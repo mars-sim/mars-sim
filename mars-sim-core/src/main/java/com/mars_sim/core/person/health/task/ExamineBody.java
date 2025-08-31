@@ -109,6 +109,7 @@ public class ExamineBody extends MedicalAidTask {
 
 		if (!success) {
 			logger.info(worker, "Now trying to go to medical again.");
+			// Note: Avoid calling this to instantly send the doctor there.
 			// Check if the doctor is already at a medical activity spot	
 			success = MedicalCare.dispatchToMedical(worker);
 			

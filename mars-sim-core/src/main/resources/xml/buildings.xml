@@ -3470,12 +3470,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</dining>
 			
-			<life-support capacity="12" power-required="0.6" />
+			<life-support capacity="16" power-required="0.8" />
 
 			<power-storage capacity="40" discharge-rate="1.25"/>
-			<research tech-level="4" capacity="3">
+			<research tech-level="4" capacity="4">
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="COMPUTING" />
+				<research-specialty name="METEOROLOGY" />
 				<research-specialty name="PHYSICS" />
 				<activity>
 					<activity-spot xloc="1.45" yloc="1.45" />
@@ -4246,7 +4247,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
-			<research tech-level="2" capacity="2">
+			<research tech-level="2" capacity="5">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="ENGINEERING" />

@@ -612,7 +612,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		
 		BuildingCategory buildingCategory = buildingSpec.getCategory();
 		
-		List<Building> sameCategoryBuildings = settlement.getBuildingManager()
+		Set<Building> sameCategoryBuildings = settlement.getBuildingManager()
 				.getBuildingsOfSameCategory(buildingCategory);
 		
 		sameTypeBuildings.addAll(sameCategoryBuildings);

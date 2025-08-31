@@ -1042,7 +1042,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private boolean walkToActivitySpotInFunction(Building building, Function f, 
 			boolean allowFail) {
 
-		LocalPosition originLoc = worker.getPosition();
 		Building originBuilding = worker.getBuildingLocation();
 		
 		if (originBuilding != null && originBuilding.equals(building)
@@ -1072,12 +1071,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 				// Q: how to make it the building only after it has arrived ?
 				// Use setToBuilding() to both add to life support/robotic station and the building itself
-				BuildingManager.setToBuilding(worker, building);
+				// BuildingManager.setToBuilding(worker, building);
 				
 //					logger.info(worker, "Claimed the spot. Walking toward " + building + ".");
 				return true;
 			}
 			else {
+				// Reverse the walk and go back to the original building
+//				createWalkingSubtask(originBuilding, originLoc, allowFail, true);
+//				logger.info(worker, 10_000L, "Failed to claim the spot. Walking back to " + originBuilding + ".");
+				
 				// Unclaim the activity spot.
 				worker.leaveActivitySpot(true);
 				
@@ -1086,9 +1089,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			}
 		}
 		else {
-			// Reverse the walk and go back to the original building
-			createWalkingSubtask(originBuilding, originLoc, allowFail, true);
-			logger.info(worker, 10_000L, "Failed to claim the spot. Walking back to " + originBuilding + ".");
+			logger.info(worker, 10_000L, "Failed to claim the spot at " + building + ".");
 			return false;
 		}
 	}

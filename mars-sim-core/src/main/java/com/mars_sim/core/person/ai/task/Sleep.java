@@ -286,6 +286,7 @@ public class Sleep extends Task {
 			// Home settlement and bed assigned
 			if (person.getAssociatedSettlement().equals(s) && person.hasBed()) {
 				
+				
 				if (person.getBuildingLocation().getZone() == person.getBed().getOwner().getZone()) {
 					// if the person is in the same zone as the building he's in
 					walkToBed(person, effortDriven);
@@ -293,9 +294,13 @@ public class Sleep extends Task {
 					return;
 				}
 			}
-
+			
+			// Note 1: Consider those in the astronomy observatory. They should be able to create a 
+			// makeshift bed
+			// Note 2: findABed will internally call findSleepRoughLocation() to turn an life support activity spot
+			// into a temporary bed spot
 			AllocatedSpot tempBed = findABed(s, person);
-
+			
 			if (tempBed != null) {
 				boolean canWalk = createWalkingSubtask(tempBed.getOwner(), tempBed.getAllocated().getPos(), effortDriven, false);
 				if (!canWalk) {
@@ -325,11 +330,11 @@ public class Sleep extends Task {
 		if (tempBed == null) {
 			tempBed = findSleepRoughLocation(s, person);
 			if (tempBed == null) {
-				logger.severe(person, "Found no spots to sleep, staying awake.");
+				logger.info(person, "Found no spots to sleep. Staying awake.");
 				return tempBed;
 			}
 			else {
-				logger.warning(person, "No permanent bed found. Sleeping at bed'"
+				logger.info(person, "No permanent bed found. Temporarily sleeping at '"
 									+ tempBed.getSpotDescription() + "'.");
 			}
 		}
@@ -344,10 +349,10 @@ public class Sleep extends Task {
 	 * @return
 	 */
 	public static AllocatedSpot findSleepRoughLocation(Settlement s, Person p) {
-		var buildMgr = s.getBuildingManager();
+		var manager = s.getBuildingManager();
 		// Find a building in the same zone as the person
 		// Avoid sleeping inside EVA Airlock
-		for (Building b: buildMgr.getSameZoneBuildingsF1NoF2(p, 
+		for (Building b: manager.getSameZoneBuildingsF1NoF2(p, 
 				FunctionType.LIFE_SUPPORT, FunctionType.EVA)) {
 			for (Function f : b.getFunctions()) {
 				for (ActivitySpot as : f.getActivitySpots()) {

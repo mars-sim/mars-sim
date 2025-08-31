@@ -72,7 +72,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	public ObserveAstronomicalObjects(Person person, ScientificStudy study) {
 		// Use task constructor.
 		super(NAME, person, false, IMPACT,
-			  			100D + RandomUtil.getRandomDouble(100D));
+			  			200D + RandomUtil.getRandomDouble(50D));
 						
 		observatory = ObserveAstronomicalObjectsMeta.determineObservatory(person.getAssociatedSettlement());
 		
@@ -80,9 +80,10 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 		// Determine observatory to use.
 		if (observatory != null) {
 			// Walk to observatory building.
-			walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(),
+			boolean canWalk = walkToTaskSpecificActivitySpotInBuilding(observatory.getBuilding(),
 													FunctionType.ASTRONOMICAL_OBSERVATION, false);
-			if (!observatory.addObserver()) {
+			
+			if (canWalk && !observatory.addObserver()) {
 				endTask();
 				return;
 			}
@@ -197,7 +198,8 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 	}
 
 	/**
-	 * Are the conditions suitable to use the astronomy. Must be low light and no dust storm.
+	 * Are the conditions suitable to use the astronomy ? Must be low light and no dust storm.
+	 * 
 	 * @param target
 	 * @return
 	 */
@@ -243,7 +245,7 @@ public class ObserveAstronomicalObjects extends Task implements ResearchScientif
 
 	
 	/**
-	 * Release Observatory
+	 * Releases the observatory space.
 	 */
 	@Override
 	protected void clearDown() {

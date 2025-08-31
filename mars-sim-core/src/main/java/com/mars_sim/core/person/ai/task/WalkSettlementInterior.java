@@ -93,6 +93,7 @@ public class WalkSettlementInterior extends Task {
 		if (startBuilding == null) {
 			logger.warning(worker, 10_000L, "Not in a building.");
 			worker.getTaskManager().clearAllTasks("Not in a building.");
+			endTask();
 			return;
 		}
 
@@ -127,8 +128,9 @@ public class WalkSettlementInterior extends Task {
 
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(worker, 10_000L, "No walkable path from " + worker.getPosition() + " in "
-						+ startBuilding.getName() + " to " + destPosition + " in " + destinationBuilding.getName());
+				logger.warning(worker, 0L, "Currently in " + startBuilding + ". Found no walkable path between my loc @ " + worker.getPosition() 
+				+ " and " + destinationBuilding.getName() + " @ " + destPosition + ".");
+				worker.getTaskManager().clearAllTasks("Null walking path.");
 				endTask();
 				return;
 			}

@@ -168,8 +168,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private ResourceProcessing resourceProcessing;
 	private RoboticStation roboticStation;
 	private Storage storage;
-	private VehicleMaintenance vehicleMaintenance;
-	private WasteProcessing wasteProcessing;
 
 	private PowerMode powerModeCache;
 	private BuildingCategory category;
@@ -481,15 +479,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	public VehicleMaintenance getVehicleMaintenance() {
-		if (vehicleMaintenance == null)
-			vehicleMaintenance = (VehicleMaintenance) getFunction(FunctionType.VEHICLE_MAINTENANCE);
-		return vehicleMaintenance;
+		return getFunction(FunctionType.VEHICLE_MAINTENANCE);
 	}
 
 	public WasteProcessing getWasteProcessing() {
-		if (wasteProcessing == null)
-			wasteProcessing = (WasteProcessing) getFunction(FunctionType.WASTE_PROCESSING);
-		return wasteProcessing;
+		return getFunction(FunctionType.WASTE_PROCESSING);
 	}
 	
 	/**

@@ -309,6 +309,7 @@ public class BuildingConfig {
 	 */
 	private static String getDefaultSpotName(FunctionType function) {
 		return switch(function) {
+			case ASTRONOMICAL_OBSERVATION -> "Post";
 			case ADMINISTRATION -> "Desk";
 			case COMMUNICATION -> "Node";
 			case COMPUTATION -> "Rack";
@@ -321,8 +322,8 @@ public class BuildingConfig {
 			case MEDICAL_CARE -> "Bay";
 			case RECREATION -> "Rec";
 			case RESEARCH -> "Lab";
-			case RESOURCE_PROCESSING -> "RP";
-			case WASTE_PROCESSING -> "WP";
+			case RESOURCE_PROCESSING -> "Pipe";
+			case WASTE_PROCESSING -> "Bin";
 			case ROBOTIC_STATION -> "Plug";
 			default -> "";
 		};

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LifeSupport.java
- * @date 2023-11-20
+ * @date 2025-08-30
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function;

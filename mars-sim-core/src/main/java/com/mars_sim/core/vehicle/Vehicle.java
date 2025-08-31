@@ -1691,8 +1691,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 		int weight = 2;
 
-		List<Building> evas = settlement.getBuildingManager()
-				.getBuildingsOfSameCategoryNZone0(BuildingCategory.EVA);
+		List<Building> evas = new ArrayList<>(settlement.getBuildingManager()
+				.getBuildingsOfSameCategoryZone0(BuildingCategory.EVA));
 		int numGarages = settlement.getBuildingManager().getGarages().size();
 		int total = (evas.size() + numGarages * weight - 1);
 		if (total < 0)

@@ -758,7 +758,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (canWalk) {
 					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 					if (!canDo) {
-						logger.warning(person, 10_000, "Unable to walk back to " + destinationBuilding + ".");
+						logger.warning(person, 20_000, "Unable to walk back to " + destinationBuilding + ".");
 					}
 				}
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoboticStation.java
- * @date 2023-11-20
+ * @date 2025-08-30
  * @author Manny Kung
  */
 package com.mars_sim.core.building.function;
@@ -182,7 +182,7 @@ public class RoboticStation extends Function {
 	 * @throws BuildingException if robot is already building occupant.
 	 */
 	public void addRobot(Robot robot) {
-		if (!robotOccupants.contains(robot)) {
+		if (!containsRobotOccupant(robot)) {
 
 			if (robot.getBuildingLocation() != null) {
 				RoboticStation roboticStation = robot.getBuildingLocation().getRoboticStation();
@@ -203,7 +203,7 @@ public class RoboticStation extends Function {
 	 * @throws BuildingException if robot is not building occupant.
 	 */
 	public void removeRobot(Robot robot) {
-		if (robotOccupants.contains(robot)) {
+		if (containsRobotOccupant(robot)) {
 			robotOccupants.remove(robot);
 		}
 	}

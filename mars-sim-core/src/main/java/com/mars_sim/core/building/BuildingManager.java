@@ -493,12 +493,12 @@ public class BuildingManager implements Serializable {
 	 * @return list of buildings
 	 */
 	public Set<Building>getBuildingsWithScienceType(Person person, ScienceType type) {
-		
-		if (person.getBuildingLocation() != null) {
+		Building origin = person.getBuildingLocation();
+		if (origin != null) {
 			return buildings
 					.stream()
 					.filter(b -> b.hasSpecialty(type)
-							&& b.getZone() == person.getBuildingLocation().getZone()
+							&& isGoodZone(origin, b)
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
@@ -506,12 +506,31 @@ public class BuildingManager implements Serializable {
 		return buildings
 				.stream()
 				.filter(b -> b.hasSpecialty(type)
+						// This avoid a person to go to astronomy observatory (in zone 1)
+						// needlessly
 						&& b.getZone() == 0
 						&& !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toSet());		
 		
 	}
 
+	/**
+	 * Checks if a building is in 'good' zone.
+	 * 
+	 * @param origin
+	 * @param destination
+	 * @return
+	 */
+	private boolean isGoodZone(Building origin, Building destination) {
+		// Assuming zone 0 is the main zone, where most service are available,
+		// this will allow someone in astronomy observatory (in zone 1) to come back home
+		if (destination.getZone() == 0 
+				|| destination.getZone() == origin.getZone()) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * Gets an available building that the person can use.
 	 *
@@ -524,12 +543,23 @@ public class BuildingManager implements Serializable {
 		// If this person is located in the settlement
 		if (person.isInSettlement()) {
 			Set<Building> buildings = null;
-
+	
 			if (sType != null) {
-				buildings = person.getSettlement().getBuildingManager()
+				if (sType == ScienceType.ASTRONOMY) {
+					
+					buildings = person.getSettlement().getBuildingManager()
+							.getBuildingsOfSameCategoryZone0(BuildingCategory.ASTRONOMY);
+					
+					if (buildings.isEmpty()) {
+						buildings = person.getSettlement().getBuildingManager()
+								.getBuildingsOfSameCategory(BuildingCategory.ASTRONOMY);
+					}
+				}
+				else 
+					buildings = person.getSettlement().getBuildingManager()
 						.getBuildingsWithScienceType(person, sType);
 			}
-
+			
 			if (buildings == null || buildings.isEmpty()) {
 				buildings = getBuildingsinSameZone(person, FunctionType.RESEARCH);
 			}
@@ -542,7 +572,7 @@ public class BuildingManager implements Serializable {
 			if (buildings == null || buildings.isEmpty()) {
 				buildings = getBuildingsinSameZone(person, FunctionType.LIVING_ACCOMMODATION);
 			}
-
+		
 			if (buildings != null && !buildings.isEmpty()) {
 				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
 						buildings);
@@ -560,10 +590,12 @@ public class BuildingManager implements Serializable {
 	 * @return
 	 */
 	public Set<Building> getDiningBuildings(Person person) {
-		if (person.getBuildingLocation() != null) {
+		Building origin = person.getBuildingLocation();
+		
+		if (origin != null) {
 			return getBuildingSet(FunctionType.DINING)
 					.stream()
-					.filter(b -> b.getZone() == person.getBuildingLocation().getZone()
+					.filter(b -> isGoodZone(origin, b)
 							&& !b.getMalfunctionManager().hasMalfunction())
 					.collect(Collectors.toSet());
 		}
@@ -632,6 +664,7 @@ public class BuildingManager implements Serializable {
 		
 		return worker.getSettlement().getBuildingManager().getBuildingSet(functionType)
 				.stream()
+				// Not possible to nail down the same zone
 				.filter(b -> b.getZone() == 0
 						&& !b.getMalfunctionManager().hasMalfunction())
 				.collect(Collectors.toSet());		
@@ -685,12 +718,12 @@ public class BuildingManager implements Serializable {
 	 * @param category the building type.
 	 * @return list of buildings.
 	 */
-	public List<Building> getBuildingsOfSameCategory(BuildingCategory category) {
+	public Set<Building> getBuildingsOfSameCategory(BuildingCategory category) {
 		// Called by Resupply.java and BuildingConstructionMission.java
 		// for putting new building next to the same building "type".
 		return buildings.stream()
 				.filter(b -> b.getCategory() == category)
-				.toList();
+				.collect(Collectors.toSet());
 	}
 
 	/**
@@ -699,13 +732,13 @@ public class BuildingManager implements Serializable {
 	 * @param category the building type.
 	 * @return list of buildings.
 	 */
-	public List<Building> getBuildingsOfSameCategoryNZone0(BuildingCategory category) {
+	public Set<Building> getBuildingsOfSameCategoryZone0(BuildingCategory category) {
 		// Called by Resupply.java and BuildingConstructionMission.java
 		// for putting new building next to the same building "type".
 		return buildings.stream()
 				.filter(b -> b.getCategory() == category
 						&& b.getZone() == 0)
-				.toList();
+				.collect(Collectors.toSet());
 	}
 	
 	/**
@@ -1527,7 +1560,7 @@ public class BuildingManager implements Serializable {
 		}
 		
 		if (originBuilding == null) {
-			// Set the building and add occupant
+			// Instantly set the worker's current building and add occupant
 			setToBuilding(worker, building);
 		}
 		
@@ -1542,7 +1575,7 @@ public class BuildingManager implements Serializable {
 			worker.setPosition(as.getAllocated().getPos());
 			
 			if (originBuilding != null && !originBuilding.equals(building)) {
-				// Transfer the worker to the new building
+				// Instantly transfer the worker to the new building
 				transferFromBuildingToBuilding(worker, originBuilding, building);
 			}
 		}
