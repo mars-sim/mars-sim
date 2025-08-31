@@ -18,6 +18,7 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.util.Snapshots;
 
 /**
  * Represents the behave that a Mission exhibits.
@@ -26,7 +27,7 @@ public interface Mission extends Entity {
 
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
-	 * 
+	 *
 	 * @param reason Reason to abort
 	 */
 	void abortMission(String reason);
@@ -36,7 +37,7 @@ public interface Mission extends Entity {
 	 */
 	void abortPhase();
 
-    /**
+	/**
 	 * Determines if mission is completed.
 	 *
 	 * @return true if mission is completed
@@ -52,10 +53,10 @@ public interface Mission extends Entity {
 
 	/**
 	 * Sets the Mission name.
-	 * 
+	 *
 	 * @param name New Name.
 	 */
-    void setName(String name);
+	void setName(String name);
 
 	/**
 	 * Gets the settlement associated with the mission.
@@ -64,7 +65,7 @@ public interface Mission extends Entity {
 	 */
 	Settlement getAssociatedSettlement();
 
-    /**
+	/**
 	 * Gets the mission designation string. Defined only after the mission has been approved and commenced.
 	 */
 	String getFullMissionDesignation();
@@ -74,26 +75,26 @@ public interface Mission extends Entity {
 	 */
 	MissionLog getLog();
 
-    /**
-     * The status flags attached to the Mission.
-     */
-    Set<MissionStatus> getMissionStatus();
-    
-    /**
+	/**
+	 * The status flags attached to the Mission.
+	 */
+	Set<MissionStatus> getMissionStatus();
+
+	/**
 	 * Gets the mission type enum.
 	 *
-	 * @return
+	 * @return mission type
 	 */
 	MissionType getMissionType();
 
 	/**
-	 * Gets the objectives that Mission satisfies. 
-	 * 
+	 * Gets the objectives that Mission satisfies.
+	 *
 	 * @return May be an empty set
 	 */
 	Set<ObjectiveType> getObjectiveSatisified();
 
-    /**
+	/**
 	 * Gets the mission qualification value for the member. Member is qualified in
 	 * joining the mission if the value is larger than 0. The larger the
 	 * qualification value, the more likely the member will be picked for the
@@ -106,12 +107,12 @@ public interface Mission extends Entity {
 
 	/**
 	 * Gets the stage of the Mission.
-	 * 
-	 * @return
+	 *
+	 * @return current stage
 	 */
 	Stage getStage();
 
-    /**
+	/**
 	 * Gets the description of the current phase.
 	 *
 	 * @return phase description
@@ -123,17 +124,17 @@ public interface Mission extends Entity {
 	 */
 	MarsTime getPhaseStartTime();
 
-    /**
+	/**
 	 * Returns the mission plan.
 	 *
 	 * @return {@link MissionPlanning}
 	 */
 	MissionPlanning getPlan();
 
-    /**
-     * Mission priority
-     */
-    int getPriority();
+	/**
+	 * Mission priority
+	 */
+	int getPriority();
 
 	/**
 	 * Gets the mission capacity for participating people.
@@ -144,8 +145,8 @@ public interface Mission extends Entity {
 
 	/**
 	 * Adds a member.
-	 * 
-	 * @param member
+	 *
+	 * @param member the member to add
 	 */
 	void addMember(Worker member);
 
@@ -157,27 +158,50 @@ public interface Mission extends Entity {
 	void removeMember(Worker member);
 
 	/**
-	 * Returns a list of people and robots who have signed up for this mission.
-	 * 
-	 * @return
+	 * Returns a set of people and robots who have signed up for this mission.
+	 * (This is generally a live view managed by the Mission implementation.)
+	 *
+	 * @return signup set, possibly empty
 	 */
 	Set<Worker> getSignup();
 
-    /**
+	/**
 	 * Gets a collection of the members in the mission.
+	 * (This is generally a live view managed by the Mission implementation.)
 	 *
 	 * @return collection of members
 	 */
 	Collection<Worker> getMembers();
 
-    /**
+	/**
+	 * Provides a CME-safe snapshot copy of current members for iteration.
+	 * Use this from parallel / asynchronous code to avoid ConcurrentModificationException.
+	 * Returns an immutable empty list when there are no members.
+	 *
+	 * @return snapshot list of members
+	 */
+	default List<Worker> snapshotMembers() {
+		return Snapshots.list(getMembers());
+	}
+
+	/**
+	 * Provides a CME-safe snapshot copy of current signups for iteration.
+	 * Returns an immutable empty set when there are no signups.
+	 *
+	 * @return snapshot set of signups
+	 */
+	default Set<Worker> snapshotSignup() {
+		return Snapshots.set(getSignup());
+	}
+
+	/**
 	 * Returns the starting person.
 	 *
 	 * @return {@link Person}
 	 */
 	Person getStartingPerson();
 
-    /**
+	/**
 	 * Performs the mission.
 	 *
 	 * @param member the member performing the mission.
@@ -192,7 +216,7 @@ public interface Mission extends Entity {
 	 */
 	void addMissionListener(MissionListener newListener);
 
-	/** 
+	/**
 	 * Removes a listener.
 	 *
 	 * @param oldListener the listener to remove.
@@ -201,7 +225,7 @@ public interface Mission extends Entity {
 
 	/**
 	 * Get the list of objectives for this mission.
-	 * @return
+	 * @return objectives list (possibly empty)
 	 */
-    List<MissionObjective> getObjectives();
+	List<MissionObjective> getObjectives();
 }
