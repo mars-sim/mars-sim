@@ -11,7 +11,7 @@ public class ToggleResourceProcessTest extends AbstractMarsSimUnitTest {
         var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
 
-        // Pick a prcoess and add resoruces
+        // Pick a process and add resources
         var p = r.getProcesses().get(0);
 
         // Reset toggle for now
@@ -39,7 +39,7 @@ public class ToggleResourceProcessTest extends AbstractMarsSimUnitTest {
         var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
 
-        // Pick a prcoess and add resoruces
+        // Pick a process and add resources
         var p = r.getProcesses().get(0);
 
         // Reset toggle for now
@@ -59,7 +59,7 @@ public class ToggleResourceProcessTest extends AbstractMarsSimUnitTest {
         var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
 
-        // Pick a prcoess and add resoruces
+        // Pick a process and add resources
         var p = r.getProcesses().get(0);
 
         var w = buildPerson("worker", s);

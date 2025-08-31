@@ -170,8 +170,18 @@ public class LifeSupport extends Function {
 	 * @param person new person to add to building.
 	 */
 	public void addPerson(Person person) {
-		// Add occupant to this function.
-		occupants.add(person);
+		if (!occupants.contains(person)) {
+		
+			if (person.getBuildingLocation() != null) {
+				LifeSupport lifeSupport = person.getBuildingLocation().getLifeSupport();
+
+				if (lifeSupport != null && lifeSupport.containsOccupant(person)) {
+					lifeSupport.removePerson(person);
+				} 
+			}
+			
+			occupants.add(person);
+		}
 	}
 
 	/**
@@ -182,10 +192,7 @@ public class LifeSupport extends Function {
 	public void removePerson(Person occupant) {
 		if (occupants.contains(occupant)) {
 			occupants.remove(occupant);
-			logger.fine(occupant, 10_000L, "Removed from " + building + "'s life support.");
-		} else {
-			throw new IllegalStateException("Person does not occupy building.");
-		}
+		} 
 	}
 
 	/**

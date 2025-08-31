@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @date 2022-09-12
+ * @date 2025-08-30
  * @author Scott Davis
  */
 package com.mars_sim.core.resourceprocess.task;
@@ -13,7 +13,6 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.ResourceProcessor;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -160,12 +159,11 @@ public class ToggleResourceProcess extends Task {
 			logger.fine(resourceProcessBuilding, process + " : " + worker + " made an attempt to toggle it on.");
 		}
 
-		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT))
-			walkToResourceBldg(resourceProcessBuilding);
-		else
-			// Looks for management function for toggling resource process.
-			checkManagement();
-
+		if (worker.getUnitType() == UnitType.PERSON)
+			checkIn();
+		// Note: For robots, they do need to walk back and forth for a work place
+		// and can connect to a resource panel and access control remotely
+		
 		setPhase(TOGGLING);
 		process.setWorkerAssigned(true);
 	}
@@ -201,17 +199,7 @@ public class ToggleResourceProcess extends Task {
 			workTime += workTime * (.2D * mechanicSkill);
 		}
 
-		if (worker.getUnitType() == UnitType.PERSON) {
-			// Note: still be able to toggle despite low performance
-//			double perf = worker.getPerformanceRating();
-//			// If worker is incapacitated, enter airlock.
-//			if (perf == 0D) {
-//				// reset it to 10% so that he can walk inside
-//				person.getPhysicalCondition().setPerformanceFactor(.1);
-//				clearTask(": poor performance in " + process.getProcessName() + ".");
-//			}
-
-		} else {
+		if (worker.getUnitType() == UnitType.ROBOT) {
 			workTime /= 2;
 		}
 
@@ -265,40 +253,108 @@ public class ToggleResourceProcess extends Task {
 	}
 
 	/**
-	 * Checks if any management function is available.
+	 * Walks to a local activity spot of interest.
+	 * 
+	 * @return
 	 */
-	private void checkManagement() {
-
+	private boolean walkToLocalSpot() {
 		boolean done = false;
-		// Pick an administrative building for remote access to the resource building
-		Set<Building> mgtBuildings = worker.getSettlement().getBuildingManager()
-				.getBuildingSet(FunctionType.MANAGEMENT);
+		
+		done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+				FunctionType.RESOURCE_PROCESSING, false);
+		if (!done) {
+			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+					FunctionType.WASTE_PROCESSING, false);
+		}
+		if (!done) {
+			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+					FunctionType.MANAGEMENT, false);
+		}
+		if (!done) {
+			done = walkToActivitySpotInBuilding(resourceProcessBuilding,
+					FunctionType.ADMINISTRATION, false);
+		}
+		
+		return done;
+	}
+	
+	/**
+	 * Walks to another building.
+	 * 
+	 * @param functionType
+	 * @return
+	 */
+	private boolean walkOtherBuildings(FunctionType functionType) {
+		boolean done = false;
 
-		if (!mgtBuildings.isEmpty()) {
+		// Pick an RESOURCE_PROCESSING building for remote access to the resource building
+		Set<Building> buildingSet = worker.getSettlement().getBuildingManager()
+				.getBuildingSet(functionType);
 
-			Set<Building> notFull = new UnitSet<>();
+		if (!buildingSet.isEmpty()) {
 
-			for (Building b : mgtBuildings) {
-				if (b.hasFunction(FunctionType.ADMINISTRATION)) {
-					walkToMgtBldg(b);
-					done = true;
-					break;
-				} else if (b.getManagement() != null && !b.getManagement().isFull()) {
-					notFull.add(b);
+			for (Building b : buildingSet) {
+				if (!b.equals(resourceProcessBuilding)
+						&& b.hasFunction(functionType)) {
+					done = walkToActivitySpotInBuilding(b,
+							functionType, false);
+					if (done)
+						return true;
 				}
 			}
-
+		}
+		
+		return done;
+	}
+	
+	/**
+	 * Checks in an activity spot.
+	 */
+	private void checkIn() {
+		boolean done = false;
+		
+		if (resourceProcessBuilding.hasFunction(FunctionType.LIFE_SUPPORT)) {
+			// First, stick with resourceProcessBuilding and find a local empty spot
+			done = walkToLocalSpot();	
+			
 			if (!done) {
-				if (!notFull.isEmpty()) {
-					walkToMgtBldg(RandomUtil.getARandSet(mgtBuildings));
-				} else {
-					clearTask(process.getProcessName() + ": Management space unavailable.");
-				}
+				// Next, go to any instrument panel for accessing it remotely
+				operateRemotely();
 			}
-		} else {
-			clearTask("Management space unavailable.");
+		}
+		else {
+			//Go to any instrument panel for accessing it remotely
+			operateRemotely();
 		}
 	}
+	
+	/**
+	 * Operates the resource processing panel remotely.
+	 */
+	private void operateRemotely() {
+		boolean done = false;
+		
+		if (!done) {			
+			done = walkOtherBuildings(FunctionType.RESOURCE_PROCESSING);
+		}
+		
+		if (!done) {
+			done = walkOtherBuildings(FunctionType.WASTE_PROCESSING);
+		}
+		
+		if (!done) {			
+			done = walkOtherBuildings(FunctionType.MANAGEMENT);
+		}
+		
+		if (!done) {
+			done = walkOtherBuildings(FunctionType.ADMINISTRATION);
+		}		
+		
+//		if (!done) {
+//			clearTask(process.getProcessName() + ". No workspace available.");
+//		}
+	}
+	
 	
 	/**
 	 * This method is part of the Task Life Cycle. It is called once
@@ -311,28 +367,6 @@ public class ToggleResourceProcess extends Task {
 			process.setWorkerAssigned(false);
 		}
 		super.clearDown();
-	}
-
-	/**
-	 * Walks to the building with resource processing function.
-	 *
-	 * @param building
-	 */
-	private void walkToResourceBldg(Building building) {
-		walkToTaskSpecificActivitySpotInBuilding(building,
-				FunctionType.RESOURCE_PROCESSING,
-				false);
-	}
-
-	/**
-	 * Walks to the building with management function.
-	 *
-	 * @param building
-	 */
-	private void walkToMgtBldg(Building building) {
-		walkToTaskSpecificActivitySpotInBuilding(building,
-				FunctionType.MANAGEMENT,
-				false);
 	}
 
 	ResourceProcess getResourceProcess() {

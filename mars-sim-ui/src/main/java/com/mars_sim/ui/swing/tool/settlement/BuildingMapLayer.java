@@ -61,7 +61,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 	private static final Map<BuildingCategory,ColorChoice> BUILDING_COLORS = new EnumMap<>(BuildingCategory.class);
 
 	static {
-		BUILDING_COLORS.put(BuildingCategory.WORKSHOP, new ColorChoice(new Color(195, 176, 145), BLACK_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.WORKSHOP, new ColorChoice(new Color(195, 176, 145), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.LABORATORY, new ColorChoice(new Color(51, 102, 153), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.LIVING, new ColorChoice(new Color (236, 121, 154).darker(), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.MEDICAL, new ColorChoice(new Color (51, 204, 255), WHITE_OUTLINE));

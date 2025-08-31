@@ -12,17 +12,15 @@ import java.util.logging.Level;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.PreparedDish;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
-import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.task.meta.EatDrinkMeta;
@@ -79,8 +77,7 @@ public class EatDrink extends Task {
 	// Data members
 	private boolean food = false;
 	private boolean water = false;
-	private boolean hasNapkin = false;
-	
+
 	private int meals = 0;
 	
 	private double foodAmount = 0;
@@ -197,8 +194,12 @@ public class EatDrink extends Task {
         	Building diningBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.DINING);
         	
         	if (diningBuilding != null) {
-        		// Initiates a walking task to go back to the settlement
-        		walkToDiningLoc(diningBuilding, false);
+  
+        		boolean canWalk = walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, false);		
+    			// Take napkin from inventory if available.
+    			if (canWalk) {
+    				// In future, arrange to meet a friend at the diner
+    			}
         	}			
 		}
 
@@ -273,14 +274,6 @@ public class EatDrink extends Task {
 	}
 
 	private void goDining() {
-		
-		Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, false);
-		if (diningBuilding != null) {
-			// Initialize task phase.
-			setPhase(LOOK_FOR_FOOD);
-			
-			walkToDiningLoc(diningBuilding, false);
-		}
 
 		boolean want2Chat = true;
 		// See if a person wants to chat while eating
@@ -295,53 +288,24 @@ public class EatDrink extends Task {
 				want2Chat = false;
 		}
 
-		diningBuilding = BuildingManager.getAvailableDiningBuilding(person, want2Chat);
-		if (diningBuilding != null)
+		Building diningBuilding = BuildingManager.getAvailableDiningBuilding(person, want2Chat);
+		
+		if (diningBuilding != null) {
+			// Initialize task phase.
+			setPhase(LOOK_FOR_FOOD);
 			// Walk to that building.
-			walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);
-
-		// Take napkin from inventory if available.
-		if (person.getSettlement().retrieveAmountResource(ResourceUtil.NAPKIN_ID, NAPKIN_MASS) > 0)
-			hasNapkin = true;
+			boolean canWalk = walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, true);		
+			// Take napkin from inventory if available.
+			if (canWalk) {
+				// In future, arrange to meet a friend at the diner
+			}
+		}	
 	}
 	
 	
 	private void checkFoodDessertAmount() {
 		// Initialize task phase.
 		setPhase(LOOK_FOR_FOOD);
-	}
-	
-	/**
-	 * Walks to an activity in the dining building.
-	 * 
-	 * @param building  the dining building.
-	 * @param allowFail true if walking is allowed to fail.
-	 */
-	protected void walkToDiningLoc(Building building, boolean allowFail) {
-		// Find a free spot in the building
-		Function f = building.getFunction(FunctionType.DINING);
-		LocalPosition loc = f.getAvailableActivitySpot();
-		if (loc == null) {
-			// Find another spot in the same building
-			f = building.getEmptyActivitySpotFunction();
-			if (f == null) {
-				return;
-			}
-			loc = f.getAvailableActivitySpot();
-		}
-
-		// Create subtask for walking to destination.
-		if (loc != null) {			
-			boolean canWalk = createWalkingSubtask(building, loc, allowFail, false);
-		
-			if (canWalk) {
-				// Set the new position
-				person.setPosition(loc);
-						
-				// Add the person to this activity spot
-				f.claimActivitySpot(loc, person);
-			}
-		}
 	}
 
 	private void goForWater() {
@@ -841,8 +805,10 @@ public class EatDrink extends Task {
 	 */
 	@Override
 	protected void clearDown() {
-		// Throw away napkin waste if one was used.
-		if (hasNapkin && person.isInside()) {
+		
+		if (person.getSettlement() != null && person.getSettlement()
+				.retrieveAmountResource(ResourceUtil.NAPKIN_ID, NAPKIN_MASS) > 0) {
+			// Throw away napkin waste if one was used.
 			((ResourceHolder)person.getContainerUnit()).storeAmountResource(ResourceUtil.SOLID_WASTE_ID, NAPKIN_MASS);
 		}
 	}

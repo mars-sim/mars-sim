@@ -40,7 +40,7 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         var s = buildSettlement("Budget", true);
         var b = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
         var p = buildPerson("Accountant", s);
-        BuildingManager.addPersonToActivitySpot(p, b, FunctionType.LIVING_ACCOMMODATION);
+        BuildingManager.addToActivitySpot(p, b, FunctionType.LIVING_ACCOMMODATION);
 
         s.setIceReviewDue(true);
         assertTrue("Ice Probability needs review", s.isIceReviewDue());

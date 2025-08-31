@@ -221,7 +221,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
         unitManager.addUnit(robot);
 
         if (place != null) {
-            BuildingManager.addRobotToActivitySpot(robot, place, activity);
+            BuildingManager.addToActivitySpot(robot, place, activity);
         }
         return robot;
     }
@@ -278,7 +278,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		unitManager.addUnit(person);
 
 		if (place != null) {
-			boolean success = BuildingManager.addPersonToActivitySpot(person, place, activity);
+			boolean success = BuildingManager.addToActivitySpot(person, place, activity);
 			assertTrue("Successful in adding " + person + " to a " + activity.getName() + " activity spot", success);
 		}
 		

@@ -4,8 +4,7 @@
         default-population="36" number-of-robots="24" sponsor="MS"
         description="Large Base" objective="CROP_FARM">
         
-    <!-- zone 0 -->        
-        
+    <!-- zone 0 -->               
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
@@ -32,16 +31,16 @@
     <building id="3" type="Hallway" length="4.0" xloc="0.0"
         yloc="19.5" facing="0.0">
         <connection-list>
-            <connection id="2" xloc="0.0" yloc="-2.0" />
+            <connection id="2" hatch-facing="south" />
             <connection id="4" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
     <building id="4" type="Lander Hab" xloc="0.0" yloc="26.0"
         facing="0.0">
         <connection-list>
-            <connection id="3" xloc="0.0" yloc="-4.5" />
-            <connection id="11" xloc="0.0" yloc="4.5" />
-            <connection id="9" xloc="-4.5" yloc="0.0" />
+            <connection id="3" hatch-facing="south"  />
+            <connection id="11" hatch-facing="north" />
+            <connection id="9" hatch-facing="east"  />
             <connection id="EVA2" hatch-facing="west" />
         </connection-list>
     </building>

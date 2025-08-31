@@ -14,6 +14,7 @@ import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -39,11 +40,12 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
         Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
 		Person person = buildPerson("Walker", settlement);
+		Worker worker = (Worker)person;
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
         BuildingManager.addToBuilding(person, b1);
 
         LocalPosition target = new LocalPosition(-2D, 1D);
-        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, b1, target, 0D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(worker, b1, target);
         assertFalse("Walk task can start", walkTask.isDone());
         
         executeTask(person, walkTask, 10);
@@ -74,11 +76,12 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
         connectorManager.addBuildingConnection(new BuildingConnector(b4, HATCH3_POSITION, 270D, b3, HATCH3_POSITION, 90D));
         
 		Person person = buildPerson("Walker", settlement);
+		Worker worker = (Worker)person;
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
         BuildingManager.addToBuilding(person, b1);
 
         LocalPosition target = new LocalPosition(-16D, 1D);
-        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, b4, target, 0D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(worker, b4, target);
         assertFalse("Walk task can start", walkTask.isDone());
         
         executeTask(person, walkTask, 10);
@@ -106,11 +109,12 @@ public class WalkInteriorTest extends AbstractMarsSimUnitTest {
         connectorManager.addBuildingConnection(new BuildingConnector(b5, HATCH2_POSITION, 270D, b4, HATCH2_POSITION, 90D));
 
 		Person person = buildPerson("Walker", settlement);
+		Worker worker = (Worker)person;
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
         BuildingManager.addToBuilding(person, b3);
 
         LocalPosition target = new LocalPosition(-11D, 1D);
-        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, b5, target, 0D);
+        WalkSettlementInterior walkTask =  new WalkSettlementInterior(worker, b5, target);
         assertFalse("Walk task can start", walkTask.isDone());
         
         executeTask(person, walkTask, 10);

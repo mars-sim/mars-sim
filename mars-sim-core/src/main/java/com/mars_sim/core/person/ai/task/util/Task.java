@@ -1045,57 +1045,52 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition originLoc = worker.getPosition();
 		Building originBuilding = worker.getBuildingLocation();
 		
-		// if the worker is already there, does it make a difference ?
-		if (originBuilding != null && originBuilding.equals(building)) {
-			logger.info(worker, "Already at " + originLoc + " in " + building + ".");
-
-			Function fClaimed = worker.getActivitySpot().getFunction();
-			if (f.equals(fClaimed)) {
-				logger.info(worker, "Already at a spot of " + f.getFunctionType().getName() 
-						+ ". No need to go further to claim any spot.");
+		if (originBuilding != null && originBuilding.equals(building)
+			// Check if this worker has already occupied a spot for this function
+			&& f.checkWorkerActivitySpot(worker)) {
+//			logger.info(worker, "Already at a spot for " + f.getFunctionType().getName() + ". No need to go further to claim one.");
 				return true;
-			}
 		}
 		
 		LocalPosition loc = f.getAvailableActivitySpot();
 		
-		if (loc != null) {
-			// Claim this activity spot
-			boolean canClaim = f.claimActivitySpot(loc, worker);
+		if (loc == null) {
+//			logger.info(worker, 10_000L, getDescription() + ". No available spots for " + f.getFunctionType().getName() + " in " + building +  ".");
+			return false;
+		}
 			
-			if (canClaim) {
-				// Create subtask for walking to destination.
-				boolean canWalk = createWalkingSubtask(building, loc, allowFail, true);
-				
-				if (canWalk) {
-					logger.info(worker, "Walking toward " + building + ".");
+		// Claim this activity spot
+		boolean canClaim = f.claimActivitySpot(loc, worker);
+		
+		if (canClaim) {
+			// Create subtask for walking to destination.
+			// e.g. building can be an outside building that need Toggling on Resource Process
+			boolean canWalk = createWalkingSubtask(building, loc, allowFail, true);
+			
+			if (canWalk) {
+//					logger.info(worker, "Walking toward " + building + ".");
 
-					// Q: how to make it the building only after it has arrived ?
-					// Use setToBuilding() to both add to life support/robotic station and the building itself
-					BuildingManager.setToBuilding(worker, building);
-					
-					logger.info(worker, "Claimed the spot. Walking toward " + building + ".");
-					return true;
-				}
-				else {
-					logger.info(worker, "Unable to walk to " + loc + " in " + building + " " +  ".");
-					return false;
-				}
+				// Q: how to make it the building only after it has arrived ?
+				// Use setToBuilding() to both add to life support/robotic station and the building itself
+				BuildingManager.setToBuilding(worker, building);
 				
+//					logger.info(worker, "Claimed the spot. Walking toward " + building + ".");
+				return true;
 			}
 			else {
-				// Reverse the walk and go back to the original building
-				createWalkingSubtask(originBuilding, originLoc, allowFail, true);
-				logger.info(worker, "Failed to claim the spot. Walking back to " + originBuilding + ".");
+				// Unclaim the activity spot.
+				worker.leaveActivitySpot(true);
+				
+				logger.info(worker, 10_000L, "Unable to walk to " + loc + " in " + building + " " +  ".");
 				return false;
 			}
-
 		}
 		else {
-			logger.info(worker, 10_000L, "No available spots in " + building +  ".");
+			// Reverse the walk and go back to the original building
+			createWalkingSubtask(originBuilding, originLoc, allowFail, true);
+			logger.info(worker, 10_000L, "Failed to claim the spot. Walking back to " + originBuilding + ".");
+			return false;
 		}
-
-		return false;
 	}
 	
 	/**
@@ -1394,7 +1389,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
-			logger.info(worker, "Already at the spot and no need to walk further.");
+//			logger.info(worker, 4_000, "Already at the spot and no need to walk further.");
 			return true;
 		}
 		

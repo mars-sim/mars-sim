@@ -381,27 +381,15 @@ public class Walk extends Task {
 			populateWalkingStepPhaseMap();
 		}
 
-		if (person != null) {
-			if (walkingStepIndex < walkingSteps.getWalkingStepsNumber()) {
-				WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-				result = walkingStepPhaseMap.get(step.stepType);
-			}
-			else {
-				logger.log(person, Level.FINE, 0,
-						"Invalid walking step index.");
-			}
-
+		if (walkingStepIndex < walkingSteps.getWalkingStepsNumber()) {
+			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+			result = walkingStepPhaseMap.get(step.stepType);
 		}
 		else {
-			if (walkingStepIndex < walkingSteps.getWalkingStepsNumber()) {
-				WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-				result = walkingStepPhaseMap.get(step.stepType);
-			}
-			else {
-				logger.log(robot, Level.FINE, 0,
-						"Invalid walking step index.");
-			}
+			logger.log(worker, Level.FINE, 0,
+					"Invalid walking step index.");
 		}
+
 		return result;
 	}
 
@@ -583,84 +571,44 @@ public class Walk extends Task {
 	 *         phase.
 	 */
 	private double walkingSettlementInteriorPhase(double time) {
-		
-		if (person != null) {
-			logger.log(person, Level.FINE, 4000, "Walking inside a settlement.");
 
-			// Check if person has reached destination location.
-			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			Building building = BuildingManager.getBuilding(person);
-			if (step.building != null && step.building.equals(building) && step.loc.isClose(person.getPosition())) {
-				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-					walkingStepIndex++;
+		logger.log(worker, Level.FINE, 4000, "Walking inside a settlement.");
 
-					setPhase(getWalkingStepPhase());
-				}
-				else {
-					endTask();
-				}
+		// Check if person has reached destination location.
+		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+		Building building = BuildingManager.getBuilding(worker);
+		if (step.building != null && step.building.equals(building) && step.loc.isClose(worker.getPosition())) {
+			if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+				walkingStepIndex++;
+
+				setPhase(getWalkingStepPhase());
 			}
 			else {
-				if (building != null) {
-					// Going from building to step.building
-					// setDescription("Walking inside from " + building.getNickName() + " to " +
-					// step.building.getNickName());
-					if (step.building != null) {
-
-						boolean canAdd = addSubTask(new WalkSettlementInterior(person, step.building, step.loc, 0));
-						if (!canAdd) {
-							logger.log(person, Level.WARNING, 4_000,
-									". Unable to add subtask WalkSettlementInterior.");
-							// Note: may call below many times
-							endTask();
-						}
-					}
-					else {
-						logger.log(person, Level.SEVERE, 5_000,
-			      				"Could not find a destination building to go.");
-						endTask();
-					}
-				} else if (person.isOutside()) {
-					logger.log(person, Level.SEVERE, 5_000, "Not in a building.");
-					
-					endTask();
-				}
+				endTask();
 			}
 		}
 		else {
-			logger.log(robot, Level.FINER, 4000, "Walking inside a settlement.");
+			if (building != null) {
+				// Going from building to step.building
+				if (step.building != null) {
 
-			// Check if robot has reached destination location.
-			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			Building building = BuildingManager.getBuilding(robot);
-			if (step.building.equals(building) && step.loc.isClose(robot.getPosition())) {
-				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-					walkingStepIndex++;
-					// setDescription("Almost arriving at (" + x + ", " + y + ") in " +
-					// building.getNickName());
-					setPhase(getWalkingStepPhase());
-				} else {
-					// setDescription("Arrived at (" + x + ", " + y + ") in " +
-					// building.getNickName());
-					endTask();
-				}
-			}
-			else {
-				if (building != null) {
-					
-					if (step.building != null) {
-						addSubTask(new WalkSettlementInterior(robot, step.building, step.loc));
-					}
-					else {
-						logger.log(robot, Level.SEVERE, 5_000,
-			      				"Could not find a destination building to go.");
+					boolean canAdd = addSubTask(new WalkSettlementInterior(worker, step.building, step.loc));
+					if (!canAdd) {
+						logger.log(worker, Level.WARNING, 4_000,
+								". Unable to add subtask WalkSettlementInterior.");
+						// Note: may call below many times
 						endTask();
-					}				
-				} else if (robot.isOutside()) {
-					logger.log(robot, Level.SEVERE, 5_000, "Not in a building.");
-					
+					}
+				}
+				else {
+					logger.log(worker, Level.SEVERE, 5_000,
+		      				"Could not find a destination building to go.");
 					endTask();
 				}
+			} else if (worker.isOutside()) {
+				logger.log(worker, Level.SEVERE, 5_000, "Not in a building.");
+				
+				endTask();
 			}
 		}
 
@@ -678,101 +626,66 @@ public class Walk extends Task {
 		
 		setDescription(WALKING_IN_ROVER);
 
-		if (person != null) {
+		logger.log(worker, Level.FINE, 5_000,
+				"Walking inside a rover.");
 
-			logger.log(person, Level.FINE, 5_000,
-					"Walking inside a rover.");
+		// Check if worker has reached destination location.
+		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+		Rover rover = (Rover) worker.getVehicle();
 
-			// Check if person has reached destination location.
-			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			Rover rover = (Rover) person.getVehicle();
-
-			// TODO: working on resolving NullPointerException
-			if (rover != null) {
-				// Update rover destination if rover has moved and existing destination is no
-				// longer within rover.
-				if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(step.loc, rover)) {
-					// Determine new destination location within rover.
-					LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalPos(rover);
-					step.loc = relativeRoverLoc;
-				}
-			}
-
-
-			if (step.rover.equals(rover) && step.loc.isClose(person.getPosition())) {
-				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-					walkingStepIndex++;
-					// setDescription("Walking back to the rover at (" + x + ", " + y + ")");
-					setPhase(getWalkingStepPhase());
-				} else {
-					endTask();
-				}
-			} else { // this is a high traffic case when a person is in a vehicle
-
-				if (person.isInSettlement()) {
-					logger.log(person, Level.SEVERE, 5_000,
-						"Was supposed to be in a rover.");
-					endTask();
-				}
-
-				if (person.isInVehicle() || person.isInVehicleInGarage()) {
-					logger.log(person, Level.FINE , 5_000,
-						"Starting WalkRoverInterior.");
-					
-					Task currentTask = person.getMind().getTaskManager().getTask();
-	        		Task subTask = person.getMind().getTaskManager().getTask().getSubTask();
-	        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))
-	        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))) {	
-					
-						boolean canAdd = addSubTask(new WalkRoverInterior(person, step.rover, step.loc));
-						if (!canAdd) {
-							logger.log(person, Level.WARNING, 4_000,
-									". Unable to add subtask WalkRoverInterior.");
-							// Note: may call below many times
-							endTask();
-						}
-	        		}
-				}
-
-				else if (person.isOutside()) {
-					logger.log(person, Level.SEVERE, 5_000,
-						"Outside calling walkingRoverInteriorPhase() and NOT in a rover.");
-					endTask();
-				}
-
-			}
-
-		} else {
-			logger.log(robot, Level.SEVERE, 5_000,
-					"Walking inside a rover.");
-
-			// Check if robot has reached destination location.
-			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			Rover rover = (Rover) robot.getVehicle();
-
+		// TODO: working on resolving NullPointerException
+		if (rover != null) {
 			// Update rover destination if rover has moved and existing destination is no
 			// longer within rover.
 			if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(step.loc, rover)) {
 				// Determine new destination location within rover.
-				// TODO: Determine location based on activity spot?
 				LocalPosition relativeRoverLoc = LocalAreaUtil.getRandomLocalPos(rover);
 				step.loc = relativeRoverLoc;
 			}
+		}
 
-			if (step.rover.equals(rover) && step.loc.isClose(robot.getPosition())) {
-				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-					walkingStepIndex++;
-					// setDescription("Walking back to the rover at (" + x + ", " + y + ")");
-					setPhase(getWalkingStepPhase());
-				} else {
-					// setDescription("Arrived at (" + x + ", " + y + ")");
-					endTask();
-				}
+
+		if (step.rover.equals(rover) && step.loc.isClose(worker.getPosition())) {
+			if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+				walkingStepIndex++;
+				// setDescription("Walking back to the rover at (" + x + ", " + y + ")");
+				setPhase(getWalkingStepPhase());
 			} else {
-				logger.log(person, Level.SEVERE, 5_000,
-					"Starting WalkRoverInterior.");
-				addSubTask(new WalkRoverInterior(robot, step.rover, step.loc));
+				endTask();
 			}
+		} else { // this is a high traffic case when a worker is in a vehicle
+
+			if (worker.isInSettlement()) {
+				logger.log(worker, Level.SEVERE, 5_000,
+					"Was supposed to be in a rover.");
+				endTask();
+			}
+
+			if (worker.isInVehicle() || worker.isInVehicleInGarage()) {
+				logger.log(worker, Level.FINE , 5_000,
+					"Starting WalkRoverInterior.");
+				
+				Task currentTask = worker.getTaskManager().getTask();
+        		Task subTask = worker.getTaskManager().getTask().getSubTask();
+        		if ((currentTask != null && !currentTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))
+        			|| (subTask != null && !subTask.getName().equalsIgnoreCase(WalkRoverInterior.NAME))) {	
+				
+					boolean canAdd = addSubTask(new WalkRoverInterior(worker, step.rover, step.loc));
+					if (!canAdd) {
+						logger.log(worker, Level.WARNING, 4_000,
+								". Unable to add subtask WalkRoverInterior.");
+						// Note: may call below many times
+						endTask();
+					}
+        		}
+			}
+
+			else if (worker.isOutside()) {
+				logger.log(worker, Level.SEVERE, 5_000,
+					"Outside calling walkingRoverInteriorPhase() and NOT in a rover.");
+				endTask();
+			}
+
 		}
 
 		return 0;

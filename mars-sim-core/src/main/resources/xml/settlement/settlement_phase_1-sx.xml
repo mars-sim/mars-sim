@@ -27,7 +27,7 @@
         </connection-list>
     </building>
 
-    <building id="3" type="Workshop" xloc="-12.0" yloc="0.0"
+    <building id="3" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0"
         facing="270.0">
         <connection-list>
             <connection id="2" xloc="0.0" yloc="4.5" />
@@ -43,7 +43,7 @@
         </connection-list>
     </building>
 
-    <building id="5" type="Inflatable Greenhouse" xloc="-24.0"
+    <building id="5" type="Workshop" xloc="-24.0"
         yloc="0.0" facing="270.0">
         <connection-list>
             <connection id="4" xloc="0.0" yloc="4.5" />

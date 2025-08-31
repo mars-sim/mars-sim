@@ -227,7 +227,7 @@ public abstract class Function implements Serializable, Temporal {
 		var allocated = as.claim(w, false, this);
 		if (allocated != null) {
 			w.setActivitySpot(allocated);
-			logger.info(w, allocated.getSpotDescription() + " was claimed.");
+//			logger.info(w, allocated.getSpotDescription() + " was claimed.");
 			return true;
 		}
 		return false;

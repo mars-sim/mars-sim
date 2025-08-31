@@ -914,7 +914,7 @@ public class BuildingManager implements Serializable {
 					&& building.getCategory() != BuildingCategory.CONNECTION
 					&& building.getCategory() != BuildingCategory.EVA) {
 				// Add the person to a building activity spot
-				found = addPersonToActivitySpot(person, building, null);
+				found = addToActivitySpot(person, building, null);
 			}
 		}
 
@@ -952,10 +952,8 @@ public class BuildingManager implements Serializable {
 					&& building.getCategory() != BuildingCategory.EVA) {
 				
 				// Add the person to the life support
-				LifeSupport lifeSupport = building.getLifeSupport();
-
-				if (!lifeSupport.containsOccupant(person)) {
-					lifeSupport.addPerson(person);
+				if (building.getLifeSupport() != null) {
+					building.getLifeSupport().addPerson(person);
 
 					person.setCurrentBuilding(building);
 					
@@ -992,7 +990,7 @@ public class BuildingManager implements Serializable {
 					&& bldg.getCategory() != BuildingCategory.CONNECTION
 					&& bldg.getFunction(functionType).hasEmptyActivitySpot()) {
 					destination = bldg;
-					canAdd = addRobotToActivitySpot(robot, destination, functionType);
+					canAdd = addToActivitySpot(robot, destination, functionType);
 			}
 		}
 
@@ -1002,7 +1000,7 @@ public class BuildingManager implements Serializable {
 					&& bldg.getCategory() != BuildingCategory.EVA
 					&& bldg.getFunction(FunctionType.ROBOTIC_STATION).hasEmptyActivitySpot()) {
 				destination = bldg;
-				canAdd = addRobotToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
+				canAdd = addToActivitySpot(robot, destination, FunctionType.ROBOTIC_STATION);
 			}
 		}	
 		
@@ -1014,7 +1012,7 @@ public class BuildingManager implements Serializable {
 					if (!canAdd && bldg.getZone() == 0
 							&& function.hasEmptyActivitySpot()) {
 						destination = bldg;		
-						canAdd = addRobotToActivitySpot(robot, destination, function.getFunctionType());
+						canAdd = addToActivitySpot(robot, destination, function.getFunctionType());
 					}
 				}
 			}
@@ -1430,10 +1428,9 @@ public class BuildingManager implements Serializable {
 
 		if (building != null) {
 			if (worker instanceof Person person) {
-				LifeSupport lifeSupport = building.getLifeSupport();
-
-				if (!lifeSupport.containsOccupant(person)) {
-					lifeSupport.addPerson(person);
+	
+				if (building.getLifeSupport() != null) {
+					building.getLifeSupport().addPerson(person);
 
 					person.setCurrentBuilding(building);
 				}
@@ -1441,10 +1438,9 @@ public class BuildingManager implements Serializable {
 
 			else {
 				Robot robot = (Robot) worker;
-				RoboticStation roboticStation = building.getRoboticStation();
-
-				if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
-					roboticStation.addRobot(robot);
+		
+				if (building.getRoboticStation() != null) {
+					building.getRoboticStation().addRobot(robot);
 					
 					robot.setCurrentBuilding(building);
 				}
@@ -1465,19 +1461,15 @@ public class BuildingManager implements Serializable {
 	 */
 	public static void transferFromBuildingToBuilding(Worker worker, Building origin, Building destination) {
 
-		if (origin != null && destination != null) {
+		if (destination != null) {
 			if (worker instanceof Person person) {
 				
-				LifeSupport lifeSupport0 = origin.getLifeSupport();
-
-				if (lifeSupport0 != null && lifeSupport0.containsOccupant(person)) {
-					lifeSupport0.removePerson(person);
+				if (origin != null && origin.getLifeSupport() != null) {
+					origin.getLifeSupport().removePerson(person);
 				}
 				
-				LifeSupport lifeSupport1 = destination.getLifeSupport();
-
-				if (lifeSupport1 != null && !lifeSupport1.containsOccupant(person)) {
-					lifeSupport1.addPerson(person);
+				if (destination.getLifeSupport() != null) {
+					destination.getLifeSupport().addPerson(person);
 
 					person.setCurrentBuilding(destination);
 				}
@@ -1486,16 +1478,12 @@ public class BuildingManager implements Serializable {
 			else {
 				Robot robot = (Robot) worker;
 				
-				RoboticStation roboticStation0 = origin.getRoboticStation();
+				if (origin != null && origin.getRoboticStation() != null) {
+					origin.getRoboticStation().removeRobot(robot);	
+				}
 
-				if (roboticStation0 != null && roboticStation0.containsRobotOccupant(robot)) {
-					roboticStation0.removeRobot(robot);
-				}				
-
-				RoboticStation roboticStation1 = destination.getRoboticStation();
-
-				if (roboticStation1 != null && !roboticStation1.containsRobotOccupant(robot)) {
-					roboticStation1.addRobot(robot);
+				if (destination.getRoboticStation() != null) {
+					destination.getRoboticStation().addRobot(robot);
 					
 					robot.setCurrentBuilding(destination);
 				}
@@ -1503,7 +1491,7 @@ public class BuildingManager implements Serializable {
 		}
 
 		else
-			logger.severe(worker, 2000, "The building is null.");
+			logger.severe(worker, 2000, "The destination building is null.");
 	}
 	
 	/**
@@ -1514,13 +1502,7 @@ public class BuildingManager implements Serializable {
 	 * @param building the building to add.
 	 */
 	public static boolean addToBuilding(Worker worker, Building building) {
-		
-		if (worker instanceof Person person)
-			return addPersonToActivitySpot(person, building, null);
-		else if (worker instanceof Robot robot)
-			return addRobotToActivitySpot(robot, building, null);
-		
-		return false;
+		return addToActivitySpot(worker, building, null);
 	}
 	
 	/**
@@ -1532,64 +1514,45 @@ public class BuildingManager implements Serializable {
 	 * @return
 	 */
 	public static boolean addToActivitySpot(Worker worker, Building building, FunctionType functionType) {
-		
-		if (worker instanceof Person person)
-			return addPersonToActivitySpot(person, building, functionType);
-		else if (worker instanceof Robot robot)
-			return addRobotToActivitySpot(robot, building, functionType);
-		
-		return false;
-	}
-	
-	/**
-	 * Adds the person to an activity spot in a building.
-	 * @apiNote This method will automatically add the person as an occupant to the life support function first, 
-	 *          even if an activity spot is not available
-	 *
-	 * @param person   the person to add.
-	 * @param building the building to add the person to.
-	 * @return
-	 */
-	public static boolean addPersonToActivitySpot(Person person, Building building, FunctionType functionType) {
 		boolean result = false;
-		
-		LifeSupport lifeSupport = building.getLifeSupport();
 
-		// Find an empty spot in life support
-//		Note: for now no need to occupy a life support spot: LocalPosition loc = lifeSupport.getAvailableActivitySpot();
-		
-		// Add the person as an occupant to the life support function first,
-		// even if an activity spot is not available				
-		if (lifeSupport != null && !lifeSupport.containsOccupant(person)) {
-			lifeSupport.addPerson(person);
-		}
+		Building originBuilding = worker.getBuildingLocation();
 		
 		if (functionType == null) {
-	
+			
 			Function f = building.getEmptyActivitySpotFunction();
 			if (f != null) {
 				functionType = f.getFunctionType();
 			}
 		}
 		
+		if (originBuilding == null) {
+			// Set the building and add occupant
+			setToBuilding(worker, building);
+		}
+		
 		if (functionType != null) {
-			result = claimActivitySpot(person, building, functionType);
+			result = claimActivitySpot(worker, building, functionType);
 		}
 
 		if (result) {
 			// Load the claimed spot
-			AllocatedSpot as = person.getActivitySpot();
-			// Set person's location
-			person.setPosition(as.getAllocated().getPos());
-			// Set the building
-			person.setCurrentBuilding(building);
+			AllocatedSpot as = worker.getActivitySpot();
+			// Set robot's location
+			worker.setPosition(as.getAllocated().getPos());
+			
+			if (originBuilding != null && !originBuilding.equals(building)) {
+				// Transfer the worker to the new building
+				transferFromBuildingToBuilding(worker, originBuilding, building);
+			}
 		}
 		else {
-			logger.info(person, 10_000L, "Unable to claim a " + functionType.getName() + " spot.");
+			logger.info(worker, 10_000L, "Unable to claim a " + functionType.getName() + " spot.");
 		}
 		
 		return result;
 	}
+
 
 	/**
 	 * Claims an activity spot.
@@ -1606,59 +1569,14 @@ public class BuildingManager implements Serializable {
 		LocalPosition loc = f.getAvailableActivitySpot();	
 		
 		if (loc != null) {
-			logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.");
+//			logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.");
 			// Claim this activity spot
 			return f.claimActivitySpot(loc, worker);
 		}
 		
 		return false;
 	}
-	
-	
-	/**
-	 * Adds the robot to an activity spot in a building.
-	 * @apiNote This method will automatically add the robot as an robot occupant to the robotic station function first, 
-	 *          even if an activity spot is not available
-	 *          
-	 * @param robot   the robot to add.
-	 * @param building the building to add the robot to.
-	 * @param functionType
-	 * @return
-	 */
-	public static boolean addRobotToActivitySpot(Robot robot, Building building, FunctionType functionType) {
-		boolean result = false;
 
-		RoboticStation roboticStation = building.getRoboticStation();
-		
-		// Add the robot as an occupant to the roboticStation function first,
-		// even if an activity spot is not available				
-		if (roboticStation != null && !roboticStation.containsRobotOccupant(robot)) {
-			roboticStation.addRobot(robot);
-		}
-		
-		if (functionType == null) {
-			
-			Function f = building.getEmptyActivitySpotFunction();
-			if (f != null) {
-				functionType = f.getFunctionType();
-			}
-		}
-		
-		if (functionType != null) {
-			result = claimActivitySpot(robot, building, functionType);
-		}
-
-		if (result) {
-			// Load the claimed spot
-			AllocatedSpot as = robot.getActivitySpot();
-			// Set robot's location
-			robot.setPosition(as.getAllocated().getPos());
-			// Set the building
-			robot.setCurrentBuilding(building);
-		}
-		
-		return result;
-	}
 	
 	/**
 	 * Removes the person from a building if possible.
@@ -1667,22 +1585,10 @@ public class BuildingManager implements Serializable {
 	 * @param building the building to remove the person from.
 	 */
 	public static void removePersonFromBuilding(Person person, Building building) {
-		if (building != null) {
-			try {
-				LifeSupport lifeSupport = building.getLifeSupport();
-
-				if (lifeSupport.containsOccupant(person)) {
-					lifeSupport.removePerson(person);
-
-					person.setCurrentBuilding(null);
-				}
-			} catch (Exception e) {
-				logger.severe(person, 2000, "Could not be removed from " + building.getName(), e);
-
-			}
-		} else {
-			logger.severe(person, 2000, "Building is null.");
-		}
+		if (building != null && building.getLifeSupport() != null) {
+			building.getLifeSupport().removePerson(person);
+			person.setCurrentBuilding(null);
+		} 
 	}
 
 	/**
@@ -1692,22 +1598,10 @@ public class BuildingManager implements Serializable {
 	 * @param building the building to remove the robot from.
 	 */
 	public static void removeRobotFromBuilding(Robot robot, Building building) {
-		if (building != null) {
-			try {
-				RoboticStation roboticStation = building.getRoboticStation();
-
-				if (roboticStation != null && roboticStation.containsRobotOccupant(robot)) {
-					roboticStation.removeRobot(robot);
-					
-					robot.setCurrentBuilding(null);
-				}
-
-			} catch (Exception e) {
-				logger.severe(robot, 2000, "Could not be removed from " + building.getName(), e);
-			}
-		} else {
-			logger.severe(robot, 2000, "building is null.");
-		}
+		if (building != null && building.getRoboticStation() != null) {
+			building.getRoboticStation().removeRobot(robot);
+			robot.setCurrentBuilding(null);
+		} 
 	}
 
 	/**

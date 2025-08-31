@@ -313,6 +313,7 @@ public class BuildingConfig {
 			case COMMUNICATION -> "Node";
 			case COMPUTATION -> "Rack";
 			case COOKING -> "Cook";
+			case EVA -> "Room";
 			case DINING -> "Dine";
 			case LIVING_ACCOMMODATION -> "Bed";
 			case MANAGEMENT -> "Mgt";

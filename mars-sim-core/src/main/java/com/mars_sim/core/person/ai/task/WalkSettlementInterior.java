@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
@@ -19,10 +18,9 @@ import com.mars_sim.core.building.connection.InsideBuildingPath;
 import com.mars_sim.core.building.connection.InsidePathLocation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
@@ -63,40 +61,38 @@ public class WalkSettlementInterior extends Task {
 	/**
 	 * Constructor for the person
 	 * 
-	 * @param person               the person performing the task.
+	 * @param worker               the person performing the task.
 	 * @param destinationBuilding  the building that is walked to. (Can be same as
 	 *                             current building).
 	 * @param destinationPosition  the destination position at the settlement.
-	 * @param destinationYLocation the destination Z location at the settlement.
 	 */
-	public WalkSettlementInterior(Person person, Building destinationBuilding, LocalPosition destinationPosition,
-			double destinationZLocation) {
-		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
+	public WalkSettlementInterior(Worker worker, Building destinationBuilding, LocalPosition destinationPosition) {
+		super(NAME, worker, false, false, STRESS_MODIFIER, null, 100D);
 
 		// Check if the person is currently inside the settlement.
-		if (!person.isInSettlement()) {
-			logger.warning(person, "Not in a settlement.");
-			person.getMind().getTaskManager().clearAllTasks("Not in a settlement.");
+		if (!worker.isInSettlement()) {
+			logger.warning(worker, "Not in a settlement.");
+			worker.getTaskManager().clearAllTasks("Not in a settlement.");
 			return;
 		}
 
 		// Initialize data members.
-		this.settlement = person.getSettlement();
+		this.settlement = worker.getSettlement();
 		this.destBuilding = destinationBuilding;
 		this.destPosition = destinationPosition;
 
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(person, 60_000L, "Destination position " + destPosition + " is not inside " + destBuilding
+			logger.warning(worker, 10_000L, "Destination position " + destPosition + " is not inside " + destBuilding
 					+ " @ " + LocalAreaUtil.getDescription(destinationBuilding));
 			endTask();
 			return;
 		}
 
 		// Check if the person is currently inside a building.
-		Building startBuilding = BuildingManager.getBuilding(person);
+		Building startBuilding = BuildingManager.getBuilding(worker);
 		if (startBuilding == null) {
-			logger.warning(person, 60_000L, "Not in a building.");
-			person.getMind().getTaskManager().clearAllTasks("Not in a building.");
+			logger.warning(worker, 10_000L, "Not in a building.");
+			worker.getTaskManager().clearAllTasks("Not in a building.");
 			return;
 		}
 
@@ -126,12 +122,12 @@ public class WalkSettlementInterior extends Task {
 			// Determine the walking path to the destination.
 			if (settlement != null) {
 				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
-						person.getPosition(), destinationBuilding, destPosition);
+						worker.getPosition(), destinationBuilding, destPosition);
 			}
 
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(person, 30_000L, "No walkable path from " + person.getPosition() + " in "
+				logger.warning(worker, 10_000L, "No walkable path from " + worker.getPosition() + " in "
 						+ startBuilding.getName() + " to " + destPosition + " in " + destinationBuilding.getName());
 				endTask();
 				return;
@@ -141,78 +137,15 @@ public class WalkSettlementInterior extends Task {
 			setPhase(WALKING);
 
 		} catch (Exception ex) {
-			logger.severe(person, 30_000L, "Unable to walk. No valid interior path.", ex);
-			person.getMind().getTaskManager().clearAllTasks("No valid interior path");
-		}
-	}
-
-	/**
-	 * Constructor for robot
-	 * 
-	 * @param robot
-	 * @param destinationBuilding
-	 * @param destinationXLocation
-	 * @param destinationYLocation
-	 */
-	public WalkSettlementInterior(Robot robot, Building destinationBuilding, LocalPosition destinationPosition) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, null, 100D);
-
-		// Check that the robot is currently inside the settlement.
-		if (!robot.isInSettlement()) {
-			logger.warning(robot, "Not in a settlement.");
-			robot.getBotMind().getBotTaskManager().clearAllTasks("Not in a settlement.");
-			return;
-		}
-
-		// Initialize data members.
-		this.settlement = robot.getSettlement();
-		this.destBuilding = destinationBuilding;
-		this.destPosition = destinationPosition;
-
-		// Check that destination location is within destination building.
-		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(worker, 60_000L, "Destination position " + destPosition + " is not inside " + destBuilding
-					+ " @ " + LocalAreaUtil.getDescription(destinationBuilding));
-			endTask();
-			return;
-		}
-
-		// Check if the robot is currently inside a building.
-		Building startBuilding = BuildingManager.getBuilding(robot);
-		if (startBuilding == null) {
-			logger.warning(robot, 60_000L, "Not in a building.");
-			robot.getBotMind().getBotTaskManager().clearAllTasks("Not in a building.");
-			return;
-		}
-
-		try {
-			// Determine the walking path to the destination.
-			if (settlement != null) {
-				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
-						robot.getPosition(), destinationBuilding, destPosition);
-			}
-
-			// If no valid walking path is found, end task.
-			if (walkingPath == null) {
-				logger.warning(robot, 30_000L, "No walkable path from " + robot.getPosition() + " in "
-						+ startBuilding.getName() + " to " + destPosition + " in " + destinationBuilding.getName());
-				endTask();
-				return;
-			}
-
-			// Initialize task phase.
-			setPhase(WALKING);
-
-		} catch (Exception ex) {
-			logger.severe(robot, 30_000L, "Unable to walk. No valid interior path.", ex);
-			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path");
+			logger.severe(worker, 10_000L, "Unable to walk. No valid interior path.", ex);
+			worker.getTaskManager().clearAllTasks("No valid interior path");
 		}
 	}
 
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			logger.severe(worker, "Task phase is null.");
+			logger.severe(worker, 10_000L, "Task phase is null.");
 		}
 		if (WALKING.equals(getPhase())) {
 			return walkingPhase(time);
@@ -232,7 +165,7 @@ public class WalkSettlementInterior extends Task {
 		// Check that remaining path locations are valid.
 		if (!checkRemainingPathLocations()) {
 			// Flooding with the following statement in stacktrace
-			logger.severe(worker, 30_000L, "Unable to continue walking due to missing path objects.");
+			logger.severe(worker, 10_000L, "Unable to continue walking due to missing path objects.");
 			endTask();
 			return 0;
 		}
@@ -280,7 +213,7 @@ public class WalkSettlementInterior extends Task {
 				coveredMeters -= distanceToLocation;
 
 				if (!changeBuildings(location)) {
-					logger.severe(worker, "Unable to change building.");
+					logger.severe(worker, 10_000L, "Unable to change building.");
 				}
 
 				if (!walkingPath.isEndOfPath()) {
@@ -309,7 +242,7 @@ public class WalkSettlementInterior extends Task {
 
 			InsidePathLocation location = walkingPath.getNextPathLocation();
 
-			logger.log(worker, Level.FINEST, 0, "Close enough to final destination (" + location.getPosition());
+//			logger.log(worker, Level.FINEST, 0, "Close enough to final destination (" + location.getPosition());
 
 			worker.setPosition(location.getPosition());
 
@@ -414,8 +347,8 @@ public class WalkSettlementInterior extends Task {
 				}
 
 				else {
-					logger.severe(worker, "Bad building connection (" + connector.getBuilding1() + " <--> "
-							+ connector.getBuilding2() + ").");
+					logger.severe(worker, 10_000L, "Bad building connection between " + connector.getBuilding1() + " and "
+							+ connector.getBuilding2() + ".");
 					return false;
 				}
 

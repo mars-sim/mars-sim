@@ -118,8 +118,7 @@ public class CookMealMeta extends MetaTask
                     // Check if enough meals have been cooked at kitchen for this meal time.
                     boolean enoughMeals = kitchen.getCookNoMore();
                     int demand = kitchen.getCookCapacity() - kitchen.getNumCooks();
-                    System.out.println("demand: " + demand + " cap: " + kitchen.getCookCapacity() + " # cooks: " + kitchen.getNumCooks());
-                    
+                  
                     if (!enoughMeals && (demand > 0)) {
                         
                         RatingScore rating = new RatingScore(250);

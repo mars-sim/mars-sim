@@ -1938,10 +1938,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	
 	/**
 	 * Leaves an activity spot.
+	 * 
 	 * @apiNote This method is for leaving an existing activity spot in 
 	 * order to go to a medical bed since medical beds are not characterized 
 	 * as standard activity spots just yet. Therefore calling setActivitySpot()
-	 * 
 	 * 
 	 * @param release
 	 */

@@ -60,7 +60,7 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Study");
         var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var p = buildPerson("Researcher", s);
-        BuildingManager.addPersonToActivitySpot(p, l, FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(p, l, FunctionType.RESEARCH);
 
         var jobType = JobType.BOTANIST;
         p.setJob(jobType, "Boss");

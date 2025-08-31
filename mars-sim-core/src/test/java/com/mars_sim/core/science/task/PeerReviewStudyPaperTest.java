@@ -16,7 +16,7 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
         var study = buildStudyToPeerReviewPhase(s, ScienceType.BOTANY, JobType.BOTANIST);
         var r = buildPerson("Reviewer", s);
         r.setJob(JobType.BOTANIST, "Boss");
-        BuildingManager.addPersonToActivitySpot(r, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(r, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
 
         var t = PeerReviewStudyPaper.createTask(r);
         assertNotNull("Review task created", t);
@@ -51,7 +51,7 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
         var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var r = buildPerson("Reviewer", s);
         r.setJob(JobType.BIOLOGIST, "Boss");
-        BuildingManager.addPersonToActivitySpot(r, l, FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(r, l, FunctionType.RESEARCH);
 
         var mt = new PeerReviewStudyPaperMeta();
         var tasks = mt.getTaskJobs(r);
