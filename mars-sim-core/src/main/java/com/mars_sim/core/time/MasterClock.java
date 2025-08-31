@@ -1,7 +1,7 @@
-  /*
+/*
  * Mars Simulation Project
  * MasterClock.java
- * @date 2025-08-05 (patched 2025-08-29: listener pool scales to listeners/cores)
+ * @date 2025-08-05 (patched 2025-08-29: listener pool scales to listeners/cores; patched 2025-08-31: refactor fireClockPulse into helpers)
  * @author Scott Davis
  */
 package com.mars_sim.core.time;
@@ -873,144 +873,159 @@ public class MasterClock implements Serializable {
                 + currentSol
                 + " - - - - - - - - - - - - - - ");
     }
+
+    // ---------------------------
+    // fireClockPulse refactoring
+    // ---------------------------
+
+    /** Holder for derived "temporal transition" flags for a pulse. */
+    private static final class PulseState {
+        final int currentIntMillisol;
+        final double currentMillisol;
+        final int currentSol;
+        final boolean isNewSol;
+        final boolean isNewHalfSol;
+        final boolean isNewIntMillisol;
+        final boolean isNewHalfMillisol;
+
+        PulseState(int currentIntMillisol,
+                   double currentMillisol,
+                   int currentSol,
+                   boolean isNewSol,
+                   boolean isNewHalfSol,
+                   boolean isNewIntMillisol,
+                   boolean isNewHalfMillisol) {
+            this.currentIntMillisol = currentIntMillisol;
+            this.currentMillisol = currentMillisol;
+            this.currentSol = currentSol;
+            this.isNewSol = isNewSol;
+            this.isNewHalfSol = isNewHalfSol;
+            this.isNewIntMillisol = isNewIntMillisol;
+            this.isNewHalfMillisol = isNewHalfMillisol;
+        }
+    }
     
     /**
      * Fires the clock pulse to each clock listener.
      *
-     * @param time
+     * @param time elapsed millisols in this pulse
      */
     private void fireClockPulse(double time) {
-        ////////////////////////////////////////////////////////////////////////////////     
-        // NOTE: Any changes (Part 0 to Part 3) made below may need to be brought to ClockPulse's fireClockPulse()
         ////////////////////////////////////////////////////////////////////////////////
-        
+        // NOTE: Any changes (Part A to Part D) may need to be mirrored in ClockPulse.fireClockPulse()
         ////////////////////////////////////////////////////////////////////////////////
-        // Part 0: Retrieve values
-        ////////////////////////////////////////////////////////////////////////////////
-        
+        PulseState ps = computePulseState();                 // Part A: derive flags & update last* fields
+        maybePrintSolBanner(ps);                             // Part B: banner
+        long pulseId = logAndGetNextPulseId();               // Part C: log pulse
+        currentPulse = buildClockPulse(pulseId, time, ps);   // Part D: construct pulse snapshot
+        dispatchPulseToListeners();                          // Part E: submit & await listener tasks
+    }
+
+    /** Part A: compute temporal flags and update lastSol/lastIntMillisol/lastMillisol. */
+    private PulseState computePulseState() {
         // Get the current millisol integer
         int currentIntMillisol = marsTime.getMillisolInt();
         // Get the current millisol
         double currentMillisol = (float) marsTime.getMillisol();
         // Get the current sol
         int currentSol = marsTime.getMissionSol();
-                
-        ////////////////////////////////////////////////////////////////////////////////
-        // Part 1: Update isNewSol and isNewHalfSol
-        ////////////////////////////////////////////////////////////////////////////////
 
-        // Identify if this pulse crosses a sol
-        final boolean isNewSol = (lastSol != currentSol);
-        
-        // Note : variable = (condition) ? expressionTrue : expressionFalse
-        boolean isNewHalfSol = false;
-        
-        // Updates lastSol
+        // Detect new sol / half-sol
+        boolean isNewSol = (lastSol != currentSol);
+        boolean isNewHalfSol;
         if (isNewSol) {
             this.lastSol = currentSol;
             isNewHalfSol = true;
-        }
-        else {
-            // Identify if it just passes half a sol
-            isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
+        } else {
+            isNewHalfSol = (lastMillisol < 500 && currentMillisol >= 500);
         }
 
-        ////////////////////////////////////////////////////////////////////////////////
-        // Part 2: Update isNewIntMillisol and isNewHalfMillisol
-        ////////////////////////////////////////////////////////////////////////////////
-
-        // Checks if this pulse starts a new integer millisol
-        final boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
-        boolean isNewHalfMillisol = false;
-        
-        // Updates lastSol
+        // Detect new int millisol / half-millisol
+        boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
+        boolean isNewHalfMillisol;
         if (isNewIntMillisol) {
             this.lastIntMillisol = currentIntMillisol;
             isNewHalfMillisol = true;
-        }
-        else {
-            // Find the decimal part of the past millisol and current millisol
-            int intPartLast = (int)lastMillisol;
+        } else {
+            int intPartLast = (int) lastMillisol;
             double decimalPartLast = lastMillisol - intPartLast;
-            int intPartCurrent = (int)currentMillisol;
+            int intPartCurrent = (int) currentMillisol;
             double decimalPartCurrent = currentMillisol - intPartCurrent;
-            
-            // Identify if it just passes half a millisol
             isNewHalfMillisol = decimalPartLast < .5 && decimalPartCurrent >= .5;
         }
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        // Part 3: Update lastMillisol
-        ////////////////////////////////////////////////////////////////////////////////
 
-        // Update the lastMillisol
+        // Update lastMillisol for next iteration
         this.lastMillisol = (float) currentMillisol;
-    
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        // Part 4: Print the current sol banner
-        ////////////////////////////////////////////////////////////////////////////////
 
-        if (isNewSol)
-            printNewSol(currentSol);
-        
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        // Part 5: Log the pulse
-        ////////////////////////////////////////////////////////////////////////////////
-
-        final long newPulseId = nextPulseId++;
-        int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
-        pulseLog[logIndex] = System.currentTimeMillis();
-
-        
-        ////////////////////////////////////////////////////////////////////////////////
-        // Part 6: Create a clock pulse
-        ////////////////////////////////////////////////////////////////////////////////
-
-        currentPulse = new ClockPulse(newPulseId, time, marsTime, this, 
+        return new PulseState(currentIntMillisol, currentMillisol, currentSol,
                 isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
-        
-        // Execute all listeners: submit all, then wait for all to complete (CME-safe via COW set)
-        if (clockListenerTasks != null && !clockListenerTasks.isEmpty()) {
-            final List<ClockListenerTask> submitted = new ArrayList<>(clockListenerTasks);
-            final List<Future<String>> futures = new ArrayList<>(submitted.size());
+    }
 
-            for (ClockListenerTask task : submitted) {
-                try {
-                    futures.add(listenerExecutor.submit(task));
-                }
-                catch (RejectedExecutionException ree) {
-                    // Application shutting down
-                    Thread.currentThread().interrupt();
-                    logger.severe("RejectedExecutionException when submitting clock listener task: ", ree);
-                }
+    /** Part B: display banner for a new sol. */
+    private void maybePrintSolBanner(PulseState ps) {
+        if (ps.isNewSol) printNewSol(ps.currentSol);
+    }
+
+    /** Part C: update pulse log and return the next pulse id. */
+    private long logAndGetNextPulseId() {
+        final long newPulseId = nextPulseId++;
+        int logIndex = (int) (newPulseId % MAX_PULSE_LOG);
+        pulseLog[logIndex] = System.currentTimeMillis();
+        return newPulseId;
+    }
+
+    /** Part D: build a ClockPulse snapshot */
+    private ClockPulse buildClockPulse(long id, double time, PulseState ps) {
+        return new ClockPulse(
+                id,
+                time,
+                marsTime,
+                this,
+                ps.isNewSol,
+                ps.isNewHalfSol,
+                ps.isNewIntMillisol,
+                ps.isNewHalfMillisol
+        );
+    }
+
+    /** Part E: submit all listeners and wait for completion; auto-drop misbehaving listeners. */
+    private void dispatchPulseToListeners() {
+        if (clockListenerTasks == null || clockListenerTasks.isEmpty()) return;
+
+        // Snapshot to avoid interference during iteration (CopyOnWriteArraySet already safe)
+        final List<ClockListenerTask> submitted = new ArrayList<>(clockListenerTasks);
+        final List<Future<String>> futures = new ArrayList<>(submitted.size());
+
+        for (ClockListenerTask task : submitted) {
+            try {
+                futures.add(listenerExecutor.submit(task));
+            } catch (RejectedExecutionException ree) {
+                // Application shutting down
+                Thread.currentThread().interrupt();
+                logger.severe("RejectedExecutionException when submitting clock listener task: ", ree);
             }
+        }
 
-            // Wait for completion and handle possible "drop" instructions
-            for (int i = 0; i < futures.size(); i++) {
-                Future<String> f = futures.get(i);
-                ClockListenerTask task = submitted.get(i);
-                try {
-                    String status = f.get();
-                    if ("drop".equals(status)) {
-                        ClockListener listener = task.getClockListener();
-                        clockListenerTasks.remove(task);
-                        logger.warning(
-                            "Auto-unregistering ClockListener "
-                                + (listener != null ? listener.getClass().getName() : "null")
-                                + " after " + task.getConsecutiveFailures() + " consecutive failures."
-                        );
-                    }
+        // Wait for completion and handle possible "drop" instructions
+        for (int i = 0; i < futures.size(); i++) {
+            Future<String> f = futures.get(i);
+            ClockListenerTask task = submitted.get(i);
+            try {
+                String status = f.get();
+                if ("drop".equals(status)) {
+                    ClockListener listener = task.getClockListener();
+                    clockListenerTasks.remove(task);
+                    logger.warning(
+                        "Auto-unregistering ClockListener "
+                            + (listener != null ? listener.getClass().getName() : "null")
+                            + " after " + task.getConsecutiveFailures() + " consecutive failures."
+                    );
                 }
-                catch (ExecutionException ee) {
-                    logger.severe("ExecutionException. Problem with clock listener tasks: ", ee);
-                }
-                catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    logger.severe("Interrupted during clock listener tasks: ", ie);
-                }
+            } catch (ExecutionException ee) {
+                logger.severe("ExecutionException. Problem with clock listener tasks: ", ee);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                logger.severe("Interrupted during clock listener tasks: ", ie);
             }
         }
     }
@@ -1539,4 +1554,4 @@ public class MasterClock implements Serializable {
             } // end of while
         } // end of run
     }
-} 
+}
