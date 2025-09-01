@@ -41,7 +41,7 @@ public class ResearchStudy implements Researcher, Serializable {
 	 * @param pulse amount of time passing (in millisols).
 	 */
 	public void timePassing(ClockPulse pulse) {
-		// Primary researcher; my responsibility to update Study
+		// Note: the primary researcher has the responsibility to update his/her studies
 		if (study != null) {
 			study.timePassing(pulse);
 		}
@@ -55,7 +55,7 @@ public class ResearchStudy implements Researcher, Serializable {
 	}
 	
 	/**
-	 * Set the study that this Person is the lead on.
+	 * Sets the study that this Person is the lead on.
 	 * 
 	 * @param scientificStudy
 	 */

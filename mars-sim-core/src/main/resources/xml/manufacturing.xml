@@ -1903,7 +1903,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="3" />
 			<part name="drone chassis panel" number="3" />
 			<part name="Motor 10 kW" number="4" />
-			<part name="methane fuel cell stack" number="2" />
+			<part name="methane fuel cell stack" number="1" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -1935,7 +1935,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="2" />
 			<part name="drone chassis panel" number="2" />
 			<part name="Motor 10 kW" number="4" />
-			<part name="methanol fuel cell stack" number="2" />
+			<part name="methanol fuel cell stack" number="1" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />

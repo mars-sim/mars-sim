@@ -182,10 +182,10 @@ public class EVASuit extends Equipment
 		
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		
-		// Add "EVA" to the standard scope
+		// Add "EVA" to the part scope
 		partConfig.addScopes(EVA);
 
-		// Add TYPE to the standard scope
+		// Add TYPE to the part scope
 		partConfig.addScopes(TYPE);
 
 		// Add "EVA" to malfunction manager scope

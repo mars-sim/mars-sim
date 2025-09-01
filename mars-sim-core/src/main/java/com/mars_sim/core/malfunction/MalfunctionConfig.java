@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.building.BuildingSpec;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.building.utility.heating.HeatSourceType;
@@ -33,6 +34,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.vehicle.VehicleSpec;
 import com.mars_sim.core.vehicle.VehicleType;
 
 /**
@@ -120,6 +122,14 @@ public class MalfunctionConfig {
 							.map(i -> i.getName().toLowerCase())
 							.collect(Collectors.toSet()));
 
+		knownSystems.add(BuildingSpec.HABITABLE);
+		knownSystems.add(BuildingSpec.METALLIC_ELEMENT);
+		knownSystems.add(VehicleSpec.CREW_CABIN);
+		knownSystems.add(VehicleSpec.BATTERY);
+		knownSystems.add(VehicleSpec.METHANOL_FUEL);
+		knownSystems.add(VehicleSpec.METHAE_FUEL);
+		
+		
 		// Build the global list in a temp to avoid access before it is built
 		List<MalfunctionMeta> newList = new ArrayList<>();
 

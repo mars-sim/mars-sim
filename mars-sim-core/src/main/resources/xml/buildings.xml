@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE building-list [
 	<!ELEMENT building-list (building*)>
-	<!ELEMENT building (description?, power-required, functions)>
+	<!ELEMENT building (description?, scopes?, power-required, functions)>
 	<!ATTLIST building type CDATA #REQUIRED>
 	<!ATTLIST building category CDATA #IMPLIED>
 	<!ATTLIST building width CDATA #REQUIRED>
@@ -14,6 +14,11 @@
 	<!ATTLIST building room-temperature CDATA #REQUIRED>
 	<!ATTLIST building base-mass CDATA #REQUIRED>
 	<!ELEMENT description (#PCDATA)>
+	
+	<!ELEMENT scopes (scope+)>
+	<!ELEMENT scope EMPTY>
+	<!ATTLIST scope name CDATA #IMPLIED>
+	
 	<!ELEMENT power-required EMPTY>
 	<!ATTLIST power-required base-power CDATA #REQUIRED>
 	<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
@@ -185,6 +190,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Lander Hab is a jack-of-all-trades building that houses many basic but critical functions
 		to jump start a settlement. It's commonly used as a main hub.
 		</description>
+		<!-- A list of explicit system scopes based on the building type are defined here. At the same time, 
+		     implicit system scopes are defined internally by BuildingSpecs, FunctionSpecs, 
+      		 VehicleSpecs, etc.
+      		 name: the name of the system scope -->
+		<scopes>
+			<scope name="life support"/>
+		</scopes>
+		
 		<!-- The power requirements of the building. -->
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
 		<!-- base-power-down-power: the baseline power (kW) required by this building in 'power down' mode. -->
@@ -989,6 +1002,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> Bioreactor-F (F stands for fermentation) hosts fermentation reactions using specialized equipment and 
 			racks and cyanobacteria and chorella that consumes glucose to produce hydrogen.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
@@ -1135,6 +1151,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> Bioreactor-M (M stands for methanol/methane) hosts specialized equipment and racks for utilizing methanogenic 
 		 archaea to convert methanol into methane and water.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
@@ -1207,6 +1226,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> Bioreactor-G (G stands for Glucose) hosts specialized equipment and racks for utilizing bio-organisms 
 			to convert fiber into glucose. 
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
@@ -1284,7 +1306,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		for growing crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
 		has an aluminized Mylar reflector curtain. It houses one workbench with instruments for botany research.
 		</description>
-
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power=".2"/>
 
 		<functions>
@@ -1427,6 +1451,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			 It has a spacious interior	for high volume crop cultivation and has a high resource 
 			 storage capability.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
@@ -3297,6 +3324,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Metal Storage Bin is a small brick bin for
 			storing metallic elements for industrial uses.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 
 		<functions>
@@ -3664,6 +3694,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		 for providing medical basic care. It also has medical research workbench and
 		 uses solar	panels as backup power source.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
@@ -4237,6 +4270,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
@@ -4342,6 +4378,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			vaulted fiber glass roof which is less susceptible to meteor damage.
 			It grows crops as food for the settlement.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>

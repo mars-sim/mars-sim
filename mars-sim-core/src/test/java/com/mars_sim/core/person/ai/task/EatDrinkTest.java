@@ -69,7 +69,7 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
 
         var t = new EatDrink(p);
         assertFalse("EatDrink task not complete", t.isDone());
-
+      
         executeTask(p, t, 150);
         assertTrue("Eatdrnk completed", t.isDone());
         assertTrue("Person is less thirty", pc.getThirst() < initialThirst);

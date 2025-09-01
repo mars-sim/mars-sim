@@ -8,7 +8,7 @@ import com.mars_sim.core.vehicle.Rover;
 public class TestMalfunction extends AbstractMarsSimUnitTest {
 
 
-	private static final String INSIDE_MALFUNCTION = "Class A Fire";
+	private static final String INSIDE_MALFUNCTION = "Class A Combustible Fire";
 	
 	private int counter = 0;
 	private MalfunctionMeta insideMeta;
