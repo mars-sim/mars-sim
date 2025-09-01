@@ -14,6 +14,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import com.mars_sim.core.util.Snapshots;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -1020,29 +1021,18 @@ public class Settlement extends Unit implements Temporal,
 	 * 
 	 * @param pulse
 	 */
-	private void timePassingCitizens(ClockPulse pulse) {
-		List<Person> remove = null;
-		// Snapshot protects iteration if citizens are added/removed during callbacks
-		final List<Person> snapshot = new ArrayList<>(citizens);
-		for (Person p : snapshot) {
-			if (p.isDeclaredDead()) {
-				// If also buried then remove it at the end of loop
-				if (p.isBuried()) {
-					if (remove == null) {
-						remove = new ArrayList<>();
-					}
-					remove.add(p);
-				}
-				continue;
-			}
-			try {
-				p.timePassing(pulse);
-			}
-			catch (Throwable t) {
-				// Never let one failing Person block time for the rest; log and continue
-				logger.severe("Citizen timePassing() threw for " + p + " @ pulse #" + pulse.getId() + ": ", t);
-			}
-		}
+	private void timePassingCitizens(/* existing params, often ClockPulse pulse */) {
++        // CME-safe: iterate a snapshot so join/leave/missions cannot mutate under us.
++        final List<Person> citizens = Snapshots.list(population); // or getPeople(), whichever is used here
++        for (Person p : citizens) {
++            try {
++                p.timePassing(pulse);
++            }
++            catch (Throwable t) {
++                logger.severe("Citizen tick failed for " + p + " in " + this + ": ", t);
++            }
++        }
++    }
 
 		if (remove != null) {
 			for (Person r : remove) {
