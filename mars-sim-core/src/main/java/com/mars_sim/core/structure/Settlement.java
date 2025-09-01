@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
++mport java.util.List;
 import com.mars_sim.core.util.Snapshots;
 import java.util.Map;
 import java.util.Set;
@@ -1015,24 +1015,27 @@ public class Settlement extends Unit implements Temporal,
 		}
 	}
 
-	/**
-	 * Passes a pulse to citizens that are not dead. Those that are buried are removed.
-	 * Uses a snapshot to avoid ConcurrentModificationException when membership changes during delivery.
-	 * 
-	 * @param pulse
-	 */
-	private void timePassingCitizens(/* existing params, often ClockPulse pulse */) {
-+        // CME-safe: iterate a snapshot so join/leave/missions cannot mutate under us.
-+        final List<Person> citizens = Snapshots.list(population); // or getPeople(), whichever is used here
-+        for (Person p : citizens) {
-+            try {
-+                p.timePassing(pulse);
-+            }
-+            catch (Throwable t) {
-+                logger.severe("Citizen tick failed for " + p + " in " + this + ": ", t);
-+            }
-+        }
-+    }
+	    /** Pass a pulse to citizens that are not dead. Those that are buried are removed. */
+    private void timePassingCitizens(ClockPulse pulse) {
+        List<Person> remove = null;
+        // CME-safe: snapshot before iteration so join/leave during callbacks won't break the loop
+        final List<Person> snapshot = Snapshots.list(citizens);
+        for (Person p : snapshot) {
+            if (p.isDeclaredDead()) {
+                if (p.isBuried()) {
+                    if (remove == null) remove = new java.util.ArrayList<>(2);
+                    remove.add(p);
+                }
+                continue;
+            }
+            try {
+                p.timePassing(pulse);
+            } catch (Throwable t) {
+                logger.severe("Citizen timePassing() threw for " + p + " @ pulse #" + pulse.getId() + ": ", t);
+            }
+        }
+        if (remove != null) citizens.removeAll(remove);
+    }
 
 		if (remove != null) {
 			for (Person r : remove) {
