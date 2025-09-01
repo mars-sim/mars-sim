@@ -1,5 +1,9 @@
 package com.mars_sim.core.moon;
 
+import com.mars_sim.core.Unit;
+import com.mars_sim.core.UnitType;
+import com.mars_sim.core.environment.PlanetaryEntity;
+
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
@@ -18,34 +22,31 @@ import java.util.Objects;
  *
  * <p><b>Design goals</b>:
  * <ul>
- *   <li>Mutable POJO (no-arg constructor + setters) for existing loaders/serializers.</li>
+ *   <li>Extends {@link PlanetaryEntity} so it is a {@link Unit} (required by the rest of the sim).</li>
+ *   <li>Mutable POJO surface (no-arg constructor + setters) for existing loaders/serializers.</li>
  *   <li>Validation on write and angle normalization to avoid NaN/Inf propagation.</li>
  *   <li>Pure orbital helpers with no global singletons or clocks.</li>
  *   <li>Builder and copy/with helpers to support immutable-style use without breaking legacy code.</li>
  *   <li>Alias getters/setters (e.g., {@code getRadius()}, {@code setPeriod(double)}) to preserve older call sites.</li>
  * </ul>
  */
-public class Moon implements Serializable {
+public class Moon extends PlanetaryEntity implements Serializable {
 
     /** Serialization ID for compatibility. */
     private static final long serialVersionUID = 1L;
 
-    // ---------------------------------------------------------------------
-    // Identity & physical properties
-    // ---------------------------------------------------------------------
+    /** Default unit name used by the no-arg constructor. */
+    private static final String DEFAULT_NAME = "Moon";
 
-    /** Unique name (e.g., "Phobos", "Deimos"). */
-    private String name;
+    // ---------------------------------------------------------------------
+    // Physical/orbital properties (SI units)
+    // ---------------------------------------------------------------------
 
     /** Physical mean radius (meters). For irregular bodies, use accepted mean radius. */
     private double bodyRadiusMeters;
 
     /** Mass (kilograms). */
     private double bodyMassKg;
-
-    // ---------------------------------------------------------------------
-    // Keplerian elements (parent-body equatorial frame, SI units)
-    // ---------------------------------------------------------------------
 
     /** Semi-major axis (meters). */
     private double semiMajorAxisMeters;
@@ -75,13 +76,19 @@ public class Moon implements Serializable {
     // Constructors
     // ---------------------------------------------------------------------
 
-    /** No-arg constructor for serializers/DI; set fields via setters or {@link Builder}. */
+    /**
+     * No-arg constructor for serializers/DI; sets this unit's identity using the
+     * default "Moon" name and {@link Unit#MOON_UNIT_ID}.
+     *
+     * <p>This ensures {@code Moon} is a proper {@link Unit} for APIs that expect Units.</p>
+     */
     public Moon() {
-        // Intentionally empty
+        super(DEFAULT_NAME, Unit.MOON_UNIT_ID, UnitType.MOON);
     }
 
     /**
      * Full constructor with validation and normalization.
+     * Also sets this unit's identity using {@code name} and {@link Unit#MOON_UNIT_ID}.
      *
      * @param name                           unique moon name
      * @param bodyRadiusMeters               radius in meters
@@ -106,7 +113,7 @@ public class Moon implements Serializable {
             double meanLongitudeAtEpochRad,
             double siderealPeriodSeconds
     ) {
-        setName(name);
+        super(Objects.requireNonNull(name, "name"), Unit.MOON_UNIT_ID, UnitType.MOON);
         setBodyRadiusMeters(bodyRadiusMeters);
         setBodyMassKg(bodyMassKg);
         setSemiMajorAxisMeters(semiMajorAxisMeters);
@@ -125,7 +132,7 @@ public class Moon implements Serializable {
     /**
      * Create a builder for a new {@link Moon}.
      *
-     * @param name unique name
+     * @param name unique unit name to assign to this Moon
      * @return builder
      */
     public static Builder builder(String name) {
@@ -209,7 +216,7 @@ public class Moon implements Serializable {
     /** @return shallow copy (all fields are primitives or immutable) */
     public Moon copy() {
         return new Moon(
-                name,
+                getName(),
                 bodyRadiusMeters,
                 bodyMassKg,
                 semiMajorAxisMeters,
@@ -222,8 +229,21 @@ public class Moon implements Serializable {
         );
     }
 
-    /** @param v new value @return copied instance with updated field */
-    public Moon withName(String v) { Moon m = copy(); m.setName(v); return m; }
+    /** @param v new unit name @return copied instance with updated name */
+    public Moon withName(String v) {
+        return new Moon(
+                v,
+                bodyRadiusMeters,
+                bodyMassKg,
+                semiMajorAxisMeters,
+                eccentricity,
+                inclinationRad,
+                longitudeAscendingNodeRad,
+                argumentOfPeriapsisRad,
+                meanLongitudeAtEpochRad,
+                siderealPeriodSeconds
+        );
+    }
     /** @param v new value @return copied instance with updated field */
     public Moon withBodyRadiusMeters(double v) { Moon m = copy(); m.setBodyRadiusMeters(v); return m; }
     /** @param v new value @return copied instance with updated field */
@@ -244,11 +264,9 @@ public class Moon implements Serializable {
     public Moon withSiderealPeriodSeconds(double v) { Moon m = copy(); m.setSiderealPeriodSeconds(v); return m; }
 
     // ---------------------------------------------------------------------
-    // Getters (canonical)
+    // Canonical getters (for the physical/orbital fields here)
+    // NOTE: Unit identity/name are handled by PlanetaryEntity (Unit).
     // ---------------------------------------------------------------------
-
-    /** @return unique name */
-    public String getName() { return name; }
 
     /** @return body mean radius (m) */
     public double getBodyRadiusMeters() { return bodyRadiusMeters; }
@@ -306,16 +324,8 @@ public class Moon implements Serializable {
     public double getMeanLongitudeAtEpoch() { return getMeanLongitudeAtEpochRad(); }
 
     // ---------------------------------------------------------------------
-    // Setters (validated & normalized)
+    // Validating setters for the physical/orbital fields
     // ---------------------------------------------------------------------
-
-    /**
-     * Set unique name.
-     * @param name value (non-null)
-     */
-    public void setName(String name) {
-        this.name = Objects.requireNonNull(name, "name");
-    }
 
     /**
      * Set body radius.
@@ -478,7 +488,7 @@ public class Moon implements Serializable {
     public double trueAnomalyFromE(double eccentricAnomalyRad) {
         final double e = eccentricity;
         final double cosE = Math.cos(eccentricAnomalyRad);
-        final double sinE = Math.sin(eccentricAnomalyRad);
+               final double sinE = Math.sin(eccentricAnomalyRad);
         final double denom = 1.0 - e * cosE;
         final double cosV = (cosE - e) / denom;
         final double sinV = Math.sqrt(1.0 - e * e) * sinE / denom;
@@ -569,19 +579,19 @@ public class Moon implements Serializable {
         if (this == other) return true;
         if (!(other instanceof Moon)) return false;
         Moon m = (Moon) other;
-        return Objects.equals(this.name, m.name);
+        return Objects.equals(this.getName(), m.getName());
     }
 
     /** @return hash code based on {@code name} (may be 0 if name is null) */
     @Override
     public int hashCode() {
-        return Objects.hashCode(name);
+        return Objects.hashCode(getName());
     }
 
     /** @return concise debug string */
     @Override
     public String toString() {
-        return "Moon[" + name + "]";
+        return "Moon[" + getName() + "]";
     }
 
     // ---------------------------------------------------------------------
@@ -633,13 +643,16 @@ public class Moon implements Serializable {
 
     // ---------------------------------------------------------------------
     // Convenience presets (optional; safe to ignore in existing code)
+    // NOTE: These create Moon Units with the same Unit ID; they are intended
+    //       for testing/demonstration only and should not be registered into
+    //       the global Unit registry alongside an existing Moon instance.
     // ---------------------------------------------------------------------
 
     /**
      * Create a Moon preset for Phobos (Mars I).
      * Values are approximate; callers can override with epoch-specific elements as desired.
      *
-     * @return {@link Moon} instance for Phobos
+     * @return {@link Moon} instance for Phobos (Unit identity will use {@link Unit#MOON_UNIT_ID})
      */
     public static Moon phobos() {
         return Moon.builder("Phobos")
@@ -659,7 +672,7 @@ public class Moon implements Serializable {
      * Create a Moon preset for Deimos (Mars II).
      * Values are approximate; callers can override with epoch-specific elements as desired.
      *
-     * @return {@link Moon} instance for Deimos
+     * @return {@link Moon} instance for Deimos (Unit identity will use {@link Unit#MOON_UNIT_ID})
      */
     public static Moon deimos() {
         return Moon.builder("Deimos")
