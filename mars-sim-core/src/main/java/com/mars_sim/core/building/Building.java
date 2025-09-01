@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2025-08-08
+ * @date 2025-09-01
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -140,34 +140,13 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
 
-	private Administration admin;
-	private AlgaeFarming algae;
-	private AstronomicalObservation astro;
-	private Communication comm;
-	private Computation computation;
-	private Cooking cooking;
-	private Dining dine;
-	private EarthReturn earthReturn;
 	private EVA eva;
-	private Exercise gym;
-	private Farming farm;
-	private Fishery fish;
-	private FoodProduction foodFactory;
-	private VehicleGarage maint;
 	private Heating heating;
-	private LivingAccommodation livingAccommodation;
 	private LifeSupport lifeSupport;
-	private Management management;
-	private Manufacture manufacture;
-	private MedicalCare medicalCare;
 	private ThermalGeneration furnace;
-	private PowerGeneration powerGen;
-	private PowerStorage powerStorage;
 	private Recreation rec;
 	private Research lab;
-	private ResourceProcessing resourceProcessing;
 	private RoboticStation roboticStation;
-	private Storage storage;
 
 	private PowerMode powerModeCache;
 	private BuildingCategory category;
@@ -323,170 +302,112 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return presetTemperature;
 	}
 
-
 	public Administration getAdministration() {
-		if (admin == null)
-			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
-		return admin;
+		return getFunction(FunctionType.ADMINISTRATION);
 	}
 
 	public AlgaeFarming getAlgae() {
-		if (algae == null)
-			algae = (AlgaeFarming) getFunction(FunctionType.ALGAE_FARMING);
-		return algae;
+		return getFunction(FunctionType.ALGAE_FARMING);
 	}
 	
 	public AstronomicalObservation getAstronomicalObservation() {
-		if (astro == null)
-			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);
-		return astro;
+		return getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);
 	}
 
 	public Dining getDining() {
-		if (dine == null)
-			dine = (Dining) getFunction(FunctionType.DINING);
-		return dine;
+		return getFunction(FunctionType.DINING);
 	}
 
 	public LifeSupport getLifeSupport() {
-		if (lifeSupport == null)
-			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
-		return lifeSupport;
+		return getFunction(FunctionType.LIFE_SUPPORT);
 	}
 
 	public Farming getFarming() {
-		if (farm == null)
-			farm = (Farming) getFunction(FunctionType.FARMING);
-		return farm;
+		return getFunction(FunctionType.FARMING);
 	}
 
 	public Fishery getFishery() {
-		if (fish == null)
-			fish = (Fishery) getFunction(FunctionType.FISHERY);
-		return fish;
+		return getFunction(FunctionType.FISHERY);
 	}
 
 	public Communication getComm() {
-		if (comm == null)
-			comm = (Communication) getFunction(FunctionType.COMMUNICATION);
-		return comm;
+		return getFunction(FunctionType.COMMUNICATION);
 	}
-
 
 	public Cooking getCooking() {
-		if (cooking == null)
-			cooking = (Cooking) getFunction(FunctionType.COOKING);
-		return cooking;
+		return getFunction(FunctionType.COOKING);
 	}
 
-
 	public Exercise getExercise() {
-		if (gym == null)
-			gym = (Exercise) getFunction(FunctionType.EXERCISE);
-		return gym;
+		return getFunction(FunctionType.EXERCISE);
 	}
 
 	public EVA getEVA() {
-		if (eva == null)
-			eva = (EVA) getFunction(FunctionType.EVA);
-		return eva;
+		return getFunction(FunctionType.EVA);
 	}
 
 	public EarthReturn getEarthReturn() {
-		if (earthReturn == null)
-			earthReturn = (EarthReturn) getFunction(FunctionType.EARTH_RETURN);
-		return earthReturn;
+		return getFunction(FunctionType.EARTH_RETURN);
 	}
 
 	public FoodProduction getFoodProduction() {
-		if (foodFactory == null)
-			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
-		return foodFactory;
+		return getFunction(FunctionType.FOOD_PRODUCTION);
 	}
 
 	public VehicleGarage getVehicleParking() {
-		if (maint == null)
-			maint = (VehicleGarage) getFunction(FunctionType.VEHICLE_MAINTENANCE);
-		return maint;
+		return getFunction(FunctionType.VEHICLE_MAINTENANCE);
 	}
 
 	public LivingAccommodation getLivingAccommodation() {
-		if (livingAccommodation == null)
-			livingAccommodation = (LivingAccommodation) getFunction(FunctionType.LIVING_ACCOMMODATION);
-		return livingAccommodation;
+		return getFunction(FunctionType.LIVING_ACCOMMODATION);
 	}
 
 	public Management getManagement() {
-		if (management == null)
-			management = (Management) getFunction(FunctionType.MANAGEMENT);
-		return management;
+		return getFunction(FunctionType.MANAGEMENT);
 	}
 
 	public Manufacture getManufacture() {
-		if (manufacture == null)
-			manufacture = (Manufacture) getFunction(FunctionType.MANUFACTURE);
-		return manufacture;
+		return getFunction(FunctionType.MANUFACTURE);
 	}
 
 	public MedicalCare getMedical() {
-		if (medicalCare == null)
-			medicalCare = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
-		return medicalCare;
+		return getFunction(FunctionType.MEDICAL_CARE);
 	}
 
 	public PowerGeneration getPowerGeneration() {
-		if (powerGen == null)
-			powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
-		return powerGen;
+		return getFunction(FunctionType.POWER_GENERATION);
 	}
 
 	public Computation getComputation() {
-		if (computation == null)
-			computation = (Computation) getFunction(FunctionType.COMPUTATION);
-		return computation;
+		return getFunction(FunctionType.COMPUTATION);
 	}
 
 	public PowerStorage getPowerStorage() {
-		if (powerStorage == null)
-			powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
-		return powerStorage;
+		return getFunction(FunctionType.POWER_STORAGE);
 	}
 
 	public Recreation getRecreation() {
-		if (rec == null)
-			rec = (Recreation) getFunction(FunctionType.RECREATION);
-		return rec;
+		return getFunction(FunctionType.RECREATION);
 	}
 
 	public Research getResearch() {
-		if (lab == null)
-			lab = (Research) getFunction(FunctionType.RESEARCH);
-		return lab;
+		return getFunction(FunctionType.RESEARCH);
 	}
 
 	public ResourceProcessing getResourceProcessing() {
-		if (resourceProcessing == null)
-			resourceProcessing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
-		return resourceProcessing;
+		return getFunction(FunctionType.RESOURCE_PROCESSING);
 	}
 	
 	public RoboticStation getRoboticStation() {
-		if (roboticStation == null)
-			roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
-
-		return roboticStation;
+		return getFunction(FunctionType.ROBOTIC_STATION);
 	}
 
 	public ThermalGeneration getThermalGeneration() {
-		if (furnace == null)
-			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
-		return furnace;
+		return getFunction(FunctionType.THERMAL_GENERATION);
 	}
 
 	public Storage getStorage() {
-		if (storage == null)
-			storage = (Storage) getFunction(FunctionType.STORAGE);
-		return storage;
+		return getFunction(FunctionType.STORAGE);
 	}
 
 	public VehicleMaintenance getVehicleMaintenance() {
@@ -1106,7 +1027,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public int numOfPeopleInAirLock() {
 		int num = 0;
 		if (eva == null)
-			eva = (EVA) getFunction(FunctionType.EVA);
+			eva = getFunction(FunctionType.EVA);
 		if (eva != null) {
 			num = eva.getAirlock().getOccupants123().size();
 			// Note: Assuming (.5) half of people are doing EVA ingress statistically
@@ -1122,14 +1043,14 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public int getNumPeople() {
-
-		int people = 0;
-
+		if (lifeSupport == null) {
+			lifeSupport = getFunction(FunctionType.LIFE_SUPPORT);
+		}
 		if (lifeSupport != null) {
-			people = lifeSupport.getOccupantNumber();
+			return lifeSupport.getOccupantNumber();
 		}
 
-		return people;
+		return 0;
 	}
 
 
@@ -1139,6 +1060,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public Collection<Person> getOccupants() {
+		if (lifeSupport == null) {
+			lifeSupport = getFunction(FunctionType.LIFE_SUPPORT);
+		}
 		if (lifeSupport != null) {
 			return lifeSupport.getOccupants();
 		}
@@ -1152,6 +1076,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public Collection<Robot> getRobots() {
+		if (roboticStation == null) {
+			roboticStation = getFunction(FunctionType.ROBOTIC_STATION);
+		}
 		if (roboticStation != null) {
 			return roboticStation.getRobotOccupants();
 		}
@@ -1452,19 +1379,26 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void addVentInHeat(double heat) {
 		// Set the instance of thermal generation function.
 		if (furnace == null)
-			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
+			furnace = getFunction(FunctionType.THERMAL_GENERATION);
 		if (heating == null)
 			heating = furnace.getHeating();
 
 		heating.addVentInHeat(heat);
 	}
 
+	/**
+	 * Gets the building air pressure.
+	 * 
+	 * @return
+	 */
 	public double getCurrentAirPressure() {
 		double p = 0D;
 		
-		LifeSupport ls = getFunction(FunctionType.LIFE_SUPPORT);
-		if (ls != null) {
-			p = ls.getAir().getTotalPressure();
+		if (lifeSupport == null) {
+			lifeSupport = getFunction(FunctionType.LIFE_SUPPORT);
+		}
+		if (lifeSupport != null) {
+			p = lifeSupport.getAir().getTotalPressure();
 		}
 		
 		// convert from atm to kPascal
@@ -1484,7 +1418,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public boolean hasSpecialty(ScienceType type) {
-		if (getResearch() == null)
+		if (lab == null)
+			lab = getFunction(FunctionType.RESEARCH);
+		if (lab == null)
 			return false;
 
 		return lab.hasSpecialty(type);
