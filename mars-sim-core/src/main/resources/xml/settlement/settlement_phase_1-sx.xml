@@ -3,50 +3,50 @@
     name="Phase 1-SX" default-population="8" description="Phase 1 base for Space X"
 	number-of-robots="4" sponsor="SPACEX">
 
-    <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
+    <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
+        facing="180.0">
+        <connection-list>
+            <connection id="MCD0" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+   <building id="MCD0" type="Match Core D" xloc="-6.0" yloc="0.0"
         facing="0.0">
         <connection-list>
-            <connection id="1" xloc="4.5" yloc="0.0" />
-            <connection id="2" xloc="-4.5" yloc="0.0" />
+            <connection id="LH0" hatch-facing="west" />
+            <connection id="IG0" hatch-facing="east" />
+            <connection id="EVA" hatch-facing="south" />
         </connection-list>
     </building>
-
-    <!-- EVA Airlock is attached to the lander hab -->
-    <building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0"
-        facing="0.0">
-        <connection-list>
-            <connection id="0" xloc="-3.0" yloc="0.0" />
-        </connection-list>
-    </building>
-
-    <building id="2" type="Hallway" length="3.0" xloc="-6.0"
-        yloc="0.0" facing="270.0">
-        <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.5" />
-            <connection id="3" xloc="0.0" yloc="-1.5" />
-        </connection-list>
-    </building>
-
-    <building id="3" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0"
+    
+    <building id="EVA" type="EVA Airlock" xloc="-6.0" yloc="-7.5"
         facing="270.0">
         <connection-list>
-            <connection id="2" xloc="0.0" yloc="4.5" />
-            <connection id="4" xloc="0.0" yloc="-4.5" />
+            <connection id="MCD0" hatch-facing="north" />
         </connection-list>
     </building>
 
-    <building id="4" type="Hallway" length="3.0" xloc="-18.0"
-        yloc="0.0" facing="270.0">
+
+    <building id="IG0" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0"
+        facing="270.0">
         <connection-list>
-            <connection id="3" xloc="0.0" yloc="1.5" />
-            <connection id="5" xloc="0.0" yloc="-1.5" />
+            <connection id="MCD0" hatch-facing="west" />
+            <connection id="MCC0" hatch-facing="east" />
         </connection-list>
     </building>
 
-    <building id="5" type="Workshop" xloc="-24.0"
-        yloc="0.0" facing="270.0">
+   <building id="MCC0" type="Match Core C" xloc="-18.0" yloc="0.0"
+        facing="0.0">
         <connection-list>
-            <connection id="4" xloc="0.0" yloc="4.5" />
+            <connection id="IG0" hatch-facing="west" />
+            <connection id="W0" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <building id="W0" type="Workshop" xloc="-24.0"
+        yloc="0.0" facing="90.0">
+        <connection-list>
+            <connection id="MCC0" hatch-facing="west" />
         </connection-list>
     </building>
  

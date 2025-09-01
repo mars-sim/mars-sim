@@ -491,7 +491,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		for (Function f : functions.values()) {
 			if (f.getFunctionType() != FunctionType.EVA) {
-				loc = f.getAvailableActivitySpot();
+				LocalPosition loc = f.getAvailableActivitySpot();
 				if (loc != null)
 					return loc;
 			}
