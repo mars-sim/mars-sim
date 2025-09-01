@@ -1014,7 +1014,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 		// Set the instance of heating function.
 		prepareHeating();
 		
-		heating.insertExcessHeatComputation(heatGenerated);
+		if (heating != null)
+			heating.insertExcessHeatComputation(heatGenerated);
 	}
 
 	/**
@@ -1465,7 +1466,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 		// Set the instance of heating function.
 		prepareHeating();
 
-		heating.addVentInHeat(heat);
+		if (heating != null)
+			heating.addVentInHeat(heat);
 	}
 
 	/**
