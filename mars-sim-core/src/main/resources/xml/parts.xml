@@ -569,10 +569,10 @@
 	</part>
 
 	<part name="Motor 10 kW" type="vehicle" mass="10.0" >
-		<description>An induction motor with 10 kW power output.</description>
+		<description>An induction motor with 10 kW power output for LUV and drones.</description>
 		<maintenance-entity-list>
-			<entity name="rover" probability="1" max-number="4" />
 			<entity name="light utility vehicle" probability="1" max-number="2" />
+			<entity name="cargo drone" probability="1" max-number="4" />
 			<entity name="delivery drone" probability="1" max-number="4" />	
 		</maintenance-entity-list>
 	</part>
@@ -766,8 +766,7 @@
 			<entity name="rover" probability="5" max-number="1" />			
 			<entity name="resource processing" probability="5" max-number="1" />
 			<entity name="eva" probability="5" max-number="4" />			
-			<entity name="cooking" probability="5" max-number="1" />
-			<entity name="computation" probability="1" max-number="1" />			
+			<entity name="cooking" probability="5" max-number="1" />			
 			<entity name="vehicle maintenance" probability="5" max-number="1" />	
 		</maintenance-entity-list>
 	</part>
@@ -943,7 +942,8 @@
 		</description>
 		<maintenance-entity-list>
 			<entity name="Fuel Heating Source" probability="1" max-number="3" />
-			<entity name="fuel power source" probability="1" max-number="3" />				
+			<entity name="fuel power source" probability="1" max-number="3" />	
+			<entity name="cargo drone" probability="1" max-number="2" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -953,6 +953,7 @@
 		    cold plate and heat pipes. 
 		</description>
 	    <maintenance-entity-list>
+			<entity name="cargo drone" probability="1" max-number="1" />
 			<entity name="Fuel Heating Source" probability="1" max-number="1" />
 			<entity name="fuel power source" probability="1" max-number="1" />
 		</maintenance-entity-list>
@@ -1077,12 +1078,13 @@
 
 	<part name="Heat pump" type="utility" mass="1.0">
 		<maintenance-entity-list>
+			<entity name="Areothermal Power Source" probability="3" max-number="2" />
+			<entity name="computation" probability="3" max-number="2" />
 			<entity name="farming" probability="3" max-number="1" />
-			<entity name="vehicle" probability="3" max-number="1" />
-			<entity name="manufacture" probability="3" max-number="2" />
-			<entity name="Areothermal Power Source" probability="1" max-number="2" />
 			<entity name="living accommodation" probability="3" max-number="1" />
-			<entity name="resource processing" probability="3" max-number="1" />			
+			<entity name="manufacture" probability="3" max-number="2" />
+			<entity name="resource processing" probability="3" max-number="1" />
+			<entity name="vehicle" probability="3" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -1092,18 +1094,19 @@
 		results in heat transfer capabilities from one hundred to several thousand
 		times that of an equivalent piece of copper.</description>
 		<maintenance-entity-list>
+			<entity name="Areothermal Power Source" probability="1" max-number="4" />
+			<entity name="computation" probability="1" max-number="4" />
 			<entity name="Farming" probability="1" max-number="1" />
-			<entity name="Areothermal Power Source" probability="1" max-number="3" />
 			<entity name="life support" probability="1" max-number="1" />
-			<entity name="manufacture" probability="1" max-number="1" />
-			<entity name="living accommodation" probability="3" max-number="2" />		
+			<entity name="living accommodation" probability="3" max-number="2" />	
+			<entity name="manufacture" probability="1" max-number="1" />	
+			<entity name="resource processing" probability="3" max-number="1" />	
 			<entity name="thermal generation" probability="1" max-number="1" />
 			<entity name="vehicle" probability="1" max-number="1" />		
-			<entity name="resource processing" probability="3" max-number="1" />	
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Small Hammer" type="tool" mass="1.5" >
+	<part name="Small hammer" type="tool" mass="1.5" >
 		<description>an utility hammer for light use</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability=".1" max-number="1" />

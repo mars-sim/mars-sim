@@ -284,6 +284,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 		passengerActivitySpots = spec.getPassengerActivitySpots();
 		
 		isReady = true;
+	
+		// Add all the vehicle spec system scopes to the part scopes
+		SimulationConfig.instance().getPartConfiguration().addScopes(spec.getSystemScopes());
 	}
 
 	/**
@@ -297,11 +300,20 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * Sets the scope string.
 	 */
 	protected void setupScopeString() {
-		// Add "vehicle" as scope
-		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
+		
+		spec.addSystemScope(SystemType.VEHICLE.getName());
+		
+		spec.addSystemScope(vehicleType.getName());
+		
+		if (VehicleType.isDrone(vehicleType)) {
+			// Note: The general "drone" system scope is not the same as the specific 
+			//       vehicle type scope such as "cargo drone"
+			spec.addSystemScope("drone");
+		}
+		
+		// Set up all scopes in malfunction manager
+		malfunctionManager.addScopeString(spec.getSystemScopes());
 	
-		// Add its vehicle type as scope
-		malfunctionManager.addScopeString(vehicleType.name());
 	}
 	
 	/**

@@ -25,6 +25,7 @@ import com.mars_sim.core.building.utility.heating.HeatSourceType;
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.goods.GoodType;
+import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.VehicleType;
 
 
@@ -52,8 +53,8 @@ public final class PartConfig  {
 	private Set<Part> partSet;
 	/** The map of maintenance scopes. */
 	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
-	/** The collection of standard scopes. */
-	private Set<String> standarsScopes = new TreeSet<>();
+	/** The collection of part scopes (as defined for each part in parts.xml. */
+	private Set<String> partScopes = new TreeSet<>();
 	
 	/**
 	 * Constructor.
@@ -71,49 +72,51 @@ public final class PartConfig  {
 	}
 
 	/**
-	 * The collection of standard scopes.
+	 * The collection of part scopes.
 	 */
 	public Set<String> getScopes() {
-		return standarsScopes;	 
+		return partScopes;	 
 	}
 	
 	
 	/**
-	 * Creates a set of standard scopes.
+	 * Creates a set of standard part scopes.
 	 */
-	private void createStandardScope() {
+	private void createStandardPartScopes() {
 		for (VehicleType type: VehicleType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopes.contains(type.getName()))
+				partScopes.add(type.getName());
 		}
 		
 		for (SystemType type: SystemType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopes.contains(type.getName()))
+				partScopes.add(type.getName());
 		}
 		
 		for (FunctionType type: FunctionType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopes.contains(type.getName()))
+				partScopes.add(type.getName());
 		}
 		
 		for (PowerSourceType type: PowerSourceType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopes.contains(type.getName()))
+				partScopes.add(type.getName());
 		}
 		
 		for (HeatSourceType type: HeatSourceType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopes.contains(type.getName()))
+				partScopes.add(type.getName());
 		}
+		
+		partScopes.add(Flyer.DRONE);
 	}
 	
 	public void addScopes(Set<String> newScopes) {
-		standarsScopes.addAll(newScopes);
+		partScopes.addAll(newScopes);
 	}
 	
 	public void addScopes(String newScope) {
-		standarsScopes.add(newScope);
+		partScopes.add(newScope);
 	}
 	
 	/**
@@ -129,7 +132,7 @@ public final class PartConfig  {
 		}
 
 		// First build a standard scope set for scope comparison
-		createStandardScope();
+		createStandardPartScopes();
 		
 		// Build the global list in a temp to avoid access before it is built
 		Set<Part> newPartSet = new TreeSet<>();
@@ -181,7 +184,7 @@ public final class PartConfig  {
 				for (Element entityElement : entityNodes) {
 					String entityName = entityElement.getAttributeValue(NAME);
 					boolean validName = false;
-					for (String s: standarsScopes) {
+					for (String s: partScopes) {
 						if (s.equalsIgnoreCase(entityName) ) {
 							validName = true;
 							double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));

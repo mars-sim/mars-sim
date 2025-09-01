@@ -44,7 +44,6 @@ import com.mars_sim.core.building.function.Research;
 import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.Storage;
-import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
@@ -109,6 +108,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
 
 	// Data members
+	/** The flag to track if the impact is immientnt for the current sol. */
 	boolean isImpactImminent = false;
 	/** Checked by getAllImmovableBoundedObjectsAtLocation() in LocalAreaUtil */
 	boolean inTransportMode = true;
@@ -175,9 +175,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	
 	private LocalPosition loc;
 
-	/** A list of functions of this building. */
-//	private List<Function> functions = new ArrayList<>();
-	
 	/** A map of functions for this building. */
 	private Map<FunctionType, Function> functions = new EnumMap<>(FunctionType.class);
 	
@@ -266,31 +263,45 @@ public class Building extends FixedUnit implements Malfunctionable,
 		// Determine total maintenance time.
 		double totalMaintenanceTime = buildingSpec.getMaintenanceTime() / 3D;
 		
-		// Set up the function map
-		for (FunctionType supported : buildingSpec.getFunctionSupported()) {
-			FunctionSpec fSpec = buildingSpec.getFunctionSpec(supported);
-			var mFunction = addFunction(fSpec);
-			totalMaintenanceTime += mFunction.getMaintenanceTime();
+		if (functions.isEmpty()) {
+			// Note: Only need to do this once now for each building
+			// Set up the function map
+			for (FunctionType supported : buildingSpec.getFunctionSupported()) {
+				FunctionSpec fSpec = buildingSpec.getFunctionSpec(supported);
+				var mFunction = addFunction(fSpec);
+				totalMaintenanceTime += mFunction.getMaintenanceTime();
+			}
 		}
 	
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, buildingSpec.getWearLifeTime(), totalMaintenanceTime);
-		// Add 'Building' to malfunction manager.
-		malfunctionManager.addScopeString(SystemType.BUILDING.getName());
-		
-		// Add building type to the standard scope
+	
+		// Add building type to the part scope
 		simulationConfig.getPartConfiguration().addScopes(buildingSpec.getName());
 		
-		// Add building type to malfunction manager.
-		malfunctionManager.addScopeString(buildingSpec.getName());
-			
-		// Add each function to the malfunction scope.
-		for (Function sfunction : functions.values()) {
-			Set<String> scopes = sfunction.getMalfunctionScopeStrings();
-			for (String scope : scopes) {
-				malfunctionManager.addScopeString(scope);
+		if (!buildingSpec.getScopeDone()) {
+			// Note: Only need to set up the system scope once for building type
+	
+			// Add the building type to buildingSpec.
+			malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
+				
+			// Add the building spec scopes to malfunction manager.
+			malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
+					
+			// Add each function to the malfunction scope.
+			for (Function sfunction : functions.values()) {
+				Set<String> scopes = sfunction.getMalfunctionScopeStrings();
+				for (String scope : scopes) {
+					malfunctionManager.addScopeString(scope);
+				}
 			}
+			
+			buildingSpec.setScopeDone(true);
 		}
+	
+		// Transfer all system scopes from BuildingSpec to malfunction manager.
+		malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
+					
 
 		// If no life support then no internal repairs
 		malfunctionManager.setSupportInsideRepair(hasFunction(FunctionType.LIFE_SUPPORT));

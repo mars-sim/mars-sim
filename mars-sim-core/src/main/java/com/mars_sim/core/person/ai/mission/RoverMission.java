@@ -248,30 +248,34 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			Person p = (Person) m;
 
 			if (p.getTaskManager().getTask() instanceof EVAOperation) {
-				logger.warning(p, 10_000, "Still doing EVA. Need to end now to embark mission. Current Location: " 
+				logger.warning(p, 10_000, "Still doing EVA outside. Need to end now to embark on '" + getName()
+						+ "'. Current Location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");				
 				result = false;
 			}
 			
 			if (!p.isInVehicle()) {
 
-				logger.warning(p, 10_000, "Not on vehicle. Not ready for mission yet. Current location: " 
-							+ p.getLocationTag().getExtendedLocation() + ".");
+				logger.warning(p, 10_000, "Not onboard " + r.getName()
+						+ ". Not ready for '" + getName() + "' yet. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
 				result = false;
 			}
 
 			if (p.isInSettlement()) {
 
-				logger.warning(p, 10_000, "Not on vehicle. Not ready for mission yet. Current location: " 
-							+ p.getLocationTag().getExtendedLocation() + ".");
+				logger.warning(p, 10_000, "Still inside the settlement. Not on " + r.getName()
+						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
 				result = false;
 			}
 			
 			if (p.isInSettlementVicinity()
 					|| p.isRightOutsideSettlement()) {
 
-				logger.warning(p, 10_000, "Still outside. Not ready for mission yet. Current location: " 
-								+ p.getLocationTag().getExtendedLocation() + ".");
+				logger.warning(p, 10_000, "Still outside and not on " + r.getName()
+						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
 				result = false;
 			}	
 		}

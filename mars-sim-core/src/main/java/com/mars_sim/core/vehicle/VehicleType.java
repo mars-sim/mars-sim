@@ -12,7 +12,7 @@ import com.mars_sim.core.tool.Msg;
 
 public enum VehicleType {
 		
-	LUV,DELIVERY_DRONE,CARGO_DRONE,EXPLORER_ROVER,TRANSPORT_ROVER,CARGO_ROVER;
+	LUV,DELIVERY_DRONE,CARGO_DRONE,PASSENGER_DRONE,EXPLORER_ROVER,TRANSPORT_ROVER,CARGO_ROVER;
 	
 	// Note: these vehicle types are also used in message.properties 
 	// they must also match those in vehicles.xml.
@@ -101,6 +101,7 @@ public enum VehicleType {
 	 */
 	public static boolean isDrone(VehicleType type) {
 		return (type == DELIVERY_DRONE
-				|| type == CARGO_DRONE);
+				|| type == CARGO_DRONE
+				|| type == PASSENGER_DRONE);
 	}	
 }
