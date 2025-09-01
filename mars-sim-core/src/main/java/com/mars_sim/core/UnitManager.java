@@ -127,7 +127,7 @@ public class UnitManager implements Serializable, Temporal {
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
 
-		// Initialize wrapper cache
+		// Initialize wrapper cache (also reinitialized in reinit())
 		temporalWrappers = new ConcurrentHashMap<>();
 	}
 
@@ -346,6 +346,14 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param s
 	 */
 	private void activateSettlement(Settlement s) {
+		// Ensure maps exist (important after deserialization where transient fields are null)
+		if (settlementCoordinateMap == null) {
+			settlementCoordinateMap = new HashMap<>();
+		}
+		if (temporalWrappers == null) {
+			temporalWrappers = new ConcurrentHashMap<>();
+		}
+
 		settlementCoordinateMap.put(s.getCoordinates(), s);
 
 		logger.config("Activating the settlement task pulse for " + s + ".");
@@ -558,8 +566,6 @@ public class UnitManager implements Serializable, Temporal {
 
 	/**
 	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param clock
 	 */
 	public void reinit() {
 
@@ -567,8 +573,11 @@ public class UnitManager implements Serializable, Temporal {
 		lookupRobot.values().forEach(Robot::reinit);
 		lookupSettlement.values().forEach(Settlement::reinit);
 
-		// Sets up the concurrent tasks
+		// Recreate transient structures after deserialization
 		settlementCoordinateMap = new HashMap<>();
+		temporalWrappers = new ConcurrentHashMap<>();
+
+		// Sets up the concurrent tasks
 		lookupSettlement.values().forEach(this::activateSettlement);
 	}
 
@@ -596,6 +605,7 @@ public class UnitManager implements Serializable, Temporal {
 		marsSurface = null;
 
 		listeners = null;
+		temporalWrappers = null;
 	}
 
 	/**
