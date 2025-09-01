@@ -1,7 +1,11 @@
+*** /dev/null
+--- b/mars-sim-core/src/main/java/com/mars_sim/core/util/Snapshots.java
+@@
 +/*
 + * Mars Simulation Project
 + * Snapshots.java
-+ * Utility: tiny helpers for CME-safe iteration
++ * @date 2025-08-31
++ * Utility to take CME-safe snapshots of live collections.
 + */
 +package com.mars_sim.core.util;
 +
@@ -12,19 +16,18 @@
 +import java.util.List;
 +import java.util.Set;
 +
-+/** Small helpers to create iteration snapshots of live collections. */
 +public final class Snapshots {
 +    private Snapshots() {}
 +
-+    /** Returns an immutable empty list if c is null/empty, else a fresh ArrayList copy. */
-+    public static <T> List<T> list(Collection<? extends T> c) {
-+        if (c == null || c.isEmpty()) return Collections.emptyList();
-+        return new ArrayList<>(c);
++    /** Returns an immutable list snapshot of a collection (or the shared empty list). */
++    public static <T> List<T> list(Collection<? extends T> src) {
++        if (src == null || src.isEmpty()) return Collections.emptyList();
++        return Collections.unmodifiableList(new ArrayList<>(src));
 +    }
 +
-+    /** Returns an immutable empty set if c is null/empty, else a fresh HashSet copy. */
-+    public static <T> Set<T> set(Collection<? extends T> c) {
-+        if (c == null || c.isEmpty()) return Collections.emptySet();
-+        return new HashSet<>(c);
++    /** Returns an immutable set snapshot of a collection (or the shared empty set). */
++    public static <T> Set<T> set(Collection<? extends T> src) {
++        if (src == null || src.isEmpty()) return Collections.emptySet();
++        return Collections.unmodifiableSet(new HashSet<>(src));
 +    }
 +}
