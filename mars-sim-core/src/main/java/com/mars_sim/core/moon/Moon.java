@@ -16,67 +16,84 @@ import java.util.Objects;
  *   <li>Time: seconds (s)</li>
  * </ul>
  *
- * <p><b>Design (interop‑friendly):</b>
+ * <p><b>Design goals</b>:
  * <ul>
- *   <li>Mutable POJO (no-arg ctor + setters) to avoid breaking legacy callers</li>
- *   <li>Validation on writes + angle normalization helpers</li>
- *   <li>Pure orbital math utilities; no global clocks/singletons</li>
- *   <li>Builder + copy/with methods for modern/immutable-style callers</li>
- *   <li>Alias getters/setters to keep ambiguous legacy names working</li>
+ *   <li>Mutable POJO (no-arg constructor + setters) for existing loaders/serializers.</li>
+ *   <li>Validation on write and angle normalization to avoid NaN/Inf propagation.</li>
+ *   <li>Pure orbital helpers with no global singletons or clocks.</li>
+ *   <li>Builder and copy/with helpers to support immutable-style use without breaking legacy code.</li>
+ *   <li>Alias getters/setters (e.g., {@code getRadius()}, {@code setPeriod(double)}) to preserve older call sites.</li>
  * </ul>
  */
 public class Moon implements Serializable {
 
+    /** Serialization ID for compatibility. */
     private static final long serialVersionUID = 1L;
 
-    // ----------------------------
-    // Identity & bulk properties
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Identity & physical properties
+    // ---------------------------------------------------------------------
 
     /** Unique name (e.g., "Phobos", "Deimos"). */
-    private volatile String name;
+    private String name;
 
-    /** Physical mean radius [m]. For irregular bodies, use the accepted mean radius. */
-    private volatile double bodyRadiusMeters;
+    /** Physical mean radius (meters). For irregular bodies, use accepted mean radius. */
+    private double bodyRadiusMeters;
 
-    /** Mass [kg]. */
-    private volatile double bodyMassKg;
+    /** Mass (kilograms). */
+    private double bodyMassKg;
 
-    // ----------------------------
-    // Keplerian elements (parent-body equatorial frame)
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Keplerian elements (parent-body equatorial frame, SI units)
+    // ---------------------------------------------------------------------
 
-    /** Semi-major axis [m]. */
-    private volatile double semiMajorAxisMeters;
+    /** Semi-major axis (meters). */
+    private double semiMajorAxisMeters;
 
-    /** Eccentricity [0, 1). */
-    private volatile double eccentricity;
+    /** Eccentricity in [0, 1). */
+    private double eccentricity;
 
-    /** Inclination [rad]. */
-    private volatile double inclinationRad;
+    /** Inclination (radians). */
+    private double inclinationRad;
 
-    /** Longitude of ascending node Ω [rad]. */
-    private volatile double longitudeAscendingNodeRad;
+    /** Longitude of ascending node, Ω (radians). */
+    private double longitudeAscendingNodeRad;
 
-    /** Argument of periapsis ω [rad]. */
-    private volatile double argumentOfPeriapsisRad;
+    /** Argument of periapsis, ω (radians). */
+    private double argumentOfPeriapsisRad;
 
-    /** Mean longitude at epoch L0 [rad] (i.e., M0 + ϖ). */
-    private volatile double meanLongitudeAtEpochRad;
+    /**
+     * Mean longitude at epoch, L₀ (radians).<br>
+     * Note: L₀ = M₀ + ϖ, where ϖ = Ω + ω.
+     */
+    private double meanLongitudeAtEpochRad;
 
-    /** Sidereal period T [s]. */
-    private volatile double siderealPeriodSeconds;
+    /** Sidereal period, T (seconds). */
+    private double siderealPeriodSeconds;
 
-    // ----------------------------
+    // ---------------------------------------------------------------------
     // Constructors
-    // ----------------------------
+    // ---------------------------------------------------------------------
 
-    /** No-arg ctor for serializers/DI; fields should be set via setters or builder. */
+    /** No-arg constructor for serializers/DI; set fields via setters or {@link Builder}. */
     public Moon() {
-        // leave fields unset to let loaders/DI write values via setters
+        // Intentionally empty
     }
 
-    /** Full constructor (fields are validated and normalized). */
+    /**
+     * Full constructor with validation and normalization.
+     *
+     * @param name                           unique moon name
+     * @param bodyRadiusMeters               radius in meters
+     * @param bodyMassKg                     mass in kilograms
+     * @param semiMajorAxisMeters            semi-major axis in meters
+     * @param eccentricity                   eccentricity in [0,1)
+     * @param inclinationRad                 inclination in radians
+     * @param longitudeAscendingNodeRad      longitude of ascending node Ω in radians
+     * @param argumentOfPeriapsisRad         argument of periapsis ω in radians
+     * @param meanLongitudeAtEpochRad        mean longitude at epoch L₀ in radians
+     * @param siderealPeriodSeconds          sidereal period in seconds
+     */
     public Moon(
             String name,
             double bodyRadiusMeters,
@@ -101,12 +118,21 @@ public class Moon implements Serializable {
         setSiderealPeriodSeconds(siderealPeriodSeconds);
     }
 
-    // ----------------------------
-    // Builder (encourages immutable style in new code)
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Builder (encourages immutable-style construction in new code)
+    // ---------------------------------------------------------------------
 
-    public static Builder builder(String name) { return new Builder(name); }
+    /**
+     * Create a builder for a new {@link Moon}.
+     *
+     * @param name unique name
+     * @return builder
+     */
+    public static Builder builder(String name) {
+        return new Builder(name);
+    }
 
+    /** Fluent builder (SI units). */
     public static final class Builder {
         private final String name;
         private double bodyRadiusMeters;
@@ -119,112 +145,206 @@ public class Moon implements Serializable {
         private double meanLongitudeAtEpochRad;
         private double siderealPeriodSeconds;
 
+        /**
+         * Construct a builder.
+         *
+         * @param name unique moon name
+         */
         public Builder(String name) {
             this.name = Objects.requireNonNull(name, "name");
         }
 
+        /** @param v radius (m) */
         public Builder bodyRadiusMeters(double v) { this.bodyRadiusMeters = v; return this; }
+
+        /** @param v mass (kg) */
         public Builder bodyMassKg(double v) { this.bodyMassKg = v; return this; }
+
+        /** @param v semi-major axis (m) */
         public Builder semiMajorAxisMeters(double v) { this.semiMajorAxisMeters = v; return this; }
+
+        /** @param v eccentricity in [0,1) */
         public Builder eccentricity(double v) { this.eccentricity = v; return this; }
+
+        /** @param v inclination (rad) */
         public Builder inclinationRadians(double v) { this.inclinationRad = v; return this; }
+
+        /** @param v longitude of ascending node Ω (rad) */
         public Builder longitudeAscendingNodeRadians(double v) { this.longitudeAscendingNodeRad = v; return this; }
+
+        /** @param v argument of periapsis ω (rad) */
         public Builder argumentOfPeriapsisRadians(double v) { this.argumentOfPeriapsisRad = v; return this; }
+
+        /** @param v mean longitude at epoch L₀ (rad) */
         public Builder meanLongitudeAtEpochRadians(double v) { this.meanLongitudeAtEpochRad = v; return this; }
+
+        /** @param v sidereal period (s) */
         public Builder siderealPeriodSeconds(double v) { this.siderealPeriodSeconds = v; return this; }
 
+        /**
+         * Build the {@link Moon} instance with validated fields.
+         *
+         * @return constructed {@link Moon}
+         */
         public Moon build() {
             return new Moon(
-                    name, bodyRadiusMeters, bodyMassKg, semiMajorAxisMeters, eccentricity,
-                    inclinationRad, longitudeAscendingNodeRad, argumentOfPeriapsisRad,
-                    meanLongitudeAtEpochRad, siderealPeriodSeconds
+                    name,
+                    bodyRadiusMeters,
+                    bodyMassKg,
+                    semiMajorAxisMeters,
+                    eccentricity,
+                    inclinationRad,
+                    longitudeAscendingNodeRad,
+                    argumentOfPeriapsisRad,
+                    meanLongitudeAtEpochRad,
+                    siderealPeriodSeconds
             );
         }
     }
 
-    // ----------------------------
-    // Copy/with helpers (immutable-style updates)
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Copy/with helpers (immutable-style updates, non-breaking)
+    // ---------------------------------------------------------------------
 
-    public Moon withName(String v) { Moon m = this.copy(); m.setName(v); return m; }
-    public Moon withBodyRadiusMeters(double v) { Moon m = this.copy(); m.setBodyRadiusMeters(v); return m; }
-    public Moon withBodyMassKg(double v) { Moon m = this.copy(); m.setBodyMassKg(v); return m; }
-    public Moon withSemiMajorAxisMeters(double v) { Moon m = this.copy(); m.setSemiMajorAxisMeters(v); return m; }
-    public Moon withEccentricity(double v) { Moon m = this.copy(); m.setEccentricity(v); return m; }
-    public Moon withInclinationRad(double v) { Moon m = this.copy(); m.setInclinationRad(v); return m; }
-    public Moon withLongitudeAscendingNodeRad(double v) { Moon m = this.copy(); m.setLongitudeAscendingNodeRad(v); return m; }
-    public Moon withArgumentOfPeriapsisRad(double v) { Moon m = this.copy(); m.setArgumentOfPeriapsisRad(v); return m; }
-    public Moon withMeanLongitudeAtEpochRad(double v) { Moon m = this.copy(); m.setMeanLongitudeAtEpochRad(v); return m; }
-    public Moon withSiderealPeriodSeconds(double v) { Moon m = this.copy(); m.setSiderealPeriodSeconds(v); return m; }
-
-    /** Shallow copy (all fields are primitives/immutable). */
+    /** @return shallow copy (all fields are primitives or immutable) */
     public Moon copy() {
         return new Moon(
-                name, bodyRadiusMeters, bodyMassKg, semiMajorAxisMeters, eccentricity,
-                inclinationRad, longitudeAscendingNodeRad, argumentOfPeriapsisRad,
-                meanLongitudeAtEpochRad, siderealPeriodSeconds
+                name,
+                bodyRadiusMeters,
+                bodyMassKg,
+                semiMajorAxisMeters,
+                eccentricity,
+                inclinationRad,
+                longitudeAscendingNodeRad,
+                argumentOfPeriapsisRad,
+                meanLongitudeAtEpochRad,
+                siderealPeriodSeconds
         );
     }
 
-    // ----------------------------
-    // Getters (canonical)
-    // ----------------------------
+    /** @param v new value @return copied instance with updated field */
+    public Moon withName(String v) { Moon m = copy(); m.setName(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withBodyRadiusMeters(double v) { Moon m = copy(); m.setBodyRadiusMeters(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withBodyMassKg(double v) { Moon m = copy(); m.setBodyMassKg(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withSemiMajorAxisMeters(double v) { Moon m = copy(); m.setSemiMajorAxisMeters(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withEccentricity(double v) { Moon m = copy(); m.setEccentricity(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withInclinationRad(double v) { Moon m = copy(); m.setInclinationRad(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withLongitudeAscendingNodeRad(double v) { Moon m = copy(); m.setLongitudeAscendingNodeRad(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withArgumentOfPeriapsisRad(double v) { Moon m = copy(); m.setArgumentOfPeriapsisRad(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withMeanLongitudeAtEpochRad(double v) { Moon m = copy(); m.setMeanLongitudeAtEpochRad(v); return m; }
+    /** @param v new value @return copied instance with updated field */
+    public Moon withSiderealPeriodSeconds(double v) { Moon m = copy(); m.setSiderealPeriodSeconds(v); return m; }
 
+    // ---------------------------------------------------------------------
+    // Getters (canonical)
+    // ---------------------------------------------------------------------
+
+    /** @return unique name */
     public String getName() { return name; }
+
+    /** @return body mean radius (m) */
     public double getBodyRadiusMeters() { return bodyRadiusMeters; }
+
+    /** @return body mass (kg) */
     public double getBodyMassKg() { return bodyMassKg; }
+
+    /** @return semi-major axis (m) */
     public double getSemiMajorAxisMeters() { return semiMajorAxisMeters; }
+
+    /** @return eccentricity in [0,1) */
     public double getEccentricity() { return eccentricity; }
+
+    /** @return inclination (rad) */
     public double getInclinationRad() { return inclinationRad; }
+
+    /** @return longitude of ascending node Ω (rad) */
     public double getLongitudeAscendingNodeRad() { return longitudeAscendingNodeRad; }
+
+    /** @return argument of periapsis ω (rad) */
     public double getArgumentOfPeriapsisRad() { return argumentOfPeriapsisRad; }
+
+    /** @return mean longitude at epoch L₀ (rad) */
     public double getMeanLongitudeAtEpochRad() { return meanLongitudeAtEpochRad; }
+
+    /** @return sidereal period (s) */
     public double getSiderealPeriodSeconds() { return siderealPeriodSeconds; }
 
-    // ----------------------------
-    // Legacy alias getters (keep old code compiling)
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Legacy alias getters (compatibility)
+    // ---------------------------------------------------------------------
 
-    /** Alias for {@link #getBodyRadiusMeters()} (unit explicitly meters). */
+    /** Alias of {@link #getBodyRadiusMeters()}. @return radius (m) */
     public double getRadius() { return getBodyRadiusMeters(); }
 
-    /** Alias for {@link #getInclinationRad()} (unit explicitly radians). */
+    /** Alias of {@link #getInclinationRad()}. @return inclination (rad) */
     public double getInclination() { return getInclinationRad(); }
 
-    /** Alias for {@link #getSemiMajorAxisMeters()} (unit explicitly meters). */
+    /** Alias of {@link #getSemiMajorAxisMeters()}. @return semi-major axis (m) */
     public double getSemiMajorAxis() { return getSemiMajorAxisMeters(); }
 
-    /** Alias for {@link #getSiderealPeriodSeconds()} (unit explicitly seconds). */
+    /** Alias of {@link #getSiderealPeriodSeconds()}. @return period (s) */
     public double getPeriod() { return getSiderealPeriodSeconds(); }
 
-    /** Alias for {@link #getBodyMassKg()}. */
+    /** Alias of {@link #getBodyMassKg()}. @return mass (kg) */
     public double getMass() { return getBodyMassKg(); }
 
-    /** Aliases without "Rad" suffix, interpreted as radians for backwards compatibility. */
+    /** Alias of {@link #getLongitudeAscendingNodeRad()}. @return Ω (rad) */
     public double getLongitudeAscendingNode() { return getLongitudeAscendingNodeRad(); }
+
+    /** Alias of {@link #getArgumentOfPeriapsisRad()}. @return ω (rad) */
     public double getArgumentOfPeriapsis() { return getArgumentOfPeriapsisRad(); }
+
+    /** Alias of {@link #getMeanLongitudeAtEpochRad()}. @return L₀ (rad) */
     public double getMeanLongitudeAtEpoch() { return getMeanLongitudeAtEpochRad(); }
 
-    // ----------------------------
+    // ---------------------------------------------------------------------
     // Setters (validated & normalized)
-    // ----------------------------
+    // ---------------------------------------------------------------------
 
+    /**
+     * Set unique name.
+     * @param name value (non-null)
+     */
     public void setName(String name) {
         this.name = Objects.requireNonNull(name, "name");
     }
 
+    /**
+     * Set body radius.
+     * @param v meters, must be &gt; 0 and finite
+     */
     public void setBodyRadiusMeters(double v) {
         this.bodyRadiusMeters = requirePositiveFinite(v, "bodyRadiusMeters");
     }
 
+    /**
+     * Set body mass.
+     * @param v kilograms, must be &gt; 0 and finite
+     */
     public void setBodyMassKg(double v) {
         this.bodyMassKg = requirePositiveFinite(v, "bodyMassKg");
     }
 
+    /**
+     * Set semi-major axis.
+     * @param v meters, must be &gt; 0 and finite
+     */
     public void setSemiMajorAxisMeters(double v) {
         this.semiMajorAxisMeters = requirePositiveFinite(v, "semiMajorAxisMeters");
     }
 
+    /**
+     * Set eccentricity.
+     * @param v eccentricity in [0,1)
+     */
     public void setEccentricity(double v) {
         if (Double.isNaN(v) || v < 0.0 || v >= 1.0) {
             throw new IllegalArgumentException("eccentricity must be in [0,1): " + v);
@@ -232,29 +352,49 @@ public class Moon implements Serializable {
         this.eccentricity = v;
     }
 
+    /**
+     * Set inclination.
+     * @param v radians, finite
+     */
     public void setInclinationRad(double v) {
         this.inclinationRad = requireFinite(v, "inclinationRad");
     }
 
+    /**
+     * Set longitude of ascending node, Ω.
+     * @param v radians, finite; normalized to [0, 2π)
+     */
     public void setLongitudeAscendingNodeRad(double v) {
         this.longitudeAscendingNodeRad = normalizeAngleRad(requireFinite(v, "longitudeAscendingNodeRad"));
     }
 
+    /**
+     * Set argument of periapsis, ω.
+     * @param v radians, finite; normalized to [0, 2π)
+     */
     public void setArgumentOfPeriapsisRad(double v) {
         this.argumentOfPeriapsisRad = normalizeAngleRad(requireFinite(v, "argumentOfPeriapsisRad"));
     }
 
+    /**
+     * Set mean longitude at epoch, L₀.
+     * @param v radians, finite; normalized to [0, 2π)
+     */
     public void setMeanLongitudeAtEpochRad(double v) {
         this.meanLongitudeAtEpochRad = normalizeAngleRad(requireFinite(v, "meanLongitudeAtEpochRad"));
     }
 
+    /**
+     * Set sidereal period.
+     * @param v seconds, must be &gt; 0 and finite
+     */
     public void setSiderealPeriodSeconds(double v) {
         this.siderealPeriodSeconds = requirePositiveFinite(v, "siderealPeriodSeconds");
     }
 
-    // ----------------------------
-    // Legacy alias setters (avoid breakage)
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Legacy alias setters (compatibility)
+    // ---------------------------------------------------------------------
 
     /** Alias of {@link #setBodyRadiusMeters(double)}. */
     public void setRadius(double v) { setBodyRadiusMeters(v); }
@@ -271,47 +411,70 @@ public class Moon implements Serializable {
     /** Alias of {@link #setBodyMassKg(double)}. */
     public void setMass(double v) { setBodyMassKg(v); }
 
-    /** Aliases without "Rad" suffix (inputs are radians for backward compatibility). */
+    /** Alias of {@link #setLongitudeAscendingNodeRad(double)}. */
     public void setLongitudeAscendingNode(double v) { setLongitudeAscendingNodeRad(v); }
+
+    /** Alias of {@link #setArgumentOfPeriapsisRad(double)}. */
     public void setArgumentOfPeriapsis(double v) { setArgumentOfPeriapsisRad(v); }
+
+    /** Alias of {@link #setMeanLongitudeAtEpochRad(double)}. */
     public void setMeanLongitudeAtEpoch(double v) { setMeanLongitudeAtEpochRad(v); }
 
-    // ----------------------------
-    // Orbital helpers (pure functions; no global state)
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Orbital helpers (pure; no global state)
+    // ---------------------------------------------------------------------
 
-    /** Mean motion n [rad/s]. */
+    /**
+     * Mean motion n (radians/second).
+     * @return 2π / T
+     */
     public double getMeanMotionRadPerSec() {
         return (2.0 * Math.PI) / siderealPeriodSeconds;
     }
 
-    /** Alias for mean motion to match potential legacy usage. */
+    /**
+     * Legacy alias for mean motion.
+     * @return mean motion (radians/second)
+     */
     public double getMeanMotion() { return getMeanMotionRadPerSec(); }
 
     /**
-     * Mean anomaly M(t) [rad] at elapsed seconds since epoch.
-     * M = L - ϖ + n * Δt, where ϖ = Ω + ω.
+     * Mean anomaly M(t) at elapsed time since epoch.
+     * <p>M = L - ϖ + n·Δt, where ϖ = Ω + ω.</p>
+     *
+     * @param secondsSinceEpoch Δt in seconds
+     * @return mean anomaly in radians normalized to [0, 2π)
      */
     public double meanAnomalyAtSecondsSinceEpoch(double secondsSinceEpoch) {
         final double L = meanLongitudeAtEpochRad + getMeanMotionRadPerSec() * secondsSinceEpoch;
-        final double varpi = longitudeAscendingNodeRad + argumentOfPeriapsisRad; // ϖ
+        final double varpi = longitudeAscendingNodeRad + argumentOfPeriapsisRad;
         return normalizeAngleRad(L - varpi);
     }
 
-    /** Eccentric anomaly E [rad] from mean anomaly M [rad] via Newton iterations. */
+    /**
+     * Eccentric anomaly E from mean anomaly M via Newton iterations.
+     *
+     * @param meanAnomalyRad mean anomaly (radians)
+     * @return eccentric anomaly (radians) normalized to [0, 2π)
+     */
     public double eccentricAnomalyFromMeanAnomaly(double meanAnomalyRad) {
         final double e = eccentricity;
         if (e == 0.0) return normalizeAngleRad(meanAnomalyRad);
         double E = meanAnomalyRad; // initial guess
         for (int i = 0; i < 8; i++) {
-            double f = E - e * Math.sin(E) - meanAnomalyRad;
-            double fp = 1.0 - e * Math.cos(E);
+            final double f = E - e * Math.sin(E) - meanAnomalyRad;
+            final double fp = 1.0 - e * Math.cos(E);
             E -= f / fp;
         }
         return normalizeAngleRad(E);
     }
 
-    /** True anomaly ν [rad] from eccentric anomaly E [rad]. */
+    /**
+     * True anomaly ν from eccentric anomaly E.
+     *
+     * @param eccentricAnomalyRad eccentric anomaly (radians)
+     * @return true anomaly (radians)
+     */
     public double trueAnomalyFromE(double eccentricAnomalyRad) {
         final double e = eccentricity;
         final double cosE = Math.cos(eccentricAnomalyRad);
@@ -322,18 +485,24 @@ public class Moon implements Serializable {
         return Math.atan2(sinV, cosV);
     }
 
-    /** Radius r [m] at eccentric anomaly E [rad]. */
+    /**
+     * Orbital radius r at eccentric anomaly E.
+     *
+     * @param eccentricAnomalyRad eccentric anomaly (radians)
+     * @return radius (meters)
+     */
     public double radiusAtE(double eccentricAnomalyRad) {
         return semiMajorAxisMeters * (1.0 - eccentricity * Math.cos(eccentricAnomalyRad));
     }
 
     /**
-     * Position in parent-body equatorial frame (meters).
+     * Position in the parent-body equatorial frame (meters).
      * Rotation order: Rz(Ω) · Rx(i) · Rz(ω).
      *
      * @param epoch reference epoch t0
-     * @param when absolute time to evaluate
-     * @return double[3] = {x, y, z} in meters
+     * @param when  absolute time to evaluate
+     * @return array {x, y, z} in meters
+     * @throws NullPointerException if epoch or when is null
      */
     public double[] positionAt(Instant epoch, Instant when) {
         Objects.requireNonNull(epoch, "epoch");
@@ -370,37 +539,61 @@ public class Moon implements Serializable {
         return new double[] { x, y, z };
     }
 
-    /** Convenience overload using seconds since epoch directly. */
+    /**
+     * Convenience overload that evaluates position at a given Δt seconds past epoch.
+     *
+     * @param epoch             reference epoch t0
+     * @param secondsSinceEpoch Δt in seconds
+     * @return array {x, y, z} in meters
+     * @throws NullPointerException if epoch is null
+     */
     public double[] positionAtSecondsSinceEpoch(Instant epoch, double secondsSinceEpoch) {
         Objects.requireNonNull(epoch, "epoch");
-        Instant when = epoch.plusSeconds((long) Math.floor(secondsSinceEpoch));
-        return positionAt(epoch, when);
+        final long whole = (long) Math.floor(secondsSinceEpoch);
+        return positionAt(epoch, epoch.plusSeconds(whole));
     }
 
-    // ----------------------------
+    // ---------------------------------------------------------------------
     // Value semantics & debug
-    // ----------------------------
+    // ---------------------------------------------------------------------
 
-    @Override public boolean equals(Object other) {
+    /**
+     * Two {@code Moon} objects are considered equal if their names are equal
+     * (names are expected to be unique identifiers in the simulation).
+     *
+     * @param other other object
+     * @return true if equal by name
+     */
+    @Override
+    public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof Moon)) return false; // avoid pattern matching for broader JDK compatibility
+        if (!(other instanceof Moon)) return false;
         Moon m = (Moon) other;
         return Objects.equals(this.name, m.name);
     }
 
-    @Override public int hashCode() {
+    /** @return hash code based on {@code name} (may be 0 if name is null) */
+    @Override
+    public int hashCode() {
         return Objects.hashCode(name);
     }
 
-    @Override public String toString() {
+    /** @return concise debug string */
+    @Override
+    public String toString() {
         return "Moon[" + name + "]";
     }
 
-    // ----------------------------
-    // Utility
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Utilities
+    // ---------------------------------------------------------------------
 
-    /** Normalize angle to [0, 2π). */
+    /**
+     * Normalize an angle to the range [0, 2π).
+     *
+     * @param a angle (radians)
+     * @return normalized angle (radians)
+     */
     public static double normalizeAngleRad(double a) {
         final double tau = Math.PI * 2.0;
         double r = a % tau;
@@ -408,6 +601,14 @@ public class Moon implements Serializable {
         return r;
     }
 
+    /**
+     * Ensure a value is finite and &gt; 0.
+     *
+     * @param v     value
+     * @param field field name
+     * @return the same value if valid
+     * @throws IllegalArgumentException if not finite or not &gt; 0
+     */
     private static double requirePositiveFinite(double v, String field) {
         if (!(v > 0.0) || Double.isNaN(v) || Double.isInfinite(v)) {
             throw new IllegalArgumentException(field + " must be finite and > 0 but was " + v);
@@ -415,6 +616,14 @@ public class Moon implements Serializable {
         return v;
     }
 
+    /**
+     * Ensure a value is finite (not NaN or infinite).
+     *
+     * @param v     value
+     * @param field field name
+     * @return the same value if valid
+     * @throws IllegalArgumentException if NaN or infinite
+     */
     private static double requireFinite(double v, String field) {
         if (Double.isNaN(v) || Double.isInfinite(v)) {
             throw new IllegalArgumentException(field + " must be finite");
@@ -422,14 +631,17 @@ public class Moon implements Serializable {
         return v;
     }
 
-    // ----------------------------
-    // Convenience: well-known moons (optional)
-    // These helpers introduce no coupling and can be ignored by existing code.
-    // ----------------------------
+    // ---------------------------------------------------------------------
+    // Convenience presets (optional; safe to ignore in existing code)
+    // ---------------------------------------------------------------------
 
-    /** Create a Moon preset for Phobos (Mars I). */
+    /**
+     * Create a Moon preset for Phobos (Mars I).
+     * Values are approximate; callers can override with epoch-specific elements as desired.
+     *
+     * @return {@link Moon} instance for Phobos
+     */
     public static Moon phobos() {
-        // Approximate values; callers can override with exact epoch-specific elements if needed.
         return Moon.builder("Phobos")
                 .bodyRadiusMeters(11_080.0)
                 .bodyMassKg(1.06e16)
@@ -443,7 +655,12 @@ public class Moon implements Serializable {
                 .build();
     }
 
-    /** Create a Moon preset for Deimos (Mars II). */
+    /**
+     * Create a Moon preset for Deimos (Mars II).
+     * Values are approximate; callers can override with epoch-specific elements as desired.
+     *
+     * @return {@link Moon} instance for Deimos
+     */
     public static Moon deimos() {
         return Moon.builder("Deimos")
                 .bodyRadiusMeters(6_270.0)
