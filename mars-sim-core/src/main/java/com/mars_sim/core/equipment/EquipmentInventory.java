@@ -13,10 +13,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -36,10 +36,10 @@ public class EquipmentInventory
 
 	private double cargoCapacity;
 
-	/** Locally held EVA suit set. */
+	/** Locally held EVA suit set (CME-safe). */
 	private Set<Equipment> suitSet;
 	
-	/** Locally held container set. */
+	/** Locally held container set (CME-safe). */
 	private Set<Equipment> containerSet;
 	
 	/** Locally held amount resource bin set. */
@@ -59,9 +59,9 @@ public class EquipmentInventory
 		this.owner = owner;
 		this.cargoCapacity = cargoCapacity;
 	
-		// Create equipment set
-		suitSet = new UnitSet<>();
-		containerSet = new UnitSet<>();
+		// Create equipment sets as CME-safe concurrent key sets
+		suitSet = ConcurrentHashMap.newKeySet();
+		containerSet = ConcurrentHashMap.newKeySet();
 		
 		// Create microInventory instance
 		microInventory = new MicroInventory(owner, cargoCapacity);
@@ -135,9 +135,9 @@ public class EquipmentInventory
 	}
 	
 	/**
-	 * Gets the equipment set.
+	 * Gets the equipment set (snapshot union).
 	 *
-	 * @return
+	 * @return unmodifiable snapshot of all equipment in this inventory
 	 */
 	@Override
 	public Set<Equipment> getEquipmentSet() {
@@ -147,19 +147,39 @@ public class EquipmentInventory
 	}
 
 	/**
-	 * Gets the container set.
+	 * CME-safe snapshot of all equipment (alias of {@link #getEquipmentSet()}).
 	 *
-	 * @return
+	 * @return unmodifiable snapshot
+	 */
+	public Set<Equipment> getEquipmentSnapshot() {
+		// getEquipmentSet already returns a snapshot
+		return getEquipmentSet();
+	}
+
+	/**
+	 * Gets the container set (live weakly-consistent view).
+	 * For a deterministic view, use {@link #getContainerSnapshot()}.
+	 *
+	 * @return unmodifiable live view
 	 */
 	@Override
 	public Set<Equipment> getContainerSet() {
 		return Collections.unmodifiableSet(containerSet);
 	}
+
+	/**
+	 * CME-safe snapshot (deterministic) of the container set.
+	 *
+	 * @return unmodifiable snapshot
+	 */
+	public Set<Equipment> getContainerSnapshot() {
+		return Collections.unmodifiableSet(new HashSet<>(containerSet));
+	}
 	
 	/**
-	 * Gets the EVA suit set.
+	 * Gets the EVA suit set (live weakly-consistent view).
 	 * 
-	 * @return
+	 * @return live set of EVA suits
 	 */
 	@Override
 	public Set<Equipment> getSuitSet() {
@@ -169,7 +189,7 @@ public class EquipmentInventory
 	/**
 	 * Does this unit possess an equipment of this equipment type ?
 	 *
-	 * @param typeID
+	 * @param type
 	 * @return
 	 */
 	@Override
@@ -348,7 +368,7 @@ public class EquipmentInventory
 	 */
 	@Override
 	public int getItemResourceStored(int resource) {
-		return microInventory.getItemResourceStored(resource);
+		return microInventory.getItemStoredIDs().contains(resource) ? microInventory.getItemResourceStored(resource) : 0;
 	}
 	
 	/**
@@ -699,7 +719,7 @@ public class EquipmentInventory
 	 * Sets the resource capacities.
 	 * 
 	 * @param capacities
-	 * @param add True if it should these be "added" on top of its existing capacity. False if it should be 'set' to a new capacity
+	 * @param toAdd True if it should these be "added" on top of its existing capacity. False if it should be 'set' to a new capacity
 	 */
 	public void setResourceCapacityMap(Map<Integer, Double> capacities, boolean toAdd) {
 		for (Entry<Integer, Double> v : capacities.entrySet()) {
@@ -732,7 +752,6 @@ public class EquipmentInventory
 		cargoCapacity += value;
  		microInventory.addStockCapacity(cargoCapacity);
 	}
-	
 	
 	
 	/**
