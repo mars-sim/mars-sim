@@ -526,7 +526,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/**
 	 * Gets a function that has with openly available (empty) activity spot.
 	 *
-	 * @return FunctionType
+	 * @return Function
 	 */
 	public Function getEmptyActivitySpotFunction() {
 		List<Function> goodFunctions = new ArrayList<>();
@@ -639,9 +639,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/**
 	 * Gets the generic function.
 	 * 
-	 * @param key
-	 * @return
+	 * @param key function type key
+	 * @return the stored Function, cast to the expected subtype
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends Function> T getFunction(FunctionType key) {
 		return (T) functions.get(key);
 	}
@@ -1676,3 +1677,4 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return super.hashCode();
 	}
 }
+
