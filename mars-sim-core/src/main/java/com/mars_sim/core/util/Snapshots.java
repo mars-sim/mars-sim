@@ -1,7 +1,8 @@
+
 /*
  * Mars Simulation Project
  * Snapshots.java
- * @date 2025-08-31
+  * @date 2025-08-31
  * Utility to take CME-safe snapshots of live collections.
  */
 package com.mars_sim.core.util;
