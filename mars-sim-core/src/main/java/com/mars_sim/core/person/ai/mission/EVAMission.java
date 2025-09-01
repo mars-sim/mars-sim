@@ -159,9 +159,8 @@ abstract class EVAMission extends RoverMission {
     protected void performPhase(Worker member) {
         super.performPhase(member);
         if (evaPhase.equals(getPhase())) {
-            // CME-safe: make sure we prune any “teleported” members each EVA tick.
-            // Uses ConcurrentHashMap + removeIf over a weakly-consistent view.
-+           checkTeleported();
+            // CME-safe: prune “teleported” members using a snapshot each EVA tick
+            checkTeleported();
             evaPhase(member);
         }
         else if (WAIT_SUNLIGHT.equals(getPhase())) {
