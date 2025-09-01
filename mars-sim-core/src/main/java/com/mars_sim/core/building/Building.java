@@ -147,6 +147,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private Recreation rec;
 	private Research lab;
 	private RoboticStation roboticStation;
+	private PowerGeneration generator;
 
 	private PowerMode powerModeCache;
 	private BuildingCategory category;
@@ -424,6 +425,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return temperature (deg C)
 	 */
 	public double getCurrentTemperature() {
+		// Set the instance of heating function.
+		prepareHeating();
+		
 		if (heating != null)
 			return heating.getCurrentTemperature();
 		else {
@@ -453,7 +457,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 		List<Function> goodFunctions = new ArrayList<>();
 
 		// First, use recreation function's empty activity spot if available
-		getRecreation();
+		if (rec == null) {
+			rec = getRecreation();
+		}
 		if (rec != null && rec.hasEmptyActivitySpot()) {
 			return rec;
 		}
@@ -481,7 +487,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public LocalPosition getRandomEmptyActivitySpot() {
 		
 		// First, use the recreation function activity spot if available
-		getRecreation();
+		if (rec == null) {
+			rec = getRecreation();
+		}
 		if (rec != null) {
 			LocalPosition availableLoc = rec.getAvailableActivitySpot();
 			if (availableLoc != null) {
@@ -694,8 +702,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getGeneratedPower() {
 		double result = 0;
 
-		if (getPowerGeneration() != null) {
-			result = getPowerGeneration().getGeneratedPower();
+		if (generator == null)
+			generator = getFunction(FunctionType.POWER_GENERATION);
+		
+		if (generator != null) {
+			result = generator.getGeneratedPower();
 		}
 
 		return result;
@@ -741,13 +752,37 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getHeatRequired() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatRequired();
+		
+		// Set the instance of heating function.
+		prepareHeating();
+		 
+		if (heating != null)
+			result = heating.getHeatRequired();
 
 		return result;
 	}
 
+	/**
+	 * Prepares the furnace instance.
+	 */
+	private void prepareFurnace() {
+		if (furnace == null) {
+			furnace = getFunction(FunctionType.THERMAL_GENERATION);
+		}
+	}
+	
+	/**
+	 * Prepares the heating instance.
+	 */
+	private void prepareHeating() {
+		// Gets the furnace instance.
+		prepareFurnace();
+		
+		if (heating == null && furnace != null) {
+			heating = furnace.getHeating();
+		}
+	}
+	
 	/**
 	 * Gets the heat gain of this building.
 	 *
@@ -756,8 +791,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getHeatGain() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatGain();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getHeatGain();
 
 		return result;
 	}
@@ -770,8 +808,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getHeatLoss() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatLoss();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getHeatLoss();
 
 		return result;
 	}
@@ -784,8 +825,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getPreNetHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getPreNetHeat();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getPreNetHeat();
 
 		return result;
 	}
@@ -798,8 +842,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getPostNetHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getPostNetHeat();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getPostNetHeat();
 
 		return result;
 	}
@@ -811,9 +858,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getAirHeatSink() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getAirHeatSink();
+		
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getAirHeatSink();
 
 		return result;
 	}
@@ -826,8 +876,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getWaterHeatSink() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getWaterHeatSink();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getWaterHeatSink();
 
 		return result;
 	}
@@ -839,9 +892,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getHeatGenerated() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getHeatGenerated();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getHeatGenerated();
 
 		return result;
 	}
@@ -854,8 +909,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getExcessHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getExcessHeat();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getExcessHeat();
 
 		return result;
 	}
@@ -868,8 +926,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getPassiveVentHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getPassiveVentHeat();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getPassiveVentHeat();
 
 		return result;
 	}
@@ -882,8 +943,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getActiveVentHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getActiveVentHeat();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getActiveVentHeat();
 
 		return result;
 	}
@@ -896,8 +960,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getHeatSurplus() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
+		
+		// Gets the furnace instance.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeatSurplus();
 
 		return result;
@@ -912,8 +979,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getDeltaTemp() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getDeltaTemp();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getDeltaTemp();
 
 		return result;
 	}
@@ -926,8 +996,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getDevTemp() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
-			result = furnace.getHeating().getDevTemp();
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		if (heating != null)
+			result = heating.getDevTemp();
 
 		return result;
 	}
@@ -938,10 +1011,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param heatGenerated
 	 */
 	public void dumpExcessHeat(double heatGenerated) {
-		if (heating == null && furnace != null) {
-			heating = furnace.getHeating();
-			heating.insertExcessHeatComputation(heatGenerated);
-		}
+		// Set the instance of heating function.
+		prepareHeating();
+		
+		heating.insertExcessHeatComputation(heatGenerated);
 	}
 
 	/**
@@ -952,7 +1025,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getNuclearPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getNuclearPowerGen();
 
 		return result;
@@ -966,7 +1042,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getSolarPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getSolarPowerGen();
 
 		return result;
@@ -980,7 +1059,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getElectricPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getElectricPowerGen();
 
 		return result;
@@ -994,7 +1076,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getFuelPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getFuelPowerGen();
 
 		return result;
@@ -1377,11 +1462,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param heat removed or added
 	 */
 	public void addVentInHeat(double heat) {
-		// Set the instance of thermal generation function.
-		if (furnace == null)
-			furnace = getFunction(FunctionType.THERMAL_GENERATION);
-		if (heating == null)
-			heating = furnace.getHeating();
+		// Set the instance of heating function.
+		prepareHeating();
 
 		heating.addVentInHeat(heat);
 	}
