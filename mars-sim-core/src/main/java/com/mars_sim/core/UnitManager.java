@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
@@ -60,7 +61,14 @@ public class UnitManager implements Serializable, Temporal {
 
 	public static final String THREAD = "thread";
 	public static final String SHARED = "shared";
-	
+
+	/** Soft warning threshold (ms) for an entire pulse across all settlements. */
+	private static final long SLOW_PULSE_WARN_MS =
+			Long.getLong("msp.unitmanager.slowPulseWarnMs", 2500L);
+
+	/** Warn if a single settlement's timePassing exceeds this many milliseconds. */
+	private static final long SLOW_SETTLEMENT_WARN_MS =
+			Long.getLong("msp.unitmanager.slowSettlementWarnMs", 40L);
 
 	// Data members
 	/** Counter of unit identifiers. */
@@ -94,6 +102,9 @@ public class UnitManager implements Serializable, Temporal {
 	/** A map of settlements with its coordinates. */
 	private transient Map<Coordinates, Settlement> settlementCoordinateMap = new HashMap<>();
 
+	/** Wrapper cache to ensure one profiling wrapper per settlement (avoids duplicates). */
+	private transient Map<Settlement, Temporal> temporalWrappers;
+
 	/** The instance of Mars Surface. */
 	private MarsSurface marsSurface;
 
@@ -115,6 +126,9 @@ public class UnitManager implements Serializable, Temporal {
 		lookupEquipment  = new ConcurrentHashMap<>();
 		lookupVehicle    = new ConcurrentHashMap<>();
 		lookupBuilding   = new ConcurrentHashMap<>();
+
+		// Initialize wrapper cache
+		temporalWrappers = new ConcurrentHashMap<>();
 	}
 
 	/**
@@ -312,7 +326,12 @@ public class UnitManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 		if (pulse.getElapsed() > 0) {
+			long startNs = System.nanoTime();
 			executor.applyPulse(pulse);
+			long elapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs);
+			if (elapsedMs >= SLOW_PULSE_WARN_MS) {
+				logger.warning("UnitManager: slow pulse #" + pulse.getId() + " took " + elapsedMs + " ms");
+			}
 		}
 		else {
 			logger.warning("Zero elapsed pulse #" + pulse.getId());
@@ -338,7 +357,10 @@ public class UnitManager implements Serializable, Temporal {
 				default -> throw new IllegalArgumentException("Unknown executor type called " + execType);
 			};
 		}
-		executor.addTarget(s);
+
+		// Wrap the settlement with a profiling/fault-isolating Temporal and cache the wrapper
+		Temporal wrapped = temporalWrappers.computeIfAbsent(s, ProfilingSettlementTemporal::new);
+		executor.addTarget(wrapped);
 	}
 
 	/**
@@ -574,5 +596,39 @@ public class UnitManager implements Serializable, Temporal {
 		marsSurface = null;
 
 		listeners = null;
+	}
+
+	/**
+	 * Wraps a {@link Settlement} as a {@link Temporal} that profiles each call and
+	 * isolates runtime exceptions so one settlement cannot crash the pulse.
+	 */
+	private final class ProfilingSettlementTemporal implements Temporal {
+		private final Settlement settlement;
+
+		private ProfilingSettlementTemporal(Settlement settlement) {
+			this.settlement = settlement;
+		}
+
+		@Override
+		public boolean timePassing(ClockPulse pulse) {
+			long startNs = System.nanoTime();
+			boolean result = true;
+			try {
+				result = settlement.timePassing(pulse);
+				return result;
+			}
+			catch (RuntimeException rte) {
+				// Log and swallow to keep the simulation ticking.
+				logger.severe("UnitManager: Problem with pulse on " + settlement + " :: " + rte);
+				return true;
+			}
+			finally {
+				long elapsedMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs);
+				if (elapsedMs >= SLOW_SETTLEMENT_WARN_MS) {
+					logger.warning("Slow settlement update: " + settlement
+							+ " took " + elapsedMs + " ms on pulse #" + pulse.getId());
+				}
+			}
+		}
 	}
 }
