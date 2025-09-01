@@ -1,6 +1,5 @@
 package com.mars_sim.core.moon;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
 import java.time.Instant;
@@ -19,16 +18,16 @@ import java.util.Objects;
  *
  * <p><b>Design (interop‑friendly):</b>
  * <ul>
- *   <li>Mutable POJO (to avoid breaking legacy callers that set fields)</li>
- *   <li>Validation on writes + normalizing helpers</li>
- *   <li>Pure orbital math helpers with no global clocks/singletons</li>
- *   <li>Builder + copy methods to encourage new code to go immutable</li>
+ *   <li>Mutable POJO (no-arg ctor + setters) to avoid breaking legacy callers</li>
+ *   <li>Validation on writes + angle normalization helpers</li>
+ *   <li>Pure orbital math utilities; no global clocks/singletons</li>
+ *   <li>Builder + copy/with methods for modern/immutable-style callers</li>
  *   <li>Alias getters/setters to keep ambiguous legacy names working</li>
  * </ul>
  */
 public class Moon implements Serializable {
 
-    @Serial private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     // ----------------------------
     // Identity & bulk properties
@@ -73,7 +72,9 @@ public class Moon implements Serializable {
     // ----------------------------
 
     /** No-arg ctor for serializers/DI; fields should be set via setters or builder. */
-    public Moon() {}
+    public Moon() {
+        // leave fields unset to let loaders/DI write values via setters
+    }
 
     /** Full constructor (fields are validated and normalized). */
     public Moon(
@@ -196,6 +197,14 @@ public class Moon implements Serializable {
     /** Alias for {@link #getSiderealPeriodSeconds()} (unit explicitly seconds). */
     public double getPeriod() { return getSiderealPeriodSeconds(); }
 
+    /** Alias for {@link #getBodyMassKg()}. */
+    public double getMass() { return getBodyMassKg(); }
+
+    /** Aliases without "Rad" suffix, interpreted as radians for backwards compatibility. */
+    public double getLongitudeAscendingNode() { return getLongitudeAscendingNodeRad(); }
+    public double getArgumentOfPeriapsis() { return getArgumentOfPeriapsisRad(); }
+    public double getMeanLongitudeAtEpoch() { return getMeanLongitudeAtEpochRad(); }
+
     // ----------------------------
     // Setters (validated & normalized)
     // ----------------------------
@@ -259,6 +268,14 @@ public class Moon implements Serializable {
     /** Alias of {@link #setSiderealPeriodSeconds(double)}. */
     public void setPeriod(double v) { setSiderealPeriodSeconds(v); }
 
+    /** Alias of {@link #setBodyMassKg(double)}. */
+    public void setMass(double v) { setBodyMassKg(v); }
+
+    /** Aliases without "Rad" suffix (inputs are radians for backward compatibility). */
+    public void setLongitudeAscendingNode(double v) { setLongitudeAscendingNodeRad(v); }
+    public void setArgumentOfPeriapsis(double v) { setArgumentOfPeriapsisRad(v); }
+    public void setMeanLongitudeAtEpoch(double v) { setMeanLongitudeAtEpochRad(v); }
+
     // ----------------------------
     // Orbital helpers (pure functions; no global state)
     // ----------------------------
@@ -267,6 +284,9 @@ public class Moon implements Serializable {
     public double getMeanMotionRadPerSec() {
         return (2.0 * Math.PI) / siderealPeriodSeconds;
     }
+
+    /** Alias for mean motion to match potential legacy usage. */
+    public double getMeanMotion() { return getMeanMotionRadPerSec(); }
 
     /**
      * Mean anomaly M(t) [rad] at elapsed seconds since epoch.
@@ -319,7 +339,9 @@ public class Moon implements Serializable {
         Objects.requireNonNull(epoch, "epoch");
         Objects.requireNonNull(when, "when");
 
-        final double dt = Duration.between(epoch, when).toSeconds();
+        final long dtSeconds = Duration.between(epoch, when).getSeconds();
+        final double dt = (double) dtSeconds;
+
         final double M  = meanAnomalyAtSecondsSinceEpoch(dt);
         final double E  = eccentricAnomalyFromMeanAnomaly(M);
         final double v  = trueAnomalyFromE(E);
@@ -348,13 +370,21 @@ public class Moon implements Serializable {
         return new double[] { x, y, z };
     }
 
+    /** Convenience overload using seconds since epoch directly. */
+    public double[] positionAtSecondsSinceEpoch(Instant epoch, double secondsSinceEpoch) {
+        Objects.requireNonNull(epoch, "epoch");
+        Instant when = epoch.plusSeconds((long) Math.floor(secondsSinceEpoch));
+        return positionAt(epoch, when);
+    }
+
     // ----------------------------
     // Value semantics & debug
     // ----------------------------
 
     @Override public boolean equals(Object other) {
         if (this == other) return true;
-        if (!(other instanceof Moon m)) return false;
+        if (!(other instanceof Moon)) return false; // avoid pattern matching for broader JDK compatibility
+        Moon m = (Moon) other;
         return Objects.equals(this.name, m.name);
     }
 
@@ -370,7 +400,8 @@ public class Moon implements Serializable {
     // Utility
     // ----------------------------
 
-    private static double normalizeAngleRad(double a) {
+    /** Normalize angle to [0, 2π). */
+    public static double normalizeAngleRad(double a) {
         final double tau = Math.PI * 2.0;
         double r = a % tau;
         if (r < 0) r += tau;
@@ -394,14 +425,11 @@ public class Moon implements Serializable {
     // ----------------------------
     // Convenience: well-known moons (optional)
     // These helpers introduce no coupling and can be ignored by existing code.
-    // Sources: NASA factsheets + Wikipedia (for mean radius/mass and orbital elements).
     // ----------------------------
 
     /** Create a Moon preset for Phobos (Mars I). */
     public static Moon phobos() {
-        // Semimajor axis ~ 9,376 km; e ~ 0.0151; i ~ 1.093° to Mars equator;
-        // Period ~ 7h 39m 12s; mean radius ~ 11.08 km; mass ~ 1.06e16 kg.
-        // Angles not strictly published here; safe defaults are 0 and can be tuned by content loaders.
+        // Approximate values; callers can override with exact epoch-specific elements if needed.
         return Moon.builder("Phobos")
                 .bodyRadiusMeters(11_080.0)
                 .bodyMassKg(1.06e16)
@@ -417,8 +445,6 @@ public class Moon implements Serializable {
 
     /** Create a Moon preset for Deimos (Mars II). */
     public static Moon deimos() {
-        // Semimajor axis ~ 23,463.2 km; e ~ 0.00033; i ~ 0.93°; Period ~ 30.312 h;
-        // mean radius ~ 6.27 km; mass ~ 1.51e15 kg.
         return Moon.builder("Deimos")
                 .bodyRadiusMeters(6_270.0)
                 .bodyMassKg(1.51e15)
@@ -428,7 +454,7 @@ public class Moon implements Serializable {
                 .longitudeAscendingNodeRadians(0.0)
                 .argumentOfPeriapsisRadians(0.0)
                 .meanLongitudeAtEpochRadians(0.0)
-                .siderealPeriodSeconds(30.312 * 3600.0)
+                .siderealPeriodSeconds((long) Math.round(30.312 * 3600.0))
                 .build();
     }
 }
