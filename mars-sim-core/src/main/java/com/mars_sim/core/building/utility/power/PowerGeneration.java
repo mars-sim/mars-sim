@@ -94,7 +94,20 @@ public class PowerGeneration extends Function {
 			powerSources.add(powerSource);
 		}
 	}
+ // New
+    private final SolarPanelDustComponent dust;
 
+    public SolarPowerGeneration(/* ...existing args... */, double panelAreaM2 /* maybe from XML */) {
+        super(/*...*/);
+        this.dust = new SolarPanelDustComponent(panelAreaM2 <= 0 ? 50 : panelAreaM2);
+    }
+
+    private double computeSolarKW(double irradianceWm2, double opticalDepth, double windMS, double minutes) {
+        // drive the dust model once per tick
+        dust.update(opticalDepth, windMS, irradianceWm2, minutes);
+        double kw = (irradianceWm2 * dust.getPanelAreaM2() * moduleEfficiency) / 1000.0;
+        return kw * dust.efficiency();
+    }
 	/**
 	 * Gets the value of the function for a named building.
 	 * 
