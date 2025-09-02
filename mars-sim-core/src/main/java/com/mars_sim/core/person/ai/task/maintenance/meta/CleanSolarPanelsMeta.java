@@ -16,6 +16,7 @@ public class CleanSolarPanelsMeta extends FactoryMetaTask {
 
     public CleanSolarPanelsMeta() {
         super(CleanSolarPanels.NAME);
+        super(CleanSolarPanels.NAME, WorkerType.PERSON, TaskScope.LOCAL);
     }
 
     /** Deprecated in newer branches, still present in the build (see warnings). */
