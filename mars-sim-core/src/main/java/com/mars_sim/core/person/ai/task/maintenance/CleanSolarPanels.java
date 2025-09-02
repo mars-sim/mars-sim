@@ -24,7 +24,6 @@ public class CleanSolarPanels extends Task {
     public CleanSolarPanels(Person worker, Building target) {
         // Use a Task constructor available in this branch:
         // Task(String, Worker, boolean, boolean, double, double)
-        // The booleans and doubles are kept conservative/minimal.
         super(NAME, worker, /*interruptible*/ false, /*requiresEVA?*/ false,
               /*stressImpact*/ 0.0, /*fatigueImpact*/ 0.0);
 
