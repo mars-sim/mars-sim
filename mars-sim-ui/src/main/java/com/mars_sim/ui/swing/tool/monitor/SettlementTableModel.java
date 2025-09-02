@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
@@ -311,46 +310,47 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
-		Object target = event.getTarget();
-		UnitEventType eventType = event.getType();
+		if (event.getSource() instanceof Settlement settlement) {
+			UnitEventType eventType = event.getType();
+			Object target = event.getTarget();
 
-		int columnNum = -1;
-		switch (eventType) {
-			case NAME_EVENT: columnNum = NAME; break;
-			case INVENTORY_STORING_UNIT_EVENT:
-			case INVENTORY_RETRIEVING_UNIT_EVENT: {
-				if (target instanceof Person) columnNum = POPULATION;
-				else if (target instanceof Vehicle) columnNum = PARKED;
-			} break;
-			case CONSUMING_COMPUTING_EVENT: columnNum = COMPUTING_UNIT; break;
-			case GENERATED_POWER_EVENT: columnNum = POWER_GEN; break;
-			case REQUIRED_POWER_EVENT: columnNum = POWER_LOAD; break;
-			case STORED_ENERGY_EVENT: columnNum = ENERGY_STORED; break;		
-			case MALFUNCTION_EVENT: columnNum = MALFUNCTION; break;
-			case INVENTORY_RESOURCE_EVENT: {
-				// Resource change
-				int resourceID = -1;
-				if (target instanceof AmountResource ar) {
-					resourceID = ar.getID();
-				}
-				else if (target instanceof Integer i) {
-					// Note: most likely, the source is an integer id
-					resourceID = i;
-				}
-				else {
-					return;
-				}
-
-				if (RESOURCE_TO_COL.containsKey(resourceID)) 
-					columnNum = RESOURCE_TO_COL.get(resourceID);
-			} break;
-
-			default:
-		}
-
-		if (columnNum > -1) {
-			entityValueUpdated((Settlement)unit, columnNum, columnNum);
+			int columnNum = -1;
+			switch (eventType) {
+				case NAME_EVENT: columnNum = NAME; break;
+				case INVENTORY_STORING_UNIT_EVENT:
+				case INVENTORY_RETRIEVING_UNIT_EVENT: {
+					if (target instanceof Person) columnNum = POPULATION;
+					else if (target instanceof Vehicle) columnNum = PARKED;
+				} break;
+				case CONSUMING_COMPUTING_EVENT: columnNum = COMPUTING_UNIT; break;
+				case GENERATED_POWER_EVENT: columnNum = POWER_GEN; break;
+				case REQUIRED_POWER_EVENT: columnNum = POWER_LOAD; break;
+				case STORED_ENERGY_EVENT: columnNum = ENERGY_STORED; break;		
+				case MALFUNCTION_EVENT: columnNum = MALFUNCTION; break;
+				case INVENTORY_RESOURCE_EVENT: {
+					// Resource change
+					int resourceID = -1;
+					if (target instanceof AmountResource ar) {
+						resourceID = ar.getID();
+					}
+					else if (target instanceof Integer i) {
+						// Note: most likely, the source is an integer id
+						resourceID = i;
+					}
+					else {
+						return;
+					}
+	
+					if (RESOURCE_TO_COL.containsKey(resourceID)) 
+						columnNum = RESOURCE_TO_COL.get(resourceID);
+				} break;
+	
+				default:
+			}
+	
+			if (columnNum > -1) {
+				entityValueUpdated(settlement, columnNum, columnNum);
+			}
 		}
 	}
 }

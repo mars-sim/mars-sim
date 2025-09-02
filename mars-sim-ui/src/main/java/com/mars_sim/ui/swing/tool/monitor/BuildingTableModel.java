@@ -366,7 +366,8 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		if (event.getSource() instanceof Building building) {
+		if (event.getSource() instanceof Building building
+				&& event.getTarget() instanceof Building) {
 			UnitEventType eventType = event.getType();
 
 			int columnIndex = switch(eventType) {

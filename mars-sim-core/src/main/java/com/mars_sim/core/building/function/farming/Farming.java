@@ -174,7 +174,7 @@ public class Farming extends Function {
 				if (crop != null) {
 					cropList.add(crop);
 					cropHistory.put(crop.getIdentifier(), cropSpec.getName());
-					building.getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+					building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 					alreadyPlanted.merge(cropSpec, 1, Integer::sum);
 				}
 			}

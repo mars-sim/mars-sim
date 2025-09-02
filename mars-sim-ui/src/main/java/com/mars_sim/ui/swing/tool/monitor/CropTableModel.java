@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
@@ -156,23 +155,24 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
-		UnitEventType eventType = event.getType();
-		Object target = event.getTarget();
-
-		int columnNum = -1;
-		if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
-			if (target instanceof Farming)
-				columnNum = GREENHOUSE_NAME; // = 1
-		}
-
-		else if (eventType == UnitEventType.CROP_EVENT) {
-			Crop crop = (Crop) target;
-			CropCategory cat = crop.getCropSpec().getCropCategory();
-			columnNum = getCategoryNum(cat);
-		}
-		if (columnNum > -1) {
-			entityValueUpdated((Building) unit, columnNum, columnNum);
+		if (event.getTarget() instanceof Crop crop) {
+			Building building = (Building) event.getSource();
+			UnitEventType eventType = event.getType();
+			Object target = event.getTarget();
+	
+			int columnNum = -1;
+			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+				if (target instanceof Farming)
+					columnNum = GREENHOUSE_NAME; // = 1
+			}
+	
+			else if (eventType == UnitEventType.CROP_EVENT) {
+				CropCategory cat = crop.getCropSpec().getCropCategory();
+				columnNum = getCategoryNum(cat);
+			}
+			if (columnNum > -1) {
+				entityValueUpdated(building, columnNum, columnNum);
+			}
 		}
 	}
 }

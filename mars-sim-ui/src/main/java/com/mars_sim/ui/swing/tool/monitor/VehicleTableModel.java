@@ -431,19 +431,20 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		 * @param event the mission event.
 		 */
 		public void missionUpdate(MissionEvent event) {
-			Mission mission = (Mission) event.getSource();
-			MissionEventType eventType = event.getType();
-			int columnNum = switch(eventType) {
-				case TRAVEL_STATUS_EVENT, NAVPOINTS_EVENT -> DESTINATION;
-				case DISTANCE_EVENT -> DESTDIST;
-				case VEHICLE_EVENT -> MISSION;
-				default -> -1;
-			};
-
-			if ((columnNum > -1) && (mission instanceof VehicleMission vm)) {
-				Vehicle vehicle = vm.getVehicle();
-				if (vehicle != null) {
-					entityValueUpdated(vehicle, columnNum, columnNum);
+			if (event.getSource() instanceof VehicleMission vm) {
+				MissionEventType eventType = event.getType();
+				int columnNum = switch(eventType) {
+					case TRAVEL_STATUS_EVENT, NAVPOINTS_EVENT -> DESTINATION;
+					case DISTANCE_EVENT -> DESTDIST;
+					case VEHICLE_EVENT -> MISSION;
+					default -> -1;
+				};
+	
+				if (columnNum > -1) {
+					Vehicle vehicle = vm.getVehicle();
+					if (vehicle != null) {
+						entityValueUpdated(vehicle, columnNum, columnNum);
+					}
 				}
 			}
 		}

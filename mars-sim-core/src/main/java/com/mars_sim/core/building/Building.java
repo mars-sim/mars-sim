@@ -738,7 +738,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void setPowerMode(PowerMode powerMode) {
 		if (powerModeCache != powerMode) {
 			powerModeCache = powerMode;
-			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
+			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT, this);
 		}
 	}
 

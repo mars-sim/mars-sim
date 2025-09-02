@@ -79,13 +79,14 @@ public class FoodInventoryTableModel extends CategoryTableModel<Food> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
-		if ((eventType == UnitEventType.FOOD_EVENT)
-					&& (event.getTarget() instanceof Food f) 
-					&& (event.getSource() instanceof Settlement s)) {
-			CategoryKey<Food> row = new CategoryKey<>(s, f);
-			// Update the whole row
-			entityValueUpdated(row, LOCAL_DEMAND_COL, PRICE_COL);
+		if (event.getTarget() instanceof Food f
+				&& event.getSource() instanceof Settlement s) {
+			UnitEventType eventType = event.getType();
+			if (eventType == UnitEventType.FOOD_EVENT) {
+				CategoryKey<Food> row = new CategoryKey<>(s, f);
+				// Update the whole row
+				entityValueUpdated(row, LOCAL_DEMAND_COL, PRICE_COL);
+			}
 		}
 	}
 

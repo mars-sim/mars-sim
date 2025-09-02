@@ -579,8 +579,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
-			Object target = event.getTarget();
-			if (target instanceof Person p) {
+			if (event.getTarget() instanceof Person p) {
 				UnitEventType eventType = event.getType();
 				if (eventType == addEvent) {
 					addEntity(p);

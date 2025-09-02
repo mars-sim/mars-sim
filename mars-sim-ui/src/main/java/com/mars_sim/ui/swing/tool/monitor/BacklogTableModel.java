@@ -14,7 +14,6 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
@@ -84,13 +83,15 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
-		UnitEventType eventType = event.getType();
-		if ((eventType == UnitEventType.BACKLOG_EVENT) && selectedSettlements.contains(unit)) {
-			var newTasks = getTasks();
-
-			// Reset the Tasks asynchronously in teh Swing Dispatcher to avoid sorting clashes
-			SwingUtilities.invokeLater(() -> resetTasks(newTasks));
+		if (event.getTarget() instanceof Settlement settlement
+				&& event.getSource() instanceof Settlement) {
+			UnitEventType eventType = event.getType();
+			if ((eventType == UnitEventType.BACKLOG_EVENT) && selectedSettlements.contains(settlement)) {
+				var newTasks = getTasks();
+	
+				// Reset the Tasks asynchronously in the Swing Dispatcher to avoid sorting clashes
+				SwingUtilities.invokeLater(() -> resetTasks(newTasks));
+			}
 		}
 	}
 
