@@ -1,5 +1,7 @@
 package com.mars_sim.core.moon;
 
+import com.mars_sim.core.time.ClockPulse;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -10,7 +12,7 @@ import java.util.Objects;
  * <ul>
  *   <li>Latitude in degrees, range [-90, +90]. North positive.</li>
  *   <li>Longitude in degrees, normalized and stored internally in the range [-180, +180).</li>
- *   <li>Angles are plain doubles (no external geometry deps) and validated on write.</li>
+ *   <li>Angles are validated on write; NaN/Inf is rejected.</li>
  *   <li>Dateline-crossing (west &gt; east after normalization) is supported.</li>
  * </ul>
  *
@@ -19,7 +21,10 @@ import java.util.Objects;
  *   <li>Serializable, lightweight POJO; no engine/runtime coupling.</li>
  *   <li>Immutable-style helpers (builder, copy/with) without breaking classic setters.</li>
  *   <li>Helpers for robust geographic logic (contains, intersects, expansion).</li>
- *   <li>Support for 0–360° and -180–+180° longitude conventions.</li>
+ *   <li>Support for 0–360° and −180–+180° longitude conventions.</li>
+ *   <li>Preserve interop with existing code that constructs zones via a
+ *       {@code Zone(ZoneType, Colony, boolean)} constructor and calls
+ *       {@code timePassing(ClockPulse)}, {@code getArea()}, and {@code getGrowthPercent()}.</li>
  * </ul>
  */
 public class Zone implements Serializable {
@@ -27,15 +32,30 @@ public class Zone implements Serializable {
     /** Serialization ID for compatibility. */
     private static final long serialVersionUID = 1L;
 
+    /** Mean lunar radius in kilometers (≈ 1737.4 km). Used for approximate area. */
+    private static final double MOON_RADIUS_KM = 1737.4;
+
     // ---------------------------------------------------------------------
-    // Identity
+    // Identity / legacy interop
     // ---------------------------------------------------------------------
 
-    /** Optional unique identifier within a registry (non-negative). */
+    /** Optional numeric identifier (non-negative). */
     private int id;
 
     /** Human-friendly name (e.g., "Near-Side Equatorial", "South Polar Cap"). */
     private String name;
+
+    /** Optional type tag for legacy interop. */
+    private ZoneType type;
+
+    /** Optional back-reference to a colony for legacy interop (not used in core math). */
+    private Colony colony;
+
+    /** Optional behavior flag used by legacy timePassing() logic. */
+    private boolean dynamic;
+
+    /** 0..100 progress value used by legacy code paths. */
+    private double growthPercent;
 
     // ---------------------------------------------------------------------
     // Geometry (stored normalized)
@@ -63,15 +83,18 @@ public class Zone implements Serializable {
     // Constructors
     // ---------------------------------------------------------------------
 
-    /** No-arg constructor for serializers/DI. Fields may be set via setters or builder. */
+    /** No-arg constructor for serializers/DI. */
     public Zone() {
-        // defaults (invalid until set): a 0-area zone centered at (0,0)
         this.name = "Zone";
         this.id = 0;
         this.southLatDeg = 0.0;
         this.northLatDeg = 0.0;
         this.westLonDeg = 0.0;
         this.eastLonDeg = 0.0;
+        this.growthPercent = 0.0;
+        this.dynamic = false;
+        this.type = null;
+        this.colony = null;
     }
 
     /**
@@ -94,6 +117,26 @@ public class Zone implements Serializable {
         setName(name);
         setLatBoundsDeg(southLatDeg, northLatDeg);
         setLonBoundsDeg(westLonDeg, eastLonDeg);
+        this.growthPercent = 0.0;
+        this.dynamic = false;
+        this.type = null;
+        this.colony = null;
+    }
+
+    /**
+     * Legacy constructor used by existing code: register a zone with a type/colony and a flag.
+     * Geometry can be set later via setters or builder.
+     *
+     * @param type     zone type tag (nullable permitted)
+     * @param colony   owning colony (nullable permitted)
+     * @param dynamic  whether this zone should evolve over time via {@link #timePassing(ClockPulse)}
+     */
+    public Zone(ZoneType type, Colony colony, boolean dynamic) {
+        this();
+        this.type = type;
+        this.colony = colony;
+        this.dynamic = dynamic;
+        this.name = (type != null) ? type.name() : this.name;
     }
 
     // ---------------------------------------------------------------------
@@ -111,14 +154,51 @@ public class Zone implements Serializable {
         private double northLatDeg;
         private double westLonDeg;
         private double eastLonDeg;
+        private ZoneType type;
+        private Colony colony;
+        private boolean dynamic;
+        private double growthPercent;
 
         public Builder(String name) {
             this.name = Objects.requireNonNull(name, "name");
+            this.id = 0;
+            this.southLatDeg = 0.0;
+            this.northLatDeg = 0.0;
+            this.westLonDeg = 0.0;
+            this.eastLonDeg = 0.0;
+            this.type = null;
+            this.colony = null;
+            this.dynamic = false;
+            this.growthPercent = 0.0;
         }
 
         /** Optional, default 0. */
         public Builder id(int v) {
             this.id = v;
+            return this;
+        }
+
+        /** Optional type tag for legacy interop. */
+        public Builder type(ZoneType v) {
+            this.type = v;
+            return this;
+        }
+
+        /** Optional colony back-reference. */
+        public Builder colony(Colony v) {
+            this.colony = v;
+            return this;
+        }
+
+        /** Whether this zone evolves via {@link #timePassing(ClockPulse)}. */
+        public Builder dynamic(boolean v) {
+            this.dynamic = v;
+            return this;
+        }
+
+        /** Pre-set growth percent (0..100). */
+        public Builder growthPercent(double v) {
+            this.growthPercent = clampPercent(v);
             return this;
         }
 
@@ -137,7 +217,12 @@ public class Zone implements Serializable {
         }
 
         public Zone build() {
-            return new Zone(id, name, southLatDeg, northLatDeg, westLonDeg, eastLonDeg);
+            Zone z = new Zone(id, name, southLatDeg, northLatDeg, westLonDeg, eastLonDeg);
+            z.type = this.type;
+            z.colony = this.colony;
+            z.dynamic = this.dynamic;
+            z.growthPercent = this.growthPercent;
+            return z;
         }
     }
 
@@ -146,7 +231,12 @@ public class Zone implements Serializable {
     // ---------------------------------------------------------------------
 
     public Zone copy() {
-        return new Zone(id, name, southLatDeg, northLatDeg, westLonDeg, eastLonDeg);
+        Zone z = new Zone(id, name, southLatDeg, northLatDeg, westLonDeg, eastLonDeg);
+        z.type = this.type;
+        z.colony = this.colony;
+        z.dynamic = this.dynamic;
+        z.growthPercent = this.growthPercent;
+        return z;
     }
 
     public Zone withId(int v) {
@@ -173,6 +263,30 @@ public class Zone implements Serializable {
         return z;
     }
 
+    public Zone withType(ZoneType v) {
+        Zone z = copy();
+        z.type = v;
+        return z;
+    }
+
+    public Zone withColony(Colony v) {
+        Zone z = copy();
+        z.colony = v;
+        return z;
+    }
+
+    public Zone withDynamic(boolean v) {
+        Zone z = copy();
+        z.dynamic = v;
+        return z;
+    }
+
+    public Zone withGrowthPercent(double v) {
+        Zone z = copy();
+        z.growthPercent = clampPercent(v);
+        return z;
+    }
+
     // ---------------------------------------------------------------------
     // Getters (canonical)
     // ---------------------------------------------------------------------
@@ -183,6 +297,26 @@ public class Zone implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    /** Optional type tag for legacy interop. */
+    public ZoneType getType() {
+        return type;
+    }
+
+    /** Optional colony back-reference. */
+    public Colony getColony() {
+        return colony;
+    }
+
+    /** Whether this zone evolves via {@link #timePassing(ClockPulse)}. */
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    /** @return growth percent in [0, 100]. */
+    public double getGrowthPercent() {
+        return growthPercent;
     }
 
     /** @return south latitude in degrees [-90, +90]. */
@@ -235,7 +369,6 @@ public class Zone implements Serializable {
         if (!crossesDateline()) {
             return normalizeLon180((w + e) * 0.5);
         }
-        // If crossing, unwrap east by +360 so midpoint is between w and e+360, then renormalize.
         double mid = (w + (e + 360.0)) * 0.5;
         return normalizeLon180(mid);
     }
@@ -257,7 +390,7 @@ public class Zone implements Serializable {
     }
 
     // ---------------------------------------------------------------------
-    // Setters (validated & normalized). These keep legacy "mutable POJO" usage working.
+    // Setters (validated & normalized). Keep legacy "mutable POJO" usage working.
     // ---------------------------------------------------------------------
 
     public void setId(int id) {
@@ -291,6 +424,11 @@ public class Zone implements Serializable {
         this.eastLonDeg = normalizeLon180(east);
     }
 
+    /** Set growth percent in [0, 100]. */
+    public void setGrowthPercent(double v) {
+        this.growthPercent = clampPercent(v);
+    }
+
     // ---------------------------------------------------------------------
     // Spatial predicates & operations
     // ---------------------------------------------------------------------
@@ -317,7 +455,6 @@ public class Zone implements Serializable {
         if (!crossesDateline()) {
             inLon = (lon >= westLonDeg) && (lon <= eastLonDeg);
         } else {
-            // Example: west=170, east=-170 -> valid if lon >=170 or lon <= -170
             inLon = (lon >= westLonDeg) || (lon <= eastLonDeg);
         }
         return inLat && inLon;
@@ -329,19 +466,12 @@ public class Zone implements Serializable {
      */
     public boolean intersects(Zone other) {
         Objects.requireNonNull(other, "other");
-
-        // Latitude overlap
         boolean latOverlap = !(this.northLatDeg < other.southLatDeg || other.northLatDeg < this.southLatDeg);
-
         if (!latOverlap) {
             return false;
         }
-
-        // Longitude overlap with dateline handling.
-        // Expand to up to two intervals each, then test for any interval overlap.
         double[][] aIntervals = lonIntervals(this.westLonDeg, this.eastLonDeg);
         double[][] bIntervals = lonIntervals(other.westLonDeg, other.eastLonDeg);
-
         for (double[] a : aIntervals) {
             for (double[] b : bIntervals) {
                 if (intervalsOverlap(a[0], a[1], b[0], b[1])) {
@@ -360,18 +490,47 @@ public class Zone implements Serializable {
         if (latPaddingDeg < 0.0 || lonPaddingDeg < 0.0) {
             throw new IllegalArgumentException("padding must be non-negative");
         }
-
         double south = clampLat(southLatDeg - latPaddingDeg);
         double north = clampLat(northLatDeg + latPaddingDeg);
-
         double west = normalizeLon180(westLonDeg - lonPaddingDeg);
         double east = normalizeLon180(eastLonDeg + lonPaddingDeg);
-
         return withLatBoundsDeg(south, north).withLonBoundsDeg(west, east);
     }
 
     // ---------------------------------------------------------------------
-    // Equality, hash, string (value semantics by id+name+bounds)
+    // Legacy methods expected by existing callers
+    // ---------------------------------------------------------------------
+
+    /**
+     * Legacy tick hook invoked by the simulation.
+     * This implementation advances {@link #growthPercent} slowly when {@link #dynamic} is true.
+     *
+     * @param pulse clock pulse (ignored for now to keep behavior conservative)
+     */
+    public void timePassing(ClockPulse pulse) {
+        if (dynamic) {
+            double next = this.growthPercent + 0.05;
+            this.growthPercent = clampPercent(next);
+        }
+    }
+
+    /**
+     * Approximate surface area of the zone on a sphere using the mean lunar radius.
+     * Result is in square kilometers.
+     *
+     * @return area in km^2
+     */
+    public double getArea() {
+        double lat1 = Math.toRadians(southLatDeg);
+        double lat2 = Math.toRadians(northLatDeg);
+        double dLon = Math.toRadians(getLonSpanDeg());
+        double band = Math.abs(Math.sin(lat2) - Math.sin(lat1));
+        double r2 = MOON_RADIUS_KM * MOON_RADIUS_KM;
+        return r2 * band * dLon;
+    }
+
+    // ---------------------------------------------------------------------
+    // Equality, hash, string (value semantics by id+name+bounds+type)
     // ---------------------------------------------------------------------
 
     @Override
@@ -385,6 +544,7 @@ public class Zone implements Serializable {
         Zone z = (Zone) other;
         return this.id == z.id
                 && Objects.equals(this.name, z.name)
+                && this.type == z.type
                 && Double.doubleToLongBits(this.southLatDeg) == Double.doubleToLongBits(z.southLatDeg)
                 && Double.doubleToLongBits(this.northLatDeg) == Double.doubleToLongBits(z.northLatDeg)
                 && Double.doubleToLongBits(this.westLonDeg) == Double.doubleToLongBits(z.westLonDeg)
@@ -395,6 +555,7 @@ public class Zone implements Serializable {
     public int hashCode() {
         return Objects.hash(id,
                 name,
+                type,
                 Double.doubleToLongBits(southLatDeg),
                 Double.doubleToLongBits(northLatDeg),
                 Double.doubleToLongBits(westLonDeg),
@@ -405,11 +566,13 @@ public class Zone implements Serializable {
     public String toString() {
         return "Zone[id=" + id
                 + ", name=" + name
+                + ", type=" + type
                 + ", south=" + southLatDeg
                 + "°, north=" + northLatDeg
                 + "°, west=" + westLonDeg
                 + "°, east=" + eastLonDeg
-                + "°]";
+                + "°, growth=" + growthPercent
+                + "%]";
     }
 
     // ---------------------------------------------------------------------
@@ -447,13 +610,14 @@ public class Zone implements Serializable {
     }
 
     private static void requireLatDeg(double latDeg, String field) {
-        if (Double.isNaN(latDeg) || Double.isInfinite(latDeg) || latDeg < -90.0 || latDeg > 90.0) {
+        boolean invalid = Double.isNaN(latDeg) || Double.isInfinite(latDeg)
+                || latDeg < -90.0 || latDeg > 90.0;
+        if (invalid) {
             throw new IllegalArgumentException(field + " must be finite and within [-90, +90]: " + latDeg);
         }
     }
 
     private static boolean intervalsOverlap(double aStart, double aEnd, double bStart, double bEnd) {
-        // intervals are inclusive; assume aStart <= aEnd and bStart <= bEnd in [-180, +180)
         return !(aEnd < bStart || bEnd < aStart);
     }
 
@@ -465,8 +629,20 @@ public class Zone implements Serializable {
         if (west <= east) {
             return new double[][] { { west, east } };
         }
-        // Crosses dateline: e.g., [170, 180) U [-180, -170]
         return new double[][] { { west, 180.0 }, { -180.0, east } };
+    }
+
+    private static double clampPercent(double v) {
+        if (Double.isNaN(v) || Double.isInfinite(v)) {
+            return 0.0;
+        }
+        if (v < 0.0) {
+            return 0.0;
+        }
+        if (v > 100.0) {
+            return 100.0;
+        }
+        return v;
     }
 
     // ---------------------------------------------------------------------
@@ -487,7 +663,7 @@ public class Zone implements Serializable {
         return Zone.builder("Far-Side")
                 .id(2)
                 .latBoundsDeg(-90.0, 90.0)
-                .lonBoundsDeg(90.0, -90.0) // note: crosses dateline
+                .lonBoundsDeg(90.0, -90.0)
                 .build();
     }
 
