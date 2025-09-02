@@ -78,7 +78,7 @@ public class Moon extends PlanetaryEntity implements Serializable {
 
     /**
      * No-arg constructor for serializers/DI; sets this unit's identity using the
-     * default "Moon" name and {@link Unit#MOON_UNIT_ID}.
+    * default "Moon" name and {@link Unit#MOON_UNIT_ID}.
      *
      * <p>This ensures {@code Moon} is a proper {@link Unit} for APIs that expect Units.</p>
      */
@@ -162,31 +162,58 @@ public class Moon extends PlanetaryEntity implements Serializable {
         }
 
         /** @param v radius (m) */
-        public Builder bodyRadiusMeters(double v) { this.bodyRadiusMeters = v; return this; }
+        public Builder bodyRadiusMeters(double v) {
+            this.bodyRadiusMeters = v;
+            return this;
+        }
 
         /** @param v mass (kg) */
-        public Builder bodyMassKg(double v) { this.bodyMassKg = v; return this; }
+        public Builder bodyMassKg(double v) {
+            this.bodyMassKg = v;
+            return this;
+        }
 
         /** @param v semi-major axis (m) */
-        public Builder semiMajorAxisMeters(double v) { this.semiMajorAxisMeters = v; return this; }
+        public Builder semiMajorAxisMeters(double v) {
+            this.semiMajorAxisMeters = v;
+            return this;
+        }
 
         /** @param v eccentricity in [0,1) */
-        public Builder eccentricity(double v) { this.eccentricity = v; return this; }
+        public Builder eccentricity(double v) {
+            this.eccentricity = v;
+            return this;
+        }
 
         /** @param v inclination (rad) */
-        public Builder inclinationRadians(double v) { this.inclinationRad = v; return this; }
+        public Builder inclinationRadians(double v) {
+            this.inclinationRad = v;
+            return this;
+        }
 
         /** @param v longitude of ascending node Ω (rad) */
-        public Builder longitudeAscendingNodeRadians(double v) { this.longitudeAscendingNodeRad = v; return this; }
+        public Builder longitudeAscendingNodeRadians(double v) {
+            this.longitudeAscendingNodeRad = v;
+            return this;
+        }
 
         /** @param v argument of periapsis ω (rad) */
-        public Builder argumentOfPeriapsisRadians(double v) { this.argumentOfPeriapsisRad = v; return this; }
+        public Builder argumentOfPeriapsisRadians(double v) {
+            this.argumentOfPeriapsisRad = v;
+            return this;
+        }
 
         /** @param v mean longitude at epoch L₀ (rad) */
-        public Builder meanLongitudeAtEpochRadians(double v) { this.meanLongitudeAtEpochRad = v; return this; }
+        public Builder meanLongitudeAtEpochRadians(double v) {
+            this.meanLongitudeAtEpochRad = v;
+            return this;
+        }
 
         /** @param v sidereal period (s) */
-        public Builder siderealPeriodSeconds(double v) { this.siderealPeriodSeconds = v; return this; }
+        public Builder siderealPeriodSeconds(double v) {
+            this.siderealPeriodSeconds = v;
+            return this;
+        }
 
         /**
          * Build the {@link Moon} instance with validated fields.
@@ -244,24 +271,69 @@ public class Moon extends PlanetaryEntity implements Serializable {
                 siderealPeriodSeconds
         );
     }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withBodyRadiusMeters(double v) { Moon m = copy(); m.setBodyRadiusMeters(v); return m; }
+    public Moon withBodyRadiusMeters(double v) {
+        Moon m = copy();
+        m.setBodyRadiusMeters(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withBodyMassKg(double v) { Moon m = copy(); m.setBodyMassKg(v); return m; }
+    public Moon withBodyMassKg(double v) {
+        Moon m = copy();
+        m.setBodyMassKg(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withSemiMajorAxisMeters(double v) { Moon m = copy(); m.setSemiMajorAxisMeters(v); return m; }
+    public Moon withSemiMajorAxisMeters(double v) {
+        Moon m = copy();
+        m.setSemiMajorAxisMeters(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withEccentricity(double v) { Moon m = copy(); m.setEccentricity(v); return m; }
+    public Moon withEccentricity(double v) {
+        Moon m = copy();
+        m.setEccentricity(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withInclinationRad(double v) { Moon m = copy(); m.setInclinationRad(v); return m; }
+    public Moon withInclinationRad(double v) {
+        Moon m = copy();
+        m.setInclinationRad(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withLongitudeAscendingNodeRad(double v) { Moon m = copy(); m.setLongitudeAscendingNodeRad(v); return m; }
+    public Moon withLongitudeAscendingNodeRad(double v) {
+        Moon m = copy();
+        m.setLongitudeAscendingNodeRad(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withArgumentOfPeriapsisRad(double v) { Moon m = copy(); m.setArgumentOfPeriapsisRad(v); return m; }
+    public Moon withArgumentOfPeriapsisRad(double v) {
+        Moon m = copy();
+        m.setArgumentOfPeriapsisRad(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withMeanLongitudeAtEpochRad(double v) { Moon m = copy(); m.setMeanLongitudeAtEpochRad(v); return m; }
+    public Moon withMeanLongitudeAtEpochRad(double v) {
+        Moon m = copy();
+        m.setMeanLongitudeAtEpochRad(v);
+        return m;
+    }
+
     /** @param v new value @return copied instance with updated field */
-    public Moon withSiderealPeriodSeconds(double v) { Moon m = copy(); m.setSiderealPeriodSeconds(v); return m; }
+    public Moon withSiderealPeriodSeconds(double v) {
+        Moon m = copy();
+        m.setSiderealPeriodSeconds(v);
+        return m;
+    }
 
     // ---------------------------------------------------------------------
     // Canonical getters (for the physical/orbital fields here)
@@ -488,7 +560,7 @@ public class Moon extends PlanetaryEntity implements Serializable {
     public double trueAnomalyFromE(double eccentricAnomalyRad) {
         final double e = eccentricity;
         final double cosE = Math.cos(eccentricAnomalyRad);
-               final double sinE = Math.sin(eccentricAnomalyRad);
+        final double sinE = Math.sin(eccentricAnomalyRad);
         final double denom = 1.0 - e * cosE;
         final double cosV = (cosE - e) / denom;
         final double sinV = Math.sqrt(1.0 - e * e) * sinE / denom;
