@@ -85,7 +85,7 @@ public class MalfunctionConfig {
 	}
 
 	/**
-	 * Gets a list of malfunctions
+	 * Gets a list of malfunctions.
 	 *
 	 * @return list of malfunctions
 	 * @throws Exception when malfunctions can not be resolved.
@@ -95,16 +95,12 @@ public class MalfunctionConfig {
 	}
 
 	/**
-	 * Build the malfunction list
-	 *
-	 * @param configDoc
+	 * Registers the known system scopes.
+	 * 
+	 * @return
 	 */
-	private synchronized void buildMalfunctionList(Document configDoc) {
-		if (malfunctionList != null) {
-			// just in case if another thread is being created
-			return;
-		}
-
+	private Set<String> registerKnownSystems() {
+	
 		// Build list of potential known systems
 		Set<String> knownSystems = Arrays.stream(FunctionType.values())
 									.map(i -> i.getName().toLowerCase())
@@ -129,8 +125,24 @@ public class MalfunctionConfig {
 		knownSystems.add(VehicleSpec.METHANOL_FUEL);
 		knownSystems.add(VehicleSpec.METHAE_FUEL);
 		
+		return knownSystems;
+	}
+	
+	/**
+	 * Builds the malfunction list.
+	 *
+	 * @param configDoc
+	 */
+	private synchronized void buildMalfunctionList(Document configDoc) {
+		if (malfunctionList != null) {
+			// just in case if another thread is being created
+			return;
+		}
+
+		// Register known system scopes.
+		Set<String> knownSystems = registerKnownSystems();	
 		
-		// Build the global list in a temp to avoid access before it is built
+		// Builds the global list in a temp to avoid access
 		List<MalfunctionMeta> newList = new ArrayList<>();
 
 		Element root = configDoc.getRootElement();
@@ -138,7 +150,7 @@ public class MalfunctionConfig {
 		for (Element malfunctionElement : malfunctionNodes) {
 			String name = malfunctionElement.getAttributeValue(NAME_ATTR);
 
-			// Get severity.
+			// Get severity.		
 			Element severityElement = malfunctionElement.getChild(SEVERITY_EL);
 			int severity = Integer.parseInt(severityElement.getAttributeValue(VALUE_ATTR));
 
@@ -153,22 +165,9 @@ public class MalfunctionConfig {
 			addWorkEffort(severity, workEffort, MalfunctionRepairWork.EVA,
 					malfunctionElement, EVA_EL);
 
-			// Get affected entities.
-			Set<String> systems = new TreeSet<>();
-			Element entityListElement = malfunctionElement.getChild(SYSTEM_LIST_EL);
-			List<Element> systemNodes = entityListElement.getChildren(SYSTEM_EL);
-
-			for (Element systemElement : systemNodes) {
-				String sysName = Conversion.capitalize(systemElement.getAttributeValue(NAME_ATTR)).toLowerCase();
-				if (knownSystems.contains(sysName)) {
-					systems.add(sysName);
-				}
-				else {
-					throw new IllegalStateException(
-							"The system name '" + sysName + "' in malfunctions.xml is NOT recognized.");
-				}
-			}
-
+			// Builds affected entities.
+			Set<String> systems = buildAffectedSystemEntities(malfunctionElement, knownSystems);
+	
 			// Get effects.
 			Map<String, Double> lifeSupportEffects = new HashMap<>();
 			Map<AmountResource, Double> resourceEffects = new HashMap<>();
@@ -199,22 +198,8 @@ public class MalfunctionConfig {
 			}
 
 			// Get medical complaints.
-			Map<ComplaintType, Double> medicalComplaints = new HashMap<>();
-
-			Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
-
-			if (medicalComplaintListElement != null) {
-				List<Element> medicalComplaintNodes = medicalComplaintListElement
-						.getChildren(MEDICAL_COMPLAINT);
-
-				for (Element medicalComplaintElement : medicalComplaintNodes) {
-					String complaintName = medicalComplaintElement.getAttributeValue(NAME_ATTR);
-					double complaintProbability = Double.parseDouble(
-							medicalComplaintElement.getAttributeValue(MEDICAL_PROBABILITY));
-					medicalComplaints.put(ComplaintType.valueOf(ConfigHelper.convertToEnumName(complaintName)),
-											complaintProbability);
-				}
-			}
+			Map<ComplaintType, Double> medicalComplaints = buildMedicalComplaints(malfunctionElement);
+			
 
 			// Convert resourceEffects
 			Map<Integer, Double> resourceEffectIDs = new HashMap<>();
@@ -222,28 +207,9 @@ public class MalfunctionConfig {
 				resourceEffectIDs.put(ar.getID(), resourceEffects.get(ar));
 			}
 
-
 			// Add repair parts.
-			List<RepairPart> parts = new ArrayList<>();
-			Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);
-			if (repairPartsListElement != null) {
-				List<Element> partNodes = repairPartsListElement.getChildren(PART_EL);
-
-				for (Element partElement : partNodes) {
-					String partName = partElement.getAttributeValue(NAME_ATTR);
-					Part part = (Part) (ItemResourceUtil.findItemResource(partName));
-					if (part == null)
-						logger.severe(
-								partName + " shows up in malfunctions.xml but doesn't exist in parts.xml.");
-					else {
-						int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER_ATTR));
-						int repairProbability = Integer.parseInt(partElement.getAttributeValue(REPAIR_PROBABILITY));
-						int partID = ItemResourceUtil.findIDbyItemResourceName(partName);
-						parts.add(new RepairPart(partName, partID, partNumber, repairProbability));
-					}
-				}
-			}
-
+			List<RepairPart> parts = buildRepairParts(malfunctionElement);
+			
 			// Create malfunction.
 			MalfunctionMeta malfunction = new MalfunctionMeta(name, severity, malfunctionProbability, workEffort, systems,
 															  resourceEffectIDs, lifeSupportEffects,
@@ -256,6 +222,99 @@ public class MalfunctionConfig {
 		malfunctionList = Collections.unmodifiableList(newList);
 	}
 
+	/**
+	 * Builds the affected system entities.
+	 * 
+	 * @param malfunctionElement
+	 * @param knownSystems
+	 * @return
+	 */
+	private Set<String> buildAffectedSystemEntities(Element malfunctionElement, Set<String> knownSystems) {
+		Set<String> systems = new TreeSet<>();
+		Element entityListElement = malfunctionElement.getChild(SYSTEM_LIST_EL);
+		List<Element> systemNodes = entityListElement.getChildren(SYSTEM_EL);
+
+		for (Element systemElement : systemNodes) {
+			String sysName = Conversion.capitalize(systemElement.getAttributeValue(NAME_ATTR)).toLowerCase();
+			if (knownSystems.contains(sysName)) {
+				systems.add(sysName);
+			}
+			else {
+				throw new IllegalStateException(
+						"The system name '" + sysName + "' in malfunctions.xml is NOT recognized.");
+			}
+		}
+		return systems;
+	}
+	
+	/**
+	 * Builds the repair parts list.
+	 * 
+	 * @param malfunctionElement
+	 * @return
+	 */
+	private List<RepairPart> buildRepairParts(Element malfunctionElement) {
+		List<RepairPart> parts = new ArrayList<>();
+		Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);
+		if (repairPartsListElement != null) {
+			List<Element> partNodes = repairPartsListElement.getChildren(PART_EL);
+
+			for (Element partElement : partNodes) {
+				String partName = partElement.getAttributeValue(NAME_ATTR);
+				Part part = (Part) (ItemResourceUtil.findItemResource(partName));
+				if (part == null)
+					logger.severe(
+							partName + " shows up in malfunctions.xml but doesn't exist in parts.xml.");
+				else {
+					int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER_ATTR));
+					int repairProbability = Integer.parseInt(partElement.getAttributeValue(REPAIR_PROBABILITY));
+					int partID = ItemResourceUtil.findIDbyItemResourceName(partName);
+					parts.add(new RepairPart(partName, partID, partNumber, repairProbability));
+				}
+			}
+		}
+		
+		return parts;
+	}
+	
+	/**
+	 * Builds medical complaints map.
+	 * 
+	 * @param malfunctionElement
+	 * @return
+	 */
+	private Map<ComplaintType, Double> buildMedicalComplaints(Element malfunctionElement) {
+
+		// Get medical complaints.
+		Map<ComplaintType, Double> medicalComplaints = new HashMap<>();
+
+		Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
+
+		if (medicalComplaintListElement != null) {
+			List<Element> medicalComplaintNodes = medicalComplaintListElement
+					.getChildren(MEDICAL_COMPLAINT);
+
+			for (Element medicalComplaintElement : medicalComplaintNodes) {
+				String complaintName = medicalComplaintElement.getAttributeValue(NAME_ATTR);
+				double complaintProbability = Double.parseDouble(
+						medicalComplaintElement.getAttributeValue(MEDICAL_PROBABILITY));
+				medicalComplaints.put(ComplaintType.valueOf(ConfigHelper.convertToEnumName(complaintName)),
+										complaintProbability);
+			}
+		}
+		
+		return medicalComplaints;
+	}
+	
+	/**
+	 * Adds work efforts.
+	 * 
+	 * @param severity
+	 * @param workEffort
+	 * @param type
+	 * @param parent
+	 * @param childName
+	 */
 	private static void addWorkEffort(int severity, Map<MalfunctionRepairWork, EffortSpec> workEffort,
 									  MalfunctionRepairWork type,
 									  Element parent, String childName) {

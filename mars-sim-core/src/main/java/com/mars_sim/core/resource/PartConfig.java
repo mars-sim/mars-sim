@@ -54,7 +54,7 @@ public final class PartConfig  {
 	/** The map of maintenance scopes. */
 	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
 	/** The collection of part scopes (as defined for each part in parts.xml. */
-	private Set<String> partScopes = new TreeSet<>();
+	private Set<String> partScopesRegistry = new TreeSet<>();
 	
 	/**
 	 * Constructor.
@@ -66,57 +66,69 @@ public final class PartConfig  {
 		// Pick up from the last resource id
 		nextID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 
+		// First build a standard scope set for scope comparison.
+		createPartScopesRegistry();
+		// Load all item resources from the parts.xml.
 		loadItemResources(itemResourceDoc);
-
+		// Register all the parts in ItemResourceUtil.
 		ItemResourceUtil.registerParts(partSet);
 	}
 
 	/**
-	 * The collection of part scopes.
+	 * Gets the part scopes registry.
 	 */
-	public Set<String> getScopes() {
-		return partScopes;	 
+	public Set<String> getPartScopesRegistry() {
+		return partScopesRegistry;	 
 	}
 	
-	
 	/**
-	 * Creates a set of standard part scopes.
+	 * Creates the part scopes registry.
 	 */
-	private void createStandardPartScopes() {
+	private void createPartScopesRegistry() {
 		for (VehicleType type: VehicleType.values()) {
-			if (!partScopes.contains(type.getName()))
-				partScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (SystemType type: SystemType.values()) {
-			if (!partScopes.contains(type.getName()))
-				partScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (FunctionType type: FunctionType.values()) {
-			if (!partScopes.contains(type.getName()))
-				partScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (PowerSourceType type: PowerSourceType.values()) {
-			if (!partScopes.contains(type.getName()))
-				partScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (HeatSourceType type: HeatSourceType.values()) {
-			if (!partScopes.contains(type.getName()))
-				partScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
-		partScopes.add(Flyer.DRONE);
+		partScopesRegistry.add(Flyer.DRONE);
 	}
 	
+	/**
+	 * Adds a set of scopes.
+	 * 
+	 * @param newScopes
+	 */
 	public void addScopes(Set<String> newScopes) {
-		partScopes.addAll(newScopes);
+		partScopesRegistry.addAll(newScopes);
 	}
 	
+	/**
+	 * Adds a scope.
+	 * 
+	 * @param newScope
+	 */
 	public void addScopes(String newScope) {
-		partScopes.add(newScope);
+		partScopesRegistry.add(newScope);
 	}
 	
 	/**
@@ -130,9 +142,6 @@ public final class PartConfig  {
 			// just in case if another thread is being created
 			return;
 		}
-
-		// First build a standard scope set for scope comparison
-		createStandardPartScopes();
 		
 		// Build the global list in a temp to avoid access before it is built
 		Set<Part> newPartSet = new TreeSet<>();
@@ -184,7 +193,7 @@ public final class PartConfig  {
 				for (Element entityElement : entityNodes) {
 					String entityName = entityElement.getAttributeValue(NAME);
 					boolean validName = false;
-					for (String s: partScopes) {
+					for (String s: partScopesRegistry) {
 						if (s.equalsIgnoreCase(entityName) ) {
 							validName = true;
 							double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));

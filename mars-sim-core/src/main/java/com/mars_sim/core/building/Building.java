@@ -154,7 +154,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private LocalPosition loc;
 
 	/** A map of functions for this building. */
-	private Map<FunctionType, Function> functions = new EnumMap<>(FunctionType.class);
+	private Map<FunctionType, Function> functionMap = new EnumMap<>(FunctionType.class);
 	
 	private static HistoricalEventManager eventManager;
 	
@@ -241,7 +241,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		// Determine total maintenance time.
 		double totalMaintenanceTime = buildingSpec.getMaintenanceTime() / 3D;
 		
-		if (functions.isEmpty()) {
+		if (functionMap.isEmpty()) {
 			// Note: Only need to do this once now for each building
 			// Set up the function map
 			for (FunctionType supported : buildingSpec.getFunctionSupported()) {
@@ -267,7 +267,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
 					
 			// Add each function to the malfunction scope.
-			for (Function sfunction : functions.values()) {
+			for (Function sfunction : getFunctions()) {
 				Set<String> scopes = sfunction.getMalfunctionScopeStrings();
 				for (String scope : scopes) {
 					malfunctionManager.addScopeString(scope);
@@ -461,7 +461,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			return rec;
 		}
 								
-		for (Function f : functions.values()) {
+		for (Function f : getFunctions()) {
 			if (f.getFunctionType() != FunctionType.EVA 
 				&& f.hasEmptyActivitySpot())
 				goodFunctions.add(f);
@@ -494,7 +494,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			}
 		}
 
-		for (Function f : functions.values()) {
+		for (Function f : getFunctions()) {
 			if (f.getFunctionType() != FunctionType.EVA) {
 				LocalPosition loc = f.getAvailableActivitySpot();
 				if (loc != null)
@@ -547,7 +547,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			};
 
 		// Add to the function map
-		functions.put(fSpec.getType(), f);	
+		functionMap.put(fSpec.getType(), f);	
 		
 		return f;
 	}
@@ -559,34 +559,41 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return true if it does.
 	 */
 	public boolean hasFunction(FunctionType functionType) {
-		return functions.containsKey(functionType);
+		return functionMap.containsKey(functionType);
 	}
 
 	/**
-	 * Gets the generic function.
+	 * Gets a specific function from the function map.
 	 * 
 	 * @param key function type key
 	 * @return the stored Function, cast to the expected subtype
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Function> T getFunction(FunctionType key) {
-		return (T) functions.get(key);
+		return (T) functionMap.get(key);
 	}
 
+	/**
+	 * Gets a collection of functions from the function map.
+	 */
+	public Collection<? extends Function> getFunctions() {
+		return functionMap.values();
+	}
+		
 	/**
 	 * Removes the building's functions from the settlement.
 	 */
 	public void removeFunctionsFromSettlement() {
 
-		Iterator<Function> i = functions.values().iterator();
+		Iterator<? extends Function> i = getFunctions().iterator();
 		while (i.hasNext()) {
 			Function f = i.next();
 			f.removeFromSettlement();
 			removeFunction(f);
 		}
 		
-		functions.clear();
-		functions = null;
+		functionMap.clear();
+		functionMap = null;
 	}
 
 	/**
@@ -595,8 +602,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param function
 	 */
 	public void removeFunction(Function function) {
-		if (functions.containsValue(function)) {
-			functions.remove(function.getFunctionType());
+		if (functionMap.containsValue(function)) {
+			functionMap.remove(function.getFunctionType());
 			// Need to remove the function from the building function map
 			getBuildingManager().removeOneFunctionfromBFMap(this, function);
 		}
@@ -681,7 +688,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		double result = baseFullPowerRequirement;
 
 		// Determine power required for each function.
-		for (Function function : functions.values()) {
+		for (Function function : getFunctions()) {
 			double power = function.getCombinedPowerLoad();
 			if (power > 0) {
 				result += power;
@@ -718,7 +725,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		double result = baseLowPowerRequirement;
 
 		// Determine power required for each function.
-		for (Function function : functions.values()) {
+		for (Function function : getFunctions()) {
 			result += function.getPoweredDownPowerRequired();
 		}
 
@@ -1203,7 +1210,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		}
 
 		// Send time to each building function.
-		for (Function f : functions.values())
+		for (Function f : getFunctions())
 			// Not needed for now. Will need this for future work
 			f.timePassing(pulse);
 
@@ -1417,10 +1424,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 	public ConstructionType getConstruction() {
 		return constructionType;
-	}
-
-	public Collection<? extends Function> getFunctions() {
-		return functions.values();
 	}
 
 	/**
