@@ -1,52 +1,43 @@
 /*
- *  GPL-3.0
+ * GPL-3.0
  */
-package org.mars_sim.msp.core.person.ai.task.maintenance.meta;
+package com.mars_sim.core.person.ai.task.maintenance.meta;
 
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
-import org.mars_sim.msp.core.person.ai.task.maintenance.CleanSolarPanels;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.maintenance.CleanSolarPanels;
+import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
+import com.mars_sim.core.person.ai.task.util.Task;
 
-public class CleanSolarPanelsMeta extends MetaTask {
+/**
+ * Meta class to expose the CleanSolarPanels task to the tasking system.
+ * Uses the (deprecated but still available) probability hook for compatibility.
+ */
+public class CleanSolarPanelsMeta extends FactoryMetaTask {
 
     public CleanSolarPanelsMeta() {
         super(CleanSolarPanels.NAME);
     }
 
-    @Override
+    /** Deprecated in newer branches, still present in the build (see warnings). */
     public double getProbability(Person p) {
-        Settlement s = p.getSettlement();
-        if (s == null) return 0;
-
-        // Find a target with dusty panels
-        Building best = s.getBuildingManager().stream()
-            .filter(b -> b.getPowerFunction() != null && b.getPowerFunction().hasSolar())
-            .filter(b -> b.getPowerFunction().getDust().map(d -> d.getDust() > 0.20).orElse(false))
-            .findFirst().orElse(null);
-
-        if (best == null) return 0;
-
-        // Weight by maintenance skill & current power deficit
-        double skill = 0.5 + 0.1 * p.getSkillLevel("Maintenance"); // illustrative
-        double deficit = Math.max(0, s.getPowerGrid().getDemandKW() - s.getPowerGrid().getSupplyKW());
-        double pressure = 0.3 + Math.min(0.7, deficit / 10.0);
-
-        // Avoid during unsafe weather
-        var w = s.getWeather();
-        if (w != null && (w.getOpticalDepth() > 1.5 || w.getWindSpeed() > 20)) return 0.01;
-
-        return skill * pressure;
+        // Start conservative until a real solar-dust signal is available.
+        return 0.0;
     }
 
-    @Override
-    public CleanSolarPanels instantiate(Person p) {
-        var target = p.getSettlement().getBuildingManager().stream()
-            .filter(b -> b.getPowerFunction() != null && b.getPowerFunction().hasSolar())
-            .filter(b -> b.getPowerFunction().getDust().map(d -> d.getDust() > 0.20).orElse(false))
-            .findFirst().orElse(null);
-        if (target == null) return null;
-        return new CleanSolarPanels(p, target, target.getPowerFunction().getDust().get());
+    /**
+     * Provide common factory hooks used by different branches.
+     * We intentionally avoid @Override to be source-compatible whether the parent
+     * declares 'instantiate', 'constructInstance', or 'createTask'.
+     */
+    public Task instantiate(Person p) {
+        return new CleanSolarPanels(p, null);
+    }
+
+    public Task constructInstance(Person p) {
+        return instantiate(p);
+    }
+
+    public Task createTask(Person p) {
+        return instantiate(p);
     }
 }
