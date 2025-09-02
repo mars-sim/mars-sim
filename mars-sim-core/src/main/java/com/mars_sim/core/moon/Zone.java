@@ -22,9 +22,9 @@ import java.util.Objects;
  *   <li>Immutable-style helpers (builder, copy/with) without breaking classic setters.</li>
  *   <li>Helpers for robust geographic logic (contains, intersects, expansion).</li>
  *   <li>Support for 0–360° and −180–+180° longitude conventions.</li>
- *   <li>Preserve interop with existing code that constructs zones via a
- *       {@code Zone(ZoneType, Colony, boolean)} constructor and calls
- *       {@code timePassing(ClockPulse)}, {@code getArea()}, and {@code getGrowthPercent()}.</li>
+ *   <li>Preserve interop with existing code that uses legacy APIs like
+ *       {@code Zone(ZoneType, Colony, boolean)}, {@code timePassing(ClockPulse)},
+ *       {@code getArea()}, {@code getGrowthPercent()}, and {@code getZoneType()}.</li>
  * </ul>
  */
 public class Zone implements Serializable {
@@ -184,6 +184,12 @@ public class Zone implements Serializable {
             return this;
         }
 
+        /** Alias for {@link #type(ZoneType)} to match UI expectations. */
+        public Builder zoneType(ZoneType v) {
+            this.type = v;
+            return this;
+        }
+
         /** Optional colony back-reference. */
         public Builder colony(Colony v) {
             this.colony = v;
@@ -269,6 +275,11 @@ public class Zone implements Serializable {
         return z;
     }
 
+    /** Alias for {@link #withType(ZoneType)}. */
+    public Zone withZoneType(ZoneType v) {
+        return withType(v);
+    }
+
     public Zone withColony(Colony v) {
         Zone z = copy();
         z.colony = v;
@@ -302,6 +313,14 @@ public class Zone implements Serializable {
     /** Optional type tag for legacy interop. */
     public ZoneType getType() {
         return type;
+    }
+
+    /**
+     * Alias used by UI layer.
+     * @return the zone type (may be null)
+     */
+    public ZoneType getZoneType() {
+        return getType();
     }
 
     /** Optional colony back-reference. */
@@ -402,6 +421,16 @@ public class Zone implements Serializable {
 
     public void setName(String name) {
         this.name = Objects.requireNonNull(name, "name");
+    }
+
+    /** Set/override the type tag. */
+    public void setType(ZoneType type) {
+        this.type = type;
+    }
+
+    /** Alias for {@link #setType(ZoneType)} to match UI expectations. */
+    public void setZoneType(ZoneType type) {
+        setType(type);
     }
 
     /** Set latitude bounds (deg), validating [-90, +90] and that north >= south. */
@@ -544,7 +573,7 @@ public class Zone implements Serializable {
         Zone z = (Zone) other;
         return this.id == z.id
                 && Objects.equals(this.name, z.name)
-                && this.type == z.type
+                && Objects.equals(this.type, z.type)
                 && Double.doubleToLongBits(this.southLatDeg) == Double.doubleToLongBits(z.southLatDeg)
                 && Double.doubleToLongBits(this.northLatDeg) == Double.doubleToLongBits(z.northLatDeg)
                 && Double.doubleToLongBits(this.westLonDeg) == Double.doubleToLongBits(z.westLonDeg)
