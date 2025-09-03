@@ -77,7 +77,9 @@ public final class SpaceWeatherService {
     /** Optional: tweak severity distribution. Values are normalized automatically. */
     public void setSeverityWeights(double mild, double moderate, double severe) {
         double sum = mild + moderate + severe;
-        if (sum <= 0) return;
+        if (sum <= 0) {
+            return;
+        }
         this.pMild = mild / sum;
         this.pModerate = moderate / sum;
         this.pSevere = severe / sum;
@@ -118,9 +120,14 @@ public final class SpaceWeatherService {
     // --- Save/load helpers (optional) ---
     /** Minimal serialization DTO; implement with the project’s existing save system. */
     public SpaceWeatherState snapshot() {
-        return new SpaceWeatherState(active == null ? null : active.getSeverity().name(),
-                                     active == null ? 0 : active.getRemainingMsol(),
-                                     baseDailyStormProbability, pMild, pModerate, pSevere);
+        return new SpaceWeatherState(
+            active == null ? null : active.getSeverity().name(),
+            active == null ? 0 : active.getRemainingMsol(),
+            baseDailyStormProbability,
+            pMild,
+            pModerate,
+            pSevere
+        );
     }
 
     public void restore(SpaceWeatherState state) {
@@ -132,7 +139,9 @@ public final class SpaceWeatherService {
             active = null;
         }
         baseDailyStormProbability = state.baseDailyStormProbability;
-        pMild = state.pMild; pModerate = state.pModerate; pSevere = state.pSevere;
+        pMild = state.pMild;
+        pModerate = state.pModerate;
+        pSevere = state.pSevere;
         recomputeMultipliers();
     }
 
@@ -141,12 +150,20 @@ public final class SpaceWeatherService {
         public final String activeSeverity;
         public final double remainingMsol;
         public final double baseDailyStormProbability, pMild, pModerate, pSevere;
-        public SpaceWeatherState(String activeSeverity, double remainingMsol,
-                                 double baseDailyStormProbability, double pMild, double pModerate, double pSevere) {
+
+        public SpaceWeatherState(
+                String activeSeverity,
+                double remainingMsol,
+                double baseDailyStormProbability,
+                double pMild,
+                double pModerate,
+                double pSevere) {
             this.activeSeverity = activeSeverity;
             this.remainingMsol = remainingMsol;
             this.baseDailyStormProbability = baseDailyStormProbability;
-            this.pMild = pMild; this.pModerate = pModerate; this.pSevere = pSevere;
+            this.pMild = pMild;
+            this.pModerate = pModerate;
+            this.pSevere = pSevere;
         }
     }
 }
