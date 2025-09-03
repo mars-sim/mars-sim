@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * SettlementMapPanel.java
  * @date 2025-08-01
- * @author Scott Davis
+ * author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.settlement;
 
@@ -29,10 +29,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeListener;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
@@ -63,6 +66,10 @@ import com.mars_sim.ui.swing.UIConfig;
  *   <li><b>Graphics hygiene</b>: uses a child {@code Graphics2D} and disposes it after painting.</li>
  *   <li><b>Icon cache hook</b>: an LRU {@code ScaledIconCache} is exposed for layers that render
  *       scalable art to reuse rasterizations at the current scale.</li>
+ *   <li><b>Background base buffer cache</b>: a small LRU {@code BaseBufferCache} caches only the
+ *       expensive background layer by (scale, size, rotation). It is cleared on pan/zoom/rotate.</li>
+ *   <li><b>Optional slider wiring</b>: {@link #attachZoomSlider(JSlider)} and {@link #detachZoomSlider()}
+ *       coalesce slider change events before applying scale, avoiding heap churn.</li>
  * </ul>
  * </p>
  */
@@ -147,6 +154,13 @@ public class SettlementMapPanel extends JPanel {
 
 	// -------- New: shared cache hook for layers that rasterize scalable art --------
 	private final ScaledIconCache iconCache = new ScaledIconCache();
+
+	// -------- New: optional external zoom slider wiring --------
+	private JSlider zoomSlider;
+	private ChangeListener zoomListener;
+
+	// -------- New: base background offscreen cache (bounded + SoftRef) --------
+	private final BaseBufferCache baseCache = new BaseBufferCache(8);
 
 	/**
 	 * Constructor 1: A panel for displaying a settlement map.
@@ -369,9 +383,49 @@ public class SettlementMapPanel extends JPanel {
 
 	@Override
 	public void removeNotify() {
-		// Ensure listeners are detached to allow GC of this panel
-		removeInteractionListeners();
-		super.removeNotify();
+		// Ensure listeners and caches are detached/cleared to allow GC of this panel
+		try {
+			removeInteractionListeners();
+			detachZoomSlider();
+			if (zoomCoalesceTimer != null) zoomCoalesceTimer.stop();
+			iconCache.clear();
+			baseCache.clearAll();
+		} finally {
+			super.removeNotify();
+		}
+	}
+
+	/**
+	 * Optional: attach an external JSlider to control the map scale.
+	 * Heavy work is coalesced inside {@link #setScale(double)}.
+	 */
+	public void attachZoomSlider(JSlider slider) {
+		if (slider == null) return;
+		detachZoomSlider();
+		zoomSlider = slider;
+		zoomSlider.setMinimum((int) MIN_SCALE);
+		zoomSlider.setMaximum((int) MAX_SCALE);
+		zoomSlider.setValue((int) Math.round(scale));
+		zoomSlider.setPaintTicks(true);
+		zoomSlider.setMajorTickSpacing(1);
+		zoomSlider.setSnapToTicks(true);
+
+		zoomListener = e -> {
+			final JSlider s = (JSlider) e.getSource();
+			final int newValue = s.getValue();
+			// Coalescing happens in setScale()
+			setScale(newValue);
+		};
+		zoomSlider.addChangeListener(zoomListener);
+	}
+
+	/** Detach any previously attached zoom slider/listener. */
+	public void detachZoomSlider() {
+		if (zoomSlider != null && zoomListener != null) {
+			zoomSlider.removeChangeListener(zoomListener);
+		}
+		zoomSlider = null;
+		zoomListener = null;
 	}
 
 	/**
@@ -471,6 +525,8 @@ public class SettlementMapPanel extends JPanel {
 			this.settlement = newSettlement;
 			getSettlementTransparentPanel().getSettlementListBox()
 					.setSelectedItem(settlement);
+			// Background depends on world coords; invalidate base cache
+			baseCache.clearAll();
 			repaint();
 		}
 	}
@@ -518,6 +574,9 @@ public class SettlementMapPanel extends JPanel {
 
 		this.scale = q;
 
+		// Invalidate cached background buffer for new scale
+		baseCache.clearAll();
+
 		// Avoid re-entrant slider event storms: do not call setZoomValue here.
 		// The transparent panel will reflect the change when it next polls/sets.
 
@@ -550,6 +609,8 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	public void setRotation(double rotation) {
 		this.rotation = rotation;
+		// Background depends on rotation; invalidate base cache
+		baseCache.clearAll();
 		repaint();
 	}
 
@@ -563,6 +624,7 @@ public class SettlementMapPanel extends JPanel {
 		setRotation(0D);
 		scale = DEFAULT_SCALE; // set directly to avoid unnecessary coalescing delay here
 		settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+		baseCache.clearAll();
 		repaint();
 	}
 
@@ -586,6 +648,9 @@ public class SettlementMapPanel extends JPanel {
 
 		xPos += realXDiff;
 		yPos += realYDiff;
+
+		// Background depends on world coords; invalidate base cache
+		baseCache.clearAll();
 
 		repaint();
 	}
@@ -1091,9 +1156,43 @@ public class SettlementMapPanel extends JPanel {
 				float scaleMod = 1f;
 				if (scale > 1) scaleMod = (float) Math.sqrt(scale);
 
-				// Display all map layers.
+				// Viewpoint for live/dynamic layers
 				var viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
+
+				// 1) Draw cached background (heavy, scale/size/rotation dependent) if available
+				SettlementMapLayer background = null;
 				for (SettlementMapLayer layer : mapLayers) {
+					if (layer instanceof BackgroundTileMapLayer) {
+						background = layer;
+						break;
+					}
+				}
+				if (background != null) {
+					BufferedImage base = baseCache.getOrLoad(
+							new BaseKey(scale, getWidth(), getHeight(), rotation),
+							() -> {
+								BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+								Graphics2D gb = img.createGraphics();
+								try {
+									gb.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+									gb.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+									float sMod = (scale > 1) ? (float) Math.sqrt(scale) : 1f;
+									// background depends on world coords too; since we clear cache on pan/zoom/rotate,
+									// we can reuse same xPos/yPos safely within a frame
+									var vp = new MapViewPoint(gb, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, sMod);
+									background.displayLayer(settlement, vp);
+								} finally {
+									gb.dispose();
+								}
+								return img;
+							}
+					);
+					g2d.drawImage(base, 0, 0, null);
+				}
+
+				// 2) Draw remaining live layers (dynamic)
+				for (SettlementMapLayer layer : mapLayers) {
+					if (layer instanceof BackgroundTileMapLayer) continue; // already drawn via cache
 					layer.displayLayer(settlement, viewpoint);
 				}
 			} finally {
@@ -1144,9 +1243,11 @@ public class SettlementMapPanel extends JPanel {
 			zoomCoalesceTimer = null;
 		}
 		iconCache.clear();
+		baseCache.clearAll();
 
 		// Remove listeners to prevent leaks
 		removeInteractionListeners();
+		detachZoomSlider();
 
 		menu = null;
 		settlement = null;
@@ -1243,6 +1344,75 @@ public class SettlementMapPanel extends JPanel {
 
 		public synchronized void clear() {
 			cache.clear();
+		}
+	}
+
+	// =====================================================================
+	//             Base Background Buffer Cache (Soft-ref + LRU)
+	// =====================================================================
+
+	private static final class BaseKey {
+		final double scale;
+		final int width;
+		final int height;
+		final double rotation;
+
+		BaseKey(double scale, int width, int height, double rotation) {
+			this.scale = scale;
+			this.width = width;
+			this.height = height;
+			this.rotation = rotation;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof BaseKey)) return false;
+			BaseKey k = (BaseKey) o;
+			return Double.doubleToLongBits(scale) == Double.doubleToLongBits(k.scale)
+					&& width == k.width && height == k.height
+					&& Double.doubleToLongBits(rotation) == Double.doubleToLongBits(k.rotation);
+		}
+
+		@Override
+		public int hashCode() {
+			long sBits = Double.doubleToLongBits(scale);
+			long rBits = Double.doubleToLongBits(rotation);
+			int h = 17;
+			h = 31 * h + (int) (sBits ^ (sBits >>> 32));
+			h = 31 * h + width;
+			h = 31 * h + height;
+			h = 31 * h + (int) (rBits ^ (rBits >>> 32));
+			return h;
+		}
+	}
+
+	private static final class BaseBufferCache {
+		private final int maxEntries;
+		private final LinkedHashMap<BaseKey, SoftReference<BufferedImage>> lru;
+
+		BaseBufferCache(int maxEntries) {
+			this.maxEntries = Math.max(4, maxEntries);
+			this.lru = new LinkedHashMap<>(32, 0.75f, true) {
+				@Override
+				protected boolean removeEldestEntry(Map.Entry<BaseKey, SoftReference<BufferedImage>> e) {
+					return size() > BaseBufferCache.this.maxEntries;
+				}
+			};
+		}
+
+		synchronized BufferedImage getOrLoad(BaseKey key, Supplier<BufferedImage> loader) {
+			SoftReference<BufferedImage> ref = lru.get(key);
+			BufferedImage img = (ref != null) ? ref.get() : null;
+			if (img == null) {
+				img = loader.get();
+				lru.put(key, new SoftReference<>(img));
+			}
+			return img;
+		}
+
+		synchronized void clearAll() {
+			lru.clear();
 		}
 	}
 }
