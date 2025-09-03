@@ -4,6 +4,10 @@
  */
 package org.mars_sim.msp.core.spaceweather;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Random;
 
@@ -22,7 +26,9 @@ import java.util.Random;
  * spaceWeather.advance(deltaMsol);
  * </pre>
  */
-public final class SpaceWeatherService {
+public final class SpaceWeatherService implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /** One sol equals 1000 msol in mars-sim notation. */
     public static final double MSOL_PER_SOL = 1000.0;
@@ -46,8 +52,12 @@ public final class SpaceWeatherService {
     private static final double MODERATE_DURATION_SCALE = 1.0;
     private static final double SEVERE_DURATION_SCALE = 1.3;
 
-    private final Random rng;
-    private SolarStormEvent active;
+    /** RNG is transient; we persist and restore it manually for deterministic replay. */
+    private transient Random rng;
+
+    /** Active storm is transient; we persist its minimal state manually. */
+    private transient SolarStormEvent active;
+
     private double solarMultiplier = 1.0;
     private boolean commsBlackout = false;
 
@@ -201,7 +211,7 @@ public final class SpaceWeatherService {
     }
 
     // ---------------------------------------------------------------------
-    // Save/load helpers (optional)
+    // Save/load helpers (custom Java serialization to avoid leaking internals)
     // ---------------------------------------------------------------------
 
     /**
@@ -216,7 +226,8 @@ public final class SpaceWeatherService {
             baseDailyStormProbability,
             pMild,
             pModerate,
-            pSevere
+            pSevere,
+            sinceLastCheckMsol
         );
     }
 
@@ -239,14 +250,45 @@ public final class SpaceWeatherService {
         pMild = state.getPMild();
         pModerate = state.getPModerate();
         pSevere = state.getPSevere();
+        sinceLastCheckMsol = state.getSinceLastCheckMsol();
         recomputeMultipliers();
+    }
+
+    /**
+     * Custom serialization: write a compact snapshot and the RNG state.
+     * We avoid default serialization of transient fields and non-serializable internals.
+     */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        // Write non-transient fields
+        out.defaultWriteObject();
+        // Write snapshot (covers active storm, weights, probability, accumulator)
+        out.writeObject(snapshot());
+        // Persist RNG for deterministic replay across save/load
+        out.writeObject(rng);
+    }
+
+    /**
+     * Custom deserialization: read snapshot and RNG, then reconstruct transient fields.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        Object snapshotObj = in.readObject();
+        Object rngObj = in.readObject();
+
+        SpaceWeatherState st = (SpaceWeatherState) snapshotObj;
+        rng = (rngObj instanceof Random) ? (Random) rngObj : new Random(0L);
+
+        // Rebuild active event and derived fields
+        restore(st);
     }
 
     /**
      * Immutable DTO for persisting {@link SpaceWeatherService} state.
      * <p>Replace with the project's serialization mechanism as needed.</p>
      */
-    public static final class SpaceWeatherState {
+    public static final class SpaceWeatherState implements Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private final String activeSeverity;
         private final double remainingMsol;
@@ -254,6 +296,7 @@ public final class SpaceWeatherService {
         private final double pMild;
         private final double pModerate;
         private final double pSevere;
+        private final double sinceLastCheckMsol;
 
         /**
          * Creates a new state snapshot.
@@ -264,6 +307,7 @@ public final class SpaceWeatherService {
          * @param pMild                      normalized weight for mild storms
          * @param pModerate                  normalized weight for moderate storms
          * @param pSevere                    normalized weight for severe storms
+         * @param sinceLastCheckMsol         accumulator toward next per-sol roll (msol)
          */
         public SpaceWeatherState(
                 String activeSeverity,
@@ -271,13 +315,15 @@ public final class SpaceWeatherService {
                 double baseDailyStormProbability,
                 double pMild,
                 double pModerate,
-                double pSevere) {
+                double pSevere,
+                double sinceLastCheckMsol) {
             this.activeSeverity = activeSeverity;
             this.remainingMsol = remainingMsol;
             this.baseDailyStormProbability = baseDailyStormProbability;
             this.pMild = pMild;
             this.pModerate = pModerate;
             this.pSevere = pSevere;
+            this.sinceLastCheckMsol = sinceLastCheckMsol;
         }
 
         /** @return enum name of the active severity or {@code null} if none */
@@ -308,6 +354,11 @@ public final class SpaceWeatherService {
         /** @return normalized weight for severe storms */
         public double getPSevere() {
             return pSevere;
+        }
+
+        /** @return accumulator toward next per-sol roll (msol) */
+        public double getSinceLastCheckMsol() {
+            return sinceLastCheckMsol;
         }
     }
 }
