@@ -242,7 +242,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		 */
 		private PartTableModel(MalfunctionManager mm) {
             // Find parts for each scope
-            for (MaintenanceScope maintenance : partConfig.getMaintenance(mm.getScopes())) {
+            for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(mm.getScopes())) {
 
                 parts.add(maintenance.getPart());
                 systems.add(Conversion.capitalize(maintenance.getName()));

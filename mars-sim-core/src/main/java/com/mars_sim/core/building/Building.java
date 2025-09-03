@@ -115,8 +115,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private int momentOfImpact = 999;
 	/** The designated zone where this building is located at. */
 	private int zone;
-	/** Unique template id assigned for the settlement template of this building belong. */
-	private String templateID;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	private int baseLevel;
 
@@ -133,6 +131,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double baseLowPowerRequirement;
 	private double powerNeededForEVAHeater;
 	
+	/** Unique template id assigned for the settlement template of this building belong. */
+	private String templateID;
 	/** Type of building. */
 	private String buildingType;
 
@@ -150,7 +150,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private PowerMode powerModeCache;
 	private BuildingCategory category;
 	private ConstructionType constructionType;
-	
+	/** The x and y location of this building. */
 	private LocalPosition loc;
 
 	/** A map of functions for this building. */
@@ -207,7 +207,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		areaFactor = Math.sqrt(floorArea) / 2;
 				
 		if (floorArea <= 0) {
-			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
+			throw new IllegalArgumentException("Floor area cannot be -ve (w=" + width + ", l=" + length + ").");
 		}
 	}
 
@@ -240,17 +240,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 		
 		// Determine total maintenance time.
 		double totalMaintenanceTime = buildingSpec.getMaintenanceTime() / 3D;
-		
-		if (functionMap.isEmpty()) {
-			// Note: Only need to do this once now for each building
-			// Set up the function map
-			for (FunctionType supported : buildingSpec.getFunctionSupported()) {
-				FunctionSpec fSpec = buildingSpec.getFunctionSpec(supported);
-				var mFunction = addFunction(fSpec);
-				totalMaintenanceTime += mFunction.getMaintenanceTime();
-			}
+
+		// Set up the function map
+		for (FunctionType supported : buildingSpec.getFunctionSupported()) {
+			totalMaintenanceTime += addFunction(buildingSpec.getFunctionSpec(supported)).getMaintenanceTime();
 		}
-	
+
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, buildingSpec.getWearLifeTime(), totalMaintenanceTime);
 	
@@ -446,7 +441,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets a function that has with openly available (empty) activity spot.
+	 * Gets a function that has with openly available (or empty) activity spot.
 	 *
 	 * @return Function
 	 */

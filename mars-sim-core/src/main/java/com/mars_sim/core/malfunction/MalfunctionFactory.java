@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @date 2021-10-20
+ * @date 2025-09-02
  * @author Scott Davis
  */
 
@@ -275,7 +275,7 @@ public final class MalfunctionFactory implements Serializable {
 	 */
 	static Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
 		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();
-		for (MaintenanceScope maintenance : partConfig.getMaintenance(scope)) {
+		for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(scope)) {
 			double prob = maintenance.getProbability() / 100D;
 			int partNumber = maintenance.getMaxNumber();
 			double averageNumber = RandomUtil.getIntegerAverageValue(partNumber);
