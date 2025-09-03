@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * SettlementMapPanel.java
  * @date 2025-08-01
- * author Scott Davis
+ * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.settlement;
 
@@ -1167,7 +1167,10 @@ public class SettlementMapPanel extends JPanel {
 						break;
 					}
 				}
-				if (background != null) {
+				// ensure effectively-final for lambda usage
+				final SettlementMapLayer bg = background;
+
+				if (bg != null) {
 					BufferedImage base = baseCache.getOrLoad(
 							new BaseKey(scale, getWidth(), getHeight(), rotation),
 							() -> {
@@ -1180,9 +1183,9 @@ public class SettlementMapPanel extends JPanel {
 									// background depends on world coords too; since we clear cache on pan/zoom/rotate,
 									// we can reuse same xPos/yPos safely within a frame
 									var vp = new MapViewPoint(gb, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, sMod);
-									background.displayLayer(settlement, vp);
+									bg.displayLayer(settlement, vp);
 								} finally {
-									gb.dispose();
+                                    gb.dispose();
 								}
 								return img;
 							}
