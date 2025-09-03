@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * Simulation.java
  * @date 2025-08-26
- * @author Scott Davis
+ * author Scott Davis
  */
 package com.mars_sim.core;
 
@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -195,12 +196,25 @@ public class Simulation implements ClockListener, Serializable {
 	private transient File savePendingFile = null;
 	private transient SimulationListener saveCallback = null;
 
+	// ---------------------------------------------------------------------
+	// Space weather (solar storms & comms blackout)
+	// ---------------------------------------------------------------------
+	/**
+	 * Space weather service that models solar storms and comms blackouts.
+	 * Fully-qualified to avoid adding imports in this file.
+	 */
+	private final org.mars_sim.msp.core.spaceweather.SpaceWeatherService spaceWeather;
+
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
 	 * from other classes.
 	 */
 	private Simulation() {
 		// INFO Simulation's constructor is on both JavaFX-Launcher Thread
+
+		// Initialize SpaceWeatherService with a deterministic seed (or reuse sim seed)
+		long seed = System.currentTimeMillis(); // or reuse the sim seed
+		spaceWeather = new org.mars_sim.msp.core.spaceweather.SpaceWeatherService(seed);
 	}
 
 	/**
@@ -1403,6 +1417,14 @@ public class Simulation implements ClockListener, Serializable {
 		if (doneInitializing && !clockOnPause) {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
+
+			// -----------------------------------------------------------------
+			// Advance space weather once per pulse (deltaMsol is the elapsed
+			// millisols this pulse). We try to extract it reflectively to avoid
+			// tying to a specific ClockPulse API; fallback is 1 msol.
+			// -----------------------------------------------------------------
+			double deltaMsol = extractDeltaMsol(pulse);
+			spaceWeather.advance(deltaMsol);
 			
 			// Future: Will call each nation's timePassing(pulse) once per pulse
 		
@@ -1432,6 +1454,46 @@ public class Simulation implements ClockListener, Serializable {
 				savePending = null;
 			}
 		}
+	}
+
+	/**
+	 * Attempts to extract the elapsed millisols for this pulse using several common
+	 * method names on ClockPulse or MasterClock. Falls back to 1.0 msol if none found.
+	 */
+	private static double extractDeltaMsol(ClockPulse pulse) {
+		// Try common getters on ClockPulse
+		for (String m : new String[] {
+				"getDeltaMsol", "getDeltaMillisols", "getMillisols",
+				"getDelta", "getElapsedMillisols", "getElapsedMsol", "getElapsed"
+		}) {
+			try {
+				Method method = pulse.getClass().getMethod(m);
+				Object val = method.invoke(pulse);
+				if (val instanceof Number) {
+					return ((Number) val).doubleValue();
+				}
+			}
+			catch (Exception ignore) { /* try next */ }
+		}
+		// Try MasterClock-derived value
+		try {
+			Object clock = pulse.getMasterClock();
+			for (String m : new String[] {
+					"getMillisolsPerPulse", "getPulseMillisols", "getDeltaMillisols"
+			}) {
+				try {
+					Method method = clock.getClass().getMethod(m);
+					Object val = method.invoke(clock);
+					if (val instanceof Number) {
+						return ((Number) val).doubleValue();
+					}
+				}
+				catch (Exception ignore) { /* try next */ }
+			}
+		}
+		catch (Exception ignore) { /* fall through */ }
+		// Conservative fallback
+		return 1.0;
 	}
 
 	@Override
@@ -1510,5 +1572,12 @@ public class Simulation implements ClockListener, Serializable {
 		eventManager = null;
 
 		 logger.config("Done with Simulation's destroyOldSimulation()");
+	}
+
+	// ---------------------------------------------------------------------
+	// Accessor for Space Weather (as requested in the patch)
+	// ---------------------------------------------------------------------
+	public org.mars_sim.msp.core.spaceweather.SpaceWeatherService getSpaceWeather() {
+		return spaceWeather;
 	}
 }
