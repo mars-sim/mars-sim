@@ -29,8 +29,10 @@ public final class SpaceWeatherService {
 
     /** Baseline per-sol chance for a storm to begin (tuned for gameplay). */
     private double baseDailyStormProbability = 0.08; // 8% per sol by default
-    /** Weighting of moderate vs severe vs mild events. */
-    private double pMild = 0.60, pModerate = 0.30, pSevere = 0.10;
+    /** Weighting of mild/moderate/severe events. */
+    private double pMild = 0.60;
+    private double pModerate = 0.30;
+    private double pSevere = 0.10;
 
     /** Construct with a seed for deterministic runs (serialize the seed for saves). */
     public SpaceWeatherService(long seed) {
@@ -47,7 +49,8 @@ public final class SpaceWeatherService {
             if (active.isFinished()) {
                 active = null;
                 recomputeMultipliers();
-            } else {
+            }
+            else {
                 // Keep current multipliers.
                 return;
             }
@@ -61,13 +64,19 @@ public final class SpaceWeatherService {
     }
 
     /** Exposes the current solar power multiplier for arrays. */
-    public double getSolarPowerMultiplier() { return solarMultiplier; }
+    public double getSolarPowerMultiplier() {
+        return solarMultiplier;
+    }
 
     /** True if long-range communications are blacked out. */
-    public boolean isCommsBlackout() { return commsBlackout; }
+    public boolean isCommsBlackout() {
+        return commsBlackout;
+    }
 
     /** Returns the active event, or null if clear skies. */
-    public SolarStormEvent getActiveEvent() { return active; }
+    public SolarStormEvent getActiveEvent() {
+        return active;
+    }
 
     /** Optional: tweak baseline storm probability at runtime (0..1). */
     public void setBaseDailyStormProbability(double p) {
@@ -90,11 +99,21 @@ public final class SpaceWeatherService {
             SpaceWeatherSeverity s = sampleSeverity();
             // Duration 0.4–1.6 sols, severity-weighted
             double base = 0.6 + rng.nextDouble() * 0.6; // 0.6-1.2 sols
-            double durationSol = switch (s) {
-                case MILD -> base * 0.7;
-                case MODERATE -> base * 1.0;
-                case SEVERE -> base * 1.3;
-            };
+            double durationSol;
+            switch (s) {
+                case MILD:
+                    durationSol = base * 0.7;
+                    break;
+                case MODERATE:
+                    durationSol = base * 1.0;
+                    break;
+                case SEVERE:
+                    durationSol = base * 1.3;
+                    break;
+                default:
+                    durationSol = base;
+                    break;
+            }
             active = new SolarStormEvent(s, durationSol * MSOL_PER_SOL);
             recomputeMultipliers();
         }
@@ -102,8 +121,12 @@ public final class SpaceWeatherService {
 
     private SpaceWeatherSeverity sampleSeverity() {
         double u = rng.nextDouble();
-        if (u < pSevere) return SpaceWeatherSeverity.SEVERE;
-        if (u < pSevere + pModerate) return SpaceWeatherSeverity.MODERATE;
+        if (u < pSevere) {
+            return SpaceWeatherSeverity.SEVERE;
+        }
+        if (u < pSevere + pModerate) {
+            return SpaceWeatherSeverity.MODERATE;
+        }
         return SpaceWeatherSeverity.MILD;
     }
 
@@ -111,7 +134,8 @@ public final class SpaceWeatherService {
         if (active == null) {
             solarMultiplier = 1.0;
             commsBlackout = false;
-        } else {
+        }
+        else {
             solarMultiplier = active.solarPowerMultiplier();
             commsBlackout = active.commsBlackout();
         }
@@ -135,7 +159,8 @@ public final class SpaceWeatherService {
         if (state.activeSeverity != null) {
             SpaceWeatherSeverity s = SpaceWeatherSeverity.valueOf(state.activeSeverity);
             active = new SolarStormEvent(s, state.remainingMsol);
-        } else {
+        }
+        else {
             active = null;
         }
         baseDailyStormProbability = state.baseDailyStormProbability;
@@ -149,7 +174,10 @@ public final class SpaceWeatherService {
     public static final class SpaceWeatherState {
         public final String activeSeverity;
         public final double remainingMsol;
-        public final double baseDailyStormProbability, pMild, pModerate, pSevere;
+        public final double baseDailyStormProbability;
+        public final double pMild;
+        public final double pModerate;
+        public final double pSevere;
 
         public SpaceWeatherState(
                 String activeSeverity,
