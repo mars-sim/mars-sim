@@ -45,7 +45,7 @@ public class LunarActivity implements Temporal, Serializable {
 	/**
 	 * Returns the colony.
 	 * 
-	 * @return
+	 * @return the colony
 	 */
 	public Colony getColony() {
 		return colony;
@@ -54,7 +54,7 @@ public class LunarActivity implements Temporal, Serializable {
 	/**
 	 * Returns the LunarActivityType.
 	 * 
-	 * @return
+	 * @return the activity type
 	 */
 	public LunarActivityType getLunarActivityType() {
 		return type;
@@ -63,47 +63,45 @@ public class LunarActivity implements Temporal, Serializable {
 	/**
 	 * Returns the demand.
 	 * 
-	 * @return
+	 * @return demand value
 	 */
 	public double getDemand() {
 		return demand;
 	}
 	
 	/**
-	 * Gets one researcher project that this researcher may join in.
+	 * Gets one research project that this researcher may join.
+	 * Selects a project where the researcher is not the lead,
+	 * is not already a participant, and the project has capacity.
 	 * 
-	 * @param researcher
-	 * @return
+	 * @param researcher the researcher seeking a project
+	 * @return a joinable ResearchProject, or {@code null} if none available
 	 */
 	public ResearchProject getOneResearchProject(ColonyResearcher researcher) {
-		for (ResearchProject p: researchProjects) {
-			if (!p.getLead().equals(researcher)) {
-				Set<Colonist> participants = p.getParticipants();
-				for (Colonist c: participants) {
-					if (!c.equals(researcher)) {
-						return p;
-					}
-				}
+		for (ResearchProject p : researchProjects) {
+			if (!p.getLead().equals(researcher)
+					&& !p.getParticipants().contains(researcher)
+					&& p.canAddParticipants()) {
+				return p;
 			}
 		}
 		return null;
 	}
 	
 	/**
-	 * Gets one engineering project that this engineer may join in.
+	 * Gets one engineering project that this engineer may join.
+	 * Selects a project where the engineer is not the lead,
+	 * is not already a participant, and the project has capacity.
 	 * 
-	 * @param Engineer
-	 * @return
+	 * @param engineer the engineer seeking a project
+	 * @return a joinable DevelopmentProject, or {@code null} if none available
 	 */
 	public DevelopmentProject getOneEngineeringProject(ColonySpecialist engineer) {
-		for (DevelopmentProject p: engineeringProjects) {
-			if (!p.getLead().equals(engineer)) {
-				Set<Colonist> participants = p.getParticipants();
-				for (Colonist c: participants) {
-					if (!c.equals(engineer)) {
-						return p;
-					}
-				}
+		for (DevelopmentProject p : engineeringProjects) {
+			if (!p.getLead().equals(engineer)
+					&& !p.getParticipants().contains(engineer)
+					&& p.canAddParticipants()) {
+				return p;
 			}
 		}
 		return null;
@@ -112,7 +110,7 @@ public class LunarActivity implements Temporal, Serializable {
 	/**
 	 * Adds a research project.
 	 * 
-	 * @param rp
+	 * @param rp the research project
 	 */
 	public void addResearchProject(ResearchProject rp) {
 		researchProjects.add(rp);
@@ -121,7 +119,7 @@ public class LunarActivity implements Temporal, Serializable {
 	/**
 	 * Adds an engineering project.
 	 * 
-	 * @param ep
+	 * @param ep the engineering project
 	 */
 	public void addEngineeringProject(DevelopmentProject ep) {
 		engineeringProjects.add(ep);
