@@ -307,7 +307,7 @@ extends TabPanel {
 		sleepExerciseTableModel = new SleepExerciseTableModel(circadianClock);
 		
 		// Create sleep time table
-		JTable sleepExerciseTable = new JTable(sleepExerciseTableModel);
+		sleepExerciseTable = new JTable(sleepExerciseTableModel);
 		TableColumnModel sModel = sleepExerciseTable.getColumnModel();
 		sleepExerciseTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		sModel.getColumn(0).setPreferredWidth(10);
@@ -345,7 +345,7 @@ extends TabPanel {
 		foodTableModel = new FoodTableModel(condition);
 		
 		// Create exercise time table
-		JTable foodTable = new JTable(foodTableModel);
+		foodTable = new JTable(foodTableModel);
 		foodTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		TableColumnModel fModel = foodTable.getColumnModel();
 		fModel.getColumn(0).setPreferredWidth(10);
@@ -415,7 +415,7 @@ extends TabPanel {
         }
  
 		// Create radiation table
-		JTable radiationTable = new JTable(radiationTableModel) {
+		radiationTable = new JTable(radiationTableModel) {
             // Implement table cell tool tips. 
 			@Override          
             public String getToolTipText(MouseEvent e) {
@@ -503,7 +503,7 @@ extends TabPanel {
 		healthProblemTableModel = new HealthProblemTableModel(condition);
 
 		// Create health problem table
-		JTable healthProblemTable = new JTable(healthProblemTableModel);
+		healthProblemTable = new JTable(healthProblemTableModel);
 		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		healthProblemTable.setRowSelectionAllowed(true);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
@@ -532,7 +532,7 @@ extends TabPanel {
 		medicationTableModel = new MedicationTableModel(condition);
 	
 		// Prepare medication table.
-		JTable medicationTable = new JTable(medicationTableModel);
+		medicationTable = new JTable(medicationTableModel);
 		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		medicationTable.setRowSelectionAllowed(true);
 		medicationScrollPanel.setViewportView(medicationTable);
@@ -559,7 +559,7 @@ extends TabPanel {
 		healthLogTableModel = new HealthLogTableModel(condition);
 		
 		// Create health problem table
-		JTable healthLogTable = new JTable(healthLogTableModel);
+		healthLogTable = new JTable(healthLogTableModel);
 		healthLogTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		healthLogTable.setRowSelectionAllowed(true);
 		healthLogTable.setDefaultRenderer(MarsTime.class, new MarsTimeTableCellRenderer());
