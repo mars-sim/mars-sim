@@ -7,21 +7,24 @@
  *   1) Atmospheric dust opacity (tau) -> Beer–Lambert attenuation ~ exp(-tau / mu)
  *   2) Panel soiling coverage fraction (0..1) -> linear transmittance (1 - soiling)
  *
- * Defaults align with published mission data trends (e.g., ~0.2%/sol soiling w/o cleaning events),
+ * Defaults align with published mission data trends (e.g., ~0.2%/sol soiling without cleaning events),
  * and allow wind “cleaning events” to partially restore panels. Use setters to tailor per site.
  *
  * Usage:
  *   DustSoilingModel model = new DustSoilingModel();
  *   model.setAtmosphericTau(currentTau);  // from weather if available
- *   model.advanceBySols(elapsedSols, isStorming, 5.0 /* storm multiplier */);
- *   powerGeneration.setDustEfficiencySupplier(model); // model implements DoubleSupplier
+ *   model.advanceBySols(elapsedSols, isStorming, 5.0);  // storm multiplier
+ *   powerGeneration.setDustEfficiencySupplier(model);   // model implements DoubleSupplier
  */
-package com.mars_sim.core.power;
+package com.mars_sim.core.building.utility.power;
 
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.DoubleSupplier;
 
+/**
+ * A small stateful model that condenses atmospheric dust opacity and panel soiling into a single
+ * multiplicative efficiency factor in [0,1] for solar-based power sources.
+ */
 public final class DustSoilingModel implements DoubleSupplier {
 
     /** Fraction of panel area covered by dust [0,1]. 0 = clean; 1 = fully obscured. */
@@ -51,7 +54,7 @@ public final class DustSoilingModel implements DoubleSupplier {
     /** During active storms, raise deposition and reduce cleaning probability. */
     private double stormCleaningProbPerSol = 0.002;
 
-    public DustSoilingModel() {}
+    public DustSoilingModel() { }
 
     /** Returns the current multiplicative efficiency factor in [0,1]. */
     @Override
@@ -65,7 +68,13 @@ public final class DustSoilingModel implements DoubleSupplier {
         return clamp(eff, 0.0, 1.0);
     }
 
-    /** Advance the soiling state by {@code elapsedSols}. Optionally scale deposition during storms. */
+    /**
+     * Advance the soiling state by {@code elapsedSols}. Optionally scale deposition during storms.
+     *
+     * @param elapsedSols elapsed time in “sols”
+     * @param stormActive whether a storm is active
+     * @param stormDepositMultiplier multiplicative factor (>1) applied to deposition while storming
+     */
     public void advanceBySols(double elapsedSols, boolean stormActive, double stormDepositMultiplier) {
         if (elapsedSols <= 0) return;
 
@@ -89,41 +98,49 @@ public final class DustSoilingModel implements DoubleSupplier {
 
     // ----------------------- setters for tuning/site-specific wiring -----------------------
 
+    /** Set current atmospheric dust optical depth (tau >= 0). */
     public DustSoilingModel setAtmosphericTau(double tau) {
         this.atmosphericTau = Math.max(0.0, tau);
         return this;
     }
 
+    /** Set mean cosine of solar zenith used for Beer–Lambert (0.1..1.0). */
     public DustSoilingModel setMeanCosZenith(double mu) {
         this.meanCosZenith = clamp(mu, 0.1, 1.0);
         return this;
     }
 
+    /** Set base daily deposition (fraction of panel coverage per sol). */
     public DustSoilingModel setBaseDailyDeposit(double fractionPerSol) {
         this.baseDailyDeposit = clamp(fractionPerSol, 0.0, 1.0);
         return this;
     }
 
+    /** Set maximum soiling cap (0..1). */
     public DustSoilingModel setMaxSoiling(double fraction) {
         this.maxSoiling = clamp(fraction, 0.0, 1.0);
         return this;
     }
 
+    /** Set mean fraction removed during a cleaning event (0..1). */
     public DustSoilingModel setCleaningEventMean(double fraction) {
         this.cleaningEventMean = clamp(fraction, 0.0, 1.0);
         return this;
     }
 
+    /** Set stddev for cleaning event removal fraction (0..1). */
     public DustSoilingModel setCleaningEventStd(double fraction) {
         this.cleaningEventStd = clamp(fraction, 0.0, 1.0);
         return this;
     }
 
+    /** Set background (non‑storm) cleaning event probability per sol (0..1). */
     public DustSoilingModel setCleaningEventProbPerSol(double prob) {
         this.cleaningEventProbPerSol = clamp(prob, 0.0, 1.0);
         return this;
     }
 
+    /** Set storm-time cleaning event probability per sol (0..1). */
     public DustSoilingModel setStormCleaningProbPerSol(double prob) {
         this.stormCleaningProbPerSol = clamp(prob, 0.0, 1.0);
         return this;
@@ -131,6 +148,13 @@ public final class DustSoilingModel implements DoubleSupplier {
 
     public double getPanelSoiling() { return panelSoiling; }
     public double getAtmosphericTau() { return atmosphericTau; }
+    public double getMeanCosZenith() { return meanCosZenith; }
+    public double getBaseDailyDeposit() { return baseDailyDeposit; }
+    public double getMaxSoiling() { return maxSoiling; }
+    public double getCleaningEventMean() { return cleaningEventMean; }
+    public double getCleaningEventStd() { return cleaningEventStd; }
+    public double getCleaningEventProbPerSol() { return cleaningEventProbPerSol; }
+    public double getStormCleaningProbPerSol() { return stormCleaningProbPerSol; }
 
     // ----------------------- helpers -----------------------
     private static double clamp(double v, double lo, double hi) {
@@ -142,6 +166,9 @@ public final class DustSoilingModel implements DoubleSupplier {
         double u1 = 1.0 - ThreadLocalRandom.current().nextDouble();
         double u2 = 1.0 - ThreadLocalRandom.current().nextDouble();
         double z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-        return Math.max(0.0, mean + std * z);
+        double val = mean + std * z;
+        if (val < 0.0) return 0.0;
+        if (val > 1.0) return 1.0;
+        return val;
     }
 }
