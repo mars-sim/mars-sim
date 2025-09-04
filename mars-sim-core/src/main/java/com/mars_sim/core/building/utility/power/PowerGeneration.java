@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.DoubleSupplier;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
@@ -34,6 +35,12 @@ public class PowerGeneration extends Function {
     private double powerGeneratedCache;
 
     private List<PowerSource> powerSources;
+
+    /** 
+     * Multiplicative efficiency factor in [0,1] representing dust attenuation for solar-based sources.
+     * Marked transient because the supplier is not necessarily Serializable.
+     */
+    private transient DoubleSupplier dustEfficiency = () -> 1.0;
 
     /**
      * Constructor.
@@ -93,6 +100,14 @@ public class PowerGeneration extends Function {
             }
             powerSources.add(powerSource);
         }
+    }
+
+    /**
+     * Allow the environment/weather model to inject a dynamic dust factor in [0,1].
+     * Passing {@code null} resets it to 1.0 (no effect).
+     */
+    public void setDustEfficiencySupplier(DoubleSupplier supplier) {
+        this.dustEfficiency = (supplier != null) ? supplier : () -> 1.0;
     }
 
     /**
@@ -177,6 +192,17 @@ public class PowerGeneration extends Function {
             double p = powerSource.getCurrentPower(getBuilding());
 
             if (!Double.isNaN(p) && !Double.isInfinite(p)) {
+                // Apply dust attenuation only to solar-based sources.
+                PowerSourceType t = powerSource.getType();
+                if (t == PowerSourceType.SOLAR_POWER || t == PowerSourceType.SOLAR_THERMAL) {
+                    DoubleSupplier ds = (dustEfficiency != null) ? dustEfficiency : () -> 1.0;
+                    double f = ds.getAsDouble();
+                    // Guard against bad inputs; clamp to [0,1]
+                    if (Double.isNaN(f) || Double.isInfinite(f)) f = 1.0;
+                    if (f < 0.0) f = 0.0;
+                    else if (f > 1.0) f = 1.0;
+                    p *= f;
+                }
                 result += p;
             }
         }
@@ -277,5 +303,6 @@ public class PowerGeneration extends Function {
         powerSources.clear();
 
         powerSources = null;
+        // optional: dustEfficiency = null; // not required
     }
 }
