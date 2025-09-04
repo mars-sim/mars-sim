@@ -969,7 +969,9 @@ extends TabPanel {
 			final double sleep;
 			final double exercise;
 			SolRow(int sol, double sleep, double exercise) {
-				this.sol = sol; this.sleep = sleep; this.exercise = exercise;
+				this.sol = sol;
+				this.sleep = sleep;
+				this.exercise = exercise;
 			}
 		}
 
