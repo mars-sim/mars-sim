@@ -11,7 +11,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  */
-package org.mars_sim.msp.core.power;
+package com.mars_sim.core.building.utility.power;
 
 import java.io.Serializable;
 import java.util.Objects;

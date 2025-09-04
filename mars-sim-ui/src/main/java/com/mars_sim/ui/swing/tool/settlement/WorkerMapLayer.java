@@ -201,6 +201,8 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
 			g2d.setStroke(oldStroke);
 		}
 		
+		image.flush();
+		
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);    
     }
