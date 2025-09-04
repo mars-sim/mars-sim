@@ -14,6 +14,9 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +30,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -955,10 +959,19 @@ extends TabPanel {
 		
 		private static final String MISSION_SOL = "Sol";
 
-		private Map<Integer, Double> sleepTime;
-		private Map<Integer, Double> exerciseTime;
-		private int solOffset = 1;
+		// Snapshot storage (never point to the live circadian maps)
+		private final Map<Integer, Double> sleepTime = new LinkedHashMap<>();
+		private final Map<Integer, Double> exerciseTime = new LinkedHashMap<>();
+		// Row index -> actual sol mapping to avoid gaps showing as zeros
+		private List<Integer> rowKeys = new ArrayList<>();
+		private int solOffset = 0;
 		private int rowCount = 0;
+
+		// Coalesce rapid updates at high sim speeds; fires on EDT
+		private final javax.swing.Timer refreshCoalesce = new javax.swing.Timer(100, e -> fireTableDataChanged());
+		{
+			refreshCoalesce.setRepeats(false);
+		}
 
 		private SleepExerciseTableModel(CircadianClock circadian) {
 			update(circadian);
@@ -999,54 +1012,77 @@ extends TabPanel {
 		}
 
 		public Object getValueAt(int row, int column) {
-			Object result = null;
-			if (row < getRowCount()) {
-				int rowSol = row + solOffset;
-				if (column == 0) {
-				    result = rowSol;
-				}
-				else if (column == 1) {
-					if (sleepTime.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES1.format(sleepTime.get(rowSol));
-					else
-						result = StyleManager.DECIMAL_PLACES1.format(0);
-				}
-				else if (column == 2) {
-					if (exerciseTime.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES1.format(exerciseTime.get(rowSol));
-					else
-						result = StyleManager.DECIMAL_PLACES1.format(0);
-				}
+			if (row < 0 || row >= getRowCount()) return null;
+
+			int rowSol = rowKeys.get(row);
+			if (column == 0) {
+				return rowSol;
 			}
-			return result;
+			else if (column == 1) {
+				if (sleepTime.containsKey(rowSol))
+					return StyleManager.DECIMAL_PLACES1.format(sleepTime.get(rowSol));
+				else
+					return StyleManager.DECIMAL_PLACES1.format(0);
+			}
+			else if (column == 2) {
+				if (exerciseTime.containsKey(rowSol))
+					return StyleManager.DECIMAL_PLACES1.format(exerciseTime.get(rowSol));
+				else
+					return StyleManager.DECIMAL_PLACES1.format(0);
+			}
+			return null;
 		}
 
+		/** Replace the old update(...) with this snapshotting version. */
 		public void update(CircadianClock circadian) {
-			sleepTime = circadian.getSleepHistory();
-			exerciseTime = circadian.getExerciseHistory();
-			
-			Set<Integer> largestSet;
-			if (sleepTime.size() > exerciseTime.size()) {
-				largestSet = sleepTime.keySet();
-			}
-			else {
-				largestSet = exerciseTime.keySet();
-			}
+			// Take immutable snapshots to avoid aliasing/races with the sim thread.
+			Map<Integer, Double> newSleep    = new LinkedHashMap<>(circadian.getSleepHistory());
+			Map<Integer, Double> newExercise = new LinkedHashMap<>(circadian.getExerciseHistory());
 
-			// Find the lowest sol day in the data, guard against empty sets
-			if (largestSet.isEmpty()) {
-				solOffset = 1;
+			// Union of keys keeps rows aligned; drop days outside the retention window instead of zeroing them.
+			Set<Integer> keys = new HashSet<>(Math.max(newSleep.size(), newExercise.size()) * 2);
+			keys.addAll(newSleep.keySet());
+			keys.addAll(newExercise.keySet());
+
+			if (keys.isEmpty()) {
+				sleepTime.clear();
+				exerciseTime.clear();
+				rowKeys = new ArrayList<>();
+				solOffset = 0;
 				rowCount = 0;
-			}
-			else {
-				solOffset = largestSet.stream()
-						.mapToInt(v -> v)               
-						.min()                          
-						.orElse(1);
-				rowCount = largestSet.size();
+				scheduleRefresh();
+				return;
 			}
 
-			fireTableDataChanged();
+			// Keep the most recent N sols (7 is current behavior per issue screenshots)
+			final int WINDOW = 7;
+			List<Integer> ordered = new ArrayList<>(keys);
+			Collections.sort(ordered); // ascending by sol #
+			int from = Math.max(0, ordered.size() - WINDOW);
+			List<Integer> window = ordered.subList(from, ordered.size());
+
+			// Rebuild model storage atomically
+			sleepTime.clear();
+			exerciseTime.clear();
+			for (Integer sol : window) {
+				sleepTime.put(sol, newSleep.getOrDefault(sol, 0.0));
+				exerciseTime.put(sol, newExercise.getOrDefault(sol, 0.0));
+			}
+
+			rowKeys = new ArrayList<>(window);
+			solOffset = rowKeys.get(0);
+			rowCount  = rowKeys.size();
+
+			scheduleRefresh();
+		}
+
+		private void scheduleRefresh() {
+			if (SwingUtilities.isEventDispatchThread()) {
+				// Coalesce bursts (restart timer)
+				refreshCoalesce.restart();
+			} else {
+				SwingUtilities.invokeLater(() -> refreshCoalesce.restart());
+			}
 		}
 	}
 	
