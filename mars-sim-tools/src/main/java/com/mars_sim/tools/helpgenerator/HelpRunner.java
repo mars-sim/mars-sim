@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.help.HelpFormatter; // use the new non-deprecated formatter
+import org.apache.commons.cli.help.HelpFormatter; // non-deprecated formatter (CLI 1.10+)
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -34,7 +34,7 @@ public class HelpRunner {
     // Note this is sync'ed swith SimualtionBuilder
     private static final String CONFIG_ARG = "configdir";
 
-    private static Logger logger = Logger.getLogger(HelpRunner.class.getName());
+    private static final Logger logger = Logger.getLogger(HelpRunner.class.getName());
 
     /**
      * The main starting method for generating html files.
@@ -51,14 +51,16 @@ public class HelpRunner {
         options.addOption(SCOPE_ARG, true, "List of types to generate; defaults to 'all'");
 
         CommandLineParser commandline = new DefaultParser();
-        CommandLine line = null;
+        CommandLine line;
         try {
             line = commandline.parse(options, args);
         }
         catch (ParseException pe) {
-            // Use the new HelpFormatter from org.apache.commons.cli.help (non-deprecated)
+            // Use the new HelpFormatter API: printHelp(cmdLineSyntax, header, options, footer, autoUsage)
             HelpFormatter format = HelpFormatter.builder().get();
-            format.printHelp("Problem with commands " + pe.getMessage() + " options:", options);
+            String header = "Problem with commands: " + pe.getMessage();
+            String footer = "";
+            format.printHelp("helpgenerator", header, options, footer, true);
             return;
         }
 
