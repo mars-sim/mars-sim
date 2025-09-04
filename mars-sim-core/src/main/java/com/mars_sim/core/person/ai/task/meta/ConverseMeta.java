@@ -10,10 +10,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
+import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;   // FIX: nested enum
+import com.mars_sim.core.person.ai.task.util.MetaTask.WorkerType; // FIX: nested enum
 import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskScope;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
-import com.mars_sim.core.person.ai.task.util.WorkerType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
