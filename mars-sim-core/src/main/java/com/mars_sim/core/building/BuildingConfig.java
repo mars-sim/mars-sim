@@ -77,7 +77,7 @@ public class BuildingConfig {
 	private static final String AMOUNT = "amount";
 	private static final String NUMBER = "number";
 	private static final String MODULES = "modules";
-	private static final String CONVERSION = "thermal-conversion";
+	private static final String CONVERSION = "thermal-conversion-efficiency";
 	private static final String PERCENT_LOADING = "percent-loading";
 
 	private static final String MEDICAL_CARE = "medical-care";

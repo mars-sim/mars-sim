@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * Moon.java
+ * @date 2025-09-02
+ * @author Manny Kung
+ */
+
 package com.mars_sim.core.moon;
 
 import com.mars_sim.core.Unit;

@@ -21,6 +21,7 @@ import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.data.Range;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -335,10 +336,11 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person)) {
+		if (!isCrewmember(person) && occupants.add(person)) {
+			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, person);
-			return occupants.add(person);
+			return true;
 		}
 		return false;
 	}

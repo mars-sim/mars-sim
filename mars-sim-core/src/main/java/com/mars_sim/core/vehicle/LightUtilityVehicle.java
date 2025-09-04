@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
@@ -148,6 +149,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 */
 	public boolean addPerson(Person person) {
 		if (!isCrewmember(person) && occupants.add(person)) {
+			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, person);
 			return true;
