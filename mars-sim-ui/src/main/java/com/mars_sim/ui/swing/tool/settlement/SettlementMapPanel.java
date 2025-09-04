@@ -63,6 +63,8 @@ import com.mars_sim.ui.swing.UIConfig;
  *   <li><b>Graphics hygiene</b>: uses a child {@code Graphics2D} and disposes it after painting.</li>
  *   <li><b>Icon cache hook</b>: an LRU {@code ScaledIconCache} is exposed for layers that render
  *       scalable art to reuse rasterizations at the current scale.</li>
+ *   <li><b>Tile cache cleanup</b>: calls {@link BackgroundTileMapLayer#dispose()} on remove to
+ *       promptly free background tile images when the panel is detached.</li>
  * </ul>
  * </p>
  */
@@ -371,6 +373,15 @@ public class SettlementMapPanel extends JPanel {
 	public void removeNotify() {
 		// Ensure listeners are detached to allow GC of this panel
 		removeInteractionListeners();
+
+		// Promptly dispose heavy background tile cache when panel is removed
+		if (mapLayers != null) {
+			for (SettlementMapLayer layer : mapLayers) {
+				if (layer instanceof BackgroundTileMapLayer) {
+					((BackgroundTileMapLayer) layer).dispose();
+				}
+			}
+		}
 		super.removeNotify();
 	}
 
@@ -1076,7 +1087,8 @@ public class SettlementMapPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		if (desktop != null && settlementWindow.isShowing() && desktop.isToolWindowOpen(SettlementWindow.NAME)) {
+		if (desktop != null && settlementWindow != null && settlementWindow.isShowing()
+				&& desktop.isToolWindowOpen(SettlementWindow.NAME)) {
 			Graphics2D g2d = (Graphics2D) g.create();
 			try {
 				g2d.setFont(sansSerif);
@@ -1152,29 +1164,34 @@ public class SettlementMapPanel extends JPanel {
 		settlement = null;
 		settlementWindow = null;
 
-		// Destroy all map layers.
+		// Destroy all map layers (this includes dayNightMapLayer).
 		if (mapLayers != null) {
 			mapLayers.forEach(SettlementMapLayer::destroy);
 			mapLayers.clear();
+			mapLayers = null;
 		}
 
-		selectedPerson.clear();
-		selectedRobot.clear();
-		selectedBuilding.clear();
-		selectedVehicle.clear();
+		if (selectedPerson != null) selectedPerson.clear();
+		if (selectedRobot != null) selectedRobot.clear();
+		if (selectedBuilding != null) selectedBuilding.clear();
+		if (selectedVehicle != null) selectedVehicle.clear();
 		selectedRobot = null;
 		selectedPerson = null;
 		selectedBuilding = null;
 		selectedVehicle = null;
 
-		dayNightMapLayer.destroy();
+		// dayNightMapLayer was already destroyed via mapLayers loop; just null it out.
 		dayNightMapLayer = null;
 
-		showSpotLabels.clear();
-		showSpotLabels = null;
+		if (showSpotLabels != null) {
+			showSpotLabels.clear();
+			showSpotLabels = null;
+		}
 
-		displayOptions.clear();
-		displayOptions = null;
+		if (displayOptions != null) {
+			displayOptions.clear();
+			displayOptions = null;
+		}
 
 		if (settlementTransparentPanel != null) {
 			settlementTransparentPanel.destroy();
