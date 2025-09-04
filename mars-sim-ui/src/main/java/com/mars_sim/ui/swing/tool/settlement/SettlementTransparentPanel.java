@@ -78,7 +78,7 @@ import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;
 
-@SuppressWarnings({ "serial"})
+@SuppressWarnings({ "serial" })
 public class SettlementTransparentPanel extends JComponent {
 
     /** default logger. */
@@ -98,9 +98,9 @@ public class SettlementTransparentPanel extends JComponent {
 
     private static final String PROJECTED_SUNRISE = "  Projected Sunrise: ";
     private static final String PROJECTED_SUNSET  = "   Projected Sunset: ";
+    private static final String PROJECTED_DAYLIGHT= " Projected Daylight: ";
     private static final String SUNRISE           = "  Yestersol Sunrise: ";
     private static final String SUNSET            = "   Yestersol Sunset: ";
-    private static final String PROJECTED_DAYLIGHT= " Projected Daylight: ";
     private static final String DAYLIGHT          = " Yestersol Daylight: ";
     private static final String ZENITH            = "        Zenith Time: ";
     private static final String MAX_LIGHT         = "       Max Sunlight: ";
@@ -294,7 +294,7 @@ public class SettlementTransparentPanel extends JComponent {
     /**
      * Creates the sun data panel.
      *
-     * @return
+     * @return panel
      */
     private JPanel buildSunPane() {
         JPanel sunPane = new JPanel(new BorderLayout(3, 3));
@@ -397,8 +397,6 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Gets the length of the most lengthy settlement name.
-     *
-     * @return
      */
     private int getNameLength() {
         Collection<Settlement> list = unitManager.getSettlements();
@@ -458,8 +456,6 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Changes the map display to the selected settlement.
-     *
-     * @param s
      */
     private void changeSettlement(Settlement s) {
         // Set the selected settlement in SettlementMapPanel
@@ -486,7 +482,6 @@ public class SettlementTransparentPanel extends JComponent {
     /**
      * Updates the weather parameters.
      *
-     * @param s
      * @return true if any cache changed
      */
     private boolean updateWeather(Settlement s) {
@@ -547,12 +542,11 @@ public class SettlementTransparentPanel extends JComponent {
     /**
      * Puts together and displays the banner string. Heavy reads happen before EDT push.
      *
-     * @param s settlement
+     * <p><b>Patch:</b> Always refresh the banner text so changes in resourceCache are reflected
+     * even when weather caches are unchanged.</p>
      */
     private void displayBanner(Settlement s) {
-        boolean changed = updateWeather(s); // reads sim state
-        if (!changed && bannerBar != null) return;
-
+        updateWeather(s); // refresh caches if needed
         String text = buildBannerText(s);
         SwingUtilities.invokeLater(() -> {
             if (bannerBar != null) {
@@ -610,12 +604,11 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Updates the weather icon.
-     * (Call on EDT)
+     * Updates the weather icon. (Call on EDT)
      */
     private void updateIcon() {
-    	if (temperatureIcon == null || windIcon == null || opticalIcon == null) return;
-    	
+        if (temperatureIcon == null || windIcon == null || opticalIcon == null) return;
+
         Icon updatedIcon;
         String tooltip = "";
         if (temperatureCache < -40) {
@@ -701,7 +694,7 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Builds the zoom slider.
+     * Builds the zoom slider with debounced change handling and safe wheel bounds.
      */
     private void buildZoomSlider() {
 
@@ -724,7 +717,6 @@ public class SettlementTransparentPanel extends JComponent {
         labelTable.put(Integer.valueOf(20), new JLabel("20"));
         labelTable.put(Integer.valueOf(10), new JLabel("10"));
         labelTable.put(Integer.valueOf(1), new JLabel("1"));
-        // Removed unreachable 0 → "0.1" label (min is 1)
         zoomSlider.setLabelTable(labelTable);
 
         zoomSlider.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.zoom")); //$NON-NLS-1$
@@ -738,14 +730,18 @@ public class SettlementTransparentPanel extends JComponent {
 
                 int numClicks = evt.getWheelRotation();
                 int value = zoomSlider.getValue();
+                int min = zoomSlider.getMinimum();
+                int max = zoomSlider.getMaximum();
+
                 if (numClicks > 0) {
-                    // Move zoom slider down.
-                    if (value >= zoomSlider.getMinimum())
+                    // wheel down -> zoom out
+                    if (value > min) {
                         zoomSlider.setValue(value - 1);
+                    }
                 }
                 else if (numClicks < 0) {
-                    // Move zoom slider up.
-                    if (value <= zoomSlider.getMaximum()) {
+                    // wheel up -> zoom in
+                    if (value < max) {
                         zoomSlider.setValue(value + 1);
                     }
                 }
@@ -759,8 +755,6 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Sets up the zoom slider with a timer to debounce any redundant re-rendering work.
-     *
-     * @param slider
      */
     private void initDebounce(JSlider slider) {
         zoomListener = e -> {
@@ -785,38 +779,21 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Converts the zoom value found on the slider to a map scale.
-     *
-     * @param value
      */
     private void convertTo(int value) {
-        // Slider min is 1; no special-case 0 (removed buggy 1/10 int math).
+        // Slider min is 1; mapPanel clamps & quantizes internally.
         mapPanel.setScale(value);
     }
 
+    /**
+     * Ensure we stop timers and detach listeners when removed from a container.
+     * (Fixed: avoid calling super.removeNotify() twice.)
+     */
     @Override
     public void removeNotify() {
-    	try {
-            // Centralized teardown: destroy() is idempotent and EDT-safe.
-            destroy();
-        }
-        finally {
-            super.removeNotify();
-	
-        }
         try {
-            if (zoomSlider != null && zoomListener != null) {
-                zoomSlider.removeChangeListener(zoomListener);
-            }
-            if (zoomDebounce != null) {
-                zoomDebounce.stop();
-            }
-            // Remove from the same component we added to (mapPanel), not 'this'
-            if (mouseWheelListener != null && mapPanel != null) {
-                mapPanel.removeMouseWheelListener(mouseWheelListener);
-                mouseWheelListener = null; // avoid stale reference
-            }
-        }
-        finally {
+            destroy();
+        } finally {
             super.removeNotify();
         }
     }
@@ -890,14 +867,17 @@ public class SettlementTransparentPanel extends JComponent {
             }
         }
     }
-    
+
     /**
-     * Sets the zoom slider value.
-     *
-     * @param value
+     * Sets the zoom slider value. Avoids redundant change events.
      */
     public void setZoomValue(int value) {
-        zoomSlider.setValue(value);
+        if (zoomSlider != null && zoomSlider.getValue() != value) {
+            if (zoomDebounce != null && zoomDebounce.isRunning()) {
+                zoomDebounce.stop(); // prevent a stale convertTo firing
+            }
+            zoomSlider.setValue(value);
+        }
     }
 
     private void buildInfoP() {
@@ -1006,11 +986,11 @@ public class SettlementTransparentPanel extends JComponent {
 
         labelsButton.setToolTipText(Msg.getString("SettlementTransparentPanel.tooltip.labels")); //$NON-NLS-1$
         labelsButton.addActionListener(e -> {
-                JButton button = (JButton) e.getSource();
-                if (labelsMenu == null) {
-                    labelsMenu = createLabelsMenu();
-                }
-                labelsMenu.show(button, 0, button.getHeight());
+            JButton button = (JButton) e.getSource();
+            if (labelsMenu == null) {
+                labelsMenu = createLabelsMenu();
+            }
+            labelsMenu.show(button, 0, button.getHeight());
         });
 
         labelPane.add(renameBtn);
@@ -1067,11 +1047,11 @@ public class SettlementTransparentPanel extends JComponent {
         var noneItem = new JMenuItem("None"); //$NON-NLS-1$
         noneItem.setContentAreaFilled(false);
         noneItem.addActionListener(e -> {
-        		mapPanel.clearSpotLabels();
+                mapPanel.clearSpotLabels();
                 clearLabelsMenu(); // Clear the menu because all the values will change
         });
         spotLabelMenuItem.add(noneItem);
-        
+
         // Add one per function type
         for (FunctionType ft : sortedFT) {
             var ftItem = new JCheckBoxMenuItem(ft.getName(), mapPanel.isShowSpotLabels(ft)); //$NON-NLS-1$
@@ -1240,8 +1220,6 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Prepares the resource data string for the new sol.
-     *
-     * @param pulse
      */
     private void prepBannerResourceString(ClockPulse pulse) {
 
@@ -1286,8 +1264,6 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Updates the current sunlight label safely on EDT.
-     *
-     * @param s settlement
      */
     private void updateCurrentSunlight(Settlement s) {
         if (currentSunLabel == null) return;
@@ -1302,8 +1278,6 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Prepares for the critical resource statistics String
-     *
-     * @param s
      */
     private void prepareResourceStat(Settlement s, int missionSol) {
         StringBuilder text = new StringBuilder(YESTERSOL_RESOURCE);
@@ -1330,16 +1304,16 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Prepare class for deletion.
+     * Prepare class for deletion (idempotent, EDT-safe).
      */
     public void destroy() {
-   
-    	// Ensure Swing teardown happens on the EDT
+
+        // Ensure Swing teardown happens on the EDT
         if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
             javax.swing.SwingUtilities.invokeLater(this::destroy);
             return;
         }
-        
+
         // --- Stop timers and detach explicit listeners we track ---
         if (zoomDebounce != null) {
             zoomDebounce.stop();
@@ -1349,13 +1323,10 @@ public class SettlementTransparentPanel extends JComponent {
             zoomSlider.removeChangeListener(zoomListener);
         }
         zoomListener = null;
-        
-        removeAllListenersRecursively(daylightLabel);
-        removeAllListenersRecursively(currentSunLabel);	        
-        
+
         // Defensive unregistration from both this panel and the mapPanel (safe no-ops if not present)
         if (mouseWheelListener != null) {
-            removeMouseWheelListener(mouseWheelListener);
+            removeMouseWheelListener(mouseWheelListener); // in case it was also attached to us
             if (mapPanel != null) {
                 mapPanel.removeMouseWheelListener(mouseWheelListener);
             }
@@ -1417,9 +1388,7 @@ public class SettlementTransparentPanel extends JComponent {
         } catch (Throwable ignore) {
             // best-effort cleanup; ignore if already detached
         }
-        
-        
-        
+
         if (settlementCBModel != null) settlementCBModel.destroy();
         settlementListBox = null;
         settlementCBModel = null;
@@ -1463,4 +1432,3 @@ public class SettlementTransparentPanel extends JComponent {
         mapPanel = null;
     }
 }
-

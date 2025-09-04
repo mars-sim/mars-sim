@@ -122,7 +122,7 @@ public class SettlementTaskManager implements Serializable {
             buildCount++;
 
             // Inform listeners
-            owner.fireUnitUpdate(UnitEventType.BACKLOG_EVENT);
+            owner.fireUnitUpdate(UnitEventType.BACKLOG_EVENT, owner);
         }
         callCount++;
         return tasks;

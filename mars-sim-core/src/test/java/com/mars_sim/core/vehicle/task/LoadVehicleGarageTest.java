@@ -9,6 +9,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 
 public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
+	
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);

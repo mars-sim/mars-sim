@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingManager.java
- * @date 2025-08-08
+ * @date 2025-09-02
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -66,6 +66,7 @@ import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
+import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -155,9 +156,20 @@ public class BuildingManager implements Serializable {
 		// Construct all buildings in the settlement.
 		buildings = new UnitSet<>();
 		
-		if (buildingTemplates != null) {
-			for(var template : buildingTemplates) {
-				addBuilding(Building.createBuilding(template, settlement), template, false);
+		if (buildingTemplates != null && !buildingTemplates.isEmpty()) {
+			for (var bt : buildingTemplates) {
+				
+				BuildingSpec spec = simulationConfig.getBuildingConfiguration().getBuildingSpec(bt.getBuildingType());
+				
+				// Check for possibility of collision
+				if (!Resupply.isTemplatePositionClear(spec, bt, this)) {
+					throw new IllegalArgumentException(bt.getBuildingName() + " collided with another building.");
+					// May relocate with bt = Resupply.clearCollision(spec, bt, Resupply.MAX_COUNTDOWN, this);
+				}
+
+				if (bt != null) {		
+					addBuilding(Building.createBuilding(bt, settlement), bt, false);
+				}
 			}
 		}
 	}

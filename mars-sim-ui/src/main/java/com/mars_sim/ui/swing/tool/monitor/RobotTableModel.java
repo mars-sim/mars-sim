@@ -422,17 +422,13 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
-			UnitEventType eventType = event.getType();
-			if (eventType == addEvent) {
-				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.ROBOT) {
-					addEntity((Robot) unit);
+			if (event.getTarget() instanceof Robot r) {
+				UnitEventType eventType = event.getType();
+				if (eventType == addEvent) {
+					addEntity(r);
 				}
-			}
-			else if (eventType == removeEvent) {
-				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.ROBOT) {
-					removeEntity((Robot) unit);
+				else if (eventType == removeEvent) {
+					removeEntity(r);
 				}
 			}
 		}

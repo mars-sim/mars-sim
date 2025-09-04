@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Building.java
- * @date 2025-08-08
+ * @date 2025-09-01
  * @author Scott Davis
  */
 package com.mars_sim.core.building;
@@ -53,7 +53,6 @@ import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.building.task.MaintainBuilding;
-import com.mars_sim.core.building.utility.heating.Heating;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
@@ -116,8 +115,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private int momentOfImpact = 999;
 	/** The designated zone where this building is located at. */
 	private int zone;
-	/** Unique template id assigned for the settlement template of this building belong. */
-	private String templateID;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	private int baseLevel;
 
@@ -134,49 +131,30 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double baseLowPowerRequirement;
 	private double powerNeededForEVAHeater;
 	
+	/** Unique template id assigned for the settlement template of this building belong. */
+	private String templateID;
 	/** Type of building. */
 	private String buildingType;
 
 	/** The MalfunctionManager instance. */
 	protected MalfunctionManager malfunctionManager;
 
-	private Administration admin;
-	private AlgaeFarming algae;
-	private AstronomicalObservation astro;
-	private Communication comm;
-	private Computation computation;
-	private Cooking cooking;
-	private Dining dine;
-	private EarthReturn earthReturn;
 	private EVA eva;
-	private Exercise gym;
-	private Farming farm;
-	private Fishery fish;
-	private FoodProduction foodFactory;
-	private VehicleGarage maint;
-	private Heating heating;
-	private LivingAccommodation livingAccommodation;
 	private LifeSupport lifeSupport;
-	private Management management;
-	private Manufacture manufacture;
-	private MedicalCare medicalCare;
 	private ThermalGeneration furnace;
-	private PowerGeneration powerGen;
-	private PowerStorage powerStorage;
 	private Recreation rec;
 	private Research lab;
-	private ResourceProcessing resourceProcessing;
 	private RoboticStation roboticStation;
-	private Storage storage;
+	private PowerGeneration generator;
 
 	private PowerMode powerModeCache;
 	private BuildingCategory category;
 	private ConstructionType constructionType;
-	
+	/** The x and y location of this building. */
 	private LocalPosition loc;
 
 	/** A map of functions for this building. */
-	private Map<FunctionType, Function> functions = new EnumMap<>(FunctionType.class);
+	private Map<FunctionType, Function> functionMap = new EnumMap<>(FunctionType.class);
 	
 	private static HistoricalEventManager eventManager;
 	
@@ -229,7 +207,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		areaFactor = Math.sqrt(floorArea) / 2;
 				
 		if (floorArea <= 0) {
-			throw new IllegalArgumentException("Floor area cannot be -ve w=" + width + ", l=" + length);
+			throw new IllegalArgumentException("Floor area cannot be -ve (w=" + width + ", l=" + length + ").");
 		}
 	}
 
@@ -262,17 +240,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 		
 		// Determine total maintenance time.
 		double totalMaintenanceTime = buildingSpec.getMaintenanceTime() / 3D;
-		
-		if (functions.isEmpty()) {
-			// Note: Only need to do this once now for each building
-			// Set up the function map
-			for (FunctionType supported : buildingSpec.getFunctionSupported()) {
-				FunctionSpec fSpec = buildingSpec.getFunctionSpec(supported);
-				var mFunction = addFunction(fSpec);
-				totalMaintenanceTime += mFunction.getMaintenanceTime();
-			}
+
+		// Set up the function map
+		for (FunctionType supported : buildingSpec.getFunctionSupported()) {
+			totalMaintenanceTime += addFunction(buildingSpec.getFunctionSpec(supported)).getMaintenanceTime();
 		}
-	
+
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, buildingSpec.getWearLifeTime(), totalMaintenanceTime);
 	
@@ -289,7 +262,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
 					
 			// Add each function to the malfunction scope.
-			for (Function sfunction : functions.values()) {
+			for (Function sfunction : getFunctions()) {
 				Set<String> scopes = sfunction.getMalfunctionScopeStrings();
 				for (String scope : scopes) {
 					malfunctionManager.addScopeString(scope);
@@ -323,170 +296,112 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return presetTemperature;
 	}
 
-
 	public Administration getAdministration() {
-		if (admin == null)
-			admin = (Administration) getFunction(FunctionType.ADMINISTRATION);
-		return admin;
+		return getFunction(FunctionType.ADMINISTRATION);
 	}
 
 	public AlgaeFarming getAlgae() {
-		if (algae == null)
-			algae = (AlgaeFarming) getFunction(FunctionType.ALGAE_FARMING);
-		return algae;
+		return getFunction(FunctionType.ALGAE_FARMING);
 	}
 	
 	public AstronomicalObservation getAstronomicalObservation() {
-		if (astro == null)
-			astro = (AstronomicalObservation) getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);
-		return astro;
+		return getFunction(FunctionType.ASTRONOMICAL_OBSERVATION);
 	}
 
 	public Dining getDining() {
-		if (dine == null)
-			dine = (Dining) getFunction(FunctionType.DINING);
-		return dine;
+		return getFunction(FunctionType.DINING);
 	}
 
 	public LifeSupport getLifeSupport() {
-		if (lifeSupport == null)
-			lifeSupport = (LifeSupport) getFunction(FunctionType.LIFE_SUPPORT);
-		return lifeSupport;
+		return getFunction(FunctionType.LIFE_SUPPORT);
 	}
 
 	public Farming getFarming() {
-		if (farm == null)
-			farm = (Farming) getFunction(FunctionType.FARMING);
-		return farm;
+		return getFunction(FunctionType.FARMING);
 	}
 
 	public Fishery getFishery() {
-		if (fish == null)
-			fish = (Fishery) getFunction(FunctionType.FISHERY);
-		return fish;
+		return getFunction(FunctionType.FISHERY);
 	}
 
 	public Communication getComm() {
-		if (comm == null)
-			comm = (Communication) getFunction(FunctionType.COMMUNICATION);
-		return comm;
+		return getFunction(FunctionType.COMMUNICATION);
 	}
-
 
 	public Cooking getCooking() {
-		if (cooking == null)
-			cooking = (Cooking) getFunction(FunctionType.COOKING);
-		return cooking;
+		return getFunction(FunctionType.COOKING);
 	}
 
-
 	public Exercise getExercise() {
-		if (gym == null)
-			gym = (Exercise) getFunction(FunctionType.EXERCISE);
-		return gym;
+		return getFunction(FunctionType.EXERCISE);
 	}
 
 	public EVA getEVA() {
-		if (eva == null)
-			eva = (EVA) getFunction(FunctionType.EVA);
-		return eva;
+		return getFunction(FunctionType.EVA);
 	}
 
 	public EarthReturn getEarthReturn() {
-		if (earthReturn == null)
-			earthReturn = (EarthReturn) getFunction(FunctionType.EARTH_RETURN);
-		return earthReturn;
+		return getFunction(FunctionType.EARTH_RETURN);
 	}
 
 	public FoodProduction getFoodProduction() {
-		if (foodFactory == null)
-			foodFactory = (FoodProduction) getFunction(FunctionType.FOOD_PRODUCTION);
-		return foodFactory;
+		return getFunction(FunctionType.FOOD_PRODUCTION);
 	}
 
 	public VehicleGarage getVehicleParking() {
-		if (maint == null)
-			maint = (VehicleGarage) getFunction(FunctionType.VEHICLE_MAINTENANCE);
-		return maint;
+		return getFunction(FunctionType.VEHICLE_MAINTENANCE);
 	}
 
 	public LivingAccommodation getLivingAccommodation() {
-		if (livingAccommodation == null)
-			livingAccommodation = (LivingAccommodation) getFunction(FunctionType.LIVING_ACCOMMODATION);
-		return livingAccommodation;
+		return getFunction(FunctionType.LIVING_ACCOMMODATION);
 	}
 
 	public Management getManagement() {
-		if (management == null)
-			management = (Management) getFunction(FunctionType.MANAGEMENT);
-		return management;
+		return getFunction(FunctionType.MANAGEMENT);
 	}
 
 	public Manufacture getManufacture() {
-		if (manufacture == null)
-			manufacture = (Manufacture) getFunction(FunctionType.MANUFACTURE);
-		return manufacture;
+		return getFunction(FunctionType.MANUFACTURE);
 	}
 
 	public MedicalCare getMedical() {
-		if (medicalCare == null)
-			medicalCare = (MedicalCare) getFunction(FunctionType.MEDICAL_CARE);
-		return medicalCare;
+		return getFunction(FunctionType.MEDICAL_CARE);
 	}
 
 	public PowerGeneration getPowerGeneration() {
-		if (powerGen == null)
-			powerGen = (PowerGeneration) getFunction(FunctionType.POWER_GENERATION);
-		return powerGen;
+		return getFunction(FunctionType.POWER_GENERATION);
 	}
 
 	public Computation getComputation() {
-		if (computation == null)
-			computation = (Computation) getFunction(FunctionType.COMPUTATION);
-		return computation;
+		return getFunction(FunctionType.COMPUTATION);
 	}
 
 	public PowerStorage getPowerStorage() {
-		if (powerStorage == null)
-			powerStorage = (PowerStorage) getFunction(FunctionType.POWER_STORAGE);
-		return powerStorage;
+		return getFunction(FunctionType.POWER_STORAGE);
 	}
 
 	public Recreation getRecreation() {
-		if (rec == null)
-			rec = (Recreation) getFunction(FunctionType.RECREATION);
-		return rec;
+		return getFunction(FunctionType.RECREATION);
 	}
 
 	public Research getResearch() {
-		if (lab == null)
-			lab = (Research) getFunction(FunctionType.RESEARCH);
-		return lab;
+		return getFunction(FunctionType.RESEARCH);
 	}
 
 	public ResourceProcessing getResourceProcessing() {
-		if (resourceProcessing == null)
-			resourceProcessing = (ResourceProcessing) getFunction(FunctionType.RESOURCE_PROCESSING);
-		return resourceProcessing;
+		return getFunction(FunctionType.RESOURCE_PROCESSING);
 	}
 	
 	public RoboticStation getRoboticStation() {
-		if (roboticStation == null)
-			roboticStation = (RoboticStation) getFunction(FunctionType.ROBOTIC_STATION);
-
-		return roboticStation;
+		return getFunction(FunctionType.ROBOTIC_STATION);
 	}
 
 	public ThermalGeneration getThermalGeneration() {
-		if (furnace == null)
-			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
-		return furnace;
+		return getFunction(FunctionType.THERMAL_GENERATION);
 	}
 
 	public Storage getStorage() {
-		if (storage == null)
-			storage = (Storage) getFunction(FunctionType.STORAGE);
-		return storage;
+		return getFunction(FunctionType.STORAGE);
 	}
 
 	public VehicleMaintenance getVehicleMaintenance() {
@@ -503,11 +418,13 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return temperature (deg C)
 	 */
 	public double getCurrentTemperature() {
-		if (heating != null)
-			return heating.getCurrentTemperature();
-		else {
-			return presetTemperature;
-		}
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
+			return furnace.getHeating().getCurrentTemperature();
+	
+		return presetTemperature;
 	}
 
 	/**
@@ -524,20 +441,22 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets a function that has with openly available (empty) activity spot.
+	 * Gets a function that has with openly available (or empty) activity spot.
 	 *
-	 * @return FunctionType
+	 * @return Function
 	 */
 	public Function getEmptyActivitySpotFunction() {
 		List<Function> goodFunctions = new ArrayList<>();
 
 		// First, use recreation function's empty activity spot if available
-		getRecreation();
+		if (rec == null) {
+			rec = getRecreation();
+		}
 		if (rec != null && rec.hasEmptyActivitySpot()) {
 			return rec;
 		}
 								
-		for (Function f : functions.values()) {
+		for (Function f : getFunctions()) {
 			if (f.getFunctionType() != FunctionType.EVA 
 				&& f.hasEmptyActivitySpot())
 				goodFunctions.add(f);
@@ -560,7 +479,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public LocalPosition getRandomEmptyActivitySpot() {
 		
 		// First, use the recreation function activity spot if available
-		getRecreation();
+		if (rec == null) {
+			rec = getRecreation();
+		}
 		if (rec != null) {
 			LocalPosition availableLoc = rec.getAvailableActivitySpot();
 			if (availableLoc != null) {
@@ -568,9 +489,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 			}
 		}
 
-		for (Function f : functions.values()) {
+		for (Function f : getFunctions()) {
 			if (f.getFunctionType() != FunctionType.EVA) {
-				loc = f.getAvailableActivitySpot();
+				LocalPosition loc = f.getAvailableActivitySpot();
 				if (loc != null)
 					return loc;
 			}
@@ -621,7 +542,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			};
 
 		// Add to the function map
-		functions.put(fSpec.getType(), f);	
+		functionMap.put(fSpec.getType(), f);	
 		
 		return f;
 	}
@@ -633,30 +554,38 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return true if it does.
 	 */
 	public boolean hasFunction(FunctionType functionType) {
-		return functions.containsKey(functionType);
+		return functionMap.containsKey(functionType);
 	}
 
 	/**
-	 * Gets the generic function.
+	 * Gets a specific function from the function map.
 	 * 
-	 * @param key
-	 * @return
+	 * @param key function type key
+	 * @return the stored Function, cast to the expected subtype
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends Function> T getFunction(FunctionType key) {
-		return (T) functions.get(key);
+		return (T) functionMap.get(key);
 	}
 
+	/**
+	 * Gets a collection of functions from the function map.
+	 */
+	public Collection<? extends Function> getFunctions() {
+		return functionMap.values();
+	}
+		
 	/**
 	 * Removes the building's functions from the settlement.
 	 */
 	public void removeFunctionsFromSettlement() {
 
-		for (Function f : functions.values()) {
+		for (Function f : getFunctions()) {
 			f.removeFromSettlement();
 			removeFunction(f);
 		}
-		
-		functions.clear(); // Do NOT nullify
+
+		functionMap.clear(); // Do NOT nullify
 	}
 
 	/**
@@ -665,8 +594,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param function
 	 */
 	public void removeFunction(Function function) {
-		if (functions.containsValue(function)) {
-			functions.remove(function.getFunctionType());
+		if (functionMap.containsValue(function)) {
+			functionMap.remove(function.getFunctionType());
 			// Need to remove the function from the building function map
 			getBuildingManager().removeOneFunctionfromBFMap(this, function);
 		}
@@ -751,7 +680,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		double result = baseFullPowerRequirement;
 
 		// Determine power required for each function.
-		for (Function function : functions.values()) {
+		for (Function function : getFunctions()) {
 			double power = function.getCombinedPowerLoad();
 			if (power > 0) {
 				result += power;
@@ -769,8 +698,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getGeneratedPower() {
 		double result = 0;
 
-		if (getPowerGeneration() != null) {
-			result = getPowerGeneration().getGeneratedPower();
+		if (generator == null)
+			generator = getFunction(FunctionType.POWER_GENERATION);
+		
+		if (generator != null) {
+			result = generator.getGeneratedPower();
 		}
 
 		return result;
@@ -785,7 +717,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		double result = baseLowPowerRequirement;
 
 		// Determine power required for each function.
-		for (Function function : functions.values()) {
+		for (Function function : getFunctions()) {
 			result += function.getPoweredDownPowerRequired();
 		}
 
@@ -805,7 +737,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void setPowerMode(PowerMode powerMode) {
 		if (powerModeCache != powerMode) {
 			powerModeCache = powerMode;
-			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
+			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT, this);
 		}
 	}
 
@@ -816,13 +748,26 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getHeatRequired() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
+		
+		// Set the instance of furnace function.
+		prepareFurnace();
+		 
+		if (furnace != null)
 			result = furnace.getHeating().getHeatRequired();
 
 		return result;
 	}
 
+	/**
+	 * Prepares the furnace instance.
+	 */
+	private void prepareFurnace() {
+		if (furnace == null) {
+			furnace = getFunction(FunctionType.THERMAL_GENERATION);
+		}
+	}
+
+	
 	/**
 	 * Gets the heat gain of this building.
 	 *
@@ -831,7 +776,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getHeatGain() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getHeatGain();
 
 		return result;
@@ -845,7 +793,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getHeatLoss() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getHeatLoss();
 
 		return result;
@@ -859,7 +810,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getPreNetHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getPreNetHeat();
 
 		return result;
@@ -873,7 +827,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getPostNetHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getPostNetHeat();
 
 		return result;
@@ -886,8 +843,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getAirHeatSink() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
+		
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getAirHeatSink();
 
 		return result;
@@ -901,7 +861,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getWaterHeatSink() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getWaterHeatSink();
 
 		return result;
@@ -914,8 +877,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getHeatGenerated() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getHeatGenerated();
 
 		return result;
@@ -929,7 +894,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getExcessHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getExcessHeat();
 
 		return result;
@@ -943,7 +911,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getPassiveVentHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getPassiveVentHeat();
 
 		return result;
@@ -957,7 +928,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getActiveVentHeat() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getActiveVentHeat();
 
 		return result;
@@ -971,8 +945,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public double getHeatSurplus() {
 		double result = 0;
-
-		if (furnace != null && heating != null)
+		
+		// Gets the furnace instance.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeatSurplus();
 
 		return result;
@@ -987,7 +964,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getDeltaTemp() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getDeltaTemp();
 
 		return result;
@@ -1001,7 +981,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getDevTemp() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
 			result = furnace.getHeating().getDevTemp();
 
 		return result;
@@ -1013,10 +996,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param heatGenerated
 	 */
 	public void dumpExcessHeat(double heatGenerated) {
-		if (heating == null && furnace != null) {
-			heating = furnace.getHeating();
-			heating.insertExcessHeatComputation(heatGenerated);
-		}
+		// Set the instance of furnace function.
+		prepareFurnace();
+		
+		if (furnace != null)
+			furnace.getHeating().insertExcessHeatComputation(heatGenerated);
 	}
 
 	/**
@@ -1027,7 +1011,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getNuclearPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getNuclearPowerGen();
 
 		return result;
@@ -1041,7 +1028,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getSolarPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getSolarPowerGen();
 
 		return result;
@@ -1055,7 +1045,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getElectricPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getElectricPowerGen();
 
 		return result;
@@ -1069,7 +1062,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public double getFuelPowerGen() {
 		double result = 0;
 
-		if (furnace != null && heating != null)
+		// Gets the furnace instance.
+		prepareFurnace();
+				
+		if (furnace != null)
 			result = furnace.getFuelPowerGen();
 
 		return result;
@@ -1102,7 +1098,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public int numOfPeopleInAirLock() {
 		int num = 0;
 		if (eva == null)
-			eva = (EVA) getFunction(FunctionType.EVA);
+			eva = getFunction(FunctionType.EVA);
 		if (eva != null) {
 			num = eva.getAirlock().getOccupants123().size();
 			// Note: Assuming (.5) half of people are doing EVA ingress statistically
@@ -1118,14 +1114,14 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public int getNumPeople() {
-
-		int people = 0;
-
+		if (lifeSupport == null) {
+			lifeSupport = getFunction(FunctionType.LIFE_SUPPORT);
+		}
 		if (lifeSupport != null) {
-			people = lifeSupport.getOccupantNumber();
+			return lifeSupport.getOccupantNumber();
 		}
 
-		return people;
+		return 0;
 	}
 
 
@@ -1135,6 +1131,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public Collection<Person> getOccupants() {
+		if (lifeSupport == null) {
+			lifeSupport = getFunction(FunctionType.LIFE_SUPPORT);
+		}
 		if (lifeSupport != null) {
 			return lifeSupport.getOccupants();
 		}
@@ -1148,6 +1147,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public Collection<Robot> getRobots() {
+		if (roboticStation == null) {
+			roboticStation = getFunction(FunctionType.ROBOTIC_STATION);
+		}
 		if (roboticStation != null) {
 			return roboticStation.getRobotOccupants();
 		}
@@ -1200,7 +1202,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		}
 
 		// Send time to each building function.
-		for (Function f : functions.values())
+		for (Function f : getFunctions())
 			// Not needed for now. Will need this for future work
 			f.timePassing(pulse);
 
@@ -1416,10 +1418,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return constructionType;
 	}
 
-	public Collection<? extends Function> getFunctions() {
-		return functions.values();
-	}
-
 	/**
 	 * Gets the building's settlement template ID number.
 	 *
@@ -1446,21 +1444,26 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @param heat removed or added
 	 */
 	public void addVentInHeat(double heat) {
-		// Set the instance of thermal generation function.
-		if (furnace == null)
-			furnace = (ThermalGeneration) getFunction(FunctionType.THERMAL_GENERATION);
-		if (heating == null)
-			heating = furnace.getHeating();
+		// Set the instance of furnace function.
+		prepareFurnace();
 
-		heating.addVentInHeat(heat);
+		if (furnace != null)
+			furnace.getHeating().addVentInHeat(heat);
 	}
 
+	/**
+	 * Gets the building air pressure.
+	 * 
+	 * @return
+	 */
 	public double getCurrentAirPressure() {
 		double p = 0D;
 		
-		LifeSupport ls = getFunction(FunctionType.LIFE_SUPPORT);
-		if (ls != null) {
-			p = ls.getAir().getTotalPressure();
+		if (lifeSupport == null) {
+			lifeSupport = getFunction(FunctionType.LIFE_SUPPORT);
+		}
+		if (lifeSupport != null) {
+			p = lifeSupport.getAir().getTotalPressure();
 		}
 		
 		// convert from atm to kPascal
@@ -1480,7 +1483,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 * @return
 	 */
 	public boolean hasSpecialty(ScienceType type) {
-		if (getResearch() == null)
+		if (lab == null)
+			lab = getFunction(FunctionType.RESEARCH);
+		if (lab == null)
 			return false;
 
 		return lab.hasSpecialty(type);
@@ -1673,3 +1678,4 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return super.hashCode();
 	}
 }
+

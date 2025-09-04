@@ -1290,7 +1290,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			partsNeededForMaintenance = new HashMap<>();
 		}
 		
-		for (MaintenanceScope maintenance : partConfig.getMaintenance(scopes)) {
+		for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(scopes)) {
 			if (RandomUtil.lessThanRandPercent(maintenance.getProbability())) {
 				int number = RandomUtil.getRandomRegressionInteger(maintenance.getMaxNumber());
 				int id = maintenance.getPart().getID();

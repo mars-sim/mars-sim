@@ -67,7 +67,7 @@ public class BuildingSpec {
 	private ConstructionType constructionType = ConstructionType.PRE_FABRICATED;
 
 	private Map<FunctionType, FunctionSpec> supportedFunctions;
-	
+
 	// Optional Function details
 	private Map<Integer, Double> storageMap = null;
 	private Map<Integer, Double> initialMap = null;
