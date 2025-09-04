@@ -10,8 +10,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
-import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;   // FIX: nested enum
-import com.mars_sim.core.person.ai.task.util.MetaTask.WorkerType; // FIX: nested enum
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
 import com.mars_sim.core.tool.Msg;
@@ -19,17 +17,23 @@ import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for Converse task.
+ *
+ * <p>This version removes all reflection and avoids calling any deprecated
+ * {@code FactoryMetaTask#getProbability(Person)} overloads. It also fixes the
+ * access error by <b>not importing</b> the protected nested enums and instead
+ * referencing them directly as inherited members.</p>
  */
 public class ConverseMeta extends FactoryMetaTask {
 
     /** Task name */
-    private static final String NAME = Msg.getString(
-            "Task.description.converse"); //$NON-NLS-1$
+    private static final String NAME =
+            Msg.getString("Task.description.converse"); //$NON-NLS-1$
 
     private static final double VALUE = 1.2;
     private static final int CAP = 10;
 
     public ConverseMeta() {
+        // Use inherited protected enums without importing them.
         super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
         setTrait(TaskTrait.PEOPLE, TaskTrait.RELAXATION);
     }
@@ -54,7 +58,8 @@ public class ConverseMeta extends FactoryMetaTask {
 
         // Compute Converse-specific probability.
         double result = RandomUtil.getRandomDouble(
-                person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.CONVERSATION)) / 20D;
+                person.getNaturalAttributeManager()
+                      .getAttribute(NaturalAttributeType.CONVERSATION)) / 20D;
 
         boolean isOnShiftNow = person.isOnDuty();
         if (!isOnShiftNow) {
