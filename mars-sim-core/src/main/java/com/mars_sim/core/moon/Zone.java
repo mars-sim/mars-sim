@@ -1,6 +1,9 @@
 package com.mars_sim.core.moon;
 
+import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.structure.colony.Colony;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.RandomUtil;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -32,7 +35,10 @@ public class Zone implements Serializable {
     /** Serialization ID for compatibility. */
     private static final long serialVersionUID = 1L;
 
-    /** Mean lunar radius in kilometers (≈ 1737.4 km). Used for approximate area. */
+    /** Logger (kept for legacy compatibility / diagnostics). */
+    private static final SimLogger logger = SimLogger.getLogger(Zone.class.getName());
+
+    /** Mean lunar radius in kilometers (≈ 1737.4 km). Used for approximate spherical area helper. */
     private static final double MOON_RADIUS_KM = 1737.4;
 
     // ---------------------------------------------------------------------
@@ -56,6 +62,15 @@ public class Zone implements Serializable {
 
     /** 0..100 progress value used by legacy code paths. */
     private double growthPercent;
+
+    /**
+     * Legacy area semantics (randomized by ZoneType with an optional multiplier).
+     * Units are legacy-specific (historically m^2-equivalent in prior code paths).
+     */
+    private double area;
+
+    /** Optional multiplier used in legacy randomized sizing (must be &gt; 0, default 1.0). */
+    private double areaFactor = 1.0;
 
     // ---------------------------------------------------------------------
     // Geometry (stored normalized)
@@ -95,6 +110,8 @@ public class Zone implements Serializable {
         this.dynamic = false;
         this.type = null;
         this.colony = null;
+        this.area = 0.0;
+        this.areaFactor = 1.0;
     }
 
     /**
@@ -121,6 +138,8 @@ public class Zone implements Serializable {
         this.dynamic = false;
         this.type = null;
         this.colony = null;
+        this.area = 0.0;
+        this.areaFactor = 1.0;
     }
 
     /**
@@ -133,9 +152,9 @@ public class Zone implements Serializable {
      */
     public Zone(ZoneType type, Colony colony, boolean dynamic) {
         this();
-        this.type = type;
         this.colony = colony;
         this.dynamic = dynamic;
+        setType(type); // ensure legacy area is derived when type is set
         this.name = (type != null) ? type.name() : this.name;
     }
 
@@ -159,6 +178,10 @@ public class Zone implements Serializable {
         private boolean dynamic;
         private double growthPercent;
 
+        // Legacy area interop
+        private Double area;        // if null -> derive by ZoneType with randomness
+        private Double areaFactor;  // if null -> default to 1.0
+
         public Builder(String name) {
             this.name = Objects.requireNonNull(name, "name");
             this.id = 0;
@@ -170,6 +193,8 @@ public class Zone implements Serializable {
             this.colony = null;
             this.dynamic = false;
             this.growthPercent = 0.0;
+            this.area = null;
+            this.areaFactor = null;
         }
 
         /** Optional, default 0. */
@@ -222,12 +247,39 @@ public class Zone implements Serializable {
             return this;
         }
 
+        /** Explicit legacy area override. */
+        public Builder area(double v) {
+            this.area = v;
+            return this;
+        }
+
+        /** Legacy area multiplier (must be > 0; default 1.0). */
+        public Builder areaFactor(double v) {
+            this.areaFactor = v;
+            return this;
+        }
+
         public Zone build() {
             Zone z = new Zone(id, name, southLatDeg, northLatDeg, westLonDeg, eastLonDeg);
-            z.type = this.type;
             z.colony = this.colony;
             z.dynamic = this.dynamic;
             z.growthPercent = this.growthPercent;
+
+            if (this.areaFactor != null) {
+                z.setAreaFactor(this.areaFactor);
+            }
+
+            // Setting type will (re)derive legacy area by ZoneType unless caller overrides it below.
+            z.setType(this.type);
+
+            if (this.area != null) {
+                z.setArea(this.area);
+            } else {
+                // If area hasn't been set by setType (e.g., null type) derive a conservative default.
+                if (z.area <= 0.0) {
+                    z.area = z.deriveLegacyArea();
+                }
+            }
             return z;
         }
     }
@@ -242,6 +294,8 @@ public class Zone implements Serializable {
         z.colony = this.colony;
         z.dynamic = this.dynamic;
         z.growthPercent = this.growthPercent;
+        z.area = this.area;
+        z.areaFactor = this.areaFactor;
         return z;
     }
 
@@ -272,6 +326,8 @@ public class Zone implements Serializable {
     public Zone withType(ZoneType v) {
         Zone z = copy();
         z.type = v;
+        // Preserve legacy semantics: (re)derive area when type changes
+        z.area = z.deriveLegacyArea();
         return z;
     }
 
@@ -295,6 +351,20 @@ public class Zone implements Serializable {
     public Zone withGrowthPercent(double v) {
         Zone z = copy();
         z.growthPercent = clampPercent(v);
+        return z;
+    }
+
+    /** With-method for explicit legacy area override. */
+    public Zone withArea(double v) {
+        Zone z = copy();
+        z.setArea(v);
+        return z;
+    }
+
+    /** With-method for legacy area multiplier. */
+    public Zone withAreaFactor(double v) {
+        Zone z = copy();
+        z.setAreaFactor(v);
         return z;
     }
 
@@ -336,6 +406,19 @@ public class Zone implements Serializable {
     /** @return growth percent in [0, 100]. */
     public double getGrowthPercent() {
         return growthPercent;
+    }
+
+    /**
+     * Legacy area getter (randomized-by-type semantics).
+     * @return area (legacy units; historically treated as m^2)
+     */
+    public double getArea() {
+        return area;
+    }
+
+    /** Legacy area multiplier (> 0, default 1.0). */
+    public double getAreaFactor() {
+        return areaFactor;
     }
 
     /** @return south latitude in degrees [-90, +90]. */
@@ -423,9 +506,11 @@ public class Zone implements Serializable {
         this.name = Objects.requireNonNull(name, "name");
     }
 
-    /** Set/override the type tag. */
+    /** Set/override the type tag (recomputes legacy area). */
     public void setType(ZoneType type) {
         this.type = type;
+        // Keep legacy: (re)size by type on assignment unless caller later overrides area explicitly.
+        this.area = deriveLegacyArea();
     }
 
     /** Alias for {@link #setType(ZoneType)} to match UI expectations. */
@@ -456,6 +541,16 @@ public class Zone implements Serializable {
     /** Set growth percent in [0, 100]. */
     public void setGrowthPercent(double v) {
         this.growthPercent = clampPercent(v);
+    }
+
+    /** Explicitly set legacy area (non-negative) and opt out of derived sizing until type changes again. */
+    public void setArea(double v) {
+        this.area = Math.max(0.0, v);
+    }
+
+    /** Set legacy area multiplier (> 0; default 1.0). */
+    public void setAreaFactor(double v) {
+        this.areaFactor = (v <= 0.0) ? 1.0 : v;
     }
 
     // ---------------------------------------------------------------------
@@ -532,24 +627,21 @@ public class Zone implements Serializable {
 
     /**
      * Legacy tick hook invoked by the simulation.
-     * This implementation advances {@link #growthPercent} slowly when {@link #dynamic} is true.
+     * Kept as a no-op for now to preserve contract; growth can be wired later without breaking callers.
      *
-     * @param pulse clock pulse (ignored for now to keep behavior conservative)
+     * @param pulse clock pulse (currently ignored)
      */
     public void timePassing(ClockPulse pulse) {
-        if (dynamic) {
-            double next = this.growthPercent + 0.05;
-            this.growthPercent = clampPercent(next);
-        }
+        // Intentionally no-op per legacy interop patch.
     }
 
     /**
-     * Approximate surface area of the zone on a sphere using the mean lunar radius.
-     * Result is in square kilometers.
+     * Approximate spherical surface area of the zone using the mean lunar radius.
+     * Result is in square kilometers. Provided as a helper separate from legacy {@link #getArea()}.
      *
      * @return area in km^2
      */
-    public double getArea() {
+    public double getSphericalAreaKm2() {
         double lat1 = Math.toRadians(southLatDeg);
         double lat2 = Math.toRadians(northLatDeg);
         double dLon = Math.toRadians(getLonSpanDeg());
@@ -559,7 +651,7 @@ public class Zone implements Serializable {
     }
 
     // ---------------------------------------------------------------------
-    // Equality, hash, string (value semantics by id+name+bounds+type)
+    // Equality, hash, string (value semantics by id+name+bounds+type+legacy fields)
     // ---------------------------------------------------------------------
 
     @Override
@@ -577,7 +669,9 @@ public class Zone implements Serializable {
                 && Double.doubleToLongBits(this.southLatDeg) == Double.doubleToLongBits(z.southLatDeg)
                 && Double.doubleToLongBits(this.northLatDeg) == Double.doubleToLongBits(z.northLatDeg)
                 && Double.doubleToLongBits(this.westLonDeg) == Double.doubleToLongBits(z.westLonDeg)
-                && Double.doubleToLongBits(this.eastLonDeg) == Double.doubleToLongBits(z.eastLonDeg);
+                && Double.doubleToLongBits(this.eastLonDeg) == Double.doubleToLongBits(z.eastLonDeg)
+                && Double.doubleToLongBits(this.area) == Double.doubleToLongBits(z.area)
+                && Double.doubleToLongBits(this.growthPercent) == Double.doubleToLongBits(z.growthPercent);
     }
 
     @Override
@@ -588,7 +682,9 @@ public class Zone implements Serializable {
                 Double.doubleToLongBits(southLatDeg),
                 Double.doubleToLongBits(northLatDeg),
                 Double.doubleToLongBits(westLonDeg),
-                Double.doubleToLongBits(eastLonDeg));
+                Double.doubleToLongBits(eastLonDeg),
+                Double.doubleToLongBits(area),
+                Double.doubleToLongBits(growthPercent));
     }
 
     @Override
@@ -601,7 +697,8 @@ public class Zone implements Serializable {
                 + "°, west=" + westLonDeg
                 + "°, east=" + eastLonDeg
                 + "°, growth=" + growthPercent
-                + "%]";
+                + "%, area=" + area
+                + " (factor=" + areaFactor + ")]";
     }
 
     // ---------------------------------------------------------------------
@@ -672,6 +769,25 @@ public class Zone implements Serializable {
             return 100.0;
         }
         return v;
+    }
+
+    /**
+     * Derive legacy area using randomized ranges by ZoneType.
+     * Falls back to a conservative default if type is null or unrecognized.
+     */
+    private double deriveLegacyArea() {
+        final ZoneType t = this.type;
+        final double f = (areaFactor <= 0.0) ? 1.0 : areaFactor;
+        if (t == null) {
+            return f * RandomUtil.getRandomDouble(20.0, 40.0);
+        }
+        switch (t) {
+            case BUSINESS:
+                return f * RandomUtil.getRandomDouble(25.0, 50.0);
+            // TODO: add other ZoneType ranges as historically defined
+            default:
+                return f * RandomUtil.getRandomDouble(20.0, 40.0);
+        }
     }
 
     // ---------------------------------------------------------------------
