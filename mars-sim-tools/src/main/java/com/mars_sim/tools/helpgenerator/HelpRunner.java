@@ -60,7 +60,12 @@ public class HelpRunner {
             HelpFormatter format = HelpFormatter.builder().get();
             String header = "Problem with commands: " + pe.getMessage();
             String footer = "";
-            format.printHelp("helpgenerator", header, options, footer, true);
+            try {
+                format.printHelp("helpgenerator", header, options, footer, true);
+            } catch (IOException ioe) {
+                // Fall back to a simple stderr message if printing help fails
+                System.err.println(header);
+            }
             return;
         }
 
