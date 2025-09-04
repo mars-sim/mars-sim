@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -306,7 +307,7 @@ extends TabPanel {
 		sleepExerciseTableModel = new SleepExerciseTableModel(circadianClock);
 		
 		// Create sleep time table
-		sleepExerciseTable = new JTable(sleepExerciseTableModel);
+		JTable sleepExerciseTable = new JTable(sleepExerciseTableModel);
 		TableColumnModel sModel = sleepExerciseTable.getColumnModel();
 		sleepExerciseTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		sModel.getColumn(0).setPreferredWidth(10);
@@ -344,7 +345,7 @@ extends TabPanel {
 		foodTableModel = new FoodTableModel(condition);
 		
 		// Create exercise time table
-		foodTable = new JTable(foodTableModel);
+		JTable foodTable = new JTable(foodTableModel);
 		foodTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
 		TableColumnModel fModel = foodTable.getColumnModel();
 		fModel.getColumn(0).setPreferredWidth(10);
@@ -414,7 +415,7 @@ extends TabPanel {
         }
  
 		// Create radiation table
-		radiationTable = new JTable(radiationTableModel) {
+		JTable radiationTable = new JTable(radiationTableModel) {
             // Implement table cell tool tips. 
 			@Override          
             public String getToolTipText(MouseEvent e) {
@@ -502,7 +503,7 @@ extends TabPanel {
 		healthProblemTableModel = new HealthProblemTableModel(condition);
 
 		// Create health problem table
-		healthProblemTable = new JTable(healthProblemTableModel);
+		JTable healthProblemTable = new JTable(healthProblemTableModel);
 		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		healthProblemTable.setRowSelectionAllowed(true);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
@@ -531,7 +532,7 @@ extends TabPanel {
 		medicationTableModel = new MedicationTableModel(condition);
 	
 		// Prepare medication table.
-		medicationTable = new JTable(medicationTableModel);
+		JTable medicationTable = new JTable(medicationTableModel);
 		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		medicationTable.setRowSelectionAllowed(true);
 		medicationScrollPanel.setViewportView(medicationTable);
@@ -558,7 +559,7 @@ extends TabPanel {
 		healthLogTableModel = new HealthLogTableModel(condition);
 		
 		// Create health problem table
-		healthLogTable = new JTable(healthLogTableModel);
+		JTable healthLogTable = new JTable(healthLogTableModel);
 		healthLogTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		healthLogTable.setRowSelectionAllowed(true);
 		healthLogTable.setDefaultRenderer(MarsTime.class, new MarsTimeTableCellRenderer());
@@ -950,138 +951,111 @@ extends TabPanel {
 	
 	/**
 	 * Internal class used as model for the sleep time table.
+	 *
+	 * <p>Patched to use a stable snapshot and apply updates on the EDT to avoid
+	 * flicker/zeros at high time ratios.</p>
 	 */
 	private static class SleepExerciseTableModel
 	extends AbstractTableModel {
 
 		private static final String SLEEP_TIME = "Sleep";
 		private static final String EXERCISE_TIME = "Exercise";
-		
 		private static final String MISSION_SOL = "Sol";
+		private static final int MAX_DAYS = 7;
 
-		// Snapshot storage (never point to the live circadian maps)
-		private final Map<Integer, Double> sleepTime = new LinkedHashMap<>();
-		private final Map<Integer, Double> exerciseTime = new LinkedHashMap<>();
-		// Row index -> actual sol mapping to avoid gaps showing as zeros
-		private List<Integer> rowKeys = new ArrayList<>();
-		private int solOffset = 0;
-		private int rowCount = 0;
-
-		// Coalesce rapid updates at high sim speeds; fires on EDT
-		private final javax.swing.Timer refreshCoalesce = new javax.swing.Timer(100, e -> fireTableDataChanged());
-		{
-			refreshCoalesce.setRepeats(false);
+		/** Immutable row snapshot. */
+		private static final class SolRow {
+			final int sol;
+			final double sleep;
+			final double exercise;
+			SolRow(int sol, double sleep, double exercise) {
+				this.sol = sol; this.sleep = sleep; this.exercise = exercise;
+			}
 		}
+
+		/** Current snapshot used by the table; replaced atomically on the EDT. */
+		private volatile List<SolRow> rows = Collections.emptyList();
 
 		private SleepExerciseTableModel(CircadianClock circadian) {
 			update(circadian);
 		}
 
+		@Override
 		public int getRowCount() {
-			return rowCount;
+			return rows.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 3;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = null;
-			if (columnIndex == 0) {
-			    dataType = Integer.class;
-			}
-			else {
-			    dataType = String.class;
-			}
-			return dataType;
+			return (columnIndex == 0) ? Integer.class : String.class;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) {
-			    return MISSION_SOL; 
-			}
-			else if (columnIndex == 1) {
-			    return SLEEP_TIME;
-			}
-			else if (columnIndex == 2) {
-			    return EXERCISE_TIME;
-			}
-			return null;
+			return switch (columnIndex) {
+				case 0 -> MISSION_SOL;
+				case 1 -> SLEEP_TIME;
+				case 2 -> EXERCISE_TIME;
+				default -> null;
+			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
-			if (row < 0 || row >= getRowCount()) return null;
-
-			int rowSol = rowKeys.get(row);
-			if (column == 0) {
-				return rowSol;
-			}
-			else if (column == 1) {
-				if (sleepTime.containsKey(rowSol))
-					return StyleManager.DECIMAL_PLACES1.format(sleepTime.get(rowSol));
-				else
-					return StyleManager.DECIMAL_PLACES1.format(0);
-			}
-			else if (column == 2) {
-				if (exerciseTime.containsKey(rowSol))
-					return StyleManager.DECIMAL_PLACES1.format(exerciseTime.get(rowSol));
-				else
-					return StyleManager.DECIMAL_PLACES1.format(0);
-			}
-			return null;
+			if (row < 0 || row >= rows.size()) return null;
+			SolRow r = rows.get(row);
+			return switch (column) {
+				case 0 -> r.sol;
+				case 1 -> StyleManager.DECIMAL_PLACES1.format(r.sleep);
+				case 2 -> StyleManager.DECIMAL_PLACES1.format(r.exercise);
+				default -> null;
+			};
 		}
 
-		/** Replace the old update(...) with this snapshotting version. */
+		/** Build a bounded, sorted snapshot and apply it on the EDT. */
 		public void update(CircadianClock circadian) {
-			// Take immutable snapshots to avoid aliasing/races with the sim thread.
-			Map<Integer, Double> newSleep    = new LinkedHashMap<>(circadian.getSleepHistory());
-			Map<Integer, Double> newExercise = new LinkedHashMap<>(circadian.getExerciseHistory());
+			// Defensive copies to decouple from the sim thread.
+			Map<Integer, Double> sleepHistory    = new HashMap<>(circadian.getSleepHistory());
+			Map<Integer, Double> exerciseHistory = new HashMap<>(circadian.getExerciseHistory());
 
-			// Union of keys keeps rows aligned; drop days outside the retention window instead of zeroing them.
-			Set<Integer> keys = new HashSet<>(Math.max(newSleep.size(), newExercise.size()) * 2);
-			keys.addAll(newSleep.keySet());
-			keys.addAll(newExercise.keySet());
+			// Union of keys -> sorted sols
+			Set<Integer> keyUnion = new HashSet<>(sleepHistory.keySet());
+			keyUnion.addAll(exerciseHistory.keySet());
 
-			if (keys.isEmpty()) {
-				sleepTime.clear();
-				exerciseTime.clear();
-				rowKeys = new ArrayList<>();
-				solOffset = 0;
-				rowCount = 0;
-				scheduleRefresh();
-				return;
-			}
-
-			// Keep the most recent N sols (7 is current behavior per issue screenshots)
-			final int WINDOW = 7;
-			List<Integer> ordered = new ArrayList<>(keys);
-			Collections.sort(ordered); // ascending by sol #
-			int from = Math.max(0, ordered.size() - WINDOW);
-			List<Integer> window = ordered.subList(from, ordered.size());
-
-			// Rebuild model storage atomically
-			sleepTime.clear();
-			exerciseTime.clear();
-			for (Integer sol : window) {
-				sleepTime.put(sol, newSleep.getOrDefault(sol, 0.0));
-				exerciseTime.put(sol, newExercise.getOrDefault(sol, 0.0));
-			}
-
-			rowKeys = new ArrayList<>(window);
-			solOffset = rowKeys.get(0);
-			rowCount  = rowKeys.size();
-
-			scheduleRefresh();
-		}
-
-		private void scheduleRefresh() {
-			if (SwingUtilities.isEventDispatchThread()) {
-				// Coalesce bursts (restart timer)
-				refreshCoalesce.restart();
+			List<SolRow> newRows;
+			if (keyUnion.isEmpty()) {
+				newRows = Collections.emptyList();
 			} else {
-				SwingUtilities.invokeLater(() -> refreshCoalesce.restart());
+				List<Integer> sols = new ArrayList<>(keyUnion);
+				Collections.sort(sols);
+				int from = Math.max(0, sols.size() - MAX_DAYS);
+				sols = sols.subList(from, sols.size());
+
+				newRows = new ArrayList<>(sols.size());
+				for (int sol : sols) {
+					double sleep = sleepHistory.getOrDefault(sol, 0D);
+					double exer  = exerciseHistory.getOrDefault(sol, 0D);
+					newRows.add(new SolRow(sol, sleep, exer));
+				}
+			}
+
+			final List<SolRow> snapshot =
+				Collections.unmodifiableList(new ArrayList<>(newRows));
+
+			// Apply on the Event Dispatch Thread
+			if (SwingUtilities.isEventDispatchThread()) {
+				rows = snapshot;
+				fireTableDataChanged();
+			} else {
+				SwingUtilities.invokeLater(() -> {
+					rows = snapshot;
+					fireTableDataChanged();
+				});
 			}
 		}
 	}
