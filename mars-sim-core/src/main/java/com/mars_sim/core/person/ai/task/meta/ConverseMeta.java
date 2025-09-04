@@ -6,14 +6,14 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
-import java.lang.reflect.Method;
-
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskScope;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.person.ai.task.util.WorkerType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -42,10 +42,8 @@ public class ConverseMeta extends FactoryMetaTask {
     /**
      * Probability that this task is the best selection for the person.
      *
-     * <p><b>Note:</b> We intentionally avoid calling the deprecated
-     * {@code FactoryMetaTask#getProbability(Person)}. If a non-deprecated overload exists
-     * upstream in {@link FactoryMetaTask}, {@link #safeBaseProbability(Person)} can be
-     * used to incorporate its baseline without referencing deprecated APIs.</p>
+     * <p><b>Note:</b> Intentionally avoids calling the deprecated
+     * {@code FactoryMetaTask#getProbability(Person)}. No reflection is used.</p>
      */
     @Override
     public double getProbability(Person person) {
@@ -71,74 +69,6 @@ public class ConverseMeta extends FactoryMetaTask {
             result = CAP;
         }
 
-        // If you'd like to incorporate a base from a future non-deprecated overload:
-        // double base = safeBaseProbability(person);
-        // result = Math.max(result, base);
-
         return result;
-    }
-
-    // ---------------------------------------------------------------------
-    //           Low-complexity helpers to avoid deprecated API
-    // ---------------------------------------------------------------------
-
-    /** Finds a non-deprecated getProbability(...) overload starting with Person. */
-    private static Method findProbabilityMethod() {
-        for (Method m : FactoryMetaTask.class.getMethods()) {
-            if (isCandidateProbability(m)) {
-                return m;
-            }
-        }
-        return null;
-    }
-
-    /** Checks whether a Method is a non-deprecated getProbability(Person, ...) candidate. */
-    private static boolean isCandidateProbability(Method m) {
-        if (!"getProbability".equals(m.getName())) return false;
-        Class<?>[] params = m.getParameterTypes();
-        if (params.length == 0 || params[0] != Person.class) return false;
-        return m.getAnnotation(Deprecated.class) == null;
-    }
-
-    /** Default argument for a primitive/boxed parameter (used for trailing args). */
-    private static Object defaultValue(Class<?> t) {
-        if (!t.isPrimitive()) return null;
-        if (t == boolean.class) return Boolean.FALSE;
-        if (t == byte.class)    return (byte) 0;
-        if (t == short.class)   return (short) 0;
-        if (t == int.class)     return 0;
-        if (t == long.class)    return 0L;
-        if (t == float.class)   return 0F;
-        if (t == double.class)  return 0D;
-        if (t == char.class)    return '\0';
-        return null;
-    }
-
-    /** Builds an argument array for invoking a probability method. */
-    private static Object[] buildArgs(Method m, Person person) {
-        Class<?>[] params = m.getParameterTypes();
-        Object[] args = new Object[params.length];
-        args[0] = person;
-        for (int i = 1; i < params.length; i++) {
-            args[i] = defaultValue(params[i]);
-        }
-        return args;
-    }
-
-    /**
-     * Compatibility helper that resolves a non-deprecated probability method at runtime and invokes it.
-     * <p>If none exists or invocation fails, returns {@code 0d}.</p>
-     */
-    @SuppressWarnings("unused")
-    private double safeBaseProbability(Person person) {
-        try {
-            Method m = findProbabilityMethod();
-            if (m == null) return 0D;
-            Object result = m.invoke(this, buildArgs(m, person));
-            return (result instanceof Number n) ? n.doubleValue() : 0D;
-        }
-        catch (Throwable ignore) {
-            return 0D;
-        }
     }
 }
