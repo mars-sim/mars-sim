@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.person.ai.task.meta;
 
+import java.lang.reflect.Method;
+
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.Converse;
@@ -76,67 +78,67 @@ public class ConverseMeta extends FactoryMetaTask {
         return result;
     }
 
+    // ---------------------------------------------------------------------
+    //           Low-complexity helpers to avoid deprecated API
+    // ---------------------------------------------------------------------
+
+    /** Finds a non-deprecated getProbability(...) overload starting with Person. */
+    private static Method findProbabilityMethod() {
+        for (Method m : FactoryMetaTask.class.getMethods()) {
+            if (isCandidateProbability(m)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
+    /** Checks whether a Method is a non-deprecated getProbability(Person, ...) candidate. */
+    private static boolean isCandidateProbability(Method m) {
+        if (!"getProbability".equals(m.getName())) return false;
+        Class<?>[] params = m.getParameterTypes();
+        if (params.length == 0 || params[0] != Person.class) return false;
+        return m.getAnnotation(Deprecated.class) == null;
+    }
+
+    /** Default argument for a primitive/boxed parameter (used for trailing args). */
+    private static Object defaultValue(Class<?> t) {
+        if (!t.isPrimitive()) return null;
+        if (t == boolean.class) return Boolean.FALSE;
+        if (t == byte.class)    return (byte) 0;
+        if (t == short.class)   return (short) 0;
+        if (t == int.class)     return 0;
+        if (t == long.class)    return 0L;
+        if (t == float.class)   return 0F;
+        if (t == double.class)  return 0D;
+        if (t == char.class)    return '\0';
+        return null;
+    }
+
+    /** Builds an argument array for invoking a probability method. */
+    private static Object[] buildArgs(Method m, Person person) {
+        Class<?>[] params = m.getParameterTypes();
+        Object[] args = new Object[params.length];
+        args[0] = person;
+        for (int i = 1; i < params.length; i++) {
+            args[i] = defaultValue(params[i]);
+        }
+        return args;
+    }
+
     /**
-     * Compatibility helper that resolves a non-deprecated probability method at runtime.
-     * <p>
-     * Searches {@link FactoryMetaTask} for a public/protected method named {@code getProbability}
-     * whose first parameter is {@link Person} and which is <b>not</b> annotated with {@link Deprecated}.
-     * If found, it invokes that method with the {@code person} and default values for trailing params.
-     * </p>
-     * <p>
-     * If no such non-deprecated overload exists, returns {@code 0d}. This keeps us from referencing
-     * deprecated APIs at compile time and avoids warnings or build breaks due to deprecations.
-     * </p>
+     * Compatibility helper that resolves a non-deprecated probability method at runtime and invokes it.
+     * <p>If none exists or invocation fails, returns {@code 0d}.</p>
      */
     @SuppressWarnings("unused")
     private double safeBaseProbability(Person person) {
         try {
-            for (var m : FactoryMetaTask.class.getMethods()) {
-                if (!"getProbability".equals(m.getName())) continue;
-                var params = m.getParameterTypes();
-                if (params.length == 0 || params[0] != Person.class) continue;
-                if (m.getAnnotation(Deprecated.class) != null) continue; // skip deprecated overloads
-
-                // Build default args for any trailing parameters.
-                Object[] args = new Object[params.length];
-                args[0] = person;
-                for (int i = 1; i < params.length; i++) {
-                    Class<?> t = params[i];
-                    if (!t.isPrimitive()) {
-                        args[i] = null;
-                    }
-                    else if (t == boolean.class) {
-                        args[i] = Boolean.FALSE;
-                    }
-                    else if (t == byte.class) {
-                        args[i] = (byte) 0;
-                    }
-                    else if (t == short.class) {
-                        args[i] = (short) 0;
-                    }
-                    else if (t == int.class) {
-                        args[i] = 0;
-                    }
-                    else if (t == long.class) {
-                        args[i] = 0L;
-                    }
-                    else if (t == float.class) {
-                        args[i] = 0F;
-                    }
-                    else if (t == double.class) {
-                        args[i] = 0D;
-                    }
-                    else { // char, etc.
-                        args[i] = '\0';
-                    }
-                }
-                Object result = m.invoke(this, args);
-                if (result instanceof Number n) return n.doubleValue();
-            }
+            Method m = findProbabilityMethod();
+            if (m == null) return 0D;
+            Object result = m.invoke(this, buildArgs(m, person));
+            return (result instanceof Number n) ? n.doubleValue() : 0D;
         }
         catch (Throwable ignore) {
-            // fall through to neutral base
+            return 0D;
         }
-        return 0D;
-        }
+    }
 }
