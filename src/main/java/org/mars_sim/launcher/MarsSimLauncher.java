@@ -16,6 +16,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.FileTime;
@@ -39,6 +41,7 @@ import java.util.stream.Stream;
  *  - Memory picker, sim speed picker, extra args
  *  - Safe Mode: disable Java2D OpenGL pipeline for compatibility
  *  - Optional: "Check for updates" (GitHub releases)
+ *  - Single-instance guard (prevents accidental double-launch; override with --allow-multiple)
  *
  * Usage (CLI, optional):
  *   java -jar mars-sim-launcher.jar [--console|--swing] [--mem 2048] [--speed 512x]
@@ -48,6 +51,13 @@ public class MarsSimLauncher {
 
     // ---------- Entry point ----------
     public static void main(String[] args) {
+        // Prevent accidental double-launches. Allow override via --allow-multiple.
+        if (!hasAllowMultiple(args)) {
+            SingleInstanceGuard.guardOrExit();
+        }
+        // Strip --allow-multiple so it is not forwarded to Mars‑Sim.
+        args = stripAllowMultiple(args);
+
         // If user passes CLI flags, try to launch without GUI.
         var cli = parseCli(args);
         if (cli != null) {
@@ -76,6 +86,35 @@ public class MarsSimLauncher {
             } catch (Exception ignored) {}
             new LauncherFrame().setVisible(true);
         });
+    }
+
+    // Detect --allow-multiple before "--", so we don't forward it to Mars‑Sim.
+    private static boolean hasAllowMultiple(String[] args) {
+        if (args == null) return false;
+        for (String a : args) {
+            if ("--".equals(a)) break; // stop at extras sentinel
+            if ("--allow-multiple".equals(a)) return true;
+        }
+        return false;
+    }
+
+    private static String[] stripAllowMultiple(String[] args) {
+        if (args == null) return null;
+        List<String> out = new ArrayList<>(args.length);
+        boolean afterDashDash = false;
+        for (String a : args) {
+            if ("--".equals(a)) {
+                afterDashDash = true;
+                out.add(a);
+                continue;
+            }
+            if (!afterDashDash && "--allow-multiple".equals(a)) {
+                // skip it so the game doesn't see it
+                continue;
+            }
+            out.add(a);
+        }
+        return out.toArray(String[]::new);
     }
 
     // ---------- Swing UI ----------
@@ -287,6 +326,69 @@ public class MarsSimLauncher {
         LaunchConfig withJar(Path p) { return new LaunchConfig(variant, p, memoryMb, speed, safeMode, extraArgs); }
     }
 
+    // ---------- Single-instance guard ----------
+    static final class SingleInstanceGuard {
+        private static final String LOCK_FILE = "mars-sim.lock";
+        private static FileChannel lockChannel;
+        private static FileLock lock;
+
+        static void guardOrExit() {
+            try {
+                final Path lockPath = getLockPath();
+                Files.createDirectories(lockPath.getParent());
+                lockChannel = FileChannel.open(lockPath,
+                        StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                lock = lockChannel.tryLock();
+                if (lock == null) {
+                    notifyUserAndExit();
+                }
+                Runtime.getRuntime().addShutdownHook(
+                        new Thread(SingleInstanceGuard::releaseQuietly, "mars-sim-lock-release"));
+            } catch (IOException e) {
+                // Do not hard-fail if filesystem doesn't support locking. Just warn and continue.
+                System.err.println("Warning: could not create single-instance lock: " + e.getMessage());
+            }
+        }
+
+        private static void notifyUserAndExit() {
+            String msg = "Another Mars‑Sim Launcher is already running.\n" +
+                         "Close it first or start with --allow-multiple.";
+            try {
+                if (!GraphicsEnvironment.isHeadless()) {
+                    JOptionPane.showMessageDialog(null, msg, "Mars‑Sim Launcher", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    System.err.println(msg);
+                }
+            } catch (Throwable t) {
+                System.err.println(msg);
+            }
+            System.exit(17); // distinct non-zero exit code
+        }
+
+        private static Path getLockPath() {
+            final String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ROOT);
+            Path base;
+            if (os.contains("win")) {
+                base = Paths.get(System.getenv().getOrDefault("APPDATA",
+                        System.getProperty("user.home")), "mars-sim");
+            } else if (os.contains("mac")) {
+                base = Paths.get(System.getProperty("user.home"), "Library", "Application Support", "mars-sim");
+            } else {
+                // Linux / Unix: prefer XDG_STATE_HOME, else ~/.local/state/mars-sim
+                String xdgState = System.getenv("XDG_STATE_HOME");
+                base = (xdgState != null && !xdgState.isEmpty())
+                        ? Paths.get(xdgState, "mars-sim")
+                        : Paths.get(System.getProperty("user.home"), ".local", "state", "mars-sim");
+            }
+            return base.resolve(LOCK_FILE);
+        }
+
+        private static void releaseQuietly() {
+            try { if (lock != null && lock.isValid()) lock.release(); } catch (IOException ignored) {}
+            try { if (lockChannel != null && lockChannel.isOpen()) lockChannel.close(); } catch (IOException ignored) {}
+        }
+    }
+
     // ---------- CLI parsing ----------
     static Cli parseCli(String[] args) {
         if (args == null || args.length == 0) return null;
@@ -307,6 +409,8 @@ public class MarsSimLauncher {
                 case "--console" -> variant = Variant.CONSOLE;
                 case "--swing" -> variant = Variant.SWING;
                 case "--safe" -> safe = true;
+                // --allow-multiple is handled in main() and intentionally ignored here
+                case "--allow-multiple" -> { /* consumed */ }
                 case "--mem" -> {
                     if (!it.hasNext()) throw new IllegalArgumentException("--mem requires value in MB");
                     mem = Integer.parseInt(it.next());
