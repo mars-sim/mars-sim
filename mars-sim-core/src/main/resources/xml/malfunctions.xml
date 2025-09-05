@@ -65,6 +65,7 @@
 			<system name="habitable" />
 			<system name="crew cabin" />
 			<system name="farming" />
+			<system name="life support" />
 		</system-list>
 
 		<!-- List of effects this malfunction can produce. (optional) -->
@@ -109,8 +110,32 @@
 			<part name="work gloves" number="1" repair-probability="10" />
 			<part name="fiberglass cloth" number="1" repair-probability="10" />
 		</repair-parts-list>
+	</malfunction>
+
+	<malfunction name="Roof Leak">
+		<severity value="90" />
+		<malfunction-probability value="5.0" />
+		<repair-inside time="50.0" />
+		<system-list>
+			<system name="farming" />
+		</system-list>
+		<effect-list>
+			<effect type="resource" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Air Pressure" change-rate="-.01" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Heartburn" medical-probability="10.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="airleak patch" number="3" repair-probability="75" />
+			<part name="work gloves" number="1" repair-probability="15" />
+			<part name="fiberglass cloth" number="1" repair-probability="5" />
+			<part name="polycarbonate roofing" number="1" repair-probability="10" />
+		</repair-parts-list>
 
 	</malfunction>
+
 
 	<!-- Leak in the water reserves. -->
 	<malfunction name="Water Leak">
@@ -169,6 +194,7 @@
 		<system-list>
 			<system name="fuel heating source" />
 			<system name="fuel power source" />
+			<system name="methane fuel" />
 		</system-list>
 		<effect-list>
 			<effect type="resource" name="Methane" change-rate="-.1" />
@@ -1258,30 +1284,5 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Wall Air leak -->
-	<malfunction name="Wall Air Leak">
-		<severity value="90" />
-		<malfunction-probability value="5.0" />
-		<repair-inside time="30.0" />
-		<system-list>
-			<system name="life support" />
-			<system name="farming" />
-		</system-list>
-		<effect-list>
-			<effect type="resource" name="Oxygen" change-rate="-.01" />
-			<effect type="life-support" name="Oxygen" change-rate="-.01" />
-			<effect type="life-support" name="Air Pressure" change-rate="-.01" />
-		</effect-list>
-		<medical-complaint-list>
-			<medical-complaint name="Heartburn" medical-probability="10.0" />
-		</medical-complaint-list>
-		<repair-parts-list>
-			<part name="airleak patch" number="2" repair-probability="75" />
-			<part name="work gloves" number="1" repair-probability="15" />
-			<part name="fiberglass cloth" number="1" repair-probability="5" />
-			<part name="polycarbonate roofing" number="1" repair-probability="10" />
-		</repair-parts-list>
-
-	</malfunction>
 
 </malfunction-list>

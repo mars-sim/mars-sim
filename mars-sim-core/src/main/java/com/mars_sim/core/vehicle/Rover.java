@@ -66,9 +66,9 @@ public class Rover extends GroundVehicle implements Crewable,
 	private static final double RATE_OF_CHANGE_OF_C_PER_MILLISOL = 0.0005D;
 	/** Rate of change of air pressure (kPa). */
 	private static final double RATE_OF_CHANGE_OF_KPA_PER_MILLISOL = 0.0005D;
-	/** The factitious temperature flow [deg C per millisols] when connected to a settlement */
+	/** The temperature flow [deg C per millisols] when connected to a settlement */
 	private static final double TEMPERATURE_FLOW_PER_MILLISOL = 0.01D;
-	/** The factitious air pressure flow [kPa per millisols] when connected to a settlement */
+	/** The air pressure flow [kPa per millisols] when connected to a settlement */
 	private static final double AIR_PRESSURE_FLOW_PER_MILLISOL = 0.01D;
 
 	/** Normal air pressure (kPa). */

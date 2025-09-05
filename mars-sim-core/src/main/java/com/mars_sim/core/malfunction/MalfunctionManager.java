@@ -969,7 +969,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	void removeFixedMalfunction(Malfunction fixed) {
 		if (!malfunctions.remove(fixed)) {
-			logger.warning(entity, 20_000L, "Fixed malfunction is unknown " + fixed.getName() + ".");
+			logger.warning(entity, 20_000L, "Fixed '" + fixed.getName() + "'.");
 		}
 		else {
 			Map<String, Double> effects = fixed.getLifeSupportEffects();
@@ -1362,7 +1362,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public List<MaintenanceScope> getMaintenanceScopeList(String scope) {
-		return scopeMap.get(scope.toLowerCase());
+//		May add back for debugging: logger.info("scope: " + scope + "  scopeMap: " + scopeMap.keySet().toString());
+		return scopeMap.getOrDefault(scope, Collections.emptyList());
 	}
 	
 	/**
