@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
+import java.util.logging.Level;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mars_sim.core.building.Building;
@@ -528,7 +529,8 @@ public class UnitManager implements Serializable, Temporal {
 				}
 				catch (Throwable ex) {
 					// Never let a bad listener break delivery to others
-					logger.severe("UnitManager listener threw during " + eventType + " for " + unit + ": ", ex);
+					logger.log(Level.SEVERE,
+					           "UnitManager listener threw during " + eventType + " for " + unit, ex);
 				}
 				return "ok";
 			});
@@ -542,16 +544,17 @@ public class UnitManager implements Serializable, Temporal {
 					f.get();
 				}
 				catch (ExecutionException ee) {
-					logger.severe("ExecutionException in UnitManager listener batch: ", ee);
+					logger.log(Level.SEVERE, "ExecutionException in UnitManager listener batch", ee);
 				}
 			}
 		}
 		catch (InterruptedException ie) {
 			Thread.currentThread().interrupt();
-			logger.severe("Interrupted while delivering UnitManager event " + eventType + " for " + unit + ": ", ie);
+			logger.log(Level.SEVERE,
+			           "Interrupted while delivering UnitManager event " + eventType + " for " + unit, ie);
 		}
 		catch (RejectedExecutionException ree) {
-			logger.severe("Rejected while delivering UnitManager event (executor shutdown): ", ree);
+			logger.log(Level.SEVERE, "Rejected while delivering UnitManager event (executor shutdown)", ree);
 		}
 	}
 
