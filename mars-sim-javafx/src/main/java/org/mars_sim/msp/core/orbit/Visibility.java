@@ -23,7 +23,7 @@
  *     standard horizon half-angle when e_min = 0.
  */
 
-package com.mars_sim.core.orbit;
+package org.mars_sim.msp.core.orbit;
 
 import java.util.Locale;
 import java.util.Objects;
