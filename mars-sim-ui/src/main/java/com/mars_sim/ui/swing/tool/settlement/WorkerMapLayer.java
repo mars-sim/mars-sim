@@ -131,7 +131,7 @@ public abstract class WorkerMapLayer<T extends Worker> extends AbstractMapLayer 
        		 	drawRightLabel(true, "- " + taskDesc, w.getPosition(), color,
        	                TASK_FONT, LABEL_XOFFSET, 1.9f * LABEL_YOFFSET, viewpoint);
         		drawRightLabel(true, w.getName(), pos, color,
-                        NAME_FONT, LABEL_XOFFSET, 3 * LABEL_YOFFSET, viewpoint);
+                        NAME_FONT, LABEL_XOFFSET, 3f * LABEL_YOFFSET, viewpoint);
         	}
         	else {
        		 	drawRightLabel(true, "- " + taskDesc, w.getPosition(), color,

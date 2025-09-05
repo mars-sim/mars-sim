@@ -2615,14 +2615,14 @@ public class Settlement extends Unit implements Temporal,
 			iceDemand = 1;
 		
 		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
-		waterDemand = waterDemand * Math.sqrt(1 + rationing.getRationingLevel());
+		waterDemand = waterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)
 			waterDemand = 1;
 		
 		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
-		brineWaterDemand = brineWaterDemand * Math.sqrt(1 + rationing.getRationingLevel());
+		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
 		if (waterDemand > WATER_MAX)
 			waterDemand = WATER_MAX;
 		if (waterDemand < 1)

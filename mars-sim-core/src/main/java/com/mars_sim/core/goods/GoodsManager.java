@@ -827,8 +827,8 @@ public class GoodsManager implements Serializable {
 		int optimalPerPop = limits.optimal();
 		int pop = settlement.getNumCitizens();
 		
-		double optimal = optimalPerPop * pop;
-		double reserve = reservePerPop * pop;
+		int optimal = optimalPerPop * pop;
+		int reserve = reservePerPop * pop;
 		double demand = getDemandScoreWithID(resourceID);
 
 		// Compare the available amount of oxygen

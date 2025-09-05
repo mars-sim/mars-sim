@@ -236,7 +236,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		
 		double condition = manager.getAdjustedCondition();
 		// Score is based on condition plus %age overdue
-		score = new RatingScore("condition", 4 * (100 - condition));
+		score = new RatingScore("condition", 4D * (100 - condition));
 		
 		score.addModifier("maint.win", 6 * (effectiveTime / inspectionWindow));
 		

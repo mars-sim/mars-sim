@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.util;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.Simulation;
@@ -101,9 +102,9 @@ public abstract class MetaTask {
 	
 	private Set<TaskTrait> traits = Collections.emptySet();
 	private Set<FavoriteType> favourites = Collections.emptySet();
-	private EnumMap<JobType, Double> preferredJobs = new EnumMap<>(JobType.class);
+	private Map<JobType, Double> preferredJobs = new EnumMap<>(JobType.class);
 	private Set<RobotType> preferredRobots = new HashSet<>();
-	private EnumMap<RoleType, Double> preferredRoles = new EnumMap<>(RoleType.class);
+	private Map<RoleType, Double> preferredRoles = new EnumMap<>(RoleType.class);
 	
 	
 	/**

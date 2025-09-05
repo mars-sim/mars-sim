@@ -367,7 +367,7 @@ public class MalfunctionTabPanel extends TabPanel {
 			.append(MalfunctionManager.getPartsString(parts)).toString();
 		
 		if (useHTML)
-			result.replaceAll(COMMA, BR);
+			return result.replaceAll(COMMA, BR);
 		
 //		if (!parts.isEmpty()) {
 //			boolean first = true;

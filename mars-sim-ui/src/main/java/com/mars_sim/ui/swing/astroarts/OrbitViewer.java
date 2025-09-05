@@ -15,6 +15,7 @@ package com.mars_sim.ui.swing.astroarts;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 /**
  * Orbit Projector
@@ -70,6 +71,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -239,6 +241,8 @@ implements ActionListener {
 		String[][] array = getParameterInfo();
 		rowOfMatrix = array.length;
 
+	 	setLayout(new BorderLayout());
+
 		createGUI();
 
 		// Player Thread
@@ -246,9 +250,40 @@ implements ActionListener {
 		playerThread = null;
 	}
 
-	private JPanel createGUI() {
+	/**
+	 * Initialization.
+	 */
+	private OrbitViewer() { 
+		super(NAME, "Orbit Viewer", null);
+	    
+		init();
+	}
+	
+	public void init() {
+		
+		JFrame frame = new JFrame("Orbit Viewer");
+		frame.setSize(1024, 1024);
+		
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
-	 	setLayout(new BorderLayout());
+		String[][] array = getParameterInfo();
+		rowOfMatrix = array.length;
+
+		frame.setLayout(new BorderLayout());
+		
+		frame.getContentPane().add(createGUI(), BorderLayout.CENTER);
+		
+		setBackground(Color.BLACK);
+		
+		// Player Thread
+		orbitPlayer = new OrbitPlayer(this);
+		playerThread = null;
+		
+		frame.pack();
+        frame.setVisible(true);
+	}
+    
+	private JPanel createGUI() {
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 

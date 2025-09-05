@@ -863,7 +863,7 @@ public class PartGood extends Good {
 		
 		int num = settlement.getBuildingManager().getMaintenanceDemand(part);
 		
-		return previousDemand * (1 + (1 + num) * PARTS_MAINTENANCE_VALUE / (1 + previousNum));
+		return previousDemand * (1 + (1 + num) * PARTS_MAINTENANCE_VALUE / (1.0 + previousNum));
 	}
 	
 	/**

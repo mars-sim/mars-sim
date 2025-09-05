@@ -52,12 +52,14 @@ public final class IntPoint implements Serializable {
 	}
 
 	/**
-	 * Get the distance between 2 points.
+	 * Gets the distance between 2 points.
+	 * 
 	 * @param position
 	 * @return
 	 */
 	public int getDistance(IntPoint position) {
-		return (int) Math.round(Math.sqrt(Math.pow(getX() - position.getX(), 2D) +
-			        Math.pow(getY() - position.getY(), 2D)));
+		// Note: need to case position.getX() and position.getY() to double
+		return (int) Math.round(Math.sqrt(Math.pow(getX() - 1.0 * position.getX(), 2D) +
+			        Math.pow(getY() - 1.0 * position.getY(), 2D)));
 	}
 }

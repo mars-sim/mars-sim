@@ -217,6 +217,8 @@ public class MainWindow
 			// Starts a background sound track.
 			desktop.playBackgroundMusic();
 		} catch (InterruptedException e) {
+			logger.severe("Problem playing background music: " + e);
+			Thread.currentThread().interrupt();
 		}
 	}
 

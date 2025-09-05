@@ -41,13 +41,14 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 		}
 
 		/**
-		 * Wait for teh current pulse to be applied
+		 * Waits for the current pulse to be applied
 		 */
 		private void awaitPulse() {
 			try {
 				doneLock.acquire();
 			} catch (InterruptedException e) {
 				logger.severe(target + ": Problem waitng for pulse", e);
+				Thread.currentThread().interrupt();
 			}
 		}
 
@@ -64,6 +65,7 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 					startLock.acquire();
 				} catch (InterruptedException e) {
 				    logger.severe(target + ": Problem waiting for startLock", e);
+					Thread.currentThread().interrupt();
 				} // Wait for the pulse
 
 				// Graceful closedown
@@ -91,14 +93,14 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 		// Wakeup each thread by applying the latest Pulse
 		tasks.stream().forEach(s -> s.applyPulse(pulse));
 
-		// Wait for all to apply the new pulse as this is a blocking operation
+		// Waits for all to apply the new pulse as this is a blocking operation
 		// order of completion does not matter
 		// These must be seperate to applow the Thread to process
 		tasks.stream().forEach(s -> s.awaitPulse());
     }
 
     /**
-     * Stop all threads
+     * Stops all threads.
      */
     @Override
     public void stop() {
@@ -107,7 +109,8 @@ public class TemporalThreadExecutor implements TemporalExecutor {
     }
 
     /**
-     * Add a new Temporal to the executor. This will create a new Thread.
+     * Adds a new Temporal to the executor. This will create a new Thread.
+     * 
      * @param s Temporal to add
      */
     @Override

@@ -118,59 +118,12 @@ public class SplashWindow extends JComponent {
 				
 				int x = splashImage.getWidth(this);
 				
-				if (rand == 1)
-					g2d.setColor(Color.DARK_GRAY);
+				drawTitleVersion(g2d, rand, x);
 				
-				else if (rand > 1)
-					g2d.setColor(Color.ORANGE);
+				drawAuthorBuild(g2d, rand, x);
 				
-				
-				g2d.setFont(titleFont);
-				
-				if (rand == 0) {
-					paintTextWithOutline(g, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);				
-				}
-				else {
-					paintTextWithOutline(g, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);
-				}
-			
-				if (rand == 0) {
-					g2d.setFont(versionStringFont1);
-					g2d.setColor(Color.WHITE);
-					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
-				}
-				else if (rand == 1) {
-					g2d.setFont(versionStringFont1);
-					g2d.setColor(Color.WHITE);
-					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
-				}
-				else if (rand == 2) {
-					g2d.setFont(versionStringFont);
-					g2d.setColor(Color.ORANGE);
-					g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 90);
-				}
-				else {
-					g2d.setFont(versionStringFont1);
-					g2d.setColor(Color.WHITE);
-					g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
-				}
-				
-				g2d.setColor(Color.WHITE);
-
-				g2d.setFont(authorStringFont);
-				
-				if (rand == 2)
-					g2d.drawString(AUTHOR_STRING[rand], 15, h - 20);
-				else
-					g2d.drawString(AUTHOR_STRING[rand], 15, h - 15);
-				
-				g2d.setFont(buildStringFont);
-				
-				if (rand == 2)
-					g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 35);
-				else 
-					g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 15);
-
+				splashImage.flush();
+				g2d.dispose();
 			}
 		};
 
@@ -193,56 +146,113 @@ public class SplashWindow extends JComponent {
 		setIconImage();
 
 		// Set cursor style.
-//		window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+		window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
 		// Display the splash window.
 		window.setVisible(true);
 	}
 
-	public void paintTextWithOutline(Graphics g, String text, Color fillColor, Color outlineColor, Font font, int x, int y) {
+	private void drawAuthorBuild(Graphics2D g2d, int rand, int x) {
+
+		g2d.setColor(Color.WHITE);
+
+		g2d.setFont(authorStringFont);
+		
+		if (rand == 2)
+			g2d.drawString(AUTHOR_STRING[rand], 15, h - 20);
+		else
+			g2d.drawString(AUTHOR_STRING[rand], 15, h - 15);
+		
+		g2d.setFont(buildStringFont);
+		
+		if (rand == 2)
+			g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 35);
+		else 
+			g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 15);
+	}
+	
+	private void drawTitleVersion(Graphics2D g2d, int rand, int x) {
+		
+		if (rand == 1)
+			g2d.setColor(Color.DARK_GRAY);
+		
+		else if (rand > 1)
+			g2d.setColor(Color.ORANGE);
+		
+		
+		g2d.setFont(titleFont);
+		
+		if (rand == 0) {
+			paintTextWithOutline(g2d, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);				
+		}
+		else {
+			paintTextWithOutline(g2d, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);
+		}
+	
+		if (rand == 0) {
+			g2d.setFont(versionStringFont1);
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
+		}
+		else if (rand == 1) {
+			g2d.setFont(versionStringFont1);
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
+		}
+		else if (rand == 2) {
+			g2d.setFont(versionStringFont);
+			g2d.setColor(Color.ORANGE);
+			g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 90);
+		}
+		else {
+			g2d.setFont(versionStringFont1);
+			g2d.setColor(Color.WHITE);
+			g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
+		}
+		
+	}
+	
+	public void paintTextWithOutline(Graphics2D g2d, String text, Color fillColor, Color outlineColor, Font font, int x, int y) {
 	
 	    BasicStroke outlineStroke = new BasicStroke(2.0f);
 
-	    if (g instanceof Graphics2D g2) {
-
-	        g2.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-	        
-	        // remember original settings
-	        Color originalColor = g2.getColor();
-	        Stroke originalStroke = g2.getStroke();
-	        RenderingHints originalHints = g2.getRenderingHints();
-
-	        // create a glyph vector from your text
-	        GlyphVector glyphVector = font.createGlyphVector(g2.getFontRenderContext(), text);
-	        // get the shape object
-	        Shape textShape = glyphVector.getOutline();
-
-	        // activate anti aliasing for text rendering (if you want it to look nice)
-	        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-	                RenderingHints.VALUE_ANTIALIAS_ON);
-	        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-	                RenderingHints.VALUE_RENDER_QUALITY);
-	        
-	        AffineTransform saveTransform = g2.getTransform();
-	        
-			// Apply graphic transforms for label.
-			AffineTransform newTransform = new AffineTransform(saveTransform);
-			newTransform.translate(x, y);
-			g2.setTransform(newTransform);
+        g2d.setStroke(new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         
-	        g2.setColor(outlineColor);
-	        g2.setStroke(outlineStroke);
-	        g2.draw(textShape); // draw outline
+        // remember original settings
+        Color originalColor = g2d.getColor();
+        Stroke originalStroke = g2d.getStroke();
+        RenderingHints originalHints = g2d.getRenderingHints();
 
-	        g2.setColor(fillColor);
-	        g2.fill(textShape); // fill the shape
+        // create a glyph vector from your text
+        GlyphVector glyphVector = font.createGlyphVector(g2d.getFontRenderContext(), text);
+        // get the shape object
+        Shape textShape = glyphVector.getOutline();
 
-	        // Restore original graphic transforms.
-			g2.setTransform(saveTransform);
-	        g2.setColor(originalColor);
-	        g2.setStroke(originalStroke);
-	        g2.setRenderingHints(originalHints);
-	    }
+        // activate anti aliasing for text rendering (if you want it to look nice)
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                RenderingHints.VALUE_RENDER_QUALITY);
+        
+        AffineTransform saveTransform = g2d.getTransform();
+        
+		// Apply graphic transforms for label.
+		AffineTransform newTransform = new AffineTransform(saveTransform);
+		newTransform.translate(x, y);
+		g2d.setTransform(newTransform);
+    
+        g2d.setColor(outlineColor);
+        g2d.setStroke(outlineStroke);
+        g2d.draw(textShape); // draw outline
+
+        g2d.setColor(fillColor);
+        g2d.fill(textShape); // fill the shape
+
+        // Restore original graphic transforms.
+		g2d.setTransform(saveTransform);
+        g2d.setColor(originalColor);
+        g2d.setStroke(originalStroke);
+        g2d.setRenderingHints(originalHints);
 	}
 	
 	public void display() {
