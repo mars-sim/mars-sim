@@ -183,7 +183,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
 	// Note: there is no need of serializing scopeCollection since it's only being used by
 	// TabPanelMaintenance for generating tables 
-	private transient Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
+	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
 	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
