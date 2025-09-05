@@ -17,6 +17,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -393,6 +394,17 @@ public class SettlementMapPanel extends JPanel {
 	public void removeNotify() {
 		// Ensure listeners are detached to allow GC of this panel
 		removeInteractionListeners();
+
+		// --- PATCH: Stop and detach the zoom coalescing timer to avoid stray events & leaks ---
+		if (zoomCoalesceTimer != null) {
+			zoomCoalesceTimer.stop();
+			// Clear listeners to break strong references early
+			for (ActionListener l : zoomCoalesceTimer.getActionListeners()) {
+				zoomCoalesceTimer.removeActionListener(l);
+			}
+			zoomCoalesceTimer = null;
+			pendingScale = null;
+		}
 		super.removeNotify();
 	}
 
