@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -137,6 +139,10 @@ public class SettlementTransparentPanel extends JComponent {
     private javax.swing.Timer zoomDebounce;
     private ChangeListener zoomListener;
     private MouseWheelListener mouseWheelListener;
+
+    // Patch 1: idempotent installation + cleanup on detach
+    private boolean listenersInstalled;
+    private HierarchyListener mapPanelHierarchyListener;
 
     private JLabel emptyLabel;
     /** label for projected sunrise time. */
@@ -287,6 +293,16 @@ public class SettlementTransparentPanel extends JComponent {
         eastPane.add(controlPane, BorderLayout.CENTER);
 
         centerPanel.add(eastPane, BorderLayout.EAST);
+
+        // Patch 1: listen for mapPanel displayability change to detach listeners to avoid leaks
+        if (mapPanel != null && mapPanelHierarchyListener == null) {
+            mapPanelHierarchyListener = e -> {
+                if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0 && !mapPanel.isDisplayable()) {
+                    detachListeners();
+                }
+            };
+            mapPanel.addHierarchyListener(mapPanelHierarchyListener);
+        }
 
         mapPanel.setVisible(true);
     }
@@ -723,7 +739,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         initDebounce(zoomSlider);
 
-        // Add mouse wheel listener for zooming.
+        // Prepare mouse wheel listener for zooming (install idempotently elsewhere).
         mouseWheelListener = new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent evt) {
@@ -750,7 +766,11 @@ public class SettlementTransparentPanel extends JComponent {
             }
         };
 
-        mapPanel.addMouseWheelListener(mouseWheelListener);
+        // Patch 1: install the wheel listener idempotently to avoid duplicates
+        if (mapPanel != null && !listenersInstalled) {
+            mapPanel.addMouseWheelListener(mouseWheelListener);
+            listenersInstalled = true;
+        }
     }
 
     /**
@@ -866,6 +886,26 @@ public class SettlementTransparentPanel extends JComponent {
                 removeAllListenersRecursively(child);
             }
         }
+    }
+
+    /**
+     * Detach the listeners this panel installs, idempotently.
+     * (Patch 1 core: prevent retained references when the map window closes)
+     */
+    private void detachListeners() {
+        // Stop and clear debounce timer
+        if (zoomDebounce != null) {
+            zoomDebounce.stop();
+        }
+        // Remove our slider change listener
+        if (zoomSlider != null && zoomListener != null) {
+            zoomSlider.removeChangeListener(zoomListener);
+        }
+        // Remove mouse wheel listener from mapPanel
+        if (mapPanel != null && mouseWheelListener != null) {
+            mapPanel.removeMouseWheelListener(mouseWheelListener);
+        }
+        listenersInstalled = false;
     }
 
     /**
@@ -1314,24 +1354,14 @@ public class SettlementTransparentPanel extends JComponent {
             return;
         }
 
-        // --- Stop timers and detach explicit listeners we track ---
-        if (zoomDebounce != null) {
-            zoomDebounce.stop();
-            zoomDebounce = null;
-        }
-        if (zoomSlider != null && zoomListener != null) {
-            zoomSlider.removeChangeListener(zoomListener);
-        }
-        zoomListener = null;
+        // --- Core patch cleanup: detach installed listeners ---
+        detachListeners();
 
-        // Defensive unregistration from both this panel and the mapPanel (safe no-ops if not present)
-        if (mouseWheelListener != null) {
-            removeMouseWheelListener(mouseWheelListener); // in case it was also attached to us
-            if (mapPanel != null) {
-                mapPanel.removeMouseWheelListener(mouseWheelListener);
-            }
+        // Remove the displayability listener from mapPanel if present
+        if (mapPanel != null && mapPanelHierarchyListener != null) {
+            mapPanel.removeHierarchyListener(mapPanelHierarchyListener);
         }
-        mouseWheelListener = null;
+        mapPanelHierarchyListener = null;
 
         // --- Best-effort: remove action/item listeners on owned controls ---
         if (renameBtn != null) {
