@@ -323,6 +323,20 @@ public class UnitManager implements Serializable, Temporal {
     public synchronized void removeUnit(Unit unit) {
         UnitType type = getTypeFromIdentifier(unit.getIdentifier());
         Map<Integer, ? extends Unit> map = getUnitMap(type);
+
+        // If a settlement is removed, also drop its coordinate cache entry
+        if (unit instanceof Settlement) {
+            Settlement s = (Settlement) unit;
+            Coordinates key = s.getCoordinates();
+            if (key != null) {
+                // Remove only if the mapping still points to this settlement
+                settlementCoordinateMap.remove(key, s);
+            } else {
+                // Rare fallback: remove by value if coordinates are unavailable
+                settlementCoordinateMap.values().remove(s);
+            }
+        }
+
         map.remove(unit.getIdentifier());
 
         // Fire unit manager event.
@@ -673,6 +687,7 @@ public class UnitManager implements Serializable, Temporal {
         lookupEquipment.clear();
 
         marsSurface = null;
+        settlementCoordinateMap.clear();
 
         // Stop the UnitManager listener executor
         if (umListenerExecutor != null) {
