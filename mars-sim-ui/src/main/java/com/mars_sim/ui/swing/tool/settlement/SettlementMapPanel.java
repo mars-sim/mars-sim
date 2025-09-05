@@ -57,14 +57,13 @@ import com.mars_sim.ui.swing.UIConfig;
  * <p><b>What's new in this version</b> (memory‑safety & UX fixes):
  * <ul>
  *   <li><b>Zoom coalescing</b>: calls to {@link #setScale(double)} are throttled via a Swing Timer
- *       to prevent excessive re-rasterization while a slider is dragged.</li>
+ *       to prevent excessive re-rendering while a slider is dragged.</li>
  *   <li><b>Listener lifecycle</b>: mouse listeners are installed once and removed on dispose to
  *       avoid leaks when the panel is recreated.</li>
  *   <li><b>Graphics hygiene</b>: uses a child {@code Graphics2D} and disposes it after painting.</li>
  *   <li><b>Icon cache hook</b>: an LRU {@code ScaledIconCache} is exposed for layers that render
  *       scalable art to reuse rasterizations at the current scale.</li>
- *   <li><b>Tile cache cleanup</b>: calls {@link BackgroundTileMapLayer#dispose()} on remove to
- *       promptly free background tile images when the panel is detached.</li>
+ *   <li><b>Tile cache cleanup</b>: background tile images are released during panel destroy.</li>
  * </ul>
  * </p>
  */
@@ -138,16 +137,16 @@ public class SettlementMapPanel extends JPanel {
 
 	private Set<DisplayOption> displayOptions = new HashSet<>();
 
-	// -------- New: event coalescing for scale updates --------
+	// -------- Event coalescing for scale updates --------
 	private Timer zoomCoalesceTimer;
 	private Double pendingScale = null; // when non-null, an update is queued
 
-	// -------- New: listener lifecycle management --------
+	// -------- Listener lifecycle management --------
 	private boolean listenersInstalled = false;
 	private MouseMotionAdapter motionListener;
 	private MouseAdapter mouseListener;
 
-	// -------- New: shared cache hook for layers that rasterize scalable art --------
+	// -------- Shared cache hook for layers that rasterize scalable art --------
 	private final ScaledIconCache iconCache = new ScaledIconCache();
 
 	/**
@@ -208,7 +207,7 @@ public class SettlementMapPanel extends JPanel {
 		selectedPerson = new HashMap<>();
 		selectedRobot = new HashMap<>();
 
-		// New: throttle zoom changes to avoid flood of repaints/rasterizations
+		// Throttle zoom changes to avoid flood of repaints/rasterizations
 		zoomCoalesceTimer = new Timer(50, e -> applyPendingScale());
 		zoomCoalesceTimer.setRepeats(false);
 	}
@@ -257,10 +256,14 @@ public class SettlementMapPanel extends JPanel {
 
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
 		settlementTransparentPanel.createAndShowGUI();
-		settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
+		if (settlement != null) {
+			settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
+		}
 
 		// Loads the value of scale possibly modified from UIConfig's Properties
-		settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+		if (settlementTransparentPanel != null) {
+			settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+		}
 
 		repaint();
 	}
@@ -287,7 +290,9 @@ public class SettlementMapPanel extends JPanel {
 				int x = evt.getX();
 				int y = evt.getY();
 
-				settlementWindow.setPop(getSettlement().getNumCitizens());
+				if (getSettlement() != null) {
+					settlementWindow.setPop(getSettlement().getNumCitizens());
+				}
 				// Call to determine if it should display or remove the building coordinate within a building
 				showBuildingCoord(x, y);
 				// Display the pixel coordinate of the window panel
@@ -373,15 +378,6 @@ public class SettlementMapPanel extends JPanel {
 	public void removeNotify() {
 		// Ensure listeners are detached to allow GC of this panel
 		removeInteractionListeners();
-
-		// Promptly dispose heavy background tile cache when panel is removed
-		if (mapLayers != null) {
-			for (SettlementMapLayer layer : mapLayers) {
-				if (layer instanceof BackgroundTileMapLayer) {
-					((BackgroundTileMapLayer) layer).dispose();
-				}
-			}
-		}
 		super.removeNotify();
 	}
 
@@ -475,13 +471,15 @@ public class SettlementMapPanel extends JPanel {
 	/**
 	 * Sets the settlement to display.
 	 *
-	 * @param settlement the settlement.
+	 * @param newSettlement the settlement.
 	 */
 	public synchronized void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
 			this.settlement = newSettlement;
-			getSettlementTransparentPanel().getSettlementListBox()
-					.setSelectedItem(settlement);
+			if (getSettlementTransparentPanel() != null
+					&& getSettlementTransparentPanel().getSettlementListBox() != null) {
+				getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(settlement);
+			}
 			repaint();
 		}
 	}
@@ -530,7 +528,6 @@ public class SettlementMapPanel extends JPanel {
 		this.scale = q;
 
 		// Avoid re-entrant slider event storms: do not call setZoomValue here.
-		// The transparent panel will reflect the change when it next polls/sets.
 
 		revalidate();
 		repaint();
@@ -573,7 +570,9 @@ public class SettlementMapPanel extends JPanel {
 		yPos = 0D;
 		setRotation(0D);
 		scale = DEFAULT_SCALE; // set directly to avoid unnecessary coalescing delay here
-		settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+		if (settlementTransparentPanel != null) {
+			settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+		}
 		repaint();
 	}
 
@@ -1104,7 +1103,7 @@ public class SettlementMapPanel extends JPanel {
 				if (scale > 1) scaleMod = (float) Math.sqrt(scale);
 
 				// Display all map layers.
-				var viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
+				MapViewPoint viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
 				for (SettlementMapLayer layer : mapLayers) {
 					layer.displayLayer(settlement, viewpoint);
 				}
@@ -1119,7 +1118,9 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	void update(ClockPulse pulse) {
-		settlementTransparentPanel.update(pulse);
+		if (settlementTransparentPanel != null) {
+			settlementTransparentPanel.update(pulse);
+		}
 		// repaint(); // avoid repaint flood; layers request repaints when needed
 	}
 
@@ -1128,7 +1129,9 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	Properties getUIProps() {
 		Properties props = new Properties();
-		props.setProperty(SETTLEMENT_PROP, settlement.getName());
+		if (settlement != null) {
+			props.setProperty(SETTLEMENT_PROP, settlement.getName());
+		}
 
 		for (DisplayOption op : DisplayOption.values()) {
 			props.setProperty(op.name(), Boolean.toString(displayOptions.contains(op)));
