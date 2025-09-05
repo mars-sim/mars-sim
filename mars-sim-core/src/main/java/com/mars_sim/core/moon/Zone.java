@@ -776,17 +776,21 @@ public class Zone implements Serializable {
     private double deriveLegacyArea() {
         final ZoneType t = this.type;
         final double f = (areaFactor <= 0.0) ? 1.0 : areaFactor;
-        final double min, max;
+        final double min;
+        final double max;
+
         if (t == null) {
-            min = 20.0; max = 40.0;
+            min = 20.0;
+            max = 40.0;
         } else {
             switch (t) {
                 case BUSINESS:
-                    min = 25.0; max = 50.0;
+                    min = 25.0;
+                    max = 50.0;
                     break;
-                // TODO: add other ZoneType ranges as historically defined
                 default:
-                    min = 20.0; max = 40.0;
+                    min = 20.0;
+                    max = 40.0;
                     break;
             }
         }
