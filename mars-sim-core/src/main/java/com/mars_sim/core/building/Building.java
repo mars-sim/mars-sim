@@ -96,7 +96,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Building.class.getName());
 
-	
+	private static final String _HAB = " hab";
+	private static final String _HUB = " hub";
+		
 	/** The height of an airlock in meters */
 	// Assume an uniform height of 2.5 meters in all buildings
 	private static final double HEIGHT = 2.5;
@@ -197,7 +199,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		this.powerModeCache = PowerMode.FULL_POWER;
 
-		if (name.contains("Hab") || name.contains("Hub")) {
+		if (name.toLowerCase().contains(_HAB) || name.toLowerCase().contains(_HUB)) {
 			// For Habs and Hubs that have a circular footprint
 			this.floorArea = Math.PI * (.5 * length) * (.5 * length);
 		}
@@ -249,6 +251,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, buildingSpec.getWearLifeTime(), totalMaintenanceTime);
 	
+		malfunctionManager.addScopeString(buildingSpec.getName());
 		// Add building type to the part scope
 		simulationConfig.getPartConfiguration().addScopes(buildingSpec.getName());
 		
@@ -275,9 +278,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 		// Transfer all system scopes from BuildingSpec to malfunction manager.
 		malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
 					
-
-		// If no life support then no internal repairs
+		// If no life support then no internal repairs.
 		malfunctionManager.setSupportInsideRepair(hasFunction(FunctionType.LIFE_SUPPORT));
+		
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
 	}
 
 	/**

@@ -144,6 +144,7 @@
 		<repair-inside time="150.0" />
 		<system-list>
 			<system name="battery" />
+			<system name="power storage" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" medical-probability="5.0" />

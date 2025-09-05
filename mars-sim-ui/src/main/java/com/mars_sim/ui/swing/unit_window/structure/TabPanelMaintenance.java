@@ -157,7 +157,7 @@ public class TabPanelMaintenance extends TabPanelTable {
 			case 1:
 				return (int)manager.getWearCondition();
 			case 2:
-				return manager.getTimeSinceLastMaintenance()/1000D;
+				return manager.getEffectiveTimeSinceLastMaintenance()/1000D;
 			case 3: 
 				return manager.getStandardInspectionWindow()/1000D;
 			case 4:

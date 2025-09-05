@@ -42,6 +42,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
@@ -1418,12 +1419,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			Iterator<Malfunction> i = vehicle.getMalfunctionManager().getMalfunctions().iterator();
 			while (i.hasNext()) {
 				Malfunction malfunction = i.next();
-				Map<Integer, Integer> parts = malfunction.getRepairParts();
-				Iterator<Integer> j = parts.keySet().iterator();
+				Map<MaintenanceScope, Integer> map = malfunction.getRepairParts();
+				Iterator<MaintenanceScope> j = map.keySet().iterator();
 				while (j.hasNext()) {
-					Integer part = j.next();
-					int number = parts.get(part);
-					if (vehicle.getItemResourceStored(part) < number) {
+					MaintenanceScope ms = j.next();
+					int number = map.get(ms);
+					if (vehicle.getItemResourceStored(ms.getPart().getID()) < number) {
 						return true;
 					}
 				}

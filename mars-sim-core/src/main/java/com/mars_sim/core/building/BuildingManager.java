@@ -28,6 +28,7 @@ import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.AstronomicalObservation;
 import com.mars_sim.core.building.function.BuildingConnection;
@@ -52,7 +53,6 @@ import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
-import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.Dining;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
@@ -79,7 +79,7 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
@@ -122,7 +122,7 @@ public class BuildingManager implements Serializable {
 	/** The settlement's map of adjacent buildings. */
 	private transient Map<Building, Set<Building>> adjacentBuildingMap = new HashMap<>();
 	/** The settlement's maintenance parts map. */
-	private Map<Malfunctionable, Map<Integer, Integer>> partsMaint = new HashMap<>();
+	private Map<Malfunctionable, Map<MaintenanceScope, Integer>> partsMaint = new HashMap<>();
 	
 	private transient Settlement settlement;
 	private MeteoriteImpactProperty meteorite;
@@ -2341,12 +2341,12 @@ public class BuildingManager implements Serializable {
 	  */
 	public void retrieveMaintParts(Malfunctionable entity) {
       
-       Map<Integer, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
+       Map<MaintenanceScope, Integer> parts = entity.getMalfunctionManager().retrieveMaintenancePartsFromManager();
 
        if (!parts.isEmpty()) {
 
            if (!partsMaint.isEmpty()) {
-               Map<Integer, Integer> partsMaintEntry = partsMaint.get(entity);
+               Map<MaintenanceScope, Integer> partsMaintEntry = partsMaint.get(entity);
                if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
                    // Post the parts and inject the demand
                    postInjectPartsDemand(entity, parts);
@@ -2374,13 +2374,14 @@ public class BuildingManager implements Serializable {
 	 * @param entity
 	 * @param parts
 	 */
-	public void postInjectPartsDemand(Malfunctionable entity, Map<Integer, Integer> parts) {
+	public void postInjectPartsDemand(Malfunctionable entity, Map<MaintenanceScope, Integer> parts) {
 		// Post it
         partsMaint.put(entity, parts);
-        for (int id : parts.keySet()) {
-            int num = parts.get(id);
-            Good good = GoodsUtil.getGood(id);
-            Part part = ItemResourceUtil.findItemResource(id);
+        for (MaintenanceScope ms : parts.keySet()) {
+        	Part part = ms.getPart();
+            int num = parts.get(ms);
+            Good good = GoodsUtil.getGood(part.getID());
+            
             // Inject the demand onto this part
             ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
         }
@@ -2391,7 +2392,7 @@ public class BuildingManager implements Serializable {
 	 * 
 	 * @param requestEntity
 	 */
-	public void updateMaintenancePartsMap(Malfunctionable requestEntity, Map<Integer, Integer> newParts) {
+	public void updateMaintenancePartsMap(Malfunctionable requestEntity, Map<MaintenanceScope, Integer> newParts) {
 		if (partsMaint.isEmpty()) {
 			partsMaint.put(requestEntity, newParts);
 			logger.info(requestEntity, 20_000L, "Maintenance parts updated: " 
@@ -2459,12 +2460,13 @@ public class BuildingManager implements Serializable {
 			return 0;
 		
 		int numRequest = 0;
-		int partID = part.getID();
-	
+
         for (Malfunctionable entity : partsMaint.keySet()) {
-            Map<Integer, Integer> partMap = partsMaint.get(entity);
-            if (partMap.containsKey(partID))
-            	numRequest += partMap.get(partID);
+            Map<MaintenanceScope, Integer> partMap = partsMaint.get(entity);
+            for (MaintenanceScope ms: partMap.keySet()) {
+            	if (ms.getPart().equals(part))
+                	numRequest += partMap.get(ms);
+            }
         }
 
 		return numRequest;

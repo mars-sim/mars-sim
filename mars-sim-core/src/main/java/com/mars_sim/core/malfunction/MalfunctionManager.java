@@ -133,8 +133,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static boolean noFailures = false;
 	
 	// Data members
-	
-
 	private boolean supportInsideRepair = true;
 
 	private int delay = 0;
@@ -144,15 +142,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private int numberMaintenances;
 	/** The number of orbits. */
 	private int orbitCache = MarsTime.FIRST_ORBIT;
-	
+	/** The fatigue accumulated . */
+	private double cumulativeFatigue;
 	/** Life support modifiers. */
 	private double oxygenFlowModifier = 100D;
 	/** The overall % probability that a maintenance event is triggered by active use on this entity. */
 	private double maintenanceProbability;	
 	/** The overall % probability that a malfunction is triggered by active use on this entity. */
 	private double malfunctionProbability;
-	/** Time passing (in millisols) since last maintenance on entity. */
-	private double timeSinceLastMaint;
 	/** Time (millisols) that entity has been actively used since last maintenance. */
 	private double effTimeSinceLastMaint;
 	/** The required base work time for each inspection maintenance on entity. */
@@ -173,7 +170,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	private final double baseWearLifeTime;
 	
-
 	/** The owning entity. */
 	private Malfunctionable entity;
 
@@ -181,9 +177,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Set<String> scopes;
 	/** The current malfunctions in the unit. */
 	private List<Malfunction> malfunctions;
+	/** The map of maintenance scopes. */
+	private Map<String, List<MaintenanceScope>> scopeMap = new HashMap<>();
 	/** The parts currently identified to be retrofitted. */
-	private Map<Integer, Integer> partsNeededForMaintenance;
-
+	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
+	// Note: there is no need of serializing scopeCollection since it's only being used by
+	// TabPanelMaintenance for generating tables 
+	private transient Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
+	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
@@ -300,11 +301,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 		currentWearLifeTime = wearLifeTime - deployedTime;
 		cumulativeTime = deployedTime;
 		effTimeSinceLastMaint = deployedTime;
-		timeSinceLastMaint = deployedTime;
-		
+	
 		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100D;
 	}
 
+	/**
+	 * Initializes the scope map.
+	 */
+	public void initScopes() {
+		for (String scope: scopes) {
+			scopeMap.put(scope, partConfig.getMaintenanceScopeList(scope));
+		}
+	}
+	
 	/**
 	 * Does this malfunctionable support inside repairs?
 	 * 
@@ -475,9 +484,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (noFailures) {
 			return null;
 		}
+		
 		Malfunction malfunction = new Malfunction(this, factory.getNewIncidentNum(), m, supportInsideRepair);
 
 		malfunctions.add(malfunction);
+		
 		numberMalfunctions++;
 
 		getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
@@ -510,10 +521,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 		ItemResourceUtil.initConsumableParts();
 		
 		// Register the failure of the Parts involved
-		for (Entry<Integer, Integer> p : malfunction.getRepairParts().entrySet()) {	
-	
+		for (Entry<MaintenanceScope, Integer> p : malfunction.getRepairParts().entrySet()) {	
+			MaintenanceScope ms = p.getKey();
 			// Compute the new reliability and failure rate for this malfunction
-			Part part = ItemResourceUtil.findItemResource(p.getKey());
+			Part part = ms.getPart();
 			String partName = part.getName();
 
 			if (ItemResourceUtil.consumablePartIDs.contains(part.getID())) {
@@ -534,8 +545,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			double oldMTBF = part.getMTBF();
 			
 			// Retrieve the cumulative number of failure
-			int cumFailure = part.getCumFailure();	
-			
+			int cumFailure = part.getCumFailure();				
 			// Gets the mission sol
 			int missionSol = masterClock.getMarsTime().getMissionSol();
 			
@@ -740,12 +750,31 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Updates params
 		cumulativeTime += time;
 		effTimeSinceLastMaint += time;
-		timeSinceLastMaint += time;
 		currentWearLifeTime -= time * RandomUtil.getRandomDouble(.75, 1.25);
 		if (currentWearCondPercent < 0D)
 			currentWearCondPercent = 0D;
 		currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
 
+		cumulativeFatigue += time;
+		if (cumulativeFatigue > 1) {
+			
+			double portion = cumulativeFatigue/2;
+			
+			// Choose two scopes
+			String firstScope = pickOneScope();
+			if (firstScope != null) {
+				injectFatigue(firstScope, portion);
+			}
+			
+			String secondScope = pickOneScope();
+			if (secondScope != null) {
+				injectFatigue(secondScope, portion);
+			}
+			
+			cumulativeFatigue = 0;
+		}
+		
+		
 		if (pulse.isNewIntMillisol()
 				&& pulse.getMarsTime().getMillisolInt() % FREQUENCY * RandomUtil.getRandomInt(-4, 4) == 0) {
 			
@@ -798,6 +827,42 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 	}
 		
+	/**
+	 * Randomly picks one of the scopes.
+	 * 
+	 * @return
+	 */
+	private String pickOneScope() {
+		// Pick a scope
+		int rand = RandomUtil.getRandomInt(scopes.size() - 1);
+		return scopes.stream()
+				     .skip(rand)
+				     .findFirst()
+				     .orElse(null);
+	}
+	
+	/**
+	 * Randomly picks one of the scopes that has a proportionally high fatigue
+	 * 
+	 * @return
+	 */
+	private String pickOneScopeHighFatigue() {
+		double highestFatigue = 0;
+		String selectedScope = null;
+		for (String scope: scopes) {
+			double sumFatigue = 0;
+			List<MaintenanceScope> list = scopeMap.get(scope);
+			for (MaintenanceScope ms: list) {
+				sumFatigue += ms.getFatigue();
+			}
+			if (sumFatigue > highestFatigue) {
+				selectedScope = scope;
+				highestFatigue = sumFatigue;
+			}
+		}
+		return selectedScope;
+	}
+	
 	/**
 	 * Performs the inspection and generate repair parts. 
 	 * 
@@ -880,9 +945,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// Check if resources is still draining
 			depleteResources(time);
 		}
-
-		// Add time passing.
-		timeSinceLastMaint += time;
 
 		return true;
 	}
@@ -1079,15 +1141,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the time since last inspection or maintenance on entity.
-	 *
-	 * @return time (in millisols)
-	 */
-	public double getTimeSinceLastMaintenance() {
-		return timeSinceLastMaint;
-	}
-
-	/**
 	 * Gets the time the entity has been actively used since its last maintenance.
 	 *
 	 * @return time (in millisols)
@@ -1179,8 +1232,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (inspectionTimeCompleted >= baseMaintWorkTime) {
 			// Reset the maint time to zero
 			inspectionTimeCompleted = 0D;
-			// Reset time last inspection to zero
-			timeSinceLastMaint = 0D;
 			// Reset eff time since last inspection to zero
 			effTimeSinceLastMaint = 0D;
 			// Increment num of maintenance 
@@ -1282,6 +1333,39 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
+	 * Gets the maintenance scope list for a specific collection of scopes, e.g. type of vehicle or function.
+	 * 
+	 * @return
+	 */
+	public List<MaintenanceScope> getMaintenanceScopeList() {
+		if (scopeCollection.containsKey(scopes)) {
+			return scopeCollection.get(scopes);
+		}
+		else {
+			List<MaintenanceScope> results = new ArrayList<>();
+			for (String s : scopes) {
+				List<MaintenanceScope> list = scopeMap.get(s.toLowerCase());
+				if (list != null) {
+					// It needs to allow duplicate MaintenanceScope objects
+					results.addAll(list);
+				}
+			}
+			scopeCollection.put(scopes, results); 
+			return results ;
+		}
+	}
+	
+	/**
+	 * Gets the maintenance scope list for a specific collection of scopes, e.g. type of vehicle or function.
+	 * 
+	 * @param scope a collection of possible scopes
+	 * @return
+	 */
+	public List<MaintenanceScope> getMaintenanceScopeList(String scope) {
+		return scopeMap.get(scope.toLowerCase());
+	}
+	
+	/**
 	 * Generates a new set of required repair parts for maintenance.
 	 * Note: may or may not result in parts needed.
 	 */
@@ -1290,14 +1374,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 			partsNeededForMaintenance = new HashMap<>();
 		}
 		
-		for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(scopes)) {
+		String selectedScope = pickOneScopeHighFatigue();
+		
+		for (MaintenanceScope maintenance : scopeMap.get(selectedScope)) {
 			if (RandomUtil.lessThanRandPercent(maintenance.getProbability())) {
 				int number = RandomUtil.getRandomRegressionInteger(maintenance.getMaxNumber());
 				int id = maintenance.getPart().getID();
 				if (partsNeededForMaintenance.containsKey(id)) {
 					number += partsNeededForMaintenance.get(id);
 				}
-				partsNeededForMaintenance.put(id, number);
+				partsNeededForMaintenance.put(maintenance, number);
 			}
 		}
 		
@@ -1306,6 +1392,48 @@ public class MalfunctionManager implements Serializable, Temporal {
 						+ getPartsString(partsNeededForMaintenance)); 
 	}
 
+	
+	/**
+	 * Injects the fatigue time into the parts.
+	 * 
+	 * @param scope
+	 * @param fatigue
+	 */
+	public void injectFatigue(String scope, double fatigue) {
+		List<MaintenanceScope> list = scopeMap.get(scope);
+		int num = list.size();
+		double average = fatigue/num;
+		double remaining = fatigue;
+		for (MaintenanceScope ms: list) {
+			Part part = ms.getPart();
+			double failureRate = part.getFailureRate();
+			double prob = ms.getProbability();
+			double max = ms.getMaxNumber();
+			for (int i=0; i<max; i++) {
+				if (RandomUtil.lessThanRandPercent(prob)) {
+					if (remaining > 0 && remaining >= average) {
+						ms.addFatigue(failureRate * average);
+						remaining -= average;
+					}
+					else if (remaining > 0) {
+						ms.addFatigue(failureRate * remaining);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Resets the value of fatigue back to zero.
+	 * 
+	 * @param map
+	 */
+	public void resetPartFatigue(Map<MaintenanceScope, Integer> map) {
+		for (MaintenanceScope ms: map.keySet()) {
+			ms.resetFatigue();
+		}
+	}
+	
 	/**
 	 * Looks at the parts needed for maintenance on this entity.
 	 * Note: if parts don't exist, it simply means that one can still do the 
@@ -1313,7 +1441,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @return map of parts and their number.
 	 */
-	public Map<Integer, Integer> getMaintenanceParts() {
+	public Map<MaintenanceScope, Integer> getMaintenanceParts() {
 		return partsNeededForMaintenance;
 	}
 
@@ -1335,7 +1463,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 *
 	 * @return map of parts and their number.
 	 */
-	public Map<Integer, Integer> retrieveMaintenancePartsFromManager() {
+	public Map<MaintenanceScope, Integer> retrieveMaintenancePartsFromManager() {
 		if (partsNeededForMaintenance == null)
 			partsNeededForMaintenance = new HashMap<>();
 		if (!partsNeededForMaintenance.isEmpty()) {
@@ -1365,10 +1493,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (!posted)
 			return result;
 		
-		Map<Integer, Integer> parts = getMaintenanceParts();
+		Map<MaintenanceScope, Integer> parts = getMaintenanceParts();
 		
-		for (Entry<Integer, Integer> entry: parts.entrySet()) {
-			Integer id = entry.getKey();
+		for (Entry<MaintenanceScope, Integer> entry: parts.entrySet()) {
+			MaintenanceScope ms = entry.getKey();
+			int id = ms.getPart().getID();
 			int number = entry.getValue();
 			if (partStore.getItemResourceStored(id) >= number) {
 				logger.info(entity, 30_000L, "Maintenance parts available: " 
@@ -1402,23 +1531,25 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		// Future: Can these spare parts be set aside first to avoid others using it ?
 		
-		Map<Integer, Integer> parts = getMaintenanceParts();
+		Map<MaintenanceScope, Integer> parts = getMaintenanceParts();
 		
 		// Call building manager to check if the maintenance parts have been submitted	
 		if (parts == null || parts.isEmpty())
 			return -1;
 		
-		Map<Integer,Integer> shortfallParts = new HashMap<>();
+		Map<MaintenanceScope, Integer> shortfallParts = new HashMap<>();
 		
 		int shortfall = 0;
 		
-		for (Entry<Integer, Integer> entry: parts.entrySet()) {
-			Integer part = entry.getKey();
+		for (Entry<MaintenanceScope, Integer> entry: parts.entrySet()) {
+			MaintenanceScope ms = entry.getKey();
+			Part part = ms.getPart();
+			int id = part.getID();
 			int number = entry.getValue();
-			int numMissing = partStore.retrieveItemResource(part, number);
+			int numMissing = partStore.retrieveItemResource(id, number);
 			if (numMissing == 0) {
 				logger.info(entity, 20_000L, "Retrieved " + number 
-						+ " " + ItemResourceUtil.findItemResourceName(part) + ".");
+						+ " " + ItemResourceUtil.findItemResourceName(id) + ".");
 			}
 			// Any part still outstanding record for later
 			if (numMissing > 0) {
@@ -1426,15 +1557,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 				// Future: raise the demand on this part
 
 				if (numMissing == number) {
-					logger.info(entity, 20_000L, "Coudn't retrieve " + number + " " + ItemResourceUtil.findItemResourceName(part)
+					logger.info(entity, 20_000L, "Coudn't retrieve " + number + " " + ItemResourceUtil.findItemResourceName(id)
 							+ ". None available. ");
 
 				}
 				else {
 					logger.info(entity, 20_000L, "Missing " + numMissing + "/" + number 
-							+ " " + ItemResourceUtil.findItemResourceName(part) + ".");
+							+ " " + ItemResourceUtil.findItemResourceName(id) + ".");
 				}
-				shortfallParts.put(part, numMissing);
+				shortfallParts.put(ms, numMissing);
 				shortfall = numMissing;
 			}
 		}
@@ -1450,25 +1581,26 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @return string.
 	 */
-	public static String getPartsString(Map<Integer, Integer> parts) {
+	public static String getPartsString(Map<MaintenanceScope, Integer> parts) {
 
 		StringBuilder buf = new StringBuilder();
 		if (!parts.isEmpty()) {
 			boolean first = true;
-			for(Entry<Integer, Integer> entry : parts.entrySet()) {
+			for(Entry<MaintenanceScope, Integer> entry : parts.entrySet()) {
 				if (!first) {
 					buf.append(", ");
 				}
 				first = false;
-				Integer part = entry.getKey();
+				MaintenanceScope ms = entry.getKey();
+				Part part = ms.getPart();
 				int number = entry.getValue();
 				buf.append(number).append(" ")
-						.append(ItemResourceUtil.findItemResource(part).getName());
+						.append(part.getName());
 			}
 			buf.append(".");
 		} else
 			buf.append("Empty.");
-
+		
 		return buf.toString();
 	}
 	

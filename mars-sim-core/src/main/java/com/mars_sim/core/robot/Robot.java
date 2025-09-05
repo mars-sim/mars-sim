@@ -215,7 +215,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		// Add system type to malfunction manager scope
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
-
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
+		
 		// Add TYPE to the part scope
 		SimulationConfig.instance().getPartConfiguration().addScopes(TYPE);
 

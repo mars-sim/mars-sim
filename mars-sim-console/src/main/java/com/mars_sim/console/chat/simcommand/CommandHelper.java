@@ -34,6 +34,7 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
@@ -471,11 +472,12 @@ public class CommandHelper {
 		response.appendLabeledString("Fixed ", String.format(PERC_FORMAT, m.getPercentageFixed()));
 		
 		// Parts
-		Map<Integer, Integer> parts = m.getRepairParts();
+		Map<MaintenanceScope, Integer> parts = m.getRepairParts();
 		if (!parts.isEmpty()) {
 			StringBuilder sb = new StringBuilder();
-			for (Entry<Integer, Integer> p : parts.entrySet()) {
-				Part part = ItemResourceUtil.findItemResource(p.getKey());
+			for (Entry<MaintenanceScope, Integer> p : parts.entrySet()) {
+				MaintenanceScope ms = p.getKey();
+				Part part = ms.getPart();
 				sb.append(part.getName()).append("@").append(p.getValue()).append(' ');
 			}
 			response.appendLabeledString("Parts", sb.toString());

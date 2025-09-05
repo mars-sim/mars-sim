@@ -35,6 +35,9 @@ public class MockBuilding extends Building {
 		if (needsLifeSupport) {
 			addFunction(getLifeSupportSpec());
 		}
+		
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
 	}
 
 	public MockBuilding(Settlement owner, String id, BoundedObject bounds) {

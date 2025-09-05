@@ -86,6 +86,6 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
         // Complete until the end
         executeTaskForDuration(p, task, task.getTimeLeft() * 1.1);
         assertTrue("Task created", task.isDone());
-        assertEquals("Maintenance period reset", 0D, manager.getTimeSinceLastMaintenance());
+        assertEquals("Maintenance period reset", 0D, manager.getEffectiveTimeSinceLastMaintenance());
     }
 }

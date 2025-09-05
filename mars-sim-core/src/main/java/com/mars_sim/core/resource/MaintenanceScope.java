@@ -23,6 +23,7 @@ public class MaintenanceScope implements Serializable {
 	private String scope;
 	private Part part;
 	private double probability;
+	private double fatigue;
 	private int maxNumber;
 
 	/**
@@ -57,5 +58,17 @@ public class MaintenanceScope implements Serializable {
 
 	public String getName() {
 		return scope;
+	}
+	
+	public double getFatigue() {
+		return fatigue;
+	}
+	
+	public void addFatigue(double added) {
+		fatigue += added;
+	}
+	
+	public void resetFatigue() {
+		fatigue = 0;
 	}
 }

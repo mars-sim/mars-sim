@@ -257,8 +257,7 @@ public class CollectionUtils {
 	public static int getTotalNumPart(int id) {
 		int result = 0;
 		// Obtain the total # of this part in used from all settlements
-		Collection<Settlement> ss = unitManager.getSettlements();
-		for (Settlement s : ss) {
+		for (Settlement s : unitManager.getSettlements()) {
 			int num = s.getItemResourceStored(id);
 			result += num;
 		}

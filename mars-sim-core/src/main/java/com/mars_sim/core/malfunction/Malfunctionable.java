@@ -17,7 +17,7 @@ import com.mars_sim.core.structure.Settlement;
  * The Malfunctionable interface represents a Unit that can have malfunctions.
  */
 public interface Malfunctionable extends Entity {
-
+	
 	/**
 	 * Gets the entity's malfunction manager.
 	 * 

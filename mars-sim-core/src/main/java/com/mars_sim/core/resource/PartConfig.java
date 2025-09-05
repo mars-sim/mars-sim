@@ -54,8 +54,7 @@ public final class PartConfig  {
 	private Map<String, List<MaintenanceScope>> scopeMap = new HashMap<>();
 	/** The collection of part scopes (as defined for each part in parts.xml. */
 	private Set<String> partScopesRegistry = new TreeSet<>();
-	
-	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
+
 	
 	/**
 	 * Constructor.
@@ -250,51 +249,40 @@ public final class PartConfig  {
 	}
 
 	/**
-	 * Gets the maintenance scope list for a specific collection of scopes, e.g. type of vehicle or function.
+	 * Gets the maintenance scope list for a scope.
 	 * 
-	 * @param scope Possible scopes
+	 * @param scope
 	 * @return
 	 */
-	public List<MaintenanceScope> getMaintenanceScopeList(Collection<String> scopes) {
-		if (scopeCollection.containsKey(scopes)) {
-			return scopeCollection.get(scopes);
+	public List<MaintenanceScope> getMaintenanceScopeList(String scope) {
+		if (scopeMap.containsKey(scope)) {
+			return scopeMap.get(scope);
 		}
-		else {
-			List<MaintenanceScope> results = new ArrayList<>();
-			for (String s : scopes) {
-				List<MaintenanceScope> list = scopeMap.get(s.toLowerCase());
-				if (list != null) {
-					// It needs to allow duplicate MaintenanceScope objects
-					results.addAll(list);
-				}
-			}
-			scopeCollection.put(scopes, results); 
-			return results ;
-		}
+		return Collections.emptyList();
 	}
-
-	/**
-	 * Gets the maintenance schedules for scopes that contains a particular part.
-	 * 
-	 * @param scope Possible scopes
-	 * @param part Filter to part
-	 * @return
-	 */
-	public List<MaintenanceScope> getMaintenance(Collection<String> scopes, Part part) {
-//		List<MaintenanceScope> results = new ArrayList<>();
-//		for (String s : scopes) {
-//			List<MaintenanceScope> list = scopeMap.get(s.toLowerCase());
-//			for (MaintenanceScope m: list) {
-//				if (list != null && (m.getPart().getID() == part.getID())) {
-//					results.add(m);
-//				}
-//			}
-//		}
-//		return results ;
-		return getMaintenanceScopeList(scopes).stream()
-				.filter(m -> m.getPart().getID() == part.getID())
-				.toList();
-	}
+	
+//	/**
+//	 * Gets the maintenance schedules for scopes that contains a particular part.
+//	 * 
+//	 * @param scope Possible scopes
+//	 * @param part Filter to part
+//	 * @return
+//	 */
+//	public List<MaintenanceScope> getMaintenance(Collection<String> scopes, Part part) {
+////		List<MaintenanceScope> results = new ArrayList<>();
+////		for (String s : scopes) {
+////			List<MaintenanceScope> list = scopeMap.get(s.toLowerCase());
+////			for (MaintenanceScope m: list) {
+////				if (list != null && (m.getPart().getID() == part.getID())) {
+////					results.add(m);
+////				}
+////			}
+////		}
+////		return results ;
+//		return getMaintenanceScopeList(scopes).stream()
+//				.filter(m -> m.getPart().getID() == part.getID())
+//				.toList();
+//	}
 
 	/**
 	 * Gets a set of all parts.

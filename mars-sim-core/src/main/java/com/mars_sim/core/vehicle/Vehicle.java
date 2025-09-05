@@ -269,7 +269,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
 
 		setupScopeString();
-
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
+		
 		primaryStatus = StatusType.PARKED;
 		
 		writeLog();
