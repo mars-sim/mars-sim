@@ -85,6 +85,8 @@
 				<module>mars-sim-console</module>
 				<module>mars-sim-core</module>
 				<module>mars-sim-ui</module>
+				<!-- ADDED: launcher module -->
+				<module>mars-sim-launcher</module>
 				<module>mars-sim-dist</module>
 				<module>mars-sim-fxgl</module>
 				<module>mars-sim-libgdx</module>
@@ -163,6 +165,8 @@
 		<module>mars-sim-console</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
+		<!-- ADDED: launcher module -->
+		<module>mars-sim-launcher</module>
     	<module>mars-sim-dist</module>
 	</modules>
   
