@@ -1,12 +1,10 @@
 package com.mars_sim.core.moon;
 
-import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.structure.colony.Colony;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.tool.RandomUtil;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * A rectangular selenographic (lunar) surface zone defined by latitude/longitude bounds.
@@ -35,9 +33,6 @@ public class Zone implements Serializable {
     /** Serialization ID for compatibility. */
     private static final long serialVersionUID = 1L;
 
-    /** Logger (kept for legacy compatibility / diagnostics). */
-    private static final SimLogger logger = SimLogger.getLogger(Zone.class.getName());
-
     /** Mean lunar radius in kilometers (≈ 1737.4 km). Used for approximate spherical area helper. */
     private static final double MOON_RADIUS_KM = 1737.4;
 
@@ -54,8 +49,11 @@ public class Zone implements Serializable {
     /** Optional type tag for legacy interop. */
     private ZoneType type;
 
-    /** Optional back-reference to a colony for legacy interop (not used in core math). */
-    private Colony colony;
+    /**
+     * Optional back-reference to a colony for legacy interop (not used in core math).
+     * Typed as {@code Object} to avoid cross-module dependencies.
+     */
+    private Object colony;
 
     /** Optional behavior flag used by legacy timePassing() logic. */
     private boolean dynamic;
@@ -69,7 +67,7 @@ public class Zone implements Serializable {
      */
     private double area;
 
-    /** Optional multiplier used in legacy randomized sizing (must be &gt; 0, default 1.0). */
+    /** Optional multiplier used in legacy randomized sizing (must be > 0, default 1.0). */
     private double areaFactor = 1.0;
 
     // ---------------------------------------------------------------------
@@ -150,7 +148,7 @@ public class Zone implements Serializable {
      * @param colony   owning colony (nullable permitted)
      * @param dynamic  whether this zone should evolve over time via {@link #timePassing(ClockPulse)}
      */
-    public Zone(ZoneType type, Colony colony, boolean dynamic) {
+    public Zone(ZoneType type, Object colony, boolean dynamic) {
         this();
         this.colony = colony;
         this.dynamic = dynamic;
@@ -174,7 +172,7 @@ public class Zone implements Serializable {
         private double westLonDeg;
         private double eastLonDeg;
         private ZoneType type;
-        private Colony colony;
+        private Object colony;
         private boolean dynamic;
         private double growthPercent;
 
@@ -216,7 +214,7 @@ public class Zone implements Serializable {
         }
 
         /** Optional colony back-reference. */
-        public Builder colony(Colony v) {
+        public Builder colony(Object v) {
             this.colony = v;
             return this;
         }
@@ -336,7 +334,7 @@ public class Zone implements Serializable {
         return withType(v);
     }
 
-    public Zone withColony(Colony v) {
+    public Zone withColony(Object v) {
         Zone z = copy();
         z.colony = v;
         return z;
@@ -393,8 +391,8 @@ public class Zone implements Serializable {
         return getType();
     }
 
-    /** Optional colony back-reference. */
-    public Colony getColony() {
+    /** Optional colony back-reference (generic to avoid module coupling). */
+    public Object getColony() {
         return colony;
     }
 
@@ -778,16 +776,26 @@ public class Zone implements Serializable {
     private double deriveLegacyArea() {
         final ZoneType t = this.type;
         final double f = (areaFactor <= 0.0) ? 1.0 : areaFactor;
+        final double min, max;
         if (t == null) {
-            return f * RandomUtil.getRandomDouble(20.0, 40.0);
+            min = 20.0; max = 40.0;
+        } else {
+            switch (t) {
+                case BUSINESS:
+                    min = 25.0; max = 50.0;
+                    break;
+                // TODO: add other ZoneType ranges as historically defined
+                default:
+                    min = 20.0; max = 40.0;
+                    break;
+            }
         }
-        switch (t) {
-            case BUSINESS:
-                return f * RandomUtil.getRandomDouble(25.0, 50.0);
-            // TODO: add other ZoneType ranges as historically defined
-            default:
-                return f * RandomUtil.getRandomDouble(20.0, 40.0);
-        }
+        return f * randomRange(min, max);
+    }
+
+    /** Thread-safe random double in [min, max). */
+    private static double randomRange(double min, double max) {
+        return ThreadLocalRandom.current().nextDouble(min, max);
     }
 
     // ---------------------------------------------------------------------
