@@ -15,7 +15,7 @@
  *     fundamental constants below; comments include their nominal values.
  */
 
-package com.mars_sim.core.orbit;
+package org.mars_sim.msp.core.orbit;
 
 import java.time.Instant;
 import java.util.Locale;
