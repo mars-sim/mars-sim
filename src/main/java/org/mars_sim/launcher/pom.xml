@@ -1,260 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<!-- ************************************************************************************************* -->
-	<!-- * General Section * -->
-	<!-- ************************************************************************************************* -->
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.mars-sim</groupId>
-	<artifactId>mars-sim</artifactId>
-	<packaging>pom</packaging>
-	<version>pre-3.10.0</version>
-	<name>mars-sim</name>
-	<url>https://github.com/mars-sim/mars-sim</url>
-	<inceptionYear>2009</inceptionYear>
-	<properties>
-		<release>21</release>
-		
-		<sonar.java.source>21</sonar.java.source>
-		<fxgl.version>11.17</fxgl.version>
-		
-		<!-- These 3 have an interdepency -->
-		<junit-jupiter.version>5.13.4</junit-jupiter.version>
-        <!--junit.version>4.13.2</junit.version -->
-		<junit-launcher.version>1.13.4</junit-launcher.version>
-		
-		<timestamp>${maven.build.timestamp}</timestamp>
-		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		
-		<!-- Set file encoding to UTF-8. See https://stackoverflow.com/questions/3017695/how-to-configure-encoding-in-maven#3018152 -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		
-		<libgdx.version>1.13.5</libgdx.version>
-		<lwjgl.version>3.2.3</lwjgl.version>
-		<slf4j.version>2.0.17</slf4j.version>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-		<commons-cli.version>1.10.0</commons-cli.version>
-		<commons-io.version>2.20.0</commons-io.version>
-		<commons-lang3.version>3.18.0</commons-lang3.version>
-		<commons-math3.version>3.6.1</commons-math3.version>
-			
-		<jacoco.version>0.8.13</jacoco.version>
-		
-  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-	</properties>
-	<profiles>
-		<profile>
-		  <id>coverage</id>
-		  <build>
-		   <plugins>
-			<plugin>
-			  <groupId>org.jacoco</groupId>
-			 <artifactId>jacoco-maven-plugin</artifactId>
-			  <version>${jacoco.version}</version>
-			  <executions>
-				<execution>
-				  <id>prepare-agent</id>
-				  <goals>
-					<goal>prepare-agent</goal>
-				  </goals>
-				</execution>
-				<execution>
-				  <id>report</id>
-				  <goals>
-					<goal>report</goal>
-				  </goals>
-				  <configuration>
-					<formats>
-					  <format>XML</format>
-					</formats>
-				  </configuration>
-				</execution>
-			  </executions>
-			</plugin>
-		   </plugins>
-		  </build>
-		</profile>
-		
-		<!-- Profile for JavaFX -->
-		<profile>
-			<id>javaFX</id>
-			<modules>
-				<module>mars-sim-tools</module>
-				<module>mars-sim-headless</module>
-				<module>mars-sim-console</module>
-				<module>mars-sim-core</module>
-				<module>mars-sim-ui</module>
-				<!-- ADDED: launcher module -->
-				<module>mars-sim-launcher</module>
-				<module>mars-sim-dist</module>
-				<module>mars-sim-fxgl</module>
-				<module>mars-sim-libgdx</module>
-			</modules>
-		</profile>
-	</profiles>
-	<dependencies>
-		<dependency>
-			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-launcher</artifactId>
-			<version>${junit-launcher.version}</version>
-			<scope>test</scope>
-		</dependency>		
-		<!-- https://stackoverflow.com/questions/41635164/is-junit5-backward-compatible-to-junit4 -->
-        <!--JUnit Jupiter Engine to depend on the JUnit5 engine and JUnit 5 API -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-		<!-- Incorporate junit-vintage to cover junit4 tests -->
-        <!--JUnit Jupiter Engine to depend on the JUnit4 engine and JUnit 4 API  -->
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>5.19.0</version>
-			<scope>test</scope>
-		</dependency>
-    </dependencies>
-	<!-- ************************************************************************************************* -->
-	<!-- * Developers Section * -->
-	<!-- ************************************************************************************************* -->
-	<developers>
-		<developer>
-			<name>Manny Kung</name>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>-8</timezone>
-		</developer>
-		<developer>
-			<name>Dennis Krenz</name>
-			<roles>
-				<role>conceptual design</role>
-			</roles>
-			<timezone>+2</timezone>
-		</developer>
-		<developer>
-			<name>Barry Evans</name>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<name>muybien3433</name>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
+  <!-- If this is a child of a parent POM, uncomment and fill in:
+  <parent>
+    <groupId>org.mars-sim</groupId>
+    <artifactId>mars-sim-parent</artifactId>
+    <version>3.9.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  -->
 
-	<!-- ************************************************************************************************* -->
-	<!-- * Module Section * -->
-	<!-- ************************************************************************************************* -->
-	<modules>
-    	<module>mars-sim-tools</module>
-		<module>mars-sim-headless</module>
-		<module>mars-sim-console</module>
-		<module>mars-sim-core</module>
-		<module>mars-sim-ui</module>
-		<!-- ADDED: launcher module -->
-		<module>mars-sim-launcher</module>
-    	<module>mars-sim-dist</module>
-	</modules>
-  
-	<!-- ************************************************************************************************* -->
-	<!-- * Build Section * -->
-	<!-- ************************************************************************************************* -->
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-				    <groupId>org.codehaus.mojo</groupId>
-				    <artifactId>versions-maven-plugin</artifactId>
-				    <version>2.18.0</version>
-				    <configuration>
-				        <generateBackupPoms>false</generateBackupPoms>
-				    </configuration>
-				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-				<plugin>
-				    <groupId>org.apache.maven.plugins</groupId>
-				    <artifactId>maven-surefire-plugin</artifactId>
-				    <version>3.5.3</version>
-				    <configuration>
-						<includes>
-							<include>%regex[.*]</include>
-						</includes>
-				    </configuration>
-				</plugin>				
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.0</version>
-					<configuration>
-						<release>${release}</release>
-						<compilerArgs>
-			            	<arg>-Xlint:unchecked</arg>
-			            	<arg>-Xlint:deprecation</arg>
-			            	<arg>-Xlint:removal</arg>
-						</compilerArgs>
-						<showWarnings>false</showWarnings>
-                        <showDeprecation>false</showDeprecation>
-						<verbose>false</verbose>
-					</configuration>
-					<!-- see https://www.baeldung.com/kotlin-maven-java-project -->
-					<!-- see https://kotlinlang.org/docs/reference/using-maven.html -->
-	       			<executions>
-		                <!-- Replacing default-compile as it is treated specially by maven -->
-		                <execution>
-		                    <id>default-compile</id>
-		                    <phase>none</phase>
-		                </execution>
-		                <!-- Replacing default-testCompile as it is treated specially by maven -->
-		                <execution>
-		                    <id>default-testCompile</id>
-		                    <phase>none</phase>
-		                </execution>
-		                <execution>
-		                    <id>java-compile</id>
-		                    <phase>compile</phase>
-		                    <goals> <goal>compile</goal> </goals>
-		                </execution>
-		                <execution>
-		                    <id>java-test-compile</id>
-		                    <phase>test-compile</phase>
-		                    <goals> <goal>testCompile</goal> </goals>
-		                </execution>
-	            	</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-	<!-- ************************************************************************************************* -->
-	<!-- * Reporting Section * -->
-	<!-- ************************************************************************************************* -->
-	<reporting>
-		<plugins>
-			<plugin>
-				<!-- https://maven.apache.org/plugins/maven-dependency-plugin/examples/copying-project-dependencies.html -->
-				<!-- See https://maven.apache.org/plugins/maven-dependency-plugin/usage.html -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<outputDirectory>
-						${project.build.directory}
-					</outputDirectory>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
+  <groupId>org.mars-sim</groupId>
+  <artifactId>mars-sim-launcher</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Mars-Sim Launcher</name>
+  <description>Standalone Swing/CLI launcher with single-instance guard.</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
+  </properties>
+
+  <!-- No external deps required; launcher uses only the JDK (Swing/AWT, NIO, HTTP). -->
+  <dependencies>
+    <!-- If you later add logging or other libs, put them here. -->
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Compile for Java 21 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+        </configuration>
+      </plugin>
+
+      <!-- Make the plain JAR have a Main-Class (handy for non-shaded runs) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>false</addClasspath>
+              <mainClass>org.mars_sim.launcher.MarsSimLauncher</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Build a single "uber-jar" that includes all dependencies -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- Keep the original POM untouched (this launcher has no deps anyway) -->
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+
+              <!-- Ensure the shaded JAR has the correct Main-Class -->
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.mars_sim.launcher.MarsSimLauncher</mainClass>
+                </transformer>
+                <!-- If you ever add libraries that use META-INF/services -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+
+              <!-- Attach as an additional artifact: *-shaded.jar -->
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>shaded</shadedClassifierName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
