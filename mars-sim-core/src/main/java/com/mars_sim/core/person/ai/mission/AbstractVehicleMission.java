@@ -7,15 +7,18 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.text.MessageFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -88,6 +91,30 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final double AVERAGE_NUM_MALFUNCTION = MalfunctionManager.AVERAGE_NUM_MALFUNCTION;
 	/** Default speed if no operators have ever driven. */
 	private static final double DEFAULT_SPEED = 10D;
+
+	/* ---------- Vehicle stuck detection & recovery (watchdog) ---------- */
+	/** How far back to check motion while travelling (in millisols). */
+	private static final double STUCK_LOOKBACK_MSOLS = 50D; // ~0.05 sol
+	/** Minimum distance considered progress over the lookback window (km). */
+	private static final double STUCK_MIN_PROGRESS_KM = 0.02D; // 20 meters
+	/** Maximum attempts to rebuild/refresh driving state before failing safe. */
+	private static final int STUCK_RECOVERY_MAX = 3;
+	/** Status when recovery attempts are exhausted. */
+	protected static final MissionStatus VEHICLE_STUCK = new MissionStatus("Mission.status.vehicleStuck");
+
+	/** Small ring buffer sample for stuck detection. */
+	private static final class PosSample {
+		final double tMillisols; // phase-relative time (msols since phase start)
+		final Coordinates pos;
+		PosSample(double tMillisols, Coordinates pos) {
+			this.tMillisols = tMillisols;
+			this.pos = pos;
+		}
+	}
+	private transient Deque<PosSample> travelTrace = new ArrayDeque<>(16);
+	private transient int recoveryAttempts = 0;
+	private transient boolean beaconRequested = false;
+	/* ------------------------------------------------------------------- */
 		
 	// Travel Mission status
 	protected static final String AT_NAVPOINT = "At a navpoint";
@@ -111,6 +138,74 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private static final Integer WHEEL_ID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
 															new String[] {ItemResourceUtil.FIBERGLASS});
+
+	/* ---------------------------------------------------------------------
+	   Idempotent guards & hooks (additive, backward-compatible)
+	   --------------------------------------------------------------------- */
+
+	/** Idempotent guard: set to true once a return-to-home has been requested. */
+	private final AtomicBoolean returnHomeRequested = new AtomicBoolean(false);
+
+	/** Idempotent guard: ensure this mission is ended only once from this class. */
+	private final AtomicBoolean missionEnded = new AtomicBoolean(false);
+
+	/**
+	 * Initiates a safe, idempotent return to the home/starting settlement.
+	 * Multiple triggers (medical emergency, weather, energy, player abort, etc.)
+	 * may request a return at the same time. This guard avoids duplicate
+	 * route planning/logs and state races.
+	 *
+	 * @param reason free-form reason appended to mission log; may be {@code null}.
+	 * @return {@code true} if this call performed the transition; {@code false} if already returning.
+	 */
+	protected final boolean requestReturnHome(final String reason) {
+		if (returnHomeRequested.compareAndSet(false, true)) {
+			String msg = (reason != null && !reason.isEmpty())
+					? "Returning to home settlement: " + reason
+					: "Returning to home settlement.";
+			logger.info(vehicle, msg);
+			// Let subclasses silence/finish long-running activities safely (e.g., EVA) before routing home.
+			onBeforeReturnHome();
+			// Allow subclasses to react (e.g., turn on beacon, (re)compute path, etc.).
+			onReturnHomeInitiated();
+			return true;
+		}
+		return false;
+	}
+
+	/** Hook invoked exactly once before {@link #onReturnHomeInitiated()} (no-op by default). */
+	protected void onBeforeReturnHome() { /* no-op */ }
+
+	/** Hook invoked exactly once when a return to home has been initiated (no-op by default). */
+	protected void onReturnHomeInitiated() { /* no-op */ }
+
+	/** @return whether a return to home has been requested. */
+	protected final boolean isReturnHomeRequested() {
+		return returnHomeRequested.get();
+	}
+
+	/**
+	 * End the mission exactly once, even if multiple subsystems attempt to end it.
+	 * Prefer this over direct {@code endMission(...)} calls when invoked from this class.
+	 */
+	protected final void endMissionOnce(final MissionStatus... statuses) {
+		if (missionEnded.compareAndSet(false, true)) {
+			endMission((statuses != null && statuses.length > 0) ? statuses[0] : null);
+		}
+	}
+
+	/**
+	 * Utility for subclasses: get a stable snapshot of members (Persons) to iterate safely
+	 * without risking {@code ConcurrentModificationException}.
+	 */
+	protected final List<Person> getMembersSnapshot() {
+		List<Person> list = new ArrayList<>();
+		for (Worker m : getMembers()) {
+			if (m instanceof Person p) list.add(p);
+		}
+		return list;
+	}
+
 	// Data members
 	/** The current navpoint index. */
 	private int navIndex = 0;
@@ -605,6 +700,21 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		super.performPhase(member);
 
 		MissionPhase phase = getPhase();
+
+		// ---- Vehicle stuck watchdog: observe/repair while travelling; reset otherwise
+		if (TRAVELLING.equals(phase)) {
+			sampleProgress();
+			if (isLikelyStuck()) {
+				tryRecoverOrFail();
+			}
+		}
+		else {
+			clearProgressTrace();
+			recoveryAttempts = 0;
+			beaconRequested = false;
+		}
+		// --------------------------------------------------------------------
+
 		if (LOADING.equals(phase)) {
 			performLoadingPhase(member);
 
@@ -631,6 +741,92 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 //				computeTotalDistanceRemaining();
 //				computeTotalDistanceTravelled();
 //			}
+		}
+	}
+
+	/* ==========================
+	   Stuck detection utilities
+	   ========================== */
+
+	/** Capture a progress sample (phase-relative time + position); keep only short window. */
+	private void sampleProgress() {
+		Coordinates here = getCurrentMissionLocation();
+		if (here == null) return;
+
+		// Use phase-relative time to avoid relying on absolute clock methods
+		double now = getPhaseDuration(); // millisols since current phase started
+		// Append and prune by lookback window
+		travelTrace.addLast(new PosSample(now, here));
+		double cutoff = now - STUCK_LOOKBACK_MSOLS;
+		while (!travelTrace.isEmpty() && travelTrace.peekFirst().tMillisols < cutoff) {
+			travelTrace.removeFirst();
+		}
+	}
+
+	/** True if we've made less than STUCK_MIN_PROGRESS_KM over the recent lookback window. */
+	private boolean isLikelyStuck() {
+		if (travelTrace.size() < 2) return false;
+		PosSample first = travelTrace.peekFirst();
+		PosSample last  = travelTrace.peekLast();
+		if (first == null || last == null) return false;
+
+		// Require a meaningful time window to avoid triggering on very fresh routes
+		double window = last.tMillisols - first.tMillisols;
+		if (window < (STUCK_LOOKBACK_MSOLS * 0.66)) return false;
+
+		double distKm = first.pos.getDistance(last.pos);
+		return distKm < STUCK_MIN_PROGRESS_KM;
+	}
+
+	/** Attempt to refresh driving state; after N tries, end mission as VEHICLE_STUCK. */
+	private void tryRecoverOrFail() {
+		recoveryAttempts++;
+		Coordinates loc = getCurrentMissionLocation();
+
+		if (recoveryAttempts <= STUCK_RECOVERY_MAX) {
+			logger.warning(getVehicle(), "Vehicle progress below threshold (" 
+					+ String.format("%.3f km over ~%.2f msols", STUCK_MIN_PROGRESS_KM, STUCK_LOOKBACK_MSOLS)
+					+ "); attempt " + recoveryAttempts + " to refresh driver/route.");
+
+			// Nudge: drop/finish current operate task so it will be rebuilt and destination refreshed this tick
+			if (operateVehicleTask instanceof PilotDrone pd) {
+				pd.endTask();
+			}
+			else if (operateVehicleTask instanceof DriveGroundVehicle dgv) {
+				dgv.endTask();
+			}
+			operateVehicleTask = null; // force reassignment in performTravelPhase
+			updateTravelDestination(); // restate intent to the current navpoint
+
+			// First time we detect "stuck", ask for a beacon to help SAR / towing
+			if (!beaconRequested) {
+				tryEnableEmergencyBeacon();
+				beaconRequested = true;
+			}
+			// Keep samples so the next tick can re-evaluate if we got unstuck
+			return;
+		}
+
+		// Exhausted recovery attempts: fail safe
+		logger.severe(getVehicle(), 30_000L, "Vehicle failed to recover after "
+				+ STUCK_RECOVERY_MAX + " attempts. Ending mission as 'vehicleStuck'.");
+		clearProgressTrace();
+		endMission(VEHICLE_STUCK);
+	}
+
+	private void clearProgressTrace() { travelTrace.clear(); }
+
+	/** Best-effort emergency beacon enable (with mission event), if available and off. */
+	private void tryEnableEmergencyBeacon() {
+		try {
+			if (vehicle != null && !vehicle.isBeaconOn()) {
+				// Reuse mission API to generate proper history/event
+				setEmergencyBeacon(getStartingPerson(), vehicle, true, "Stuck recovery watchdog");
+				logger.info(vehicle, "Emergency beacon enabled (stuck recovery).");
+			}
+		}
+		catch (Exception e) {
+			logger.warning(getVehicle(), "Failed to enable emergency beacon: " + e.getMessage());
 		}
 	}
 
