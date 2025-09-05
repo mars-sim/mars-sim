@@ -230,7 +230,7 @@ public class UnitManager implements Serializable, Temporal {
 
     /**
      * Gets the settlement list including the commander's associated settlement
-     * and the settlement that he's at or in the vicinity.
+    * and the settlement that he's at or in the vicinity.
      *
      * @return {@link List<Settlement>}
      */
@@ -521,10 +521,14 @@ public class UnitManager implements Serializable, Temporal {
             int cores = Math.max(1, Runtime.getRuntime().availableProcessors());
             int desired = Math.max(1, Math.min(cores, listenerCount));
             logger.config("Setting up UnitManager listener executor with " + desired + " thread(s).");
-            umListenerExecutor = Executors.newFixedThreadPool(
-                    desired,
-                    new ThreadFactoryBuilder().setNameFormat("unitManager-listener-%d").build()
-            );
+
+            ThreadFactoryBuilder tfb = new ThreadFactoryBuilder()
+                    .setNameFormat("unitManager-listener-%d")
+                    .setDaemon(true)
+                    .setUncaughtExceptionHandler((t, e) ->
+                            logger.log(Level.SEVERE, "Uncaught in " + t.getName(), e));
+
+            umListenerExecutor = Executors.newFixedThreadPool(desired, tfb.build());
         }
     }
 
