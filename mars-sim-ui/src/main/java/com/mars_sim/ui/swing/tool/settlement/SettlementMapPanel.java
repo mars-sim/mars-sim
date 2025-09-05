@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -149,6 +150,10 @@ public class SettlementMapPanel extends JPanel {
 	// -------- Event coalescing for scale updates --------
 	private Timer zoomCoalesceTimer;
 	private volatile Double pendingScale = null; // when non-null, an update is queued
+
+	// -------- Event coalescing for simulation tick -> UI --------
+	/** Coalesces simulation-tick UI updates so we don't flood the EDT. */
+	private final AtomicBoolean uiUpdateScheduled = new AtomicBoolean(false);
 
 	// -------- Listener lifecycle management --------
 	private boolean listenersInstalled = false;
@@ -528,6 +533,8 @@ public class SettlementMapPanel extends JPanel {
 	 * Must be invoked on the EDT.
 	 */
 	private void applyPendingScale() {
+		assert SwingUtilities.isEventDispatchThread() : "applyPendingScale must run on EDT";
+
 		final double target = (pendingScale != null ? pendingScale : scale);
 		pendingScale = null;
 
@@ -1132,11 +1139,19 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	void update(ClockPulse pulse) {
-		onEdt(() -> {
-			if (settlementTransparentPanel != null) {
-				settlementTransparentPanel.update(pulse);
-			}
-		});
+		// Clock pulses arrive on worker threads (MasterClock/ThreadPool). Swing must be updated on the EDT.
+		if (uiUpdateScheduled.compareAndSet(false, true)) {
+			SwingUtilities.invokeLater(() -> {
+				try {
+					if (settlementTransparentPanel != null) {
+						settlementTransparentPanel.update(pulse);
+					}
+					// If layers request repaints, they’ll do so on EDT; avoid repaint flood.
+				} finally {
+					uiUpdateScheduled.set(false);
+				}
+			});
+		}
 		// repaint(); // avoid repaint flood; layers request repaints when needed
 	}
 
