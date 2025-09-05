@@ -14,7 +14,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * The Job class represents a person's job.
+ * The Job class represents a robot's job.
  */
 public abstract class RobotJob implements Serializable {
 

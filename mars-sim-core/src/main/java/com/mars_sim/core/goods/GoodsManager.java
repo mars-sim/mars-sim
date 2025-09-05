@@ -841,7 +841,7 @@ public class GoodsManager implements Serializable {
 			return 0;
 		}
 			
-		lacking = MathUtils.between(optimal - reserve - stored, 0, optimal - reserve);
+		lacking = MathUtils.between(optimal - reserve - stored, 0, 1D * optimal - reserve);
 
 		// Note : Make sure stored is not zero by adding 1 so that delta is not infinite	
 		

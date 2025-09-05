@@ -21,7 +21,7 @@ public enum JobType implements Named{
 	METEOROLOGIST,PHYSICIST,PILOT,POLITICIAN,PSYCHOLOGIST,
 	REPORTER,TECHNICIAN,TRADER;
 
-	// Interals allows to be built is static initiaiser method
+	// Internals allows to be built is static initialiser method
 	private static final Set<JobType> INTERNAL_ACA = new HashSet<>();
 	private static final Set<JobType> INTERNAL_INT = new HashSet<>();
 

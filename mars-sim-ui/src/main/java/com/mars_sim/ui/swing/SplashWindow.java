@@ -179,15 +179,9 @@ public class SplashWindow extends JComponent {
 		else if (rand > 1)
 			g2d.setColor(Color.ORANGE);
 		
-		
 		g2d.setFont(titleFont);
-		
-		if (rand == 0) {
-			paintTextWithOutline(g2d, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);				
-		}
-		else {
-			paintTextWithOutline(g2d, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);
-		}
+
+		paintTextWithOutline(g2d, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);
 	
 		if (rand == 0) {
 			g2d.setFont(versionStringFont1);
