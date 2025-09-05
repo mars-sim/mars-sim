@@ -33,6 +33,9 @@ public class EVA extends Function {
 	
 	private ClassicAirlock airlock;
 
+	// Note: Model after MedicalStation's bedRegistry for 2 makeshift EVA beds
+	//       May add a helper method in BuildingManager such as BuildingManager::addPatientToMedicalBed.
+	
 	/**
 	 * Constructor.
 	 * 

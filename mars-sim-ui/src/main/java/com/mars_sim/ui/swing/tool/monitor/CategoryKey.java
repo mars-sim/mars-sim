@@ -6,6 +6,10 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import com.mars_sim.core.Unit;
+import com.mars_sim.core.building.function.farming.Crop;
+import com.mars_sim.core.food.Food;
+import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -25,6 +29,20 @@ class CategoryKey<T> {
     }
     public T getCategory() {
         return category;
+    }
+    
+    public String getName() {
+    	Object obj = ((Object) category);
+    	if (obj instanceof Unit u)
+    		return u.getName();
+    	else if (obj instanceof Good g)
+    		return g.getName();
+    	else if (obj instanceof Food f)
+    		return f.getName();
+    	else if (obj instanceof Crop c)
+    		return c.getName();
+    	
+    	return "";
     }
 
     @Override

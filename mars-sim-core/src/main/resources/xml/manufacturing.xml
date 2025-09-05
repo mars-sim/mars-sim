@@ -1834,6 +1834,26 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Convert bio-based oil into hydraulic fluid" tech="3" skill="2" work-time="50" process-time="100"
+			tooling="Soldering" power-required="1.0">
+		<inputs>
+			<resource name="Ethylene glycol" amount=".1"/>
+			<resource name="propylene" amount=".1"/>
+							
+			<resource name="Rice Bran Oil" amount="3.8" >	
+				<alternative name="Soybean Oil" amount="3.8" />
+				<alternative name="Peanut Oil" amount="3.8" />
+				<alternative name="Sesame Oil" amount="3.8" />
+				<alternative name="Garlic Oil" amount="3.8" />
+				<alternative name="Olive Oil" amount="3.8" />
+				<alternative name="Fish Oil" amount="3.8" />				
+			</resource>
+		</inputs>
+		<outputs>
+			<resource name="Hydraulic Fluid" amount="4" />
+		</outputs>
+	</process>
+
 	<!-- values are not based on fact but pure conjecture
 	<process name="algae tank manufacturing" tech="2" skill="2" work-time="200" process-time="200" power-required="5.0">
 		<inputs>
@@ -1883,7 +1903,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="3" />
 			<part name="drone chassis panel" number="3" />
 			<part name="Motor 10 kW" number="4" />
-			<part name="methane fuel cell stack" number="2" />
+			<part name="methane fuel cell stack" number="1" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -1915,7 +1935,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="aluminum sheet" number="2" />
 			<part name="drone chassis panel" number="2" />
 			<part name="Motor 10 kW" number="4" />
-			<part name="methanol fuel cell stack" number="2" />
+			<part name="methanol fuel cell stack" number="1" />
 			<part name="battery module" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />

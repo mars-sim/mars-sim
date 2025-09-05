@@ -82,9 +82,6 @@ public class DelegateWork extends Task {
 			}
 			 
 			// Initialize phase
-			addPhase(COMPILING);
-			addPhase(SELECTING);
-			addPhase(ASSIGNING);
 			setPhase(COMPILING);
 			
 			// Set the boolean to true so that it won't be done again today
@@ -96,9 +93,6 @@ public class DelegateWork extends Task {
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
 	
 				// Initialize phase
-				addPhase(COMPILING);
-				addPhase(SELECTING);
-				addPhase(ASSIGNING);
 				setPhase(COMPILING);
 			}
 		}

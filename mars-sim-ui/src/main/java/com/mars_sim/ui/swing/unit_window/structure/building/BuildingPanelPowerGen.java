@@ -89,10 +89,11 @@ extends BuildingFunctionPanel {
 		);
 
 		// Check if the building is a power producer.
-		isProducer = building.hasFunction(FunctionType.POWER_GENERATION);
-		generator = building.getPowerGeneration();
-		if (generator != null)
+		generator = building.getFunction(FunctionType.POWER_GENERATION);
+		if (generator != null) {
+			isProducer = true;
 			sources = generator.getPowerSources();
+		}
 	}
 
 	/**

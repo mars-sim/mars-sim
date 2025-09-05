@@ -50,6 +50,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.GameManager;
@@ -252,6 +253,8 @@ public class CommanderWindow extends ToolWindow {
 	public CommanderWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		this.masterClock = desktop.getSimulation().getMasterClock();
 		unitManager = desktop.getSimulation().getUnitManager();

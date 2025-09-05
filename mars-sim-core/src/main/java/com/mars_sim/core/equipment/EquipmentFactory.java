@@ -72,7 +72,6 @@ public final class EquipmentFactory {
 		// Add this equipment as being placed in this settlement
 		settlement.addEquipment(newEqm);
 		settlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_EQUIPMENT_EVENT, newEqm);
-
 		return newEqm;
 	}
 

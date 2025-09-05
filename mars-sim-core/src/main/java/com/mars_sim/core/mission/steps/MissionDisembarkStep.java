@@ -146,7 +146,7 @@ public class MissionDisembarkStep extends MissionStep {
 
         if (w instanceof Person p) {
 			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
-            Walk walk = Walk.createWalkingTask(p, adjustedLoc, destinationBuilding);
+            Walk walk = Walk.createWalkingTask(p, adjustedLoc, destinationBuilding, true);
             if (walk != null) {
                 // walk back home
                 return assignTask(p, walk);

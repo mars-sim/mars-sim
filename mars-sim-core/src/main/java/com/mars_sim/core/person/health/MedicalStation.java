@@ -36,8 +36,9 @@ public class MedicalStation implements MedicalAid {
 
 	/** Treatment level of the facility. */
 	private int level;
-	/** Number of sick beds. */
-	private int sickBeds;
+	
+	/** The total number of sick beds. */
+	private int totalNumMedicalBeds;
 
 	/** The name of this medical station. */
 	private String name;
@@ -54,8 +55,8 @@ public class MedicalStation implements MedicalAid {
 	/** Treatments supported by the medical station. */
 	private List<Treatment> supportedTreatments;
 	
-	/** The set of sick beds. */
-	private Set<LocalPosition> bedSet;
+	/** The set of medical beds. */
+	private Set<LocalPosition> medicalBedSet;
 	
 	private Map<Integer, LocalPosition> bedRegistry;
 	
@@ -69,7 +70,7 @@ public class MedicalStation implements MedicalAid {
 		this.name = name;
 		this.level = level;
 
-		this.sickBeds = beds;
+		this.totalNumMedicalBeds = beds;
 		
 		problemsBeingTreated = new CopyOnWriteArrayList<>();
 		problemsAwaitingTreatment = new CopyOnWriteArrayList<>();
@@ -91,7 +92,7 @@ public class MedicalStation implements MedicalAid {
 	
 		Collection<LocalPosition> beds = bedRegistry.values();
 		
-		for (LocalPosition pos: bedSet) {
+		for (LocalPosition pos: medicalBedSet) {
 			if (!beds.contains(pos))
 				return pos;
 		}
@@ -116,7 +117,10 @@ public class MedicalStation implements MedicalAid {
 			 LocalPosition aBed = getEmptyBed();
 			 
 			 if (aBed != null) {
-				 bedRegistry.put(person.getIdentifier(), aBed);
+				 bedRegistry.put(person.getIdentifier(), aBed);		 
+				 // Release existing activity spot
+				 person.leaveActivitySpot(false);
+				 
 				 return true;
 			 }
 		 }
@@ -165,21 +169,21 @@ public class MedicalStation implements MedicalAid {
 	}
 	
 	/**
-	 * Sets the sick beds.
+	 * Sets the medical beds.
 	 * 
 	 * @param bedSet
 	 */
-	public void setSickBeds(Set<LocalPosition> bedSet) {
-		this.bedSet = bedSet;
+	public void setMedicalBeds(Set<LocalPosition> bedSet) {
+		this.medicalBedSet = bedSet;
 	}
 	
 	/**
-	 * Returns a set of sick beds.
+	 * Returns a set of medical beds.
 	 * 
 	 * @return
 	 */
-	public Set<LocalPosition> getBedSet() {
-		return bedSet;
+	public Set<LocalPosition> getMedicalBedSet() {
+		return medicalBedSet;
 	}
 	
 	@Override
@@ -203,7 +207,7 @@ public class MedicalStation implements MedicalAid {
 	 * @return Sick bed count.
 	 */
 	public int getSickBedNum() {
-		return sickBeds;
+		return totalNumMedicalBeds;
 	}
 
 	/**

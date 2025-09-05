@@ -49,7 +49,6 @@ public class SavePower extends Task {
 		walkToAssignedDutyLocation(robot, true);
 		
 		// Initialize phase
-		addPhase(POWER_SAVING);
 		setPhase(POWER_SAVING);
 	}
 	

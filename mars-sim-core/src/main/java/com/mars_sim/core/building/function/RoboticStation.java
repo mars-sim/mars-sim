@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoboticStation.java
- * @date 2023-11-20
+ * @date 2025-08-30
  * @author Manny Kung
  */
 package com.mars_sim.core.building.function;
@@ -11,10 +11,8 @@ import java.util.Iterator;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.data.UnitSet;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -28,7 +26,7 @@ public class RoboticStation extends Function {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(RoboticStation.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(RoboticStation.class.getName());
 	
 	/** The charge rate of the bot in kW. */
 	public final static double CHARGE_RATE = 5D;
@@ -184,20 +182,17 @@ public class RoboticStation extends Function {
 	 * @throws BuildingException if robot is already building occupant.
 	 */
 	public void addRobot(Robot robot) {
-		if (!robotOccupants.contains(robot)) {
+		if (!containsRobotOccupant(robot)) {
 
 			if (robot.getBuildingLocation() != null) {
-				// Remove this person from the old building first
-				BuildingManager.removeRobotFromBuilding(robot, robot.getBuildingLocation());
+				RoboticStation roboticStation = robot.getBuildingLocation().getRoboticStation();
+
+				if (roboticStation != null && roboticStation.containsRobotOccupant(robot)) {
+					roboticStation.removeRobot(robot);
+				}
 			}
 				
 			robotOccupants.add(robot);
-			
-			// Add robot to this building.
-			logger.fine(robot,  10_000L, "Added to " + getBuilding() + "'s robotic station.");
-		
-		} else {
-			throw new IllegalStateException("This robot is already in this building.");
 		}
 	}
 
@@ -208,11 +203,8 @@ public class RoboticStation extends Function {
 	 * @throws BuildingException if robot is not building occupant.
 	 */
 	public void removeRobot(Robot robot) {
-		if (robotOccupants.contains(robot)) {
+		if (containsRobotOccupant(robot)) {
 			robotOccupants.remove(robot);
-			logger.fine(robot, 10_000L, "Removed from " + getBuilding() + "'s robotic station.");
-		} else {
-			throw new IllegalStateException("The robot is not in this building.");
 		}
 	}
 

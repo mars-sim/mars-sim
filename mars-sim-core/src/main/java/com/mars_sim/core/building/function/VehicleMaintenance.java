@@ -400,6 +400,9 @@ public abstract class VehicleMaintenance extends Function {
 	 */
 	public void relocateCrew(Vehicle vehicle) {
 		
+		// Question: will this account for a person/robot being in a vehicle
+		// parked inside a garage ?
+	
 		if (vehicle instanceof Crewable c) {
 			// Remove the human occupants from the settlement
 			// But is this needed ? These should already be in the Vehicle
@@ -409,6 +412,7 @@ public abstract class VehicleMaintenance extends Function {
 				// and it's called by removeFromGarage()
 				Vehicle v = p.getVehicle();
 				if (v != null) {
+					// Note: Removing a person from a building can be dangerous				
 					BuildingManager.removePersonFromBuilding(p, building);
 				}
 			}
@@ -416,6 +420,7 @@ public abstract class VehicleMaintenance extends Function {
 			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
 				Vehicle v = r.getVehicle();
 				if (v != null) {
+					// Note: Removing a robot from a building can be dangerous
 					BuildingManager.removeRobotFromBuilding(r, building);
 				}
 			}

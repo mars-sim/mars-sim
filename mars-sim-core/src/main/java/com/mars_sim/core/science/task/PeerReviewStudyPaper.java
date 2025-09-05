@@ -130,7 +130,6 @@ public class PeerReviewStudyPaper extends Task {
         }
         
         // Initialize phase
-        addPhase(REVIEW);
         setPhase(REVIEW);
     }
 

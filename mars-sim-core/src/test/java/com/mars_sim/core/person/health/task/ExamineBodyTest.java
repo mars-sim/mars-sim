@@ -23,23 +23,25 @@ public class ExamineBodyTest extends AbstractMarsSimUnitTest {
         
         System.out.println("# of spots: " + spots.size());
 
-        // How to declare  more than just one activity spot ?
+        // How to declare more than just one activity spot ?
         
         List<ActivitySpot> list = new ArrayList<>(spots);
-        
-        ActivitySpot spot = list.get(0);
-        
-        System.out.println("Location: " + spot.getPos());
-        
+  
+        for (ActivitySpot spot: list) {
+            System.out.println("Location: " + spot.getPos());   
+        }
         
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
-
+        System.out.println("Patient is at " + patient.getBuildingLocation());
+        
         // Laceration is self heal
         var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.DEHYDRATION);
         patient.getPhysicalCondition().recordDead(hp, true, PhysicalCondition.STANDARD_QUOTE_0);
         var death = patient.getPhysicalCondition().getDeathDetails();
 
         var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
+        System.out.println("Doctor is at " + doctor.getBuildingLocation());
+        
         doctor.getSkillManager().addNewSkill(SkillType.MEDICINE, 20);
 
         var task = ExamineBody.createTask(doctor, death);
@@ -58,6 +60,8 @@ public class ExamineBodyTest extends AbstractMarsSimUnitTest {
         
         executeTask(doctor, task, 100);
       
+        System.out.println("Doctor is at " + doctor.getBuildingLocation());
+        
         System.out.println("Phase: " + task.getPhase());
       
         executeTask(doctor, task, 50);

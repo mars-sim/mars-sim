@@ -43,7 +43,6 @@ import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -881,7 +880,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * 
 	 * @return duration (millisol)
 	 */
-	protected double getDuration() {
+	public double getDuration() {
 		return duration;
 	}
 
@@ -935,24 +934,23 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void walkToResearchSpotInBuilding(Building building, boolean allowFail) {
 		
-		if (building.hasFunction(FunctionType.RESEARCH)) {
-			walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
+		boolean success = walkToActivitySpotInBuilding(building, FunctionType.RESEARCH, allowFail);
+		
+		if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
 		} 
-		else if (building.hasFunction(FunctionType.ADMINISTRATION)) {
-			walkToActivitySpotInBuilding(building, FunctionType.ADMINISTRATION, allowFail);
+		if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
 		} 
-		else if (building.hasFunction(FunctionType.DINING)) {
-			walkToActivitySpotInBuilding(building, FunctionType.DINING, allowFail);
+		if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.RECREATION, allowFail);			
 		} 
-		else if (building.hasFunction(FunctionType.RECREATION)) {
-			walkToActivitySpotInBuilding(building, FunctionType.RECREATION, allowFail);			
+		if (!success) {
+			success = walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATION, allowFail);			
 		} 
-		else if (building.hasFunction(FunctionType.LIVING_ACCOMMODATION)) {
-			walkToActivitySpotInBuilding(building, FunctionType.LIVING_ACCOMMODATION, allowFail);			
-		} 
-		else {
+		if (!success) {
 			// If no available activity spot, go to an empty location in building
-			walkToEmptyActivitySpotInBuilding(building, allowFail);
+			success = walkToEmptyActivitySpotInBuilding(building, allowFail);
 		}
 	}
 
@@ -982,7 +980,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		}
 	
 		// Create subtask for walking to destination.
-		return createWalkingSubtask(bed.getOwner(), bedLoc, allowFail);
+		return createWalkingSubtask(bed.getOwner(), bedLoc, allowFail, true);
 	}
 
 	/**
@@ -994,23 +992,26 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail    true if walking is allowed to fail.
 	 * @return
 	 */
-	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, boolean allowFail) {
+	protected boolean walkToActivitySpotInBuilding(Building building, FunctionType functionType, 
+			boolean allowFail) {
 		
 		Function f = building.getFunction(functionType);
 		if (f == null) {
 			return false;
 		}
-		return walkToActivitySpotInFunction(building, f, allowFail) != null;
+		return walkToActivitySpotInFunction(building, f, allowFail);
 	}
 
 	/**
 	 * Finds an EVA spot in this building and walk to this spot.
 	 * 
 	 * @param building
+	 * @param newPos
+	 * @param needEVA
 	 * @return
 	 */
-	protected boolean walkToEVASpot(Building building, LocalPosition newPos) {
-		return walkToActivitySpot(building, building.getFunction(FunctionType.EVA), newPos, false);
+	protected boolean walkToEVASpot(Building building, LocalPosition newPos, boolean needEVA) {
+		return walkToActivitySpot(building, building.getFunction(FunctionType.EVA), newPos, false, needEVA);
 	}
 
 	/**
@@ -1027,7 +1028,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			return false;
 		}
 
-		return walkToActivitySpotInFunction(building, f, allowFail) != null;
+		return walkToActivitySpotInFunction(building, f, allowFail);
 	}
 
 	/**
@@ -1038,26 +1039,59 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param allowFail
 	 * @return
 	 */
-	private LocalPosition walkToActivitySpotInFunction(Building building, Function f, boolean allowFail) {
-		LocalPosition loc = f.getAvailableActivitySpot();
+	private boolean walkToActivitySpotInFunction(Building building, Function f, 
+			boolean allowFail) {
 
-		if (loc != null) {
+		Building originBuilding = worker.getBuildingLocation();
+		
+		if (originBuilding != null && originBuilding.equals(building)
+			// Check if this worker has already occupied a spot for this function
+			&& f.checkWorkerActivitySpot(worker)) {
+//			logger.info(worker, "Already at a spot for " + f.getFunctionType().getName() + ". No need to go further to claim one.");
+				return true;
+		}
+		
+		LocalPosition loc = f.getAvailableActivitySpot();
+		
+		if (loc == null) {
+//			logger.info(worker, 10_000L, getDescription() + ". No available spots for " + f.getFunctionType().getName() + " in " + building +  ".");
+			return false;
+		}
+			
+		// Claim this activity spot
+		boolean canClaim = f.claimActivitySpot(loc, worker);
+		
+		if (canClaim) {
 			// Create subtask for walking to destination.
-			boolean canWalk = createWalkingSubtask(building, loc, allowFail);
+			// e.g. building can be an outside building that need Toggling on Resource Process
+			boolean canWalk = createWalkingSubtask(building, loc, allowFail, true);
 			
 			if (canWalk) {
-				// Claim this activity spot
-				boolean canClaim = f.claimActivitySpot(loc, worker);
+//					logger.info(worker, "Walking toward " + building + ".");
+
+				// Q: how to make it the building only after it has arrived ?
+				// Use setToBuilding() to both add to life support/robotic station and the building itself
+				// BuildingManager.setToBuilding(worker, building);
 				
-				if (!canClaim)
-					loc = null;
+//					logger.info(worker, "Claimed the spot. Walking toward " + building + ".");
+				return true;
 			}
 			else {
-				loc = null;
+				// Reverse the walk and go back to the original building
+//				createWalkingSubtask(originBuilding, originLoc, allowFail, true);
+//				logger.info(worker, 10_000L, "Failed to claim the spot. Walking back to " + originBuilding + ".");
+				
+				// Unclaim the activity spot.
+				worker.leaveActivitySpot(true);
+				
+				logger.info(worker, 10_000L, "Unable to walk to " + loc + " in " + building + " " +  ".");
+				return false;
 			}
-		} 
-
-		return loc;
+		}
+		else {
+			logger.info(worker, 10_000L, "Failed to claim the spot at " + building + ".");
+			return false;
+		}
 	}
 	
 	/**
@@ -1067,12 +1101,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param f
 	 * @param newPos
 	 * @param allowFail
+	 * @param needEVA
 	 * @return
 	 */
-	private boolean walkToActivitySpot(Building building, Function f, LocalPosition newPos, boolean allowFail) {
+	private boolean walkToActivitySpot(Building building, Function f, LocalPosition newPos, 
+			boolean allowFail, boolean needEVA) {
 		if (newPos != null) {
 			// Create subtask for walking to destination.
-			boolean canWalk = createWalkingSubtask(building, newPos, allowFail);
+			boolean canWalk = createWalkingSubtask(building, newPos, allowFail, needEVA);
 			
 			if (canWalk) {
 				// Add to this activity spot
@@ -1085,6 +1121,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	
 	/**
 	 * Walks to a random location in a building.
+	 * @apiNote This method should only be used when inspecting or repairing the building.
 	 * 
 	 * @param building  the destination building.
 	 * @param allowFail true if walking is allowed to fail.
@@ -1093,7 +1130,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Gets a settlement wide location
 		LocalPosition sPos = LocalAreaUtil.getRandomLocalPos(building);
 		// Create subtask for walking to destination.
-		return createWalkingSubtask(building, sPos, allowFail);
+		return createWalkingSubtask(building, sPos, allowFail, false);
 	}
 
 	
@@ -1210,11 +1247,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		boolean success = false;
 		
 		if (activitySpot != null) {
-
 			// Create subtask for walking to destination.
-			success = createWalkingSubtask(rover, activitySpot, allowFail);
-		} else {
-
+			success = createWalkingSubtask(rover, activitySpot, allowFail, true);
+		} 
+		else {
 			// Walk to a random location in the rover.
 			success = walkToRandomLocInRover(rover, allowFail);
 		}
@@ -1236,7 +1272,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		if (sPos != null)
 			// Create subtask for walking to destination.
-			success = createWalkingSubtask(rover, sPos, allowFail);
+			success = createWalkingSubtask(rover, sPos, allowFail, true);
 		
 		return success;
 	}
@@ -1281,32 +1317,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param robot
 	 * @param allowFail
 	 */
-	protected void walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
+	protected boolean walkToAssignedDutyLocation(Robot robot, boolean allowFail) {
+		
 		if (robot.isInSettlement()) {
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-			
-			RobotType type = robot.getRobotType();
-			FunctionType fct = FunctionType.getDefaultFunction(type);
-			
-			if (currentBuilding != null && currentBuilding.hasFunction(fct)) {
-				walkToActivitySpotInBuilding(currentBuilding, fct, allowFail);
-			}
-			else {
-				List<Building> buildingList = robot.getSettlement().getBuildingManager()
-						.getBuildingsNoHallwayTunnelObservatory(fct);
-
-				if (!buildingList.isEmpty()) {
-					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-
-					Building building = buildingList.get(buildingIndex);
-
-					if (!robot.getSettlement().getAdjacentBuildings(building).isEmpty()) {
-						logger.log(robot, Level.FINER, 5000, "Walking toward " + building.getName());
-						walkToActivitySpotInBuilding(building, fct, allowFail);
-					}
-				}
-			}
+			return walkToASpot(robot, allowFail, BuildingManager.getBuilding(robot), 
+					FunctionType.getDefaultFunction(robot.getRobotType()));
 		}
+		
+		return false;
 	}
 
 	/**
@@ -1317,30 +1335,39 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @return
 	 */
 	protected boolean walkToRoboticStation(Robot robot, boolean allowFail) {
+	
+		if (robot.isInSettlement()) {
+			return walkToASpot(robot, allowFail, BuildingManager.getBuilding(robot), 
+					FunctionType.ROBOTIC_STATION);
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Walks to a spot.
+	 * 
+	 * @param robot
+	 * @param allowFail
+	 * @param currentBuilding
+	 * @param functionType
+	 * @return
+	 */
+	public boolean walkToASpot(Robot robot, boolean allowFail, Building currentBuilding, FunctionType functionType) {
 		boolean canWalk = false;
 		
-		if (robot.isInSettlement()) {
-			Building currentBuilding = BuildingManager.getBuilding(robot);
-
-			FunctionType functionType = FunctionType.ROBOTIC_STATION;
+		if (currentBuilding != null) {
+			canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
+		}
 		
-			if (currentBuilding != null && currentBuilding.hasFunction(functionType)) {
-				canWalk = walkToActivitySpotInBuilding(currentBuilding, functionType, allowFail);
-			}
-			else {
-				List<Building> buildingList = robot.getSettlement().getBuildingManager()
-						.getBuildingsNoHallwayTunnelObservatory(functionType);
+		if (!canWalk) {
+			List<Building> buildingList = robot.getSettlement().getBuildingManager()
+					.getBuildingsNoHallwayTunnelObservatory(functionType);
 
-				if (!buildingList.isEmpty()) {
-					int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
-
-					Building building = buildingList.get(buildingIndex);
-
-					if (!robot.getSettlement().getAdjacentBuildings(building).isEmpty()) {
-						logger.fine(robot, 5000, "Walking toward " + building.getName());
-						canWalk = walkToActivitySpotInBuilding(building, functionType, allowFail);
-					}
-				}
+			for (Building b: buildingList) {
+				canWalk = walkToActivitySpotInBuilding(b, functionType, allowFail);
+				if (canWalk)
+					return true;
 			}
 		}
 		
@@ -1353,21 +1380,24 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @Note: need to ensure releasing the old activity spot prior to calling this method
 	 * and take in the new activity spot after this method.
 	 * @param interiorObject the destination interior object.
-	 * @param sLoc  the settlement local position destination.
-	 * @param allowFail      true if walking is allowed to fail.
+	 * @param sLoc the settlement local position destination.
+	 * @param allowFail true if walking is allowed to fail.
+	 * @param needEVA
 	 */
-	public boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition sLoc, boolean allowFail) {
+	public boolean createWalkingSubtask(LocalBoundedObject interiorObject, LocalPosition sLoc, 
+			boolean allowFail, boolean needEVA) {
 		// Check my own position
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
+//			logger.info(worker, 4_000, "Already at the spot and no need to walk further.");
 			return true;
 		}
 		
 		Walk walkingTask = null;
 		
 		if (worker instanceof Person person) {
-			walkingTask = Walk.createWalkingTask(person, sLoc, interiorObject);
+			walkingTask = Walk.createWalkingTask(person, sLoc, interiorObject, needEVA);
 		}
 		else {
 			walkingTask = Walk.createWalkingTask((Robot)(worker), sLoc, interiorObject);

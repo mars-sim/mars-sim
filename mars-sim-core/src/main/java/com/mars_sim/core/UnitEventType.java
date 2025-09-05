@@ -21,8 +21,9 @@ public enum UnitEventType {
 	NAME_EVENT						("name"),
 	DESCRIPTION_EVENT				("description"),
 	MASS_EVENT						("mass"),
-	LOCATION_EVENT					("location"),
+	COORDINATE_EVENT				("coordinate"),
 	NOTES_EVENT						("notes"),
+	LOCAL_POSITION_EVENT			("local position"),
 	
 	// For Settlement
 	ADD_ASSOCIATED_PERSON_EVENT		("add associated person"),
@@ -72,17 +73,14 @@ public enum UnitEventType {
 	START_CONSTRUCTION_SITE_EVENT	("start construction site"),
 	START_CONSTRUCTION_WIZARD_EVENT	("start construction wizard"),
 	END_CONSTRUCTION_WIZARD_EVENT	("end construction wizard"),
-	END_CONSTRUCTION_SITE_EVENT     ("end constructino site"),
+	END_CONSTRUCTION_SITE_EVENT     ("end construction site"),
 	ADD_CONSTRUCTION_STAGE_EVENT	("add construction stage"),
 	REMOVE_CONSTRUCTION_STAGE_EVENT	("remove construction stage"),
 
 	ADD_CONSTRUCTION_WORK_EVENT		("add construction work"),
 	ADD_CONSTRUCTION_MATERIALS_EVENT("add construction materials"), 
 
-	FINISH_CONSTRUCTION_BUILDING_EVENT	("finish building construction"),
-
-	START_CONSTRUCTION_SALVAGE_EVENT	("start salvage construction "),
-	FINISH_CONSTRUCTION_SALVAGE_EVENT	("end salvage construction "),
+	FINISH_CONSTRUCTION_BUILDING_EVENT	("finish construction"),
 
 	// For BuildingManager
 	ADD_BUILDING_EVENT				("add building"),
@@ -118,6 +116,8 @@ public enum UnitEventType {
 	DEMAND_EVENT					("demand of a good"),
 	COST_EVENT						("cost of a good"),
 	PRICE_EVENT						("price of a good"),
+	
+	SUPPLY_EVENT					("supply of a good"),
 	
 	// For Vehicle
 	STATUS_EVENT					("vehicle status"),

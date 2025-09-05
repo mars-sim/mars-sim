@@ -62,8 +62,8 @@
 		<!-- List of systems (or functions of a building) that are susceptible
 		to this malfunction. (min 1 entity required) -->
 		<system-list>
-			<system name="life support" />
-			<system name="rover" />
+			<system name="habitable" />
+			<system name="crew cabin" />
 			<system name="farming" />
 		</system-list>
 
@@ -112,36 +112,133 @@
 
 	</malfunction>
 
-	<!-- Small electrical or chemical fire. -->
-	<malfunction name="Vehicle Fire">
-		<severity value="60" />
-		<malfunction-probability value="2.0" />
+	<!-- Leak in the water reserves. -->
+	<malfunction name="Water Leak">
+		<severity value="50" />
+		<malfunction-probability value="3.0" />
 		<repair-inside time="50.0" />
 		<system-list>
 			<system name="rover" />
+			<system name="living accommodation" />
+			<system name="farming" />
+			<system name="manufacture" />
+			<system name="cooking" />
+		</system-list>
+		<effect-list>
+			<effect type="resource" name="Water" change-rate="-.1" />
+		</effect-list>
+		<repair-parts-list>
+			<part name="gasket" number="1" repair-probability="15" />
+			<part name="valve" number="1" repair-probability="15" />
+			<part name="plastic tubing" number="2" repair-probability="15" />
+			<part name="plastic bottle" number="1" repair-probability="15" />
+			<part name="copper pipe" number="1" repair-probability="2" />
+			<part name="water tank" number="1" repair-probability="3" />
+			<part name="water pump small" number="1" repair-probability="15" />
+		</repair-parts-list>
+	</malfunction>
+
+	<malfunction name="Battery Failure">
+		<severity value="60" />
+		<malfunction-probability value="2.0" />
+		<repair-inside time="150.0" />
+		<system-list>
+			<system name="battery" />
+			<system name="power storage" />
 		</system-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" medical-probability="5.0" />
 		</medical-complaint-list>
 		<repair-parts-list>
-			<part name="fire extinguisher" number="1" repair-probability="35" />
+			<part name="fire extinguisher" number="1" repair-probability="15" />
+			<part name="oxygen pump" number="1" repair-probability="5" />
+			<part name="heating element" number="1" repair-probability="5" />
+			<part name="battery module" number="1" repair-probability="2" />
+			<part name="valve" number="2" repair-probability="5" />
+			<part name="electrical wire" number="2" repair-probability="5" />
+			<part name="wire connector" number="2" repair-probability="5" />		
+			<part name="work gloves" number="1" repair-probability="10" />
+		</repair-parts-list>
+	</malfunction>
+
+	<!-- Fuel Leak -->
+	<malfunction name="Fuel Leak">
+		<severity value="50" />
+		<malfunction-probability value="3.0" />
+		<repair-eva time="60.0" />
+		<system-list>
+			<system name="fuel heating source" />
+			<system name="fuel power source" />
+		</system-list>
+		<effect-list>
+			<effect type="resource" name="Methane" change-rate="-.1" />
+		</effect-list>
+		<repair-parts-list>
+			<part name="gasket" number="1" repair-probability="15" />
+			<part name="valve" number="1" repair-probability="15" />
+			<part name="plastic bottle" number="1" repair-probability="15" />
+			<part name="plastic tubing" number="1" repair-probability="15" />
+			<part name="fuel tank" number="1" repair-probability="10" />
+			<part name="work gloves" number="1" repair-probability="10" />
+			<part name="decontamination kit" number="1" repair-probability="30" />
+		</repair-parts-list>
+	</malfunction>
+	
+	<malfunction name="Methanol Fuel Cell Failure">
+		<severity value="80" />
+		<malfunction-probability value="2.0" />
+		<repair-inside time="150.0" />
+		<system-list>
+			<system name="methanol fuel" />
+		</system-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" medical-probability="5.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="fire extinguisher" number="1" repair-probability="15" />
 			<part name="oxygen pump" number="1" repair-probability="5" />
 			<part name="fuel pump" number="1" repair-probability="5" />
 			<part name="heating element" number="1" repair-probability="5" />
-			<part name="battery module" number="1" repair-probability="2" />
 			<part name="gas tank" number="1" repair-probability="5" />
+			<part name="fuel tank" number="1" repair-probability="5" />
 			<part name="valve" number="2" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />
+			<part name="methanol fuel cell" number="1" repair-probability="5" />
+			<part name="methanol fuel cell stack" number="1" repair-probability="1" />			
+			<part name="work gloves" number="1" repair-probability="10" />
+		</repair-parts-list>
+	</malfunction>
+
+	<malfunction name="Methane Fuel Cell Failure">
+		<severity value="80" />
+		<malfunction-probability value="2.0" />
+		<repair-inside time="150.0" />
+		<system-list>
+			<system name="methane fuel" />
+		</system-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" medical-probability="5.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="fire extinguisher" number="1" repair-probability="15" />
+			<part name="oxygen pump" number="1" repair-probability="5" />
+			<part name="fuel pump" number="1" repair-probability="5" />
+			<part name="heating element" number="1" repair-probability="5" />
+			<part name="gas tank" number="1" repair-probability="5" />
 			<part name="fuel tank" number="1" repair-probability="5" />
-			<part name="water tank" number="1" repair-probability="5" />
+			<part name="valve" number="2" repair-probability="5" />
+			<part name="electrical wire" number="2" repair-probability="5" />
+			<part name="wire connector" number="2" repair-probability="5" />
+			<part name="methane fuel cell" number="1" repair-probability="5" />
+			<part name="methane fuel cell stack" number="1" repair-probability="1" />			
 			<part name="work gloves" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
 	<!-- Class A Fire are fires in ordinary combustibles such as wood, paper,
 		cloth, trash, and plastics. -->
-	<malfunction name="Class A Fire">
+	<malfunction name="Class A Combustible Fire">
 		<severity value="60" />
 		<malfunction-probability value="3.0" />
 		<repair-inside time="40.0" repairers="4"/>
@@ -155,7 +252,6 @@
 		<repair-parts-list>
 			<part name="fire extinguisher" number="2" repair-probability="35" />
 			<part name="lubricant bottle" number="1" repair-probability="5" />
-			<part name="gas tank" number="1" repair-probability="5" />
 			<part name="plastic sheet" number="1" repair-probability="5" />
 			<part name="fiberglass cloth" number="3" repair-probability="15" />
 			<part name="heating element" number="2" repair-probability="20" />
@@ -165,13 +261,14 @@
 			<part name="work gloves" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
-	<!-- Class B fires are fires in flammable liquids such as liquid hydrogen
-		and oxygen and flammable gases such as methane.  -->
-	<malfunction name="Class B Fire">
+
+	<!-- Class B fires are caused by oxygen and flammable liquids such as methanol.  -->
+	<malfunction name="Class B-1 Fuel Fire">
 		<severity value="80" />
 		<malfunction-probability value="2" />
 		<repair-inside time="30.0" repairers="5"/>
 		<system-list>
+			<system name="methanol fuel" />
 			<system name="cooking" />
 			<system name="farming" />
 			<system name="thermal generation" />
@@ -187,6 +284,9 @@
 		<repair-parts-list>
 			<part name="fire extinguisher" number="2" repair-probability="45" />
 			<part name="gas tank" number="1" repair-probability="5" />
+			<part name="fuel tank" number="1" repair-probability="10" />
+			<part name="methanol fuel cell" number="1" repair-probability="5" />
+			<part name="methanol fuel cell stack" number="1" repair-probability="1" />
 			<part name="aluminum sheet" number="1" repair-probability="5" />
 			<part name="plastic sheet" number="1" repair-probability="5" />
 			<part name="fiberglass" number="1" repair-probability="5" />
@@ -194,14 +294,49 @@
 			<part name="valve" number="3" repair-probability="5" />
 			<part name="electrical wire" number="2" repair-probability="5" />
 			<part name="wire connector" number="2" repair-probability="5" />
-			<part name="fuel tank" number="1" repair-probability="10" />
 			<part name="work gloves" number="1" repair-probability="10" />
 		</repair-parts-list>
 	</malfunction>
 
+	<!-- Class B-2 fires are caused by oxygen and flammable gases such as methane. -->
+	<malfunction name="Class B-2 Fuel Fire">
+		<severity value="80" />
+		<malfunction-probability value="2" />
+		<repair-inside time="30.0" repairers="5"/>
+		<system-list>
+			<system name="methane fuel" />
+			<system name="cooking" />
+			<system name="farming" />
+			<system name="thermal generation" />
+		</system-list>
+		<effect-list>
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Temperature" change-rate="+.01" />
+		</effect-list>
+		<medical-complaint-list>
+			<medical-complaint name="Minor Burns" medical-probability="15.0" />
+			<medical-complaint name="Burns" medical-probability="5.0" />
+		</medical-complaint-list>
+		<repair-parts-list>
+			<part name="fire extinguisher" number="2" repair-probability="45" />
+			<part name="gas tank" number="1" repair-probability="5" />
+			<part name="fuel tank" number="1" repair-probability="10" />
+			<part name="methane fuel cell" number="1" repair-probability="5" />
+			<part name="methane fuel cell stack" number="1" repair-probability="1" />
+			<part name="aluminum sheet" number="1" repair-probability="5" />
+			<part name="plastic sheet" number="1" repair-probability="5" />
+			<part name="fiberglass" number="1" repair-probability="5" />
+			<part name="plastic pipe" number="2" repair-probability="5" />
+			<part name="valve" number="3" repair-probability="5" />
+			<part name="electrical wire" number="2" repair-probability="5" />
+			<part name="wire connector" number="2" repair-probability="5" />
+			<part name="work gloves" number="1" repair-probability="10" />
+		</repair-parts-list>
+	</malfunction>
+	
 	<!-- Class C fires are fires involving energized electrical equipment such
 		as motors, transformers, and appliances. -->
-	<malfunction name="Class C Fire">
+	<malfunction name="Class C Electrical Fire">
 		<severity value="100" />
 		<malfunction-probability value="1" />
 		<repair-inside time="40.0" repairers="6"/>
@@ -234,13 +369,12 @@
 
 	<!-- Class D fires are fires in combustible metals such as potassium,
 		sodium, aluminum, and magnesium. -->
-	<malfunction name="Class D Fire">
+	<malfunction name="Class D Metal Fire">
 		<severity value="100" />
 		<malfunction-probability value="1" />
 		<repair-inside time="30.0" repairers="6"/>
 		<system-list>
-			<system name="research" />
-			<system name="storage" />
+			<system name="metallic element" />
 		</system-list>
 		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
@@ -267,9 +401,9 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Class K fires are fires in cooking oils and greases such as animals
+	<!-- Class K fires involving cooking oils and greases such as animals
 		fats and vegetable fats. -->
-	<malfunction name="Class K Fire">
+	<malfunction name="Class K Oil Fire">
 		<severity value="100" />
 		<malfunction-probability value="1" />
 		<repair-inside time="40.0"/>
@@ -378,30 +512,6 @@
 		</repair-parts-list>
 	</malfunction>
 
-	<!-- Methane fuel leak. -->
-	<malfunction name="Fuel Leak">
-		<severity value="50" />
-		<malfunction-probability value="3.0" />
-		<repair-eva time="60.0" />
-		<system-list>
-			<system name="rover" />
-			<system name="fuel heating source" />
-			<system name="fuel power source" />
-		</system-list>
-		<effect-list>
-			<effect type="resource" name="Methane" change-rate="-.1" />
-		</effect-list>
-		<repair-parts-list>
-			<part name="gasket" number="1" repair-probability="15" />
-			<part name="valve" number="1" repair-probability="15" />
-			<part name="plastic bottle" number="1" repair-probability="15" />
-			<part name="plastic tubing" number="1" repair-probability="15" />
-			<part name="fuel tank" number="1" repair-probability="10" />
-			<part name="work gloves" number="1" repair-probability="10" />
-			<part name="decontamination kit" number="1" repair-probability="30" />
-		</repair-parts-list>
-	</malfunction>
-
 	<!-- Problems with the generator. -->
 	<malfunction name="Generator Problems">
 		<severity value="50" />
@@ -429,7 +539,7 @@
 	</malfunction>
 
 	<!-- Rover Power failure. -->
-	<malfunction name="Vehicle Power Failure">
+	<malfunction name="Vehicle Power System Failure">
 		<severity value="40" />
 		<malfunction-probability value="2.0" />
 		<repair-inside time="50.0" />
@@ -569,32 +679,6 @@
 			<part name="logic board" number="1" repair-probability="5" />
 			<part name="microcontroller" number="1" repair-probability="1" />
 			<part name="utility vehicle control panel" number="1" repair-probability="10" />
-		</repair-parts-list>
-	</malfunction>
-
-	<!-- Leak in the water reserves. -->
-	<malfunction name="Water Leak">
-		<severity value="50" />
-		<malfunction-probability value="3.0" />
-		<repair-inside time="50.0" />
-		<system-list>
-			<system name="rover" />
-			<system name="living accommodation" />
-			<system name="farming" />
-			<system name="manufacture" />
-			<system name="cooking" />
-		</system-list>
-		<effect-list>
-			<effect type="resource" name="Water" change-rate="-.1" />
-		</effect-list>
-		<repair-parts-list>
-			<part name="gasket" number="1" repair-probability="15" />
-			<part name="valve" number="1" repair-probability="15" />
-			<part name="plastic tubing" number="2" repair-probability="15" />
-			<part name="plastic bottle" number="1" repair-probability="15" />
-			<part name="copper pipe" number="1" repair-probability="2" />
-			<part name="water tank" number="1" repair-probability="3" />
-			<part name="water pump small" number="1" repair-probability="15" />
 		</repair-parts-list>
 	</malfunction>
 

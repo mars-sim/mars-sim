@@ -10,7 +10,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
@@ -57,10 +59,15 @@ public class MedicalCare extends Function implements MedicalAid {
 		// THis is not good. all details should be in the FunctionSpec
 		Set<LocalPosition> bedSet = buildingConfig.getBuildingSpec(building.getBuildingType()).getBeds();
 
+		bedSet = bedSet.stream()
+				.map(pos ->
+						LocalAreaUtil.convert2SettlementPos(pos, building))
+				.collect(Collectors.toSet());
+		
 		// NOTE: distinguish between activity spots and bed locations
 		medicalStation = new MedicalStation(building.getName(), techLevel, bedSet.size());
 		
-		medicalStation.setSickBeds(bedSet);
+		medicalStation.setMedicalBeds(bedSet);
 	}
 	
 	/**
@@ -117,10 +124,12 @@ public class MedicalCare extends Function implements MedicalAid {
 			success = BuildingManager.addToActivitySpot(worker, building, FunctionType.MEDICAL_CARE);
 				
 			if (success)
-				logger.info(worker, 20_000, "Already arrived at " + building.getName() + ".");
+				logger.info(worker, 20_000, "Arrived at " + building.getName() + ".");
+			else
+				logger.info(worker, 0, "Unable to be go to a medical building.");
 		}
 		else
-			logger.info(worker, 0, "Not in a building.");
+			logger.info(worker, 0, "Unable to find a medical building.");
 		
 	    return success;
     }
@@ -179,8 +188,8 @@ public class MedicalCare extends Function implements MedicalAid {
 	public int getPhysicianNum() {
 		int result = 0;
 
-		if (getBuilding().hasFunction(FunctionType.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = getBuilding().getLifeSupport();
+		LifeSupport lifeSupport = getBuilding().getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {
 			Iterator<Person> i = lifeSupport.getOccupants().iterator();
 			while (i.hasNext()) {
 				Task task = i.next().getMind().getTaskManager().getTask();

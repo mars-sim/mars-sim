@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LifeSupport.java
- * @date 2023-11-20
+ * @date 2025-08-30
  * @author Scott Davis
  */
 package com.mars_sim.core.building.function;
@@ -12,7 +12,6 @@ import java.util.Iterator;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingConfig;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.FunctionSpec;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -172,19 +171,16 @@ public class LifeSupport extends Function {
 	 */
 	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
-
+		
 			if (person.getBuildingLocation() != null) {
-				// Remove this person from the old building first
-				BuildingManager.removePersonFromBuilding(person, person.getBuildingLocation());
+				LifeSupport lifeSupport = person.getBuildingLocation().getLifeSupport();
+
+				if (lifeSupport != null && lifeSupport.containsOccupant(person)) {
+					lifeSupport.removePerson(person);
+				} 
 			}
-				
-			// Add person to this building.
-			occupants.add(person);
 			
-			logger.fine(person, 10_000L, "Added to " + building + "'s life support.");	
-		} 
-		else {
-			throw new IllegalStateException("Person already occupying building.");
+			occupants.add(person);
 		}
 	}
 
@@ -196,10 +192,7 @@ public class LifeSupport extends Function {
 	public void removePerson(Person occupant) {
 		if (occupants.contains(occupant)) {
 			occupants.remove(occupant);
-			logger.fine(occupant, 10_000L, "Removed from " + building + "'s life support.");
-		} else {
-			throw new IllegalStateException("Person does not occupy building.");
-		}
+		} 
 	}
 
 	/**
@@ -233,8 +226,7 @@ public class LifeSupport extends Function {
 					Iterator<Person> j = getOccupants().iterator();
 					while (j.hasNext()) {
 						Person p = j.next();
-						if (!p.isRestingTask()) {	
-//							logger.info(p, 10_000, "Adding " + Math.round(stressModifier * 100.0)/100.0 + " to the stress.");
+						if (!p.isRestingTask()) {
 							p.getPhysicalCondition().addStress(stressModifier);
 						}
 					}

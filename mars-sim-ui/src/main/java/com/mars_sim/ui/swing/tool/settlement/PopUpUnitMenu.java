@@ -123,8 +123,14 @@ public class PopUpUnitMenu extends JPopupMenu {
 			    b.init(name, type, description);
 	           	b.setOpaque(false);
 		        b.setBackground(new Color(0,0,0,128));
-
-				final JDialog d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+		        
+		        final JDialog d;
+//		        if (unit instanceof Worker w) {
+//					 d = new UnitDialog(w).createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+//		        }
+//		        else {
+		        	d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+//		        }
 
 				d.setForeground(Color.WHITE); // orange font
 				d.setFont(new Font("Arial", Font.BOLD, 14));

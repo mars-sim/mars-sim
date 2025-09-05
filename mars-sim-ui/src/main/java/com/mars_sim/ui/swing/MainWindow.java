@@ -111,6 +111,7 @@ public class MainWindow
 	private Dimension terminalSize;
 	
 	private Simulation sim;
+	
 	private MasterClock masterClock;
 
 	private JMemoryMeter memoryBar;
@@ -154,7 +155,6 @@ public class MainWindow
 		// Set up the look and feel library to be used
 		StyleManager.setStyles(uiconfigs.getPropSets());
 
-//		GraphicsDevice[] gs = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;
@@ -520,8 +520,8 @@ public class MainWindow
 		// Create memory bar
 		memoryBar = new JMemoryMeter();
 		memoryBar.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-		memoryBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
-		memoryBar.setPreferredSize(new Dimension(130, 22));
+		memoryBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 5));
+		memoryBar.setPreferredSize(new Dimension(235, 22));
 		statusBar.addRightComponent(memoryBar, false);
 
 		// Add this class to the master clock's listener
@@ -953,19 +953,32 @@ public class MainWindow
 	 * Prepares the panel for deletion.
 	 */
 	public void destroy() {
+		
+		masterClock.removeClockListener(this);
+		masterClock = null;
+		
 		frame = null;
+		
 		unitToolbar = null;
 		toolToolbar = null;
+		
 		desktop.destroy();
 		desktop = null;
+		
 		uiconfigs = null;
+		
+		if (splashWindow != null)
+			splashWindow.destroy();
 		splashWindow = null;
+		
 		interactiveTerm.destroy();
 		interactiveTerm = null;
+		
 		playPauseSwitch = null;
 		selectedSize = null;
+		
 		sim = null;
-		masterClock = null;
+		
 		memoryBar = null;
 	}
 }

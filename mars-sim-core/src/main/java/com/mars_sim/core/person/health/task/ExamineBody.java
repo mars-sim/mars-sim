@@ -104,6 +104,22 @@ public class ExamineBody extends MedicalAidTask {
 		// Set deathInfo
 		deathInfo = body;
 
+		// First walk to a medical activity spot 
+		boolean success = walkToDoctorStation(false);  
+
+		if (!success) {
+			logger.info(worker, "Now trying to go to medical again.");
+			// Note: Avoid calling this to instantly send the doctor there.
+			// Check if the doctor is already at a medical activity spot	
+			success = MedicalCare.dispatchToMedical(worker);
+			
+			if (!success) {
+				// If no medical activity spot is available, end the task
+				endTask();
+				return ;
+			}
+		}
+		
 		// Initialize phase.
 		setPhase(PREPARING);
 	}
@@ -125,21 +141,7 @@ public class ExamineBody extends MedicalAidTask {
 
 	private double preparingPhase(double time) {
 		double remainingTime = 0;
-		
-		// Check if the doctor is already at a medical activity spot	
-		boolean success = MedicalCare.dispatchToMedical(worker);
-
-		if (!success) {
-			// First walk to a medical activity spot
-			success = walkToDoctorStation(true);
-			
-			if (!success) {
-				// If no medical activity spot is available, end the task
-				endTask();
-				
-				return remainingTime;
-			}
-		}
+	
 
 		String name = deathInfo.getDoctorRetrievingBody();
 		
@@ -180,7 +182,7 @@ public class ExamineBody extends MedicalAidTask {
 			if (transportRemainingTime < 0) {
 
 				// Send the worker as a patient to a medical bed
-				success = BuildingManager.addPatientToMedicalBed(patient, worker.getSettlement());
+				BuildingManager.addPatientToMedicalBed(patient, worker.getSettlement());
 				// Initialize phase.
 				setPhase(EXAMINING);
 			}

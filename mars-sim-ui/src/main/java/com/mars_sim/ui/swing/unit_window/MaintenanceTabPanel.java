@@ -20,12 +20,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -68,8 +66,6 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	
 	/** The parts table model. */
 	private PartTableModel tableModel;
-
-	private static PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 
 	/**
 	 * Constructor.
@@ -154,13 +150,14 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	@Override
 	protected void setColumnDetails(TableColumnModel columnModel) {
 
-        columnModel.getColumn(0).setPreferredWidth(140);
-        columnModel.getColumn(1).setPreferredWidth(140);
+        columnModel.getColumn(0).setPreferredWidth(100);
+        columnModel.getColumn(1).setPreferredWidth(100);
 		columnModel.getColumn(2).setPreferredWidth(25);
-		columnModel.getColumn(3).setPreferredWidth(30);	
-		
+		columnModel.getColumn(3).setPreferredWidth(40);	
+		columnModel.getColumn(4).setPreferredWidth(40);	
+		columnModel.getColumn(5).setPreferredWidth(35);	
 		// Add percentage format
-		columnModel.getColumn(3).setCellRenderer(new PercentageTableCellRenderer(false));
+		columnModel.getColumn(5).setCellRenderer(new PercentageTableCellRenderer(false));
 	}
 
 	/**
@@ -175,12 +172,12 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		wearCondition.setValue((int) manager.getWearCondition());
 
 		// Update last completed label.
-		double timeSinceLastMaint = manager.getTimeSinceLastMaintenance()/1000;
-		lastCompletedLabel.setText(StyleManager.DECIMAL1_SOLS.format(timeSinceLastMaint) + AGO);
+		double timeSinceLastMaint = manager.getEffectiveTimeSinceLastMaintenance()/1000;
+		lastCompletedLabel.setText(StyleManager.DECIMAL2_SOLS.format(timeSinceLastMaint) + AGO);
 
 		// Update inspection window label.
-		double window = manager.getMaintenancePeriod()/1000D;
-		inspectionWinLabel.setText(StyleManager.DECIMAL1_SOLS.format(window));
+		double window = manager.getStandardInspectionWindow()/1000D;
+		inspectionWinLabel.setText(StyleManager.DECIMAL2_SOLS.format(window));
 
 		// Update inspection work time.
 		double baseWorkTime = manager.getBaseMaintenanceWorkTime()/1000;
@@ -196,7 +193,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		
 		// Future: need to compare what parts are missing and what parts are 
 		// available for swapping out (just need time)
-		Map<Integer, Integer> parts = manager.getMaintenanceParts();
+		Map<MaintenanceScope, Integer> parts = manager.getMaintenanceParts();
 		int size = 0; 
 		
 		if (parts != null)
@@ -223,18 +220,20 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	 * 
 	 * @return string.
 	 */
-	private String getPartsString(Map<Integer, Integer> parts, boolean useHtml) {
+	private String getPartsString(Map<MaintenanceScope, Integer> parts, boolean useHtml) {
 		return MalfunctionTabPanel.getPartsString(REPAIR_PARTS_NEEDED, parts, useHtml).toString();
 	}
 
 	/**
-	 * Internal class used as model for the equipment table.
+	 * Internal class used as the table model for the parts.
 	 */
 	private static class PartTableModel extends AbstractTableModel {
 		
 		private List<Part> parts = new ArrayList<>();
-		private List<String> functions = new ArrayList<>();
+		private List<String> systems = new ArrayList<>();
 		private List<Integer> max = new ArrayList<>();
+		private List<Double> fatigue = new ArrayList<>();
+		private List<Double> failure = new ArrayList<>();
 		private List<Double> probability = new ArrayList<>();
 
 		/**
@@ -242,11 +241,13 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		 */
 		private PartTableModel(MalfunctionManager mm) {
             // Find parts for each scope
-            for (MaintenanceScope maintenance : partConfig.getMaintenance(mm.getScopes())) {
+            for (MaintenanceScope maintenance : mm.getMaintenanceScopeList()) {
 
                 parts.add(maintenance.getPart());
-                functions.add(Conversion.capitalize(maintenance.getName()));
+                systems.add(Conversion.capitalize(maintenance.getName()));          
                 max.add(maintenance.getMaxNumber());
+                failure.add(maintenance.getPart().getFailureRate());
+                fatigue.add(maintenance.getFatigue());
                 probability.add(maintenance.getProbability());
             }	
 		}
@@ -256,7 +257,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		}
 
 		public int getColumnCount() {
-			return 4;
+			return 6;
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
@@ -269,6 +270,10 @@ public class MaintenanceTabPanel extends TabPanelTable {
 				return Integer.class;
 			case 3:
 				return Double.class;
+			case 4:
+				return Double.class;
+			case 5:
+				return Double.class;
 			default:
                 return String.class;
             }
@@ -279,10 +284,14 @@ public class MaintenanceTabPanel extends TabPanelTable {
 			case 0:
 				return Msg.getString("MaintenanceTabPanel.header.part"); //$NON-NLS-1$
 			case 1:
-				return Msg.getString("MaintenanceTabPanel.header.function"); //$NON-NLS-1$
+				return Msg.getString("MaintenanceTabPanel.header.system"); //$NON-NLS-1$
 			case 2:
-				return Msg.getString("MaintenanceTabPanel.header.max"); //$NON-NLS-1$
+				return Msg.getString("MaintenanceTabPanel.header.num"); //$NON-NLS-1$
 			case 3:
+				return Msg.getString("MaintenanceTabPanel.header.fatigue"); //$NON-NLS-1$
+			case 4:
+				return Msg.getString("MaintenanceTabPanel.header.failure"); //$NON-NLS-1$
+			case 5:
 				return Msg.getString("MaintenanceTabPanel.header.probability"); //$NON-NLS-1$
 			default:
 				return "unknown";
@@ -295,10 +304,14 @@ public class MaintenanceTabPanel extends TabPanelTable {
 				case 0:
 					return parts.get(row).getName();
 				case 1:
-					return functions.get(row);
+					return systems.get(row);
 				case 2:
 					return max.get(row);
 				case 3:
+					return fatigue.get(row);
+				case 4:
+					return failure.get(row);
+				case 5:
 					return probability.get(row);
                 }
 			}

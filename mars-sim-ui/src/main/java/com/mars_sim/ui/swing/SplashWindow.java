@@ -263,6 +263,7 @@ public class SplashWindow extends JComponent {
 	
 	public void destroy() {
 		splashImage = null;
+		window = null;
 	}
 	
 	/**

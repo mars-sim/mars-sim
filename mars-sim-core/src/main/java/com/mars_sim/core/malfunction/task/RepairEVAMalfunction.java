@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.malfunction.task;
 
+import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -19,6 +20,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -51,6 +53,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 
 	/** Where to the parts come from */
 	private EquipmentOwner partStore;
+	
+	private Map<MaintenanceScope, Integer> replacedPartMap;
 
 	public RepairEVAMalfunction(Person person, Malfunctionable entity, Malfunction malfunction) {
 		super(NAME, person, 25, REPAIRING);
@@ -133,7 +137,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 
 		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
 			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available @ " + entity.getName() + ".");
-			RepairHelper.claimRepairParts(partStore, malfunction);
+			replacedPartMap = RepairHelper.claimRepairParts(partStore, malfunction);
 		}
 
 		else {
@@ -157,6 +161,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
 		else {
+			// Reset the cumulative fatigue back to zero
+			entity.getMalfunctionManager().resetPartFatigue(replacedPartMap);
+			
 			logger.log(worker, Level.INFO, 1_000, "Wrapped up EVA repair work for '" 
 					+ malfunction.getName() + "' in " + entity 
 					+ String.format(WORK_FORMAT,

@@ -9,7 +9,9 @@ package com.mars_sim.core.mission;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.steps.MissionBoardVehicleStep;
 import com.mars_sim.core.mission.steps.MissionDisembarkStep;
@@ -32,6 +34,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 public class MissionVehicleProject extends MissionProject
     implements VehicleMission {
     
+	private static final SimLogger logger = SimLogger.getLogger(MissionVehicleProject.class.getName());
 	private static final long serialVersionUID = 1L;
 
 	private static final MissionStatus NO_AVAILABLE_VEHICLES = new MissionStatus("Mission.status.noVehicle");
@@ -127,7 +130,7 @@ public class MissionVehicleProject extends MissionProject
         // needs better choosing based on capabilities and range
         return switch(v.getVehicleType()) {
             case CARGO_ROVER, EXPLORER_ROVER, TRANSPORT_ROVER -> 1;
-            case LUV, DELIVERY_DRONE, CARGO_DRONE -> -1;
+            case LUV, DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> -1;
         };
     }
 
@@ -205,9 +208,25 @@ public class MissionVehicleProject extends MissionProject
 
     @Override
     public void getHelp(MissionStatus status) {
-        throw new UnsupportedOperationException("Unimplemented method 'getHelp'");
+
+		// Set emergency beacon if vehicle is not at settlement.
+		// Note: need to find out if there are other matching reasons for setting
+		// emergency beacon.
+		if (vehicle.getSettlement() == null && !vehicle.isBeaconOn()) {
+            addStatus(status);
+            
+            var message = new StringBuilder();
+
+            // Question: could the emergency beacon itself be broken ?
+            message.append("Turned on emergency beacon to request for towing. Status flag(s): ");
+            message.append(getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
+            
+            vehicle.setEmergencyBeacon(true);
+            logger.warning(this, message.toString());
+		}
     }
-    
+
+
     /**
      * Extracst the Navpoints and calculates the proposed. This will extract the NavPoints for the Route.
      * 

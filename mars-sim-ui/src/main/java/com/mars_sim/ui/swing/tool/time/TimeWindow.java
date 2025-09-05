@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -171,6 +172,8 @@ public class TimeWindow extends ToolWindow {
 		// Use TimeWindow constructor
 		super(NAME, TITLE, desktop);
 	
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+
 		// Set window resizable to false.
 		setResizable(true);
 		
@@ -375,7 +378,7 @@ public class TimeWindow extends ToolWindow {
 		float value = Math.round(masterClock.getCPUUtil() * 100.0)/100.0f;
 		float min = Math.round(value / 5 * 100.0)/100.0f;
 		float max = Math.round(5 * value * 100.0)/100.0f;
-		float step = Math.round(value/20 * 100.0)/100.0f;
+		float step = Math.round(value / 20 * 100.0)/100.0f;
 		cpuSpinner = createSpinner(masterClock, value, min, max, step);
 		cpuSpinner.addChangeListener(e -> {
 			float cpu = ((SpinnerNumberModel)(cpuSpinner.getModel())).getNumber().floatValue();
@@ -419,14 +422,14 @@ public class TimeWindow extends ToolWindow {
 		actionPane.add(rpRatioPane);
 		
 		// Create the ref pulse damper spinner
-		value = Math.round(masterClock.getRefPulseDamper() * 100.0)/100.0f;
-		min = Math.round(value / 5 * 100.0)/100.0f;
-		max = Math.round(5 * value * 100.0)/100.0f;
-		step = 0.1f; //Math.round(value/20 * 100.0)/100.0f;
+		value = (int)(masterClock.getRefPulseDamper());
+		min = 5;
+		max = 1000;
+		step = 5;
 		refPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
 		refPulseDamperSpinner.addChangeListener(e -> {
-			float rpd = ((SpinnerNumberModel)(refPulseDamperSpinner.getModel())).getNumber().floatValue();
-			// Change the pulse load
+			int rpd = ((SpinnerNumberModel)(refPulseDamperSpinner.getModel())).getNumber().intValue();
+			// Change the ref pulse damper
 			masterClock.setRefPulseDamper(rpd);
 		});
 		
@@ -467,14 +470,14 @@ public class TimeWindow extends ToolWindow {
 		
 		
 		// Create the task pulse damper spinner
-		value = Math.round(masterClock.getTaskPulseDamper() * 100.0)/100.0f;
-		min = Math.round(value / 5 * 100.0)/100.0f;
-		max = Math.round(5 * value * 100.0)/100.0f;
-		step = 0.1f; //Math.round(value/20 * 100.0)/100.0f;
+		value = masterClock.getTaskPulseDamper();
+		min = 5;
+		max = 1000;
+		step = 5;
 		taskPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
 		taskPulseDamperSpinner.addChangeListener(e -> {
-			float tpd = ((SpinnerNumberModel)(taskPulseDamperSpinner.getModel())).getNumber().floatValue();
-			// Change the ref pulse damper
+			int tpd = ((SpinnerNumberModel)(taskPulseDamperSpinner.getModel())).getNumber().intValue();
+			// Change the task pulse damper
 			masterClock.setTaskPulseDamper(tpd);
 		});
 		
@@ -569,9 +572,9 @@ public class TimeWindow extends ToolWindow {
 		}
 
 		// Update the ref pulse damper spinner
-		float value2 = Math.round(masterClock.getRefPulseDamper() * 100.0)/100.0f;
+		int value2 = masterClock.getRefPulseDamper();
 		SpinnerNumberModel spinnerModel2 = (SpinnerNumberModel)(refPulseDamperSpinner.getModel());
-		float spinValue2 = spinnerModel2.getNumber().floatValue();
+		int spinValue2 = spinnerModel2.getNumber().intValue();
 		if (spinValue2 != value2) {
 			spinnerModel2.setValue(value2);
 		}
@@ -585,9 +588,9 @@ public class TimeWindow extends ToolWindow {
 		}
 		
 		// Update the task pulse damper spinner
-		float value4 = Math.round(masterClock.getTaskPulseDamper() * 100.0)/100.0f;
+		int value4 = masterClock.getTaskPulseDamper();
 		SpinnerNumberModel spinnerModel4 = (SpinnerNumberModel)(taskPulseDamperSpinner.getModel());
-		float spinValue4 = spinnerModel4.getNumber().floatValue();
+		int spinValue4 = spinnerModel4.getNumber().intValue();
 		if (spinValue4 != value4) {
 			spinnerModel4.setValue(value4);
 		}

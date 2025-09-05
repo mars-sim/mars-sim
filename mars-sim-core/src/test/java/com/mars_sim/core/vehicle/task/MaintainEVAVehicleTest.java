@@ -32,13 +32,15 @@ public class MaintainEVAVehicleTest extends AbstractMarsSimUnitTest {
         EVAOperationTest.executeEVAWalk(this, eva, task);
 
         // Do maintenance and advance to return
-        executeTaskUntilPhase(p, task, 1000);
+        executeTaskUntilPhase(p, task, 100);
 
         assertEquals("Maintenance time completed reset", 0D,
                             mm.getInspectionWorkTimeCompleted());
-        assertFalse("Vehicle not reserved", v.isReservedForMaintenance());
+     
         assertFalse("Vehicle status out of Maintenance", v.haveStatusType(StatusType.MAINTENANCE));
-        assertEquals("Vehicle maintenance time reset", 0D, mm.getEffectiveTimeSinceLastMaintenance());
+        assertFalse("Vehicle not reserved", v.isReservedForMaintenance());
+        
+        assertGreaterThan("Vehicle maintenance time has been reset and increase again", 0D, mm.getEffectiveTimeSinceLastMaintenance());
     
         // Return to base
         EVAOperationTest.executeEVAWalk(this, eva, task);
@@ -53,7 +55,7 @@ public class MaintainEVAVehicleTest extends AbstractMarsSimUnitTest {
 
         // Create a massive pulse to trigger maintenance
         var master = sim.getMasterClock();
-        var pulse = new ClockPulse(1, mm.getMaintenancePeriod(), master.getMarsTime(), master, false, false, true, false);
+        var pulse = new ClockPulse(1, mm.getStandardInspectionWindow(), master.getMarsTime(), master, false, false, true, false);
         mm.activeTimePassing(pulse);
         assertGreaterThan("Vehicle maintenance time", 0D, mm.getEffectiveTimeSinceLastMaintenance());
 

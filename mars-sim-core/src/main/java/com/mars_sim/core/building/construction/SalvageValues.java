@@ -217,7 +217,68 @@ implements Serializable {
 	 * @throws Exception if error determining salvage profit.
 	 */
 	public double getNewBuildingSalvageProfit(Building building, int constructionSkill) {
-		double result = 0D;
+		// Check for life support at settlement.
+		LifeSupport lifeSupport = building.getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {
+			// See if the building currently have any people in it.
+		    if (lifeSupport.getOccupantNumber() > 0 && settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).size() == 1) {
+		    	// If there are people in it and that's the only one life support building, for sure do NOT salvage that building
+		        return 0D;
+		    }
+		}
+
+		// Check if building has needed living accommodation for settlement population.
+		if (building.hasFunction(FunctionType.LIVING_ACCOMMODATION)) {
+			int popSize = settlement.getNumCitizens();
+			int popCapacity = settlement.getPopulationCapacity();
+			LivingAccommodation livingaccommodation = building.getLivingAccommodation();
+			int buildingPopCapacity = livingaccommodation.getBedCap();
+			if ((popCapacity - buildingPopCapacity) < popSize) {
+				return 0D;
+			}
+		}
+
+		// Check that building doesn't have only airlock at settlement.
+		if (building.hasFunction(FunctionType.EVA)
+			&& settlement.getAirlockNum() == 1) {
+			return 0D;
+		}
+
+		// Check that the building isn't on any person's walking path.
+		Iterator<Person> i = unitManager.getPeople().iterator();
+		while (i.hasNext()) {
+		    Person person = i.next();
+		    TaskManager taskManager = person.getMind().getTaskManager();
+		    if (taskManager.isWalkingThroughBuilding(building)) {
+		    	return 0D;
+		    }
+		}
+		
+		// Check that the building doesn't currently have any robots in it.
+		if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
+            RoboticStation roboticStation = building.getRoboticStation();
+            if (roboticStation.getRobotOccupantNumber() > 0) {
+            	return 0D;
+            }
+        } 
+		
+		// Check that the building isn't on any robot's walking path.
+		Iterator<Robot> j = unitManager.getRobots().iterator();
+        while (j.hasNext()) {
+            Robot robot = j.next();
+            BotTaskManager taskManager = robot.getBotMind().getBotTaskManager();
+            if (taskManager.isWalkingThroughBuilding(building)) {
+            	return 0D;
+            }
+        }
+		
+		// Check that the building doesn't currently have any vehicles in it.
+		if (building.hasFunction(FunctionType.VEHICLE_MAINTENANCE)) {
+		    VehicleGarage vehicleMaint = building.getVehicleParking();
+		    if (vehicleMaint.getCurrentRoverNumber() > 0) {
+		        return 0D;
+		    }
+		}
 
 		// Get current value of building.
 		BuildingManager buildingManager = settlement.getBuildingManager();
@@ -236,78 +297,10 @@ implements Serializable {
 			double partsValue = getEstimatedSalvagedPartsValue(buildingStage, constructionSkill, (buildingWear / 100D));
 
 			double salvageProfit = frameStageValue - buildingValue + partsValue;
-			result = salvageProfit;
-		}
-
-		// Check that building doesn't have remaining life support at settlement.
-		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			if (settlement.getBuildingManager().getBuildings(FunctionType.LIFE_SUPPORT).size() == 1) { 
-				result = 0D;
-			}
-			LifeSupport lifeSupport = building.getLifeSupport();
-				// Check that the building doesn't currently have any people in it.
-		    if (lifeSupport.getOccupantNumber() > 0) {
-		        result = 0D;
-		    }
-		}
-
-		// Check if building has needed living accommodation for settlement population.
-		if (building.hasFunction(FunctionType.LIVING_ACCOMMODATION)) {
-			int popSize = settlement.getNumCitizens();
-			int popCapacity = settlement.getPopulationCapacity();
-			LivingAccommodation livingaccommodation = building.getLivingAccommodation();
-			int buildingPopCapacity = livingaccommodation.getBedCap();
-			if ((popCapacity - buildingPopCapacity) < popSize) {
-				result = 0D;
-			}
-		}
-
-		// Check that building doesn't have only airlock at settlement.
-		if (building.hasFunction(FunctionType.EVA)) {
-			if (settlement.getAirlockNum() == 1) {
-			    result = 0D;
-			}
+			return salvageProfit;
 		}
 		
-
-		
-		// Check that the building isn't on any person's walking path.
-		Iterator<Person> i = unitManager.getPeople().iterator();
-		while (i.hasNext() && (result > 0D)) {
-		    Person person = i.next();
-		    TaskManager taskManager = person.getMind().getTaskManager();
-		    if (taskManager.isWalkingThroughBuilding(building)) {
-		        result = 0D;
-		    }
-		}
-		
-		// Check that the building doesn't currently have any robots in it.
-		if (building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-            RoboticStation roboticStation = building.getRoboticStation();
-            if (roboticStation.getRobotOccupantNumber() > 0) {
-                result = 0D;
-            }
-        } 
-		
-		// Check that the building isn't on any robot's walking path.
-		Iterator<Robot> j = unitManager.getRobots().iterator();
-        while (j.hasNext() && (result > 0D)) {
-            Robot robot = j.next();
-            BotTaskManager taskManager = robot.getBotMind().getBotTaskManager();
-            if (taskManager.isWalkingThroughBuilding(building)) {
-                result = 0D;
-            }
-        }
-		
-		// Check that the building doesn't currently have any vehicles in it.
-		if (building.hasFunction(FunctionType.VEHICLE_MAINTENANCE)) {
-		    VehicleGarage vehicleMaint = building.getVehicleParking();
-		    if (vehicleMaint.getCurrentRoverNumber() > 0) {
-		        result = 0D;
-		    }
-		}
-
-		return result;
+		return 0D;
 	}
 
 	/**

@@ -28,6 +28,9 @@ public abstract class Flyer extends Vehicle {
     /** Ideal hovering elevation. */
 	public final static double ELEVATION_ABOVE_GROUND = .05; // in km
 	
+	/** The overall system scope. */
+	public final static String DRONE = "drone";
+	
 	// Data members
 	/** Current total elevation above the sea level in km. */
 	private double elevation;

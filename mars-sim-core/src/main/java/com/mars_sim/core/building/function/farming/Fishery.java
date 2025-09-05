@@ -358,7 +358,7 @@ public class Fishery extends Function {
 		   // Create some new fish, according to the BIRTH_RATE constant
 		   if (weeds.size() < maxWeed * RandomUtil.getRandomDouble(.9, 1.1)) {
 			   weedBirthCache += WEED_BIRTH_RATE * time * weeds.size() * health
-					   * (1.5 + .01 * RandomUtil.getRandomInt(-15, 15));
+					   * (3.5 + .01 * RandomUtil.getRandomInt(-15, 15));
 			   if (weedBirthCache > 1) {
 					int newWeed = (int)weedBirthCache;
 					weedBirthCache = weedBirthCache - newWeed;

@@ -80,7 +80,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	private static final String REPAIRBOT = "RepairBot";
 	/** The base carrying capacity (kg) of a robot. */
 	private static final double BASE_CAPACITY = 60D;
-	/** Unloaded mass of EVA suit (kg.). */
+	/** The estimate base mass in kg. */
 	public static final double EMPTY_MASS = 80D;
 	/** life time in number of sols. */
 	private static final double WEAR_LIFETIME = 334_000D;
@@ -215,8 +215,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		// Add system type to malfunction manager scope
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
-
-		// Add TYPE to the standard scope
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
+		
+		// Add TYPE to the part scope
 		SimulationConfig.instance().getPartConfiguration().addScopes(TYPE);
 
 		// Set up the time stamp for the robot
@@ -592,8 +594,11 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
-			if (building != null && building.hasFunction(FunctionType.ROBOTIC_STATION)) {
-				localRobotGroup.addAll(building.getRoboticStation().getRobotOccupants());
+			if (building != null) {
+				RoboticStation rs = building.getFunction(FunctionType.ROBOTIC_STATION); 
+				if (rs != null) {
+					localRobotGroup.addAll(rs.getRobotOccupants());
+				}
 			}
 		}
 		else if (isInVehicle()) {
@@ -1265,6 +1270,21 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	@Override
 	public AllocatedSpot getActivitySpot() {
 		return spot;
+	}
+	
+	/**
+	 * Leaves an activity spot.
+	 * 
+	 * @apiNote This method is for leaving an existing activity spot in 
+	 * order to go to a medical bed since medical beds are not characterized 
+	 * as standard activity spots just yet. Therefore calling setActivitySpot()
+	 * 
+	 * @param release
+	 */
+	public void leaveActivitySpot(boolean release) {
+		if (spot != null) {
+			spot.leave(this, release);
+		}
 	}
 	
 	@Override

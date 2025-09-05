@@ -1,7 +1,7 @@
-/**
+/*
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-08-25
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.svg;
@@ -24,8 +24,9 @@ public final class SVGMapUtil {
 
     // Static members.
 	private static final String fileName = SVGLoader.SVG_DIR + "svg_image_mapping.properties";
-	private static Logger logger = Logger.getLogger(SVGMapUtil.class.getName());
-    private static Properties svgMapProperties;
+	private static final Logger logger = Logger.getLogger(SVGMapUtil.class.getName());
+    
+	private static Properties svgMapProperties;
 
     /**
      * Private constructor for utility class.

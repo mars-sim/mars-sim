@@ -121,7 +121,6 @@ public class OptimizeSystem extends Task {
 			endTask();
 		
 		// Initialize phase
-		addPhase(OPTIMIZING_SYSTEM);
 		setPhase(OPTIMIZING_SYSTEM);
 	}
 

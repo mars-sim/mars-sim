@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -26,9 +25,10 @@ import javax.swing.table.TableRowSorter;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.MalfunctionRepairWork;
 import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -357,28 +357,35 @@ public class MalfunctionTabPanel extends TabPanel {
 	 * 
 	 * @return string.
 	 */
-	public static String getPartsString(String title, Map<Integer, Integer> parts, boolean useHTML) {
+	public static String getPartsString(String title, Map<MaintenanceScope, Integer> parts, boolean useHTML) {
 
-		// TODO: compare what parts are missing
-		
+		// Future: compare what parts are missing
+
 		StringBuilder buf = new StringBuilder(title);
-		if (!parts.isEmpty()) {
-			boolean first = true;
-			for(Entry<Integer, Integer> entry : parts.entrySet()) {
-				if (!first) {
-					buf.append(useHTML ? BR : COMMA);
-				}
-				first = false;
-				Integer part = entry.getKey();
-				int number = entry.getValue();
-				buf.append(number).append(ONE_SPACE)
-						.append(ItemResourceUtil.findItemResource(part).getName());
-			}
-			buf.append(DOT);
-		} else
-			buf.append(NONE);
+		
+		String result = buf.append(useHTML ? BR : "")
+			.append(MalfunctionManager.getPartsString(parts)).toString();
+		
+		if (useHTML)
+			result.replaceAll(COMMA, BR);
+		
+//		if (!parts.isEmpty()) {
+//			boolean first = true;
+//			for(Entry<MaintenanceScope, Integer> entry : parts.entrySet()) {
+//				if (!first) {
+//					buf.append(useHTML ? BR : COMMA);
+//				}
+//				first = false;
+//				Integer part = entry.getKey();
+//				int number = entry.getValue();
+//				buf.append(number).append(ONE_SPACE)
+//						.append(ItemResourceUtil.findItemResource(part).getName());
+//			}
+//			buf.append(DOT);
+//		} else
+//			buf.append(NONE);
 
-		return buf.toString();
+		return result;
 	}
 
 	@Override

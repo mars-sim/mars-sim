@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.UnitEvent;
@@ -132,7 +133,11 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	public boolean setSettlementFilter(Set<Settlement> filter) {
 		getEntities().forEach(s -> s.removeUnitListener(this));
 
-		var newBuildings = filter.stream().flatMap(s -> s.getBuildingManager().getBuildingSet().stream()).toList();
+		var newBuildings = filter.stream()
+				.flatMap(s -> s.getBuildingManager().getBuildingSet().stream())
+				.sorted(Comparator.comparing(Building::getName))
+				.toList();
+	
 		resetEntities(newBuildings);
 
 		newBuildings.forEach(s -> s.addUnitListener(this));
@@ -361,7 +366,8 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		if (event.getSource() instanceof Building building) {
+		if (event.getSource() instanceof Building building
+				&& event.getTarget() instanceof Building) {
 			UnitEventType eventType = event.getType();
 
 			int columnIndex = switch(eventType) {

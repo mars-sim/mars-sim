@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Simulation.java
- * @date 2024-09-01
+ * @date 2025-08-26
  * @author Scott Davis
  */
 package com.mars_sim.core;
@@ -354,7 +354,7 @@ public class Simulation implements ClockListener, Serializable {
 		marketManager = new MarketManager(this);
 		
         RoleUtil.initialize();
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
+		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
 		
 		missionManager = new MissionManager();
 			
@@ -525,7 +525,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		CreditManager.initializeInstances(unitManager);	
 		
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
+		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -648,7 +648,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		CreditManager.initializeInstances(unitManager);
 		
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager);
+		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
 				
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);

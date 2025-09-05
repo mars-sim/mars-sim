@@ -2,7 +2,7 @@
  * Mars Simulation Project
  * PlanetaryEntity.java
  * @date 2023-07-02
- * @author MBarry Evans
+ * @author Barry Evans
  */
 
 package com.mars_sim.core.environment;

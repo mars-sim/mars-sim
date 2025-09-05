@@ -16,12 +16,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.LocalAreaUtil;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.construction.ConstructionVehicleType;
 import com.mars_sim.core.building.construction.SalvageValues;
 import com.mars_sim.core.equipment.EVASuit;
@@ -162,7 +160,7 @@ public class SalvageMission extends AbstractMission
 
 				// Mark construction site as undergoing salvage.
 				if (constructionStage != null) {
-					constructionSite.setWorkOnSite(true);
+					constructionSite.setWorkOnSite(this);
 				}
 			} else {
 				logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
@@ -231,7 +229,7 @@ public class SalvageMission extends AbstractMission
 
 			// Mark construction site as undergoing salvage.
 			if (constructionStage != null)
-				constructionSite.setWorkOnSite(true);
+				constructionSite.setWorkOnSite(this);
 		} else {
 			logger.warning(Msg.getString("BuildingSalvageMission.log.siteNotFound")); //$NON-NLS-1$
 			endMission(SALVAGE_CONSTRUCTION_SITE_NOT_FOUND_OR_CREATED);
@@ -239,7 +237,7 @@ public class SalvageMission extends AbstractMission
 
 		// Mark site as undergoing salvage.
 		if (constructionStage != null)
-			constructionSite.setWorkOnSite(true);
+			constructionSite.setWorkOnSite(this);
 
 		addMembers(members, false);
 
@@ -399,21 +397,13 @@ public class SalvageMission extends AbstractMission
 			setPhaseEnded(true);
 
 			// Remove salvaged construction stage from site.
-			constructionSite.removeSalvagedStage(constructionStage);
+			constructionSite.advanceToNextPhase();
 
 			// Salvage construction parts from the stage.
 			salvageConstructionParts();
 
 			// Mark construction site as not undergoing salvage.
-			constructionSite.setWorkOnSite(false);
-
-			// Remove construction site if all salvaging complete.
-			if (constructionStage.getInfo().getType().equals(ConstructionStageInfo.Stage.FOUNDATION)) {
-				settlement.getConstructionManager().removeConstructionSite(constructionSite);
-				settlement.fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_SALVAGE_EVENT, constructionSite);
-				logger.log(Level.FINE, Msg.getString("BuildingSalvageMission.salvagedAt" //$NON-NLS-1$
-						, settlement.getName()));
-			}
+			constructionSite.setWorkOnSite(null);
 		}
 	}
 
@@ -423,7 +413,7 @@ public class SalvageMission extends AbstractMission
 
 		// Mark site as not undergoing salvage.
 		if (constructionSite != null)
-			constructionSite.setWorkOnSite(false);
+			constructionSite.setWorkOnSite(null);
 
 		// Unreserve all mission construction vehicles.
 		unreserveConstructionVehicles();
@@ -628,26 +618,6 @@ public class SalvageMission extends AbstractMission
 
 			}
 		}
-	}
-
-	@Override
-	protected boolean hasEmergency() {
-		boolean result = super.hasEmergency();
-
-		// Cancel construction mission if there are any beacon vehicles within range
-		// that need help.
-		Vehicle vehicleTarget = null;
-		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
-		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
-			if (vehicleTarget != null) {
-				if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) {
-					result = true;
-				}
-			}
-		}
-
-		return result;
 	}
 
 	/**

@@ -10,10 +10,9 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
@@ -54,12 +53,12 @@ public class WalkRoverInterior extends Task {
 	/**
 	 * Constructor 1.
 	 */
-    public WalkRoverInterior(Person person, Rover rover, LocalPosition destLoc) {
-        super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
+    public WalkRoverInterior(Worker worker, Rover rover, LocalPosition destLoc) {
+        super(NAME, worker, false, false, STRESS_MODIFIER, null, 100D);
 
         // Check that the person is currently inside a rover.
-        if (!person.isInVehicle()) {
-        	logger.severe(person, "Not inside rover "
+        if (!worker.isInVehicle()) {
+        	logger.severe(worker, "Not inside rover "
            			+ rover.getName() + "."); 
     	}
         
@@ -69,28 +68,6 @@ public class WalkRoverInterior extends Task {
         this.destLoc = destLoc;
 
         // Initialize task phase.
-        addPhase(WALKING);
-        setPhase(WALKING);
-    }
-
-	/**
-	 * Constructor 2.
-	 */
-    public WalkRoverInterior(Robot robot, Rover rover, LocalPosition destLoc) {
-        super(NAME, robot, false, false, STRESS_MODIFIER, null, 100D);
-
-        // Check that the robot is currently inside a rover.
-        if (!robot.isInVehicle()) {
-        	logger.severe(robot, "Is supposed to be inside rover "
-           			+ rover.getName() + "."); 
-    	}
-        
-        // Initialize data members.
-        this.rover = rover;
-        this.destLoc = destLoc;
-
-        // Initialize task phase.
-        addPhase(WALKING);
         setPhase(WALKING);
     }
     
@@ -123,7 +100,7 @@ public class WalkRoverInterior extends Task {
 
 		}
 		else {
-			speedKPH =  Walk.ROBOT_WALKING_SPEED;// * robot.getWalkSpeedMod();
+			speedKPH = Walk.ROBOT_WALKING_SPEED;// * robot.getWalkSpeedMod();
 		}
 		
         LocalPosition currentPosition = worker.getPosition(); 

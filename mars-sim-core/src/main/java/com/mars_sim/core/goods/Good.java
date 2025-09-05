@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Good.java
- * @date 2024-06-29
+ * @date 2025-08-25
  * @author Scott Davis
  */
 package com.mars_sim.core.goods;
@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
@@ -39,6 +40,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	static final double LOWEST_PROJECTED_VALUE = 0.01;
 	static final int HIGHEST_PROJECTED_VALUE = 20_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
@@ -52,6 +54,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	protected static PersonConfig personConfig;
 	protected static CropConfig cropConfig;
 	protected static BuildingConfig buildingConfig;
+	protected static UnitManager unitManager;
 
 	// Data members
 	private String name;
@@ -185,6 +188,14 @@ public abstract class Good implements Serializable, Comparable<Good> {
 		return cost;
 	}
 
+	public double getPrice() {
+		return price;
+	}
+	
+	public void setPrice(double value) {
+		price = value;
+	}
+	
 	/**
 	 * Computes the cost modifier for calculating output cost.
 	 * 
@@ -195,7 +206,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private record OutputCosts(double labor, double power, double process, double skill, double tech) {}
 
 	/**
-	 * Calul;ates the output costs for a list of processes.
+	 * Calculates the output costs for a list of processes.
+	 * 
 	 * @param processInfos
 	 * @return
 	 */
@@ -511,9 +523,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param sc
 	 * @param m
 	 */
-	static void initializeInstances(SimulationConfig sc, MissionManager m) {
+	static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u) {
 		missionManager = m;
-
+		unitManager = u;
 		vehicleConfig = sc.getVehicleConfiguration();
 		personConfig = sc.getPersonConfig();
 		cropConfig = sc.getCropConfiguration();

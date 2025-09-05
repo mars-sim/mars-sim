@@ -96,7 +96,7 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_VALUE_MODIFIER = 0.02;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
-	private static final double ROCK_SALT_VALUE_MODIFIER = 1;
+	private static final double ROCK_SALT_VALUE_MODIFIER = .01;
 	private static final double EPSOM_SALT_VALUE_MODIFIER = 0.1;
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
@@ -122,11 +122,25 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_VALUE_MODIFIER_2 = 10;
 		
 	// flatten multipliers
+	private static final double ICE_FLATTENING_FACTOR = 1.5;
+	private static final double WATER_FLATTENING_FACTOR = 2.0;
+	
+	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
+	private static final double METHANE_FLATTENING_FACTOR = 1.1;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 0.1;
+	private static final double OXYGEN_FLATTENING_FACTOR = 0.1;	
+	
+	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
+	private static final double CO_FLATTENING_FACTOR = 0.09;
+	private static final double CO2_FLATTENING_FACTOR = 0.06;
+		
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
 	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
 	private static final double ROCK_FLATTENING_FACTOR = 1;
 	private static final double REGOLITH_FLATTENING_FACTOR = 2;
 	private static final double SAND_FLATTENING_FACTOR = 1;
+	
+	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
 	
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
@@ -149,23 +163,9 @@ class AmountResourceGood extends Good {
 	private static final double CROP_FLATTENING_FACTOR = 2;
 	private static final double DERIVED_FLATTENING_FACTOR = 2;
 	private static final double TISSUE_FLATTENING_FACTOR = 4;
-	
-	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
-	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 0.1;
-	private static final double OXYGEN_FLATTENING_FACTOR = 0.1;	
-	
-	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
-	private static final double CO_FLATTENING_FACTOR = 0.09;
-	private static final double CO2_FLATTENING_FACTOR = 0.06;
-	
-
-	private static final double ICE_FLATTENING_FACTOR = 1.5;
 
 	private static final double NACO3_FLATTENING_FACTOR = 0.5;
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.005;
-	
-	private static final double WATER_FLATTENING_FACTOR = 2.0;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
 	
@@ -223,6 +223,11 @@ class AmountResourceGood extends Good {
 
 		case CHEMICAL:
 			mod = CHEMICAL_FLATTENING_FACTOR;	
+			
+			mod *= switch(ar.getID()) {
+				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
+				default -> 1D;
+			};
 			
 			break;
 			
@@ -503,9 +508,12 @@ class AmountResourceGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-		double totalMass = Math.round(settlement.getSpecificAmountResourceStored(getID()) * 100.0)/100.0;
-		double factor = 1.5 / (.5 + Math.log(totalMass + 1));
-	    return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+//		double totalMass = Math.round(settlement.getSpecificAmountResourceStored(getID()) * 100.0)/100.0;
+		  double supply = settlement.getGoodsManager().getSupplyScore(getID());
+		double factor = 1.5 / (2 + Math.log(supply));
+	    double price = getCostOutput() * (1 + 2 * factor * Math.log(value + 1));
+	    setPrice(price);
+	    return price;
     }
 
     @Override
@@ -529,8 +537,8 @@ class AmountResourceGood extends Good {
 		double totalDemand = 0;
 		double totalSupply = 0;	
 
-		// Calculate projected demand
-		double newDemand = 
+		// Calculate new projected demand
+		double newProjDemand = 
 			// Tune ice demand.
 			computeIceProjectedDemand(owner)
 			// Tune regolith projected demand.
@@ -560,15 +568,15 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on minerals and ores.
 			+ getMineralDemand(owner, settlement);
 
-		newDemand = Math.min(HIGHEST_PROJECTED_VALUE, newDemand);
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 	
-		this.projectedDemand = newDemand;
-		
-		double projected = newDemand
+		double projected = newProjDemand
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
+		
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
 		
 		// Add trade value. Cache is always false if this method is called
 		this.tradeDemand = owner.determineTradeDemand(this);
@@ -603,7 +611,7 @@ class AmountResourceGood extends Good {
 		totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
 
 		// Store the average supply
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
     }
 
     

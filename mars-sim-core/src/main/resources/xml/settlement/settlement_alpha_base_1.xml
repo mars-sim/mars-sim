@@ -4,8 +4,7 @@
         default-population="36" number-of-robots="24" sponsor="MS"
         description="Large Base" objective="CROP_FARM">
         
-    <!-- zone 0 -->        
-        
+    <!-- zone 0 -->               
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
@@ -32,16 +31,16 @@
     <building id="3" type="Hallway" length="4.0" xloc="0.0"
         yloc="19.5" facing="0.0">
         <connection-list>
-            <connection id="2" xloc="0.0" yloc="-2.0" />
+            <connection id="2" hatch-facing="south" />
             <connection id="4" xloc="0.0" yloc="2.0" />
         </connection-list>
     </building>
     <building id="4" type="Lander Hab" xloc="0.0" yloc="26.0"
         facing="0.0">
         <connection-list>
-            <connection id="3" xloc="0.0" yloc="-4.5" />
-            <connection id="11" xloc="0.0" yloc="4.5" />
-            <connection id="9" xloc="-4.5" yloc="0.0" />
+            <connection id="3" hatch-facing="south"  />
+            <connection id="11" hatch-facing="north" />
+            <connection id="9" hatch-facing="east"  />
             <connection id="EVA2" hatch-facing="west" />
         </connection-list>
     </building>
@@ -243,7 +242,8 @@
 	<building-package name="Kilo Set 1 - 1x2"/>
 	<building-package name="MD1 Set 1 - 1x2"/>
 	<building-package name="MD4 Set 1 - 1x2"/>
-  
+  	<building-package name="Brine Water Well Set 1 - 1x3"/>	 	
+ 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Long Range Explorer" number="1" />
     <vehicle type="Transport Rover" number="2" />
@@ -255,8 +255,14 @@
     <!-- Robots -->
     <robot name="Huey" type="GardenBot" model="Advanced"/>
     <robot name="Dewey" type="GardenBot" model="Advanced"/>
-    <robot name="Louie" type="GardenBot"/>
-
+    <robot name="TeslaBot-G" type="GardenBot" model="Advanced"/>
+    <robot name="TeslaBot-R" type="RepairBot" model="Advanced"/>
+    <robot name="TeslaBot-MR" type="MakerBot" model="Advanced"/> 
+    <robot name="TeslaBot-C" type="ChefBot" model="Advanced"/>
+    <robot name="TeslaBot-D" type="DeliveryBot" model="Advanced"/>
+    <robot name="TeslaBot-MC" type="MedicBot" model="Advanced"/>
+  
+    
     <equipment type="EVA Suit" number="36" />
 
     <!-- Containers-->
@@ -273,7 +279,7 @@
 	<resource type="water" amount="7200" />
 	<resource type="oxygen" amount="5760" />
 
-    <part-package name="package 4" number="1" />
+    <part-package name="standard package" number="6" />
       
     <resupply>
        	<resupply-mission name="Bi-Monthly Delivery" manifest-name="Standard Resupply 1">

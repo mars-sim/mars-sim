@@ -1,15 +1,13 @@
 /*
  * Mars Simulation Project
  * MarketManager.java
- * @date 2025-07-23
+ * @date 2025-08-26
  * @author Manny Kung
  */
 package com.mars_sim.core.goods;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.Simulation;
@@ -27,7 +25,7 @@ public class MarketManager implements Serializable, Temporal {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	// May add back later : private static SimLogger logger = SimLogger.getLogger(MarketManager.class.getName());
+	// May add back private static SimLogger logger = SimLogger.getLogger(MarketManager.class.getName());
 
 	/** A map of Goods and the global market data. */
 	private Map<Good, MarketData> globalMarketBook;
@@ -40,6 +38,17 @@ public class MarketManager implements Serializable, Temporal {
 	public MarketManager(Simulation sim) {
 		this.unitManager = sim.getUnitManager();
 		// Initialize data members
+
+		if (globalMarketBook == null) {
+			globalMarketBook = new HashMap<>();
+			
+			for (Good g: GoodsUtil.getGoodsList()) {
+				MarketData marketData = new MarketData();
+				globalMarketBook.put(g, marketData);
+			}
+		}
+		
+		updateMarket();	
 	}
 
 	/**
@@ -51,35 +60,37 @@ public class MarketManager implements Serializable, Temporal {
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
 	
-		if (pulse.isNewHalfSol()) {
-
-			Collection<Settlement> settlements = unitManager.getSettlements();
-			List<Good> goods = GoodsUtil.getGoodsList();
-
-			if (globalMarketBook == null) {
-				globalMarketBook = new HashMap<>();
-				
-				for (Good g: goods) {
-					MarketData marketData = new MarketData();
-					globalMarketBook.put(g, marketData);
-				}
-			}
-		
-			for (Settlement s: settlements) {
-					
-				for (Good g: goods) {
-					MarketData data = globalMarketBook.get(g);
-					double oneDemand = s.getGoodsManager().getMarketMap().get(g).getDemand(); 
-					double oneGoodValue = s.getGoodsManager().getMarketMap().get(g).getGoodValue();
-		
-					data.updateDemand(oneDemand);
-					data.updateGoodValue(oneGoodValue);				
-					globalMarketBook.put(g, data);			
-				}	
-			}
+		if (pulse.isNewHalfMillisol()) {
+			updateMarket();
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Updates the global demand and vp.  
+	 */
+	private void updateMarket() {
+		for (Settlement s: unitManager.getSettlements()) {
+			
+			for (Good g: GoodsUtil.getGoodsList()) {
+				MarketData data = globalMarketBook.get(g);
+				double oneDemand = s.getGoodsManager().getDemandScore(g); 
+				double oneGoodValue = s.getGoodsManager().getGoodValuePoint(g.getID());
+	
+				data.updateDemand(oneDemand);
+				data.updateGoodValue(oneGoodValue);	
+			}	
+		}
+	}
+	
+	/**
+	 * Gets the global market map.
+	 * 
+	 * @return
+	 */
+	public Map<Good, MarketData> getGlobalMarketBook() {
+		return globalMarketBook;
 	}
 	
 	/**
@@ -90,9 +101,9 @@ public class MarketManager implements Serializable, Temporal {
 	 */
 	public double getGlobalMarketDemand(Good g) {
 		if (globalMarketBook == null)
-			return 0;
+			return 0.0;
 		if (globalMarketBook.isEmpty())
-			return 0;
+			return 0.0;
 		return globalMarketBook.get(g).getDemand();
 	}
 	
@@ -104,9 +115,9 @@ public class MarketManager implements Serializable, Temporal {
 	 */
 	public double getGlobalMarketGoodValue(Good g) {
 		if (globalMarketBook == null)
-			return 0;
+			return 0.0;
 		if (globalMarketBook.isEmpty())
-			return 0;
+			return 0.0;
 		return globalMarketBook.get(g).getGoodValue();
 	}
 	

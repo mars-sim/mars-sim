@@ -113,7 +113,6 @@ public class ReviewJobReassignment extends Task {
 		}
 
 		// Initialize phase
-		addPhase(REVIEWING);
 		setPhase(REVIEWING);
 	}
 

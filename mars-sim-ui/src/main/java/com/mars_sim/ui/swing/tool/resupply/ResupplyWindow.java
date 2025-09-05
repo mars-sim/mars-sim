@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
+import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -80,6 +81,8 @@ public class ResupplyWindow extends ToolWindow
 	public ResupplyWindow(MainDesktopPane desktop)  {
 		// Use the ToolWindow constructor.
 		super(NAME, TITLE, desktop);
+
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());

@@ -19,6 +19,8 @@ import com.mars_sim.core.mission.Construction;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
+import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -125,6 +127,7 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	public void setPosition(LocalPosition position) {
 		this.localPosn = position;
+		fireUnitUpdate(UnitEventType.LOCAL_POSITION_EVENT, position);
 	}
 
     /**
@@ -186,7 +189,7 @@ public abstract class AbstractMobileUnit extends Unit
 	public void setCoordinates(Coordinates newLocation) {
 		if (!location.equals(newLocation)) {
 			location = newLocation;
-			fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
+			fireUnitUpdate(UnitEventType.COORDINATE_EVENT, newLocation);
 		}
 	}
 
@@ -276,15 +279,25 @@ public abstract class AbstractMobileUnit extends Unit
 	}
 
 	/**
-	 * Gets vehicle person is in, null if person is not in vehicle.
-	 *
-	 * @return the person's vehicle
+	 * Gets the vehicle the unit is in, null if person is not in vehicle.
+	 * Note: for a rover, do NOT call this method for getting the superclass of a rover
+	 * 
+	 * @return the unit's vehicle
 	 */
 	@Override
 	public Vehicle getVehicle() {
-		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
-			return (Vehicle) getContainerUnit();
+		if (getContainerUnit() instanceof Vehicle v) {
+			return v;
 		}
+		if (getContainerUnit() instanceof Rover r) {
+			return r;
+		}
+		if (getContainerUnit() instanceof LightUtilityVehicle luv) {
+			return luv;
+		}
+//		if (getLocationStateType() == LocationStateType.INSIDE_VEHICLE) {
+//			return (Vehicle) getContainerUnit();
+//		}
 
 		return null;
 	}
@@ -296,6 +309,16 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	@Override
 	public boolean isInVehicle() {
+		var cu = getContainerUnit();
+		if (cu instanceof Vehicle) {
+			return true;
+		}
+		
+		Vehicle v = getVehicle();
+		if (v != null) {
+			return true;
+		}
+		
 		if (LocationStateType.INSIDE_VEHICLE == locnState)
 			return true;
 
@@ -312,9 +335,17 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	public boolean isInVehicleInGarage() {
 		var cu = getContainerUnit();
-		if (cu instanceof Vehicle v) {
-			// still inside the garage
+		Vehicle v = getVehicle();
+		if (v != null) {
 			return v.isInGarage();
+		}
+//		if (cu instanceof Settlement s) {
+//			// still inside the garage
+//			return v.isInSettlement() && v.isInGarage();
+//		}
+		if (cu instanceof Vehicle vv) {
+			// still inside the garage
+			return vv.isInGarage();
 		}
 		return false;
 	}

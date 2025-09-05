@@ -158,7 +158,7 @@
 	<building-package name="Solar Set 1 - 1x3"/>
 	<building-package name="Kilo Set 1 - 1x2"/>
 	<building-package name="MD1 Set 1 - 1x1"/>
-	
+ 	<building-package name="Brine Water Well Set 1 - 1x1"/>
 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
@@ -180,7 +180,7 @@
 	<resource type="water" amount="4800" />
 	<resource type="oxygen" amount="2880" />
  
-    <part-package name="package 2" number="1" />
+    <part-package name="standard package" number="2" />
  
     <resupply>
        	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1">

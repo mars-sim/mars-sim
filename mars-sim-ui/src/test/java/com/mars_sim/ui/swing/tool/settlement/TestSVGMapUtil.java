@@ -33,7 +33,7 @@ public class TestSVGMapUtil extends TestCase {
     public void testGetBuildingSVG() {
         
         // Check that all configured building names are mapped to a SVG image.
-        for(var bs : config.getBuildingConfiguration().getBuildingSpecs()) {
+        for (var bs : config.getBuildingConfiguration().getBuildingSpecs()) {
             GraphicsNode svg = SVGMapUtil.getBuildingSVG(bs.getName());
             assertNotNull(bs.getName() + " is not mapped to a SVG image.", svg);
         }

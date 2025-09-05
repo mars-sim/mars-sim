@@ -24,7 +24,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -118,12 +117,12 @@ public class TableTab extends MonitorTab {
 		});
 
 		// Allow ordering
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-		sorter.setSortsOnUpdates(true);
-		table.setRowSorter(sorter);
+//		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
+//		sorter.setSortsOnUpdates(true);
+//		table.setRowSorter(sorter);
 		
 		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
-//		setAutoCreateRowSorter(true);
+		table.setAutoCreateRowSorter(true);
 
 		
 		// Set single selection mode if necessary.

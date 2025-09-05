@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.equipment.BinFactory;
@@ -33,24 +32,30 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
-	private static final int GOOD_COL = 0;
-	private static final int CAT_COL = GOOD_COL + 1;
-	private static final int TYPE_COL = CAT_COL + 1;
-	private static final int SETTLEMENT_COL = TYPE_COL + 1;
-	static final int FLATTEN_COL = SETTLEMENT_COL + 1;
-	private static final int PROJECTED_COL = FLATTEN_COL + 1;
-	private static final int TRADE_COL = PROJECTED_COL + 1;
-	private static final int REPAIR_COL = TRADE_COL + 1;
-	private static final int DEMAND_COL = REPAIR_COL + 1;
-	private static final int MARKET_DEMAND_COL = DEMAND_COL + 1;
-	private static final int SUPPLY_COL = MARKET_DEMAND_COL + 1;
-	static final int QUANTITY_COL = SUPPLY_COL + 1;
-	private static final int MASS_COL = QUANTITY_COL + 1;
-	private static final int VALUE_COL = MASS_COL + 1;
-	private static final int MARKET_VALUE_COL = VALUE_COL + 1;
-	static final int COST_COL = MARKET_VALUE_COL + 1;
-	static final int MARKET_COST_COL = COST_COL + 1;
-	static final int MARKET_PRICE_COL = MARKET_COST_COL + 1;
+	private static final int GOOD_COL 			= 0;
+	private static final int CAT_COL 			= GOOD_COL + 1;
+	private static final int TYPE_COL 			= CAT_COL + 1;
+	private static final int SETTLEMENT_COL 	= TYPE_COL + 1;
+			static final int FLATTEN_COL 		= SETTLEMENT_COL + 1;
+	private static final int PROJECTED_COL 		= FLATTEN_COL + 1;
+	private static final int TRADE_COL 			= PROJECTED_COL + 1;
+	private static final int REPAIR_COL 		= TRADE_COL + 1;
+	
+	private static final int SUPPLY_COL 		= REPAIR_COL + 1;
+			static final int QUANTITY_COL 		= SUPPLY_COL + 1;
+	private static final int MASS_COL 			= QUANTITY_COL + 1;
+	
+	private static final int DEMAND_COL 		= MASS_COL + 1;
+	private static final int MARKET_DEMAND_COL 	= DEMAND_COL + 1;
+	
+	private static final int VALUE_COL 			= MARKET_DEMAND_COL + 1;
+	private static final int MARKET_VALUE_COL 	= VALUE_COL + 1;
+	
+			static final int COST_COL 			= MARKET_VALUE_COL + 1;
+			static final int MARKET_COST_COL 	= COST_COL + 1;
+			
+			static final int PRICE_COL 			= MARKET_COST_COL + 1;
+			static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
 
 	private static final int COLUMNCOUNT = MARKET_PRICE_COL + 1;
 
@@ -64,20 +69,28 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[CAT_COL] = new ColumnSpec ("Category", String.class);
 		COLUMNS[TYPE_COL] = new ColumnSpec ("Type", String.class);
 		COLUMNS[SETTLEMENT_COL] = new ColumnSpec("Settlement", String.class);
+
+		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Integer.class, ColumnSpec.STYLE_INTEGER);
+		COLUMNS[MASS_COL] = new ColumnSpec ("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT1);
+		
+		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class, ColumnSpec.STYLE_DIGIT3);	
+		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec ("Market Demand", Double.class, ColumnSpec.STYLE_DIGIT3);
+		
+		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT3);
+		
+		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
+		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
+		
+		COLUMNS[PRICE_COL] = new ColumnSpec ("Price", Double.class, ColumnSpec.STYLE_CURRENCY);
+		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
+		
+		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Double.class, ColumnSpec.STYLE_DIGIT3);
 		COLUMNS[PROJECTED_COL] = new ColumnSpec ("Projected", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[TRADE_COL] = new ColumnSpec ("Trade", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[REPAIR_COL] = new ColumnSpec ("Repair", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class, ColumnSpec.STYLE_DIGIT3);	
-		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec ("Market Demand", Double.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Integer.class, ColumnSpec.STYLE_INTEGER);
-		COLUMNS[MASS_COL] = new ColumnSpec ("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT1);
-		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Double.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
-		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
-		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
+
 	}
 
 	/** The market manager instance. */
@@ -102,18 +115,23 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
-		UnitEventType eventType = event.getType();
 		if (event.getTarget() instanceof Good g
-			&& unit instanceof Settlement s) {
+			&& event.getSource() instanceof Settlement s) {
 			
+			UnitEventType eventType = event.getType();
 			switch (eventType) {
+				case UnitEventType.MASS_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MASS_COL, MASS_COL);
+				case UnitEventType.SUPPLY_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), SUPPLY_COL, SUPPLY_COL);
 				case UnitEventType.VALUE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), VALUE_COL, VALUE_COL);
 				case UnitEventType.DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), DEMAND_COL, DEMAND_COL);
 				case UnitEventType.COST_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
+				case UnitEventType.PRICE_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), PRICE_COL, PRICE_COL);
 				case UnitEventType.MARKET_VALUE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
 				case UnitEventType.MARKET_DEMAND_EVENT ->
@@ -159,7 +177,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			case DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandScore(selectedGood);
 			case MARKET_DEMAND_COL:
-				return marketManager.getGlobalMarketDemand(selectedGood); // selectedSettlement.getGoodsManager().getMarketData(selectedGood).getDemand();
+				return marketManager.getGlobalMarketDemand(selectedGood); 
 			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyScore(selectedGood);
 			case QUANTITY_COL:
@@ -169,11 +187,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			case VALUE_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedGood.getID());
 			case MARKET_VALUE_COL:
-				return marketManager.getGlobalMarketGoodValue(selectedGood); // selectedSettlement.getGoodsManager().getMarketData(selectedGood).getValue();
+				return marketManager.getGlobalMarketGoodValue(selectedGood);
 			case COST_COL:
 				return selectedGood.getCostOutput();
 			case MARKET_COST_COL:
 				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getCost();
+			case PRICE_COL:
+				return selectedGood.getPrice();
 			case MARKET_PRICE_COL:
 				return selectedSettlement.getGoodsManager().getMarketData(selectedGood).getPrice();
 			default:
@@ -271,13 +291,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
     		if (p != null) {
     			return settlement.getItemResourceStored(id) * p.getMassPerItem();
     		}
-    			return 0;
+    		return 0.0;
     	}
     	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
     		// For Vehicle
     		VehicleType vehicleType = VehicleType.convertID2Type(id);
     		if (settlement.getAVehicle(vehicleType) == null)
-    			return 0;
+    			return 0.0;
     		
     		return settlement.findNumVehiclesOfType(vehicleType) * CollectionUtils.getVehicleTypeBaseMass(vehicleType); 
     	}
@@ -292,6 +312,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
     	}
     	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
     		// For Robots   
+    		// Future: will need to account for individual robot mass
     		return settlement.getNumBots() * Robot.EMPTY_MASS;
     	}    	
     	else {

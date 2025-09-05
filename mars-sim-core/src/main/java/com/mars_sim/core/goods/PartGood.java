@@ -22,6 +22,7 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -364,10 +365,13 @@ public class PartGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-        double mass = getPart().getMassPerItem();
-        double quantity = settlement.getItemResourceStored(getID()) ;
-        double factor = 1.2 * Math.log(mass + 1) / (1.2 + Math.log(quantity + 1));
-        return getCostOutput() * (1 + 5 * factor * Math.log(Math.sqrt(value)/2.0 + 1));
+    	// double mass = getMassPerItem();
+//        double quantity = settlement.getItemResourceStored(getID());
+        double supply = settlement.getGoodsManager().getSupplyScore(getID());
+        double factor = 1.2 / (2 + supply);
+        double price = getCostOutput() * (1 + factor * Math.log(value + 1));
+        setPrice(price);
+	    return price;
     }
 
     @Override
@@ -397,7 +401,7 @@ public class PartGood extends Good {
 
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
-		double projectedDemand = 
+		double newProjDemand = 
 			// Add manufacturing demand.					
 			getPartManufacturingDemand(owner, settlement, part)
 			// Add food production demand.
@@ -419,14 +423,14 @@ public class PartGood extends Good {
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(0, settlement, part, previousDemand);
 		
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
-		
-		this.projectedDemand = projectedDemand;
-		
-		double projected = projectedDemand
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
+
+		double projected = newProjDemand
 			// Flatten certain part demand.
 			* flattenDemand;
 
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		
 		// Add trade demand.
 		tradeDemand = owner.determineTradeDemand(this);
 
@@ -467,7 +471,7 @@ public class PartGood extends Good {
 		totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
 
 		// Save the average supply
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
     }
 
     /**

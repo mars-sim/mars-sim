@@ -63,8 +63,8 @@
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="55"/>
 				<robotic-attribute name="Endurance" value="95"/>
-				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="40"/>
+				<robotic-attribute name="Agility" value="60"/>
+				<robotic-attribute name="Teaching" value="30"/>
 				<robotic-attribute name="Experience Aptitude" value="95"/>
 				<robotic-attribute name="Conversation" value="80"/>
 			</robotic-attribute-list>
@@ -81,7 +81,7 @@
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
 				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Teaching" value="30"/>
 				<robotic-attribute name="Experience Aptitude" value="95"/>
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
@@ -91,6 +91,23 @@
 			</skill-list>
 		</robot>				
 		
+		<robot type="MakerBot" make="Advanced"
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+			<description>A manufacturing robot that aids resource production.</description>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="60"/>
+				<robotic-attribute name="Teaching" value="30"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="80"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Materials Science" level="2"/>
+				<skill name="Physics" level="2"/>				
+			</skill-list>
+		</robot>
+		
 		<robot type="RepairBot" make="Standard"
 					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
 			<description>A robot that fix and repair parts and equipment.</description>
@@ -98,13 +115,30 @@
 				<robotic-attribute name="Strength" value="95"/>
 				<robotic-attribute name="Endurance" value="95"/>
 				<robotic-attribute name="Agility" value="40"/>
-				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Teaching" value="30"/>
 				<robotic-attribute name="Experience Aptitude" value="95"/>
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Mechanics" level="1"/>
 				<skill name="Materials Science" level="1"/>
+			</skill-list>
+		</robot>			
+		
+		<robot type="RepairBot" make="Advanced"
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+			<description>A robot that fix and repair parts and equipment.</description>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="60"/>
+				<robotic-attribute name="Teaching" value="50"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="80"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Mechanics" level="2"/>
+				<skill name="Materials Science" level="2"/>
 			</skill-list>
 		</robot>			
 		
@@ -120,8 +154,25 @@
 				<robotic-attribute name="Conversation" value="10"/>
 			</robotic-attribute-list>
 			<skill-list>
-				<skill name="CHEMISTRY" level="1"/>
+				<skill name="Chemistry" level="1"/>
 				<skill name="Cooking" level="1"/>
+			</skill-list>
+		</robot>
+
+		<robot type="ChefBot" make="Advanced"
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+			<description>A kitchen robot that prepare food, meals and dessert.</description>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="60"/>
+				<robotic-attribute name="Teaching" value="30"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="80"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Chemistry" level="2"/>
+				<skill name="Cooking" level="2"/>
 			</skill-list>
 		</robot>
 	
@@ -142,6 +193,25 @@
 				<skill name="CHEMISTRY" level="1"/>
 			</skill-list>
 		</robot>				
+		
+		<robot type="MedicBot" make="Advanced" mass="90"
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+			<description>A robot that provides medical treatment and aid.</description>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="60"/>
+				<robotic-attribute name="Teaching" value="30"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="80"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="PSYCHOLOGY" level="2"/>
+				<skill name="Medicine" level="2"/>
+				<skill name="CHEMISTRY" level="2"/>
+			</skill-list>
+		</robot>				
+		
 		
 		<robot type="ConstructionBot" make="Standard" mass="120" height="160"
 				standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
@@ -179,6 +249,24 @@
 			</skill-list>
 		</robot>
 
+		<robot type="DeliveryBot" make="Advanced" mass="50" height="80" max-capacity="20"
+					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+			<description>A robot that functions as a pilot and loads and unloads cargoes.</description>
+			<robotic-attribute-list>
+				<robotic-attribute name="Strength" value="95"/>
+				<robotic-attribute name="Endurance" value="95"/>
+				<robotic-attribute name="Agility" value="60"/>
+				<robotic-attribute name="Teaching" value="30"/>
+				<robotic-attribute name="Experience Aptitude" value="95"/>
+				<robotic-attribute name="Conversation" value="80"/>
+			</robotic-attribute-list>
+			<skill-list>
+				<skill name="Trading" level="2"/>
+				<skill name="Piloting" level="2"/>
+				<skill name="Mechanics" level="2"/>		
+			</skill-list>
+		</robot>
+		
 	</robot-list>
 
 </robot-configuration>

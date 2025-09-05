@@ -9,16 +9,15 @@ package com.mars_sim.core.person.ai.mission;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -28,7 +27,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
 //   Current Definition :
@@ -71,9 +69,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	private static final MissionStatus TARGET_VEHICLE_NOT_FOUND = new MissionStatus("Mission.status.noTargetVehicle");
 	
 	// Data members
-	private boolean rescue = false;
-
-	private Vehicle vehicleTarget;
+	private RescueVehicleObjective objective;
 
 	/**
 	 * Constructor.
@@ -88,11 +84,9 @@ public class RescueSalvageVehicle extends RoverMission {
 		setPriority(5);
 		
 		if (!isDone()) {			
-			if (vehicleTarget == null)
-				vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
+			var vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
 			if (vehicleTarget != null) {
-				rescue = true;
 				setName(Msg.getString("Mission.description.rescueSalvageVehicle.rescue", // $NON-NLS-1$
 						vehicleTarget.getName()));
 						
@@ -105,19 +99,7 @@ public class RescueSalvageVehicle extends RoverMission {
 					return;
 				}
 
-				if (!hasVehicle()) {
-					endMission(NO_AVAILABLE_VEHICLE);
-					return;
-				}
-				
-				// Check if vehicle can carry enough supplies for the mission.
-				if (hasVehicle() && !isVehicleLoadable()) {			
-					endMission(CANNOT_LOAD_RESOURCES);
-					return;
-				}
-				
-				// Set initial phase
-				setInitialPhase(needsReview);
+				addObjectives(needsReview, vehicleTarget, true);
 				
 			}
 			else {
@@ -126,6 +108,27 @@ public class RescueSalvageVehicle extends RoverMission {
 		}
 	}
 
+	private void addObjectives(boolean needsReview, Vehicle target, boolean isRescue) {
+		if (!hasVehicle()) {
+			endMission(NO_AVAILABLE_VEHICLE);
+			return;
+		}
+
+		// Need objective to calculate resources needed.
+		objective = new RescueVehicleObjective(target, isRescue);
+		addObjective(objective);
+		
+		// Check if vehicle can carry enough supplies for the mission.
+		if (hasVehicle() && !isVehicleLoadable()) {
+			endMission(CANNOT_LOAD_RESOURCES);
+			return;
+		}
+	
+
+
+		setInitialPhase(needsReview);
+	}
+	
 	/**
 	 * Constructor with explicit data.
 	 * 
@@ -139,9 +142,8 @@ public class RescueSalvageVehicle extends RoverMission {
 
 		// Use RoverMission constructor.
 		super(MissionType.RESCUE_SALVAGE_VEHICLE, (Worker) members.toArray()[0], rover);
-
-		this.vehicleTarget = vehicleTarget;
-
+		
+		boolean rescue = false;
 		if (getRescuePeopleNum(vehicleTarget) > 0) {
 			rescue = true;
 		}
@@ -154,74 +156,21 @@ public class RescueSalvageVehicle extends RoverMission {
 		// Add mission members.
 		addMembers(members, false);
 
-		if (!hasVehicle()) {
-			endMission(NO_AVAILABLE_VEHICLE);
-			return;
-		}
-		
-		// Check if vehicle can carry enough supplies for the mission.
-		if (hasVehicle() && !isVehicleLoadable()) {
-			endMission(CANNOT_LOAD_RESOURCES);
-			return;
-		}
-	
-		setInitialPhase(false);
+		addObjectives(false, vehicleTarget, rescue);
 	}
 
 	@Override
 	protected boolean isUsableVehicle(Vehicle vehicle) {
-		if (vehicle != null) {
-			boolean usable = true;
-
-			// Filter off the vehicleTarget as the candidate vehicle to be used for rescue
-			if (vehicleTarget != null && vehicleTarget.equals(vehicle))
-				return false;
-
-			if (!(vehicle instanceof Rover))
-				usable = false;
-
-			if (vehicle.isReservedForMission())
-				usable = false;
-
-			usable = vehicle.isVehicleReady();
-
-			if (!vehicle.isEmpty())
-				usable = false;
-
-			return usable;
-		} else {
-			throw new IllegalArgumentException("isUsableVehicle: newVehicle is null.");
+		// Filter off the vehicleTarget as the candidate vehicle to be used for rescue
+		if ((objective != null) && vehicle.equals(objective.getRecoverVehicle())
+			|| !(vehicle instanceof Rover)
+			|| vehicle.isReservedForMission()) {
+			return false;
 		}
+
+		return super.isUsableVehicle(vehicle);
 	}
 
-	@Override
-	protected void setVehicle(Vehicle newVehicle) {
-		super.setVehicle(newVehicle);
-		if (newVehicle.isReservedForMaintenance()) {
-			newVehicle.setReservedForMaintenance(false);
-			newVehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
-			// If the vehicle is in a garage, remove from garage
-			BuildingManager.removeFromGarage(newVehicle);
-		}
-	}
-
-	/**
-	 * Check if mission is a rescue mission or a salvage mission.
-	 * 
-	 * @return true if rescue mission
-	 */
-	public boolean isRescueMission() {
-		return rescue;
-	}
-
-	/**
-	 * Gets the vehicle being rescued/salvaged by this mission.
-	 * 
-	 * @return vehicle
-	 */
-	public Vehicle getVehicleTarget() {
-		return vehicleTarget;
-	}
 
 	/**
 	 * Determines a new phase for the mission when the current phase has ended.
@@ -238,9 +187,7 @@ public class RescueSalvageVehicle extends RoverMission {
 					startDisembarkingPhase();
 				}
 				else {
-					String subject = (rescue ? vehicleTarget.getName() + " for Rescue"
-												:  vehicleTarget.getName() + " for Salvage");
-					setPhase(RENDEZVOUS, subject);
+					setPhase(RENDEZVOUS, objective.getName());
 				}
 			}
 	
@@ -269,16 +216,17 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @param member the mission member currently performing the mission.
 	 */
 	private void rendezvousPhase(Worker member) {
-
+		var vehicleTarget = objective.getRecoverVehicle();
 		logger.info(member, 5000, "Has arrived to rendezvous with " + vehicleTarget.getName() + ".");
 
 		// If rescuing vehicle crew, load rescue life support resources into vehicle (if
 		// possible).
-		if (rescue) {
-			Map<Integer, Number> rescueResources = determineRescueResourcesNeeded(true);
+		if (objective.isRescue()) {
+			Map<Integer, Number> rescueResources = determineRescueResourcesNeeded(vehicleTarget, true);
 
-			for (Integer resource : rescueResources.keySet()) {
-				double amount = (Double) rescueResources.get(resource);
+			for (var required : rescueResources.entrySet()) {
+				int resource = required.getKey();
+				double amount = required.getValue().doubleValue();
 				double amountNeeded = amount - vehicleTarget.getSpecificAmountResourceStored(resource);
 
 				if ((amountNeeded > 0) && (getRover().getSpecificAmountResourceStored(resource) > amountNeeded)) {
@@ -301,22 +249,13 @@ public class RescueSalvageVehicle extends RoverMission {
 		}
 
 		// Set mission event.
-		HistoricalEvent newEvent = null;
-		if (rescue) {
-			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
-					"Rescuing Stranded Vehicle", // cause
+		HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
+					(objective.isRescue() ? "Rescue Stranded Vehicle"
+							: "Salvage Vehicle"),
 					getName(), // during
 					member.getName(), // member
 					vehicleTarget
-			);
-		} else {
-			newEvent = new MissionHistoricalEvent(EventType.MISSION_RENDEZVOUS, this,
-					"Salvaging Vehicle", 
-					getName(), // during
-					member.getName(), // member
-					vehicleTarget
-			);
-		}
+		);
 		eventManager.registerNewEvent(newEvent);
 	}
 
@@ -329,15 +268,9 @@ public class RescueSalvageVehicle extends RoverMission {
 	 */
 	protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) {
 
-//		// Put towed vehicle and crew in settlement if necessary.
-//		if (hasVehicle()) {
-//			disembarkTowedVehicles(person, getRover(), disembarkSettlement);
-//			super.disembark(person, getRover().getTowedVehicle(), disembarkSettlement);
-//		}
-
 		super.performDisembarkToSettlementPhase(person, disembarkSettlement);
 		
-		reportMalfunction(person, getRover(), disembarkSettlement);
+		reportMalfunction(getRover());
 	}
 
 	/**
@@ -347,9 +280,9 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @param disembarkSettlement the settlement to store the towed vehicle in.
 	 * @throws MissionException if error disembarking towed vehicle.
 	 */
-	private void reportMalfunction(Person person, Rover rover, Settlement disembarkSettlement) {
+	private void reportMalfunction(Rover rover) {
 
-    	Malfunction serious = vehicleTarget.getMalfunctionManager().getMostSeriousMalfunction();
+    	Malfunction serious = objective.getRecoverVehicle().getMalfunctionManager().getMostSeriousMalfunction();
 		if (serious != null) {
 			HistoricalEvent salvageEvent = new MissionHistoricalEvent(
 					EventType.MISSION_SALVAGE_VEHICLE, 
@@ -361,42 +294,7 @@ public class RescueSalvageVehicle extends RoverMission {
 				);
 			eventManager.registerNewEvent(salvageEvent);
 		}
-		
-		// Is the following still needed ?
-		// May have been superceded by rescueOperation() in RoverMission
-		
-		// Unload crew from the towed vehicle at settlement.
-//		if (rover instanceof Crewable) {
-//			Crewable crewVehicle = (Crewable) rover;
-//
-//			for (Person p : crewVehicle.getCrew()) {
-//
-//				if (p.isDeclaredDead() || p.getPerformanceRating() < 0.1) {
-//					
-//					if (p.isDeclaredDead())
-//						logger.log(p, Level.INFO, 0, "Body had been retrieved from the towed rover "
-//									+ rover.getName() + " during an Rescue Operation.");
-//					else
-//						logger.log(p, Level.INFO, 0, "Was rescued from the towed rover "
-//										+ rover.getName() + " during an Rescue Operation.");
-//					
-//					// Retrieve the dead person
-//					p.transfer(disembarkSettlement);
-//					
-//					BuildingManager.addToMedicalBuilding(p, disembarkSettlement);
-//					p.setAssociatedSettlement(disembarkSettlement.getIdentifier());
-//
-//					HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON, 
-//							this,
-//							p.getPhysicalCondition().getHealthSituation(), 
-//							p.getTaskDescription(), 
-//							p.getName(),
-//							p
-//							);
-//					eventManager.registerNewEvent(rescueEvent);												
-//				}
-//			}
-//		}
+
 	}
 
 	/**
@@ -406,8 +304,8 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @return map of amount resources and their amounts.
 	 * @throws MissionException if error determining resources.
 	 */
-	private Map<Integer, Number> determineRescueResourcesNeeded(boolean useBuffer) {
-		Map<Integer, Number> result = new HashMap<>(3);
+	private Map<Integer, Number> determineRescueResourcesNeeded(Vehicle vehicleTarget, boolean useBuffer) {
+		Map<Integer, Number> result = new HashMap<>();
 
 		// Determine estimate time for trip.
 		double distance = vehicleTarget.getCoordinates().getDistance(getStartingSettlement().getCoordinates());
@@ -439,19 +337,18 @@ public class RescueSalvageVehicle extends RoverMission {
 
 		// Find all available vehicles.
 		for (Vehicle vehicle : unitManager.getVehicles()) {
-			if (vehicle.isBeaconOn() && !isVehicleAlreadyMissionTarget(vehicle)) {
+			if (vehicle.isBeaconOn() && (getRescueingVehicle(vehicle) == null)) {
 				emergencyBeaconVehicles.add(vehicle);
 
-				if (vehicle instanceof Crewable) {
-					if (((Crewable) vehicle).getCrewNum() > 0 || ((Crewable) vehicle).getRobotCrewNum() > 0) {
-						vehiclesNeedingRescue.add(vehicle);
-					}
-				}
+				if (vehicle instanceof Crewable crew
+						&& (crew.getCrewNum() > 0 || crew.getRobotCrewNum() > 0)) {
+					vehiclesNeedingRescue.add(vehicle);
+				}			
 			}
 		}
 
 		// Check for vehicles with crew needing rescue first.
-		if (vehiclesNeedingRescue.size() > 0) {
+		if (!vehiclesNeedingRescue.isEmpty()) {
 			Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), vehiclesNeedingRescue);
 			if (vehicle != null) {
 				double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
@@ -462,7 +359,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		}
 
 		// Check for vehicles needing salvage next.
-		if ((result == null) && (emergencyBeaconVehicles.size() > 0)) {
+		if ((result == null) && (!emergencyBeaconVehicles.isEmpty())) {
 			Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), emergencyBeaconVehicles);
 			if (vehicle != null) {
 				double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
@@ -476,29 +373,22 @@ public class RescueSalvageVehicle extends RoverMission {
 	}
 
 	/**
-	 * Checks if vehicle is already the target of a rescue/salvage vehicle mission.
+	 * Find if this vehicle is already the target of a rescue/salvage vehicle mission.
 	 * 
 	 * @param vehicle the vehicle to check.
-	 * @return true if already mission target.
+	 * @return The vehcile doing the rescue
 	 */
-	private static boolean isVehicleAlreadyMissionTarget(Vehicle vehicle) {
-		boolean result = false;
+	public static Vehicle getRescueingVehicle(Vehicle vehicle) {
+		var mMgr = Simulation.instance().getMissionManager();
 
-		if (missionManager == null)
-			missionManager = Simulation.instance().getMissionManager();
-
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext() && !result) {
-			Mission mission = i.next();
-			if (mission instanceof RescueSalvageVehicle) {
-				Vehicle vehicleTarget = ((RescueSalvageVehicle) mission).vehicleTarget;
-				if (vehicle == vehicleTarget) {
-					result = true;
-				}
-			}
-		}
-
-		return result;
+		return mMgr.getMissions().stream()
+			.filter(RescueSalvageVehicle.class::isInstance)
+			.map(m -> (RescueSalvageVehicle)m)
+			.filter(mo -> (mo.objective != null
+						&& vehicle.equals(mo.objective.getRecoverVehicle())))
+			.map(tv -> tv.getVehicle())
+			.findAny()
+			.orElse(null);
 	}
 
 	/**
@@ -511,9 +401,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	private static Vehicle findClosestVehicle(Coordinates location, Collection<Vehicle> vehicles) {
 		Vehicle closest = null;
 		double closestDistance = Double.MAX_VALUE;
-		Iterator<Vehicle> i = vehicles.iterator();
-		while (i.hasNext()) {
-			Vehicle vehicle = i.next();
+		for(Vehicle vehicle : vehicles) {
 			double vehicleDistance = location.getDistance(vehicle.getCoordinates());
 			if (vehicleDistance < closestDistance) {
 				closest = vehicle;
@@ -530,34 +418,9 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @return number of people.
 	 */
 	public static int getRescuePeopleNum(Vehicle vehicle) {
-		int result = 0;
-
-		if (vehicle instanceof Crewable)
-			result = ((Crewable) vehicle).getCrewNum();
-		return result;
-	}
-
-	/**
-	 * Gets the number of robots in the vehicle that needs to be rescued.
-	 * 
-	 * @param vehicle
-	 * @return
-	 */
-	public static int getRescueRobotsNum(Vehicle vehicle) {
-		int result = 0;
-
-		if (vehicle instanceof Crewable)
-			result = ((Crewable) vehicle).getRobotCrewNum();
-		return result;
-	}
-
-	/**
-	 * Gets the settlement associated with the mission.
-	 * 
-	 * @return settlement or null if none.
-	 */
-	public Settlement getAssociatedSettlement() {
-		return getStartingSettlement();
+		if (vehicle instanceof Crewable crew)
+			return crew.getCrewNum();
+		return 0;
 	}
 
 	/**
@@ -572,23 +435,25 @@ public class RescueSalvageVehicle extends RoverMission {
 		Map<Integer, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
 		// Include rescue resources if needed.
-		if (rescue && (getRover().getTowedVehicle() == null)) {
-			Map<Integer, Number> rescueResources = determineRescueResourcesNeeded(useBuffer);
+		if (objective.isRescue() && (getRover().getTowedVehicle() == null)) {
+			Map<Integer, Number> rescueResources = determineRescueResourcesNeeded(objective.getRecoverVehicle(), useBuffer);
 
-			for (Integer id : rescueResources.keySet()) {
+			for (var needed : rescueResources.entrySet()) {
+				var id = needed.getKey();
 				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-					double amount = (Double) rescueResources.get(id);
-					if (result.containsKey(id)) {
-						amount += (Double) result.get(id);
-					}
+					double amount = (Double) needed.getValue();
 					if (useBuffer) {
 						amount *= RESCUE_RESOURCE_BUFFER;
 					}
+					if (result.containsKey(id)) {
+						amount += (Double) result.get(id);
+					}
+
 					result.put(id, amount);
 					
 				}  // Check if these resources are Parts
-				else if (id >= ResourceUtil.FIRST_ITEM_RESOURCE_ID && id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-					int num = (Integer) rescueResources.get(id);
+				else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
+					int num = (Integer) needed.getValue();
 					if (result.containsKey(id)) {
 						num += (Integer) result.get(id);
 					}
@@ -608,19 +473,12 @@ public class RescueSalvageVehicle extends RoverMission {
 	 */
 	@Override
 	public double getMissionQualification(Worker member) {
-		double result = 0D;
+		double result = super.getMissionQualification(member);
 
-		result = super.getMissionQualification(member);
-
-		if (member instanceof Person) {
-			Person person = (Person) member;
-
-			// If person has the "Driver" job, add 1 to their qualification.
-			if (person.getMind().getJob() == JobType.PILOT) {
-				result += 1D;
-			}
+		if (member instanceof Person person && person.getMind().getJob() == JobType.PILOT) {
+			result += 1D;
 		}
-
+		
 		return result;
 	}
 
@@ -635,55 +493,22 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @throws MissionException if error in checking settlements.
 	 */
 	public static boolean isClosestCapableSettlement(Settlement thisSettlement, Vehicle thisVehicle) {
-		boolean result = true;
 
 		double distance = thisSettlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
 
-		Iterator<Settlement> iS = unitManager.getSettlements().iterator();
-		while (iS.hasNext() && result) {
-			Settlement settlement = iS.next();
-			if (settlement != thisSettlement) {
+		for(Settlement settlement : unitManager.getSettlements()) {
+			if (!settlement.equals(thisSettlement)) {
 				double settlementDistance = settlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
-				if (settlementDistance < distance) {
-					if (settlement.getIndoorPeopleCount() >= MIN_GOING_MEMBERS) {
-						Iterator<Vehicle> iV = settlement.getParkedGaragedVehicles().iterator();
-						while (iV.hasNext() && result) {
-							Vehicle vehicle = iV.next();
-							if (vehicle instanceof Rover) {
-								if (vehicle.getEstimatedRange() >= (settlementDistance * 2D)) {
-									result = false;
-								}
-							}
+				if ((settlementDistance < distance) && (settlement.getIndoorPeopleCount() >= MIN_GOING_MEMBERS)) {
+					for(Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
+						if (vehicle instanceof Rover && vehicle.getEstimatedRange() >= (settlementDistance * 2D)) {
+							return false;
 						}
 					}
 				}
 			}
 		}
 
-		return result;
-	}
-
-	/**
-	 * Gets the resources needed for loading the vehicle.
-	 * 
-	 * @return resources and their number.
-	 * @throws MissionException if error determining resources.
-	 */
-	public Map<Integer, Number> getResourcesToLoad() {
-		// Override and full rover with fuel and life support resources.
-		Map<Integer, Number> result = new HashMap<>(4);
-
-		int fuelTypeID = getVehicle().getFuelTypeID();
-		if (fuelTypeID > 0) {
-			result.put(fuelTypeID, getVehicle().getSpecificCapacity(fuelTypeID));
-			result.put(ResourceUtil.OXYGEN_ID, getVehicle().getSpecificCapacity(ResourceUtil.OXYGEN_ID));
-			result.put(ResourceUtil.WATER_ID, getVehicle().getSpecificCapacity(ResourceUtil.WATER_ID));
-		}
-		result.put(ResourceUtil.FOOD_ID, getVehicle().getSpecificCapacity(ResourceUtil.FOOD_ID));
-
-		// Get parts too.
-		result.putAll(getSparePartsForTrip(computeTotalDistanceRemaining()));
-
-		return result;
+		return true;
 	}
 }

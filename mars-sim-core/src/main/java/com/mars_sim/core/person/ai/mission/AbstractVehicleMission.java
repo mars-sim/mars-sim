@@ -42,6 +42,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
@@ -118,17 +119,17 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private int lastResourceCheck = 0;
 	
 	/** Vehicle traveled distance at start of mission. */
-	private double startingTravelledDistance;
+	private double startingTravelledDistance = 0D;
 	/** Total traveled distance. */
-	private double distanceTravelled;
+	private double distanceTravelled = 0D;
 	/** The estimated total distance for this mission. */
-	private double distanceProposed = 0;
+	private double distanceProposed = 0D;
 	/** The current leg remaining distance at this moment. */
-	private double distanceCurrentLegRemaining;
+	private double distanceCurrentLegRemaining = 0D;
 	/** The current leg travelled distance at this moment. */
-	private double distanceCurrentLegTravelled;
+	private double distanceCurrentLegTravelled = 0D;
 	/** The estimated total remaining distance at this moment. */
-	private double distanceTotalRemaining;
+	private double distanceTotalRemaining = 0D;
 
 	private transient double cachedDistance = -1;
 	/** The current traveling status of the mission. */
@@ -172,7 +173,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			setVehicle(vehicle);
 		}
 		
-		if (reserveVehicle()) {
+		else if (reserveVehicle()) {
 			// Charge the vehicle
 			getVehicle().setCharging(true);
 		}
@@ -1332,7 +1333,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	public void unitUpdate(UnitEvent event) {
 		UnitEventType type = event.getType();
-		if (type == UnitEventType.LOCATION_EVENT) {
+		if (type == UnitEventType.COORDINATE_EVENT) {
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 		} else if (type == UnitEventType.NAME_EVENT) {
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
@@ -1418,12 +1419,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			Iterator<Malfunction> i = vehicle.getMalfunctionManager().getMalfunctions().iterator();
 			while (i.hasNext()) {
 				Malfunction malfunction = i.next();
-				Map<Integer, Integer> parts = malfunction.getRepairParts();
-				Iterator<Integer> j = parts.keySet().iterator();
+				Map<MaintenanceScope, Integer> map = malfunction.getRepairParts();
+				Iterator<MaintenanceScope> j = map.keySet().iterator();
 				while (j.hasNext()) {
-					Integer part = j.next();
-					int number = parts.get(part);
-					if (vehicle.getItemResourceStored(part) < number) {
+					MaintenanceScope ms = j.next();
+					int number = map.get(ms);
+					if (vehicle.getItemResourceStored(ms.getPart().getID()) < number) {
 						return true;
 					}
 				}
@@ -1871,10 +1872,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				setNextNavpointIndex(navPoints.size() - offset);
 				updateTravelDestination();
 				
-				distanceCurrentLegRemaining = 0;
+				distanceCurrentLegRemaining = 0D;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 				
-				return 0;
+				return 0D;
 			}
 			
 			Coordinates c1 = null;
@@ -1890,7 +1891,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				}
 			}
 
-			double dist = 0;
+			double dist = 0D;
 			
 			if (c1 != null) {
 				dist = getCurrentMissionLocation().getDistance(c1);
@@ -1898,7 +1899,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				if (Double.isNaN(dist)) {
 					logger.severe(getName() + 
 							": current leg's remaining distance is NaN.");
-					dist = 0;
+					dist = 0D;
 				}
 			}
 			
@@ -1935,14 +1936,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				setNextNavpointIndex(navPoints.size() - offset);
 				updateTravelDestination();
 				
-				distanceCurrentLegTravelled = 0;
+				distanceCurrentLegTravelled = 0D;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
 				
-				return 0;
+				return 0D;
 			}
 			
 			Coordinates c0 = null;
-			double dist = 0;
+			double dist = 0D;
 			
 			// In case of TravelToSettlement, it's an one-way trip
 			if (this instanceof TravelToSettlement travelToSettlement) {
@@ -1955,7 +1956,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				if (Double.isNaN(dist)) {
 					logger.severe(getName() + 
 							": current leg's travelled distance is NaN.");
-					dist = 0;
+					dist = 0D;
 				}
 			}
 			
@@ -2034,7 +2035,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		double legRemaining = computeDistanceCurrentLegRemaining();
 
 		int index = 0;
-		double remainingNavPointDistance = 0;
+		double remainingNavPointDistance = 0D;
 		if (AT_NAVPOINT.equals(travelStatus))
 			index = getCurrentNavpointIndex();
 		else if (TRAVEL_TO_NAVPOINT.equals(travelStatus))

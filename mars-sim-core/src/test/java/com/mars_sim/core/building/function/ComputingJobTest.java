@@ -49,13 +49,12 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
         BuildingManager.addToBuilding(p, b);
         
         Building bLoc = p.getBuildingLocation();
-        
-//        System.out.println("Building: " + bLoc);
+
+        assertEquals("Same building ", b,  bLoc);
         
         var clock = getSim().getMasterClock().getMarsTime();
-//        System.out.println("1. clock: " + clock);
-        
-//        b.getComputation().setFreeCU(20);
+  
+        b.getComputation().setFreeCU(20);
         
         OptimizeSystem task = new OptimizeSystem(p);
         
@@ -65,20 +64,17 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
         executeTask(p, task, 5);
 
         // Check one run
-        double origNeed = job.getRemainingNeed();
-//        System.out.println("origNeed: " + origNeed);
-        
+        double remainingNeed = job.getRemainingNeed();
+  
         Computation center = null;
         double newNeed = 0;
         
         // Run job to consume bulk of power
         for (int i = 0; i < STEPS-1; i++) {
         	double cu = b.getComputation().getCurrentCU();
-//            System.out.println("cu: " + cu);
-            
+      
             clock = clock.addTime(1);
-//            System.out.println("2. clock: " + clock);
-            
+       
         	center = job.consumeProcessing(center, i * STEPS, clock.getMillisolInt());
   
             assertTrue("Job found compute function #" + i, center != null);
@@ -88,28 +84,22 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
             center.timePassing(pulse);
             
             newNeed = job.getRemainingNeed();
-//            System.out.println("newNeed: " + newNeed);
-            
+         
             // At the first round, newNeed equals origNeed
             // Comment out below for now. Unable to get the mars clock running
-            assertTrue("Computing consumed #" + i, newNeed == origNeed);
+            assertTrue("Computing consumed #" + i, newNeed == remainingNeed);
             
             assertFalse("Computing still active #" + 1, job.isCompleted());
-            
-            // Set newNeed to equal origNeed
-//            origNeed = newNeed;
         }
 
         // Comment out below for now. Unable to get the mars clock running
-        assertTrue("Computing consumed: ", newNeed == origNeed);
+        assertTrue("Computing consumed: ", newNeed == remainingNeed);
  
         // Big duration to complete
 //        job.consumeProcessing(center, (DURATION/STEPS)*3, clock.getMillisolInt());
 
         // Comment out below for now. Unable to get the mars clock running
-//        assertTrue("Job found compute function end", job.isCompleted());
-
-//        System.out.println("1. clock: " + clock);        
+//        assertTrue("Job found compute function end", job.isCompleted());      
     }
 
     public void testNoCompute() {

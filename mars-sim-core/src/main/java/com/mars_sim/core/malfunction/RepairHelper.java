@@ -14,6 +14,8 @@ import java.util.logging.Level;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.resource.MaintenanceScope;
+import com.mars_sim.core.resource.Part;
 
 /**
  * This is a helper class for completing Repair activities on a Malfunction
@@ -65,6 +67,7 @@ public final class RepairHelper {
 
 	/**
 	 * Does a container have the parts required in stock ?
+	 * 
 	 * @param containerUnit
 	 * @param malfunction
 	 * @return
@@ -79,8 +82,10 @@ public final class RepairHelper {
 		if (malfunction == null)
 			throw new IllegalArgumentException("malfunction is null");
 
-		for (Entry<Integer, Integer> item : malfunction.getRepairParts().entrySet()) {
-			Integer id = item.getKey();
+		for (Entry<MaintenanceScope, Integer> item : malfunction.getRepairParts().entrySet()) {
+			MaintenanceScope ms = item.getKey();
+			Part part = ms.getPart();
+			int id = part.getID();
 			int number = item.getValue();
 			if (containerUnit.getItemResourceStored(id) < number) {
 				result = false;
@@ -97,21 +102,27 @@ public final class RepairHelper {
 	 * @param malfunction
 	 * @return 
 	 */
-	public static void claimRepairParts(EquipmentOwner containerUnit, Malfunction malfunction) {
-		Map<Integer, Integer> needed = malfunction.getRepairParts();
+	public static Map<MaintenanceScope, Integer>  claimRepairParts(EquipmentOwner containerUnit, Malfunction malfunction) {
+		Map<MaintenanceScope, Integer> replaced = new HashMap<>();
+		Map<MaintenanceScope, Integer> needed = malfunction.getRepairParts();
 		if (!needed.isEmpty()) {
 			// Take a copy because source will get modified
-			Map<Integer, Integer> parts = new HashMap<>(needed);
+			Map<MaintenanceScope, Integer> parts = new HashMap<>(needed);
 
 			// Add repair parts if necessary.
-			for (Entry<Integer, Integer> part : parts.entrySet()) {
-				Integer id = part.getKey();
-				int number = part.getValue();
-				containerUnit.retrieveItemResource(id, number);
+			for (Entry<MaintenanceScope, Integer> entry : parts.entrySet()) {
+				MaintenanceScope ms = entry.getKey(); 
+				Part part = ms.getPart();
+				int id = part.getID();
+				int number = entry.getValue();
+				int shortfall = containerUnit.retrieveItemResource(id, number);
 				// Add in the repair part
-				malfunction.repairWithParts(id, number, containerUnit);
+				malfunction.repairWithParts(ms, number - shortfall, containerUnit);
+				
+				replaced.put(ms, number - shortfall);
 			}
 		}
+		return replaced;
 	}
 
 	/**

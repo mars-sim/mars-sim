@@ -203,7 +203,7 @@ public class TexturedPanel extends JPanel {
     g2.drawLine(0, 5, 6, 5);
 
     ourPainter = new TexturePaint(buff, new Rectangle(0, 0, 6, 6));
-
+    buff.flush();
     g2.dispose();
   }
 
@@ -247,7 +247,7 @@ public class TexturedPanel extends JPanel {
     }
 
     ourPainter = new TexturePaint(buff, new Rectangle(0, 0, w * scale, h * scale));
-
+    buff.flush();
     g2.dispose();
   }
 
@@ -273,7 +273,7 @@ public class TexturedPanel extends JPanel {
     Graphics2D g2 = buff.createGraphics();
     g2.drawImage(texture, 0, 0, this);
     ourPainter = new TexturePaint(buff, new Rectangle(0, 0, w, h));
-
+    buff.flush();
     g2.dispose();
   }
 
@@ -299,7 +299,7 @@ public class TexturedPanel extends JPanel {
     Graphics2D g2 = buff.createGraphics();
     texture.paintIcon(this, g2, 0, 0);
     ourPainter = new TexturePaint(buff, new Rectangle(0, 0, w, h));
-
+    buff.flush();
     g2.dispose();
   }
 

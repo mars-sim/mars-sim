@@ -75,6 +75,11 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
         p1.getTaskManager().replaceTask(new CookMeal(p1, k));
         results = mt.getSettlementTasks(s);
         task = results.get(0);
+        
+        String taskName = p1.getTaskManager().getTaskDescription(false);
+        System.out.println(p1 + " " + taskName);
+        int numCooks = k.getNumCooks();
+        System.out.println(p1 + " at " + p1.getBuildingLocation() + " (numCooks: " + numCooks + ")");
         assertEquals("Meal task demand after 1 chef", k.getCookCapacity() - 1, task.getDemand());
 
         var p2 = buildPerson("Chef", s, JobType.CHEF, b, FunctionType.COOKING);

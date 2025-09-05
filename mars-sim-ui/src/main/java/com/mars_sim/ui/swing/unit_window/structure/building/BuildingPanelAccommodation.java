@@ -108,6 +108,7 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 		JTable table = new JTable(bedTableModel);
 		table.setCellSelectionEnabled(false);
 		table.setRowSelectionAllowed(true);
+		table.setAutoCreateRowSorter(true);
 		EntityLauncher.attach(table, getDesktop());
 
 		scrollPanel.setViewportView(table);

@@ -84,11 +84,14 @@ public class PrescribeMedication extends Task {
                 	patient.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
     			}
             }
-            else
+            else {
+            	logger.info(patient, "Not in settlement.");
             	endTask();
+            }
 
         }
         else {
+        	logger.info(pharmacist, "No patient found.");
             endTask();
         }
 

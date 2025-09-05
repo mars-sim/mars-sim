@@ -234,6 +234,8 @@ implements ActionListener {
 		// Call ModalInternalFrame constructor
         super(NAME, "Orbit Viewer", desktop);
 
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+
 		String[][] array = getParameterInfo();
 		rowOfMatrix = array.length;
 

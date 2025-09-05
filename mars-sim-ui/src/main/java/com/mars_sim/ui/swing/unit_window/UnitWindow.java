@@ -376,5 +376,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 	public void destroy() {
 		tabPanels.forEach(t -> t.destroy());	
 		tabPanels.clear();
+		tabPanels = null;
 	}
 }

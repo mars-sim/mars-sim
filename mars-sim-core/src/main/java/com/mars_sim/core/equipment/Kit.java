@@ -45,6 +45,9 @@ public class Kit extends Equipment
 
 		// Add scope to malfunction manager
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
 	}
 
 	/**

@@ -12,6 +12,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 
 /**
  * This class represents how a Robot can be traded.
@@ -94,6 +95,12 @@ class RobotGood extends Good {
 
     @Override
     public double getMassPerItem() {
+    	for (Robot r: unitManager.getRobots()) {
+    		if (robotType == r.getRobotType()) {
+    			return r.getBaseMass();
+    		}
+    	}
+    	
         return Robot.EMPTY_MASS;
     }
 
@@ -127,11 +134,14 @@ class RobotGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-        double mass = Robot.EMPTY_MASS;
-        double quantity = settlement.getInitialNumOfRobots() ;
-        double factor = Math.log(mass/50.0 + 1) / (5 + Math.log(quantity + 1));
+//        double mass = getMassPerItem();
+//        double quantity = settlement.getInitialNumOfRobots() ;
+        double supply = settlement.getGoodsManager().getSupplyScore(getID());
+        double factor = 2 / (2 + supply);
         // Need to increase the value for robots
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
+        double price = getCostOutput() * (1 + factor * Math.log(Math.sqrt(value) + 1));  
+        setPrice(price);
+	    return price;
     }
 
     @Override
@@ -153,17 +163,17 @@ class RobotGood extends Good {
 		double totalDemand = 0;
 		
 		// Determine projected demand for this cycle
-		double projectedDemand = determineRobotDemand(owner, settlement);
+		double newProjDemand = determineRobotDemand(owner, settlement);
 
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 		
-		this.projectedDemand = projectedDemand;
+		double projected = newProjDemand * flattenDemand;
 		
-		double projected = projectedDemand * flattenDemand;
-				
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		
 		double totalSupply = getNumberForSettlement(settlement);
 				
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
 		tradeDemand = owner.determineTradeDemand(this);

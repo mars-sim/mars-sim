@@ -175,9 +175,7 @@ implements Serializable {
             result = new WalkState(WalkState.BUILDING_LOC);
             result.building = building;
 
-            logger.log(person, Level.FINER, 4000,
-            		"Inside " + building
-					+ ".");
+            logger.log(person, Level.FINER, 4000, "Inside " + building + ".");
         }
 
         else if (person.isInVehicle()) {
@@ -202,8 +200,7 @@ implements Serializable {
 
         else {
 
-        	logger.warning(person,  4000,
-        			"Can not identify parent container.");
+        	logger.severe(person, 4000, "Can not identify parent container.");
         }
 
         // Set person X and Y location.
@@ -235,17 +232,18 @@ implements Serializable {
             result = new RobotWalkState(RobotWalkState.BUILDING_LOC);
             result.building = building;
 
-            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(robot.getPosition(), building)) {
-            	logger.severe(robot, 5000,
-            			"Invalid Robot start location at " + robot.getPosition()
-                        + ", not within " + building + " @ "
-                        + LocalAreaUtil.getDescription(building));
-            }
+            logger.log(robot, Level.FINER, 4000, "Inside " + building + ".");
+            
+//            if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(robot.getPosition(), building)) {
+//            	logger.severe(robot, 5000,
+//            			"Invalid Robot start location at " + robot.getPosition()
+//                        + ", not within " + building + " @ "
+//                        + LocalAreaUtil.getDescription(building));
+//            }
         }
 
         else {
-        	logger.severe(robot, 5000,
-        			"Invalid location situation for walking task.");
+        	logger.severe(robot, 5000, "Invalid location situation for walking task.");
         }
 
         // Set robot X and Y location.

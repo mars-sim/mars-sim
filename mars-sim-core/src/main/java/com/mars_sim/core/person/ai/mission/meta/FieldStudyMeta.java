@@ -74,7 +74,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 			// Add probability for each study researcher is collaborating on.
 			for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
-				if (StudyStatus.RESEARCH_PHASE.equals(collabStudy.getPhase())
+				if (StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
 						&& !collabStudy.isCollaborativeResearchCompleted(person)
 						&& (science == collabStudy.getContribution(person))) {
 					newBase += WEIGHT/2D;

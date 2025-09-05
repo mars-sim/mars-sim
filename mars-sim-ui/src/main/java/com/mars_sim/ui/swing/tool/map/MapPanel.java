@@ -16,6 +16,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -593,10 +594,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 //	                		getDesktop().getNavWin().updateGPUButton();
 	                		// Q: how to stop continuously calling CannedMarsMap.getMapImage() below ?
 //	                		logger.config("Calling getMapImage()");
-	                		var mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
+	                		Image mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
 	                		if (mapImage != null) {
 	                			g2d.drawImage(mapImage, 0, 0, this);  
-	                		}         		
+	                			
+	                			mapImage.flush();
+	                		}
 	                	}
 	                	else
 	                		return;

@@ -77,7 +77,6 @@ public class WriteReport extends Task {
 //				}				
 			}
 			// Initialize phase
-			addPhase(WRITING_REPORT);
 			setPhase(WRITING_REPORT);
 			
 			// set the boolean to true so that it won't be done again today
@@ -92,7 +91,6 @@ public class WriteReport extends Task {
 //				person.getPreference().setTaskDue(this, true);
 				
 				// Initialize phase
-				addPhase(WRITING_REPORT);
 				setPhase(WRITING_REPORT);
 			}
 		}

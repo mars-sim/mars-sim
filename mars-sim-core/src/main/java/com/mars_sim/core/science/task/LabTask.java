@@ -333,10 +333,10 @@ public abstract class LabTask extends Task implements ResearchScientificStudy {
 	private static double getRelationshipModifier(Person person, Building building) {
 		double result = 1D;
 
-		if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-			LifeSupport lifeSupport = building.getLifeSupport();
+        LifeSupport lifeSupport = building.getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {
 			double totalOpinion = 0D;
-			for(Person occupant : lifeSupport.getOccupants()) {
+			for (Person occupant : lifeSupport.getOccupants()) {
 				if (person != occupant) {
 					totalOpinion += ((RelationshipUtil.getOpinionOfPerson(person, occupant) - 50D) / 50D);
 				}

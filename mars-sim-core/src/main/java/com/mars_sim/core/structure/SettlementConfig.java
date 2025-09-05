@@ -140,7 +140,7 @@ public class SettlementConfig {
 			rulesets.add(new GroupActivitySchedule(name, pop, specials, meetings));
 		}
 
-		// Order rulles sets in increasing minimum population
+		// Order rules sets in increasing minimum population
 		rulesets.sort(Comparator.comparingInt(GroupActivitySchedule::minPop).reversed());
 	}
 
@@ -297,9 +297,9 @@ public class SettlementConfig {
 	 * @return Selected; could be null
 	 */
 	public ShiftPattern getShiftByPopulation(int popSize) {
-		// Pattern are order in terms of decreasing population sp find first that is smaller than 
+		// Pattern are order in terms of decreasing population tp find first that is smaller than 
 		// target population
-		for(var a : shiftDefinitions) {
+		for (var a : shiftDefinitions) {
 			if ((a.getMinPopulation() <= popSize) && (a.getMinPopulation() > 0)) {
 				return a;
 			}

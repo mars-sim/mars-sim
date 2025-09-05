@@ -99,7 +99,9 @@ public class BinGood extends Good {
     	double mass = 0; // BinFactory.getBinMass(binType);
 		double quantity = 0; //settlement.findNumContainersOfType(binType);
     	double factor = 1.2 * Math.log(mass + 1) / (.1 + Math.log(quantity + 1));
-        return getCostOutput() * factor;        
+        double price = getCostOutput() * factor;  
+        setPrice(price);
+	    return price;
     }
 
 	@Override
@@ -124,7 +126,7 @@ public class BinGood extends Good {
 
 		double totalSupply = getAverageBinSupply(settlement.findNumBinsOfType(binType));
 				
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
 		double trade = owner.determineTradeDemand(this);

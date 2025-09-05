@@ -64,8 +64,12 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		center.add(topPanel, BorderLayout.NORTH);
 
 		// Add SVG Image loading for the building
+		int facing = (int)building.getFacing();
+		boolean toTurn = false;
+		if (facing == 90 || facing == 270)
+			toTurn = true;
 		GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
-		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 220, 110, true);
+		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 220, 110, toTurn);
 		JLabel svgLabel = new JLabel(svgIcon);
 		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		svgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));

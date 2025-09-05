@@ -96,7 +96,6 @@ public class Charge extends Task {
 		}
 		
 		// Initialize phase
-		addPhase(CHARGING);
 		setPhase(CHARGING);
 	}
 
@@ -341,12 +340,11 @@ public class Charge extends Task {
 				&& currentBldg.getCategory() != BuildingCategory.EVA
 				&& currentBldg.hasFunction(FunctionType.ROBOTIC_STATION)) {
 			
-			roboticStation = currentBldg.getRoboticStation();
+			roboticStation = currentBldg.getFunction(FunctionType.ROBOTIC_STATION);
 			
 			if (roboticStation != null) {
 					
 				// Future: reserve an activity spot in robotic station for this bot
-				
 				if (roboticStation.isSpaceAvailable()) {
 					return currentBldg;
 				}

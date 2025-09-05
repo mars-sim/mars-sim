@@ -99,9 +99,6 @@ public class PlanMission extends Task {
 		}
 
 		// Initialize phase
-		addPhase(SELECTING);
-		addPhase(SUBMITTING);
-		
 		setPhase(SELECTING);
 	}	
 

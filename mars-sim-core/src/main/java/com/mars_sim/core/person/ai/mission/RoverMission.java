@@ -225,36 +225,61 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	/**
 	 * Checks that everyone in the mission is aboard the rover and not 
 	 * doing an EVAOperation leaving the Vehicle
-	 *
+	 * Similar to {@link EVAMission#checkTeleported()} for detecting if a person has been "teleported" but not exactly the same.
+	 * 
 	 * @return true if everyone is aboard
 	 */
 	protected final boolean isEveryoneInRover() {
-		// Note: prior to calling this method, may need to be more defensive 
-		//       to ensure that no "teleported" persons are still members.
-		//       Or else the it would always return false
+		boolean result = true;
+		
 		Rover r = getRover();
-		for (Worker m : getMembers()) {
-			Person p = (Person) m;
-			
-			// Check below if anyone has been "teleported"
-			if (p.isInSettlement() 
-				|| p.isInSettlementVicinity()
-				|| p.isRightOutsideSettlement()) {
-
-				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
-							+ p.getLocationTag().getExtendedLocation() + ".");
-				return false;
-			}
-					
-			if (!r.isCrewmember(p)) {
-				return false;
-			}
-
-			if (p.getTaskManager().getTask() instanceof EVAOperation) {
-				return false;
+		Set<Person> crew = new UnitSet<>();
+		crew.addAll(r.getCrew());
+		
+		for (Person p : crew) {
+			if (!getMembers().contains(p)) {
+				logger.warning(p, 10_000, "Being a crew member in " 
+						+ r.getName() + " but not a mission member.");
+				result = false;
 			}
 		}
-		return true;
+		
+		for (Worker m : getMembers()) {
+			Person p = (Person) m;
+
+			if (p.getTaskManager().getTask() instanceof EVAOperation) {
+				logger.warning(p, 10_000, "Still doing EVA outside. Need to end now to embark on '" + getName()
+						+ "'. Current Location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");				
+				result = false;
+			}
+			
+			if (!p.isInVehicle()) {
+
+				logger.warning(p, 10_000, "Not onboard " + r.getName()
+						+ ". Not ready for '" + getName() + "' yet. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+				result = false;
+			}
+
+			if (p.isInSettlement()) {
+
+				logger.warning(p, 10_000, "Still inside the settlement. Not on " + r.getName()
+						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+				result = false;
+			}
+			
+			if (p.isInSettlementVicinity()
+					|| p.isRightOutsideSettlement()) {
+
+				logger.warning(p, 10_000, "Still outside and not on " + r.getName()
+						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+				result = false;
+			}	
+		}
+		return result;
 	}
 	
 	/**
@@ -338,7 +363,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Still enough members ? If so eject late arrivals
 			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
 				for (Person ej : ejectedMembers) {
-					logger.info(ej, "Missed the departure and evicted from '" + getName() + "'.");
+					logger.warning(ej, "Missed the departure and evicted from '" + getName() + "'.");
 					removeMember(ej);
 					addMissionLog(ej.getName() + " evicted");
 				}
@@ -498,7 +523,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 				
 				else if (v2 != null) {
-					registerVehicle(v1, disembarkSettlement);
+					registerVehicle(v2, disembarkSettlement);
 					
 					untetherVehicle(v2, v0, disembarkSettlement);
 				}
@@ -758,7 +783,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (canWalk) {
 					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
 					if (!canDo) {
-						logger.warning(person, 10_000, "Unable to walk back to " + destinationBuilding + ".");
+						logger.warning(person, 20_000, "Unable to walk back to " + destinationBuilding + ".");
 					}
 				}
 

@@ -13,12 +13,13 @@ import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 
 public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
+	
     private Person createRadiationPatient(Settlement s, Building sb) {
-        var p = buildPerson("Patient", s, JobType.ENGINEER, sb, FunctionType.MEDICAL_CARE);
+        var p = buildPatient("Patient", s, JobType.ENGINEER, sb, FunctionType.MEDICAL_CARE);
         var pc = p.getPhysicalCondition();
         var e = p.getPhysicalCondition().getRadiationExposure();
 
-        // Simualte a mass radiation dose
+        // Simulate a mass radiation dose
         e.addDose(RadiationType.SEP, BodyRegionType.SKIN, 2000D);
         var pulse = createPulse(1, 0, true, true);
         pc.timePassing(pulse, s);
@@ -28,8 +29,6 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
         return p;
     }
 
-
-
     public void testDetermineRadiation() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -37,7 +36,7 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
 
         var p = createRadiationPatient(s, sb);
 
-        var doctor = buildPerson("Docter", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
+        var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var found = PrescribeMedication.determinePatient(doctor);
         assertEquals("Found stressed out patient", p, found);
@@ -47,19 +46,20 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
         var p = createRadiationPatient(s, sb);
-        var doctor = buildPerson("Docter", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
+        var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var task = new PrescribeMedication(doctor);
-        assertFalse("Task is active", task.isDone());
         assertEquals("Found patient", p, task.getPatient());
+        assertFalse("Task is active", task.isDone());
 
-        // Complet eto the end
+
+        // Complete to the end
         executeTask(doctor, task, 2000);
         assertTrue("Task completed", task.isDone());
         var meds = p.getPhysicalCondition().getMedicationList();
         assertEquals("Patient has medication", 1, meds.size());
         
-        // Check has radiationmedication
+        // Check has radiation medication
         var radMeds = meds.get(0);
         assertEquals("Radiation meds", ComplaintType.RADIATION_SICKNESS, radMeds.getComplaintType());
     }

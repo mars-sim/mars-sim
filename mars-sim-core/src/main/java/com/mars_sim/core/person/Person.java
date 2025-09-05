@@ -32,6 +32,7 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.environment.MarsSurface;
@@ -692,10 +693,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (!isValid(pulse)) {
 			return false;
 		}
-
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		long tnow = System.currentTimeMillis();
-		
+	
 		// Check to see if the person has deceased
 		if (condition.getDeathDetails() != null) {
 			setDeceased();
@@ -706,7 +704,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			return false;
 		}
 
-		// Primary researcher; my responsibility to update Study
+		// Note: the primary researcher has the responsibility to update his/her studies
 		research.timePassing(pulse);
 
 		EVASuit suit = getSuit();
@@ -727,7 +725,19 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		circadian.timePassing(pulse, support);
 		// Pass the time in the physical condition first as this may result in death.
 		condition.timePassing(pulse, support);
+		
+		checkInNewSol(pulse);
+				
+		return true;
+	}
 
+	/**
+	 * Checks in for the new sol.
+	 * 
+	 * @param pulse
+	 */
+	private void checkInNewSol(ClockPulse pulse) {
+		
 		if (pulse.isNewSol()) {
 			// Update the solCache
 			int currentSol = pulse.getMarsTime().getMissionSol();
@@ -767,16 +777,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					role.obtainNewRole();
 			}
 		}
-		
-//		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		tLast = System.currentTimeMillis();
-//		long elapsedMS = tLast - tnow;
-//		if (elapsedMS > 100)
-//			logger.severe(this, "elapsedMS: " + elapsedMS);
-				
-		return true;
 	}
-
+	
 	/**
 	 * Checks if the person has deceased.
 	 * 
@@ -931,7 +933,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	/**
 	 * Gets the person's local group of people (in building or rover).
 	 *
-	 * @return collection of people in person's location. The collectino incldues the Person
+	 * @return collection of people in person's location. The collection includes the Person
 	 */
 	public Collection<Person> getLocalGroup() {
 		Collection<Person> localGroup = null;
@@ -939,11 +941,13 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (isInSettlement()) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
-				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					localGroup = building.getLifeSupport().getOccupants();
+				LifeSupport ls = building.getFunction(FunctionType.LIFE_SUPPORT);
+				if (ls != null) {
+					localGroup = ls.getOccupants();
 				}
 			}
-		} else if (isInVehicle()) {
+		} 
+		else if (isInVehicle()) {
 			localGroup = ((Crewable) getVehicle()).getCrew();
 		}
 
@@ -1931,6 +1935,21 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	@Override
 	public AllocatedSpot getActivitySpot() {
 		return spot;
+	}
+	
+	/**
+	 * Leaves an activity spot.
+	 * 
+	 * @apiNote This method is for leaving an existing activity spot in 
+	 * order to go to a medical bed since medical beds are not characterized 
+	 * as standard activity spots just yet. Therefore calling setActivitySpot()
+	 * 
+	 * @param release
+	 */
+	public void leaveActivitySpot(boolean release) {
+		if (spot != null) {
+			spot.leave(this, release);
+		}
 	}
 	
 	/**

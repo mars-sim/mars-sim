@@ -295,7 +295,7 @@
 		<!-- Part packages (see part_packages.xml) -->
 		<!-- name: the part package name. -->
 		<!-- number: the number of packages. -->
-		<part-package name="package 2" number="1" />
+		<part-package name="standard package" number="1" />
 
 	</resupply>
 
@@ -322,7 +322,7 @@
 		<resource type="hydrogen" amount="1000.0" />
 		<resource type="food" amount="1657.0" />
 		
-		<part-package name="package 3" number="1" />
+		<part-package name="standard package" number="2" />
 		
 	</resupply>
 
@@ -347,7 +347,7 @@
 		<resource type="hydrogen" amount="1000.0" />
 		<resource type="food" amount="4970.0" />
 		
-		<part-package name="package 4" number="1" />
+		<part-package name="standard package" number="3" />
 		
 	</resupply>
 

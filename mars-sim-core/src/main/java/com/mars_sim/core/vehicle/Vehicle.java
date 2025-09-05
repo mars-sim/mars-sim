@@ -194,7 +194,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private Set<StatusType> statusTypes = new HashSet<>();
 	
 	/** The vehicle's status log. */
-	private History<Set<StatusType>> vehicleLog = new History<>(40);
+	private History<Set<StatusType>> vehicleLog = new History<>(28);
 	/** The vehicle's road speed history. */
 	private MSolDataLogger<Integer> roadSpeedHistory = new MSolDataLogger<>(MAX_NUM_SOLS);
 	/** The vehicle's road power history. */	
@@ -269,7 +269,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 		malfunctionManager = new MalfunctionManager(this, baseWearLifetime, maintenanceWorkTime);
 
 		setupScopeString();
-
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
+		
 		primaryStatus = StatusType.PARKED;
 		
 		writeLog();
@@ -284,6 +286,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 		passengerActivitySpots = spec.getPassengerActivitySpots();
 		
 		isReady = true;
+	
+		// Add all the vehicle spec system scopes to the part scopes
+		SimulationConfig.instance().getPartConfiguration().addScopes(spec.getSystemScopes());
 	}
 
 	/**
@@ -297,11 +302,20 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * Sets the scope string.
 	 */
 	protected void setupScopeString() {
-		// Add "vehicle" as scope
-		malfunctionManager.addScopeString(SystemType.VEHICLE.getName());
+		
+		spec.addSystemScope(SystemType.VEHICLE.getName());
+		
+		spec.addSystemScope(vehicleType.getName());
+		
+		if (VehicleType.isDrone(vehicleType)) {
+			// Note: The general "drone" system scope is not the same as the specific 
+			//       vehicle type scope such as "cargo drone"
+			spec.addSystemScope("drone");
+		}
+		
+		// Set up all scopes in malfunction manager
+		malfunctionManager.addScopeString(spec.getSystemScopes());
 	
-		// Add its vehicle type as scope
-		malfunctionManager.addScopeString(vehicleType.name());
 	}
 	
 	/**
@@ -1691,8 +1705,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 		int weight = 2;
 
-		List<Building> evas = settlement.getBuildingManager()
-				.getBuildingsOfSameCategoryNZone0(BuildingCategory.EVA);
+		List<Building> evas = new ArrayList<>(settlement.getBuildingManager()
+				.getBuildingsOfSameCategoryZone0(BuildingCategory.EVA));
 		int numGarages = settlement.getBuildingManager().getGarages().size();
 		int total = (evas.size() + numGarages * weight - 1);
 		if (total < 0)

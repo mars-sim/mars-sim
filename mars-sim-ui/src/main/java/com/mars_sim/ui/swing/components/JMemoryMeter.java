@@ -21,7 +21,8 @@ public class JMemoryMeter extends JProgressBar {
     private static final String MB = " MB";
     private static final String OF = " of ";
     
-    private static final String TOOLTIPFORMAT = "<html> Used: %,d MB <br/> Allocated: %,d MB <br/> Maximum: %,d MB";
+    private static final String TOOLTIPFORMAT = 
+    		"<html> Used: %,d MB <br/> Allocated: %,d MB <br/> Maximum: %,d MB <br/> Available cores: %,d";
     		
     private int totalMemoryMB;
 
@@ -57,10 +58,14 @@ public class JMemoryMeter extends JProgressBar {
             setMaximum(totalMemoryMB);
         }
 
-        int freeMB = (int) (rt.freeMemory()/MEGA);
-        int consumedMB = totalMemoryMB - freeMB;
+        int freeMB = (int)(rt.freeMemory() / MEGA);
+        int consumedMB = newTotal - freeMB;
+        int maxMB = (int)(rt.maxMemory() / MEGA);
+        
+        
         setValue(consumedMB);
-        setString(consumedMB + MB + OF + totalMemoryMB + MB);
-        setToolTipText(String.format(TOOLTIPFORMAT,  consumedMB, totalMemoryMB, (int)(rt.maxMemory()/MEGA)));
+        setString(consumedMB + MB + OF + newTotal + MB + " [Max: " + maxMB + MB + "]");
+        setToolTipText(String.format(TOOLTIPFORMAT, consumedMB, newTotal, 
+        		(int)(rt.maxMemory()/MEGA), (int)(rt.availableProcessors())));
     }
 }

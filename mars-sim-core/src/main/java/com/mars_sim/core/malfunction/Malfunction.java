@@ -14,13 +14,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
 import com.mars_sim.core.person.health.ComplaintType;
-import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.MaintenanceScope;
+import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -165,7 +167,7 @@ public class Malfunction implements Serializable {
 	/* The definition instance of this malfunction. */
 	private MalfunctionMeta definition;
 	/* The map of repair part id and part quantity for this malfunction. */
-	private Map<Integer, Integer> repairParts;
+	private Map<MaintenanceScope, Integer> repairParts;
 	/** Repair work required */
 	private EnumMap<MalfunctionRepairWork, RepairWork> work = new EnumMap<>(MalfunctionRepairWork.class);
 
@@ -205,7 +207,7 @@ public class Malfunction implements Serializable {
 			}
 		}
 
-		// What is need to repair malfunction
+		// Determine what parts are needed to repair malfunction
 		determineRepairParts();
 	}
 
@@ -592,40 +594,90 @@ public class Malfunction implements Serializable {
 	 * @throws Exception if error determining the repair parts.
 	 */
 	private void determineRepairParts() {
-		for (RepairPart part : definition.getParts()) {
-			if (RandomUtil.lessThanRandPercent(part.getRepairProbability())) {
-				int id = part.getPartID();
-				repairParts.put(id, part.getNumber());
+		
+		List<MaintenanceScope> list = pickOneScopeHighFatigue();
+		
+		for (MaintenanceScope ms : list) {
 
-				logger.warning(name + REPAIR_REQUIRES + part.getName()
-						+ QUANTITY + part.getNumber() + CLOSE_B);
+			double prob = ms.getProbability();
+			int chance = ms.getMaxNumber();
+			for (int i=0; i<chance; i++) {
+				int num = 0;
+				if (RandomUtil.lessThanRandPercent(prob)) {
+					if (repairParts.containsKey(ms)) {
+						num = repairParts.get(ms) + 1;
+						repairParts.put(ms, num);
+					}
+					else {
+						repairParts.put(ms, ++num);
+					}
+					Part part = ms.getPart();
+					logger.warning(name + REPAIR_REQUIRES + part.getName()
+						+ QUANTITY + num + CLOSE_B);
+				}
 			}
 		}
 	}
 
+	/**
+	 * Randomly picks one of the scopes that has a proportionally high fatigue
+	 * 
+	 * @return
+	 */
+	private List<MaintenanceScope> pickOneScopeHighFatigue() {
+		double highestFatigue = 0;
+		List<MaintenanceScope> selectedScope = null;
+		for (String scope: definition.getSystems()) {
+			double sumFatigue = 0;
+			List<MaintenanceScope> list = owner.getMaintenanceScopeList(scope);
+			for (MaintenanceScope ms: list) {
+				sumFatigue += ms.getFatigue();
+			}
+			if (sumFatigue > highestFatigue) {
+				selectedScope = list;
+				highestFatigue = sumFatigue;
+			}
+		}
+		return selectedScope;
+	}
+	
+	/**
+	 * Randomly picks one of the scopes.
+	 * 
+	 * @return
+	 */
+	private String pickOneScope() {
+		Set<String> scopes = definition.getSystems();
+
+		int rand = RandomUtil.getRandomInt(scopes.size() - 1);
+		return scopes.stream()
+				     .skip(rand)
+				     .findFirst()
+				     .orElse(null);
+	}
 
 	/**
 	 * Gets the parts required to repair this malfunction.
 	 *
 	 * @return map of parts and their number.
 	 */
-	public Map<Integer, Integer> getRepairParts() {
+	public Map<MaintenanceScope, Integer> getRepairParts() {
 		return Collections.unmodifiableMap(repairParts);
 	}
 
 	/**
 	 * Repairs the malfunction with a number of a part.
 	 *
-	 * @param id the id of the part.
+	 * @param ms the scope.
 	 * @param number the number used for repair.
 	 * @param inv the inventory
 	 */
-	public void repairWithParts(Integer id, int number, EquipmentOwner containerUnit) {
-		if (!repairParts.containsKey(id)) {
+	public void repairWithParts(MaintenanceScope ms, int number, EquipmentOwner containerUnit) {
+		if (!repairParts.containsKey(ms)) {
 			return;
 		}
 
-		int numberNeeded = repairParts.get(id);
+		int numberNeeded = repairParts.get(ms);
 		if (number > numberNeeded) {
 			return;
 		}
@@ -633,20 +685,20 @@ public class Malfunction implements Serializable {
 		numberNeeded -= number;
 
 		//  Add producing solid waste
-		double mass = ItemResourceUtil.findItemResource(id).getMassPerItem();
+		double mass = ms.getPart().getMassPerItem();
 		if (mass > 0) {
 			containerUnit.storeAmountResource(ResourceUtil.SOLID_WASTE_ID, mass);
 		}
 
 		if (numberNeeded > 0) {
-			repairParts.put(id, numberNeeded);
+			repairParts.put(ms, numberNeeded);
 		}
 		else
-			repairParts.remove(id);
+			repairParts.remove(ms);
 	}
 
 	/**
-	 * Get the soruce of the malfunction.
+	 * Get the source of the malfunction.
 	 */
 	public Malfunctionable getSource() {
 		return owner.getEntity();

@@ -103,15 +103,6 @@ public class EnterAirlock extends Task {
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.enterAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
-		addPhase(REQUEST_INGRESS);
-		addPhase(DEPRESSURIZE_CHAMBER);
-		addPhase(STEP_THRU_OUTER_DOOR);
-		addPhase(WALK_TO_CHAMBER);
-		addPhase(PRESSURIZE_CHAMBER);
-		addPhase(DOFF_EVA_SUIT);
-		addPhase(CLEAN_UP);
-		addPhase(LEAVE_AIRLOCK);
-
 		setPhase(REQUEST_INGRESS);
 
 		logger.fine(person, 4000, "Starting EVA ingress in " + airlock.getEntityName() + ".");
@@ -242,7 +233,7 @@ public class EnterAirlock extends Task {
 
 		if (newZone == AirlockZone.ZONE_2) {
 			// Check if the person can walk to one of the 4 EVA chambers
-			boolean canWalk = walkToEVASpot(b, newPos);
+			boolean canWalk = walkToEVASpot(b, newPos, false);
 
 			if (canWalk) {
 				// Convert the local activity spot to the settlement reference coordinate

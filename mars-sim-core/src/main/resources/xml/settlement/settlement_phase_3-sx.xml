@@ -191,6 +191,7 @@
 	<building-package name="Solar Set 1 - 1x9"/>
 	<building-package name="Kilo Set 1 - 1x4"/>
 	<building-package name="MD1 Set 1 - 1x1"/>	
+ 	<building-package name="Brine Water Well Set 1 - 1x2"/>	 	
 	
     <vehicle type="Explorer Rover" number="3" />
     <vehicle type="Transport Rover" number="2" />
@@ -198,6 +199,12 @@
     <vehicle type="Light Utility Vehicle" number="3" />
     <vehicle type="Delivery Drone" number="3" />
 
+    <!-- Robots -->
+    <robot name="TeslaBot-G" type="GardenBot" model="Advanced"/>
+    <robot name="TeslaBot-R" type="RepairBot" model="Advanced"/>
+    <robot name="TeslaBot-C" type="ChefBot" model="Advanced"/>
+    <robot name="TeslaBot-D" type="DeliveryBot" model="Advanced"/>
+    
     <equipment type="EVA Suit" number="24" />
 
     <!-- Containers-->
@@ -214,7 +221,7 @@
 	<resource type="water" amount="6000" />
 	<resource type="oxygen" amount="4320" />
 	
-    <part-package name="package 3" number="1" />
+    <part-package name="standard package" number="3" />
  
     <resupply>
        	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1">

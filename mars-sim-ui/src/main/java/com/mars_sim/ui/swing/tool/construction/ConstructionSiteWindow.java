@@ -19,11 +19,6 @@ public class ConstructionSiteWindow extends UnitWindow {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	// Data members
-	private boolean done;
-
-	private ConstructionSite constructionSite;
 	
     /**
      * Constructor.
@@ -35,7 +30,6 @@ public class ConstructionSiteWindow extends UnitWindow {
         // Use UnitWindow constructor
         super(desktop, constructionSite, constructionSite.getName() 
         		+ " - " + constructionSite.getName(), false);
-        this.constructionSite = constructionSite;
 
         // Add tab panels
         addTabPanel(new TabPanelSiteGeneral(constructionSite, desktop));
@@ -45,14 +39,5 @@ public class ConstructionSiteWindow extends UnitWindow {
 
 		// Add to tab panels.
 		addTabIconPanels();
-    }
-
-    /**
-     * Updates this window.
-     */
-	@Override
-    public void update() {
-        super.update();
-        //
     }
 }

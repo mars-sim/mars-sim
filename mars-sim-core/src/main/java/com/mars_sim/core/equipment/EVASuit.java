@@ -182,10 +182,10 @@ public class EVASuit extends Equipment
 		
 		PartConfig partConfig = SimulationConfig.instance().getPartConfiguration();
 		
-		// Add "EVA" to the standard scope
+		// Add "EVA" to the part scope
 		partConfig.addScopes(EVA);
 
-		// Add TYPE to the standard scope
+		// Add TYPE to the part scope
 		partConfig.addScopes(TYPE);
 
 		// Add "EVA" to malfunction manager scope
@@ -194,8 +194,12 @@ public class EVASuit extends Equipment
 		// Add TYPE to malfunction manager scope
 		malfunctionManager.addScopeString(TYPE);
 		
+		
 		malfunctionManager.addScopeString(FunctionType.LIFE_SUPPORT.getName());
-
+	
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
+		
 		// Create MicroInventory instance
 		microInventory = new MicroInventory(this, 1);
 
@@ -713,5 +717,4 @@ public class EVASuit extends Equipment
 		microInventory = null;
 		super.destroy();
 	}
-
 }

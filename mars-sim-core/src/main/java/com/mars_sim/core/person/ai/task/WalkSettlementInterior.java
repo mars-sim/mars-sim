@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task;
 
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
@@ -19,10 +18,9 @@ import com.mars_sim.core.building.connection.InsideBuildingPath;
 import com.mars_sim.core.building.connection.InsidePathLocation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
@@ -41,8 +39,8 @@ public class WalkSettlementInterior extends Task {
 	private static SimLogger logger = SimLogger.getLogger(WalkSettlementInterior.class.getName());
 
 	/** Simple Task name */
-	public static final String SIMPLE_NAME = WalkOutside.class.getSimpleName();
-	
+	public static final String SIMPLE_NAME = WalkSettlementInterior.class.getSimpleName();
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.walkSettlementInterior"); //$NON-NLS-1$
 
@@ -52,9 +50,8 @@ public class WalkSettlementInterior extends Task {
 	// Static members
 	private static final double VERY_SMALL_DISTANCE = .01D;
 	private static final double STRESS_MODIFIER = -.2D;
-	/** The minimum pulse time for completing a task phase in this class.  */
+	/** The minimum pulse time for completing a task phase in this class. */
 	private static double minPulseTime = 0;
-
 
 	private LocalPosition destPosition;
 	private Settlement settlement;
@@ -64,160 +61,93 @@ public class WalkSettlementInterior extends Task {
 	/**
 	 * Constructor for the person
 	 * 
-	 * @param person               the person performing the task.
+	 * @param worker               the person performing the task.
 	 * @param destinationBuilding  the building that is walked to. (Can be same as
 	 *                             current building).
-	 * @param destinationPosition the destination position at the settlement.
-	 * @param destinationYLocation the destination Z location at the settlement.
+	 * @param destinationPosition  the destination position at the settlement.
 	 */
-	public WalkSettlementInterior(Person person, Building destinationBuilding, LocalPosition destinationPosition,
-								  double destinationZLocation) {
-		super(NAME, person, false, false, STRESS_MODIFIER, null, 100D);
+	public WalkSettlementInterior(Worker worker, Building destinationBuilding, LocalPosition destinationPosition) {
+		super(NAME, worker, false, false, STRESS_MODIFIER, null, 100D);
 
 		// Check if the person is currently inside the settlement.
-		if (!person.isInSettlement()) {
-			logger.warning(person, "Not in a settlement.");
-			person.getMind().getTaskManager().clearAllTasks("Not in a settlement.");
+		if (!worker.isInSettlement()) {
+			logger.warning(worker, "Not in a settlement.");
+			worker.getTaskManager().clearAllTasks("Not in a settlement.");
 			return;
 		}
 
 		// Initialize data members.
-		this.settlement = person.getSettlement();
+		this.settlement = worker.getSettlement();
 		this.destBuilding = destinationBuilding;
 		this.destPosition = destinationPosition;
-		
+
 		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(person, 60_000L, "Destination position " + destPosition + " is not inside "
-						+ destBuilding + " @ " + LocalAreaUtil.getDescription(destinationBuilding));
+			logger.warning(worker, 10_000L, "Destination position " + destPosition + " is not inside " + destBuilding
+					+ " @ " + LocalAreaUtil.getDescription(destinationBuilding));
 			endTask();
 			return;
 		}
-		
+
 		// Check if the person is currently inside a building.
-		Building startBuilding = BuildingManager.getBuilding(person);
+		Building startBuilding = BuildingManager.getBuilding(worker);
 		if (startBuilding == null) {
-			logger.warning(person, 60_000L, "Not in a building.");
-			person.getMind().getTaskManager().clearAllTasks("Not in a building.");
-			return;
-		}
-
-		try {
-			
-			// Note: use Breadth-First Search (BFS) or Dijkstra's algorithm to find shortest path
-			
-			// The choice depends on whether the graph is unweighted or weighted, respectively.
-			
-			// BFS is suitable for unweighted graphs and guarantees the shortest path in terms of 
-			// the number of edges.
-			
-			// Dijkstra’s algorithm is used for weighted graphs with non-negative weights, 
-			// ensuring the path with the minimum total weight is found.
-			
-			// Both algorithms maintain a parent map to reconstruct the path from the source to 
-			// the destination. 
-			
-			// The key difference lies in the data structure used: BFS uses a FIFO queue, 
-			// while Dijkstra uses a priority queue to prioritize nodes with the smallest distance.
-			
-			// Determine the walking path to the destination.
-			if (settlement != null) {			
-				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(
-						startBuilding, person.getPosition(), destinationBuilding, destPosition);
-			}
-			
-			// If no valid walking path is found, end task.
-			if (walkingPath == null) {
-				logger.warning(person, 30_000L, "No walkable path from "
-						+ person.getPosition() + " in "
-						+ startBuilding.getName() + " to "
-						+ destPosition + " in "
-						+ destinationBuilding.getName());
-				endTask();
-				return;
-			}
-					
-			// Initialize task phase.
-			addPhase(WALKING);
-			setPhase(WALKING);
-		
-		} catch (Exception ex) {
-			logger.severe(person, 30_000L, "Unable to walk. No valid interior path.", ex);
-			person.getMind().getTaskManager().clearAllTasks("No valid interior path");
-		}
-	}
-
-	/**
-	 * Constructor for robot
-	 * 
-	 * @param robot
-	 * @param destinationBuilding
-	 * @param destinationXLocation
-	 * @param destinationYLocation
-	 */
-	public WalkSettlementInterior(Robot robot, Building destinationBuilding, LocalPosition destinationPosition) {
-		super(NAME, robot, false, false, STRESS_MODIFIER, null, 100D);
-
-		// Check that the robot is currently inside the settlement.
-		if (!robot.isInSettlement()) {
-			logger.warning(robot, "Not in a settlement.");
-			robot.getBotMind().getBotTaskManager().clearAllTasks("Not in a settlement.");
-			return;
-		}
-
-		// Initialize data members.
-		this.settlement = robot.getSettlement();
-		this.destBuilding = destinationBuilding;
-		this.destPosition = destinationPosition;
-		
-		// Check that destination location is within destination building.
-		if (!LocalAreaUtil.isPositionWithinLocalBoundedObject(destPosition, destBuilding)) {
-			logger.warning(worker, 60_000L, "Destination position " + destPosition + " is not inside "
-						+ destBuilding + " @ " + LocalAreaUtil.getDescription(destinationBuilding));
+			logger.warning(worker, 10_000L, "Not in a building.");
+			worker.getTaskManager().clearAllTasks("Not in a building.");
 			endTask();
 			return;
 		}
 
-		// Check if  the robot is currently inside a building.
-		Building startBuilding = BuildingManager.getBuilding(robot);
-		if (startBuilding == null) {
-			logger.warning(robot, 60_000L, "Not in a building.");
-			robot.getBotMind().getBotTaskManager().clearAllTasks("Not in a building.");
-			return;
-		}
-		
 		try {
+
+			// Note: use Breadth-First Search (BFS) or Dijkstra's algorithm to find shortest
+			// path
+
+			// The choice depends on whether the graph is unweighted or weighted,
+			// respectively.
+
+			// BFS is suitable for unweighted graphs and guarantees the shortest path in
+			// terms of
+			// the number of edges.
+
+			// Dijkstra’s algorithm is used for weighted graphs with non-negative weights,
+			// ensuring the path with the minimum total weight is found.
+
+			// Both algorithms maintain a parent map to reconstruct the path from the source
+			// to
+			// the destination.
+
+			// The key difference lies in the data structure used: BFS uses a FIFO queue,
+			// while Dijkstra uses a priority queue to prioritize nodes with the smallest
+			// distance.
+
 			// Determine the walking path to the destination.
-			if (settlement != null) {				
-				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(
-						startBuilding,
-						robot.getPosition(), destinationBuilding, destPosition);
+			if (settlement != null) {
+				walkingPath = settlement.getBuildingConnectorManager().determineShortestPath(startBuilding,
+						worker.getPosition(), destinationBuilding, destPosition);
 			}
-				
+
 			// If no valid walking path is found, end task.
 			if (walkingPath == null) {
-				logger.warning(robot, 30_000L, "No walkable path from "
-						+ robot.getPosition() + " in "
-						+ startBuilding.getName() + " to "
-						+ destPosition + " in "
-						+ destinationBuilding.getName());
+				logger.warning(worker, 0L, "Currently in " + startBuilding + ". Found no walkable path between my loc @ " + worker.getPosition() 
+				+ " and " + destinationBuilding.getName() + " @ " + destPosition + ".");
+				worker.getTaskManager().clearAllTasks("Null walking path.");
 				endTask();
 				return;
 			}
-	
+
 			// Initialize task phase.
-			addPhase(WALKING);
 			setPhase(WALKING);
-			
+
 		} catch (Exception ex) {
-			logger.severe(robot, 30_000L, "Unable to walk. No valid interior path.", ex);
-			robot.getBotMind().getBotTaskManager().clearAllTasks("No valid interior path");
-		}			
+			logger.severe(worker, 10_000L, "Unable to walk. No valid interior path.", ex);
+			worker.getTaskManager().clearAllTasks("No valid interior path");
+		}
 	}
 
 	@Override
 	protected double performMappedPhase(double time) {
 		if (getPhase() == null) {
-			logger.severe(worker, "Task phase is null.");
+			logger.severe(worker, 10_000L, "Task phase is null.");
 		}
 		if (WALKING.equals(getPhase())) {
 			return walkingPhase(time);
@@ -237,23 +167,22 @@ public class WalkSettlementInterior extends Task {
 		// Check that remaining path locations are valid.
 		if (!checkRemainingPathLocations()) {
 			// Flooding with the following statement in stacktrace
-			logger.severe(worker, 30_000L, "Unable to continue walking due to missing path objects.");
+			logger.severe(worker, 10_000L, "Unable to continue walking due to missing path objects.");
 			endTask();
 			return 0;
 		}
-		
+
 		double remainingTime = time - minPulseTime;
-		double timeHours = MarsTime.HOURS_PER_MILLISOL * remainingTime;		
+		double timeHours = MarsTime.HOURS_PER_MILLISOL * remainingTime;
 		double speedKPH = 0;
-		
+
 		if (person != null) {
 			speedKPH = Walk.PERSON_WALKING_SPEED * person.getWalkSpeedMod();
 
+		} else {
+			speedKPH = Walk.ROBOT_WALKING_SPEED * robot.getWalkSpeedMod();
 		}
-		else {
-			speedKPH =  Walk.ROBOT_WALKING_SPEED * robot.getWalkSpeedMod();
-		}
-		
+
 		// Determine walking distance.
 		double coveredKm = speedKPH * timeHours;
 		double coveredMeters = coveredKm * 1_000;
@@ -261,16 +190,15 @@ public class WalkSettlementInterior extends Task {
 
 		if (coveredMeters > remainingPathDistance) {
 			coveredMeters = remainingPathDistance;
-			
+
 			if (speedKPH > 0) {
 				double usedTime = MarsTime.convertSecondsToMillisols(coveredMeters / speedKPH * 3.6);
 				remainingTime = remainingTime - usedTime;
 			}
-			
+
 			if (remainingTime < 0)
 				remainingTime = 0;
-		}
-		else {
+		} else {
 			remainingTime = 0D; // Use all the remaining time
 		}
 
@@ -285,40 +213,39 @@ public class WalkSettlementInterior extends Task {
 				worker.setPosition(location.getPosition());
 
 				coveredMeters -= distanceToLocation;
-				
+
 				if (!changeBuildings(location)) {
-					logger.severe(worker, "Unable to change building.");
+					logger.severe(worker, 10_000L, "Unable to change building.");
 				}
-				
+
 				if (!walkingPath.isEndOfPath()) {
 					walkingPath.iteratePathLocation();
 				}
 			}
-			
+
 			else {
 				// Walk in direction of next path location.
-				
+
 				// Determine direction
 				double direction = worker.getPosition().getDirectionTo(location.getPosition());
-				
+
 				// Determine person's new location at distance and direction.
 				walkInDirection(direction, coveredMeters);
 
 				// Set person at next path location, changing buildings if necessary.
 //				worker.setPosition(location.getPosition());
-				
+
 				coveredMeters = 0;
 			}
 		}
 
 		// If path destination is reached, end task.
 		if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
-			
+
 			InsidePathLocation location = walkingPath.getNextPathLocation();
 
-			logger.log(worker, Level.FINEST, 0, "Close enough to final destination ("
-					+ location.getPosition());
-			
+//			logger.log(worker, Level.FINEST, 0, "Close enough to final destination (" + location.getPosition());
+
 			worker.setPosition(location.getPosition());
 
 			endTask();
@@ -402,69 +329,40 @@ public class WalkSettlementInterior extends Task {
 	private boolean changeBuildings(InsidePathLocation location) {
 
 		if (location instanceof Hatch hatch) {
-			// If hatch leads to new building, place person in the new building.
-			if (person != null) {
-				Building currentBuilding = BuildingManager.getBuilding(person);
-				if (!hatch.getBuilding().equals(currentBuilding)) {
-					BuildingManager.removePersonFromBuilding(person, currentBuilding);
-					BuildingManager.setToBuilding(person, hatch.getBuilding());
-				}
-			} 
-			
-			else if (robot != null) {
-				Building currentBuilding = BuildingManager.getBuilding(robot);
-				if (!hatch.getBuilding().equals(currentBuilding)) {
-					BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-					BuildingManager.setToBuilding(robot, hatch.getBuilding());
-				}
+			// If hatch leads to new building, place worker in the new building.
+			Building currentBuilding = BuildingManager.getBuilding(worker);
+			if (!hatch.getBuilding().equals(currentBuilding)) {
+				BuildingManager.transferFromBuildingToBuilding(worker, currentBuilding, hatch.getBuilding());
 			}
-
 		} else if (location instanceof BuildingConnector connector) {
-			// If non-split building connector, place person in the new building.
+			// If non-split building connector, place worker in the new building.
 			if (!connector.isSplitConnection()) {
-				Building currentBuilding = null;
-				
-				if (person != null) {
-					currentBuilding = BuildingManager.getBuilding(person);
-				} 
-				
-				else {
-					currentBuilding = BuildingManager.getBuilding(robot);
-				}
-				
+				Building currentBuilding = BuildingManager.getBuilding(worker);
+
 				Building newBuilding = null;
 				if (connector.getBuilding1().equals(currentBuilding)) {
 					newBuilding = connector.getBuilding2();
-				} 
-				
+				}
+
 				else if (connector.getBuilding2().equals(currentBuilding)) {
 					newBuilding = connector.getBuilding1();
-				} 
-				
+				}
+
 				else {
-					logger.severe(worker, "Bad building connection (" 
-							+ connector.getBuilding1() + " <--> " + connector.getBuilding2()
-							+ ").");
+					logger.severe(worker, 10_000L, "Bad building connection between " + connector.getBuilding1() + " and "
+							+ connector.getBuilding2() + ".");
 					return false;
 				}
 
 				if (newBuilding != null) {
-					
-					if (person != null) {
-						BuildingManager.removePersonFromBuilding(person, currentBuilding);
-						BuildingManager.setToBuilding(person, newBuilding);
-					}
-					else if (robot != null) {
-						BuildingManager.removeRobotFromBuilding(robot, currentBuilding);
-						BuildingManager.setToBuilding(robot, newBuilding);
-					}
+					BuildingManager.transferFromBuildingToBuilding(worker, currentBuilding, newBuilding);
 				}
 			}
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Does a change of Phase for this Task generate an entry in the Task Schedule ?
 	 * 

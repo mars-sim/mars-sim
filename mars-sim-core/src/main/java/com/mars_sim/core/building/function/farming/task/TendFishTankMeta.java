@@ -131,7 +131,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
             
             result.addBase("fish.weeds", fishTank.getWeedDemand() * 15);
             
-            if (result.getScore() > 0) {
+            if (result.getScore() >= 1) {
                 tasks.add(new FishTaskJob(this, fishTank, result));
             }
         }

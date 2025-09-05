@@ -20,7 +20,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         var l = context.buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var p = context.buildPerson("Researcher", s);
         p.setJob(researchJob, "Boss");
-        BuildingManager.addPersonToActivitySpot(p, l, FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(p, l, FunctionType.RESEARCH);
 
         // Build a study
         var sim = context.getSim();
@@ -73,9 +73,9 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         var c1 = buildPerson("Collab1", s);
         var c2 = buildPerson("Collab2", s);
 
-        BuildingManager.addPersonToActivitySpot(p, l, FunctionType.RESEARCH);
-        BuildingManager.addPersonToActivitySpot(c1, l, FunctionType.RESEARCH);
-        BuildingManager.addPersonToActivitySpot(c2, l, FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(p, l, FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(c1, l, FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(c2, l, FunctionType.RESEARCH);
 
         var jobType = JobType.BOTANIST;
         p.setJob(jobType, "Boss");

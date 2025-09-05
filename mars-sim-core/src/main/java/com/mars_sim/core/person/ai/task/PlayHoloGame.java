@@ -98,9 +98,6 @@ public class PlayHoloGame extends Task {
         compute.pickMultipleNodes(0, now);
 				
 		// Initialize phase
-		addPhase(SETTING_UP_SCENES);
-		addPhase(PLAYING_A_HOLO_GAME);
-
 		setPhase(SETTING_UP_SCENES);
 
 		logger.fine(person, "Setting up hologames to play.");

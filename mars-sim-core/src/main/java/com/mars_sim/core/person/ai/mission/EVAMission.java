@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -245,7 +247,7 @@ abstract class EVAMission extends RoverMission {
 		if (!activeEVA) {
 			
 			// Check below if anyone has been "teleported"
-			if (isEveryoneInRover()) {
+			if (checkTeleported()) {
 				// End phase
 				phaseEVAEnded();
 				setPhaseEnded(true);
@@ -261,28 +263,64 @@ abstract class EVAMission extends RoverMission {
 	 * Ensures no "teleported" person is still a member of this mission.
 	 * Note: still investigating the cause and how to handle this.
 	 */
-	void checkTeleported() {
-
+	boolean checkTeleported() {
+		boolean result = false;
+		
+		Rover r = getRover();
+		Set<Person> crew = new UnitSet<>();
+		crew.addAll(r.getCrew());
+		
+		for (Person p : crew) {
+			if (!getMembers().contains(p)) {
+				logger.severe(p, 10_000, "Teleportation scenario 1 detected. Being a crew member in " 
+						+ r.getName() + " but not a mission member.");
+				result = true;
+			}
+		}
+		
 		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
 			Worker member = i.next();
 
-			if (member instanceof Person p
-				&& (p.isInSettlement() 
-				|| p.isInSettlementVicinity()
-				|| p.isRightOutsideSettlement())) {
+			if (member instanceof Person p) {
+				
+				if (p.isInSettlement()) {
 
-				logger.severe(p, 10_000, "Invalid 'teleportation' detected. Current location: " 
+					logger.severe(p, 10_000, "Teleportation scenario 2 detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
-				
-				// Use Iterator's remove() method
-//				i.remove();
-				
-				// Call memberLeave to set mission to null will cause this member to drop off the member list
-//				memberLeave(member);
 
-				break;
+					// Note: need to debug why this happens and can't remove a person as member yet
+				
+					// Use Iterator's remove() method i.remove();
+					// Call memberLeave(member) to set mission to null will cause this member to drop off the member list
+						
+					result = true;
+				}
+				
+				else if (p.isInSettlementVicinity()) {
+
+					logger.severe(p, 10_000, "Teleportation scenario 3 detected. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+
+					result = true;
+				}
+				
+				else if (p.isRightOutsideSettlement()) {
+
+					logger.severe(p, 10_000, "Teleportation scenario 4 detected. Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+
+					result = true;
+				}
+
+				if (p.getTaskManager().getTask() instanceof EVAOperation) {
+					logger.warning(p, 10_000, "Still doing EVA. Need to end now. Current Location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+					
+					result = true;
+				}			
 			}
 		}
+		return result;
 	}
 	
     /**

@@ -283,6 +283,9 @@ public class TestContainment extends AbstractMarsSimUnitTest {
         BuildingManager.removeFromGarage(vehicle);
 
 		assertTrue("Vehicle leaving garage. Transfer bag from settlement to vehicle", bag.transfer(vehicle));
+		
+		assertTrue("Bag's container unit", bag.getContainerUnit() instanceof Rover);
+		
 		assertInVehicle("In vehicle", bag, vehicle);
 		
 		assertTrue("Transfer bag from vehicle back to settlement", bag.transfer(settlement));

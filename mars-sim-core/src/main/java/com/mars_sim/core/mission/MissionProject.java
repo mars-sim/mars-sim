@@ -185,6 +185,10 @@ public abstract class MissionProject implements Mission {
         return log;
     }
 
+    protected void addStatus(MissionStatus s) {
+        status.add(s);
+    }
+    
     @Override
     public Set<MissionStatus> getMissionStatus() {
         return status;

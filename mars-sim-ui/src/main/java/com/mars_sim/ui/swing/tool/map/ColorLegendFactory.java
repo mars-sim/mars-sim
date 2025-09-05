@@ -81,6 +81,7 @@ final class ColorLegendFactory {
 		g.drawImage(image, 0, 0, null);
 		g.drawImage(overlapImage, xOffset, yOffset, null);
 
+		combined.flush();
 		g.dispose();
 		return new ImageIcon(combined);
 	}

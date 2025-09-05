@@ -143,7 +143,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 								LocalPosition pos, double facing, boolean lifeSupport) {
 
 		int id = buildingManager.getNumBuildings();
-		String name = "B" + id;
+		String name = "B" + (id + 1);
 		var building0 = new MockBuilding(buildingManager.getSettlement(), name, Integer.toString(id),
 										new BoundedObject(pos, BUILDING_WIDTH, BUILDING_LENGTH, facing),
 										type, cat, lifeSupport);
@@ -221,7 +221,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
         unitManager.addUnit(robot);
 
         if (place != null) {
-            BuildingManager.addRobotToActivitySpot(robot, place, activity);
+            BuildingManager.addToActivitySpot(robot, place, activity);
         }
         return robot;
     }
@@ -234,6 +234,32 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return buildPerson(name, settlement, job, null, null);
 	}
 
+	public Person buildPatient(String name, Settlement settlement, JobType job,
+			Building place, FunctionType activity) {
+
+		GenderType gender = GenderType.MALE;
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1)
+			gender = GenderType.FEMALE;
+		
+		Person person = Person.create(name, settlement, gender)
+				.build();
+		
+		person.setJob(job, "Test");
+		
+		person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE, 100);
+		
+		unitManager.addUnit(person);
+		
+		if (place != null) {
+			boolean success = BuildingManager.addPatientToMedicalBed(person, settlement);
+			assertTrue("Successful in adding " + person + " to a " + activity.getName() + " activity spot", success);
+		}
+		
+		return person;
+	}
+	
+	
 	public Person buildPerson(String name, Settlement settlement, JobType job,
 					Building place, FunctionType activity) {
         
@@ -252,17 +278,14 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		unitManager.addUnit(person);
 
 		if (place != null) {
-			boolean success = BuildingManager.addPersonToActivitySpot(person, place, activity);
-			
-			if (!success)
-				System.out.println("Unsuccessful in adding " + person + " to a " + activity.getName() + " activity spot.");
-			else 
-				System.out.println("Successful in adding " + person + " to a " + activity.getName() + " activity spot.");
+			boolean success = BuildingManager.addToActivitySpot(person, place, activity);
+			assertTrue("Successful in adding " + person + " to a " + activity.getName() + " activity spot", success);
 		}
 		
 		return person;
 	}
 
+	
 
 	/**
 	 * Executes a Task for a duration or until it completes.

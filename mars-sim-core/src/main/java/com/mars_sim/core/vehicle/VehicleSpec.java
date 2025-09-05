@@ -8,6 +8,7 @@ package com.mars_sim.core.vehicle;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,6 +119,11 @@ public class VehicleSpec implements Serializable {
 	/** The kg-to-Wh conversion factor for our nuclear-powered vehicles using uranium oxide. */	
 	public static final double URANIUM_OXIDE_WH_PER_KG = 1000.0D / URANIUM_OXIDE_KG_PER_KWH; 
 	
+	/** The system scopes for vehicles. */	
+	public static final String CREW_CABIN = "crew cabin";
+	public static final String BATTERY = "battery";
+	public static final String METHANOL_FUEL = "methanol fuel";
+	public static final String METHAE_FUEL = "methane fuel";
 	
 	/** Estimated Number of hours traveled each day. **/
 	static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
@@ -267,6 +273,8 @@ public class VehicleSpec implements Serializable {
 	private LocalPosition airlockExteriorLoc;
 
 	private Set<Integer> partIDs;
+	/** A set of system scopes affected by malfunction incidents. */
+	private Set<String> systemScopes = new HashSet<>();
 
 	/**
 	 * Constructor.
@@ -300,9 +308,26 @@ public class VehicleSpec implements Serializable {
 		this.description = description;
 		this.baseImage = baseImage;
 		
+		if (VehicleType.isRover(type)) {
+			// Add crew cabin as a system scope
+			addSystemScope(CREW_CABIN);
+		}
+		else if (VehicleType.isDrone(type)) {
+			// Add crew cabin as a system scope
+			addSystemScope(Flyer.DRONE);
+			
+			if (VehicleType.PASSENGER_DRONE == type) {
+				// Add crew cabin as a system scope
+				addSystemScope(CREW_CABIN);
+			}
+		}
+		
 		this.powerSourceType = PowerSourceType.getType(powerSourceStr.replaceAll("_", " ").toLowerCase());
 		
 		this.fuelTypeStr = fuelTypeStr;
+		
+		// Add the fuel type as a system scope
+		addSystemScope(fuelTypeStr + "fuel");
 		
 		if (PowerSourceType.FUEL_POWER == powerSourceType) {	
 			var fr = ResourceUtil.findAmountResource(fuelTypeStr);
@@ -320,12 +345,16 @@ public class VehicleSpec implements Serializable {
 
 		// Set the estimated onboard power expenditure
 		this.onboardEnergyPercent = powerPercent;
-		
 		// Set the number of battery modules of the vehicle.
 		this.numBatteryModule = batteryModule;	
+		
+		if (batteryModule > 0) {
+			// Add battery as a system scope
+			addSystemScope(BATTERY);
+		}
+		
 		// Set the energy kWh per battery module of the vehicle.		
 		this.energyCapacityPerModule = energyPerModule;
-		
 		// Set the # of fuel cell stacks of the vehicle.
 		this.numFuelCellStack = fuelCellStack;
 		// Set the drivetrain efficiency [dimension-less] of the vehicle.
@@ -340,6 +369,22 @@ public class VehicleSpec implements Serializable {
 	
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * 68.5D;
+	}
+	
+	/**
+	 * Gets the system scopes
+	 */
+	protected Set<String> getSystemScopes() {	
+		return systemScopes;
+	}
+	
+	/**
+	 * Adds a system scope.
+	 * 
+	 * @param newScope
+	 */
+	protected void addSystemScope(String newScope) {
+		systemScopes.add(newScope);
 	}
 	
 	/**
@@ -1007,7 +1052,7 @@ public class VehicleSpec implements Serializable {
     public double getWearModifier() {
 	
 		return switch(type) {
-			case DELIVERY_DRONE, CARGO_DRONE -> .85;
+			case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> .85;
 			case LUV -> 2D;
 			case EXPLORER_ROVER -> 1D;
 			case TRANSPORT_ROVER -> 1.25D;

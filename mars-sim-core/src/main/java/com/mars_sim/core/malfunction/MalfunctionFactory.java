@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @date 2021-10-20
+ * @date 2025-09-02
  * @author Scott Davis
  */
 
@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
@@ -23,7 +22,6 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.PartConfig;
 import com.mars_sim.core.robot.Robot;
@@ -264,31 +262,31 @@ public final class MalfunctionFactory implements Serializable {
 		return repairPartProbabilities;
 	}
 
-	/**
-	 * Gets the probabilities of parts per maintenance for a set of entity scope
-	 * strings.
-	 *
-	 * @param scope a collection of entity scope strings.
-	 * @return map of maintenance parts and probable number of parts needed per
-	 *         maintenance.
-	 * @throws Exception if error finding maintenance part probabilities.
-	 */
-	static Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
-		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();
-		for (MaintenanceScope maintenance : partConfig.getMaintenance(scope)) {
-			double prob = maintenance.getProbability() / 100D;
-			int partNumber = maintenance.getMaxNumber();
-			double averageNumber = RandomUtil.getIntegerAverageValue(partNumber);
-			double totalNumber = averageNumber * prob;
-
-			Integer id = maintenance.getPart().getID();
-			if (maintenancePartProbabilities.containsKey(id))
-				totalNumber += maintenancePartProbabilities.get(id);
-			maintenancePartProbabilities.put(id, totalNumber);
-		}
-
-		return maintenancePartProbabilities;
-	}
+//	/**
+//	 * Gets the probabilities of parts per maintenance for a set of entity scope
+//	 * strings.
+//	 *
+//	 * @param scope a collection of entity scope strings.
+//	 * @return map of maintenance parts and probable number of parts needed per
+//	 *         maintenance.
+//	 * @throws Exception if error finding maintenance part probabilities.
+//	 */
+//	static Map<Integer, Double> getMaintenancePartProbabilities(Set<String> scope) {
+//		Map<Integer, Double> maintenancePartProbabilities = new HashMap<>();	
+//		for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(scope)) {
+//			double prob = maintenance.getProbability() / 100D;
+//			int partNumber = maintenance.getMaxNumber();
+//			double averageNumber = RandomUtil.getIntegerAverageValue(partNumber);
+//			double totalNumber = averageNumber * prob;
+//
+//			Integer id = maintenance.getPart().getID();
+//			if (maintenancePartProbabilities.containsKey(id))
+//				totalNumber += maintenancePartProbabilities.get(id);
+//			maintenancePartProbabilities.put(id, totalNumber);
+//		}
+//
+//		return maintenancePartProbabilities;
+//	}
 
 	/**
 	 * Obtains the malfunction representing the specified name.

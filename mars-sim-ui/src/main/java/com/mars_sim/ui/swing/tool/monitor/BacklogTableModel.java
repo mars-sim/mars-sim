@@ -14,7 +14,6 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
@@ -62,8 +61,9 @@ public class BacklogTableModel extends AbstractMonitorModel
 		COLUMNS[SCORE_COL] = new ColumnSpec("Score", Double.class, ColumnSpec.STYLE_DIGIT1);
 	}
 
-	private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private boolean monitorSettlement = false;
+	
+	private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private List<BacklogEntry> tasks = Collections.emptyList();
 
 	/**
@@ -83,13 +83,15 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	@Override
 	public void unitUpdate(UnitEvent event) {
-		Unit unit = (Unit) event.getSource();
-		UnitEventType eventType = event.getType();
-		if ((eventType == UnitEventType.BACKLOG_EVENT) && selectedSettlements.contains(unit)) {
-			var newTasks = getTasks();
-
-			// Reset the Tasks asynchronously in teh Swing Dispatcher to avoid sorting clashes
-			SwingUtilities.invokeLater(() -> resetTasks(newTasks));
+		if (event.getTarget() instanceof Settlement settlement
+				&& event.getSource() instanceof Settlement) {
+			UnitEventType eventType = event.getType();
+			if ((eventType == UnitEventType.BACKLOG_EVENT) && selectedSettlements.contains(settlement)) {
+				var newTasks = getTasks();
+	
+				// Reset the Tasks asynchronously in the Swing Dispatcher to avoid sorting clashes
+				SwingUtilities.invokeLater(() -> resetTasks(newTasks));
+			}
 		}
 	}
 
@@ -156,14 +158,14 @@ public class BacklogTableModel extends AbstractMonitorModel
     }
 
 	/**
-	 * Create a list od backlog entries for all the monitored settlements.
-	 * The SettlementTask does holdthe Settlement refernece so this is record in
-	 * the artifical BacklogEntry record.
+	 * Creates a list of backlog entries for all the monitored settlements.
+	 * The SettlementTask does hold the Settlement reference so this is record in
+	 * the artificial BacklogEntry record.
 	 */
 	private List<BacklogEntry> getTasks() {
 		return selectedSettlements.stream()
 					.flatMap(s -> s.getTaskManager().getAvailableTasks().stream()
-									.map(e -> new BacklogEntry(s, e)))
+					.map(e -> new BacklogEntry(s, e)))
 					.toList();
 	}
 

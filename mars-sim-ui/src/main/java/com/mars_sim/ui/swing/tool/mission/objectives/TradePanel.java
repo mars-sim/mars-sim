@@ -68,6 +68,7 @@ public class TradePanel extends JPanel implements MissionListener{
 		// Create the selling goods table and model.
 		sellingGoodsTableModel = new GoodsTableModel();
 		JTable sellingGoodsTable = new JTable(sellingGoodsTableModel);
+		sellingGoodsTable.setAutoCreateRowSorter(true);
 		sellingGoodsScrollPane.setViewportView(sellingGoodsTable);
 
 		// Create the desired goods panel.
@@ -94,6 +95,7 @@ public class TradePanel extends JPanel implements MissionListener{
 		// Create the desired goods table and model.
 		desiredGoodsTableModel = new GoodsTableModel();
 		JTable desiredGoodsTable = new JTable(desiredGoodsTableModel);
+		desiredGoodsTable.setAutoCreateRowSorter(true);
 		desiredGoodsScrollPane.setViewportView(desiredGoodsTable);
 
 		// Create the bought goods panel.
@@ -120,6 +122,7 @@ public class TradePanel extends JPanel implements MissionListener{
 		// Create the bought goods table and model.
 		boughtGoodsTableModel = new GoodsTableModel();
 		JTable boughtGoodsTable = new JTable(boughtGoodsTableModel);
+		boughtGoodsTable.setAutoCreateRowSorter(true);
 		boughtGoodsScrollPane.setViewportView(boughtGoodsTable);
 
 		// Update the tables

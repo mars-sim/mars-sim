@@ -137,15 +137,6 @@ public class ExitAirlock extends Task {
 		// Initialize data members
 		setDescription(Msg.getString("Task.description.exitAirlock.detail", airlock.getEntityName())); // $NON-NLS-1$
 		// Initialize task phase
-		addPhase(REQUEST_EGRESS);
-		addPhase(PRESSURIZE_CHAMBER);
-		addPhase(STEP_THRU_INNER_DOOR);
-		addPhase(WALK_TO_CHAMBER);
-		addPhase(DON_EVA_SUIT);
-		addPhase(PREBREATHE);
-		addPhase(DEPRESSURIZE_CHAMBER);
-		addPhase(LEAVE_AIRLOCK);
-
 		setPhase(REQUEST_EGRESS);
 
 		logger.fine(person, 4_000,
@@ -286,20 +277,18 @@ public class ExitAirlock extends Task {
 		
 		if (newZone == AirlockZone.ZONE_2) {	
 			// Check if the person can walk to one of the 4 EVA chambers
-			boolean canWalk = walkToEVASpot(b, newPos);
+			boolean canWalk = walkToEVASpot(b, newPos, false);
 						
 			if (canWalk) {
 				// Convert the local activity spot to the settlement reference coordinate
 				// Set the person's new position
 				person.setPosition(newPos);
 				
-				logger.log(person, Level.FINE, 4000, "Arrived at "
-						+ newPos.getShortFormat() + " in " + newZone + ".");
+//				May add back for future testing: logger.log(person, Level.FINE, 4000, "Arrived at " + newPos.getShortFormat() + " in " + newZone + ".");
 				return true;
 			}
 			else {
-				logger.log(person, Level.FINE, 4000, "Could not enter the chamber in airlock zone " 
-						+ newZone + ".");
+//				May add back for future testing: logger.log(person, Level.FINE, 4000, "Could not enter the chamber in airlock zone "  + newZone + ".");
 				return false;
 			}
 		}
@@ -308,8 +297,7 @@ public class ExitAirlock extends Task {
 			// Set the person's new position
 			person.setPosition(newPos);
 			
-			logger.fine(person, 4000, "Arrived at "
-					+ newPos.getShortFormat() + " in " + newZone + ".");
+//			May add back for future testing: logger.fine(person, 4000, "Arrived at "+ newPos.getShortFormat() + " in " + newZone + ".");
 			return true;
 		}
 	}
@@ -1267,6 +1255,21 @@ public class ExitAirlock extends Task {
 	}
 
 	/**
+	 * Checks if an airlock is full.
+	 * 
+	 * @param airlock the airlock to be used
+	 * @return
+	 */
+	public static boolean isFull(Airlock airlock) {
+	
+		if (airlock.isFull()) {
+			return true;
+		}
+	
+		return false;
+	}
+	
+	/**
 	 * Checks if a person can exit an airlock to do an EVA.
 	 *
 	 * @param person  the person exiting
@@ -1285,10 +1288,10 @@ public class ExitAirlock extends Task {
 			return false;
 		}
 		
-		// Check if person is incapacitated.
-		if (person.getPerformanceRating() <= MIN_PERFORMANCE
-				|| person.getPhysicalCondition().hasSeriousMedicalProblems()
-				) {
+		if (person.getSettlement() != null && !person.getSettlement().getRationing().isAtEmergency()
+				// Check if person is incapacitated.
+			&& (person.getPerformanceRating() <= MIN_PERFORMANCE
+				|| person.getPhysicalCondition().hasSeriousMedicalProblems())) {
 			// May need to relocate the following code to a proper place
 			
 			// Prevent the logger statement below from being repeated multiple times

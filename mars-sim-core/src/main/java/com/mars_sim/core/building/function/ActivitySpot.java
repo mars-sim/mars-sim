@@ -32,10 +32,13 @@ public final class ActivitySpot implements Serializable {
 		
 		private ActivitySpot spot;
 		private Building owner;
+		private Function f;
 
-		private AllocatedSpot(Building owner, ActivitySpot spot) {
+		private AllocatedSpot(Function f, ActivitySpot spot) {
 			this.spot = spot;
-			this.owner = owner;
+			this.f = f;
+			if (f != null)
+				this.owner = f.getBuilding();
 		}
 
 		/**
@@ -66,6 +69,15 @@ public final class ActivitySpot implements Serializable {
 			return owner;
 		}
 
+		/**
+		 * Gets the function.
+		 * 
+		 * @return
+		 */
+		public Function getFunction() {
+			return f;
+		}
+		
 		/**
 		 * Gets a description of the spot.
 		 */
@@ -98,6 +110,11 @@ public final class ActivitySpot implements Serializable {
 					return false;
 			} else if (!owner.equals(other.owner))
 				return false;
+			if (f == null) {
+				if (other.f != null)
+					return false;
+			} else if (!f.equals(other.f))
+				return false;
 			return true;
 		}
 	}
@@ -126,11 +143,11 @@ public final class ActivitySpot implements Serializable {
 	 * @param allocator Building that is doing the allocation.
 	 * @return Allocation reference or null if it is already allocated
 	 */
-	AllocatedSpot claim(Worker w, boolean permanent, Building allocator) {
+	AllocatedSpot claim(Worker w, boolean permanent, Function f) {
 		if (id == EMPTY_ID) {
 			id = w.getIdentifier();
 			this.permanent = permanent;
-			return new AllocatedSpot(allocator, this);
+			return new AllocatedSpot(f, this);
 		}
 		return null;
 	}

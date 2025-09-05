@@ -37,7 +37,7 @@
 			<location longitude="164 E" latitude="6 N" />
 		</settlement>
 
-		<settlement name="New Seoul" template="Phase 2-KR" persons="9" robots="6" sponsor="KASA">
+		<settlement name="New Seoul" template="Phase 2-KR" persons="16" robots="8" sponsor="KASA">
 			<location longitude="105.8939 W" latitude="40.4244 N" />
 		</settlement>
 	

@@ -72,20 +72,22 @@ public class CookMeal extends Task {
 		this.kitchen = kitchen;
 		kitchenBuilding = kitchen.getBuilding();
 
-
 		// Walk to kitchen building.
-		walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false);
+		if (!walkToTaskSpecificActivitySpotInBuilding(kitchenBuilding, FunctionType.COOKING, false)) {
+			logger.log(person, Level.WARNING, 10_000, "No kitchen spots available.");
+
+			endTask();
+			return;
+		}
 
 		if (!Cooking.hasMealIngredients(kitchenBuilding.getSettlement())) {
 			logger.log(person, Level.WARNING, 10_000, NO_INGREDIENT);
 
 			endTask();
+			return;
 		}
-		else {
-			// Add task phase
-			addPhase(COOKING);
-			setPhase(COOKING);
-		}
+		
+		setPhase(COOKING);
 	}
 
 	/**

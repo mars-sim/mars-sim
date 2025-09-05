@@ -63,13 +63,17 @@ public class TabPanelMaintenance extends TabPanelTable {
 
 	@Override
 	protected void setColumnDetails(TableColumnModel tc) {
-		tc.getColumn(0).setPreferredWidth(120);
-		tc.getColumn(1).setPreferredWidth(55);
+		tc.getColumn(0).setPreferredWidth(130);
+		tc.getColumn(1).setPreferredWidth(35);
 		tc.getColumn(1).setCellRenderer(new PercentageTableCellRenderer(false));
 		tc.getColumn(2).setCellRenderer(new NumberCellRenderer(2));
-		tc.getColumn(2).setPreferredWidth(65);
-		tc.getColumn(3).setCellRenderer(new PercentageTableCellRenderer(false));
+		tc.getColumn(2).setPreferredWidth(55);
+		tc.getColumn(3).setCellRenderer(new NumberCellRenderer(2));
 		tc.getColumn(3).setPreferredWidth(55);
+		tc.getColumn(4).setCellRenderer(new NumberCellRenderer(3));
+		tc.getColumn(4).setPreferredWidth(55);
+		tc.getColumn(5).setCellRenderer(new PercentageTableCellRenderer(false));
+		tc.getColumn(5).setPreferredWidth(45);
 	}
 
 	/**
@@ -108,6 +112,10 @@ public class TabPanelMaintenance extends TabPanelTable {
 			case 2:
 				return Double.class;
 			case 3:
+				return Double.class;
+			case 4:
+				return Double.class;
+			case 5:
 				return Integer.class;
 			default:
                 return null;
@@ -120,10 +128,14 @@ public class TabPanelMaintenance extends TabPanelTable {
 				case 0: 
 					return "Building";
 				case 1:
-					return "Condition";
+					return "Health";
 				case 2:
-					return "Last Ins (sols)";
+					return "Last Inspect";
 				case 3:
+					return "Inspect window";
+				case 4:
+					return "Maint time";
+				case 5:
 					return "% Done";
 				default:
 					return "";
@@ -132,7 +144,7 @@ public class TabPanelMaintenance extends TabPanelTable {
 
 		@Override
 		public int getColumnCount() {
-			return 4;
+			return 6;
 		}
 
 		@Override
@@ -145,11 +157,15 @@ public class TabPanelMaintenance extends TabPanelTable {
 			case 1:
 				return (int)manager.getWearCondition();
 			case 2:
-				return manager.getTimeSinceLastMaintenance()/1000D;
-			case 3: {
+				return manager.getEffectiveTimeSinceLastMaintenance()/1000D;
+			case 3: 
+				return manager.getStandardInspectionWindow()/1000D;
+			case 4:
+				return manager.getBaseMaintenanceWorkTime()/1000D;	
+			case 5: {
 				double completed = manager.getInspectionWorkTimeCompleted();
 				double total = manager.getBaseMaintenanceWorkTime();
-				return (int)(100.0 * completed / total);
+				return (int)(Math.round(1000.0 * completed / total)/10.0);
 				}
 			default:
 				return "";

@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.task.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -121,7 +122,7 @@ public class SettlementTaskManager implements Serializable {
             buildCount++;
 
             // Inform listeners
-            owner.fireUnitUpdate(UnitEventType.BACKLOG_EVENT);
+            owner.fireUnitUpdate(UnitEventType.BACKLOG_EVENT, owner);
         }
         callCount++;
         return tasks;
@@ -133,6 +134,9 @@ public class SettlementTaskManager implements Serializable {
      * @return
      */
     public List<SettlementTask> getAvailableTasks() {
+    	if (tasks == null) {
+    		return Collections.emptyList();
+    	}
         return tasks;
     }
     
@@ -151,7 +155,7 @@ public class SettlementTaskManager implements Serializable {
             // Check this type of Robot can do the Job
             if (mt.getPreferredRobot().contains(r.getRobotType())) {
                 RatingScore score = mt.assessRobotSuitability(st, r);
-                if (score.getScore() > 0) {
+                if (score.getScore() >= 1) {
                     result.add(new SettlementTaskProxy(this, st, score));
                 }
             }
@@ -180,7 +184,7 @@ public class SettlementTaskManager implements Serializable {
             if (acceptable.contains(scope)) {
                 SettlementMetaTask mt = st.getMeta();
                 RatingScore score = mt.assessPersonSuitability(st, p);
-                if (score.getScore() > 0) {
+                if (score.getScore() >= 1) {
                     result.add(new SettlementTaskProxy(this, st, score));
                 }
             }

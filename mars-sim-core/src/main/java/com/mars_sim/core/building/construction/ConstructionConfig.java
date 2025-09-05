@@ -88,17 +88,6 @@ public class ConstructionConfig {
                     .findAny()
                     .orElse(null);
     }
-	
-    /**
-     * Get all stages which follow the specified Stage. 
-     * @param start
-     * @return
-     */
-    public List<ConstructionStageInfo> getPotentialNextStages(ConstructionStageInfo start) {
-        return allConstructionStageInfoList.stream()
-                    .filter(s -> start.equals(s.getPrerequisiteStage()))
-                    .toList();
-    }
 
     /**
      * Creates a stage info list.

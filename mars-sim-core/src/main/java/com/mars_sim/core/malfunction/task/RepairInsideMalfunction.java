@@ -109,7 +109,6 @@ public class RepairInsideMalfunction extends Task implements Repair {
 			RepairHelper.prepareRepair(malfunction, worker, MalfunctionRepairWork.INSIDE, entity);
 
 			// Initialize phase
-			addPhase(REPAIRING);
 			setPhase(REPAIRING);
 		}
 	}
@@ -233,13 +232,12 @@ public class RepairInsideMalfunction extends Task implements Repair {
 
 			if (worker.getUnitType() == UnitType.PERSON) {
 
-				if (building.hasFunction(FunctionType.LIFE_SUPPORT)) {
-					// Walk to malfunctioning building.
-					isWalk = walkToActivitySpotInBuilding(building, FunctionType.LIFE_SUPPORT, true);
+				// Walk to malfunctioning building.
+				isWalk = walkToActivitySpotInBuilding(building, FunctionType.LIFE_SUPPORT, true);
 					
-					if (!isWalk)
-						isWalk = walkToEmptyActivitySpotInBuilding(building, true);
-				}
+				if (!isWalk)
+					isWalk = walkToEmptyActivitySpotInBuilding(building, true);
+
 			}
 
 			else if (worker.getUnitType() == UnitType.ROBOT) {

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EntityTableModel.java
- * @date 2022-10-13
+ * @date 2025-08-27
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -76,7 +76,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
      */
     protected void resetEntities(Collection<T> newEntities) {
 		fireEnabled = false;
-
+		
 		if (!entities.isEmpty()) {
 			// Take a shallow copy as going to be removing items
 			List<T> oldUnits = new ArrayList<>(entities);
@@ -88,6 +88,8 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 		for(T newUnit : newEntities) {
 			addEntity(newUnit);
 		}
+
+		
         fireTableDataChanged();
         
 		// Just fire one table event for the whole table
@@ -106,7 +108,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
         if (add) {
             if (fireEnabled) {
                 // Do async
-                SwingUtilities.invokeLater(() ->addRow(newEntity));
+                SwingUtilities.invokeLater(() -> addRow(newEntity));
             }
             else {
                 addRow(newEntity);
@@ -115,6 +117,11 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
         return add;
     }
 
+    /**
+     * Adds a row of entity.
+     * 
+     * @param newEntity
+     */
     private void addRow(T newEntity) {
         entities.add(newEntity);
 

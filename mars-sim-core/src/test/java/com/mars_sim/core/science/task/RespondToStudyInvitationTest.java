@@ -21,7 +21,7 @@ public class RespondToStudyInvitationTest extends AbstractMarsSimUnitTest {
         // Create a study in invite phase
         var study = getStudy(c, ScienceType.CHEMISTRY, JobType.CHEMIST);
 
-        BuildingManager.addPersonToActivitySpot(c, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(c, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
 
         var t = new RespondToStudyInvitation(c);
         assertFalse("Task started", t.isDone());
@@ -51,7 +51,7 @@ public class RespondToStudyInvitationTest extends AbstractMarsSimUnitTest {
         // Create a study in invite phase
         var study = getStudy(c, ScienceType.CHEMISTRY, JobType.CHEMIST);
 
-        BuildingManager.addPersonToActivitySpot(c, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(c, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
 
 
         var t = new RespondToStudyInvitation(c);
@@ -71,7 +71,7 @@ public class RespondToStudyInvitationTest extends AbstractMarsSimUnitTest {
         // Create a study in invite phase
         var study = getStudy(c, ScienceType.CHEMISTRY, JobType.CHEMIST);
 
-        BuildingManager.addPersonToActivitySpot(c, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
+        BuildingManager.addToActivitySpot(c, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
 
         RespondToStudyInvitationMeta mt = new RespondToStudyInvitationMeta();
         var tasks = mt.getTaskJobs(c);

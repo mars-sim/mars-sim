@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Resupply.java
- * @date 2023-07-30
+ * @date 2025-09-02
  * @author Scott Davis
  */
 package com.mars_sim.core.interplanetary.transport.resupply;
@@ -68,7 +68,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 	private static final int BUILDING_CENTER_SEPARATION = 11; // why 11?
 
-	private static final int MAX_COUNTDOWN = 20;
+	public static final int MAX_COUNTDOWN = 20;
 
 	// Default width and length for variable size buildings if not otherwise
 	// determined.
@@ -224,7 +224,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, zone,
 						btemplate.getBuildingType(), uniqueName, correctedBounds);
 
-				checkTemplateAddBuilding(spec, correctedTemplate);
+				checkTemplateAddBuilding(spec, correctedTemplate, buildingManager);
 			}
 			
 			return true;
@@ -269,16 +269,16 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param bt a building template
 	 * @param bc 
 	 */
-	private void checkTemplateAddBuilding(BuildingSpec spec, BuildingTemplate bt) {
+	public static void checkTemplateAddBuilding(BuildingSpec spec, BuildingTemplate bt, BuildingManager buildingManager) {
 		// Check if building template position/facing collides with any existing
 		// buildings/vehicles/construction sites.
-		if (!isTemplatePositionClear(spec, bt)) {
-			bt = clearCollision(spec, bt, MAX_COUNTDOWN);
+		if (!isTemplatePositionClear(spec, bt, buildingManager)) {
+			bt = clearCollision(spec, bt, MAX_COUNTDOWN, buildingManager);
 		}
 
 		if (bt != null) {
-			settlement.getBuildingManager().addBuilding(
-					Building.createBuilding(bt, settlement), bt, true);
+			buildingManager.addBuilding(
+					Building.createBuilding(bt, buildingManager.getSettlement()), bt, true);
 		}
 	}
 
@@ -290,14 +290,13 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param count number of counts
 	 * @param bc 
 	 * @param spec 
+	 * @param buildingManager
 	 * @return corrected building template
 	 */
-	private BuildingTemplate clearCollision(BuildingSpec spec, BuildingTemplate bt, int count) {
+	public static BuildingTemplate clearCollision(BuildingSpec spec, BuildingTemplate bt, int count, BuildingManager buildingManager) {
 		count--;
 		logger.config("#" + (Resupply.MAX_COUNTDOWN - count) + " : Calling clearCollision() for " + bt.getBuildingName());
-		
-		BuildingManager buildingManager = settlement.getBuildingManager();
-		
+	
 		boolean noVehicle = true;
 		boolean noImmovable = true;
 		boolean noConflictResupply = true;
@@ -306,10 +305,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			return null;
 		} else {
 			// check if a vehicle is the obstacle and move it
-			noVehicle = isCollisionFreeVehicle(bt);
+			noVehicle = isCollisionFreeVehicle(bt, buildingManager.getSettlement());
 
 			if (noVehicle) {
-				noImmovable = isCollisionFreeImmovable(bt);
+				noImmovable = isCollisionFreeImmovable(bt, buildingManager.getSettlement());
 			}
 
 			if (noConflictResupply) {
@@ -318,10 +317,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 			if (!noImmovable || !noConflictResupply || !inZone) {// if there are obstacles
 				// get a new template
-				BuildingTemplate repositioned = positionNewResupplyBuilding(spec);
+				BuildingTemplate repositioned = positionNewResupplyBuilding(spec, buildingManager);
 
 				// Call again recursively to check for any collision
-				bt = clearCollision(spec, repositioned, count);
+				bt = clearCollision(spec, repositioned, count, buildingManager);
 			}
 		}
 
@@ -336,7 +335,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param coordinates
 	 * @return true if the location is clear of collision
 	 */
-	private boolean isCollisionFreeVehicle(BuildingTemplate t) {
+	private static boolean isCollisionFreeVehicle(BuildingTemplate t, Settlement settlement) {
 		return !LocalAreaUtil.isVehicleBoundedOjectIntersected(t.getBounds(),
 				settlement.getCoordinates(), true);
 
@@ -348,10 +347,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param t a building template
 	 * @return true if no collision.
 	 */
-	private boolean isCollisionFreeImmovable(BuildingTemplate t) {
+	private static boolean isCollisionFreeImmovable(BuildingTemplate t, Settlement settlement) {
 
 		return !LocalAreaUtil.isImmovableBoundedOjectIntersected(t.getBounds(), 
-				getSettlement().getCoordinates());
+				settlement.getCoordinates());
 	}
 
 	/**
@@ -454,7 +453,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param buildingConfig 
 	 * @return true if building template position is clear.
 	 */
-	private boolean isTemplatePositionClear(BuildingSpec spec, BuildingTemplate template) {
+	public static boolean isTemplatePositionClear(BuildingSpec spec, BuildingTemplate template, 
+			BuildingManager buildingManager) {
 
 		boolean result = true;
 		
@@ -462,8 +462,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		// buildings.
 		BoundedObject correctedBounds = getCorrectedBounds(spec, template.getBounds());
 
-		result = settlement.getBuildingManager()
-				.isBuildingLocationOpen(correctedBounds);
+		result = buildingManager.isBuildingLocationOpen(correctedBounds);
 
 		return result;
 	}
@@ -475,10 +474,9 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param building type the new building type.
 	 * @return the repositioned building template.
 	 */
-	private BuildingTemplate positionNewResupplyBuilding(BuildingSpec spec) {
+	private static BuildingTemplate positionNewResupplyBuilding(BuildingSpec spec, BuildingManager buildingManager) {
 
 		BuildingTemplate newPosition = null;
-		BuildingManager buildingManager = settlement.getBuildingManager();
 		
 		// Note : only hallway and tunnel has "connection" function
 		Set<FunctionType> supported = spec.getFunctionSupported();
@@ -488,7 +486,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		if (isBuildingConnector) {
 			// Case 0 : a hallway or tunnel
 			// Try to find best location to connect between the two buildings.
-			newPosition = positionNewConnector(spec);
+			newPosition = positionNewConnector(spec, buildingManager);
 			if (newPosition != null) {
 				logger.config("Case 0: it is a hallway or tunnel.");
 				return newPosition;
@@ -497,7 +495,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 		else if (hasLifeSupport) {
 			// Case 1 : same type and with life support
-			newPosition = positionSameType(spec, true);
+			newPosition = positionSameType(spec, true, buildingManager);
 
 			if (newPosition != null) {
 				logger.config("Case 1: " + POSITIONING + " near the same building type ("
@@ -525,7 +523,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 								MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
 					}
 
-					newPosition = positionNextToBuilding(spec, building, Math.round(dist1), false);
+					newPosition = positionNextToBuilding(spec, buildingManager, building, Math.round(dist1), false);
 					if (newPosition != null) {
 						logger.config("Case 2: " + POSITIONING 
 								+ " near a different building type (" 
@@ -536,7 +534,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			}
 		} else {
 			// Case 3 : the same type but having no life support
-			newPosition = positionSameType(spec, false);
+			newPosition = positionSameType(spec, false, buildingManager);
 			if (newPosition != null) {
 				logger.config("Case 3: " + POSITIONING + newPosition.getBuildingName()
 						+ " near the same building type with no life support");
@@ -555,7 +553,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 					Iterator<Building> i = buildingManager.getBuildingSet().iterator();
 					while (i.hasNext()) {
 						Building building = i.next();
-						newPosition = positionNextToBuilding(spec, building, x, false);
+						newPosition = positionNextToBuilding(spec, buildingManager, building, x, false);
 						if (newPosition != null) {
 							logger.config("Case 4: " + POSITIONING + newPosition.getBuildingName() + " at " + x
 									+ " meters away near a different building type with no life support");
@@ -603,16 +601,16 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param lifeSupport
 	 * @return
 	 */
-	private BuildingTemplate positionSameType(BuildingSpec buildingSpec , boolean lifeSupport) {
+	private static BuildingTemplate positionSameType(BuildingSpec buildingSpec , boolean lifeSupport, BuildingManager buildingManager) {
 		BuildingTemplate newPosition = null;
 
 		// Put this non-habitable building next to the same building type.
-		List<Building> sameTypeBuildings = settlement.getBuildingManager()
+		List<Building> sameTypeBuildings = buildingManager
 				.getBuildingsOfSameType(buildingSpec.getName());
 		
 		BuildingCategory buildingCategory = buildingSpec.getCategory();
 		
-		List<Building> sameCategoryBuildings = settlement.getBuildingManager()
+		Set<Building> sameCategoryBuildings = buildingManager
 				.getBuildingsOfSameCategory(buildingCategory);
 		
 		sameTypeBuildings.addAll(sameCategoryBuildings);
@@ -640,7 +638,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				dist2 = RandomUtil.getRandomRegressionInteger(MIN_INHABITABLE_BUILDING_DISTANCE * 2,
 						MAX_INHABITABLE_BUILDING_DISTANCE * 2) / 2D;
 			
-			newPosition = positionNextToBuilding(buildingSpec, building, Math.round(dist2), false);
+			newPosition = positionNextToBuilding(buildingSpec, buildingManager, building, Math.round(dist2), false);
 			if (newPosition != null) {
 				break;
 			}
@@ -655,8 +653,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param newBuildingType the new building type.
 	 * @return new building template with position/length, or null if none found.
 	 */
-	private BuildingTemplate positionNewConnector(BuildingSpec spec) {
-		BuildingManager buildingManager = settlement.getBuildingManager();
+	private static BuildingTemplate positionNewConnector(BuildingSpec spec, BuildingManager buildingManager) {
+		
 		BuildingTemplate newTemplate = null;
 
 		int baseLevel = spec.getBaseLevel();
@@ -667,7 +665,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		// Try to find a connection between an inhabitable building without access to
 		// airlock and
 		// another inhabitable building with access to an airlock.
-		if (settlement.getAirlockNum() > 0) {
+		if (buildingManager.getSettlement().getAirlockNum() > 0) {
 			logger.config("Case 1 in positionNewConnector()");
 			Building closestStartingBuilding = null;
 			Building closestEndingBuilding = null;
@@ -676,7 +674,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			Iterator<Building> i = inhabitableBuildings.iterator();
 			while (i.hasNext()) {
 				Building startingBuilding = i.next();
-				if (!settlement.hasWalkableAvailableAirlock(startingBuilding)) {
+				if (!buildingManager.getSettlement().hasWalkableAvailableAirlock(startingBuilding)) {
 					// Find a different inhabitable building that has walkable access to an airlock.
 					Iterator<Building> k = inhabitableBuildings.iterator();
 					while (k.hasNext()) {
@@ -686,13 +684,13 @@ public class Resupply extends Transportable implements SettlementSupplies {
 							boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel())
 									|| (baseLevel == building.getBaseLevel());
 
-							if (settlement.hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
+							if (buildingManager.getSettlement().hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
 								double distance = Point2D.distance(startingBuilding.getXLocation(),
 										startingBuilding.getYLocation(), building.getXLocation(),
 										building.getYLocation());
 								if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 									// Check that new building can be placed between the two buildings.
-									if (positionConnectorBetweenTwoBuildings(spec, startingBuilding,
+									if (positionConnectorBetweenTwoBuildings(spec, buildingManager, startingBuilding,
 											building) != null) {
 										closestStartingBuilding = startingBuilding;
 										closestEndingBuilding = building;
@@ -706,7 +704,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 				if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
 					// Determine new location/length between the two buildings.
-					newTemplate = positionConnectorBetweenTwoBuildings(spec, closestStartingBuilding,
+					newTemplate = positionConnectorBetweenTwoBuildings(spec, buildingManager, closestStartingBuilding,
 							closestEndingBuilding);
 
 				}
@@ -730,8 +728,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				Iterator<Building> k = inhabitableBuildings.iterator();
 				while (k.hasNext()) {
 					Building building = k.next();
-					boolean hasWalkingPath = settlement.getBuildingConnectorManager().hasValidPath(startingBuilding,
-							building);
+					boolean hasWalkingPath = buildingManager.getSettlement().getBuildingConnectorManager()
+							.hasValidPath(startingBuilding, building);
 
 					// Check if connector base level matches either building.
 					boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel())
@@ -742,7 +740,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 								startingBuilding.getYLocation(), building.getXLocation(), building.getYLocation());
 						if ((distance < leastDistance) && (distance >= MINIMUM_CONNECTOR_LENGTH)) {
 							// Check that new building can be placed between the two buildings.
-							if (positionConnectorBetweenTwoBuildings(spec, startingBuilding,
+							if (positionConnectorBetweenTwoBuildings(spec, buildingManager, startingBuilding,
 									building) != null) {
 								closestStartingBuilding = startingBuilding;
 								closestEndingBuilding = building;
@@ -755,7 +753,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 			if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
 				// Determine new location/length between the two buildings.
-				newTemplate = positionConnectorBetweenTwoBuildings(spec, closestStartingBuilding,
+				newTemplate = positionConnectorBetweenTwoBuildings(spec, buildingManager, closestStartingBuilding,
 						closestEndingBuilding);
 			}
 		}
@@ -777,7 +775,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				Iterator<Building> k = inhabitableBuildings.iterator();
 				while (k.hasNext()) {
 					Building building = k.next();
-					boolean directlyConnected = (!settlement.getBuildingConnectorManager()
+					boolean directlyConnected = (!buildingManager.getSettlement().getBuildingConnectorManager()
 							.getBuildingConnections(startingBuilding, building).isEmpty());
 
 					// Check if connector base level matches either building.
@@ -790,7 +788,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 								startingBuilding.getYLocation(), building.getXLocation(), building.getYLocation());
 						if ((distance < leastDistance) && (distance >= 5D)) { 
 							// Check that new building can be placed between the two buildings.
-							if (positionConnectorBetweenTwoBuildings(spec, startingBuilding,
+							if (positionConnectorBetweenTwoBuildings(spec, buildingManager, startingBuilding,
 									building) != null) {
 								closestStartingBuilding = startingBuilding;
 								closestEndingBuilding = building;
@@ -803,7 +801,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 			if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
 				// Determine new location/length between the two buildings.
-				newTemplate = positionConnectorBetweenTwoBuildings(spec, closestStartingBuilding,
+				newTemplate = positionConnectorBetweenTwoBuildings(spec, buildingManager, closestStartingBuilding,
 						closestEndingBuilding);
 			}
 		}
@@ -816,7 +814,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			while (l.hasNext()) {
 				Building building = l.next();
 				// Make connector building face away from building.
-				newTemplate = positionNextToBuilding(spec, building, 0D, true);
+				newTemplate = positionNextToBuilding(spec, buildingManager, building, 0D, true);
 			}
 		}
 
@@ -834,7 +832,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @return new building template with determined position, or null if none
 	 *         found.
 	 */
-	private BuildingTemplate positionNextToBuilding(BuildingSpec spec, Building building,
+	private static BuildingTemplate positionNextToBuilding(BuildingSpec spec, BuildingManager buildingManager, Building building, 
 			double separationDistance, boolean faceAway) {
 		BuildingTemplate newPosition = null;
 
@@ -908,7 +906,6 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			// Check to see if proposed new building position intersects with any existing
 			// buildings
 			// or construction sites.
-			BuildingManager buildingManager = settlement.getBuildingManager();
 			BoundedObject position =  new BoundedObject(rectCenterX, rectCenterY, width, length, rectRotation);
 			if (buildingManager.isBuildingLocationOpen(position)) {
 				// Set the new building here.
@@ -940,12 +937,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @return new building template with determined position, or null if none
 	 *         found.
 	 */
-	private BuildingTemplate positionConnectorBetweenTwoBuildings(BuildingSpec spec, 
+	private static BuildingTemplate positionConnectorBetweenTwoBuildings(BuildingSpec spec, BuildingManager buildingManager,
 			Building firstBuilding,
 			Building secondBuilding) {
 
-		BuildingManager buildingManager = settlement.getBuildingManager();
-		
 		BuildingTemplate newPosition = null;
 
 		// Determine valid placement lines for connector building.
@@ -969,7 +964,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 					// Check line rect between positions for obstacle collision.
 					Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(),
 							secondBuildingPos.getX(), secondBuildingPos.getY());
-					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, settlement.getCoordinates(), false);
+					boolean clearPath = LocalAreaUtil.isLinePathCollisionFree(line, buildingManager.getSettlement().getCoordinates(), false);
 					if (clearPath) {
 						validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
 					}
@@ -1029,7 +1024,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param connectorWidth the width of the new connector.
 	 * @return point adjusted location for connector end point.
 	 */
-	private Point2D adjustConnectorEndPoint(Point2D point, double lineFacing, Building building,
+	private static Point2D adjustConnectorEndPoint(Point2D point, double lineFacing, Building building,
 			double connectorWidth) {
 
 		double lineFacingRad = Math.toRadians(lineFacing);
@@ -1054,7 +1049,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 *                         the building.
 	 * @return list of four positions.
 	 */
-	private List<Point2D> getFourPositionsSurroundingBuilding(Building building, double distanceFromSide) {
+	private static List<Point2D> getFourPositionsSurroundingBuilding(Building building, double distanceFromSide) {
 
 		List<Point2D> result = new ArrayList<>();
 

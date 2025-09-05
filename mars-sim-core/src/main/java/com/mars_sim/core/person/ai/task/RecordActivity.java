@@ -50,7 +50,6 @@ public class RecordActivity extends Task {
 				walkToRandomLocation(false);
 			
 			// Initialize phase
-			addPhase(RECORDING);
 			setPhase(RECORDING);
 		}
 
@@ -60,7 +59,6 @@ public class RecordActivity extends Task {
 			}
 			
 			// Initialize phase
-			addPhase(RECORDING);
 			setPhase(RECORDING);
 		}
 

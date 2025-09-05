@@ -10,8 +10,8 @@ package com.mars_sim.ui.swing.tool.settlement;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.util.Properties;
 
 import javax.swing.BorderFactory;
@@ -55,10 +55,13 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	private static final String POPULATION = " Pop: ";
 	private static final String WHITESPACES_2 = " ";
 	private static final String CLOSE_PARENT = ") ";
-	private static final String WITHIN_BLDG = " Building: ";
+	private static final String BLDG_CENTER = "Building Center: ";
+	private static final String BLDG_SPOT = " Building Spot: ";
 	private static final String SETTLEMENT_MAP = " Map: ";
 	private static final String PIXEL_MAP = " Window: (";
 
+	
+	private JLabel buildingSpotLabel;
 	private JLabel buildingXYLabel;
 	private JLabel mapXYLabel;
 	private JLabel windowXYLabel;
@@ -79,7 +82,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
 
-		setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
 		setBackground(Color.BLACK);
 		
@@ -96,6 +99,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 		mapPanel = new SettlementMapPanel(desktop, this, desktop.getMainWindow().getConfig().getInternalWindowProps(NAME));
 		mapPanel.createUI();
+		desktop.setSettlementMapPanel(mapPanel);
 
 		// Added SpotlightLayerUI
 		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
@@ -119,41 +123,53 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
         statusBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 
         popLabel = new JLabel();
-        popLabel.setPreferredSize(new Dimension(100, HEIGHT_STATUS_BAR));
+//        popLabel.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
         popLabel.setVerticalAlignment(SwingConstants.CENTER);
         popLabel.setHorizontalAlignment(SwingConstants.LEFT);
         popLabel.setFont(font);
           
 	    buildingXYLabel = new JLabel();
-	    buildingXYLabel.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
+//	    buildingXYLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
 	    buildingXYLabel.setVerticalAlignment(SwingConstants.CENTER);
-	    buildingXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	    buildingXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
 	    buildingXYLabel.setFont(font);
   		
+	    buildingSpotLabel = new JLabel();
+//	    buildingSpotLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
+	    buildingSpotLabel.setVerticalAlignment(SwingConstants.CENTER);
+	    buildingSpotLabel.setHorizontalAlignment(SwingConstants.LEFT);
+	    buildingSpotLabel.setFont(font);
+	    
 	    windowXYLabel = new JLabel();
-	    windowXYLabel.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
+//	    windowXYLabel.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
 	    windowXYLabel.setVerticalAlignment(SwingConstants.CENTER);
-	    windowXYLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	    windowXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
 	    windowXYLabel.setFont(font);
     
 	    mapXYLabel = new JLabel();
-	    mapXYLabel.setPreferredSize(new Dimension(150, HEIGHT_STATUS_BAR));
+//	    mapXYLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
 	    mapXYLabel.setVerticalAlignment(SwingConstants.CENTER);
-	    mapXYLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+	    mapXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
 	    mapXYLabel.setFont(font);
     
-	    statusBar.addLeftComponent(popLabel, false);
+	    JPanel popPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 3));
+	    popPanel.add(popLabel);
+	    statusBar.addLeftComponent(popPanel, false);
 	    
-	    statusBar.addCenterComponent(buildingXYLabel, false);
+	    JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 4));
+//	    centerPanel.setPreferredSize(new Dimension(300, HEIGHT_STATUS_BAR));
+	    centerPanel.setAlignmentY(CENTER_ALIGNMENT);
+	    centerPanel.setAlignmentX(CENTER_ALIGNMENT);
 	    
-        JPanel gridPanel = new JPanel(new GridLayout(1, 2));
-        gridPanel.setPreferredSize(new Dimension(300, HEIGHT_STATUS_BAR));
-        gridPanel.setAlignmentY(CENTER_ALIGNMENT);
-        gridPanel.setAlignmentX(CENTER_ALIGNMENT);
-	    gridPanel.add(windowXYLabel);
-	    gridPanel.add(mapXYLabel);
+	    centerPanel.add(mapXYLabel);
+	    centerPanel.add(buildingXYLabel);
+	    centerPanel.add(buildingSpotLabel);
 	    
-	    statusBar.addRightComponent(gridPanel, false);
+	    statusBar.addCenterComponent(centerPanel, false);
+
+	    JPanel winPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 3));
+	    winPanel.add(windowXYLabel);
+	    statusBar.addRightComponent(winPanel, false);
 
 	    return statusBar;
 	}
@@ -163,7 +179,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	}
 
 	/**
-	 * Sets the label of the coordinates within a building.
+	 * Sets the label of the center position of a building.
 	 *
 	 * @param pos
 	 * @param blank
@@ -174,11 +190,29 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		}
 		else {
 			StringBuilder sb = new StringBuilder();
-			sb.append(WITHIN_BLDG).append(pos.getShortFormat());
+			sb.append(BLDG_CENTER).append(pos.getShortFormat());
 			buildingXYLabel.setText(sb.toString());
 		}
 	}
 
+	/**
+	 * Sets the pointer position within a building.
+	 *
+	 * @param pos
+	 * @param blank
+	 */
+	void setBuildingPointerXYCoord(LocalPosition pos, boolean blank) {
+		if (blank) {
+			buildingSpotLabel.setText("");
+		}
+		else {
+			StringBuilder sb = new StringBuilder();
+			sb.append(BLDG_SPOT).append(pos.getShortFormat());
+			buildingSpotLabel.setText(sb.toString());
+		}
+	}
+	
+	
 	/**
 	 * Sets the x/y pixel label of the settlement window.
 	 *
@@ -321,6 +355,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 	@Override
 	public void destroy() {
+		buildingSpotLabel = null;
 		buildingXYLabel = null;
 		windowXYLabel = null;
 		mapXYLabel = null;
@@ -328,9 +363,10 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		subPanel = null;
 		
 		statusBar = null;
-		mapPanel.destroy();
 		
+		mapPanel.destroy();
 		mapPanel = null;
+		
 		desktop = null;
 	}
 }

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
@@ -82,7 +81,7 @@ class VehicleGood extends Good {
         this.vehicleType = vs.getType();
         this.goodType = switch(vehicleType) {
 			case DELIVERY_DRONE, CARGO_DRONE, LUV -> GoodType.VEHICLE_SMALL;
-			case EXPLORER_ROVER -> GoodType.VEHICLE_MEDIUM;
+			case EXPLORER_ROVER, PASSENGER_DRONE -> GoodType.VEHICLE_MEDIUM;
 			case TRANSPORT_ROVER, CARGO_ROVER -> GoodType.VEHICLE_HEAVY;
         };
 
@@ -189,10 +188,13 @@ class VehicleGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-        double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
-        double quantity = settlement.findNumVehiclesOfType(vehicleType);
-        double factor = Math.log(mass/1600.0 + 1) / (5 + Math.log(quantity + 1));
-        return getCostOutput() * (1 + 2 * factor * Math.log(value + 1));  
+//        double mass = CollectionUtils.getVehicleTypeBaseMass(vehicleType);
+//        double quantity = settlement.findNumVehiclesOfType(vehicleType);
+        double supply = settlement.getGoodsManager().getSupplyScore(getID());
+        double factor = 1.5 / (2 + supply);
+        double price = getCostOutput() * (1 + factor * Math.log(Math.sqrt(value + 1)));  
+        setPrice(price);
+	    return price;
     }
 
     @Override
@@ -215,16 +217,16 @@ class VehicleGood extends Good {
 		// Calculate total supply
 		double totalSupply = getAverageVehicleSupply(getNumberForSettlement(settlement));
 		
-		owner.setSupplyValue(this, totalSupply);
+		owner.setSupplyScore(this, totalSupply);
 			
-		double projectedDemand = determineVehicleProjectedDemand(owner, settlement);
+		double newProjDemand = determineVehicleProjectedDemand(owner, settlement);
 				
-		projectedDemand = Math.min(HIGHEST_PROJECTED_VALUE, projectedDemand);
+		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 		
-		this.projectedDemand = projectedDemand;
+		double projected = newProjDemand * flattenDemand;
 		
-		double projected = projectedDemand * flattenDemand;
-
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		
 		double average = computeVehiclePartsCost(owner);
 		
 		tradeDemand = determineTradeVehicleValue(owner, settlement);
@@ -329,7 +331,7 @@ class VehicleGood extends Good {
             case CARGO_ROVER -> CARGO_VEHICLE_FACTOR;		
             case TRANSPORT_ROVER -> TRANSPORT_VEHICLE_FACTOR;
             case EXPLORER_ROVER -> EXPLORER_VEHICLE_FACTOR;
-		    case DELIVERY_DRONE, CARGO_DRONE -> DRONE_VEHICLE_FACTOR;
+		    case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> DRONE_VEHICLE_FACTOR;
 		    case LUV -> LUV_VEHICLE_FACTOR;
         };
 		return demand * (.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;

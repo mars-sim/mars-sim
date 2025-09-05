@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
@@ -81,7 +83,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 		eventColumnMapping = new EnumMap<>(UnitEventType.class);
 		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
-		eventColumnMapping.put(UnitEventType.LOCATION_EVENT, LOCATION);
+		eventColumnMapping.put(UnitEventType.COORDINATE_EVENT, LOCATION);
 		eventColumnMapping.put(UnitEventType.STATUS_EVENT, MODE);
 		eventColumnMapping.put(UnitEventType.BATTERY_EVENT, BATTERY);
 		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
@@ -125,7 +127,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 		sourceType = ValidSourceType.VEHICLE_ROBOTS;
 		this.vehicle = vehicle;
-		resetEntities(vehicle.getRobotCrew());
+		
+		Collection<Robot> crew = CollectionUtils.sortByName(vehicle.getRobotCrew());
+		resetEntities(crew);
+		
 		crewListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		((Unit) vehicle).addUnitListener(crewListener);
@@ -167,7 +172,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				missionRobots.add((Robot) member);
 			}
 		}
+		
+		CollectionUtils.sortByName(missionRobots);
 		resetEntities(missionRobots);
+	
 		missionListener = new LocalMissionListener();
 		mission.addMissionListener(missionListener);
 	}
@@ -191,6 +199,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			entities = settlements.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
+						.sorted(Comparator.comparing(Robot::getName))
 						.collect(Collectors.toList());
 			settlementListener = new RobotChangeListener(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT,
 														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
@@ -202,13 +211,15 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			entities = settlements.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
+						.sorted(Comparator.comparing(Robot::getName))
 						.collect(Collectors.toList());
 			settlementListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
 														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		}
-					
-		resetEntities(entities);
-
+		
+		if (entities != null && !entities.isEmpty()) {	
+			resetEntities(entities);
+		}
 		// Listen to the settlements for new People
 		settlements.forEach(s -> s.addUnitListener(settlementListener));
 
@@ -411,17 +422,13 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
-			UnitEventType eventType = event.getType();
-			if (eventType == addEvent) {
-				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.ROBOT) {
-					addEntity((Robot) unit);
+			if (event.getTarget() instanceof Robot r) {
+				UnitEventType eventType = event.getType();
+				if (eventType == addEvent) {
+					addEntity(r);
 				}
-			}
-			else if (eventType == removeEvent) {
-				Unit unit = (Unit)event.getTarget();
-				if (unit.getUnitType() == UnitType.ROBOT) {
-					removeEntity((Robot) unit);
+				else if (eventType == removeEvent) {
+					removeEntity(r);
 				}
 			}
 		}

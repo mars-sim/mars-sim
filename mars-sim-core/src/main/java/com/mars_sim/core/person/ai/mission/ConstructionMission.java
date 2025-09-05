@@ -18,10 +18,8 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.building.construction.ConstructionVehicleType;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -56,9 +54,6 @@ public class ConstructionMission extends AbstractMission
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionMission.class.getName());
-	
-	/** Mission Type enum. */
-	public static final MissionType missionType = MissionType.CONSTRUCTION;
 
 	/** Mission phases. */
 	private static final MissionPhase SELECT_SITE_PHASE = new MissionPhase("Mission.phase.selectConstructionSite");
@@ -88,7 +83,7 @@ public class ConstructionMission extends AbstractMission
 	 */
 	public ConstructionMission(Worker startingMember) {
 		// Use Mission constructor.
-		super(missionType, startingMember);
+		super(MissionType.CONSTRUCTION, startingMember);
 
 		if (isDone()) {
 			return;
@@ -142,7 +137,7 @@ public class ConstructionMission extends AbstractMission
 			List<GroundVehicle> vehicles) {
 
 		// Use Mission constructor.
-		super(missionType, (Worker) members.toArray()[0]);
+		super(MissionType.CONSTRUCTION, (Worker) members.toArray()[0]);
 
 		// Add mission members.
 		addMembers(members, false);
@@ -165,7 +160,7 @@ public class ConstructionMission extends AbstractMission
 	
 	private void createObjectives(ConstructionSite site, List<GroundVehicle> constructionVehicles) {
 		var settlement = site.getAssociatedSettlement();
-		site.setWorkOnSite(true);
+		site.setWorkOnSite(this);
 
 		var stage = site.getCurrentConstructionStage();
 		// Reserve construction vehicles.
@@ -474,7 +469,7 @@ public class ConstructionMission extends AbstractMission
 			setPhaseEnded(true);
 			var manager = site.getAssociatedSettlement().getConstructionManager();
 
-			if (site.isAllConstructionComplete()) {
+			if (site.isComplete()) {
 				// Construct building if all 3 stages of the site construction have been complete.
 				Building building = site.createBuilding();
 				manager.removeConstructionSite(site);
@@ -483,10 +478,7 @@ public class ConstructionMission extends AbstractMission
 			}
 			else {
 				// Move on to the next one fromm the current one
-				var newStageType = Stage.values()[stage.getInfo().getType().ordinal() + 1];
-				var newStageInfo = ConstructionManager.getStageInfo(site.getBuildingName(), newStageType);
-				site.addNewStage(newStageInfo);
-				logger.info(site, "'" + stage.getInfo().getName() + "' finished advanced to '" + newStageInfo.getName() + "'");
+				site.advanceToNextPhase();
 			}
 		}
 	}
@@ -495,7 +487,7 @@ public class ConstructionMission extends AbstractMission
 	public void endMission(MissionStatus endStatus) {
 		var site = objective.getSite();
 		// Mark site as not undergoing construction.
-		site.setWorkOnSite(false);
+		site.setWorkOnSite(null);
 
 		// Unreserve all LUV attachment parts for this mission.
 		unreserveLUVparts(objective.getLuvAttachmentParts(), site.getAssociatedSettlement());
@@ -575,24 +567,6 @@ public class ConstructionMission extends AbstractMission
 	@Override
 	public List<GroundVehicle> getConstructionVehicles() {
 		return objective.getConstructionVehicles();
-	}
-
-	@Override
-	protected boolean hasEmergency() {
-		boolean result = super.hasEmergency();
-
-		// Cancel construction mission if there are any beacon vehicles within range
-		// that need help.
-		Settlement settlement = getAssociatedSettlement();
-		Vehicle vehicleTarget = null;
-		Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
-		if (vehicle != null) {
-			vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement, vehicle.getEstimatedRange());
-			if (vehicleTarget != null && !RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
-				return true;
-		}
-
-		return result;
 	}
 
 	/**

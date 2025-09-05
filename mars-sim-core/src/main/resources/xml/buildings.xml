@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE building-list [
 	<!ELEMENT building-list (building*)>
-	<!ELEMENT building (description?, power-required, functions)>
+	<!ELEMENT building (description?, scopes?, power-required, functions)>
 	<!ATTLIST building type CDATA #REQUIRED>
 	<!ATTLIST building category CDATA #IMPLIED>
 	<!ATTLIST building width CDATA #REQUIRED>
@@ -14,6 +14,11 @@
 	<!ATTLIST building room-temperature CDATA #REQUIRED>
 	<!ATTLIST building base-mass CDATA #REQUIRED>
 	<!ELEMENT description (#PCDATA)>
+	
+	<!ELEMENT scopes (scope+)>
+	<!ELEMENT scope EMPTY>
+	<!ATTLIST scope name CDATA #IMPLIED>
+	
 	<!ELEMENT power-required EMPTY>
 	<!ATTLIST power-required base-power CDATA #REQUIRED>
 	<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
@@ -103,7 +108,7 @@
 	<!ATTLIST power-source toggle (true|false) #IMPLIED>
 	<!ATTLIST power-source power CDATA #REQUIRED>
 	<!ATTLIST power-source modules CDATA #IMPLIED>
-	<!ATTLIST power-source thermal-conversion CDATA #IMPLIED>
+	<!ATTLIST power-source thermal-conversion-efficiency CDATA #IMPLIED>
 	<!ATTLIST power-source percent-loading CDATA #IMPLIED>
 	<!ATTLIST power-source fuel-type CDATA #IMPLIED>
 
@@ -185,6 +190,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Lander Hab is a jack-of-all-trades building that houses many basic but critical functions
 		to jump start a settlement. It's commonly used as a main hub.
 		</description>
+		<!-- A list of explicit system scopes based on the building type are defined here. At the same time, 
+		     implicit system scopes are defined internally by BuildingSpecs, FunctionSpecs, 
+      		 VehicleSpecs, etc.
+      		 name: the name of the system scope -->
+		<scopes>
+			<scope name="life support"/>
+		</scopes>
+		
 		<!-- The power requirements of the building. -->
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
 		<!-- base-power-down-power: the baseline power (kW) required by this building in 'power down' mode. -->
@@ -205,7 +218,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has communication capabilities. -->
 			<communication tech-level="1" >
 				<activity>
-					<!-- The left and right seats of the west table -->
+					<!-- The left and right seats of the west dining table -->
 					<activity-spot xloc="3.43" yloc="-1.3" />
 					<activity-spot xloc="2.12" yloc="-1.3" />
 				</activity>
@@ -214,14 +227,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has a computation capability. -->
 			<!-- computing-unit [CU] : the unit of computation available for this node. -->
 			<!-- power-demand [kW/CU] : the power required in kW for running each CU.
-			     Note that cooling demand was calculated separately based on this figure.  -->
+			     Note that cooling demand was calculated separately based on this figure. -->
 			<computation computing-unit="10.0" power-demand="1.0">
 				<activity>
-					<!--The 1 seat on the south end of long lab bench sector-->
-					<activity-spot xloc="-2.67" yloc="-2.86" />
-					<!--The inner 2 seats on the long table south of the medical bay-->
-					<activity-spot xloc="2.95" yloc="0.35" />				
-					<activity-spot xloc="2.05" yloc="0.02" />
+					<!--The 1 burgundy seat on the south end of long lab bench sector-->
+					<activity-spot xloc="-2.745" yloc="-2.872" />
+					
+					<!--The right and middle seats on the long table south of the medical bay. -->
+					<activity-spot xloc="2.962" yloc="0.181" />				
+					<activity-spot xloc="2.081" yloc="-0.147" />
 					
 				</activity>
 			</computation>
@@ -249,8 +263,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="2">
 				<activity>
-					<activity-spot xloc="3.74" yloc="-0.7" name="Weight Lifting"/>
-					<activity-spot xloc="3.84" yloc="0" name="Bike"/>
+					<activity-spot xloc="3.725" yloc="-0.799" name="Weight Lifting"/>
+					<activity-spot xloc="3.822" yloc="-0.177" name="Bike"/>
 				</activity>
 			</exercise>
 
@@ -265,7 +279,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
-			<life-support capacity="16" power-required="0.8" />
+			<life-support capacity="24" power-required="1.2" />
 
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
@@ -293,7 +307,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- capacity: the number of population managed. -->
 			<management capacity="1">
 				<activity>
-					<activity-spot xloc="3.74" yloc="0.6" />
+					<!-- The right and middle seats on the long table south of the medical bay. -->
+					<activity-spot xloc="3.807" yloc="0.496" />
 				</activity>
 			</management>
 
@@ -364,9 +379,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<research-specialty name="PSYCHOLOGY" />
 
 				<activity>
-					<activity-spot xloc="-2.20"  yloc="-2.47" />
-					<activity-spot xloc="-1.69" yloc="-2.15" />
-					<activity-spot xloc="-1.17" yloc="-1.80" />
+					<activity-spot xloc="-2.183"  yloc="-2.603" />
+					<activity-spot xloc="-1.663" yloc="-2.262" />
+					<activity-spot xloc="-1.142" yloc="-1.915" />
 
 				</activity>
 			</research>
@@ -387,8 +402,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="96" />
-				<process-engine name="Filter Brine Water" number-modules="72" />
+				<process-engine name="Melt Ice" number-modules="24" />
+				<process-engine name="Filter Brine Water" number-modules="24" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -764,8 +779,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="12"/>
 				<process-engine name="Methanol Synthesis" number-modules="12"/>
-				<process-engine name="Melt Ice" number-modules="120" />
-				<process-engine name="Filter Brine Water" number-modules="96" />
+				<process-engine name="Melt Ice" number-modules="48" />
+				<process-engine name="Filter Brine Water" number-modules="48" />
 						
 				<activity>
 					<activity-spot xloc="7.27" yloc="4.54" />
@@ -825,7 +840,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end for Central Hub Type A -->
 
 	<building type="Match Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="100" room-temperature="20.5" base-mass="1000">
+			wear-lifetime="3340000" maintenance-time="72" room-temperature="20.5" base-mass="720">
 		<description> Match Core A is a 3m by 6m utility hub that primarily connects
 		  other modules together
 		</description>
@@ -884,7 +899,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end of Match Core A -->
 
 	<building type="Match Core B" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
+			wear-lifetime="3340000" maintenance-time="36" room-temperature="20.5" base-mass="360">
 		<description> Match Core B is a 3m by 6m utility hub that primarily connects
 		  other modules together
 		</description>
@@ -933,7 +948,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end of Match Core B -->
 
 	<building type="Match Core C" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
+			wear-lifetime="3340000" maintenance-time="42" room-temperature="20.5" base-mass="420">
 		<description> Match Core C is a 3m by 7m utility hub that primarily connects
 		  other modules together
 		</description>
@@ -982,15 +997,70 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end of Match Core C -->
 
+	<building type="Match Core D" width="3.0" length="9.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="54" room-temperature="20.5" base-mass="540">
+		<description> Match Core D is a 3m by 9m utility hub that primarily connects
+		  other modules together
+		</description>
+		<power-required base-power="0.5" base-power-down-power="0.05" />
+
+		<functions>		
+			<life-support capacity="8" power-required="0.3">
+				<activity>
+					<activity-spot xloc=".75" yloc="-3.35" />
+					<activity-spot xloc=".75" yloc="-2.35" />
+					<activity-spot xloc=".75" yloc="-1.35" />
+					<activity-spot xloc=".75" yloc="-0.35" />
+					<activity-spot xloc="-.75" yloc="0.35" />
+					<activity-spot xloc="-.75" yloc="1.35" />
+					<activity-spot xloc="-.75" yloc="2.35" />
+					<activity-spot xloc="-.75" yloc="3.35" />
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			
+			<power-storage capacity="5" discharge-rate="1.5"/>
+	
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="-1.25" yloc="0.0" />
+					<activity-spot xloc="1.25" yloc="0.0" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="7000">
+				<resource-capacity type="water" amount="2000.0" />
+				<resource-capacity type="oxygen" amount="2000.0" />
+				<resource-capacity type="methane" amount="2000.0" />
+				
+				<resource-capacity type="grey water" amount="2000.0" />				
+
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="2.5" />
+				<heat-source type="Electric Heating" capacity="7.5" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="10.0" />
+			</thermal-generation>
+
+		</functions>
+	</building>
+	<!-- end of Match Core D -->
+	
 	<building type="Bioreactor-F" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor-F hosts fermentation reactions using specialized equipment and 
+		<description> Bioreactor-F (F stands for fermentation) hosts fermentation reactions using specialized equipment and 
 			racks and cyanobacteria and chorella that consumes glucose to produce hydrogen.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1058,13 +1128,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Bioreactor-E" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor-E host specialized equipment and racks for utilizing cynobacteria 
+		<description> Bioreactor-E (E stands for Ethylene) host specialized equipment and racks for utilizing cynobacteria 
 			to produce ethylene gas.
 		</description>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1130,13 +1200,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 	<building type="Bioreactor-M" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor-M hosts specialized equipment and racks for utilizing methanogenic 
+		<description> Bioreactor-M (M stands for methanol/methane) hosts specialized equipment and racks for utilizing methanogenic 
 		 archaea to convert methanol into methane and water.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1202,13 +1275,16 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<building type="Bioreactor-G" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
-		<description> Bioreactor A hosts specialized equipment and racks for utilizing bio-organisms 
+		<description> Bioreactor-G (G stands for Glucose) hosts specialized equipment and racks for utilizing bio-organisms 
 			to convert fiber into glucose. 
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
-			<life-support capacity="2" power-required="0.2">
+			<life-support capacity="12" power-required="0.6">
 				<activity>
 					<activity-spot xloc="-2.86" yloc="1.67" />
 					<activity-spot xloc="0.76" yloc="-0.53" />										
@@ -1282,7 +1358,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		for growing crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
 		has an aluminized Mylar reflector curtain. It houses one workbench with instruments for botany research.
 		</description>
-
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power=".2"/>
 
 		<functions>
@@ -1313,7 +1391,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="10.0"
@@ -1425,6 +1503,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			 It has a spacious interior	for high volume crop cultivation and has a high resource 
 			 storage capability.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
@@ -1597,7 +1678,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</fishery>
 
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="10.0"
@@ -1679,7 +1760,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</algae-farming>
 
-			<life-support capacity="8" power-required=".8" />
+			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="10.0"
@@ -1984,7 +2065,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Melt Ice" number-modules="144"/>	
-				<process-engine name="Filter Brine Water" number-modules="108"/>						
+				<process-engine name="Filter Brine Water" number-modules="144"/>						
 			</resource-processing>
 			
 			<storage stock-capacity="300000">
@@ -2033,7 +2114,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<power-generation>
 				<power-source type="Thermionic Nuclear Power Source" 
-					modules="37" power="3.1" thermal-conversion="10.5" percent-loading="83.3"/>
+					modules="37" power="3.1" thermal-conversion-efficiency="10.5" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="5" discharge-rate="1.25"/>
 		</functions>
@@ -2048,7 +2129,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<power-generation>
 				<power-source type="Thermionic Nuclear Power Source" 
-					modules="74" power="4.7" thermal-conversion="10.37" percent-loading="83.3"/>
+					modules="74" power="4.7" thermal-conversion-efficiency="10.37" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="02" discharge-rate="1.25"/>
 		</functions>
@@ -2072,7 +2153,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<power-generation>
 				<power-source type="Fission Power Source" 
-					modules="2" power="43.3" thermal-conversion="27.4" percent-loading="83.3"/>
+					modules="2" power="43.3" thermal-conversion-efficiency="27.4" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="10" discharge-rate="1.25"/>
 		</functions>
@@ -2080,13 +2161,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="4000">
-		<description>The MD1 Nuclear Reactor at 40kW is the first compact fission power plant commissioned 
-		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
+		<description>The MD1 Nuclear Reactor is the first compact fission power plant commissioned 
+		    for use off-world. With the thermal conversion efficiency of 27.4% and at 83.3% load capacity, 
+		    it provides a consistent power supply of ~40 kWe.</description>
 		<power-required base-power="0.25" base-power-down-power="0.025" />
 		<functions>
 			<power-generation>
 				<power-source type="Fission Power Source" 
-					modules="1" power="175.0" thermal-conversion="27.4" percent-loading="83.3"/>
+					modules="1" power="175.0" thermal-conversion-efficiency="27.4" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
 		</functions>
@@ -2096,14 +2178,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="8000">
 		<description>
 			The MD4 Nuclear Reactor is a robust, flight-ready nuclear fission power plant. 
-			At 83.3% load capacity, it provides a consistent power supply of ~100 kWe.
+			With the thermal conversion efficiency of 27.4% and at 83.3% load capacity, 
+			it provides a consistent power supply of ~100 kWe.
 			It also includes a 80 kWh backup battery.
 		</description>
 		<power-required base-power="1" base-power-down-power="0.1"/>
 		<functions>
 			<power-generation>
 				<power-source type="Fission Power Source" 
-					modules="3" power="145.8" thermal-conversion="27.4" percent-loading="83.3"/>
+					modules="3" power="145.8" thermal-conversion-efficiency="27.4" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="80" discharge-rate="1.0"/>
 			<!--thermal-generation>
@@ -2289,7 +2372,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="18" power-required="0.9" />
+			<life-support capacity="12" power-required="0.6" />
 			<living-accommodation capacity="12" guesthouse="true">
 				<activity>
 					<activity-spot xloc="2.2" yloc="3.15" />
@@ -2699,7 +2782,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="2.75" yloc="-2.33" />
 				</activity>
 			</computation>
-			<life-support capacity="24" power-required="0.6" />
+			<life-support capacity="24" power-required="1.2" />
 			<management capacity="12">
 				<activity>
 					<activity-spot xloc="1.32" yloc="0.92" />
@@ -2788,7 +2871,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.15" yloc="-0.8" />																			
 				</activity>
 			</computation>
-			<life-support capacity="24" power-required="0.6" />
+			<life-support capacity="24" power-required="1.2" />
 			<management capacity="12">
 				<activity>
 					<activity-spot xloc="3.1" yloc="2.7" />
@@ -2938,7 +3021,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-0.55" yloc="-2.5" />		
 				</activity>
 			</vehicle-maintenance>
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="16" power-required="0.8" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="7.5" />
 				<power-source type="Fuel Power Source" toggle="false" power="7.5"
@@ -3140,7 +3223,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 
 	<building type="Large Areothermal Well" width="10.0" length="15.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="02">
+			wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="1000">
 		<description>  The Large Areothermal Well is an geothermal energy production system
 			that features more advance geothermal flow path for ground loop design for
 			capturing heat and creating electricity.
@@ -3155,6 +3238,42 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
+	<building type="Brine Water Well" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="150" room-temperature="-30" base-mass="400">
+		<description>  A Brine Water Well is built on top of a Deep BoreHole Drilling Site that has layer of
+		  water ice below.
+		 </description>
+		<power-required base-power="0.5" base-power-down-power="0.05"/>
+
+		<functions>
+		
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+			
+			<power-storage capacity="20" discharge-rate="1.3"/>
+			
+			<resource-processing power-down-level="0.2">
+				<process-engine name="Excavate Ice" number-modules="4" />
+				<process-engine name="Melt Ice" number-modules="40" />
+				<process-engine name="Filter Brine Water" number-modules="40" />
+				
+			</resource-processing>
+			
+			<storage stock-capacity="100000">
+				<resource-capacity type="Brine Water" amount="90000.0" />
+				<resource-capacity type="Rock Salt" amount="500.0" />
+				<resource-capacity type="Hydraulic Fluid" amount="500.0" />
+				<resource-capacity type="Ice" amount="8000.0" />
+				
+				<resource-initial type="Hydraulic Fluid" amount="100.0" />
+				<resource-initial type="Rock Salt" amount="10.0" />
+			</storage>
+			
+		</functions>
+	</building> <!-- A brine well -->
+
+	
 	<building type="Concrete Storage" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="50" room-temperature="0" base-mass="1000">
 		<description>  The Concrete Storage Bin is a small brick bin for
@@ -3259,6 +3378,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Metal Storage Bin is a small brick bin for
 			storing metallic elements for industrial uses.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 
 		<functions>
@@ -3432,12 +3554,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</dining>
 			
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="16" power-required="0.8" />
 
 			<power-storage capacity="40" discharge-rate="1.25"/>
-			<research tech-level="4" capacity="3">
+			<research tech-level="4" capacity="4">
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="COMPUTING" />
+				<research-specialty name="METEOROLOGY" />
 				<research-specialty name="PHYSICS" />
 				<activity>
 					<activity-spot xloc="1.45" yloc="1.45" />
@@ -3625,6 +3748,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		 for providing medical basic care. It also has medical research workbench and
 		 uses solar	panels as backup power source.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
@@ -3709,7 +3835,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</computation>			
 
-			<life-support capacity="6" power-required="3" />
+			<life-support capacity="8" power-required="0.4" />
 			<manufacture tech-level="4" concurrent-processes="8">
 				<activity>
 					<activity-spot xloc="2.25" yloc="1.6" />
@@ -3934,8 +4060,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
-				<process-engine name="Melt Ice" number-modules="84" />
-				<process-engine name="Filter Brine Water" number-modules="60" />
+				<process-engine name="Melt Ice" number-modules="24" />
+				<process-engine name="Filter Brine Water" number-modules="24" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
@@ -4161,7 +4287,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 										
 				</activity>
 			</vehicle-maintenance>
-			<life-support capacity="16" power-required="0.8" />
+			<life-support capacity="24" power-required="1.2" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="10" />
 				<power-source type="Fuel Power Source" toggle="false" power="10"
@@ -4198,17 +4324,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
-			<life-support capacity="4" power-required="0.2" />
+			<life-support capacity="6" power-required="0.3" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
-			<research tech-level="2" capacity="2">
+			<research tech-level="2" capacity="5">
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<research-specialty name="ENGINEERING" />
@@ -4253,7 +4382,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="0" yloc="0" />
 				</activity>
 			</computation>			
-			<life-support capacity="4" power-required="0.2" />
+			<life-support capacity="6" power-required="0.3" />
 			<manufacture tech-level="3" concurrent-processes="2">
 				<activity>
 					<activity-spot xloc=".95" yloc="1.05" />
@@ -4303,6 +4432,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			vaulted fiber glass roof which is less susceptible to meteor damage.
 			It grows crops as food for the settlement.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
@@ -4316,7 +4448,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</farming>
 
-			<life-support capacity="8" power-required="0.4" />
+			<life-support capacity="10" power-required="0.5" />
 
 			<power-storage capacity="40" discharge-rate="1.25"/>
 

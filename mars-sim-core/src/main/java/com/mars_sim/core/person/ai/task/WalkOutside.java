@@ -138,7 +138,6 @@ public class WalkOutside extends Task {
 		walkingPath = determineWalkingPath();
 
 		// Initialize task phase.
-		addPhase(WALKING);
 		setPhase(WALKING);
 	}
 

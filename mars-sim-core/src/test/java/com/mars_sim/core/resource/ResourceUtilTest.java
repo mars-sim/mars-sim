@@ -17,7 +17,7 @@ public class ResourceUtilTest {
     @Test
     void testIsInSitu() {
         assertFalse("Oxygen is not raw material", ResourceUtil.isInSitu(ResourceUtil.OXYGEN_ID));
-        assertTrue("Ice is raw material", ResourceUtil.isInSitu(ResourceUtil.ICE_ID)); 
+        assertTrue("Regolith is an insitu material", ResourceUtil.isInSitu(ResourceUtil.REGOLITH_ID)); 
     }
 
     @Test

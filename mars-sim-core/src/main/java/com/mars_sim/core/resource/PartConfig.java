@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PartConfig.java
- * @date 2022-10-03
+ * @date 2025-09-02
  * @author Scott Davis
  */
 package com.mars_sim.core.resource;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -25,6 +24,7 @@ import com.mars_sim.core.building.utility.heating.HeatSourceType;
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.goods.GoodType;
+import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.VehicleType;
 
 
@@ -51,9 +51,10 @@ public final class PartConfig  {
 	/** The set of parts. */
 	private Set<Part> partSet;
 	/** The map of maintenance scopes. */
-	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
-	/** The collection of standard scopes. */
-	private Set<String> standarsScopes = new TreeSet<>();
+	private Map<String, List<MaintenanceScope>> scopeMap = new HashMap<>();
+	/** The collection of part scopes (as defined for each part in parts.xml. */
+	private Set<String> partScopesRegistry = new TreeSet<>();
+
 	
 	/**
 	 * Constructor.
@@ -65,55 +66,87 @@ public final class PartConfig  {
 		// Pick up from the last resource id
 		nextID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 
+		// First build a standard scope set for scope comparison.
+		createPartScopesRegistry();
+		// Load all item resources from the parts.xml.
 		loadItemResources(itemResourceDoc);
-
+		// Register all the parts in ItemResourceUtil.
 		ItemResourceUtil.registerParts(partSet);
 	}
 
 	/**
-	 * The collection of standard scopes.
+	 * Gets the part scopes registry.
 	 */
-	public Set<String> getScopes() {
-		return standarsScopes;	 
+	public Set<String> getPartScopesRegistry() {
+		return partScopesRegistry;	 
 	}
 	
-	
 	/**
-	 * Creates a set of standard scopes.
+	 * Creates the part scopes registry.
 	 */
-	private void createStandardScope() {
-		for (VehicleType type: VehicleType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+	private void createPartScopesRegistry() {
+		for (VehicleType type: VehicleType.values()) {		
+			registerScope(type.getName());
 		}
-		
+			
 		for (SystemType type: SystemType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			registerScope(type.getName());
 		}
 		
 		for (FunctionType type: FunctionType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			registerScope(type.getName());
 		}
 		
 		for (PowerSourceType type: PowerSourceType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			registerScope(type.getName());
 		}
 		
 		for (HeatSourceType type: HeatSourceType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			registerScope(type.getName());
 		}
+		
+		partScopesRegistry.add(Flyer.DRONE);
 	}
 	
+	/**
+	 * Registers as a system scope.
+	 *  
+	 * @param name
+	 */
+	private void registerScope(String name) {
+		if (!containsIgnoreCase(partScopesRegistry, name))
+			partScopesRegistry.add(name);
+	}
+	
+	/**
+	 * Checks if a collection of string contains a string while ignoring the case.
+	 * 
+	 * @param col
+	 * @param name
+	 * @return
+	 */
+	private boolean containsIgnoreCase(Collection<String> col, String name) {
+		return col
+		.stream()
+		.anyMatch(s -> s.equalsIgnoreCase(name));   
+	}
+	
+	/**
+	 * Adds a set of scopes.
+	 * 
+	 * @param newScopes
+	 */
 	public void addScopes(Set<String> newScopes) {
-		standarsScopes.addAll(newScopes);
+		partScopesRegistry.addAll(newScopes);
 	}
 	
+	/**
+	 * Adds a scope.
+	 * 
+	 * @param newScope
+	 */
 	public void addScopes(String newScope) {
-		standarsScopes.add(newScope);
+		partScopesRegistry.add(newScope);
 	}
 	
 	/**
@@ -127,9 +160,6 @@ public final class PartConfig  {
 			// just in case if another thread is being created
 			return;
 		}
-
-		// First build a standard scope set for scope comparison
-		createStandardScope();
 		
 		// Build the global list in a temp to avoid access before it is built
 		Set<Part> newPartSet = new TreeSet<>();
@@ -143,6 +173,15 @@ public final class PartConfig  {
 			// Get name.
 			String name = partElement.getAttributeValue(NAME);
 
+			boolean contaisName = newPartSet
+					.stream()
+					.anyMatch(p -> p.getName().equalsIgnoreCase(name));   
+			
+			if (contaisName) {
+				throw new IllegalArgumentException(
+						"PartConfig detected an duplicated part name entry in parts.xml: " + name);
+			}
+			
 			// get description
 			Element descriptElem = partElement.getChild(DESCRIPTION);
 			if (descriptElem != null) {
@@ -165,14 +204,8 @@ public final class PartConfig  {
 				throw new IllegalStateException(
 						"PartConfig detected invalid type in parts.xml : " + type);
 
-			// Get storable
+			// Get part
 			Part p = new Part(name, nextID, description, goodType, mass, 1);
-
-			for (Part pp: newPartSet) {
-				if (pp.getName().equalsIgnoreCase(name))
-					throw new IllegalStateException(
-						"PartConfig detected an duplicated part entry in parts.xml : " + name);
-			}
 
 			// Add maintenance entities for part.
 			Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
@@ -180,24 +213,18 @@ public final class PartConfig  {
 				List<Element> entityNodes = entityListElement.getChildren(ENTITY);
 				for (Element entityElement : entityNodes) {
 					String entityName = entityElement.getAttributeValue(NAME);
-					boolean validName = false;
-					for (String s: standarsScopes) {
-						if (s.equalsIgnoreCase(entityName) ) {
-							validName = true;
-							double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
-							int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-	
-							MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
-							addPartScope(entityName, newMaintenance);
-						}
-					}
 					
-					if (!validName) {
-						throw new IllegalArgumentException(entityName + " is not being clearly defined in mars-sim.");
-					}	
+					if (!containsIgnoreCase(partScopesRegistry, entityName)) {
+						throw new IllegalArgumentException("The system scope '" + entityName + "' was found in parts.xml but "
+								+ "was not being defined in part scope registry.");
+					}
+					else {
+						double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
+						int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
+						addPartScope(entityName, new MaintenanceScope(p, entityName, probability, maxNumber));
+					}
 				}
 			}
-			
 
 			// Add part to newPartSet.
 			newPartSet.add(p);			
@@ -215,39 +242,47 @@ public final class PartConfig  {
 	 */
 	private void addPartScope(String scope, MaintenanceScope newMaintenance) {
 
-		String key = scope.toLowerCase();
-		List<MaintenanceScope> maintenance = scopes.computeIfAbsent(key, k -> new ArrayList<>());
+		List<MaintenanceScope> maintenance = scopeMap.computeIfAbsent(scope.toLowerCase(), k -> new ArrayList<>());
+		// Double-checking the size of the list : logger.info(scope + " 1. # of scopes: " + scopes.get(scope).size());
 		maintenance.add(newMaintenance);
+		// Double-checking the size of the list : logger.info(scope + " 2. # of scopes: " + scopes.get(scope).size());
 	}
 
 	/**
-	 * Gets the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * Gets the maintenance scope list for a scope.
 	 * 
-	 * @param scope Possible scopes
+	 * @param scope
 	 * @return
 	 */
-	public List<MaintenanceScope> getMaintenance(Collection<String> scope) {
-		List<MaintenanceScope> results = new ArrayList<>();
-		for (String s : scope) {
-			List<MaintenanceScope> m = scopes.get(s.toLowerCase());
-			if (m != null) {
-				results.addAll(m);
-			}
+	public List<MaintenanceScope> getMaintenanceScopeList(String scope) {
+		if (scopeMap.containsKey(scope)) {
+			return scopeMap.get(scope);
 		}
-		return results ;
+		return Collections.emptyList();
 	}
-
-	/**
-	 * Gets the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
-	 * Apply a filter so only a certain part is taken.
-	 * 
-	 * @param scope Possible scopes
-	 * @param part Filter to part
-	 * @return
-	 */
-	public List<MaintenanceScope> getMaintenance(Collection<String> scope, Part part) {
-		return getMaintenance(scope).stream().filter(m -> m.getPart().equals(part)).collect(Collectors.toList());
-	}
+	
+//	/**
+//	 * Gets the maintenance schedules for scopes that contains a particular part.
+//	 * 
+//	 * @param scope Possible scopes
+//	 * @param part Filter to part
+//	 * @return
+//	 */
+//	public List<MaintenanceScope> getMaintenance(Collection<String> scopes, Part part) {
+////		List<MaintenanceScope> results = new ArrayList<>();
+////		for (String s : scopes) {
+////			List<MaintenanceScope> list = scopeMap.get(s.toLowerCase());
+////			for (MaintenanceScope m: list) {
+////				if (list != null && (m.getPart().getID() == part.getID())) {
+////					results.add(m);
+////				}
+////			}
+////		}
+////		return results ;
+//		return getMaintenanceScopeList(scopes).stream()
+//				.filter(m -> m.getPart().getID() == part.getID())
+//				.toList();
+//	}
 
 	/**
 	 * Gets a set of all parts.

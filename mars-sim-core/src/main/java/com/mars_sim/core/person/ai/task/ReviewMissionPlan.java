@@ -114,10 +114,7 @@ public class ReviewMissionPlan extends Task {
 			endTask();
 		}
 
-		// Initialize phase
-		addPhase(REVIEWING);
-		addPhase(APPROVING);
-		
+		// Initialize phase	
 		setPhase(REVIEWING);
 	}
 

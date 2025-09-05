@@ -193,7 +193,7 @@
 	<building-package name="Wind Set 1 - 1x6"/>
 	<building-package name="Kilo Set 1 - 1x2"/>
 	<building-package name="MD1 Set 1 - 1x2"/>
-
+ 	<building-package name="Brine Water Well Set 1 - 1x2"/>	 	
 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Transport Rover" number="1" />
@@ -217,7 +217,7 @@
 	<resource type="water" amount="6000" />
 	<resource type="oxygen" amount="4320" />
 	
-    <part-package name="package 3" number="1" />
+    <part-package name="standard package" number="3" />
   
     <resupply>
        	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1">

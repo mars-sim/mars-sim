@@ -45,7 +45,8 @@ public class ShiftPattern {
     }
 
     /**
-     * Get teh adivsed minum population for this shift pattern
+     * Gets the advised minimum population for this shift pattern.
+     * 
      * @return
      */
     public int getMinPopulation() {
