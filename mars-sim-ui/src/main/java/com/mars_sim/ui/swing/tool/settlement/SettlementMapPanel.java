@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,6 +70,14 @@ import com.mars_sim.ui.swing.UIConfig;
  */
 @SuppressWarnings("serial")
 public class SettlementMapPanel extends JPanel {
+
+	/**
+	 * Run the given task on the Swing EDT (immediately if already on EDT).
+	 */
+	private static void onEdt(Runnable r) {
+		if (SwingUtilities.isEventDispatchThread()) r.run();
+		else SwingUtilities.invokeLater(r);
+	}
 
 	/**
 	 * Display options that can be selected
@@ -135,11 +144,11 @@ public class SettlementMapPanel extends JPanel {
 
 	private static final Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 
-	private Set<DisplayOption> displayOptions = new HashSet<>();
+	private Set<DisplayOption> displayOptions = EnumSet.noneOf(DisplayOption.class);
 
 	// -------- Event coalescing for scale updates --------
 	private Timer zoomCoalesceTimer;
-	private Double pendingScale = null; // when non-null, an update is queued
+	private volatile Double pendingScale = null; // when non-null, an update is queued
 
 	// -------- Listener lifecycle management --------
 	private boolean listenersInstalled = false;
@@ -255,17 +264,18 @@ public class SettlementMapPanel extends JPanel {
 		mapLayers.add(new RobotMapLayer(this));
 
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
-		settlementTransparentPanel.createAndShowGUI();
-		if (settlement != null) {
-			settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
-		}
 
-		// Loads the value of scale possibly modified from UIConfig's Properties
-		if (settlementTransparentPanel != null) {
+		// Ensure all Swing mutations happen on EDT
+		onEdt(() -> {
+			settlementTransparentPanel.createAndShowGUI();
+			if (settlement != null && settlementTransparentPanel.getSettlementListBox() != null) {
+				settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
+			}
+			// Loads the value of scale possibly modified from UIConfig's Properties
 			settlementTransparentPanel.setZoomValue((int) Math.round(scale));
-		}
 
-		repaint();
+			repaint();
+		});
 	}
 
 	/**
@@ -476,11 +486,13 @@ public class SettlementMapPanel extends JPanel {
 	public synchronized void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
 			this.settlement = newSettlement;
-			if (getSettlementTransparentPanel() != null
-					&& getSettlementTransparentPanel().getSettlementListBox() != null) {
-				getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(settlement);
-			}
-			repaint();
+			onEdt(() -> {
+				if (getSettlementTransparentPanel() != null
+						&& getSettlementTransparentPanel().getSettlementListBox() != null) {
+					getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(settlement);
+				}
+				repaint();
+			});
 		}
 	}
 
@@ -505,15 +517,15 @@ public class SettlementMapPanel extends JPanel {
 		// Queue the new scale; apply after a short delay (coalescing)
 		pendingScale = newScale;
 		if (zoomCoalesceTimer != null) {
-			zoomCoalesceTimer.restart();
+			onEdt(() -> zoomCoalesceTimer.restart()); // ensure Swing Timer is touched on EDT
 		} else {
-			// Fallback: apply immediately if timer wasn't created yet
-			applyPendingScale();
+			onEdt(this::applyPendingScale);
 		}
 	}
 
 	/**
 	 * Applies the pending scale (quantized and clamped) and repaints once.
+	 * Must be invoked on the EDT.
 	 */
 	private void applyPendingScale() {
 		final double target = (pendingScale != null ? pendingScale : scale);
@@ -570,10 +582,12 @@ public class SettlementMapPanel extends JPanel {
 		yPos = 0D;
 		setRotation(0D);
 		scale = DEFAULT_SCALE; // set directly to avoid unnecessary coalescing delay here
-		if (settlementTransparentPanel != null) {
-			settlementTransparentPanel.setZoomValue((int) Math.round(scale));
-		}
-		repaint();
+		onEdt(() -> {
+			if (settlementTransparentPanel != null) {
+				settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+			}
+			repaint();
+		});
 	}
 
 	/**
@@ -1118,9 +1132,11 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	void update(ClockPulse pulse) {
-		if (settlementTransparentPanel != null) {
-			settlementTransparentPanel.update(pulse);
-		}
+		onEdt(() -> {
+			if (settlementTransparentPanel != null) {
+				settlementTransparentPanel.update(pulse);
+			}
+		});
 		// repaint(); // avoid repaint flood; layers request repaints when needed
 	}
 
