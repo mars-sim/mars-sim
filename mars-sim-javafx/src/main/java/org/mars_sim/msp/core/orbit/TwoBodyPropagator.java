@@ -53,32 +53,6 @@ public final class TwoBodyPropagator {
         }
     }
 
-    /** Spherical lat/lon/alt (geocentric latitude, degrees helpers provided). */
-    public static final class GroundPoint {
-        /** Latitude [rad], geocentric. */
-        public final double latitudeRad;
-        /** Longitude [rad], East-positive, range (-π, π]. */
-        public final double longitudeRad;
-        /** Altitude above mean radius [m]. */
-        public final double altitudeM;
-
-        public GroundPoint(double latitudeRad, double longitudeRad, double altitudeM) {
-            this.latitudeRad = latitudeRad;
-            this.longitudeRad = normalizeToPi(longitudeRad);
-            this.altitudeM = altitudeM;
-        }
-
-        public double latitudeDeg() { return Math.toDegrees(latitudeRad); }
-        public double longitudeDeg() { return Math.toDegrees(longitudeRad); }
-
-        @Override
-        public String toString() {
-            return String.format(Locale.ROOT,
-                    "LLA[lat=%.6f° lon=%.6f° alt=%.1f m]",
-                    latitudeDeg(), longitudeDeg(), altitudeM);
-        }
-    }
-
     // ---------------------------------------------------------------------
     // Fields (immutable core)
     // ---------------------------------------------------------------------
@@ -305,12 +279,5 @@ public final class TwoBodyPropagator {
         long ds = t1.getEpochSecond() - t0.getEpochSecond();
         int dns = t1.getNano() - t0.getNano();
         return (double) ds + dns * 1e-9;
-    }
-
-    private static double normalizeToPi(double angleRad) {
-        double x = angleRad % (2.0 * Math.PI);
-        if (x <= -Math.PI) x += 2.0 * Math.PI;
-        if (x > Math.PI)   x -= 2.0 * Math.PI;
-        return x;
     }
 }
