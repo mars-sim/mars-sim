@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-package org.mars_sim.msp.libgdx.surface3d;
+package com.mars_sim.libgdx.surface3d;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
@@ -14,17 +14,20 @@ public class OrbitCameraController extends InputAdapter {
     private final PerspectiveCamera cam;
     private final Vector3 target = new Vector3();
 
-    private float yawDeg = 0f;   // around Y axis
-    private float pitchDeg = 15f; // up-down
+    // Angles and distance
+    private float yawDeg = 0f;      // around Y axis
+    private float pitchDeg = 15f;   // up-down
     private float distance = 100f;
 
+    // Limits
     private float minDistance = 10f;
     private float maxDistance = 100000f;
 
+    // Controls
     private float rotateSpeed = 0.5f;
     private float scrollZoomStrength = 0.1f;
-
-    private int lastX = -1, lastY = -1;
+    private int lastX = -1;
+    private int lastY = -1;
     private boolean rotating = false;
 
     public OrbitCameraController(PerspectiveCamera cam, float targetX, float targetY, float targetZ) {
@@ -33,13 +36,27 @@ public class OrbitCameraController extends InputAdapter {
         updateCamera();
     }
 
-    public void setDistance(float d) { distance = MathUtils.clamp(d, minDistance, maxDistance); updateCamera(); }
-    public void setClampDistance(float min, float max) { this.minDistance = min; this.maxDistance = max; setDistance(distance); }
-    public void setRotateSpeed(float s) { this.rotateSpeed = s; }
-    public void setScrollZoomStrength(float s) { this.scrollZoomStrength = s; }
+    public void setDistance(float d) {
+        distance = MathUtils.clamp(d, minDistance, maxDistance);
+        updateCamera();
+    }
+
+    public void setClampDistance(float min, float max) {
+        this.minDistance = min;
+        this.maxDistance = max;
+        setDistance(distance);
+    }
+
+    public void setRotateSpeed(float s) {
+        this.rotateSpeed = s;
+    }
+
+    public void setScrollZoomStrength(float s) {
+        this.scrollZoomStrength = s;
+    }
 
     public void update(float dt) {
-        // no-op; kept for future smooth damping
+        // No-op for now; leave hook for future smoothing/damping.
         updateCamera();
     }
 
@@ -59,7 +76,7 @@ public class OrbitCameraController extends InputAdapter {
 
         cam.position.set(x, y, z);
         cam.lookAt(target);
-        cam.up.set(0, 1, 0);
+        cam.up.set(0f, 1f, 0f);
         cam.update();
     }
 
@@ -67,7 +84,8 @@ public class OrbitCameraController extends InputAdapter {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
             rotating = true;
-            lastX = screenX; lastY = screenY;
+            lastX = screenX;
+            lastY = screenY;
             return true;
         }
         return false;
@@ -75,11 +93,13 @@ public class OrbitCameraController extends InputAdapter {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (!rotating) return false;
+        if (!rotating) {
+            return false;
+        }
         int dx = screenX - lastX;
         int dy = screenY - lastY;
-        lastX = screenX; lastY = screenY;
-
+        lastX = screenX;
+        lastY = screenY;
         yawDeg -= dx * rotateSpeed;
         pitchDeg -= dy * rotateSpeed;
         return true;
