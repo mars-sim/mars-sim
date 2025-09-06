@@ -103,7 +103,33 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		for (Robot robot : getAllRobotCandidates(settlement)) {
+		Robot worstRobot = null;
+		double highestScore = 0;
+		RatingScore score = new RatingScore(0);
+		
+		for (Robot robot : getAllDownRobotCandidates(settlement)) {
+			
+			MalfunctionManager manager = robot.getMalfunctionManager();
+			
+			boolean partsPosted = manager.hasMaintenancePartsInStorage(settlement);
+			
+			score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
+
+			if (score.getScore() > highestScore) {
+				worstRobot = robot;
+				highestScore = score.getScore();
+			}
+		}
+		
+		if (highestScore > 0) {
+			tasks.add(new MaintenanceJob(this, worstRobot, score));
+		}
+		
+		// Reset them
+		worstRobot = null;
+		highestScore = 0;
+		
+		for (Robot robot : getAllGoodRobotCandidates(settlement)) {
 				
 			MalfunctionManager manager = robot.getMalfunctionManager();
 			
@@ -113,17 +139,19 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 			//       malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
 			if (!hasMalfunction) {
 			
-				boolean partsPosted = robot.getMalfunctionManager()
-						.hasMaintenancePartsInStorage(settlement);
+				boolean partsPosted = manager.hasMaintenancePartsInStorage(settlement);
 				
-				RatingScore score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
+				score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
 	
-				// Vehicle in need of maintenance
-				if (score.getScore() >= 1) {
-					
-					tasks.add(new MaintenanceJob(this, robot, score));
+				if (score.getScore() > highestScore) {
+					worstRobot = robot;
+					highestScore = score.getScore();
 				}
 			}
+		}
+		
+		if (highestScore > 0) {
+			tasks.add(new MaintenanceJob(this, worstRobot, score));
 		}
 
 		return tasks;
@@ -135,17 +163,36 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 	 * @param home the settlement checking.
 	 * @return collection of robot available for maintenance.
 	 */
-	private static List<Robot> getAllRobotCandidates(Settlement home) {
+	private static List<Robot> getAllGoodRobotCandidates(Settlement home) {
 		
 		return home.getAllAssociatedRobots().stream()
 			.filter(r -> !isPiloting(r) && !r.getSystemCondition().isInMaintenance())
 			.collect(Collectors.toList());
 	}
+
+	/**
+	 * Gets all robot requiring maintenance.
+	 * 
+	 * @param home the settlement checking.
+	 * @return collection of robot available for maintenance.
+	 */
+	private static List<Robot> getAllDownRobotCandidates(Settlement home) {
+		
+		return home.getAllAssociatedRobots().stream()
+			.filter(r -> !isPiloting(r) && r.getSystemCondition().isInMaintenance())
+			.collect(Collectors.toList());
+	}
 	
+	/**
+	 * Is the robot piloting a drone ?
+	 * 
+	 * @param r
+	 * @return
+	 */
 	private static boolean isPiloting(Robot r) {
-		String taskName = r.getBotMind().getBotTaskManager().getTaskName();
-		boolean result = taskName.toLowerCase().contains("operat")
-				|| taskName.toLowerCase().contains("pilot");
+		String taskName = r.getBotMind().getBotTaskManager().getTaskName().toLowerCase();
+		boolean result = taskName.contains("operat")
+				|| taskName.contains("pilot");
 		
 		return result;		
 	}

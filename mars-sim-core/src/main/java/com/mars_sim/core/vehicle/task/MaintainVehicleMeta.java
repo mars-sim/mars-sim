@@ -118,7 +118,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		double highestScore = 0;
 		RatingScore score = new RatingScore(0);
 				
-		for (Vehicle vehicle : getAllVehicleCandidates(settlement, false)) {
+		for (Vehicle vehicle : getAllDownVehicleCandidates(settlement, false)) {
 				
 			MalfunctionManager manager = vehicle.getMalfunctionManager();
 			
@@ -149,25 +149,76 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 			tasks.add(new VehicleMaintenanceJob(this, worstVehicle, !garageTask, score));
 		}
 
+		// Reset them
+		worstVehicle = null;
+		highestScore = 0;
+			
+		for (Vehicle vehicle : getAllGoodVehicleCandidates(settlement, false)) {
+				
+			MalfunctionManager manager = vehicle.getMalfunctionManager();
+			
+			boolean hasMalfunction = manager.hasMalfunction();
+			
+			// Note: Look for entities that are NOT malfunction since
+			//       malfunctioned entities are being taken care of by the two Repair*Malfunction tasks
+			if (!hasMalfunction) {
+			
+				boolean partsPosted = vehicle.getMalfunctionManager()
+						.hasMaintenancePartsInStorage(settlement);
+				
+				score = MaintenanceUtil.scoreMaintenance(manager, vehicle, partsPosted);
+	
+				if (score.getScore() > highestScore) {
+					worstVehicle = vehicle;
+					highestScore = score.getScore();
+				}
+			}
+		}
+		
+		// Vehicle in need of maintenance
+		if (highestScore > 0) {
+			
+			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+					worstVehicle.getAssociatedSettlement(), worstVehicle instanceof Rover);
+			
+			tasks.add(new VehicleMaintenanceJob(this, worstVehicle, !garageTask, score));
+		}
+		
 		return tasks;
 	}
 	
 	/**
-	 * Gets all ground vehicles requiring maintenance. Candidate list be filtered
+	 * Gets all good vehicles not reserved for maintenance yet. Candidate list be filtered
 	 * for just outside Vehicles.
 	 * 
 	 * @param home Settlement checking.
 	 * @param mustBeOutside
 	 * @return collection of ground vehicles available for maintenance.
 	 */
-	private static List<Vehicle> getAllVehicleCandidates(Settlement home, boolean mustBeOutside) {
+	private static List<Vehicle> getAllGoodVehicleCandidates(Settlement home, boolean mustBeOutside) {
 		// Vehicle must not be reserved for Mission nor maintenance
 		return home.getParkedGaragedVehicles().stream()
-			.filter(v -> (!v.isReserved()
+			.filter(v -> (!v.isReserved() && !v.isReservedForMaintenance()
 						&& (!mustBeOutside || !v.isInGarage())))
 			.collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets all down vehicles under maintenance. Candidate list be filtered
+	 * for just outside Vehicles.
+	 * 
+	 * @param home Settlement checking.
+	 * @param mustBeOutside
+	 * @return collection of ground vehicles available for maintenance.
+	 */
+	private static List<Vehicle> getAllDownVehicleCandidates(Settlement home, boolean mustBeOutside) {
+		// Vehicle must not be reserved for Mission nor maintenance
+		return home.getParkedGaragedVehicles().stream()
+			.filter(v -> (!v.isReserved() && v.isReservedForMaintenance()
+						&& (!mustBeOutside || !v.isInGarage())))
+			.collect(Collectors.toList());
+	}
+	
 	/**
 	 *Checks if a garages space is available in a Settlement.
 	 * 

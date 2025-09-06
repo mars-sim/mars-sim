@@ -104,7 +104,7 @@
 	<part name="Satellite Dish" type="electronic" mass="4.0">
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
-			<entity name="delivery drone" probability="5" max-number="1" />			
+			<entity name="drone" probability="5" max-number="1" />			
 			<entity name="communication" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -199,6 +199,7 @@
 
 	<part name="Wire Connector" type="electrical" mass=".005">
 		<maintenance-entity-list>
+			<entity name="building" probability=".5" max-number="4" />
 			<entity name="life support" probability=".5" max-number="4" />			
 			<entity name="vehicle maintenance" probability=".5" max-number="4" />
 			<entity name="vehicle" probability=".5" max-number="4" />
@@ -245,6 +246,7 @@
 
 	<part name="Plastic Pipe" type="utility" mass="1.0">
 		<maintenance-entity-list>
+			<entity name="building" probability=".05" max-number="4" />
 			<entity name="living accommodation" probability=".05" max-number="2" />
 			<entity name="farming" probability=".05" max-number="4" />
 			<entity name="manufacture" probability=".05" max-number="2" />
@@ -384,7 +386,7 @@
 			<entity name="robot" probability="2" max-number="1" />
 			<entity name="rover" probability="2" max-number="2" />
 			<entity name="light utility vehicle" probability="2" max-number="1" />
-			<entity name="delivery drone" probability="2" max-number="1" />
+			<entity name="drone" probability="2" max-number="1" />
 			<entity name="power storage" probability="2" max-number="1" />			
 		</maintenance-entity-list>
 	</part>
@@ -409,8 +411,7 @@
 	<part name="Drone Chassis Panel" type="vehicle" mass="20.0" >
 		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
-			<entity name="delivery drone" probability="5" max-number="1" />	
-			<entity name="cargo drone" probability="5" max-number="1" />							
+			<entity name="drone" probability="5" max-number="1" />							
 		</maintenance-entity-list>
 	</part>
 	
@@ -444,7 +445,7 @@
 	<part name="Propeller" type="vehicle" mass="2.0" >
 		<description>polycarbonate propeller for drones</description>
 		<maintenance-entity-list>
-			<entity name="delivery drone" probability="5" max-number="4" />
+			<entity name="drone" probability="5" max-number="4" />
 		</maintenance-entity-list>
 	</part>
 
@@ -579,7 +580,7 @@
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="1" max-number="2" />
 			<entity name="cargo drone" probability="1" max-number="4" />
-			<entity name="delivery drone" probability="1" max-number="4" />	
+			<entity name="drone" probability="1" max-number="4" />	
 		</maintenance-entity-list>
 	</part>
 
@@ -959,9 +960,9 @@
 		    cold plate and heat pipes. 
 		</description>
 	    <maintenance-entity-list>
-			<entity name="cargo drone" probability="1" max-number="1" />
 			<entity name="Fuel Heating Source" probability="1" max-number="1" />
 			<entity name="fuel power source" probability="1" max-number="1" />
+			<entity name="cargo drone" probability="1" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
@@ -1090,7 +1091,8 @@
 			<entity name="living accommodation" probability="3" max-number="1" />
 			<entity name="manufacture" probability="3" max-number="2" />
 			<entity name="resource processing" probability="3" max-number="1" />
-			<entity name="vehicle" probability="3" max-number="1" />			
+			<entity name="rover" probability="3" max-number="1" />	
+			<entity name="life support" probability="3" max-number="2" />			
 		</maintenance-entity-list>
 	</part>
 
@@ -1172,8 +1174,9 @@
 	<part name="Work gloves" type="utility" mass="0.05">
 		<description>a pair of utility work gloves for medium to heavy use.</description>
 		<maintenance-entity-list>
-			<entity name="manufacture" probability="5" max-number="1" />
-			<entity name="vehicle maintenance" probability="5" max-number="1" />
+			<entity name="manufacture" probability="10" max-number="1" />
+			<entity name="vehicle maintenance" probability="15" max-number="1" />
+			<entity name="farming" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
@@ -1211,6 +1214,11 @@
 		NASA’s Mars Exploration Rovers where thin aerogel layers provided night-time thermal 
 		insulation. A 3 cm layer of silica aerogel can increase the temperature of the underlying 
 		surface by 45 K when it receives a flux of 150 W/m2. </description>
+		<maintenance-entity-list>
+			<entity name="life support" probability=".1" max-number="1" />
+			<entity name="living accommodation" probability=".1" max-number="4" />
+			<entity name="farming" probability=".1" max-number="10" />
+		</maintenance-entity-list>
 	</part>
 	
 	<part name="Insulation board" type="construction" mass="1">
@@ -1219,6 +1227,9 @@
 		within the foam. Because the polystyrene itself is also highly resistant to heat, 
 		the result is a great thermal insulator which can give excellent R-ratings. 
 		XPS is often lined with aluminium foil. </description>
+		<maintenance-entity-list>
+			<entity name="life support" probability=".1" max-number="2" />
+		</maintenance-entity-list>
 	</part>
 
 	<part name="Biosensor" type="electronic" mass="0.1">
