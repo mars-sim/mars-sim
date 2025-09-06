@@ -216,7 +216,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Add system type to malfunction manager scope
 		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
 
-		// Add TYPE to the standard scope
+		// Add TYPE to the part scope
 		SimulationConfig.instance().getPartConfiguration().addScopes(TYPE);
 
 		// Set up the time stamp for the robot

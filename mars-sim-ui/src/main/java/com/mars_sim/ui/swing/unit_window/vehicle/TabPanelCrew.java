@@ -129,7 +129,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		// Create member table model.
 		Crewable vehicle = (Crewable) getUnit();
 		memberTableModel = new MemberTableModel(vehicle);
-		if ((mission != null) && vehicle.equals(mission.getVehicle()))
+		if ((mission != null) && vehicle.getName().equals(mission.getVehicle().getName()))
 			memberTableModel.setMission(mission);
 
 		// Create member table.

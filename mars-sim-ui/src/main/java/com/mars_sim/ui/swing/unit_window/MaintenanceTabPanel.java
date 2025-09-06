@@ -228,12 +228,12 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	}
 
 	/**
-	 * Internal class used as model for the equipment table.
+	 * Internal class used as the table model for the parts.
 	 */
 	private static class PartTableModel extends AbstractTableModel {
 		
 		private List<Part> parts = new ArrayList<>();
-		private List<String> functions = new ArrayList<>();
+		private List<String> systems = new ArrayList<>();
 		private List<Integer> max = new ArrayList<>();
 		private List<Double> probability = new ArrayList<>();
 
@@ -242,10 +242,10 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		 */
 		private PartTableModel(MalfunctionManager mm) {
             // Find parts for each scope
-            for (MaintenanceScope maintenance : partConfig.getMaintenance(mm.getScopes())) {
+            for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(mm.getScopes())) {
 
                 parts.add(maintenance.getPart());
-                functions.add(Conversion.capitalize(maintenance.getName()));
+                systems.add(Conversion.capitalize(maintenance.getName()));
                 max.add(maintenance.getMaxNumber());
                 probability.add(maintenance.getProbability());
             }	
@@ -279,9 +279,9 @@ public class MaintenanceTabPanel extends TabPanelTable {
 			case 0:
 				return Msg.getString("MaintenanceTabPanel.header.part"); //$NON-NLS-1$
 			case 1:
-				return Msg.getString("MaintenanceTabPanel.header.function"); //$NON-NLS-1$
+				return Msg.getString("MaintenanceTabPanel.header.system"); //$NON-NLS-1$
 			case 2:
-				return Msg.getString("MaintenanceTabPanel.header.max"); //$NON-NLS-1$
+				return Msg.getString("MaintenanceTabPanel.header.num"); //$NON-NLS-1$
 			case 3:
 				return Msg.getString("MaintenanceTabPanel.header.probability"); //$NON-NLS-1$
 			default:
@@ -295,7 +295,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 				case 0:
 					return parts.get(row).getName();
 				case 1:
-					return functions.get(row);
+					return systems.get(row);
 				case 2:
 					return max.get(row);
 				case 3:

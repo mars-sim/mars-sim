@@ -693,10 +693,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		if (!isValid(pulse)) {
 			return false;
 		}
-
-		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		long tnow = System.currentTimeMillis();
-		
+	
 		// Check to see if the person has deceased
 		if (condition.getDeathDetails() != null) {
 			setDeceased();
@@ -707,7 +704,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			return false;
 		}
 
-		// Primary researcher; my responsibility to update Study
+		// Note: the primary researcher has the responsibility to update his/her studies
 		research.timePassing(pulse);
 
 		EVASuit suit = getSuit();
@@ -728,7 +725,19 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		circadian.timePassing(pulse, support);
 		// Pass the time in the physical condition first as this may result in death.
 		condition.timePassing(pulse, support);
+		
+		checkInNewSol(pulse);
+				
+		return true;
+	}
 
+	/**
+	 * Checks in for the new sol.
+	 * 
+	 * @param pulse
+	 */
+	private void checkInNewSol(ClockPulse pulse) {
+		
 		if (pulse.isNewSol()) {
 			// Update the solCache
 			int currentSol = pulse.getMarsTime().getMissionSol();
@@ -768,16 +777,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 					role.obtainNewRole();
 			}
 		}
-		
-//		// DEBUG: Calculate the real time elapsed [in milliseconds]
-//		tLast = System.currentTimeMillis();
-//		long elapsedMS = tLast - tnow;
-//		if (elapsedMS > 100)
-//			logger.severe(this, "elapsedMS: " + elapsedMS);
-				
-		return true;
 	}
-
+	
 	/**
 	 * Checks if the person has deceased.
 	 * 

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <!DOCTYPE building-list [
 	<!ELEMENT building-list (building*)>
-	<!ELEMENT building (description?, power-required, functions)>
+	<!ELEMENT building (description?, scopes?, power-required, functions)>
 	<!ATTLIST building type CDATA #REQUIRED>
 	<!ATTLIST building category CDATA #IMPLIED>
 	<!ATTLIST building width CDATA #REQUIRED>
@@ -14,6 +14,11 @@
 	<!ATTLIST building room-temperature CDATA #REQUIRED>
 	<!ATTLIST building base-mass CDATA #REQUIRED>
 	<!ELEMENT description (#PCDATA)>
+	
+	<!ELEMENT scopes (scope+)>
+	<!ELEMENT scope EMPTY>
+	<!ATTLIST scope name CDATA #IMPLIED>
+	
 	<!ELEMENT power-required EMPTY>
 	<!ATTLIST power-required base-power CDATA #REQUIRED>
 	<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
@@ -103,7 +108,7 @@
 	<!ATTLIST power-source toggle (true|false) #IMPLIED>
 	<!ATTLIST power-source power CDATA #REQUIRED>
 	<!ATTLIST power-source modules CDATA #IMPLIED>
-	<!ATTLIST power-source thermal-conversion CDATA #IMPLIED>
+	<!ATTLIST power-source thermal-conversion-efficiency CDATA #IMPLIED>
 	<!ATTLIST power-source percent-loading CDATA #IMPLIED>
 	<!ATTLIST power-source fuel-type CDATA #IMPLIED>
 
@@ -185,6 +190,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Lander Hab is a jack-of-all-trades building that houses many basic but critical functions
 		to jump start a settlement. It's commonly used as a main hub.
 		</description>
+		<!-- A list of explicit system scopes based on the building type are defined here. At the same time, 
+		     implicit system scopes are defined internally by BuildingSpecs, FunctionSpecs, 
+      		 VehicleSpecs, etc.
+      		 name: the name of the system scope -->
+		<scopes>
+			<scope name="life support"/>
+		</scopes>
+		
 		<!-- The power requirements of the building. -->
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
 		<!-- base-power-down-power: the baseline power (kW) required by this building in 'power down' mode. -->
@@ -827,7 +840,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end for Central Hub Type A -->
 
 	<building type="Match Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="100" room-temperature="20.5" base-mass="1000">
+			wear-lifetime="3340000" maintenance-time="72" room-temperature="20.5" base-mass="720">
 		<description> Match Core A is a 3m by 6m utility hub that primarily connects
 		  other modules together
 		</description>
@@ -886,7 +899,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end of Match Core A -->
 
 	<building type="Match Core B" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
+			wear-lifetime="3340000" maintenance-time="36" room-temperature="20.5" base-mass="360">
 		<description> Match Core B is a 3m by 6m utility hub that primarily connects
 		  other modules together
 		</description>
@@ -935,7 +948,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- end of Match Core B -->
 
 	<building type="Match Core C" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="50" room-temperature="20.5" base-mass="550">
+			wear-lifetime="3340000" maintenance-time="42" room-temperature="20.5" base-mass="420">
 		<description> Match Core C is a 3m by 7m utility hub that primarily connects
 		  other modules together
 		</description>
@@ -984,11 +997,66 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end of Match Core C -->
 
+	<building type="Match Core D" width="3.0" length="9.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="54" room-temperature="20.5" base-mass="540">
+		<description> Match Core D is a 3m by 9m utility hub that primarily connects
+		  other modules together
+		</description>
+		<power-required base-power="0.5" base-power-down-power="0.05" />
+
+		<functions>		
+			<life-support capacity="8" power-required="0.3">
+				<activity>
+					<activity-spot xloc=".75" yloc="-3.35" />
+					<activity-spot xloc=".75" yloc="-2.35" />
+					<activity-spot xloc=".75" yloc="-1.35" />
+					<activity-spot xloc=".75" yloc="-0.35" />
+					<activity-spot xloc="-.75" yloc="0.35" />
+					<activity-spot xloc="-.75" yloc="1.35" />
+					<activity-spot xloc="-.75" yloc="2.35" />
+					<activity-spot xloc="-.75" yloc="3.35" />
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			
+			<power-storage capacity="5" discharge-rate="1.5"/>
+	
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="-1.25" yloc="0.0" />
+					<activity-spot xloc="1.25" yloc="0.0" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="7000">
+				<resource-capacity type="water" amount="2000.0" />
+				<resource-capacity type="oxygen" amount="2000.0" />
+				<resource-capacity type="methane" amount="2000.0" />
+				
+				<resource-capacity type="grey water" amount="2000.0" />				
+
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="2.5" />
+				<heat-source type="Electric Heating" capacity="7.5" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="10.0" />
+			</thermal-generation>
+
+		</functions>
+	</building>
+	<!-- end of Match Core D -->
+	
 	<building type="Bioreactor-F" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
 		<description> Bioreactor-F (F stands for fermentation) hosts fermentation reactions using specialized equipment and 
 			racks and cyanobacteria and chorella that consumes glucose to produce hydrogen.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
@@ -1135,6 +1203,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> Bioreactor-M (M stands for methanol/methane) hosts specialized equipment and racks for utilizing methanogenic 
 		 archaea to convert methanol into methane and water.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
@@ -1207,6 +1278,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> Bioreactor-G (G stands for Glucose) hosts specialized equipment and racks for utilizing bio-organisms 
 			to convert fiber into glucose. 
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="5.0" base-power-down-power="0.05" />
 
 		<functions>		
@@ -1284,7 +1358,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		for growing crops as the food source for the settlers. It is UV-resistant, bullet-resistant and
 		has an aluminized Mylar reflector curtain. It houses one workbench with instruments for botany research.
 		</description>
-
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power=".2"/>
 
 		<functions>
@@ -1427,6 +1503,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			 It has a spacious interior	for high volume crop cultivation and has a high resource 
 			 storage capability.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="4.0" base-power-down-power="0.4" />
 
 		<functions>
@@ -2035,7 +2114,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<power-generation>
 				<power-source type="Thermionic Nuclear Power Source" 
-					modules="37" power="3.1" thermal-conversion="10.5" percent-loading="83.3"/>
+					modules="37" power="3.1" thermal-conversion-efficiency="10.5" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="5" discharge-rate="1.25"/>
 		</functions>
@@ -2050,7 +2129,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<power-generation>
 				<power-source type="Thermionic Nuclear Power Source" 
-					modules="74" power="4.7" thermal-conversion="10.37" percent-loading="83.3"/>
+					modules="74" power="4.7" thermal-conversion-efficiency="10.37" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="02" discharge-rate="1.25"/>
 		</functions>
@@ -2074,7 +2153,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<power-generation>
 				<power-source type="Fission Power Source" 
-					modules="2" power="43.3" thermal-conversion="27.4" percent-loading="83.3"/>
+					modules="2" power="43.3" thermal-conversion-efficiency="27.4" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="10" discharge-rate="1.25"/>
 		</functions>
@@ -2082,13 +2161,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 	<building type="MD1 Nuclear Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="4000">
-		<description>The MD1 Nuclear Reactor at 40kW is the first compact fission power plant commissioned 
-		    for use off-world. At 83.3% load capacity, it provides a consistent power supply of ~40 kWe.</description>
+		<description>The MD1 Nuclear Reactor is the first compact fission power plant commissioned 
+		    for use off-world. With the thermal conversion efficiency of 27.4% and at 83.3% load capacity, 
+		    it provides a consistent power supply of ~40 kWe.</description>
 		<power-required base-power="0.25" base-power-down-power="0.025" />
 		<functions>
 			<power-generation>
 				<power-source type="Fission Power Source" 
-					modules="1" power="175.0" thermal-conversion="27.4" percent-loading="83.3"/>
+					modules="1" power="175.0" thermal-conversion-efficiency="27.4" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>
 		</functions>
@@ -2098,14 +2178,15 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="500" room-temperature="0" base-mass="8000">
 		<description>
 			The MD4 Nuclear Reactor is a robust, flight-ready nuclear fission power plant. 
-			At 83.3% load capacity, it provides a consistent power supply of ~100 kWe.
+			With the thermal conversion efficiency of 27.4% and at 83.3% load capacity, 
+			it provides a consistent power supply of ~100 kWe.
 			It also includes a 80 kWh backup battery.
 		</description>
 		<power-required base-power="1" base-power-down-power="0.1"/>
 		<functions>
 			<power-generation>
 				<power-source type="Fission Power Source" 
-					modules="3" power="145.8" thermal-conversion="27.4" percent-loading="83.3"/>
+					modules="3" power="145.8" thermal-conversion-efficiency="27.4" percent-loading="83.3"/>
 			</power-generation>
 			<power-storage capacity="80" discharge-rate="1.0"/>
 			<!--thermal-generation>
@@ -3297,6 +3378,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Metal Storage Bin is a small brick bin for
 			storing metallic elements for industrial uses.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 
 		<functions>
@@ -3664,6 +3748,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		 for providing medical basic care. It also has medical research workbench and
 		 uses solar	panels as backup power source.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
@@ -4237,6 +4324,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Mining Lab is a small brick laboratory furnished for
 			mining-related scientific instruments and research workbench.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>
@@ -4342,6 +4432,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			vaulted fiber glass roof which is less susceptible to meteor damage.
 			It grows crops as food for the settlement.
 		</description>
+		<scopes>
+			<scope name="metallic element"/>
+		</scopes>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
 		<functions>

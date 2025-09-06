@@ -8,11 +8,13 @@ package com.mars_sim.core.building;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
@@ -24,6 +26,10 @@ import com.mars_sim.core.science.ScienceType;
  */
 public class BuildingSpec {
 	
+	
+	public static final String HABITABLE = "habitable";
+	public static final String METALLIC_ELEMENT = "metallic element";
+	
 	// Empty list constants
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
@@ -31,6 +37,8 @@ public class BuildingSpec {
 	
 	/** is the building non-habitable. */
 	private boolean isInhabitable = true;
+	/** The flag for tracking if the system scope has been set up. */
+	boolean systemScopeDone = false;
 	
 	private int baseLevel;
 	private int maintenanceTime;
@@ -49,6 +57,9 @@ public class BuildingSpec {
 	private String buildingType;
 	private String description;
 	
+	/** A set of system scopes affected by malfunction incidents. */
+	private Set<String> systemScopes = new HashSet<>();;
+
 	/**
 	 * The type of material use for the construction of the wall of a building.
 	 * Solid by default 
@@ -56,7 +67,7 @@ public class BuildingSpec {
 	private ConstructionType constructionType = ConstructionType.PRE_FABRICATED;
 
 	private Map<FunctionType, FunctionSpec> supportedFunctions;
-	
+
 	// Optional Function details
 	private Map<Integer, Double> storageMap = null;
 	private Map<Integer, Double> initialMap = null;
@@ -93,7 +104,7 @@ public class BuildingSpec {
 	 * @param basePowerDownPowerRequirement
 	 * @param supportedFunctions
 	 */
-	BuildingSpec(String buildingType, String description, BuildingCategory category, 
+	BuildingSpec(BuildingConfig buildingConfig, String buildingType, String description, BuildingCategory category, 
 			double width, double length, String alignment, int baseLevel,
 			double presetTemperature, int maintenanceTime,
 			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
@@ -115,10 +126,69 @@ public class BuildingSpec {
 		this.basePowerDownPowerRequirement = basePowerDownPowerRequirement;
 		this.supportedFunctions = supportedFunctions;
 		
-		if (supportedFunctions.containsKey(FunctionType.LIFE_SUPPORT))
+		if (supportedFunctions.containsKey(FunctionType.LIFE_SUPPORT)) {
 			isInhabitable = false;
+			addSystemScope(HABITABLE);
+		}
+		
+		// Add 'building' as a scope name
+		addSystemScope(SystemType.BUILDING.getName());
+		// Add the building type as a scope name
+		addSystemScope(buildingType);
+		// Add all the system scopes pre-defined in buildings.xml for a particular building type
+		Set<String> scopes = buildingConfig.getBuildingScopes().get(buildingType);
+		if (scopes != null)
+			addSystemScope(scopes);
 	}
 
+	/**
+	 * Sets the flag for the system scope.
+	 * 
+	 * @param value
+	 */
+	protected void setScopeDone(boolean value) {
+		systemScopeDone = value;
+	}
+	
+	/**
+	 * Gets the flag for the system scope.
+	 * 
+	 * @return
+	 */
+	protected boolean getScopeDone() {
+		return systemScopeDone;
+	}
+	
+	/**
+	 * Gets the system scopes
+	 */
+	protected Set<String> getSystemScopes() {	
+		return systemScopes;
+	}
+	
+	/**
+	 * Adds a system scope.
+	 * 
+	 * @param newScope
+	 */
+	protected void addSystemScope(String newScope) {
+		systemScopes.add(newScope);
+	}
+	
+	/**
+	 * 
+	 * Adds a set of scopes.
+	 *
+	 * @param scope
+	 */
+	public void addSystemScope(Set<String> newScopes) {
+		for (String aScope: newScopes) {
+			String scopeString = aScope.toLowerCase().replace("_", " ");
+			if ((scopeString != null) && !systemScopes.contains(scopeString))
+				systemScopes.add(scopeString);
+		}
+	}
+	
 	/**
 	 * Checks if this building is isInhabitable.
 	 * 

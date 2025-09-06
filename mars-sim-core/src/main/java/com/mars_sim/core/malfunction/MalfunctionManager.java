@@ -324,6 +324,20 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if ((scopeString != null) && !scopes.contains(scopeString))
 			scopes.add(scopeString);
 	}
+	
+	/**
+	 * 
+	 * Adds a set of scopes to the manager.
+	 *
+	 * @param scope
+	 */
+	public void addScopeString(Set<String> newScopes) {
+		for (String aScope: newScopes) {
+			String scopeString = aScope.toLowerCase().replace("_", " ");
+			if ((scopeString != null) && !scopes.contains(scopeString))
+				scopes.add(scopeString);
+		}
+	}
 
 	/**
 	 * Returns a set of scopes.
@@ -1276,7 +1290,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			partsNeededForMaintenance = new HashMap<>();
 		}
 		
-		for (MaintenanceScope maintenance : partConfig.getMaintenance(scopes)) {
+		for (MaintenanceScope maintenance : partConfig.getMaintenanceScopeList(scopes)) {
 			if (RandomUtil.lessThanRandPercent(maintenance.getProbability())) {
 				int number = RandomUtil.getRandomRegressionInteger(maintenance.getMaxNumber());
 				int id = maintenance.getPart().getID();

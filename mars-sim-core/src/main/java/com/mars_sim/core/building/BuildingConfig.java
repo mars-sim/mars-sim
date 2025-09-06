@@ -77,7 +77,7 @@ public class BuildingConfig {
 	private static final String AMOUNT = "amount";
 	private static final String NUMBER = "number";
 	private static final String MODULES = "modules";
-	private static final String CONVERSION = "thermal-conversion";
+	private static final String CONVERSION = "thermal-conversion-efficiency";
 	private static final String PERCENT_LOADING = "percent-loading";
 
 	private static final String MEDICAL_CARE = "medical-care";
@@ -99,6 +99,9 @@ public class BuildingConfig {
 	private static final String HEAT_SOURCE = "heat-source";
 	private static final String THERMAL_GENERATION = "thermal-generation";
 
+	private static final String SCOPES = "scopes";
+	private static final String SCOPE = "scope";
+	
 	// Power source types
 	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
@@ -109,6 +112,9 @@ public class BuildingConfig {
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
+	/** A collection of building level system scopes (as defined for each building in buldings.xml. */
+	private Map<String, Set<String>> buildingScopes = new HashMap<>();
+	
 	private Set<FunctionType> activityFunctions  = new HashSet<>();
 	
 	/**
@@ -156,10 +162,6 @@ public class BuildingConfig {
 	 */
 	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement,
 								ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
-		Element descElement = buildingElement.getChild(DESCRIPTION);
-
-		String desc = descElement.getValue().trim();
-		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
 
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
@@ -172,7 +174,23 @@ public class BuildingConfig {
 		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
 		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
 		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
-
+		
+		// Process description
+		Element descElement = buildingElement.getChild(DESCRIPTION);
+		String desc = descElement.getValue().trim();
+		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
+		
+		// Process the scopes
+		Set<String> scopeNames = new HashSet<>();
+		Element scopesElement = buildingElement.getChild(SCOPES);
+		if (scopesElement != null) {
+			for (Element element : scopesElement.getChildren(SCOPE)) {
+				String name = element.getAttributeValue(NAME);
+				scopeNames.add(name);
+			}		
+			buildingScopes.put(buildingTypeName, scopeNames);
+		}
+		
 		// Get functions
 		Map<FunctionType, FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
 		Element funcElement = buildingElement.getChild(FUNCTIONS);
@@ -220,7 +238,7 @@ public class BuildingConfig {
 			category = deriveCategory(supportedFunctions.keySet());
 		}
 
-		BuildingSpec newSpec = new BuildingSpec(buildingTypeName, desc, category, 
+		BuildingSpec newSpec = new BuildingSpec(this, buildingTypeName, desc, category, 
 				width, length, alignment, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
@@ -731,5 +749,14 @@ public class BuildingConfig {
 	 */
     public Set<FunctionType> getActivitySpotFunctions() {
         return activityFunctions;
+    }
+    
+    /**
+     * Gets a map of building scopes.
+     * 
+     * @return
+     */
+    public Map<String, Set<String>> getBuildingScopes() {
+    	return buildingScopes;
     }
 }

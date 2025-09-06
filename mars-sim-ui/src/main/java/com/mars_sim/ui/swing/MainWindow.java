@@ -967,7 +967,8 @@ public class MainWindow
 		
 		uiconfigs = null;
 		
-		splashWindow.destroy();
+		if (splashWindow != null)
+			splashWindow.destroy();
 		splashWindow = null;
 		
 		interactiveTerm.destroy();

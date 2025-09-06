@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PartConfig.java
- * @date 2022-10-03
+ * @date 2025-09-02
  * @author Scott Davis
  */
 package com.mars_sim.core.resource;
@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -25,6 +24,7 @@ import com.mars_sim.core.building.utility.heating.HeatSourceType;
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.goods.GoodType;
+import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.VehicleType;
 
 
@@ -51,9 +51,11 @@ public final class PartConfig  {
 	/** The set of parts. */
 	private Set<Part> partSet;
 	/** The map of maintenance scopes. */
-	private Map<String, List<MaintenanceScope>> scopes = new HashMap<>();
-	/** The collection of standard scopes. */
-	private Set<String> standarsScopes = new TreeSet<>();
+	private Map<String, List<MaintenanceScope>> scopeMap = new HashMap<>();
+	/** The collection of part scopes (as defined for each part in parts.xml. */
+	private Set<String> partScopesRegistry = new TreeSet<>();
+	
+	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
 	
 	/**
 	 * Constructor.
@@ -65,55 +67,69 @@ public final class PartConfig  {
 		// Pick up from the last resource id
 		nextID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 
+		// First build a standard scope set for scope comparison.
+		createPartScopesRegistry();
+		// Load all item resources from the parts.xml.
 		loadItemResources(itemResourceDoc);
-
+		// Register all the parts in ItemResourceUtil.
 		ItemResourceUtil.registerParts(partSet);
 	}
 
 	/**
-	 * The collection of standard scopes.
+	 * Gets the part scopes registry.
 	 */
-	public Set<String> getScopes() {
-		return standarsScopes;	 
+	public Set<String> getPartScopesRegistry() {
+		return partScopesRegistry;	 
 	}
 	
-	
 	/**
-	 * Creates a set of standard scopes.
+	 * Creates the part scopes registry.
 	 */
-	private void createStandardScope() {
+	private void createPartScopesRegistry() {
 		for (VehicleType type: VehicleType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (SystemType type: SystemType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (FunctionType type: FunctionType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (PowerSourceType type: PowerSourceType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
 		
 		for (HeatSourceType type: HeatSourceType.values()) {
-			if (!standarsScopes.contains(type.getName()))
-				standarsScopes.add(type.getName());
+			if (!partScopesRegistry.contains(type.getName()))
+				partScopesRegistry.add(type.getName());
 		}
+		
+		partScopesRegistry.add(Flyer.DRONE);
 	}
 	
+	/**
+	 * Adds a set of scopes.
+	 * 
+	 * @param newScopes
+	 */
 	public void addScopes(Set<String> newScopes) {
-		standarsScopes.addAll(newScopes);
+		partScopesRegistry.addAll(newScopes);
 	}
 	
+	/**
+	 * Adds a scope.
+	 * 
+	 * @param newScope
+	 */
 	public void addScopes(String newScope) {
-		standarsScopes.add(newScope);
+		partScopesRegistry.add(newScope);
 	}
 	
 	/**
@@ -127,9 +143,6 @@ public final class PartConfig  {
 			// just in case if another thread is being created
 			return;
 		}
-
-		// First build a standard scope set for scope comparison
-		createStandardScope();
 		
 		// Build the global list in a temp to avoid access before it is built
 		Set<Part> newPartSet = new TreeSet<>();
@@ -165,7 +178,7 @@ public final class PartConfig  {
 				throw new IllegalStateException(
 						"PartConfig detected invalid type in parts.xml : " + type);
 
-			// Get storable
+			// Get part
 			Part p = new Part(name, nextID, description, goodType, mass, 1);
 
 			for (Part pp: newPartSet) {
@@ -181,14 +194,12 @@ public final class PartConfig  {
 				for (Element entityElement : entityNodes) {
 					String entityName = entityElement.getAttributeValue(NAME);
 					boolean validName = false;
-					for (String s: standarsScopes) {
+					for (String s: partScopesRegistry) {
 						if (s.equalsIgnoreCase(entityName) ) {
 							validName = true;
 							double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
 							int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-	
-							MaintenanceScope newMaintenance = new MaintenanceScope(p, entityName, probability, maxNumber);
-							addPartScope(entityName, newMaintenance);
+							addPartScope(entityName, new MaintenanceScope(p, entityName, probability, maxNumber));
 						}
 					}
 					
@@ -197,7 +208,6 @@ public final class PartConfig  {
 					}	
 				}
 			}
-			
 
 			// Add part to newPartSet.
 			newPartSet.add(p);			
@@ -216,25 +226,33 @@ public final class PartConfig  {
 	private void addPartScope(String scope, MaintenanceScope newMaintenance) {
 
 		String key = scope.toLowerCase();
-		List<MaintenanceScope> maintenance = scopes.computeIfAbsent(key, k -> new ArrayList<>());
+		List<MaintenanceScope> maintenance = scopeMap.computeIfAbsent(key, k -> new ArrayList<>());
+		// Double-checking the size of the list : logger.info(scope + " 1. # of scopes: " + scopes.get(scope).size());
 		maintenance.add(newMaintenance);
+		// Double-checking the size of the list : logger.info(scope + " 2. # of scopes: " + scopes.get(scope).size());
 	}
 
 	/**
-	 * Gets the maintenance schedules for a specific scopes, e.g. type of vehicle or function.
+	 * Gets the maintenance scope list for a specific collection of scopes, e.g. type of vehicle or function.
 	 * 
 	 * @param scope Possible scopes
 	 * @return
 	 */
-	public List<MaintenanceScope> getMaintenance(Collection<String> scope) {
-		List<MaintenanceScope> results = new ArrayList<>();
-		for (String s : scope) {
-			List<MaintenanceScope> m = scopes.get(s.toLowerCase());
-			if (m != null) {
-				results.addAll(m);
-			}
+	public List<MaintenanceScope> getMaintenanceScopeList(Collection<String> scopes) {
+		if (scopeCollection.containsKey(scopes)) {
+			return scopeCollection.get(scopes);
 		}
-		return results ;
+		else {
+			List<MaintenanceScope> results = new ArrayList<>();
+			for (String s : scopes) {
+				List<MaintenanceScope> m = scopeMap.get(s.toLowerCase());
+				if (m != null) {
+					results.addAll(m);
+				}
+			}
+			scopeCollection.put(scopes, results); 
+			return results ;
+		}
 	}
 
 	/**
@@ -246,7 +264,9 @@ public final class PartConfig  {
 	 * @return
 	 */
 	public List<MaintenanceScope> getMaintenance(Collection<String> scope, Part part) {
-		return getMaintenance(scope).stream().filter(m -> m.getPart().equals(part)).collect(Collectors.toList());
+		return getMaintenanceScopeList(scope).stream()
+				.filter(m -> m.getPart().getID() == part.getID())
+				.toList();
 	}
 
 	/**
