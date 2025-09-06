@@ -1,32 +1,52 @@
 name: SonarQube Analysis
+
 on:
-  # Trigger analysis when pushing in master
+  # Trigger analysis when pushing in master (canonical repo only; job-level if guards below)
   push:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   sonarqube:
-    # Dependabot actor does not have access to secrets so skill the analysis
-    if: ${{ github.actor != 'dependabot[bot]' }}
+    # Only run in the canonical repository and not for Dependabot
+    if: ${{ github.repository == 'mars-sim/mars-sim' && github.actor != 'dependabot[bot]' }}
     name: SonarQube Trigger
     runs-on: ubuntu-latest
+
     steps:
-            
-    - name: Checkout
-      uses: actions/checkout@v4
-    
-    # Setup java 21
-    - name: Setup Java JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: 21
-                  
-    - name: SonarCloud Analysis
-      env:
-        SONAR_ORGANISATION: ${{ secrets.SONAR_ORGANISATION }}
-        SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-      run:
-        mvn --file pom.xml -B -Pcoverage -Dsonar.token=$SONAR_LOGIN -Dsonar.projectKey=com.mars-sim:mars-sim -Dsonar.organization=$SONAR_ORGANISATION verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history improves Sonar blame data
+          fetch-depth: 0
+
+      # Setup Java 21
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: SonarCloud Analysis
+        # Run only if at least one of the expected secrets is present
+        if: ${{ secrets.SONAR_TOKEN != '' || secrets.SONAR_LOGIN != '' }}
+        env:
+          SONAR_ORGANISATION: ${{ secrets.SONAR_ORGANISATION }}
+          # Support both secret names; prefer SONAR_TOKEN if present
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TOKEN="${SONAR_TOKEN:-$SONAR_LOGIN}"
+          if [ -z "$TOKEN" ]; then
+            echo "No Sonar token available; skipping analysis."
+            exit 0
+          fi
+          mvn --file pom.xml -B -Pcoverage \
+            -Dsonar.token="$TOKEN" \
+            -Dsonar.host.url="https://sonarcloud.io" \
+            -Dsonar.projectKey="com.mars-sim:mars-sim" \
+            -Dsonar.organization="$SONAR_ORGANISATION" \
+            -Dsonar.skip=false \
+            verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
