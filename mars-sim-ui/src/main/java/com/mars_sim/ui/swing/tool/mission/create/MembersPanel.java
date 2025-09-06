@@ -13,8 +13,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -28,8 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.person.Person;
@@ -113,55 +111,50 @@ implements ActionListener {
 		peopleTable.setRowSelectionAllowed(true);
 		peopleTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		peopleTable.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						// Get the selected rows.
-						int[] selectedRows = peopleTable.getSelectedRows();
-						if (selectedRows.length > 0) {
-							if (e.getValueIsAdjusting()) {
-								membersTable.clearSelection();
+				e -> {
+					// Get the selected rows.
+					int[] selectedRows = peopleTable.getSelectedRows();
+					if (selectedRows.length > 0) {
+						if (e.getValueIsAdjusting()) {
+							membersTable.clearSelection();
 
-								// Check if any of the rows failed.
-								boolean failedRow = false;
-								for (int selectedRow : selectedRows)
-									if (peopleTableModel.isFailureRow(selectedRow)) failedRow = true;
+							// Check if any of the rows failed.
+							boolean failedRow = false;
+							for (int selectedRow : selectedRows)
+								if (peopleTableModel.isFailureRow(selectedRow)) failedRow = true;
 
-								if (failedRow) {
-									// Display failed row message and disable add button.
-									errorMessageLabel.setText("One or more selected people cannot be used on the mission " +
-											"(see red cells).");
+							if (failedRow) {
+								// Display failed row message and disable add button.
+								errorMessageLabel.setText("One or more selected people cannot be used on the mission " +
+										"(see red cells).");
+								addButton.setEnabled(false);
+							}
+							else {
+								// Check if number of rows exceed rover remaining capacity.
+								if (selectedRows.length > getRemainingVehicleCapacity()) {
+									// Display over capacity message and disable add button.
+									errorMessageLabel.setText("Not enough rover capacity to hold selected people.");
 									addButton.setEnabled(false);
 								}
 								else {
-									// Check if number of rows exceed rover remaining capacity.
-									if (selectedRows.length > getRemainingVehicleCapacity()) {
-										// Display over capacity message and disable add button.
-										errorMessageLabel.setText("Not enough rover capacity to hold selected people.");
-										addButton.setEnabled(false);
-									}
-									else {
-										// Enable add button.
-										errorMessageLabel.setText(" ");
-										addButton.setEnabled(true);
-									}
+									// Enable add button.
+									errorMessageLabel.setText(" ");
+									addButton.setEnabled(true);
 								}
 							}
 						}
-						else {
-							// Disable add button when no rows are selected.
-							addButton.setEnabled(false);
-							errorMessageLabel.setText(" ");
-						}
+					}
+					else {
+						// Disable add button when no rows are selected.
+						addButton.setEnabled(false);
+						errorMessageLabel.setText(" ");
 					}
 				}
 				);
 
 		peopleTable.addMouseListener(
-				new MouseListener() {
-					public void mouseReleased(MouseEvent e) {}
-					public void mousePressed(MouseEvent e) {}
-					public void mouseExited(MouseEvent e) {}
-					public void mouseEntered(MouseEvent e) {}
+				new MouseAdapter() {
+					@Override
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() == 2 && !e.isConsumed()) {
 
@@ -215,9 +208,7 @@ implements ActionListener {
 
 		skipButton = new JButton("Skip");
 		skipButton.setEnabled(true);
-		skipButton.addActionListener(e -> {
-			wizard.buttonClickedNext();
-		});
+		skipButton.addActionListener(e -> wizard.buttonClickedNext());
 		buttonPane.add(skipButton);
 		
 		// Add a vertical strut to make UI space.
@@ -255,18 +246,16 @@ implements ActionListener {
 		membersTable.setRowSelectionAllowed(true);
 		membersTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		membersTable.getSelectionModel().addListSelectionListener(
-				new ListSelectionListener() {
-					public void valueChanged(ListSelectionEvent e) {
-						int[] selectedRows = membersTable.getSelectedRows();
-						if (selectedRows.length > 0) {
-							if (e.getValueIsAdjusting()) {
-								// Enable the remove button.
-								peopleTable.clearSelection();
-								removeButton.setEnabled(true);
-							}
+				e -> {
+					int[] selectedRows = membersTable.getSelectedRows();
+					if (selectedRows.length > 0) {
+						if (e.getValueIsAdjusting()) {
+							// Enable the remove button.
+							peopleTable.clearSelection();
+							removeButton.setEnabled(true);
 						}
-						else removeButton.setEnabled(false);
 					}
+					else removeButton.setEnabled(false);
 				});
 		membersScrollPane.setViewportView(membersTable);
 	}
@@ -290,20 +279,13 @@ implements ActionListener {
 	boolean commitChanges(boolean isTesting) {
 		Collection<Worker> members = new ConcurrentLinkedQueue<>();
 		int size = membersTableModel.getRowCount();
-//		if (size == 0) {
-//			int size1 = getWizard().getMissionData().getMixedMembers().size();
-//			if (size1 == 0) {
-//				return false;
-//			}
-//		}
+
 		for (int x = 0; x < size; x++) {
 			members.add((Worker) membersTableModel.getUnit(x));
 		}
-//		if (!isTesting) {
-			// Use setMixedMembers here, not addMixedMembers
-			getWizard().getMissionData().setMixedMembers(members);
-//			return true;
-//		}	
+		// Use setMixedMembers here, not addMixedMembers
+		getWizard().getMissionData().setMixedMembers(members);
+	
 		return true;
 	}
 
@@ -333,9 +315,6 @@ implements ActionListener {
 		if (MissionType.CONSTRUCTION == type) {
 			vehicleCapacityLabel.setText(" ");
 		}
-		else if (MissionType.SALVAGE == type) { 
-			vehicleCapacityLabel.setText(" ");
-		}
 		else {
 			
 			if (MissionType.DELIVERY == type) {
@@ -355,7 +334,6 @@ implements ActionListener {
 	int getRemainingVehicleCapacity() {
 		MissionType type = getWizard().getMissionData().getMissionType();
 		if (MissionType.CONSTRUCTION == type) return Integer.MAX_VALUE;
-		else if (MissionType.SALVAGE == type) return Integer.MAX_VALUE;
 		else {
 			if (MissionType.DELIVERY == type) {
 				return Delivery.MAX_MEMBERS;
@@ -404,25 +382,22 @@ implements ActionListener {
 			if (row < units.size()) {
 				Person person = (Person) getUnit(row);
 
-				try {
-					if (column == 0) 
-						result = person.getName();
-					else if (column == 1) 
-						result = person.getMind().getJob().getName();
-					else if (column == 2) {
-						result = person.getShiftSlot().getStatusDescription();
-					}
-					else if (column == 3) {
-						Mission mission = person.getMind().getMission();
-						if (mission != null) result = mission.getName();
-						else result = "None";
-					}
-					else if (column == 4) 
-						result = (int) (person.getPerformanceRating() * 100D) + "%";
-					else if (column == 5)
-						result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
+				if (column == 0) 
+					result = person.getName();
+				else if (column == 1) 
+					result = person.getMind().getJob().getName();
+				else if (column == 2) {
+					result = person.getShiftSlot().getStatusDescription();
 				}
-				catch (Exception e) {}
+				else if (column == 3) {
+					Mission mission = person.getMind().getMission();
+					if (mission != null) result = mission.getName();
+					else result = "None";
+				}
+				else if (column == 4) 
+					result = (int) (person.getPerformanceRating() * 100D) + "%";
+				else if (column == 5)
+					result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 			}
 
 			return result;
@@ -437,8 +412,6 @@ implements ActionListener {
 			Settlement settlement = missionData.getStartingSettlement();
 			if (MissionType.CONSTRUCTION == missionData.getMissionType())
 				settlement = missionData.getConstructionSettlement();
-			else if (MissionType.SALVAGE == missionData.getMissionType())
-				settlement = missionData.getSalvageSettlement();
 			Collection<Person> people = CollectionUtils.sortByName(settlement.getIndoorPeople());
 			Iterator<Person> i = people.iterator();
 			while (i.hasNext()) units.add(i.next());
@@ -458,9 +431,8 @@ implements ActionListener {
 			if (row < units.size()) {
 				Person person = (Person) getUnit(row);
 
-				if (column == 3) {
-					if (person.getMind().getMission() != null) return true;
-				}
+				if (column == 3 && person.getMind().getMission() != null)
+					return true;
 			}
 
 			return result;
@@ -532,25 +504,22 @@ implements ActionListener {
 			if (row < units.size()) {
 				Person person = (Person) getUnit(row);
 
-				try {
-					if (column == 0) 
-						result = person.getName();
-					else if (column == 1) 
-						result = person.getMind().getJob().getName();
-					else if (column == 2) {
-						result = person.getShiftSlot().getStatusDescription();
-					}
-					else if (column == 3) {
-						Mission mission = person.getMind().getMission();
-						if (mission != null) result = mission.getName();
-						else result = "None";
-					}						
-					else if (column == 4) 
-						result = (int) (person.getPerformanceRating() * 100D) + "%";
-					else if (column == 5)
-						result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
+				if (column == 0) 
+					result = person.getName();
+				else if (column == 1) 
+					result = person.getMind().getJob().getName();
+				else if (column == 2) {
+					result = person.getShiftSlot().getStatusDescription();
 				}
-				catch (Exception e) {}
+				else if (column == 3) {
+					Mission mission = person.getMind().getMission();
+					if (mission != null) result = mission.getName();
+					else result = "None";
+				}						
+				else if (column == 4) 
+					result = (int) (person.getPerformanceRating() * 100D) + "%";
+				else if (column == 5)
+					result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
 			}
 
 			return result;

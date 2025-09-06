@@ -33,7 +33,6 @@ import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.construction.SalvageValues;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.building.function.farming.Crop;
@@ -376,7 +375,6 @@ public class Simulation implements ClockListener, Serializable {
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
 		
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
-		SalvageValues.initializeInstances(unitManager, masterClock);
 
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, masterClock);
@@ -537,9 +535,6 @@ public class Simulation implements ClockListener, Serializable {
 
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 		
-		// Initialize Unit related class
-		SalvageValues.initializeInstances(unitManager, masterClock);
-		
 		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
 		ExplorationManager.initialise(surfaceFeatures);
 		
@@ -658,11 +653,6 @@ public class Simulation implements ClockListener, Serializable {
 				surfaceFeatures, missionManager, pc);
 
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
-		
-		// Re-initialize Unit related class
-		SalvageValues.initializeInstances(unitManager, masterClock);
-		
-		///////////////////////////////////////////////////////////////
 		
 		// Rediscover the MissionControls
 		AuthorityFactory rf  = simulationConfig.getReportingAuthorityFactory();

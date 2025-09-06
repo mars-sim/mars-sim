@@ -220,7 +220,7 @@ class ConstructionProjectPanel extends WizardPanel {
         Settlement settlement = getConstructionSettlement();
         if (settlement != null) {
             ConstructionManager manager = settlement.getConstructionManager();
-            manager.getConstructionSitesNeedingMission(true).forEach(cs -> siteListModel.addElement(cs));
+            manager.getConstructionSitesNeedingMission().forEach(cs -> siteListModel.addElement(cs));
         }
     }
 
@@ -231,12 +231,7 @@ class ConstructionProjectPanel extends WizardPanel {
 
         var selectedSite = siteList.getSelectedValue();
         if (selectedSite != null) {
-            if (!selectedSite.isConstruction()) {
-                errorMessageTextPane.setText("Cannot start mission on a site already undergoing salvage.");
-                // Do nothing.
-            } else {
-            	loadSite(selectedSite);
-            }
+            loadSite(selectedSite);
         }
         else {
             materialsTableModel.update();
@@ -399,9 +394,9 @@ class ConstructionProjectPanel extends WizardPanel {
             ConstructionStage stage = site.getCurrentConstructionStage();
                 
             // Add resources.
-            for(var mr : stage.getMissingResources().entrySet()) {
+            for(var mr : stage.getResources().entrySet()) {
                 Integer resource = mr.getKey();
-                double amountRequired = mr.getValue();
+                double amountRequired = mr.getValue().getMissing();
                 double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
                 materialsList.add(new ConstructionMaterial(
                         ResourceUtil.findAmountResource(resource).getName(), (int) amountRequired,
@@ -409,9 +404,9 @@ class ConstructionProjectPanel extends WizardPanel {
             }
                 
             // Add parts.
-            for (var mp : stage.getMissingParts().entrySet()) {
+            for (var mp : stage.getParts().entrySet()) {
                 Integer part = mp.getKey();
-                int numRequired = mp.getValue();
+                int numRequired = (int) mp.getValue().getMissing();
                 int numAvailable = settlement.getItemResourceStored(part);
                 materialsList.add(new ConstructionMaterial(
                         ItemResourceUtil.findItemResource(part).getName(), 
@@ -470,16 +465,14 @@ class ConstructionProjectPanel extends WizardPanel {
         private boolean isFailureCell(int row, int col) {
             boolean result = false;
 
-            if (col == 2) {
-                if (row < materialsList.size()) {
-                    ConstructionMaterial material = materialsList.get(row);
-                    if (material.isVehicleRelated) {
-                        if (material.numRequired > material.numAvailable) {
-                            result = true;
-                        }
+            if (col == 2 && row < materialsList.size()) {
+                ConstructionMaterial material = materialsList.get(row);
+                if (material.isVehicleRelated && material.numRequired > material.numAvailable) {
+                        result = true;
                     }
-                }
+                
             }
+            
 
             return result;
         }
@@ -494,15 +487,11 @@ class ConstructionProjectPanel extends WizardPanel {
         private boolean isWarningCell(int row, int col) {
             boolean result = false;
             
-            if (col == 2) {
-                if (row < materialsList.size()) {
-                    ConstructionMaterial material = materialsList.get(row);
-                    if (!material.isVehicleRelated) {
-                        if (material.numRequired > material.numAvailable) {
-                            result = true;
-                        }
-                    }
-                }
+            if (col == 2 && row < materialsList.size()) {
+                ConstructionMaterial material = materialsList.get(row);
+                if (!material.isVehicleRelated && material.numRequired > material.numAvailable) {
+                    result = true;
+                }            
             }
             
             return result;

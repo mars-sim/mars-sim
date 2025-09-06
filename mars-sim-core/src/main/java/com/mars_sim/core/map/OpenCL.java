@@ -2,10 +2,11 @@
  * Mars Simulation Project
  * OpenCL.java
  * @date 2025-07-26
- * @author xxx
+ * @author Byron
  */
 package com.mars_sim.core.map;
 
+import com.jogamp.common.JogampRuntimeException;
 import com.jogamp.opencl.CLCommandQueue;
 import com.jogamp.opencl.CLContext;
 import com.jogamp.opencl.CLDevice;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * OpenCL is a wrapper class for storing, finding and reusing programs
@@ -26,39 +28,51 @@ import java.util.Map;
  * @see CLCommandQueue
  */
 public class OpenCL {
-  private static Map<String, CLProgram> programs;
-  private static Map<CLProgram, Map<String, CLKernel>> kernels;
-  private static CLContext context;
-  private static CLDevice device;
-  private static CLCommandQueue queue;
-  private static int localSize = -1;
+		
+	// Static members.
+ 	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
-  private OpenCL() {
-    // Avoid creating helper
-  }
+	private static final String OPENCL_FOLDER = "/opencl";
+	  
+	private static Map<String, CLProgram> programs;
+	private static Map<CLProgram, Map<String, CLKernel>> kernels;
+	private static CLContext context;
+	private static CLDevice device;
+	private static CLCommandQueue queue;
+	private static int localSize = -1;
 
-  /**
-   * Initialises compute.
-   * 
-   * @return Is OpenCL supported
-   */
-  public static boolean initCompute() {
-    if (!CLPlatform.isAvailable()) {
-      return false;
-    }
-    else if (context == null) {
-      // Don't re-init if a context is already present
-      programs = new HashMap<>();
-      kernels = new HashMap<>();
+	private OpenCL() {
+		// Avoid creating helper
+	}
 
-      context = CLContext.create();
-      device = context.getMaxFlopsDevice();
-      queue = device.createCommandQueue();
-
-      Runtime.getRuntime().addShutdownHook(new Thread(OpenCL::destroy));
-    }
-    return true;
-  }
+   /**
+	* Initialises compute.
+	* 
+	* @return Is OpenCL supported
+	*/
+	public static boolean initCompute() {
+		try {
+			CLPlatform.initialize();
+		} catch (JogampRuntimeException ex) {
+			logger.severe("Could not load Java OpenCL Binding: " + ex.getMessage());
+		}
+	  
+		if (!CLPlatform.isAvailable()) {
+			return false;
+		}
+		else if (context == null) {
+			// Don't re-init if a context is already present
+			programs = new HashMap<>();
+			kernels = new HashMap<>();
+	
+			context = CLContext.create();
+			device = context.getMaxFlopsDevice();
+			queue = device.createCommandQueue();
+	
+			Runtime.getRuntime().addShutdownHook(new Thread(OpenCL::destroy));
+		}
+	 	return true;
+	}
 
   /**
    * Retrieves a built program of the name provided using getSystemResourceAsStream
@@ -70,10 +84,10 @@ public class OpenCL {
    */
   public static CLProgram getProgram(String programName) {
     programs.computeIfAbsent(programName, k -> {
-      try {InputStream stream = ClassLoader.getSystemResourceAsStream(programName);
+      try {InputStream stream = ClassLoader.getSystemResourceAsStream(OPENCL_FOLDER + programName);
         return context.createProgram(stream).build();
       } catch (IOException e) {
-        throw new IllegalStateException("Problem loading program file", e);
+        throw new IllegalStateException("Problem loading opencl program file", e);
       }
     });
 

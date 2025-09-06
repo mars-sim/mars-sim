@@ -366,7 +366,36 @@ public class SystemCondition implements Serializable {
 			robot.removeSecondaryStatus(BotMode.CHARGING);
 		}
 	}
+	
+	/**
+	 * Sets the maintenance status of the robot.
+	 *  
+	 * @param value
+	 */
+	public void setMaintenance(boolean value) {
+		if (value) {
+			setPowerSave(true);
+			robot.setPrimaryStatus(BotMode.POWER_DOWN);
+			robot.addSecondaryStatus(BotMode.MAINTENANCE);
+			robot.setInoperable(true);
+		}
+		else {
+			setPowerSave(false);
+			robot.setPrimaryStatus(BotMode.NOMINAL);
+			robot.removeSecondaryStatus(BotMode.MAINTENANCE);
+			robot.setInoperable(false);
+		}
+	}
 
+	/**
+	 * Is the robot in maintenance status.
+	 * 
+	 * @return
+	 */
+	public boolean isInMaintenance() {
+		return robot.haveStatusType(BotMode.MAINTENANCE);
+	}
+	
     /**
      * Gets the performance factor that effect Person with the complaint.
      * 

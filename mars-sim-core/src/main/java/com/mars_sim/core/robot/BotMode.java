@@ -19,7 +19,8 @@ public enum BotMode {
 	MALFUNCTION 			(false),
 	OUT_OF_POWER			(false),
 	POWER_SAVE				(false),
-	NOMINAL 				(true)
+	NOMINAL 				(true),
+	POWER_DOWN				(true)
 	;
 	
 	private String name;

@@ -45,11 +45,11 @@ public class SiteCommand extends AbstractSettlementCommand {
 		// Output Sites
 		response.appendHeading("Sites");
 		response.appendTableHeading("Name", 11,
-						"Stage", 28, "%", 3, "Build", "Active", "Left", "Building", -STAGE_WIDTH);
+						"Stage", 28, "Work", 6, "Build", "Active", "Left", "Building", -STAGE_WIDTH);
 		for (var site : cmgr.getConstructionSites()) {
 			var stage = site.getCurrentConstructionStage();
 			response.appendTableRow(site.getName(), stage.getInfo().getName(),
-						Math.round(stage.getCompletedPerc() * 100),
+						stage.getRequiredWorkTime(),
 						site.isConstruction(), site.getWorkOnSite() != null,
 						site.getRemainingPhases().size(), site.getBuildingName());
 		}

@@ -67,12 +67,10 @@ implements ActionListener {
 		infoPane = new JPanel(new CardLayout());
 		infoPane.setBorder(new MarsPanelBorder());
 
-		//setContentPane(infoPane);
-
 		add(infoPane, BorderLayout.CENTER);
 
 		// Create wizard panels list.
-		wizardPanels = new ArrayList<WizardPanel>();
+		wizardPanels = new ArrayList<>();
 		displayPanelIndex = 0;
 
 		// Create initial set of wizard panels.
@@ -107,17 +105,10 @@ implements ActionListener {
 
 		// Create cancel button.
 		JButton cancelButton = new JButton("Cancel");
-		cancelButton.addActionListener(
-				new ActionListener() {
-        			public void actionPerformed(ActionEvent e) {
-        				// Dispose this dialog.
-        				dispose();
-        			}
-				});
+		cancelButton.addActionListener(e -> dispose());
 		bottomButtonPane.add(cancelButton);
 
 		// Finish and display wizard.
-		//pack();
         setSize(new Dimension(700, 600));
         
 		// Set the icon
@@ -208,12 +199,9 @@ implements ActionListener {
 		}
 		
 		// Set building construction or building salvage projects
-		if (missionBean.isConstructionMission()) {
+		else if (missionBean.isConstructionMission()) {
 			addWizardPanel(new ConstructionProjectPanel(this));
             addWizardPanel(new ConstructionVehiclePanel(this));
-		} else if (missionBean.isBuildingSalvageMission()) {
-			addWizardPanel(new SalvageProjectPanel(this));
-            addWizardPanel(new SalvageVehiclePanel(this));
 		}
 	}
 

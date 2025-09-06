@@ -12,6 +12,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.StatusType;
@@ -106,10 +107,15 @@ public class MaintainEVAVehicle extends EVAOperation {
      */
     private double maintainVehiclePhase(double time) {        
         var settlement = vehicle.getAssociatedSettlement();
-		if (checkReadiness(time) > 0)
-			return time;
-			
+		if (checkReadiness(time) > 0) {
+			vehicle.setReservedForMaintenance(false);
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
+			return time;	
+		}
+		
 		if (settlement.getBuildingManager().isInGarage(vehicle)) {
+			vehicle.setReservedForMaintenance(false);
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 			endEVA("Vehicle in garage.");
 			return time;
 		}
@@ -119,7 +125,7 @@ public class MaintainEVAVehicle extends EVAOperation {
  
 		if (malfunction) {
 			endEVA("Vehicle had malfunction.");
-			return time;
+			return time * .75;
 		}
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
@@ -130,7 +136,7 @@ public class MaintainEVAVehicle extends EVAOperation {
 
 		// Check if maintenance has already been completed.
 		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
-
+	
 		boolean doneInspection = false;
 
 		if (!finishedMaintenance) {
@@ -154,7 +160,13 @@ public class MaintainEVAVehicle extends EVAOperation {
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
-        return 0;
+		// Note: workTime can be longer or shorter than time
+		if (workTime > time) {
+			// if work time is greater, then time is saved on this frame
+			return MathUtils.between(workTime - time, 0, time * .75);
+		}
+		else
+			return 0;
     }
 	
     @Override

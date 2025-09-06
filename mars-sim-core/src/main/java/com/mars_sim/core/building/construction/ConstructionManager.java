@@ -25,7 +25,7 @@ import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -97,7 +97,6 @@ public class ConstructionManager implements Serializable {
 	
 	private Settlement settlement;
 	private List<ConstructionSite> sites;
-	private SalvageValues salvageValues;
 	private List<BuildingSchedule> queue = new ArrayList<>();
 
 	/**
@@ -108,7 +107,6 @@ public class ConstructionManager implements Serializable {
 	public ConstructionManager(Settlement settlement) {
 		this.settlement = settlement;
 		sites = new ArrayList<>();
-		salvageValues = new SalvageValues(settlement);
 	}
 
 	/**
@@ -126,11 +124,10 @@ public class ConstructionManager implements Serializable {
 	 * @param construction Search for sites under construction not salvage
 	 * @return list of construction sites.
 	 */
-	public List<ConstructionSite> getConstructionSitesNeedingMission(boolean construction) {
+	public List<ConstructionSite> getConstructionSitesNeedingMission() {
 		List<ConstructionSite> result = new ArrayList<>();
 		for (ConstructionSite site : sites) {
-			if ((site.getWorkOnSite() == null) &&
-					!site.isComplete()&& site.isConstruction() == construction) {
+			if ((site.getWorkOnSite() == null) && !site.isComplete()) {
 				ConstructionStage currentStage = site.getCurrentConstructionStage();
 				if (currentStage != null) {
 					boolean workNeeded = !currentStage.isComplete();
@@ -173,59 +170,42 @@ public class ConstructionManager implements Serializable {
 	 * @throws Exception if site doesn't exist.
 	 */
 	public void removeConstructionSite(ConstructionSite site) {
-		sites.remove(site);
+		if (site.isProposed()) {
+			sites.remove(site);
+		}
 	}
 
-	/**
-	 * Gets the salvage values.
-	 * 
-	 * @return salvage values.
-	 */
-	public SalvageValues getSalvageValues() {
-		return salvageValues;
-	}
 
 	/**
-	 * Creates a new salvaging construction site to replace a building.
+	 * Creates a new demolish construction site to replace a building.
 	 * 
-	 * @param salvagedBuilding the building to be salvaged.
-	 * @return the construction site.
+	 * @param demolist the building to be demolished.
 	 * @throws Exception if error creating construction site.
 	 */
-	public ConstructionSite createNewSalvageConstructionSite(Building salvagedBuilding) {
-
+	public void createNewSalvageConstructionSite(Building demolish) {
 		// Remove building from settlement.
-		BuildingManager buildingManager = salvagedBuilding.getBuildingManager();
+		BuildingManager buildingManager = demolish.getAssociatedSettlement().getBuildingManager();
 		
 		// Move any people in building to somewhere else in the settlement.
-		LifeSupport lifeSupport = salvagedBuilding.getFunction(FunctionType.LIFE_SUPPORT);
-		if (lifeSupport != null) {		
-			for (Person occupant : new ArrayList<>(lifeSupport.getOccupants())) {
-				// Note: the safest way is to assign a task to have the person to walk to another building
-				//       Need to find ways to ensure he will talk to an unaffected building
-				occupant.getTaskManager().addPendingTask(Walk.SIMPLE_NAME);
-//				BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
-//				BuildingManager.addPersonToRandomBuilding(occupant, buildingManager.getSettlement());
-			}
+		List<Worker> occupants = new ArrayList<>();
+		LifeSupport lifeSupport = demolish.getFunction(FunctionType.LIFE_SUPPORT);
+		if (lifeSupport != null) {	
+			occupants.addAll(lifeSupport.getOccupants());	
 		}
 
 		// Move any robot in building to somewhere else in the settlement.
-		RoboticStation station= salvagedBuilding.getFunction(FunctionType.ROBOTIC_STATION);
+		RoboticStation station= demolish.getFunction(FunctionType.ROBOTIC_STATION);
 		if (station != null) {
-			for (Robot occupant : new ArrayList<>(station.getRobotOccupants())) {
-				// Note: the safest way is to assign a task to have the robot to walk to another building
-				//       Need to find ways to ensure it will talk to an unaffected building
-				occupant.getTaskManager().addPendingTask(Walk.SIMPLE_NAME);
-//				BuildingManager.removeRobotFromBuilding(occupant, salvagedBuilding);
-//				BuildingManager.addRobotToRandomBuilding(occupant, buildingManager.getSettlement());
-			}
+			occupants.addAll(station.getRobotOccupants());
 		}
+		occupants.forEach(this::moveWorker);
 
-		buildingManager.removeBuilding(salvagedBuilding);
+		// What about people 
+		buildingManager.removeBuilding(demolish);
 
-		var bldStage = getConstructionStages(salvagedBuilding.getBuildingType());
+		var bldStage = getConstructionStages(demolish.getBuildingType());
 		if (bldStage.isEmpty()) {
-			throw new IllegalStateException("No construction stages found for " + salvagedBuilding.getBuildingType());
+			throw new IllegalStateException("No construction stages found for " + demolish.getBuildingType());
 		}
 
 		// Salvage so rotate the phases as demonlishing
@@ -235,7 +215,18 @@ public class ConstructionManager implements Serializable {
 				.toList();
 
 		// Add construction site.
-		return createNewConstructionSite(salvagedBuilding.getBuildingType(), salvagedBuilding, phases);
+		createNewConstructionSite(demolish.getBuildingType(), demolish, phases);
+	}
+
+	private void moveWorker(Worker w) {
+		// Must be working in the affected Building
+		w.getTaskManager().endCurrentTask();
+
+		// Move them (should only be a single method
+		if (w instanceof Person p)
+			BuildingManager.addPersonToRandomBuilding(p, settlement);
+		else if (w instanceof Robot r)
+			BuildingManager.addRobotToRandomBuilding(r, settlement);
 	}
 
 	/**
@@ -246,7 +237,7 @@ public class ConstructionManager implements Serializable {
 	public ConstructionSite getNextConstructionSite(int skill) {
 
 		var potentials = sites.stream()
-					.filter(s -> s.isConstruction() && (s.getWorkOnSite() == null))
+					.filter(s -> s.getWorkOnSite() == null)
 					.filter(s -> s.getCurrentConstructionStage().getInfo().getBaseLevel() <= skill)
 					.toList();
 
@@ -329,9 +320,9 @@ public class ConstructionManager implements Serializable {
 	/**
 	 * Find the construction stages needed to build a building.
 	 * @param buildingType Type to create
-	 * @return List starting for first to last
+	 * @return list starting for first to last
 	 */
-	public static List<ConstructionStageInfo> getConstructionStages(String buildingType) {
+	static List<ConstructionStageInfo> getConstructionStages(String buildingType) {
 		var consConfig = SimulationConfig.instance().getConstructionConfiguration();
 
 		List<ConstructionStageInfo> results = new ArrayList<>();
@@ -350,7 +341,26 @@ public class ConstructionManager implements Serializable {
 	 */
 	public void destroy() {
 		sites.clear();
-		salvageValues.destroy();
-		salvageValues = null;
 	}
+
+	/**
+	 * Can this building be demolished; it needs an associate ConstructionInfo
+	 * @param b
+	 * @return
+	 */
+	public boolean canDemolish(Building b) {
+		return (!getConstructionStages(b.getBuildingType()).isEmpty());
+	}
+
+	/**
+	 * Remove a site
+	 * @param site
+	 */
+    public void removeSite(ConstructionSite site) {
+        if (sites.contains(site) && site.isProposed()) {
+			sites.remove(site);
+
+			Simulation.instance().getUnitManager().removeUnit(site);
+		}
+    }
 }

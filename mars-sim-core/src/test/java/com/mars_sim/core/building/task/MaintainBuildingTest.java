@@ -3,6 +3,7 @@ package com.mars_sim.core.building.task;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.maintenance.MaintenanceUtil;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
@@ -13,7 +14,7 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
 	
     static void buildingNeedMaintenance(Building b, MarsSimContext context) {
         MalfunctionManager manager = b.getMalfunctionManager();
-        double time = manager.getStandardInspectionWindow() * MaintainBuildingMeta.INSPECTION_PERCENTAGE * 220;
+        double time = manager.getStandardInspectionWindow() * MaintenanceUtil.INSPECTION_PERCENTAGE * 220;
         var mTime = context.getSim().getMasterClock().getMarsTime().addTime(time);
         manager.activeTimePassing(context.createPulse(mTime, false, false));
     }
@@ -27,9 +28,8 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
         var mt = new MaintainBuildingMeta();
         var tasks = mt.getSettlementTasks(s);
         
-        // Note: there is a chance that tasks are made since scoreMaintenance() currently
-        //       has a probability component
-//        assertTrue("No tasks found", tasks.isEmpty());
+        // Note: there is a chance that tasks are made since scoreMaintenance() currently  has a probability component
+        // Not used: assertTrue("No tasks found", tasks.isEmpty());
 
         // One building needs maintenance
         buildingNeedMaintenance(b1, this);
@@ -81,7 +81,7 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
         // Do maintenance for a few calls to ensure maintenance is happening
         executeTaskUntilPhase(p, task, 2);
         // Note that inspectionTimeCompleted will be reset to zero right away and is never a sign that work is accomplished
-//        assertGreaterThan("Maintenance completed", 0D, manager.getInspectionWorkTimeCompleted());
+        // Not used: assertGreaterThan("Maintenance completed", 0D, manager.getInspectionWorkTimeCompleted());
 
         // Complete until the end
         executeTaskForDuration(p, task, task.getTimeLeft() * 1.1);

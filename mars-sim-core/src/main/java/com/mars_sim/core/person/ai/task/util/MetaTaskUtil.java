@@ -25,6 +25,7 @@ import com.mars_sim.core.building.function.task.OptimizeSystemMeta;
 import com.mars_sim.core.building.function.task.ProduceFoodMeta;
 import com.mars_sim.core.building.function.task.ToggleFuelPowerSourceMeta;
 import com.mars_sim.core.building.task.MaintainBuildingMeta;
+import com.mars_sim.core.maintenance.MaintainRobotMeta;
 import com.mars_sim.core.malfunction.task.RepairMalfunctionMeta;
 import com.mars_sim.core.manufacture.task.ManufacturingMetaTask;
 import com.mars_sim.core.person.ai.task.meta.AnalyzeMapDataMeta;
@@ -45,7 +46,6 @@ import com.mars_sim.core.person.ai.task.meta.RelaxMeta;
 import com.mars_sim.core.person.ai.task.meta.ReportMissionControlMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewJobReassignmentMeta;
 import com.mars_sim.core.person.ai.task.meta.ReviewMissionPlanMeta;
-import com.mars_sim.core.person.ai.task.meta.SalvageBuildingMeta;
 import com.mars_sim.core.person.ai.task.meta.SleepMeta;
 import com.mars_sim.core.person.ai.task.meta.TeachMeta;
 import com.mars_sim.core.person.ai.task.meta.WorkoutMeta;
@@ -148,6 +148,7 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new LoadVehicleMeta());
 		allMetaTasks.add(new MaintainVehicleMeta());
 		allMetaTasks.add(new MaintainBuildingMeta());
+		allMetaTasks.add(new MaintainRobotMeta());
 		
 		allMetaTasks.add(new ManufacturingMetaTask());
 		allMetaTasks.add(new MeetTogetherMeta());
@@ -178,7 +179,6 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new ReviewJobReassignmentMeta());
 		allMetaTasks.add(new ReviewMissionPlanMeta());
 		
-		allMetaTasks.add(new SalvageBuildingMeta());
 		allMetaTasks.add(new SelfTreatHealthProblemMeta());
 		allMetaTasks.add(new SleepMeta()); 
 		allMetaTasks.add(new StudyFieldSamplesMeta());

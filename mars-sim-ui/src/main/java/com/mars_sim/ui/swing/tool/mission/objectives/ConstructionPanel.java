@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,6 +28,7 @@ import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.building.construction.ConstructionStage;
+import com.mars_sim.core.building.construction.ConstructionStage.Material;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.mission.objectives.ConstructionObjective;
@@ -76,8 +79,8 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         var stage = objective.getStage();
         String stageLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.stageLabel"); //-NLS-1$
         stageLabel = infoPanel.addTextField(stageLabelString, stage.getInfo().getName(),
-                        ConstructionStageFormat.getTooltip(stage, true));
-        
+                        ConstructionStageFormat.getTooltip(stage));
+        infoPanel.addTextField("Work Type", site.isConstruction() ? "Build" : "Demolish", null);
 
         workRemaining = infoPanel.addTextField("Work Remaining", "",  null);
          
@@ -90,10 +93,9 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         Border blackline = StyleManager.createLabelBorder(remainingMaterialsLabelString);
         remainingMaterialsLabelPane.setBorder(blackline);
         
-        // Create the construction materials table and model.
-        materialsTableModel = new MaterialsTableModel();
+        // Create the materials table and model.
+        materialsTableModel = new MaterialsTableModel(stage.isConstruction());
         JTable materialsTable = new JTable(materialsTableModel);
-        materialsTable.setRowSelectionAllowed(true);
 
         // Create a scroll pane for the remaining construction materials table.
         scrollPane = new JScrollPane();
@@ -102,17 +104,19 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         scrollPane.setPreferredSize(new Dimension(-1, 100));  
         scrollPane.setViewportView(materialsTable);
 
+        // Update remaining construction materials table.
+        materialsTableModel.updateTable();
+
         site.addUnitListener(this);    
         
         updateProgressBar();
-
-        // Update remaining construction materials table.
-        materialsTableModel.updateTable();
     }
 
     @Override
     public void missionUpdate(MissionEvent event) {
-        materialsTableModel.updateTable();
+        if (materialsTableModel != null) {
+            materialsTableModel.updateTable();
+        }
     }
 
     /**
@@ -127,7 +131,8 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
             updateProgressBar();
 
         }
-        else if (UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()) {
+        else if (UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()
+                && materialsTableModel != null) {
             // Update remaining construction materials table.
             materialsTableModel.updateTable();
         }
@@ -139,11 +144,11 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
     private void updateProgressBar() {
         ConstructionStage stage = objective.getStage();
         if (stage != null) {
-            double workLeft = stage.getRequiredWorkTime() - stage.getCompletableWorkTime();
-            workRemaining.setText(StyleManager.DECIMAL_MSOL.format(workLeft));
+            double workLeft = stage.getRequiredWorkTime() - stage.getCompletedWorkTime();
+            workRemaining.setText(StyleManager.DECIMAL2_MSOL.format(workLeft));
         
             // Update the tool tip string.
-            stageLabel.setToolTipText(ConstructionStageFormat.getTooltip(stage, true));
+            stageLabel.setToolTipText(ConstructionStageFormat.getTooltip(stage));
         }
     }
 
@@ -157,24 +162,31 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         /** default serial id. */
         private static final long serialVersionUID = 1L;
 
+        private static final String[] CONS_LABELS = {Msg.getString("ConstructionMissionCustomInfoPanel.column.material"),
+                                                    Msg.getString("ConstructionMissionCustomInfoPanel.column.type"),
+                                                    Msg.getString("ConstructionMissionCustomInfoPanel.column.original"),
+                                                    Msg.getString("ConstructionMissionCustomInfoPanel.column.available"),
+                                                    Msg.getString("ConstructionMissionCustomInfoPanel.column.missing")};
+        private static final String[] SALV_LABELS = {Msg.getString("ConstructionMissionCustomInfoPanel.column.material"),
+                                                    Msg.getString("ConstructionMissionCustomInfoPanel.column.type"),
+                                                    Msg.getString("ConstructionMissionCustomInfoPanel.column.available"),
+                                                    "Reclaimed"};
+
         // Data members.
-        private Map<Good, Integer> missingMap;
-        private Map<Good, Integer> availableMap;
-        private Map<Good, Integer> originalMap;
+        private Map<Good, Material> materials;
         private List<Good> goodsList;
+
+        private String[] columns;
 
         /**
          * Constructor.
          */
-        private MaterialsTableModel() {
-            // Use AbstractTableModel constructor.
-            super();
+        private MaterialsTableModel(boolean construction) {
+            this.columns = (construction ? CONS_LABELS : SALV_LABELS);
 
             // Initialize goods map and list.
             goodsList = new ArrayList<>();
-            originalMap = new HashMap<>();
-            availableMap = new HashMap<>();
-            missingMap = new HashMap<>();
+            materials = new HashMap<>();
         }
 
         /**
@@ -194,7 +206,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
          */
         @Override
         public int getColumnCount() {
-            return 5;
+            return columns.length;
         }
 
         /**
@@ -205,13 +217,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
          */
         @Override
         public String getColumnName(int columnIndex) {
-            return switch (columnIndex) {
-              case 0 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.material");
-              case 1 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.type");
-              case 2 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.missing");
-              case 3 -> Msg.getString("ConstructionMissionCustomInfoPanel.column.available");
-              default -> Msg.getString("ConstructionMissionCustomInfoPanel.column.original");
-            };
+            return columns[columnIndex];
         }
 
         /**
@@ -228,9 +234,9 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
                 return switch (column) {
                   case 0 ->  good.getName();
                   case 1 ->  good.getCategory().getName();
-                  case 2 -> missingMap.get(good);
-                  case 3 -> availableMap.get(good);
-                  default -> originalMap.get(good);
+                  case 2 -> materials.get(good).getRequired();
+                  case 3 -> materials.get(good).getAvailable();
+                  default -> materials.get(good).getMissing();
                 };
             }
 
@@ -245,32 +251,15 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
             // Populate originalMap.
             ConstructionStage stage = objective.getStage();
             if (stage != null) {
+                materials = new HashMap<>();
+                materials.putAll(stage.getParts().entrySet().stream()
+                        .collect(Collectors.toMap(e -> GoodsUtil.getGood(e.getKey()), Entry::getValue)));
+               
+                materials.putAll(stage.getResources().entrySet().stream()
+                        .collect(Collectors.toMap(e -> GoodsUtil.getGood(e.getKey()), Entry::getValue)));
 
-                originalMap = new HashMap<>();
-                stage.getOriginalResources().entrySet().forEach(i0 -> 
-                        originalMap.put(GoodsUtil.getGood(i0.getKey()), (int) i0.getValue().doubleValue()));
-                stage.getOriginalParts().entrySet().forEach(j0 ->
-                        originalMap.put(GoodsUtil.getGood(j0.getKey()), j0.getValue()));
-
-                if (!originalMap.isEmpty())
-                	scrollPane.setPreferredSize(new Dimension(-1, originalMap.size() * 40));
-
-                goodsList = new ArrayList<>(originalMap.keySet());
+                goodsList = new ArrayList<>(materials.keySet());
                 Collections.sort(goodsList);
-
-                // Add available resources.
-                availableMap = new HashMap<>();
-                stage.getAvailableResources().entrySet().forEach(i1 ->
-                    availableMap.put(GoodsUtil.getGood(i1.getKey()), (int) i1.getValue().doubleValue()));
-                stage.getAvailableParts().entrySet().forEach(j1 ->
-                    availableMap.put(GoodsUtil.getGood(j1.getKey()), j1.getValue()));
-        
-                // Add missing resources.
-                missingMap = new HashMap<>();
-                stage.getMissingResources().entrySet().forEach(i2 ->
-                    missingMap.put(GoodsUtil.getGood(i2.getKey()), (int) i2.getValue().doubleValue()));
-                stage.getMissingParts().entrySet().forEach(j2 ->
-                    missingMap.put(GoodsUtil.getGood(j2.getKey()), j2.getValue()));
             }
 
             fireTableDataChanged();

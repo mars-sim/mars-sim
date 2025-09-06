@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -585,15 +584,12 @@ public class Building extends FixedUnit implements Malfunctionable,
 	 */
 	public void removeFunctionsFromSettlement() {
 
-		Iterator<? extends Function> i = getFunctions().iterator();
-		while (i.hasNext()) {
-			Function f = i.next();
+		for (Function f : getFunctions()) {
 			f.removeFromSettlement();
 			removeFunction(f);
 		}
-		
-		functionMap.clear();
-		functionMap = null;
+
+		functionMap.clear(); // Do NOT nullify
 	}
 
 	/**

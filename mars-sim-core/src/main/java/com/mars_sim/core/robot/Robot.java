@@ -141,7 +141,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** robot's mind. */
 	private BotMind botMind;
 	/** robot's System condition. */
-	private SystemCondition health;
+	private SystemCondition condition;
 	/** The SalvageInfo instance. */
 	private SalvageInfo salvageInfo;
 	/** The equipment's malfunction manager. */
@@ -187,7 +187,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		setDescription("[ " + CURRENTLY + OPERABLE + " ] " + spec.getDescription());
 		
 		// Construct the SystemCondition instance.
-		health = new SystemCondition(this, spec);
+		condition = new SystemCondition(this, spec);
 
 		// Construct the SkillManager instance.
 		skillManager = new SkillManager(this);
@@ -420,22 +420,43 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
         return LocationStateType.SETTLEMENT_VICINITY == getLocationStateType();
     }
 
+	/**
+	 * Sets the robot to be salvaged.
+	 */
 	private void toBeSalvaged() {
 		((Settlement)getContainerUnit()).removeOwnedRobot(this);
 		isInoperable = true;
 	}
 
-	private  void setInoperable() {
-		// set description for this robot
-		super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
-		botMind.setInactive();
-		health.setPerformanceFactor(0);
-//		this.setPrimaryStatus(BotMode.MALFUNCTION);
-		toBeSalvaged();
-	}
-
+	/**
+	 * Is the robot operable ?
+	 * 
+	 * @return
+	 */
 	public boolean isOperable() {
 		return !isInoperable;
+	}
+	
+	/**
+	 * Sets the operational status.
+	 * 
+	 * @param value
+	 */
+	public void setInoperable(boolean value) {
+	
+		if (value) {
+			super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
+			botMind.setInactive();
+			condition.setPerformanceFactor(0);
+//			this.setPrimaryStatus(BotMode.MALFUNCTION);
+//			toBeSalvaged();
+		}
+		else {
+			super.setDescription(getDescription().replace(INOPERABLE, OPERABLE));
+			condition.setPerformanceFactor(1);
+		}
+		
+		isInoperable = value;
 	}
 	
 	/**
@@ -464,8 +485,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		
 		// If robot is dead, then skip
-		if (health != null) {
-			if (health.timePassing(pulse)) {
+		if (condition != null) {
+			if (condition.timePassing(pulse)) {
 				// Mental changes with time passing.
 				if (botMind != null) {
 					botMind.timePassing(pulse);
@@ -476,7 +497,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 					}	
 				}
 			} else {
-				setInoperable();
+				setInoperable(true);
 			}
 		}
 
@@ -504,7 +525,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @return The value is between 0 -> 1.
 	 */
 	public double getPerformanceRating() {
-		return health.getPerformanceFactor();
+		return condition.getPerformanceFactor();
 	}
 
 	/**
@@ -513,7 +534,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * @return the robot's batteryCondition
 	 */
 	public SystemCondition getSystemCondition() {
-		return health;
+		return condition;
 	}
 
 	/**
@@ -565,7 +586,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
      * @param time the duration of time
 	 */
     public void consumeEnergy(double amount, double time) {
-        health.consumeEnergy(amount, time);
+        condition.consumeEnergy(amount, time);
     }
 
 	/**
@@ -1247,7 +1268,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * Returns the current amount of energy in kWh. 
 	 */
 	public double getcurrentEnergy() {
-		return health.getkWattHourStored();
+		return condition.getkWattHourStored();
 	}
 	
 	public EquipmentInventory getEquipmentInventory() {
@@ -1319,8 +1340,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		attributes = null;
 		botMind.destroy();
 		botMind = null;
-		health.destroy();
-		health = null;
+		condition.destroy();
+		condition = null;
 		skillManager.destroy();
 		skillManager = null;
 	}
