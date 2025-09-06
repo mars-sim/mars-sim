@@ -106,7 +106,7 @@ public class BuildingPlacement {
 			// Max 10 attempt to place
 			for (int x = 1; x < 10; x++) {
 				for (Building b : bldMgr.getBuildingSet()) {
-					var sameBldPosn = positionNextToBuilding(b, spec, x*10, false);
+					var sameBldPosn = positionNextToBuilding(b, spec, x * 10.0, false);
 					if (sameBldPosn != null) {
 						logger.info(settlement, "Case 5. Any one of the buildings.");
 						return sameBldPosn;
