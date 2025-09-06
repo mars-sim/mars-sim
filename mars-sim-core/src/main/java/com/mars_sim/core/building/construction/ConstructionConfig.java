@@ -139,6 +139,10 @@ public class ConstructionConfig {
                                             + " references a prestage from a later stage type.");
                     }
                     preStage = loadedStages.get(preStageName);
+                    if (preStage == null) {
+                        throw new IllegalStateException("Construction prestage " + preStageName + " in stage "
+                                            + name + " unknown.");
+                    }
                     break;
                 }
             }

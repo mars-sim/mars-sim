@@ -118,6 +118,16 @@
 			</vehicle>
 		</foundation>
 
+		<foundation name="Surface Foundation 7x7" width="7.0" length="7.0"
+		 north-south-alignment="length" base-level="0"
+		 constructable="true" salvagable="true" work-time="0.8" skill-required="1" >
+			<resource type="concrete" amount="49.0" />
+			<vehicle type="LUV" >
+				<attachment-part type="bulldozer blade" />
+				<attachment-part type="soil compactor" />
+			</vehicle>
+		</foundation>
+
 		<foundation name="Surface Foundation 3x6" width="3.0" length="6.0" 
 		 north-south-alignment="length" base-level="0"
 		 constructable="true" salvagable="true" work-time="0.6" skill-required="1" >
@@ -373,7 +383,15 @@
 			</vehicle>
 		</frame>
 
-
+		<frame name="Small Brick Shed Frame" width="5.0" length="5.0"
+		 north-south-alignment="length" base-level="-1" constructable="true"
+		 salvagable="true" work-time="1.0" skill-required="1" foundation="Subsurface Foundation 5x5x3" >
+			<resource type="concrete" amount="25.0" />
+			<part type="brick" number="250" />
+			<vehicle type="LUV" >
+				<attachment-part type="crane boom" />
+			</vehicle>
+		</frame>
 				
 		<frame name="Round Hab Frame" width="9.0" length="9.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
@@ -848,7 +866,7 @@
 
 		<building name="Manufacturing Shed" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="0.5" skill-required="3" frame="Brick A Shed Frame" >
+		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Brick Shed Frame" >
 			<resource type="concrete" amount="75.0" />
 			<part type="aerogel tile" number="90" />
 			<part type="steel pipe" number="3" />
@@ -871,7 +889,7 @@
 
 		<building name="Bunkhouse" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Brick Shed A Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Brick Shed Frame" >
 		 	<resource type="cement" amount="75.0" />
 		 	<resource type="concrete" amount="57.0" />
 			<part type="aerogel tile" number="90" />
@@ -1444,7 +1462,7 @@
 
 		<building name="Storage Shed" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="0.5" skill-required="3" frame="Brick Shed A Frame" >
+		 salvagable="true" work-time="0.5" skill-required="3" frame="Small Brick Shed Frame" >
 			<resource type="polyester resin" amount="2.0" />
 			<resource type="styrene" amount="1.0" />
 			<resource type="polyethylene" amount="10.0" />
@@ -1484,7 +1502,7 @@
 
 		<building name="Mining Lab" width="5.0" length="5.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Brick Shed A Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Small Brick Shed Frame" >
 		 	<resource type="cement" amount="50.0" />
 		 	<resource type="concrete" amount="50.0" />		 	
 			<part type="steel pipe" number="3" />
