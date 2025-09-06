@@ -6,9 +6,9 @@
  */
 package com.mars_sim.core.building;
 
-import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.configuration.RelativePosition;
 
 /**
- * Represents a LocalPosition with an associated name.
+ * Represents a relative position in a Building with an associated name.
  */
-public record NamedPosition(String name, LocalPosition position) {}
+public record NamedPosition(String name, RelativePosition position) {}

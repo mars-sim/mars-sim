@@ -152,7 +152,7 @@ public class BuildingConfig {
 	}
 	
 	/**
-	 * Parses a building spec node.
+	 * Parses a full building spec node.
 	 *
 	 * @param buildingTypeName
 	 * @param buildingElement
@@ -163,6 +163,93 @@ public class BuildingConfig {
 	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement,
 								ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 
+		var newSpec = parseBuildingSpec(buildingElement, buildingTypeName, manuConfig);
+		
+		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
+		if (construction != null) {
+			newSpec.setConstruction(ConstructionType.valueOf(ConfigHelper.convertToEnumName(construction)));
+		}
+
+		String baseMass = buildingElement.getAttributeValue(BASE_MASS);
+		if (baseMass != null) {
+			newSpec.setBaseMass(Double.parseDouble(baseMass));
+		}
+
+		// Get Storage
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element storageElement = functionsElement.getChild(STORAGE);
+		if (storageElement != null) {
+			parseStorage(newSpec, storageElement);
+		}
+
+		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
+		if (thermalGenerationElement != null) {
+			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE),
+														   CAPACITY);
+			newSpec.setHeatSource(heatSourceList);
+		}
+
+		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
+		if (powerGenerationElement != null) {
+			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE),
+															POWER);
+			newSpec.setPowerSource(powerSourceList);
+		}
+
+		Element researchElement = functionsElement.getChild(RESEARCH);
+		if (researchElement != null) {
+			parseResearch(newSpec, researchElement);
+		}
+
+		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
+		if (resourceProcessingElement != null) {
+			newSpec.setResourceProcess(parseResourceProcessing(resProcConfig, resourceProcessingElement));
+		}
+
+		Element wasteProcessingElement = functionsElement.getChild(WASTE_PROCESSING);
+		if (wasteProcessingElement != null) {
+			newSpec.setWasteProcess(parseResourceProcessing(resProcConfig, wasteProcessingElement));
+		}
+
+		var width = newSpec.getWidth();
+		var length = newSpec.getLength();
+		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
+		if (vehicleElement != null) {
+			Set<LocalPosition> roverParking = parsePositions(vehicleElement, ROVER, LOCATION,
+												   width, length);
+			newSpec.setRoverParking(roverParking);
+		}
+
+		if (vehicleElement != null) {
+			Set<LocalPosition> utilityParking = parsePositions(vehicleElement, UTILITY, LOCATION,
+												   width, length);
+			newSpec.setUtilityParking(utilityParking);
+		}
+		
+		if (vehicleElement != null) {
+			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, FLYER, LOCATION,
+												   width, length);
+			newSpec.setFlyerParking(flyerParking);
+		}
+		
+		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
+		if (medicalElement != null) {
+			Set<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
+												width, length);
+			newSpec.setBeds(beds);
+		}
+		
+		return newSpec;
+	}
+
+	/**
+	 * Parse and create the basic BuildingSpec
+	 * @param buildingElement
+	 * @param buildingTypeName
+	 * @param manuConfig
+	 * @return
+	 */
+	private BuildingSpec parseBuildingSpec(Element buildingElement, String buildingTypeName, ManufactureConfig manuConfig) {
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
 		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
@@ -178,7 +265,7 @@ public class BuildingConfig {
 		// Process description
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
-		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
+		desc = desc.replaceAll("\t+", "").replaceAll("\s+", " ").replace("   ", " ").replace("  ", " ");
 		
 		// Process the scopes
 		Set<String> scopeNames = new HashSet<>();
@@ -238,85 +325,11 @@ public class BuildingConfig {
 			category = deriveCategory(supportedFunctions.keySet());
 		}
 
-		BuildingSpec newSpec = new BuildingSpec(this, buildingTypeName, desc, category, 
+		return new BuildingSpec(this, buildingTypeName, desc, category, 
 				width, length, alignment, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
-		
-		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
-		if (construction != null) {
-			newSpec.setConstruction(ConstructionType.valueOf(ConfigHelper.convertToEnumName(construction)));
-		}
-
-		String baseMass = buildingElement.getAttributeValue(BASE_MASS);
-		if (baseMass != null) {
-			newSpec.setBaseMass(Double.parseDouble(baseMass));
-		}
-
-		// Get Storage
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element storageElement = functionsElement.getChild(STORAGE);
-		if (storageElement != null) {
-			parseStorage(newSpec, storageElement);
-		}
-
-		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
-		if (thermalGenerationElement != null) {
-			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE),
-														   CAPACITY);
-			newSpec.setHeatSource(heatSourceList);
-		}
-
-		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
-		if (powerGenerationElement != null) {
-			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE),
-															POWER);
-			newSpec.setPowerSource(powerSourceList);
-		}
-
-		Element researchElement = functionsElement.getChild(RESEARCH);
-		if (researchElement != null) {
-			parseResearch(newSpec, researchElement);
-		}
-
-		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
-		if (resourceProcessingElement != null) {
-			newSpec.setResourceProcess(parseResourceProcessing(resProcConfig, resourceProcessingElement));
-		}
-
-		Element wasteProcessingElement = functionsElement.getChild(WASTE_PROCESSING);
-		if (wasteProcessingElement != null) {
-			newSpec.setWasteProcess(parseResourceProcessing(resProcConfig, wasteProcessingElement));
-		}
-
-		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
-		if (vehicleElement != null) {
-			Set<LocalPosition> roverParking = parsePositions(vehicleElement, ROVER, LOCATION,
-												   width, length);
-			newSpec.setRoverParking(roverParking);
-		}
-
-		if (vehicleElement != null) {
-			Set<LocalPosition> utilityParking = parsePositions(vehicleElement, UTILITY, LOCATION,
-												   width, length);
-			newSpec.setUtilityParking(utilityParking);
-		}
-		
-		if (vehicleElement != null) {
-			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, FLYER, LOCATION,
-												   width, length);
-			newSpec.setFlyerParking(flyerParking);
-		}
-		
-		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
-		if (medicalElement != null) {
-			Set<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
-												width, length);
-			newSpec.setBeds(beds);
-		}
-		
-		return newSpec;
 	}
 
 	/**
@@ -514,7 +527,7 @@ public class BuildingConfig {
 		if (activityElement != null) {
 			int i = 1;
 			for(Element activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
-				LocalPosition point = ConfigHelper.parseLocalPosition(activitySpot);
+				var point = ConfigHelper.parseRelativePosition(activitySpot);
 
 				// Check location is within the building. Check as long as the maximum
 				// is defined

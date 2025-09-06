@@ -12,11 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-//For batik-transcoder 1.7, use
-//import org.apache.batik.dom.svg.SAXSVGDocumentFactory; 
-//For batik-transcoder up to 1.6, use
-//import org.apache.batik.dom.util.SAXDocumentFactory;
-//For batik-transcoder1.8 and 1.9, use 
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory; 
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
@@ -64,6 +59,10 @@ public class SVGLoader {
 			String subPath = prefix.replace(DOT, SLASH);
 			String fileName = SVG_DIR + subPath + SLASH + name;
 			URL resource = SVGLoader.class.getResource(fileName);
+			if (resource == null) {
+				logger.severe("No image found called " + fileName);
+				return null;
+			}
 			
 			String parser = XMLResourceDescriptor.getXMLParserClassName();
 			SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);

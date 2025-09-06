@@ -122,6 +122,18 @@ public class ConfigHelper {
 	 * @param element
 	 * @return
 	 */
+	public static RelativePosition parseRelativePosition(Element element) {
+		double x = getAttributeDouble(element, X_LOCATION);
+		double y = getAttributeDouble(element, Y_LOCATION);
+		return new RelativePosition(x, y);
+	}
+
+	/**
+	 * Parses an element that conforms to the LocalPosition style.
+	 * 
+	 * @param element
+	 * @return
+	 */
 	public static LocalPosition parseLocalPosition(Element element) {
 		double x = -1;
 		double y = -1;

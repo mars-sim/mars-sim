@@ -91,7 +91,7 @@ public class LocalAreaUtil {
 	 * @param boundedObject
 	 * @return
 	 */
-	private static double[] translateLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
+	public static double[] translateLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
 		double radianRotation = Math.toRadians(boundedObject.getFacing());
 		double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
 		double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));

@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingConfig;
@@ -93,7 +92,7 @@ public abstract class Function implements Serializable, Temporal {
 	private static Set<ActivitySpot> createActivitySpot(Set<NamedPosition> set, Building owner) {
 		return set.stream()
 							.map(p -> new ActivitySpot(p.name(),
-											LocalAreaUtil.convert2SettlementPos(p.position(), owner)))
+											p.position().toPosition(owner)))
 							.collect(Collectors.toSet());
 	}
 
@@ -227,7 +226,6 @@ public abstract class Function implements Serializable, Temporal {
 		var allocated = as.claim(w, false, this);
 		if (allocated != null) {
 			w.setActivitySpot(allocated);
-//			logger.info(w, allocated.getSpotDescription() + " was claimed.");
 			return true;
 		}
 		return false;
@@ -320,9 +318,6 @@ public abstract class Function implements Serializable, Temporal {
 			}
 		}
 		return num;
-//		return (int) spots.stream()
-//					.filter(ActivitySpot::isEmpty)
-//					.count();
 	}
 
 	/**
