@@ -116,7 +116,7 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
     }
 
     /**
-     * Adds a modifier to the Rating. Apply the value as a modifier.
+     * Adds a modifier (or multiplier) to the Rating. Apply the value as a modifier.
      * Note: modifiers are multiplied.
      * 
      * @param name
@@ -130,7 +130,7 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
             calculateScore();
         }
         else {
-            // New modifier so just apply multipler
+            // New modifier so just apply multiplier
             score *= value;
         }
     }

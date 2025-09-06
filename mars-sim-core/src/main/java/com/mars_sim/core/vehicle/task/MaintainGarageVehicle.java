@@ -20,6 +20,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
@@ -202,7 +203,13 @@ public class MaintainGarageVehicle extends Task {
 		// Check if an accident happens during maintenance.
 		checkForAccident(vehicle, time, 0.007);
 
-		return 0;
+		// Note: workTime can be longer or shorter than time
+		if (workTime > time) {
+			// if work time is greater, then time is saved on this frame
+			return MathUtils.between(workTime, 0, workTime - time);
+		}
+		else
+			return 0;
 	}
 
 	@Override

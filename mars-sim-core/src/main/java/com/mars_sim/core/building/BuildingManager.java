@@ -1617,7 +1617,13 @@ public class BuildingManager implements Serializable {
 			}
 		}
 		else {
-			logger.info(worker, 10_000L, "Unable to claim a " + functionType.getName() + " spot.");
+			if (functionType != null) {
+				logger.info(worker, 10_000L, "Unable to claim a " + functionType.getName() + " spot.");
+			}
+			else {
+				logger.info(worker, 10_000L, "Unable to claim a spot.");
+			}
+				
 		}
 		
 		return result;

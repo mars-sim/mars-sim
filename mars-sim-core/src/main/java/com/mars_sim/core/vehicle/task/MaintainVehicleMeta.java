@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
-import com.mars_sim.core.building.task.MaintainBuildingMeta;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.maintenance.MaintenanceUtil;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -36,6 +36,12 @@ import com.mars_sim.core.vehicle.Vehicle;
  * Meta task for the MaintainGarageVehicle task.
  */
 public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask {
+	// Default logger
+	// May add back private static final SimLogger logger = SimLogger.getLogger(MaintainVehicleMeta.class.getName());
+
+	/**
+     * Represents a Job needed for internal maintenance on a vehicle.
+     */
 	private static class VehicleMaintenanceJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
@@ -72,14 +78,15 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.maintainGarageVehicle"); //$NON-NLS-1$
 	
+	private static final double ROBOT_FACTOR = 2D;
+	
     public MaintainVehicleMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.WORK_HOUR);
 		
-		setFavorite(FavoriteType.OPERATION);
-		setTrait(TaskTrait.STRENGTH);
+		setFavorite(FavoriteType.OPERATION, FavoriteType.TINKERING);
+		setTrait(TaskTrait.AGILITY, TaskTrait.STRENGTH);
 		setPreferredJob(JobType.LOADERS);
-        addPreferredRobot();
-		addPreferredRobot(RobotType.REPAIRBOT, RobotType.DELIVERYBOT);
+		addPreferredRobot(RobotType.REPAIRBOT, RobotType.DELIVERYBOT, RobotType.CONSTRUCTIONBOT);
 		addAllCrewRoles();
 	}
 
@@ -92,7 +99,10 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
      */
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
-		return TaskUtil.assessRobot(t, r);
+		var factor = TaskUtil.assessRobot(t, r);
+		if (factor.getScore() >= 1)
+			factor.addModifier("robot.expert", ROBOT_FACTOR);
+		return factor;
     }
 
 	/**
@@ -104,6 +114,10 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
+		Vehicle worstVehicle = null;
+		double highestScore = 0;
+		RatingScore score = new RatingScore(0);
+				
 		for (Vehicle vehicle : getAllVehicleCandidates(settlement, false)) {
 				
 			MalfunctionManager manager = vehicle.getMalfunctionManager();
@@ -117,17 +131,22 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 				boolean partsPosted = vehicle.getMalfunctionManager()
 						.hasMaintenancePartsInStorage(settlement);
 				
-				RatingScore score = MaintainBuildingMeta.scoreMaintenance(manager, vehicle, partsPosted);
+				score = MaintenanceUtil.scoreMaintenance(manager, vehicle, partsPosted);
 	
-				// Vehicle in need of maintenance
-				if (score.getScore() >= 0) {
-					
-					boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-							vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
-					
-					tasks.add(new VehicleMaintenanceJob(this, vehicle, !garageTask, score));
+				if (score.getScore() > highestScore) {
+					worstVehicle = vehicle;
+					highestScore = score.getScore();
 				}
 			}
+		}
+		
+		// Vehicle in need of maintenance
+		if (highestScore > 0) {
+			
+			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
+					worstVehicle.getAssociatedSettlement(), worstVehicle instanceof Rover);
+			
+			tasks.add(new VehicleMaintenanceJob(this, worstVehicle, !garageTask, score));
 		}
 
 		return tasks;

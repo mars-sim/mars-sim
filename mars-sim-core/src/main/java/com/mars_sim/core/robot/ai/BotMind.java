@@ -150,7 +150,8 @@ public class BotMind implements Serializable, Temporal {
 			}
 		}
 		
-		else {
+		// If the robot is inoperable, it won't look for new tasks
+		else if (robot.isOperable()) {
 			lookForATask();
 		}
 	}
@@ -280,7 +281,7 @@ public class BotMind implements Serializable, Temporal {
 	 * aborted.
 	 */
 	public void setInactive() {
-		botTaskManager.clearAllTasks("Inactive");
+//		botTaskManager.clearAllTasks("Inactive");
 		if (hasActiveMission()) {
 			mission.removeMember(robot);
 			mission = null;

@@ -15,6 +15,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -139,6 +140,12 @@ extends EVAOperation {
 		// Check if an accident happens during maintenance.
 		checkForAccident(entity, time, 0.01);
 		
-		return 0;
+		// Note: workTime can be longer or shorter than time
+		if (workTime > time) {
+			// if work time is greater, then time is saved on this frame
+			return MathUtils.between(workTime, 0, workTime - time);
+		}
+		else
+			return 0;
 	}
 }

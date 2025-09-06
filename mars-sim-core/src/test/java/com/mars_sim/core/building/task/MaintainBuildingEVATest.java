@@ -27,8 +27,7 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
 
         var mt = new MaintainBuildingMeta();
         var tasks = mt.getSettlementTasks(s);
-        // Note: there is a chance that tasks are made since scoreMaintenance currently
-        //       has a probability component
+        // Note: there is a chance that tasks are made since scoreMaintenance currently has a probability component
 //        assertTrue("No tasks found", tasks.isEmpty());
 
         // One building needs maintenance
@@ -81,10 +80,8 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         
         assertFalse("Task created", task.isDone()); 
 
-        // Note: currently, EVAOperation set duration to 0
-//        assertGreaterThan("Duration", 0D, task.getDuration());
-        
-//        assertEquals("EVA walk completed", MaintainBuildingEVA.MAINTAIN, task.getPhase());
+        // Note: currently, EVAOperation set duration to 0;  assertGreaterThan("Duration", 0D, task.getDuration());
+//      // Not used:  assertEquals("EVA walk completed", MaintainBuildingEVA.MAINTAIN, task.getPhase());
         assertEquals("EVA walking outside", EVAOperation.WALK_TO_OUTSIDE_SITE, task.getPhase());
         
         // Move onsite
