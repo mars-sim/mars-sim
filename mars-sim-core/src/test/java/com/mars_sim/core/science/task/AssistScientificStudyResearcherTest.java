@@ -23,7 +23,7 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
         assertEquals("Assisted research", research,  t.getAssisted());
         assertEquals("Assistant ", assistant,  research.getResearchAssistant());
 
-        // Assistent task does very little but changes relationship
+        // Assistant task does very little but changes relationship
         var researcher = research.getResearcher();
         RelationshipUtil.changeOpinion(researcher, assistant, RelationshipType.FACE_TO_FACE_COMMUNICATION, 1);
         var origOpinion = researcher.getRelation().getOpinion(assistant);
@@ -31,7 +31,7 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
         var newOpinion = researcher.getRelation().getOpinion(assistant);
         assertGreaterThan("Opinion of researcher", origOpinion.getAverage(), newOpinion.getAverage());
 
-        research.endTask(); // End rsearch task should end this assistance task
+        research.endTask(); // End research task should end this assistance task
         executeTaskForDuration(assistant, t, 100);
         assertTrue("Assistance complete", t.isDone());
         assertNull("Assistant releases ", research.getResearchAssistant());

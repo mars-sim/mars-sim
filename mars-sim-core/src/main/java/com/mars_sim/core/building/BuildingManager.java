@@ -574,7 +574,8 @@ public class BuildingManager implements Serializable {
 			}
 			
 			if (b == null && buildings != null && !buildings.isEmpty()) {
-				b = (new ArrayList<>(buildings)).get(0);
+				List<Building> bldg = new ArrayList<>(buildings);
+				b = bldg.get(0);
 			}
 			if (b == null) {
 				b = getBuildingWithSpot(person, FunctionType.RESEARCH,
@@ -616,7 +617,11 @@ public class BuildingManager implements Serializable {
 			return RandomUtil.getWeightedRandomObject(possibleBuildings);
 		}
 		
-		return (new ArrayList<>(buildings)).get(0);
+		List<Building> bldg = new ArrayList<>(buildings);
+		if (bldg.size() > 0)
+			return bldg.get(0);
+		
+		return null;
 	}
 	
 	/**
