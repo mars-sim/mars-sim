@@ -14,6 +14,8 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Disposable;
+import org.mars_sim.msp.libgdx.surface3d.terrain.CubeSpherePlanetLod;
+import org.mars_sim.msp.libgdx.surface3d.terrain.TerrainConfig;
 
 public class Surface3DApp extends ApplicationAdapter {
 
@@ -23,11 +25,9 @@ public class Surface3DApp extends ApplicationAdapter {
     private PerspectiveCamera cam;
     private ModelBatch batch;
     private Environment env;
-    private Model planetModel;
-    private ModelInstance planet;
-    private OrbitCameraController orbit;
 
-    private final Disposable[] disposables = new Disposable[2];
+    private CubeSpherePlanetLod planetLod;
+    private OrbitCameraController orbit;
 
     @Override
     public void create() {
@@ -41,21 +41,25 @@ public class Surface3DApp extends ApplicationAdapter {
         cam.up.set(0, 1, 0);
         cam.update();
 
-        // Scene + lights
-        // --- Use the custom Mars fog shader (Step 3 fix) ---
+        // Scene + lights + fog shader
         MarsFogShader.Settings fog = MarsFogShader.Settings.marsDefaults(MARS_RADIUS_KM);
         batch = new ModelBatch(new MarsFogShaderProvider(fog));
 
         env = new Environment();
-        // Slightly lower ambient for a dustier, less washed-out look (Step 3 optional tweak)
         env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.45f, 0.45f, 0.45f, 1f));
         env.add(new DirectionalLight().set(1.0f, 0.98f, 0.93f, -0.7f, -0.9f, -0.3f)); // sun-ish
 
-        // Planet geometry (single mesh cube-sphere for now, tiles/LOD later)
-        CubeSpherePlanet generator = new CubeSpherePlanet(MARS_RADIUS_KM,
-                new NoiseHeightFunction( /* amplitudeKm= */ 2.5f, /* frequency= */ 8f, /* octaves= */ 3));
-        planetModel = generator.buildModel("mars-planet", MarsMaterials.dusty());
-        planet = new ModelInstance(planetModel);
+        // LOD terrain setup
+        TerrainConfig cfg = TerrainConfig.defaults();
+        Material marsMat = MarsMaterials.dusty();
+
+        // Height function can be replaced later with MOLA sampling; noise is a placeholder.
+        planetLod = new CubeSpherePlanetLod(
+                MARS_RADIUS_KM,
+                new NoiseHeightFunction(/* amplitudeKm= */ 2.5f, /* frequency= */ 8f, /* octaves= */ 3),
+                cfg,
+                marsMat
+        );
 
         // Input: orbit around planet
         orbit = new OrbitCameraController(cam, /*targetX=*/0, /*targetY=*/0, /*targetZ=*/0);
@@ -70,10 +74,6 @@ public class Surface3DApp extends ApplicationAdapter {
         Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         Gdx.gl.glEnable(GL20.GL_CULL_FACE);
         Gdx.gl.glCullFace(GL20.GL_BACK);
-
-        // Track disposables
-        disposables[0] = batch;
-        disposables[1] = planetModel;
     }
 
     @Override
@@ -81,11 +81,14 @@ public class Surface3DApp extends ApplicationAdapter {
         float dt = MathUtils.clamp(Gdx.graphics.getDeltaTime(), 0f, 1f / 30f);
         orbit.update(dt);
 
+        // Update LOD selection for current camera
+        planetLod.update(cam);
+
         Gdx.gl.glClearColor(0.02f, 0.02f, 0.035f, 1f); // near-black space
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         batch.begin(cam);
-        batch.render(planet, env);
+        batch.render(planetLod, env);
         batch.end();
     }
 
@@ -98,9 +101,8 @@ public class Surface3DApp extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        for (Disposable d : disposables) {
-            if (d != null) d.dispose();
-        }
+        if (planetLod != null) planetLod.dispose();
+        if (batch != null) batch.dispose();
     }
 
     // Simple helper materials for Mars-y look
