@@ -198,7 +198,7 @@ public class ConstructionSitesPanel extends JPanel {
         private String getToolTipString() {            
             ConstructionStage stage = site.getCurrentConstructionStage();
             if (stage != null) {
-                return ConstructionStageFormat.getTooltip(stage, true);
+                return ConstructionStageFormat.getTooltip(stage);
             }
             return "";
         }

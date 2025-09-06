@@ -126,18 +126,20 @@ public class TabPanelConstruction extends TabPanel {
 			.forEach(c -> buildingChoice.addItem(c));
 		selectionPanel.add(buildingChoice, BorderLayout.CENTER);
 
-		var buttonPanel = new JPanel(new GridLayout(1, 2));
-		var addButton = new JButton(ImageLoader.getIconByName("action/add"));
-		addButton.setToolTipText("Add building to the queue");
-		addButton.addActionListener(event -> addBuildingToQueue());
-		buttonPanel.add(addButton);
+		var buttonPanel = new JPanel(new GridLayout(1, 3));
+		var addSButton = new JButton("Add Site");
+		addSButton.addActionListener(event -> addBuildingToSite());
+		buttonPanel.add(addSButton);
 
-		deleteButton = new JButton(ImageLoader.getIconByName("action/delete"));
+		var addQButton = new JButton("Add To Queue");
+		addQButton.addActionListener(event -> addBuildingToQueue());
+		buttonPanel.add(addQButton);
+
+		deleteButton = new JButton("Delete from queue");
 		deleteButton.setEnabled(false);
-		deleteButton.setToolTipText("Delete building from queue");
 		deleteButton.addActionListener(event -> removeBuilding());
 		buttonPanel.add(deleteButton);
-		selectionPanel.add(buttonPanel, BorderLayout.EAST);
+		selectionPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		queue = new QueueTableModel(manager.getBuildingSchedule());
 		queueTable = new JTable(queue) {
@@ -159,6 +161,15 @@ public class TabPanelConstruction extends TabPanel {
 	private void queueItemSelected(ListSelectionEvent e) {
 		ListSelectionModel lsm = (ListSelectionModel)e.getSource();
 		deleteButton.setEnabled(!lsm.isSelectionEmpty());
+	}
+
+	private void addBuildingToSite() {
+		String selectedBuilding = (String) buildingChoice.getSelectedItem();
+		var bConfig = getDesktop().getSimulation().getConfig().getBuildingConfiguration();
+		var spec = bConfig.getBuildingSpec(selectedBuilding);
+		if (spec != null) {
+			settlement.getConstructionManager().createNewBuildingSite(spec);
+		}
 	}
 
 	private void addBuildingToQueue() {

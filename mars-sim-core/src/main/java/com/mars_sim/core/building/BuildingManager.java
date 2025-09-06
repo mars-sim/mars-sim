@@ -233,8 +233,6 @@ public class BuildingManager implements Serializable {
 		if (buildings.contains(oldBuilding)) {
 			// Remove building connections (hatches) to old building.
 			getBuildingConnectorManager().removeAllConnectionsToBuilding(oldBuilding);
-			// Remove the building's functions from the settlement.
-			oldBuilding.removeFunctionsFromSettlement();
 
 			buildings.remove(oldBuilding);
 
@@ -242,6 +240,9 @@ public class BuildingManager implements Serializable {
 			for (var f : oldBuilding.getFunctions()) {
 				removeOneFunctionfromBFMap(oldBuilding, f);
 			}
+
+			// Remove the building's functions from the settlement.
+			oldBuilding.removeFunctionsFromSettlement();
 
 			settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
 		}

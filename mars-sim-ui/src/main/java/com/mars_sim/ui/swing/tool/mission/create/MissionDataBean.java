@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
@@ -23,7 +22,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.AreologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.BiologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
-import com.mars_sim.core.person.ai.mission.SalvageMission;
 import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.CollectRegolith;
 import com.mars_sim.core.person.ai.mission.Delivery;
@@ -58,7 +56,6 @@ class MissionDataBean {
 	private Settlement startingSettlement;
 	private Settlement destinationSettlement;
     private Settlement constructionSettlement;
-    private Settlement salvageSettlement;
     
 	private Drone drone;
 	private Rover rover;
@@ -74,9 +71,6 @@ class MissionDataBean {
 	private MineralSite miningSite;
     
     private ConstructionSite constructionSite;
-    private ConstructionSite salvageSite;
-    
-    private Building salvageBuilding;
   
     private Person leadResearcher;
     private ScientificStudy study;
@@ -84,7 +78,6 @@ class MissionDataBean {
 	private Collection<Worker> mixedMembers = new HashSet<>();
 	private Collection<Worker> botMembers = new HashSet<>();
     private List<GroundVehicle> constructionVehicles;
-    private List<GroundVehicle> salvageVehicles;
     private Map<Good, Integer> emergencyGoods;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
@@ -143,9 +136,6 @@ class MissionDataBean {
 					mission = new Mining(mixedMembers, miningSite, rover, luv);
 			case MissionType.RESCUE_SALVAGE_VEHICLE ->
 					mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover);
-			case MissionType.SALVAGE ->
-					mission = new SalvageMission(mixedMembers, salvageSettlement, salvageBuilding, salvageSite,
-							salvageVehicles);
 			case MissionType.TRADE ->
 					mission = new Trade(mixedMembers, destinationSettlement, rover,
 							sellGoods, buyGoods);
@@ -492,78 +482,6 @@ class MissionDataBean {
 	}
 
     /**
-     * Gets the salvage settlement.
-     * 
-     * @return settlement.
-     */
-	protected Settlement getSalvageSettlement() {
-        return salvageSettlement;
-    }
-
-    /**
-     * Sets the salvage settlement.
-     * 
-     * @param salvageSettlement the salvage settlement.
-     */
-	protected void setSalvageSettlement(Settlement salvageSettlement) {
-        this.salvageSettlement = salvageSettlement;
-    }
-
-    /**
-     * Gets the salvage site.
-     * 
-     * @return salvage site.
-     */
-	protected ConstructionSite getSalvageSite() {
-        return salvageSite;
-    }
-
-    /**
-     * Sets the salvage site.
-     * 
-     * @param salvageSite the salvage site.
-     */
-    protected void setSalvageSite(ConstructionSite salvageSite) {
-        this.salvageSite = salvageSite;
-    }
-
-    /**
-     * Gets the salvage building.
-     * 
-     * @return salvage building.
-     */
-    protected Building getSalvageBuilding() {
-        return salvageBuilding;
-    }
-
-    /**
-     * Sets the salvage building.
-     * 
-     * @param salvageBuilding the salvage building.
-     */
-    protected void setSalvageBuilding(Building salvageBuilding) {
-        this.salvageBuilding = salvageBuilding;
-    }
-
-    /**
-     * Gets the salvage vehicles.
-     * 
-     * @return list of ground vehicles.
-     */
-    protected List<GroundVehicle> getSalvageVehicles() {
-        return salvageVehicles;
-    }
-
-    /**
-     * Sets the salvage vehicles.
-     * 
-     * @param salvageVehicles list of ground vehicles.
-     */
-    protected void setSalvageVehicles(List<GroundVehicle> salvageVehicles) {
-        this.salvageVehicles = salvageVehicles;
-    }
-
-    /**
      * Gets the construction settlement.
      * 
      * @return settlement.
@@ -723,10 +641,6 @@ class MissionDataBean {
     	return missionType == MissionType.CONSTRUCTION;
 	}
 
-	protected boolean isBuildingSalvageMission() {
-    	return missionType == MissionType.SALVAGE;
-	}
-
 	protected boolean requiresFieldSite() {
 		return isScientificMission();
 	}
@@ -747,8 +661,7 @@ class MissionDataBean {
 	 * @return true, if a mission takes place outside the starting base
 	 */
 	protected boolean isRemoteMission() {
-        return missionType != MissionType.CONSTRUCTION
-                && missionType != MissionType.SALVAGE;
+        return missionType != MissionType.CONSTRUCTION;
 	}
 
 	/**

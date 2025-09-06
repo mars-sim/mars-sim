@@ -366,8 +366,6 @@ implements ActionListener {
 			Settlement settlement = missionData.getStartingSettlement();
 			if (MissionType.CONSTRUCTION == missionData.getMissionType())
 				settlement = missionData.getConstructionSettlement();
-			else if (MissionType.SALVAGE == missionData.getMissionType())
-				settlement = missionData.getSalvageSettlement();
 			// Pick only deliverybot for delivery mission
 			var robots = settlement.getAllAssociatedRobots().stream()
 							.filter(r -> r.getRobotType() == RobotType.DELIVERYBOT)

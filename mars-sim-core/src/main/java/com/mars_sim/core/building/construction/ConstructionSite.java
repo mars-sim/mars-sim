@@ -204,6 +204,27 @@ public class ConstructionSite extends FixedUnit {
         return newBuilding;
     }
 
+    
+	/**
+	 * Salvage construction parts from the stage.
+	 * @param site 
+	 * @param stage 
+	 * 
+	 */
+	public void reclaimParts(double skill) {
+		logger.info(this, "Reclaimed parts");
+
+		// Modify salvage chance based on building wear condition.
+		// Note: if non-building construction stage, wear condition should be 100%.
+		double salvageChance = 50D; // Needs to be aware ot the source Building
+
+
+		// Modify salvage chance based on average construction skill.
+		salvageChance += skill * 5D;
+
+        currentStage.reclaimParts(salvageChance);
+	}
+
     private static BuildingSpec getBuildingSpec(String buildingType) {
         return SimulationConfig.instance().getBuildingConfiguration().getBuildingSpec(buildingType);
     }
@@ -226,8 +247,12 @@ public class ConstructionSite extends FixedUnit {
         return !currentStage.isComplete();
     }
 
-    public boolean isUnstarted() {
-        return unstarted;
+    /**
+     * Is the site at a proposal stage with no work completed
+     * @return
+     */
+    public boolean isProposed() {
+        return unstarted && isConstruction;
     }
 
     /**
