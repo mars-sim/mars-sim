@@ -30,6 +30,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.GroundVehicle;
@@ -70,6 +71,8 @@ public class ConstructionMission extends AbstractMission {
 	private static final double SITE_PREPARE_TIME = 250D;
 
 	private ConstructionObjective objective;
+
+	private double sitePrepTime;
 	
 	/**
 	 * Constructor 1 for Case 1: Determined by the need of the settlement.
@@ -91,7 +94,6 @@ public class ConstructionMission extends AbstractMission {
 		if (!recruitMembersForMission(startingMember, true, MIN_PEOPLE)) {
 			return;
 		}
-
 
 		// Determine construction site and stage.
 		int constructionSkill = 1;
@@ -155,6 +157,16 @@ public class ConstructionMission extends AbstractMission {
 	private void createObjectives(ConstructionSite site, List<GroundVehicle> constructionVehicles) {
 		var settlement = site.getAssociatedSettlement();
 		site.setWorkOnSite(this);
+
+		
+		// Site prepare time
+		sitePrepTime = SITE_PREPARE_TIME;
+		if (settlement.getPreferences().getBooleanValue(SettlementParameters.INSTANCE,
+                                                        SettlementParameters.QUICK_CONST,
+                                            false)) {
+			sitePrepTime *= 0.1D;
+		}
+		
 
 		var stage = site.getCurrentConstructionStage();
 		// Reserve construction vehicles.
@@ -318,11 +330,6 @@ public class ConstructionMission extends AbstractMission {
 			logger.info(site, 60_000, "Materials not ready at " + site.getName() + ".");
 			return false;
 		}
-	
-		if (!stage.loadAvailableConstructionParts(settlement)) {
-			logger.info(site, 60_000, "Parts not ready at " + site.getName() + ".");
-			return false;
-		}
 		return true;
 	}
 
@@ -337,7 +344,7 @@ public class ConstructionMission extends AbstractMission {
 		}
 		
 		// Check if site preparation time has expired
-		if (getPhaseDuration() >= SITE_PREPARE_TIME) {
+		if (getPhaseDuration() >= sitePrepTime) {
 			setPhaseEnded(true);
 		}
 	}
@@ -397,24 +404,23 @@ public class ConstructionMission extends AbstractMission {
 	private void checkConstructionStageComplete(ConstructionSite site, ConstructionStage stage) {
 		if (stage.isComplete()) {
 			setPhaseEnded(true);
-			var manager = site.getAssociatedSettlement().getConstructionManager();
 
-			if (site.isComplete()) {
+			if (!stage.isConstruction()) {
+				// Is salvage so collect parts
+				// Get average construction skill of mission members.
+				double averageSkill = getMembers().stream()
+						.mapToDouble(w -> w.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION))
+						.average().orElse(0D);
+				site.reclaimParts(averageSkill);
+			}
+			else if (site.isComplete()) {
+				// For construction await the whole site
+				var manager = site.getAssociatedSettlement().getConstructionManager();
 				manager.removeConstructionSite(site);
 
-				if (stage.isConstruction()) {		
-					// Construct building if all 3 stages of the site construction have been complete.
-					site.createBuilding();
-					logger.info(site, "New building '" + site.getBuildingName() + "' constructed.");
-				}
-				else {
-					// Get average construction skill of mission members.
-					double averageSkill = getMembers().stream()
-							.mapToDouble(w -> w.getSkillManager()
-								.getEffectiveSkillLevel(SkillType.CONSTRUCTION))
-							.average().orElse(0D);
-					site.reclaimParts(averageSkill);
-				}
+				// Construct building if all 3 stages of the site construction have been complete.
+				site.createBuilding();
+				logger.info(site, "New building '" + site.getBuildingName() + "' constructed.");
 			}
 			else {
 				// Move on to the next one fromm the current one

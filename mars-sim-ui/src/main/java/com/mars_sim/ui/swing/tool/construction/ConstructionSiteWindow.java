@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.construction;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 
 
@@ -33,6 +34,7 @@ public class ConstructionSiteWindow extends UnitWindow {
 
         // Add tab panels
         addTabPanel(new TabPanelSiteGeneral(constructionSite, desktop));
+        addTabPanel(new LocationTabPanel(constructionSite, desktop));
 
         // Sort tab panels
     	sortTabPanels();

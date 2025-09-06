@@ -23,10 +23,7 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.FixedUnit;
 
 /**
@@ -219,34 +216,13 @@ public class ConstructionSite extends FixedUnit {
 
 		// Modify salvage chance based on building wear condition.
 		// Note: if non-building construction stage, wear condition should be 100%.
-		double salvageChance = (50D * .25D) + 25D; // Needs to be aware ot the source Building
+		double salvageChance = 50D; // Needs to be aware ot the source Building
 
 
 		// Modify salvage chance based on average construction skill.
 		salvageChance += skill * 5D;
 
-		// Salvage construction parts.
-		for(var e : currentStage.getInfo().getParts().entrySet()) {
-			int part = e.getKey();
-			int number = e.getValue();
-
-			int salvagedNumber = 0;
-			for (int x = 0; x < number; x++) {
-				if (RandomUtil.lessThanRandPercent(salvageChance))
-					salvagedNumber++;
-			}
-
-			var settlement = getAssociatedSettlement();
-			if (salvagedNumber > 0) {
-				Part p = ItemResourceUtil.findItemResource(part);
-				double mass = salvagedNumber * p.getMassPerItem();
-				double capacity = settlement.getCargoCapacity();
-				if (mass <= capacity) {
-					settlement.storeItemResource(part, salvagedNumber);
-				}
-
-			}
-		}
+        currentStage.reclaimParts(salvageChance);
 	}
 
     private static BuildingSpec getBuildingSpec(String buildingType) {

@@ -74,7 +74,6 @@ public class PartGood extends Good {
 	private static final int VEHICLE_PART_COST = 3;
 	private static final int ROBOT_VALUE = 30;
 	private static final int EVA_PARTS_VALUE = 20;
-	private static final double CONSTRUCTING_INPUT_FACTOR = 0.2;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
 	
 	private static final double DRILL_DEMAND  = .5;
@@ -214,7 +213,6 @@ public class PartGood extends Good {
 				return EVA_PART_DEMAND;
 			
 			default:
-//				return 1;
 		}
 
 		
@@ -365,8 +363,6 @@ public class PartGood extends Good {
 
     @Override
     double calculatePrice(Settlement settlement, double value) {
-    	// double mass = getMassPerItem();
-//        double quantity = settlement.getItemResourceStored(getID());
         double supply = settlement.getGoodsManager().getSupplyScore(getID());
         double factor = 1.2 / (2 + supply);
         double price = getCostOutput() * (1 + factor * Math.log(value + 1));
@@ -595,7 +591,7 @@ public class PartGood extends Good {
 		for(var s : settlement.getConstructionManager().getConstructionSites()) {
 			if (s.isConstruction()) {
 				var stage = s.getCurrentConstructionStage();
-				base += stage.getMissingParts().getOrDefault(getID(), 0) * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
+				base += stage.getResourceNeeded(getID()) * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
 			}
 		}
 

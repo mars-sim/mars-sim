@@ -7,12 +7,15 @@
 package com.mars_sim.core.building.construction;
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A construction stage of a construction site.
@@ -31,18 +34,40 @@ public class ConstructionStage implements Serializable {
     private double completedWorkTime;
     private double requiredWorkTime;
 
-
     private ConstructionStageInfo info;
     private ConstructionSite site;
     
-    private Map<Integer, Integer> missingParts;
-    private Map<Integer, Double> missingResources;
-    
-    private Map<Integer, Double> availableResources;
-    private Map<Integer, Integer> availableParts;
-    
-    private Map<Integer, Integer> originalReqParts;
-    private Map<Integer, Double> originalReqResources;
+    /**
+     * Represents the quantities of a Material needed for construction
+     */
+    public static class Material implements Serializable {
+        private double required;
+        private double available;
+
+        private Material(double required) {
+            this.required = required;
+        }
+
+        public double getRequired() {
+            return required;
+        }
+
+        public double getAvailable() {
+            return available;
+        }
+
+        public double getMissing() {
+            return required - available;
+        }
+
+        private void addAmount(double delta) {
+            available += delta;
+            available = Math.min(required, available);  // Available cannot be more than required
+        }
+    }
+
+    private Map<Integer, Material> parts;
+    private Map<Integer, Material> resources;
     
     /**
      * Constructor.
@@ -59,30 +84,19 @@ public class ConstructionStage implements Serializable {
                                                                         SettlementParameters.QUICK_CONST,
                                                            false);
         completedWorkTime = 0D;
-        requiredWorkTime =  (quickConstruction ? 0.1D : 1D) * info.getWorkTime();
-        if (!isConstruction) {
+        var scaling = (quickConstruction ? 10 : 1);
+        requiredWorkTime = info.getWorkTime()/scaling;
+        if (isConstruction) {
+            resources = info.getResources().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, v -> new Material(v.getValue()/scaling)));
             requiredWorkTime *= SALVAGE_WORK_TIME_MODIFIER;
         }
-        
-        // Quick construction also reduces resources needed
-        if (quickConstruction && isConstruction) {
-            originalReqParts = new HashMap<>();
-            info.getParts().forEach((k,v) -> originalReqParts.put(k, (int)(v * 0.1D)));
-
-            originalReqResources = new HashMap<>();
-            info.getResources().forEach((k,v) -> originalReqResources.put(k, (v * 0.1D)));
-        }
         else {
-            originalReqParts = info.getParts();
-            originalReqResources = info.getResources();
+            resources = Collections.emptyMap();
         }
 
-        missingParts = new HashMap<>(originalReqParts);
-        availableParts = new HashMap<>();
-
-        missingResources = new HashMap<>(originalReqResources);
-        availableResources = new HashMap<>();
-
+        parts = info.getParts().entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getKey, v -> new Material(v.getValue()/scaling)));
     }
 
     /**
@@ -155,57 +169,31 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Gets the original parts needed for construction.
+     * Gets the parts needed for construction.
      * 
      * @return map of parts and their numbers.
      */
-    public Map<Integer, Integer> getOriginalParts() {
-        return new HashMap<>(originalReqParts);
+    public Map<Integer, Material> getParts() {
+        return parts;
     }
 
     /**
-     * Gets the original resources needed for construction.
+     * Gets the resources needed for construction.
      * 
      * @return map of resources and their amounts (kg).
      */
-    public Map<Integer, Double> getOriginalResources() {
-        return new HashMap<>(originalReqResources);
+    public Map<Integer, Material> getResources() {
+        return resources;
     }
 
     /**
-     * Gets the missing parts needed for construction.
-     * 
-     * @return map of parts and their numbers.
+     * Get how much of a material is still needed
+     * @param id
+     * @return
      */
-    public Map<Integer, Integer> getMissingParts() {
-        return new HashMap<>(missingParts);
-    }
-
-    /**
-     * Gets the missing resources needed for construction.
-     * 
-     * @return map of resources and their amounts (kg).
-     */
-    public Map<Integer, Double> getMissingResources() {
-        return new HashMap<>(missingResources);
-    }
-    
-    /**
-     * Gets the available resources on site for construction.
-     * 
-     * @return map of resources and their amounts (kg).
-     */
-    public Map<Integer, Double> getAvailableResources() {
-        return new HashMap<>(availableResources);
-    }
-    
-    /**
-     * Gets the available parts on site for construction.
-     * 
-     * @return map of parts and their amounts (kg).
-     */
-    public Map<Integer, Integer> getAvailableParts() {
-        return new HashMap<>(availableParts);
+    public double getResourceNeeded(int id) {
+        var m = resources.get(id);
+        return (m == null ? 0D : m.getMissing());
     }
     
     /**
@@ -224,139 +212,61 @@ public class ConstructionStage implements Serializable {
             return true;
         }
 
+        boolean allLoaded = true;
+        boolean createEvent = false;
+
 		// Load amount resources.
-		for(var r : missingResources.entrySet()) {
+		for(var r : resources.entrySet()) {
 			int resource = r.getKey();
-			double amountNeeded = r.getValue();
-			double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
-			// Load as much of the remaining resource as possible into the construction site
-			// stage.
-			double amountLoading = Math.min(amountAvailable, amountNeeded);
-
-			if (amountLoading > 0) {
-				// Retrieve this materials now
-				settlement.retrieveAmountResource(resource, amountLoading);
-				// Store the materials at this site
-				addResource(resource, amountLoading);
-				amountNeeded -= amountLoading;
-			}
-
-			// Use a 10% buffer just in case other tasks will consume this materials at the same time
-			if (amountNeeded > 0) {
-				return false;
-			}
+			var material = r.getValue();
+            var amountNeeded = material.getMissing();
+            if (amountNeeded > 0) {
+                double amountAvailable = settlement.getSpecificAmountResourceStored(resource);
+                // Load as much of the remaining resource as possible into the construction site
+                // stage.
+                if (amountNeeded > amountAvailable) {
+                    amountNeeded = amountAvailable;
+                    allLoaded = false;
+                }
+                if (amountNeeded > 0) {
+                    // Retrieve this materials now
+                    settlement.retrieveAmountResource(resource, amountNeeded);
+                    // Store the materials at this site
+                    material.addAmount(amountNeeded);
+                    createEvent = true;
+                }
+            }
 		}
-		
-		return true;
-	}
-		
-		
-	/**
-	 * Loads remaining required construction materials into site that are available
-	 * at settlement inventory.
-	 * 
-	 * @return true if all parts are available
-	 */
-	public boolean loadAvailableConstructionParts(Settlement settlement) {
-        if (!isConstruction) {
-            return true;
-        }
-
-		boolean enough = true;
-		// Load parts.
-		for(var e : missingParts.entrySet()) {
-			int part = e.getKey();
-			int numberNeeded = e.getValue();
-			int numberAvailable = settlement.getItemResourceStored(part);
-			// Load as many remaining parts as possible into the construction site stage.
-			int numberLoading = Math.min(numberAvailable, numberNeeded);
-
-			if (numberLoading > 0) {
-				// Retrieve this item now
-				settlement.retrieveItemResource(part, numberLoading);
-				// Store this item at this site
-				addParts(part, numberLoading);
-			}
-			else
-				enough = false;
+	
+        // Load parts
+		for(var r : parts.entrySet()) {
+			int part = r.getKey();
+			var material = r.getValue();
+            var amountNeeded = (int)material.getMissing();
+            if (amountNeeded > 0) {
+                int amountAvailable = settlement.getItemResourceStored(part);
+                // Load as much of the remaining parts as possible into the construction site
+                // stage.
+                if (amountNeeded > amountAvailable) {
+                    amountNeeded = amountAvailable;
+                    allLoaded = false;
+                }
+                if (amountNeeded > 0) {
+                    // Retrieve this materials now
+                    settlement.retrieveItemResource(part, amountNeeded);
+                    // Store the materials at this site
+                    material.addAmount(amountNeeded);
+                    createEvent = true;
+                }
+            }
 		}
-		
-		return enough;
+
+        if (createEvent) {
+            // Generate an event if at least one has been changed
+            site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
+        }
+		return allLoaded;
 	}
-    
-    /**
-     * Adds parts to the construction stage.
-     * 
-     * @param part the part to add.
-     * @param number the number of parts to add.
-     */
-    private void addParts(Integer part, int number) {
-
-        if (missingParts.containsKey(part)) {
-            int missingRequiredNum = missingParts.get(part);
-            if (number <= missingRequiredNum) {
-                missingRequiredNum -= number;
-                if (missingRequiredNum >= 0) {
-                    missingParts.put(part, missingRequiredNum);
-                }
-          
-                int availableNum = 0;
-                if (availableParts.containsKey(part)) {
-                	availableNum = availableParts.get(part);
-                }
-                availableNum += number;
-                availableParts.put(part, availableNum);
-                
-                // Fire construction event
-                site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
-            }
-            else {
-                throw new IllegalStateException("Trying to add " + number + " " + part + 
-                        " to " + info.getName() + " when only " + missingRequiredNum + 
-                        " are needed.");
-            }
-        }
-        else {
-            throw new IllegalStateException("Construction stage " + info.getName() + 
-                    " does not require part " + part);
-        }
-    }
-
-    /**
-     * Adds resource to the construction stage.
-     * 
-     * @param resource the resource to add.
-     * @param amount the amount (kg) of resource to add.
-     */
-    private void addResource(Integer resource, double amount) {
-
-        if (missingResources.containsKey(resource)) {
-            double missingRequiredAmount = missingResources.get(resource);
-            if (amount <= missingRequiredAmount) {
-                missingRequiredAmount -= amount;
-                missingResources.put(resource, missingRequiredAmount);
-
-                double availableAmount = 0;
-                if (availableResources.containsKey(resource)) {
-                	availableAmount = availableResources.get(resource);
-                }
-                availableAmount += amount;
-                availableResources.put(resource, availableAmount);
-                
-                // Fire construction event
-                site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
-            }
-            else {
-                throw new IllegalStateException("Trying to add " + amount + " " + resource + 
-                        " to " + info.getName() + " when only " + missingRequiredAmount + 
-                        " are needed.");
-            }
-        }
-        else {
-            throw new IllegalStateException("Construction stage " + info.getName() + 
-                    " does not require resource " + resource);
-        }
-    }
 
     /**
 	 * Checks if the settlement has any construction materials needed for the stage.
@@ -365,15 +275,15 @@ public class ConstructionStage implements Serializable {
 	 */
 	public boolean hasMissingConstructionMaterials() {
         var  settlement = site.getAssociatedSettlement();
-        if (missingResources.entrySet().stream()
-            .anyMatch(e -> (e.getValue() > 0)
-                    && (e.getValue() > settlement.getSpecificAmountResourceStored(e.getKey())))) {
+        if (resources.entrySet().stream()
+            .anyMatch(e -> (e.getValue().getMissing() > 0)
+                    && (e.getValue().getMissing() > settlement.getSpecificAmountResourceStored(e.getKey())))) {
             return true;
         }
 
-        return missingParts.entrySet().stream()
-            .anyMatch(e -> (e.getValue() > 0)
-                    && (e.getValue() > settlement.getItemResourceStored(e.getKey())));
+        return parts.entrySet().stream()
+            .anyMatch(e -> (e.getValue().getMissing() > 0)
+                    && (e.getValue().getMissing() > settlement.getItemResourceStored(e.getKey())));
     }
 
     @Override
@@ -381,21 +291,40 @@ public class ConstructionStage implements Serializable {
         if (isConstruction) return "Constructing " + info.getName();
         else return "Salvaging " + info.getName();
     }
-    
+
+    /**
+     * Reclaim parts
+     * @param reclaimChance
+     */
+    void reclaimParts(double reclaimChance) {
+        var settlement = site.getAssociatedSettlement();
+
+		// Salvage construction parts.
+		for(var e : parts.entrySet()) {
+			int part = e.getKey();
+			var material = e.getValue();
+
+			int salvagedNumber = 0;
+			for (int x = 0; x < material.getRequired(); x++) {
+				if (RandomUtil.lessThanRandPercent(reclaimChance))
+					salvagedNumber++;
+			}
+
+			if (salvagedNumber > 0) {
+				material.addAmount(salvagedNumber);
+				settlement.storeItemResource(part, salvagedNumber);
+			}
+		}
+    }
+        
 	/**
 	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		info = null;
 	    site = null;
-	    missingParts.clear();
-	    missingResources.clear();
-	    originalReqParts.clear();
-	    originalReqResources.clear();
-	    
-	    missingParts = null;
-	    missingResources = null;
-	    originalReqParts = null;
-	    originalReqResources = null;
+	    parts.clear();
+        resources.clear();
 	}
+
 }
