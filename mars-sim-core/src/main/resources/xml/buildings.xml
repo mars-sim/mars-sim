@@ -997,9 +997,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end of Match Core C -->
 
-	<building type="Match Core D" width="3.0" length="9.0" north-south-alignment="length" base-level="0"
+	<building type="Corridor 3x9" width="3.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="54" room-temperature="20.5" base-mass="540">
-		<description> Match Core D is a 3m by 9m utility hub that primarily connects
+		<description> Corridor 3x9 is a 3m by 9m utility tube that primarily connects
 		  other modules together
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
@@ -1047,7 +1047,53 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-	<!-- end of Match Core D -->
+	<!-- end of Corridor 3x9-->
+	
+	<building type="Corridor 3x3" width="3.0" length="3.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="18" room-temperature="20.5" base-mass="180">
+		<description> Corridor 3x3 is a 3m by 3m access tube that primarily connects
+		  other modules together
+		</description>
+		<power-required base-power="0.2" base-power-down-power="0.02" />
+
+		<functions>		
+			<life-support capacity="3" power-required="0.2">
+				<activity>
+					<activity-spot xloc=".75" yloc="-1.35" />
+					<activity-spot xloc=".75" yloc="-0.35" />
+					<activity-spot xloc="-.75" yloc="0.35" />
+
+				</activity>
+			</life-support>
+			
+			<power-generation>
+				<power-source type="Solar Power Source" power="2.0" />
+			</power-generation>
+			
+			<power-storage capacity="2" discharge-rate="1.5"/>
+	
+			<robotic-station capacity="1">
+				<activity>
+					<activity-spot xloc="-.75" yloc="1.35" />
+				</activity>
+			</robotic-station>
+			<storage stock-capacity="2000">
+				<resource-capacity type="water" amount="500.0" />
+				<resource-capacity type="oxygen" amount="500.0" />
+				<resource-capacity type="methane" amount="500.0" />
+				<resource-capacity type="grey water" amount="500.0" />				
+
+			</storage>
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="1.0" />
+				<heat-source type="Electric Heating" capacity="2.5" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="2.5" />
+			</thermal-generation>
+
+		</functions>
+	</building>
+	<!-- end of Corridor 3x3 -->
 	
 	<building type="Bioreactor-F" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">

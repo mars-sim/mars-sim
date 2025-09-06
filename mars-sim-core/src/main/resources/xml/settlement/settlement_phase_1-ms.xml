@@ -3,43 +3,68 @@
         name="Phase 1-MS" default-population="4" description="Phase 1 base for Mars Society"
 		number-of-robots="4" sponsor="MS">
 
-    <!-- Lander habitat building is the main habitation in the Mars Direct
-        mission plan. -->
-    <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
+    <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
+        facing="180.0">
+        <connection-list>
+            <connection id="C0" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+   <building id="C0" type="Corridor 3x9" xloc="-6.0" yloc="0.0"
         facing="0.0">
-        <!-- List of all connections to other buildings (optional). -->
         <connection-list>
-            <!-- Connection to another building. "id" is other building's ID. -->
-            <!-- X & Y locations are relative to this building, not in the settlement
-                locale. -->
-            <connection id="1" xloc="4.5" yloc="0.0" />
-            <connection id="2" xloc="-4.5" yloc="0.0" />
+            <connection id="LH0" hatch-facing="west" />
+            <connection id="EVA" hatch-facing="south" />
+            <connection id="C1" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="EVA" type="EVA Airlock" xloc="-6.0" yloc="-7.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="C0" hatch-facing="north" />
         </connection-list>
     </building>
 
-    <!-- EVA Airlock is attached to the lander hab -->
-    <building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
+    <building id="C1" type="Corridor 3x3" xloc="-6.0" yloc="6.0"
+        facing="0.0">
         <connection-list>
-            <connection id="0" xloc="-3.0" yloc="0.0" />
+            <connection id="C0" hatch-facing="south" />
+            <connection id="C2" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="C2" type="Corridor 3x9" xloc="-12.0" yloc="6.0"
+        facing="90.0">
+        <connection-list>
+            <connection id="C1" hatch-facing="west" />
+            <connection id="C3" hatch-facing="east" />
+            <connection id="IG0" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="IG0" type="Inflatable Greenhouse" xloc="-12.0" yloc="1.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="C2" hatch-facing="north" />
         </connection-list>
     </building>
 
-    <!-- Hallway connecting lander hab and inflatable greenhouse. -->
-    <!-- Note: Aa hallway has fixed width but variable length. Therefore,
-        the length argument must be provided below. -->
-    <building id="2" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
+    <building id="C3" type="Corridor 3x9" xloc="-21.0" yloc="6.0"
+        facing="90.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.5" />
-            <connection id="3" xloc="0.0" yloc="-1.5" />
+            <connection id="C2" hatch-facing="west" />
+            <connection id="W0" hatch-facing="south" />
         </connection-list>
     </building>
-
-    <!-- Inflatable greenhouse can be used to grow crops. -->
-    <building id="3" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0" facing="270.0">
+    
+    <building id="W0" type="Workshop" xloc="-21.0" yloc="1.0" 
+    	facing="90.0">
         <connection-list>
-            <connection id="2" xloc="0.0" yloc="4.5" />
+            <connection id="C3" hatch-facing="north" />
         </connection-list>
     </building>
+    
 
     <!-- Building Packages -->
     <building-package name="Storage Set 1"/>
