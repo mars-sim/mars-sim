@@ -14,6 +14,10 @@ import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -946,107 +951,114 @@ extends TabPanel {
 	
 	/**
 	 * Internal class used as model for the sleep time table.
+	 *
+	 * <p>Patched to use a stable snapshot and apply updates on the EDT to avoid
+	 * flicker/zeros at high time ratios.</p>
 	 */
 	private static class SleepExerciseTableModel
 	extends AbstractTableModel {
 
 		private static final String SLEEP_TIME = "Sleep";
 		private static final String EXERCISE_TIME = "Exercise";
-		
 		private static final String MISSION_SOL = "Sol";
+		private static final int MAX_DAYS = 7;
 
-		private Map<Integer, Double> sleepTime;
-		private Map<Integer, Double> exerciseTime;
-		private int solOffset = 1;
-		private int rowCount = 0;
+		/** Immutable row snapshot. */
+		private static final class SolRow {
+			final int sol;
+			final double sleep;
+			final double exercise;
+			SolRow(int sol, double sleep, double exercise) {
+				this.sol = sol;
+				this.sleep = sleep;
+				this.exercise = exercise;
+			}
+		}
+
+		/** Current snapshot used by the table; replaced atomically on the EDT. */
+		private volatile List<SolRow> rows = Collections.emptyList();
 
 		private SleepExerciseTableModel(CircadianClock circadian) {
 			update(circadian);
 		}
 
+		@Override
 		public int getRowCount() {
-			return rowCount;
+			return rows.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 3;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = null;
-			if (columnIndex == 0) {
-			    dataType = Integer.class;
-			}
-			else {
-			    dataType = String.class;
-			}
-			return dataType;
+			return (columnIndex == 0) ? Integer.class : String.class;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) {
-			    return MISSION_SOL; 
-			}
-			else if (columnIndex == 1) {
-			    return SLEEP_TIME;
-			}
-			else if (columnIndex == 2) {
-			    return EXERCISE_TIME;
-			}
-			return null;
+			return switch (columnIndex) {
+				case 0 -> MISSION_SOL;
+				case 1 -> SLEEP_TIME;
+				case 2 -> EXERCISE_TIME;
+				default -> null;
+			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
-			Object result = null;
-			if (row < getRowCount()) {
-				int rowSol = row + solOffset;
-				if (column == 0) {
-				    result = rowSol;
-				}
-				else if (column == 1) {
-					if (sleepTime.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES1.format(sleepTime.get(rowSol));
-					else
-						result = StyleManager.DECIMAL_PLACES1.format(0);
-				}
-				else if (column == 2) {
-					if (exerciseTime.containsKey(rowSol))
-						result = StyleManager.DECIMAL_PLACES1.format(exerciseTime.get(rowSol));
-					else
-						result = StyleManager.DECIMAL_PLACES1.format(0);
-				}
-			}
-			return result;
+			if (row < 0 || row >= rows.size()) return null;
+			SolRow r = rows.get(row);
+			return switch (column) {
+				case 0 -> r.sol;
+				case 1 -> StyleManager.DECIMAL_PLACES1.format(r.sleep);
+				case 2 -> StyleManager.DECIMAL_PLACES1.format(r.exercise);
+				default -> null;
+			};
 		}
 
+		/** Build a bounded, sorted snapshot and apply it on the EDT. */
 		public void update(CircadianClock circadian) {
-			sleepTime = circadian.getSleepHistory();
-			exerciseTime = circadian.getExerciseHistory();
-			
-			Set<Integer> largestSet;
-			if (sleepTime.size() > exerciseTime.size()) {
-				largestSet = sleepTime.keySet();
-			}
-			else {
-				largestSet = exerciseTime.keySet();
+			// Defensive copies to decouple from the sim thread.
+			Map<Integer, Double> sleepHistory    = new HashMap<>(circadian.getSleepHistory());
+			Map<Integer, Double> exerciseHistory = new HashMap<>(circadian.getExerciseHistory());
+
+			// Union of keys -> sorted sols
+			Set<Integer> keyUnion = new HashSet<>(sleepHistory.keySet());
+			keyUnion.addAll(exerciseHistory.keySet());
+
+			List<SolRow> newRows;
+			if (keyUnion.isEmpty()) {
+				newRows = Collections.emptyList();
+			} else {
+				List<Integer> sols = new ArrayList<>(keyUnion);
+				Collections.sort(sols);
+				int from = Math.max(0, sols.size() - MAX_DAYS);
+				sols = sols.subList(from, sols.size());
+
+				newRows = new ArrayList<>(sols.size());
+				for (int sol : sols) {
+					double sleep = sleepHistory.getOrDefault(sol, 0D);
+					double exer  = exerciseHistory.getOrDefault(sol, 0D);
+					newRows.add(new SolRow(sol, sleep, exer));
+				}
 			}
 
-			// Find the lowest sol day in the data, guard against empty sets
-			if (largestSet.isEmpty()) {
-				solOffset = 1;
-				rowCount = 0;
-			}
-			else {
-				solOffset = largestSet.stream()
-						.mapToInt(v -> v)               
-						.min()                          
-						.orElse(1);
-				rowCount = largestSet.size();
-			}
+			final List<SolRow> snapshot =
+				Collections.unmodifiableList(new ArrayList<>(newRows));
 
-			fireTableDataChanged();
+			// Apply on the Event Dispatch Thread
+			if (SwingUtilities.isEventDispatchThread()) {
+				rows = snapshot;
+				fireTableDataChanged();
+			} else {
+				SwingUtilities.invokeLater(() -> {
+					rows = snapshot;
+					fireTableDataChanged();
+				});
+			}
 		}
 	}
 	
