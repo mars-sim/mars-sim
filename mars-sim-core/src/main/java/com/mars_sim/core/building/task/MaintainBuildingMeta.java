@@ -179,7 +179,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	public static RatingScore scoreMaintenance(MalfunctionManager manager, Malfunctionable entity, 
 			boolean partsPosted) {
 		
-		RatingScore score = RatingScore.ZERO_RATING;
+		RatingScore score = new RatingScore("base", 0D); //RatingScore.ZERO_RATING;
 		
 		boolean hasMalfunction = manager.hasMalfunction();
 		
@@ -191,7 +191,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		double inspectionWindow = manager.getStandardInspectionWindow();	
 	
-		if (partsPosted) {
+		if (partsPosted) {	
 			score = computeScore(manager, score, 
 					effectiveTime, inspectionWindow, partsPosted);
 		}
@@ -210,8 +210,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 			if ((effectiveTime >= chance)
 				// if needed parts have been posted, hurry up to swap out the parts without waiting for 
 				// the standard inspection/maintenance due
-				|| partsPosted) {	
-				
+				|| partsPosted) {
 				score = computeScore(manager, score, 
 						effectiveTime, inspectionWindow, partsPosted);
 			}

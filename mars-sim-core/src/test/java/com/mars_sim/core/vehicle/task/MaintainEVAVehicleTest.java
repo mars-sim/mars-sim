@@ -10,8 +10,6 @@ import com.mars_sim.core.vehicle.StatusType;
 
 public class MaintainEVAVehicleTest extends AbstractMarsSimUnitTest {
 
-
-
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
 
