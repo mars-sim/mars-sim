@@ -132,7 +132,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 				
 				RatingScore score = MaintenanceUtil.scoreMaintenance(manager, building, partsPosted);
 	
-				if (score.getScore() >= 1) {
+				if (score.getScore() > 0) {
 	
 					boolean habitableBuilding = building.hasFunction(FunctionType.LIFE_SUPPORT);
 					

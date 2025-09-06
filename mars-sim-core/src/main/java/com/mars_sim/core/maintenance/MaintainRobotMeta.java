@@ -119,7 +119,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 				RatingScore score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
 	
 				// Vehicle in need of maintenance
-				if (score.getScore() >= 0) {
+				if (score.getScore() >= 1) {
 					
 					tasks.add(new MaintenanceJob(this, robot, score));
 				}
