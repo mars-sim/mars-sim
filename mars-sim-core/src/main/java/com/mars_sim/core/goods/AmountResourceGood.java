@@ -955,11 +955,11 @@ class AmountResourceGood extends Good {
 	 */
 	private double getResourceConstructionDemand(Settlement settlement) {
 		double base = 0D;
-
+		int id = getID();
 		for(var s : settlement.getConstructionManager().getConstructionSites()) {
 			if (s.isConstruction()) {
 				var stage = s.getCurrentConstructionStage();
-				base += stage.getMissingResources().getOrDefault(getID(), 0D);
+				base += stage.getResourceNeeded(id);
 			}
 		}
 		return Math.min(GoodsManager.MAX_DEMAND, base / 100);

@@ -75,11 +75,11 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 
 				try {
 					target.timePassing(currentPulse);
-					doneLock.release();  // Notify parent pulse has been applied
 				}
 				catch (RuntimeException rte) {
 					logger.severe(target + ": Problem with Pulse", rte);
-				}	
+				}
+				doneLock.release();  // Notify parent pulse has been applied
 			}
 		}
 	}

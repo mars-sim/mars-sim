@@ -98,7 +98,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		this.missionMgr = desktop.getSimulation().getMissionManager();
 		this.missionMgr.addListener(new MissionManagerListener() {
@@ -280,6 +280,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		mainPanel.setMission(newMission);
 		// Highlight the selected mission in Nav tab
 		navpointPane.setMission(newMission);
+		
 	}
 
 	/**

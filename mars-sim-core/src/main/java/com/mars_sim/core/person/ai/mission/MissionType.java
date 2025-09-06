@@ -24,8 +24,7 @@ public enum MissionType {
 
 	TRADE,
 	TRAVEL_TO_SETTLEMENT,
-	CONSTRUCTION,
-	SALVAGE
+	CONSTRUCTION
 	;
 
 	private String name;

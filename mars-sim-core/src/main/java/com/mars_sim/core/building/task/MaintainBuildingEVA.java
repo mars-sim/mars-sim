@@ -122,7 +122,7 @@ extends EVAOperation {
 
 		// Check if maintenance has already been completed.
 		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
-
+		
 		if (!finishedMaintenance) {
 			doneInspection = !manager.addInspectionMaintWorkTime(workTime);
 		}
@@ -143,7 +143,7 @@ extends EVAOperation {
 		// Note: workTime can be longer or shorter than time
 		if (workTime > time) {
 			// if work time is greater, then time is saved on this frame
-			return MathUtils.between(workTime, 0, workTime - time);
+			return MathUtils.between(workTime - time, 0, time * .75);
 		}
 		else
 			return 0;

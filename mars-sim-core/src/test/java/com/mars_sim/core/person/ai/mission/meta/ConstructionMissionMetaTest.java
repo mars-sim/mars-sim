@@ -3,6 +3,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.structure.Settlement;
@@ -32,6 +33,25 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         addSitePreReqs(s);
 
         score = meta.getProbability(architect);
+        assertTrue("Architect can start", score.getScore() >= 1);
+    }
+
+    public void testProbabiltySalvageSite() {
+        var s = buildSettlement();
+        var a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+
+        var architect = buildPerson("worker", s, JobType.ARCHITECT);
+        for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
+            buildPerson("P" + i, s);
+        }
+
+        var meta = new ConstructionMissionMeta();
+
+        var cm = s.getConstructionManager();
+        cm.createNewSalvageConstructionSite(a);
+        addSitePreReqs(s);
+
+        var score = meta.getProbability(architect);
         assertTrue("Architect can start", score.getScore() >= 1);
     }
 

@@ -61,8 +61,8 @@ public class MaintainGarageVehicle extends Task {
 
 	/**
 	 * Constructor.
-	 * @param target
 	 * 
+	 * @param target
 	 * @param person the person to perform the task
 	 */
 	public MaintainGarageVehicle(Worker unit, Vehicle target) {
@@ -143,11 +143,15 @@ public class MaintainGarageVehicle extends Task {
 	private double maintainVehiclePhase(double time) {
     	
 		if (vehicle.getSettlement() == null || !vehicle.getSettlement().getBuildingManager().isInGarage(vehicle)) {
-        	endTask();
+			vehicle.setReservedForMaintenance(false);
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
+			endTask();
 			return time;
 		}
 		
 		if (worker.getPerformanceRating() <= .1) {
+			vehicle.setReservedForMaintenance(false);
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 			endTask();
 			return time;
 		}
@@ -156,6 +160,8 @@ public class MaintainGarageVehicle extends Task {
 		
 		// If vehicle has malfunction, end task.
 		if (manager.hasMalfunction()) {
+			vehicle.setReservedForMaintenance(false);
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
 			endTask();
 			return time * .75;
 		}
@@ -206,7 +212,7 @@ public class MaintainGarageVehicle extends Task {
 		// Note: workTime can be longer or shorter than time
 		if (workTime > time) {
 			// if work time is greater, then time is saved on this frame
-			return MathUtils.between(workTime, 0, workTime - time);
+			return MathUtils.between(workTime - time, 0, time * .75);
 		}
 		else
 			return 0;

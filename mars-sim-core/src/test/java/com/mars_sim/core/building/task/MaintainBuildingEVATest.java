@@ -70,10 +70,11 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         MaintainBuildingTest.buildingNeedMaintenance(b, this);
 
         var manager = b.getMalfunctionManager();
-        assertGreaterThan("Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
+        assertGreaterThan("EVA Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
 
         var task = new MaintainBuildingEVA(p, b);
-        assertFalse("Task created", task.isDone());
+
+        assertFalse("EVA Task created", task.isDone()); 
 
         // Do NOT assert on duration here: getDuration() can legitimately be 0.0 at creation time
         // because EVAOperation tracks walking/onsite time internally across phases.
@@ -84,8 +85,12 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         // Move onsite
         int callUsed = EVAOperationTest.executeEVAWalk(this, eva, task);
         assertGreaterThan("Calls Used ", 0, callUsed);
-        assertFalse("Task still active", task.isDone());
-        assertGreaterThan("Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
+ 
+        assertFalse("EVA Task still active", task.isDone());
+        
+        assertGreaterThan("EVA Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
+
+        assertEquals("EVA Maintenance started", 0D, manager.getInspectionWorkTimeCompleted());
 
         // Confirm we are now in onsite MAINTAIN phase
         assertEquals("EVA walk completed", MaintainBuildingEVA.MAINTAIN, task.getPhase());
@@ -97,6 +102,6 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
 
         // Complete maintenance
         executeTaskForDuration(p, task, manager.getBaseMaintenanceWorkTime() * 1.1);
-        assertGreaterThan("Maintenance count", 0, manager.getNumberOfMaintenances());
+        assertGreaterThan("EVA Maintenance count", 0, manager.getNumberOfMaintenances());
     }
 }

@@ -76,7 +76,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			}
 			
 			var cm = settlement.getConstructionManager();
-			int need = cm.getConstructionSitesNeedingMission(true).size() * SITE_BASE;
+			int need = cm.getConstructionSitesNeedingMission().size() * SITE_BASE;
 			if (need == 0) {
 				need = (int) cm.getBuildingSchedule().stream()
 						.filter(s -> s.isReady())
