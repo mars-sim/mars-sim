@@ -42,9 +42,13 @@ public class Surface3DApp extends ApplicationAdapter {
         cam.update();
 
         // Scene + lights
-        batch = new ModelBatch();
+        // --- Use the custom Mars fog shader (Step 3 fix) ---
+        MarsFogShader.Settings fog = MarsFogShader.Settings.marsDefaults(MARS_RADIUS_KM);
+        batch = new ModelBatch(new MarsFogShaderProvider(fog));
+
         env = new Environment();
-        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.55f, 0.55f, 0.55f, 1f));
+        // Slightly lower ambient for a dustier, less washed-out look (Step 3 optional tweak)
+        env.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.45f, 0.45f, 0.45f, 1f));
         env.add(new DirectionalLight().set(1.0f, 0.98f, 0.93f, -0.7f, -0.9f, -0.3f)); // sun-ish
 
         // Planet geometry (single mesh cube-sphere for now, tiles/LOD later)
@@ -103,7 +107,7 @@ public class Surface3DApp extends ApplicationAdapter {
     static final class MarsMaterials {
         static Material dusty() {
             // Clay red/orange diffuse with slight warm tint
-            Color marsDust = new Color(0xC95E3BFF); // ARGB-ish literal then normalized by LibGDX
+            Color marsDust = new Color(0xC95E3BFF); // RGBA8888 literal normalized by LibGDX
             return new Material(ColorAttribute.createDiffuse(marsDust));
         }
     }
