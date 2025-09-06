@@ -22,7 +22,6 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.mission.Construction;
 import com.mars_sim.core.mission.objectives.ConstructionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
@@ -43,8 +42,7 @@ import com.mars_sim.core.vehicle.VehicleType;
  * Mission for construction a stage for a settlement building.
  * strings
  */
-public class ConstructionMission extends AbstractMission
-	implements Construction {
+public class ConstructionMission extends AbstractMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -506,7 +504,6 @@ public class ConstructionMission extends AbstractMission
 	 *
 	 * @return list of construction vehicles.
 	 */
-	@Override
 	public List<GroundVehicle> getConstructionVehicles() {
 		return objective.getConstructionVehicles();
 	}

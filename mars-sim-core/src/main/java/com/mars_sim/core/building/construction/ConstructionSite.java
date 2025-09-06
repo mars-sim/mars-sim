@@ -271,7 +271,11 @@ public class ConstructionSite extends FixedUnit {
         return !currentStage.isComplete();
     }
 
-    public boolean isRelocatable() {
+    /**
+     * Is the site at a proposal stage with no work completed
+     * @return
+     */
+    public boolean isProposed() {
         return unstarted && isConstruction;
     }
 

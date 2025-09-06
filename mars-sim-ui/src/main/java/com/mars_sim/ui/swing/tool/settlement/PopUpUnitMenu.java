@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.settlement;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.function.Consumer;
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -16,10 +17,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -52,15 +54,15 @@ public class PopUpUnitMenu extends JPopupMenu {
 			case Vehicle v: 
 				add(buildDescriptionitem(unit, desktop));
 				add(buildDetailsItem(unit, desktop));
-				add(buildVehicleRelocate(v));
-				add(buildVehicleToMaintain(v));
+				add(createItem("relocate", v, Vehicle::relocateVehicle));
+				add(createItem("maintain", v, Vehicle::maintainVehicle));
 				break;
 
         	case Building b:
 				add(buildDescriptionitem(unit, desktop));
 				add(buildDetailsItem(unit, desktop));
 				if (b.getAssociatedSettlement().getConstructionManager().canDemolish(b)) {
-					add(buildSalvageItem(b));
+					add(createItem("demolish", b, this::triggerDemolish));
 				}
 				break;
 
@@ -68,8 +70,10 @@ public class PopUpUnitMenu extends JPopupMenu {
 			case ConstructionSite cs:
 				add(buildDescriptionitem(unit, desktop));
 				add(buildDetailsItem(unit, desktop));
-				if (cs.isRelocatable()) {
-					add(relocateSite(cs));
+				if (cs.isProposed()) {
+					add(createItem("relocate", cs, t -> t.relocateSite()));
+					add(createItem("delete", cs,
+								 t -> t.getAssociatedSettlement().getConstructionManager().removeSite(t)));
 				}
 				break;
 
@@ -79,7 +83,6 @@ public class PopUpUnitMenu extends JPopupMenu {
         }
     }
 
-
     /**
      * Builds item one.
      *
@@ -87,77 +90,86 @@ public class PopUpUnitMenu extends JPopupMenu {
      */
     private JMenuItem buildDescriptionitem(final Unit unit, final MainDesktopPane desktop) {
         
-		JMenuItem descriptionItem = new JMenuItem(Msg.getString("PopUpUnitMenu.description"));
+		return createItem("description", unit, t -> {
 
-        descriptionItem.addActionListener(e -> {
+            String description = null;
+            String type = null;
+            String name = null;
 
-                String description = null;
-                String type = null;
-                String name = null;
-
-                if (unit.getUnitType() == UnitType.VEHICLE) {
-                	Vehicle vehicle = (Vehicle) unit;
+			switch (t) {
+				case Vehicle vehicle -> {
                 	description = vehicle.getDescription();
                 	type = vehicle.getVehicleType().getName();
                 	name = vehicle.getName();
                 }
-                else if (unit.getUnitType() == UnitType.BUILDING) {
-                	Building building = (Building) unit;
+                case Building building -> {
                 	description = building.getDescription();
                 	type = building.getBuildingType();
                 	name = building.getName();
                 }
-                else if (unit.getUnitType() == UnitType.CONSTRUCTION) {
-                	ConstructionSite site = (ConstructionSite) unit;
+                case ConstructionSite site -> {
 					var stageInfo = site.getCurrentConstructionStage().getInfo();
                 	description = stageInfo.getName();
                 	type = stageInfo.getType().name().toLowerCase();
                 	name = site.getName();
                 }
-                else
+                default -> {
                 	return;
-
-				UnitInfoPanel b = new UnitInfoPanel(desktop);
-
-			    b.init(name, type, description);
-	           	b.setOpaque(false);
-		        b.setBackground(new Color(0,0,0,128));
-		        
-		        JDialog d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
-
-				d.setForeground(Color.WHITE); // orange font
-				d.setFont(new Font("Arial", Font.BOLD, 14));
-
-            	d.setOpacity(0.75f);
-		        d.setBackground(new Color(0,0,0,128));
-                d.setVisible(true);
-             }
-        );
-
-		return descriptionItem;
-    }
-
-	/**
-     * Salvage building
-     *
-     * @param unit
-     * @param mainDesktopPane
-     */
-    private JMenuItem buildSalvageItem(final Building b) {
-		JMenuItem detailsItem = new JMenuItem("Demolish");
-
-        detailsItem.addActionListener(e -> {
-			if (JOptionPane.showConfirmDialog(null,
-             				"Confirm the demolition of " + b.getName(), "Confirm demolish",
-			 				JOptionPane.YES_NO_OPTION)
-			 		== JOptionPane.OK_OPTION) {
-					b.getAssociatedSettlement().getConstructionManager().createNewSalvageConstructionSite(b);
+				}
 			}
-	    });
 
-		return detailsItem;
+			UnitInfoPanel b = new UnitInfoPanel(desktop);
+
+			b.init(name, type, description);
+			b.setOpaque(false);
+			b.setBackground(new Color(0,0,0,128));
+			
+			JDialog d = SwingHelper.createPopupWindow(b, WIDTH_1, HEIGHT_1, 0, 0);
+
+			d.setForeground(Color.WHITE); // orange font
+			d.setFont(new Font("Arial", Font.BOLD, 14));
+
+			d.setOpacity(0.75f);
+			d.setBackground(new Color(0,0,0,128));
+			d.setVisible(true);
+		});
     }
+
 	
+	/**
+	 * Class to operatino the demolish of a Building async to avoid the removal causing a problem with 
+	 * the active simulation logic.
+	 */
+	private class DemolishHandler implements ScheduledEventHandler {
+		private Building b;
+
+		public DemolishHandler(Building b) {
+			this.b = b;
+		}
+
+		@Override
+		public String getEventDescription() {
+			return "Start demolishing of " + b.getName();
+		}
+
+		@Override
+		public int execute(MarsTime currentTime) {
+			b.getAssociatedSettlement().getConstructionManager().createNewSalvageConstructionSite(b);
+			return 0;
+		}
+	}
+
+	private void triggerDemolish(Building b) {
+		if (JOptionPane.showConfirmDialog(null,
+						"Confirm the demolition of " + b.getName(), "Confirm demolish",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.OK_OPTION) {
+			var fm = b.getAssociatedSettlement().getFutureManager();
+
+			var handler = new DemolishHandler(b);
+			fm.addEvent(1, handler);
+		}
+	}
+
     /**
      * Builds item two.
      *
@@ -165,57 +177,20 @@ public class PopUpUnitMenu extends JPopupMenu {
      * @param mainDesktopPane
      */
     private JMenuItem buildDetailsItem(final Unit unit, final MainDesktopPane desktop) {
-		JMenuItem detailsItem = new JMenuItem(Msg.getString("PopUpUnitMenu.details"));
-
-        detailsItem.addActionListener(e -> desktop.showDetails(unit));
-
-		return detailsItem;
+		return createItem("details", unit, desktop::showDetails);
     }
-    
-    /**
-     * Builds item for vehicle relocation.
+ 
+	/**
+     * Create a menu item
      *
      * @param unit
      */
-	private JMenuItem buildVehicleRelocate(Vehicle v) {
-		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu.relocate"));
-
-        relocateItem.addActionListener(e -> {
-	            v.relocateVehicle();
-	    		repaint();
-        });
-
-		return relocateItem;
-	}
-	
-    /**
-     * Builds item for maintenance tagging.
-     *
-     * @param unit
-     */
-	private JMenuItem buildVehicleToMaintain(Vehicle v) {
-		JMenuItem item = new JMenuItem(Msg.getString("PopUpUnitMenu.maintain"));
-
-		item.addActionListener(e -> {
-	            v.maintainVehicle();
-	    		repaint();
-        });
-
-		return item;
-	}
-	
-    /**
-     * Builds item for relocating a construction site.
-     *
-     * @param unit
-     */
-	private JMenuItem relocateSite(ConstructionSite site) {
-		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu.relocate"));
+	private <T> JMenuItem createItem(String name, T target, Consumer<T> action) {
+		JMenuItem relocateItem = new JMenuItem(Msg.getString("PopUpUnitMenu." + name));
 		
-        relocateItem.setForeground(new Color(139,69,19));
         relocateItem.addActionListener(e -> {
-        		site.relocateSite();
-	    		repaint();
+			action.accept(target);
+			repaint();
         });
 
 		return relocateItem;
