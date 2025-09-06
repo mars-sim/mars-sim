@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- If this is a child of a parent POM, uncomment and fill in:
+  <parent>
+    <groupId>org.mars-sim</groupId>
+    <artifactId>mars-sim-parent</artifactId>
+    <version>3.9.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  -->
+
+  <groupId>org.mars-sim</groupId>
+  <artifactId>mars-sim-launcher</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Mars-Sim Launcher</name>
+  <description>Standalone Swing/CLI launcher with single-instance guard.</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>21</maven.compiler.release>
+  </properties>
+
+  <!-- No external deps required; launcher uses only the JDK (Swing/AWT, NIO, HTTP). -->
+  <dependencies>
+    <!-- If you later add logging or other libs, put them here. -->
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Compile for Java 21 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+        </configuration>
+      </plugin>
+
+      <!-- Make the plain JAR have a Main-Class (handy for non-shaded runs) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>false</addClasspath>
+              <mainClass>org.mars_sim.launcher.MarsSimLauncher</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Build a single "uber-jar" that includes all dependencies -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- Keep the original POM untouched (this launcher has no deps anyway) -->
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+
+              <!-- Ensure the shaded JAR has the correct Main-Class -->
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>org.mars_sim.launcher.MarsSimLauncher</mainClass>
+                </transformer>
+                <!-- If you ever add libraries that use META-INF/services -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
+
+              <!-- Attach as an additional artifact: *-shaded.jar -->
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>shaded</shadedClassifierName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
