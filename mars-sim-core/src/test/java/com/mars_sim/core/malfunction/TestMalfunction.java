@@ -1,7 +1,13 @@
 package com.mars_sim.core.malfunction;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
+import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 
@@ -9,6 +15,7 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
 
 
 	private static final String INSIDE_MALFUNCTION = "Class A Combustible Fire";
+	private static final String AIR_LEAK ="Air Leak";
 	
 	private int counter = 0;
 	private MalfunctionMeta insideMeta;
@@ -22,16 +29,27 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
 
         MalfunctionConfig config = simConfig.getMalfunctionConfiguration();
         for (MalfunctionMeta m : config.getMalfunctionList()) {
-        	if (m.getName().equals(INSIDE_MALFUNCTION)) {
+        	if (m.getName().equals(AIR_LEAK)) {
         		insideMeta = m;
         	}
         }
 
 		Settlement s = buildSettlement();
+//		Building a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+//		Building g = buildGreenhouse(s.getBuildingManager());
+		VehicleGarage g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+
 		Rover r = buildRover(s, "Test", null);
 		mgr = r.getMalfunctionManager();
+		mgr.initScopes();
     }
     
+    
+	public Building buildGreenhouse(BuildingManager buildingManager) {
+		return buildFunction(buildingManager, "Large Greenhouse", BuildingCategory.FARMING,
+                FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
+	}
+	
     private Malfunction createInsideMalfunction() {
 		return new Malfunction(mgr, counter++, insideMeta, true);
 	}
@@ -59,7 +77,7 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
     	assertEquals("Malfunction initial slots", mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE), desiredWorkers);
 
     	// Add worker
-    	for(int i = 0; i < e.getDesiredWorkers(); i++) {
+    	for (int i = 0; i < e.getDesiredWorkers(); i++) {
         	mal.addWorkTime(MalfunctionRepairWork.INSIDE, 0.001D, "Worker" + i);
         	int expectedSlots = desiredWorkers - (i + 1);
         	assertEquals("Available slots after worker #" + i, expectedSlots, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE));

@@ -120,7 +120,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 				RatingScore score = MaintainBuildingMeta.scoreMaintenance(manager, vehicle, partsPosted);
 	
 				// Vehicle in need of maintenance
-				if (score.getScore() >= 1) {
+				if (score.getScore() >= 0) {
 					
 					boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
 							vehicle.getAssociatedSettlement(), vehicle instanceof Rover);

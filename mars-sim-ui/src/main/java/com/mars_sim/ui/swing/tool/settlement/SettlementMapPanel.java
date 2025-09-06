@@ -17,18 +17,21 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -57,19 +60,26 @@ import com.mars_sim.ui.swing.UIConfig;
  * <p><b>What's new in this version</b> (memory‑safety & UX fixes):
  * <ul>
  *   <li><b>Zoom coalescing</b>: calls to {@link #setScale(double)} are throttled via a Swing Timer
- *       to prevent excessive re-rasterization while a slider is dragged.</li>
+ *       to prevent excessive re-rendering while a slider is dragged.</li>
  *   <li><b>Listener lifecycle</b>: mouse listeners are installed once and removed on dispose to
  *       avoid leaks when the panel is recreated.</li>
  *   <li><b>Graphics hygiene</b>: uses a child {@code Graphics2D} and disposes it after painting.</li>
  *   <li><b>Icon cache hook</b>: an LRU {@code ScaledIconCache} is exposed for layers that render
  *       scalable art to reuse rasterizations at the current scale.</li>
- *   <li><b>Tile cache cleanup</b>: calls {@link BackgroundTileMapLayer#dispose()} on remove to
- *       promptly free background tile images when the panel is detached.</li>
+ *   <li><b>Tile cache cleanup</b>: background tile images are released during panel destroy.</li>
  * </ul>
  * </p>
  */
 @SuppressWarnings("serial")
 public class SettlementMapPanel extends JPanel {
+
+	/**
+	 * Run the given task on the Swing EDT (immediately if already on EDT).
+	 */
+	private static void onEdt(Runnable r) {
+		if (SwingUtilities.isEventDispatchThread()) r.run();
+		else SwingUtilities.invokeLater(r);
+	}
 
 	/**
 	 * Display options that can be selected
@@ -136,18 +146,22 @@ public class SettlementMapPanel extends JPanel {
 
 	private static final Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 
-	private Set<DisplayOption> displayOptions = new HashSet<>();
+	private Set<DisplayOption> displayOptions = EnumSet.noneOf(DisplayOption.class);
 
-	// -------- New: event coalescing for scale updates --------
+	// -------- Event coalescing for scale updates --------
 	private Timer zoomCoalesceTimer;
-	private Double pendingScale = null; // when non-null, an update is queued
+	private volatile Double pendingScale = null; // when non-null, an update is queued
 
-	// -------- New: listener lifecycle management --------
+	// -------- Event coalescing for simulation tick -> UI --------
+	/** Coalesces simulation-tick UI updates so we don't flood the EDT. */
+	private final AtomicBoolean uiUpdateScheduled = new AtomicBoolean(false);
+
+	// -------- Listener lifecycle management --------
 	private boolean listenersInstalled = false;
 	private MouseMotionAdapter motionListener;
 	private MouseAdapter mouseListener;
 
-	// -------- New: shared cache hook for layers that rasterize scalable art --------
+	// -------- Shared cache hook for layers that rasterize scalable art --------
 	private final ScaledIconCache iconCache = new ScaledIconCache();
 
 	/**
@@ -208,7 +222,7 @@ public class SettlementMapPanel extends JPanel {
 		selectedPerson = new HashMap<>();
 		selectedRobot = new HashMap<>();
 
-		// New: throttle zoom changes to avoid flood of repaints/rasterizations
+		// Throttle zoom changes to avoid flood of repaints/rasterizations
 		zoomCoalesceTimer = new Timer(50, e -> applyPendingScale());
 		zoomCoalesceTimer.setRepeats(false);
 	}
@@ -256,13 +270,18 @@ public class SettlementMapPanel extends JPanel {
 		mapLayers.add(new RobotMapLayer(this));
 
 		settlementTransparentPanel = new SettlementTransparentPanel(desktop, this);
-		settlementTransparentPanel.createAndShowGUI();
-		settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
 
-		// Loads the value of scale possibly modified from UIConfig's Properties
-		settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+		// Ensure all Swing mutations happen on EDT
+		onEdt(() -> {
+			settlementTransparentPanel.createAndShowGUI();
+			if (settlement != null && settlementTransparentPanel.getSettlementListBox() != null) {
+				settlementTransparentPanel.getSettlementListBox().setSelectedItem(settlement);
+			}
+			// Loads the value of scale possibly modified from UIConfig's Properties
+			settlementTransparentPanel.setZoomValue((int) Math.round(scale));
 
-		repaint();
+			repaint();
+		});
 	}
 
 	/**
@@ -287,7 +306,9 @@ public class SettlementMapPanel extends JPanel {
 				int x = evt.getX();
 				int y = evt.getY();
 
-				settlementWindow.setPop(getSettlement().getNumCitizens());
+				if (getSettlement() != null) {
+					settlementWindow.setPop(getSettlement().getNumCitizens());
+				}
 				// Call to determine if it should display or remove the building coordinate within a building
 				showBuildingCoord(x, y);
 				// Display the pixel coordinate of the window panel
@@ -374,13 +395,15 @@ public class SettlementMapPanel extends JPanel {
 		// Ensure listeners are detached to allow GC of this panel
 		removeInteractionListeners();
 
-		// Promptly dispose heavy background tile cache when panel is removed
-		if (mapLayers != null) {
-			for (SettlementMapLayer layer : mapLayers) {
-				if (layer instanceof BackgroundTileMapLayer) {
-					((BackgroundTileMapLayer) layer).dispose();
-				}
+		// --- PATCH: Stop and detach the zoom coalescing timer to avoid stray events & leaks ---
+		if (zoomCoalesceTimer != null) {
+			zoomCoalesceTimer.stop();
+			// Clear listeners to break strong references early
+			for (ActionListener l : zoomCoalesceTimer.getActionListeners()) {
+				zoomCoalesceTimer.removeActionListener(l);
 			}
+			zoomCoalesceTimer = null;
+			pendingScale = null;
 		}
 		super.removeNotify();
 	}
@@ -475,14 +498,18 @@ public class SettlementMapPanel extends JPanel {
 	/**
 	 * Sets the settlement to display.
 	 *
-	 * @param settlement the settlement.
+	 * @param newSettlement the settlement.
 	 */
 	public synchronized void setSettlement(Settlement newSettlement) {
 		if (newSettlement != settlement) {
 			this.settlement = newSettlement;
-			getSettlementTransparentPanel().getSettlementListBox()
-					.setSelectedItem(settlement);
-			repaint();
+			onEdt(() -> {
+				if (getSettlementTransparentPanel() != null
+						&& getSettlementTransparentPanel().getSettlementListBox() != null) {
+					getSettlementTransparentPanel().getSettlementListBox().setSelectedItem(settlement);
+				}
+				repaint();
+			});
 		}
 	}
 
@@ -507,17 +534,19 @@ public class SettlementMapPanel extends JPanel {
 		// Queue the new scale; apply after a short delay (coalescing)
 		pendingScale = newScale;
 		if (zoomCoalesceTimer != null) {
-			zoomCoalesceTimer.restart();
+			onEdt(() -> zoomCoalesceTimer.restart()); // ensure Swing Timer is touched on EDT
 		} else {
-			// Fallback: apply immediately if timer wasn't created yet
-			applyPendingScale();
+			onEdt(this::applyPendingScale);
 		}
 	}
 
 	/**
 	 * Applies the pending scale (quantized and clamped) and repaints once.
+	 * Must be invoked on the EDT.
 	 */
 	private void applyPendingScale() {
+		assert SwingUtilities.isEventDispatchThread() : "applyPendingScale must run on EDT";
+
 		final double target = (pendingScale != null ? pendingScale : scale);
 		pendingScale = null;
 
@@ -530,7 +559,6 @@ public class SettlementMapPanel extends JPanel {
 		this.scale = q;
 
 		// Avoid re-entrant slider event storms: do not call setZoomValue here.
-		// The transparent panel will reflect the change when it next polls/sets.
 
 		revalidate();
 		repaint();
@@ -573,8 +601,12 @@ public class SettlementMapPanel extends JPanel {
 		yPos = 0D;
 		setRotation(0D);
 		scale = DEFAULT_SCALE; // set directly to avoid unnecessary coalescing delay here
-		settlementTransparentPanel.setZoomValue((int) Math.round(scale));
-		repaint();
+		onEdt(() -> {
+			if (settlementTransparentPanel != null) {
+				settlementTransparentPanel.setZoomValue((int) Math.round(scale));
+			}
+			repaint();
+		});
 	}
 
 	/**
@@ -1104,7 +1136,7 @@ public class SettlementMapPanel extends JPanel {
 				if (scale > 1) scaleMod = (float) Math.sqrt(scale);
 
 				// Display all map layers.
-				var viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
+				MapViewPoint viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
 				for (SettlementMapLayer layer : mapLayers) {
 					layer.displayLayer(settlement, viewpoint);
 				}
@@ -1119,7 +1151,19 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	void update(ClockPulse pulse) {
-		settlementTransparentPanel.update(pulse);
+		// Clock pulses arrive on worker threads (MasterClock/ThreadPool). Swing must be updated on the EDT.
+		if (uiUpdateScheduled.compareAndSet(false, true)) {
+			SwingUtilities.invokeLater(() -> {
+				try {
+					if (settlementTransparentPanel != null) {
+						settlementTransparentPanel.update(pulse);
+					}
+					// If layers request repaints, they’ll do so on EDT; avoid repaint flood.
+				} finally {
+					uiUpdateScheduled.set(false);
+				}
+			});
+		}
 		// repaint(); // avoid repaint flood; layers request repaints when needed
 	}
 
@@ -1128,7 +1172,9 @@ public class SettlementMapPanel extends JPanel {
 	 */
 	Properties getUIProps() {
 		Properties props = new Properties();
-		props.setProperty(SETTLEMENT_PROP, settlement.getName());
+		if (settlement != null) {
+			props.setProperty(SETTLEMENT_PROP, settlement.getName());
+		}
 
 		for (DisplayOption op : DisplayOption.values()) {
 			props.setProperty(op.name(), Boolean.toString(displayOptions.contains(op)));

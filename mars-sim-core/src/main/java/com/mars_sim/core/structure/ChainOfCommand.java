@@ -198,7 +198,7 @@ public class ChainOfCommand implements Serializable {
 				+ 3 * mgr.getAttribute(NaturalAttributeType.EMOTIONAL_STABILITY)
 				
 				+ 2 * mgr.getAttribute(NaturalAttributeType.ATTRACTIVENESS)
-				+ mgr.getAttribute(NaturalAttributeType.CONVERSATION);
+				+ 1D + mgr.getAttribute(NaturalAttributeType.CONVERSATION);
 	}
 
 

@@ -17,47 +17,63 @@ import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Meta task for Converse task.
+ *
+ * <p>This version removes all reflection and avoids calling any deprecated
+ * {@code FactoryMetaTask#getProbability(Person)} overloads. It also fixes the
+ * access error by <b>not importing</b> the protected nested enums and instead
+ * referencing them directly as inherited members.</p>
  */
 public class ConverseMeta extends FactoryMetaTask {
 
     /** Task name */
-    private static final String NAME = Msg.getString(
-            "Task.description.converse"); //$NON-NLS-1$
-    
+    private static final String NAME =
+            Msg.getString("Task.description.converse"); //$NON-NLS-1$
+
     private static final double VALUE = 1.2;
     private static final int CAP = 10;
-    
-	public ConverseMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
-		setTrait(TaskTrait.PEOPLE, TaskTrait.RELAXATION);
-	}
-       
+
+    public ConverseMeta() {
+        // Use inherited protected enums without importing them.
+        super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
+        setTrait(TaskTrait.PEOPLE, TaskTrait.RELAXATION);
+    }
+
     @Override
     public Task constructInstance(Person person) {
         return new Converse(person);
     }
 
+    /**
+     * Probability that this task is the best selection for the person.
+     *
+     * <p><b>Note:</b> Intentionally avoids calling the deprecated
+     * {@code FactoryMetaTask#getProbability(Person)}. No reflection is used.</p>
+     */
     @Override
     public double getProbability(Person person) {
-        // Avoid chatting when outside        
+        // Avoid chatting when outside
         if (person.isOutside()) {
             return 0D;
         }
 
-    	double result = RandomUtil.getRandomDouble(person.getNaturalAttributeManager()
-    			.getAttribute(NaturalAttributeType.CONVERSATION))/20;
- 
+        // Compute Converse-specific probability.
+        double result = RandomUtil.getRandomDouble(
+                person.getNaturalAttributeManager()
+                      .getAttribute(NaturalAttributeType.CONVERSATION)) / 20D;
+
         boolean isOnShiftNow = person.isOnDuty();
-        if (!isOnShiftNow)
-        	result = result /2;
-        
-        result = result + result * person.getPreference().getPreferenceScore(this)/10D;
-        
+        if (!isOnShiftNow) {
+            result = result / 2D;
+        }
+
+        result = result + result * person.getPreference().getPreferenceScore(this) / 10D;
+
         result *= VALUE;
-        
-        if (result > CAP) 
-        	result = CAP;
-        
+
+        if (result > CAP) {
+            result = CAP;
+        }
+
         return result;
     }
 }

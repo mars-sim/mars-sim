@@ -40,7 +40,7 @@ public abstract class Function implements Serializable, Temporal {
 	private static SimLogger logger = SimLogger.getLogger(Function.class.getName());
 
 	// The default inspection work time in millisols for each scope 
-	protected static final int BASE_MAINT_TIME = 3;
+	protected static final double BASE_MAINT_TIME = 3D;
 
 	private long lastPulse = 0; // First initial pulse is always 1
 

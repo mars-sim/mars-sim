@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.util;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.Simulation;
@@ -24,7 +25,6 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
-import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -101,9 +101,11 @@ public abstract class MetaTask {
 	
 	private Set<TaskTrait> traits = Collections.emptySet();
 	private Set<FavoriteType> favourites = Collections.emptySet();
-	private EnumMap<JobType, Double> preferredJobs = new EnumMap<>(JobType.class);
+	
+	private Map<JobType, Double> preferredJobs = new EnumMap<>(JobType.class);
+	
 	private Set<RobotType> preferredRobots = new HashSet<>();
-	private EnumMap<RoleType, Double> preferredRoles = new EnumMap<>(RoleType.class);
+	private Map<RoleType, Double> preferredRoles = new EnumMap<>(RoleType.class);
 	
 	
 	/**
@@ -393,17 +395,17 @@ public abstract class MetaTask {
 		
         // Job modifier. If not my job suitable then a penalty.
 	 	// Rules are:
-	 	// 1. Person must have a Job
-	 	// 2. Task must have Preferred Jobs
-	 	// 3. If the Person's job is not in the Preferred list then a penalty is applied. 
-		JobType job = person.getMind().getJob();
-        if ((job != null) && !preferredJobs.isEmpty()) {
-			score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(job, NON_JOB_PENALTY));
+	 	// 1. Person must have a job type
+	 	// 2. Task must have preferred job type
+	 	// 3. If the Person's job type is not in the preferred list then a penalty is applied. 
+		JobType jobType = person.getMind().getJob();
+        if ((jobType != null) && !preferredJobs.isEmpty()) {
+			score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(jobType, NON_JOB_PENALTY));
         }
 		
 		// Role modifier. If suitable role then add a bonus
 	 	// Rules are:
-	 	// 1. Person must have a Role
+	 	// 1. Person must have a role
 	 	// 2. Role is preferred then add bonus
 		var role = person.getRole();
         if ((role != null) && !preferredRoles.isEmpty()) {
@@ -430,14 +432,14 @@ public abstract class MetaTask {
 	protected RatingScore assessRobotSuitability(RatingScore score, Robot robot) {
 
         // Job modifier. If not my job suitable then a penalty.
-		RobotJob job = robot.getBotMind().getRobotJob();
-        if ((job != null) && !preferredRobots.isEmpty()) {
-			score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(job, NON_JOB_PENALTY));
-        }
+//		It's not JobType. RobotJob robotJob = robot.getBotMind().getRobotJob();
+//      It's not JobType.  if ((robotJob != null) && !preferredJobs.isEmpty()) {
+//		It's not JobType.	score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(robotJob, NON_JOB_PENALTY));
+//      It's not JobType. }
 		
 		// Role modifier. If suitable role then add a bonus
-		RobotType type = robot.getRobotType();
-        if ((type != null) && !preferredRobots.isEmpty()) {
+		RobotType robotType = robot.getRobotType();
+        if ((robotType != null) && !preferredRobots.isEmpty()) {
 			score.addModifier(TYPE_MODIFIER, TYPE_BONUS);
         }
 

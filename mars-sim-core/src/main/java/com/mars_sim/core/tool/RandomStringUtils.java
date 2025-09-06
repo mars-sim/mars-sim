@@ -486,4 +486,7 @@ public class RandomStringUtils {
         return random(count, 0, chars.length, false, false, chars, RANDOM);
     }
 
+    public void destroy() {
+    	random.remove();
+    }
 }

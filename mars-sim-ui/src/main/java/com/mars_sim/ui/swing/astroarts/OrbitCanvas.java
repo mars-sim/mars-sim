@@ -357,11 +357,11 @@ class OrbitCanvas extends Canvas {
 		this.nY0 = this.sizeCanvas.height / 2;
 
         if (Math.abs(epochToEcl - atime.getJd()) > 365.2422 * 5) {
-                updateRotationMatrix(atime);
+           updateRotationMatrix(atime);
         }
 
         // If center object is comet/asteroid  
-        if (centerObjectSelected == 1 )   {
+        if (centerObjectSelected == 1) {
            xyz = this.objectPos.rotate(this.mtxToEcl).rotate(this.mtxRotate);	
            point3 = getDrawPoint(xyz);
 
@@ -373,9 +373,8 @@ class OrbitCanvas extends Canvas {
            } 
         }
         // If center object is one of the planets
-        else if (centerObjectSelected > 1 )   {
-           xyz = planetPos[centerObjectSelected -2].rotate(this.mtxRotate);
-
+        else if (centerObjectSelected > 1) {
+           xyz = planetPos[centerObjectSelected - 2].rotate(this.mtxRotate);
            point3 = getDrawPoint(xyz);
 
            this.nX0 = this.sizeCanvas.width - point3.x;
@@ -435,6 +434,7 @@ class OrbitCanvas extends Canvas {
 		g2d.setColor(OBJECT_COLOR);
 		g2d.fillArc(point1.x - 2, point1.y - 2, 5, 5, 0, 360);
 		g2d.setFont(OBJECT_NAME_FONT);
+		
 		if (bObjectName) {
 			g2d.setColor(OBJECT_NAME_COLOR);
 			g2d.drawString(object.getName(), point1.x + 5, point1.y);
@@ -452,8 +452,7 @@ class OrbitCanvas extends Canvas {
 		}
 		drawPlanetBody(g2d, planetPos[8], "Pluto");
 		
-		if (orbitDisplay[0] || orbitDisplay[9]) {
-			
+		if (orbitDisplay[0] || orbitDisplay[9]) {			
 			drawPlanetOrbit(g2d, planetOrbit[Planet.NEPTUNE-Planet.MERCURY],
 							PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
 		}
@@ -486,8 +485,7 @@ class OrbitCanvas extends Canvas {
 			drawPlanetBody(g2d, planetPos[3], "Mars");
 		}
 		if (fZoom >= 7.5) {
-                        if (orbitDisplay[0] || orbitDisplay[4]) {
-
+			if (orbitDisplay[0] || orbitDisplay[4]) {
 			   drawEarthOrbit(g2d, planetOrbit[Planet.EARTH-Planet.MERCURY],
 						PLANET_ORBIT_UPPER_COLOR);
                         }
@@ -495,14 +493,14 @@ class OrbitCanvas extends Canvas {
                         
 		}
 		if (fZoom * 0.723 >= 7.5) {
-                        if (orbitDisplay[0] || orbitDisplay[3]) {
+			if (orbitDisplay[0] || orbitDisplay[3]) {
 			   drawPlanetOrbit(g2d, planetOrbit[Planet.VENUS-Planet.MERCURY],
 						PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
                         }
 			drawPlanetBody(g2d, planetPos[1], "Venus");
 		}
 		if (fZoom * 0.387 >= 7.5) {
-                        if (orbitDisplay[0] || orbitDisplay[2]) {
+			if (orbitDisplay[0] || orbitDisplay[2]) {
 			   drawPlanetOrbit(g2d, planetOrbit[0],
 						PLANET_ORBIT_UPPER_COLOR, PLANET_ORBIT_LOWER_COLOR);
                         }

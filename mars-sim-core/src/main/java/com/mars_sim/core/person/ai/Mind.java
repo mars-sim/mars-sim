@@ -59,8 +59,8 @@ public class Mind implements Serializable, Temporal {
 	private PersonTaskManager taskManager;
 	/** The person's current mission (if any). */
 	private Mission mission;
-	/** The person's job. */
-	private JobType job;
+	/** The person's job type. */
+	private JobType jobType;
 	/** The person's personality. */
 	private MBTIPersonality mbti;
 	/** The person's emotional states. */
@@ -82,7 +82,7 @@ public class Mind implements Serializable, Temporal {
 		// Initialize data members
 		this.person = person;
 		mission = null;
-		job = null;
+		jobType = null;
 		jobLock = false;
 
 		// Construct the Big Five personality trait.
@@ -127,14 +127,14 @@ public class Mind implements Serializable, Temporal {
 	
 		
 		// Note: for now, a Mayor/Manager cannot switch job
-		if (jobLock && job != JobType.POLITICIAN) {
+		if (jobLock && jobType != JobType.POLITICIAN) {
 			// Check for the passing of each day
 			if (pulse.isNewSol()) {
 				// Note: for non-managerial position, the new job needs to be locked in
 				// (i.e. no change allowed) until the beginning of the next sol
 				jobLock = false;
 			}
-		} else if (job == null) {
+		} else if (jobType == null) {
 			// Assign a new job but do not bypass jobLock
 			getAJob(false, JobUtil.SETTLEMENT);
 		}
@@ -348,11 +348,11 @@ public class Mind implements Serializable, Temporal {
 		AssignmentHistory jh = person.getJobHistory();
 
 		// Future: check if the initiator's role allows the job to be changed
-		if (newJob != job) {
+		if (newJob != jobType) {
 
 			if (bypassingJobLock || !jobLock) {
 				// Set to the new job
-				job = newJob;
+				jobType = newJob;
 				jh.saveJob(newJob, assignedBy, status, approvedBy);
 
 				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
@@ -497,7 +497,7 @@ public class Mind implements Serializable, Temporal {
 	 * @return job or null if none.
 	 */
 	public JobType getJob() {
-		return job;
+		return jobType;
 	}
 
 	/**
@@ -556,7 +556,7 @@ public class Mind implements Serializable, Temporal {
 		person = null;
 		taskManager.destroy();
 		mission = null;
-		job = null;
+		jobType = null;
 		if (mbti != null)
 			mbti.destroy();
 		mbti = null;

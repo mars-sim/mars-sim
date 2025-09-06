@@ -594,10 +594,8 @@ public class Malfunction implements Serializable {
 	 * @throws Exception if error determining the repair parts.
 	 */
 	private void determineRepairParts() {
-		
-		List<MaintenanceScope> list = pickOneScopeHighFatigue();
-		
-		for (MaintenanceScope ms : list) {
+			
+		for (MaintenanceScope ms : pickOneScopeHighFatigue()) {
 
 			double prob = ms.getProbability();
 			int chance = ms.getMaxNumber();
@@ -626,7 +624,8 @@ public class Malfunction implements Serializable {
 	 */
 	private List<MaintenanceScope> pickOneScopeHighFatigue() {
 		double highestFatigue = 0;
-		List<MaintenanceScope> selectedScope = null;
+		List<MaintenanceScope> selectedScope = Collections.emptyList();
+//		May add back for debugging: logger.info("Malfunction: " + definition.getSystems());
 		for (String scope: definition.getSystems()) {
 			double sumFatigue = 0;
 			List<MaintenanceScope> list = owner.getMaintenanceScopeList(scope);

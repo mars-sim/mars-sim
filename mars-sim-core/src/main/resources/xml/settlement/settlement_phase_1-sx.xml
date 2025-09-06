@@ -10,7 +10,7 @@
         </connection-list>
     </building>
 
-   <building id="MCD0" type="Match Core D" xloc="-6.0" yloc="0.0"
+   <building id="MCD0" type="Corridor 3x9" xloc="-6.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="LH0" hatch-facing="west" />

@@ -9,8 +9,6 @@ package com.mars_sim.core.malfunction;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.resource.MaintenanceScope;
-
 /**
  * Private inner class for repair part information.
  */
@@ -19,7 +17,6 @@ public class RepairPart implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private MaintenanceScope scope;
 	private String name;
 	private int partID;
 	private int number;
@@ -34,7 +31,6 @@ public class RepairPart implements Serializable {
 	 * @param repairProbability the probability of the part being needed.
 	 */
 	RepairPart(String name, int partID, int number, double repairProbability) {
-		this.scope = scope;
 		this.partID = partID;
 		this.name = name;
 		this.number = number;

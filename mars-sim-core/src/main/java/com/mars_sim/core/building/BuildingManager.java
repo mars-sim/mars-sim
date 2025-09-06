@@ -166,10 +166,8 @@ public class BuildingManager implements Serializable {
 					throw new IllegalArgumentException(bt.getBuildingName() + " collided with another building.");
 					// May relocate with bt = Resupply.clearCollision(spec, bt, Resupply.MAX_COUNTDOWN, this);
 				}
-
-				if (bt != null) {		
-					addBuilding(Building.createBuilding(bt, settlement), bt, false);
-				}
+	
+				addBuilding(Building.createBuilding(bt, settlement), bt, false);
 			}
 		}
 	}
@@ -536,11 +534,8 @@ public class BuildingManager implements Serializable {
 	private boolean isGoodZone(Building origin, Building destination) {
 		// Assuming zone 0 is the main zone, where most service are available,
 		// this will allow someone in astronomy observatory (in zone 1) to come back home
-		if (destination.getZone() == 0 
-				|| destination.getZone() == origin.getZone()) {
-			return true;
-		}
-		return false;
+		return (destination.getZone() == 0 
+				|| (destination.getZone() == origin.getZone())); 
 	}
 	
 	/**
@@ -572,28 +567,62 @@ public class BuildingManager implements Serializable {
 						.getBuildingsWithScienceType(person, sType);
 			}
 			
-			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildingsinSameZone(person, FunctionType.RESEARCH);
-			}
-			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildingsinSameZone(person, FunctionType.ADMINISTRATION);
-			}
-			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildingsinSameZone(person, FunctionType.DINING);
-			}
-			if (buildings == null || buildings.isEmpty()) {
-				buildings = getBuildingsinSameZone(person, FunctionType.LIVING_ACCOMMODATION);
-			}
-		
 			if (buildings != null && !buildings.isEmpty()) {
-				Map<Building, Double> possibleBuildings = BuildingManager.getBestRelationshipBuildings(person,
-						buildings);
+				Map<Building, Double> possibleBuildings = BuildingManager.
+						getBestRelationshipBuildings(person, buildings);
 				b = RandomUtil.getWeightedRandomObject(possibleBuildings);
 			}
+			
+			if (b == null && buildings != null && !buildings.isEmpty()) {
+				List<Building> bldg = new ArrayList<>(buildings);
+				b = bldg.get(0);
+			}
+			if (b == null) {
+				b = getBuildingWithSpot(person, FunctionType.RESEARCH,
+						FunctionType.ADMINISTRATION,
+						FunctionType.DINING,
+						FunctionType.LIVING_ACCOMMODATION);
+			}	
 		}
+		
 		return b;
 	}
 	
+	/**
+	 * Gets a building with one of the spot.
+	 * 
+	 * @param person
+	 * @return
+	 */
+	private static Building getBuildingWithSpot(Person person, FunctionType type1,
+			FunctionType type2, FunctionType type3, FunctionType type4) {
+		Set<Building> buildings = null;
+		
+		if (buildings == null || buildings.isEmpty()) {
+			buildings = getBuildingsinSameZone(person, type1);
+		}
+		if (buildings == null || buildings.isEmpty()) {
+			buildings = getBuildingsinSameZone(person, type2);
+		}
+		if (buildings == null || buildings.isEmpty()) {
+			buildings = getBuildingsinSameZone(person, type3);
+		}
+		if (buildings == null || buildings.isEmpty()) {
+			buildings = getBuildingsinSameZone(person, type4);
+		}
+	
+		if (buildings != null && !buildings.isEmpty()) {
+			Map<Building, Double> possibleBuildings = BuildingManager.
+					getBestRelationshipBuildings(person, buildings);
+			return RandomUtil.getWeightedRandomObject(possibleBuildings);
+		}
+		
+		List<Building> bldg = new ArrayList<>(buildings);
+		if (bldg.size() > 0)
+			return bldg.get(0);
+		
+		return null;
+	}
 	
 	/**
 	 * Gets a list of non-malfunctioned diners in the same zone.
@@ -640,17 +669,17 @@ public class BuildingManager implements Serializable {
 			if (list0.isEmpty())
 				return null;
 			
-			Set<Building> list1 = list0;
-
-            if (canChat)
+            if (canChat) {
 				// Choose between the most crowded or the least crowded dining hall
-				list1 = BuildingManager.getChattyBuildings(list1);
-			else
-				list1 = BuildingManager.getLeastCrowdedBuildings(list1);
+				BuildingManager.getChattyBuildings(list0);
+            }
+			else {
+				BuildingManager.getLeastCrowdedBuildings(list0);
+			}
 
-			if (!list1.isEmpty()) {
-				Map<Building, Double> probs = BuildingManager.getBestRelationshipBuildings(person,
-						list1);
+			if (!list0.isEmpty()) {
+				Map<Building, Double> probs = BuildingManager
+						.getBestRelationshipBuildings(person, list0);
 				b = RandomUtil.getWeightedRandomObject(probs);
 			}
 		}
@@ -796,9 +825,7 @@ public class BuildingManager implements Serializable {
 	public Building getABuilding(FunctionType f1, FunctionType f2) {
 		Optional<Building> value = buildings.stream()
 				.filter(b -> b.hasFunction(f1) && b.hasFunction(f2))
-//				.max(Comparator.comparing(Building::getFunction(f1).getNumEmptyActivitySpots, Comparator.reverseOrder()))
-				.findAny();
-//                .findFirst();
+				.findAny(); //  .findFirst();
 
         return value.orElse(null);
 
@@ -929,17 +956,17 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Adds a person to a random habitable building within a settlement.
-	 * Note: excluding the astronomical observation building
+	 * Adds a person to a random habitable building activity spot within a settlement.
+	 * Note: excluding the EVA (and astronomical observation) building
 	 *
-	 * @param unit       the person to add.
-	 * @param s the settlement to find a building.
+	 * @param person the person to add.
+	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
-	public static void addPersonToRandomBuilding(Person person, Settlement s) {
+	public static void addPersonToRandomBuildingSpot(Person person, Settlement settlement) {
 		
 		// Go to the default zone 0 only
-		Set<Building> bldgSet = person.getSettlement().getBuildingManager()
+		Set<Building> bldgSet = person.getAssociatedSettlement().getBuildingManager()
 					.getBuildingSet(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b.getZone() == 0
@@ -948,7 +975,6 @@ public class BuildingManager implements Serializable {
 					.collect(Collectors.toSet());
 
 		if (bldgSet.isEmpty()) {
-//			logger.warning(person, "No habitable buildings available in zone 0.");
 			return;
 		}
 		
@@ -970,16 +996,16 @@ public class BuildingManager implements Serializable {
 
 	/**
 	 * Adds a person to a random habitable building within a settlement.
-	 * Note: excluding the astronomical observation building
+	 * Note: excluding the EVA building (and astronomical observation) building
 	 *
-	 * @param unit       the person to add.
-	 * @param s the settlement to find a building.
+	 * @param person       the person to add.
+	 * @param settlement the settlement to find a building.
 	 * @throws BuildingException if person cannot be added to any building.
 	 */
-	public static void landOnRandomBuilding(Person person, Settlement s) {
+	public static void addPersonToRandomBuilding(Person person, Settlement settlement) {
 		
 		// Go to the default zone 0 only
-		Set<Building> bldgSet = person.getSettlement().getBuildingManager()
+		Set<Building> bldgSet = settlement.getBuildingManager()
 					.getBuildingSet(FunctionType.LIFE_SUPPORT)
 					.stream()
 					.filter(b -> b.getZone() == 0
@@ -988,7 +1014,6 @@ public class BuildingManager implements Serializable {
 					.collect(Collectors.toSet());
 
 		if (bldgSet.isEmpty()) {
-//			logger.warning(person, "No habitable buildings available in zone 0.");
 			return;
 		}
 				

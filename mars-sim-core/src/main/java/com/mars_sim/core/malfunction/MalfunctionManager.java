@@ -183,7 +183,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
 	// Note: there is no need of serializing scopeCollection since it's only being used by
 	// TabPanelMaintenance for generating tables 
-	private transient Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
+	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
 	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
@@ -969,7 +969,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	void removeFixedMalfunction(Malfunction fixed) {
 		if (!malfunctions.remove(fixed)) {
-			logger.warning(entity, 20_000L, "Fixed malfunction is unknown " + fixed.getName() + ".");
+			logger.warning(entity, 20_000L, "Fixed '" + fixed.getName() + "'.");
 		}
 		else {
 			Map<String, Double> effects = fixed.getLifeSupportEffects();
@@ -1362,7 +1362,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public List<MaintenanceScope> getMaintenanceScopeList(String scope) {
-		return scopeMap.get(scope.toLowerCase());
+//		May add back for debugging: logger.info("scope: " + scope + "  scopeMap: " + scopeMap.keySet().toString());
+		return scopeMap.getOrDefault(scope, Collections.emptyList());
 	}
 	
 	/**
@@ -1379,9 +1380,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 		for (MaintenanceScope maintenance : scopeMap.get(selectedScope)) {
 			if (RandomUtil.lessThanRandPercent(maintenance.getProbability())) {
 				int number = RandomUtil.getRandomRegressionInteger(maintenance.getMaxNumber());
-				int id = maintenance.getPart().getID();
-				if (partsNeededForMaintenance.containsKey(id)) {
-					number += partsNeededForMaintenance.get(id);
+				
+				if (partsNeededForMaintenance.containsKey(maintenance)) {
+					number += partsNeededForMaintenance.get(maintenance);
 				}
 				partsNeededForMaintenance.put(maintenance, number);
 			}

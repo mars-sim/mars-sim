@@ -149,6 +149,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 										type, cat, lifeSupport);
 	    buildingManager.addMockBuilding(building0);	
 	    
+	    building0.getMalfunctionManager().addScopeString(building0.getBuildingType());
+		
 	    unitManager.addUnit(building0);
 	
 	    return building0;
@@ -159,6 +161,8 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 							FunctionType fType, LocalPosition pos, double facing, boolean lifesupport) {
 		MockBuilding building0 = buildBuilding(buildingManager, type, cat,  pos, facing, lifesupport);
 
+		building0.getMalfunctionManager().addScopeString(fType.getName());
+		
 		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(type, fType);
 
 	    building0.addFunction(spec);
@@ -167,6 +171,11 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return building0;
 	}
 
+	public Building buildGreenhouse(BuildingManager buildingManager) {
+		return buildFunction(buildingManager, "Large Greenhouse", BuildingCategory.FARMING,
+                FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
+	}
+	
 	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,
 							FunctionType.RESEARCH,  pos, facing, true);

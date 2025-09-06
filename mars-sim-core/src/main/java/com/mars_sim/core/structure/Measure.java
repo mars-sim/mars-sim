@@ -9,7 +9,9 @@ package com.mars_sim.core.structure;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement.MeasureType;
 
 /**
@@ -24,14 +26,17 @@ public class Measure implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Measure.class.getName());
 	
+	private static final double WASH_WATER_USAGE = SimulationConfig.instance().getPersonConfig().getWaterUsageRate();
+	
+	
 	/** The flag to see if a rationing approval is due. */
 	private boolean approvalDue = false;
 	/** The flag to see if a rationing review is due. */
 	private boolean reviewDue = false;
-	/** The previous value of this measure. */
-	private int cacheValue = 0;
-	/** The current value of this measure. */
-	private int currentValue = 0;
+	/** The current rationing level of the settlement. */
+	private int currentLevel = 0;
+	/** The newly recommended level just being computed. */
+	private int recommendedLevel;
 	/** The new value just being computed. */
 	private int newValue;
 	
@@ -60,29 +65,28 @@ public class Measure implements Serializable {
 	}
 	
 	/** 
-	 * Gets the previous value. 
+	 * Gets the current rationing level at the settlement. 
 	 */
-	public int getCacheValue() {
-		return cacheValue;
+	public int getRationingLevel() {
+		return currentLevel;
 	}
 	
 	/**
-	 * Returns the difference between cache value and the new value. 
+	 * Returns the difference between cache level and the recommended level. 
 	 *
-	 * @return the difference 
+	 * @return difference of rationing level
 	 */
-	public int getValueDiff() {
-		return cacheValue - newValue;
+	public int getLevelDiff() {
+		return recommendedLevel - currentLevel;
 	}
 	
 	/**
-	 * Enforces the new value.
+	 * Enforces the new rationing level.
 	 */
-	public void enforceNewValue() {
-		// Back up the current level to the cache
-		cacheValue = currentValue;
+	public void enforceNewRationingLevel() {
+		logger.info(settlement, 30_000L, "currentLevel: " + currentLevel + "  recommendedLevel: " + recommendedLevel);
 		// Update the current level to the newly recommended level
-		currentValue = newValue;
+		currentLevel = recommendedLevel;
 		// Set the approval due back to false if it hasn't happened
 		setApprovalDue(false);
 	}
@@ -147,7 +151,7 @@ public class Measure implements Serializable {
 	 * @return
 	 */
 	public boolean isAtEmergency() {
-		return currentValue >= emergencyLevel;
+		return currentLevel >= emergencyLevel;
 	}
 	
 	/**
@@ -156,23 +160,25 @@ public class Measure implements Serializable {
 	 *
 	 * @return level difference
 	 */
-	public int reviewMeasure(double previou) {
+	public int reviewMeasure(double previous) {
+		double stored = settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		int reserve = settlement.getNumCitizens() * Settlement.MIN_WATER_RESERVE;
 		
-		int newLevel = 0;
+		// Assuming a 90-day supply of this resource and including industrial usage 
+		// of WASH_WATER_USAGE
+		double required = (5 * WASH_WATER_USAGE + settlement.getWaterConsumptionRate())
+				* settlement.getNumCitizens() * 120;
+	
+		int newLevel = (int)((required + reserve) / (1 + stored));
 		if (newLevel < 1)
 			newLevel = 0;
-		else if (newLevel > 0) {
-			 // Note: once other resources are starting to adopt this class, 
-			 //       this method will be changed	
-			logger.info(settlement, 0, "New Water Rationing Level: " + newLevel);
-		}
 		else if (newLevel > 1000)
 			newLevel = 1000;
 		
 		// Record it as the newly recommended level
-		newValue = newLevel;
+		recommendedLevel = newLevel;
 		
-		return cacheValue - newLevel;
+		return newLevel - currentLevel;
 	}
 
 }

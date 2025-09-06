@@ -827,8 +827,8 @@ public class GoodsManager implements Serializable {
 		int optimalPerPop = limits.optimal();
 		int pop = settlement.getNumCitizens();
 		
-		double optimal = optimalPerPop * pop;
-		double reserve = reservePerPop * pop;
+		int optimal = optimalPerPop * pop;
+		int reserve = reservePerPop * pop;
 		double demand = getDemandScoreWithID(resourceID);
 
 		// Compare the available amount of oxygen
@@ -841,7 +841,7 @@ public class GoodsManager implements Serializable {
 			return 0;
 		}
 			
-		lacking = MathUtils.between(optimal - reserve - stored, 0, optimal - reserve);
+		lacking = MathUtils.between(optimal - reserve - stored, 0, 1D * optimal - reserve);
 
 		// Note : Make sure stored is not zero by adding 1 so that delta is not infinite	
 		

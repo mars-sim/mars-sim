@@ -171,7 +171,7 @@ public abstract class DigLocal extends EVAOperation {
         int endurance = nManager.getAttribute(NaturalAttributeType.ENDURANCE);
         
         // Increase the duration of this task based upon one's endurance
-        setDuration(getDuration() * (1 + endurance/100/2));
+        setDuration(getDuration() * (1 + endurance/200.0));
         
         fatigueFactor = .5 * (1 - (agility + strength + endurance) / 300D);
 		compositeRate = collectionRate * ((.5 * agility + strength) / 150D) * (eva + .1);

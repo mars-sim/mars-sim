@@ -122,8 +122,10 @@ public class VehicleSpec implements Serializable {
 	/** The system scopes for vehicles. */	
 	public static final String CREW_CABIN = "crew cabin";
 	public static final String BATTERY = "battery";
-	public static final String METHANOL_FUEL = "methanol fuel";
-	public static final String METHAE_FUEL = "methane fuel";
+	public static final String FUEL = " fuel";
+	public static final String METHANOL_FUEL = "methanol" + FUEL;
+	public static final String METHAE_FUEL = "methane" + FUEL;
+	
 	
 	/** Estimated Number of hours traveled each day. **/
 	static final int ESTIMATED_TRAVEL_HOURS_PER_SOL = 16;
@@ -327,7 +329,7 @@ public class VehicleSpec implements Serializable {
 		this.fuelTypeStr = fuelTypeStr;
 		
 		// Add the fuel type as a system scope
-		addSystemScope(fuelTypeStr + "fuel");
+		addSystemScope(fuelTypeStr + FUEL);
 		
 		if (PowerSourceType.FUEL_POWER == powerSourceType) {	
 			var fr = ResourceUtil.findAmountResource(fuelTypeStr);
