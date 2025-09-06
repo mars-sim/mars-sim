@@ -253,8 +253,10 @@ public class MasterClock implements Serializable {
 		// Calculate the original cpu load
 		computeOriginalCPULoad();
 
-		// Set the reference pulse width
+		// Set the reference pulse width and optimal pulse width
 		computeReferencePulse();
+		// Ensure the very first tick has non-zero elapsed time
+		leadPulseTime = optMilliSolPerPulse;
 		
 		maxWaitTimeBetweenPulses = config.getDefaultPulsePeriod();
 
@@ -466,10 +468,11 @@ public class MasterClock implements Serializable {
 	 * @Param minDuration The minimum duration in milliseconds between pulses.
 	 */
 	public final void addClockListener(ClockListener newListener, long minDuration) {
-		// Check if clockListenerTaskList already contain the newListener's task,
-		// if it doesn't, create one
-		if (clockListenerTasks == null)
+		// Initialize container ONCE (don’t re-initialize on every add)
+		if (clockListenerTasks == null) {
 			clockListenerTasks = new CopyOnWriteArrayList<>();
+		}
+		// Avoid duplicates; add if missing
 		if (!hasClockListenerTask(newListener)) {
 			clockListenerTasks.add(new ClockListenerTask(newListener, minDuration));
 		}
@@ -494,6 +497,7 @@ public class MasterClock implements Serializable {
 	 * @return
 	 */
 	private boolean hasClockListenerTask(ClockListener listener) {
+		if (clockListenerTasks == null) return false;
 		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
 		while (i.hasNext()) {
 			ClockListenerTask c = i.next();
@@ -894,6 +898,8 @@ public class MasterClock implements Serializable {
 //			computeNewCpuLoad();
 			// Redo the pulses
 			computeReferencePulse();
+			// Ensure first tick has non-zero elapsed time even if dt is tiny
+			leadPulseTime = optMilliSolPerPulse;
 		}
 		clockExecutor.execute(clockThreadTask);
 	}
@@ -1434,8 +1440,7 @@ public class MasterClock implements Serializable {
 					// Case 2: acceptablePulse is false	
 					
 				    if (!isPaused) {
-				    	
-						logger.severe(20_000, "acceptablePulse is false. Pulse width deviated too much: " 
+				    	logger.severe(20_000, "acceptablePulse is false. Pulse width deviated too much: " 
 								+ pulseDeviation + ".");
 		
 						logger.severe(20_000, "Either pause & unpause the sim "
@@ -1443,19 +1448,6 @@ public class MasterClock implements Serializable {
 				
 						// Test if this can restore the simulation
 						leadPulseTime = referencePulse;					
-									    	
-//						// Readjust the time pulses and get the deviation
-						
-//				    	cpuUtil *= .9999;
-//				    	taskPulseDamper *= .9999;
-//				    	refPulseDamper *= .9999;
-//				    	taskPulseRatio *= .9999;
-//				    	refPulseRatio *= .9999;
-//						leadPulseTime *= .9999;
-						
-						// NOTE: check if resuming from power saving can cause this
-//						logger.config(10_000L, "Pulse deviation is too high. Restarting listener executor thread.");				
-//						resetListenerExecutor();
 					}
 				}
 				
