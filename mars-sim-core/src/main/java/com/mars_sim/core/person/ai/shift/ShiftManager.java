@@ -228,4 +228,22 @@ public class ShiftManager implements Serializable {
     public int getMaxOnLeave() {
         return leavePercentage;
     }
+    
+    /**
+     * Gets a modifier based on the Shift start time. This is based on how far through the shift a person is;
+     * it is weighted towards the 1st 50% of the shift.
+     * 
+     * @param person
+     * @param millisol
+     * @return
+     */
+    public static double getShiftModifier(Person person, double shiftFraction, int millisol) {
+        double completed = person.getShiftSlot().getShift().getShiftCompleted(millisol);
+
+        // Do not start in the last 30% of a shift
+        if (completed > shiftFraction) {
+            return 0D;
+        }
+        return 1D - completed;
+    }
 }

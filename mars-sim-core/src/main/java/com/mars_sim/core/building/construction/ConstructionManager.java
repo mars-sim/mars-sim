@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionManager.java
- * @date 2023-06-07
+ * @date 2025-09-06
  * @author Scott Davis
  */
 package com.mars_sim.core.building.construction;
@@ -69,7 +69,7 @@ public class ConstructionManager implements Serializable {
 		}
 
 		/**
-		 * Privbate handler for this queued item
+		 * Private handler for this queued item
 		 * @return
 		 */
 		public ScheduledEventHandler getHandler() {

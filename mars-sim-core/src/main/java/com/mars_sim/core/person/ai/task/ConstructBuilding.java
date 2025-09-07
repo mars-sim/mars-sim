@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructBuilding.java
- * @date 2025-07-30
+ * @date 2025-09-06
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -38,7 +38,7 @@ public class ConstructBuilding extends EVAOperation {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ConstructBuilding.class.getName());
-
+   
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.constructBuilding"); //$NON-NLS-1$
 
@@ -54,6 +54,7 @@ public class ConstructBuilding extends EVAOperation {
 	
 	private double cumulativeWorkTime;
 
+	private ConstructionMission mission;
 	private ConstructionStage stage;
 	private ConstructionSite site;
 	private LightUtilityVehicle luv;
@@ -74,13 +75,22 @@ public class ConstructBuilding extends EVAOperation {
         	return;
 		}
 
-		ConstructionMission mission = getMissionNeedingAssistance(person);
-
-		if ((mission != null) && canConstruct(person, mission.getConstructionSite())) {
+//		mission = getMissionNeedingAssistance(person);
+//		site = mission.getConstructionSite();
+		
+		site =	person.getAssociatedSettlement().getConstructionManager().getConstructionSites().get(0); 
+		// Note: using .getConstructionSitesNeedingMission() returns zero sites
+		
+		Mission m = site.getWorkOnSite();
+		
+		if (m instanceof ConstructionMission cm) {
+			mission = cm;
+		}
+		
+		if (canConstruct(person, site)) {
 
 			// Initialize data members.
-			this.stage = mission.getConstructionStage();
-			this.site = mission.getConstructionSite();
+			this.stage = site.getCurrentConstructionStage();
 			this.vehicles = mission.getConstructionVehicles();
 
 			// Determine location for construction site.
@@ -164,6 +174,7 @@ public class ConstructBuilding extends EVAOperation {
 		return RandomUtil.getRandomElement(constructionMissions);
 	}
 
+
 	/**
 	 * Gets a list of all building construction missions that need assistance at a
 	 * settlement.
@@ -172,7 +183,7 @@ public class ConstructBuilding extends EVAOperation {
 	 * @return list of building construction missions.
 	 */
 	public static List<ConstructionMission> getAllMissionsNeedingAssistance(Settlement settlement) {
-
+		
 		List<ConstructionMission> result = new ArrayList<>(); 
 
 		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();

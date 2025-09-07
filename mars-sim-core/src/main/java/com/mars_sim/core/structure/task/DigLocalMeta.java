@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * DigLocalMeta.java
- * @date 2023-06-08
+ * @date 2025-09-06
  * @author Barry Evans
  */
 package com.mars_sim.core.structure.task;
@@ -16,6 +16,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
+import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -62,9 +63,9 @@ public abstract class DigLocalMeta extends MetaTask
 	private static final int DEFAULT_EVA_NUM = 5;
 	
     private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
-    // This defines the maximum shift completed for a person to start a dig task.
-    // Anything above this value will not be considered for digging.
-    private static final double MAX_SHIFT_PERC_FOR_DIG = 0.66D;
+    /* The maximum shift fraction completed for a person to start this task.
+    If above this value, the person will not consider picking this task. */
+ private static final double MAX_SHIFT_FRACTION = 0.66D;
     
 	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
 	
@@ -189,7 +190,8 @@ public abstract class DigLocalMeta extends MetaTask
         result = assessPersonSuitability(result, p);
 
         // Encourage to get this task done early in a work shift
-        result.addModifier("shift", getShiftModifier(p));
+        result.addModifier("shift", ShiftManager.getShiftModifier(p, 
+        		MAX_SHIFT_FRACTION, getMarsTime().getMillisolInt()));
 
         return result;
     }
@@ -202,20 +204,5 @@ public abstract class DigLocalMeta extends MetaTask
      */
     protected abstract Task createTask(Person person);
 
-    /**
-     * Gets a modifier based on the Shift start time. This is based on how far through the shift a person is;
-     * it is weighted towards the 1st 50% of the shift.
-     * 
-     * @param person
-     * @return
-     */
-    private static double getShiftModifier(Person person) {
-        double completed = person.getShiftSlot().getShift().getShiftCompleted(getMarsTime().getMillisolInt());
 
-        // Do not start in the last 30% of a shift
-        if (completed > MAX_SHIFT_PERC_FOR_DIG) {
-            return 0D;
-        }
-        return 1D - completed;
-    }
 }

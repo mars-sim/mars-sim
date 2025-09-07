@@ -43,15 +43,15 @@ public class ConstructionSite extends FixedUnit {
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
 
     private boolean isConstruction;
-    private Mission activeWork;
     private boolean unstarted = true;
-
     private double width;
     private double length;
-    private LocalPosition position;
     private double facing;
-
+    
     private String targetBuilding;
+    
+    private LocalPosition position;
+    private Mission activeWork;
     private ConstructionStage currentStage;
 
     private List<ConstructionPhase> phases;

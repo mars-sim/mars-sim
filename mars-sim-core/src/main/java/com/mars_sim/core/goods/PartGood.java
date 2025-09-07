@@ -595,7 +595,7 @@ public class PartGood extends Good {
 			}
 		}
 
-		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
+		return Math.min(GoodsManager.MAX_DEMAND, base);
 	}
 
     /**

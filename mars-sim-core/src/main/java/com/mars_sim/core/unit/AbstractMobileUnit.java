@@ -280,7 +280,7 @@ public abstract class AbstractMobileUnit extends Unit
 
 	/**
 	 * Gets the vehicle the unit is in, null if person is not in vehicle.
-	 * Note: for a rover, do NOT call this method for getting the superclass of a rover
+	 * Note: if the unit is a rover, do NOT use this method to get the superclass
 	 * 
 	 * @return the unit's vehicle
 	 */
@@ -319,11 +319,11 @@ public abstract class AbstractMobileUnit extends Unit
 			return true;
 		}
 		
-		if (LocationStateType.INSIDE_VEHICLE == locnState)
-			return true;
-
-		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
-			return ((Worker)getContainerUnit()).isInVehicle();
+//		if (LocationStateType.INSIDE_VEHICLE == locnState)
+//			return true;
+//
+//		if (LocationStateType.ON_PERSON_OR_ROBOT == locnState)
+//			return ((Worker)getContainerUnit()).isInVehicle();
 
 		return false;
 	}

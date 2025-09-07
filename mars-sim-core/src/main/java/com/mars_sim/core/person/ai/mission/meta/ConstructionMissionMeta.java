@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ConstructionMissionMeta.java
- * @date 2023-08-16
+ * @date 2025-09-06
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission.meta;
@@ -10,6 +10,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -26,9 +27,12 @@ import com.mars_sim.core.structure.Settlement;
  */
 public class ConstructionMissionMeta extends AbstractMetaMission {
     
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(ConstructionMissionMeta.class.getName());
+
 	// Sites have a higher score than queued buildings
-	private static final int SITE_BASE = 40;
-	private static final int QUEUE_BASE = 30;
+	private static final int SITE_BASE = 200;
+	private static final int QUEUE_BASE = 50;
 		
     ConstructionMissionMeta() {
     	super(MissionType.CONSTRUCTION, 
@@ -61,7 +65,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 				|| RoleType.SUB_COMMANDER == roleType
 				) {							
 
-			// Fint people not on a misison and healthy		
+			// Find people not on a mission and healthy		
 			long availablePeopleNum = settlement.getIndoorPeople().stream()
 						.filter(p -> !p.getMind().hasActiveMission()
 									&& !p.getPhysicalCondition().hasSeriousMedicalProblems())
@@ -76,11 +80,15 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 			}
 			
 			var cm = settlement.getConstructionManager();
-			int need = cm.getConstructionSitesNeedingMission().size() * SITE_BASE;
+			int need = cm.getConstructionSites() 
+					// Note: using .getConstructionSitesNeedingMission() returns zero sites
+					.size() * SITE_BASE;
+
 			if (need == 0) {
 				need = (int) cm.getBuildingSchedule().stream()
 						.filter(s -> s.isReady())
 						.count() * QUEUE_BASE;
+
 				if (need == 0) {
 					return RatingScore.ZERO_RATING;
 				}

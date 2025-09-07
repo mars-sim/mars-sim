@@ -11,10 +11,10 @@ import java.util.logging.Level;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.ActivitySpot;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
-import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.CircadianClock;
@@ -27,6 +27,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Rover;
 
 /**
@@ -98,9 +99,12 @@ public class Sleep extends Task {
 
 			walkToDestination();
 			
-			// Finally assign essentials for sleeping
-			person.wearGarment(((EquipmentOwner)person.getContainerUnit()));
-			person.assignThermalBottle();
+			UnitHolder uh = person.getContainerUnit();
+			if (uh instanceof EquipmentOwner eo) {
+				// Finally assign essentials for sleeping
+				person.wearGarment(eo);
+				person.assignThermalBottle();
+			}
 			
 			// Note: each REM cycle lasts about 90 to 120 mins or 60 to 80 millisols
 			numREMCycles = (int) (getDuration() / RandomUtil.getRandomInt(60, 80));

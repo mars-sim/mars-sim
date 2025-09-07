@@ -25,15 +25,15 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
- * This class is responsible for locating teh best position for a new Building in a Settlement
+ * This class is responsible for locating the best position for a new Building in a Settlement
  */
 public class BuildingPlacement {
 
     private static final SimLogger logger = SimLogger.getLogger(BuildingPlacement.class.getName());
 
-	private static final double DEFAULT_HABITABLE_BUILDING_DISTANCE = 5D;
-	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 2D;
-	private static final double DEFAULT_FARMING_DISTANCE = 5D;
+	private static final double GAP_DISTANCE_HABITABLE = 3D;
+	private static final double GAP_DISTANCE_INHABITABLE = 5D;
+	private static final double GAP_DISTANCE_FARMING = 2D;
 	private static final double MINIMUM_CONNECTOR_LENGTH = 1D;
 
     private BuildingManager bldMgr;
@@ -66,7 +66,7 @@ public class BuildingPlacement {
 		
 		else if (hasLifeSupport) {
 
-			var sameBldPosn = positionSameBuildingType(spec, DEFAULT_FARMING_DISTANCE);
+			var sameBldPosn = positionSameBuildingType(spec, GAP_DISTANCE_FARMING);
 			if (sameBldPosn != null) {
 				return sameBldPosn;
 			}
@@ -80,10 +80,10 @@ public class BuildingPlacement {
 				// Match the floor area (e.g look more organize to put all 7m x 9m next to one
 				// another)
 				if (b.getFloorArea() == newFloorArea) {
-					var foundPosn = positionNextToBuilding(b, spec, DEFAULT_HABITABLE_BUILDING_DISTANCE,
+					var foundPosn = positionNextToBuilding(b, spec, GAP_DISTANCE_HABITABLE,
 							false);
 					if (foundPosn != null) {
-						logger.info(settlement, "Case 2. Habitable.");
+						logger.info(settlement, "Case B. Habitable.");
 						return foundPosn;
 					}
 				}
@@ -91,8 +91,8 @@ public class BuildingPlacement {
 		}
 		else {
 			// Try to put building next to the same building type.
-			logger.info(settlement, "Case 3. Inhabitable.");
-			var sameBldPosn = positionSameBuildingType(spec, DEFAULT_INHABITABLE_BUILDING_DISTANCE);
+			logger.info(settlement, "Case C. Inhabitable.");
+			var sameBldPosn = positionSameBuildingType(spec, GAP_DISTANCE_INHABITABLE);
 			if (sameBldPosn != null) {
 				return sameBldPosn;
 			}
@@ -260,12 +260,12 @@ public class BuildingPlacement {
 	 * Positions a new construction site near an existing building.
 	 *
 	 * @param building           the existing building.
-	 * @param separationDistance the separation distance (meters) from the building.
+	 * @param gapDistance the separation distance (meters) from the wall of one building to the wall of another building.
 	 * @param faceAway           true if new building should face away from other
 	 *                           building.
 	 * @return true if construction site could be positioned, false if not.
 	 */
-	private BoundedObject positionNextToBuilding(Building building, BuildingSpec spec, double separationDistance,
+	private BoundedObject positionNextToBuilding(Building building, BuildingSpec spec, double gapDistance,
 			boolean faceAway) {
 
 		final int front = 0;
@@ -318,7 +318,7 @@ public class BuildingPlacement {
 				rectRotation -= 360D;
 			}
 
-			double distance = structureDistance + separationDistance;
+			double distance = structureDistance + gapDistance;
 			double radianDirection = Math.PI * direction / 180D;
 			LocalPosition rectCenter = building.getPosition().getPosition(distance, radianDirection);
 
