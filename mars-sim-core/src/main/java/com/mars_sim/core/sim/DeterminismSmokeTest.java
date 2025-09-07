@@ -1,20 +1,25 @@
-package org.mars_sim.msp.core.sim;
+package com.mars_sim.core.sim;
 
 import org.junit.jupiter.api.Test;
-import org.mars_sim.msp.core.sim.clock.SimulationClock;
-import org.mars_sim.msp.core.sim.clock.TickRunner;
-import org.mars_sim.msp.core.sim.random.RandomService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import com.mars_sim.core.sim.clock.SimulationClock;
+import com.mars_sim.core.sim.clock.TickRunner;
+import com.mars_sim.core.sim.random.RandomService;
 
 import java.util.random.RandomGenerator;
-import static org.junit.jupiter.api.Assertions.*;
 
-/** Proves that given same seed/ticks, we get same result in a tiny dummy world. */
+/**
+ * Smoke test: given the same seed + number of ticks, results should be identical.
+ * NOTE: This is a dummy-world test to validate the deterministic plumbing only.
+ */
 public class DeterminismSmokeTest {
 
   static final class DummyWorld {
     long accum = 0L;
     void step(long tick, RandomGenerator rng) {
-      // deterministic per tick
+      // deterministic contribution per tick for the smoke test
       accum += (tick ^ rng.nextLong());
     }
   }
