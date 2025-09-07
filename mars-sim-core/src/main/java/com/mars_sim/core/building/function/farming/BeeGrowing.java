@@ -7,7 +7,7 @@
 
 package com.mars_sim.core.building.function.farming;
 
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.time.ClockPulse;

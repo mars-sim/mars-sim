@@ -14,7 +14,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
-import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.structure.Settlement;
 

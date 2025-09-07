@@ -17,9 +17,9 @@ import java.util.Map;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.building.BuildingConfig;
-import com.mars_sim.core.building.BuildingSpec;
 import com.mars_sim.core.building.BuildingTemplate;
+import com.mars_sim.core.building.config.BuildingConfig;
+import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.logging.SimLogger;

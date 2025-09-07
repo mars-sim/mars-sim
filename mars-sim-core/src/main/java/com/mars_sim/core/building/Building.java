@@ -21,6 +21,8 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
+import com.mars_sim.core.building.config.BuildingSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.connection.InsidePathLocation;
 import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.AstronomicalObservation;

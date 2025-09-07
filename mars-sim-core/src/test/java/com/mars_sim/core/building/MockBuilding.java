@@ -1,29 +1,13 @@
 package com.mars_sim.core.building;
 
-import java.util.Map;
-
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.config.BuildingConfigTest;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.structure.Settlement;
 
 @SuppressWarnings("serial")
 public class MockBuilding extends Building {
-
-	/* default logger. */
-	private static FunctionSpec lifeSupportSpec = null;
-	
-	private static FunctionSpec getLifeSupportSpec() {
-		if (lifeSupportSpec == null) {
-			
-			lifeSupportSpec = new FunctionSpec(FunctionType.LIFE_SUPPORT, Map.of(BuildingConfig.POWER_REQUIRED, 1D,
-													  FunctionSpec.CAPACITY, 10),
-														null);
-		}
-		return lifeSupportSpec;
-	}
-
     
     public MockBuilding(Settlement owner, String name, String id, BoundedObject bounds,
 						String buildingType, BuildingCategory cat,
@@ -33,7 +17,7 @@ public class MockBuilding extends Building {
 		// Set wearLifeTime to 334_000D
 		malfunctionManager = new MalfunctionManager(this, 334_000D, 100D);
 		if (needsLifeSupport) {
-			addFunction(getLifeSupportSpec());
+			addFunction(BuildingConfigTest.getLifeSupportSpec());
 		}
 		
 		// Initialize the scope map.

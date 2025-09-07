@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.ResourceProcessingSpec;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.structure.Settlement;

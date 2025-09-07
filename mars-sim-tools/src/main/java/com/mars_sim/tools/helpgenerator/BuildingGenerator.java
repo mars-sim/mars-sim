@@ -9,7 +9,7 @@ package com.mars_sim.tools.helpgenerator;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.config.BuildingSpec;
 
 /**
  * Generators help files for a BuildingSpec showing the details of the Functions allocated

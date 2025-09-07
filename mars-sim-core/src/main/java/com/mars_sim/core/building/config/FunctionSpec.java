@@ -4,7 +4,7 @@
  * @date 2023-11-24
  * @author Barry Evans
  */
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 import java.util.Collections;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class FunctionSpec {
 	 * @param props
 	 * @param spots
 	 */
-	public FunctionSpec(FunctionType type, Map<String, Object> props, Set<NamedPosition> spots) {
+	FunctionSpec(FunctionType type, Map<String, Object> props, Set<NamedPosition> spots) {
 		this.props = props;
 		this.type = type;
 		if (spots == null) {

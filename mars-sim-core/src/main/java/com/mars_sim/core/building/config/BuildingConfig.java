@@ -4,7 +4,7 @@
  * @date 2023-05-31
  * @author Scott Davis
  */
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,8 @@ import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import com.mars_sim.core.building.config.ResourceProcessingSpec;
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.manufacture.ManufactureConfig;

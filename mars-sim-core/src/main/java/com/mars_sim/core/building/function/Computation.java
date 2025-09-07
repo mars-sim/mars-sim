@@ -12,8 +12,8 @@ import java.util.Map;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
-import com.mars_sim.core.building.FunctionSpec;
-import com.mars_sim.core.building.SourceSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
+import com.mars_sim.core.building.config.SourceSpec;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 

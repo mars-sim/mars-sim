@@ -4,7 +4,7 @@
  * @date 2023-12-08
  * @author Barry Evans
  */
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 import com.mars_sim.core.configuration.RelativePosition;
 

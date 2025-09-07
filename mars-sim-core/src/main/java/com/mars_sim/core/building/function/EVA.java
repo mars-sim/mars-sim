@@ -8,7 +8,7 @@ package com.mars_sim.core.building.function;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;

@@ -10,9 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.BuildingException;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.BuildingConfig;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.science.ScienceType;

@@ -13,7 +13,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;

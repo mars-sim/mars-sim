@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingConfig;
-import com.mars_sim.core.building.FunctionSpec;
-import com.mars_sim.core.building.NamedPosition;
+import com.mars_sim.core.building.config.BuildingConfig;
+import com.mars_sim.core.building.config.FunctionSpec;
+import com.mars_sim.core.building.config.NamedPosition;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;

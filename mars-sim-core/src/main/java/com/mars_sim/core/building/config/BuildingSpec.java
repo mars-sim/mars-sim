@@ -4,7 +4,7 @@
  * @date 2024-07-12
  * @author Barry Evans
  */
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -139,7 +141,7 @@ public class BuildingSpec {
 	 * 
 	 * @param value
 	 */
-	protected void setScopeDone(boolean value) {
+	public void setScopeDone(boolean value) {
 		systemScopeDone = value;
 	}
 	
@@ -148,14 +150,14 @@ public class BuildingSpec {
 	 * 
 	 * @return
 	 */
-	protected boolean getScopeDone() {
+	public boolean getScopeDone() {
 		return systemScopeDone;
 	}
 	
 	/**
 	 * Gets the system scopes
 	 */
-	protected Set<String> getSystemScopes() {	
+	public Set<String> getSystemScopes() {	
 		return systemScopes;
 	}
 	

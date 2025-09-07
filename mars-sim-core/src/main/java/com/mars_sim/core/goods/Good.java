@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingConfig;
+import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.construction.ConstructionUtil;
 import com.mars_sim.core.building.function.FunctionType;

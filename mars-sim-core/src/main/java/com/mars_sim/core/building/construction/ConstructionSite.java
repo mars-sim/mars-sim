@@ -16,7 +16,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
