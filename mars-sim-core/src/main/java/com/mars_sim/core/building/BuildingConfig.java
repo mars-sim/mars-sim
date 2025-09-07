@@ -21,6 +21,7 @@ import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.building.config.ResourceProcessingSpec;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.manufacture.ManufactureConfig;
@@ -47,7 +48,6 @@ public class BuildingConfig {
 	private static final String N_S_ALIGNMENT = "north-south-alignment";
 	private static final String CONSTRUCTION = "construction";
 	private static final String BASE_LEVEL = "base-level";
-	private static final String BASE_MASS = "base-mass";
 
 	private static final String WEAR_LIFETIME = "wear-lifetime";
 	private static final String MAINTENANCE_TIME = "maintenance-time";
@@ -58,8 +58,6 @@ public class BuildingConfig {
 
 	private static final String RESEARCH = "research";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
-
-	private static final String RESOURCE_PROCESSING = "resource-processing";
 
 	private static final String NUMBER_MODULES = "number-modules";
 
@@ -87,8 +85,6 @@ public class BuildingConfig {
 	private static final String ROVER = "rover";
 	private static final String FLYER = "flyer";
 	private static final String UTILITY = "utility";
-	
-	private static final String WASTE_PROCESSING = "waste-processing";
 
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
@@ -163,16 +159,11 @@ public class BuildingConfig {
 	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement,
 								ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 
-		var newSpec = parseBuildingSpec(buildingElement, buildingTypeName, manuConfig);
+		var newSpec = parseBuildingSpec(buildingElement, buildingTypeName, resProcConfig, manuConfig);
 		
 		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
 		if (construction != null) {
 			newSpec.setConstruction(ConstructionType.valueOf(ConfigHelper.convertToEnumName(construction)));
-		}
-
-		String baseMass = buildingElement.getAttributeValue(BASE_MASS);
-		if (baseMass != null) {
-			newSpec.setBaseMass(Double.parseDouble(baseMass));
 		}
 
 		// Get Storage
@@ -201,16 +192,6 @@ public class BuildingConfig {
 			parseResearch(newSpec, researchElement);
 		}
 
-		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
-		if (resourceProcessingElement != null) {
-			newSpec.setResourceProcess(parseResourceProcessing(resProcConfig, resourceProcessingElement));
-		}
-
-		Element wasteProcessingElement = functionsElement.getChild(WASTE_PROCESSING);
-		if (wasteProcessingElement != null) {
-			newSpec.setWasteProcess(parseResourceProcessing(resProcConfig, wasteProcessingElement));
-		}
-
 		var width = newSpec.getWidth();
 		var length = newSpec.getLength();
 		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
@@ -218,15 +199,11 @@ public class BuildingConfig {
 			Set<LocalPosition> roverParking = parsePositions(vehicleElement, ROVER, LOCATION,
 												   width, length);
 			newSpec.setRoverParking(roverParking);
-		}
 
-		if (vehicleElement != null) {
 			Set<LocalPosition> utilityParking = parsePositions(vehicleElement, UTILITY, LOCATION,
 												   width, length);
 			newSpec.setUtilityParking(utilityParking);
-		}
-		
-		if (vehicleElement != null) {
+
 			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, FLYER, LOCATION,
 												   width, length);
 			newSpec.setFlyerParking(flyerParking);
@@ -249,7 +226,8 @@ public class BuildingConfig {
 	 * @param manuConfig
 	 * @return
 	 */
-	private BuildingSpec parseBuildingSpec(Element buildingElement, String buildingTypeName, ManufactureConfig manuConfig) {
+	private BuildingSpec parseBuildingSpec(Element buildingElement, String buildingTypeName,
+									ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
 		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
@@ -282,37 +260,11 @@ public class BuildingConfig {
 		Map<FunctionType, FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
 		Element funcElement = buildingElement.getChild(FUNCTIONS);
 		for (Element element : funcElement.getChildren()) {
-			String name = element.getName();
-			FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
-
-			// Get activity spots
-			String spotName = getDefaultSpotName(function);
-			Set<NamedPosition> spots = parseNamedPositions(element, ACTIVITY,
-													spotName, width, length);
-
-			// Record that this Function has activity spots
-			if (!spots.isEmpty()) {
-				activityFunctions.add(function);
-			}
-
-			// Get attributes as basic properties
-			Map<String, Object> props = new HashMap<>();
-			for (Attribute attr : element.getAttributes()) {
-				props.put(attr.getName(), attr.getValue());
-			}
-
-			// Any complex properties
-			for (Element complexProperty : element.getChildren()) {
-				if (complexProperty.getName().endsWith(POSITION)) {
-					LocalPosition pos = ConfigHelper.parseLocalPosition(complexProperty);
-					props.put(complexProperty.getName(), pos);
-				}
-			}
 			
 			// Parse extras
-			FunctionSpec fspec = createFunctionSpec(buildingTypeName + " - " + name, function, props, spots, element, manuConfig);
+			FunctionSpec fspec = parseFunctionSpec(buildingTypeName, element, manuConfig, resProcConfig, width, length);
 
-			supportedFunctions.put(function, fspec);
+			supportedFunctions.put(fspec.getType(), fspec);
 		}
 
 		String categoryString = buildingElement.getAttributeValue(CATEGORY);
@@ -392,16 +344,40 @@ public class BuildingConfig {
 	/**
 	 * Creates factory method to create FunctionSpecs.
 	 * 
-	 * @param context Context for error messages
-	 * @param function Type of Function
-	 * @param props Coming standard props
-	 * @param spots Activity spots
-	 * @param element Source XML element
-	 * @param manuConfig 
+	 * @param width 
 	 * @return
 	 */
-	private FunctionSpec createFunctionSpec(String context, FunctionType function, Map<String,Object> props,
-											Set<NamedPosition> spots, Element element, ManufactureConfig manuConfig) {
+	private FunctionSpec parseFunctionSpec(String context, Element element, ManufactureConfig manuConfig,
+											ResourceProcessConfig resProcConfig,
+											double width, double length) {
+		String name = element.getName();
+		context += " - " + name;
+		FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
+
+		// Get activity spots
+		String spotName = getDefaultSpotName(function);
+		Set<NamedPosition> spots = parseNamedPositions(element, ACTIVITY,
+												spotName, width, length);
+
+		// Record that this Function has activity spots
+		if (!spots.isEmpty()) {
+			activityFunctions.add(function);
+		}
+
+		// Get attributes as basic properties
+		Map<String, Object> props = new HashMap<>();
+		for (Attribute attr : element.getAttributes()) {
+			props.put(attr.getName(), attr.getValue());
+		}
+
+		// Any complex properties
+		for (Element complexProperty : element.getChildren()) {
+			if (complexProperty.getName().endsWith(POSITION)) {
+				LocalPosition pos = ConfigHelper.parseLocalPosition(complexProperty);
+				props.put(complexProperty.getName(), pos);
+			}
+		}
+			
 		// Check for extra function specifics	
 		if (function == FunctionType.MANUFACTURE) {
 			var tools = ConfigHelper.parseIntList(context, element.getChildren(TOOLING), NAME,
@@ -409,7 +385,17 @@ public class BuildingConfig {
 			props.put(TOOLING, tools);
 		}
 
-		return new FunctionSpec(function, props, spots);
+		var base = new FunctionSpec(function, props, spots);
+
+		// Some function needs extra properties
+		switch(function) {
+			case WASTE_PROCESSING, RESOURCE_PROCESSING -> base = createResourceProcessingSpec(base, element, resProcConfig);
+			default -> { // No need to do anything
+						}
+		}
+
+
+		return base;
 	}
 
 	/**
@@ -418,8 +404,8 @@ public class BuildingConfig {
 	 * @param resourceProcessingElement
 	 * @return 
 	 */
-	private List<ResourceProcessEngine> parseResourceProcessing(ResourceProcessConfig resProcConfig,
-										 Element resourceProcessingElement) {
+	private ResourceProcessingSpec createResourceProcessingSpec(FunctionSpec base, Element resourceProcessingElement,
+													ResourceProcessConfig resProcConfig) {
 		List<ResourceProcessEngine> resourceProcesses = new ArrayList<>();
 
 		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS_ENGINE);
@@ -430,7 +416,7 @@ public class BuildingConfig {
 			resourceProcesses.add(new ResourceProcessEngine(resProcConfig.getProcessSpec(name), modules));
 		}
 
-		return resourceProcesses;
+		return new ResourceProcessingSpec(base, resourceProcesses);
 	}
 
 	/**
@@ -636,28 +622,6 @@ public class BuildingConfig {
 	public List<ScienceType> getResearchSpecialties(String buildingType) {
 		return getBuildingSpec(buildingType).getScienceType();
 
-	}
-
-	/**
-	 * Gets the building's resource processes.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return a list of resource processes.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<ResourceProcessEngine> getResourceProcesses(String buildingType) {
-		return getBuildingSpec(buildingType).getResourceProcess();
-	}
-
-	/**
-	 * Gets the building's waste processes.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return a list of waste processes.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<ResourceProcessEngine> getWasteProcesses(String buildingType) {
-		return getBuildingSpec(buildingType).getWasteProcess();
 	}
 
 	/**

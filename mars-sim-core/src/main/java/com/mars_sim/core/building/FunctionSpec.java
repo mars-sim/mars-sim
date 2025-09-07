@@ -47,6 +47,16 @@ public class FunctionSpec {
 		}
 	}
 
+	/**
+	 * Copy constructor used by sub classes
+	 * @param base
+	 */
+	protected FunctionSpec(FunctionSpec base) {
+		this.props = base.props;
+		this.spots = base.spots;
+		this.type = base.type;
+	}
+
 	public FunctionType getType() {
 		return type;
 	}

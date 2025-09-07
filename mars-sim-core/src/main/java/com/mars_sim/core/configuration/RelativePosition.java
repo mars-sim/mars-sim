@@ -40,6 +40,6 @@ public record RelativePosition(double x, double y) implements Serializable {
 	 * @return
 	 */
 	public boolean isWithin(double maxX, double maxY) {
-		return (Math.abs(x) < maxX && Math.abs(y) < maxY);
+		return (x <= maxX && y <= maxY);
 	}
 }

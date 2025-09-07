@@ -116,7 +116,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("width", 6D, found.getWidth());
         assertEquals("length", 9D, found.getLength());
         assertEquals("width", 6D, found.getWidth());
-        assertEquals("width", 3000D, found.getBaseMass());
 
         assertEquals("Construction", ConstructionType.INFLATABLE, found.getConstruction());
 
@@ -155,7 +154,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         assertEquals("width", 7D, found.getWidth());
         assertEquals("length", 9D, found.getLength());
-        assertEquals("mass", 4000D, found.getBaseMass());
 
         assertEquals("Construction", ConstructionType.PRE_FABRICATED, found.getConstruction());
 
