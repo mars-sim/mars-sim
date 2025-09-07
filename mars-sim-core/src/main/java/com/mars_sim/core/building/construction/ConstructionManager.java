@@ -37,8 +37,12 @@ import com.mars_sim.core.tool.RandomUtil;
 public class ConstructionManager implements Serializable {
 
 	public static class BuildingSchedule implements Serializable {
+		private static final long serialVersionUID = 1L;
+
 		// Private handler to schedule the activiation
 		private class Handler implements ScheduledEventHandler {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public String getEventDescription() {
 				return "Queue new building " + buildingType;

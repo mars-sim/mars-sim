@@ -201,8 +201,10 @@ public class AssistScientificStudyResearcher extends Task {
 	 */
 	private static List<Person> getAvailableResearchers(Person assistant) {
 		List<Person> result = new ArrayList<>();
-
-		for(Person person : getLocalPeople(assistant)) {
+		Collection<Person> people = getLocalPeople(assistant);
+		if (people == null || people.isEmpty())
+			return result;
+		for(Person person: people) {
 			Task personsTask = person.getMind().getTaskManager().getTask();
 			if (personsTask instanceof ResearchScientificStudy researchTask && !personsTask.isDone()
 				&& !researchTask.hasResearchAssistant() && researchTask.getResearchScience() != null) {

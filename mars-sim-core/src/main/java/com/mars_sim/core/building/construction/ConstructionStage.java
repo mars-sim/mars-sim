@@ -41,7 +41,8 @@ public class ConstructionStage implements Serializable {
      * Represents the quantities of a Material needed for construction
      */
     public static class Material implements Serializable {
-        private double required;
+        private static final long serialVersionUID = 1L;
+		private double required;
         private double available;
 
         private Material(double required) {
@@ -100,7 +101,7 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Get the construction stage information.
+     * Gets the construction stage information.
      * 
      * @return stage information.
      */
@@ -109,7 +110,8 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Is this stage doing Constructiopn or Salvage
+     * Is this stage doing Construction or Salvage ?
+     * 
      * @return
      */
     public boolean isConstruction() {
@@ -187,7 +189,8 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Get how much of a material is still needed
+     * Gets how much of a material is still needed.
+     * 
      * @param id
      * @return
      */
@@ -199,8 +202,8 @@ public class ConstructionStage implements Serializable {
     /**
 	 * Loads remaining required construction materials into site that are available
 	 * at settlement inventory.
-	 * @param settlement 
 	 * 
+	 * @param settlement 
 	 * @return true if all resources are available
 	 */
 	public boolean loadAvailableConstructionMaterials(Settlement settlement) {
@@ -277,7 +280,7 @@ public class ConstructionStage implements Serializable {
         var  settlement = site.getAssociatedSettlement();
         if (resources.entrySet().stream()
             .anyMatch(e -> (e.getValue().getMissing() > 0)
-                    && (e.getValue().getMissing() > settlement.getSpecificAmountResourceStored(e.getKey())))) {
+                   && (e.getValue().getMissing() > settlement.getSpecificAmountResourceStored(e.getKey())))) {
             return true;
         }
 
@@ -293,7 +296,8 @@ public class ConstructionStage implements Serializable {
     }
 
     /**
-     * Reclaim parts
+     * Reclaims parts.
+     * 
      * @param reclaimChance
      */
     void reclaimParts(double reclaimChance) {

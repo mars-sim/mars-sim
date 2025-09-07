@@ -403,7 +403,7 @@ public class PartGood extends Good {
 			// Add food production demand.
 			+ getPartFoodProductionDemand(owner, settlement, part)
 			// Add construction site demand.
-			+ getPartConstructionSiteDemand(settlement)
+			+ getPartConstructionSiteDemand(owner, settlement)
 			// Calculate individual EVA suit-related part demand.
 			+ getEVASuitPartsDemand(owner)
 			// Calculate individual bot-related part demand.
@@ -585,13 +585,19 @@ public class PartGood extends Good {
 	 * @param part the part.
 	 * @return demand (# of parts).
 	 */
-	private double getPartConstructionSiteDemand(Settlement settlement) {
+	private double getPartConstructionSiteDemand(GoodsManager owner, Settlement settlement) {
 		double base = 0D;
 
 		for(var s : settlement.getConstructionManager().getConstructionSites()) {
 			if (s.isConstruction()) {
 				var stage = s.getCurrentConstructionStage();
-				base += stage.getResourceNeeded(getID()) * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
+				double need = stage.getResourceNeeded(getID());
+				
+				// Inject demand need immediately here
+				injectPartsDemand(ItemResourceUtil.findItemResource(getID()), 
+						owner, (int)Math.ceil(need));
+				
+				base += need * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
 			}
 		}
 

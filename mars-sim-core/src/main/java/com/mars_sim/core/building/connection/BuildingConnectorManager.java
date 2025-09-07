@@ -44,7 +44,7 @@ public class BuildingConnectorManager implements Serializable {
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
 	/**
-	 * This be a bidirectional equality. Ends are stored according to the identfier value.
+	 * This be a bidirectional equality. Ends are stored according to the identifier value.
 	 * A,B == B,A as well as A,B == A,B
 	 */
 	private static class PathKey {
@@ -493,7 +493,7 @@ public class BuildingConnectorManager implements Serializable {
 		BuildingLocation start = new BuildingLocation(startBuilding, startPosition);
 		BuildingLocation end = new BuildingLocation(endBuilding, endPosition);
 
-		// Check agsint the already learnt paths
+		// Check against the already learnt paths
 		PathKey key = new PathKey(startBuilding, endBuilding);
 		var foundPath = learntPaths.getIfPresent(key);
 		if (foundPath != null) {
@@ -503,7 +503,7 @@ public class BuildingConnectorManager implements Serializable {
 
 		var finder = new PathFinder(this, start, end);
 		if (finder.isValidRoute()) {
-			// Actual path is immutable so it can be shared savely
+			// Actual path is immutable so it can be shared safely
 			var sharedPath = Collections.unmodifiableList(finder.toPath());
 			learntPaths.put(key, sharedPath);
 
@@ -838,7 +838,8 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Initiase the 
+	 * Initialises the objects.
+	 *  
 	 * @param in
 	 * @throws IOException
 	 * @throws ClassNotFoundException
@@ -850,7 +851,8 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Get a status of the learnt path cache
+	 * Gets a status of the learnt path cache.
+	 * 
 	 * @return
 	 */
 	public String getPathCacheStatus() {
@@ -860,7 +862,8 @@ public class BuildingConnectorManager implements Serializable {
 	}
 
 	/**
-	 * Use a cache that will purge the older paths
+	 * Uses a cache that will purge the older paths.
+	 * 
 	 * @return
 	 */
 	private static Cache<PathKey, List<InsidePathLocation>> buildCache() {

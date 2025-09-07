@@ -1,17 +1,16 @@
 /*
  * Mars Simulation Project
  * LightUtilityVehicle.java
- * @date 2023-04-16
+ * @date 2025-09-06
  * @author Sebastien Venot
  */
 package com.mars_sim.core.vehicle;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.Part;
@@ -40,11 +39,11 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	private int slotNumber = 0;
 	
 	/** A collections of attachment parts */
-	private Collection<Part> attachments = Collections.emptyList();
+	private Collection<Part> attachments;
 	/** The occupants. */
-	private List<Person> occupants = new ArrayList<>();
+	private Set<Person> occupants;
 	/** The robot occupants. */
-	private List<Robot> robotOccupants = new ArrayList<>();
+	private Set<Robot> robotOccupants;
 	
 	public LightUtilityVehicle(String name, VehicleSpec spec, Settlement settlement) {
 		// Use GroundVehicle constructor.
@@ -55,6 +54,10 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 			slotNumber = spec.getAttachmentSlots();
 		}
 
+		occupants = new UnitSet<>();
+		robotOccupants = new UnitSet<>();
+		
+		// Set crew capacity
 		crewCapacity = spec.getCrewSize();
 		robotCrewCapacity = spec.getCrewSize();
 	}
@@ -100,24 +103,24 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	/**
-	 * Gets a list of the robot crewmembers.
+	 * Gets a set of the robot crewmembers.
 	 * 
 	 * @return robot crewmembers as Collection
 	 */
-	public List<Person> getCrew() {
+	public Set<Person> getCrew() {
 		if (occupants == null || occupants.isEmpty())
-			return new ArrayList<>();
+			return new UnitSet<>();
 		return occupants;
 	}
 
 	/**
-	 * Gets a list of the robot crewmembers.
+	 * Gets a set of the robot crewmembers.
 	 * 
 	 * @return robot crewmembers as Collection
 	 */
-	public List<Robot> getRobotCrew() {
+	public Set<Robot> getRobotCrew() {
 		if (robotOccupants == null || robotOccupants.isEmpty())
-			return new ArrayList<>();
+			return new UnitSet<>();
 		return robotOccupants;
 	}
 
@@ -223,7 +226,13 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		super.destroy();
 
 		attachments.clear();
-		attachments = null;
+		attachments = null;	
+
+		occupants.clear();
+		occupants = null;
+		
+		robotOccupants.clear();
+		robotOccupants = null;
 	}
 	 
 }

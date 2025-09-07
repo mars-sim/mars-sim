@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
@@ -54,7 +55,6 @@ public class ConstructBuilding extends EVAOperation {
 	
 	private double cumulativeWorkTime;
 
-	private ConstructionMission mission;
 	private ConstructionStage stage;
 	private ConstructionSite site;
 	private LightUtilityVehicle luv;
@@ -75,27 +75,21 @@ public class ConstructBuilding extends EVAOperation {
         	return;
 		}
 
-//		mission = getMissionNeedingAssistance(person);
-//		site = mission.getConstructionSite();
+		int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 		
-		site =	person.getAssociatedSettlement().getConstructionManager().getConstructionSites().get(0); 
-		// Note: using .getConstructionSitesNeedingMission() returns zero sites
-		
-		Mission m = site.getWorkOnSite();
-		
-		if (m instanceof ConstructionMission cm) {
-			mission = cm;
-		}
-		
+		site =	person.getAssociatedSettlement().getConstructionManager().getNextConstructionSite(1 + constructionSkill);
+		// Or may use getConstructionSites().get(0) to pick the very first one.
+
 		if (canConstruct(person, site)) {
 
 			// Initialize data members.
 			this.stage = site.getCurrentConstructionStage();
-			this.vehicles = mission.getConstructionVehicles();
+			this.vehicles = ((ConstructionMission)site.getWorkOnSite()).getConstructionVehicles();
 
 			// Determine location for construction site.
 			LocalPosition constructionSiteLoc = determineConstructionLocation();
 			setOutsideSiteLocation(constructionSiteLoc);
+	
 		}
 
 		else {
@@ -293,7 +287,13 @@ public class ConstructBuilding extends EVAOperation {
 			if (!vehicle.getMalfunctionManager().hasMalfunction()
 				&& (vehicle instanceof LightUtilityVehicle tempLuv)
 				&& (tempLuv.getOperator() == null)) {
-					tempLuv.addPerson(person);
+
+					// Warning: do not call addPerson directly
+//					tempLuv.addPerson(person);
+					
+					// Call transfer()
+					person.transfer(tempLuv);
+				
 					tempLuv.setOperator(person);
 
 					luv = tempLuv;

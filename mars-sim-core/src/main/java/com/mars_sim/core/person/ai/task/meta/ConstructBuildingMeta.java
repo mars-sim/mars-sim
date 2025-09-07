@@ -80,18 +80,23 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
         }
         
 		List<ConstructionSite> sites = person.getAssociatedSettlement()
-				.getConstructionManager().getConstructionSites(); 
-		// Note: using .getConstructionSitesNeedingMission() returns zero sites
+				.getConstructionManager().getConstructionSitesNeedingMission();
+		// or use .getConstructionSites() to expedite the process
+		
 		if (sites.isEmpty())
 			return EMPTY_TASKLIST;
 		
 		List<Mission> missions = new ArrayList<>();
 
 		for (ConstructionSite cs: sites) {
+			// If the ConstructionMission of a site has not been started,
+			// player will have to wait for it to get started before 
+			// it can be captured and turned into a ConstructBuilding task
 			Mission m = cs.getWorkOnSite();
 			if (m != null)
 				missions.add(m);
 		}
+		
         if (!Walk.anyAirlocksForIngressEgress(person, false)) {
             return EMPTY_TASKLIST;
         }

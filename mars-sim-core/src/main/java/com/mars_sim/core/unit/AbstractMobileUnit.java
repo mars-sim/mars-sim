@@ -252,6 +252,7 @@ public abstract class AbstractMobileUnit extends Unit
 		else if (c instanceof FixedUnit b) {
 			return b.getAssociatedSettlement();
 		}
+		
 		else if (c instanceof AbstractMobileUnit m) {
 			return m.getSettlement();
 		}

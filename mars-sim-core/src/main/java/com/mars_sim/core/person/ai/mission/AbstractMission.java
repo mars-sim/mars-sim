@@ -751,7 +751,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// If no mission flags have been added then it was accomplished
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		MissionPhase finalPhase = ABORTED_PHASE;
-		if (missionStatus.isEmpty() && !aborted) {
+		
+//		if (missionStatus.isEmpty() && !aborted) {
+		if (!aborted) {
 			missionStatus.add(MISSION_ACCOMPLISHED);
 			addMissionScore();
 			finalPhase = COMPLETED_PHASE;

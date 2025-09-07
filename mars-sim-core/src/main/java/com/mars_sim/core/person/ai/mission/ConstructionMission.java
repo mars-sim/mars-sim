@@ -39,9 +39,8 @@ import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
-/**getAss
- * Mission for construction a stage for a settlement building.
- * strings
+/**
+ * This class is responsible for the construction of a stage for a settlement building.
  */
 public class ConstructionMission extends AbstractMission {
 
@@ -389,9 +388,9 @@ public class ConstructionMission extends AbstractMission {
 		}
 		
 		if (canAssign)
-			logger.info(member, 30_000L, "Assigned to construct " + site.getName() + ".");
+			logger.info(member, 20_000L, "Assigned to construct " + site.getName() + ".");
 		else
-			logger.info(member, 30_000L, "Not ready to be assigned to construct " + site.getName() + ".");
+			logger.info(member, 20_000L, "Not being assigned to construct " + site.getName() + ".");
 		
 		checkConstructionStageComplete(site, stage);
 	}

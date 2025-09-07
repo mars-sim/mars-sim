@@ -79,9 +79,8 @@ class AmountResourceGood extends Good {
 	private static final double MINERAL_COST = 0.3;
 	private static final double ELEMENT_COST = 0.5;
 	private static final double LIFE_SUPPORT_COST = 0.5;
-
-
-	// modifiers
+	
+	// Modifiers
     private static final double ICE_VALUE_MODIFIER = 1.5;
 	private static final double WATER_VALUE_MODIFIER = 0.2;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 1.2;
@@ -90,7 +89,7 @@ class AmountResourceGood extends Good {
 	private static final double SAND_VALUE_MODIFIER = 0.03;
 	private static final double ORES_VALUE_MODIFIER = 0.05;
 	
-	private static final double CONCRETE_VALUE_MODIFIER = 0.7;
+	private static final double CONCRETE_VALUE_MODIFIER = 1.5;
 	private static final double CEMENT_VALUE_MODIFIER = 2;
 	private static final double MINERAL_VALUE_MODIFIER = 0.02;
 	private static final double ROCK_VALUE_MODIFIER = 0.02;
@@ -147,6 +146,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double CHEMICAL_FLATTENING_FACTOR = 3;
 	private static final double COMPOUND_FLATTENING_FACTOR = 2;
+	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3;
 	private static final double ELEMENT_FLATTENING_FACTOR = 4;
 
 	private static final double GEMSTONE_FLATTENING_FACTOR = 3;
@@ -171,7 +171,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
-	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 1000D;
+	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 300D;
 
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500; 
 	private static final double MAX_MANUFACTURING_DEMAND = 1500;
@@ -252,6 +252,11 @@ class AmountResourceGood extends Good {
 			
 			break;
 	
+		case CONSTRUCTION:
+			mod = CONSTRUCTION_FLATTENING_FACTOR;
+			
+			break;
+			
 		case CROP:
 			mod = CROP_FLATTENING_FACTOR;
 			
@@ -949,7 +954,7 @@ class AmountResourceGood extends Good {
 
 	/**
 	 * Gets the demand for an amount resource as an input in building construction.
-	 * This is basedon the missing resoruces of a current stage
+	 * This is based on the missing resources of a current stage
 	 *
 	 * @return demand (kg)
 	 */
@@ -959,10 +964,11 @@ class AmountResourceGood extends Good {
 		for(var s : settlement.getConstructionManager().getConstructionSites()) {
 			if (s.isConstruction()) {
 				var stage = s.getCurrentConstructionStage();
-				base += stage.getResourceNeeded(id);
+				double need = stage.getResourceNeeded(id);
+				base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
 			}
 		}
-		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
+		return Math.min(GoodsManager.MAX_DEMAND, base);
 	}
 
 	/**
