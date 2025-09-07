@@ -4,7 +4,7 @@
  * @date 2023-05-31
  * @author Scott Davis
  */
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +21,8 @@ import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.manufacture.ManufactureConfig;
@@ -47,7 +49,6 @@ public class BuildingConfig {
 	private static final String N_S_ALIGNMENT = "north-south-alignment";
 	private static final String CONSTRUCTION = "construction";
 	private static final String BASE_LEVEL = "base-level";
-	private static final String BASE_MASS = "base-mass";
 
 	private static final String WEAR_LIFETIME = "wear-lifetime";
 	private static final String MAINTENANCE_TIME = "maintenance-time";
@@ -58,8 +59,6 @@ public class BuildingConfig {
 
 	private static final String RESEARCH = "research";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
-
-	private static final String RESOURCE_PROCESSING = "resource-processing";
 
 	private static final String NUMBER_MODULES = "number-modules";
 
@@ -87,8 +86,6 @@ public class BuildingConfig {
 	private static final String ROVER = "rover";
 	private static final String FLYER = "flyer";
 	private static final String UTILITY = "utility";
-	
-	private static final String WASTE_PROCESSING = "waste-processing";
 
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
@@ -152,7 +149,7 @@ public class BuildingConfig {
 	}
 	
 	/**
-	 * Parses a building spec node.
+	 * Parses a full building spec node.
 	 *
 	 * @param buildingTypeName
 	 * @param buildingElement
@@ -163,95 +160,11 @@ public class BuildingConfig {
 	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement,
 								ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 
-		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
-		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
-		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
-		int baseLevel = Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
-		double presetTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
-		int maintenanceTime = Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
-		int wearLifeTime = Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
-
-		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
-		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
-		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
-		
-		// Process description
-		Element descElement = buildingElement.getChild(DESCRIPTION);
-		String desc = descElement.getValue().trim();
-		desc = desc.replaceAll("\\t+", "").replaceAll("\\s+", " ").replace("   ", " ").replace("  ", " ");
-		
-		// Process the scopes
-		Set<String> scopeNames = new HashSet<>();
-		Element scopesElement = buildingElement.getChild(SCOPES);
-		if (scopesElement != null) {
-			for (Element element : scopesElement.getChildren(SCOPE)) {
-				String name = element.getAttributeValue(NAME);
-				scopeNames.add(name);
-			}		
-			buildingScopes.put(buildingTypeName, scopeNames);
-		}
-		
-		// Get functions
-		Map<FunctionType, FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
-		Element funcElement = buildingElement.getChild(FUNCTIONS);
-		for (Element element : funcElement.getChildren()) {
-			String name = element.getName();
-			FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
-
-			// Get activity spots
-			String spotName = getDefaultSpotName(function);
-			Set<NamedPosition> spots = parseNamedPositions(element, ACTIVITY,
-													spotName, width, length);
-
-			// Record that this Function has activity spots
-			if (!spots.isEmpty()) {
-				activityFunctions.add(function);
-			}
-
-			// Get attributes as basic properties
-			Map<String, Object> props = new HashMap<>();
-			for (Attribute attr : element.getAttributes()) {
-				props.put(attr.getName(), attr.getValue());
-			}
-
-			// Any complex properties
-			for (Element complexProperty : element.getChildren()) {
-				if (complexProperty.getName().endsWith(POSITION)) {
-					LocalPosition pos = ConfigHelper.parseLocalPosition(complexProperty);
-					props.put(complexProperty.getName(), pos);
-				}
-			}
-			
-			// Parse extras
-			FunctionSpec fspec = createFunctionSpec(buildingTypeName + " - " + name, function, props, spots, element, manuConfig);
-
-			supportedFunctions.put(function, fspec);
-		}
-
-		String categoryString = buildingElement.getAttributeValue(CATEGORY);
-		BuildingCategory category = null;
-		if (categoryString != null) {
-			category = BuildingCategory.valueOf(ConfigHelper.convertToEnumName(categoryString));
-		}
-		else {
-			// Derive category from Functions
-			category = deriveCategory(supportedFunctions.keySet());
-		}
-
-		BuildingSpec newSpec = new BuildingSpec(this, buildingTypeName, desc, category, 
-				width, length, alignment, baseLevel,
-			 	presetTemp, maintenanceTime, wearLifeTime,
-			 	basePowerRequirement, basePowerDownPowerRequirement,
-			 	supportedFunctions);
+		var newSpec = parseBuildingSpec(buildingElement, buildingTypeName, resProcConfig, manuConfig);
 		
 		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
 		if (construction != null) {
 			newSpec.setConstruction(ConstructionType.valueOf(ConfigHelper.convertToEnumName(construction)));
-		}
-
-		String baseMass = buildingElement.getAttributeValue(BASE_MASS);
-		if (baseMass != null) {
-			newSpec.setBaseMass(Double.parseDouble(baseMass));
 		}
 
 		// Get Storage
@@ -280,30 +193,18 @@ public class BuildingConfig {
 			parseResearch(newSpec, researchElement);
 		}
 
-		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
-		if (resourceProcessingElement != null) {
-			newSpec.setResourceProcess(parseResourceProcessing(resProcConfig, resourceProcessingElement));
-		}
-
-		Element wasteProcessingElement = functionsElement.getChild(WASTE_PROCESSING);
-		if (wasteProcessingElement != null) {
-			newSpec.setWasteProcess(parseResourceProcessing(resProcConfig, wasteProcessingElement));
-		}
-
+		var width = newSpec.getWidth();
+		var length = newSpec.getLength();
 		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
 		if (vehicleElement != null) {
 			Set<LocalPosition> roverParking = parsePositions(vehicleElement, ROVER, LOCATION,
 												   width, length);
 			newSpec.setRoverParking(roverParking);
-		}
 
-		if (vehicleElement != null) {
 			Set<LocalPosition> utilityParking = parsePositions(vehicleElement, UTILITY, LOCATION,
 												   width, length);
 			newSpec.setUtilityParking(utilityParking);
-		}
-		
-		if (vehicleElement != null) {
+
 			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, FLYER, LOCATION,
 												   width, length);
 			newSpec.setFlyerParking(flyerParking);
@@ -317,6 +218,71 @@ public class BuildingConfig {
 		}
 		
 		return newSpec;
+	}
+
+	/**
+	 * Parse and create the basic BuildingSpec
+	 * @param buildingElement
+	 * @param buildingTypeName
+	 * @param manuConfig
+	 * @return
+	 */
+	private BuildingSpec parseBuildingSpec(Element buildingElement, String buildingTypeName,
+									ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
+		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
+		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
+		int baseLevel = Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
+		double presetTemp = Double.parseDouble(buildingElement.getAttributeValue(ROOM_TEMPERATURE));
+		int maintenanceTime = Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
+		int wearLifeTime = Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
+
+		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
+		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
+		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
+		
+		// Process description
+		Element descElement = buildingElement.getChild(DESCRIPTION);
+		String desc = descElement.getValue().trim();
+		desc = desc.replaceAll("\t+", "").replaceAll("\s+", " ").replace("   ", " ").replace("  ", " ");
+		
+		// Process the scopes
+		Set<String> scopeNames = new HashSet<>();
+		Element scopesElement = buildingElement.getChild(SCOPES);
+		if (scopesElement != null) {
+			for (Element element : scopesElement.getChildren(SCOPE)) {
+				String name = element.getAttributeValue(NAME);
+				scopeNames.add(name);
+			}		
+			buildingScopes.put(buildingTypeName, scopeNames);
+		}
+		
+		// Get functions
+		Map<FunctionType, FunctionSpec> supportedFunctions = new EnumMap<>(FunctionType.class);
+		Element funcElement = buildingElement.getChild(FUNCTIONS);
+		for (Element element : funcElement.getChildren()) {
+			
+			// Parse extras
+			FunctionSpec fspec = parseFunctionSpec(buildingTypeName, element, manuConfig, resProcConfig, width, length);
+
+			supportedFunctions.put(fspec.getType(), fspec);
+		}
+
+		String categoryString = buildingElement.getAttributeValue(CATEGORY);
+		BuildingCategory category = null;
+		if (categoryString != null) {
+			category = BuildingCategory.valueOf(ConfigHelper.convertToEnumName(categoryString));
+		}
+		else {
+			// Derive category from Functions
+			category = deriveCategory(supportedFunctions.keySet());
+		}
+
+		return new BuildingSpec(this, buildingTypeName, desc, category, 
+				width, length, alignment, baseLevel,
+			 	presetTemp, maintenanceTime, wearLifeTime,
+			 	basePowerRequirement, basePowerDownPowerRequirement,
+			 	supportedFunctions);
 	}
 
 	/**
@@ -379,16 +345,40 @@ public class BuildingConfig {
 	/**
 	 * Creates factory method to create FunctionSpecs.
 	 * 
-	 * @param context Context for error messages
-	 * @param function Type of Function
-	 * @param props Coming standard props
-	 * @param spots Activity spots
-	 * @param element Source XML element
-	 * @param manuConfig 
+	 * @param width 
 	 * @return
 	 */
-	private FunctionSpec createFunctionSpec(String context, FunctionType function, Map<String,Object> props,
-											Set<NamedPosition> spots, Element element, ManufactureConfig manuConfig) {
+	private FunctionSpec parseFunctionSpec(String context, Element element, ManufactureConfig manuConfig,
+											ResourceProcessConfig resProcConfig,
+											double width, double length) {
+		String name = element.getName();
+		context += " - " + name;
+		FunctionType function = FunctionType.valueOf(ConfigHelper.convertToEnumName(name));
+
+		// Get activity spots
+		String spotName = getDefaultSpotName(function);
+		Set<NamedPosition> spots = parseNamedPositions(element, ACTIVITY,
+												spotName, width, length);
+
+		// Record that this Function has activity spots
+		if (!spots.isEmpty()) {
+			activityFunctions.add(function);
+		}
+
+		// Get attributes as basic properties
+		Map<String, Object> props = new HashMap<>();
+		for (Attribute attr : element.getAttributes()) {
+			props.put(attr.getName(), attr.getValue());
+		}
+
+		// Any complex properties
+		for (Element complexProperty : element.getChildren()) {
+			if (complexProperty.getName().endsWith(POSITION)) {
+				LocalPosition pos = ConfigHelper.parseLocalPosition(complexProperty);
+				props.put(complexProperty.getName(), pos);
+			}
+		}
+			
 		// Check for extra function specifics	
 		if (function == FunctionType.MANUFACTURE) {
 			var tools = ConfigHelper.parseIntList(context, element.getChildren(TOOLING), NAME,
@@ -396,7 +386,17 @@ public class BuildingConfig {
 			props.put(TOOLING, tools);
 		}
 
-		return new FunctionSpec(function, props, spots);
+		var base = new FunctionSpec(function, props, spots);
+
+		// Some function needs extra properties
+		switch(function) {
+			case WASTE_PROCESSING, RESOURCE_PROCESSING -> base = createResourceProcessingSpec(base, element, resProcConfig);
+			default -> { // No need to do anything
+						}
+		}
+
+
+		return base;
 	}
 
 	/**
@@ -405,8 +405,8 @@ public class BuildingConfig {
 	 * @param resourceProcessingElement
 	 * @return 
 	 */
-	private List<ResourceProcessEngine> parseResourceProcessing(ResourceProcessConfig resProcConfig,
-										 Element resourceProcessingElement) {
+	private ResourceProcessingSpec createResourceProcessingSpec(FunctionSpec base, Element resourceProcessingElement,
+													ResourceProcessConfig resProcConfig) {
 		List<ResourceProcessEngine> resourceProcesses = new ArrayList<>();
 
 		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS_ENGINE);
@@ -417,7 +417,7 @@ public class BuildingConfig {
 			resourceProcesses.add(new ResourceProcessEngine(resProcConfig.getProcessSpec(name), modules));
 		}
 
-		return resourceProcesses;
+		return new ResourceProcessingSpec(base, resourceProcesses);
 	}
 
 	/**
@@ -514,7 +514,7 @@ public class BuildingConfig {
 		if (activityElement != null) {
 			int i = 1;
 			for(Element activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
-				LocalPosition point = ConfigHelper.parseLocalPosition(activitySpot);
+				var point = ConfigHelper.parseRelativePosition(activitySpot);
 
 				// Check location is within the building. Check as long as the maximum
 				// is defined
@@ -623,28 +623,6 @@ public class BuildingConfig {
 	public List<ScienceType> getResearchSpecialties(String buildingType) {
 		return getBuildingSpec(buildingType).getScienceType();
 
-	}
-
-	/**
-	 * Gets the building's resource processes.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return a list of resource processes.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<ResourceProcessEngine> getResourceProcesses(String buildingType) {
-		return getBuildingSpec(buildingType).getResourceProcess();
-	}
-
-	/**
-	 * Gets the building's waste processes.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return a list of waste processes.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<ResourceProcessEngine> getWasteProcesses(String buildingType) {
-		return getBuildingSpec(buildingType).getWasteProcess();
 	}
 
 	/**

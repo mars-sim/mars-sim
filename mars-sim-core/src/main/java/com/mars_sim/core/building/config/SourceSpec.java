@@ -5,7 +5,7 @@
  * @author Barry Evans
  */
 
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 import java.util.Properties;
 

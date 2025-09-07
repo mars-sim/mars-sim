@@ -24,6 +24,8 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.building.config.BuildingConfig;
+import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.building.construction.ConstructionManager;

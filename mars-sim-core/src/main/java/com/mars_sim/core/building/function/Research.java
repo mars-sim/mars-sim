@@ -14,7 +14,7 @@ import java.util.Map;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;

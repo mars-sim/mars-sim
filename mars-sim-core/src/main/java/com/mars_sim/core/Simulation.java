@@ -31,8 +31,8 @@ import java.util.zip.GZIPOutputStream;
 
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.authority.AuthorityFactory;
-import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.building.function.farming.Crop;

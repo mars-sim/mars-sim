@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import org.jdom2.Document;
 import org.jdom2.Element;
 
-import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.building.utility.heating.HeatSourceType;

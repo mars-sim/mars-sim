@@ -11,8 +11,8 @@ import java.util.Iterator;
 
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingConfig;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.BuildingConfig;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;

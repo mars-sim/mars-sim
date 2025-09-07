@@ -4,7 +4,7 @@
  * @date 2024-07-12
  * @author Barry Evans
  */
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,11 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingCategory;
+import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.science.ScienceType;
 
 /**
@@ -33,7 +34,6 @@ public class BuildingSpec {
 	// Empty list constants
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
 	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
-	private static final List<ResourceProcessEngine> EMPTY_RESOURCE = new ArrayList<>();
 	
 	/** is the building non-habitable. */
 	private boolean isInhabitable = true;
@@ -51,14 +51,12 @@ public class BuildingSpec {
 	private double length;
 	private double width;
 	
-	private double baseMass;
-	
 	private String alignment;
 	private String buildingType;
 	private String description;
 	
 	/** A set of system scopes affected by malfunction incidents. */
-	private Set<String> systemScopes = new HashSet<>();;
+	private Set<String> systemScopes = new HashSet<>();
 
 	/**
 	 * The type of material use for the construction of the wall of a building.
@@ -76,9 +74,6 @@ public class BuildingSpec {
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 	
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
-	
-	private List<ResourceProcessEngine> resourceProcess = EMPTY_RESOURCE;
-	private List<ResourceProcessEngine> wasteProcess = EMPTY_RESOURCE;
 
 	private Set<LocalPosition> beds;
 	private Set<LocalPosition> roverParking;
@@ -146,7 +141,7 @@ public class BuildingSpec {
 	 * 
 	 * @param value
 	 */
-	protected void setScopeDone(boolean value) {
+	public void setScopeDone(boolean value) {
 		systemScopeDone = value;
 	}
 	
@@ -155,14 +150,14 @@ public class BuildingSpec {
 	 * 
 	 * @return
 	 */
-	protected boolean getScopeDone() {
+	public boolean getScopeDone() {
 		return systemScopeDone;
 	}
 	
 	/**
 	 * Gets the system scopes
 	 */
-	protected Set<String> getSystemScopes() {	
+	public Set<String> getSystemScopes() {	
 		return systemScopes;
 	}
 	
@@ -270,14 +265,6 @@ public class BuildingSpec {
 		return alignment;
 	}
 	
-	public double getBaseMass() {
-		return baseMass;
-	}
-	
-	public void setBaseMass(double value) {
-		baseMass = value;
-	}
-	
 	public ConstructionType getConstruction() {
 		return constructionType;
 	}
@@ -321,22 +308,6 @@ public class BuildingSpec {
 	
 	public List<ScienceType> getScienceType() {
 		return scienceType;
-	}
-
-	public void setResourceProcess(List<ResourceProcessEngine> resourceProcesses) {
-		this.resourceProcess = resourceProcesses;
-	}
-
-	public List<ResourceProcessEngine> getResourceProcess() {
-		return resourceProcess;
-	}
-	
-	public void setWasteProcess(List<ResourceProcessEngine> list) {
-		this.wasteProcess = list;
-	}
-
-	public List<ResourceProcessEngine> getWasteProcess() {
-		return wasteProcess;
 	}
 	
 	public String toString() {

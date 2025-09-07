@@ -19,8 +19,8 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import com.mars_sim.core.authority.AuthorityFactory;
-import com.mars_sim.core.building.BuildingConfig;
 import com.mars_sim.core.building.BuildingPackageConfig;
+import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.construction.ConstructionConfig;
 import com.mars_sim.core.building.function.cooking.MealConfig;
 import com.mars_sim.core.building.function.farming.CropConfig;

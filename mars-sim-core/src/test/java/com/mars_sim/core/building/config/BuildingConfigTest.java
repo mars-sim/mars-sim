@@ -1,4 +1,4 @@
-package com.mars_sim.core.building;
+package com.mars_sim.core.building.config;
 
 
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -20,7 +21,19 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     private static final String LANDER_HAB = "Lander Hab";
 
     private static final String BUNK = "Bunk";
+
+    private static FunctionSpec lifeSupportSpec;
     
+    public static FunctionSpec getLifeSupportSpec() {
+		if (lifeSupportSpec == null) {
+			
+			lifeSupportSpec = new FunctionSpec(FunctionType.LIFE_SUPPORT, Map.of(BuildingConfig.POWER_REQUIRED, 1D,
+													  FunctionSpec.CAPACITY, 10),
+														null);
+		}
+		return lifeSupportSpec;
+	}
+
     public void testLanderHabFunctions() {
         var bc = simConfig.getBuildingConfiguration();
 
@@ -116,7 +129,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("width", 6D, found.getWidth());
         assertEquals("length", 9D, found.getLength());
         assertEquals("width", 6D, found.getWidth());
-        assertEquals("width", 3000D, found.getBaseMass());
 
         assertEquals("Construction", ConstructionType.INFLATABLE, found.getConstruction());
 
@@ -155,7 +167,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         assertEquals("width", 7D, found.getWidth());
         assertEquals("length", 9D, found.getLength());
-        assertEquals("mass", 4000D, found.getBaseMass());
 
         assertEquals("Construction", ConstructionType.PRE_FABRICATED, found.getConstruction());
 

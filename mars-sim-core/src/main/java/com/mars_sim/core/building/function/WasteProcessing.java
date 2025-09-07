@@ -6,8 +6,13 @@
  */
 package com.mars_sim.core.building.function;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
+import com.mars_sim.core.building.config.ResourceProcessingSpec;
+import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -24,7 +29,7 @@ public class WasteProcessing extends ResourceProcessor {
 	 */
 	public WasteProcessing(Building building, FunctionSpec spec) {
 		// Use Function constructor
-		super(FunctionType.WASTE_PROCESSING, spec, building, buildingConfig.getWasteProcesses(building.getBuildingType()));
+		super(FunctionType.WASTE_PROCESSING, spec, building, ((ResourceProcessingSpec) spec).getProcesses());
 	}
 
 	/**
@@ -36,6 +41,9 @@ public class WasteProcessing extends ResourceProcessor {
 	 * @return value (VP) of building function.
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
-		return calculateFunctionValue(settlement, buildingConfig.getWasteProcesses(type));
+		var spec = buildingConfig.getBuildingSpec(type);
+		var processSpec = (ResourceProcessingSpec)spec.getFunctionSpec(FunctionType.WASTE_PROCESSING);
+		List<ResourceProcessEngine> processes = (processSpec != null ? processSpec.getProcesses() : Collections.emptyList());
+		return calculateFunctionValue(settlement, processes);
 	}
 }

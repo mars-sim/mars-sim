@@ -9,7 +9,7 @@ package com.mars_sim.core.building.function;
 import java.util.Iterator;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.FunctionSpec;
+import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.structure.Settlement;
 
 /**

@@ -16,7 +16,7 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.BuildingSpec;
+import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.construction.ConstructionSite.ConstructionPhase;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
