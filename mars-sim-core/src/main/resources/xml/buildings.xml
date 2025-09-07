@@ -3343,7 +3343,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<storage stock-capacity="20000">
-				<resource-capacity type="Cement" amount="10000.0" />
+				<resource-capacity type="Cement" amount="20000.0" />
 			</storage>
 		</functions>
 	</building>
@@ -3394,11 +3394,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<storage stock-capacity="20000">
-				<resource-capacity type="ice" amount="6000.0" />
-				<resource-capacity type="water" amount="10000.0" />
-				<resource-capacity type="brine water" amount="2300.0" />
-				<resource-capacity type="grey water" amount="2000.0" />
-				<resource-capacity type="black water" amount="200.0" />
+				<resource-capacity type="ice" amount="12000.0" />
+				<resource-capacity type="water" amount="4800.0" />
+				<resource-capacity type="brine water" amount="5000.0" />
+				<resource-capacity type="grey water" amount="100.0" />
+				<resource-capacity type="black water" amount="100.0" />
 			</storage>
 		</functions>
 	</building>
@@ -3412,9 +3412,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<storage stock-capacity="20000">
-				<resource-capacity type="Lime" amount="8000.0" />
+				<resource-capacity type="Lime" amount="10000.0" />
 				<resource-capacity type="Carbon" amount="2000.0" />
-				<resource-capacity type="calcium carbonate" amount="10000.0" />				
+				<resource-capacity type="calcium carbonate" amount="8000.0" />				
 			</storage>
 		</functions>
 	</building>
@@ -3430,12 +3430,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 
 		<functions>
-			<storage stock-capacity="30000">
-				<resource-capacity type="potassium" amount="5000.0" />
+			<storage stock-capacity="20000">
+				<resource-capacity type="potassium" amount="1000.0" />
 				<resource-capacity type="iron powder" amount="5000.0" />
 				<resource-capacity type="copper" amount="5000.0" />	
-				<resource-capacity type="magnesium" amount="5000.0" />
-				<resource-capacity type="nickel" amount="5000.0" />
+				<resource-capacity type="magnesium" amount="3000.0" />
+				<resource-capacity type="nickel" amount="1000.0" />
 				<resource-capacity type="aluminum" amount="5000.0" />												
 			</storage>
 		</functions>
@@ -3470,9 +3470,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<storage stock-capacity="20000">
 				<resource-capacity type="regolith" amount="15000.0" />
-				<resource-capacity type="regolith-B" amount="5000.0" />
-				<resource-capacity type="regolith-C" amount="5000.0" />
-				<resource-capacity type="regolith-D" amount="5000.0" />	
+				<resource-capacity type="regolith-B" amount="2000.0" />
+				<resource-capacity type="regolith-C" amount="2000.0" />
+				<resource-capacity type="regolith-D" amount="1000.0" />	
 			</storage>
 		</functions>
 	</building>
@@ -3505,8 +3505,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="Oxygen" amount="6000.0" />
 				<resource-capacity type="Hydrogen" amount="6000.0" />
 				<resource-capacity type="Nitrogen" amount="3000.0" />			
-				<resource-capacity type="Argon" amount="3000.0" />
-				<resource-capacity type="Carbon Dioxide" amount="1000.0" />
+				<resource-capacity type="Argon" amount="2000.0" />
+				<resource-capacity type="Carbon Dioxide" amount="2000.0" />
 				<resource-capacity type="Carbon Monoxide" amount="1000.0" />
 			</storage>
 		</functions>

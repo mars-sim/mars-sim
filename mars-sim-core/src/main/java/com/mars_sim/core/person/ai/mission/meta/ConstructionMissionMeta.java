@@ -10,7 +10,6 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -28,7 +27,7 @@ import com.mars_sim.core.structure.Settlement;
 public class ConstructionMissionMeta extends AbstractMetaMission {
     
 	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ConstructionMissionMeta.class.getName());
+	// May add back private static final SimLogger logger = SimLogger.getLogger(ConstructionMissionMeta.class.getName());
 
 	// Sites have a higher score than queued buildings
 	private static final int SITE_BASE = 200;

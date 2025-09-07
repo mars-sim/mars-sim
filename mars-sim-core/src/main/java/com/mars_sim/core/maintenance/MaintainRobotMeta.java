@@ -36,11 +36,11 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 	/**
      * Represents a job needed for internal maintenance on a robot.
      */
-	private static class MaintenanceJob extends SettlementTask {
+	private static class MaintainRobotJob extends SettlementTask {
 
 		private static final long serialVersionUID = 1L;
 
-        public MaintenanceJob(SettlementMetaTask owner, Robot target, RatingScore score) {
+        public MaintainRobotJob(SettlementMetaTask owner, Robot target, RatingScore score) {
             super(owner, "Robot Maintenance", target, score);
         }
 
@@ -86,6 +86,10 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
      */
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+		// Avoid having a repair bot maintaining itself
+		if (r.equals((Robot)t.getFocus()))
+			return RatingScore.ZERO_RATING;
+		
 		var factor = TaskUtil.assessRobot(t, r);
 		if (factor.getScore() >= 50)
 			factor.addModifier("robot.expert", ROBOT_FACTOR);
@@ -122,7 +126,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		}
 		
 		if (highestScore > 0) {
-			tasks.add(new MaintenanceJob(this, worstRobot, score));
+			tasks.add(new MaintainRobotJob(this, worstRobot, score));
 		}
 		
 		// Reset them
@@ -151,7 +155,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		}
 		
 		if (highestScore > 0) {
-			tasks.add(new MaintenanceJob(this, worstRobot, score));
+			tasks.add(new MaintainRobotJob(this, worstRobot, score));
 		}
 
 		return tasks;

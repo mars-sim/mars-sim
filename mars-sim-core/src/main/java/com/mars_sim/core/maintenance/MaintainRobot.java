@@ -81,7 +81,7 @@ public class MaintainRobot extends Task  {
 		String des = DETAIL + entity.getName();
 		setDescription(des);
 		logger.info(worker, 30_000, des + ".");
-
+	
 		boolean success = false;
 		
 		// Walk to a workshop or garage

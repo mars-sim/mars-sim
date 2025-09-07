@@ -44,6 +44,9 @@ public class MaintainBuilding extends Task  {
     private static final String DETAIL = Msg.getString(
     		"Task.description.maintainBuilding.detail") + " "; //$NON-NLS-1$
     
+    private static final String REMOTE_DETAIL = Msg.getString(
+    		"Task.description.maintainBuilding.remote.detail") + " "; //$NON-NLS-1$
+    
 	/** Task phases. */
 	static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString("Task.phase.maintain")); //$NON-NLS-1$
 
@@ -71,12 +74,12 @@ public class MaintainBuilding extends Task  {
 
 		this.entity = entity;		
 
-		String des = DETAIL + entity.getName();
-		setDescription(des);
-		logger.info(worker, 30_000, des + ".");
-		
-		
 		if (entity.isInhabitable()) {
+			
+			String des = REMOTE_DETAIL + entity.getName();
+			setDescription(des);
+			logger.info(worker, 20_000, des + ".");
+			
 			// walk to an admin and remotely inspect the building
 			Settlement s = worker.getSettlement();
 			if (s != null) {
@@ -91,6 +94,12 @@ public class MaintainBuilding extends Task  {
 			}
 		}
 		else {
+			
+			String des = DETAIL + entity.getName();
+			setDescription(des);
+			logger.info(worker, 20_000, des + ".");
+			
+			
 			// Walk to random location in building.
 			walkToRandomLocInBuilding(entity, false);
 		}

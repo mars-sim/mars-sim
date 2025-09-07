@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimLogger.java
- * @date 2022-06-27
+ * @date 2025-09-07
  * @author Barry Evans
  */
 
@@ -39,6 +39,11 @@ public class SimLogger {
 	private static Map<String, SimLogger> loggers = new HashMap<>();
 	private static Map<String, BlockedCount> blockedMsgs = new ConcurrentHashMap<>();
 
+	public  static final long DEFAULT_SEVERE_TIME = 0;
+	private static final long DEFAULT_WARNING_TIME = 0;
+	private static final long DEFAULT_INFO_TIME = 0;
+	
+	private static final String SYSTEM = "System";
 	private static final String REPEAT_BRACKET = " [x";
 	private static final String OPEN_BRACKET = "[";
 	private static final String CLOSED_BRACKET = "]";
@@ -46,9 +51,7 @@ public class SimLogger {
 	private static final String COLON = " : ";
 	private static final String DASH = " - ";
 	private static final String QUESTION = "?";
-	private static final long DEFAULT_WARNING_TIME = 0;
-	public static final long DEFAULT_SEVERE_TIME = 0;
-	private static final long DEFAULT_INFO_TIME = 0;
+
 
 	private String sourceName;
 	private Logger rootLogger;
@@ -143,15 +146,17 @@ public class SimLogger {
 				}
 			}
 
-			// Must start blocking subsequence messaages
+			// Must start blocking subsequence messages
 			blockedMsgs.put(uniqueIdentifier, new BlockedCount(now + timeBetweenLogs));
 		}
 
-		// Add body, contents Settlement, Unit nickname message"
 		outputMessage.append(COLON);
+		
 		if (actor == null) {
 			// Actor unknown
-			outputMessage.append(OPEN_BRACKET).append("System").append(CLOSED_BRACKET_SPACE);
+			outputMessage.append(OPEN_BRACKET).append(SYSTEM).append(CLOSED_BRACKET_SPACE);
+			
+			message = message.replace(sourceName + COLON, "");
 		}
 		else {
 			// Has an Actor
@@ -161,6 +166,7 @@ public class SimLogger {
 			}
 			outputMessage.append(actor.getName()).append(DASH);		
 		}
+		
 		outputMessage.append(message);
 
 		if (t == null) {
@@ -201,7 +207,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void log(Level level, String message) {
-		rootLogger.log(level, () -> sourceName + " : " + message);
+		rootLogger.log(level, () -> sourceName + COLON + message);
 	}
 
 	/**
@@ -212,7 +218,7 @@ public class SimLogger {
 	 * @param e Exception
 	 */
 	private void rootLog(Level level, String message, Throwable e) {
-		rootLogger.log(level, sourceName + " : " + message, e);
+		rootLogger.log(level, sourceName + COLON + message, e);
 	}
 	
 	/**
@@ -282,7 +288,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void info(long timeBetweenLogs, String message) {
-		baseLog(null, Level.INFO, timeBetweenLogs, sourceName + " : " + message, null);
+		baseLog(null, Level.INFO, timeBetweenLogs, sourceName + COLON + message, null);
 	}
 	
 	/**
@@ -322,7 +328,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void warning(long timeBetweenLogs, String message) {
-		baseLog(null, Level.WARNING, timeBetweenLogs, sourceName + " : " + message, null);
+		baseLog(null, Level.WARNING, timeBetweenLogs, sourceName + COLON + message, null);
 	}
 
 	/**
@@ -350,7 +356,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void severe(long timeBetweenLogs, String message) {
-		baseLog(null, Level.SEVERE, timeBetweenLogs, sourceName + " : " + message, null);
+		baseLog(null, Level.SEVERE, timeBetweenLogs, sourceName + COLON + message, null);
 	}
 	
 	/**
@@ -434,7 +440,7 @@ public class SimLogger {
 	 * @param message
 	 */
 	public void config(long timeBetweenLogs, String message) {
-		baseLog(null, Level.CONFIG, timeBetweenLogs, sourceName + " : " + message, null);
+		baseLog(null, Level.CONFIG, timeBetweenLogs, sourceName + COLON + message, null);
 	}
 	
 	

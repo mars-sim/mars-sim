@@ -9,6 +9,8 @@ package com.mars_sim.core.maintenance;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
+import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.tool.RandomUtil;
 
 public class MaintenanceUtil {
@@ -46,6 +48,8 @@ public class MaintenanceUtil {
 		double inspectionWindow = manager.getStandardInspectionWindow();	
 	
 		if (partsPosted) {	
+			// if needed parts have been posted, hurry up to swap out the parts without waiting for 
+			// the standard inspection/maintenance due
 			score = computeScore(manager, score, 
 					effectiveTime, inspectionWindow, partsPosted);
 		}
@@ -58,13 +62,18 @@ public class MaintenanceUtil {
 			
 			// This is important since inspection work won't need to become a time crunch at the end
 			
+			double bonus = 1D;
+			
+			// Note: repairbots are to be inspected more frequently so as to be in pristine condition 
+			// or else less repair can be done in the long run
+			if (entity instanceof Robot r && RobotType.REPAIRBOT == r.getRobotType()) {
+				bonus = .9D;
+			}
+			
 			double chance = RandomUtil.getRandomDouble(inspectionWindow * INSPECTION_PERCENTAGE, 
 					inspectionWindow);
 			
-			if ((effectiveTime >= chance)
-				// if needed parts have been posted, hurry up to swap out the parts without waiting for 
-				// the standard inspection/maintenance due
-				|| partsPosted) {
+			if (effectiveTime >= chance * bonus) {
 				score = computeScore(manager, score, 
 						effectiveTime, inspectionWindow, partsPosted);
 			}
