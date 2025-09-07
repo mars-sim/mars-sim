@@ -151,7 +151,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person) && occupants.add(person)) {
+		if (occupants.size() == 0 && robotOccupants.size() == 0) {
 			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, person);
@@ -181,7 +181,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (!isRobotCrewmember(robot)) {
+		if (occupants.size() == 0 && robotOccupants.size() == 0) {
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, robot);
 			return robotOccupants.add(robot);
 		}
