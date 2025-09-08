@@ -143,7 +143,8 @@ public class SettlementMapPanel extends JPanel {
 	private Map<Settlement, Robot>    selectedRobot;
 	private Map<Settlement, Building> selectedBuilding;
 	private Map<Settlement, Vehicle>  selectedVehicle;
-
+	private Map<Settlement, ConstructionSite>  selectedSite;
+	
 	private static final Font sansSerif = new Font("SansSerif", Font.BOLD, 11);
 
 	private Set<DisplayOption> displayOptions = EnumSet.noneOf(DisplayOption.class);
@@ -936,9 +937,10 @@ public class SettlementMapPanel extends JPanel {
 	 * @return selected construction site
 	 */
 	private ConstructionSite selectConstructionSiteAt(LocalPosition settlementPosition) {
-		for (ConstructionSite s : settlement.getConstructionManager().getConstructionSites()) {
-			if (isWithin(settlementPosition, s)) {
-				return s;
+		for (ConstructionSite site : settlement.getConstructionManager().getConstructionSites()) {
+			if (isWithin(settlementPosition, site)) {
+				selectSite(site);
+				return site;
 			}
 		}
 
@@ -1015,7 +1017,7 @@ public class SettlementMapPanel extends JPanel {
 			}
 		}
 	}
-
+	
 	/**
 	 * Gets the selected building for the current settlement.
 	 *
@@ -1029,6 +1031,35 @@ public class SettlementMapPanel extends JPanel {
 		return result;
 	}
 
+	/**
+	 * Selects a site on the map.
+	 *
+	 * @param site the selected sites.
+	 */
+	public void selectSite(ConstructionSite site) {
+		if ((settlement != null) && (site != null)) {
+			ConstructionSite currentlySelected = selectedSite.get(settlement);
+			if (site.equals(currentlySelected)) {
+				selectedSite.put(settlement, null);
+			} else {
+				selectedSite.put(settlement, site);
+			}
+		}
+	}
+	
+	/**
+	 * Gets the selected site for the current settlement.
+	 *
+	 * @return the selected site.
+	 */
+	public ConstructionSite getSelectedSite() {
+		ConstructionSite result = null;
+		if (settlement != null) {
+			result = selectedSite.get(settlement);
+		}
+		return result;
+	}
+	
 	/**
 	 * Is a display option enabled?
 	 *

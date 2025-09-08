@@ -380,13 +380,14 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score += mrate * LOW_BIAS;
 				} else if (ResourceUtil.isRawMaterial(resource)) { // ore, minerals, sand
 					score += mrate / LOW_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource)) { // glucose, leaves, soil
-					score += mrate / HIGH_BIAS;	
-				} else if (ResourceUtil.isInSitu(resource)) { // all regolith types 
+				} else if (ResourceUtil.isConstructionResource(resource) // cement, concrete, gypsum, lime, brick
+					|| ResourceUtil.isChemical(resource)) { // ethylene, styrene, propylene 
+						score += mrate / MID_BIAS;
+				} else if (ResourceUtil.isDerivedResource(resource) // glucose, leaves, soil, ethylene
+					|| ResourceUtil.isInSitu(resource)) { // all regolith types 
 					score += mrate / HIGH_BIAS;
-				} else if (ResourceUtil.isTier0Resource(resource)) { // ice, brine water
-					score += mrate / SUPER_HIGH_BIAS;
-				} else if (ResourceUtil.isWaste(resource)) { // grey water, black water, * waste
+				} else if (ResourceUtil.isTier0Resource(resource) // ice, brine water
+					|| ResourceUtil.isWaste(resource)) { // grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
 				} else {
 					score += mrate;
@@ -425,15 +426,15 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score += mrate;
 				} else if (ResourceUtil.isRawMaterial(resource)) {  // ore, minerals, sand
 					score += mrate * LOW_BIAS ;	
-				} else if (ResourceUtil.isTier1Resource(resource)) { // methane, water
+				} else if (ResourceUtil.isConstructionResource(resource) // cement, concrete, gypsum, lime, brick
+					|| ResourceUtil.isChemical(resource)) { // ethylene, styrene, propylene 
+					score += mrate * MID_BIAS;	
+				} else if (ResourceUtil.isTier1Resource(resource) // methane, water
+					|| ResourceUtil.isDerivedResource(resource) // glucose, leaves, soil
+					|| ResourceUtil.isRawElement(resource)) { // carbon
 					score += mrate * HIGH_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource)) { // glucose, leaves, soil
-					score += mrate * HIGH_BIAS;
-				} else if (ResourceUtil.isTier0Resource(resource)) { // ice, brine water
-					score += mrate * SUPER_HIGH_BIAS;	
-				} else if (ResourceUtil.isRawElement(resource)) { // carbon
-					score += mrate * SUPER_HIGH_BIAS;
-				} else if (ResourceUtil.isWaste(resource)) { // grey water, * waste
+				} else if (ResourceUtil.isTier0Resource(resource) // ice, brine water
+				    || ResourceUtil.isWaste(resource)) { // grey water, * waste
 					score += mrate * SUPER_HIGH_BIAS;
 				} else
 					score += mrate;

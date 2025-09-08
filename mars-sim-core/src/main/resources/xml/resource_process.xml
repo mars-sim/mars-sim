@@ -996,7 +996,7 @@
 		</description>						
 		<input resource="sand" rate="60.0" />
 		<input resource="cement" rate="34.0" />
-		<input resource="polyethylene" rate="1.0" />
+		<input resource="polyethylene" rate="0.5" />
 		<input resource="water" rate="5.0" />		
 
 		<output resource="concrete" rate="100.0" />
@@ -1008,7 +1008,7 @@
 		</description>
 		<input resource="sand" rate="60.0" />
 		<input resource="cement" rate="34.0" />
-		<input resource="polyethylene" rate="1.0" />
+		<input resource="polyethylene" rate="0.5" />
 		<input resource="brine water" rate="5.0" />		
 
 		<output resource="concrete" rate="100.0" />
@@ -1046,7 +1046,7 @@
 		<input resource="sulfur" rate="50.0" />
 		<input resource="sand" rate="25.0" />
 		<input resource="regolith" rate="24.0" />
-		<input resource="polyethylene" rate="1.0" />	
+		<input resource="polyethylene" rate="0.5" />	
 
 		<output resource="concrete" rate="100.0" />
 	</process>
@@ -1058,7 +1058,7 @@
 		</description>	
 		<input resource="sand" rate="60.0" />
 		<input resource="lime" rate="34.0" />
-		<input resource="polyethylene" rate="1.0" />
+		<input resource="polyethylene" rate="0.5" />
 		<input resource="water" rate="5.0" />		
 
 		<output resource="concrete" rate="100.0" />
@@ -1071,7 +1071,7 @@
 		</description>	
 		<input resource="sand" rate="60.0" />
 		<input resource="lime" rate="34.0" />
-		<input resource="polyethylene" rate="1.0" />
+		<input resource="polyethylene" rate="0.5" />
 		<input resource="brine water" rate="5.0" />		
 
 		<output resource="concrete" rate="100.0" />

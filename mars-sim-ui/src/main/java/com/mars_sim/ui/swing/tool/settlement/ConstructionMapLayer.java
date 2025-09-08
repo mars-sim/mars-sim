@@ -24,7 +24,7 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 public class ConstructionMapLayer extends AbstractMapLayer {
     
     private static final Color CONST_COLOR = new Color(119, 59, 0); // dark orange
-    private static final Color CONST_SELECTED_COLOR = new Color(119, 85, 0); // dark orange
+    private static final Color CONST_SELECTED_COLOR = Color.WHITE; // Color(119, 85, 0); // dark orange
 
     private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note size doesn;t matter
 
@@ -66,6 +66,10 @@ public class ConstructionMapLayer extends AbstractMapLayer {
      * @param site the construction site.
      */
     private void drawConstructionSite(ConstructionSite site, boolean showLabel, MapViewPoint viewpoint) {
+    	
+     	// Check if it's drawing the mouse-picked building 
+        Color selectedColor = (site.equals(mapPanel.getSelectedSite()) ? CONST_SELECTED_COLOR : null);
+    	
         // Use SVG image for construction site if available.
         GraphicsNode svg = null;
         ConstructionStage stage = site.getCurrentConstructionStage();
@@ -77,13 +81,12 @@ public class ConstructionMapLayer extends AbstractMapLayer {
         
         if (svg != null) {
             // Determine construction site pattern SVG image if available.
-            GraphicsNode patternSVG = SVGMapUtil
-                    .getConstructionSitePatternSVG(imageName);
+            GraphicsNode patternSVG = SVGMapUtil.getConstructionSitePatternSVG(imageName);
 
-            drawStructure(site, svg, patternSVG, CONST_SELECTED_COLOR, viewpoint);
+            drawStructure(site, svg, patternSVG, selectedColor , viewpoint);
         }
         else {
-            drawRectangle(site, CONST_COLOR, CONST_SELECTED_COLOR, viewpoint);
+            drawRectangle(site, CONST_COLOR, selectedColor, viewpoint);
         }
 
         

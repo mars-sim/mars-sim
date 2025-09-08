@@ -135,34 +135,34 @@ class AmountResourceGood extends Good {
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
 	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
-	private static final double ROCK_FLATTENING_FACTOR = 1;
-	private static final double REGOLITH_FLATTENING_FACTOR = 2;
-	private static final double SAND_FLATTENING_FACTOR = 1;
+	private static final double ROCK_FLATTENING_FACTOR = 1D;
+	private static final double REGOLITH_FLATTENING_FACTOR = 2D;
+	private static final double SAND_FLATTENING_FACTOR = 1D;
 	
 	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
 	
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
 	
-	private static final double CHEMICAL_FLATTENING_FACTOR = 3;
-	private static final double COMPOUND_FLATTENING_FACTOR = 2;
-	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3;
-	private static final double ELEMENT_FLATTENING_FACTOR = 4;
+	private static final double CHEMICAL_FLATTENING_FACTOR = 4D;
+	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
+	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
+	private static final double ELEMENT_FLATTENING_FACTOR = 4D;
 
-	private static final double GEMSTONE_FLATTENING_FACTOR = 3;
+	private static final double GEMSTONE_FLATTENING_FACTOR = 3D;
 
 	private static final double WASTE_FLATTENING_FACTOR = 0.15;
 	
-	private static final double UTILITY_FLATTENING_FACTOR = 10;
-	private static final double INSTRUMENT_FLATTENING_FACTOR = 5;
+	private static final double UTILITY_FLATTENING_FACTOR = 10D;
+	private static final double INSTRUMENT_FLATTENING_FACTOR = 5D;
 
-	private static final double INSECT_FLATTENING_FACTOR = 5;
-	private static final double ORGANISM_FLATTENING_FACTOR = 2;
+	private static final double INSECT_FLATTENING_FACTOR = 5D;
+	private static final double ORGANISM_FLATTENING_FACTOR = 2D;
 	private static final double SOYBASED_FLATTENING_FACTOR = 0.5;
-	private static final double ANIMAL_FLATTENING_FACTOR = 2;
-	private static final double CROP_FLATTENING_FACTOR = 2;
-	private static final double DERIVED_FLATTENING_FACTOR = 2;
-	private static final double TISSUE_FLATTENING_FACTOR = 4;
+	private static final double ANIMAL_FLATTENING_FACTOR = 2D;
+	private static final double CROP_FLATTENING_FACTOR = 2D;
+	private static final double DERIVED_FLATTENING_FACTOR = 2D;
+	private static final double TISSUE_FLATTENING_FACTOR = 4D;
 
 	private static final double NACO3_FLATTENING_FACTOR = 0.5;
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.005;
@@ -173,9 +173,9 @@ class AmountResourceGood extends Good {
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 300D;
 
-	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500; 
-	private static final double MAX_MANUFACTURING_DEMAND = 1500;
-	private static final double MAX_FOOD_PRODUCTION_DEMAND = 1500;
+	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500D; 
+	private static final double MAX_MANUFACTURING_DEMAND = 1500D;
+	private static final double MAX_FOOD_PRODUCTION_DEMAND = 1500D;
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -186,7 +186,9 @@ class AmountResourceGood extends Good {
 	/** The ingredient demand of each refresh cycle. */
 	private double ingredientDemand;
 	
-	private double costModifier = -1;
+	private double costModifier = -1D;
+	
+	private double multiplier = 1D;
 		
 	private AmountResource resource;
 	
@@ -195,6 +197,7 @@ class AmountResourceGood extends Good {
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
 		this.resource = ar;
+		this.multiplier = ar.getDemandMultiplier();
 
 		// Calculate fixed values
 		flattenDemand = calculateFlattenDemand(ar);
@@ -575,13 +578,18 @@ class AmountResourceGood extends Good {
 
 		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 	
-		double projected = newProjDemand
+		double projected = newProjDemand * multiplier
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
 		
-		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		if (projectedDemand == 0D) {
+			projectedDemand = projected;
+		}
+		else {
+			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		}
 		
 		// Add trade value. Cache is always false if this method is called
 		this.tradeDemand = owner.determineTradeDemand(this);
@@ -605,7 +613,7 @@ class AmountResourceGood extends Good {
 
 			totalDemand = (
 					  .9986 * previousDemand 
-					+ .00012 * projected 
+					+ .00012 * projected
 					+ .00005 * tradeDemand); 
 		}
 		
@@ -649,7 +657,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 20);
+		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 15);
 	}
 
 	/**
@@ -678,7 +686,7 @@ class AmountResourceGood extends Good {
 
 			double singleInputRate = process.getBaseSingleInputRate(resourceID);
 
-			return outputValue / singleInputRate / 3; 
+			return outputValue / singleInputRate / 2; 
 		}
 
 		return 0;

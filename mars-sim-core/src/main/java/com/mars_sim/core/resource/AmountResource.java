@@ -73,7 +73,7 @@ public final class AmountResource extends ResourceAbstract {
 	 * 
 	 * @return
 	 */
-	public double getDemand() {
+	public double getDemandMultiplier() {
 		return demandMultiplier;
 	}
 	

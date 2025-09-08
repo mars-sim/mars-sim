@@ -132,7 +132,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_STAT_SOLS = 12;
 
 	private static final int ICE_PROB_FACTOR = 5;
-	private static final int REGOLITH_PROB_FACTOR = 15;
+	private static final int REGOLITH_PROB_FACTOR = 20;
 	
 	private static final int MAX_PROB = 10_000;
 	private static final int MIN_REGOLITH_RESERVE = 400; // per person
@@ -143,7 +143,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int WATER_MAX = 10_000;
 
 	public static final int MIN_WATER_RESERVE = 800; // per person
-	private static final int MIN_ICE_RESERVE = 400; // per person
+	private static final int MIN_ICE_RESERVE = 800; // per person
 
 	/** The settlement sampling resources. */
 	private static final int[] samplingResources;
@@ -2435,9 +2435,6 @@ public class Settlement extends Unit implements Temporal,
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
 		
-//		logger.info("regolith: " + Math.round(result * 10D)/10D 
-//				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
-//				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
 		return result;
 	}
 
@@ -2650,11 +2647,7 @@ public class Settlement extends Unit implements Temporal,
 			result = 0;
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
-		
-//		logger.info("ice: " + Math.round(result * 10D)/10D 
-//				+ " surplus: " + Math.round(surplus * 10D)/10D + " totalSupply: " + Math.round(totalSupply * 10D)/10D  
-//				+ " totalDemand: " + Math.round(totalDemand * 10D)/10D  + " reserve: " + Math.round(reserve * 10D)/10D);
-		
+	
 		return result;
 	}
 

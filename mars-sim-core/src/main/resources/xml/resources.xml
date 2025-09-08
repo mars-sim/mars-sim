@@ -5,7 +5,7 @@
 	<!ATTLIST resource name CDATA #REQUIRED>
 	<!ATTLIST resource type CDATA #IMPLIED>
 	<!ATTLIST resource phase (solid|liquid|gas) #REQUIRED>
-	<!ATTLIST resource demand CDATA #IMPLIED>
+	<!ATTLIST resource demand-multiplier CDATA #IMPLIED>
 	<!ATTLIST resource life-support (true|false) "false">
 	<!ATTLIST resource edible (true|false) "false">
 ]>
@@ -20,13 +20,19 @@
 	<!-- phase - the normal phase of the resource as used. -->
 	<!--         Possible values: "solid", "liquid" or "gas" -->
 	<!-- life-support - Is the resource used for life support? -->
+	
+	
+	
+	
 	<!-- edible - Is the resource edible? -->
+	
+	
 
 	<!-- Life Support Resources -->
-	<resource name="Food" type="derived" phase="solid" life-support="true" demand="1.25" edible="true">
+	<resource name="Food" type="derived" phase="solid" life-support="true" demand-multiplier="1.25" edible="true">
 		Represents thermo-stabilized food that is not perishable.</resource>
-	<resource name="Water" type="compound" phase="liquid" life-support="true" demand="1.25" >Potable water</resource>
-	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand="0.75" />
+	<resource name="Water" type="compound" phase="liquid" life-support="true" demand-multiplier="1.25" >Potable water</resource>
+	<resource name="Oxygen" type="element" phase="gas" life-support="true" demand-multiplier="0.5" />
 	<resource name="Carbon dioxide" type="compound" phase="gas" life-support="true"/>
 
 	<resource name="Ice" type="compound" phase="solid">Extracted from ice-rich underground permafrost</resource>
@@ -36,20 +42,20 @@
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
 	<!-- Other Gas Resources -->
-	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand="0.75" />
-	
-	<resource name="Methane" type="compound" phase="gas" life-support="true" demand="2.0" />
-	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand=".5" >
+	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand-multiplier="0.75" />
+
+	<resource name="Methane" type="compound" phase="gas" life-support="true" demand-multiplier="0.75" />
+	<resource name="Methanol" type="compound" phase="liquid" life-support="true" demand-multiplier=".5" >
 	  Methanol CH3OH can be used as a fuel source, solvent, pesticide, or 
 	  a chemical feedstock for production of a range of important industrial
 	  chemicals such as polyester. It appears as a colorless fairly volatile 
 	  liquid with a faintly sweet pungent odor like that of ethyl alcohol. 
 	  </resource>
 	 
-	<resource name="Nitrogen" type="element" phase="gas" demand="0.25" >N2 is an odorless gas </resource>
+	<resource name="Nitrogen" type="element" phase="gas" demand-multiplier="0.25" >N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
-	<resource name="Carbon monoxide" type="compound" phase="gas" demand=".05" />
+	<resource name="Carbon monoxide" type="compound" phase="gas" demand-multiplier=".05" />
 	<resource name="Chlorine" type="element" phase="gas"/>
 
 <!-- Wastes -->
@@ -272,15 +278,15 @@
 
 
 <!-- Salt resources -->
-	<resource name="Table salt" type="chemical" phase="solid" demand="0.25" edible="true">
+	<resource name="Table salt" type="chemical" phase="solid" demand-multiplier="0.25" edible="true">
 		Food Grade Salt, is the common name for the substance sodium chloride (NaCI), which occurs in the form of transparent cubic crystals. </resource>
-	<resource name="Rock salt" type="chemical" phase="solid" demand="0.25">
+	<resource name="Rock salt" type="chemical" phase="solid" demand-multiplier="0.25">
 		Halite, commonly known as rock salt, is the mineral
 	 	form of sodium chloride (NaCl).</resource>
-	<resource name="Epsom salt" type="chemical" phase="solid" demand="0.5"> 
+	<resource name="Epsom salt" type="chemical" phase="solid" demand-multiplier="0.5"> 
 		Magnesium Sulfate as bath salt to
 		soothe sore muscles or for gardeners to improve crops. </resource>
-	<resource name="Perchlorate" type="chemical" phase="solid" demand="0.5"> 
+	<resource name="Perchlorate" type="chemical" phase="solid" demand-multiplier="0.5"> 
 		Perchlorate salts such as magnesium perchlorate Mg(ClO4)2 is a powerful 
 		oxidizing agent. 
 		
@@ -312,9 +318,9 @@
 	<resource name="Activated charcoal" type="chemical" phase="solid"> 
 		Activated charcoal's main use is as an
 	antidote in poisoning and in constructing water filter</resource>
-	<resource name="Fertilizer" type="chemical" phase="solid" demand="4.5"> 
+	<resource name="Fertilizer" type="chemical" phase="solid" demand-multiplier="3.5"> 
 		Inorganic nutrients for crop growth </resource>	
-	<resource name="Lime" type="chemical" phase="solid" demand=".01"> 
+	<resource name="Lime" type="chemical" phase="solid" demand-multiplier="1.5"> 
 		Lime is a calcium-containing inorganic
 		material in which carbonates, oxides, and hydroxides predominate. In the
 		strict sense of the term, lime is CaO or Ca(OH)2.</resource>	
@@ -332,7 +338,7 @@
 		it has been used as a medicine to reduce headaches and act 
 		as a weak blood thinner.</resource>
 
-	<resource name="Acetylene" type="chemical" phase="gas" demand=".01" >
+	<resource name="Acetylene" type="chemical" phase="gas" demand-multiplier="1.1" >
 		Acetylene is a colorless gas that has a strong garlic-like odor. When 
 		combined with oxygen, it becomes very hot and is classified as the 
 		hottest fuel gas. 
@@ -375,14 +381,14 @@
 		the production of ethylene.
 	</resource>		
 	
-	<resource name="Ethylene" type="chemical" phase="gas" demand=".1" >
+	<resource name="Ethylene" type="chemical" phase="gas" demand-multiplier="2" >
 		Ethylene is a colorless, flammable gas with a sweet and musky odor. 
 		It is a hydrocarbon with the chemical formula C2H4, also known as ethene 
 		or polyethylene. Ethylene is widely used in the chemical industry and is 
 		a natural plant hormone that plays a crucial role in plant growth and 
 		development.
 	</resource>
-	<resource name="Ethylene glycol" type="chemical" phase="liquid" demand=".1"> 
+	<resource name="Ethylene glycol" type="chemical" phase="liquid" demand-multiplier="2"> 
 		Ethylene glycol is a colorless, odorless, flammable, and viscous liquid.
 		
 		It's commonly used in various industrial and consumer products, including antifreeze, 
@@ -400,13 +406,13 @@
 		processes.
 	</resource>
 
-	<resource name="Polycarbonate resin" type="chemical" phase="solid" demand="1.5"> 
+	<resource name="Polycarbonate resin" type="chemical" phase="solid" demand-multiplier="1.5"> 
 		These are partially bio-based
 		polycarbonates made use of renewable feedstocks (food waste) and CO2. See
 		https://www.bio.org/sites/default/files/Natalie%20Bittner.pdf. They
 		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
 
-	<resource name="Polyester resin" type="chemical" phase="liquid" demand="0.015">
+	<resource name="Polyester resin" type="chemical" phase="liquid" demand-multiplier="1.5">
 		Polyester resins are thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
 	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
 	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
@@ -419,29 +425,29 @@
 	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
 	</resource> 
 
-	<resource name="Polyethylene" type="chemical" phase="solid" demand=".01">
+	<resource name="Polyethylene" type="chemical" phase="solid" demand-multiplier="1.5">
 		Polyethylene pellets or flakes. It has two different types (HDPE vs LDPE). </resource>
 	
-	<resource name="Polypropylene" type="chemical" phase="solid" demand=".01">
+	<resource name="Polypropylene" type="chemical" phase="solid" demand-multiplier="1.5">
 		A thermoplastic polymer stiffer than polyethylene. Characterized by a more 
 		transparent appearance and higher tensile strength, polypropylene bags 
 		offer a higher heat and chemical resistance than polyethylene bags, as well 
 		as rigid protective edges to prevent scratches. Polypropylene is a soft, 
 		flexible type of plastic that is considered safer than other plastics.</resource>		
 	
-	<resource name="Polystyrene" type="chemical" phase="solid" demand="2.5">
+	<resource name="Polystyrene" type="chemical" phase="solid" demand-multiplier="1.5">
 		When styrene molecules are linked together into a polymer, polystyrene (C8H8)n is created. Polystyrene is an inert plastic that can
 		be used to make many products, such as disposable plates, cups and other foodservice
 		packaging products. </resource>
 	
-	<resource name="Polyurethane" type="chemical" phase="solid" demand="10">
+	<resource name="Polyurethane" type="chemical" phase="solid" demand-multiplier="1.5">
 		These bio-based polyurethane made
 		use of natural-oil polyols (NOPs) produced from renewable
 		raw materials such as soybean or vegetable oil. Polyurethanes are used
 		in the manufacturing of foot wears, solid plastic items, foams for
 		bedding and upholstery. </resource>
  
-	<resource name="Propylene" type="chemical" phase="gas" demand=".01">
+	<resource name="Propylene" type="chemical" phase="gas" demand-multiplier="2.5">
 		The common name for the organic chemical compound propene. An alkene which is a 
 		colorless gaseous (at room temperature and pressure) hydrocarbon with the chemical
 		formula C3H6. 
@@ -461,7 +467,7 @@
 		of antifreeze and other industrial chemicals.
 		</resource>
 
-	<resource name="Styrene" type="chemical" phase="liquid" demand=".015">
+	<resource name="Styrene" type="chemical" phase="liquid" demand-multiplier="3.5">
 		Synthetic styrene, which is chemically identical to naturally occurring styrene, 
 		is manufactured as a chemical building block for
 		materials used to make packaging, insulation </resource>
@@ -513,9 +519,9 @@
 
 
 <!-- Assorted mineral compounds -->
-	<resource name="Aluminum oxide" type="compound" phase="solid" demand=".05" />
+	<resource name="Aluminum oxide" type="compound" phase="solid" demand-multiplier=".5" />
 	<resource name="Ammonia" type="compound" phase="solid"> NH3+ is an essential nutrient for plants</resource>
-	<resource name="Calcium carbonate" type="compound" phase="solid" demand=".1" />
+	<resource name="Calcium carbonate" type="compound" phase="solid" demand-multiplier="1.2" />
 	<resource name="Calcium sulfate" type="compound" phase="solid">
 		CaSO4 has a molecular weight of 136.14 g/mol. Derived from limestone, it 
 		occurs naturally in the form of gypsum, and may be used as a sequestrant 
@@ -574,7 +580,7 @@
 
 	<resource name="Nitrate" type="compound" phase="solid"> NO3 is an essential nutrient for plants</resource>
 	<resource name="Nitrite" type="compound" phase="solid"> NO2 is an essential nutrient for plants</resource>
-	<resource name="Potash lye" type="compound" phase="solid" demand="20"> Potassium Hydroxide (KOH). Used for
+	<resource name="Potash lye" type="compound" phase="solid" demand-multiplier="5"> Potassium Hydroxide (KOH). Used for
 		liquid soap production. Also for food processing, such as curing olives and making certain types of noodles.</resource>
 	<resource name="Sand" type="compound" phase="solid"> Soil with iron oxide removed. Used for making glass.</resource>
 	<resource name="Silica" type="compound" phase="solid"> The word Silica came from the Latin silex. 
@@ -593,7 +599,7 @@
 
 <!-- Utility items derived from crop harvest -->
 	<resource name="Fiber cloth" type="utility" phase="solid" >Cloth made from soy fiber and cane fiber.</resource>
-	<resource name="Polyester fiber" type="chemical" phase="solid" demand="0.015">
+	<resource name="Polyester fiber" type="chemical" phase="solid" demand-multiplier="1.5">
 		Polyester fiber are strong, heat resistant material for clothing and fabric.
 	</resource>
 	<resource name="Napkin" type="utility" phase="solid" />
@@ -787,13 +793,13 @@
 	Reference : 
     1. https://en.wikipedia.org/wiki/Ore_resources_on_Mars
 -->
-	<resource name="Aluminum" type="element" phase="solid" demand=".15" >An element.</resource>
+	<resource name="Aluminum" type="element" phase="solid" demand-multiplier="1.1" >An element.</resource>
 	<resource name="Calcium" type="element" phase="solid">An element.</resource>
-	<resource name="Carbon" type="element" phase="solid" demand=".01" >Carbon powder</resource>
+	<resource name="Carbon" type="element" phase="solid" demand-multiplier="1.2" >Carbon powder</resource>
 	<resource name="Chromium" type="element" phase="solid">An element.</resource>
-	<resource name="Copper" type="element" phase="solid">An element.</resource>
+	<resource name="Copper" type="element" phase="solid">An elemen.</resource>
 	<resource name="Gold" type="element" phase="solid">An element.</resource>
-	<resource name="Iron powder" type="element" phase="solid" demand=".1">An element.</resource>
+	<resource name="Iron powder" type="element" phase="solid" demand-multiplier="1.1">An element.</resource>
 	<resource name="Lithium" type="element" phase="solid">An element.</resource>
 	<resource name="Magnesium" type="element" phase="solid">An element.</resource>
 	<resource name="Manganese" type="element" phase="solid">An element.</resource>
@@ -802,7 +808,7 @@
 	<resource name="Platinum" type="element" phase="solid">An element.</resource>
 	<resource name="Potassium" type="element" phase="solid">An element.</resource>
 	<resource name="scandium" type="element" phase="solid">An element.</resource>
-	<resource name="Silicon" type="element" phase="solid" demand=".15" >An element.</resource>
+	<resource name="Silicon" type="element" phase="solid" demand-multiplier="1.5" >An element.</resource>
 	<resource name="Silver" type="element" phase="solid">An element.</resource>
 	<resource name="Sulfur" type="element" phase="solid">An element.</resource>
 	<resource name="Tin" type="element" phase="solid">An element.</resource>
@@ -848,8 +854,8 @@
 
 
 <!-- Misc. -->
-	<resource name="Glass" type="gemstone" phase="solid" demand="2" >For making vessels</resource>
-	<resource name="Quartz" type="gemstone" phase="solid" demand="5" >For making electronic components</resource>
+	<resource name="Glass" type="gemstone" phase="solid" demand-multiplier="2" >For making vessels</resource>
+	<resource name="Quartz" type="gemstone" phase="solid" demand-multiplier="5" >For making electronic components</resource>
 
 
 </resource-list>

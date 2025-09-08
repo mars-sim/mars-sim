@@ -88,21 +88,24 @@ public class PartGood extends Good {
 	private static final double SHEET_METAL_DEMAND = .025;
 	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
-	private static final double BRICK_DEMAND = .005;
+	private static final double BRICK_DEMAND = 2;
 	private static final double ELECTRICAL_DEMAND = .15;
 	private static final double INSTRUMENT_DEMAND = 6;
 	private static final double METALLIC_DEMAND = .25;
 	private static final double UTILITY_DEMAND = .25;
 	private static final double TOOL_DEMAND = 4;
-	private static final double CONSTRUCTION_DEMAND = 0.5;
+	private static final double CONSTRUCTION_DEMAND = 1.2;
 	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double BASE_DEMAND = 0.5;
-	private static final int PARTS_MAINTENANCE_VALUE = 2;
-	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
+
 	private static final double ATTACHMENT_PARTS_DEMAND = 20;
 	private static final double AEROGEL_TILE_DEMAND = 0.05;
 	private static final double PLASTIC_PIPE_DEMAND = .1;
+
+	
+	private static final int PARTS_MAINTENANCE_VALUE = 2;
+	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
 	
 	// Cost modifiers
 	private static final double ITEM_COST = 1.1D;
@@ -205,8 +208,13 @@ public class PartGood extends Good {
 
 			case CONSTRUCTION:
 				if (name.equalsIgnoreCase(AEROGEL_TILE)) {
-					return AEROGEL_TILE_DEMAND;
+					return AEROGEL_TILE_DEMAND * CONSTRUCTION_DEMAND;
 				}
+				
+				if (name.equalsIgnoreCase(BRICK)) {
+					return BRICK_DEMAND * CONSTRUCTION_DEMAND;
+				}
+				
 				return CONSTRUCTION_DEMAND;
 
 			case EVA:
@@ -425,7 +433,12 @@ public class PartGood extends Good {
 			// Flatten certain part demand.
 			* flattenDemand;
 
-		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		if (projectedDemand == 0D) {
+			projectedDemand = projected;
+		}
+		else {
+			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		}
 		
 		// Add trade demand.
 		tradeDemand = owner.determineTradeDemand(this);

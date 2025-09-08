@@ -99,6 +99,7 @@ public class ResourceUtil {
 	public static final int BLACK_WATER_ID = SAND_ID + 1;
 	public static final int GREY_WATER_ID = BLACK_WATER_ID + 1;
 	public static final int BRINE_WATER_ID = GREY_WATER_ID + 1;
+	
 	public static final int CONCRETE_ID = BRINE_WATER_ID + 1;
 	public static final int CEMENT_ID = CONCRETE_ID + 1;
 	public static final int LIME_ID = CEMENT_ID + 1;
@@ -126,9 +127,12 @@ public class ResourceUtil {
 	public static final int SPIRULINA_ID = FISH_MEAT_ID + 1;
 
 	public static final int CARBON_ID = SPIRULINA_ID + 1;
+	public static final int ETHYLENE_ID = CARBON_ID + 1;
+	public static final int STYRENE_ID = ETHYLENE_ID + 1;
+	public static final int PROPYLENE_ID = STYRENE_ID + 1;
 	
 	// Must be one after the last fixed resource
-	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = CARBON_ID + 1;
+	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = PROPYLENE_ID + 1;
 
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
 			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
@@ -172,6 +176,7 @@ public class ResourceUtil {
 		fixedResources.put("cross bedding", CROSSBEDDING_ID);
 		fixedResources.put("electronic waste", E_WASTE_ID);
 		fixedResources.put("epsom salt", EPSOM_SALT_ID);
+		fixedResources.put("ethylene", ETHYLENE_ID);
 		fixedResources.put("fertilizer", FERTILIZER_ID);
 		fixedResources.put("fish meat", FISH_MEAT_ID);
 		fixedResources.put("fish oil", FISH_OIL_ID);
@@ -199,6 +204,7 @@ public class ResourceUtil {
 		fixedResources.put("nitrogen", NITROGEN_ID);
 		fixedResources.put("olivine", OLIVINE_ID);
 		fixedResources.put("oxygen", OXYGEN_ID);
+		fixedResources.put("propylene", PROPYLENE_ID);
 		fixedResources.put("pyroxene", PYROXENE_ID);
 		fixedResources.put("regolith", REGOLITH_ID);
 		fixedResources.put("regolith-b", REGOLITHB_ID);
@@ -215,6 +221,7 @@ public class ResourceUtil {
 		fixedResources.put("soil", SOIL_ID);
 		fixedResources.put("solid waste", SOLID_WASTE_ID);
 		fixedResources.put("spirulina", SPIRULINA_ID);
+		fixedResources.put("styrene", STYRENE_ID);
 		fixedResources.put("sylvite", SYLVITE_ID);
 		fixedResources.put("table salt", TABLE_SALT_ID);
 		fixedResources.put("taenite", TAENITE_ID);
@@ -482,6 +489,32 @@ public class ResourceUtil {
 	public static boolean isDerivedResource(int resource) {
 		return switch (resource) {
 			case GLUCOSE_ID, LEAVES_ID, SOIL_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
+	 * Is this a chemical ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isChemical(int resource) {
+		return switch (resource) {
+			case ETHYLENE_ID, PROPYLENE_ID, STYRENE_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
+	 * Is this a construction resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isConstructionResource(int resource) {
+		return switch (resource) {
+			case CEMENT_ID, CONCRETE_ID, GYPSUM_ID, LIME_ID -> true;
 			default -> false;
 		};
 	}

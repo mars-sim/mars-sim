@@ -81,7 +81,7 @@ public class AmountResourceConfig {
 			PhaseType phaseType = PhaseType.valueOf(ConfigHelper.convertToEnumName(phaseString));
 
 			// Get the demand modifier
-			double demand = ConfigHelper.getOptionalAttributeDouble(resourceElement, DEMAND, 0);
+			double demand = ConfigHelper.getOptionalAttributeDouble(resourceElement, DEMAND, 1);
 			
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
