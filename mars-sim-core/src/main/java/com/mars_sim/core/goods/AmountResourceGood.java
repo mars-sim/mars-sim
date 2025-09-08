@@ -44,9 +44,6 @@ class AmountResourceGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final String NACO3 = "Sodium Carbonate";
-	private static final String IRON_POWDER = "Iron Powder";
-	
 	private static final double INITIAL_AMOUNT_DEMAND = 0;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
@@ -164,8 +161,8 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_FLATTENING_FACTOR = 2D;
 	private static final double TISSUE_FLATTENING_FACTOR = 4D;
 
-	private static final double NACO3_FLATTENING_FACTOR = 0.5;
-	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.005;
+	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
+	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.5;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
 	
@@ -249,9 +246,9 @@ class AmountResourceGood extends Good {
 				default -> 1D;
 			};
 			
-			// Special case for NACO3
-			if (ar.getName().equalsIgnoreCase(NACO3)) 
-				mod *= NACO3_FLATTENING_FACTOR;
+			// Special case for NA2CO3
+			if (ar.getID() == ResourceUtil.NA2CO3_ID) 
+				mod *= NA2CO3_FLATTENING_FACTOR;
 			
 			break;
 	
@@ -279,7 +276,7 @@ class AmountResourceGood extends Good {
 			else if (ar.getID() == ResourceUtil.OXYGEN_ID)
 				mod *= OXYGEN_FLATTENING_FACTOR;
 					
-			if (ar.getName().equalsIgnoreCase(IRON_POWDER))
+			if (ar.getID() == ResourceUtil.IRON_POWDER_ID)
 				mod *= IRON_POWDER_FLATTENING_FACTOR;
 			
 			break;
@@ -597,8 +594,8 @@ class AmountResourceGood extends Good {
 		if (previousDemand == 0) {
 			// At the start of the sim
 			totalDemand = (
-					.5 * projected 
-					+ .5 * tradeDemand);
+					.8 * projected 
+					+ .2 * tradeDemand);
 
 		}
 		else {
@@ -657,7 +654,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 15);
+		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 20);
 	}
 
 	/**
@@ -686,7 +683,7 @@ class AmountResourceGood extends Good {
 
 			double singleInputRate = process.getBaseSingleInputRate(resourceID);
 
-			return outputValue / singleInputRate / 2; 
+			return outputValue / (singleInputRate + 1); 
 		}
 
 		return 0;

@@ -88,7 +88,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      * @return
      */
     public double getFlattenDemand() {
-		return 1;
+		return 1.0;
 	}
     
     /**
@@ -98,7 +98,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      * @return
      */
     public double getProjectedDemand() {
-    	return 1;
+    	return 1.0;
     }
 	
     /**
@@ -108,7 +108,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      * @return
      */
     public double getTradeDemand() {
-    	return 0;
+    	return 0.0;
     }
 	
     /**
@@ -117,7 +117,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      * @return
      */
     public double getRepairDemand() {
-    	return 0;
+    	return 0.0;
     }
 
 	/**

@@ -50,7 +50,7 @@ public class PilotDrone extends OperateVehicle {
 
 	// Data members
 	private int sideDirection = NONE;
-			
+
 	/**
 	 * Default Constructor.
 	 * 

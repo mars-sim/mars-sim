@@ -228,7 +228,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 
     	double trade = settlement.getGoodsManager().getTradeDemand(good);
     	
-    	if (trade == 0)
+    	if (trade == 0.0)
     		return null;
     	
     	return trade;

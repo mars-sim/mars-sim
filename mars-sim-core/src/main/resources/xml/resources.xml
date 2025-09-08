@@ -664,7 +664,7 @@
 		the fabric's surfaces closet to the skin.
 	</resource>	
 		
-	<resource name="Zeolite" type="compound" phase="solid"> Zeolites are naturally occurring 
+	<resource name="Zeolite" type="utility" phase="solid"> Zeolites are naturally occurring 
 		or synthetic microporous powder-like minerals with unique properties, making them valuable 
 		in various industrial applications from refining to chemical production, 
 		and from off-gas purification to odor removal. It reduces harmful emissions.
@@ -675,7 +675,7 @@
 		undesired molecules and make it a perfect basis for catalytically active metals.
 	</resource>
 	
-	<resource name="Hydraulic Fluid" type="compound" phase="liquid"> 
+	<resource name="Hydraulic Fluid" type="compound" phase="liquid" demand-multiplier="0.01"> 
 		Hydraulic Fluid is used for the subsurface robotic excavator to drill through the ice layer. 
 		It lubricates the drill bits.
 	</resource>			 					 		 

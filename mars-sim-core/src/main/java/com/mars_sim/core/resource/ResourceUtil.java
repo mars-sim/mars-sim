@@ -113,8 +113,9 @@ public class ResourceUtil {
 	public static final int TOILET_TISSUE_ID = SOLID_WASTE_ID + 1;
 	public static final int FERTILIZER_ID = TOILET_TISSUE_ID + 1;
 	public static final int NACLO_ID = FERTILIZER_ID + 1; 
+	public static final int NA2CO3_ID = NACLO_ID + 1;
 	
-	public static final int GLUCOSE_ID = NACLO_ID + 1;
+	public static final int GLUCOSE_ID = NA2CO3_ID + 1;
 	public static final int LEAVES_ID = GLUCOSE_ID + 1;
 	public static final int FISH_OIL_ID = LEAVES_ID + 1;
 	public static final int EPSOM_SALT_ID = FISH_OIL_ID + 1;
@@ -131,8 +132,10 @@ public class ResourceUtil {
 	public static final int STYRENE_ID = ETHYLENE_ID + 1;
 	public static final int PROPYLENE_ID = STYRENE_ID + 1;
 	
+	public static final int IRON_POWDER_ID = PROPYLENE_ID + 1;
+	
 	// Must be one after the last fixed resource
-	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = PROPYLENE_ID + 1;
+	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = IRON_POWDER_ID + 1;
 
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
 			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
@@ -191,6 +194,7 @@ public class ResourceUtil {
 		fixedResources.put("ice", ICE_ID);
 		fixedResources.put("kamacite", KAMACITE_ID);
 		fixedResources.put("glucose", GLUCOSE_ID);
+		fixedResources.put("iron powder", IRON_POWDER_ID);
 		fixedResources.put("leaves", LEAVES_ID);
 		fixedResources.put("lime", LIME_ID);
 		fixedResources.put("magnesite", MAGNESITE_ID);
@@ -218,6 +222,7 @@ public class ResourceUtil {
 		fixedResources.put("shale", SHALE_ID);
 		fixedResources.put("smectite", SMECTITE_ID);
 		fixedResources.put("sodium hypochlorite", NACLO_ID);
+		fixedResources.put("sodium carbonate", NA2CO3_ID);
 		fixedResources.put("soil", SOIL_ID);
 		fixedResources.put("solid waste", SOLID_WASTE_ID);
 		fixedResources.put("spirulina", SPIRULINA_ID);

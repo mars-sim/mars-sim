@@ -391,17 +391,15 @@ public class PartGood extends Good {
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
 		int id = getID();
-		Part part = getPart();
 		
+		Part part = getPart();
+		// Future: find the 7 sols average of this resource
 		double previousDemand = owner.getDemandScore(this);
 		
 		Settlement settlement = owner.getSettlement();
 
 		double totalDemand = 0;
-		double average = 0;
 		double totalSupply = 0;
-
-		average = getAverageItemDemand(owner);
 
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
@@ -450,10 +448,9 @@ public class PartGood extends Good {
 		if (previousDemand == 0) {
 			// At the start of the sim
 			totalDemand = (
-					.1 * repairDemand 
-					+ .4 * average 
+					.4 * repairDemand 
 					+ .4 * projected 
-					+ .1 * tradeDemand);
+					+ .2 * tradeDemand);
 		}
 
 		else {
@@ -467,8 +464,7 @@ public class PartGood extends Good {
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
 					  .9985 * previousDemand 
-					+ .00005 * repairDemand 
-					+ .00005 * average 
+					+ .0001 * repairDemand 
 					+ .00012 * projected 
 					+ .0001 * tradeDemand); 
 		}
@@ -537,19 +533,6 @@ public class PartGood extends Good {
 			return base * BRICK_DEMAND;
 
 		return base;
-	}
-
-
-    /**
-	 * Gets the current item demand.
-	 *
-	 * @param resource
-	 * @param solElapsed
-	 * @return
-	 */
-	private double getAverageItemDemand(GoodsManager owner) {
-		// Future: find the 7 sols average of this resource
-		return owner.getDemandScore(this);
 	}
 
 	/**

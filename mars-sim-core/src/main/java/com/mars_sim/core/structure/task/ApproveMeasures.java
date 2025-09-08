@@ -42,7 +42,7 @@ public class ApproveMeasures extends Task {
 			Msg.getString("Task.phase.approveMeasures.approving")); //$NON-NLS-1$
 
 	// Static members	
-	private static final int STANDARD_DURATION = 20;
+	private static final int STANDARD_DURATION = 30;
 
 	public static final double REVIEW_PERC = .9;
 
@@ -65,8 +65,8 @@ public class ApproveMeasures extends Task {
 		};
 		
 	// Data members		
+
 	private double newValue = 0;
-	
 	/** The administration building the person is using. */
 	private Administration office;
 
@@ -89,9 +89,9 @@ public class ApproveMeasures extends Task {
 				return;
 			}
 			
-			int skill = getEffectiveSkillLevel();
+			int effectiveSkillLevel = getEffectiveSkillLevel();
 			// Duration is skill-dependent	
-			setDuration(getDuration() * 2.5 / (1 + skill));
+			setDuration(getDuration() / (1 + effectiveSkillLevel));
 			
 			// If person is in a settlement, try to find an office building.
 			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);

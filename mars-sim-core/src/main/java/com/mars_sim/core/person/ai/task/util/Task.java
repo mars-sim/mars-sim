@@ -84,6 +84,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	
 	/** The level of this Task, one is top level Task **/
 	private int level = TOP_LEVEL;
+	/** The modified skill level. */
+	private int effectiveSkillLevel = -1;
 	
 	/** Amount of time required to complete current phase (in millisols) */
 	protected double phaseTimeRequired;
@@ -738,7 +740,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	public int getEffectiveSkillLevel() {
 		// This can be dropped once ExpereicneImpact is defined in constructor
-		return getImpact().getEffectiveSkillLevel(worker);
+		if (effectiveSkillLevel == -1) {
+			effectiveSkillLevel = getImpact().getEffectiveSkillLevel(worker);
+		}
+		return effectiveSkillLevel;
 	} 
 
 	/**
