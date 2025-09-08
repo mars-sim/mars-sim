@@ -99,7 +99,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double OXYGEN_VALUE_MODIFIER = 2;
 	private static final double METHANE_VALUE_MODIFIER = 0.06;
-	private static final double HYDROGEN_VALUE_MODIFIER = 0.0025;
+	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	private static final double CO2_VALUE_MODIFIER = 0.0075;
@@ -127,8 +127,8 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.1;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
-	private static final double CO_FLATTENING_FACTOR = 0.09;
-	private static final double CO2_FLATTENING_FACTOR = 0.06;
+	private static final double CO_FLATTENING_FACTOR = 0.009;
+	private static final double CO2_FLATTENING_FACTOR = 0.0006;
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
 	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
@@ -185,8 +185,6 @@ class AmountResourceGood extends Good {
 	
 	private double costModifier = -1D;
 	
-	private double multiplier = 1D;
-		
 	private AmountResource resource;
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
@@ -194,10 +192,14 @@ class AmountResourceGood extends Good {
     AmountResourceGood(AmountResource ar) {
         super(ar.getName(), ar.getID());
 		this.resource = ar;
-		this.multiplier = ar.getDemandMultiplier();
+		
+		double multiplier = ar.getDemandMultiplier();
+		
+		if (ar.getDemandMultiplier() == 0.0)
+			multiplier = 1;
 
 		// Calculate fixed values
-		flattenDemand = calculateFlattenDemand(ar);
+		flattenDemand = calculateFlattenDemand(ar) * multiplier;
 		costModifier = calculateCostModifier(ar);
 		ingredientDemand = calculateIngredientDemand(ar, simulationConfig.getMealConfiguration());
     }
@@ -575,7 +577,7 @@ class AmountResourceGood extends Good {
 
 		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 	
-		double projected = newProjDemand * multiplier
+		double projected = newProjDemand 
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.

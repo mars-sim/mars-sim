@@ -222,6 +222,7 @@ public class SettlementMapPanel extends JPanel {
 		selectedBuilding = new HashMap<>();
 		selectedPerson = new HashMap<>();
 		selectedRobot = new HashMap<>();
+		selectedSite = new HashMap<>();
 
 		// Throttle zoom changes to avoid flood of repaints/rasterizations
 		zoomCoalesceTimer = new Timer(50, e -> applyPendingScale());

@@ -23,7 +23,7 @@ public final class AmountResource extends ResourceAbstract {
 	private boolean lifeSupport;
 	
 	/** By default, demandMultiplier is zero. */
-	private double demandMultiplier = 0;
+	private double demandMultiplier = 0D;
 
 	private GoodType goodType;
 

@@ -271,7 +271,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * Allocates a new shift.
 	 */
 	public void allocateNewShift() {
-		getSettlement().getShiftManager().assignNewShift(this);
+		getAssociatedSettlement().getShiftManager().assignNewShift(this);
 	}
 	
 	
