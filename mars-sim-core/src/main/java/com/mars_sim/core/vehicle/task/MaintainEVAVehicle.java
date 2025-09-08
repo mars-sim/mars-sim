@@ -42,6 +42,8 @@ public class MaintainEVAVehicle extends EVAOperation {
             "Task.phase.maintainVehicle"), createPhaseImpact(SkillType.MECHANICS));
 
     // Data members.
+	/** The modified skill level. */
+	private int effectiveSkillLevel;
     /** Vehicle to be maintained. */
     private Vehicle vehicle;
 
@@ -82,6 +84,9 @@ public class MaintainEVAVehicle extends EVAOperation {
 		
         // Determine location for maintenance.
         setOutsideLocation(vehicle);
+    	
+		// Determine the effective skill level
+		effectiveSkillLevel = getEffectiveSkillLevel();
     }
 
     @Override
@@ -130,9 +135,10 @@ public class MaintainEVAVehicle extends EVAOperation {
 
         // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
         double workTime = time;
-        int skill = getEffectiveSkillLevel();
+        int skill = effectiveSkillLevel;
         if (skill == 0) workTime /= 2;
-        if (skill > 1) workTime += workTime * (.2D * skill);
+        if (skill > 1)
+        	workTime = workTime * (1 + .25 * skill);
 
 		// Check if maintenance has already been completed.
 		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
@@ -160,13 +166,10 @@ public class MaintainEVAVehicle extends EVAOperation {
         // Check if an accident happens during maintenance.
         checkForAccident(time);
 
-		// Note: workTime can be longer or shorter than time
-		if (workTime > time) {
-			// if work time is greater, then time is saved on this frame
-			return MathUtils.between(workTime - time, 0, time * .75);
-		}
-		else
-			return 0;
+		// if work time is greater than time, then less time is spent on this frame
+		return MathUtils.between((workTime - time), 0, time) * .5;
+		// Note: 1. workTime can be longer or shorter than time
+		//       2. the return time may range from zero to as much as half the tick  
     }
 	
     @Override

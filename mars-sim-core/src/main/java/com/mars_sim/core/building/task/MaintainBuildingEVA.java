@@ -41,9 +41,10 @@ extends EVAOperation {
     /** Task phases. */
     static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
             "Task.phase.maintain"), createPhaseImpact(SkillType.MECHANICS));
-
     
 	// Data members
+	/** The modified skill level. */
+	private int effectiveSkillLevel;
 	/** Entity to be maintained. */
 	private Malfunctionable entity;
 
@@ -69,6 +70,9 @@ extends EVAOperation {
         
 	    // Determine location for maintenance.
         setOutsideLocation((LocalBoundedObject) entity);
+    	
+		// Determine the effective skill level
+		effectiveSkillLevel = getEffectiveSkillLevel();
 	}
 
     @Override
@@ -107,17 +111,13 @@ extends EVAOperation {
 			return time;
 		}
 
-		// Determine effective work time based on "Mechanic" skill.
-		double workTime = time;
-		int mechanicSkill = worker.getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-	
-		if (mechanicSkill == 0) {
-		    workTime /= 2;
-		}
-		if (mechanicSkill > 1) {
-		    workTime += workTime * (.4D * mechanicSkill);
-		}	
-			
+        // Determine effective work time based on "Mechanic" and "EVA Operations" skills.
+        double workTime = time;
+        int skill = effectiveSkillLevel;
+        if (skill == 0) workTime /= 2;
+        if (skill > 1)
+        	workTime = workTime * (1 + .25 * skill);
+ 
 		boolean doneInspection = false;
 
 		// Check if maintenance has already been completed.
@@ -140,12 +140,9 @@ extends EVAOperation {
 		// Check if an accident happens during maintenance.
 		checkForAccident(entity, time, 0.01);
 		
-		// Note: workTime can be longer or shorter than time
-		if (workTime > time) {
-			// if work time is greater, then time is saved on this frame
-			return MathUtils.between(workTime - time, 0, time * .75);
-		}
-		else
-			return 0;
+		// if work time is greater than time, then less time is spent on this frame
+		return MathUtils.between((workTime - time), 0, time) * .5;
+		// Note: 1. workTime can be longer or shorter than time
+		//       2. the return time may range from zero to as much as half the tick  
 	}
 }

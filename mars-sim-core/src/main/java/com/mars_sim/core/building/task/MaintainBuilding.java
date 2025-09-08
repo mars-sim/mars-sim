@@ -56,6 +56,8 @@ public class MaintainBuilding extends Task  {
 												0.1D, SkillType.MECHANICS);
 
 	// Data members
+	/** The modified skill level. */
+	private int effectiveSkillLevel;
 	/** Entity to be maintained. */
 	private Malfunctionable entity;
 
@@ -97,13 +99,14 @@ public class MaintainBuilding extends Task  {
 			
 			String des = DETAIL + entity.getName();
 			setDescription(des);
-			logger.info(worker, 20_000, des + ".");
-			
+			logger.info(worker, 20_000, des + ".");		
 			
 			// Walk to random location in building.
 			walkToRandomLocInBuilding(entity, false);
 		}
 
+		// Determine the effective skill level
+		effectiveSkillLevel = getEffectiveSkillLevel();
 		// Initialize phase.
 		setPhase(MAINTAIN);
 	}
@@ -141,14 +144,11 @@ public class MaintainBuilding extends Task  {
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
-		double workTime = time;
-		int mechanicSkill = getEffectiveSkillLevel();
-		if (mechanicSkill == 0) {
-			workTime /= 2;
-		}
-		if (mechanicSkill > 1) {
-			workTime += workTime * (.4D * mechanicSkill);
-		}
+        double workTime = time;
+        int skill = effectiveSkillLevel;
+        if (skill == 0) workTime /= 2;
+        if (skill > 1)
+        	workTime = workTime * (1 + .25 * skill);
 		
 		// Check if maintenance has already been completed.
 		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
@@ -172,13 +172,10 @@ public class MaintainBuilding extends Task  {
 		// Check if an accident happens during maintenance.
 		checkForAccident(entity, time, 0.005);
 
-		// Note: workTime can be longer or shorter than time
-		if (workTime > time) {
-			// if work time is greater, then time is saved on this frame
-			return MathUtils.between(workTime - time, 0, time * .75);
-		}
-		else
-			return 0;
+		// if work time is greater than time, then less time is spent on this frame
+		return MathUtils.between((workTime - time), 0, time) * .5;
+		// Note: 1. workTime can be longer or shorter than time
+		//       2. the return time may range from zero to as much as half the tick  
 	}
 
 	/**
