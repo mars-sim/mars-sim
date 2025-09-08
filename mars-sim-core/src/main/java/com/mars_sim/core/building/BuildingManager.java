@@ -1246,20 +1246,17 @@ public class BuildingManager implements Serializable {
 			return false;
 		}
 		
-		if (vehicle instanceof Rover rover) {
-			if (garage.getVehicleMaintenance().removeRover(rover, true)) {
+		if (vehicle instanceof Rover rover
+			&& garage.getVehicleMaintenance().removeRover(rover, true)) {
 				return true;
-			}
 		}
-		else if (vehicle instanceof Flyer flyer) {
-			if (garage.getVehicleMaintenance().removeFlyer(flyer)) {
+		else if (vehicle instanceof Flyer flyer
+			&& garage.getVehicleMaintenance().removeFlyer(flyer)) {
 				return true;
-			}
 		}
-		else if (vehicle instanceof LightUtilityVehicle luv) {
-			if (garage.getVehicleMaintenance().removeUtilityVehicle(luv, true)) {
+		else if (vehicle instanceof LightUtilityVehicle luv
+			&& garage.getVehicleMaintenance().removeUtilityVehicle(luv, true)) {
 				return true;
-			}
 		}
 
 		return false;

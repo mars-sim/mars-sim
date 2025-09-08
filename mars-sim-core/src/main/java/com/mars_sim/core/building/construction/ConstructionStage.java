@@ -89,7 +89,7 @@ public class ConstructionStage implements Serializable {
         requiredWorkTime = info.getWorkTime()/scaling;
         if (isConstruction) {
             resources = info.getResources().entrySet().stream()
-                    .collect(Collectors.toMap(Entry::getKey, v -> new Material(v.getValue()/scaling)));
+                    .collect(Collectors.toMap(Entry::getKey, v -> new Material(1.0 * v.getValue()/scaling)));
             requiredWorkTime *= SALVAGE_WORK_TIME_MODIFIER;
         }
         else {
@@ -97,7 +97,7 @@ public class ConstructionStage implements Serializable {
         }
 
         parts = info.getParts().entrySet().stream()
-                    .collect(Collectors.toMap(Entry::getKey, v -> new Material(v.getValue()/scaling)));
+                    .collect(Collectors.toMap(Entry::getKey, v -> new Material(1.0 * v.getValue()/scaling)));
     }
 
     /**

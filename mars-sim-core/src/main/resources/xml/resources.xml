@@ -18,17 +18,13 @@
 	<!-- name - the name of the resource. -->
 	<!-- type - the type of the resource (optional). -->
 	<!-- phase - the normal phase of the resource as used. -->
-	<!--         Possible values: "solid", "liquid" or "gas" -->
+	<!--         Possible values: "solid", "liquid" or "gas". -->
 	<!-- life-support - Is the resource used for life support? -->
-	
-	
-	
-	
-	<!-- edible - Is the resource edible? -->
-	
-	
+	<!-- edible - Is the resource edible? -->	
+	<!-- demand-multiplier - the multiplier of the projected demand in each good update. -->
 
-	<!-- Life Support Resources -->
+
+<!-- Vital Resources -->
 	<resource name="Food" type="derived" phase="solid" life-support="true" demand-multiplier="1.25" edible="true">
 		Represents thermo-stabilized food that is not perishable.</resource>
 	<resource name="Water" type="compound" phase="liquid" life-support="true" demand-multiplier="1.25" >Potable water</resource>
@@ -41,7 +37,6 @@
 		Brine water comes from melted mineral ice or from underground water reserve.</resource>
 
 	<!-- see https://space.stackexchange.com/questions/8449/is-there-a-cost-effective-way-to-obtain-nitrogen-argon-on-mars-for-usage-in-a-hu/8548 -->
-	<!-- Other Gas Resources -->
 	<resource name="Hydrogen" type="element" phase="gas" life-support="true" demand-multiplier="0.75" />
 
 	<resource name="Methane" type="compound" phase="gas" life-support="true" demand-multiplier="0.75" />
@@ -52,6 +47,7 @@
 	  liquid with a faintly sweet pungent odor like that of ethyl alcohol. 
 	  </resource>
 	 
+<!-- Other Gas/Liquid Resources -->	 
 	<resource name="Nitrogen" type="element" phase="gas" demand-multiplier="0.25" >N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	

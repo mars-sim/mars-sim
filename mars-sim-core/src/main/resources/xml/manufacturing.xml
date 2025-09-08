@@ -564,8 +564,8 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="carbon dioxide" amount="10.0" />
 			<part name="steel canister" number="1" />
-			<part name="valve" number="2" />
-			<part name="gasket" number="4" />
+			<part name="valve" number="1" />
+			<part name="gasket" number="1" />
 			<part name="plastic tubing" number="1" />
 		</inputs>
 		<outputs>

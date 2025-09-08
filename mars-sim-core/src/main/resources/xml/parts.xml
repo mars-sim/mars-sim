@@ -23,6 +23,8 @@
 	<part name="Fire Extinguisher" type="utility" mass="3" />
 
 	<part name="Gasket" type="utility" mass=".1">
+		<description>Gasket is a sealing component, typically made from high-quality rubber, 
+			designed to ensure a secure and leak-proof connection.</description>
 		<!-- 'entity' denotes the system name or the malfunction/maintenance scope. -->
 		<!-- 'probability' denotes a % maintenance probability, i.e. how likely it will be triggered as maintenance item. 
 		     Note that this probability is not related to part reliability %, MTBF or failure rate of this item.  -->		
@@ -1175,7 +1177,7 @@
 		<description>a pair of utility work gloves for medium to heavy use.</description>
 		<maintenance-entity-list>
 			<entity name="manufacture" probability="10" max-number="1" />
-			<entity name="vehicle maintenance" probability="15" max-number="1" />
+			<entity name="vehicle maintenance" probability="10" max-number="1" />
 			<entity name="farming" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
@@ -1256,14 +1258,14 @@
 		
 	<part name="Power Panel" type="electrical" mass="5">
 		<maintenance-entity-list>
-			<entity name="power generation" probability="5" max-number="1" />
-			<entity name="power storage" probability="5" max-number="1" />
+			<entity name="power generation" probability=".5" max-number="1" />
+			<entity name="power storage" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
 	<part name="Surge Protector" type="electrical" mass="1">
 		<maintenance-entity-list>
-			<entity name="building" probability="5" max-number="1" />
+			<entity name="building" probability=".5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
