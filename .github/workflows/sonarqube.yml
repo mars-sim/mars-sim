@@ -29,8 +29,7 @@ jobs:
           java-version: '21'
 
       - name: SonarCloud Analysis
-        # Run only if at least one of the expected secrets is present
-        if: ${{secrets.SONAR_LOGIN != '' }}
+
         env:
           SONAR_ORGANISATION: ${{ secrets.SONAR_ORGANISATION }}
           # Support both secret names; prefer SONAR_TOKEN if present
