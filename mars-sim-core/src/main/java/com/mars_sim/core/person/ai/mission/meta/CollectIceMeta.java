@@ -52,10 +52,10 @@ public class CollectIceMeta extends AbstractMetaMission {
 
 			RoleType roleType = person.getRole().getType();
 
-			if (person.getMind().getJob() == JobType.AREOLOGIST
-					|| person.getMind().getJob() == JobType.CHEMIST
-					|| person.getMind().getJob() == JobType.BOTANIST
-					|| person.getMind().getJob() == JobType.CHEF
+			if (person.getMind().getJobType() == JobType.AREOLOGIST
+					|| person.getMind().getJobType() == JobType.CHEMIST
+					|| person.getMind().getJobType() == JobType.BOTANIST
+					|| person.getMind().getJobType() == JobType.CHEF
 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
 					|| RoleType.MISSION_SPECIALIST == roleType

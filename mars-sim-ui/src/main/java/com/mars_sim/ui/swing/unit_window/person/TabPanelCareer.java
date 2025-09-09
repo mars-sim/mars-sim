@@ -146,7 +146,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		northPanel.add(attrPanel, BorderLayout.NORTH);
 
 		// Prepare job combo box
-		jobCache = mind.getJob();
+		jobCache = mind.getJobType();
 		DefaultComboBoxModel<JobType> jobModel = new DefaultComboBoxModel<>(JobType.values());
 
 		// Prepare job combo box

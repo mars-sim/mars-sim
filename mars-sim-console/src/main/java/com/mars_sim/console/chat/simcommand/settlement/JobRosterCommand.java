@@ -54,7 +54,7 @@ public class JobRosterCommand extends AbstractSettlementCommand {
 				.sorted((p1, p2) -> p1.getName().compareTo(p2.getName())).collect(Collectors.toList());
 
 		for (Person p : list) {
-			String job = p.getMind().getJob().getName();
+			String job = p.getMind().getJobType().getName();
 			response.append(String.format(PERSON_ROSTER, p.getName(), job));
 		}
 
@@ -87,6 +87,6 @@ public class JobRosterCommand extends AbstractSettlementCommand {
 	public static Map<JobType, List<Person>> getJobMap(Settlement s)
 	{
 		return 	s.getAllAssociatedPeople().stream()
-				.collect(Collectors.groupingBy(p -> p.getMind().getJob()));
+				.collect(Collectors.groupingBy(p -> p.getMind().getJobType()));
 	}
 }

@@ -47,8 +47,7 @@ public class ChainOfCommand implements Serializable {
 	public static final int POPULATION_WITH_DEPUTY_ADMINISTRATOR = 136;
 	public static final int POPULATION_WITH_MAYOR = 480;
 	public static final int POPULATION_WITH_PRESIDENT = 1024;
-	
-	private int pop = 0;
+
 
 	/** Stores the number for each role. */
 	private Map<RoleType, Integer> roleRegistry = new HashMap<>();
@@ -67,8 +66,6 @@ public class ChainOfCommand implements Serializable {
 	 */
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
-
-		pop = settlement.getInitialPopulation();
 		
 		// Initialize roleAvailability array once only
 		initializeRoleMaps();
@@ -80,7 +77,8 @@ public class ChainOfCommand implements Serializable {
 	public void initializeRoleMaps() {
 
 		List<RoleType> roles = null;
-
+		int pop = settlement.getInitialPopulation();
+		
 		if (pop > POPULATION_WITH_COMMANDER) {
 			roles = new ArrayList<>(RoleUtil.getSpecialists());
 		}
@@ -114,7 +112,7 @@ public class ChainOfCommand implements Serializable {
 	 * @return
 	 */
 	public boolean isRoleAvailable(RoleType type) {
-        return roleAvailability.get(type) > roleRegistry.get(type);
+        return roleAvailability.getOrDefault(type, 0) > roleRegistry.getOrDefault(type, 0);
 	}
 
 	/**
@@ -126,6 +124,15 @@ public class ChainOfCommand implements Serializable {
 		return roleAvailability;
 	}
 
+	/**
+	 * Gets the role registry map.
+	 *
+	 * @return
+	 */
+	public Map<RoleType, Integer> getRoleRegistry() {
+		return roleRegistry;
+	}
+	
 	/**
 	 * Increments the number of the target role type in the map.
 	 *
@@ -143,7 +150,7 @@ public class ChainOfCommand implements Serializable {
 	 */
 	public void releaseRole(RoleType key) {
 		int value = getNumFilled(key);
-		if (value <= 0)
+		if (value > 0)
 			roleRegistry.put(key, value - 1);
 	}
 
@@ -156,9 +163,8 @@ public class ChainOfCommand implements Serializable {
 	public void reelectLeadership(RoleType key) {
 		if (getNumFilled(key) == 0) {
 
-			if (pop == 0)
-				pop = settlement.getNumCitizens();
-
+			int pop = settlement.getNumCitizens();
+	
 			if (pop >= POPULATION_WITH_COMMANDER) {
 				if (key.isChief()) {
 					electChief(key);
@@ -209,6 +215,11 @@ public class ChainOfCommand implements Serializable {
 	 * @param secondRole
 	 */
 	private void electLeader(RoleType firstRole, RoleType secondRole) {
+		if ((firstRole != null && !firstRole.isCouncil())
+				|| (secondRole != null && !secondRole.isCouncil())) {
+			return;
+		}
+		
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		Person bestCandidate = null;
 		int bestLeadership = 0;
@@ -220,6 +231,10 @@ public class ChainOfCommand implements Serializable {
 		
 		// Compare their leadership scores
 		for (Person candidate : people) {
+			if (candidate.isDeclaredDead()) {
+				continue;
+			}
+	
 			NaturalAttributeManager mgr = candidate.getNaturalAttributeManager();
 			int leadership = (int)(Math.round(.9 * mgr.getAttribute(NaturalAttributeType.LEADERSHIP)));
 			leadership = leadership + (int)(Math.round(.1 * candidate.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING)));
@@ -371,6 +386,8 @@ public class ChainOfCommand implements Serializable {
 
 		List<RoleType> roleList = null;
 				
+		int pop = settlement.getNumCitizens();
+		
 		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
 			roleList = new ArrayList<>(RoleUtil.getCrewRoles());
 		}
@@ -398,27 +415,27 @@ public class ChainOfCommand implements Serializable {
 	 *
 	 * @param settlement the settlement.
 	 */
-	private void establishTopLeadership() {
+	void establishTopLeadership() {
 
-		int popSize = settlement.getNumCitizens();
-
-		if (popSize >= POPULATION_WITH_MAYOR) {
+		int pop = settlement.getNumCitizens();
+	
+		if (pop >= POPULATION_WITH_MAYOR) {
 			// Elect a mayor
 			electLeader(RoleType.MAYOR, null);
 		}
-		else if (popSize >= POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
+		else if (pop >= POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
 			// Elect two roles
 			electLeader(RoleType.ADMINISTRATOR, RoleType.DEPUTY_ADMINISTRATOR);
 		}
-		else if (popSize >= POPULATION_WITH_ADMINISTRATOR) {
+		else if (pop >= POPULATION_WITH_ADMINISTRATOR) {
 			// Elect one role
 			electLeader(RoleType.ADMINISTRATOR, null);
 		}
-		else if (popSize >= POPULATION_WITH_SUB_COMMANDER) {
+		else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
 			// Elect commander and sub-commander
 			electLeader(RoleType.COMMANDER, RoleType.SUB_COMMANDER);
 		}
-		else if (popSize >= POPULATION_WITH_COMMANDER) {
+		else if (pop >= POPULATION_WITH_COMMANDER) {
 			// Elect commander
 			electLeader(RoleType.COMMANDER, null);
 		}
@@ -565,6 +582,9 @@ public class ChainOfCommand implements Serializable {
 
 		// compare their scores
 		for (Person p : people) {
+			if (p.isDeclaredDead()) {
+				continue;
+			}
 			SkillManager skillMgr = p.getSkillManager();
 			NaturalAttributeManager mgr = p.getNaturalAttributeManager();
 			if (p.getRole().getType() == specialty) {

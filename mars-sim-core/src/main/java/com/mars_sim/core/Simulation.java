@@ -352,7 +352,9 @@ public class Simulation implements ClockListener, Serializable {
 	
 		marketManager = new MarketManager(this);
 		
-        RoleUtil.initialize();
+        // Initialize RoleUtil
+        new RoleUtil();
+     
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
 		
 		missionManager = new MissionManager();
@@ -480,8 +482,7 @@ public class Simulation implements ClockListener, Serializable {
 		
         // Initialize RoleUtil
         new RoleUtil();
-        // Initialize RoleUtil
-        RoleUtil.initialize();
+        
         // Initialize RoleU
 		History.initializeInstances(masterClock);
 		// Re-initialize Person/Robot related class
@@ -603,8 +604,7 @@ public class Simulation implements ClockListener, Serializable {
 	
         // Initialize RoleUtil
         new RoleUtil();
-        // Initialize RoleUtil
-        RoleUtil.initialize();
+  
         // Initialize RoleU
 		History.initializeInstances(masterClock);
 		// Re-initialize Person/Robot related class

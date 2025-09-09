@@ -46,7 +46,7 @@ public class WorkerWorkCommand extends AbstractUnitCommand {
 		// Extra info for Person
 		if (source instanceof Person) {
 			Person p = (Person)source;
-			response.appendLabeledString("Job", p.getMind().getJob().getName());
+			response.appendLabeledString("Job", p.getMind().getJobType().getName());
 			response.appendLabeledString("Favourite", p.getFavorite().getFavoriteActivity().getName());
 		}
 

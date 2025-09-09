@@ -212,8 +212,8 @@ public class GoodsManager implements Serializable {
 		// Schedule reseting the first review cycle during early morning
 		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
 		
-		// Schedule reseting the first review cycle during early morning
-		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
+		// Schedule reseting the first review cycle during mid-sol
+		settlement.getFutureManager().addEvent(startOfDayOffset + 515, new ResourcesReset());
 	}
     
 	/**

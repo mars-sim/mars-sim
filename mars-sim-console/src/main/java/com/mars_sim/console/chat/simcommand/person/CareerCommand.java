@@ -33,7 +33,7 @@ public class CareerCommand extends AbstractPersonCommand {
 
 		Role r = person.getRole();
 		response.appendLabeledString("Current Role", r.getType().getName());
-		response.appendLabeledString("Current Job", person.getMind().getJob().getName());
+		response.appendLabeledString("Current Job", person.getMind().getJobType().getName());
 
 		response.appendHeading("Role History");
 		response.appendTableHeading("When", CommandHelper.TIMESTAMP_TRUNCATED_WIDTH,

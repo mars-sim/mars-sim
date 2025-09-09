@@ -51,8 +51,8 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 
 			RoleType roleType = person.getRole().getType();
 
-			if (person.getMind().getJob() == JobType.AREOLOGIST
-					|| person.getMind().getJob() == JobType.CHEMIST
+			if (person.getMind().getJobType() == JobType.AREOLOGIST
+					|| person.getMind().getJobType() == JobType.CHEMIST
 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
 					|| RoleType.MISSION_SPECIALIST == roleType

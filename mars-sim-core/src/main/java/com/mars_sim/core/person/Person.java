@@ -31,9 +31,9 @@ import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
-import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
@@ -190,7 +190,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	private ShiftSlot shiftSlot;
 
 	/**
-	 * Constructor with the mandatory properties defined. All these are needed to construct the minimum person.
+	 * Constructor 1 with the mandatory properties defined. All these are needed to construct the minimum person.
 	 *
 	 * @param name       the person's name
 	 * @param settlement {@link Settlement} the settlement the person is at
@@ -221,6 +221,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		settlement.addACitizen(this);
 		// Calculate next birthday and scheduled a party in terms of future Mars sols
 		var currentEarthTime = masterClock.getEarthTime();
+		// Set up birth date
 		calculateBirthDate(currentEarthTime, age);
 		// Create favorites
 		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());
@@ -236,6 +237,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		condition.initialize();
 		// Initialize field data in circadian clock
 		circadian.initialize();
+		// Create preferences
+//		preference = new Preference(this);
 		// Create job history
 		jobHistory = new AssignmentHistory();
 		// Create the role
@@ -255,6 +258,60 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		research = new ResearchStudy();
 	}
 
+	/**
+	 * Constructor 2 for maven testing. 
+	 *
+	 * @param name       the person's name
+	 * @param settlement {@link Settlement} the settlement the person is at
+	 * @param gender     the person's gender
+	 * @param age		 Uhe person's age, can be optional of -1
+	 * @param initialAttrs 
+	 * @param personAttrs Persons attributes.
+	 */
+	public Person(String name, Settlement settlement, GenderType gender,
+			int age, Map<NaturalAttributeType, Integer> initialAttrs) {
+		super(name, settlement);
+		super.setDescription(EARTHLING);
+		this.gender = gender;
+
+		// Create a prior training profile
+		generatePriorTraining();
+		// Construct the PersonAttributeManager instance
+		attributes = new NaturalAttributeManager(initialAttrs);
+		// Construct the SkillManager instance
+		skillManager = new SkillManager(this);
+		// Construct the Mind instance
+		mind = new Mind(this);
+		// Set the person's status of death
+		isBuried = false;
+		// Add this person as a citizen
+		settlement.addTestCitizen(this);
+		
+		// Create favorites
+		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());
+		// Create preferences
+		preference = new Preference(this);
+				
+		// Calculate next birthday and scheduled a party in terms of future Mars sols
+		var currentEarthTime = masterClock.getEarthTime();
+		// Set up birth date
+		calculateBirthDate(currentEarthTime, age);
+		// Create circadian clock
+		circadian = new CircadianClock(this);
+		// Create physical condition
+		condition = new PhysicalCondition(this);
+		// Initialize field data in PhysicalCondition
+		condition.initialize();
+		// Initialize field data in circadian clock
+		circadian.initialize();
+
+		
+		// Create job history
+		jobHistory = new AssignmentHistory();
+		// Create the role
+		role = new Role(this);
+	}
+	
 	/**
 	 * Uses static factory method to create an instance of PersonBuilder.
 	 *
@@ -574,7 +631,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		// Create a future activity so many earth days in the future
 		var earthDays = ChronoUnit.DAYS.between(earthLocalTime.toLocalDate(), nextBirthday) % 365;
-		GroupActivity.createPersonActivity("Birthday Party", GroupActivityType.BIRTHDAY,
+		
+		if (getAssociatedSettlement().getFutureManager() != null)
+			GroupActivity.createPersonActivity("Birthday Party", GroupActivityType.BIRTHDAY,
 									getAssociatedSettlement(), this, 
 									(int)((earthDays * MarsTime.MILLISOLS_PER_EARTHDAY)/1000D),
 									masterClock.getMarsTime());
@@ -612,6 +671,32 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
+	 * Declares the death status of a person.
+	 */
+	public void setDeclaredDead(boolean value) {
+		declaredDead = value;
+		
+		if (value) {
+			// Set work shift to OFF
+			if (shiftSlot != null)
+				shiftSlot.getShift().leaveShift();
+	
+			// Relinquish his role
+			var roleType = role.getType();
+			role.relinquishOldRoleType();
+			var chain = getAssociatedSettlement().getChainOfCommand();
+			if (chain != null) {
+				chain.reelectLeadership(roleType);
+			}
+			
+			// Set the mind of the person to inactive
+			mind.setInactive();
+			
+			getAssociatedSettlement().removeACitizen(this);
+		}
+	}
+	
+	/**
 	 * Declares the person dead.
 	 */
 	void setDeclaredDead() {
@@ -622,8 +707,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 		// Deregister the person's quarters
 		deregisterBed();
+		
 		// Set work shift to OFF
-		shiftSlot.getShift().leaveShift();
+		if (shiftSlot != null)
+			shiftSlot.getShift().leaveShift();
 
 		// Relinquish his role
 		var roleType = role.getType();

@@ -114,7 +114,7 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
             score *= LabTask.getLabCrowdingModifier(person, lab);
 
             // If researcher's current job isn't related to study science, divide by two.
-            JobType job = person.getMind().getJob();
+            JobType job = person.getMind().getJobType();
             if (job != null) {
                 ScienceType jobScience = ScienceType.getJobScience(job);
                 if (science != jobScience) {

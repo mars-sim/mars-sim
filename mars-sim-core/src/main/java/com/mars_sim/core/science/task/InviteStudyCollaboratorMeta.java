@@ -99,7 +99,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
 	        result = assessBuildingSuitability(result, adminBuilding, person);
 		}
         // Increase probability if person's current job is related to study's science.
-        JobType job = person.getMind().getJob();
+        JobType job = person.getMind().getJobType();
         ScienceType science = study.getScience();
  
         if (science == ScienceType.getJobScience(job)) {

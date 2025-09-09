@@ -1278,7 +1278,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 			// Get base result for job modifier.
 			Set<JobType> prefered = getPreferredPersonJobs();
-			JobType job = person.getMind().getJob();
+			JobType job = person.getMind().getJobType();
 			double jobModifier;
 			if ((prefered != null) && prefered.contains(job)) {
 				jobModifier = 1D;

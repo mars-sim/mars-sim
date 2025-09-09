@@ -470,8 +470,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				// If person is dead, get job from death info.
 				if (person.getPhysicalCondition().isDead())
 					result = person.getPhysicalCondition().getDeathDetails().getJob().getName();
-				else if (person.getMind().getJob() != null)
-					result = person.getMind().getJob().getName();
+				else if (person.getMind().getJobType() != null)
+					result = person.getMind().getJobType().getName();
 				break;
 
 			case SHIFT:

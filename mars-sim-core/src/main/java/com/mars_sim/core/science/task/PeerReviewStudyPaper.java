@@ -176,7 +176,7 @@ public class PeerReviewStudyPaper extends Task {
                     && !study.getCollaborativeResearchers().contains(person)) {
 
                 // Check if person's current job is related to study primary science.
-                JobType job = person.getMind().getJob();
+                JobType job = person.getMind().getJobType();
                 if (job != null) {
                     ScienceType jobScience = ScienceType.getJobScience(job);
                     if (study.getScience() == jobScience) {

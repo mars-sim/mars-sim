@@ -53,7 +53,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 		Settlement settlement = person.getSettlement();
 	
 		RoleType roleType = person.getRole().getType();
-		var jobType = person.getMind().getJob();
+		var jobType = person.getMind().getJobType();
 		
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
 		if (jobType == JobType.ARCHITECT

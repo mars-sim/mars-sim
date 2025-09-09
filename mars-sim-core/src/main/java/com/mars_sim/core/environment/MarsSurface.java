@@ -28,7 +28,8 @@ public class MarsSurface extends PlanetaryEntity
 	}
 
 	/**
-	 * Get the time offset for a given point on the surface.
+	 * Gets the time offset for a given point on the surface.
+	 * 
 	 * @param point
 	 * @return
 	 */

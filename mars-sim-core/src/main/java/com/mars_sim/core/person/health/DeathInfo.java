@@ -178,7 +178,7 @@ public class DeathInfo implements Serializable {
 
 		Mind mind = person.getMind();
 		
-		job = mind.getJob();
+		job = mind.getJobType();
 
 		TaskManager taskMgr = mind.getTaskManager();
 

@@ -890,7 +890,7 @@ public abstract class OperateVehicle extends Task {
     		if (operator instanceof Person p) {
     			
     			// If the person's current job is pilot
-    			if (p.getMind().getJob() == JobType.PILOT) {
+    			if (p.getMind().getJobType() == JobType.PILOT) {
     				mod += 0.25; 
     			}
   			
@@ -926,7 +926,7 @@ public abstract class OperateVehicle extends Task {
      
     	if (worker.getUnitType() == UnitType.PERSON) {
 			// If the person's current job is pilot
-			if (person.getMind().getJob() == JobType.PILOT) {
+			if (person.getMind().getJobType() == JobType.PILOT) {
 				mod += 0.25; 
 			}
 			

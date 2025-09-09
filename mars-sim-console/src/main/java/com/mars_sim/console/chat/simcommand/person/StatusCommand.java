@@ -56,7 +56,7 @@ public class StatusCommand extends AbstractPersonCommand {
 			
 			buffer.append(genderNoun0);
 			
-			String job = person.getMind().getJob().getName().toLowerCase();
+			String job = person.getMind().getJobType().getName().toLowerCase();
 			if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) != -1) {	
 				buffer.append(" a ");
 			}
@@ -100,7 +100,7 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append("Hi, my name is ");
 			buffer.append(person.getName());
 			buffer.append(" and I am ");
-			String job = person.getMind().getJob().getName().toLowerCase();
+			String job = person.getMind().getJobType().getName().toLowerCase();
 			if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) == -1) {	
 				buffer.append("a ");
 			}

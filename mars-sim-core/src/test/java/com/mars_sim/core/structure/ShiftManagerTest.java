@@ -24,7 +24,7 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.time.MarsTime;
 
 /**
- * Test the intenrals of the SHiftMansger
+ * Test the internals of the ShiftMansger
  */
 public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 

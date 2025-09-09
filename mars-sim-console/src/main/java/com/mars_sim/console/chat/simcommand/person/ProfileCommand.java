@@ -34,7 +34,7 @@ public class ProfileCommand extends AbstractPersonCommand {
 		response.appendLabelledDigit("Age", person.getAge());
 		response.appendLabeledString("Weight", String.format(CommandHelper.KG_FORMAT, person.getMass()));
 		response.appendLabeledString("Height", String.format("%.2f m", person.getHeight()/100D));
-		response.appendLabeledString("Job", person.getMind().getJob().getName());
+		response.appendLabeledString("Job", person.getMind().getJobType().getName());
 
 		response.appendBlankLine();
 		PhysicalCondition condition = person.getPhysicalCondition();

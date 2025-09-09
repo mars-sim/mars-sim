@@ -368,11 +368,43 @@ public class Settlement extends Unit implements Temporal,
 		tempRange = settlementConfig.getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
 	}
 
+
 	/**
-	 * Constructor 2 called by MockSettlement for maven testing.
+	 * Constructor 2A called by MockSettlement for maven testing.
 	 *
 	 * @param name
 	 * @param location
+	 * @param initialPopulation
+	 */
+	protected Settlement(String name, Coordinates location, int initialPopulation) {
+		// Use Structure constructor.
+		super(name);
+
+		this.settlementCode = createCode(name);
+		this.location = location;
+		this.timeOffset = MarsSurface.getTimeOffset(location);
+		this.meals = new MealSchedule(timeOffset);
+		this.initialPopulation = initialPopulation;
+		
+		citizens = new UnitSet<>();
+		ownedRobots = new UnitSet<>();
+		ownedVehicles = new UnitSet<>();
+		vicinityParkedVehicles = new UnitSet<>();
+		indoorPeople = new UnitSet<>();
+		robotsWithin = new UnitSet<>();
+		
+	
+		// Add chain of command
+		chainOfCommand = new ChainOfCommand(this);
+
+	}
+	
+	/**
+	 * Constructor 2B called by MockSettlement for maven testing.
+	 *
+	 * @param name
+	 * @param location
+	 * @param testCommand
 	 */
 	protected Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
@@ -1702,7 +1734,22 @@ public class Settlement extends Unit implements Temporal,
 	public int getIndoorPeopleCount() {
 		return indoorPeople.size();
 	}
+	
 
+	/**
+	 * Adds a citizen for maven testing only.
+	 * 
+	 * @param p
+	 */
+	public void addTestCitizen(Person p) {
+		citizens.add(p);	
+		// Update the numCtizens
+		numCitizens = citizens.size();
+	
+		// Add this person indoor map of the settlement
+		addToIndoor(p);		
+	}
+	
 	/**
 	 * Assigns a person to be a legal citizen of this settlement.
 	 *
@@ -3378,7 +3425,7 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Get the time offset of day rise for this Settlement. This is based on it's location
+	 * Gets the time offset of day rise for this Settlement. This is based on it's location
 	 * around the planet.
 	 */
 	public int getTimeOffset() {
