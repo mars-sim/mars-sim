@@ -285,7 +285,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Set the person's status of death
 		isBuried = false;
 		// Add this person as a citizen
-		settlement.addTestCitizen(this);
+		settlement.insertCitizen(this);
 		
 		// Create favorites
 		favorite = new Favorite(SimulationConfig.instance().getMealConfiguration());

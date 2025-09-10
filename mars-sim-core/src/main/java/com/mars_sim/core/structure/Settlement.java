@@ -1737,17 +1737,21 @@ public class Settlement extends Unit implements Temporal,
 	
 
 	/**
-	 * Adds a citizen for maven testing only.
+	 * Insert a citizen to the settlement.
 	 * 
 	 * @param p
 	 */
-	public void addTestCitizen(Person p) {
-		citizens.add(p);	
-		// Update the numCtizens
-		numCitizens = citizens.size();
-	
-		// Add this person indoor map of the settlement
-		addToIndoor(p);		
+	public boolean insertCitizen(Person p) {
+		if (citizens.add(p)) {
+			// Update the numCtizens
+			numCitizens = citizens.size();
+			// Add this person indoor map of the settlement
+			addToIndoor(p);	
+			
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -1759,17 +1763,13 @@ public class Settlement extends Unit implements Temporal,
 	public boolean addACitizen(Person p) {
 		if (citizens.contains(p))
 			return true;
-		if (citizens.add(p)) {
+		if (insertCitizen(p)) {
 			// Set x and y coordinates first prior to adding the person 
-			p.setCoordinates(getCoordinates());						
-			// Add this person indoor map of the settlement
-			addToIndoor(p);			
+			p.setCoordinates(getCoordinates());							
 			// Add to a random building
 			BuildingManager.addPersonToRandomBuildingSpot(p, getAssociatedSettlement());			
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
-			// Update the numCtizens
-			numCitizens = citizens.size();
 			// Update the population factor
 			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));		
 			// Update mission limit dependent upon population
