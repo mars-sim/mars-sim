@@ -1711,10 +1711,13 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public boolean removePeopleWithin(Person p) {
 		if (!indoorPeople.contains(p)) {
+			return true;
+		}
+		if (indoorPeople.remove(p)) {
 			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, p);
 			return true;
 		}
-		return indoorPeople.remove(p);
+		return false;
 	}
 
 	/**

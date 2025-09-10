@@ -2348,6 +2348,17 @@ public abstract class Vehicle extends AbstractMobileUnit
 			else {
 				if (leaving && isInGarage()) {
 					BuildingManager.removeFromGarage(this);
+					
+					// Transfer each occupant 
+					if (this instanceof Crewable crewable) {
+			            for (Person crewmember : crewable.getCrew()) {
+			                crewmember.transfer(this);
+			            }
+					}
+					// Transfer each piece of equipment 
+					for (Equipment equipment : getEquipmentSet()) {
+						equipment.transfer(this);
+		            }	
 				}
 				setContainerUnitAndID(destination);
 			}
