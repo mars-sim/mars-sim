@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * EVAMission.java
- * @date 2025-08-17
+ * @date 2025-09-10
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission;
@@ -91,6 +91,7 @@ abstract class EVAMission extends RoverMission {
 	/**
 	 * Can the EVA phase be started ?
 	 * 
+	 * @param member
 	 * @return 
 	 */
 	private boolean canStartEVA() {
@@ -104,21 +105,23 @@ abstract class EVAMission extends RoverMission {
 			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
 					|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
 				// No point waiting, move to next site
-				logger.info(getVehicle(), "Continue travel, sunrise too late " + sunrise.getTruncatedDateTimeStamp());
-				addMissionLog(NOT_ENOUGH_SUNLIGHT);
+				logger.info(getVehicle(), "Continue to travel since sunrise is too late " + sunrise.getTruncatedDateTimeStamp());
+				addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
 				startTravellingPhase();
 			}
 			else {
 				// Wait for sunrise
 				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
 				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
+				// May call this the first time but how to avoid duplicate entry : addMissionLog(WAIT_SUNLIGHT.getName(), getStartingPerson().getName()) 
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * Check that if the sunlight is suitable to continue
+	 * Checks that if the sunlight is suitable to continue.
+	 * 
 	 * @param member Member triggering the waiting
 	 */
 	private void performWaitForSunlight(Worker member) {
@@ -181,7 +184,7 @@ abstract class EVAMission extends RoverMission {
 	}
 
     /**
-	 * End all EVA Operations
+	 * Ends all EVA Operations.
 	 */
 	protected void endEVATasks() {
 		// End each member's EVA task.
@@ -215,7 +218,7 @@ abstract class EVAMission extends RoverMission {
 			// night time, end the exploring phase.
 			if (activeEVA && !isEnoughSunlightForEVA()) {
 				logger.info(getVehicle(), "Not enough sunlight during the EVA phase of the mission.");
-				addMissionLog(NOT_ENOUGH_SUNLIGHT);
+				addMissionLog(NOT_ENOUGH_SUNLIGHT, member.getName());
 				activeEVA = false;
 			}
 
@@ -238,7 +241,7 @@ abstract class EVAMission extends RoverMission {
 				activeEVA = performEVA((Person) member);
 				if (!activeEVA) {
 					logger.info(member, "EVA operation Terminated.");
-					addMissionLog("EVA operation Terminated.");
+					addMissionLog("EVA Ops Terminated.", member.getName());
 				}
 			}
 		} 
@@ -247,7 +250,7 @@ abstract class EVAMission extends RoverMission {
 		if (!activeEVA) {
 			
 			// Check below if anyone has been "teleported"
-			if (checkTeleported()) {
+			if (checkTeleported(member)) {
 				// End phase
 				phaseEVAEnded();
 				setPhaseEnded(true);
@@ -262,8 +265,10 @@ abstract class EVAMission extends RoverMission {
 	/**
 	 * Ensures no "teleported" person is still a member of this mission.
 	 * Note: still investigating the cause and how to handle this.
+	 * 
+	 * @param worker
 	 */
-	boolean checkTeleported() {
+	boolean checkTeleported(Worker worker) {
 		boolean result = false;
 		
 		Rover r = getRover();
@@ -274,6 +279,7 @@ abstract class EVAMission extends RoverMission {
 			if (!getMembers().contains(p)) {
 				logger.severe(p, 10_000, "Teleportation scenario 1 detected. Being a crew member in " 
 						+ r.getName() + " but not a mission member.");
+				addMissionLog("Teleportation Type 1 - " + p.getName(), worker.getName());
 				result = true;
 			}
 		}
@@ -287,7 +293,7 @@ abstract class EVAMission extends RoverMission {
 
 					logger.severe(p, 10_000, "Teleportation scenario 2 detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
-
+					addMissionLog("Teleportation Type 2 - " + p.getName(), worker.getName());
 					// Note: need to debug why this happens and can't remove a person as member yet
 				
 					// Use Iterator's remove() method i.remove();
@@ -300,7 +306,7 @@ abstract class EVAMission extends RoverMission {
 
 					logger.severe(p, 10_000, "Teleportation scenario 3 detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
-
+					addMissionLog("Teleportation Type 3 - " + p.getName(), worker.getName());
 					result = true;
 				}
 				
@@ -308,7 +314,7 @@ abstract class EVAMission extends RoverMission {
 
 					logger.severe(p, 10_000, "Teleportation scenario 4 detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
-
+					addMissionLog("Teleportation Type 4 - " + p.getName(), worker.getName());
 					result = true;
 				}
 
@@ -324,14 +330,15 @@ abstract class EVAMission extends RoverMission {
 	}
 	
     /**
-     * Perform the specific EVA activities. This may cancel the EVA phase
+     * Performs the specific EVA activities. This may cancel the EVA phase.
+     * 
      * @param person
      * @return
      */
 	protected abstract boolean performEVA(Person person);
 
 	/**
-	 * Signak the start of an EVA phase to do any housekeeping
+	 * Signals the start of an EVA phase to do any housekeeping
 	 */
 	protected void phaseEVAStarted() {
 		activeEVA = true;
@@ -344,7 +351,7 @@ abstract class EVAMission extends RoverMission {
 	}
 
     /**
-     * Calculate the spare parts needed for the trip
+     * Calculates the spare parts needed for the trip.
      */
     @Override
 	protected Map<Integer, Number> getSparePartsForTrip(double distance) {
@@ -482,8 +489,9 @@ abstract class EVAMission extends RoverMission {
 
 
 	/**
-	 * Order a list of Coordinates starting from a point to minimise
+	 * Orders a list of Coordinates starting from a point to minimise
 	 * the travel time.
+	 * 
 	 * @param unorderedSites
 	 * @param startingLocation
 	 * @return

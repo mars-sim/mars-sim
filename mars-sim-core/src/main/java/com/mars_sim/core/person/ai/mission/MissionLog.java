@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionLog.java
- * @date 2024-07-14
+ * @date 2025-09-10
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.mission;
@@ -29,19 +29,31 @@ public class MissionLog implements Serializable  {
         
         private MarsTime time;
         private String entry;
+        private String enterBy;
         
+        private MissionLogEntry(MarsTime time, String entry, String enterBy) {
+            super();
+            this.time = time;
+            this.entry = entry;
+            this.enterBy = enterBy;
+        }
+    
         private MissionLogEntry(MarsTime time, String entry) {
             super();
             this.time = time;
             this.entry = entry;
         }
-    
+        
         public MarsTime getTime() {
             return time;
         }
     
         public String getEntry() {
             return entry;
+        }
+        
+        public String getEnterBy() {
+        	return enterBy;
         }
     
         @Override
@@ -55,10 +67,26 @@ public class MissionLog implements Serializable  {
     private boolean done = false;
     protected static MasterClock clock;
 
+    /**
+     * Adds an entry.
+     * 
+     * @param entry
+	 * @param enterBy the name of the person who logs this
+     */
+    public void addEntry(String entry, String enterBy) {
+		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
+    }
+
+    /**
+     * Adds an entry.
+     * 
+     * @param entry
+	 * @param enterBy the name of the person who logs this
+     */
     public void addEntry(String entry) {
 		log.add(new MissionLogEntry(clock.getMarsTime(), entry));
     }
-
+    
     /**
 	 * Gets the date filed timestamp of the mission.
 	 *

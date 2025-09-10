@@ -45,6 +45,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -170,41 +171,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		return result;
 	}
-
-//	/**
-//	 * Checks to see if any vehicles are available at a settlement.
-//	 *
-//	 * @param settlement         the settlement to check.
-//	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
-//	 * @return true if vehicles are available.
-//	 */
-//	public static boolean areVehiclesAvailable(Settlement settlement, boolean allowMaintReserved) {
-//
-//		boolean result = false;
-//
-//		Iterator<Vehicle> i = settlement.getParkedGaragedVehicles().iterator();
-//		while (i.hasNext()) {
-//			Vehicle vehicle = i.next();
-//
-//			boolean usable = !vehicle.isReservedForMission();
-//
-//            if (!allowMaintReserved && vehicle.isReserved())
-//				usable = false;
-//
-//			usable = vehicle.isVehicleReady();
-//
-//			if (!(vehicle instanceof Rover))
-//				usable = false;
-//
-//			if (!vehicle.isEmpty())
-//				usable = false;
-//
-//			if (usable)
-//				result = true;
-//		}
-//
-//		return result;
-//	}
 
 	/**
 	 * Checks if vehicle is usable for this mission. (This method should be
@@ -353,10 +319,18 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Find who has not boarded after the duration is over
 			List<Person> ejectedMembers = new ArrayList<>();
 			Rover r = getRover();
+			
 			for (Worker m : getMembers()) {
 				Person p = (Person) m;
 				if (!r.isCrewmember(p)) {
 					ejectedMembers.add(p);
+				}
+			}
+			
+			for (Person crewmember : r.getCrew()) {
+	            Worker w = (Worker)crewmember; 
+				if (!getMembers().contains(w)) {
+					ejectedMembers.add(crewmember);
 				}
 			}
 
@@ -365,7 +339,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				for (Person ej : ejectedMembers) {
 					logger.warning(ej, "Missed the departure and evicted from '" + getName() + "'.");
 					removeMember(ej);
-					addMissionLog(ej.getName() + " evicted");
+					addMissionLog("Evicted", ej.getName());
 				}
 			}
 			

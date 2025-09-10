@@ -530,7 +530,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Add entry to the log
-		addMissionLog(newPhase.getName());
+		addMissionLog(newPhase.getName(), getStartingPerson().getName());
 
 		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
 	}
@@ -541,9 +541,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param entry
 	 */
 	protected void addMissionLog(String entry) {
-		log.addEntry(entry);
+		addMissionLog(entry, "");
 	}
 
+	/**
+	 * Adds a mission log.
+	 * 
+	 * @param entry
+	 * @param enterBy the name of the person who logs this
+	 */
+	protected void addMissionLog(String entry, String enterBy) {
+		log.addEntry(entry, enterBy);
+	}
+	
 	/**
 	 * Gets the mission log.
 	 */
@@ -1121,7 +1131,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		List<MemberScore> qualifiedPeople = new ArrayList<>();
-		for(Person person : possibles) {
+		for (Person person : possibles) {
 			if (isCapableOfMission(person)) {
 				// Determine the person's mission qualification.
 				double qualification = getMissionQualification(person) * 100D;
@@ -1505,7 +1515,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected boolean addMissionStatus(MissionStatus status) {
 		boolean newStatus = missionStatus.add(status);
 		if (newStatus) {
-			addMissionLog(status.getName());
+			addMissionLog(status.getName(), getStartingPerson().getName());
 		}
 		return newStatus;
 	}
@@ -1522,7 +1532,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/**
 	 * Checks if this worker can participate.
 	 * 
-	 * @param worker This maybe used by overridding methods
+	 * @param worker This maybe used by overriding methods
 	 * @return
 	 */
 	protected boolean canParticipate(Worker worker) {

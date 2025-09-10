@@ -250,6 +250,7 @@ public abstract class AbstractMobileUnit extends Unit
 		}
 
 		else if (c instanceof FixedUnit b) {
+			// Note: only Building and ConstructionSites are FixedUnit
 			return b.getAssociatedSettlement();
 		}
 		

@@ -812,7 +812,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return column count.
 		 */
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		/**
@@ -826,6 +826,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			return switch (columnIndex) {
 				case 0 -> "Date";
 				case 1 -> "Entry";
+				case 2 -> "Logged by";
 				default -> null;
 			};
 		}
@@ -844,8 +845,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (row < entries.size()) {
 				if (column == 0)
 					return entries.get(row).getTime().getTruncatedDateTimeStamp();
-				else
+				else if (column == 1)
 					return entries.get(row).getEntry();
+				else
+					return entries.get(row).getEnterBy();
 			}
 			return null;
 		}
