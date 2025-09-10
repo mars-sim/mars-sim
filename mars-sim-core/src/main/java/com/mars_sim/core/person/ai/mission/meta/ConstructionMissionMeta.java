@@ -95,7 +95,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
             case MAYOR -> 5;
             case ADMINISTRATOR -> 5;
             case DEPUTY_ADMINISTRATOR -> 5;
-            default -> 1;
+            default -> .2;
         };
         
         missionProbability.addModifier("role", roleModifier);		
@@ -106,7 +106,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         	case PHYSICIST -> 1.3;
         	case MATHEMATICIAN -> 1.1;
         	case TECHNICIAN -> 1.2;
-        	default -> 1;
+        	default -> .2;
         };		
             
         missionProbability.addModifier("job", jobModifier);

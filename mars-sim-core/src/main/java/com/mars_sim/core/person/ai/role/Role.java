@@ -92,8 +92,11 @@ public class Role implements Serializable {
 			roleType = newType;
 			roleHistory.add(roleType);
 			
-			// Save the role in the settlement Registry
-			home.getChainOfCommand().registerRole(roleType);
+			if (home.getChainOfCommand() != null) {
+				// Check for null in case of maven test ConstructionMissionMetaTest
+				// Save the role in the settlement Registry
+				home.getChainOfCommand().registerRole(roleType);
+			}
 
 			// Records the role change and fire unit update
 			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);

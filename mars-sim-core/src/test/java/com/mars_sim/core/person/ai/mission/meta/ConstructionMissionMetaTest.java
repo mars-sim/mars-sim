@@ -6,6 +6,7 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 
 public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
@@ -14,6 +15,7 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
     public void testProbabiltyArchitectSite() {
         var s = buildSettlement();
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
+        architect.setRole(RoleType.ENGINEERING_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
@@ -41,6 +43,7 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         var a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
+        architect.setRole(RoleType.ENGINEERING_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
@@ -58,6 +61,7 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
     public void testProbabiltyDoctor() {
         var s = buildSettlement();
         var doctor = buildPerson("worker", s, JobType.DOCTOR);
+        doctor.setRole(RoleType.AGRICULTURE_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
@@ -70,7 +74,7 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         addSitePreReqs(s);
 
         var score = meta.getProbability(doctor);
-        assertEquals("Doctor cannot start", 0D, score.getScore());
+        assertGreaterThan("Doctor still start but rating is low", 0D, score.getScore());
     }
 
     private void addSitePreReqs(Settlement s) {
@@ -83,6 +87,7 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
     public void testProbabiltyArchitectQueue() {
         var s = buildSettlement();
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
+        architect.setRole(RoleType.ENGINEERING_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
             buildPerson("P" + i, s);
         }
