@@ -173,10 +173,10 @@ public class TabPanelSiteGeneral extends TabPanel {
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			var p = phases.get(rowIndex);
 			return switch (columnIndex) {
-				case 0 -> p.stage().getName();
-				case 1 -> p.stage().getType().name().toLowerCase();
+				case 0 -> p.stageInfo().getName();
+				case 1 -> p.stageInfo().getType().name().toLowerCase();
 				case 2 -> p.construct() ? "Construct" : "Demolish";
-				case 3 -> p.stage().getWorkTime();
+				case 3 -> p.stageInfo().getWorkTime();
 				default -> null;
 			};
 		}
@@ -185,7 +185,7 @@ public class TabPanelSiteGeneral extends TabPanel {
 		public String getToolTipAt(int row, int col) {
 			var selected = phases.get(row);
 
-			return ConstructionStageFormat.getTooltip(selected.stage());
+			return ConstructionStageFormat.getTooltip(selected.stageInfo());
 		}
 	}
 }

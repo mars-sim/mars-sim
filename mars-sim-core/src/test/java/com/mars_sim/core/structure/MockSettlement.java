@@ -5,7 +5,6 @@ import java.util.Collections;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.Person;
 
 @SuppressWarnings("serial")
 public class MockSettlement extends Settlement {

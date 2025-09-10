@@ -37,7 +37,7 @@ public class ConstructionSite extends FixedUnit {
     /**
      * A phase of construction that might be construct or salvage.
      */
-    public record ConstructionPhase(ConstructionStageInfo stage, boolean construct) implements Serializable {}
+    public record ConstructionPhase(ConstructionStageInfo stageInfo, boolean construct) implements Serializable {}
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(ConstructionSite.class.getName());
@@ -69,7 +69,7 @@ public class ConstructionSite extends FixedUnit {
         var initPhase = this.phases.remove(0);
 
         this.isConstruction = initPhase.construct();
-        this.currentStage = new ConstructionStage(initPhase.stage(), this, isConstruction);
+        this.currentStage = new ConstructionStage(initPhase.stageInfo(), this, isConstruction);
 
         this.targetBuilding = target;
     	this.width = placement.getWidth();
@@ -99,7 +99,8 @@ public class ConstructionSite extends FixedUnit {
     }
 
     /**
-     * Get the remaining construction phases
+     * Gets the remaining construction phases.
+     * 
      * @return
      */
     public List<ConstructionPhase> getRemainingPhases() {
@@ -138,7 +139,8 @@ public class ConstructionSite extends FixedUnit {
     }
 
     /**
-     * Get the mission that is doing active work on site
+     * Gets the mission that is doing active work on site.
+     * 
      * @return
      */
     public Mission getWorkOnSite() {
@@ -155,17 +157,31 @@ public class ConstructionSite extends FixedUnit {
     }
 
     /**
-     * Advance to the next phase
-     * @return All completed
+     * Gets the next construction stage info at the site.
+     * 
+     * @return next construction stage info .
+     */
+    public ConstructionStageInfo getNextConstructionStageInfo() {
+    	ConstructionPhase nextPhase = phases.get(0);
+    	if (nextPhase != null) {
+    		return nextPhase.stageInfo();
+    	}
+        return null;
+    }
+    
+    /**
+     * Advances to the next phase.
+     * 
+     * @return all completed
      */
     public boolean advanceToNextPhase() {
         if (phases.isEmpty()) return true;
 
         var nextPhase = phases.remove(0);
         this.isConstruction = nextPhase.construct();
-        this.currentStage = new ConstructionStage(nextPhase.stage(), this, isConstruction);
+        this.currentStage = new ConstructionStage(nextPhase.stageInfo(), this, isConstruction);
 
-        logger.info(this, "Advanced to next phase '" + nextPhase.stage().getName() + "' "
+        logger.info(this, "Advanced to next phase '" + nextPhase.stageInfo().getName() + "' "
                 + (isConstruction ? "construction" : "salvage"));
 
         fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
@@ -206,10 +222,9 @@ public class ConstructionSite extends FixedUnit {
 
     
 	/**
-	 * Salvage construction parts from the stage.
-	 * @param site 
-	 * @param stage 
+	 * Salvages construction parts from the stage.
 	 * 
+	 * @param skill 
 	 */
 	public void reclaimParts(double skill) {
 		logger.info(this, "Reclaimed parts");

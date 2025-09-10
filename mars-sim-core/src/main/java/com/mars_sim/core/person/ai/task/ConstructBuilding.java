@@ -98,7 +98,8 @@ public class ConstructBuilding extends EVAOperation {
 	}
 
 	/**
-	 * Constructor.
+	 * Constructor. Called by ConstructionMission
+	 * Q: is it necessary ?
 	 *
 	 * @param person   the person performing the task.
 	 * @param stage    the construction site stage.
