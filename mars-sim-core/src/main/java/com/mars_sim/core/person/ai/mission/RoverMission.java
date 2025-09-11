@@ -204,8 +204,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		for (Person p : crew) {
 			if (!getMembers().contains(p)) {
-				logger.warning(p, 10_000, "Being a crew member in " 
-						+ r.getName() + " but not a mission member.");
+				logger.warning(p, "(" + p.getTaskDescription() + " in " + p.getLocationTag().getExtendedLocation() 
+						+ ") was a crew member in " + r.getName() + " but not a mission member of " + getName() + ".");
+				addMissionLog("Non-mission member", p.getName());
 				result = false;
 			}
 		}
@@ -214,15 +215,22 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			Person p = (Person) m;
 
 			if (p.getTaskManager().getTask() instanceof EVAOperation) {
-				logger.warning(p, 20_000, "Still doing EVA outside. Need to end now to embark on '" + getName()
-						+ "'. Current Location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");				
+				if (p.getTaskDescription().equals("")) {
+					logger.warning(p, 20_000L, "(In " + p.getLocationTag().getExtendedLocation() 
+						+ ") considered ending EVA outside for " + getName() + ".");
+				}
+				else {
+					logger.warning(p, 20_000L, "(" + p.getTaskDescription() + " in " + p.getLocationTag().getExtendedLocation() 
+							+ ") considered ending EVA outside for " + getName() + ".");
+				}
+				
+				addMissionLog("Busy outside with EVA", p.getName());
 				result = false;
 			}
 			
 			if (!p.isInVehicle()) {
 
-				logger.warning(p, 20_000, "Not onboard " + r.getName()
+				logger.warning(p, 20_000L, "Not onboard " + r.getName()
 						+ ". Not ready for '" + getName() + "' yet. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				result = false;
@@ -230,7 +238,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			if (p.isInSettlement()) {
 
-				logger.warning(p, 20_000, "Still inside the settlement. Not on " + r.getName()
+				logger.warning(p, 20_000L, "Still inside the settlement. Not on " + r.getName()
 						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				result = false;
@@ -239,7 +247,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (p.isInSettlementVicinity()
 					|| p.isRightOutsideSettlement()) {
 
-				logger.warning(p, 20_000, "Still outside and not on " + r.getName()
+				logger.warning(p, 20_000L, "Still outside and not on " + r.getName()
 						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 				result = false;
@@ -337,8 +345,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Still enough members ? If so eject late arrivals
 			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
 				for (Person ej : ejectedMembers) {
-					logger.warning(ej, "Missed the departure and evicted from '" + getName() + "'.");
 					removeMember(ej);
+					logger.warning(ej, "(" + ej.getTaskDescription() + " in " + ej.getLocationTag().getExtendedLocation() 
+							+ ") got evicted from " + r.getName() + " as the rover was departing for " + getName() + ".");
 					addMissionLog("Evicted", ej.getName());
 				}
 			}
@@ -348,9 +357,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				canDepart = true;
 			}
 			else {
+				Person lead = (Person)member;
 				// If the leader is ejected, then the mission must be cancelled
-				logger.info(member, "Noted that mission Lead " + getStartingPerson().getName() 
-						+ " evicted from '" + getName() + "' and mission cancelled.");
+				logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
+						+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
+						+ ") got evicted from " + getName() + " and mission cancelled.");
+				addMissionLog(MISSION_LEAD_NO_SHOW.getName(), lead.getName());
 				endMission(MISSION_LEAD_NO_SHOW);
 			}
 		}

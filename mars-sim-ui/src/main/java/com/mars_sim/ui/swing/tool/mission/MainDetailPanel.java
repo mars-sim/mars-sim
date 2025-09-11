@@ -94,7 +94,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private static final int MAX_LENGTH = 48;
 	private static final int WIDTH = 250;
 	private static final int MEMBER_HEIGHT = 125;
-	private static final int LOG_HEIGHT = 125;
+	private static final int LOG_HEIGHT = 200;
 	
 	// Private members
 	private JLabel vehicleStatusLabel;
@@ -225,7 +225,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		mainLayout.setBorder(blackline);
 		
 		// Prepare travel grid layout.
-		AttributePanel travelGridPane = new AttributePanel();
+		AttributePanel travelGridPane = new AttributePanel(1, 2, 0, 1);
 		mainLayout.add(travelGridPane, BorderLayout.CENTER);
 
 		vehicleLabel = new EntityLabel(desktop);
@@ -252,7 +252,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		JTable logTable = new JTable(logTableModel);
 		logTable.getColumnModel().getColumn(0).setPreferredWidth(80);
 		logTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-
+		logTable.getColumnModel().getColumn(2).setPreferredWidth(120);
+		
 		var scroller = StyleManager.createScrollBorder("Phase Log", logTable);
 		var dim = new Dimension(WIDTH, LOG_HEIGHT);
 		scroller.setPreferredSize(dim);
