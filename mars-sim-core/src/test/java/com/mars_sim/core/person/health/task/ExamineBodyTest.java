@@ -2,8 +2,6 @@ package com.mars_sim.core.person.health.task;
 
 import static org.junit.Assert.assertNotEquals;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.building.function.ActivitySpot;
@@ -21,18 +19,10 @@ public class ExamineBodyTest extends AbstractMarsSimUnitTest {
         
         Set<ActivitySpot> spots = sb.getFunction(FunctionType.MEDICAL_CARE).getActivitySpots();
         
-        System.out.println("# of spots: " + spots.size());
-
-        // How to declare more than just one activity spot ?
-        
-        List<ActivitySpot> list = new ArrayList<>(spots);
-  
-        for (ActivitySpot spot: list) {
-            System.out.println("Location: " + spot.getPos());   
-        }
+        assertEquals("# of spots", 2, spots.size());
         
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
-        System.out.println("Patient is at " + patient.getBuildingLocation());
+        assertEquals("Patient is at ", sb, patient.getBuildingLocation());
         
         // Laceration is self heal
         var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.DEHYDRATION);
@@ -40,7 +30,7 @@ public class ExamineBodyTest extends AbstractMarsSimUnitTest {
         var death = patient.getPhysicalCondition().getDeathDetails();
 
         var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
-        System.out.println("Doctor is at " + doctor.getBuildingLocation());
+        assertEquals("Doctor is at ", sb, doctor.getBuildingLocation());
         
         doctor.getSkillManager().addNewSkill(SkillType.MEDICINE, 20);
 
@@ -48,39 +38,36 @@ public class ExamineBodyTest extends AbstractMarsSimUnitTest {
         assertEquals("At preparing phase", ExamineBody.PREPARING, task.getPhase());
         
         assertFalse("Task created", task.isDone());
-     
-        System.out.println("Doctor is at " + doctor.getBuildingLocation());
-        
-//        assertTrue("At medical", task.sendToMedicalAid());
-        
+      
         executeTaskUntilSubTask(doctor, task, 20);
 
         assertEquals("At preparing phase", ExamineBody.PREPARING, task.getPhase());
-        System.out.println("Phase: " + task.getPhase());
+   
+        assertEquals("Estimated Time for examination", 0D, death.getEstTimeExam());
+        assertEquals("Time completed in examination", 0D, death.getTimeSpentExam());
         
         executeTask(doctor, task, 100);
-      
-        System.out.println("Doctor is at " + doctor.getBuildingLocation());
+  
+        assertEquals("At preparing phase", ExamineBody.PREPARING, task.getPhase());
         
-        System.out.println("Phase: " + task.getPhase());
-      
-        executeTask(doctor, task, 50);
-        
-        System.out.println("Phase: " + task.getPhase());
-        
-        assertGreaterThan("Estimate time for examination", 0D, death.getEstTimeExam());
-
-        executeTask(doctor, task, 100);
-        
-        System.out.println("Phase: " + task.getPhase());
-        assertEquals("At preparing phase", ExamineBody.EXAMINING, task.getPhase());
-        
-        assertGreaterThan("Time completed in examination", 0D, death.getTimeSpentExam());
-       
-        // Complete exam
-        executeTaskUntilPhase(doctor, task, 1000);
         assertFalse("Task still going", task.isDone());
-        assertEquals("Report next", ExamineBody.RECORDING, task.getPhase());
+        
+        executeTask(doctor, task, 200);
+   
+        assertEquals("At examining phase", ExamineBody.EXAMINING, task.getPhase());
+ 
+        assertFalse("Task still going", task.isDone());
+        
+        assertGreaterThan("Estimated Time for examination", 0D, death.getEstTimeExam());
+        assertGreaterThan("Time completed in examination", 0D, death.getTimeSpentExam());
+      
+        executeTask(doctor, task, 200);    
+
+        assertGreaterThan("Estimated Time for examination", 0D, death.getEstTimeExam());
+        assertGreaterThan("Time completed in examination", 0D, death.getTimeSpentExam());
+  
+        // Complete exam
+        assertEquals("Report next", null, task.getPhase());
 
         // Complete report
         executeTaskUntilPhase(doctor, task, 1000);

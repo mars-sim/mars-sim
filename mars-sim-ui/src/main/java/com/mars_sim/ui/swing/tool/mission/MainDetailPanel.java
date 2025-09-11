@@ -225,7 +225,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		mainLayout.setBorder(blackline);
 		
 		// Prepare travel grid layout.
-		AttributePanel travelGridPane = new AttributePanel(1, 2, 0, 1);
+		AttributePanel travelGridPane = new AttributePanel();
 		mainLayout.add(travelGridPane, BorderLayout.CENTER);
 
 		vehicleLabel = new EntityLabel(desktop);
@@ -250,9 +250,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		// Create member table.
 		JTable logTable = new JTable(logTableModel);
-		logTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		logTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-		logTable.getColumnModel().getColumn(2).setPreferredWidth(120);
+		logTable.getColumnModel().getColumn(0).setPreferredWidth(70);
+		logTable.getColumnModel().getColumn(1).setPreferredWidth(90);
+		logTable.getColumnModel().getColumn(2).setPreferredWidth(70);
 		
 		var scroller = StyleManager.createScrollBorder("Phase Log", logTable);
 		var dim = new Dimension(WIDTH, LOG_HEIGHT);
@@ -274,8 +274,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	
 			// Create member table.
 			var memberTable = new JTable(memberTableModel);
-			memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+			memberTable.getColumnModel().getColumn(0).setPreferredWidth(70);
+			memberTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 			memberTable.getColumnModel().getColumn(2).setPreferredWidth(20);
 			memberTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 			memberTable.setRowSelectionAllowed(true);

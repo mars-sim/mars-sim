@@ -317,7 +317,7 @@ public final class EVASuitUtil {
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	public static void transferSuitsToVehicle(Person p, Settlement disembarkSettlement, Mission mission) {
+	public static void checkTransferSuitsToVehicle(Person p, Settlement disembarkSettlement, Mission mission) {
 		if (p.getSuit() == null && p.isInVehicle()) {
 
 			Vehicle v = p.getVehicle();

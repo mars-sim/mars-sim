@@ -219,8 +219,7 @@ public class ExamineBody extends MedicalAidTask {
 	 * @return the amount of time (millisol) left over after performing the phase.
 	 */
 	private double examiningPhase(double time) {
-		double remainingTime = 0;
-
+	
 		var mal = getMalfunctionable();
 
 		// If medical aid has malfunction, end task.

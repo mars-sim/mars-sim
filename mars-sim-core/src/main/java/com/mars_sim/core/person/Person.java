@@ -1778,7 +1778,6 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			else if (destination instanceof MarsSurface ms) {
 				transferred = ms.addPerson(this);
 			}
-			
 			else if (destination instanceof Settlement s) {
 				transferred = s.addToIndoor(this);
 				// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
@@ -1786,10 +1785,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 				// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
 			}
 			else if (destination instanceof Building b) {
+				// A person is coming home as the vehicle is being garaged and is about
+				// to walk out of the vehicle into the garage building. 
+				// See Walk::exitingRoverGaragePhase
 				transferred = b.getSettlement().addToIndoor(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance
 				BuildingManager.setToBuilding(this, b);
+				// Switch the destination from building to settlement
 				destination = b.getSettlement();
 			}
 

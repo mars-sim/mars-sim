@@ -129,6 +129,7 @@ public class Walk extends Task {
 
 			// If no mission and vehicle is at a settlement location, enter settlement.
 			boolean walkToSettlement = false;
+			
 			if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null)) {
 
 				Settlement settlement = vehicle.getSettlement();
@@ -136,13 +137,17 @@ public class Walk extends Task {
 				// Check if vehicle is in garage.
 				Building garageBuilding = vehicle.getGarage();
 				if (garageBuilding != null) {
+					// Note: if the vehicle is already garaged, what difference does it make 
+					// to the occupants of this vehicle when it comes to 
+					// walking out of the vehicle into the garage ?
 					targetObject = garageBuilding;
 					walkToSettlement = true;
 				}
 
-				else if (vehicle instanceof Rover) {
-					// If not on a LUV
-
+				else {			
+					// Question: is this the right place to direct a person to walk
+				    // out of a garaged vehicle 
+				
 					// Check if person has a good EVA suit available if in a rover.
 					boolean goodEVASuit = true;
 					boolean roverSuit = vehicle.containsEquipment(EquipmentType.EVA_SUIT);
@@ -158,21 +163,12 @@ public class Walk extends Task {
 						}
 					}
 				}
-				else {
-					// If on a LUV, retrieve person from vehicle.
-					if (person.transfer(unitManager.getMarsSurface())) {
-						logger.info(person, "successfully retrieved " + person + " from " + vehicle.getName());
-					}
-					else {
-						logger.warning(worker, "failed to retrieve " + person + " from " + vehicle.getName());
-					}
-				}
 			}
 
 			if (!walkToSettlement) {
 				// Walk to random location within rover.
-				if (vehicle instanceof Rover) {
-					targetObject = person.getVehicle();
+				if (vehicle instanceof Rover r) {
+					targetObject = r;
 				}
 			}
 		}
@@ -951,6 +947,8 @@ public class Walk extends Task {
 		if (person != null
 			// Exit the rover parked inside a garage onto the settlement
 			&& person.isInVehicleInGarage()
+			// Note: in transfer(), it will automatically switch the destination 
+			//       from building back to settlement
 				&& person.transfer(garageBuilding)) {
 					logger.log(person, Level.INFO, 4_000,
 							"Exited rover " + rover.getName()
@@ -961,6 +959,8 @@ public class Walk extends Task {
 
 		else if (robot != null 
 			&& robot.isInVehicleInGarage()
+			// Note: in transfer(), it will automatically switch the destination 
+			//       from building back to settlement
 				&& robot.transfer(garageBuilding)) {
 					logger.log(robot, Level.INFO, 4_000,
 							"Exited rover " + rover.getName()

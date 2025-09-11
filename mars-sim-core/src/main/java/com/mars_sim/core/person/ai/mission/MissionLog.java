@@ -37,13 +37,7 @@ public class MissionLog implements Serializable  {
             this.entry = entry;
             this.enterBy = enterBy;
         }
-    
-        private MissionLogEntry(MarsTime time, String entry) {
-            super();
-            this.time = time;
-            this.entry = entry;
-        }
-        
+      
         public MarsTime getTime() {
             return time;
         }
@@ -74,7 +68,26 @@ public class MissionLog implements Serializable  {
 	 * @param enterBy the name of the person who logs this
      */
     public void addEntry(String entry, String enterBy) {
-		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
+    	int size = log.size();
+    	MissionLogEntry lastLastLog = null;
+    	MissionLogEntry lastLog = null;
+    	if (size - 2 >= 0) {
+    		lastLastLog = log.get(size - 2);
+        	lastLog = log.get(size - 1);
+        	String lastLastEntry = lastLastLog.getEntry();
+        	String lastEntry = lastLog.getEntry();
+        	String lastLastEnterBy = lastLastLog.getEnterBy();
+        	String lastEnterBy = lastLog.getEnterBy();
+        	if (lastEntry.equals(entry) && lastEnterBy.equals(enterBy)
+        		&& lastLastEntry.equals(entry) && lastLastEnterBy.equals(enterBy)) {
+        		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
+        		// The last log is not needed
+        		log.remove(size - 1);
+        	}
+    	}
+    	else {    	
+    		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
+    	}
     }
 
     /**
@@ -84,7 +97,7 @@ public class MissionLog implements Serializable  {
 	 * @param enterBy the name of the person who logs this
      */
     public void addEntry(String entry) {
-		log.add(new MissionLogEntry(clock.getMarsTime(), entry));
+    	addEntry(entry, null);
     }
     
     /**

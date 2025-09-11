@@ -2313,7 +2313,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	@Override
 	public boolean transfer(UnitHolder destination) {
-		boolean leaving = false;
+		boolean departingFromHome = false;
 		boolean transferred = false;
 		var cu = getContainerUnit();
 		// Note: at startup, a vehicle has Mars Surface as the container unit by default
@@ -2323,8 +2323,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 		
 		else if (cu instanceof Settlement s) {
+			// The vehicle is about to depart either from the settlement vicinity or from a garage in a settlement 
 			transferred = s.removeVicinityParkedVehicle(this);
-			leaving = true;
+			departingFromHome = true;
 		}
 
 		if (!transferred) {
@@ -2333,11 +2334,13 @@ public abstract class Vehicle extends AbstractMobileUnit
 		}
 		else {
 			if (destination instanceof MarsSurface ms) {
+				// Vehicle is leaving the settlement vicinity onto the surface of mars
 				transferred = ms.addVehicle(this);
-				leaving = true;
+				departingFromHome = true;
 			}
 			else if (destination instanceof Settlement s) {
-    			// Add the vehicle to the settlement
+    			// Add the vehicle to the settlement vicinity
+				// After this, the vehicle may enter a garage
 				transferred = s.addVicinityVehicle(this);
 			}
 
@@ -2346,7 +2349,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				// NOTE: need to revert back the storage action
 			}
 			else {
-				if (leaving && isInGarage()) {
+				if (departingFromHome && isInGarage()) {
 					BuildingManager.removeFromGarage(this);
 					
 					// Transfer each occupant 
