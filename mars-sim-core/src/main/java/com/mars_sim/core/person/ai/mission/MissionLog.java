@@ -71,6 +71,8 @@ public class MissionLog implements Serializable  {
     	int size = log.size();
     	MissionLogEntry lastLastLog = null;
     	MissionLogEntry lastLog = null;
+    	
+    	// Future: should look for the same message that occurs within a short time frame
     	if (size - 2 >= 0) {
     		lastLastLog = log.get(size - 2);
         	lastLog = log.get(size - 1);
@@ -83,6 +85,9 @@ public class MissionLog implements Serializable  {
         		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
         		// The last log is not needed
         		log.remove(size - 1);
+        	}
+        	else {
+        		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
         	}
     	}
     	else {    	

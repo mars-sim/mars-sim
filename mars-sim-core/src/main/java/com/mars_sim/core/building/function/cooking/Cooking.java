@@ -116,7 +116,12 @@ public class Cooking extends Function {
 	private static final double WASTE_WATER_TANK_CAPACITY = 5.0;
 	private static final double UP = 0.01;
 	private static final double DOWN = 0.007;
-
+	
+	/** The amount of cleaning agent per sol. */
+	private static double CLEANING_AGENT_PER_SOL;
+	/** The dry mass of a meal per serving. */
+	private static double DRY_MASS_PER_SERVING;
+	
 	private boolean cookNoMore = false;
 
 	/** The cache for msols */
@@ -127,12 +132,11 @@ public class Cooking extends Function {
 	private double wasteWaterTank;
 	/** The amount of water in the holding tank. */
 	private double waterHoldingTank;
-	// Dynamically adjusted the rate of generating meals
-	private double cleaningAgentPerSol;
 	/** Cleanliness score between -1 and 1. */
 	private double cleanliness;
+	
 	private double cookingWorkTime;
-	private double dryMassPerServing;
+
 
 	// Data members
 	private List<PreparedDish> availableDishes;
@@ -161,14 +165,24 @@ public class Cooking extends Function {
 		this.cookCapacity = spec.getCapacity();
 
 		// need this to pass maven test
-		cleaningAgentPerSol = mealConfig.getCleaningAgentPerSol();
-		dryMassPerServing = mealConfig.getDryMassPerServing();
+		CLEANING_AGENT_PER_SOL = mealConfig.getCleaningAgentPerSol();
+		DRY_MASS_PER_SERVING = mealConfig.getDryMassPerServing();
 
 		qualityMap = new HashMap<>();
 	}
+	
+	/**
+	 * Gets the cleaning agent usage.
+	 * 
+	 * @return
+	 */
+	public static double getCleaningAgentPerSol() {
+		return CLEANING_AGENT_PER_SOL;
+	}
 
 	/**
-	 * Rerturn a map of the best and worse meals cooked today
+	 * Returns a map of the best and worse meals cooked today.
+	 * 
 	 * @return
 	 */
 	public Map<String, DishStats> getQualityMap() {
@@ -422,7 +436,7 @@ public class Cooking extends Function {
 		String nameOfMeal = hotMeal.getName();
 
 		MarsTime currentTime = masterClock.getMarsTime();
-		PreparedDish meal = new PreparedDish(nameOfMeal, mealQuality, dryMassPerServing,
+		PreparedDish meal = new PreparedDish(nameOfMeal, mealQuality, DRY_MASS_PER_SERVING,
 										currentTime);
 		availableDishes.add(meal);
 		mealCounterPerSol++;
@@ -581,12 +595,12 @@ public class Cooking extends Function {
 	}
 
 	/**
-	 * Gets the quantity of one serving of meal.
+	 * Gets the standard dry mass of one serving of meal.
 	 *
 	 * @return quantity
 	 */
 	public double getMassPerServing() {
-		return dryMassPerServing;
+		return DRY_MASS_PER_SERVING;
 	}
 
 	/**
@@ -615,6 +629,8 @@ public class Cooking extends Function {
 						.filter(meal -> meal.getExpirationTime().getTimeDiff(now) < 0D)
 						.toList();
 
+				double massPerServing = DRY_MASS_PER_SERVING;
+				
 				// Handle expired cooked meals.
 				for (PreparedDish meal : expired) {
 					// Note: turn this into a task
@@ -626,11 +642,11 @@ public class Cooking extends Function {
 					StringBuilder log = new StringBuilder();
 
 					if (qNum < 1) {
-						if (dryMassPerServing > 0)
+						if (massPerServing > 0)
 							// Turn low quality food into food waste
-							store(dryMassPerServing, ResourceUtil.FOOD_WASTE_ID, "Cooking::timePassing");
+							store(massPerServing, ResourceUtil.FOOD_WASTE_ID, "Cooking::timePassing");
 
-						log.append(dryMassPerServing)
+						log.append(massPerServing)
 								.append(" kg ").append(meal.getName()).append(DISCARDED);
 
 						logger.log(building, Level.FINE, 10_000, log.toString());
@@ -640,7 +656,7 @@ public class Cooking extends Function {
 						preserveFood();
 
 						log.append(CONVERTING)
-								.append(dryMassPerServing).append(" kg ").append(meal.getName())
+								.append(massPerServing).append(" kg ").append(meal.getName())
 								.append(PRESERVED);
 
 						logger.log(building, Level.INFO, 20_000, log.toString());
@@ -699,8 +715,8 @@ public class Cooking extends Function {
 	 */
 	private void cleanUpKitchen() {
 		var s = building.getSettlement();
-		double amountAgent = cleaningAgentPerSol;		 
-		double lackingAgent = s.retrieveAmountResource(ResourceUtil.NACLO_ID, amountAgent);
+		double amountAgent = CLEANING_AGENT_PER_SOL;		 
+		double lackingAgent = s.retrieveAmountResource(ResourceUtil.CLEANING_AGENT_ID, amountAgent);
 
 		double amountWater = 10 * amountAgent;
 		double lackingWater = s.retrieveAmountResource(ResourceUtil.WATER_ID, amountWater);
@@ -731,8 +747,8 @@ public class Cooking extends Function {
 	private void preserveFood() {
 		// Note: turn this into a task
 		building.getSettlement().retrieveAmountResource(ResourceUtil.TABLE_SALT_ID, AMOUNT_OF_SALT_PER_MEAL);
-		if (dryMassPerServing > 0)
-			store(dryMassPerServing, ResourceUtil.FOOD_ID, "Cooking::preserveFood");
+		if (DRY_MASS_PER_SERVING > 0)
+			store(DRY_MASS_PER_SERVING, ResourceUtil.FOOD_ID, "Cooking::preserveFood");
 	}
 
 	/**

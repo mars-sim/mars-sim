@@ -184,7 +184,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity type="nitrogen" amount="1.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
-			<capacity type="carbon dioxide" amount="1.0" />
+			<capacity type="carbon dioxide" amount="10.0" />
 
 			<!-- Default: varies according to the type of vehicle  -->
 			<capacity type="water" amount="200.0" />
@@ -262,7 +262,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity type="oxygen" amount="250.0" />
 			
 			<capacity type="nitrogen" amount="2.0" />
-			<capacity type="carbon dioxide" amount="2.0" />
+			<capacity type="carbon dioxide" amount="20.0" />
 			
 			<capacity type="water" amount="300.0" />
 			<capacity type="food" amount="90.0" />
@@ -319,7 +319,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity type="oxygen" amount="450.0" />
 			
 			<capacity type="nitrogen" amount="16.0" />
-			<capacity type="carbon dioxide" amount="8.0" />
+			<capacity type="carbon dioxide" amount="80.0" />
 			
 			<capacity type="water" amount="600.0" />
 			<capacity type="food" amount="200.0" />
@@ -370,7 +370,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			<capacity type="oxygen" amount="650.0" />
 			
 			<capacity type="nitrogen" amount="16.0" />
-			<capacity type="carbon dioxide" amount="8.0" />
+			<capacity type="carbon dioxide" amount="20.0" />
 			
 			<capacity type="water" amount="800.0" />
 			<capacity type="food" amount="250.0" />

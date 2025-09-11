@@ -36,6 +36,7 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Airlockable;
+import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -141,6 +142,9 @@ public class Walk extends Task {
 					// to the occupants of this vehicle when it comes to 
 					// walking out of the vehicle into the garage ?
 					targetObject = garageBuilding;
+					
+					((Crewable)vehicle).getCrew().remove(person);
+					
 					walkToSettlement = true;
 				}
 

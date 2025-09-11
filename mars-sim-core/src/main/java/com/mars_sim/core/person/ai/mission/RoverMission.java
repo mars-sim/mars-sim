@@ -353,6 +353,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			
 			// If the leader is not ejected, then the mission can be proceeded
 			if (!ejectedMembers.contains(getStartingPerson())) {
+				
+				
 				canDepart = true;
 			}
 			else {

@@ -957,7 +957,7 @@
 		<inputs>
 			<resource name="Wheat Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
-			<resource name="Baking Powder" amount="0.02" />
+			<resource name="Baking soda" amount="0.02" />
 			<resource name="Soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
@@ -974,7 +974,7 @@
 		<inputs>
 			<resource name="Rice Flour" amount="1.0" />
 			<resource name="Water" amount="1" />
-			<resource name="Baking Powder" amount="0.02" />
+			<resource name="Baking soda" amount="0.02" />
 			<resource name="Soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
@@ -1152,7 +1152,7 @@
 	<process name="Make Blueberry Muffin"
 		tech="2" skill="2" work-time="50" process-time="100"
 			power-required="0.2">
-		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry
+		<description>Mix flour, sugar, salt, baking soda, honey, and blueberry
 			and bake in preheated oven at 200 deg C. </description>
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
@@ -1160,7 +1160,7 @@
 			<resource name="table salt" amount="0.1" />
 			<resource name="Water" amount="2.0" />
 			<resource name="Honey" amount="0.1" />
-			<resource name="Baking Powder" amount="0.1" />
+			<resource name="Baking soda" amount="0.1" />
 			<resource name="Wheat Flour" amount="1.5" />
 		</inputs>
 		<outputs>
@@ -1171,7 +1171,7 @@
 	<process name="Make Okara Blueberry Muffin"
 		tech="2" skill="2" work-time="50" process-time="100"
 			power-required="0.2">
-		<description>Mix flour, sugar, salt, baking powder, honey, and blueberry
+		<description>Mix flour, sugar, salt, baking soda, honey, and blueberry
 			and bake in preheated oven at 200 deg C. </description>
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
@@ -1179,7 +1179,7 @@
 			<resource name="table salt" amount="0.1" />
 			<resource name="Water" amount="2.0" />
 			<resource name="Honey" amount="0.1" />
-			<resource name="Baking Powder" amount="0.1" />
+			<resource name="Baking soda" amount="0.1" />
 			<resource name="Wheat Flour" amount="1.3" />
 			<resource name="Okara" amount="0.35" />
 		</inputs>

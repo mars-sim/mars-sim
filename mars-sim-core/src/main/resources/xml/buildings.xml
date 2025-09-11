@@ -487,7 +487,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- chemicals: 210 kg  -->
 				<resource-initial type="bleaching chemical" amount="50.0" />
-				<resource-initial type="baking powder" amount="50.0" />
+				<resource-initial type="Baking soda" amount="50.0" />
 				<resource-initial type="bisphenol-a" amount="50.0" />
 				<resource-initial type="sodium hypochlorite" amount="50.0" />
 				<resource-initial type="immune booster" amount="50.0" />
@@ -1157,10 +1157,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="8000">	
-				<resource-capacity type="glucose" amount="1000.0" />
+				<resource-capacity type="glucose" amount="2000.0" />
 				<resource-capacity type="water" amount="400.0" />
-				<resource-capacity type="acetic acid" amount="6000.0" />
-				<resource-capacity type="hydrogen" amount="1600.0" />							
+				<resource-capacity type="acetic acid" amount="3600.0" />
+				<resource-capacity type="hydrogen" amount="1000.0" />	
+				<resource-capacity type="carbon dioxide" amount="2000.0" />						
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
@@ -2657,7 +2658,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="Wheat Flour" amount="500.0" />
 				<resource-capacity type="Granola Bar" amount="500.0" />
 				<resource-capacity type="Honey" amount="500.0" />
-				<resource-capacity type="Baking Powder" amount="500.0" />
+				<resource-capacity type="Baking soda" amount="500.0" />
 				<resource-capacity type="Cranberry Juice" amount="100.0" />
 				<resource-capacity type="Sugarcane Juice" amount="100.0" />
 				<resource-capacity type="Blueberry Muffin" amount="500.0" />
@@ -4175,7 +4176,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- chemicals: 210 kg  -->
 				<resource-initial type="bleaching chemical" amount="50.0" />
-				<resource-initial type="baking powder" amount="50.0" />
+				<resource-initial type="Baking soda" amount="50.0" />
 				<resource-initial type="bisphenol-a" amount="50.0" />
 				<resource-initial type="sodium hypochlorite" amount="50.0" />
 				<resource-initial type="immune booster" amount="50.0" />

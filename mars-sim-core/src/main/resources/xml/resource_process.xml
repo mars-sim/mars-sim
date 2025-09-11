@@ -70,7 +70,7 @@
 		<input resource="Water" rate="36.0" />	
 
 		<output resource="Acetic acid" rate="120.0" />
-		<output resource="Carbon dioxide" rate="88.0" />
+		<output resource="Carbon dioxide" rate="88.0" waste="false"/>
 		<output resource="Hydrogen" rate="8.0" />
 	</process>
 
@@ -88,7 +88,7 @@
 		<input resource="Glucose" rate="180.0" />
 		<input resource="water" rate="108.0" />	
 
-		<output resource="Carbon dioxide" rate="264.0" />
+		<output resource="Carbon dioxide" rate="264.0" waste="false"/>
 		<output resource="Hydrogen" rate="24.0" />
 	</process>
 
@@ -666,7 +666,7 @@
 			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
 			regolith is estimated to contain 11.3% sodium bicarbonate (baking
 			soda) and 1.15% of sodium chloride (table salt) -->
-			<output resource="baking powder" rate="4.0" />
+			<output resource="baking soda" rate="4.0" />
 			<output resource="table salt" rate="0.4" />
 	</process>
 

@@ -309,8 +309,8 @@
 	
 
 <!-- Home use chemicals -->
-	<resource name="Baking powder" type="chemical" phase="solid" edible="true">
-		Baking powder contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
+	<resource name="Baking soda" type="chemical" phase="solid" edible="true">
+		Baking soda contains sodium bicarbonate as well as the acidifying agent (cream of tartar), and also a drying agent (usually starch). </resource>
 	<resource name="Activated charcoal" type="chemical" phase="solid"> 
 		Activated charcoal's main use is as an
 	antidote in poisoning and in constructing water filter</resource>
@@ -324,8 +324,12 @@
 		Sodium Hypochlorite is
 		one of the bleaching chemical for sanitizing soybean as well as pulp
 		bleaching during paper making </resource>
+	<resource name="Cleaning agent" type="chemical" phase="liquid">
+		Unspecified cleaning agent that are composed of acetic acid, sodium hypochlorite, sodium carbonate,  </resource>	
+	<resource name="Bleaching chemical" type="chemical" phase="liquid">
+		Bleaching chemical include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
 	
-			
+				
 <!-- Industrial chemicals -->
 	<resource name="Acetic acid" type="chemical" phase="solid">
 		Acetic acid is a weak acid, and the defining ingredient in vinegar. 
@@ -353,10 +357,7 @@
 	<resource name="Bisphenol-a" type="chemical" phase="solid"> 
 		The chemical used for reinforcing
 		plastic and for making polycarbonate</resource>
-		<resource name="Bleaching chemical" type="chemical" phase="liquid">
-		Bleaching chemical
-		include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
-	
+
 	<resource name="Ceramic electrolyte" type="chemical" phase="solid"> 
 		The ceramic electrolyte 
 		is highly ion-conductive and chemically stable for making batteries and fuel cells. 

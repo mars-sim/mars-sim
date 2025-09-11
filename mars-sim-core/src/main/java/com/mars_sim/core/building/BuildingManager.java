@@ -651,6 +651,85 @@ public class BuildingManager implements Serializable {
 				.collect(Collectors.toSet());
 	}
 	
+	/**
+	 * Gets an available dining building.
+	 *
+	 * @param settlement
+	 * @param zone
+	 * @return available dining building
+	 * @throws BuildingException if error finding dining building.
+	 */
+	public static Building getAvailableDiningBuilding(Settlement settlement, int zone) {
+		Building bldg = null;
+
+		if (settlement != null) {
+			
+			List<Building> list = settlement.getBuildingManager().getBuildingSet(FunctionType.DINING)
+					.stream()
+					.filter(b -> b.getZone() == zone 
+						&& !b.getMalfunctionManager().hasMalfunction())
+					.collect(Collectors.toList());
+
+			if (!list.isEmpty()) {
+				bldg = list.get(0);
+			}
+		}
+		
+		return bldg;
+	}
+	
+	/**
+	 * Gets an available kitchen for a worker.
+	 * DO NOT DELETE. LEAVE HERE AS A REFERENCE
+	 * 
+	 * @param worker
+	 * @param functionType
+	 * @return
+	 */
+	public static Building getAvailableKitchen(Worker worker) {
+		Building result = null;		
+		
+		if (worker.isInSettlement()) {
+			BuildingManager manager = worker.getSettlement().getBuildingManager();
+			
+			Set<Building> kitchenBuildings = null;
+					
+			if (worker.getBuildingLocation() != null) {
+				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
+						.stream()
+						.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());
+			}
+			else {
+				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
+						.stream()
+						.filter(b -> b.getZone() == 0
+								&& !b.getMalfunctionManager().hasMalfunction())
+						.collect(Collectors.toSet());		
+			}
+			
+			if (UnitType.PERSON == worker.getUnitType()) {
+				kitchenBuildings = getLeastCrowdedBuildings(kitchenBuildings);
+
+				if (!kitchenBuildings.isEmpty()) {
+					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person)worker, kitchenBuildings);
+					result = RandomUtil.getWeightedRandomObject(selectedBldgs);
+				}
+			} 
+			
+			else {
+				if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
+					kitchenBuildings = getLeastCrowded4BotBuildings(kitchenBuildings);
+	
+				if (!kitchenBuildings.isEmpty()) {
+					result = RandomUtil.getARandSet(kitchenBuildings);
+				}
+			}
+		}
+
+		return result;
+	}
 	
 	/**
 	 * Gets an available dining building that the person can use. Returns null if no
@@ -2206,7 +2285,8 @@ public class BuildingManager implements Serializable {
 			if (anyZones) {
 				buildings = person.getSettlement().getBuildingManager().getBuildings(functionType)
 						.stream()
-						// Condition: the building doesn't need to be in the same zone as the person						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
+						// Condition: the building doesn't need to be in the same zone as the person						
+						.filter(b -> !b.getMalfunctionManager().hasMalfunction())
 						.collect(Collectors.toSet());
 			}
 			else {
@@ -2232,58 +2312,7 @@ public class BuildingManager implements Serializable {
 	}
 	
 		
-	/**
-	 * Gets an available kitchen for a worker.
-	 * DO NOT DELETE. LEAVE HERE AS A REFERENCE
-	 * 
-	 * @param worker
-	 * @param functionType
-	 * @return
-	 */
-	public static Building getAvailableKitchen(Worker worker) {
-		Building result = null;		
-		
-		if (worker.isInSettlement()) {
-			BuildingManager manager = worker.getSettlement().getBuildingManager();
-			
-			Set<Building> kitchenBuildings = null;
-					
-			if (worker.getBuildingLocation() != null) {
-				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
-						.stream()
-						.filter(b -> b.getZone() == worker.getBuildingLocation().getZone()
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());
-			}
-			else {
-				kitchenBuildings = manager.getBuildings(FunctionType.COOKING)
-						.stream()
-						.filter(b -> b.getZone() == 0
-								&& !b.getMalfunctionManager().hasMalfunction())
-						.collect(Collectors.toSet());		
-			}
-			
-			if (UnitType.PERSON == worker.getUnitType()) {
-				kitchenBuildings = getLeastCrowdedBuildings(kitchenBuildings);
 
-				if (!kitchenBuildings.isEmpty()) {
-					Map<Building, Double> selectedBldgs = getBestRelationshipBuildings((Person)worker, kitchenBuildings);
-					result = RandomUtil.getWeightedRandomObject(selectedBldgs);
-				}
-			} 
-			
-			else {
-				if (RandomUtil.getRandomInt(2) == 0) // robot is not as inclined to move around
-					kitchenBuildings = getLeastCrowded4BotBuildings(kitchenBuildings);
-	
-				if (!kitchenBuildings.isEmpty()) {
-					result = RandomUtil.getARandSet(kitchenBuildings);
-				}
-			}
-		}
-
-		return result;
-	}
 	
 	/**
 	 * Is the astronomy observatory the owner of this EVA Airlock ?

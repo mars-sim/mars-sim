@@ -916,6 +916,11 @@ class AmountResourceGood extends Good {
 			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
 		}
 
+		else if (id == ResourceUtil.CLEANING_AGENT_ID) {
+			// Assuming a person takes 3 meals per sol
+			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.getCleaningAgentPerSol(); 
+		}
+		
 		else {
 			if (ResourceUtil.getOilResources().contains(id)) {
 				// Assuming a person takes 3 meals per sol
