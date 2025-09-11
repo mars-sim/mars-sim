@@ -26,6 +26,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * Meta task for the ExamineBody task.
@@ -141,12 +142,13 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		List<DeathInfo> deaths = medicalManager.getPostmortemExam(settlement);
 
 		if (!deaths.isEmpty()) { // && hasNeedyMedicalAidsAtSettlement(settlement)) {
-			for(DeathInfo pm : deaths) {
-				if (!pm.getExamDone()) {
+			for(DeathInfo info : deaths) {
+				if (!info.getExamDone() 
+						&& isVehicleContainerUnitSettlement(info.getPerson())) {
 					RatingScore score = new RatingScore(DEFAULT_SCORE);
 					score.addBase("due", 
-							getMarsTime().getTimeDiff(pm.getTimeOfDeath()) * MOD_SCORE);
-					tasks.add(new ExamineBodyJob(this, pm, score));
+							getMarsTime().getTimeDiff(info.getTimeOfDeath()) * MOD_SCORE);
+					tasks.add(new ExamineBodyJob(this, info, score));
 				}
 			}
 		}
@@ -154,6 +156,31 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		return tasks;
 	}
 
+	/**
+	 * Is this person in a vehicle parked in the settlement vicinity or in a garage ?
+	 * 
+	 * @param person
+	 * @return
+	 */
+	private boolean isVehicleContainerUnitSettlement(Person person) {
+		boolean result = false;
+		
+		boolean isInSettlement = person.isInSettlement();
+		
+		if (isInSettlement) {
+			return true;
+		}
+		
+		Vehicle vehicle = person.getVehicle();
+		if (vehicle != null && 
+				(vehicle.isInGarage() || vehicle.isInSettlement() || vehicle.isInSettlementVicinity())) {
+			// In future, need to model how this person is to be transported 
+			return true;
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * Checks if there are medical aids at a settlement that have people waiting for
 	 * treatment.

@@ -319,7 +319,12 @@ public class DeathInfo implements Serializable {
 			return "None";
 	}
 
-	public void setExamDone(boolean value) {
+	/**
+	 * Timestamps the exam when done.
+	 * 
+	 * @param value
+	 */
+	public void timestampExamDone(boolean value) {
 		timePostMortemExam = Simulation.instance().getMasterClock().getMarsTime();
 		examDone = value;
 	}
@@ -381,7 +386,7 @@ public class DeathInfo implements Serializable {
 	 * 
 	 * @param name
 	 */
-	public void setDoctorSigningCertificate(String name) {
+	public void signOffDeathCertificate(String name) {
 		doctorSigningCertificate = name;
 	}
 	
