@@ -1762,7 +1762,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			// Q2: should it be the vehicle's responsibility to remove the person from the settlement
 			//     as the vehicle leaves the garage ?
 			transferred = s.removePeopleWithin(this);
-			BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
+			if (transferred)
+				BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 		}
 
 		if (!transferred) {
@@ -1774,6 +1775,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			// Check if the destination is a vehicle
 			if (destination instanceof Crewable c) {
 				transferred = c.addPerson(this);
+				// Note: will call setContainerUnit(c) below. no need of calling it here
 			}
 			else if (destination instanceof MarsSurface ms) {
 				transferred = ms.addPerson(this);
@@ -2032,7 +2034,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * 
 	 * @apiNote This method is for leaving an existing activity spot in 
 	 * order to go to a medical bed since medical beds are not characterized 
-	 * as standard activity spots just yet. Therefore calling setActivitySpot()
+	 * as standard activity spots just yet. Compare with setActivitySpot()
 	 * 
 	 * @param release
 	 */

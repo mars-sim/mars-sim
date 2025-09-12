@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -241,7 +239,7 @@ abstract class EVAMission extends RoverMission {
 				activeEVA = performEVA((Person) member);
 				if (!activeEVA) {
 					logger.info(member, "EVA operation Terminated.");
-					addMissionLog("EVA Ops Terminated.", member.getName());
+					addMissionLog("EVA Terminated.", member.getName());
 				}
 			}
 		} 

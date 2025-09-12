@@ -85,7 +85,7 @@ public class FunctionTest extends AbstractMarsSimUnitTest {
 
         assertTrue("Activity spot allocated", !spot.isEmpty());
 
-        //Leave spot
+        // Leave spot
         allocated.leave(p, false);
         assertTrue("Activity spot still allocated", !spot.isEmpty());
 

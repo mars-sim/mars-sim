@@ -107,7 +107,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
 	private static final MissionStatus UNREPAIRABLE_MALFUNCTION = new MissionStatus("Mission.status.unrepairable");
 	protected static final MissionStatus MISSION_LEAD_NO_SHOW = new MissionStatus("Mission.status.leaderNoShow");
-
+	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("Mission.status.onlyOneMember");
+	
 	// Static members
 	private static final Integer WHEEL_ID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
 	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
@@ -612,7 +613,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		} else if (DEPARTING.equals(phase)) {
 			checkVehicleMaintenance();
 			performDepartingFromSettlementPhase(member);
-			startTravellingPhase();
 		}
 		else if (TRAVELLING.equals(phase)) {
 			performTravelPhase(member);
@@ -875,15 +875,14 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 		// Set the members' work shift to on-call to get ready
 		for (Worker m : getMembers()) {
-			if (m instanceof Person person) {
+			if (m instanceof Person person
 				// If first time this person has been called and there is a limit interrupt them
-				if (!person.getShiftSlot().setOnCall(true) && (deadline > 0)) {
-					// First call so 
-					Task active = person.getTaskManager().getTask();
-					if (active instanceof Sleep sp) {
-						// Not create but the only way
-						sp.setAlarm(deadline);
-					}
+				&& !person.getShiftSlot().setOnCall(true) && (deadline > 0)) {
+				// First call so 
+				Task active = person.getTaskManager().getTask();
+				if (active instanceof Sleep sp) {
+					// Not create but the only way
+					sp.setAlarm(deadline);
 				}
 			}
 		}
@@ -2081,12 +2080,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private double computeTotalDistanceTravelled() {
 		if (vehicle != null) {
-			double dist = vehicle.getOdometerMileage() - startingTravelledDistance;
-			if (dist != distanceTravelled) {
+			double diff = vehicle.getOdometerMileage() - startingTravelledDistance;
+			if (diff != distanceTravelled) {
 				// Update or record the distance
-				distanceTravelled = dist;
+				distanceTravelled = diff;
 				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
-				return dist;
+				return diff;
 			}
 		}
 

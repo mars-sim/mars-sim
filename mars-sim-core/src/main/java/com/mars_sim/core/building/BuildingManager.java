@@ -1743,6 +1743,7 @@ public class BuildingManager implements Serializable {
 		if (building != null && building.getLifeSupport() != null) {
 			building.getLifeSupport().removePerson(person);
 			person.setCurrentBuilding(null);
+			person.leaveActivitySpot(false);
 		} 
 	}
 
@@ -1756,6 +1757,7 @@ public class BuildingManager implements Serializable {
 		if (building != null && building.getRoboticStation() != null) {
 			building.getRoboticStation().removeRobot(robot);
 			robot.setCurrentBuilding(null);
+			robot.leaveActivitySpot(false);
 		} 
 	}
 

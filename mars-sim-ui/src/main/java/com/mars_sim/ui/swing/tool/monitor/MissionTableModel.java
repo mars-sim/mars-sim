@@ -70,7 +70,7 @@ public class MissionTableModel extends AbstractMonitorModel
 	/** Remaining distance column. */
 	private static final int TOTAL_REMAINING_DISTANCE_KM = 13;
 	/** Travelled distance column. */
-	private static final int ACTUAL_TRAVELLED_DISTANCE_KM = 14;
+	private static final int TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM = 14;
 	/** Proposed route distance column. */
 	private static final int TOTAL_ESTIMATED_DISTANCE_KM = 15;
 	/** The number of Columns. */
@@ -105,7 +105,7 @@ public class MissionTableModel extends AbstractMonitorModel
 		COLUMNS[TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.travelled"), Double.class);
 		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.remaining"), Double.class);		
 		COLUMNS[TOTAL_REMAINING_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.remaining"), Double.class);
-		COLUMNS[ACTUAL_TRAVELLED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.travelled"), Double.class);	
+		COLUMNS[TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.travelled"), Double.class);	
 		COLUMNS[TOTAL_ESTIMATED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.proposed"), Double.class);
 	}
 
@@ -261,7 +261,7 @@ public class MissionTableModel extends AbstractMonitorModel
 						columnsToUpdate.add(TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(REMAINING_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE_KM);
-						columnsToUpdate.add(ACTUAL_TRAVELLED_DISTANCE_KM);
+						columnsToUpdate.add(TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM);
 						columnsToUpdate.add(TOTAL_ESTIMATED_DISTANCE_KM);
 					} break;
 
@@ -387,7 +387,7 @@ public class MissionTableModel extends AbstractMonitorModel
 				}
 				break;
 				
-			case ACTUAL_TRAVELLED_DISTANCE_KM:
+			case TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM:
 				if (mission instanceof VehicleMission vm) {
 					result = vm.getTotalDistanceTravelled();
 				}

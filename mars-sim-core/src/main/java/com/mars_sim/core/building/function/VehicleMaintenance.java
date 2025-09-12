@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.location.LocationStateType;
@@ -412,16 +411,16 @@ public abstract class VehicleMaintenance extends Function {
 				// and it's called by removeFromGarage()
 				Vehicle v = p.getVehicle();
 				if (v != null) {
-					// Note: Removing a person from a building can be dangerous				
-					BuildingManager.removePersonFromBuilding(p, building);
+					p.transfer(vehicle);
+					// Note: inside transfer() will call BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 				}
 			}
 			// Remove the robot occupants from the settlement
 			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
 				Vehicle v = r.getVehicle();
 				if (v != null) {
-					// Note: Removing a robot from a building can be dangerous
-					BuildingManager.removeRobotFromBuilding(r, building);
+					r.transfer(vehicle);
+					// Note: inside transfer() will call BuildingManager.removePersonFromBuilding(this, getBuildingLocation());
 				}
 			}
 		}

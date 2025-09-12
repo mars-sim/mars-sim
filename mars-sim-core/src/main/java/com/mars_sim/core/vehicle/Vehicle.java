@@ -2349,20 +2349,27 @@ public abstract class Vehicle extends AbstractMobileUnit
 				// NOTE: need to revert back the storage action
 			}
 			else {
-				if (departingFromHome && isInGarage()) {
-					BuildingManager.removeFromGarage(this);
+				if (departingFromHome) {
 					
-					// Transfer each occupant 
-					if (this instanceof Crewable crewable) {
-			            for (Person crewmember : crewable.getCrew()) {
-			                crewmember.transfer(this);
-			            }
+					if (isInGarage()) {
+						BuildingManager.removeFromGarage(this);
 					}
-					// Transfer each piece of equipment 
-					for (Equipment equipment : getEquipmentSet()) {
-						equipment.transfer(this);
-		            }	
+					else {
+						// Transfer each occupant 
+						if (this instanceof Crewable crewable) {
+				            for (Person crewmember : crewable.getCrew()) {
+				                crewmember.transfer(this);
+				            }
+						}
+						
+						// Transfer each piece of equipment 
+						for (Equipment equipment : getEquipmentSet()) {
+							equipment.transfer(this);
+			            }	
+					}
 				}
+				
+				// Set the container unit for this vehicle
 				setContainerUnitAndID(destination);
 			}
 		}

@@ -336,7 +336,10 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the person can be added
 	 */
 	public boolean addPerson(Person person) {
-		if (!isCrewmember(person) && occupants.add(person)) {
+		if (isCrewmember(person)) {
+			return true;
+		}
+		if (occupants.add(person)) {
 			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, person);
@@ -352,9 +355,12 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the person can be removed
 	 */
 	public boolean removePerson(Person person) {
-		if (isCrewmember(person)) {
+		if (!isCrewmember(person)) {
+			return true;
+		}
+		if (occupants.remove(person)) {
 			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, person);
-			return occupants.remove(person);
+			return true;
 		}
 		return false;
 	}
@@ -366,9 +372,13 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the robot can be added
 	 */
 	public boolean addRobot(Robot robot) {
-		if (!isRobotCrewmember(robot)) {
+		if (isRobotCrewmember(robot)) {
+			return true;
+		}
+		if (robotOccupants.add(robot)) {
+			robot.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, robot);
-			return robotOccupants.add(robot);
+			return true;
 		}
 		return false;
 	}
@@ -380,7 +390,10 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * @param true if the robot can be removed
 	 */
 	public boolean removeRobot(Robot robot) {
-		if (isRobotCrewmember(robot)) {
+		if (!isRobotCrewmember(robot)) {
+			return true;
+		}
+		if (robotOccupants.remove(robot)) {
 			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, robot);
 			return robotOccupants.remove(robot);
 		}

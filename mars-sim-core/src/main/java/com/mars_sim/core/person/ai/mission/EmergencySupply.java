@@ -275,20 +275,21 @@ public class EmergencySupply extends RoverMission {
 		var emergencySettlement = supplies.getDestination();
 		Vehicle v = getVehicle();
 		
-		if (member.isInVehicle()) {
-
-			// Move person to random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
-
-			if (member instanceof Person person) {
-				if (!person.isDeclaredDead()) {
-					
+		// Move person to random location within rover.
+		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
+		
+		for (Worker w: getMembers()) {
+			if (w instanceof Person person		
+					&& !person.isDeclaredDead()) {
+				
+				if (member.isInVehicle()) {
 					if (v == null)
 						v = person.getVehicle();
-					
+						
 					// Check if an EVA suit is available
 					EVASuitUtil.fetchEVASuitFromAny(person, v, emergencySettlement);
-
+				}
+				else {
 					// If person is not aboard the rover, board rover.
 					
 					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);
@@ -302,14 +303,14 @@ public class EmergencySupply extends RoverMission {
 					}
 					
 					else {
-						endMissionProblem(person, "Cannot enter " + v.getName());
+						endMissionProblem(person, "Unable to walk toward " + v.getName());
 					}
 				}
 			}
 		}
 
 		// If rover is loaded and everyone is aboard, embark from settlement.
-		if (isEveryoneInRover()) {
+		if (!isDone() && isEveryoneInRover(member)) {
 			
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {

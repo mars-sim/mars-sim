@@ -409,42 +409,45 @@ public class Trade extends RoverMission implements CommerceMission {
 	private void performTradeEmbarkingPhase(Worker member) {
 		Vehicle v = getVehicle();
 		
-		// If person is not aboard the rover, board rover.
-		if (!isDone() && !member.isInVehicle()) {
+		// Question: is the trading settlement responsible
+		// for providing an EVA suit for each person
 
-			// Move person to random location within rover.
-			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);			
-
-			// Question: is the trading settlement responsible
-			// for providing an EVA suit for each person
-			for (Worker mm: getMembers()) {
-				if (mm instanceof Person person) {
-					if (person.isDeclaredDead()) {
-						continue;
-					}
-
+		// Move person to random location within rover.
+		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
+		
+		for (Worker w: getMembers()) {
+			if (w instanceof Person person		
+					&& !person.isDeclaredDead()) {
+				
+				if (member.isInVehicle()) {
 					if (v == null)
 						v = person.getVehicle();
-					
+						
 					// Check if an EVA suit is available
 					EVASuitUtil.fetchEVASuitFromAny(person, v, objective.getTradingVenue());
-
+				}
+				else {
+					// If person is not aboard the rover, board rover.
+					
 					WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);
 					boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
-					// Walk back to the vehicle and be ready to embark and go home
+					
 					if (canWalk) {
-						assignTask(person, new Walk(person, walkingSteps));
+						boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+						if (!canDo) {
+							logger.warning(person, "Unable to start walk to " + v + ".");
+						}
 					}
-
+					
 					else {
-						endMissionProblem(person, "Unable to enter rover " + v.getName());
+						endMissionProblem(person, "Unable to walk toward " + v.getName());
 					}
 				}
 			}
 		}
-
+		
 		// If rover is loaded and everyone is aboard, embark from settlement.
-		if (!isDone() && isEveryoneInRover()) {
+		if (!isDone() && isEveryoneInRover(member)) {
 
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {

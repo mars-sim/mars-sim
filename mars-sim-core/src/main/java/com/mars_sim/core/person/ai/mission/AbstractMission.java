@@ -1420,7 +1420,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			case APPROVED:
 				createDesignationString();
 
-				logger.info(this, "Mission plan for was approved.");
+				logger.info(this, "Mission plan approved.");
 
 				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
