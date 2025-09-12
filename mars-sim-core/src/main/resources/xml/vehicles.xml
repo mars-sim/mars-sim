@@ -173,7 +173,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 			
 			<!-- Default: varies according to the type of vehicle -->
 			<!-- The H2 tank on Toyota Mirai has a 5 kg capacity http://www.mytoyotamirai.com/toyota-mirai-specifications/ -->
-			<capacity type="methanol" amount="100.0" />
+			<capacity type="methanol" amount="120.0" />
 			
 			<!-- ratio of oxidizer to fuel is 1.5:1. Thus 300 kg methanol needs 450 kg oxygen -->
 			<!-- Assuming totalTripHours is 45 hrs, each person consumes .8 kg / 24.66 hrs * totalTripHours -> 1.65 kg -->
@@ -258,7 +258,7 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="6.0"/>
 		<crew-size value="4" />
 		<cargo total-capacity="2400.0">
-			<capacity type="methanol" amount="150.0" />
+			<capacity type="methanol" amount="180.0" />
 			<capacity type="oxygen" amount="250.0" />
 			
 			<capacity type="nitrogen" amount="2.0" />
@@ -315,8 +315,8 @@ http://www.marspapers.org/paper/Zubrin_1991.pdf
 		<terrain-handling value="3.0"/>
 		<crew-size value="8" />
 		<cargo total-capacity="4000.0">
-			<capacity type="methanol" amount="300.0" />
-			<capacity type="oxygen" amount="450.0" />
+			<capacity type="methanol" amount="320.0" />
+			<capacity type="oxygen" amount="480.0" />
 			
 			<capacity type="nitrogen" amount="16.0" />
 			<capacity type="carbon dioxide" amount="80.0" />
