@@ -342,27 +342,25 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 
 			// Still enough members ? If so eject late arrivals
-			if ((getMembers().size() - ejectedMembers.size()) >= 2) {
+			if ((getMembers().size() - ejectedMembers.size()) >= MIN_GOING_MEMBERS) { 
 				for (Person ej : ejectedMembers) {
 					removeMember(ej);
 					logger.warning(ej, "(" + ej.getTaskDescription() + " in " + ej.getLocationTag().getExtendedLocation() 
-							+ ") got evicted from " + r.getName() + " as the rover was departing for " + getName() + ".");
-					addMissionLog("Evicted", ej.getName());
+							+ ") got ejected from " + r.getName() + " as the rover was departing for " + getName() + ".");
+					addMissionLog("Ejected", ej.getName());
 				}
 			}
 			
 			// If the leader is not ejected, then the mission can be proceeded
-			if (!ejectedMembers.contains(getStartingPerson())) {
-				
-				
-				canDepart = true;
+			if (ejectedMembers.contains(getStartingPerson())) {
+				canDepart = false;
 			}
 			else {
 				Person lead = (Person)member;
 				// If the leader is ejected, then the mission must be cancelled
 				logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
 						+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
-						+ ") got evicted from " + getName() + " and mission cancelled.");
+						+ ") got ejected from " + getName() + " and mission cancelled.");
 				addMissionLog(MISSION_LEAD_NO_SHOW.getName(), lead.getName());
 				endMission(MISSION_LEAD_NO_SHOW);
 			}

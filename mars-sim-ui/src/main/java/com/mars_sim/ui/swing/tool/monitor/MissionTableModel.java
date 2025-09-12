@@ -46,7 +46,7 @@ public class MissionTableModel extends AbstractMonitorModel
 	/** Date Embarked column. */
 	private static final int DATE_EMBARKED = 1;
 	/** Date Returned column. */
-	private static final int DATE_RETURNED = 2;
+	private static final int DATE_COMPLETED = 2;
 	/** Starting member column. */
 	private static final int STARTING_MEMBER = 3;
 	/** Mission String column. */
@@ -93,7 +93,7 @@ public class MissionTableModel extends AbstractMonitorModel
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[DATE_FILED] = new ColumnSpec(Msg.getString("MissionTableModel.column.filed"), MarsTime.class);
 		COLUMNS[DATE_EMBARKED] = new ColumnSpec(Msg.getString("MissionTableModel.column.embarked"), MarsTime.class);
-		COLUMNS[DATE_RETURNED] = new ColumnSpec(Msg.getString("MissionTableModel.column.returned"), MarsTime.class);
+		COLUMNS[DATE_COMPLETED] = new ColumnSpec(Msg.getString("MissionTableModel.column.completed"), MarsTime.class);
 		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("MissionTableModel.column.name"), String.class);
 		COLUMNS[MISSION_STRING] = new ColumnSpec(Msg.getString("MissionTableModel.column.missionString"), String.class);
 		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("MissionTableModel.column.designation"), String.class);
@@ -304,15 +304,15 @@ public class MissionTableModel extends AbstractMonitorModel
 
 		switch (columnIndex) {
 			case DATE_FILED:
-				result = mission.getLog().getDateCreated();
+				result = mission.getLog().getTimestampCreated();
 				break;
 
 			case DATE_EMBARKED:
-				result = mission.getLog().getDateEmbarked();
+				result = mission.getLog().getTimestampEmbarked();
 				break;
 
-			case DATE_RETURNED:
-				result = mission.getLog().getDateFinished();
+			case DATE_COMPLETED:
+				result = mission.getLog().getTimestampCompleted();
 				break;
 
 			case STARTING_MEMBER:

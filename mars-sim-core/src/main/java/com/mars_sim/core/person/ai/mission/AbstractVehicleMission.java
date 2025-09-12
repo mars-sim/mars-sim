@@ -612,6 +612,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		} else if (DEPARTING.equals(phase)) {
 			checkVehicleMaintenance();
 			performDepartingFromSettlementPhase(member);
+			startTravellingPhase();
 		}
 		else if (TRAVELLING.equals(phase)) {
 			performTravelPhase(member);
@@ -621,17 +622,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (isCurrentNavpointSettlement()) {
 				performDisembarkToSettlementPhase(member, getCurrentNavpointSettlement());
 			}
-			else
+			else {
 				logger.severe(getName() + ": Current navpoint is not a settlement.");
-			
-//			int msol = getMarsTime().getMillisolInt();
-//			if (msolCache != msol) {
-//				msolCache = msol;
-//				// Update the distances only once per msol
-//				computeDistanceCurrentLegTravelled();
-//				computeTotalDistanceRemaining();
-//				computeTotalDistanceTravelled();
-//			}
+			}
 		}
 	}
 
@@ -723,7 +716,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		// If emergency, make sure the current operateVehicleTask is pointed home.
-		if ((allCrewHasMedical || hasEmergency || malfunction) &&
+		if ((allCrewHasMedical || hasEmergency || malfunction || !hasEnoughResourcesForRemainingMission()) &&
 			operateVehicleTask != null &&
 			destination != null &&
 			destination.getLocation() != null &&
@@ -1127,6 +1120,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// Create Mission Flag
 				MissionStatus status = MissionStatus.createResourceStatus(missingResourceId);
 				abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
+				addMissionLog("Non-mission member", getStartingPerson().getName());
 			}
 		}
 
@@ -2104,7 +2098,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * next navigation point.
 	 */
 	protected void startTravellingPhase() {
-		if (getLog().getDateEmbarked() == null) {
+		if (getLog().getTimestampEmbarked() == null) {
 			// If the embarked date has already been set, do not call it again
 			getLog().generatedDateEmbarked();
 		}

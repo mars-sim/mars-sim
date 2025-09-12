@@ -57,7 +57,7 @@ public class MissionLog implements Serializable  {
     }
 
     private List<MissionLogEntry> log = new ArrayList<>();
-    private MarsTime dateEmbarked;
+    private MarsTime timestampEmbarked;
     private boolean done = false;
     protected static MasterClock clock;
 
@@ -110,7 +110,7 @@ public class MissionLog implements Serializable  {
 	 *
 	 * @return
 	 */
-	public MarsTime getDateCreated() {
+	public MarsTime getTimestampCreated() {
 		if (!log.isEmpty()) {
 			return log.get(0).getTime();
 		}
@@ -119,22 +119,21 @@ public class MissionLog implements Serializable  {
 
     
 	/**
-	 * Gets the date embarked. This is after any preparation steps.
+	 * Gets the timestamp when the mission was embarked. This is after any preparation steps.
 	 *
 	 * @return
 	 */
-	public MarsTime getDateEmbarked() {
-		return dateEmbarked;
+	public MarsTime getTimestampEmbarked() {
+		return timestampEmbarked;
 	}
 
 	/**
-	 * Gets the date missions was finished.
+	 * Gets the timestamp when the mission was completed.
 	 *
 	 * @return
 	 */
-	public MarsTime getDateFinished() {
+	public MarsTime getTimestampCompleted() {
 		if (done && !log.isEmpty()) {
-            // TODO SHould this be when teh mission returned to the Settlement? 
 			return log.get(log.size()-1).getTime();
 		}
 
@@ -149,8 +148,8 @@ public class MissionLog implements Serializable  {
      * Generates the embarked date.
      */
 	public void generatedDateEmbarked() {
-		if (dateEmbarked == null) {
-			dateEmbarked = clock.getMarsTime();
+		if (timestampEmbarked == null) {
+			timestampEmbarked = clock.getMarsTime();
 		}
 	}
 

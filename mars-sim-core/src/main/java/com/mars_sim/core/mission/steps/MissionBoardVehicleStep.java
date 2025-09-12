@@ -140,7 +140,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 				for(Person ej : ejectedMembers) {
 					logger.info(ej, "Ejected from mission " + m.getName() + " missed Departure");
 					m.removeMember(ej);
-					m.addMissionLog(ej.getName() + " evicted");
+					m.addMissionLog(ej.getName() + " ejected");
 				}
 				canDepart = true;
 			}

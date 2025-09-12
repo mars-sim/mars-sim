@@ -272,10 +272,8 @@ abstract class EVAMission extends RoverMission {
 		boolean result = false;
 		
 		Rover r = getRover();
-		Set<Person> crew = new UnitSet<>();
-		crew.addAll(r.getCrew());
 		
-		for (Person p : crew) {
+		for (Person p : r.getCrew()) {
 			if (!getMembers().contains(p)) {
 				logger.severe(p, 10_000, "Teleportation scenario 1 detected. Being a crew member in " 
 						+ r.getName() + " but not a mission member.");

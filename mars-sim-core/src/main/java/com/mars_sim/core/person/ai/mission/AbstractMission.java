@@ -1055,6 +1055,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// Abort the mission and return home
 			abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
 						 EventType.MISSION_MEDICAL_EMERGENCY);
+			addMissionLog("Non-mission member", patient.getName());
 		}
 		return patient != null;
 	}
