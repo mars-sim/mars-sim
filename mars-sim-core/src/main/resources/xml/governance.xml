@@ -253,9 +253,9 @@
 		</agenda>
 				
 		<agenda name="Space Testing and Integration"
-				objective="Characterize environmental protocols for rigorous experimentation and testing"
-				findings="Determine human factors and  for setting up restricted and quarantine zones"
-				data="Characterize the morphology of this local region as test bed for developing advanced technologies of interest">
+				objective="Characterize environmental protocols for rigorous experimentations and testings"
+				findings="Determine safety factors in setting up restricted and quarantine zones"
+				data="Characterize the morphology of local regions as test beds of development of advanced technologies of interest">
 			<capability description="Develop techniques for automation for testing and experimentation">
 				<preference type="SCIENCE" name="ENGINEERING" modifier="3"/>
 				<preference type="SCIENCE" name="COMPUTING" modifier="3"/>				
@@ -274,10 +274,10 @@
 			</capability>
 			<capability description="Integrate hardware equipment and computational tools">
 				<preference type="MISSION" name="TRADING" modifier="1.1"/>
-				<preference type="SCIENCE" name="COMPUTING" modifier="7"/>				
-				<preference type="SCIENCE" name="PHYSICS" modifier="7"/>				
-				<preference type="SCIENCE" name="MATHEMATICS" modifier="7"/>
-				<preference type="SCIENCE" name="ENGINEERING" modifier="7"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>				
+				<preference type="SCIENCE" name="PHYSICS" modifier="6"/>				
+				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="6"/>
 			</capability>
 		</agenda>
 		
@@ -581,7 +581,23 @@
 			<rover-name name="Buco Nero" /> 			
 			<rover-name name="Universo" /> 	
 			<rover-name name="Pianeta" /> 	
-																		
+						
+			<rover-name name="Fiat" /> 
+			<rover-name name="Ferrari" /> 
+			<rover-name name="Lamborghini" /> 
+			<rover-name name="Lancia" /> 
+			<rover-name name="Maserati" /> 			
+			<rover-name name="Abarth" /> 	
+			<rover-name name="Pagani" /> 							
+	
+			<rover-name name="Pininfarina" /> 
+			<rover-name name="Alfa Romeo" /> 
+			<rover-name name="Bizzarrini" /> 
+			<rover-name name="Casalini" /> 
+			<rover-name name="Cecomp" /> 			
+			<rover-name name="Cirelli" /> 	
+			<rover-name name="Corbellati" /> 
+																					
 		</authority>
 		
 		<authority code="AEB" name="Agencia Espacial Brasileira" corporation="false"
@@ -650,6 +666,75 @@
 			<rover-name name="Aoxiang" />   <!-- Chinese for soaring -->
 			<rover-name name="Piaofu" />    <!-- Chinese for hovering -->
 			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
+		</authority>
+		
+		<!-- German Space Agency / German Aerospace Center -->
+		<authority code="DLR" name="Deutsches Zentrum für Luft- und Raumfahrt" corporation="false"
+					agenda="Space Testing and Integration" gender-ratio="0.723">
+			<!--  In 2021, women accounted for only 27.7% of tertiary education STEM graduates in 
+			Germany, placing it among the lowest rates in the EU alongside Belgium and Austria.
+ 			This underrepresentation is evident across specific disciplines: in engineering, 
+ 			the share of female students is 28%, and in ICT (Information and Communication 
+ 			Technologies), it is 20%. -->
+			<country name="Germany"/>
+			<settlement-name name="Neu Augsburg" />
+			<settlement-name name="Neu Deutschland" />
+			<settlement-name name="Neu Munchen" />
+			<settlement-name name="Neu Berlin" />
+			<settlement-name name="Neu Hamburg" />
+			<settlement-name name="Neubraunschweig" />
+			<settlement-name name="Neusachsen" />
+			<settlement-name name="Neu Brandenburg" />
+			<settlement-name name="Neu-Askania" />
+			<settlement-name name="Klein-Venedig" />
+			<settlement-name name="Neu Kiautschou" />
+			<settlement-name name="Deutsch-Samoa" />
+			<settlement-name name="Neupommern" />
+	
+			<rover-name name="Wotan" /> 
+			<rover-name name="Freya" /> 
+			<rover-name name="Ares" />   
+			<rover-name name="Serenity" /> 
+			<rover-name name="Citadel" /> 
+			<rover-name name="Otto" />   
+			<rover-name name="Gastau" /> 
+			<rover-name name="Bismarck" /> 
+			<rover-name name="Zollverein" />   
+			<rover-name name="Woermann" /> 
+			<rover-name name="Hanau" /> 
+			<rover-name name="Duchy" />   	
+			
+			<rover-name name="Hanauish" /> 
+			<rover-name name="Audi" /> 
+			<rover-name name="Volkswagen" />   
+			<rover-name name="BMW" /> 
+			<rover-name name="Mercedes" /> 
+			<rover-name name="Opel" />  
+			<rover-name name="Porsche" />   
+			<rover-name name="Maybach" /> 
+			<rover-name name="Borgward" /> 
+			<rover-name name="Artega" />  
+							
+			<rover-name name="Melkus" /> 
+			<rover-name name="Wiesmann" />  
+			<rover-name name="Isdera" />   
+			<rover-name name="Bitter" /> 
+			<rover-name name="Borgward" /> 
+			<rover-name name="Brabus" />  				
+
+			<rover-name name="Carlsson" /> 
+			<rover-name name="Alpina" />  
+			<rover-name name="Mansory" />   
+			<rover-name name="9ff" /> 
+			<rover-name name="Ruf" /> 
+			<rover-name name="Abt" /> 
+			 		
+			<rover-name name="Daimler" /> 
+			<rover-name name="Setra" />  
+			<rover-name name="Edag" />   
+			<rover-name name="Gumpert" /> 
+			<rover-name name="Wartburg" /> 
+			<rover-name name="Lloyd" /> 																		
 		</authority>
 		
 		<authority code="CSA" name="Canadian Space Agency" corporation="false"
