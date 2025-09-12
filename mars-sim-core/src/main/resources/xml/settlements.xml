@@ -279,9 +279,11 @@
 		<template name="Phase 0-MS"/>
 		<template name="Phase 0-US"/>
 								
-		<!-- 9 Phase 1 templates -->
+		<!-- 10 Phase 1 templates -->
+		<template name="Phase 1-ASI"/>
 		<template name="Phase 1-TW"/>
 		<template name="Phase 1-BR"/>
+		
 		<template name="Phase 1-CN"/>
 		<template name="Phase 1-IN"/>
 		<template name="Phase 1-MS"/>

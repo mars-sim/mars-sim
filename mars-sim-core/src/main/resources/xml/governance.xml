@@ -450,7 +450,7 @@
 										
 		<agenda name="Space Sustainability"
 				objective="Incentivize private and corporate ownership of properties and resources in space"
-				findings="Supports statutes to meet the growing demand for sustainable transporation and logistic needs" 
+				findings="Support statutes to meet the growing demand for sustainable transporation and logistic needs" 
 				data="Analyze and rank policies for enhancing mass resource utilization">
 			<capability description="Characterize industry opportunities and innovations in the space sector">
 				<preference type="MISSION" name="TRADE" modifier="2"/>
@@ -479,13 +479,12 @@
 			</capability>
 		</agenda>
 
-		<!-- https://www.unoosa.org/oosa/en/ourwork/access2space4all/index.html 
-			 https://www.space.com/un-unoosa-space-access-partnership.html -->
+		<!-- https://www.unoosa.org/oosa/en/ourwork/access2space4all/index.html -->
 		<agenda name="Space Accessibility"
 				objective="Partner with public and private actors and fund cooperative projects to allow member states to launch space missions"
 				findings="Meet the functional criteria of the growing demand for space access and logistic" 
 				data="Collect and analyze member states' sustainable development goals">
-			<capability description="Contribute to initiaitive in enabling deveoping and emerging countries to grow their space sector">
+			<capability description="Contribute to initiatives in enabling developing and emerging countries to grow their space sectors">
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
@@ -502,21 +501,94 @@
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
 			</capability>
-			<capability description="Develop infrastructure, faciltiy and service as a part 
+			<capability description="Develop infrastructure, facility and service as a part 
 				of a high impact and high visibility initiative ">
 				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
 				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>	
 			</capability>
-		</agenda>		
+		</agenda>	
+		
+		<!-- https://www.space.com/un-unoosa-space-access-partnership.html 
+		     https://www.nasa.gov/news-release/nasa-announces-us-industry-partnerships-to-advance-moon-mars-technology/ -->
+		<agenda name="Space Collaboration"
+				objective="Foster partnership between other nations and space industrial bases to support the sustainable commercialization of space"
+				findings="Measure the successes of ongoing space collaborations" 
+				data="Provide actionable data sets on how nations and corporations benefit from partnership development">
+			<capability description="Test and develop network sensors on common platform">
+				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>
+				<preference type="MISSION" name="MINING" modifier="1.4"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="8"/>
+				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>
+			</capability>
+			<capability description="Create new opportunities for cooperations">
+				<preference type="MISSION" name="TRADE" modifier="1.3"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>								
+			</capability>
+			<capability description="Identify human factors in the domain of operational safety">
+				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
+				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="MEDICINE" modifier="2"/>
+			</capability>
+			<capability description="Develop programs and initiatives for space system fusion and integration">
+				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
+				<preference type="MISSION" name="TRADE" modifier="2"/>
+				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+			</capability>
+		</agenda>	
 	</agendas>
 
 	<!--  Reporting authorities. The code attribute must match
 		the ReportingAuthorityType enum -->
 	<authorities>
+		<!-- Italian Space Agency Agenzia_Spaziale_Italiana -->
+		<authority code="ASI" name="Agenzia Spaziale Italiana" corporation="false"
+					agenda="Space Collaboration" gender-ratio="0.694">
+			<!-- For engineering master's graduates in 2023, the overall percentage of 
+			women was 30.6%, with specific fields showing stark imbalances: Biomedical 
+			Engineering had 63.0% women, while fields like Electric Engineering (14.0% women), 
+			Mechanic Engineering (13.3% women), and Computer Engineering (18.1% women) 
+			had much lower female representation.-->		
+			<country name="Italy"/>
+			<settlement-name name="New Rome" />
+			<settlement-name name="Costellazione" />
+			<settlement-name name="Sole" />
+			<settlement-name name="Cosmos" />
+			<settlement-name name="Galassia" />
+			<settlement-name name="Solare" />		
+			<settlement-name name="Eclissi" />
+			<settlement-name name="Osservatorio" />	
+
+			<rover-name name="Basilio" />  
+			<rover-name name="Malindi" />  
+			<rover-name name="Matera" />    
+			<rover-name name="Bianca" />  
+			<rover-name name="Asteroide" />  
+			<rover-name name="Stella" />  
+			<rover-name name="Luna" /> 
+			<rover-name name="Cielo" /> 
+			<rover-name name="Celeste" /> 
+			<rover-name name="Stella" /> 
+			<rover-name name="Telescopio" /> 
+			<rover-name name="Buco Nero" /> 			
+			<rover-name name="Universo" /> 	
+			<rover-name name="Pianeta" /> 	
+																		
+		</authority>
+		
 		<authority code="AEB" name="Agencia Espacial Brasileira" corporation="false"
-					agenda="Space Tracking" gender-ratio="0.85">
+					agenda="Space Tracking" gender-ratio="0.74">
+		<!-- While women represent 45% of formal workers in Brazil, they account for only 26% of 
+		those employed in STEM occupations, a figure that has remained stagnant at around 2.8% 
+		of formal employees since 2015. -->
 			<country name="Brazil"/>
 			<settlement-name name="Alcantara" />
 			<settlement-name name="Antonina" />
