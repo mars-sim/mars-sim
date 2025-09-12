@@ -95,6 +95,7 @@ import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
@@ -1180,7 +1181,7 @@ public class Settlement extends Unit implements Temporal,
 		refreshSleepMap();
 
 		// Decrease the Mission score.
-		minimumPassingScore *= 0.9D;
+		minimumPassingScore *= 1.05;
 
 		// Check the Grey water situation
 		if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
@@ -2728,10 +2729,10 @@ public class Settlement extends Unit implements Temporal,
 		minimumPassingScore = total / missionScores.size();
 
 		// Cap any very large score to protect the average
-		double desiredMax = Math.min(MAX_MISSION_SCORE, minimumPassingScore * 1.5D);
+		double desiredMax = MathUtils.between(minimumPassingScore * 1.5D, 0, MAX_MISSION_SCORE);
 		missionScores.add(Math.min(score, desiredMax));
 
-		if (missionScores.size() > 20)
+		if (missionScores.size() > 30)
 			missionScores.remove(0);
 	}
 
