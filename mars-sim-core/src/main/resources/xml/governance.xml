@@ -1254,8 +1254,12 @@
 		</authority>
 		
 		<authority code="TASA" name="Taiwan Space Agency" corporation="false"
-					agenda="Space Commerce" gender-ratio="0.75">
+					agenda="Space Commerce" gender-ratio="0.769">
 			<country name="Taiwan"/>
+			<!-- While women are well-represented in certain areas, overall 
+			participation remains lower than that of men. In 2021, women comprised 
+			23.1% of all researchers, a figure that reflects a slow but steady 
+			increase from 21.7% in 2012-->
 			<settlement-name name="Chung Shan" />
 			<settlement-name name="Tao Yuan" />
 			<settlement-name name="Miao Li" />
@@ -1288,8 +1292,7 @@
 			
 			<rover-name name="San Yang" /> 
 			<rover-name name="Ta Ching" /> 
-			<rover-name name="Hotai" />  
-			<rover-name name="Yulon" />
+			<rover-name name="Hotai" />
 		</authority>
 				
 		<authority code="SPACEX" name="Space Exploration Technologies Corporation" corporation="true"
