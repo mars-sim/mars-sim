@@ -56,7 +56,6 @@ public class BuildingConfig {
 	private static final String FUNCTIONS = "functions";
 	private static final String CAPACITY = "capacity";
 
-	private static final String RESEARCH = "research";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
 
 	private static final String NUMBER_MODULES = "number-modules";
@@ -178,12 +177,6 @@ public class BuildingConfig {
 															POWER);
 			newSpec.setPowerSource(powerSourceList);
 		}
-
-		Element researchElement = functionsElement.getChild(RESEARCH);
-		if (researchElement != null) {
-			parseResearch(newSpec, researchElement);
-		}
-
 		return newSpec;
 	}
 
@@ -353,6 +346,7 @@ public class BuildingConfig {
 			case MEDICAL_CARE -> base = createMedicalCareSpec(base, element, width, length);
 			case WASTE_PROCESSING, RESOURCE_PROCESSING -> base = createResourceProcessingSpec(base, element, resProcConfig);
 			case VEHICLE_MAINTENANCE -> base = createVehicleMaintenanceSpec(base, element, width, length);
+			case RESEARCH -> base = createResearchSpec(base, element);
 			default -> { // No need to do anything
 						}
 		}
@@ -419,14 +413,15 @@ public class BuildingConfig {
 	 * @param newSpec
 	 * @param researchElement
 	 */
-	private void parseResearch(BuildingSpec newSpec, Element researchElement) {
+	private ResearchSpec createResearchSpec(FunctionSpec base, Element researchElement) {
 		List<ScienceType> result = new ArrayList<>();
 		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);
 		for (Element researchSpecialityElement : researchSpecialities) {
 			String value = researchSpecialityElement.getAttributeValue(NAME);
 			result.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(value)));
 		}
-		newSpec.setScienceType(result);
+		
+		return new ResearchSpec(base, result);
 	}
 
 	/**
@@ -562,18 +557,6 @@ public class BuildingConfig {
 	 */
 	public boolean hasFunction(String buildingType, FunctionType function) {
 		return getBuildingSpec(buildingType).getFunctionSupported().contains(function);
-	}
-
-	/**
-	 * Gets a list of research specialties for the building's lab.
-	 *
-	 * @param buildingType the type of the building
-	 * @return list of research specialties as {@link ScienceType}.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<ScienceType> getResearchSpecialties(String buildingType) {
-		return getBuildingSpec(buildingType).getScienceType();
-
 	}
 
 	/**

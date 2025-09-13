@@ -17,7 +17,6 @@ import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.map.location.BoundedObject;
-import com.mars_sim.core.science.ScienceType;
 
 /**
  * The specification of a certain Building Type.
@@ -31,7 +30,6 @@ public class BuildingSpec {
 	
 	// Empty list constants
 	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
-	private static final List<ScienceType> EMPTY_SCIENCE = new ArrayList<>();
 	
 	/** is the building non-habitable. */
 	private boolean isInhabitable = true;
@@ -70,8 +68,6 @@ public class BuildingSpec {
 
 	private List<SourceSpec> heatSourceList = EMPTY_SOURCE;
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
-	
-	private List<ScienceType> scienceType = EMPTY_SCIENCE;
 
 	private BuildingCategory category;
 	
@@ -295,14 +291,6 @@ public class BuildingSpec {
 		return powerSource;
 	}
 
-	public void setScienceType(List<ScienceType> scienceType) {
-		this.scienceType = scienceType;
-	}
-	
-	public List<ScienceType> getScienceType() {
-		return scienceType;
-	}
-	
 	public String toString() {
 		return buildingType;
 	}

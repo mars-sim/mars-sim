@@ -2,7 +2,6 @@ package com.mars_sim.core.building.config;
 
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,7 +12,6 @@ import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.core.science.ScienceType;
 
 
 public class BuildingConfigTest extends AbstractMarsSimUnitTest {
@@ -146,9 +144,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         var initial = found.getInitialResources();
         assertEquals("Carbon stored", 100D, initial.get(ResourceUtil.CO2_ID));
-
-        assertEquals("Science research", Set.of(ScienceType.BIOLOGY, ScienceType.BOTANY,
-                                                ScienceType.CHEMISTRY), new HashSet<>(found.getScienceType()));
     }
 
     
@@ -183,11 +178,32 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
     }
 
-      /**
+    /**
      * This test is very tied to the building spec of LANDER_HAB
      */
     @SuppressWarnings("unchecked")
-	public void testMedical() {
+	public void testResearchFunction() {
+	    var simConfig = SimulationConfig.loadConfig();
+        var bc = simConfig.getBuildingConfiguration();
+
+        var found = (ResearchSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.RESEARCH);
+        
+        assertNotNull("Found", found);
+
+        var science = found.getScience();
+        assertEquals("Science", 8, science.size());
+
+        assertEquals("Research tech", 3, found.getTechLevel());
+        assertEquals("Research capacity", 3, found.getCapacity());
+        assertEquals("Research spots", 3, found.getActivitySpots().size());
+    }
+
+
+    /**
+     * This test is very tied to the building spec of LANDER_HAB
+     */
+    @SuppressWarnings("unchecked")
+	public void testMedicalFunction() {
 	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
@@ -196,8 +212,10 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertNotNull("Found", found);
 
         var beds = found.getBeds();
-
         assertEquals("Beds", 2, beds.size());
+
+        assertEquals("Medical tech", 4, found.getTechLevel());
+        assertEquals("Medical spots", 2, found.getActivitySpots().size());
     }
 
 

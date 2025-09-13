@@ -7,6 +7,7 @@
 package com.mars_sim.core.building.function;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Map;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
+import com.mars_sim.core.building.config.ResearchSpec;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.data.SolSingleMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
@@ -102,8 +104,8 @@ implements Lab {
         
         technologyLevel = spec.getTechLevel();
         researcherCapacity = spec.getCapacity();
-        researchSpecialties = buildingConfig.getResearchSpecialties(building.getBuildingType());
-        researchQualityMap = new HashMap<>();
+        researchSpecialties = ((ResearchSpec) spec).getScience();
+        researchQualityMap = new EnumMap<>(ScienceType.class);
 		
         // Initialize the research quality map
         for (ScienceType scienceType : researchSpecialties) {
@@ -124,41 +126,43 @@ implements Lab {
 
         double result = 0D;
 
-        for (ScienceType specialty : buildingConfig.getResearchSpecialties(type)) {
-            double researchDemand = 0D;
-            for(Person p : settlement.getAllAssociatedPeople()) {
-                researchDemand += p.getSkillManager().getSkillLevel(specialty.getSkill());
-            }
-
-            double researchSupply = 0D;
-            boolean removedBuilding = false;
-
-            for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESEARCH)) {
-                if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
-                    removedBuilding = true;
+        var spec = buildingConfig.getFunctionSpec(type, FunctionType.RESEARCH);
+        if (spec instanceof ResearchSpec rs) {
+            for (ScienceType specialty : rs.getScience()) {
+                double researchDemand = 0D;
+                for(Person p : settlement.getAllAssociatedPeople()) {
+                    researchDemand += p.getSkillManager().getSkillLevel(specialty.getSkill());
                 }
-                else {
-                    Research researchFunction = building.getResearch();
-                    int techLevel = researchFunction.technologyLevel;
-                    int labSize = researchFunction.researcherCapacity;
-                    double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                    for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
-                        ScienceType researchSpecialty = researchFunction.getTechSpecialties()[x];
-                        if (specialty.equals(researchSpecialty)) {
-                            researchSupply += techLevel * labSize * wearModifier;
+
+                double researchSupply = 0D;
+                boolean removedBuilding = false;
+
+                for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.RESEARCH)) {
+                    if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
+                        removedBuilding = true;
+                    }
+                    else {
+                        Research researchFunction = building.getResearch();
+                        int techLevel = researchFunction.technologyLevel;
+                        int labSize = researchFunction.researcherCapacity;
+                        double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                        for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
+                            ScienceType researchSpecialty = researchFunction.getTechSpecialties()[x];
+                            if (specialty.equals(researchSpecialty)) {
+                                researchSupply += techLevel * labSize * wearModifier;
+                            }
                         }
                     }
                 }
+
+                double existingResearchValue = researchDemand / (researchSupply + 1D);
+
+                int techLevel = spec.getTechLevel();
+                int labSize = spec.getCapacity();
+                int buildingResearchSupply = techLevel * labSize;
+
+                result += buildingResearchSupply * existingResearchValue;
             }
-
-            double existingResearchValue = researchDemand / (researchSupply + 1D);
-
-            FunctionSpec spec = buildingConfig.getFunctionSpec(type, FunctionType.RESEARCH);
-            int techLevel = spec.getTechLevel();
-            int labSize = spec.getCapacity();
-            int buildingResearchSupply = techLevel * labSize;
-
-            result += buildingResearchSupply * existingResearchValue;
         }
 
         return result;
@@ -408,9 +412,9 @@ implements Lab {
      */
 	public List<String> getUncheckedTissues() {
 		List<String> batch = new ArrayList<>();
-		for (String s : tissueCultureInspection.keySet()) {
-			if (tissueCultureInspection.get(s) < NUM_INSPECTIONS)
-				batch.add(s);
+		for (var s : tissueCultureInspection.entrySet()) {
+			if (s.getValue() < NUM_INSPECTIONS)
+				batch.add(s.getKey());
 		}
 		return batch;
 	}
@@ -432,12 +436,8 @@ implements Lab {
      * @return true if the lab has it
      */
     public boolean hasTissueCulture(String tissueName) {
-    	if (tissueCultureAmount.containsKey(tissueName)
-    		&& tissueCultureAmount.get(tissueName) > 0) {
-    			return true;
-    	}
-
-    	return false;
+    	return (tissueCultureAmount.containsKey(tissueName)
+    		&& tissueCultureAmount.get(tissueName) > 0);
     }
     
 	/**
@@ -479,9 +479,7 @@ implements Lab {
 	 * @param value
 	 */
 	public void increaseEntropy(double value) {
-		
-//		double penalty = getEntropyPenalty();
-		
+				
 		entropy += value;
 		
 		if (entropy > maxEntropy) {
