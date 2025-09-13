@@ -53,9 +53,9 @@ public final class ResupplyUtil {
 			// For each Settlement get the resupply scheduled defined by the SettlementTemplate
 			for(ResupplySchedule template : settlementTemplateConfig.getItem(templateName).getResupplyMissionTemplates()) {
 				var schedule = template.getSchedule();
-				// Get the local time at teh Settlemnt when this will arrive
+				// Get the local time at the Settlemnt when this will arrive
 				MarsTime arrivalDate = schedule.getFirstEvent(currentTime,
-						settlement.getTimeOffset());
+						settlement.getTimeZone());
 
 				// If the frequency is less than transport time also add the next ones
 				for(int cycle = 0; cycle < template.getActiveMissions(); cycle++) {

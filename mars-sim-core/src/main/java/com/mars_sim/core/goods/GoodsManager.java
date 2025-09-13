@@ -97,7 +97,7 @@ public class GoodsManager implements Serializable {
 	 */
 	private class ResourcesReset implements ScheduledEventHandler {
 		// Duration to between reviewing essential resources
-		private static final int REVIEW_PERIOD = 2000;
+		private static final int REVIEW_PERIOD = 1000; // Once per sol
 		private static final long serialVersionUID = 1L;
 
 		@Override
@@ -198,7 +198,7 @@ public class GoodsManager implements Serializable {
 	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
 
-		int startOfDayOffset = settlement.getTimeOffset();
+		int startOfDayOffset = settlement.getTimeZone().getMSolOffset();
 		
 		// Schedule an event to recalculate shopping lists just after start of day
 		settlement.getFutureManager().addEvent(startOfDayOffset + 10, new TradeListUpdater());
@@ -211,9 +211,6 @@ public class GoodsManager implements Serializable {
 
 		// Schedule reseting the first review cycle during early morning
 		settlement.getFutureManager().addEvent(startOfDayOffset + 15, new ResourcesReset());
-		
-		// Schedule reseting the first review cycle during mid-sol
-		settlement.getFutureManager().addEvent(startOfDayOffset + 515, new ResourcesReset());
 	}
     
 	/**
@@ -268,7 +265,6 @@ public class GoodsManager implements Serializable {
 			deflationIndexMap.put(id, 0);
 			demandCache.put(id, good.getDefaultDemandValue());
 			supplyCache.put(id, good.getDefaultSupplyValue());
-//			marketMap.put(good, new MarketData());
 		}
 	}
 
@@ -831,9 +827,6 @@ public class GoodsManager implements Serializable {
 		int reserve = reservePerPop * pop;
 		double demand = getDemandScoreWithID(resourceID);
 
-		// Compare the available amount of oxygen
-//		double supply = getSupplyScore(resourceID);
-
 		double stored = settlement.getAllAmountResourceStored(resourceID);
 	
 		if (stored > optimal) {
@@ -846,7 +839,7 @@ public class GoodsManager implements Serializable {
 		// Note : Make sure stored is not zero by adding 1 so that delta is not infinite	
 		
 		// Multiply by THROTTLING to limit the speed of increase to avoid an abrupt rise in demand
-		double delta = (lacking / (1 + stored) - 1); //* THROTTLING;
+		double delta = (lacking / (1 + stored) - 1);
  
 		
 		if (delta > 0) {
@@ -856,7 +849,6 @@ public class GoodsManager implements Serializable {
 					+ "Injecting Demand: " + Math.round(demand * 100.0)/100.0 
 					+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
 					+ "  Optimal: " + Math.round(optimal * 100.0)/100.0 
-//					+ "  Supply: " + Math.round(supply * 100.0)/100.0 
 					+ "  Stored: " + Math.round(stored * 100.0)/100.0
 					+ "  reserve: " + Math.round(reservePerPop * 100.0)/100.0
 					+ "  lacking: " + Math.round(lacking * 100.0)/100.0
