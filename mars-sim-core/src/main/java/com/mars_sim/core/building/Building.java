@@ -45,7 +45,6 @@ import com.mars_sim.core.building.function.Research;
 import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.Storage;
-import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
@@ -354,7 +353,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return getFunction(FunctionType.FOOD_PRODUCTION);
 	}
 
-	public VehicleGarage getVehicleParking() {
+	public VehicleMaintenance getVehicleParking() {
 		return getFunction(FunctionType.VEHICLE_MAINTENANCE);
 	}
 
@@ -528,7 +527,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 			case FARMING -> new Farming(this, fSpec);
 			case FISHERY -> new Fishery(this, fSpec);
 			case FOOD_PRODUCTION -> new FoodProduction(this, fSpec);
-			case VEHICLE_MAINTENANCE -> new VehicleGarage(this, fSpec);
+			case VEHICLE_MAINTENANCE -> new VehicleMaintenance(this, fSpec);
 			case LIFE_SUPPORT -> new LifeSupport(this, fSpec);
 			case LIVING_ACCOMMODATION -> new LivingAccommodation(this, fSpec);
 			case MANAGEMENT -> new Management(this, fSpec);

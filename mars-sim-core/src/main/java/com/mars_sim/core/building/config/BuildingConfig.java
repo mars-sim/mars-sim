@@ -81,14 +81,11 @@ public class BuildingConfig {
 
 	private static final String MEDICAL_CARE = "medical-care";
 	private static final String BEDS = "bed";
-	private static final String VEHICLE_MAINTENANCE = "vehicle-maintenance";
-	private static final String LOCATION = "location";
 	private static final String ROVER = "rover";
 	private static final String FLYER = "flyer";
 	private static final String UTILITY = "utility";
 
 	private static final String ACTIVITY = "activity";
-	private static final String ACTIVITY_SPOT = "activity-spot";
 	private static final String BED_LOCATION = "bed-location";
 
 	private static final String TOOLING = "tooling";
@@ -195,20 +192,7 @@ public class BuildingConfig {
 
 		var width = newSpec.getWidth();
 		var length = newSpec.getLength();
-		Element vehicleElement = functionsElement.getChild(VEHICLE_MAINTENANCE);
-		if (vehicleElement != null) {
-			Set<LocalPosition> roverParking = parsePositions(vehicleElement, ROVER, LOCATION,
-												   width, length);
-			newSpec.setRoverParking(roverParking);
 
-			Set<LocalPosition> utilityParking = parsePositions(vehicleElement, UTILITY, LOCATION,
-												   width, length);
-			newSpec.setUtilityParking(utilityParking);
-
-			Set<LocalPosition> flyerParking = parsePositions(vehicleElement, FLYER, LOCATION,
-												   width, length);
-			newSpec.setFlyerParking(flyerParking);
-		}
 		
 		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
 		if (medicalElement != null) {
@@ -391,12 +375,25 @@ public class BuildingConfig {
 		// Some function needs extra properties
 		switch(function) {
 			case WASTE_PROCESSING, RESOURCE_PROCESSING -> base = createResourceProcessingSpec(base, element, resProcConfig);
+			case VEHICLE_MAINTENANCE -> base = createVehicleMaintenanceSpec(base, element, width, length);
 			default -> { // No need to do anything
 						}
 		}
 
 
 		return base;
+	}
+
+	/**
+	 * Parse the vehicle maintenance specific elements
+	 */
+	private FunctionSpec createVehicleMaintenanceSpec(FunctionSpec base, Element maintElement, double width, double length) {
+
+		var utility = parseNamedPositions(maintElement, UTILITY, UTILITY, width, length);
+		var rover = parseNamedPositions(maintElement, ROVER, ROVER, width, length);
+		var flyer = parseNamedPositions(maintElement, FLYER, FLYER, width, length);
+		
+		return new VehicleMaintenanceSpec(base, rover, utility, flyer);
 	}
 
 	/**
@@ -494,13 +491,14 @@ public class BuildingConfig {
 	 * Parses an set of named position for a building's function. These have a xloc & yloc structure.
 	 *
 	 * @param functionElement Element holding locations
-	 * @param locations Name of the location elements
+	 * @param childrenName Name of the position elements
+	 * @param positionName Name of the actual position element
 	 * @param namePrefix The default name prefix to assign to the spots
 	 * @param buildingWidth
 	 * @param buildingLength
 	 * @return set of activity spots as Point2D objects.
 	 */
-	private Set<NamedPosition> parseNamedPositions(Element functionElement, String locations,
+	private Set<NamedPosition> parseNamedPositions(Element functionElement, String childrenName,
 												   String namePrefix,
 										 		   double buildingWidth, double buildingLength) {
 		Set<NamedPosition> result = new HashSet<>();
@@ -510,10 +508,10 @@ public class BuildingConfig {
 		double maxY = buildingLength/2D;
 		boolean hasMax = (maxX > 0 && maxY > 0);
 
-		Element activityElement = functionElement.getChild(locations);
+		Element activityElement = functionElement.getChild(childrenName);
 		if (activityElement != null) {
 			int i = 1;
-			for(Element activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
+			for(Element activitySpot : activityElement.getChildren()) {
 				var point = ConfigHelper.parseRelativePosition(activitySpot);
 
 				// Check location is within the building. Check as long as the maximum
@@ -527,7 +525,7 @@ public class BuildingConfig {
 					} while (!functionElement.getName().equals(BUILDING));
 					name.append("in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
 
-					throw new IllegalArgumentException("Locations '" + locations
+					throw new IllegalArgumentException("Locations '" + childrenName
 							+ "' of " + name.toString()
 							+ " are outside building");
 				}
@@ -669,41 +667,6 @@ public class BuildingConfig {
 		return getBuildingSpec(buildingType).getPowerSource();
 
 	}
-
-	/**
-	 * Gets the relative location in the building of a rover parking location.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return Positions containing the relative X & Y position from the building
-	 *         center.
-	 */
-	public Set<LocalPosition> getRoverLocations(String buildingType) {
-		return getBuildingSpec(buildingType).getRoverParking();
-	}
-
-
-	/**
-	 * Gets the relative location in the building of a LUV parking location.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return Positions containing the relative X & Y position from the building
-	 *         center.
-	 */
-	public Set<LocalPosition> getUtilityLocations(String buildingType) {
-		return getBuildingSpec(buildingType).getUtilityParking();
-	}
-	
-	/**
-	 * Gets the relative location in the building of a flyer location.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return Positions containing the relative X & Y position from the building
-	 *         center.
-	 */
-	public Set<LocalPosition> getFlyerLocations(String buildingType) {
-		return getBuildingSpec(buildingType).getFlyerParking();
-	}
-
 	
 	private static final String generateSpecKey(String buildingType) {
 		return buildingType.toLowerCase().replace(" ", "-");

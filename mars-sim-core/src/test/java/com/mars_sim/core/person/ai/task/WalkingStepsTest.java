@@ -15,7 +15,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.connection.BuildingConnector;
 import com.mars_sim.core.building.connection.BuildingConnectorManager;
-import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.WalkingSteps.WalkStep;
@@ -96,9 +95,6 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
         assertNotNull(walkingSteps);
         
-//        boolean canWalk = walkingSteps.canWalkAllSteps();
-//        System.out.println("canWalk: " + canWalk);
-        
         assertFalse(walkingSteps.canWalkAllSteps());
 
         assertNotNull(walkingSteps.getWalkingStepsList());
@@ -133,12 +129,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         assertNotNull(walkingSteps);
 
         boolean canWalk = walkingSteps.canWalkAllSteps();
-//        System.out.println("canWalk: " + canWalk);
         
         assertFalse("No walking path found", canWalk);
 
         assertNotNull(walkingSteps.getWalkingStepsList());
-//        System.out.println("walking steps: " + walkingSteps.getWalkingStepsList());
         
         int steps = walkingSteps.getWalkingStepsNumber();
         
@@ -557,7 +551,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
-        VehicleGarage garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D,  0);
+        var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D,  0);
         garage.addRover(rover);
 
         buildingManager.setupBuildingFunctionsMap();
@@ -602,7 +596,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
         rover.transfer(settlement);
         
-        VehicleGarage garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         garage.addRover(rover);
         buildingManager.setupBuildingFunctionsMap();
         

@@ -10,7 +10,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.VehicleGarage;
+import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -128,7 +128,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return rover1;
 	}
 
-	protected VehicleGarage buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
 									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);
 	    

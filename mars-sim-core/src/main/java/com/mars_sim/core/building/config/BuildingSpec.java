@@ -7,7 +7,6 @@
 package com.mars_sim.core.building.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -76,9 +75,6 @@ public class BuildingSpec {
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
 
 	private Set<LocalPosition> beds;
-	private Set<LocalPosition> roverParking;
-	private Set<LocalPosition> utilityParking;
-	private Set<LocalPosition> flyerParking;
 
 	private BuildingCategory category;
 	
@@ -322,31 +318,6 @@ public class BuildingSpec {
 		this.beds = beds;
 	}
 	
-	public Set<LocalPosition> getRoverParking() {
-		return roverParking;
-	}
-
-	void setRoverParking(Set<LocalPosition> parking) {
-		this.roverParking = Collections.unmodifiableSet(parking);
-	}
-	
-	public Set<LocalPosition> getUtilityParking() {
-		return utilityParking;
-	}
-
-	void setUtilityParking(Set<LocalPosition> parking) {
-		this.utilityParking = Collections.unmodifiableSet(parking);
-	}
-	
-	
-	public Set<LocalPosition> getFlyerParking() {
-		return flyerParking;
-	}
-
-	void setFlyerParking(Set<LocalPosition> parking) {
-		this.flyerParking = Collections.unmodifiableSet(parking);
-	}
-
 	/**
 	 * Combines a custom bounds definition with what is validate for this building.
 	 * 

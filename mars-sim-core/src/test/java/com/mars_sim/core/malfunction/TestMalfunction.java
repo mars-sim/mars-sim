@@ -1,11 +1,6 @@
 package com.mars_sim.core.malfunction;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingCategory;
-import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
@@ -35,21 +30,15 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
         }
 
 		Settlement s = buildSettlement();
-//		Building a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
-//		Building g = buildGreenhouse(s.getBuildingManager());
-		VehicleGarage g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+
+		// Allows rover to go directly into Garage
+		buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
 
 		Rover r = buildRover(s, "Test", null);
 		mgr = r.getMalfunctionManager();
 		mgr.initScopes();
     }
     
-    
-	public Building buildGreenhouse(BuildingManager buildingManager) {
-		return buildFunction(buildingManager, "Large Greenhouse", BuildingCategory.FARMING,
-                FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
-	}
-	
     private Malfunction createInsideMalfunction() {
 		return new Malfunction(mgr, counter++, insideMeta, true);
 	}

@@ -9,7 +9,7 @@ package com.mars_sim.core;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.VehicleGarage;
+import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -27,7 +27,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 
 public class TestContainment extends AbstractMarsSimUnitTest {
 
-	private VehicleGarage garage;
+	private VehicleMaintenance garage;
 	private Settlement settlement;
 	private MarsSurface surface;
 
@@ -93,7 +93,6 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		
 		// If a vehicle is in a garage, then it's local state 
 		boolean isInGarage = source.isInGarage();
-		System.out.println("In assertVehicleGaraged(), isInGarage: " + isInGarage);
 		
 		LocationStateType state = LocationStateType.SETTLEMENT_VICINITY;
 		if (isInGarage)
@@ -117,6 +116,7 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertFalse(msg + ": isInVehicle", source.isInVehicle());
 		
 		assertNull(msg + ": Vehicle", source.getVehicle());
+		assertEquals(msg + ": isGaraged", isInGarage, source.isInGarage());
 		
 		assertEquals(msg + ": Container", base, source.getContainerUnit());
 	}
@@ -130,10 +130,6 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	
 	private static void assertInVehicle(String msg, Person source, Vehicle vehicle) {
 		assertEquals(msg + ": person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
-	
-		// Note that once the vehicle is built, it goes to a garage by default
-		boolean isInGarage = vehicle.isInGarage();
-//		System.out.println("isInGarage: " + isInGarage);
 		
 		assertTrue(msg + ": isInVehicleInGarage", source.isInVehicleInGarage());
 		
@@ -203,15 +199,11 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		// Since garage has been built at constructor, once the vehicle is built, 
 		// it goes into a garage automatically 
 		
-		boolean isInGarage = vehicle.isInGarage();
-		System.out.println("In testVehicleInGarage(), isInGarage: " + isInGarage);
-		
 		assertVehicleGaraged("Vehicle in garage", vehicle, settlement);
 	
 		boolean toRemove = BuildingManager.removeFromGarage(vehicle);
 			
 		assertVehicleParked("Initial Vehicle", vehicle, settlement);
-//		System.out.println("toRemove: " + toRemove);
 		
 		assertTrue("Vehicle parking outside", toRemove);
 

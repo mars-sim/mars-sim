@@ -52,7 +52,6 @@ import com.mars_sim.core.building.function.Research;
 import com.mars_sim.core.building.function.ResourceProcessing;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.Storage;
-import com.mars_sim.core.building.function.VehicleGarage;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.building.function.WasteProcessing;
 import com.mars_sim.core.building.function.cooking.Cooking;
@@ -1734,7 +1733,7 @@ public class BuildingManager implements Serializable {
 					case FARMING -> Farming.getFunctionValue(buildingType, newBuilding, settlement);
 					case FISHERY -> Fishery.getFunctionValue(buildingType, newBuilding, settlement);
 					case FOOD_PRODUCTION -> FoodProduction.getFunctionValue(buildingType, newBuilding, settlement);
-					case VEHICLE_MAINTENANCE -> VehicleGarage.getFunctionValue(buildingType, newBuilding, settlement);
+					case VEHICLE_MAINTENANCE -> VehicleMaintenance.getFunctionValue(buildingType, newBuilding, settlement);
 					case LIFE_SUPPORT -> LifeSupport.getFunctionValue(buildingType, newBuilding, settlement);
 					case LIVING_ACCOMMODATION -> LivingAccommodation.getFunctionValue(buildingType, newBuilding, settlement);
 					case MANAGEMENT -> Management.getFunctionValue(buildingType, newBuilding, settlement);
