@@ -150,7 +150,7 @@ public class ManufacturingManager implements Serializable {
         var futures = owner.getFutureManager();
 
         // Add a daily refresh event
-        futures.addEvent(owner.getTimeOffset() + REFRESH_TIME, new UpdateEvent(1000));
+        futures.addEvent(owner.getTimeZone().getMSolOffset() + REFRESH_TIME, new UpdateEvent(1000));
 
         // Add a one off event to build the queue
         futures.addEvent(1, new UpdateEvent(0));
@@ -359,7 +359,7 @@ public class ManufacturingManager implements Serializable {
             var potential = getQueuableManuProcesses()
                     .filter(i -> i.isResourcesAvailable(owner))
                     .toList();
-            addTopValueProcesses("Manu", potential, scoreThreshold, maxProcesses);
+            addTopValueProcesses(potential, scoreThreshold, maxProcesses);
         }   
     }
 
@@ -382,13 +382,12 @@ public class ManufacturingManager implements Serializable {
      * Adds the top value processes from the potential list where the value is above the 
      * threshold.
      * 
-     * @param name Tag of the potentials
      * @param potential Potential processes to evaluated.
      * @param scoreThreshold Value threshold of processes to add
      * @param maxProcesses Max number of processes to add
      * @return Number added
      */
-    private int addTopValueProcesses(String name, List<? extends WorkshopProcessInfo> potential,
+    private int addTopValueProcesses(List<? extends WorkshopProcessInfo> potential,
                                      int scoreThreshold, int maxProcesses) {
 
         record ProcessValue(WorkshopProcessInfo info, RatingScore score) {

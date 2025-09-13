@@ -94,6 +94,7 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -221,7 +222,7 @@ public class Settlement extends Unit implements Temporal,
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	/** The time offset of day rise for this settlement. Location based. */
-	private int timeOffset;
+	private MarsZone zone;
 	
 	/** The previous ice prob value. */
 	private double iceProbabilityCache = 400D;
@@ -382,8 +383,8 @@ public class Settlement extends Unit implements Temporal,
 
 		this.settlementCode = createCode(name);
 		this.location = location;
-		this.timeOffset = MarsSurface.getTimeOffset(location);
-		this.meals = new MealSchedule(timeOffset);
+		this.zone = MarsZone.getMarsZone(location);
+		this.meals = new MealSchedule(zone.getMSolOffset());
 		this.initialPopulation = initialPopulation;
 		
 		citizens = new UnitSet<>();
@@ -412,8 +413,8 @@ public class Settlement extends Unit implements Temporal,
 
 		this.settlementCode = createCode(name);
 		this.location = location;
-		this.timeOffset = MarsSurface.getTimeOffset(location);
-		this.meals = new MealSchedule(timeOffset);
+		this.zone = MarsZone.getMarsZone(location);
+		this.meals = new MealSchedule(zone.getMSolOffset());
 
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -464,8 +465,8 @@ public class Settlement extends Unit implements Temporal,
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
 		this.sponsor = sponsor;
-		this.timeOffset = MarsSurface.getTimeOffset(location);
-		this.meals = new MealSchedule(timeOffset);
+		this.zone = MarsZone.getMarsZone(location);
+		this.meals = new MealSchedule(zone.getMSolOffset());
 		this.mapImageID = RandomUtil.getRandomInt(NUM_BACKGROUND_IMAGES - 1) + 1;
 				
 		citizens = new UnitSet<>();
@@ -3425,11 +3426,11 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Gets the time offset of day rise for this Settlement. This is based on it's location
+	 * Gets the mars time zone for this Settlement. This is based on it's location
 	 * around the planet.
 	 */
-	public int getTimeOffset() {
-		return timeOffset;
+	public MarsZone getTimeZone() {
+		return zone;
 	}
 
 	/** 

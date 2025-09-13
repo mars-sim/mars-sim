@@ -7,7 +7,6 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.activities.GroupActivity.ActivityState;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.events.ScheduledEventManager.ScheduledEvent;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -104,7 +103,7 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
     private GroupActivity testFutureEvent(String message, Settlement s, GroupActivityInfo info,
                                 MarsTime now, int minDuration, int maxDuration) {
-        var offset = MarsSurface.getTimeOffset(s.getCoordinates());
+        var offset = s.getTimeZone().getMSolOffset();
 
         var fm = s.getFutureManager();
         List<ScheduledEvent> matched = fm.getEvents().stream()
