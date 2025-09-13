@@ -198,6 +198,32 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertEquals("Research spots", 3, found.getActivitySpots().size());
     }
 
+    
+    /**
+     * This test is very tied to the building spec of LANDER_HAB
+     */
+    @SuppressWarnings("unchecked")
+	public void testThermalFunction() {
+	    var simConfig = SimulationConfig.loadConfig();
+        var bc = simConfig.getBuildingConfiguration();
+
+        var found = (GenerationSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.THERMAL_GENERATION);
+        
+        assertNotNull("Found", found);
+
+        var thermals = found.getSources();
+        assertEquals("Sources", 3, thermals.size());
+
+        assertEquals("Type 1", "Solar Heating", thermals.get(0).getType());
+        assertEquals("Capacity 1", 5D, thermals.get(0).getCapacity());
+        
+        assertEquals("Type 1", "Electric Heating", thermals.get(1).getType());
+        assertEquals("Capacity 1", 20D, thermals.get(1).getCapacity());
+
+        assertEquals("Type 2", "Fuel Heating", thermals.get(2).getType());
+        assertEquals("Capacity 2", 20D, thermals.get(2).getCapacity());
+        assertEquals("Fuel 2", "methane", thermals.get(2).getAttribute(SourceSpec.FUEL_TYPE));
+    }
 
     /**
      * This test is very tied to the building spec of LANDER_HAB

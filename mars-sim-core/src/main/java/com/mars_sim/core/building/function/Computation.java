@@ -14,6 +14,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.SourceSpec;
+import com.mars_sim.core.building.config.GenerationSpec;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 
@@ -148,10 +149,14 @@ public class Computation extends Function {
 
 		double existingPowerValue = demand / (supply + 1D);
 
-		double powerSupply = buildingConfig.getHeatSources(type).stream()
-								.mapToDouble(SourceSpec::getCapacity).sum();
+		var spec = buildingConfig.getFunctionSpec(type, FunctionType.THERMAL_GENERATION);
+		if (spec instanceof GenerationSpec ss) {
+			double powerSupply = ss.getSources().stream()
+									.mapToDouble(SourceSpec::getCapacity).sum();
 
-		return powerSupply * existingPowerValue;
+			return powerSupply * existingPowerValue;
+		}
+		return 0;
 	}
 
 	/**

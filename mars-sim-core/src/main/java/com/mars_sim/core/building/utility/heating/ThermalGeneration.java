@@ -17,6 +17,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.SourceSpec;
+import com.mars_sim.core.building.config.GenerationSpec;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
@@ -71,41 +72,46 @@ public class ThermalGeneration extends Function {
 
 		// Determine heat sources.
 		heatSources = new ArrayList<>();
-		
-		for (SourceSpec sourceSpec : buildingConfig.getHeatSources(building.getBuildingType())) {
-			double heat = sourceSpec.getCapacity();
-			HeatSource heatSource = null;
-			HeatSourceType sourceType = HeatSourceType.valueOf(sourceSpec.getType().toUpperCase().replace(" ", "_"));
-			
-			switch (sourceType) {
-			case ELECTRIC_HEATING:
-				heatSource = new ElectricHeatSource(building, heat);	
-				electricHeatSource = heatSource;
-				break;
 
-			case SOLAR_HEATING:
-				heatSource = new SolarHeatingSource(building, heat);
-				solarHeatSource = heatSource;
-				break;
+		if (spec instanceof GenerationSpec ss) {
+			for (SourceSpec sourceSpec : ss.getSources()) {
+				double heat = sourceSpec.getCapacity();
+				HeatSource heatSource = null;
+				HeatSourceType sourceType = HeatSourceType.valueOf(sourceSpec.getType().toUpperCase().replace(" ", "_"));
 				
-			case FUEL_HEATING:
-				boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
-				String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
-				heatSource = new FuelHeatSource(building, heat, toggle, fuelType);
-				fuelHeatSource = heatSource;
-				break;
+				switch (sourceType) {
+				case ELECTRIC_HEATING:
+					heatSource = new ElectricHeatSource(building, heat);	
+					electricHeatSource = heatSource;
+					break;
+
+				case SOLAR_HEATING:
+					heatSource = new SolarHeatingSource(building, heat);
+					solarHeatSource = heatSource;
+					break;
+					
+				case FUEL_HEATING:
+					boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
+					String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
+					heatSource = new FuelHeatSource(building, heat, toggle, fuelType);
+					fuelHeatSource = heatSource;
+					break;
+					
+				case THERMAL_NUCLEAR:
+					heatSource = new ThermalNuclearSource(building, heat);
+					nuclearHeatSource = heatSource;
+					break;
+					
+				default:
+					throw new IllegalArgumentException("Do not know heat source type :" + sourceSpec.getType());
+				}
 				
-			case THERMAL_NUCLEAR:
-				heatSource = new ThermalNuclearSource(building, heat);
-				nuclearHeatSource = heatSource;
-				break;
-				
-			default:
-				throw new IllegalArgumentException("Do not know heat source type :" + sourceSpec.getType());
+				// Add this heat source into the list
+				heatSources.add(heatSource);
 			}
-			
-			// Add this heat source into the list
-			heatSources.add(heatSource);
+		}
+		else {
+			throw new IllegalArgumentException("FunctionSpec is not of correct type");
 		}
 	}
 
@@ -135,11 +141,15 @@ public class ThermalGeneration extends Function {
 		}
 
 		double existingHeatValue = demand / (supply + 1D);
+		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.THERMAL_GENERATION);
+		if (spec instanceof GenerationSpec ss) {
+			double heatSupply = ss.getSources().stream()
+									.mapToDouble(SourceSpec::getCapacity).sum();
 
-		double heatSupply = buildingConfig.getHeatSources(buildingName).stream()
-								.mapToDouble(SourceSpec::getCapacity).sum();
+			return heatSupply * existingHeatValue;
+		}
+		return 0;
 
-		return heatSupply * existingHeatValue;
 	}
 
 	/**
@@ -191,15 +201,6 @@ public class ThermalGeneration extends Function {
 	public void setGeneratedHeat(double heat) {
 		heatGeneratedCache = heat;
 	}
-	
-//	/**
-//	 * Gets the total amount of power that this building is CURRENTLY producing.
-//	 * 
-//	 * @return power generated in kW ()
-//	 */
-//	public double getGeneratedPower() {
-//		return powerGeneratedCache; 
-//	}
 
 	/**
 	 * Calculates the amount of heat that this building is generating to cover the heat load.
@@ -210,10 +211,9 @@ public class ThermalGeneration extends Function {
 	 */
 	private double[] calculateHeatGen(double heatLoad, double time) {
 		// Assume heatLoad is positive to begin with
-//		logger.info(building, 5_000 , "heatLoad: " + Math.round(heatLoad * 100.0)/100.0);
 		double remainHeatReq = heatLoad;
 		double heatGen = 0D;
-		double heat[] = new double[2];
+		double []heat = new double[2];
 	
 		double sHeat = 0;
 		double eHeat = 0;
@@ -222,19 +222,19 @@ public class ThermalGeneration extends Function {
 		
 		HeatMode newHeatMode = null;
 		
-		List<HeatMode> ALL_HEAT_MODES = HeatMode.ALL_HEAT_MODES;
-		HeatMode heatMode = ALL_HEAT_MODES.get(0);
+		var allHeatModes = HeatMode.ALL_HEAT_MODES;
+		HeatMode heatMode = allHeatModes.get(0);
 		
 		// Order of business: solar, nuclear, electric, and fuel
 
-		int size = ALL_HEAT_MODES.size() - 1;
+		int size = allHeatModes.size() - 1;
 		
 		if (solarHeatSource != null) {
 				
 			if (((SolarHeatingSource)solarHeatSource).getSunlight() > 0) {
 				
 				for (int i=0; i<size; i++) {
-					heatMode = ALL_HEAT_MODES.get(i);
+					heatMode = allHeatModes.get(i);
 	
 			    	sHeat = solarHeatSource.requestHeat(heatMode.getPercentage());
 		    	
@@ -312,7 +312,7 @@ public class ThermalGeneration extends Function {
 		if (nuclearHeatSource != null) {
 			
 			for (int i=0; i<size; i++) {
-				heatMode = ALL_HEAT_MODES.get(i);
+				heatMode = allHeatModes.get(i);
 
 		    	nHeat = nuclearHeatSource.requestHeat(heatMode.getPercentage());
 				 	
@@ -384,7 +384,7 @@ public class ThermalGeneration extends Function {
 		if (electricHeatSource != null) {
 	
 			for (int i=0; i<size; i++) {
-				heatMode = ALL_HEAT_MODES.get(i);
+				heatMode = allHeatModes.get(i);
 				
 		    	eHeat = electricHeatSource.requestHeat(heatMode.getPercentage());
 				
@@ -449,7 +449,7 @@ public class ThermalGeneration extends Function {
 		if (fuelHeatSource != null) {
 	
 			for (int i=0; i<size; i++) {
-				heatMode = ALL_HEAT_MODES.get(i);
+				heatMode = allHeatModes.get(i);
 				
 				((FuelHeatSource)fuelHeatSource).setTime(time);
 				((FuelHeatSource)fuelHeatSource).toggleON();
@@ -504,10 +504,8 @@ public class ThermalGeneration extends Function {
 			}
 		}
 
-//		if (sHeat + nHeat + eHeat + fHeat > 0) {
-			heat[0] = heatGen;
-			heat[1] = remainHeatReq;			
-//		}
+		heat[0] = heatGen;
+		heat[1] = remainHeatReq;			
 		return heat;
 	}
 
@@ -583,7 +581,6 @@ public class ThermalGeneration extends Function {
 			devT = -25;
 		else if (devT > 25)
 			devT = 25;
-		// Note: devT = tPreset - newT;
 
 		// if devT is -ve, too hot. Lower heatGen
 		// if devT is +ve, too cold. Raise heatGen
@@ -612,7 +609,7 @@ public class ThermalGeneration extends Function {
 				// hot but need more heat
 				// heatReq: +ve
 				// mod: +ve/-ve
-				mHeatReq = 0; //heatReq * mod * 0.5;
+				mHeatReq = 0;
 				// mHeatReq is -ve
 			}
 			
@@ -669,7 +666,7 @@ public class ThermalGeneration extends Function {
 		
 		if (finalHeatReq <= THRESHOLD) {
 			// input zero heat req in order to reset all heat sources to zero
-			double heat[] = calculateHeatGen(0, millisols);
+			double []heat = calculateHeatGen(0, millisols);
 			heatGen = heat[0];
 			remainHeatReq = heat[1];
 			// Update heat generated in Heating
@@ -697,7 +694,7 @@ public class ThermalGeneration extends Function {
 		}
 		
 		// Find out how much heat can be generated to match this requirement
-		double heat[] = calculateHeatGen(finalHeatReq, millisols);
+		double []heat = calculateHeatGen(finalHeatReq, millisols);
 		heatGen = heat[0];
 		remainHeatReq = heat[1];
 		

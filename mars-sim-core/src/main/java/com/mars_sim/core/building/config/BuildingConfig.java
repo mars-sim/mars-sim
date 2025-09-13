@@ -163,20 +163,6 @@ public class BuildingConfig {
 		if (storageElement != null) {
 			parseStorage(newSpec, storageElement);
 		}
-
-		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
-		if (thermalGenerationElement != null) {
-			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE),
-														   CAPACITY);
-			newSpec.setHeatSource(heatSourceList);
-		}
-
-		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
-		if (powerGenerationElement != null) {
-			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE),
-															POWER);
-			newSpec.setPowerSource(powerSourceList);
-		}
 		return newSpec;
 	}
 
@@ -344,9 +330,11 @@ public class BuildingConfig {
 		switch(function) {
 			case EVA -> base = createEVASpec(base, element);
 			case MEDICAL_CARE -> base = createMedicalCareSpec(base, element, width, length);
+			case POWER_GENERATION -> base = createSourcesSpec(base, element, POWER_SOURCE, POWER);
+			case RESEARCH -> base = createResearchSpec(base, element);
+			case THERMAL_GENERATION -> base = createSourcesSpec(base, element, HEAT_SOURCE, CAPACITY);
 			case WASTE_PROCESSING, RESOURCE_PROCESSING -> base = createResourceProcessingSpec(base, element, resProcConfig);
 			case VEHICLE_MAINTENANCE -> base = createVehicleMaintenanceSpec(base, element, width, length);
-			case RESEARCH -> base = createResearchSpec(base, element);
 			default -> { // No need to do anything
 						}
 		}
@@ -431,9 +419,9 @@ public class BuildingConfig {
 	 * @param unitName
 	 * @return
 	 */
-	private List<SourceSpec> parseSources(List<Element> list, String unitName) {
+	private GenerationSpec createSourcesSpec(FunctionSpec base, Element element, String sourceName, String unitName) {
 		List<SourceSpec> sourceList = new ArrayList<>();
-		for (Element sourceElement : list) {
+		for (Element sourceElement : element.getChildren(sourceName)) {
 			Properties attrs = new Properties();
 			String type = sourceElement.getAttributeValue(TYPE);
 			double unitCapacity = ConfigHelper.getOptionalAttributeDouble(sourceElement, unitName, 0);
@@ -451,7 +439,7 @@ public class BuildingConfig {
 			sourceList.add(new SourceSpec(type, attrs, numModules, 
 					unitCapacity, stirlingConversion, percentLoadCapacity));
 		}
-		return sourceList;
+		return new GenerationSpec(base, sourceList);
 	}
 
 	/**
@@ -579,29 +567,6 @@ public class BuildingConfig {
 	 */
 	public Map<Integer, Double> getInitialResources(String buildingType) {
 		return getBuildingSpec(buildingType).getInitialResources();
-	}
-
-	/**
-	 * Gets a list of the building's heat sources.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return list of heat sources
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<SourceSpec> getHeatSources(String buildingType) {
-		return getBuildingSpec(buildingType).getHeatSource();
-	}
-
-	/**
-	 * Gets a list of the building's power sources.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return list of power sources
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<SourceSpec> getPowerSources(String buildingType) {
-		return getBuildingSpec(buildingType).getPowerSource();
-
 	}
 	
 	private static final String generateSpecKey(String buildingType) {

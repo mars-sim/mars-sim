@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -36,41 +35,25 @@ extends BuildingFunctionPanel {
 
 	private static final String POWER_ICON = "power";
 	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
-	/** Is the building a power producer? */
-	private boolean isProducer;
-	
 	/** The power production cache. */
 	private double totalProducedCache;
 	/** The total power used cache. */
 	private double totalUsedCache;
-	/** The max power cache. */
-	private double maxPowerCache0;
-	/** The max power cache. */
-	private double maxPowerCache1;
-	/** The load capacity cache. */
-	private double loadCapacity0;
-	/** The load capacity cache. */
-	private double loadCapacity1;
 	
 	private JLabel powerModeLabel;
 	private JLabel totalUsedLabel;
 	private JLabel totalProducedLabel;
-
-	private JLabel maxPowerLabel0;
-	private JLabel loadCapacityLabel0;
-	
-	private JLabel maxPowerLabel1;
-	private JLabel loadCapacityLabel1;
 	
 	/** The power status cache. */
 	private PowerMode powerModeCache;
 
 	private PowerGeneration generator;
 	
-	private List<PowerSource> sources;
+	private List<PowerSource> sources = null;
+
+	protected JLabel[] maxPowerLabels;
+
+	private JLabel[] loadLabels;
 	
 	/**
 	 * Constructor.
@@ -91,7 +74,6 @@ extends BuildingFunctionPanel {
 		// Check if the building is a power producer.
 		generator = building.getFunction(FunctionType.POWER_GENERATION);
 		if (generator != null) {
-			isProducer = true;
 			sources = generator.getPowerSources();
 		}
 	}
@@ -102,87 +84,52 @@ extends BuildingFunctionPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 		
-		JPanel panel = new JPanel(new BorderLayout(5, 10));
-		AttributePanel springPanel = new AttributePanel(3);
-		center.add(panel, BorderLayout.NORTH);
-		panel.add(springPanel, BorderLayout.NORTH);
+		AttributePanel totalsPanel = new AttributePanel();
+		totalsPanel.setBorder(StyleManager.createLabelBorder("Total"));
+		center.add(totalsPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
 		powerModeCache = building.getPowerMode();
 		
-		powerModeLabel = springPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"),
+		powerModeLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"),
 					powerModeCache.getName());
 		
-		// Prepare power used label.
-		if (powerModeCache == PowerMode.FULL_POWER) 
-			totalUsedCache = building.getFullPowerRequired();
-		else if (powerModeCache == PowerMode.LOW_POWER) 
-			totalUsedCache = building.getLowPowerRequired();
-		else 
-			totalUsedCache = 0D;
-		
-		totalUsedLabel = springPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerTotalUsed"),
+		totalUsedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerTotalUsed"),
 										StyleManager.DECIMAL_KW.format(totalUsedCache));
 
 		// If power producer, prepare power producer label.
-		if (isProducer) {
+		if (generator != null) {
 			totalProducedCache = generator.getGeneratedPower();
 			
-			totalProducedLabel = springPanel.addRow(Msg.getString("BuildingPanelPowerGen.totalProduced"),
+			totalProducedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.totalProduced"),
 									  StyleManager.DECIMAL_KW.format(totalProducedCache));
 			
 			int num = sources.size();
-			
 			AttributePanel sPanel = new AttributePanel(num * 3);
+			sPanel.setBorder(StyleManager.createLabelBorder("Sources"));
 
-			panel.add(sPanel, BorderLayout.CENTER);
-			
+			var centerPanel = new JPanel(new BorderLayout());
+			center.add(centerPanel, BorderLayout.CENTER);
+			centerPanel.add(sPanel, BorderLayout.NORTH);
+
+			maxPowerLabels = new JLabel[num];
+			loadLabels = new JLabel[num];
+
 			int count = 0;
-			Iterator<PowerSource> iP = sources.iterator();
-			while (iP.hasNext()) {
-
-				PowerSource powerSource = iP.next();
+			for(var powerSource : sources) {
 
 				sPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerType") 
 						+ " " + count,
-						powerSource.getType().getName());	
+						powerSource.getType().getName());
 
-				double maxPowerCache = powerSource.getMaxPower();
-				JLabel maxPowerLabel = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.maxPower"),
-						StyleManager.DECIMAL_KW.format(maxPowerCache));
-
-				double loadCapacity = 0;
-				JLabel loadLabel = null;
-				
-				if (powerSource.getType() == PowerSourceType.FISSION_POWER
-						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
-							
-					loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
-					loadLabel = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.loadCapacity"),
-							Math.round(loadCapacity *10.0)/10.0 + " %");
-					break;
-				}
-				else {
-					loadLabel = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.loadCapacity"),
+				maxPowerLabels[count] = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.maxPower"), "");
+				loadLabels[count] = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.loadCapacity"),
 							"None");
-				}
-				
-				if (count == 0) {
-					maxPowerCache0 = maxPowerCache;
-					maxPowerLabel0 = maxPowerLabel;	
-					loadCapacity0 = loadCapacity;
-					loadCapacityLabel0 = loadLabel;
-				}
-				else if (count == 1) {
-					maxPowerCache1 = maxPowerCache;
-					maxPowerLabel1 = maxPowerLabel;	
-					loadCapacity1 = loadCapacity;
-					loadCapacityLabel1 = loadLabel;
-				}	
-				
 				count++;
 			}
 		}
+
+		update();
 	}
 
 	/**
@@ -190,9 +137,6 @@ extends BuildingFunctionPanel {
 	 */
 	@Override
 	public void update() {	
-		if (!uiDone)
-			initializeUI();
-		
 
 		// Update power status if necessary.
 		PowerMode mode = building.getPowerMode();
@@ -200,7 +144,6 @@ extends BuildingFunctionPanel {
 			powerModeCache = mode;
 			powerModeLabel.setText(mode.getName()); //$NON-NLS-1$
 		}
-
 
 		// Update power used if necessary.
 		double totalUsed = 0D;
@@ -215,7 +158,7 @@ extends BuildingFunctionPanel {
 		}
 		
 		// Update power production if necessary.
-		if (isProducer) {
+		if (generator != null) {
 			double totalProduced = generator.getGeneratedPower();
 			if (totalProducedCache != totalProduced) {
 				totalProducedCache = totalProduced;
@@ -223,42 +166,14 @@ extends BuildingFunctionPanel {
 			}
 			
 			int count = 0;
-			Iterator<PowerSource> iP = sources.iterator();
-			while (iP.hasNext()) {
-				PowerSource powerSource = iP.next();
+			for(var powerSource : sources) {
 
 				double maxPower = powerSource.getMaxPower();
+				maxPowerLabels[count].setText(StyleManager.DECIMAL_KW.format(maxPower));
 				
-				if (count == 0) {
-					if (maxPowerCache0 != maxPower) {
-						maxPowerCache0 = maxPower;
-						maxPowerLabel0.setText(StyleManager.DECIMAL_KW.format(maxPower));
-					}
-				}
-				else {
-					if (maxPowerCache1 != maxPower) {
-						maxPowerCache1 = maxPower;
-						maxPowerLabel1.setText(StyleManager.DECIMAL_KW.format(maxPower));
-					}
-				}
-				
-				if (powerSource.getType() == PowerSourceType.FISSION_POWER
-						|| powerSource.getType() == PowerSourceType.THERMIONIC_NUCLEAR_POWER) {
-					
-					double loadCapacity = ((FissionPowerSource)powerSource).getCurrentLoadCapacity();
-					
-					if (count == 0) {
-						if (loadCapacity0 != loadCapacity) {
-							loadCapacity0 = loadCapacity;
-							loadCapacityLabel0.setText(Math.round(loadCapacity *10.0)/10.0 + " %");
-						}
-					}
-					else {
-						if (loadCapacity1 != loadCapacity) {
-							loadCapacity1 = loadCapacity;
-							loadCapacityLabel1.setText(Math.round(loadCapacity *10.0)/10.0 + " %");
-						}
-					}
+				if (powerSource instanceof FissionPowerSource fps) {					
+					double loadCapacity = fps.getCurrentLoadCapacity();
+					loadLabels[count].setText(Math.round(loadCapacity *10.0)/10.0 + " %");
 				}
 				
 				count++;
@@ -278,11 +193,5 @@ extends BuildingFunctionPanel {
 		totalUsedLabel = null;
 		powerModeCache = null;
 		generator = null;
-		
-		maxPowerLabel0 = null;
-		loadCapacityLabel0 = null;
-		
-		maxPowerLabel1 = null;	
-		loadCapacityLabel1 = null;
 	}
 }

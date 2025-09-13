@@ -16,6 +16,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.SourceSpec;
+import com.mars_sim.core.building.config.GenerationSpec;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.structure.Settlement;
@@ -48,50 +49,55 @@ public class PowerGeneration extends Function {
 		// Determine power sources.
 		powerSources = new ArrayList<>();
 		
-		for (SourceSpec sourceSpec : buildingConfig.getPowerSources(building.getBuildingType())) {
-			String type = sourceSpec.getType();
-			double power = sourceSpec.getCapacity();
-			int numModules = sourceSpec.getNumModules();
-			double conversion = sourceSpec.getConversionEfficiency();
-			double percentLoadCapacity = sourceSpec.getpercentLoadCapacity();
-			
-			PowerSource powerSource = null;
-			PowerSourceType powerType = PowerSourceType.getType(type);
-			switch (powerType) {
-				case FISSION_POWER:
-					powerSource = new FissionPowerSource(numModules, power, conversion, percentLoadCapacity);				
-					break;
-					
-				case THERMIONIC_NUCLEAR_POWER:
-					powerSource = new ThermionicNuclearPowerSource(numModules, power, conversion, percentLoadCapacity);				
-					break;
-					
-				case SOLAR_POWER:
-					powerSource = new SolarPowerSource(building, power);
-					break;
-					
-				case SOLAR_THERMAL:
-					powerSource = new SolarThermalPowerSource(building, power);
-					break;
-					
-				case FUEL_POWER:
-					boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
-					String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
-					powerSource = new FuelPowerSource(building, power, toggle, fuelType);
-					break;
-					
-				case WIND_POWER:
-					powerSource = new WindPowerSource(building, power);				
-					break;
-					
-				case AREOTHERMAL_POWER:
-					powerSource = new AreothermalPowerSource(power);
-					break;
+		if (spec instanceof GenerationSpec ss) {
+			for (SourceSpec sourceSpec : ss.getSources()) {
+				String type = sourceSpec.getType();
+				double power = sourceSpec.getCapacity();
+				int numModules = sourceSpec.getNumModules();
+				double conversion = sourceSpec.getConversionEfficiency();
+				double percentLoadCapacity = sourceSpec.getpercentLoadCapacity();
 				
-				default:
-					throw new IllegalArgumentException("Don't know how to build PowerSource : " + type);
+				PowerSource powerSource = null;
+				PowerSourceType powerType = PowerSourceType.getType(type);
+				switch (powerType) {
+					case FISSION_POWER:
+						powerSource = new FissionPowerSource(numModules, power, conversion, percentLoadCapacity);				
+						break;
+						
+					case THERMIONIC_NUCLEAR_POWER:
+						powerSource = new ThermionicNuclearPowerSource(numModules, power, conversion, percentLoadCapacity);				
+						break;
+						
+					case SOLAR_POWER:
+						powerSource = new SolarPowerSource(building, power);
+						break;
+						
+					case SOLAR_THERMAL:
+						powerSource = new SolarThermalPowerSource(building, power);
+						break;
+						
+					case FUEL_POWER:
+						boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
+						String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
+						powerSource = new FuelPowerSource(building, power, toggle, fuelType);
+						break;
+						
+					case WIND_POWER:
+						powerSource = new WindPowerSource(building, power);				
+						break;
+						
+					case AREOTHERMAL_POWER:
+						powerSource = new AreothermalPowerSource(power);
+						break;
+					
+					default:
+						throw new IllegalArgumentException("Don't know how to build PowerSource : " + type);
+				}
+				powerSources.add(powerSource);
 			}
-			powerSources.add(powerSource);
+		}
+		else {
+			throw new IllegalArgumentException("FunctionSpec is of wrong type");
 		}
 	}
 
@@ -122,11 +128,14 @@ public class PowerGeneration extends Function {
 		}
 
 		double existingPowerValue = demand / (supply + 1D);
+		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.POWER_GENERATION);
+		if (spec instanceof GenerationSpec ss) {
+			double powerSupply = ss.getSources().stream()
+									.mapToDouble(SourceSpec::getCapacity).sum();
 
-		double powerSupply = buildingConfig.getPowerSources(buildingName).stream()
-								.mapToDouble(SourceSpec::getCapacity).sum();
-
-		return powerSupply * existingPowerValue;
+			return powerSupply * existingPowerValue;
+		}
+		return 0;
 	}
 
 	/**
@@ -256,30 +265,12 @@ public class PowerGeneration extends Function {
 	/**
 	 * Returns the power source to the inventory.
 	 */
+	@Override
 	public void removeFromSettlement() {
-		Iterator<PowerSource> i = powerSources.iterator();
-		while (i.hasNext()) {
-			i.next().removeFromSettlement();
-		}
+		powerSources.forEach(i -> i.removeFromSettlement());
 	}
 
 	public double getGeneratedPower() {
 		return powerGeneratedCache;
 	}
-	
-	@Override
-	public void destroy() {
-		super.destroy();
-
-//		thermalGeneration = null;
-
-		Iterator<PowerSource> i = powerSources.iterator();
-		while (i.hasNext()) {
-			i.next().destroy();
-		}
-		powerSources.clear();
-
-		powerSources = null;
-	}
-
 }

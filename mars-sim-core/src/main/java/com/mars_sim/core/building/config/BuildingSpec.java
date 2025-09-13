@@ -6,9 +6,7 @@
  */
 package com.mars_sim.core.building.config;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,9 +25,6 @@ public class BuildingSpec {
 	
 	public static final String HABITABLE = "habitable";
 	public static final String METALLIC_ELEMENT = "metallic element";
-	
-	// Empty list constants
-	private static final List<SourceSpec> EMPTY_SOURCE = new ArrayList<>();
 	
 	/** is the building non-habitable. */
 	private boolean isInhabitable = true;
@@ -65,9 +60,6 @@ public class BuildingSpec {
 	// Optional Function details
 	private Map<Integer, Double> storageMap = null;
 	private Map<Integer, Double> initialMap = null;
-
-	private List<SourceSpec> heatSourceList = EMPTY_SOURCE;
-	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 
 	private BuildingCategory category;
 	
@@ -273,22 +265,6 @@ public class BuildingSpec {
 	void setStorage(Map<Integer, Double> storageMap, Map<Integer, Double> initialMap) {
 		this.storageMap = storageMap;
 		this.initialMap = initialMap;
-	}
-
-	public void setHeatSource(List<SourceSpec> heatSourceList) {
-		this.heatSourceList = heatSourceList;
-	}
-	
-	public List<SourceSpec> getHeatSource() {
-		return heatSourceList;
-	}
-	
-	public void setPowerSource(List<SourceSpec> powerSource) {
-		this.powerSource = powerSource;
-	}
-	
-	public List<SourceSpec> getPowerSource() {
-		return powerSource;
 	}
 
 	public String toString() {
