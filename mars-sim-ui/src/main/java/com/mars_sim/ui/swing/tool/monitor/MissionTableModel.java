@@ -46,7 +46,7 @@ public class MissionTableModel extends AbstractMonitorModel
 	/** Date Embarked column. */
 	private static final int DATE_EMBARKED = 1;
 	/** Date Returned column. */
-	private static final int DATE_RETURNED = 2;
+	private static final int DATE_COMPLETED = 2;
 	/** Starting member column. */
 	private static final int STARTING_MEMBER = 3;
 	/** Mission String column. */
@@ -70,7 +70,7 @@ public class MissionTableModel extends AbstractMonitorModel
 	/** Remaining distance column. */
 	private static final int TOTAL_REMAINING_DISTANCE_KM = 13;
 	/** Travelled distance column. */
-	private static final int ACTUAL_TRAVELLED_DISTANCE_KM = 14;
+	private static final int TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM = 14;
 	/** Proposed route distance column. */
 	private static final int TOTAL_ESTIMATED_DISTANCE_KM = 15;
 	/** The number of Columns. */
@@ -93,7 +93,7 @@ public class MissionTableModel extends AbstractMonitorModel
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[DATE_FILED] = new ColumnSpec(Msg.getString("MissionTableModel.column.filed"), MarsTime.class);
 		COLUMNS[DATE_EMBARKED] = new ColumnSpec(Msg.getString("MissionTableModel.column.embarked"), MarsTime.class);
-		COLUMNS[DATE_RETURNED] = new ColumnSpec(Msg.getString("MissionTableModel.column.returned"), MarsTime.class);
+		COLUMNS[DATE_COMPLETED] = new ColumnSpec(Msg.getString("MissionTableModel.column.completed"), MarsTime.class);
 		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("MissionTableModel.column.name"), String.class);
 		COLUMNS[MISSION_STRING] = new ColumnSpec(Msg.getString("MissionTableModel.column.missionString"), String.class);
 		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("MissionTableModel.column.designation"), String.class);
@@ -105,7 +105,7 @@ public class MissionTableModel extends AbstractMonitorModel
 		COLUMNS[TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.travelled"), Double.class);
 		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.remaining"), Double.class);		
 		COLUMNS[TOTAL_REMAINING_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.remaining"), Double.class);
-		COLUMNS[ACTUAL_TRAVELLED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.travelled"), Double.class);	
+		COLUMNS[TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.travelled"), Double.class);	
 		COLUMNS[TOTAL_ESTIMATED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.proposed"), Double.class);
 	}
 
@@ -261,7 +261,7 @@ public class MissionTableModel extends AbstractMonitorModel
 						columnsToUpdate.add(TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(REMAINING_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE_KM);
-						columnsToUpdate.add(ACTUAL_TRAVELLED_DISTANCE_KM);
+						columnsToUpdate.add(TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM);
 						columnsToUpdate.add(TOTAL_ESTIMATED_DISTANCE_KM);
 					} break;
 
@@ -304,15 +304,15 @@ public class MissionTableModel extends AbstractMonitorModel
 
 		switch (columnIndex) {
 			case DATE_FILED:
-				result = mission.getLog().getDateCreated();
+				result = mission.getLog().getTimestampCreated();
 				break;
 
 			case DATE_EMBARKED:
-				result = mission.getLog().getDateEmbarked();
+				result = mission.getLog().getTimestampEmbarked();
 				break;
 
-			case DATE_RETURNED:
-				result = mission.getLog().getDateFinished();
+			case DATE_COMPLETED:
+				result = mission.getLog().getTimestampCompleted();
 				break;
 
 			case STARTING_MEMBER:
@@ -387,7 +387,7 @@ public class MissionTableModel extends AbstractMonitorModel
 				}
 				break;
 				
-			case ACTUAL_TRAVELLED_DISTANCE_KM:
+			case TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM:
 				if (mission instanceof VehicleMission vm) {
 					result = vm.getTotalDistanceTravelled();
 				}

@@ -278,6 +278,26 @@ public class PersonBuilder {
 		}
 		return result;
 	}
+
+
+	public Person testBuild() {
+
+		// Predefined age overrides any calculation
+		if (age <= 0) {
+			age = RandomUtil.getRandomInt(21, 65);	
+		}
+		
+		if (attributeMap == null) {
+			attributeMap = buildDefaultAttributes();
+		}
+		
+		Person p = new Person(name, settlement, gender, age, attributeMap);
+		
+		applyPersonality(p);
+		applySkillMap(p);
+
+		return p;
+	}
 	
 	public Person build() {
 		

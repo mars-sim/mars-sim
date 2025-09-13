@@ -70,7 +70,7 @@
 		<input resource="Water" rate="36.0" />	
 
 		<output resource="Acetic acid" rate="120.0" />
-		<output resource="Carbon dioxide" rate="88.0" />
+		<output resource="Carbon dioxide" rate="88.0" waste="false"/>
 		<output resource="Hydrogen" rate="8.0" />
 	</process>
 
@@ -88,7 +88,7 @@
 		<input resource="Glucose" rate="180.0" />
 		<input resource="water" rate="108.0" />	
 
-		<output resource="Carbon dioxide" rate="264.0" />
+		<output resource="Carbon dioxide" rate="264.0" waste="false"/>
 		<output resource="Hydrogen" rate="24.0" />
 	</process>
 
@@ -196,7 +196,7 @@
 		<input resource="hydrogen" rate="36" />
 		
 		<output resource="methane" rate="48" />
-		<output resource="carbon monoxide" rate="168" />
+		<output resource="carbon monoxide" rate="168" waste="true" />
 		<output resource="water" rate="216" />
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
@@ -344,6 +344,31 @@
 		<output resource="methanol" rate="64"  />
 	</process> <!--"Selective Partial Oxidation (SPO) of Methane to Methanol"-->
 	
+
+	<process name="Water-Gas Shift Reaction (WGSR)" power-required=".1" >
+	<description>
+		
+		CO + H2O -> CO2 + H2
+		28   18     44    2
+		
+		This reaction is a key step in hydrogen production, particularly 
+		in conjunction with steam reforming of methane or other hydrocarbons, 
+		where carbon monoxide is a primary product that is then converted to 
+		hydrogen via the WGSR.
+		
+		The reaction is moderately exothermic and its equilibrium favors higher 
+		hydrogen production at lower temperatures, leading to the use of 
+		high-temperature shift (HTS) and low-temperature shift (LTS) reactors 
+		in industrial applications.
+		
+	</description>
+
+		<input resource="carbon monoxide" rate="28" ambient="true" />
+		<input resource="water" rate="18.0"  />				
+		
+		<output resource="carbon dioxide" rate="44.0"  />
+		<output resource="hydrogen" rate="2.0"  />
+	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
 
 	<process name="Oxygen Generation System (OGS)" power-required="2.5" defaultOn="true">
@@ -666,7 +691,7 @@
 			<!-- According to http://canada.marssociety.org/winnipeg/soil.html
 			regolith is estimated to contain 11.3% sodium bicarbonate (baking
 			soda) and 1.15% of sodium chloride (table salt) -->
-			<output resource="baking powder" rate="4.0" />
+			<output resource="baking soda" rate="4.0" />
 			<output resource="table salt" rate="0.4" />
 	</process>
 

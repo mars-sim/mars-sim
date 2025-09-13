@@ -475,7 +475,7 @@ public class RescueSalvageVehicle extends RoverMission {
 	public double getMissionQualification(Worker member) {
 		double result = super.getMissionQualification(member);
 
-		if (member instanceof Person person && person.getMind().getJob() == JobType.PILOT) {
+		if (member instanceof Person person && person.getMind().getJobType() == JobType.PILOT) {
 			result += 1D;
 		}
 		

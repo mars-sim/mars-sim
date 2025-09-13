@@ -254,6 +254,30 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Make cleaning agent"
+			tech="2" skill="1"
+			work-time="10"
+			process-time="50" tooling="chemical"
+			power-required=".1">
+		<inputs>
+			<resource name="Acetic acid" amount="4.5" >
+				<alternative name="Baking soda" amount="4.5" />
+				<alternative name="Perchlorate" amount="4.5" />
+				<alternative name="Potash lye" amount="4.5" />
+				<alternative name="Ammonia" amount="4.5" />
+				<alternative name="Chlorine" amount="4.5" />	
+				<alternative name="Sodium carbonate" amount="4.5" />	
+				<alternative name="Rice vinegar" amount="4.5" />			
+			</resource>	
+			<resource name="Bleaching chemical" amount="0.5" >
+				<alternative name="Sodium hypochlorite" amount="0.5" />			
+			</resource>	
+		</inputs>
+		<outputs>
+			<resource name="Cleaning agent" amount="5.0" />
+		</outputs>
+	</process>
+	
 	<process name="Make crop fertilizers"
 			tech="2" skill="1"
 			work-time="10"
@@ -559,10 +583,10 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make fire extinguisher" tech="2" skill="1" work-time="100" process-time="50"
+	<process name="Make fire extinguisher" tech="2" skill="1" work-time="50" process-time="10"
 			power-required="0.1">
 		<inputs>
-			<resource name="carbon dioxide" amount="10.0" />
+			<resource name="carbon dioxide" amount="3.0" />
 			<part name="steel canister" number="1" />
 			<part name="valve" number="1" />
 			<part name="gasket" number="1" />

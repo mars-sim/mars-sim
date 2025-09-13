@@ -109,7 +109,7 @@ public class Teach extends Task {
 
 				}
 				else {
-					JobType jobType = ((Person)worker).getMind().getJob();
+					JobType jobType = ((Person)worker).getMind().getJobType();
 					
 					Set<JobType> jobs = metaTask.getPreferredJob();
 					if (!jobs.contains(jobType)) {

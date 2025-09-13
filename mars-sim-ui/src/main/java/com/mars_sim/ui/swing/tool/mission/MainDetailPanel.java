@@ -94,7 +94,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	private static final int MAX_LENGTH = 48;
 	private static final int WIDTH = 250;
 	private static final int MEMBER_HEIGHT = 125;
-	private static final int LOG_HEIGHT = 125;
+	private static final int LOG_HEIGHT = 200;
 	
 	// Private members
 	private JLabel vehicleStatusLabel;
@@ -250,9 +250,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		// Create member table.
 		JTable logTable = new JTable(logTableModel);
-		logTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-		logTable.getColumnModel().getColumn(1).setPreferredWidth(150);
-
+		logTable.getColumnModel().getColumn(0).setPreferredWidth(70);
+		logTable.getColumnModel().getColumn(1).setPreferredWidth(90);
+		logTable.getColumnModel().getColumn(2).setPreferredWidth(70);
+		
 		var scroller = StyleManager.createScrollBorder("Phase Log", logTable);
 		var dim = new Dimension(WIDTH, LOG_HEIGHT);
 		scroller.setPreferredSize(dim);
@@ -273,8 +274,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	
 			// Create member table.
 			var memberTable = new JTable(memberTableModel);
-			memberTable.getColumnModel().getColumn(0).setPreferredWidth(80);
-			memberTable.getColumnModel().getColumn(1).setPreferredWidth(150);
+			memberTable.getColumnModel().getColumn(0).setPreferredWidth(70);
+			memberTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 			memberTable.getColumnModel().getColumn(2).setPreferredWidth(20);
 			memberTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 			memberTable.setRowSelectionAllowed(true);
@@ -812,7 +813,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return column count.
 		 */
 		public int getColumnCount() {
-			return 2;
+			return 3;
 		}
 
 		/**
@@ -826,6 +827,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			return switch (columnIndex) {
 				case 0 -> "Date";
 				case 1 -> "Entry";
+				case 2 -> "Logged by";
 				default -> null;
 			};
 		}
@@ -844,8 +846,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if (row < entries.size()) {
 				if (column == 0)
 					return entries.get(row).getTime().getTruncatedDateTimeStamp();
-				else
+				else if (column == 1)
 					return entries.get(row).getEntry();
+				else
+					return entries.get(row).getEnterBy();
 			}
 			return null;
 		}

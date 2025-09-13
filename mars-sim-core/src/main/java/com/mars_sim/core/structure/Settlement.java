@@ -94,7 +94,9 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.Temporal;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
@@ -221,7 +223,7 @@ public class Settlement extends Unit implements Temporal,
 	/** The background map image id used by this settlement. */
 	private int mapImageID;
 	/** The time offset of day rise for this settlement. Location based. */
-	private int timeOffset;
+	private MarsZone zone;
 	
 	/** The previous ice prob value. */
 	private double iceProbabilityCache = 400D;
@@ -368,11 +370,43 @@ public class Settlement extends Unit implements Temporal,
 		tempRange = settlementConfig.getLifeSupportRequirements(SettlementConfig.TEMPERATURE);
 	}
 
+
 	/**
-	 * Constructor 2 called by MockSettlement for maven testing.
+	 * Constructor 2A called by MockSettlement for maven testing.
 	 *
 	 * @param name
 	 * @param location
+	 * @param initialPopulation
+	 */
+	protected Settlement(String name, Coordinates location, int initialPopulation) {
+		// Use Structure constructor.
+		super(name);
+
+		this.settlementCode = createCode(name);
+		this.location = location;
+		this.zone = MarsZone.getMarsZone(location);
+		this.meals = new MealSchedule(zone.getMSolOffset());
+		this.initialPopulation = initialPopulation;
+		
+		citizens = new UnitSet<>();
+		ownedRobots = new UnitSet<>();
+		ownedVehicles = new UnitSet<>();
+		vicinityParkedVehicles = new UnitSet<>();
+		indoorPeople = new UnitSet<>();
+		robotsWithin = new UnitSet<>();
+		
+	
+		// Add chain of command
+		chainOfCommand = new ChainOfCommand(this);
+
+	}
+	
+	/**
+	 * Constructor 2B called by MockSettlement for maven testing.
+	 *
+	 * @param name
+	 * @param location
+	 * @param testCommand
 	 */
 	protected Settlement(String name, Coordinates location) {
 		// Use Structure constructor.
@@ -380,8 +414,8 @@ public class Settlement extends Unit implements Temporal,
 
 		this.settlementCode = createCode(name);
 		this.location = location;
-		this.timeOffset = MarsSurface.getTimeOffset(location);
-		this.meals = new MealSchedule(timeOffset);
+		this.zone = MarsZone.getMarsZone(location);
+		this.meals = new MealSchedule(zone.getMSolOffset());
 
 		citizens = new UnitSet<>();
 		ownedRobots = new UnitSet<>();
@@ -432,8 +466,8 @@ public class Settlement extends Unit implements Temporal,
 		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
 		this.sponsor = sponsor;
-		this.timeOffset = MarsSurface.getTimeOffset(location);
-		this.meals = new MealSchedule(timeOffset);
+		this.zone = MarsZone.getMarsZone(location);
+		this.meals = new MealSchedule(zone.getMSolOffset());
 		this.mapImageID = RandomUtil.getRandomInt(NUM_BACKGROUND_IMAGES - 1) + 1;
 				
 		citizens = new UnitSet<>();
@@ -1148,7 +1182,7 @@ public class Settlement extends Unit implements Temporal,
 		refreshSleepMap();
 
 		// Decrease the Mission score.
-		minimumPassingScore *= 0.9D;
+		minimumPassingScore *= 1.05;
 
 		// Check the Grey water situation
 		if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
@@ -1679,10 +1713,13 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public boolean removePeopleWithin(Person p) {
 		if (!indoorPeople.contains(p)) {
+			return true;
+		}
+		if (indoorPeople.remove(p)) {
 			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, p);
 			return true;
 		}
-		return indoorPeople.remove(p);
+		return false;
 	}
 
 	/**
@@ -1702,7 +1739,26 @@ public class Settlement extends Unit implements Temporal,
 	public int getIndoorPeopleCount() {
 		return indoorPeople.size();
 	}
+	
 
+	/**
+	 * Insert a citizen to the settlement.
+	 * 
+	 * @param p
+	 */
+	public boolean insertCitizen(Person p) {
+		if (citizens.add(p)) {
+			// Update the numCtizens
+			numCitizens = citizens.size();
+			// Add this person indoor map of the settlement
+			addToIndoor(p);	
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Assigns a person to be a legal citizen of this settlement.
 	 *
@@ -1712,17 +1768,13 @@ public class Settlement extends Unit implements Temporal,
 	public boolean addACitizen(Person p) {
 		if (citizens.contains(p))
 			return true;
-		if (citizens.add(p)) {
+		if (insertCitizen(p)) {
 			// Set x and y coordinates first prior to adding the person 
-			p.setCoordinates(getCoordinates());						
-			// Add this person indoor map of the settlement
-			addToIndoor(p);			
+			p.setCoordinates(getCoordinates());							
 			// Add to a random building
 			BuildingManager.addPersonToRandomBuildingSpot(p, getAssociatedSettlement());			
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
-			// Update the numCtizens
-			numCitizens = citizens.size();
 			// Update the population factor
 			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));		
 			// Update mission limit dependent upon population
@@ -2678,10 +2730,10 @@ public class Settlement extends Unit implements Temporal,
 		minimumPassingScore = total / missionScores.size();
 
 		// Cap any very large score to protect the average
-		double desiredMax = Math.min(MAX_MISSION_SCORE, minimumPassingScore * 1.5D);
+		double desiredMax = MathUtils.between(minimumPassingScore * 1.5D, 0, MAX_MISSION_SCORE);
 		missionScores.add(Math.min(score, desiredMax));
 
-		if (missionScores.size() > 20)
+		if (missionScores.size() > 30)
 			missionScores.remove(0);
 	}
 
@@ -3378,11 +3430,11 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Get the time offset of day rise for this Settlement. This is based on it's location
+	 * Gets the mars time zone for this Settlement. This is based on it's location
 	 * around the planet.
 	 */
-	public int getTimeOffset() {
-		return timeOffset;
+	public MarsZone getTimeZone() {
+		return zone;
 	}
 
 	/** 

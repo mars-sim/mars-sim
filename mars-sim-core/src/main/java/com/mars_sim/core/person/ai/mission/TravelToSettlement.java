@@ -279,7 +279,7 @@ public class TravelToSettlement extends RoverMission {
 		// starting settlement.
 		double jobFactor = 0D;
 		if (member instanceof Person person) {
-			JobType currentJob = person.getMind().getJob();
+			JobType currentJob = person.getMind().getJobType();
 			double currentJobProspect = JobUtil.getJobProspect(person, currentJob, startingSettlement, true);
 			double destinationJobProspect;
 
@@ -311,7 +311,7 @@ public class TravelToSettlement extends RoverMission {
 		double jobScienceAchievementFactor = 0D;
 
 		if (member instanceof Person person) {
-			ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
+			ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJobType());
 			if (jobScience != null) {
 				double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
 				double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
@@ -355,11 +355,11 @@ public class TravelToSettlement extends RoverMission {
 			}
 
 			// If person has the "Driver" job, add 1 to their qualification.
-			if (person.getMind().getJob() == JobType.PILOT) {
+			if (person.getMind().getJobType() == JobType.PILOT) {
 				result += 1D;
 			}
 
-			if (person.getMind().getJob() == JobType.POLITICIAN) {
+			if (person.getMind().getJobType() == JobType.POLITICIAN) {
 				result += 10D;
 			}
         }

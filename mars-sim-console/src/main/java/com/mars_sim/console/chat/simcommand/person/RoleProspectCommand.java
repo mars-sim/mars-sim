@@ -37,7 +37,7 @@ public class RoleProspectCommand extends AbstractPersonCommand {
 
 		response.appendTableHeading("Role", CommandHelper.ROLE_WIDTH, "Job Score", "Training Score", "Total");
 
-		JobType job = person.getMind().getJob();
+		JobType job = person.getMind().getJobType();
 		Map<RoleType, Double> weights = RoleUtil.getRoleWeights().get(job);
 		
 		for (RoleType roleType : roles) {

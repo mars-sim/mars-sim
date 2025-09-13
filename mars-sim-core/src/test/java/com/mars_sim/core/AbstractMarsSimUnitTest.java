@@ -20,6 +20,7 @@ import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
@@ -171,6 +172,12 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return building0;
 	}
 
+
+	public Building buildCommand(BuildingManager buildingManager) {
+		return buildFunction(buildingManager, "Command Center", BuildingCategory.FARMING,
+                FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
+	}
+	
 	public Building buildGreenhouse(BuildingManager buildingManager) {
 		return buildFunction(buildingManager, "Large Greenhouse", BuildingCategory.FARMING,
                 FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
@@ -205,12 +212,48 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return buildSettlement(MockSettlement.DEFAULT_NAME);
 	}
 
+	/**
+	 * Builds a settlement.
+	 * Note: without BuildingManager.
+	 *  
+	 * @param initialPopulation
+	 * @return
+	 */
+	protected Settlement buildSettlement(int initialPopulation) {
+		return buildSettlement(MockSettlement.DEFAULT_NAME, initialPopulation);
+	}
+	
 	protected Settlement buildSettlement(String name) {
 		return buildSettlement(name, false);
+	}
+	
+	/**
+	 * Builds a settlement.
+	 * Note: without BuildingManager.
+	 *  
+	 * @param name
+	 * @param initialPopulation
+	 * @return
+	 */
+	protected Settlement buildSettlement(String name, int initialPopulation) {
+		return buildSettlement(name, false, initialPopulation);
 	}
 
 	protected Settlement buildSettlement(String name, boolean needGoods) {
 		return buildSettlement(name, needGoods, MockSettlement.DEFAULT_COORDINATES);
+	}
+	
+	/**
+	 * Builds a settlement.
+	 * Note: without BuildingManager.
+	 * 
+	 * @param name
+	 * @param needGoods
+	 * @param initialPopulation
+	 * @return
+	 */
+	protected Settlement buildSettlement(String name, boolean needGoods, int initialPopulation) {
+		return buildSettlement(name, needGoods, MockSettlement.DEFAULT_COORDINATES, initialPopulation);
 	}
 	
 	protected Settlement buildSettlement(String name, boolean needGoods, Coordinates locn) {
@@ -220,8 +263,15 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 		return settlement;
 	}
-
 	
+	protected Settlement buildSettlement(String name, boolean needGoods, Coordinates locn, int initialPopulation) {
+		var auth = getConfig().getReportingAuthorityFactory().getItem("NASA");
+		Settlement settlement = new MockSettlement(name, needGoods, locn, auth, initialPopulation);
+		unitManager.addUnit(settlement);
+
+		return settlement;
+	}
+
     protected Robot buildRobot(String name, Settlement s, RobotType type, Building place, FunctionType activity) {
         var spec = simConfig.getRobotConfiguration().getRobotSpec(type, "Standard");
         var robot = new Robot(name, s, spec);
@@ -294,7 +344,24 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return person;
 	}
 
+	public Person buildPerson(String name, Settlement settlement, RoleType role, JobType job) {
+
+		GenderType gender = GenderType.MALE;
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1)
+			gender = GenderType.FEMALE;
+		
+		Person person = Person.create(name, settlement, gender)
+				.testBuild();
+		
+		person.setRole(role);
+		
+		person.setJob(job, "NASA");
+		
+		person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE, 100);
 	
+		return person;
+	}	
 
 	/**
 	 * Executes a Task for a duration or until it completes.

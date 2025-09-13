@@ -114,8 +114,9 @@ public class ResourceUtil {
 	public static final int FERTILIZER_ID = TOILET_TISSUE_ID + 1;
 	public static final int NACLO_ID = FERTILIZER_ID + 1; 
 	public static final int NA2CO3_ID = NACLO_ID + 1;
+	public static final int CLEANING_AGENT_ID = NA2CO3_ID + 1; 
 	
-	public static final int GLUCOSE_ID = NA2CO3_ID + 1;
+	public static final int GLUCOSE_ID = CLEANING_AGENT_ID + 1;
 	public static final int LEAVES_ID = GLUCOSE_ID + 1;
 	public static final int FISH_OIL_ID = LEAVES_ID + 1;
 	public static final int EPSOM_SALT_ID = FISH_OIL_ID + 1;
@@ -171,6 +172,7 @@ public class ResourceUtil {
 		fixedResources.put("cement", CEMENT_ID);
 		fixedResources.put("chalcopyrite", CHALCOPYRITE_ID);
 		fixedResources.put("chlorine", CHLORINE_ID);
+		fixedResources.put("cleaning agent", CLEANING_AGENT_ID);
 		fixedResources.put("columnar basalt", COLUMNAR_BASALT_ID);
 		fixedResources.put("compost", COMPOST_ID);
 		fixedResources.put("concrete", CONCRETE_ID);

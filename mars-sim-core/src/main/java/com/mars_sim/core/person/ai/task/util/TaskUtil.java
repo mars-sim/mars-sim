@@ -227,7 +227,7 @@ public class TaskUtil {
      * @return Science Type from the associated job; maybe null.
      */
     public static ScienceType getPersonJobScience(Person person) {
-    	JobType job = person.getMind().getJob();
+    	JobType job = person.getMind().getJobType();
         if (job == null) {
     		return null;
     	}

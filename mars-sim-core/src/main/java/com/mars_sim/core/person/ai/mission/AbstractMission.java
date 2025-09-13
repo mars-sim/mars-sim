@@ -530,7 +530,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Add entry to the log
-		addMissionLog(newPhase.getName());
+		addMissionLog(newPhase.getName(), getStartingPerson().getName());
 
 		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
 	}
@@ -541,9 +541,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param entry
 	 */
 	protected void addMissionLog(String entry) {
-		log.addEntry(entry);
+		addMissionLog(entry, "");
 	}
 
+	/**
+	 * Adds a mission log.
+	 * 
+	 * @param entry
+	 * @param enterBy the name of the person who logs this
+	 */
+	protected void addMissionLog(String entry, String enterBy) {
+		log.addEntry(entry, enterBy);
+	}
+	
 	/**
 	 * Gets the mission log.
 	 */
@@ -1045,6 +1055,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// Abort the mission and return home
 			abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
 						 EventType.MISSION_MEDICAL_EMERGENCY);
+			addMissionLog("Non-mission member", patient.getName());
 		}
 		return patient != null;
 	}
@@ -1121,7 +1132,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		List<MemberScore> qualifiedPeople = new ArrayList<>();
-		for(Person person : possibles) {
+		for (Person person : possibles) {
 			if (isCapableOfMission(person)) {
 				// Determine the person's mission qualification.
 				double qualification = getMissionQualification(person) * 100D;
@@ -1278,7 +1289,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 			// Get base result for job modifier.
 			Set<JobType> prefered = getPreferredPersonJobs();
-			JobType job = person.getMind().getJob();
+			JobType job = person.getMind().getJobType();
 			double jobModifier;
 			if ((prefered != null) && prefered.contains(job)) {
 				jobModifier = 1D;
@@ -1409,7 +1420,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			case APPROVED:
 				createDesignationString();
 
-				logger.info(this, "Mission plan for was approved.");
+				logger.info(this, "Mission plan approved.");
 
 				if (!(this instanceof VehicleMission)) {
 					// Set the members' work shift to on-call to get ready
@@ -1505,7 +1516,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected boolean addMissionStatus(MissionStatus status) {
 		boolean newStatus = missionStatus.add(status);
 		if (newStatus) {
-			addMissionLog(status.getName());
+			addMissionLog(status.getName(), getStartingPerson().getName());
 		}
 		return newStatus;
 	}
@@ -1522,7 +1533,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/**
 	 * Checks if this worker can participate.
 	 * 
-	 * @param worker This maybe used by overridding methods
+	 * @param worker This maybe used by overriding methods
 	 * @return
 	 */
 	protected boolean canParticipate(Worker worker) {

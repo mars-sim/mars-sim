@@ -165,7 +165,7 @@ public class RespondToStudyInvitation extends Task {
 				return time;
 			}
 
-			JobType job = person.getMind().getJob();
+			JobType job = person.getMind().getJobType();
 
 			// Get relationship between invitee and primary researcher.
 			Person primaryResearcher = study.getPrimaryResearcher();
@@ -201,7 +201,7 @@ public class RespondToStudyInvitation extends Task {
 		boolean result = false;
 
 		ScienceType studyScience = study.getScience();
-		ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
+		ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJobType());
 		if (jobScience != null) {
 			boolean isPrimaryScience = studyScience.equals(jobScience);
 			boolean isCollaborativeScience = ScienceType.isCollaborativeScience(studyScience, jobScience);

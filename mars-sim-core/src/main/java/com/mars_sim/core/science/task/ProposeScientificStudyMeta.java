@@ -77,7 +77,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 			// Probability of starting a new scientific study based on Job
 			int pop = settlement.getInitialPopulation();
 			Set<JobType> targetJobs = JobType.SCIENTISTS;
-			JobType job = person.getMind().getJob();
+			JobType job = person.getMind().getJobType();
 
 			if (pop <= 6) {
 				targetJobs = JobType.ACADEMICS;

@@ -121,7 +121,7 @@ public class ProposeScientificStudy extends Task {
 	public static ScientificStudy createStudy(Person p) {
 		// Create new scientific study.
 		ScientificStudy study = null;
-		JobType job = p.getMind().getJob();
+		JobType job = p.getMind().getJobType();
 		ScienceType science = ScienceType.getJobScience(job);
 		if (science != null) {
 			SkillType skill = science.getSkill();

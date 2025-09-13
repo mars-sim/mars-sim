@@ -49,7 +49,7 @@ public class ScientificStudyUtil {
             if (!person.equals(study.getPrimaryResearcher()) &&
                     !alreadyInvited.contains(person) &&
                     !person.getPhysicalCondition().isDead()) {
-                JobType job = person.getMind().getJob();
+                JobType job = person.getMind().getJobType();
                 if (job != null) {
                     ScienceType jobScience = ScienceType.getJobScience(job);
 
@@ -84,7 +84,7 @@ public class ScientificStudyUtil {
             if (!person.equals(study.getPrimaryResearcher()) &&
                     !alreadyInvited.contains(person) &&
                     !person.getPhysicalCondition().isDead()) {
-                JobType job = person.getMind().getJob();
+                JobType job = person.getMind().getJobType();
                 if (job != null) {
                     ScienceType jobScience = ScienceType.getJobScience(job);
 
@@ -113,7 +113,7 @@ public class ScientificStudyUtil {
         Iterator<Person> i = RelationshipUtil.getAllKnownPeople(researcher).iterator();
         while (i.hasNext()) {
             Person person = i.next();
-            if (science == ScienceType.getJobScience(person.getMind().getJob())) {
+            if (science == ScienceType.getJobScience(person.getMind().getJobType())) {
                 RelationshipUtil.changeOpinion(researcher, person, achievement);
             }
         }

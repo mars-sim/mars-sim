@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.VehicleMaintenanceSpec;
 import com.mars_sim.core.location.LocationStateType;
@@ -228,8 +227,8 @@ public class VehicleMaintenance extends Function {
 			return false;
 		}
 
-		if (transferCrew && oldVehicle instanceof Crewable c)
-			relocateCrew(c);
+		if (transferCrew)
+			relocateCrew(oldVehicle);
 		
 		found.parkVehicle(null);
 		parkInVicinity(oldVehicle);
@@ -262,35 +261,36 @@ public class VehicleMaintenance extends Function {
 	/**
 	 * Relocates the crew.
 	 * 
-	 * @param c
+	 * @param vehicle
 	 */
-	private void relocateCrew(Crewable c) {
+	public void relocateCrew(Vehicle vehicle) {
 		
 		// Question: will this account for a person/robot being in a vehicle
 		// parked inside a garage ?
 	
-		// Remove the human occupants from the settlement
-		// But is this needed ? These should already be in the Vehicle
-		// if there are in the crew
-		for (Person p: new ArrayList<>(c.getCrew())) {
-			// If person's origin is already in this vehicle
-			// and it's called by removeFromGarage()
-			Vehicle v = p.getVehicle();
-			if (v != null) {
-				// Note: Removing a person from a building can be dangerous				
-				BuildingManager.removePersonFromBuilding(p, building);
+		if (vehicle instanceof Crewable c) {
+			// Remove the human occupants from the settlement
+			// But is this needed ? These should already be in the Vehicle
+			// if there are in the crew
+			for (Person p: new ArrayList<>(c.getCrew())) {
+				// If person's origin is already in this vehicle
+				// and it's called by removeFromGarage()
+				Vehicle v = p.getVehicle();
+				if (v != null) {
+					p.transfer(vehicle);
+					// Note: inside transfer() will call BuildingManager.removePersonFromBuilding(this, getBuildingLocation())
+				}
 			}
-		}
-		// Remove the robot occupants from the settlement
-		for (Robot r: new ArrayList<>(c.getRobotCrew())) {
-			Vehicle v = r.getVehicle();
-			if (v != null) {
-				// Note: Removing a robot from a building can be dangerous
-				BuildingManager.removeRobotFromBuilding(r, building);
+			// Remove the robot occupants from the settlement
+			for (Robot r: new ArrayList<>(c.getRobotCrew())) {
+				Vehicle v = r.getVehicle();
+				if (v != null) {
+					r.transfer(vehicle);
+					// Note: inside transfer() will call BuildingManager.removePersonFromBuilding(this, getBuildingLocation())
+				}
 			}
 		}
 	}
-	
 	
 	/**
 	 * Parks the vehicle in settlement vicinity upon being removed from garage.

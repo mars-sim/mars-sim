@@ -56,7 +56,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 			return EMPTY_TASKLIST;
 		}
 		
-		// Identify the available amoutn first
+		// Identify the available amount first
 		double foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 		double waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		
@@ -98,40 +98,46 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		// Each meal (.155 kg = .62/4) has an average of 2525 kJ. Thus ~10,000 kJ
 		// person per sol
 		if (person.isInSettlement()) {
+			
 			inSettlement = true;
 			needFood = ((hungry || leptinS == 0 || ghrelinS > 0)
 					&& (foodAmount > 0 || mFactor > 1 || dFactor > 1));
-
 		}
+		
 		else if (person.isInVehicle()) {
 			
-			if (container instanceof Vehicle vehicle) {
-				if (vehicle.isInSettlement()) {
-					inSettlement = true;
+			Vehicle vehicle = person.getVehicle();
+			
+			if (vehicle.isInGarage()) {
+				inSettlement = true;
 
-					// How to make a person walk out of vehicle back to settlement 
-					// if hunger is >500 ?
-					if (foodAmount == 0)
-						foodAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-					if (waterAmount == 0)
-						waterAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-		
-					needFood = (hungry && (foodAmount > 0 || dFactor > 1));
-				}
-				else {
-					// One way that prevents a person from eating vehicle food
-					// before the mission embarking is
-					// by having the person carry food himself
-					
-					// Note: if not, it may affect the amount of water/food available 
-					// for the mission
-					if (foodAmount == 0)
-						foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-					if (waterAmount == 0)
-						waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-		
-					needFood = (hungry && (foodAmount > 0 || dFactor > 1));
-				}
+				// How to make a person walk out of vehicle back to settlement 
+				// if hunger is >500 ?
+				if (foodAmount == 0)
+					foodAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+				if (waterAmount == 0)
+					waterAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+	
+				needFood = (hungry && (foodAmount > 0 || dFactor > 1));
+			}
+			else {
+				// One way that prevents a person from eating vehicle food
+				// before the mission embarking is
+				// by having the person carry food himself
+				
+				// Note: if not, it may affect the amount of water/food available 
+				// for the mission
+				if (foodAmount == 0)
+					foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+				if (waterAmount == 0)
+					waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+	
+				if (foodAmount == 0)
+					foodAmount = vehicle.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+				if (waterAmount == 0)
+					waterAmount = vehicle.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+				
+				needFood = (hungry && (foodAmount > 0 || dFactor > 1));
 			}
 		}
 

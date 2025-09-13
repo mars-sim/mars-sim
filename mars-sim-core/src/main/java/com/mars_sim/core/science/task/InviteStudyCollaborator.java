@@ -130,7 +130,7 @@ public class InviteStudyCollaborator extends Task {
         for(Person invitee : ScientificStudyUtil.getAvailableCollaboratorsForInvite(study)) {
             double inviteeValue = 0D;
 
-            ScienceType jobScience = ScienceType.getJobScience(invitee.getMind().getJob());
+            ScienceType jobScience = ScienceType.getJobScience(invitee.getMind().getJobType());
 
             // Modify based on invitee level in job science.
             SkillType skill = jobScience.getSkill();

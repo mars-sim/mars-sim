@@ -274,26 +274,31 @@ public final class EVASuitUtil {
 	 * @param person
 	 * @param vehicle
 	 * @param settlement
+	 * @return
 	 */
-	public static void fetchEVASuitFromSettlement(Person person, Vehicle vehicle, Settlement settlement) {
+	public static boolean fetchEVASuitFromSettlement(Person person, Vehicle vehicle, Settlement settlement) {
 		EVASuit suit1 = EVASuitUtil.findEVASuitWithResources(settlement, person);
 		// Note: In future, will need to handle this officially by coming up 
 		// with a list of parts that are missing and have a person carries them to the vehicle
 		// instead of cheating this way
 		if (suit1 != null) {
 			boolean success = suit1.transfer(vehicle);
-			if (!success)
+			if (!success) {
 				logger.warning(person, "Unable to fetch " + suit1 + FROM 
 						+ settlement + TO + vehicle + ".");
+				return false;
+			}
 			else {
 //				// Register this suit to a person
 				suit1.setRegisteredOwner(person);
 				
 				logger.info(person, "Just fetched " + suit1 + FROM
 						+ settlement + TO + vehicle + ".");
+				return true;
 			}
 		} else {
 			logger.warning(person, "No EVA suit available from " + settlement + ".");
+			return false;
 		}
 	}
 	
@@ -317,7 +322,7 @@ public final class EVASuitUtil {
 	 * @param p
 	 * @param disembarkSettlement
 	 */
-	public static void transferSuitsToVehicle(Person p, Settlement disembarkSettlement, Mission mission) {
+	public static void checkTransferSuitsToVehicle(Person p, Settlement disembarkSettlement, Mission mission) {
 		if (p.getSuit() == null && p.isInVehicle()) {
 
 			Vehicle v = p.getVehicle();

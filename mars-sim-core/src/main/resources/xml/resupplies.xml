@@ -111,9 +111,10 @@
 	    <resource type="toilet tissue" amount="100.0" />
 	    <resource type="paper" amount="100.0" />
 	    <resource type="napkin" amount="100.0" />
-	    
-	    <resource type="bleaching chemical" amount="50.0" />
-	    <resource type="Baking Powder" amount="100.0" />
+
+	    <resource type="Cleaning agent" amount="10.0" />	    
+	    <resource type="Bleaching chemical" amount="5.0" />
+	    <resource type="Baking soda" amount="100.0" />
 	    <resource type="pulp" amount="100.0" />
 	    <resource type="Honey" amount="100.0" />
 	    <resource type="Yeast" amount="50.0" />
@@ -224,9 +225,10 @@
 	    <resource type="toilet tissue" amount="100.0" />
 	    <resource type="paper" amount="100.0" />
 	    <resource type="napkin" amount="100.0" />
-	    
-	    <resource type="bleaching chemical" amount="50.0" />
-	    <resource type="Baking Powder" amount="100.0" />
+
+	    <resource type="Cleaning agent" amount="10.0" />	    
+	    <resource type="Bleaching chemical" amount="5.0" />
+	    <resource type="Baking soda" amount="100.0" />
 	    <resource type="pulp" amount="100.0" />
 	    <resource type="Honey" amount="100.0" />
 	    <resource type="Yeast" amount="50.0" />

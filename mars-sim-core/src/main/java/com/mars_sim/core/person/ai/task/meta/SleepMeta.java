@@ -111,7 +111,7 @@ public class SleepMeta extends FactoryMetaTask {
          	result += result * pref/12D;                            	
 	    	
             // Check if person is an astronomer.
-            boolean isAstronomer = (person.getMind().getJob() == JobType.ASTRONOMER);
+            boolean isAstronomer = (person.getMind().getJobType() == JobType.ASTRONOMER);
 
             // Dark outside modifier.
             boolean isDark = (surfaceFeatures.getSolarIrradiance(person.getCoordinates()) < 5);

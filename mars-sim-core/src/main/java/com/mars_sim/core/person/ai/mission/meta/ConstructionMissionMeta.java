@@ -51,59 +51,75 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
         }
 	
 		Settlement settlement = person.getSettlement();
-	
-		RoleType roleType = person.getRole().getType();
-		var jobType = person.getMind().getJob();
-		
+
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
-		if (jobType == JobType.ARCHITECT
-				|| jobType == JobType.ENGINEER
-				|| RoleType.CHIEF_OF_ENGINEERING == roleType
-				|| RoleType.ENGINEERING_SPECIALIST == roleType
-				|| RoleType.COMMANDER == roleType
-				|| RoleType.SUB_COMMANDER == roleType
-				) {							
+		
+		// Find people not on a mission and healthy		
+		long availablePeopleNum = settlement.getIndoorPeople().stream()
+					.filter(p -> !p.getMind().hasActiveMission()
+								&& !p.getPhysicalCondition().hasSeriousMedicalProblems())
+					.count();
 
-			// Find people not on a mission and healthy		
-			long availablePeopleNum = settlement.getIndoorPeople().stream()
-						.filter(p -> !p.getMind().hasActiveMission()
-									&& !p.getPhysicalCondition().hasSeriousMedicalProblems())
-						.count();
+		// Check if enough available people at settlement for mission.
+		if ((availablePeopleNum < ConstructionMission.MIN_PEOPLE) 
+			|| !ConstructionMission.isLUVAvailable(settlement)
+			|| (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
+				ConstructionMission.MIN_PEOPLE)) {
+			return RatingScore.ZERO_RATING;
+		}
+		
+		var cm = settlement.getConstructionManager();
+		int need = cm.getConstructionSites() 
+				// Note: using .getConstructionSitesNeedingMission() returns zero sites
+				.size() * SITE_BASE;
 
-			// Check if enough available people at settlement for mission.
-			if ((availablePeopleNum < ConstructionMission.MIN_PEOPLE) 
-				|| !ConstructionMission.isLUVAvailable(settlement)
-				|| (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) <
-					ConstructionMission.MIN_PEOPLE)) {
-				return RatingScore.ZERO_RATING;
-			}
-			
-			var cm = settlement.getConstructionManager();
-			int need = cm.getConstructionSites() 
-					// Note: using .getConstructionSitesNeedingMission() returns zero sites
-					.size() * SITE_BASE;
+		if (need == 0) {
+			need = (int) cm.getBuildingSchedule().stream()
+					.filter(s -> s.isReady())
+					.count() * QUEUE_BASE;
 
 			if (need == 0) {
-				need = (int) cm.getBuildingSchedule().stream()
-						.filter(s -> s.isReady())
-						.count() * QUEUE_BASE;
-
-				if (need == 0) {
-					return RatingScore.ZERO_RATING;
-				}
+				return RatingScore.ZERO_RATING;
 			}
-			missionProbability = new RatingScore(need);
-	
-			// Modify if construction is the person's favorite activity.
-			if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
-				missionProbability.addModifier("favourite", 1.1D);
-			}
-
-			// Job modifier.
-			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-					
-			missionProbability.applyRange(0, LIMIT);
 		}
+		missionProbability = new RatingScore(need);
+
+       	RoleType roleType = person.getRole().getType();
+        double roleModifier = switch(roleType) {
+            case ENGINEERING_SPECIALIST -> 1.5;
+            case CHIEF_OF_ENGINEERING -> 3;
+            case MISSION_SPECIALIST -> 1.5;
+            case CHIEF_OF_MISSION_PLANNING -> 3;
+            case SUB_COMMANDER -> 4.5;
+            case COMMANDER -> 5;
+            case MAYOR -> 5;
+            case ADMINISTRATOR -> 5;
+            case DEPUTY_ADMINISTRATOR -> 5;
+            default -> .2;
+        };
+        
+        missionProbability.addModifier("role", roleModifier);		
+   
+        JobType jobType = person.getMind().getJobType();
+        double jobModifier = switch(jobType) {
+        	case ENGINEER -> 1.5;
+        	case PHYSICIST -> 1.3;
+        	case MATHEMATICIAN -> 1.1;
+        	case TECHNICIAN -> 1.2;
+        	default -> .2;
+        };		
+            
+        missionProbability.addModifier("job", jobModifier);
+		
+		// Modify if construction is the person's favorite activity.
+		if (person.getFavorite().getFavoriteActivity() == FavoriteType.TINKERING) {
+			missionProbability.addModifier("favourite", 1.1D);
+		}
+
+		// Job modifier.
+		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+				
+		missionProbability.applyRange(0, LIMIT);
 	
         return missionProbability;
     }

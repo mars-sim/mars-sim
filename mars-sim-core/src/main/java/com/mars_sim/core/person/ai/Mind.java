@@ -492,11 +492,11 @@ public class Mind implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the person's job.
+	 * Gets the person's job type.
 	 *
 	 * @return job or null if none.
 	 */
-	public JobType getJob() {
+	public JobType getJobType() {
 		return jobType;
 	}
 

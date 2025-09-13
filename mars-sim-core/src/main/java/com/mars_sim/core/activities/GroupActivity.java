@@ -85,7 +85,7 @@ public class GroupActivity implements ScheduledEventHandler {
         // Calculate the duration to the next scheduled start of this activity
         // But adjust to the local time zone        
         state = ActivityState.SCHEDULED;
-        startTime = calendar.getFirstEvent(now, owner.getTimeOffset());
+        startTime = calendar.getFirstEvent(now, owner.getTimeZone());
         owner.getFutureManager().addEvent(startTime, this);
     }
 

@@ -304,14 +304,14 @@ public class Mining extends EVAMission
 
 		if (roverRemainingCap <= 0) {
 			logger.info(getRover(), "No more room in " + rover.getName());
-			addMissionLog("No remaining rover capacity");
+			addMissionLog("No remaining rover capacity", person.getName());
 			return false;
 		}
 
 		double weight = person.getMass();
 		if (roverRemainingCap < weight) {
 			logger.info(getRover(), "No enough capacity to fit " + person.getName() + "(" + weight + " kg).");
-			addMissionLog("Rover capacity full");
+			addMissionLog("Rover capacity full", person.getName());
 			return false;
 		}
 		

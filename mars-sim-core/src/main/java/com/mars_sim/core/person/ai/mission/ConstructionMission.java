@@ -382,16 +382,16 @@ public class ConstructionMission extends AbstractMission {
 			Person p = (Person) member;
 			if (p.isInSettlement() && RandomUtil.lessThanRandPercent(CONSTRUCT_PERCENT_PROBABILITY)
 				&& ConstructBuilding.canConstruct(p, site)) {
-
 				canAssign = assignTask(p, new ConstructBuilding(p, stage, site, objective.getConstructionVehicles()));
 			}
+			if (canAssign) {
+				logger.info(member, 20_000L, "Assigned to construct " + site.getName() + ".");
+			}
+			else {
+				logger.info(member, 20_000L, "Unable to assign to construct " + site.getName() + ".");
+			}
 		}
-		
-		if (canAssign)
-			logger.info(member, 20_000L, "Assigned to construct " + site.getName() + ".");
-		else
-			logger.info(member, 20_000L, "Not being assigned to construct " + site.getName() + ".");
-		
+
 		checkConstructionStageComplete(site, stage);
 	}
 

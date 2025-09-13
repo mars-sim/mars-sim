@@ -1204,7 +1204,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 			// Question: should we remove this unit from settlement's robotWithin list
 			// especially if it is still inside the garage of a settlement
 			transferred = s.removeRobotsWithin(this);
-			BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
+			if (transferred)
+				BuildingManager.removeRobotFromBuilding(this, getBuildingLocation());
 		}
 		else {
 			logger.warning(this, 20_000, "Not possible to be retrieved from " + cu + ".");
@@ -1227,7 +1228,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 				transferred = s.addRobotsWithin(this);
 			}
 			else if (destination instanceof Building b) {
+				
 				BuildingManager.setToBuilding(this, b);
+				
 				transferred = b.getSettlement().addRobotsWithin(this);
 				// Turn a building destination to a settlement to avoid 
 				// casting issue with making containerUnit a building instance

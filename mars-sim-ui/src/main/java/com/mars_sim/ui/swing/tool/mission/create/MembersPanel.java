@@ -385,7 +385,7 @@ implements ActionListener {
 				if (column == 0) 
 					result = person.getName();
 				else if (column == 1) 
-					result = person.getMind().getJob().getName();
+					result = person.getMind().getJobType().getName();
 				else if (column == 2) {
 					result = person.getShiftSlot().getStatusDescription();
 				}
@@ -507,7 +507,7 @@ implements ActionListener {
 				if (column == 0) 
 					result = person.getName();
 				else if (column == 1) 
-					result = person.getMind().getJob().getName();
+					result = person.getMind().getJobType().getName();
 				else if (column == 2) {
 					result = person.getShiftSlot().getStatusDescription();
 				}

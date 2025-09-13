@@ -149,9 +149,10 @@ public class ConstructionManager implements Serializable {
 
 	/**
 	 * Creates a new construction site.
+	 * 
 	 * @param buildingType The final type of building
 	 * @param placement Where the site is placed
-	 * @param phases P{hases required to create the construction.
+	 * @param phases Phases required to create the construction.
 	 */
 	private ConstructionSite createNewConstructionSite(String buildingType, LocalBoundedObject placement,
 						 List<ConstructionPhase> phases) {
@@ -266,7 +267,8 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Create a new building site to build a building. This bypasses the queue
+	 * Creates a new building site to build a building. This bypasses the queue.
+	 * 
 	 * @param building
 	 * @return
 	 */
@@ -288,7 +290,8 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Add a building to the queue to be scheduled for construction
+	 * Adds a building to the queue to be scheduled for construction.
+	 * 
 	 * @param buildingType
 	 * @param when This can be null if schedule now
 	 */

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LivingAccommodation;
 import com.mars_sim.core.building.function.cooking.Cooking;
@@ -168,7 +169,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
-	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 300D;
+	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 400D;
 
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500D; 
 	private static final double MAX_MANUFACTURING_DEMAND = 1500D;
@@ -915,6 +916,11 @@ class AmountResourceGood extends Good {
 			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
 		}
 
+		else if (id == ResourceUtil.CLEANING_AGENT_ID) {
+			// Assuming a person takes 3 meals per sol
+			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.getCleaningAgentPerSol(); 
+		}
+		
 		else {
 			if (ResourceUtil.getOilResources().contains(id)) {
 				// Assuming a person takes 3 meals per sol
@@ -970,9 +976,29 @@ class AmountResourceGood extends Good {
 		int id = getID();
 		for(var s : settlement.getConstructionManager().getConstructionSites()) {
 			if (s.isConstruction()) {
-				var stage = s.getCurrentConstructionStage();
-				double need = stage.getResourceNeeded(id);
-				base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
+				double need = s.getCurrentConstructionStage().getResourceNeeded(id);
+				if (need > 0) {
+					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR * 2;
+					// May add back logger.info("Now - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
+				}
+			}
+			else {
+				// If construction has not started, should anticipate the need
+				double need = s.getCurrentConstructionStage().getResourceNeeded(id);
+				if (need > 0) {
+					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR;
+					// May add back logger.info("Upcoming - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
+				}
+			}
+			
+			// Anticipate the need for the next stage
+			ConstructionStageInfo info = s.getNextConstructionStageInfo();
+			if (info != null) {
+				double need = info.getResourceRequired(id) / 2;
+				if (need > 0) {
+					base += need * CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR / 2;
+					// May add back logger.info("Next - " + ResourceUtil.findAmountResourceName(id) + " : " + base)
+				}
 			}
 		}
 		return Math.min(GoodsManager.MAX_DEMAND, base);

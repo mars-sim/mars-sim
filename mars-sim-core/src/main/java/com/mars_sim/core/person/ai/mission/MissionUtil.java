@@ -29,7 +29,6 @@ public class MissionUtil {
     private MissionUtil() {
     }
 
-    	
 	/**
 	 * Gets the number of available EVA suits for a mission at a settlement.
 	 *
@@ -51,7 +50,8 @@ public class MissionUtil {
 	}
     
     /**
-	 * Finds the closest settlement to a Coordinate
+	 * Finds the closest settlement to a Coordinate.
+	 * 
 	 * @param location Center of search
 	 * @return settlement
 	 */
@@ -88,7 +88,7 @@ public class MissionUtil {
 		return result;
 	}
 
-    	/**
+    /**
 	 * Checks to see if at least a minimum number of people are available for a
 	 * mission at a settlement.
 	 *
@@ -101,11 +101,11 @@ public class MissionUtil {
 		int min = minNum;
 		if (settlement != null) {
 
-			String template = settlement.getTemplate();
+			String template = settlement.getTemplate().toLowerCase();
 			// Override the minimum num req if the settlement is too small
-			if (template.toLowerCase().contains(PHASE_1)
-					|| template.toLowerCase().contains(MINING)
-					|| template.toLowerCase().contains(TRADING))
+			if (template.contains(PHASE_1)
+					|| template.contains(MINING)
+					|| template.contains(TRADING))
 				min = 0;
 
 			int numAvailable = 0;

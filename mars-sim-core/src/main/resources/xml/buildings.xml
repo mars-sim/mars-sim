@@ -401,6 +401,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="24" />
 				<process-engine name="Filter Brine Water" number-modules="24" />
@@ -487,7 +488,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- chemicals: 210 kg  -->
 				<resource-initial type="bleaching chemical" amount="50.0" />
-				<resource-initial type="baking powder" amount="50.0" />
+				<resource-initial type="Baking soda" amount="50.0" />
 				<resource-initial type="bisphenol-a" amount="50.0" />
 				<resource-initial type="sodium hypochlorite" amount="50.0" />
 				<resource-initial type="immune booster" amount="50.0" />
@@ -777,7 +778,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="96"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
 				
-				<process-engine name="Atmospheric processing" number-modules="12"/>
+				<process-engine name="Atmospheric processing" number-modules="16"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
 				<process-engine name="Methanol Synthesis" number-modules="12"/>
 				<process-engine name="Melt Ice" number-modules="48" />
 				<process-engine name="Filter Brine Water" number-modules="48" />
@@ -1157,10 +1159,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="8000">	
-				<resource-capacity type="glucose" amount="1000.0" />
+				<resource-capacity type="glucose" amount="2000.0" />
 				<resource-capacity type="water" amount="400.0" />
-				<resource-capacity type="acetic acid" amount="6000.0" />
-				<resource-capacity type="hydrogen" amount="1600.0" />							
+				<resource-capacity type="acetic acid" amount="3600.0" />
+				<resource-capacity type="hydrogen" amount="1000.0" />	
+				<resource-capacity type="carbon dioxide" amount="2000.0" />						
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="5.0" />
@@ -1471,7 +1474,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="8"/>
+				<process-engine name="Atmospheric processing" number-modules="10"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="10"/>
 				<activity>
 					<activity-spot xloc="-1.6" yloc="3.6" />
 				</activity>
@@ -1646,7 +1650,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="8"/>
+				<process-engine name="Atmospheric processing" number-modules="20"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="20"/>
+
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
 				</activity>
@@ -2260,7 +2266,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<!-- "Atmospheric Processor" -->
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="16"/>
+				<process-engine name="Atmospheric processing" number-modules="24"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="24"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="8"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>				
@@ -2657,7 +2664,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="Wheat Flour" amount="500.0" />
 				<resource-capacity type="Granola Bar" amount="500.0" />
 				<resource-capacity type="Honey" amount="500.0" />
-				<resource-capacity type="Baking Powder" amount="500.0" />
+				<resource-capacity type="Baking soda" amount="500.0" />
 				<resource-capacity type="Cranberry Juice" amount="100.0" />
 				<resource-capacity type="Sugarcane Juice" amount="100.0" />
 				<resource-capacity type="Blueberry Muffin" amount="500.0" />
@@ -3512,8 +3519,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</functions>
 	</building>
 
-
-
 	<building type="Large Sabatier Processor" width="5.0" length="5.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="250" room-temperature="0" base-mass="1500">
 		<description> This building houses a number of high capacity sabatier
@@ -4105,6 +4110,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="4"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="24" />
 				<process-engine name="Filter Brine Water" number-modules="24" />
@@ -4175,7 +4181,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				<!-- chemicals: 210 kg  -->
 				<resource-initial type="bleaching chemical" amount="50.0" />
-				<resource-initial type="baking powder" amount="50.0" />
+				<resource-initial type="Baking soda" amount="50.0" />
 				<resource-initial type="bisphenol-a" amount="50.0" />
 				<resource-initial type="sodium hypochlorite" amount="50.0" />
 				<resource-initial type="immune booster" amount="50.0" />
@@ -4518,6 +4524,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="4"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="4"/>
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />
 				</activity>

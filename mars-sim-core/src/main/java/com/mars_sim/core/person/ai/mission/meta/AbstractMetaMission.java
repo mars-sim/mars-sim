@@ -105,7 +105,7 @@ public class AbstractMetaMission implements MetaMission {
 	 */
 	@Override
 	public double getLeaderSuitability(Person person) {
-		JobType jt = person.getMind().getJob();
+		JobType jt = person.getMind().getJobType();
 		
 		double lead = person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.LEADERSHIP);
 		double result = lead/100;

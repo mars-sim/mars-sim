@@ -78,8 +78,10 @@ public class Role implements Serializable {
 				// Find a list of predecessors who are occupying this role
 				predecessors = home.getChainOfCommand().findPeopleWithRole(newType);
 				if (!predecessors.isEmpty()) {
+					Person p = predecessors.get(0);
 					// Predecessors to seek for a new role to fill
-					predecessors.get(0).getRole().obtainNewRole();
+					if (!p.isDeclaredDead())
+						p.getRole().obtainNewRole();
 				}
 			}
 			
@@ -90,14 +92,18 @@ public class Role implements Serializable {
 			roleType = newType;
 			roleHistory.add(roleType);
 			
-			// Save the role in the settlement Registry
-			home.getChainOfCommand().registerRole(roleType);
+			if (home.getChainOfCommand() != null) {
+				// Check for null in case of maven test ConstructionMissionMetaTest
+				// Save the role in the settlement Registry
+				home.getChainOfCommand().registerRole(roleType);
+			}
 
 			// Records the role change and fire unit update
 			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
 
 			// For Council members being changed have a meeting
-			if (roleType.isCouncil() && !predecessors.isEmpty()) {
+			if (roleType.isCouncil() && !predecessors.isEmpty()
+					& home.getFutureManager() != null) {
 				GroupActivity.createPersonActivity("Council Announcement for " + roleType.getName(),
 									GroupActivityType.ANNOUNCEMENT, home, person, 0, 
 									Simulation.instance().getMasterClock().getMarsTime());

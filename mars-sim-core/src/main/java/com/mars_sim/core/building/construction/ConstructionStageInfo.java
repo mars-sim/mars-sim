@@ -192,6 +192,17 @@ public class ConstructionStageInfo implements Serializable {
     }
 
     /**
+     * Gets how much of a material is required.
+     * 
+     * @param id
+     * @return
+     */
+    public double getResourceRequired(int id) {
+        var m = resources.get(id);
+        return (m == null ? 0D : m);
+    }
+    
+    /**
      * Gets the stage type.
      * 
      * @return type.
@@ -224,7 +235,8 @@ public class ConstructionStageInfo implements Serializable {
     }
 
     /**
-     * Get the name of the associated image for this Stage
+     * Gets the name of the associated image for this Stage.
+     * 
      * @return
      */
     public String getImageName() {

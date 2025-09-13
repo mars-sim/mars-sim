@@ -181,7 +181,7 @@ public final class JobUtil {
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
-			if (person.getMind().getJob() == job) {
+			if (person.getMind().getJobType() == job) {
 				capability += jobSpec.getCapability(person);
 			}
 		}
@@ -204,7 +204,7 @@ public final class JobUtil {
 		// Find new job for person.
 		double selectedJobProspect = Integer.MIN_VALUE;
 		
-		JobType originalJob = person.getMind().getJob();
+		JobType originalJob = person.getMind().getJobType();
 		JobType selectedJob = originalJob;
 		// Determine person's associated settlement.
 		Settlement settlement = person.getAssociatedSettlement();
@@ -280,7 +280,7 @@ public final class JobUtil {
 		
 		double remainingNeed = getRemainingSettlementNeed(settlement, job);
 
-		if ((job == person.getMind().getJob()) && isHomeSettlement)
+		if ((job == person.getMind().getJobType()) && isHomeSettlement)
 			remainingNeed += jobCapability;
 
 		return (jobCapability + 1D) * remainingNeed;
@@ -314,7 +314,7 @@ public final class JobUtil {
 	 */
 	public static int numJobs(JobType job, Settlement settlement) {
 		return (int) settlement.getAllAssociatedPeople().stream()
-					.filter(p -> p.getMind().getJob() == job)
+					.filter(p -> p.getMind().getJobType() == job)
 					.count();
 	}
 

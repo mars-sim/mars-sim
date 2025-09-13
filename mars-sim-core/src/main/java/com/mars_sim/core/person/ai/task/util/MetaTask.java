@@ -398,7 +398,7 @@ public abstract class MetaTask {
 	 	// 1. Person must have a job type
 	 	// 2. Task must have preferred job type
 	 	// 3. If the Person's job type is not in the preferred list then a penalty is applied. 
-		JobType jobType = person.getMind().getJob();
+		JobType jobType = person.getMind().getJobType();
         if ((jobType != null) && !preferredJobs.isEmpty()) {
 			score.addModifier(JOB_MODIFIER, preferredJobs.getOrDefault(jobType, NON_JOB_PENALTY));
         }

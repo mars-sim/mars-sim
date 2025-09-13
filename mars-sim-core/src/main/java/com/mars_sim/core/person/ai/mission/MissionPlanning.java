@@ -49,6 +49,12 @@ public class MissionPlanning implements Serializable {
 		RoleType role = reviewer.getRole().getType();
 
 		switch (role) {
+			case MAYOR:
+				weight = 4D; break;
+			case ADMINISTRATOR:
+				weight = 3.5; break;
+			case DEPUTY_ADMINISTRATOR:
+				weight = 3D; break;	
 			case COMMANDER:
 					weight = 2.5; break;
 			case SUB_COMMANDER:
@@ -64,7 +70,7 @@ public class MissionPlanning implements Serializable {
 			case MISSION_SPECIALIST:
 				weight = 1.5;  break;
 			default:
-				weight = 1; break;
+				weight = 1D; break;
 		}
 
 		// Update stats
@@ -139,8 +145,8 @@ public class MissionPlanning implements Serializable {
 		this.status = status;
 	}
 
-	public void setPassingScore(double threshold) {
-		passingScore = threshold;
+	public void setPassingScore(double score) {
+		passingScore = score;
 	}
 	
 	public Mission getMission() {

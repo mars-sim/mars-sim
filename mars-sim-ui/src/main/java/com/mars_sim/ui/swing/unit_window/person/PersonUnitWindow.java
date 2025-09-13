@@ -266,7 +266,7 @@ public class PersonUnitWindow extends UnitWindow {
 			townLabel.setText(TWO_SPACES + townString);
 		}
 
-		String jobString = person.getMind().getJob().getName();
+		String jobString = person.getMind().getJobType().getName();
 		if (!oldJob.equals(jobString)) {
 			oldJob = jobString;
 			jobLabel.setText(TWO_SPACES + jobString);

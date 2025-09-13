@@ -44,14 +44,15 @@ public class EventSchedule implements Serializable {
 
     /**
      * Calaculate the time when the first event will occur from the current time.
+     * The schedule is defined in terms of Central Mars Time.
      * @param now Time on Mars now
-     * @param timeOffset Offset to apply to compensate for rotation of Mars
+     * @param zone Zone where the event is to be applied
      * @return
      */
-    public MarsTime getFirstEvent(MarsTime now, int timeOffset) {
+    public MarsTime getFirstEvent(MarsTime now, MarsZone zone) {
         // Calculate the duration to the next scheduled start of this calendar
         // But adjust to the local time zone
-        int standardStartTime = (timeOfDay + timeOffset) % 1000;
+        int standardStartTime = (timeOfDay + zone.getMSolOffset()) % 1000;
 
         // mSols to the schedued start
         int toEvent = standardStartTime - now.getMillisolInt();

@@ -379,10 +379,13 @@ public abstract class OperateVehicle extends Task {
 		}
         else if (worker.getUnitType() == UnitType.PERSON
             	&& ((Person)worker).isSuperUnfit()){
+  
         	// For humans
         	logger.log(worker, Level.WARNING, 20_000,
         			". Super unfit to pilot " + getVehicle() + ".");
 	        endTask();
+	        
+	        
 	        return false;
         }
         
@@ -406,8 +409,7 @@ public abstract class OperateVehicle extends Task {
 	 */
 	protected double mobilizeVehicle(double time) {
       
-		if (!checkQualification(time))
-			return time;
+		// Note: sometimes no one are fit to drive but they still want to come home : if (!checkQualification(time)) return time
   	
         double remainingFuel = -1;
         
@@ -890,7 +892,7 @@ public abstract class OperateVehicle extends Task {
     		if (operator instanceof Person p) {
     			
     			// If the person's current job is pilot
-    			if (p.getMind().getJob() == JobType.PILOT) {
+    			if (p.getMind().getJobType() == JobType.PILOT) {
     				mod += 0.25; 
     			}
   			
@@ -926,7 +928,7 @@ public abstract class OperateVehicle extends Task {
      
     	if (worker.getUnitType() == UnitType.PERSON) {
 			// If the person's current job is pilot
-			if (person.getMind().getJob() == JobType.PILOT) {
+			if (person.getMind().getJobType() == JobType.PILOT) {
 				mod += 0.25; 
 			}
 			

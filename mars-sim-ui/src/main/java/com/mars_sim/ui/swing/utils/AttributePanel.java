@@ -22,7 +22,7 @@ import com.mars_sim.ui.swing.StyleManager;
 @SuppressWarnings("serial")
 public class AttributePanel extends JPanel {
 
-	private static final int DEFAULT_GAP = 3;
+	private static final int DEFAULT_GAP = 2;
 
 	private GridLayout autoLayout = null;
 

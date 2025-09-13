@@ -21,15 +21,22 @@ public class MockSettlement extends Settlement {
 	public MockSettlement(String name, boolean needGoods, Coordinates locn, Authority owner) {
 		// Use Settlement constructor.
 		super(name, locn);
-					
-        // Set inventory total mass capacity.
+			
+	    // Set inventory total mass capacity.
 		getEquipmentInventory().setCargoCapacity(Double.MAX_VALUE);
-
+	
 		initialiseEssentials(needGoods, Collections.emptyList());
 
 		this.owner = owner;
-	}	
+	}
+	
+	public MockSettlement(String name, boolean needGoods, Coordinates locn, Authority owner, int initialPopulation) {
+		// Use Settlement constructor.
+		super(name, locn, initialPopulation);
 
+		this.owner = owner;
+	}
+	
 	@Override
 	public Authority getReportingAuthority() {
 		return owner;

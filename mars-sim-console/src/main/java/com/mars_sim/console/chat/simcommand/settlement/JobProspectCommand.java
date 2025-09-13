@@ -81,7 +81,7 @@ public class JobProspectCommand extends AbstractSettlementCommand {
 			response.appendTableHeading(job.getName() + " Job Prospect", CommandHelper.PERSON_WIDTH,
 										"Current", CommandHelper.JOB_WIDTH, "Scores");
 			for (JobProspect p : prospects) {
-				response.appendTableRow(p.person.getName(), p.person.getMind().getJob(), p.prospect);
+				response.appendTableRow(p.person.getName(), p.person.getMind().getJobType(), p.prospect);
 			}
 		}
 

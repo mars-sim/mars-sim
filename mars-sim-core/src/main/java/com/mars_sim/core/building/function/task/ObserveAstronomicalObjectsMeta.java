@@ -155,7 +155,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
         result.addModifier("research", researchModifier);
 
         // If researcher's current job isn't related to astronomy, divide by two.
-        JobType job = p.getMind().getJob();
+        JobType job = p.getMind().getJobType();
         if (job != null) {
             ScienceType jobScience = ScienceType.getJobScience(job);
             if (ScienceType.ASTRONOMY != jobScience) {

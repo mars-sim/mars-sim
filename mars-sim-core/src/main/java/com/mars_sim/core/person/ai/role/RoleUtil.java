@@ -48,7 +48,7 @@ public class RoleUtil implements Serializable {
 
 	
 	public RoleUtil() {
-		// nothing
+		initialize();
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class RoleUtil implements Serializable {
 		
 		int pop = p.getSettlement().getInitialPopulation();
 		
-		JobType job = p.getMind().getJob();
+		JobType job = p.getMind().getJobType();
 		Map<RoleType, Double> weights = roleWeights.get(job);
 
 		// Use a Tree map so entries sorting in increasing order.
@@ -223,7 +223,7 @@ public class RoleUtil implements Serializable {
 
 		for (Person p : candidates) {
 
-			JobType job = p.getMind().getJob();
+			JobType job = p.getMind().getJobType();
 			Map<RoleType, Double> weights = roleWeights.get(job);
 
 			double score = getRolePropectScore(p, role, weights);

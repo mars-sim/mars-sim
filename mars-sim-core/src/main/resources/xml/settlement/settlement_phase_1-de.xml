@@ -1,0 +1,141 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+        name="Phase 1-DE" default-population="8" description="Phase 1 base for German Aerospace Center"
+		number-of-robots="6" sponsor="DLR">
+
+    <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
+        facing="180.0">
+        <connection-list>
+            <connection id="C0" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+   <building id="C0" type="Corridor 3x9" xloc="-6.0" yloc="0.0"
+        facing="0.0">
+        <connection-list>
+            <connection id="LH0" hatch-facing="west" />
+            <connection id="EVA" hatch-facing="south" />
+            <connection id="C1" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="EVA" type="EVA Airlock" xloc="-6.0" yloc="-7.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="C0" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="C1" type="Corridor 3x3" xloc="-6.0" yloc="6.0"
+        facing="0.0">
+        <connection-list>
+            <connection id="C0" hatch-facing="south" />
+            <connection id="C2" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="C2" type="Corridor 3x9" xloc="-12.0" yloc="6.0"
+        facing="90.0">
+        <connection-list>
+            <connection id="C1" hatch-facing="west" />
+            <connection id="C3" hatch-facing="east" />
+            <connection id="IG0" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="IG0" type="Inflatable Greenhouse" xloc="-12.0" yloc="1.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="C2" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="C3" type="Corridor 3x9" xloc="-21.0" yloc="6.0"
+        facing="90.0">
+        <connection-list>
+            <connection id="C2" hatch-facing="west" />
+            <connection id="W0" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="W0" type="Workshop" xloc="-21.0" yloc="1.0" 
+    	facing="90.0">
+        <connection-list>
+            <connection id="C3" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+
+    <!-- Building Packages -->
+    <building-package name="Storage Set 1"/>
+   	<building-package name="ERV Set 1"/>
+   	<building-package name="Air Set 1 - 1x1"/>
+   	<building-package name="Sabatier Set 1 - 1x1"/>
+   	<building-package name="Nuclear Set 1 - Combo 0"/>
+   	<building-package name="Solar Set 1 - 1x6"/>
+ 	<building-package name="Brine Water Well Set 1 - 1x1"/>
+ 	    	    
+    <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
+    <vehicle type="Explorer Rover" number="2" />
+    <vehicle type="Light Utility Vehicle" number="1" />
+    <vehicle type="Delivery Drone" number="1" />
+
+    <!-- Equipment -->
+    <equipment type="EVA Suit" number="8" />
+     
+    <!-- Containers-->
+	<equipment type="barrel" number="40" />
+	<equipment type="bag" number="40" />
+	<equipment type="gas canister" number="40" />		
+	<equipment type="large bag" number="40" />
+	<equipment type="specimen box" number="40" />
+    <equipment type="thermal bottle" number="8" />	
+ 	<equipment type="wheelbarrow" number="12" />
+
+    <!-- Bins -->
+	<bin type="pot" number="20" />
+	<bin type="crate" number="20" />
+	<bin type="basket" number="20" />
+
+    <!-- Resources -->
+    <!-- type: the type of resource (see resources.txt) -->
+    <!-- amount: the amount of the resource (kg) -->
+
+    <!-- Mars Direct Mission Plan : 
+    (1). ERV - 
+    	(a). Payload imported from Earth - 
+    		 Consumables - Hydrogen : 3400 kg  
+    		 Feedstock - Hydrogen : 6300 kg 
+        (b). Produced on Mars : 
+        	 Water : 18900 kg 
+        	 Oxygen : 16080 kg 
+        	 Methane : 8400 kg 
+    (2). Hab -
+        (a). Payload imported from Earth - 
+             Consumables - Hydrogen : 7000 kg 
+    -->
+
+    <!-- Life Support Resources -->
+	<resource type="food" amount="720" />
+	<resource type="water" amount="3600" />
+	<resource type="oxygen" amount="1440" />
+	
+
+    <!-- Crop -->
+    <!-- No starting crops for this template -->
+
+    <!-- Part packages (see part_packages.xml) -->
+    <!-- name: the part package name. -->
+    <!-- number: the number of packages. -->
+    <part-package name="standard package" number="1" />
+
+    <!-- The resupply missions from Earth scheduled for this type of settlement. -->
+    <resupply>
+        <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
+            <schedule firstSol="2" frequency="80" />
+        </resupply-mission>
+        <resupply-mission name="Phase 1 Delivery" manifest-name="Resupply for Phase 1">
+            <schedule firstSol="668" />
+        </resupply-mission>
+    </resupply>
+</template>

@@ -40,7 +40,7 @@ public class ResearcherCommand extends AbstractSettlementCommand {
 			response.appendBlankLine();
 			response.append(p.getName());
 			response.appendBlankLine();
-			response.appendLabeledString("Job",p.getMind().getJob().getName());
+			response.appendLabeledString("Job",p.getMind().getJobType().getName());
 
 			ScientificStudy ss = p.getResearchStudy().getStudy();
 			String priName = "None";

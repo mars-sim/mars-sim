@@ -79,7 +79,7 @@ public class ShiftManager implements Serializable {
         this.leavePercentage = shiftDefinition.getLeavePercentage();
         this.rotationSols = shiftDefinition.getRotationSols();
 
-        var offset = settlement.getTimeOffset();
+        var offset = settlement.getTimeZone().getMSolOffset();
 
         // Create future event to rotate shifts
         ScheduledEventManager futures = settlement.getFutureManager();

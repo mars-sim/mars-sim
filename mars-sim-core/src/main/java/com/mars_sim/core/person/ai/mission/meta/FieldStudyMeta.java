@@ -48,7 +48,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			return RatingScore.ZERO_RATING;
 		
 		RoleType roleType = person.getRole().getType();
-		JobType jobType = person.getMind().getJob();
+		JobType jobType = person.getMind().getJobType();
 
 		if ((FieldStudyMission.determineStudy(science, person) == null)
 			|| !person.isInSettlement()

@@ -152,14 +152,19 @@ public class EatDrink extends Task {
 
 		/////////////////////////////////////////////////
 
-		if (person.isInSettlement()) {
-			
+		if (person.isInSettlement()) {	
 			checkSettlement(hungry, thirsty, waterAmount);
 		}
 
 		else if (person.isInVehicle()) {
-
-			checkPersonVehicle(person.getVehicle(), hungry, thirsty);
+			Vehicle vehicle = person.getVehicle();
+			
+			if (vehicle.isInGarage()) {
+				checkVehicleInGarage(vehicle, hungry, thirsty, waterAmount);
+			}
+			else {
+				checkPersonVehicle(person.getVehicle(), hungry, thirsty);
+			}	
 		}
 
 		else {
@@ -192,6 +197,39 @@ public class EatDrink extends Task {
 		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA) {
 			// Check if there is a local dining building.
         	Building diningBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.DINING);
+        	
+        	if (diningBuilding != null) {
+  
+        		boolean canWalk = walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, false);		
+    			// Take napkin from inventory if available.
+    			if (canWalk) {
+    				// In future, arrange to meet a friend at the diner
+    			}
+        	}			
+		}
+
+		if (hungry && (foodAmount > 0 || meals > 0)) {
+			food = true;
+		}
+
+		if (thirsty && waterAmount > 0) {
+			water = true;
+		}
+	}
+	
+	/**
+	 * Walks to a dining facility in the settlement where the garage vehicle is at.
+	 * 
+	 * @param vehicle
+	 * @param hungry
+	 * @param thirsty
+	 * @param waterAmount
+	 */
+	private void checkVehicleInGarage(Vehicle vehicle, boolean hungry, boolean thirsty, double waterAmount) {
+		Building currentBuilding = vehicle.getGarage();
+		if (currentBuilding != null) {
+			// Check if there is a local dining building.
+        	Building diningBuilding = BuildingManager.getAvailableDiningBuilding(currentBuilding.getSettlement(), currentBuilding.getZone());
         	
         	if (diningBuilding != null) {
   
