@@ -183,6 +183,24 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
     }
 
+      /**
+     * This test is very tied to the building spec of LANDER_HAB
+     */
+    @SuppressWarnings("unchecked")
+	public void testMedical() {
+	    var simConfig = SimulationConfig.loadConfig();
+        var bc = simConfig.getBuildingConfiguration();
+
+        var found = (MedicalCareSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.MEDICAL_CARE);
+        
+        assertNotNull("Found", found);
+
+        var beds = found.getBeds();
+
+        assertEquals("Beds", 2, beds.size());
+    }
+
+
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */

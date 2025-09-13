@@ -15,9 +15,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.configuration.RelativePosition;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
@@ -87,9 +87,9 @@ public class ClassicAirlock extends Airlock {
      * @param exteriorPos
      */
     public ClassicAirlock(Building building, EVA eva, int capacity, 
-    		LocalPosition position,
-    		LocalPosition interiorPos, 
-    		LocalPosition exteriorPos) {
+    		RelativePosition position,
+    		RelativePosition interiorPos, 
+    		RelativePosition exteriorPos) {
         // User Airlock constructor
         super(capacity);
 
@@ -101,13 +101,13 @@ public class ClassicAirlock extends Airlock {
 		remainingCycleTime = CYCLE_TIME;
 
         // Determine airlock inner/interior door position.
-        airlockInteriorPos = LocalAreaUtil.convert2SettlementPos(interiorPos, building);
+        airlockInteriorPos = interiorPos.toPosition(building);
         // For Zone 0
         outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.55, 0.4);
         // For Zone 1
         insideInteriorDoorMap = buildDoorMap(interiorPos, building, 1.7, 2.3, 0.4);
         // Determine airlock outer/exterior door position.
-        airlockExteriorPos = LocalAreaUtil.convert2SettlementPos(exteriorPos, building);
+        airlockExteriorPos = exteriorPos.toPosition(building);
         // For Zone 3
         insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.4);
         // For Zone 4
@@ -124,14 +124,14 @@ public class ClassicAirlock extends Airlock {
      * @param y 		The +y and -y pos
      * @return
      */
-    private static Map<LocalPosition, Integer> buildDoorMap(LocalPosition center, Building building,
+    private static Map<LocalPosition, Integer> buildDoorMap(RelativePosition center, Building building,
 			double x1, double x2, double y) {
         Map<LocalPosition, Integer> result = new HashMap<>();
 
-        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x1, center.getY() + y), building), -1);
-        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x1, center.getY() - y), building), -1);
-        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX()+ x2, center.getY() + y), building), -1);
-        result.put(LocalAreaUtil.convert2SettlementPos(new LocalPosition(center.getX() + x2, center.getY() - y), building), -1);
+        result.put(center.move(x1, y).toPosition(building), -1);
+		result.put(center.move(x1, -y).toPosition(building), -1);
+        result.put(center.move(x2, y).toPosition(building), -1);
+        result.put(center.move(x2, -y).toPosition(building), -1);
 
         return result;
 	}
@@ -493,20 +493,6 @@ public class ClassicAirlock extends Airlock {
 	@Override
 	public int getNumInside() {
 		return getNumOccupant123();
-		
-//		int result = 0;
-//		for (Integer p : insideExteriorDoorMap.values()) {
-//			if (!p.equals(-1))
-//				result++;
-//		}
-//		
-//		result += eva.getNumOccupiedActivitySpots();
-//		
-//		for (Integer p : insideInteriorDoorMap.values()) {
-//			if (!p.equals(-1))
-//				result++;
-//		}
-//		return result;
 	}
 
 	/**

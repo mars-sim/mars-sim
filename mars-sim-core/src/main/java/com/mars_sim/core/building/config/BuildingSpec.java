@@ -17,7 +17,6 @@ import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.map.location.BoundedObject;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.science.ScienceType;
 
 /**
@@ -73,8 +72,6 @@ public class BuildingSpec {
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 	
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
-
-	private Set<LocalPosition> beds;
 
 	private BuildingCategory category;
 	
@@ -308,14 +305,6 @@ public class BuildingSpec {
 	
 	public String toString() {
 		return buildingType;
-	}
-	
-	public Set<LocalPosition> getBeds() {
-		return beds;
-	}
-
-	void setBeds(Set<LocalPosition> beds) {
-		this.beds = beds;
 	}
 	
 	/**

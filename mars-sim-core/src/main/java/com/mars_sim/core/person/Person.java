@@ -1949,6 +1949,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	public void leaveActivitySpot(boolean release) {
 		if (spot != null) {
 			spot.leave(this, release);
+			spot = null;
 		}
 	}
 	

@@ -8,8 +8,8 @@ package com.mars_sim.core.building.function;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
+import com.mars_sim.core.building.config.EVASpec;
 import com.mars_sim.core.building.config.FunctionSpec;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -24,17 +24,9 @@ public class EVA extends Function {
 
 	private static final double MAINTENANCE_FACTOR = 5D;
 
-	// Different Positions of an airlock that must match the buildings.xml
-	private static final String CENTER_POSITION = "center-position";
-	private static final String INTERIOR_POSITION = "interior-position";
-	private static final String EXTERIOR_POSITION = "exterior-position"; 
-	
 	private int airlockCapacity;
 	
 	private ClassicAirlock airlock;
-
-	// Note: Model after MedicalStation's bedRegistry for 2 makeshift EVA beds
-	//       May add a helper method in BuildingManager such as BuildingManager::addPatientToMedicalBed.
 	
 	/**
 	 * Constructor.
@@ -48,12 +40,10 @@ public class EVA extends Function {
 
 		// Add a building airlock.
 		airlockCapacity = spec.getCapacity();
-		LocalPosition airlockLoc = spec.getPositionProperty(CENTER_POSITION);
-		LocalPosition airlockInteriorLoc = spec.getPositionProperty(INTERIOR_POSITION);
-		LocalPosition airlockExteriorLoc = spec.getPositionProperty(EXTERIOR_POSITION);
 
-		airlock = new ClassicAirlock(building, this, airlockCapacity, airlockLoc, 
-											airlockInteriorLoc, airlockExteriorLoc);
+		EVASpec evaS = (EVASpec) spec;
+		airlock = new ClassicAirlock(building, this, airlockCapacity, evaS.getAirlockLoc(), 
+											evaS.getInteriorLoc(), evaS.getExteriorLoc());
 	}
 
 	/**

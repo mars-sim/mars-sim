@@ -26,7 +26,6 @@ import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.manufacture.ManufactureConfig;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcessConfig;
 import com.mars_sim.core.resourceprocess.ResourceProcessEngine;
@@ -79,14 +78,11 @@ public class BuildingConfig {
 	private static final String CONVERSION = "thermal-conversion-efficiency";
 	private static final String PERCENT_LOADING = "percent-loading";
 
-	private static final String MEDICAL_CARE = "medical-care";
-	private static final String BEDS = "bed";
 	private static final String ROVER = "rover";
 	private static final String FLYER = "flyer";
 	private static final String UTILITY = "utility";
 
 	private static final String ACTIVITY = "activity";
-	private static final String BED_LOCATION = "bed-location";
 
 	private static final String TOOLING = "tooling";
 
@@ -101,8 +97,6 @@ public class BuildingConfig {
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER = "power";
 	private static final Set<String> DEFAULT_SOURCE_ATTR = Set.of(TYPE, MODULES, CONVERSION, PERCENT_LOADING);
-
-	private static final String POSITION = "-position";
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
 
@@ -190,17 +184,6 @@ public class BuildingConfig {
 			parseResearch(newSpec, researchElement);
 		}
 
-		var width = newSpec.getWidth();
-		var length = newSpec.getLength();
-
-		
-		Element medicalElement = functionsElement.getChild(MEDICAL_CARE);
-		if (medicalElement != null) {
-			Set<LocalPosition> beds = parsePositions(medicalElement, BEDS, BED_LOCATION,
-												width, length);
-			newSpec.setBeds(beds);
-		}
-		
 		return newSpec;
 	}
 
@@ -355,14 +338,6 @@ public class BuildingConfig {
 			props.put(attr.getName(), attr.getValue());
 		}
 
-		// Any complex properties
-		for (Element complexProperty : element.getChildren()) {
-			if (complexProperty.getName().endsWith(POSITION)) {
-				LocalPosition pos = ConfigHelper.parseLocalPosition(complexProperty);
-				props.put(complexProperty.getName(), pos);
-			}
-		}
-			
 		// Check for extra function specifics	
 		if (function == FunctionType.MANUFACTURE) {
 			var tools = ConfigHelper.parseIntList(context, element.getChildren(TOOLING), NAME,
@@ -374,6 +349,8 @@ public class BuildingConfig {
 
 		// Some function needs extra properties
 		switch(function) {
+			case EVA -> base = createEVASpec(base, element);
+			case MEDICAL_CARE -> base = createMedicalCareSpec(base, element, width, length);
 			case WASTE_PROCESSING, RESOURCE_PROCESSING -> base = createResourceProcessingSpec(base, element, resProcConfig);
 			case VEHICLE_MAINTENANCE -> base = createVehicleMaintenanceSpec(base, element, width, length);
 			default -> { // No need to do anything
@@ -384,6 +361,25 @@ public class BuildingConfig {
 		return base;
 	}
 
+	/**
+	 * Create a spec for an EVA function
+	 */
+	private FunctionSpec createEVASpec(FunctionSpec base, Element evaElement) {
+		var central = ConfigHelper.parseRelativePosition(evaElement.getChild("center-position"));
+		var interior = ConfigHelper.parseRelativePosition(evaElement.getChild("interior-position"));
+		var exterior = ConfigHelper.parseRelativePosition(evaElement.getChild("exterior-position"));
+
+		return new EVASpec(base, central, interior, exterior);
+	}
+
+	/**
+	 * Create a medical care by further passing specific medical properties
+	 */
+	private FunctionSpec createMedicalCareSpec(FunctionSpec base, Element medElement, double width, double length) {
+		var beds = parseNamedPositions(medElement,  "bed", "Bed", width, length);
+		return new MedicalCareSpec(base, beds);
+	}
+		
 	/**
 	 * Parse the vehicle maintenance specific elements
 	 */
@@ -541,50 +537,7 @@ public class BuildingConfig {
 		}
 		return result;
 	}
-	/**
-	 * Parses an set of position for a building's function. These have a xloc & yloc structure.
-	 *
-	 * @param functionElement Element holding locations
-	 * @param locations Name of the location elements
-	 * @param pointName Name of the point item
-	 * @return set of activity spots as Point2D objects.
-	 */
-	private Set<LocalPosition> parsePositions(Element functionElement, String locations, String pointName,
-										 double buildingWidth, double buildingLength) {
-		Set<LocalPosition> result = new HashSet<>();
-
-		// Maximum coord is half the width or length
-		double maxX = buildingWidth/2D;
-		double maxY = buildingLength/2D;
-		boolean hasMax = (maxX > 0 && maxY > 0);
-		
-		Element activityElement = functionElement.getChild(locations);
-		if (activityElement != null) {
-			for(Element activitySpot : activityElement.getChildren(pointName)) {
-				LocalPosition point = ConfigHelper.parseLocalPosition(activitySpot);
-
-				// Check location is within the building. Check as long as the maximum
-				// is defined
-				if (hasMax && !point.isWithin(maxX, maxY)) {
-					// Roughly walk back over the XPath
-					StringBuilder name = new StringBuilder();
-					do {
-						name.append(functionElement.getName()).append(' ');
-						functionElement = functionElement.getParentElement();
-					} while (!functionElement.getName().equals(BUILDING));
-					name.append("in building '").append(functionElement.getAttributeValue(TYPE)).append("'");
-
-					throw new IllegalArgumentException("Locations '" + locations
-							+ "' of " + name.toString()
-							+ " are outside building");
-				}
-
-				result.add(point);
-			}
-		}
-		return result;
-	}
-
+	
 	/**
 	 * Finds a building spec according to the name.
 	 * 
