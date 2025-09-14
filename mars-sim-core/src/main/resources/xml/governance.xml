@@ -681,6 +681,11 @@
             <settlement-name name="Neuland" />
             <settlement-name name="Marsheim" />
             <settlement-name name="Marsburg"/>
+            <settlement-name name="Marsdorf"/>
+            <settlement-name name="Marsstatt"/>
+            <settlement-name name="Marsstadt"/>
+            <settlement-name name="Marsstation"/>
+            <settlement-name name="Marshafen"/>
             <settlement-name name="Landung" />
             <!-- Names based on German aerospace engineers and scientists-->
             <!-- Rule of Thump : If the name is good enough for a school today, its good enough for the DLR ;-) -->
@@ -705,11 +710,13 @@
             <settlement-name name="Gottlieb-Daimler-Station" />
             <settlement-name name="Heinrich-Dubbel-Station" />
             <settlement-name name="Johann-Culemeyer-Station" />
+            <settlement-name name="Kurt-Lang-Station" />
             <settlement-name name="Paul-Bilfinger-Station" />
             <settlement-name name="Reinhard-Baumeister-Station" />
             <settlement-name name="Robert-Bosch-Station" />
             <settlement-name name="Rudolf-Diesel-Station" />
             <settlement-name name="Rudolph-Berg-Station" />
+            <settlement-name name="Walter-Möers-Station" />
             <!-- Names based on German regions -->
             <settlement-name name="Neuholstein" />
             <settlement-name name="Neusachsen" />
@@ -731,6 +738,7 @@
             <settlement-name name="Neu-Köln" />
             <settlement-name name="Neu-Lampoldshausen" />
             <settlement-name name="Neu-Schleißheim" />
+            <settlement-name name="Neu-Danzig" />
             <!-- other names -->
 			<settlement-name name="Neu-Askania" /> <!-- Named after the noble house of Askania -->
 			<settlement-name name="Klein-Venedig" />
@@ -770,6 +778,7 @@
             <rover-name name="Ameise" />
             <rover-name name="Büffel" />
             <rover-name name="Dachs" />
+            <rover-name name="Drache" />
             <rover-name name="Elefant" />
             <rover-name name="Fuchs" />
             <rover-name name="Gepard" />
@@ -784,12 +793,15 @@
             <rover-name name="Ozelot" />
             <rover-name name="Puma" />
             <rover-name name="Ratte" />
+            <rover-name name="Rottweiler" />
             <rover-name name="Schwalbe" />
+            <rover-name name="Seehund" />
             <rover-name name="Tiger" />
             <rover-name name="Uhu" />
             <rover-name name="Vogel" />
             <rover-name name="Wolf" />
             <rover-name name="Zebra" />
+            <rover-name name="Ziege" />
             <!-- Rover names based on west-germanic names for the norse gods -->
 			<rover-name name="Wodan" />
 			<rover-name name="Freya" />
@@ -832,11 +844,36 @@
             <rover-name name="Kaiserin" />
 
             <rover-name name="Bismarck" />
-			<rover-name name="Zollverein" />   
+			<rover-name name="Zollverein" />
+            <rover-name name="Hexe"/>
+            <rover-name name="Hofnarr" />
+            <rover-name name="Eulenspiegel"/>
+            <rover-name name="Faust" />
+            <rover-name name="Heidi"/>
+            <rover-name name="Zauberer" />
+            <rover-name name="Campino" />
+            <rover-name name="Tabaluga" />
+            <rover-name name="Blaubär" />
+            <rover-name name="Schreckse"/>
+            <rover-name name="Lukas" />
+            <rover-name name="Jim Knopf" />
+            <rover-name name="Emma" />
+            <rover-name name="Schalke" />
+            <rover-name name="Urmel" />
+            <rover-name name="BAP" />
+            <rover-name name="Lord of the Lost" />
+            <rover-name name="Kreator" />
+            <rover-name name="Knorkator"/>
+            <rover-name name="Running Wild" />
+            <rover-name name="Gamma Ray" />
+            <rover-name name="Blind Guardian" />
+            <rover-name name="Helloween" />
+            <rover-name name="In Extremo" />
+            <rover-name name="Campino" />
+
 			<rover-name name="Woermann" /> 
 			<rover-name name="Hanau" /> 
-			<rover-name name="Duchy" />   	
-			
+			<rover-name name="Duchy" />
 			<rover-name name="Hanauish" /> 
 			<rover-name name="Audi" /> 
 			<rover-name name="Volkswagen" />   
