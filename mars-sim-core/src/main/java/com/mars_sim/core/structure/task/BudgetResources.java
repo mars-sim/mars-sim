@@ -12,7 +12,6 @@ import com.mars_sim.core.building.function.Administration;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.goods.GoodsUtil;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -29,8 +28,6 @@ public class BudgetResources extends Task {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(BudgetResources.class.getName());
 
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.budgetResources"); //$NON-NLS-1$
@@ -47,7 +44,7 @@ public class BudgetResources extends Task {
 
 	public static final double REVIEW_PERC = .9;
 
-	public static enum ReviewGoal {LIFE_RESOURCE, WATER_RATIONING, ICE_RESOURCE, REGOLITH_RESOURCE}
+	public enum ReviewGoal {LIFE_RESOURCE, WATER_RATIONING, ICE_RESOURCE, REGOLITH_RESOURCE}
 	
 	// Experience modifier is based on a mixture of abilities
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(25D, NaturalAttributeType.EXPERIENCE_APTITUDE,
@@ -280,25 +277,14 @@ public class BudgetResources extends Task {
 				if (newValue != 0) {
 					person.getAssociatedSettlement().setIceReviewDue(false);
 					person.getAssociatedSettlement().setIceApprovalDue(true);
-					
-					logger.info(worker, 30_000, "Submitting a new ice probability for the settlement.");	
 				}
-//				else {
-//					logger.info(worker, 30_000, "No need to change the ice probability.");	
-//				}
 				break;
 				
 			case REGOLITH_RESOURCE:
 				if (newValue != 0) {
 					person.getAssociatedSettlement().setRegolithReviewDue(false);
-					person.getAssociatedSettlement().setRegolithApprovalDue(true);
-					
-					logger.info(worker, 30_000, "Submitting a new regolith probability for the settlement.");	
+					person.getAssociatedSettlement().setRegolithApprovalDue(true);					
 				}
-//				else {
-//					logger.info(worker, 30_000, "No need to change the regolith probability.");	
-//				}
-
 				break;
 				
 			case LIFE_RESOURCE:
@@ -307,13 +293,8 @@ public class BudgetResources extends Task {
 					
 					person.getAssociatedSettlement().getGoodsManager().injectResourceDemand(settlementResource, newValue);
 					
-					person.getAssociatedSettlement().getGoodsManager().updateOneGood(GoodsUtil.getGood(settlementResource));
-					
-					logger.info(worker, 30_000, "Submitting a new resource demand measure for the settlement.");	
+					person.getAssociatedSettlement().getGoodsManager().updateOneGood(GoodsUtil.getGood(settlementResource));					
 				}
-//				else {
-//					logger.info(worker, 30_000, "No need to change the resource demand for the settlement.");	
-//				}
 				
 				break;
 				
@@ -322,9 +303,7 @@ public class BudgetResources extends Task {
 				if (newValue != 0) {		
 					// Submit request and ask for approval
 					person.getAssociatedSettlement().getRationing().setApprovalDue(true);
-				}
-				
-				logger.info(worker, 30_000, "Submitting a new water rationing measure for the settlement.");
+				}				
 				break;
 		}
 			

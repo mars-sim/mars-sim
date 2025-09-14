@@ -101,7 +101,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     public void testLanderHabNamedSpots() {
         var bc = simConfig.getBuildingConfiguration();
 
-
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
 
         // Check names of exercise stations but could check any Function
@@ -150,6 +149,55 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
         assertEquals("Science research", Set.of(ScienceType.BIOLOGY, ScienceType.BOTANY,
                                                 ScienceType.CHEMISTRY), new HashSet<>(found.getScienceType()));
+    }
+
+    
+    /**
+     * This test is very tied to the building spec of LANDER_HAB
+     */
+    @SuppressWarnings("unchecked")
+	public void testGarage() {
+	    var simConfig = SimulationConfig.loadConfig();
+        var bc = simConfig.getBuildingConfiguration();
+
+        var found = bc.getBuildingSpec("Garage");
+        
+        assertNotNull("Found", found);
+
+        assertEquals("width", 12D, found.getWidth());
+        assertEquals("length", 16D, found.getLength());
+
+        assertEquals("Construction", ConstructionType.PRE_FABRICATED, found.getConstruction());
+
+        assertEquals("Functions", Set.of(FunctionType.VEHICLE_MAINTENANCE, FunctionType.LIFE_SUPPORT,
+                                         FunctionType.POWER_GENERATION, FunctionType.POWER_STORAGE,
+                                         FunctionType.ROBOTIC_STATION,
+                                         FunctionType.STORAGE, FunctionType.THERMAL_GENERATION),
+                                        found.getFunctionSupported());
+
+        VehicleMaintenanceSpec spec = (VehicleMaintenanceSpec) found.getFunctionSpec(FunctionType.VEHICLE_MAINTENANCE);
+
+        assertEquals("Flyer parking", 2, spec.getFlyerParking().size());
+        assertEquals("Rover parking", 2, spec.getRoverParking().size());
+        assertEquals("LUV parking", 2, spec.getUtilityParking().size());
+
+    }
+
+      /**
+     * This test is very tied to the building spec of LANDER_HAB
+     */
+    @SuppressWarnings("unchecked")
+	public void testMedical() {
+	    var simConfig = SimulationConfig.loadConfig();
+        var bc = simConfig.getBuildingConfiguration();
+
+        var found = (MedicalCareSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.MEDICAL_CARE);
+        
+        assertNotNull("Found", found);
+
+        var beds = found.getBeds();
+
+        assertEquals("Beds", 2, beds.size());
     }
 
 

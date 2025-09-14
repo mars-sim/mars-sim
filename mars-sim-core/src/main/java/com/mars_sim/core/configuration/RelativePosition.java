@@ -31,7 +31,15 @@ public record RelativePosition(double x, double y) implements Serializable {
 		return new LocalPosition(translateX, translateY);
     }
 
-    	
+    /**
+	 * Get the Relative position by applying a delta
+	 * @param xDelta Adjustment on x axis
+	 * @param yDelta Adjustment on y axis
+	 */
+	public RelativePosition move(double xDelta, double yDelta) {
+		return new RelativePosition(x + xDelta, y + yDelta);
+	}
+
 	/**
 	 * Is this position within the boundaries of an X & Y ?
 	 * 

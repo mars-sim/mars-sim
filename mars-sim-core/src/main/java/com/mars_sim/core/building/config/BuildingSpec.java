@@ -7,7 +7,6 @@
 package com.mars_sim.core.building.config;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.map.location.BoundedObject;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.science.ScienceType;
 
 /**
@@ -74,11 +72,6 @@ public class BuildingSpec {
 	private List<SourceSpec> powerSource = EMPTY_SOURCE;
 	
 	private List<ScienceType> scienceType = EMPTY_SCIENCE;
-
-	private Set<LocalPosition> beds;
-	private Set<LocalPosition> roverParking;
-	private Set<LocalPosition> utilityParking;
-	private Set<LocalPosition> flyerParking;
 
 	private BuildingCategory category;
 	
@@ -314,39 +307,6 @@ public class BuildingSpec {
 		return buildingType;
 	}
 	
-	public Set<LocalPosition> getBeds() {
-		return beds;
-	}
-
-	void setBeds(Set<LocalPosition> beds) {
-		this.beds = beds;
-	}
-	
-	public Set<LocalPosition> getRoverParking() {
-		return roverParking;
-	}
-
-	void setRoverParking(Set<LocalPosition> parking) {
-		this.roverParking = Collections.unmodifiableSet(parking);
-	}
-	
-	public Set<LocalPosition> getUtilityParking() {
-		return utilityParking;
-	}
-
-	void setUtilityParking(Set<LocalPosition> parking) {
-		this.utilityParking = Collections.unmodifiableSet(parking);
-	}
-	
-	
-	public Set<LocalPosition> getFlyerParking() {
-		return flyerParking;
-	}
-
-	void setFlyerParking(Set<LocalPosition> parking) {
-		this.flyerParking = Collections.unmodifiableSet(parking);
-	}
-
 	/**
 	 * Combines a custom bounds definition with what is validate for this building.
 	 * 

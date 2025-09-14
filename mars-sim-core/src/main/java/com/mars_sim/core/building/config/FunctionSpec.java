@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.map.location.LocalPosition;
 
 /**
  * Represents a specification of a Building Function in a generic fashion.
@@ -108,16 +107,6 @@ public class FunctionSpec {
 	 */
 	public int getTechLevel() {
 		return getIntegerProperty(TECH_LEVEL);
-	}
-
-	/**
-	 * Gets a Function property as a Position object.
-	 * 
-	 * @param propName
-	 * @return
-	 */
-	public LocalPosition getPositionProperty(String propName) {
-		return (LocalPosition) props.get(propName);
 	}
 
 	/**

@@ -9,16 +9,14 @@ package com.mars_sim.core.building.function;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.FunctionSpec;
+import com.mars_sim.core.building.config.MedicalCareSpec;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -57,11 +55,10 @@ public class MedicalCare extends Function implements MedicalAid {
 		int techLevel = spec.getTechLevel();
 		
 		// THis is not good. all details should be in the FunctionSpec
-		Set<LocalPosition> bedSet = buildingConfig.getBuildingSpec(building.getBuildingType()).getBeds();
+		var medSpec = (MedicalCareSpec) spec;
 
-		bedSet = bedSet.stream()
-				.map(pos ->
-						LocalAreaUtil.convert2SettlementPos(pos, building))
+		var bedSet = medSpec.getBeds().stream()
+				.map(np -> np.position().toPosition(building))
 				.collect(Collectors.toSet());
 		
 		// NOTE: distinguish between activity spots and bed locations
