@@ -923,6 +923,21 @@
             <rover-name name="Helloween" />
             <rover-name name="In Extremo" />
             <rover-name name="Campino" />
+            <!-- Rover names based on the famous German tall ships, the flying P-Liners -->
+            <rover-name name="Placilla"/>
+            <rover-name name="Pisagua"/>
+            <rover-name name="Pitlochry"/>
+            <rover-name name="Potosi"/>
+            <rover-name name="Preußen"/>
+            <rover-name name="Pommern"/>
+            <rover-name name="Pangani"/>
+            <rover-name name="Petschili"/>
+            <rover-name name="Pamir"/>
+            <rover-name name="Passat"/>
+            <rover-name name="Peking"/>
+            <rover-name name="Pola"/>
+            <rover-name name="Priwall"/>
+            <rover-name name="Padua"/>
 
 			<rover-name name="Woermann" /> 
 			<rover-name name="Hanau" /> 
