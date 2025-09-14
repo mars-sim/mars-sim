@@ -252,27 +252,16 @@ public class Building extends FixedUnit implements Malfunctionable,
 		malfunctionManager = new MalfunctionManager(this, buildingSpec.getWearLifeTime(), totalMaintenanceTime);
 	
 		malfunctionManager.addScopeString(buildingSpec.getName());
+		
 		// Add building type to the part scope
 		simulationConfig.getPartConfiguration().addScopes(buildingSpec.getName());
-		
-		if (!buildingSpec.getScopeDone()) {
-			// Note: Only need to set up the system scope once for building type
-	
-			// Add the building type to buildingSpec.
-			malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
 				
-			// Add the building spec scopes to malfunction manager.
-			malfunctionManager.addScopeString(buildingSpec.getSystemScopes());
-					
-			// Add each function to the malfunction scope.
-			for (Function sfunction : getFunctions()) {
-				Set<String> scopes = sfunction.getMalfunctionScopeStrings();
-				for (String scope : scopes) {
-					malfunctionManager.addScopeString(scope);
-				}
+		// Add each function to the malfunction scope.
+		for (Function sfunction : getFunctions()) {
+			Set<String> scopes = sfunction.getMalfunctionScopeStrings();
+			for (String scope : scopes) {
+				malfunctionManager.addScopeString(scope);
 			}
-			
-			buildingSpec.setScopeDone(true);
 		}
 	
 		// Transfer all system scopes from BuildingSpec to malfunction manager.

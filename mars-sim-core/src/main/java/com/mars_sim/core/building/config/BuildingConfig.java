@@ -56,7 +56,6 @@ public class BuildingConfig {
 	private static final String FUNCTIONS = "functions";
 	private static final String CAPACITY = "capacity";
 
-	private static final String RESEARCH = "research";
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
 
 	private static final String NUMBER_MODULES = "number-modules";
@@ -68,7 +67,6 @@ public class BuildingConfig {
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
 	
 	private static final String PROCESS_ENGINE = "process-engine";
-	private static final String STORAGE = "storage";
 	private static final String RESOURCE_CAPACITY = "resource-capacity";
 	private static final String RESOURCE_INITIAL = "resource-initial";
 	private static final String TYPE = "type";
@@ -87,21 +85,16 @@ public class BuildingConfig {
 	private static final String TOOLING = "tooling";
 
 	private static final String HEAT_SOURCE = "heat-source";
-	private static final String THERMAL_GENERATION = "thermal-generation";
 
 	private static final String SCOPES = "scopes";
 	private static final String SCOPE = "scope";
 	
 	// Power source types
-	private static final String POWER_GENERATION = "power-generation";
 	private static final String POWER_SOURCE = "power-source";
 	private static final String POWER = "power";
 	private static final Set<String> DEFAULT_SOURCE_ATTR = Set.of(TYPE, MODULES, CONVERSION, PERCENT_LOADING);
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
-
-	/** A collection of building level system scopes (as defined for each building in buldings.xml. */
-	private Map<String, Set<String>> buildingScopes = new HashMap<>();
 	
 	private Set<FunctionType> activityFunctions  = new HashSet<>();
 	
@@ -151,51 +144,6 @@ public class BuildingConfig {
 	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement,
 								ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 
-		var newSpec = parseBuildingSpec(buildingElement, buildingTypeName, resProcConfig, manuConfig);
-		
-		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
-		if (construction != null) {
-			newSpec.setConstruction(ConstructionType.valueOf(ConfigHelper.convertToEnumName(construction)));
-		}
-
-		// Get Storage
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element storageElement = functionsElement.getChild(STORAGE);
-		if (storageElement != null) {
-			parseStorage(newSpec, storageElement);
-		}
-
-		Element thermalGenerationElement = functionsElement.getChild(THERMAL_GENERATION);
-		if (thermalGenerationElement != null) {
-			List<SourceSpec> heatSourceList = parseSources(thermalGenerationElement.getChildren(HEAT_SOURCE),
-														   CAPACITY);
-			newSpec.setHeatSource(heatSourceList);
-		}
-
-		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
-		if (powerGenerationElement != null) {
-			List<SourceSpec> powerSourceList = parseSources(powerGenerationElement.getChildren(POWER_SOURCE),
-															POWER);
-			newSpec.setPowerSource(powerSourceList);
-		}
-
-		Element researchElement = functionsElement.getChild(RESEARCH);
-		if (researchElement != null) {
-			parseResearch(newSpec, researchElement);
-		}
-
-		return newSpec;
-	}
-
-	/**
-	 * Parse and create the basic BuildingSpec
-	 * @param buildingElement
-	 * @param buildingTypeName
-	 * @param manuConfig
-	 * @return
-	 */
-	private BuildingSpec parseBuildingSpec(Element buildingElement, String buildingTypeName,
-									ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
 		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
@@ -208,6 +156,12 @@ public class BuildingConfig {
 		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
 		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
 		
+		ConstructionType constructionType = ConstructionType.PRE_FABRICATED;
+		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
+		if (construction != null) {
+			constructionType =  ConfigHelper.getEnum(ConstructionType.class, construction);
+		}
+
 		// Process description
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
@@ -219,9 +173,8 @@ public class BuildingConfig {
 		if (scopesElement != null) {
 			for (Element element : scopesElement.getChildren(SCOPE)) {
 				String name = element.getAttributeValue(NAME);
-				scopeNames.add(name);
+				scopeNames.add(name.toLowerCase().replace("_", " "));
 			}		
-			buildingScopes.put(buildingTypeName, scopeNames);
 		}
 		
 		// Get functions
@@ -245,8 +198,8 @@ public class BuildingConfig {
 			category = deriveCategory(supportedFunctions.keySet());
 		}
 
-		return new BuildingSpec(this, buildingTypeName, desc, category, 
-				width, length, alignment, baseLevel,
+		return new BuildingSpec(buildingTypeName, desc, category, 
+				width, length, alignment, constructionType, scopeNames, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
@@ -351,6 +304,10 @@ public class BuildingConfig {
 		switch(function) {
 			case EVA -> base = createEVASpec(base, element);
 			case MEDICAL_CARE -> base = createMedicalCareSpec(base, element, width, length);
+			case POWER_GENERATION -> base = createGenerationSpec(base, element, POWER_SOURCE, POWER);
+			case RESEARCH -> base = createResearchSpec(base, element);
+			case STORAGE -> base = createStorageSpec(context, base, element);
+			case THERMAL_GENERATION -> base = createGenerationSpec(base, element, HEAT_SOURCE, CAPACITY);
 			case WASTE_PROCESSING, RESOURCE_PROCESSING -> base = createResourceProcessingSpec(base, element, resProcConfig);
 			case VEHICLE_MAINTENANCE -> base = createVehicleMaintenanceSpec(base, element, width, length);
 			default -> { // No need to do anything
@@ -419,26 +376,24 @@ public class BuildingConfig {
 	 * @param newSpec
 	 * @param researchElement
 	 */
-	private void parseResearch(BuildingSpec newSpec, Element researchElement) {
+	private ResearchSpec createResearchSpec(FunctionSpec base, Element researchElement) {
 		List<ScienceType> result = new ArrayList<>();
 		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);
 		for (Element researchSpecialityElement : researchSpecialities) {
 			String value = researchSpecialityElement.getAttributeValue(NAME);
 			result.add(ScienceType.valueOf(ConfigHelper.convertToEnumName(value)));
 		}
-		newSpec.setScienceType(result);
+		
+		return new ResearchSpec(base, result);
 	}
 
 	/**
 	 * Parses a sources element.
 	 * 
-	 * @param list
-	 * @param unitName
-	 * @return
 	 */
-	private List<SourceSpec> parseSources(List<Element> list, String unitName) {
+	private GenerationSpec createGenerationSpec(FunctionSpec base, Element element, String sourceName, String unitName) {
 		List<SourceSpec> sourceList = new ArrayList<>();
-		for (Element sourceElement : list) {
+		for (Element sourceElement : element.getChildren(sourceName)) {
 			Properties attrs = new Properties();
 			String type = sourceElement.getAttributeValue(TYPE);
 			double unitCapacity = ConfigHelper.getOptionalAttributeDouble(sourceElement, unitName, 0);
@@ -456,7 +411,7 @@ public class BuildingConfig {
 			sourceList.add(new SourceSpec(type, attrs, numModules, 
 					unitCapacity, stirlingConversion, percentLoadCapacity));
 		}
-		return sourceList;
+		return new GenerationSpec(base, sourceList);
 	}
 
 	/**
@@ -465,16 +420,16 @@ public class BuildingConfig {
 	 * @param newSpec
 	 * @param storageElement
 	 */
-	private void parseStorage(BuildingSpec newSpec, Element storageElement) {
+	private StorageSpec createStorageSpec(String context, FunctionSpec base, Element storageElement) {
 		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_CAPACITY);
-		var storageMap = parseResourceList("Storage capacity in building " + newSpec.getName(),
+		var storageMap = parseResourceList("Storage capacity in building " + context,
 										resourceStorageNodes);
 		
 		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
-		var initialMap = parseResourceList("Initial storage in building " + newSpec.getName(),
+		var initialMap = parseResourceList("Initial storage in building " + context,
 										resourceInitialNodes);
 
-		newSpec.setStorage(storageMap, initialMap);
+		return new StorageSpec(base, initialMap, storageMap);
 	}
 
 	private static Map<Integer, Double> parseResourceList(String context, List<Element> resourceList) {
@@ -563,63 +518,6 @@ public class BuildingConfig {
 	public boolean hasFunction(String buildingType, FunctionType function) {
 		return getBuildingSpec(buildingType).getFunctionSupported().contains(function);
 	}
-
-	/**
-	 * Gets a list of research specialties for the building's lab.
-	 *
-	 * @param buildingType the type of the building
-	 * @return list of research specialties as {@link ScienceType}.
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<ScienceType> getResearchSpecialties(String buildingType) {
-		return getBuildingSpec(buildingType).getScienceType();
-
-	}
-
-	/**
-	 * Gets a list of the building's resource capacities.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return list of storage capacities
-	 * @thrList<ResourceProcessEngine>ing type cannot be found or XML parsing error.
-	 */
-	public Map<Integer, Double> getStorageCapacities(String buildingType) {
-		return getBuildingSpec(buildingType).getStorage();
-	}
-
-	/**
-	 * Gets a map of the initial resources stored in this building.
-	 *
-	 * @param buildingType the type of the building
-	 * @return map of initial resources
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public Map<Integer, Double> getInitialResources(String buildingType) {
-		return getBuildingSpec(buildingType).getInitialResources();
-	}
-
-	/**
-	 * Gets a list of the building's heat sources.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return list of heat sources
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<SourceSpec> getHeatSources(String buildingType) {
-		return getBuildingSpec(buildingType).getHeatSource();
-	}
-
-	/**
-	 * Gets a list of the building's power sources.
-	 *
-	 * @param buildingType the type of the building.
-	 * @return list of power sources
-	 * @throws Exception if building type cannot be found or XML parsing error.
-	 */
-	public List<SourceSpec> getPowerSources(String buildingType) {
-		return getBuildingSpec(buildingType).getPowerSource();
-
-	}
 	
 	private static final String generateSpecKey(String buildingType) {
 		return buildingType.toLowerCase().replace(" ", "-");
@@ -643,14 +541,5 @@ public class BuildingConfig {
 	 */
     public Set<FunctionType> getActivitySpotFunctions() {
         return activityFunctions;
-    }
-    
-    /**
-     * Gets a map of building scopes.
-     * 
-     * @return
-     */
-    public Map<String, Set<String>> getBuildingScopes() {
-    	return buildingScopes;
     }
 }

@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
+import com.mars_sim.core.building.config.StorageSpec;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
@@ -48,7 +49,8 @@ public class Storage extends Function {
 		super(FunctionType.STORAGE, spec, building);
 
 		// Get capacity for each resource.
-		resourceCapacities = buildingConfig.getStorageCapacities(building.getBuildingType());
+		StorageSpec storageSpec = (StorageSpec) spec;
+		resourceCapacities = storageSpec.getCapacityResources();
 
 		// Note: Storing a resource in a building is equivalent to storing it in a settlement.
 
@@ -65,11 +67,9 @@ public class Storage extends Function {
 		
 		// Add the stock/general/cargo capacity of this building to its owner
 		inv.addCargoCapacity(stockCapacity);
-
-		// Account for the capacity of specific resources available for each building
-		Map<Integer, Double> capResources = buildingConfig.getStorageCapacities(building.getBuildingType());	
+	
 		// Account for the initial specific resources available for each building
-		Map<Integer, Double> initialResources = buildingConfig.getInitialResources(building.getBuildingType());
+		Map<Integer, Double> initialResources = storageSpec.getInitialResources();
 		
 		double totalAmount = 0;
 		
@@ -79,32 +79,17 @@ public class Storage extends Function {
 			double initialAmount = i.getValue();
 			totalAmount += initialAmount;
 			int resourceId = i.getKey();
-			
-			// For future debugging. Please do NOT delete.
-			
-//			if (!capResources.containsKey(resourceId)) {
-//				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
-//				logger.warning(building, "Lacking specific storage capacity for " + resourceName + ".");
-//			}
-			
+
 			// Future: need to work out a way to store these excess resources into appropriate containers
 			
 			// Stores this resource in this building.
-			double excess = inv.storeAmountResource(resourceId, initialAmount);
-			
-			// For future debugging. Please do NOT delete
-			
-//			if (excess > 0D) {
-//				String resourceName = ResourceUtil.findAmountResourceName(resourceId);
-//				logger.warning(building, "Still lacking " + excess + " kg " + resourceName
-//						+ " storage space. " + (initialAmount - excess) + " kg stored. " );
-//			}
+			inv.storeAmountResource(resourceId, initialAmount);
 		}	
 
 		double totalcap = 0;
 		
 		// Calculate total capacities of specific resources in this building.
-		for (Entry<Integer, Double> i : capResources.entrySet()) {
+		for (Entry<Integer, Double> i : resourceCapacities.entrySet()) {
 			double amount = i.getValue();
 			totalcap += amount;		
 		}
@@ -131,43 +116,41 @@ public class Storage extends Function {
 
 		double result = 0D;
 
-		Map<Integer, Double> storageMap = buildingConfig.getStorageCapacities(buildingName);
-		Iterator<Integer> i = storageMap.keySet().iterator();
-		while (i.hasNext()) {
-			Integer resource = i.next();
-			double existingStorage = 0D;
-			Iterator<Building> j = settlement.getBuildingManager().getBuildingSet(FunctionType.STORAGE).iterator();
-			while (j.hasNext()) {
-				Building building = j.next();
-				Storage storageFunction = building.getStorage();
-				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				if (storageFunction.resourceCapacities.containsKey(resource))
-					existingStorage += storageFunction.resourceCapacities.get(resource) * wearModifier;
+		var spec = buildingConfig.getFunctionSpec(buildingName, FunctionType.STORAGE);
+		if (spec instanceof StorageSpec ss) { 
+			for(Entry<Integer, Double> e : ss.getCapacityResources().entrySet()) {
+				Integer resource = e.getKey();
+				double storageAmount = e.getValue();
+
+				double existingStorage = 0D;
+				for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.STORAGE)) {
+					Storage storageFunction = building.getStorage();
+					double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+					existingStorage += storageFunction.resourceCapacities.getOrDefault(resource, 0D) * wearModifier;
+				}
+
+				if (!newBuilding) {
+					existingStorage -= storageAmount;
+					if (existingStorage < 0D)
+						existingStorage = 0D;
+				}
+
+				double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
+				double resourceStored = settlement.getSpecificAmountResourceStored(resource);
+				double resourceDemand = resourceValue * (resourceStored + 1D);
+
+				double currentStorageDemand = resourceDemand - existingStorage;
+				if (currentStorageDemand < 0D)
+					currentStorageDemand = 0D;
+
+				// Determine amount of this building's resource storage is useful to the
+				// settlement.
+				double buildingStorageNeeded = Math.min(currentStorageDemand, storageAmount);
+
+				double storageValue = buildingStorageNeeded / 1000D;
+
+				result += storageValue;
 			}
-
-			double storageAmount = storageMap.get(resource);
-
-			if (!newBuilding) {
-				existingStorage -= storageAmount;
-				if (existingStorage < 0D)
-					existingStorage = 0D;
-			}
-
-			double resourceValue = settlement.getGoodsManager().getGoodValuePoint(resource);
-			double resourceStored = settlement.getSpecificAmountResourceStored(resource);
-			double resourceDemand = resourceValue * (resourceStored + 1D);
-
-			double currentStorageDemand = resourceDemand - existingStorage;
-			if (currentStorageDemand < 0D)
-				currentStorageDemand = 0D;
-
-			// Determine amount of this building's resource storage is useful to the
-			// settlement.
-			double buildingStorageNeeded = Math.min(currentStorageDemand, storageAmount);
-
-			double storageValue = buildingStorageNeeded / 1000D;
-
-			result += storageValue;
 		}
 
 		return result;
@@ -190,29 +173,33 @@ public class Storage extends Function {
 		removeStorageCapacity();
 	}
 
-	public void removeResources() {
+	private void removeResources() {
+		ResourceHolder s = getBuilding().getSettlement();
+
 		// Remove excess amount resources that can no longer be stored.
-		Iterator<Integer> i = resourceCapacities.keySet().iterator();
-		while (i.hasNext()) {
-			Integer resource = i.next();
-			double storageCapacityAmount = resourceCapacities.get(resource);
-			double totalStorageCapacityAmount = getBuilding().getSettlement().getSpecificCapacity(resource);
+		for (var e : resourceCapacities.entrySet()) {
+			Integer resource = e.getKey();
+			double storageCapacityAmount = e.getValue();
+			double totalStorageCapacityAmount = s.getSpecificCapacity(resource);
+
 			double remainingStorageCapacityAmount = totalStorageCapacityAmount - storageCapacityAmount;
-			double totalStoredAmount = getBuilding().getSettlement().getSpecificAmountResourceStored(resource);
+			double totalStoredAmount = s.getSpecificAmountResourceStored(resource);
 			if (remainingStorageCapacityAmount < totalStoredAmount) {
 				double resourceAmountRemoved = totalStoredAmount - remainingStorageCapacityAmount;
-				getBuilding().getSettlement().retrieveAmountResource(resource, resourceAmountRemoved);
+				s.retrieveAmountResource(resource, resourceAmountRemoved);
 			}
 		}
 	}
 
 	public void removeStorageCapacity() {
+		EquipmentInventory inv = getBuilding().getSettlement().getEquipmentInventory();
+
 		// Remove storage capacity from settlement.
 		Iterator<Integer> j = resourceCapacities.keySet().iterator();
 		while (j.hasNext()) {
 			Integer resource = j.next();
 			double storageCapacityAmount = resourceCapacities.get(resource);
-			getBuilding().getSettlement().getEquipmentInventory().removeSpecificCapacity(resource, storageCapacityAmount);
+			inv.removeSpecificCapacity(resource, storageCapacityAmount);
 		}
 	}
 
@@ -256,29 +243,13 @@ public class Storage extends Function {
 			}
 		}
 		
-		else {
-			result = false;
-			if (!method.equals(""))
-				method = " at " + method;
-				logger.log(rh, Level.SEVERE, 10_000,
-					"Attempting to store non-positive amount of "
-					+ ResourceUtil.findAmountResourceName(id) + method);
+		else if (!method.equals("")) {
+			logger.log(rh, Level.SEVERE, 10_000,
+				"Attempting to store non-positive amount of "
+				+ ResourceUtil.findAmountResourceName(id) + " at " + method);
 		}
 
 		return result;
-	}
-
-	/**
-	 * Retrieves a resource or test if a resource is available.
-	 *
-	 * @param requestedAmount
-	 * @param ar
-	 * @param inv
-	 * @param isRetrieving
-	 * @return true if the full amount can be retrieved.
-	 */
-	public static boolean retrieveAnResource(double requestedAmount, AmountResource ar, ResourceHolder rh, boolean isRetrieving) {
-		return retrieveAnResource(requestedAmount, ar.getID(), rh, isRetrieving);
 	}
 
 	/**
@@ -293,35 +264,30 @@ public class Storage extends Function {
 	public static boolean retrieveAnResource(double amount, int id, ResourceHolder rh, boolean isRetrieving) {
 		boolean result = false;
 		if (amount > 0) {
-			try {
-				double amountStored = rh.getSpecificAmountResourceStored(id);
+			double amountStored = rh.getSpecificAmountResourceStored(id);
 
-				if (amountStored < 0.00001) {
-					result = false;
+			if (amountStored < 0.00001) {
+				result = false;
 
-				} else if (amountStored < amount) {
-					amount = amountStored;
-					if (isRetrieving) {
-						rh.retrieveAmountResource(id, amount);
-					}
-					logger.warning(rh, 30_000,
-							"Ran out of "
-							+ ResourceUtil.findAmountResourceName(id) + "."
-							);
-					result = false;
-
-				} else {
-					if (isRetrieving) {
-						rh.retrieveAmountResource(id, amount);
-					}
-					result = true;
+			} else if (amountStored < amount) {
+				amount = amountStored;
+				if (isRetrieving) {
+					rh.retrieveAmountResource(id, amount);
 				}
-			} catch (Exception e) {
-				logger.severe(rh,10_000,
-						"Issues with retrieveAnResource(ar) on "
-						+ ResourceUtil.findAmountResourceName(id) + " : " + e.getMessage(), e);
+				logger.warning(rh, 30_000,
+						"Ran out of "
+						+ ResourceUtil.findAmountResourceName(id) + "."
+						);
+				result = false;
+
+			} else {
+				if (isRetrieving) {
+					rh.retrieveAmountResource(id, amount);
+				}
+				result = true;
 			}
-		} else {
+		}
+		else {
 			result = false;
 			logger.severe(rh, 10_000,
 					"Attempting to retrieve non-positive amount of "
