@@ -9,10 +9,11 @@
         facing="0.0">
         <connection-list>
             <connection id="1" hatch-facing="north" />
-            <connection id="5" hatch-facing="east" />
+            <connection id="H0" hatch-facing="east" />
             <connection id="EVA1" hatch-facing="west" />
         </connection-list>
     </building>
+
     <building id="1" type="Hallway" length="4.0" xloc="0.0"
         yloc="6.5" facing="0.0">
         <connection-list>
@@ -44,19 +45,31 @@
             <connection id="EVA2" hatch-facing="west" />
         </connection-list>
     </building>
-    <building id="5" type="Hallway" length="3.0" xloc="-6.0"
+    
+     <!-- row 0 when yloc="0.0"" -->
+    <building id="H0" type="Hallway" length="3.0" xloc="-6.0"
         yloc="0.0" facing="270.0">
         <connection-list>
-            <connection id="0" xloc="0.0" yloc="1.5" />
-            <connection id="6" xloc="0.0" yloc="-1.5" />
+            <connection id="0" hatch-facing="west" />
+            <connection id="IG0" hatch-facing="east" />
+            <connection id="T0" hatch-facing="south" />
         </connection-list>
     </building>
-    <building id="6" type="Inflatable Greenhouse" xloc="-12.0"
+    <building id="IG0" type="Inflatable Greenhouse" xloc="-12.0"
         yloc="0.0" facing="270.0">
         <connection-list>
-            <connection id="5" hatch-facing="west" />
+            <connection id="H0" hatch-facing="west" />
+            <connection id="IG1" hatch-facing="east" />
         </connection-list>
     </building>
+    <building id="IG1" type="Inflatable Greenhouse" xloc="-21.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="IG0" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
+    <!-- row 1 -->
     <building id="7" type="Hallway" length="3.0" xloc="-6.0"
         yloc="13.0" facing="270.0">
         <connection-list>
@@ -210,19 +223,17 @@
     </building>
     
     
-    <!-- zone 1 -->
-    
-    <building id="28" zone="1" type="Astronomy Observatory" xloc="-55.0"
-        yloc="-20.0" facing="180.0">
+    <building id="T0" type="Tunnel" length="10" xloc="-6.0"
+        yloc="-6.0" facing="0.0">
         <connection-list>
-            <connection id="EVA3" hatch-facing="west" />
+            <connection id="AO1" hatch-facing="south" />
+            <connection id="H0" hatch-facing="north" />
         </connection-list>
     </building>
-
-    <!-- EVA Airlock is attached to the Astronomy Observatory -->
-    <building id="EVA3" zone="1" type="EVA Airlock" xloc="-48.5" yloc="-20.0" facing="0.0">
+    <building id="AO1" type="Astronomy Observatory" xloc="-6.0"
+        yloc="-14.5" facing="0.0">
         <connection-list>
-            <connection id="28" hatch-facing="east" />
+            <connection id="T0" hatch-facing="north" />
         </connection-list>
     </building>
 
