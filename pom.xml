@@ -186,6 +186,7 @@
 				    <artifactId>maven-surefire-plugin</artifactId>
 				    <version>3.5.3</version>
 				    <configuration>
+                        <argLine>-Duser.language=en -Duser.region=US</argLine>
 						<includes>
 							<include>%regex[.*]</include>
 						</includes>
