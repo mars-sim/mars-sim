@@ -677,26 +677,131 @@
  			the share of female students is 28%, and in ICT (Information and Communication 
  			Technologies), it is 20%. -->
 			<country name="Germany"/>
-			<settlement-name name="Neu Augsburg" />
-			<settlement-name name="Neu Deutschland" />
-			<settlement-name name="Neu Munchen" />
-			<settlement-name name="Neu Berlin" />
-			<settlement-name name="Neu Hamburg" />
-			<settlement-name name="Neubraunschweig" />
-			<settlement-name name="Neusachsen" />
-			<settlement-name name="Neu Brandenburg" />
-			<settlement-name name="Neu-Askania" />
+            <!-- Generic German names for settlements on Mars -->
+            <settlement-name name="Neuland" />
+            <settlement-name name="Marsheim" />
+            <settlement-name name="Marsburg"/>
+            <settlement-name name="Landung" />
+            <!-- Names based on German aerospace engineers and scientists-->
+            <!-- Rule of Thump : If the name is good enough for a school today, its good enough for the DLR ;-) -->
+            <settlement-name name="Adolf-Busemann-Station" />
+            <settlement-name name="Bartsch-von-Sigsfeld-Station" />
+            <settlement-name name="Claude-Dornier-Station" />
+            <settlement-name name="Eugen-Sänger-Station" />
+            <settlement-name name="Ferdinand-von-Zeppelin-Station" />
+            <settlement-name name="Georg-von-Neumayer-Station" />
+            <settlement-name name="Joseph-von-Baader-Station" />
+            <settlement-name name="Ludwig-Prandtl-Station" />
+            <settlement-name name="Krafft-Arnold-Ehricke-Station" />
+            <settlement-name name="Kurt-Heinrich-Debus-Station" />
+            <settlement-name name="Roland-Eisenlohr-Station" />
+            <settlement-name name="Wernher-von-Braun-Station" />
+            <!-- Named in honor of the Leipnitz award scientist and planetologist -->
+            <settlement-name name="Dieter-Stöffler-Station" />
+            <!-- Named after other famous German engineers and founders -->
+            <settlement-name name="Adolf-Bleichart-Station" />
+            <settlement-name name="Carl-Benz-Station" />
+            <settlement-name name="Gottlob-Bauknecht-Station" />
+            <settlement-name name="Gottlieb-Daimler-Station" />
+            <settlement-name name="Heinrich-Dubbel-Station" />
+            <settlement-name name="Johann-Culemeyer-Station" />
+            <settlement-name name="Paul-Bilfinger-Station" />
+            <settlement-name name="Reinhard-Baumeister-Station" />
+            <settlement-name name="Robert-Bosch-Station" />
+            <settlement-name name="Rudolf-Diesel-Station" />
+            <settlement-name name="Rudolph-Berg-Station" />
+            <!-- Names based on German regions -->
+            <settlement-name name="Neuholstein" />
+            <settlement-name name="Neusachsen" />
+            <settlement-name name="Neumünster" />
+            <settlement-name name="Neu-Mecklenburg" />
+            <settlement-name name="Neu-Brandenburg" />
+            <settlement-name name="Neubaden" />
+            <settlement-name name="Neubayern" />
+            <settlement-name name="Neu-Vorpommern" />
+            <!-- Names based on German cities -->
+            <settlement-name name="Neu-Sankt-Pauli" />
+            <settlement-name name="Neu-Franken" />
+			<settlement-name name="Neu-Augsburg" />
+			<settlement-name name="Neu-München" />
+			<settlement-name name="Neu-Berlin" />
+			<settlement-name name="Neu-Hamburg" />
+			<settlement-name name="Neu-Braunschweig" />
+            <settlement-name name="Neu-Göttingen" />
+            <settlement-name name="Neu-Köln" />
+            <settlement-name name="Neu-Lampoldshausen" />
+            <settlement-name name="Neu-Schleißheim" />
+            <!-- other names -->
+			<settlement-name name="Neu-Askania" /> <!-- Named after the noble house of Askania -->
 			<settlement-name name="Klein-Venedig" />
 			<settlement-name name="Neu Kiautschou" />
 			<settlement-name name="Deutsch-Samoa" />
-			<settlement-name name="Neupommern" />
-	
-			<rover-name name="Wotan" /> 
-			<rover-name name="Freya" /> 
-			<rover-name name="Ares" />   
-			<rover-name name="Serenity" /> 
-			<rover-name name="Citadel" /> 
-			<rover-name name="Otto" />   
+
+            <!-- Rover names based on the german phonetic alphabet pre-1950 (and car industry today)-->
+            <rover-name name="Anton" />
+            <rover-name name="Bertha" />
+            <rover-name name="Cäsar" />
+            <rover-name name="Dora" />
+            <rover-name name="Emil" />
+            <rover-name name="Friedrich" />
+            <rover-name name="Gustav" />
+            <rover-name name="Heinrich" />
+            <rover-name name="Ida" />
+            <rover-name name="Julius" />
+            <rover-name name="Kaufmann" />
+            <rover-name name="Ludwig" />
+            <rover-name name="Martha" />
+            <rover-name name="Nordpol" />
+            <rover-name name="Otto" />
+            <rover-name name="Paula" />
+            <rover-name name="Quelle" />
+            <rover-name name="Richard" />
+            <rover-name name="Siegfried" />
+            <rover-name name="Samuel" />
+            <rover-name name="Theodor" />
+            <rover-name name="Ulrich" />
+            <rover-name name="Viktor" />
+            <rover-name name="Wilhelm" />
+            <rover-name name="Xanthippe" />
+            <rover-name name="Ysiplon" />
+            <rover-name name="Zeppelin" />
+            <rover-name name="Zacharias" />
+            <!-- Rover names based on animals -->
+            <rover-name name="Ameise" />
+            <rover-name name="Büffel" />
+            <rover-name name="Dachs" />
+            <rover-name name="Elefant" />
+            <rover-name name="Fuchs" />
+            <rover-name name="Gepard" />
+            <rover-name name="Hase" />
+            <rover-name name="Igel" />
+            <rover-name name="Jaguar" />
+            <rover-name name="Keiler" />
+            <rover-name name="Leopard" />
+            <rover-name name="Marder" />
+            <rover-name name="Möwe" />
+            <rover-name name="Nashorn" />
+            <rover-name name="Ozelot" />
+            <rover-name name="Puma" />
+            <rover-name name="Ratte" />
+            <rover-name name="Schwalbe" />
+            <rover-name name="Tiger" />
+            <rover-name name="Uhu" />
+            <rover-name name="Vogel" />
+            <rover-name name="Wolf" />
+            <rover-name name="Zebra" />
+            <!-- Rover names based on west-germanic names for the norse gods -->
+			<rover-name name="Wodan" />
+			<rover-name name="Freya" />
+            <rover-name name="Donar" />
+            <rover-name name="Heimdall" />
+            <!-- Rover names based on characters in the Nibelungen myth -->
+            <rover-name name="Siegfried" />
+            <rover-name name="Brunhild" />
+            <rover-name name="Fafnir" />
+            <rover-name name="Kriemhild" />
+
+            <rover-name name="Otto" />
 			<rover-name name="Gastau" /> 
 			<rover-name name="Bismarck" /> 
 			<rover-name name="Zollverein" />   
@@ -734,8 +839,11 @@
 			<rover-name name="Edag" />   
 			<rover-name name="Gumpert" /> 
 			<rover-name name="Wartburg" /> 
-			<rover-name name="Lloyd" /> 																		
-		</authority>
+			<rover-name name="Lloyd" />
+            <rover-name name="Ares" />
+            <rover-name name="Serenity" />
+            <rover-name name="Citadel" />
+        </authority>
 		
 		<authority code="CSA" name="Canadian Space Agency" corporation="false"
 					agenda="Communication Network"  gender-ratio="0.5">
