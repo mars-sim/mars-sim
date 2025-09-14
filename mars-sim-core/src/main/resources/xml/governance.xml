@@ -837,6 +837,24 @@
             <rover-name name="Wolf" />
             <rover-name name="Zebra" />
             <rover-name name="Ziege" />
+            <!-- Rover names based on German names for weather phenomena -->
+            <rover-name name="Aufwind"/>
+            <rover-name name="Blitz"/>
+            <rover-name name="Blanker Hans"/>
+            <rover-name name="Donner"/>
+            <rover-name name="Fallwind"/>
+            <rover-name name="Fönwind"/>
+            <rover-name name="Rüttler"/> <!-- derived from Hausrüttler lit. "house shaker", very powerful lightning -->
+            <rover-name name="Knaller"/>
+            <rover-name name="Kugelblitz"/>
+            <rover-name name="Orkan"/>
+            <rover-name name="Passat"/>
+            <rover-name name="Sturm"/>
+            <rover-name name="Tornado"/>
+            <rover-name name="Welle"/>
+            <rover-name name="Scirocco"/> <!-- also the name of a German car model -->
+            <rover-name name="Windhose"/>
+            <rover-name name="Wirbelwind"/>
             <!-- Rover names based on west-germanic names for the norse gods -->
 			<rover-name name="Wodan" />
 			<rover-name name="Freya" />
