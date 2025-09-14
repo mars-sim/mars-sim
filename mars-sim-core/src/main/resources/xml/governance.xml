@@ -778,7 +778,6 @@
             <settlement-name name="Neu-Wolfsburg"/>
             <settlement-name name="Neu-Zittau"/>
             <!-- other names -->
-			<settlement-name name="Neu-Askania" /> <!-- Named after the noble house of Askania -->
 			<settlement-name name="Klein-Venedig" />
             <!-- Rover names based on the german phonetic alphabet pre-1950 (and car industry today)-->
             <rover-name name="Anton" />
@@ -976,6 +975,7 @@
             <rover-name name="Ares" />
             <rover-name name="Serenity" />
             <rover-name name="Citadel" />
+            <rover-name name="Ascania"/>
         </authority>
 		
 		<authority code="CSA" name="Canadian Space Agency" corporation="false"
