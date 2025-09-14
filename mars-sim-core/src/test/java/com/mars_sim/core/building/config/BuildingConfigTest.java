@@ -15,6 +15,8 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 
+    private static final String INFLATABLE_GREENHOUSE = "Inflatable Greenhouse";
+
     private static final String LANDER_HAB = "Lander Hab";
 
     private static final String BUNK = "Bunk";
@@ -111,13 +113,30 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         assertTrue("Exercise spot called 'Running Machine'", names.contains("Weight Lifting"));
     }
 
+        /**
+     * This test is very tied to the building spec of LANDER_HAB
+     */
+    public void testGreenhouseScope() {
+        var bc = simConfig.getBuildingConfiguration();
+
+        BuildingSpec spec = bc.getBuildingSpec(INFLATABLE_GREENHOUSE);
+
+        var scopes = spec.getSystemScopes();
+
+        assertEquals("Scope size", 4, scopes.size());
+        assertTrue("Building scope", scopes.contains("building"));
+        assertTrue("Habitable Scope", scopes.contains("habitable"));
+        assertTrue("Type Scope", scopes.contains(INFLATABLE_GREENHOUSE));
+        assertTrue("Metalic Scope", scopes.contains("metallic element"));
+    }   
+
     /**
      * This test is very tied to the building spec of the inflatable greenhouse
      */
     public void testInflatableGreenhouse() {
         var bc = simConfig.getBuildingConfiguration();
 
-        var found = bc.getBuildingSpec("Inflatable Greenhouse");
+        var found = bc.getBuildingSpec(INFLATABLE_GREENHOUSE);
         
         assertNotNull("Found", found);
 

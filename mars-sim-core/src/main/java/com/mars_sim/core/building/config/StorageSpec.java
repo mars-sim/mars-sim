@@ -1,7 +1,16 @@
+/*
+ * Mars Simulation Project
+ * StorageSpec.java
+ * @date 2025-09-14
+ * @author Barry Evans
+ */
 package com.mars_sim.core.building.config;
 
 import java.util.Map;
 
+/**
+ * The specification of a Storage Function.
+ */
 public class StorageSpec extends FunctionSpec {
 
     private Map<Integer, Double> capacities;

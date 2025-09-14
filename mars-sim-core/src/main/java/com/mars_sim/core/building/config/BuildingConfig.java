@@ -95,9 +95,6 @@ public class BuildingConfig {
 	private static final Set<String> DEFAULT_SOURCE_ATTR = Set.of(TYPE, MODULES, CONVERSION, PERCENT_LOADING);
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
-
-	/** A collection of building level system scopes (as defined for each building in buldings.xml. */
-	private Map<String, Set<String>> buildingScopes = new HashMap<>();
 	
 	private Set<FunctionType> activityFunctions  = new HashSet<>();
 	
@@ -147,25 +144,6 @@ public class BuildingConfig {
 	private BuildingSpec parseBuilding(String buildingTypeName, Element buildingElement,
 								ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 
-		var newSpec = parseBuildingSpec(buildingElement, buildingTypeName, resProcConfig, manuConfig);
-		
-		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
-		if (construction != null) {
-			newSpec.setConstruction(ConstructionType.valueOf(ConfigHelper.convertToEnumName(construction)));
-		}
-
-		return newSpec;
-	}
-
-	/**
-	 * Parse and create the basic BuildingSpec
-	 * @param buildingElement
-	 * @param buildingTypeName
-	 * @param manuConfig
-	 * @return
-	 */
-	private BuildingSpec parseBuildingSpec(Element buildingElement, String buildingTypeName,
-									ResourceProcessConfig resProcConfig, ManufactureConfig manuConfig) {
 		double width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
 		double length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
 		String alignment = buildingElement.getAttributeValue(N_S_ALIGNMENT);
@@ -178,6 +156,12 @@ public class BuildingConfig {
 		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
 		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
 		
+		ConstructionType constructionType = ConstructionType.PRE_FABRICATED;
+		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
+		if (construction != null) {
+			constructionType =  ConfigHelper.getEnum(ConstructionType.class, construction);
+		}
+
 		// Process description
 		Element descElement = buildingElement.getChild(DESCRIPTION);
 		String desc = descElement.getValue().trim();
@@ -189,9 +173,8 @@ public class BuildingConfig {
 		if (scopesElement != null) {
 			for (Element element : scopesElement.getChildren(SCOPE)) {
 				String name = element.getAttributeValue(NAME);
-				scopeNames.add(name);
+				scopeNames.add(name.toLowerCase().replace("_", " "));
 			}		
-			buildingScopes.put(buildingTypeName, scopeNames);
 		}
 		
 		// Get functions
@@ -215,8 +198,8 @@ public class BuildingConfig {
 			category = deriveCategory(supportedFunctions.keySet());
 		}
 
-		return new BuildingSpec(this, buildingTypeName, desc, category, 
-				width, length, alignment, baseLevel,
+		return new BuildingSpec(buildingTypeName, desc, category, 
+				width, length, alignment, constructionType, scopeNames, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
 			 	basePowerRequirement, basePowerDownPowerRequirement,
 			 	supportedFunctions);
@@ -558,14 +541,5 @@ public class BuildingConfig {
 	 */
     public Set<FunctionType> getActivitySpotFunctions() {
         return activityFunctions;
-    }
-    
-    /**
-     * Gets a map of building scopes.
-     * 
-     * @return
-     */
-    public Map<String, Set<String>> getBuildingScopes() {
-    	return buildingScopes;
     }
 }
