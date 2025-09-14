@@ -18,7 +18,6 @@ import com.mars_sim.core.building.utility.power.FissionPowerSource;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerSource;
-import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;

@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.Tooling;
@@ -116,7 +115,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      * This test is very tied to the building spec of the inflatable greenhouse
      */
     public void testInflatableGreenhouse() {
-	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Inflatable Greenhouse");
@@ -137,12 +135,13 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
                                          FunctionType.WASTE_PROCESSING),
                                         found.getFunctionSupported());
 
-        
-        var storage = found.getStorage();
+        var fSpec = (StorageSpec) found.getFunctionSpec(FunctionType.STORAGE);
+
+        var storage = fSpec.getCapacityResources();
         assertEquals("Oxygen capacity", 5000D, storage.get(ResourceUtil.OXYGEN_ID));
         assertEquals("Nitrogen capacity", 2500D, storage.get(ResourceUtil.NITROGEN_ID));
 
-        var initial = found.getInitialResources();
+        var initial = fSpec.getInitialResources();
         assertEquals("Carbon stored", 100D, initial.get(ResourceUtil.CO2_ID));
     }
 
@@ -152,7 +151,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testGarage() {
-	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Garage");
@@ -183,7 +181,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testResearchFunction() {
-	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
         var found = (ResearchSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.RESEARCH);
@@ -204,7 +201,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testThermalFunction() {
-	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
         var found = (GenerationSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.THERMAL_GENERATION);
@@ -230,7 +226,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testMedicalFunction() {
-	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
         var found = (MedicalCareSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.MEDICAL_CARE);
@@ -250,7 +245,6 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testWorkshop() {
-	    var simConfig = SimulationConfig.loadConfig();
         var bc = simConfig.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Workshop");
@@ -269,8 +263,8 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
                                         found.getFunctionSupported());
 
         
-        var storage = found.getStorage();
-        assertEquals("Cement capacity", 500D, storage.get(ResourceUtil.CEMENT_ID));
+        var fSpec = (StorageSpec) found.getFunctionSpec(FunctionType.STORAGE);
+        assertEquals("Cement capacity", 500D, fSpec.getCapacityResources().get(ResourceUtil.CEMENT_ID));
 
         FunctionSpec manufacture = found.getFunctionSpec(FunctionType.MANUFACTURE);
         Map<Tooling, Integer> tools = (Map<Tooling, Integer>) manufacture.getProperty("tooling");

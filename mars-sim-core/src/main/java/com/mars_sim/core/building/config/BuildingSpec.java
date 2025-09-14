@@ -57,10 +57,6 @@ public class BuildingSpec {
 
 	private Map<FunctionType, FunctionSpec> supportedFunctions;
 
-	// Optional Function details
-	private Map<Integer, Double> storageMap = null;
-	private Map<Integer, Double> initialMap = null;
-
 	private BuildingCategory category;
 	
 	/**
@@ -252,19 +248,6 @@ public class BuildingSpec {
 
 	public void setConstruction(ConstructionType type) {
 		this.constructionType = type;
-	}
-
-	public Map<Integer, Double> getStorage() {
-		return storageMap;
-	}
-	
-	public Map<Integer, Double> getInitialResources() {
-		return initialMap;
-	}
-
-	void setStorage(Map<Integer, Double> storageMap, Map<Integer, Double> initialMap) {
-		this.storageMap = storageMap;
-		this.initialMap = initialMap;
 	}
 
 	public String toString() {
