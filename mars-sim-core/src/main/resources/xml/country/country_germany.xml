@@ -968,5 +968,8 @@
         <last-name value="Gerst" />
         <last-name value="Maurer" />
         <last-name value="Rogge" />
+        <!-- Currently in training -->
+        <last-name value="Schoenenwald" />
+        <last-name value="Winter" />
     </last-name-list>
 </country>
