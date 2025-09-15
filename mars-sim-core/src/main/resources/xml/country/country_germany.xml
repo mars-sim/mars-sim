@@ -955,6 +955,18 @@
         <last-name value="Wolff" />
         <last-name value="Bender" />
         <last-name value="Pfeiffer" />
-
+        <!-- Additional surnames of German astronauts -->
+        <last-name value="Jähn" />
+        <last-name value="Merbold" />
+        <last-name value="Furrer" />
+        <last-name value="Messerschmid" />
+        <last-name value="Flade" />
+        <last-name value="Schlegel"/>
+        <last-name value="Reiter" />
+        <last-name value="Ewald" />
+        <last-name value="Thiele" />
+        <last-name value="Gerst" />
+        <last-name value="Maurer" />
+        <last-name value="Rogge" />
     </last-name-list>
 </country>
