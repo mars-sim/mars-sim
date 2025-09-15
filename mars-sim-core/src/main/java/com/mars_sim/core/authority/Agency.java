@@ -32,7 +32,7 @@ public class Agency extends Organization {
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// TODO Auto-generated method stub
+		// May be used in future
 		return false;
 	}
 

@@ -602,7 +602,7 @@ public class SimulationConfig {
 	 */
 	public File getBundledXML(String filename) {
 		if (filename.indexOf('.') == -1) {
-			// Ne extension; assume XML
+			// Add extension; assume XML
 			filename = filename + XML_EXTENSION;
 		}
 		

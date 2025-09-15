@@ -53,6 +53,7 @@ public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
                         "Romania", "Russia",
                         "Saudi Arabia",
                         "South Korea", "Spain", "Sweden", "Switzerland", 
+                        "Taiwan",
                         "United Arab Emirates",
                         "United Kingdom", "United States"};
 

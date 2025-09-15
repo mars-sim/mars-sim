@@ -95,7 +95,7 @@ public class ResourceCache {
                 return existingFile;
             }
 
-            // Checksum the bundled resoruce from a new stream
+            // Checksum the bundled resource from a new stream
             if (doChecksum) {
                 try (InputStream checkStream = ResourceCache.class.getResourceAsStream(resourceName)) {
                     if (checkStream == null) {

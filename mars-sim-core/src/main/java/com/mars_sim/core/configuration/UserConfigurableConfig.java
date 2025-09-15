@@ -139,7 +139,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		Document doc;
 		try (InputStream contents = getRawConfigContents(file, predefined)) {
 			if (contents == null) {
-				throw new IllegalStateException("Can not find " + file);
+				throw new IllegalStateException("Cannot find " + file);
 			}
 
 			SAXBuilder builder = null;

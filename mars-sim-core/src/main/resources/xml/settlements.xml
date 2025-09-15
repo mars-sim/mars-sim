@@ -294,7 +294,8 @@
 		<template name="Phase 1-SX"/>
 		<template name="Phase 1-TW"/>		
 		<template name="Phase 1-US"/>
-		
+		<template name="Phase 1-UK"/>
+				
 		<!-- 10 Phase 2 templates -->	
 		<template name="Phase 2-BO"/>	
 		<template name="Phase 2-CN"/>	

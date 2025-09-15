@@ -271,14 +271,14 @@ public class AuthorityEditor  {
 	/**
 	 * Commits the changes to the crew profiles.
 	 *
-	 * @param name
+	 * @param shortName
 	 * @param description
 	 * @return
 	 */
-	private Authority commitChanges(String name, String description) {
+	private Authority commitChanges(String shortName, String description) {
 		String agendaName = (String) agendaCB.getSelectedItem();
 		
-		return new Authority(name, description, isCorporation, false,
+		return new Authority(shortName, description, isCorporation, false,
 				// Note: the following entries may be subject to change
 				genderRatio.getValue()/100D,
 				raFactory.getAgenda(agendaName),

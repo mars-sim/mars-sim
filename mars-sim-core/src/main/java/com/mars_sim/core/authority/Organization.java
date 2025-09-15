@@ -60,7 +60,7 @@ public abstract class Organization implements Serializable, Temporal {
 	
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-		// TODO Auto-generated method stub
+		// Will add logics here in future
 		return true;
 	}
 
