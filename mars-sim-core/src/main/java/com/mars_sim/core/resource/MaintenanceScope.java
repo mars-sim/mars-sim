@@ -10,6 +10,7 @@ package com.mars_sim.core.resource;
 import java.io.Serializable;
 
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A class for holding maintenance scope for a part.
@@ -71,4 +72,12 @@ public class MaintenanceScope implements Serializable {
 	public void resetFatigue() {
 		fatigue = 0;
 	}
+	
+	/**
+	 * Cleans a part and reduces its fatigue fictitiously.
+	 */
+	public void cleanPart() {
+		fatigue = RandomUtil.getRandomDouble(fatigue * .67, fatigue);
+	}
+	
 }

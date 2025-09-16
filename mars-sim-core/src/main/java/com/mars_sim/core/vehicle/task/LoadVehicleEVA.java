@@ -31,6 +31,8 @@ public class LoadVehicleEVA extends EVAOperation {
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = LoadVehicleEVA.class.getSimpleName();
 	
+	public static final String DETAIL = Msg.getString("Task.description.loadVehicleEVA.detail");
+	
 	/** Task phases. */
 	private static final TaskPhase LOADING = 
 			new TaskPhase(Msg.getString("Task.phase.loading"), //$NON-NLS-1$
@@ -80,7 +82,7 @@ public class LoadVehicleEVA extends EVAOperation {
 			return;
 		}
 
-		setDescription(Msg.getString("Task.description.loadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+		setDescription(DETAIL + vehicle.getName());
 
 		// Add the rover to a garage if possible.
 		if (settlement.getBuildingManager().addToGarage(vehicle)) {
@@ -88,7 +90,6 @@ public class LoadVehicleEVA extends EVAOperation {
 			endEVA("Vehicle in garage.");
 			return;
 		}
-
 		
 		// Determine location for loading.
 		setOutsideLocation(vehicle);

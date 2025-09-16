@@ -181,8 +181,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<String, List<MaintenanceScope>> scopeMap = new HashMap<>();
 	/** The parts currently identified to be retrofitted. */
 	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
-	// Note: there is no need of serializing scopeCollection since it's only being used by
-	// TabPanelMaintenance for generating tables 
+	/** The map of collections of scopes. */
 	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
 	
 	private static MasterClock masterClock;
@@ -840,7 +839,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Randomly picks one of the scopes that has a proportionally high fatigue
+	 * Randomly picks one of the scopes that has a proportionally high fatigue.
 	 * 
 	 * @return
 	 */
@@ -1364,7 +1363,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Generates a new set of required repair parts for maintenance.
+	 * Generates a new set of required replacement parts for maintenance.
 	 * Note: may or may not result in parts needed.
 	 */
 	public void generateNewMaintenanceParts() {
@@ -1426,11 +1425,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * 
 	 * @param map
 	 */
-	public void resetPartFatigue(Map<MaintenanceScope, Integer> map) {
-		for (MaintenanceScope ms: map.keySet()) {
+	public void resetPartFatigue(Map<MaintenanceScope, Integer> repairedMap) {
+		for (MaintenanceScope ms: repairedMap.keySet()) {
+			// Note: need to rework to match what is in repairedMap to that 
 			ms.resetFatigue();
 		}
 	}
+	
+
 	
 	/**
 	 * Looks at the parts needed for maintenance on this entity.

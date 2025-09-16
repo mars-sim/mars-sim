@@ -36,6 +36,8 @@ public class PilotDrone extends OperateVehicle {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.pilotDrone"); //$NON-NLS-1$
 
+	private static final String DETAIL = Msg.getString("Task.description.pilotDrone.detail"); //$NON-NLS-1$
+	
 	/** Collision phase produces more skill experience */
 	private static final TaskPhase AVOID_COLLISION = new TaskPhase(Msg.getString("Task.phase.avoidObstacle"),
 									IMPACT.changeSkillsRatio(0.2D));
@@ -82,8 +84,8 @@ public class PilotDrone extends OperateVehicle {
 		super(NAME, pilot, flyer, destination, startTripTime, startTripDistance, 200);
 		
 		// Set initial parameters
-		setDescription(Msg.getString("Task.description.pilotDrone.detail", flyer.getName())); // $NON-NLS-1$
-
+		setDescription(DETAIL + flyer.getName()); 
+		
 		if (getPhase() == null) {
 			logger.log(pilot, Level.INFO, 4_000, "Starting phase is null.");
 		}

@@ -47,6 +47,8 @@ public class LoadVehicleGarage extends Task {
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = LoadVehicleGarage.class.getSimpleName();
 
+	public static final String DETAIL = Msg.getString("Task.description.loadVehicleGarage.detail");
+	
 	/** Task phases. */
 	private static final TaskPhase LOADING = new TaskPhase(Msg.getString("Task.phase.loading")); //$NON-NLS-1$
 
@@ -102,8 +104,7 @@ public class LoadVehicleGarage extends Task {
 		// Walk to garage.
 		walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.VEHICLE_MAINTENANCE, false);
 	
-		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
-		
+		setDescription(DETAIL + vehicle.getName());
 		
 		// Initialize task phase
 		setPhase(LOADING);

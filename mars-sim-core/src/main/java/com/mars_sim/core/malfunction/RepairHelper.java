@@ -116,8 +116,8 @@ public final class RepairHelper {
 				int id = part.getID();
 				int number = entry.getValue();
 				int shortfall = containerUnit.retrieveItemResource(id, number);
-				// Add in the repair part
-				malfunction.repairWithParts(ms, number - shortfall, containerUnit);
+				// Consume the repair part
+				malfunction.consumeRepairPart(ms, number - shortfall, containerUnit);
 				
 				replaced.put(ms, number - shortfall);
 			}

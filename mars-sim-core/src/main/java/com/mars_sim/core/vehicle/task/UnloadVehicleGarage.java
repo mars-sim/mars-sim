@@ -37,7 +37,11 @@ public class UnloadVehicleGarage extends Task {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(UnloadVehicleGarage.class.getName());
-
+	
+	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage");
+	
+	private static final String DETAIL = Msg.getString("Task.description.unloadVehicleGarage.detail");
+	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$
 
@@ -64,7 +68,7 @@ public class UnloadVehicleGarage extends Task {
 	 */
 	public UnloadVehicleGarage(Worker worker, Vehicle vehicle) {
 		// Use Task constructor.
-		super("Unloading vehicle", worker, false, IMPACT,
+		super(NAME, worker, false, IMPACT,
 					RandomUtil.getRandomDouble(40D) + 10D);
 		
 		settlement = worker.getSettlement();
@@ -85,6 +89,7 @@ public class UnloadVehicleGarage extends Task {
 			clearTask(vehicle.getName() + " already unloaded. No need to execute UnloadVehicleGarage");
 			return;
 		}
+		
 		logger.log(worker, Level.FINER, 0, "Going to unload " + vehicle.getName() + ".");
 
 		// Add the vehicle to a garage if possible
@@ -98,8 +103,9 @@ public class UnloadVehicleGarage extends Task {
 
 		// Walk to garage
 		walkToTaskSpecificActivitySpotInBuilding(garage, FunctionType.VEHICLE_MAINTENANCE, false);
+		
 		// Set the description
-		setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", vehicle.getName())); // $NON-NLS-1$
+		setDescription(DETAIL + vehicle.getName());
 
 		// Initialize phase
 		setPhase(UNLOADING);

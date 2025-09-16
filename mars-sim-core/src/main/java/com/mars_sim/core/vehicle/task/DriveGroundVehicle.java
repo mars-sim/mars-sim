@@ -36,6 +36,8 @@ public class DriveGroundVehicle extends OperateVehicle {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.driveGroundVehicle"); //$NON-NLS-1$
 
+	private static final String DETAIL = Msg.getString("Task.description.driveGroundVehicle.detail"); //$NON-NLS-1$
+	
 	/** Task phases. */
 	private static final TaskPhase AVOID_OBSTACLE = new TaskPhase(Msg.getString("Task.phase.avoidObstacle"),
 																	IMPACT.changeSkillsRatio(0.2D));
@@ -84,7 +86,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 		super(NAME, driver, vehicle, destination, startTripTime, startTripDistance, (100D + RandomUtil.getRandomDouble(-20D, 20D)));
 		
 		// Set initial parameters
-		setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", vehicle.getName())); // $NON-NLS-1$
+		setDescription(DETAIL + vehicle.getName());
 		
 		if (getPhase() == null) {
 			logger.log(driver, Level.INFO, 4_000, "Starting phase is null.");

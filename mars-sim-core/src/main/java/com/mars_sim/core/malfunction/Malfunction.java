@@ -666,13 +666,13 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Repairs the malfunction with a number of a part.
+	 * Consumes the repair part.
 	 *
 	 * @param ms the scope.
 	 * @param number the number used for repair.
 	 * @param inv the inventory
 	 */
-	public void repairWithParts(MaintenanceScope ms, int number, EquipmentOwner containerUnit) {
+	public void consumeRepairPart(MaintenanceScope ms, int number, EquipmentOwner containerUnit) {
 		if (!repairParts.containsKey(ms)) {
 			return;
 		}

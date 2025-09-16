@@ -41,6 +41,8 @@ public class MeetTogether extends Task {
 	/** Simple Task name */
 	static final String SIMPLE_NAME = MeetTogether.class.getSimpleName();
 	
+	private static final String DETAIL = Msg.getString("Task.description.meetTogether.detail");
+	
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.meetTogether"); //$NON-NLS-1$
@@ -77,8 +79,8 @@ public class MeetTogether extends Task {
         		10D + RandomUtil.getRandomDouble(20));
 
         this.person = person;
-        
-		setDescription(Msg.getString("Task.description.meetTogether")); //$NON-NLS-1$
+
+		setDescription(NAME);
 
 		// Check if this person has an meeting initiator
 		initiatorId = person.getMeetingInitiator();
@@ -232,9 +234,11 @@ public class MeetTogether extends Task {
 			Building inviteebuilding = invitee.getBuildingLocation();
 	    			
 			if (inviteebuilding.equals(personbuilding)) {
-				setDescription(Msg.getString("Task.description.meetTogether.detail", invitee.getName())); //$NON-NLS-1$
+				String detail = DETAIL + invitee.getName();
 				
-				logger.info(initiator, Msg.getString("Task.description.meetTogether.detail", invitee.getName()));
+				setDescription(detail); 
+				
+				logger.info(initiator, detail);
 				
 				RelationshipUtil.changeOpinion(initiator, invitee, RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
 				RelationshipUtil.changeOpinion(invitee, initiator, RelationshipType.REMOTE_COMMUNICATION, RandomUtil.getRandomDouble(-.1, .15));
@@ -277,7 +281,7 @@ public class MeetTogether extends Task {
     }
     
     /**
-     * Gets a pool of candidates
+     * Gets a pool of candidates.
      * 
      * @param ppl
      * @param roleType

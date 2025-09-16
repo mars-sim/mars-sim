@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.malfunction.task;
 
+import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.UnitType;
@@ -21,6 +22,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
+import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -41,7 +43,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 	static final String SIMPLE_NAME = RepairInsideMalfunction.class.getSimpleName();
 	
 	/** Task description name */
-	static final String NAME = Msg.getString("Task.description.repairMalfunction"); //$NON-NLS-1$
+	static final String NAME = Msg.getString("Task.description.repairInsideMalfunction"); //$NON-NLS-1$
 
 	/** Task phases. */
 	private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString("Task.phase.repairing")); //$NON-NLS-1$
@@ -100,7 +102,18 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		logger.info(worker, "Starting repair " + malfunction.getName());
 		this.partStore = RepairHelper.getClosestRepairStore(worker);
 
-
+		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
+			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + entity.getName() + ".");
+		} 
+		else {
+			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + entity.getName() + ".");
+			endTask();
+		}	
+		
+		// Start if found
+		setDescription(Msg.getString("Task.description.repairInsideMalfunction.detail", malfunction.getName(),
+				entity.getName())); // $NON-NLS-1$
+		
 		// Add person to location of malfunction if possible.
 		addPersonOrRobotToMalfunctionLocation(entity);
 
@@ -164,12 +177,8 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		
 		// Add repair parts if necessary.
 		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
-			setDescription(Msg.getString("Task.description.repairMalfunction.detail", malfunction.getName(),
-					entity.getName())); // $NON-NLS-1$
-
 			if (!worker.isOutside()) {
 				logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + entity.getName() + ".");
-				RepairHelper.claimRepairParts(partStore, malfunction);
 			}
 		} 
 		else {
@@ -182,14 +191,19 @@ public class RepairInsideMalfunction extends Task implements Repair {
 		// Check if an accident happens during repair.
 		checkForAccident(entity, time, 0.001D, getEffectiveSkillLevel(), "Repairing " + entity.getName());
 
-		// Add EVA work to malfunction.
 		double workTimeLeft = 0D;
+		// Check if the malfunction has been handled.
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.INSIDE)) {
 			logger.log(worker, Level.FINE, 10_000, "Performing inside repair on malfunction '" + malfunction + "' at " + entity.getName() + ".");
 			// Add work to malfunction.
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.INSIDE, workTime, worker.getName());
 		}
 		else {
+			Map<MaintenanceScope, Integer> replacedPartMap = RepairHelper.claimRepairParts(partStore, malfunction);
+			
+			// Reset the cumulative fatigue back to zero
+			entity.getMalfunctionManager().resetPartFatigue(replacedPartMap);
+						
 			// Work fully completed
 			logger.log(worker, Level.INFO, 1_000, "Wrapped up inside repair work for '"
 					+ malfunction.getName()	+ "' in " + entity
@@ -227,8 +241,7 @@ public class RepairInsideMalfunction extends Task implements Repair {
 	private void addPersonOrRobotToMalfunctionLocation(Malfunctionable malfunctionable) {
 
 		boolean isWalk = false;
-		if (malfunctionable.getUnitType() == UnitType.BUILDING) {
-			Building building = (Building) malfunctionable;
+		if (malfunctionable instanceof Building building) {
 
 			if (worker.getUnitType() == UnitType.PERSON) {
 

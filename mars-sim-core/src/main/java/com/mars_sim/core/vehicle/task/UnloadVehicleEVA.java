@@ -39,6 +39,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 	
+	private static final String DETAIL = Msg.getString("Task.description.unloadVehicleEVA.detail"); 
+	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = 
 			new TaskPhase(Msg.getString("Task.phase.unloading"), //$NON-NLS-1$
@@ -67,7 +69,8 @@ public class UnloadVehicleEVA extends EVAOperation {
 		super(NAME, person, RandomUtil.getRandomDouble(25D) + 10D, UNLOADING);
 		setMinimumSunlight(LightLevel.NONE);
 
-		setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", vehicle.getName())); // $NON-NLS-1$
+		setDescription(DETAIL + vehicle.getName());
+		
 		this.vehicle = vehicle;
 		
 		if (!vehicle.haveStatusType(StatusType.UNLOADING)) {

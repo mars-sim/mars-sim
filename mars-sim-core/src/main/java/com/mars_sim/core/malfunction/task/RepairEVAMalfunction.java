@@ -54,8 +54,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 	/** Where to the parts come from */
 	private EquipmentOwner partStore;
 	
-	private Map<MaintenanceScope, Integer> replacedPartMap;
-
 	public RepairEVAMalfunction(Person person, Malfunctionable entity, Malfunction malfunction) {
 		super(NAME, person, 25, REPAIRING);
 		setMinimumSunlight(LightLevel.NONE);
@@ -76,10 +74,19 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 		this.malfunction = malfunction;
 		this.partStore = RepairHelper.getClosestRepairStore(person);
 
+
+		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
+			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' available from " + entity.getName() + ".");
+		} 
+		else {
+			logger.log(worker, Level.INFO, 10_000, "Parts for repairing malfunction '" + malfunction + "' NOT available from " + entity.getName() + ".");
+			endTask();
+		}	
+		
 		// Start if found
 		setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", malfunction.getName(),
 				entity.getName())); // $NON-NLS-1$
-
+		
 		// Determine location for repairing malfunction.
 		setOutsideLocation((LocalBoundedObject) entity);
 
@@ -100,7 +107,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 				throw new IllegalArgumentException("Task phase is null");
 			}
 			else if (REPAIRING.equals(getPhase())) {
-				time = repairMalfunctionPhase(time);
+				time = repairingPhase(time);
 			}
 		}
 		return time;
@@ -112,7 +119,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 	 * @param time the time to perform this phase (in millisols)
 	 * @return the time remaining after performing this phase (in millisols)
 	 */
-	private double repairMalfunctionPhase(double time) {
+	private double repairingPhase(double time) {
 		double remainingTime = 0;
 		
 		if (checkReadiness(time) > 0) {
@@ -137,7 +144,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
 
 		if (RepairHelper.hasRepairParts(partStore, malfunction)) {
 			logger.log(worker, Level.FINE, 10_000, "Parts for repairing malfunction '" + malfunction + "' available @ " + entity.getName() + ".");
-			replacedPartMap = RepairHelper.claimRepairParts(partStore, malfunction);
 		}
 
 		else {
@@ -146,21 +152,22 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair {
             return remainingTime;
 		}
 
-
-		// Add experience points
+		// Add experience
 		addExperience(time);
 
 		// Check if an accident happens during repair.
 		checkForAccident(time);
 
 		double workTimeLeft = 0D;
-		// Check if there are no more malfunctions.
+		// Check if the malfunction has been handled.
 		if (!malfunction.isWorkDone(MalfunctionRepairWork.EVA)) {
 			logger.log(worker, Level.FINE, 10_000, "Performing EVA repair on malfunction '" + malfunction + "' @ " + entity.getName() + ".");
 			// Add EVA work to malfunction.
 			workTimeLeft = malfunction.addWorkTime(MalfunctionRepairWork.EVA, workTime, worker.getName());
 		}
 		else {
+			Map<MaintenanceScope, Integer> replacedPartMap = RepairHelper.claimRepairParts(partStore, malfunction);
+			
 			// Reset the cumulative fatigue back to zero
 			entity.getMalfunctionManager().resetPartFatigue(replacedPartMap);
 			
