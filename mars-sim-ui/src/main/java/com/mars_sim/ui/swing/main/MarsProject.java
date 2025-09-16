@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProject.java
- * @date 2023-03-30
+ * @date 2025-09-15
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.main;
@@ -21,10 +21,10 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 import com.mars_sim.console.InteractiveTerm;
 import com.mars_sim.core.Simulation;
@@ -40,7 +40,7 @@ import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 
 /**
-* MarsProject is the main class for the application. It creates both the
+* MarsProject is the main class for starting mars-sim's UI mode. It creates both the
 * simulation and the user interface.
 */
 public class MarsProject {
@@ -327,10 +327,18 @@ public class MarsProject {
 	 * @param options
 	 */
 	private void usage(String message, Options options) {
-		HelpFormatter format = new HelpFormatter();
-		logger.config(message);
-		format.printHelp("marsProject", options);
-		System.exit(1);
+        // New non-deprecated HelpFormatter (Commons CLI 1.10+)
+        final HelpFormatter fmt = HelpFormatter.builder().get();
+        final String header = "\n" + message + "\n";
+        final String footer = "";
+        try {
+            fmt.printHelp("mars-sim-ui [options]", header, options, footer, true);
+        } catch (IOException ioe) {
+            // Fallback if printing help fails
+            logger.severe(message);
+            logger.severe("usage: mars-sim-ui [options]");
+        }
+        System.exit(1);
 	}
 
 	/**

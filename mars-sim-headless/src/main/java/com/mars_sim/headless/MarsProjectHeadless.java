@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MarsProjectHeadless.java
- * @date 2023-03-30
+ * @date 2025-09-15
  * @author Manny Kung
  */
 
@@ -158,9 +158,8 @@ public class MarsProjectHeadless {
             fmt.printHelp("mars-sim-headless [options]", header, options, footer, true);
         } catch (IOException ioe) {
             // Fallback if printing help fails
-            System.out.println();
-            System.out.println(message);
-            System.out.println("usage: mars-sim-headless [options]");
+            logger.severe(message);
+            logger.severe("usage: mars-sim-headless [options]");
         }
         System.exit(1);
     }

@@ -68,7 +68,7 @@ public class Pilot extends Job {
 		}
 		
 		// Get number of associated vehicles at a settlement.
-		result = (result + settlement.getOwnedVehicleNum() / 3 + population / 4.0) / 4.0;
+		result = (result + settlement.getOwnedVehicleNum() / 3.0 + population / 4.0) / 4;
 				
 		return result;
 	}
