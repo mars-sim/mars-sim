@@ -21,10 +21,10 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // Prepare the skills, make sure 2 to be tested are level at the start
         var sm = p.getSkillManager();
-        sm.addNewSkill(SkillType.BIOLOGY, 1);
+        sm.addNewSkill(SkillType.ASTROBIOLOGY, 1);
         sm.addNewSkill(SkillType.CHEMISTRY, 1);
 
-        var changed1 = sm.getSkill(SkillType.BIOLOGY);
+        var changed1 = sm.getSkill(SkillType.ASTROBIOLOGY);
         var changed2 = sm.getSkill(SkillType.CHEMISTRY);
 
         var origChanged1Exp = changed1.getCumulativeExperience();
@@ -67,9 +67,9 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // Prepare the skills, make sure 2 to be tested are level at the start
         var sm = p.getSkillManager();
-        sm.addNewSkill(SkillType.BIOLOGY, 1);
+        sm.addNewSkill(SkillType.ASTROBIOLOGY, 1);
 
-        var changed1 = sm.getSkill(SkillType.BIOLOGY);
+        var changed1 = sm.getSkill(SkillType.ASTROBIOLOGY);
 
         var origChanged1Exp = changed1.getCumulativeExperience();
 
@@ -82,7 +82,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         ExperienceImpact impact = new ExperienceImpact(skillsRatio,
                                             NaturalAttributeType.EXPERIENCE_APTITUDE,
-                                            false, stressRatio, SkillType.BIOLOGY);
+                                            false, stressRatio, SkillType.ASTROBIOLOGY);
 
         // Simple apply with no assistance
         impact.apply(p, 100D, 1D, 1D);
@@ -107,9 +107,9 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
 
         // Prepare the skills
         var sm = p.getSkillManager();
-        sm.addNewSkill(SkillType.BIOLOGY, 1);
+        sm.addNewSkill(SkillType.ASTROBIOLOGY, 1);
         sm.addNewSkill(SkillType.CHEMISTRY, 1);
-        var changed1 = sm.getSkill(SkillType.BIOLOGY);
+        var changed1 = sm.getSkill(SkillType.ASTROBIOLOGY);
         var changed2 = sm.getSkill(SkillType.CHEMISTRY);
 
         var origChanged1Exp = changed1.getCumulativeExperience();

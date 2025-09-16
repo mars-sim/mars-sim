@@ -95,7 +95,8 @@ public class ScienceConfig implements Serializable {
 		List<Topic> results = new ArrayList<>();
     	
         // Load the topic json files
-    	try(InputStream fis = this.getClass().getResourceAsStream(fileName);
+    	try (InputStream fis = this.getClass().getResourceAsStream(fileName);
+			
 			JsonReader jsonReader = Json.createReader(fis)) {
 	    	
 	        var jsonObject = jsonReader.readObject();
@@ -114,7 +115,10 @@ public class ScienceConfig implements Serializable {
 				Topic e = new Topic(child.getString(TOPIC));
 				results.add(e);
 			}
-    	}
+    	} catch (Exception e1) {
+          	logger.log(Level.SEVERE, "Cannot open json file " + fileName + " : " + e1.getMessage());
+		}
+    	
 
 		return results;
 	}

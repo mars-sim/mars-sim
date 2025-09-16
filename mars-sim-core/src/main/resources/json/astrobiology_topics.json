@@ -1,5 +1,5 @@
 {
-	"subject": "Biology",
+	"subject": "Astrobiology",
 	"topics": [ 
 	 		{"topic": "Aerobes"},
 			{"topic": "Anaerobes"},
@@ -16,8 +16,8 @@
 			{"topic": "Hypersaline Water Bodies"},  	
 			{"topic": "Martian Cyanobacteria"}, 						
 			{"topic": "Metabolic Pathway"},
-			{"topic": "Martian Extremophile Enzymes"},			
- 			{"topic": "Origins of Microbial Life"}, 	
+			{"topic": "Martian Extremophile Enzymes"},
+			{"topic": "Origins of Microbial Life"}, 	
 			{"topic": "Past Habitability"},
 			{"topic": "Bacteria Mutation Modeling"},			
 			{"topic": "Present Refugia"}

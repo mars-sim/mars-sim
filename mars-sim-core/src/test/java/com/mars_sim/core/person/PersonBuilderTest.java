@@ -71,7 +71,7 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
         var home = buildSettlement();
 
         Map<SkillType, Integer> attrs = new EnumMap<>(SkillType.class);
-        attrs.put(SkillType.BIOLOGY, 20);
+        attrs.put(SkillType.ASTROBIOLOGY, 20);
         attrs.put(SkillType.MECHANICS, 44);
         attrs.put(SkillType.MATHEMATICS, 78);
 

@@ -19,7 +19,7 @@ public class JobTypeTest extends TestCase  {
     }
 
     public void testBiologistGroups() {
-        testGroups(JobType.BIOLOGIST, false, true, true, true, false, false);
+        testGroups(JobType.ASTROBIOLOGIST, false, true, true, true, false, false);
     }
 
     public void testMathGroups() {

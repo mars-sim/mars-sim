@@ -40,7 +40,7 @@ public class ProduceFoodMeta extends FactoryMetaTask {
 		setFavorite(FavoriteType.COOKING);
 		setTrait(TaskTrait.ARTISTIC);
 		
-		setPreferredJob(JobType.BIOLOGIST, JobType.CHEF,
+		setPreferredJob(JobType.ASTROBIOLOGIST, JobType.CHEF,
 						JobType.CHEMIST, JobType.BOTANIST);
 
         addPreferredRobot(RobotType.CHEFBOT);

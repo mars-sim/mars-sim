@@ -18,7 +18,7 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
     public void testPersonTending() {
         var s = buildSettlement("Fish");
         var b = buildFishery(s);
-        var p = buildPerson("fisherman", s, JobType.BIOLOGIST, b, FunctionType.FISHERY);
+        var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.FISHERY);
         var tank = b.getFishery();
 
         var task = new TendFishTank(p, tank, TendFishTank.TENDING);
@@ -38,7 +38,7 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
     public void testPersonInspecting() {
         var s = buildSettlement("Fish");
         var b = buildFishery(s);
-        var p = buildPerson("fisherman", s, JobType.BIOLOGIST, b, FunctionType.FISHERY);
+        var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.FISHERY);
         var tank = b.getFishery();
         var origScore = tank.getHousekeeping().getAverageInspectionScore();
 
@@ -61,7 +61,7 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
         
         var s = buildSettlement("Fish");
         var b = buildFishery(s);
-        var p = buildPerson("fisherman", s, JobType.BIOLOGIST, b, FunctionType.FISHERY);
+        var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.FISHERY);
         var tank = b.getFishery();
         var origClean = tank.getHousekeeping().getAverageCleaningScore();
 
@@ -80,7 +80,7 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
 
         var s = buildSettlement("Fish");
         var b = buildFishery(s);
-        var p = buildPerson("fisherman", s, JobType.BIOLOGIST, b, FunctionType.FISHERY);
+        var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.FISHERY);
 
         var tank = b.getFishery();
         tank.addFish(tank.getMaxFish() - tank.getNumFish());

@@ -754,7 +754,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</recreation>
 			
 			<research tech-level="2" capacity="2">
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
@@ -1123,7 +1123,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<research tech-level="4" capacity="8">
 				<!-- Sciences that can be researched at the laboratory. -->
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc="2.72" yloc="0.45" />
@@ -1198,7 +1198,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<research tech-level="4" capacity="8">
 				<!-- Sciences that can be researched at the laboratory. -->
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc="2.72" yloc="0.45" />
@@ -1273,7 +1273,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<research tech-level="4" capacity="8">
 				<!-- Sciences that can be researched at the laboratory. -->
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc="2.72" yloc="0.45" />
@@ -1348,7 +1348,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<research tech-level="4" capacity="8">
 				<!-- Sciences that can be researched at the laboratory. -->
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
 					<activity-spot xloc="2.72" yloc="0.45" />
@@ -1464,7 +1464,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</recreation>
 			
 			<research tech-level="2" capacity="2">
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
@@ -1641,7 +1641,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</recreation>
 			
 			<research tech-level="3" capacity="4">
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>
@@ -1714,7 +1714,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="150" room-temperature="20.0" base-mass="3000">
 		<description>
 			The Fish Farm is made of stronger structural and cladding material such as coextruded laminate of polyamide and polyolefin interwoven around
-			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a biology research lab with instruments.
+			an aluminum frame to give rise to a scaffolded retention bladder. It is furnished with a ASTROBIOLOGY research lab with instruments.
 		</description>
 		<power-required base-power="2.0" base-power-down-power="0.2" />
 
@@ -1750,7 +1750,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</recreation>
 			
 			<research tech-level="2" capacity="4">
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<activity>
 					<activity-spot xloc="-1.7" yloc="3.6" />
 					<activity-spot xloc="1.7" yloc="3.6" />
@@ -1831,7 +1831,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</recreation>
 			
 			<research tech-level="2" capacity="4">
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<activity>
 					<activity-spot xloc="1.5" yloc="3.5" />
 					<activity-spot xloc="-1.5" yloc="3.5" />
@@ -4514,7 +4514,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</recreation>
 			
 			<research tech-level="2" capacity="2">
-				<research-specialty name="BIOLOGY" />
+				<research-specialty name="ASTROBIOLOGY" />
 				<research-specialty name="BOTANY" />
 				<research-specialty name="CHEMISTRY" />
 				<activity>

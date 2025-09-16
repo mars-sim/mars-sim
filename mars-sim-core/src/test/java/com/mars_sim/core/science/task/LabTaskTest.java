@@ -49,7 +49,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
 
     public void testPerformPrimaryLabResearch() {
         var s = buildSettlement("Study", true);
-        var study = buildStudyToResearchPhase(s, this, ScienceType.BIOLOGY, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var task  = PerformLaboratoryResearch.createTask(p);
@@ -67,10 +67,10 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
 
     public void testPerformCollabLabResearch() {
         var s = buildSettlement("Study", true);
-        var study = buildStudyToResearchPhase(s, this, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var study = buildStudyToResearchPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
         var prim = study.getPrimaryResearcher();
-        var collab = buildPerson("Collab", s, JobType.BIOLOGIST, prim.getBuildingLocation(), FunctionType.RESEARCH);   
-        study.addCollaborativeResearcher(collab, ScienceType.BIOLOGY);
+        var collab = buildPerson("Collab", s, JobType.ASTROBIOLOGIST, prim.getBuildingLocation(), FunctionType.RESEARCH);   
+        study.addCollaborativeResearcher(collab, ScienceType.ASTROBIOLOGY);
 
         var task  = PerformLaboratoryResearch.createTask(collab);
         assertNotNull("Task created", task);
@@ -107,7 +107,7 @@ public class LabTaskTest extends AbstractMarsSimUnitTest {
     public void testLabMetaTask() {
         var s = buildSettlement("Study", true);
 
-        var study = buildStudyToResearchPhase(s, this, ScienceType.BIOLOGY, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var lmt = new PerformLaboratoryResearchMeta();

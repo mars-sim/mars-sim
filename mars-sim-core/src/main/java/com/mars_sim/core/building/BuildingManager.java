@@ -1659,11 +1659,12 @@ public class BuildingManager implements Serializable {
 	 *
 	 * @param worker   the worker to add.
 	 * @param building the building to add.
+	 * @param type the function type
 	 * @return
 	 */
-	public static boolean addToActivitySpot(Worker worker, Building building, FunctionType functionType) {
+	public static boolean addToActivitySpot(Worker worker, Building building, FunctionType type) {
 		boolean result = false;
-
+		FunctionType functionType = type;
 		Building originBuilding = worker.getBuildingLocation();
 		
 		if (functionType == null) {
@@ -1675,8 +1676,9 @@ public class BuildingManager implements Serializable {
 		}
 		
 		if (originBuilding == null) {
-			// Instantly set the worker's current building and add occupant
-			setToBuilding(worker, building);
+			// Instantly set the worker's current building and add occupant since this worker has
+			// just been added to the settlement or just returned to the settlement from outside
+			setToBuilding(worker, building);	
 		}
 		
 		if (functionType != null) {
@@ -1697,11 +1699,16 @@ public class BuildingManager implements Serializable {
 		else {
 			if (functionType != null) {
 				logger.info(worker, 10_000L, "Unable to claim a " + functionType.getName() + " spot.");
+				return false;
 			}
-			else {
-				logger.info(worker, 10_000L, "Unable to claim a spot.");
-			}
+			else if (type != null) {
+				logger.info(worker, 10_000L, "Unable to claim a spot since functionType is null.");
+				return false;
 				
+			}	
+			
+			// if type is null prior to calling this method in the first time, then it doesn't need to claim a spot.
+			return true;
 		}
 		
 		return result;

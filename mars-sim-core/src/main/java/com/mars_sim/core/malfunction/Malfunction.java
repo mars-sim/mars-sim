@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Malfunction.java
- * @date 2022-06-14
+ * @date 2025-09-12
  * @author Scott Davis
  */
 package com.mars_sim.core.malfunction;
@@ -33,7 +33,7 @@ import com.mars_sim.core.tool.RandomUtil;
 public class Malfunction implements Serializable {
 
 	/**
-	 * Description of Repairer's effort
+	 * Description of Repairer's effort.
 	 */
 	public static class Repairer {
 		private String worker;
@@ -158,7 +158,7 @@ public class Malfunction implements Serializable {
 
 	// Data members
 	private int incidentNum;
-	/* Owner of the Malfuncion */
+	/* Owner of the Malfunction */
 	private MalfunctionManager owner;
 	/* Name */
 	private String name;
@@ -323,7 +323,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Computes the expected work time on a gaussian curve
+	 * Computes the expected work time on a gaussian curve.
 	 *
 	 * @param timeValue
 	 * @return the work time
@@ -548,9 +548,10 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * How has worked on the repair
-	 * @return
-	 * @return Work effort by repairer
+	 * Gets a list of repairers who have worked on this type of malfunction repair.
+	 * 
+	 * @param type
+	 * @return list of repairer
 	 */
 	public List<Repairer> getRepairersEffort(MalfunctionRepairWork type) {
 		RepairWork w = getWorkType(type);
@@ -618,14 +619,14 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Randomly picks one of the scopes that has a proportionally high fatigue
+	 * Randomly picks one of the scopes that has a proportionally high fatigue.
 	 * 
 	 * @return
 	 */
 	private List<MaintenanceScope> pickOneScopeHighFatigue() {
 		double highestFatigue = 0;
 		List<MaintenanceScope> selectedScope = Collections.emptyList();
-//		May add back for debugging: logger.info("Malfunction: " + definition.getSystems());
+		// May add back for debugging: logger.info("Malfunction: " + definition.getSystems())
 		for (String scope: definition.getSystems()) {
 			double sumFatigue = 0;
 			List<MaintenanceScope> list = owner.getMaintenanceScopeList(scope);
@@ -697,7 +698,7 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Get the source of the malfunction.
+	 * Gets the source of the malfunction.
 	 */
 	public Malfunctionable getSource() {
 		return owner.getEntity();
@@ -735,8 +736,14 @@ public class Malfunction implements Serializable {
 		return (1 + incidentNum) % 32;
 	}
 
-
 	public void destroy() {
+		repairParts.clear();
 		repairParts = null;
+		
+		owner = null;
+		definition = null;
+		
+		work.clear();
+		work = null;
 	}
 }

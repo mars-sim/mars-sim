@@ -76,9 +76,9 @@ public class StudyPanel extends WizardPanel {
 		if (MissionType.AREOLOGY == type) 
 			studyScience = ScienceType.AREOLOGY;
 		else if (MissionType.BIOLOGY == type) 
-			studyScience = ScienceType.BIOLOGY;
+			studyScience = ScienceType.ASTROBIOLOGY;
 		else if (MissionType.METEOROLOGY == type) 
-			studyScience = ScienceType.BIOLOGY;
+			studyScience = ScienceType.ASTROBIOLOGY;
 		studyTableModel = new StudyTableModel(studyScience);
 
 		// Create the study table.

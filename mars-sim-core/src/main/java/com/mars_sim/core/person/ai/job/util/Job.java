@@ -143,8 +143,8 @@ public abstract class Job {
 		Collection<Vehicle> parked = settlement.getParkedGaragedVehicles();
 		
 		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
-			if (mission instanceof RoverMission) {
-				Rover rover = ((RoverMission) mission).getRover();
+			if (mission instanceof RoverMission rm) {
+				Rover rover = rm.getRover();
 				if ((rover != null) && !parked.contains(rover)) {
 					result += getRoverScienceScore(rover, type, scale);
 				}
@@ -166,8 +166,8 @@ public abstract class Job {
 		double result = 0D;
 		
 		for (Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
-			if (vehicle instanceof Rover) {
-				result += getRoverScienceScore((Rover) vehicle, type, scale);
+			if (vehicle instanceof Rover r) {
+				result += getRoverScienceScore(r, type, scale);
 			}
 		}
 		

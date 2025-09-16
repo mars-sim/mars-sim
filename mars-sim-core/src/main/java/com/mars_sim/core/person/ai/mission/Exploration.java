@@ -39,7 +39,7 @@ import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
 public class Exploration extends EVAMission
 	implements SiteMission {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, 
+	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.ASTROBIOLOGIST, 
 			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
 	/** default serial id. */

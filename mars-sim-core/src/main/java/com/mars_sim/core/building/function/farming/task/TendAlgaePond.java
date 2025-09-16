@@ -44,7 +44,7 @@ public class TendAlgaePond extends TendHousekeeping {
 	
 	private static final ExperienceImpact IMPACT = new ExperienceImpact(100D,
 													NaturalAttributeType.EXPERIENCE_APTITUDE, false,
-													-1.1D, SkillType.BIOLOGY);
+													-1.1D, SkillType.ASTROBIOLOGY);
 
 	// Data members
 	private double harvestingTime = 0D;

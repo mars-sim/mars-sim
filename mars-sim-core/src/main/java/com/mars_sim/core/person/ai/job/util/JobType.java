@@ -16,13 +16,15 @@ import com.mars_sim.core.tool.Msg;
 
 public enum JobType implements Named{
 
-	ARCHITECT,AREOLOGIST,ASTRONOMER,BIOLOGIST,BOTANIST,
-	CHEF,CHEMIST,COMPUTER_SCIENTIST,DOCTOR,ENGINEER,MATHEMATICIAN,
-	METEOROLOGIST,PHYSICIST,PILOT,POLITICIAN,PSYCHOLOGIST,
-	REPORTER,TECHNICIAN,TRADER;
+	ARCHITECT, AREOLOGIST, ASTRONOMER, ASTROBIOLOGIST, BOTANIST,
+	CHEF, CHEMIST, COMPUTER_SCIENTIST, DOCTOR, ENGINEER, MATHEMATICIAN,
+	METEOROLOGIST, PHYSICIST, PILOT, POLITICIAN, PSYCHOLOGIST,
+	REPORTER, SOCIOLOGIST, TECHNICIAN, TRADER;
 
 	// Internals allows to be built is static initialiser method
+	// Academic subjects
 	private static final Set<JobType> INTERNAL_ACA = new HashSet<>();
+	// Intellectual subjects
 	private static final Set<JobType> INTERNAL_INT = new HashSet<>();
 
 	/**
@@ -63,11 +65,12 @@ public enum JobType implements Named{
 	 */
 	public static final Set<JobType> SCIENTISTS =
 				Set.of(JobType.AREOLOGIST,
-						JobType.BIOLOGIST,
+						JobType.ASTROBIOLOGIST,
 						JobType.BOTANIST,
 						JobType.CHEMIST,
 						JobType.COMPUTER_SCIENTIST,
-						JobType.PHYSICIST
+						JobType.PHYSICIST,
+						JobType.SOCIOLOGIST
 						);
 
 	static {

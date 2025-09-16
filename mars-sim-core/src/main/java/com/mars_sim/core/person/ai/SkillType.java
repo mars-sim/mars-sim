@@ -15,13 +15,14 @@ import com.mars_sim.core.tool.Msg;
 public enum SkillType {
 
 	
-	// The following is organized in accordance with the subject matter affinity : 
-	
-	TRADING,CONSTRUCTION,MECHANICS,PILOTING,EVA_OPERATIONS,
-	PROSPECTING,METEOROLOGY,AREOLOGY,ASTRONOMY,CHEMISTRY,
-	MATHEMATICS,COMPUTING,PHYSICS,MATERIALS_SCIENCE,COOKING,
-	BOTANY,BIOLOGY,MEDICINE,PSYCHOLOGY,MANAGEMENT,
-	REPORTING,ORGANISATION;
+	// Note: The following listing is organized in accordance with the subject matter affinity : 
+	// DO NOT alter the order
+	TRADING, CONSTRUCTION, MECHANICS, PILOTING, EVA_OPERATIONS,
+	PROSPECTING, METEOROLOGY, AREOLOGY, ASTRONOMY, CHEMISTRY,
+	MATHEMATICS, COMPUTING, PHYSICS, MATERIALS_SCIENCE, COOKING,
+	BOTANY, ASTROBIOLOGY, MEDICINE, PSYCHOLOGY, MANAGEMENT,
+	REPORTING, ORGANISATION;
+	// Note: The above listing is organized in accordance with the subject matter affinity 
 	
 	private String name;
 

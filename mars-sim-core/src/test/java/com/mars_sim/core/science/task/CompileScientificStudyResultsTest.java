@@ -29,7 +29,7 @@ public class CompileScientificStudyResultsTest extends AbstractMarsSimUnitTest {
 
     public void testCreateTask() {
         var s = buildSettlement("Research");
-        var study = buildStudyToPaperPhase(s, this, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var study = buildStudyToPaperPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
         var p = study.getPrimaryResearcher();
 
         var t = CompileScientificStudyResults.createTask(p);
@@ -45,7 +45,7 @@ public class CompileScientificStudyResultsTest extends AbstractMarsSimUnitTest {
 
     public void testMetaTaskAsPrimary() {
         var s = buildSettlement("Research", true);
-        var study = buildStudyToPaperPhase(s, this, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var study = buildStudyToPaperPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
         var p = study.getPrimaryResearcher();
 
         var mt = new CompileScientificStudyResultsMeta();
@@ -56,7 +56,7 @@ public class CompileScientificStudyResultsTest extends AbstractMarsSimUnitTest {
 
     public void testMetaTaskAsCollab() {
         var s = buildSettlement("Research", true);
-        var study = buildStudyToPaperPhase(s, this, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var study = buildStudyToPaperPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
         var p = buildPerson("Collab", s);
         study.addCollaborativeResearcher(p, study.getScience());
 

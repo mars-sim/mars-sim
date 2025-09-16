@@ -40,7 +40,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		
 		setFavorite(FavoriteType.FIELD_WORK);
 		setTrait(TaskTrait.ACADEMIC);
-		setPreferredJob(JobType.AREOLOGIST, JobType.BIOLOGIST,
+		setPreferredJob(JobType.AREOLOGIST, JobType.ASTROBIOLOGIST,
 						JobType.BOTANIST, JobType.CHEMIST);
 		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
 				RoleType.CREW_SCIENTIST);

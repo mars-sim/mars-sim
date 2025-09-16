@@ -41,7 +41,7 @@ public class BiologyFieldStudy extends FieldStudyMission {
 	 */
 	public BiologyFieldStudy(Person startingPerson, boolean needsReview) {
 		super(MissionType.BIOLOGY, startingPerson,
-			  ScienceType.BIOLOGY, FIELD_SITE_TIME, needsReview);
+			  ScienceType.ASTROBIOLOGY, FIELD_SITE_TIME, needsReview);
 
 	}
 
@@ -62,7 +62,7 @@ public class BiologyFieldStudy extends FieldStudyMission {
 
 	@Override
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {
-		return ScientificStudyFieldWork.createFieldStudy(ScienceType.BIOLOGY, person, leadResearcher,
+		return ScientificStudyFieldWork.createFieldStudy(ScienceType.ASTROBIOLOGY, person, leadResearcher,
 														study, vehicle);
 	}
 

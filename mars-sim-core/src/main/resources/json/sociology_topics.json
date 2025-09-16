@@ -1,0 +1,18 @@
+{
+	"subject": "Sociology",
+	"topics": [
+			{"topic": "Treatment and Discrimination"},
+			{"topic": "Isolated Space Settlements"},
+			{"topic": "Socialization of Colonists under a Single Culture"},
+			{"topic": "Evolution of Class Systems"},
+			{"topic": "Complexities of Human Interaction and Societal Development"},	
+			{"topic": "Risk of Mental Health Issues and Behavioral Disruptions"},
+			{"topic": "Design of Habitat Structures Incorporating Social Needs"}, 
+			{"topic": "Challenges of Human Reproduction in Offworld Settlements"},
+			{"topic": "Legal and Ethical Considerations in Offworld Settlements"},						
+			{"topic": "Rise of Economic Qnequalities among Settlements"},
+			{"topic": "Long-Term Societal and Cultural Evolution"},
+			{"topic": "Independence from Earth's Authorities"},	
+			{"topic": "Impact of Artificial Intelligence on Societies"}
+	]
+}

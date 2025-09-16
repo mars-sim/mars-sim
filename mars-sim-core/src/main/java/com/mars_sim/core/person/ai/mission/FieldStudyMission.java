@@ -33,7 +33,7 @@ import com.mars_sim.core.vehicle.Rover;
  */
 public abstract class FieldStudyMission extends EVAMission {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.BIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
+	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.ASTROBIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

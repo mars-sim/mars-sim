@@ -18,7 +18,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.Architect;
 import com.mars_sim.core.person.ai.job.Areologist;
 import com.mars_sim.core.person.ai.job.Astronomer;
-import com.mars_sim.core.person.ai.job.Biologist;
+import com.mars_sim.core.person.ai.job.Astrobiologist;
 import com.mars_sim.core.person.ai.job.Botanist;
 import com.mars_sim.core.person.ai.job.Chef;
 import com.mars_sim.core.person.ai.job.Chemist;
@@ -32,6 +32,7 @@ import com.mars_sim.core.person.ai.job.Pilot;
 import com.mars_sim.core.person.ai.job.Politician;
 import com.mars_sim.core.person.ai.job.Psychologist;
 import com.mars_sim.core.person.ai.job.Reporter;
+import com.mars_sim.core.person.ai.job.Sociologist;
 import com.mars_sim.core.person.ai.job.Technician;
 import com.mars_sim.core.person.ai.job.Trader;
 import com.mars_sim.core.robot.RobotType;
@@ -80,7 +81,7 @@ public final class JobUtil {
 		jobs.add(new Architect());
 		jobs.add(new Areologist());
 		jobs.add(new Astronomer());
-		jobs.add(new Biologist());
+		jobs.add(new Astrobiologist());
 		jobs.add(new Botanist());
 		
 		jobs.add(new Chef());
@@ -97,6 +98,7 @@ public final class JobUtil {
 		
 		jobs.add(new Psychologist());
 		jobs.add(new Reporter());
+		jobs.add(new Sociologist());
 		jobs.add(new Technician());
 		jobs.add(new Trader());
 		

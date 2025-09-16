@@ -486,7 +486,7 @@ public class ChainOfCommand implements Serializable {
 		case CHIEF_OF_AGRICULTURE:
 			requiredSkills = List.of(
 									SkillType.BOTANY,
-									SkillType.BIOLOGY,
+									SkillType.ASTROBIOLOGY,
 									SkillType.CHEMISTRY,
 									SkillType.COOKING,
 									SkillType.TRADING
@@ -541,7 +541,7 @@ public class ChainOfCommand implements Serializable {
 		case CHIEF_OF_SAFETY_HEALTH_SECURITY:
 			requiredSkills = List.of(
 									SkillType.AREOLOGY,
-									SkillType.BIOLOGY,
+									SkillType.ASTROBIOLOGY,
 									SkillType.CONSTRUCTION,
 									SkillType.EVA_OPERATIONS,
 									SkillType.MEDICINE,
@@ -554,7 +554,7 @@ public class ChainOfCommand implements Serializable {
 			requiredSkills = List.of(
 									SkillType.AREOLOGY,
 									SkillType.ASTRONOMY,
-									SkillType.BIOLOGY,
+									SkillType.ASTROBIOLOGY,
 									SkillType.BOTANY,									
 									SkillType.CHEMISTRY,
 									SkillType.COMPUTING,

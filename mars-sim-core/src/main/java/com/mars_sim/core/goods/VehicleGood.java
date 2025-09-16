@@ -475,7 +475,7 @@ class VehicleGood extends Good {
 			demand /= 1 + JobUtil.numJobs(JobType.AREOLOGIST, settlement);
 		
 		case BIOLOGY ->
-			demand /= 1 + JobUtil.numJobs(JobType.BIOLOGIST, settlement);
+			demand /= 1 + JobUtil.numJobs(JobType.ASTROBIOLOGIST, settlement);
 		
 		case METEOROLOGY ->
 			demand /= 1 + JobUtil.numJobs(JobType.METEOROLOGIST, settlement);
@@ -612,7 +612,7 @@ class VehicleGood extends Good {
 					capacity = 1D;
 
 				if (v.hasLab()) {
-					if (v.getLabTechSpecialties().contains(ScienceType.BIOLOGY)) {
+					if (v.getLabTechSpecialties().contains(ScienceType.ASTROBIOLOGY)) {
 						capacity += v.getLabTechLevel();
 					} else {
 						capacity /= 2D;

@@ -18,7 +18,7 @@ public class TendAlgaePondTest extends AbstractMarsSimUnitTest {
     public void testPersonTending() {
         var s = buildSettlement("Fish");
         var b = buildAlgaePond(s);
-        var p = buildPerson("fisherman", s, JobType.BIOLOGIST, b, FunctionType.ALGAE_FARMING);
+        var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.ALGAE_FARMING);
         var pond = b.getAlgae();
 
         var task = new TendAlgaePond(p, pond, TendAlgaePond.TENDING);
@@ -35,7 +35,7 @@ public class TendAlgaePondTest extends AbstractMarsSimUnitTest {
     public void testPersonHarvest() {
         var s = buildSettlement("Fish");
         var b = buildAlgaePond(s);
-        var p = buildPerson("fisherman", s, JobType.BIOLOGIST, b, FunctionType.ALGAE_FARMING);
+        var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.ALGAE_FARMING);
         var pond = b.getAlgae();
         var shortfall = (pond.getIdealAlgae() * 2) - pond.getCurrentAlgae();
         pond.addAlgae(shortfall);

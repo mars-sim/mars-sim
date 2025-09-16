@@ -11,12 +11,12 @@ import com.mars_sim.core.structure.Settlement;
 public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest {
     public void testCreateTask() {
         Settlement s = buildSettlement("Research", true);
-        var research = createActiveResearch(s, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var research = createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
         var assistant = buildPerson("Helper", s);
-        assistant.setJob(JobType.BIOLOGIST, "Boss");
+        assistant.setJob(JobType.ASTROBIOLOGIST, "Boss");
         assistant.getPhysicalCondition().setPerformanceFactor(1);
-        assistant.getSkillManager().addNewSkill(SkillType.BIOLOGY, 1); // Must have higher skill
+        assistant.getSkillManager().addNewSkill(SkillType.ASTROBIOLOGY, 1); // Must have higher skill
 
         var t = AssistScientificStudyResearcher.createTask(assistant);
         assertFalse("Task is not false", t.isDone());
@@ -39,12 +39,12 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
 
     public void testMetaTask() {
         Settlement s = buildSettlement("Research", true);
-        createActiveResearch(s, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
         var p = buildPerson("Helper", s);
-        p.setJob(JobType.BIOLOGIST, "Boss");
+        p.setJob(JobType.ASTROBIOLOGIST, "Boss");
         p.getPhysicalCondition().setPerformanceFactor(1);
-        p.getSkillManager().addNewSkill(SkillType.BIOLOGY, 1); // Must have higher skill
+        p.getSkillManager().addNewSkill(SkillType.ASTROBIOLOGY, 1); // Must have higher skill
 
         var mt = new AssistScientificStudyResearcherMeta();
         var tasks = mt.getTaskJobs(p);
@@ -54,12 +54,12 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
 
     public void testMetaTaskTooSkilled() {
         Settlement s = buildSettlement("Research", true);
-        createActiveResearch(s, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
         var p = buildPerson("Helper", s);
-        p.setJob(JobType.BIOLOGIST, "Boss");
+        p.setJob(JobType.ASTROBIOLOGIST, "Boss");
         p.getPhysicalCondition().setPerformanceFactor(1);
-        p.getSkillManager().addNewSkill(SkillType.BIOLOGY, 10); // Must have higher skill
+        p.getSkillManager().addNewSkill(SkillType.ASTROBIOLOGY, 10); // Must have higher skill
 
         var mt = new AssistScientificStudyResearcherMeta();
         var tasks = mt.getTaskJobs(p);

@@ -50,7 +50,7 @@ public class StudyFieldSamples extends LabTask {
 
 
 	public static final Set<ScienceType> FIELD_SCIENCES = Set.of(ScienceType.AREOLOGY,
-												ScienceType.ASTRONOMY, ScienceType.BIOLOGY,
+												ScienceType.ASTRONOMY, ScienceType.ASTROBIOLOGY,
 												ScienceType.CHEMISTRY, ScienceType.ENGINEERING,
 												ScienceType.METEOROLOGY, ScienceType.PHYSICS);
 	/**

@@ -28,7 +28,7 @@ public class AssignmentHistoryTest extends AbstractMarsSimUnitTest {
 
         int j = 1;
         AssignmentHistory jh = p.getJobHistory();
-        JobType [] jobs = {JobType.ARCHITECT, JobType.BIOLOGIST, JobType.MATHEMATICIAN};
+        JobType [] jobs = {JobType.ARCHITECT, JobType.ASTROBIOLOGIST, JobType.MATHEMATICIAN};
         for(JobType job : jobs) {
             clock.setMarsTime(base.addTime(j * 100));  
             jh.saveJob(job, "Name" + j, AssignmentType.APPROVED, "Case");

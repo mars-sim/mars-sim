@@ -25,7 +25,7 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
         var s = buildSettlement("Study", true);
         buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var p = buildPerson("Biologist", s);
-        p.setJob(JobType.BIOLOGIST, "Boss");
+        p.setJob(JobType.ASTROBIOLOGIST, "Boss");
         var mt = new ProposeScientificStudyMeta();
 
         var mayorTasks = mt.getTaskJobs(p);

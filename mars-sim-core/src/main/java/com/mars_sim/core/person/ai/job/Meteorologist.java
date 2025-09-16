@@ -49,7 +49,7 @@ public class Meteorologist extends Job {
 		// Add (labspace * tech level / 2) for all labs with meteorology specialties.
 		result += getBuildingScienceDemand(settlement, ScienceType.METEOROLOGY, 12D);
 
-		result = (result + population / 12D) / 2.0;
+		result = (result + population / 20D) / 2.0;
 				
 		return result;
 	}

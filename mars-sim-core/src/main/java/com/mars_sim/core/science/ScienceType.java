@@ -26,11 +26,11 @@ public enum ScienceType {
 	/** The study of the evolution of the planet Mars. */
 	AREOLOGY("ARE", SkillType.AREOLOGY, JobType.AREOLOGIST),
 
+	/** Concerned with the processes of life from micro to macro scale. */
+	ASTROBIOLOGY("BIO", SkillType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST),
+	
 	/** Keeping track of heavenly bodies. */
 	ASTRONOMY("AST", SkillType.ASTRONOMY, JobType.ASTRONOMER),
-
-	/** Concerned with the processes of life from micro to macro scale. */
-	BIOLOGY("BIO", SkillType.BIOLOGY, JobType.BIOLOGIST),
 
 	/** How to grow plants. */
 	BOTANY("BOT", SkillType.BOTANY, JobType.BOTANIST),
@@ -47,7 +47,7 @@ public enum ScienceType {
 	/** Provides fundamental basics for all sciences. */
 	MATHEMATICS("MAT", SkillType.MATHEMATICS, JobType.MATHEMATICIAN),
 
-	/** How to tell sick from healthy. */
+	/** Understanding, diagnosing, managing disease and ailments. */
 	MEDICINE("MED", SkillType.MEDICINE, JobType.DOCTOR),
 
 	/** Weather forecasting, climate modeling. */
@@ -56,9 +56,16 @@ public enum ScienceType {
 	/** Laws of nature. Study of forces and mechanics. */
 	PHYSICS("PHY", SkillType.PHYSICS, JobType.PHYSICIST),
 
+	/** The Study of the politics.  */
+	POLTICS("POL", SkillType.MANAGEMENT, JobType.POLITICIAN),
+	
 	/** The Study of the mind and behavior.  */
-	PSYCHOLOGY("PSY", SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST);
+	PSYCHOLOGY("PSY", SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST),
 
+	/** The Study of the social aspects of human beings.  */
+	SOCIOLOGY("SOC", SkillType.ORGANISATION, JobType.SOCIOLOGIST);
+	
+	
 
 	/** A list of science subjects for research projects. */
 	private static List<ScienceType> sciencesSubjects = new ArrayList<>();
@@ -95,7 +102,7 @@ public enum ScienceType {
 	static  {
 		sciencesSubjects.add(AREOLOGY);
 		sciencesSubjects.add(ASTRONOMY);
-		sciencesSubjects.add(BIOLOGY);
+		sciencesSubjects.add(ASTROBIOLOGY);
 		sciencesSubjects.add(BOTANY);
 		sciencesSubjects.add(CHEMISTRY);
 		sciencesSubjects.add(COMPUTING);
@@ -103,7 +110,9 @@ public enum ScienceType {
 		sciencesSubjects.add(MEDICINE);
 		sciencesSubjects.add(METEOROLOGY);
 		sciencesSubjects.add(PHYSICS);
+		sciencesSubjects.add(POLTICS);
 		sciencesSubjects.add(PSYCHOLOGY);
+		sciencesSubjects.add(SOCIOLOGY);
 	}
 	
 	/** 
@@ -119,7 +128,7 @@ public enum ScienceType {
 		// Configure collaborative sciences.
 		Science areology = collabSciences.get(ScienceType.AREOLOGY);
 		Science astronomy = collabSciences.get(ScienceType.ASTRONOMY);
-		Science biology = collabSciences.get(ScienceType.BIOLOGY);
+		Science astrobiology = collabSciences.get(ScienceType.ASTROBIOLOGY);
 		Science botany = collabSciences.get(ScienceType.BOTANY);
 		Science chemistry = collabSciences.get(ScienceType.CHEMISTRY);
 		Science computing = collabSciences.get(ScienceType.COMPUTING);
@@ -129,18 +138,22 @@ public enum ScienceType {
 		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
 		Science physics = collabSciences.get(ScienceType.PHYSICS);
 		Science psychology = collabSciences.get(ScienceType.PSYCHOLOGY);
-
-		areology.setCollaborativeSciences(new Science[]    { biology, chemistry, physics, meteorology });
-		astronomy.setCollaborativeSciences(new Science[]   { biology, chemistry, mathematics, physics });
-		biology.setCollaborativeSciences(new Science[]     { botany, chemistry, mathematics, medicine });
-		botany.setCollaborativeSciences(new Science[]      { biology, chemistry, medicine });
-		chemistry.setCollaborativeSciences(new Science[]   { biology, mathematics, medicine });
+		Science politics = collabSciences.get(ScienceType.POLTICS);
+		Science sociology = collabSciences.get(ScienceType.SOCIOLOGY);
+		
+		areology.setCollaborativeSciences(new Science[]    { astrobiology, chemistry, physics, meteorology });
+		astronomy.setCollaborativeSciences(new Science[]   { astrobiology, chemistry, mathematics, physics, computing});
+		astrobiology.setCollaborativeSciences(new Science[]    { botany, chemistry, mathematics, medicine, astronomy });
+		botany.setCollaborativeSciences(new Science[]      { astrobiology, chemistry, medicine });
+		chemistry.setCollaborativeSciences(new Science[]   { astrobiology, mathematics, medicine, astronomy});
 		computing.setCollaborativeSciences(new Science[]   { astronomy, engineering, physics, mathematics, medicine, meteorology });
-		mathematics.setCollaborativeSciences(new Science[] { astronomy, engineering, physics });
-		medicine.setCollaborativeSciences(new Science[]    { biology, botany, chemistry, mathematics });
-		meteorology.setCollaborativeSciences(new Science[] { chemistry, mathematics, physics });
-		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering });
-		psychology.setCollaborativeSciences(new Science[]  { biology, chemistry, medicine });
+		mathematics.setCollaborativeSciences(new Science[] { astronomy, engineering, physics, computing });
+		medicine.setCollaborativeSciences(new Science[]    { astrobiology, botany, chemistry, mathematics });
+		meteorology.setCollaborativeSciences(new Science[] { astronomy, chemistry, mathematics, physics });
+		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering, computing});
+		psychology.setCollaborativeSciences(new Science[]  { psychology, chemistry, medicine, sociology, politics});
+		politics.setCollaborativeSciences(new Science[]  { psychology, sociology});
+		sociology.setCollaborativeSciences(new Science[]  { psychology, politics});
 	}
 
 	static {

@@ -34,7 +34,7 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 
     private static final String BIOLOGY_NAME = Msg.getString("Task.description.biologyFieldWork"); //$NON-NLS-1$
     private static final TaskPhase BIOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.biology"),
-							createPhaseImpact(SkillType.BIOLOGY)); //$NON-NLS-1$
+							createPhaseImpact(SkillType.ASTROBIOLOGY)); //$NON-NLS-1$
 	private static final String AREOLOGY_NAME = Msg.getString("Task.description.areologyFieldWork"); //$NON-NLS-1$
 	private static final TaskPhase AREOLOGY_WORK = new TaskPhase(Msg.getString("Task.phase.fieldWork.areology"), //$NON-NLS-1$
 							createPhaseImpact(SkillType.AREOLOGY));
@@ -80,7 +80,7 @@ public  class ScientificStudyFieldWork extends EVAOperation {
 		TaskPhase fieldwork;
 
 		switch(science) {
-			case BIOLOGY:
+			case ASTROBIOLOGY:
 				name = BIOLOGY_NAME;
 				fieldwork = BIOLOGY_WORK;
 				break;

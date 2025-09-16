@@ -82,6 +82,7 @@
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.9"/>
 				<preference type="MISSION" name="MINING" modifier="3"/>
 				<preference type="SCIENCE" name="AREOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="2"/>
 			</capability>
 		</agenda>
 		
@@ -90,20 +91,20 @@
 				findings="Look for signature of life in soil data"
 				data="Analyze and Cataloging data from various sites">
 			<capability description="Follow the water">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.9"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.9"/>
 				<preference type="SCIENCE" name="BOTANY" modifier="3"/>				
 				<preference type="MISSION" name="COLLECT_ICE" modifier="1.2"/>
-				<preference type="SCIENCE" name="BIOLOGY" modifier="4"/>	
+				<preference type="SCIENCE" name="ASTROBIOLOGY" modifier="4"/>	
 				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>								
 			</capability>
 			<capability description="Search regions capable hosting/sustaining microbial life">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.6"/>			
-				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.6"/>			
+				<preference type="SCIENCE" name="ASTROBIOLOGY" modifier="6"/>
 				<preference type="SCIENCE" name="BOTANY" modifier="6"/>				
 				<preference type="SCIENCE" name="CHEMISTRY" modifier="6"/>				
 			</capability>
 			<capability description="Analyze bio-signatures in rocks and mineral ice">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.8"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.8"/>
 				<preference type="MISSION" name="COLLECT_ICE" modifier="1.4"/>
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
 				<preference type="MISSION" name="MINING" modifier="2"/>
@@ -122,24 +123,24 @@
 				findings="Identify on the various health hazards for human beings living on Mars"
 				data="Classify environmental hazards for surface operation">
 			<capability description="Investigate biological hazards">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.6"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.6"/>
 				<preference type="MISSION" name="COLLECT_ICE" modifier="1.2"/>
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.4"/>
-				<preference type="SCIENCE" name="BIOLOGY" modifier="7"/>
+				<preference type="SCIENCE" name="ASTROBIOLOGY" modifier="7"/>
 				<preference type="SCIENCE" name="BOTANY" modifier="5"/>				
 				<preference type="SCIENCE" name="MEDICINE" modifier="6"/>				
 			</capability>
 			<capability description="Examining microbes in water ice">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.4"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.4"/>
 				<preference type="MISSION" name="COLLECT_ICE" modifier="2"/>
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.2"/>
 				<preference type="MISSION" name="MINING" modifier="1"/>
-				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>
+				<preference type="SCIENCE" name="ASTROBIOLOGY" modifier="6"/>
 				<preference type="SCIENCE" name="BOTANY" modifier="3"/>								
 			</capability>
 			<capability description="Observe radiation risks, limits and exposures">
 				<preference type="MISSION" name="AREOLOGY" modifier="1.8"/>
-				<preference type="MISSION" name="BIOLOGY" modifier="1.2"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.2"/>
 				<preference type="MISSION" name="COLLECT_ICE" modifier="1.1"/>
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.1"/>
 				<preference type="SCIENCE" name="MEDICINE" modifier="9"/>
@@ -161,7 +162,7 @@
 				<preference type="SCIENCE" name="CHEMISTRY" modifier="7"/>							
 			</capability>
 			<capability description="Characterize radiation countermeasures">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.8"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.8"/>
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.3"/>
 				<preference type="SCIENCE" name="MEDICINE" modifier="5"/>
 			</capability>
@@ -180,7 +181,7 @@
 			</capability>
 			<capability description="Study terraforming Mars environment">
 				<preference type="MISSION" name="AREOLOGY" modifier="1.3"/>
-				<preference type="MISSION" name="BIOLOGY" modifier="1.3"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.3"/>
 				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
 				<preference type="SCIENCE" name="CHEMISTRY" modifier="3"/>
 				<preference type="SCIENCE" name="AREOLOGY" modifier="7"/>				
@@ -217,7 +218,8 @@
 			</capability>
 			<capability description="Analyze meteorite fragments">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>			
-				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>		
+				<preference type="SCIENCE" name="PHYSICS" modifier="6"/>		
+				<preference type="SCIENCE" name="CHEMISTRY" modifier="4"/>	
 			</capability>					
 			<capability description="Core drill rock data from selected locations">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.9"/>
@@ -270,7 +272,7 @@
 			<capability description="Identify methods of hazard wastes management">
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="4"/>
 				<preference type="SCIENCE" name="MEDICINE" modifier="5"/>	
-				<preference type="SCIENCE" name="BIOLOGY" modifier="5"/>						
+				<preference type="SCIENCE" name="ASTROBIOLOGY" modifier="5"/>						
 			</capability>
 			<capability description="Integrate hardware equipment and computational tools">
 				<preference type="MISSION" name="TRADING" modifier="1.1"/>
@@ -287,7 +289,7 @@
 				data="Analyze structural integrity of geological features for building settlements in this region">
 			<capability description="Engineer soil capable of hosting and sustaining organic microbial life">
 				<preference type="MISSION" name="COLLECT_REGOLITH" modifier="1.3"/>
-				<preference type="SCIENCE" name="BIOLOGY" modifier="6"/>		
+				<preference type="SCIENCE" name="ASTROBIOLOGY" modifier="6"/>		
 				<preference type="SCIENCE" name="BOTANY" modifier="6"/>	
 				<preference type="TASK" name="TendGreenhouse" modifier="1.2"/>							
 			</capability>
@@ -298,11 +300,12 @@
 			</capability>
 			<capability description="Minimize physiological effects of long term exposure to martian environment">
 				<preference type="MISSION" name="AREOLOGY" modifier="1"/>
-				<preference type="MISSION" name="BIOLOGY" modifier="1.5"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.5"/>
 				<preference type="MISSION" name="EXPLORATION" modifier="1.2"/>
 				<preference type="MISSION" name="METEOROLOGY" modifier="1.2"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="5"/>
 				<preference type="SCIENCE" name="MEDICINE" modifier="8"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="4"/>	
 			</capability>
 		</agenda>
 		
@@ -317,14 +320,14 @@
 				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>								
 			</capability>
 			<capability description="Test new flexible space suit micro fabric">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.3"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.3"/>
 				<preference type="SCIENCE" name="ENGINEERING" modifier="8"/>				
 			</capability>
 			<capability description="Improve closed-loop life support system">
 				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>
 				<preference type="SCIENCE" name="MEDICINE" modifier="6"/>	
 				<preference type="SCIENCE" name="BOTANY" modifier="3"/>		
-				<preference type="SCIENCE" name="BIOLOGY" modifier="3"/>															
+				<preference type="SCIENCE" name="ASTROBIOLOGY" modifier="3"/>															
 			</capability>
 		</agenda>
 		
@@ -339,7 +342,7 @@
 				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>								
 			</capability>
 			<capability description="Test radiation-proof fabric and barrier">
-				<preference type="MISSION" name="BIOLOGY" modifier="1.5"/>
+				<preference type="MISSION" name="ASTROBIOLOGY" modifier="1.5"/>
 				<preference type="SCIENCE" name="MEDICINE" modifier="7"/>				
 				<preference type="MISSION" name="TRADE" modifier="1"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>				
@@ -372,7 +375,8 @@
 			<capability description="Characterize dynamics of human interactions">
 				<preference type="MISSION" name="TRADE" modifier="1.4"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
-				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="5"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="7"/>	
 			</capability>
 			<capability description="Extend EVA operations to climbing caves">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.2"/>
@@ -402,6 +406,7 @@
 				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="6"/>	
 			</capability>
 			<capability description="Conceptualize interplanetary transportation network">
 				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
@@ -424,7 +429,8 @@
 			<capability description="Spearhead accelerator group">
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
-				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="4"/>
+				<preference type="SCIENCE" name="POLITICS" modifier="7"/>	
 			</capability>
 			<capability description="Develop space labs and facilitate knowledge transfer">
 				<preference type="SCIENCE" name="ASTRONOMY" modifier="4"/>
@@ -438,6 +444,7 @@
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
 				<preference type="MISSION" name="TRADE" modifier="1.6"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="POLITICS" modifier="6"/>	
 			</capability>
 			<capability description="Establish international partnership in the space sector">
 				<preference type="MISSION" name="DELIVERY" modifier="1.5"/>
@@ -445,6 +452,7 @@
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="4"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
+				<preference type="SCIENCE" name="POLITICS" modifier="5"/>	
 			</capability>
 		</agenda>
 										
@@ -471,11 +479,13 @@
 				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="6"/>	
 			</capability>
 			<capability description="Legislate responsible spaceflight framework and guidelines regarding space debris">
 				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>	
 				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
-				<preference type="SCIENCE" name="PHYSICS" modifier="7"/>
+				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>
+				<preference type="SCIENCE" name="POLITICS" modifier="7"/>	
 			</capability>
 		</agenda>
 
@@ -488,19 +498,19 @@
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="8"/>
-				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="4"/>
 			</capability>
 			<capability description="Level the playing level and create new sponsorship for emerging players">
 				<preference type="MISSION" name="TRADE" modifier="1.3"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>	
-				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>	
-				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>							
+				<preference type="SCIENCE" name="POLITICS" modifier="4"/>										
 			</capability>
 			<capability description="Identify social factors in developing partnership">
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
 				<preference type="MISSION" name="EXPLORATION" modifier="1.3"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="4"/>
 			</capability>
 			<capability description="Develop infrastructure, facility and service as high impact and high visibility initiative ">
 				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
@@ -516,18 +526,18 @@
 				objective="Foster partnership between other nations and space industrial bases to support the sustainable commercialization of space"
 				findings="Measure the successes of ongoing space collaborations" 
 				data="Provide actionable data sets on how nations and corporations benefit from partnership development">
-			<capability description="Test and develop network sensors on common platform">
+			<capability description="Develop groundwork for common space operation platform">
 				<preference type="MISSION" name="EXPLORATION" modifier="1.4"/>
-				<preference type="MISSION" name="MINING" modifier="1.4"/>
-				<preference type="SCIENCE" name="COMPUTING" modifier="8"/>
+				<preference type="MISSION" name="TRADE" modifier="1.4"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="8"/>
 				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
-				<preference type="SCIENCE" name="PHYSICS" modifier="4"/>
+				<preference type="SCIENCE" name="POLITICS" modifier="4"/>
 			</capability>
-			<capability description="Create new opportunities for cooperations">
+			<capability description="Spearhead new projects for cooperations">
 				<preference type="MISSION" name="TRADE" modifier="1.3"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
-				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>								
+				<preference type="SCIENCE" name="POLITICS" modifier="6"/>								
 			</capability>
 			<capability description="Identify human factors in the domain of operational safety">
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
@@ -535,13 +545,15 @@
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="2"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
 				<preference type="SCIENCE" name="MEDICINE" modifier="2"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="5"/>
 			</capability>
-			<capability description="Develop programs and initiatives for space system fusion and integration">
+			<capability description="Develop program initiatives for economic fusion and integration">
 				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
-				<preference type="SCIENCE" name="COMPUTING" modifier="6"/>
-				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
+				<preference type="SCIENCE" name="POLITICS" modifier="4"/>
+				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>
+				<preference type="SCIENCE" name="SOCIOLOGY" modifier="8"/>
 			</capability>
 		</agenda>	
 	</agendas>

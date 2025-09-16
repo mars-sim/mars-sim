@@ -46,11 +46,11 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
 
     public void testMetaTask() {
         var s = buildSettlement("Study", true);
-        var study = buildStudyToPeerReviewPhase(s, ScienceType.BIOLOGY, JobType.BIOLOGIST);
+        var study = buildStudyToPeerReviewPhase(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
         var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
         var r = buildPerson("Reviewer", s);
-        r.setJob(JobType.BIOLOGIST, "Boss");
+        r.setJob(JobType.ASTROBIOLOGIST, "Boss");
         BuildingManager.addToActivitySpot(r, l, FunctionType.RESEARCH);
 
         var mt = new PeerReviewStudyPaperMeta();

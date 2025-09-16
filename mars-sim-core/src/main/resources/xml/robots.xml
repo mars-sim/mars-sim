@@ -52,7 +52,7 @@
 			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="1"/>
-				<skill name="Biology" level="1"/>
+				<skill name="Astrobiology" level="1"/>
 			</skill-list>
 		</robot>
 
@@ -70,7 +70,7 @@
 			</robotic-attribute-list>
 			<skill-list>
 				<skill name="Botany" level="2"/>
-				<skill name="Biology" level="2"/>
+				<skill name="Astrobiology" level="2"/>
 			</skill-list>
 		</robot>
 		

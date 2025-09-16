@@ -790,8 +790,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 			double inspectFactor = (effTimeSinceLastMaint/standardInspectionWindow) + .1D;
 			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
 			double malfunctionChance = time * inspectFactor * wearFactor; // * FREQUENCY;
-//			malfunctionProbability = malfunctionChance;
-//			logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
+
+			// Keep for debugging: logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %")
 			
 			// For one orbit, log10 (1.000_001) * 1000 * 687 is 0.2984. 
 			// This results in ~0.3%, a reasonable lower limit. 
@@ -801,9 +801,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			// This results in 100 % certainty (the upper limit) that it will have a malfunction.
 			
 			malfunctionProbability = 1.0 - Math.exp(-malfunctionChance) ;
-			
-//			malfunctionProbability = Math.log(MathUtils.between(malfunctionChance, MALFUNCTION_LOWER_LIMIT, UPPER_LIMIT));
-//			logger.info(entity, "MalfunctionChance log10: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %");
+			// Keep for debugging: logger.info(entity, "MalfunctionChance log10: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %")
 				
 			boolean hasMal = false;
 			// Check for malfunction due to lack of maintenance and wear condition.
@@ -878,11 +876,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 		// Question: when should numberMaintenances be lower ?
 		
 		double maintenanceChance = malfunctionProbability * (1 + numberMaintenances/5.0) * MAINT_TO_MAL_RATIO;
-//			maintenanceProbability = maintenanceChance;
-//			logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
+		// Need for debugging: logger.info(entity, "maintenanceChance: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %")
 
 		maintenanceProbability = MathUtils.between(maintenanceChance, MAINTENANCE_LOWER_LIMIT, 2 * UPPER_LIMIT);
-//			logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %");
+		// Need for debugging: logger.info(entity, "maintenanceChance log10: " + Math.round(maintenanceChance * 100_000.0)/100_000.0 + " %")
 		
 		// Check for repair items needed due to lack of maintenance and wear condition.
 		if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceProbability)) {

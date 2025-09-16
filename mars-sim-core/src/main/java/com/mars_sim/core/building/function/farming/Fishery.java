@@ -344,8 +344,8 @@ public class Fishery extends Function {
 			   nextFish.nibble(nextWeed);
 		   } 
 		   	    
-		   // Create some new fish, according to the BIRTH_RATE constant
-		   if (fish.size() < maxFish * RandomUtil.getRandomDouble(.9, 1.1)) {
+		   // Create some new fish, according to the FISH_BIRTH_RATE constant
+		   if (fish.size() < maxFish) {
 			   fishBirthCache += FISH_BIRTH_RATE * time * fish.size() * health
 					   * (2 + .01 * RandomUtil.getRandomInt(-15, 15));
 			   if (fishBirthCache > 1) {
@@ -355,8 +355,8 @@ public class Fishery extends Function {
 			   }
 		   }	   
 		   
-		   // Create some new fish, according to the BIRTH_RATE constant
-		   if (weeds.size() < maxWeed * RandomUtil.getRandomDouble(.9, 1.1)) {
+		   // Create some new weed, according to the WEED_BIRTH_RATE constant
+		   if (weeds.size() < maxWeed) {
 			   weedBirthCache += WEED_BIRTH_RATE * time * weeds.size() * health
 					   * (3.5 + .01 * RandomUtil.getRandomInt(-15, 15));
 			   if (weedBirthCache > 1) {
@@ -376,10 +376,10 @@ public class Fishery extends Function {
     public void addFish(int numFish) {
 		for (int i = 0; i < numFish; i++) {
 			// Assume the beginning weight of a baby fish is 1/30 of an adult fish
-			double weight = RandomUtil.getRandomDouble(FISH_OUNCES / 30 *.75, FISH_OUNCES / 30 * 1.25);
-			double eatingRate = RandomUtil.getRandomDouble(weight * EAT_FRACTION *.9, weight * EAT_FRACTION * 1.1);
+			double weight = FISH_OUNCES / 30;
+			double eatingRate = weight * EAT_FRACTION;		
 			fish.add(new Fish(weight,  
-					RandomUtil.getRandomDouble(FISH_GROWTH_RATE *.9, FISH_GROWTH_RATE * 1.1), 
+					FISH_GROWTH_RATE, 
 					eatingRate));
 		}
 
@@ -394,8 +394,8 @@ public class Fishery extends Function {
     public void addWeed(int numWeed) {
 		for (int i = 0; i < numWeed; i++) {
 			// Assume the beginning weight of a baby weed is 1/20 of an adult weed		
-			double weight = RandomUtil.getRandomDouble(WEED_OUNCES *.75 / 20, WEED_OUNCES * 1.25);
-	    	double growthRate = RandomUtil.getRandomDouble(WEED_GROWTH_RATE *.9, WEED_GROWTH_RATE * 1.1);
+			double weight = WEED_OUNCES / 20;
+	    	double growthRate = WEED_GROWTH_RATE;
 	    	weeds.add(new Plant(weight, growthRate));
 		}
 

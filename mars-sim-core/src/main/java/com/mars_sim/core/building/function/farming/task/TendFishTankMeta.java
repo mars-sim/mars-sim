@@ -67,7 +67,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
     public TendFishTankMeta() {
 		super(NAME, WorkerType.BOTH, TaskScope.ANY_HOUR);
 		setFavorite(FavoriteType.TENDING_FARM);
-		setPreferredJob(JobType.BOTANIST, JobType.BIOLOGIST, JobType.CHEMIST);
+		setPreferredJob(JobType.BOTANIST, JobType.ASTROBIOLOGIST, JobType.CHEMIST);
 		setPreferredRole(RoleType.SCIENCE_SPECIALIST, RoleType.CREW_SCIENTIST, RoleType.CHIEF_OF_SCIENCE,
 				RoleType.CHIEF_OF_SUPPLY_RESOURCE);
 		setTrait(TaskTrait.ARTISTIC, TaskTrait.RELAXATION);
