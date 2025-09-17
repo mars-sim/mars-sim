@@ -19,7 +19,9 @@ public class MaintenanceScope implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	/** default logger. */
+	// May add back : private static SimLogger logger = SimLogger.getLogger(MaintenanceScope.class.getName())
+	
 	// Domain members
 	private String scope;
 	private Part part;
@@ -57,7 +59,7 @@ public class MaintenanceScope implements Serializable {
 		return maxNumber;
 	}
 
-	public String getName() {
+	public String getScope() {
 		return scope;
 	}
 	
@@ -69,15 +71,27 @@ public class MaintenanceScope implements Serializable {
 		fatigue += added;
 	}
 	
+	/**
+	 * Resets the fatigue back to zero.
+	 * Note: This is akin to swapping out with a brand new part.
+	 */
 	public void resetFatigue() {
 		fatigue = 0;
 	}
 	
 	/**
-	 * Cleans a part and reduces its fatigue fictitiously.
+	 * Reduces the fatigue.
+	 * 
+	 * @param effort
 	 */
-	public void cleanPart() {
-		fatigue = RandomUtil.getRandomDouble(fatigue * .67, fatigue);
+	public void reduceFatigue(double effort) {
+		double mod = 1 - effort / 125;
+		if (mod < 0)
+			mod = 0;
+		double oldFatigue = fatigue;
+		double newFatigue = RandomUtil.getRandomDouble(oldFatigue * mod, oldFatigue);
+		// May add back for debugging: logger.info(scope + " - " + part.getName() + " : " + Math.round(oldFatigue * 100_000.0)/100_000.0 + " --> " + Math.round(newFatigue * 100_000.0)/100_000.0)
+		fatigue = newFatigue;
 	}
 	
 }

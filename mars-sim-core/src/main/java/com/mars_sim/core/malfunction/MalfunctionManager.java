@@ -844,17 +844,19 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return
 	 */
 	private String pickOneScopeHighFatigue() {
-		double highestFatigue = 0;
+		double highestFatigue = 0D;
 		String selectedScope = null;
 		for (String scope: scopes) {
-			double sumFatigue = 0;
+			double sumFatigue = 0D;
 			List<MaintenanceScope> list = scopeMap.get(scope);
-			for (MaintenanceScope ms: list) {
-				sumFatigue += ms.getFatigue();
-			}
-			if (sumFatigue > highestFatigue) {
-				selectedScope = scope;
-				highestFatigue = sumFatigue;
+			if (list != null) {
+				for (MaintenanceScope ms: list) {
+					sumFatigue += ms.getFatigue();
+				}
+				if (sumFatigue > highestFatigue) {
+					selectedScope = scope;
+					highestFatigue = sumFatigue;
+				}
 			}
 		}
 		return selectedScope;
@@ -882,8 +884,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		// Check for repair items needed due to lack of maintenance and wear condition.
 		if (time > 0 && RandomUtil.lessThanRandPercent(maintenanceProbability)) {
-			// Reset delay back to MAX_DELAY. 
-			delay = MAX_DELAY;
 
 			// Note: call determineNewMaintenanceParts is just checking for the possibility 
 			// of having needed repair parts and doesn't necessarily result in generating parts 
@@ -1370,7 +1370,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (partsNeededForMaintenance == null) {
 			partsNeededForMaintenance = new HashMap<>();
 		}
-		
+		// Select a scope that has high fatigue
 		String selectedScope = pickOneScopeHighFatigue();
 		
 		for (MaintenanceScope maintenance : scopeMap.get(selectedScope)) {
@@ -1409,11 +1409,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 			for (int i=0; i<max; i++) {
 				if (RandomUtil.lessThanRandPercent(prob)) {
 					if (remaining > 0 && remaining >= average) {
-						ms.addFatigue(failureRate * average);
+						ms.addFatigue(failureRate * average / max);
 						remaining -= average;
 					}
 					else if (remaining > 0) {
-						ms.addFatigue(failureRate * remaining);
+						ms.addFatigue(failureRate * remaining / max);
 					}
 				}
 			}
@@ -1421,18 +1421,49 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Resets the value of fatigue back to zero.
+	 * Resets the value of fatigue of the scopes back to zero.
 	 * 
 	 * @param map
 	 */
 	public void resetPartFatigue(Map<MaintenanceScope, Integer> repairedMap) {
-		for (MaintenanceScope ms: repairedMap.keySet()) {
-			// Note: need to rework to match what is in repairedMap to that 
-			ms.resetFatigue();
+		for (MaintenanceScope ms0: repairedMap.keySet()) {
+			
+			String scope = ms0.getScope();
+			
+			if (scopeMap.containsKey(scope)) {
+				for (MaintenanceScope ms1 : scopeMap.get(scope)) {
+					ms1.resetFatigue();
+				}
+			}
 		}
 	}
 	
-
+	/**
+	 * Reduces the fatigue on a chosen scope.
+	 * 
+	 * @param timeFactor
+	 */
+	public void reduceFatigue(double timeFactor) {
+		// Select a scope that has high fatigue
+		String selectedScope = pickOneScopeHighFatigue();
+				
+		if (scopeMap.containsKey(selectedScope)) {
+			List<MaintenanceScope> list = scopeMap.get(selectedScope);
+			Collections.shuffle(list);
+			int size = list.size();
+			// Pick up to 3 parts to inspect and adjust
+			int count = 3;
+			if (size < count)
+				count = size;			
+			double effort = timeFactor / count;
+			
+			for (int i=0; i<count; i++) {
+				// Reduce fatigue on up to 3 parts
+				list.get(i).reduceFatigue(effort);
+			}
+		}
+	}
+	
 	
 	/**
 	 * Looks at the parts needed for maintenance on this entity.

@@ -244,7 +244,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
             for (MaintenanceScope maintenance : mm.getMaintenanceScopeList()) {
 
                 parts.add(maintenance.getPart());
-                systems.add(Conversion.capitalize(maintenance.getName()));          
+                systems.add(Conversion.capitalize(maintenance.getScope()));          
                 max.add(maintenance.getMaxNumber());
                 failure.add(maintenance.getPart().getFailureRate());
                 fatigue.add(maintenance.getFatigue());

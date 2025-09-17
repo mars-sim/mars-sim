@@ -172,28 +172,36 @@ public class MaintainGarageVehicle extends Task {
 		}
 
 		// Determine effective work time based on "Mechanic" skill.
-	       double workTime = time;
-	        int skill = effectiveSkillLevel;
-	        if (skill == 0) workTime /= 2;
-	        if (skill > 1)
-	        	workTime = workTime * (1 + .25 * skill);
+		double workTime = time;
+		int skill = effectiveSkillLevel;
+		if (skill == 0) workTime /= 2;
+		if (skill > 1)
+			workTime = workTime * (1 + .25 * skill);
+		
+		double timeCompleted = getTimeCompleted();
+	        
+        // At the beginning of maintenance, identify if anything needs to be replaced
+        if (timeCompleted == 0.0) {
+			// Inspect the entity
+			manager.inspectEntityTrackParts(timeCompleted);
+        }
+        
+		boolean doneInspection = false;
 		
 		// Check if maintenance has already been completed.
 		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
-
-		boolean doneInspection = false;
 
 		if (!finishedMaintenance) {
 			doneInspection = !manager.addInspectionMaintWorkTime(workTime);
 		}
 		
-		if (finishedMaintenance || doneInspection || getTimeCompleted() >= getDuration()) {
+		if (finishedMaintenance || doneInspection || timeCompleted >= getDuration()) {
+			// Reduce fatigue
+			manager.reduceFatigue(timeCompleted * (1 + .25 * skill));
 			
             vehicle.setReservedForMaintenance(false);
             
-            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);
-			// Inspect the entity
-			manager.inspectEntityTrackParts(getTimeCompleted());			
+            vehicle.removeSecondaryStatus(StatusType.MAINTENANCE);			
 			// No more maintenance is needed
 			endTask();
 		}

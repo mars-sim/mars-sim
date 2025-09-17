@@ -57,7 +57,7 @@ public enum ScienceType {
 	PHYSICS("PHY", SkillType.PHYSICS, JobType.PHYSICIST),
 
 	/** The Study of the politics.  */
-	POLTICS("POL", SkillType.MANAGEMENT, JobType.POLITICIAN),
+	POLITICS("POL", SkillType.MANAGEMENT, JobType.POLITICIAN),
 	
 	/** The Study of the mind and behavior.  */
 	PSYCHOLOGY("PSY", SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST),
@@ -110,7 +110,7 @@ public enum ScienceType {
 		sciencesSubjects.add(MEDICINE);
 		sciencesSubjects.add(METEOROLOGY);
 		sciencesSubjects.add(PHYSICS);
-		sciencesSubjects.add(POLTICS);
+		sciencesSubjects.add(POLITICS);
 		sciencesSubjects.add(PSYCHOLOGY);
 		sciencesSubjects.add(SOCIOLOGY);
 	}
@@ -138,7 +138,7 @@ public enum ScienceType {
 		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
 		Science physics = collabSciences.get(ScienceType.PHYSICS);
 		Science psychology = collabSciences.get(ScienceType.PSYCHOLOGY);
-		Science politics = collabSciences.get(ScienceType.POLTICS);
+		Science politics = collabSciences.get(ScienceType.POLITICS);
 		Science sociology = collabSciences.get(ScienceType.SOCIOLOGY);
 		
 		areology.setCollaborativeSciences(new Science[]    { astrobiology, chemistry, physics, meteorology });

@@ -108,7 +108,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		List<SettlementTask> tasks = new ArrayList<>();
 
 		Robot worstRobot = null;
-		double highestScore = 0;
+		double highestScore = 0D;
 		RatingScore score = new RatingScore(0);
 		
 		for (Robot robot : getAllDownRobotCandidates(settlement)) {
@@ -131,7 +131,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		
 		// Reset them
 		worstRobot = null;
-		highestScore = 0;
+		highestScore = 0D;
 		
 		for (Robot robot : getAllGoodRobotCandidates(settlement)) {
 				

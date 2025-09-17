@@ -150,18 +150,26 @@ public class MaintainBuilding extends Task  {
         if (skill > 1)
         	workTime = workTime * (1 + .25 * skill);
 		
+        double timeCompleted = getTimeCompleted();
+        
+        // At the beginning of maintenance, identify if anything needs to be replaced
+        if (timeCompleted == 0.0) {
+			// Inspect the entity
+			manager.inspectEntityTrackParts(timeCompleted);
+        }
+        
+		boolean doneInspection = false;
+
 		// Check if maintenance has already been completed.
 		boolean finishedMaintenance = manager.getEffectiveTimeSinceLastMaintenance() == 0D;
-
-		boolean doneInspection = false;
 
 		if (!finishedMaintenance) {
 			doneInspection = !manager.addInspectionMaintWorkTime(workTime);
 		}
 		
-		if (finishedMaintenance || doneInspection || getTimeCompleted() >= getDuration()) {
-			// Inspect the entity
-			manager.inspectEntityTrackParts(getTimeCompleted());
+		if (finishedMaintenance || doneInspection || timeCompleted >= getDuration()) {
+			// Reduce fatigue
+			manager.reduceFatigue(timeCompleted * (1 + .25 * skill));
 			// No more maintenance is needed
 			endTask();
 		}

@@ -87,7 +87,7 @@ extends EVAOperation {
 	    	    throw new IllegalArgumentException("Task phase is null");
 	    	}
 	    	else if (MAINTAIN.equals(getPhase())) {
-	    	    time = maintenancePhase(time);
+	    	    time = maintainPhase(time);
 	    	}
         }
     	return time;
@@ -101,7 +101,7 @@ extends EVAOperation {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error during maintenance.
 	 */
-	private double maintenancePhase(double time) {
+	private double maintainPhase(double time) {
 		
 		if (checkReadiness(time) > 0)
 			return time;
@@ -120,7 +120,15 @@ extends EVAOperation {
         if (skill == 0) workTime /= 2;
         if (skill > 1)
         	workTime = workTime * (1 + .25 * skill);
- 
+        
+        double timeCompleted = getTimeCompleted();
+        
+        // At the beginning of maintenance, identify if anything needs to be replaced
+        if (timeCompleted == 0.0) {
+			// Inspect the entity
+			manager.inspectEntityTrackParts(timeCompleted);
+        }
+        
 		boolean doneInspection = false;
 
 		// Check if maintenance has already been completed.
@@ -131,8 +139,8 @@ extends EVAOperation {
 		}
 		
 		if (finishedMaintenance || doneInspection) {
-			// Inspect the entity
-			manager.inspectEntityTrackParts(getTimeCompleted());
+			// Reduce fatigue
+			manager.reduceFatigue(timeCompleted * (1 + .25 * skill));
 			// No more maintenance is needed
 			endEVA("Maintenance Done");
 		}

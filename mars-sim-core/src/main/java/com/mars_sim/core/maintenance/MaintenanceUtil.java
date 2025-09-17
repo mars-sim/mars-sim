@@ -100,9 +100,9 @@ public class MaintenanceUtil {
 		
 		score.addBase("maintenance", BASE);
 		// Score is based on condition plus %age overdue
-		score.addModifier("condition", 10 * (100D - condition));
+		score.addModifier("condition", 5 * (100D - condition));
 		
-		score.addModifier("maint.win", 10 * (effectiveTime / inspectionWindow));
+		score.addModifier("maint.win", 5 * (effectiveTime / inspectionWindow));
 		
 		if (partsPosted) {
 			// If needed parts are available, double up the speed of the maintenance
