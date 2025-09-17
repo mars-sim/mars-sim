@@ -62,9 +62,9 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		
 		var container = person.getContainerUnit();
 		if (container instanceof ResourceHolder rh) {
-			if (foodAmount == 0)
+			if (foodAmount < EatDrink.MIN)
 				foodAmount = rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-			if (waterAmount == 0)
+			if (waterAmount < EatDrink.MIN)
 				waterAmount = rh.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		}
 
@@ -101,7 +101,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 			
 			inSettlement = true;
 			needFood = ((hungry || leptinS == 0 || ghrelinS > 0)
-					&& (foodAmount > 0 || mFactor > 1 || dFactor > 1));
+					&& (foodAmount >= EatDrink.MIN || mFactor > 1 || dFactor > 1));
 		}
 		
 		else if (person.isInVehicle()) {
@@ -113,12 +113,12 @@ public class EatDrinkMeta extends FactoryMetaTask {
 
 				// How to make a person walk out of vehicle back to settlement 
 				// if hunger is >500 ?
-				if (foodAmount == 0)
+				if (foodAmount < EatDrink.MIN)
 					foodAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-				if (waterAmount == 0)
+				if (waterAmount < EatDrink.MIN)
 					waterAmount = vehicle.getSettlement().getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 	
-				needFood = (hungry && (foodAmount > 0 || dFactor > 1));
+				needFood = (hungry && (foodAmount >= EatDrink.MIN || dFactor > 1));
 			}
 			else {
 				// One way that prevents a person from eating vehicle food
@@ -127,21 +127,21 @@ public class EatDrinkMeta extends FactoryMetaTask {
 				
 				// Note: if not, it may affect the amount of water/food available 
 				// for the mission
-				if (foodAmount == 0)
+				if (foodAmount < EatDrink.MIN)
 					foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-				if (waterAmount == 0)
+				if (waterAmount < EatDrink.MIN)
 					waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 	
-				if (foodAmount == 0)
+				if (foodAmount < EatDrink.MIN)
 					foodAmount = vehicle.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-				if (waterAmount == 0)
+				if (waterAmount < EatDrink.MIN)
 					waterAmount = vehicle.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 				
-				needFood = (hungry && (foodAmount > 0 || dFactor > 1));
+				needFood = (hungry && (foodAmount >= EatDrink.MIN || dFactor > 1));
 			}
 		}
 
-		needWater = (thirsty && waterAmount > 0);
+		needWater = (thirsty && waterAmount >= EatDrink.MIN);
 
 		// Calculate score
 		RatingScore result = new RatingScore();

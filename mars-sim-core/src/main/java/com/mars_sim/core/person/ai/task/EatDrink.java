@@ -62,7 +62,7 @@ public class EatDrink extends Task {
 	/** The conversion ratio of thirst to one serving of water. */	
 	private static final int THIRST_PER_WATER_SERVING = 450;
 	/** The minimal amount of resource to be retrieved. */
-	private static final double MIN = 0.001;
+	public static final double MIN = 0.001;
 	/** The amount of preserved food for carrying in a person [in kg]. */
 	private static final double PACKED_PRESERVED_FOOD_CARRIED = .2; 
 	/** The stress modified per millisol. */
@@ -671,7 +671,7 @@ public class EatDrink extends Task {
 			proportion = proportion - excess;
 		}
 		
-		if (proportion > MIN) {
+		if (proportion >= MIN) {
 			// Add to cumulativeProportion
 			cumulativeProportion += proportion;
 			// Food amount eaten over this period of time.

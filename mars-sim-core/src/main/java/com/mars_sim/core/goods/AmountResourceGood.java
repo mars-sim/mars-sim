@@ -79,9 +79,9 @@ class AmountResourceGood extends Good {
 	private static final double LIFE_SUPPORT_COST = 0.5;
 	
 	// Modifiers
-    private static final double ICE_VALUE_MODIFIER = 1.5;
+    private static final double ICE_VALUE_MODIFIER = 0.75;
 	private static final double WATER_VALUE_MODIFIER = 0.2;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = 1.2;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
 	private static final double SAND_VALUE_MODIFIER = 0.03;
@@ -1233,7 +1233,7 @@ class AmountResourceGood extends Good {
 			double waterRationLevel = settlement.getRationing().getRationingLevel();
 			double amountNeededSol = personConfig.getWaterUsageRate();
 			demand = amountNeededSol *  WATER_VALUE_MODIFIER 
-					* owner.getCommerceFactor(CommerceType.TRADE)  * (1 + waterRationLevel);
+					* owner.getCommerceFactor(CommerceType.TRADE) * Math.sqrt(1.0 + waterRationLevel);
 		}
 
 		return demand;

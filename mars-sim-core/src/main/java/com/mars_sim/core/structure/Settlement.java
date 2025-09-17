@@ -133,7 +133,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final int RESOURCE_SAMPLING_FREQ = 50; // in msols
 	private static final int RESOURCE_STAT_SOLS = 12;
 
-	private static final int ICE_PROB_FACTOR = 5;
+	private static final int ICE_PROB_FACTOR = 2;
 	private static final int REGOLITH_PROB_FACTOR = 20;
 	
 	private static final int MAX_PROB = 10_000;
@@ -2469,24 +2469,84 @@ public class Settlement extends Unit implements Temporal,
 		
 		double cementAvailable = goodsManager.getSupplyScore(ResourceUtil.CEMENT_ID);
 		
-		int pop = numCitizens;
 		int reserve = MIN_REGOLITH_RESERVE + MIN_SAND_RESERVE;
 		
 		// Note: Derive the probability per pop (regardless the size of the settlement)
 		
-		double totalSupply = (regolithAvailable + sandAvailable + concreteAvailable + cementAvailable) / pop;
-		double totalDemand = regolithDemand + sandDemand + cementDemand + concreteDemand ;
+		double totalSupply = regolithAvailable + sandAvailable + concreteAvailable + cementAvailable;
+		double totalDemand = regolithDemand + sandDemand + cementDemand + concreteDemand;
 		double surplus = totalSupply - reserve - totalDemand;
 		
 		// Note: the lower the collection rate, the higher probability it needs to have to prompt
 		// settlers to go collect regolith more often to compensate the lack of its availability locally.
-		result = Math.max(1, 1 - surplus) * REGOLITH_PROB_FACTOR / regolithCollectionRate;
+		
+		if (surplus <= 0)
+			result = REGOLITH_PROB_FACTOR / regolithCollectionRate * - surplus;
+		else
+			result = REGOLITH_PROB_FACTOR / regolithCollectionRate / surplus;
 		
 		if (result < 0)
 			result = 0;
 		else if (result > MAX_PROB)
 			result = MAX_PROB;
 		
+		return result;
+	}
+
+
+	/**
+	 * Computes the probability of the presence of ice.
+	 *
+	 * @return probability of finding ice
+	 */
+	public double computeIceProbability() {
+		double result = 0;
+		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID);
+		if (iceDemand > ICE_MAX)
+			iceDemand = ICE_MAX;
+		if (iceDemand < 1)
+			iceDemand = 1;
+		
+		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
+		waterDemand = waterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
+		if (waterDemand > WATER_MAX)
+			waterDemand = WATER_MAX;
+		if (waterDemand < 1)
+			waterDemand = 1;
+		
+		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
+		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
+		if (waterDemand > WATER_MAX)
+			waterDemand = WATER_MAX;
+		if (waterDemand < 1)
+			waterDemand = 1;
+		
+		// Compare the available amount of water and ice reserve
+		double iceSupply = goodsManager.getSupplyScore(ResourceUtil.ICE_ID);
+		double waterSupply = goodsManager.getSupplyScore(ResourceUtil.WATER_ID);
+		double brineWaterSupply = goodsManager.getSupplyScore(ResourceUtil.BRINE_WATER_ID);
+		
+		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE;
+
+		// Note: Derive the probability per pop (regardless the size of the settlement)
+		
+		double totalSupply = iceSupply + waterSupply + brineWaterSupply;
+		double totalDemand = iceDemand + waterDemand + brineWaterDemand;
+		double surplus = totalSupply - reserve - totalDemand;
+		
+		// Note: the lower the collection rate, the higher probability it needs to have to prompt
+		// settlers to go collect ice more often to compensate the lack of its availability locally.
+		
+		if (surplus <= 0)
+			result = ICE_PROB_FACTOR / iceCollectionRate * - surplus;
+		else
+			result = ICE_PROB_FACTOR / iceCollectionRate / surplus;
+		
+		if (result < 0)
+			result = 0;
+		else if (result > MAX_PROB)
+			result = MAX_PROB;
+	
 		return result;
 	}
 
@@ -2648,59 +2708,6 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public double getRegolithProbabilityValue() {
 		return regolithProbabilityCache;
-	}
-
-	/**
-	 * Computes the probability of the presence of ice.
-	 *
-	 * @return probability of finding ice
-	 */
-	public double computeIceProbability() {
-		double result = 0;
-		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID);
-		if (iceDemand > ICE_MAX)
-			iceDemand = ICE_MAX;
-		if (iceDemand < 1)
-			iceDemand = 1;
-		
-		double waterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.WATER_ID);
-		waterDemand = waterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
-		if (waterDemand > WATER_MAX)
-			waterDemand = WATER_MAX;
-		if (waterDemand < 1)
-			waterDemand = 1;
-		
-		double brineWaterDemand = goodsManager.getDemandScoreWithID(ResourceUtil.BRINE_WATER_ID);
-		brineWaterDemand = brineWaterDemand * Math.sqrt(1.0 + rationing.getRationingLevel());
-		if (waterDemand > WATER_MAX)
-			waterDemand = WATER_MAX;
-		if (waterDemand < 1)
-			waterDemand = 1;
-		
-		// Compare the available amount of water and ice reserve
-		double iceSupply = goodsManager.getSupplyScore(ResourceUtil.ICE_ID);
-		double waterSupply = goodsManager.getSupplyScore(ResourceUtil.WATER_ID);
-		double brineWaterSupply = goodsManager.getSupplyScore(ResourceUtil.BRINE_WATER_ID);
-		
-		int pop = numCitizens;
-		int reserve = MIN_WATER_RESERVE + MIN_ICE_RESERVE;
-
-		// Note: Derive the probability per pop (regardless the size of the settlement)
-		
-		double totalSupply = (iceSupply + waterSupply + brineWaterSupply) / pop;
-		double totalDemand = (iceDemand + waterDemand + brineWaterDemand);
-		double surplus = totalSupply - reserve - totalDemand;
-		
-		// Note: the lower the collection rate, the higher probability it needs to have to prompt
-		// settlers to go collect ice more often to compensate the lack of its availability locally.
-		result = Math.max(1, 1 - surplus) * ICE_PROB_FACTOR / iceCollectionRate;
-		
-		if (result < 0)
-			result = 0;
-		else if (result > MAX_PROB)
-			result = MAX_PROB;
-	
-		return result;
 	}
 
 	/**
