@@ -6,12 +6,7 @@
  */
 package com.mars_sim.core.building.task;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
@@ -20,7 +15,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -44,9 +38,6 @@ extends EVAOperation {
     private static final String DETAIL = Msg.getString(
     		"Task.description.maintainBuildingEVA.detail") + " "; //$NON-NLS-1$
 
-    private static final String REMOTE_DETAIL = Msg.getString(
-    		"Task.description.maintainBuildingEVA.remote.detail") + " "; //$NON-NLS-1$
-    
     /** Task phases. */
     static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
             "Task.phase.maintain"), createPhaseImpact(SkillType.MECHANICS));
@@ -72,44 +63,19 @@ extends EVAOperation {
         
 		// Check suitability
 		entity = target;
-
-		if (target.isInhabitable()) {
 			
-			String des = REMOTE_DETAIL + entity.getName();
-			setDescription(des);
-			logger.info(worker, 20_000, des + ".");
-			
-			// walk to an admin and remotely inspect the building
-			Settlement s = worker.getSettlement();
-			if (s != null) {
-				List<Building> buildingList = new ArrayList<>(
-						BuildingManager.getBuildingsinSameZone(worker, FunctionType.ADMINISTRATION));
-				int size = buildingList.size();
-				boolean success = false;
-				for (int i=0; i<size && !success; i++) {
-					success = walkToActivitySpotInBuilding(buildingList.get(i), 
-							FunctionType.ADMINISTRATION, false);
-				}
-			}
-		}
-		else {
-			
-			String des = DETAIL + entity.getName();
-			setDescription(des);
-			logger.info(worker, 20_000, des + ".");		
-			
-			// Walk to random location in building.
-			walkToRandomLocInBuilding(target, false);
-			
-			 // Determine location for maintenance.
-	        setOutsideLocation((LocalBoundedObject) entity);
-		}
-    	
+		String des = DETAIL + entity.getName();
+		setDescription(des);
+		logger.info(worker, 20_000, des + ".");		
+	
+		// Determine location for maintenance.
+	    setOutsideLocation((LocalBoundedObject) entity);
+	
 		// Determine the effective skill level
 		effectiveSkillLevel = getEffectiveSkillLevel();
 		
 		// Initialize phase.
-		setPhase(MAINTAIN);
+		// DO NOT call setPhase(MAINTAIN) directly. Let 
 	}
 
     @Override
