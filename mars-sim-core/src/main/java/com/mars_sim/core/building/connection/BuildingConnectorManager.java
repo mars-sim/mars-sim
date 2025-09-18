@@ -43,6 +43,11 @@ public class BuildingConnectorManager implements Serializable {
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
+	private static final String NORTH = "north";
+	private static final String EAST = "east";
+	private static final String SOUTH = "south";
+	private static final String WEST = "west";
+	
 	/**
 	 * This be a bidirectional equality. Ends are stored according to the identifier value.
 	 * A,B == B,A as well as A,B == A,B
@@ -135,37 +140,75 @@ public class BuildingConnectorManager implements Serializable {
 			partialBuildingConnectorList.addAll(processBuildTemplate(bt, buildingManager));
 		}
 
+		processAllPartialBuildingConnectors(partialBuildingConnectorList);
+	}
+	
+	/**
+	 * Processes a building template.
+	 * 
+	 * @param settlement
+	 * @param buildingTemplate
+	 */
+	public void processBuildingTemplate(Settlement settlement, BuildingTemplate buildingTemplate) {
+		
+		BuildingManager buildingManager = settlement.getBuildingManager();
+
+		// Create partial building connector list from building connection templates.
+		List<PartialBuildingConnector> partialBuildingConnectorList = new ArrayList<>();
+
+		partialBuildingConnectorList.addAll(processBuildTemplate(buildingTemplate, buildingManager));
+
+		processOnePartialBuildingConnector(partialBuildingConnectorList);
+	}
+	
+	/**
+	 * Processes just one partial building connector.
+	 * 
+	 * @param partialBuildingConnectorList
+	 */
+	private void processOnePartialBuildingConnector(List<PartialBuildingConnector> partialBuildingConnectorList) {
+		PartialBuildingConnector partialConnector = partialBuildingConnectorList.remove(0);
+		PartialBuildingConnector foundMatch = findConnectorMatch(partialConnector, partialBuildingConnectorList);
+
+		if (foundMatch != null) {
+				BuildingConnector buildingConnector = new BuildingConnector(partialConnector.building,
+						partialConnector.pos, partialConnector.facing,
+						foundMatch.building, foundMatch.pos, 
+						foundMatch.facing);
+				addBuildingConnection(buildingConnector);
+				partialBuildingConnectorList.remove(foundMatch);
+		} 
+		else {
+			throw new IllegalStateException(
+					settlement.getName() + " - Missing/Invalid PartialBuildingConnector(s). "
+					+ partialConnector.building.getName()
+					+ " [templateID: " + partialConnector.building.getTemplateID() 
+					+ "  building name: " + partialConnector.building.getName()
+					+ "  pos: " + partialConnector.pos
+					+ "  facing: " + partialConnector.facing
+					+ "  connectToBuilding: " + partialConnector.connectToBuilding
+					+ "]  partialConnectorLoc: " + partialConnector.pos
+					+ "  List size: " + partialBuildingConnectorList.size()
+					 + ".");
+		}	
+	}
+	
+	/**
+	 * Processes all partial building connectors.
+	 * 
+	 * @param partialBuildingConnectorList
+	 */
+	private void processAllPartialBuildingConnectors(List<PartialBuildingConnector> partialBuildingConnectorList) {
+		
 		// Match up partial connectors to create building connectors.
 		while (!partialBuildingConnectorList.isEmpty()) {
-			PartialBuildingConnector partialConnector = partialBuildingConnectorList.remove(0);
-			PartialBuildingConnector foundMatch = findConnectorMatch(partialConnector, partialBuildingConnectorList);
-
-			if (foundMatch != null) {
-					BuildingConnector buildingConnector = new BuildingConnector(partialConnector.building,
-							partialConnector.pos, partialConnector.facing,
-							foundMatch.building, foundMatch.pos, 
-							foundMatch.facing);
-					addBuildingConnection(buildingConnector);
-					partialBuildingConnectorList.remove(foundMatch);
-			} 
-			else {
-				throw new IllegalStateException(
-						settlement.getName() + " - Missing/Invalid PartialBuildingConnector(s). "
-						+ partialConnector.building.getName()
-						+ " [templateID: " + partialConnector.building.getTemplateID() 
-						+ "  building name: " + partialConnector.building.getName()
-						+ "  pos: " + partialConnector.pos
-						+ "  facing: " + partialConnector.facing
-						+ "  connectToBuilding: " + partialConnector.connectToBuilding
-						+ "]  partialConnectorLoc: " + partialConnector.pos
-						+ "  List size: " + partialBuildingConnectorList.size()
-						 + ".");
-			}
+			processOnePartialBuildingConnector(partialBuildingConnectorList);
 		}
 	}
 
 	/**
-	 * Find the best match for a partial connector in the pool of unmatched connectors
+	 * Finds the best match for a partial connector in the pool of unmatched connectors.
+	 * 
 	 * @param seed
 	 * @param unmatched
 	 * @return
@@ -175,7 +218,7 @@ public class BuildingConnectorManager implements Serializable {
 
 		LocalPosition partialConnectorLoc = seed.pos;
 
-		// Fitler current unmatched connectors to find those that match the seed
+		// Filter current unmatched connectors to find those that match the seed
 		List<PartialBuildingConnector> validPartialConnectors = unmatched.stream()
 				.filter(pc -> pc.building.equals(seed.connectToBuilding)
 						&& pc.connectToBuilding.equals(seed.building))
@@ -198,7 +241,8 @@ public class BuildingConnectorManager implements Serializable {
 
 	/**
 	 * This processes a building template and creates a set of partial building connectors
-	 * in the correct relative position and reference the correct other Building
+	 * in the correct relative position and reference the correct other Building.
+	 * 
 	 * @param buildingTemplate
 	 * @param buildingManager
 	 * @return
@@ -236,83 +280,83 @@ public class BuildingConnectorManager implements Serializable {
 			String hatchFace = connectionTemplate.getHatchFace();
 			if (hatchFace != null) {
 				if (bFacing == 0) {
-					if (hatchFace.equalsIgnoreCase("north")) {
+					if (hatchFace.equalsIgnoreCase(NORTH)) {
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(0, halfL);
 					}
-					else if (hatchFace.equalsIgnoreCase("east")) {
+					else if (hatchFace.equalsIgnoreCase(EAST)) {
 						connectionFacing = 90;
 						connectionPosn = new LocalPosition(-halfW, 0);
 					}
-					else if (hatchFace.equalsIgnoreCase("south")) {
+					else if (hatchFace.equalsIgnoreCase(SOUTH)) {
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(0, -halfL);
 					}
-					else if (hatchFace.equalsIgnoreCase("west")) {
+					else if (hatchFace.equalsIgnoreCase(WEST)) {
 						connectionFacing = 90;
 						connectionPosn = new LocalPosition(halfW, 0);
 					}
 				}
 				else if (bFacing == 90) {
-					if (hatchFace.equalsIgnoreCase("north")) {
+					if (hatchFace.equalsIgnoreCase(NORTH)) {
 						// verified as good
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(halfW, 0);
 					}
-					else if (hatchFace.equalsIgnoreCase("east")) {
+					else if (hatchFace.equalsIgnoreCase(EAST)) {
 						// verified as good
 						connectionFacing = 90;
 						connectionPosn = new LocalPosition(0, halfL);
 					}
-					else if (hatchFace.equalsIgnoreCase("south")) {
+					else if (hatchFace.equalsIgnoreCase(SOUTH)) {
 						// verified as good
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(-halfW, 0);
 					}
-					else if (hatchFace.equalsIgnoreCase("west")) {
+					else if (hatchFace.equalsIgnoreCase(WEST)) {
 						// verified as good
 						connectionFacing = 90;
 						connectionPosn = new LocalPosition(0, -halfL);
 					}
 				}
 				else if (bFacing == 180) {
-					if (hatchFace.equalsIgnoreCase("north")) {
+					if (hatchFace.equalsIgnoreCase(NORTH)) {
 						// verified as 
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(0, -halfL);
 					}
-					else if (hatchFace.equalsIgnoreCase("east")) {
+					else if (hatchFace.equalsIgnoreCase(EAST)) {
 						// verified as good
 						connectionFacing = 90;
 						connectionPosn = new LocalPosition(halfW, 0);
 					}
-					else if (hatchFace.equalsIgnoreCase("south")) {
+					else if (hatchFace.equalsIgnoreCase(SOUTH)) {
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(0, halfL);
 					}
-					else if (hatchFace.equalsIgnoreCase("west")) {
+					else if (hatchFace.equalsIgnoreCase(WEST)) {
 						// verified as good
 						connectionFacing = 90;
 						connectionPosn = new LocalPosition(-halfW, 0);
 					}
 				}
 				else if (bFacing == 270) {
-					if (hatchFace.equalsIgnoreCase("north")) {
+					if (hatchFace.equalsIgnoreCase(NORTH)) {
 						// verified as good
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(-halfW, 0);
 					}
-					else if (hatchFace.equalsIgnoreCase("east")) {
+					else if (hatchFace.equalsIgnoreCase(EAST)) {
 						// verified as good 
 						connectionFacing = 90;
 						connectionPosn = new LocalPosition(0, -halfL);
 					}
-					else if (hatchFace.equalsIgnoreCase("south")) {
+					else if (hatchFace.equalsIgnoreCase(SOUTH)) {
 						// verified as good
 						connectionFacing = 0;
 						connectionPosn = new LocalPosition(halfW, 0);
 					}
-					else if (hatchFace.equalsIgnoreCase("west")) {
+					else if (hatchFace.equalsIgnoreCase(WEST)) {
 						// verified as good
 						connectionFacing = 90; // both 90 or 270 are fine
 						connectionPosn = new LocalPosition(0, halfL);

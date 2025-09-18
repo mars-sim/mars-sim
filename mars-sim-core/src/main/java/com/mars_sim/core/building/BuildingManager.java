@@ -320,9 +320,8 @@ public class BuildingManager implements Serializable {
 				
 		if (!buildings.contains(newBuilding)
 			&& createBuildingConnections) {
-			List<BuildingTemplate> buildingTemplates = new ArrayList<>();
-			buildingTemplates.add(buildingTemplate);
-			getBuildingConnectorManager().initialize(settlement, buildingTemplates);
+			// Process the building template and make connections with adjacent building
+			getBuildingConnectorManager().processBuildingTemplate(settlement, buildingTemplate);
 		}
 	}
 
