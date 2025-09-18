@@ -286,33 +286,6 @@ public class Walk extends Task {
 		return canExitAllAirlocks(person, walkingSteps);
 	}
 	
-//	/**
-//	 * This is a factory method to create a Walk task if there is a valid path.
-//	 *
-//	 * @param person Person doing the walking
-//	 * @param destPosition FInal destination within an interior object
-//	 * @param destZ Vertical destination
-//	 * @param destObject Destination
-//	 * @return
-//	 */
-//	public static boolean canWalk(Person person, LocalPosition destPosition, LocalBoundedObject destObject) {
-//		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destObject);
-//		return canWalkAllSteps(person, walkingSteps);
-//	}
-//	
-//	/**
-//	 * This is a factory method to create a Walk task if there is a valid path.
-//	 *
-//	 * @param robot Robot doing the walking
-//	 * @param destPosition FInal destination within an interior object
-//	 * @param destZ Vertical destination
-//	 * @param destObject Destination
-//	 * @return
-//	 */
-//	public static boolean canWalk(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
-//		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destObject);
-//		return canWalkAllSteps(robot, walkingSteps);
-//	}
 	
 	/**
 	 * Check if robot can walk to a local destination.
@@ -605,7 +578,7 @@ public class Walk extends Task {
 		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
 		Rover rover = (Rover) worker.getVehicle();
 
-		// TODO: working on resolving NullPointerException
+		// Note: may need to work on resolving NullPointerException
 		if (rover != null) {
 			// Update rover destination if rover has moved and existing destination is no
 			// longer within rover.
@@ -674,79 +647,40 @@ public class Walk extends Task {
 	
 		setDescription(WALKING_OUTSIDE);
 
-		if (person != null) {
-			logger.log(person, Level.FINER, 4000,
-					"Calling walkingExteriorPhase().");
+		logger.log(worker, Level.FINER, 4000,
+				"Calling walkingExteriorPhase().");
 
-			// Check if person has reached destination location.
-			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			if (step.loc.isClose(person.getPosition())) {
-				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-					walkingStepIndex++;
-					setPhase(getWalkingStepPhase());
-				}
-				else {
-					endTask();
-				}
+		// Check if worker has reached destination location.
+		WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
+		if (step.loc.isClose(worker.getPosition())) {
+			if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+				walkingStepIndex++;
+				setPhase(getWalkingStepPhase());
 			}
 			else {
-				if (person.isOutside()) {
-					setDescription(WALKING_OUTSIDE + " toward " + step.loc.getShortFormat());
-
-	        		// Note that addSubTask() will internally check if the task is a duplicate
-					boolean canAdd = addSubTask(new WalkOutside(person, person.getPosition(), step.loc, true));
-					if (!canAdd) {
-						logger.log(person, Level.WARNING, 4_000,
-								". Unable to add subtask WalkOutside.");
-						// Note: may call below many times
-						endTask();
-					}
-				}
-				else {
-					logger.log(person, Level.SEVERE, 5_000,
-							"Not being outside.");
-					endTask();
-				}
+				endTask();
 			}
 		}
-
 		else {
+			if (worker.isOutside()) {
+				setDescription(WALKING_OUTSIDE + " toward " + step.loc.getShortFormat());
 
-			logger.log(robot, Level.SEVERE, 5_000,
-					"Calling walkingExteriorPhase().");
-
-			// Check if robot has reached destination location.
-			WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-			if (step.loc.isClose(robot.getPosition())) {
-				if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-					walkingStepIndex++;
-
-					setPhase(getWalkingStepPhase());
-				}
-				else {
+        		// Note that addSubTask() will internally check if the task is a duplicate
+				boolean canAdd = addSubTask(new WalkOutside(worker, worker.getPosition(), step.loc, true));
+				if (!canAdd) {
+					logger.log(worker, Level.WARNING, 4_000,
+							". Unable to add subtask WalkOutside.");
+					// Note: may call below many times
 					endTask();
 				}
 			}
 			else {
-				if (robot.isOutside()) {
-
-					logger.log(robot, Level.FINER, 4_000,
-							"Outside. Starting WalkOutside.");
-					boolean canUse = addSubTask(new WalkOutside(robot, robot.getPosition(), step.loc, true));
-					if (!canUse) {
-						logger.log(robot, Level.WARNING, 4_000,
-								". Unable to add subtask WalkOutside.");
-						// Note: may call below many times
-						endTask();
-					}
-				}
-				else {
-					logger.log(robot, Level.SEVERE, 5_000,
-							"Already physically outside.");
-					endTask();
-				}
+				logger.log(worker, Level.SEVERE, 5_000,
+						"Not being outside.");
+				endTask();
 			}
 		}
+	
 
 		return 0;
 	}
@@ -919,30 +853,17 @@ public class Walk extends Task {
 		// WARNING: Transferring a person/robot/equipment from a vehicle into a settlement 
 		// can be problematic if no building is assigned.
 		// If exiting a vehicle in a garage, it's recommended using garageBuilding as a destination
-		
-		if (person != null
-			// Exit the rover parked inside a garage onto the settlement
-			&& person.isInVehicleInGarage()
-			// Note: in transfer(), it will automatically switch the destination 
-			//       from building back to settlement
-				&& person.transfer(garageBuilding)) {
-					logger.log(person, Level.INFO, 4_000,
-							"Exited rover " + rover.getName()
-							+ " inside " + garageBuilding + ".");
-					endTask();
-					canExit = true;
-		}
 
-		else if (robot != null 
-			&& robot.isInVehicleInGarage()
-			// Note: in transfer(), it will automatically switch the destination 
-			//       from building back to settlement
-				&& robot.transfer(garageBuilding)) {
-					logger.log(robot, Level.INFO, 4_000,
-							"Exited rover " + rover.getName()
-							+ " inside " + garageBuilding + ".");
-					endTask();
-					canExit = true;
+		// Exit the rover parked inside a garage onto the settlement
+		if (worker.isInVehicleInGarage()
+		// Note: in transfer(), it will automatically switch the destination 
+		//       from building back to settlement
+			&& worker.transfer(garageBuilding)) {
+				logger.log(worker, Level.INFO, 4_000,
+						"Exited rover " + rover.getName()
+						+ " inside " + garageBuilding + ".");
+				endTask();
+				canExit = true;
 		}
 
 		if (!canExit) {
@@ -976,36 +897,24 @@ public class Walk extends Task {
 		
 		setDescription(ENTERING_GARAGE);
 
-		if (person != null) {
-			// Place this person within a vehicle inside a garage in a settlement
-			if (person.transfer(rover)) {
-				logger.log(person, Level.INFO, 4_000,
-						"Entered rover " + rover.getName()
-						+ " inside " + garageBuilding + ".");
-				endTask();
-				
+		// Place this person within a vehicle inside a garage in a settlement
+		if (worker.transfer(rover)) {
+			logger.log(worker, Level.INFO, 4_000,
+					"Entered rover " + rover.getName()
+					+ " inside " + garageBuilding + ".");
+			endTask();
+			if (person != null) {
+				// Use person's walk speed
 				timeTraveled = distance / PERSON_WALKING_SPEED_PER_MILLISOL;
-				remainingTime = remainingTime - timeTraveled;
-				if (remainingTime < 0)
-					remainingTime = 0;
-				return remainingTime ;
 			}
-		}
-
-		else {
-			// Place this robot within a vehicle inside a garage in a settlement
-			if (robot.transfer(rover)) {
-				logger.log(robot, Level.INFO, 4_000,
-						"Entered rover " + rover.getName()
-						+ " inside " + garageBuilding + ".");
-				endTask();
-				
+			else {
+				// use robot's walk speed
 				timeTraveled = distance / ROBOT_WALKING_SPEED_PER_MILLISOL;
-				remainingTime = remainingTime - timeTraveled;
-				if (remainingTime < 0)
-					remainingTime = 0;
-				return remainingTime ;
 			}
+			remainingTime = remainingTime - timeTraveled;
+			if (remainingTime < 0)
+				remainingTime = 0;
+			return remainingTime ;
 		}
 
 		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
@@ -1033,15 +942,13 @@ public class Walk extends Task {
 		setDescription(Msg.getString("Task.description.walk.climbingUpLadder")); //$NON-NLS-1$
 
         if (building.isAHabOrHub()) {
-    		if (person != null) {
-    			// check if it's a hab or hub building since they are the only ones
-    			// having a ladder to go up or down
-    	   		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-        			walkingStepIndex++;
-        			setPhase(getWalkingStepPhase());
-        		} else {
-        			endTask();
-        		}
+			// check if it's a hab or hub building since they are the only ones
+			// having a ladder to go up or down
+	   		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+    			walkingStepIndex++;
+    			setPhase(getWalkingStepPhase());
+    		} else {
+    			endTask();
     		}
         }
         else {
@@ -1066,16 +973,15 @@ public class Walk extends Task {
 		setDescription(Msg.getString("Task.description.walk.climbingDownLadder")); //$NON-NLS-1$
 
         if (building.isAHabOrHub()) {
-    		if (person != null) {
-    			// check if it's a hab or hub building since they are the only ones
-    			// having a ladder to go up or down
-    	   		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
-        			walkingStepIndex++;
-        			setPhase(getWalkingStepPhase());
-        		} else {
-        			endTask();
-        		}
+			// check if it's a hab or hub building since they are the only ones
+			// having a ladder to go up or down
+	   		if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
+    			walkingStepIndex++;
+    			setPhase(getWalkingStepPhase());
+    		} else {
+    			endTask();
     		}
+  
         }
         else {
 			endTask();

@@ -27,7 +27,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 
@@ -73,8 +73,6 @@ public class WalkOutside extends Task {
 	private int walkingPathIndex;
 	private double[] obstacleSearchLimits;
 
-//	private long tLast;
-	
 	private LocalPosition start;
 	private LocalPosition destination;
 	private List<LocalPosition> walkingPath;
@@ -83,43 +81,21 @@ public class WalkOutside extends Task {
 	/**
 	 * Constructor 1.
 	 *
-	 * @param person               the person performing the task.
+	 * @param worker               the worker performing the task.
 	 * @param start                the starting local location.
 	 * @param destination		   the destination local location.
 	 * @param ignoreEndEVA         ignore end EVA situations and continue walking
 	 *                             task.
 	 */
-	public WalkOutside(Person person, LocalPosition start, LocalPosition destination,
+	public WalkOutside(Worker worker, LocalPosition start, LocalPosition destination,
 			boolean ignoreEndEVA) {
 
 		// Use Task constructor.
-		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
+		super(NAME, worker, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
 
-		// Check that the person is currently outside a settlement or vehicle.
-		if (person.isInside())
-			throw new IllegalStateException("WalkOutside task started when " + person + " was " + person.getLocationStateType());
-
-		init(start, destination, ignoreEndEVA);
-	}
-
-	/**
-	 * Constructor 2.
-	 *
-	 * @param robot                the robot performing the walk.
-	 * @param start                the starting local location.
-	 * @param destination		   the destination local location.
-	 * @param ignoreEndEVA         ignore end EVA situations and continue walking
-	 *                             task.
-	 */
-	public WalkOutside(Robot robot, LocalPosition start, LocalPosition destination,
-					   boolean ignoreEndEVA) {
-
-		// Use Task constructor.
-		super(NAME, robot, false, false, STRESS_MODIFIER, SkillType.EVA_OPERATIONS, 100D);
-
-		// Check that the robot is currently outside a settlement or vehicle.
-		if (robot.isInside())
-			throw new IllegalStateException("WalkOutside task started when " + robot + " was " + robot.getLocationStateType());
+		// Check that the worker is currently outside a settlement or vehicle.
+		if (!worker.isOutside())
+			throw new IllegalStateException("WalkOutside task started when " + worker + " was " + worker.getLocationStateType());
 
 		init(start, destination, ignoreEndEVA);
 	}
