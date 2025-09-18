@@ -140,7 +140,7 @@ public class BuildingConnectorManager implements Serializable {
 			partialBuildingConnectorList.addAll(processBuildTemplate(bt, buildingManager));
 		}
 
-		processAllPartialBuildingConnectors(partialBuildingConnectorList);
+		createBuildingConnectors(partialBuildingConnectorList);
 	}
 	
 	/**
@@ -158,15 +158,15 @@ public class BuildingConnectorManager implements Serializable {
 
 		partialBuildingConnectorList.addAll(processBuildTemplate(buildingTemplate, buildingManager));
 
-		processOnePartialBuildingConnector(partialBuildingConnectorList);
+		createOneBuildingConnector(partialBuildingConnectorList);
 	}
 	
 	/**
-	 * Processes just one partial building connector.
+	 * Create a building connector by processing a partial building connector.
 	 * 
 	 * @param partialBuildingConnectorList
 	 */
-	private void processOnePartialBuildingConnector(List<PartialBuildingConnector> partialBuildingConnectorList) {
+	private void createOneBuildingConnector(List<PartialBuildingConnector> partialBuildingConnectorList) {
 		PartialBuildingConnector partialConnector = partialBuildingConnectorList.remove(0);
 		PartialBuildingConnector foundMatch = findConnectorMatch(partialConnector, partialBuildingConnectorList);
 
@@ -194,15 +194,15 @@ public class BuildingConnectorManager implements Serializable {
 	}
 	
 	/**
-	 * Processes all partial building connectors.
+	 * Creates all building connectors by processing each available partial building connector.
 	 * 
 	 * @param partialBuildingConnectorList
 	 */
-	private void processAllPartialBuildingConnectors(List<PartialBuildingConnector> partialBuildingConnectorList) {
+	private void createBuildingConnectors(List<PartialBuildingConnector> partialBuildingConnectorList) {
 		
 		// Match up partial connectors to create building connectors.
 		while (!partialBuildingConnectorList.isEmpty()) {
-			processOnePartialBuildingConnector(partialBuildingConnectorList);
+			createOneBuildingConnector(partialBuildingConnectorList);
 		}
 	}
 

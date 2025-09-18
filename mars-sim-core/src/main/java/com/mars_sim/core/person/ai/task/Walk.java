@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Walk.java
- * @date 2024-11-30
+ * @date 2025-09-18
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.task;
@@ -55,6 +55,9 @@ public class Walk extends Task {
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = Walk.class.getSimpleName();
 
+	/** Simple Task name */
+	public static final String WALK = "Walk";
+	
 	// Static members
 	static final double MIN_PULSE_TIME = 0.0129;
 	// See https://en.wikipedia.org/wiki/Preferred_walking_speed
@@ -203,39 +206,27 @@ public class Walk extends Task {
 			return;
 		}
 
-		setupPersonWalk();
+		setupWalk();
 	}
 
 	
 	/**
 	 * Constructor for factory method with preprocessed walking steps
 	 *
-	 * @param person         the person performing the task.
+	 * @param worker         the worker performing the task.
 	 * @param walkingSteps	 Precalculated and verified walking steps
 	 */
-	public Walk(Person person, WalkingSteps walkingSteps) {
-		super("Walk", person, false, false, 0D, null, 100D);
+	public Walk(Worker worker, WalkingSteps walkingSteps) {
+		super(WALK, worker, false, false, 0D, null, 100D);
 
 		this.walkingSteps = walkingSteps;
-		setupPersonWalk();
+		
+		setupWalk();
 	}
 
-	private void setupPersonWalk() {
+	private void setupWalk() {
 		// Initialize data members.
 		walkingStepIndex = 0;
-
-		// Initialize task phase.
-		setPhase(getWalkingStepPhase());
-	}
-
-	public Walk(Robot robot, WalkingSteps walkingSteps) {
-		super("Walk", robot, false, false, 0D, null, 100D);
-
-		// Initialize data members.
-		walkingStepIndex = 0;
-
-		this.walkingSteps = walkingSteps;
-
 		// Initialize task phase.
 		setPhase(getWalkingStepPhase());
 	}
@@ -243,22 +234,22 @@ public class Walk extends Task {
 	/**
 	 * This is a factory method to create a Walk task if there is a valid path.
 	 *
-	 * @param person Person doing the walking
+	 * @param worker worker doing the walking
 	 * @param destPosition Final destination within an interior object
 	 * @param destZ Vertical destination
 	 * @param destObject Destination
 	 * @param needEVA
 	 * @return
 	 */
-	public static Walk createWalkingTask(Person person, LocalPosition destPosition, 
+	public static Walk createWalkingTask(Worker worker, LocalPosition destPosition, 
 			LocalBoundedObject destObject, boolean needEVA) {
-		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destObject);
+		WalkingSteps walkingSteps = new WalkingSteps(worker, destPosition, destObject);
 		boolean canWalk = walkingSteps.canWalkAllSteps();
 
 		if (canWalk) {
 			if (needEVA) {
 		        // Check if all airlocks can be exited
-				canWalk = canExitAllAirlocks(person, walkingSteps);
+				canWalk = canExitAllAirlocks(worker, walkingSteps);
 			}
 			// Q: Why does it have to check for all airlocks if the person may or may not exit airlock ?
 			// A: Only if walkingSteps include WalkStep.EXIT_AIRLOCK
@@ -268,12 +259,12 @@ public class Walk extends Task {
 		}
 		
 		if (canWalk) {
-			return new Walk(person, walkingSteps);
+			return new Walk(worker, walkingSteps);
 		}
 		
 		return null;
 	}
-
+	
 	/**
 	 * Check if person can walk to a local destination.
 	 *
@@ -295,52 +286,33 @@ public class Walk extends Task {
 		return canExitAllAirlocks(person, walkingSteps);
 	}
 	
-	/**
-	 * This is a factory method to create a Walk task if there is a valid path.
-	 *
-	 * @param person Person doing the walking
-	 * @param destPosition FInal destination within an interior object
-	 * @param destZ Vertical destination
-	 * @param destObject Destination
-	 * @return
-	 */
-	public static boolean canWalk(Person person, LocalPosition destPosition, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destObject);
-		return canWalkAllSteps(person, walkingSteps);
-	}
-
-
-	/**
-	 * This is a factory method to create a Walk task if there is a valid path.
-	 *
-	 * @param robot Robot doing the walking
-	 * @param destPosition FInal destination within an interior object
-	 * @param destObject Destination
-	 * @return
-	 */
-	public static Walk createWalkingTask(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destObject);
-		boolean canWalk = walkingSteps.canWalkAllSteps();
-
-		if (canWalk) {
-			return new Walk(robot, walkingSteps);
-		}
-		return null;
-	}
-	
-	/**
-	 * This is a factory method to create a Walk task if there is a valid path.
-	 *
-	 * @param robot Robot doing the walking
-	 * @param destPosition FInal destination within an interior object
-	 * @param destZ Vertical destination
-	 * @param destObject Destination
-	 * @return
-	 */
-	public static boolean canWalk(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
-		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destObject);
-		return canWalkAllSteps(robot, walkingSteps);
-	}
+//	/**
+//	 * This is a factory method to create a Walk task if there is a valid path.
+//	 *
+//	 * @param person Person doing the walking
+//	 * @param destPosition FInal destination within an interior object
+//	 * @param destZ Vertical destination
+//	 * @param destObject Destination
+//	 * @return
+//	 */
+//	public static boolean canWalk(Person person, LocalPosition destPosition, LocalBoundedObject destObject) {
+//		WalkingSteps walkingSteps = new WalkingSteps(person, destPosition, destObject);
+//		return canWalkAllSteps(person, walkingSteps);
+//	}
+//	
+//	/**
+//	 * This is a factory method to create a Walk task if there is a valid path.
+//	 *
+//	 * @param robot Robot doing the walking
+//	 * @param destPosition FInal destination within an interior object
+//	 * @param destZ Vertical destination
+//	 * @param destObject Destination
+//	 * @return
+//	 */
+//	public static boolean canWalk(Robot robot, LocalPosition destPosition, LocalBoundedObject destObject) {
+//		WalkingSteps walkingSteps = new WalkingSteps(robot, destPosition, destObject);
+//		return canWalkAllSteps(robot, walkingSteps);
+//	}
 	
 	/**
 	 * Check if robot can walk to a local destination.
@@ -394,11 +366,11 @@ public class Walk extends Task {
 	}
 
 	/**
-	 * Checks if a person can exit all airlocks in walking steps.
+	 * Checks if a worker can exit all airlocks in walking steps.
 	 *
 	 * @return true is all airlocks can be exited (or no airlocks in walk steps).
 	 */
-	private static boolean canExitAllAirlocks(Person person, WalkingSteps walkingSteps) {
+	private static boolean canExitAllAirlocks(Worker worker, WalkingSteps walkingSteps) {
 		List<WalkingSteps.WalkStep> stepList = walkingSteps.getWalkingStepsList();
 		if (stepList != null) {
 			Iterator<WalkingSteps.WalkStep> i = stepList.iterator();

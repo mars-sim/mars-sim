@@ -525,6 +525,12 @@ public class Settlement extends Unit implements Temporal,
 			terrainElevation = surfaceFeatures.getTerrainElevation();
 	}
 	
+	/**
+	 * Initializes the instances.
+	 * 
+	 * @param needGoods
+	 * @param list
+	 */
 	protected void initialiseEssentials(boolean needGoods, List<BuildingTemplate> list) {
 		// Initialize building manager
 		buildingManager = new BuildingManager(this, list);
@@ -537,10 +543,14 @@ public class Settlement extends Unit implements Temporal,
 
 		// Initialize power grid
 		powerGrid = new PowerGrid(this);
+		
+		// Initialize the thermal system
 		thermalSystem = new ThermalSystem(this);
 
 		if (needGoods) {
+			// Initialize the goods manager
 			goodsManager = new GoodsManager(this);
+			// Initialize the manufacturing manager
 			manuManager = new ManufacturingManager(this);
 		}
 	}
@@ -613,7 +623,8 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Get the fixed location of this Settlement
+	 * Gets the fixed location of this Settlement.
+	 * 
 	 * @return
 	 */
 	@Override

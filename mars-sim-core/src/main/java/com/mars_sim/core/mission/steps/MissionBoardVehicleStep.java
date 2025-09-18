@@ -24,7 +24,6 @@ import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.SuppliesManifest;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.OperateVehicle;
@@ -197,15 +196,8 @@ public class MissionBoardVehicleStep extends MissionStep {
 	 * @param v
 	 */
     private boolean boardVehicle(Worker worker, Vehicle v) {
-		Walk walk = null;
 		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
-		if (worker instanceof Person p) {
-			walk = Walk.createWalkingTask(p, adjustedLoc, v, true);
-		}
-
-		else if (worker instanceof Robot r) {
-			walk = Walk.createWalkingTask(r, adjustedLoc, v);
-		}
+		Walk walk = Walk.createWalkingTask(worker, adjustedLoc, v, true);
 
 		// Walk to board
 		if (walk != null) {
@@ -218,7 +210,8 @@ public class MissionBoardVehicleStep extends MissionStep {
 	}
 
     /**
-     * What resources are needed for this travel. This includes the spares needed for the Vehicle.
+     * Gets the resources are needed for this travel. This includes the spares needed for the Vehicle.
+     * 
 	 * @param manifet Capture the parts needed
 	 * @param addOptionals Any optional spares
      */

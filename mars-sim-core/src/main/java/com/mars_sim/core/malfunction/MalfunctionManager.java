@@ -1601,6 +1601,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 
+		// Update the map in building manager
 		entity.getAssociatedSettlement().getBuildingManager().updateMaintenancePartsMap(entity, shortfallParts);
 		
 		return shortfall;

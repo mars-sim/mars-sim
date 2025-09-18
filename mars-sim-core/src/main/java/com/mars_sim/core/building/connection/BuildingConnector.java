@@ -30,7 +30,8 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
 	private LocalPosition pos;
 
     /**
-     * Constructor
+     * Constructor.
+     * 
      * @param building1 The first connected building.
      * @param building1HatchPosition The hatch position connecting the first building.
      * @param building1HatchFacing The hatch facing (degrees) connecting the first building.

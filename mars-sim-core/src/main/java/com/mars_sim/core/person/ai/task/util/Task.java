@@ -1395,19 +1395,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		LocalPosition myLoc = worker.getPosition();
 
 		if (myLoc.equals(sLoc)) {
-//			logger.info(worker, 4_000, "Already at the spot and no need to walk further.");
+			// May add back checking: logger.info(worker, 4_000, "Already at the spot and no need to walk further.")
 			return true;
 		}
 		
-		Walk walkingTask = null;
-		
-		if (worker instanceof Person person) {
-			walkingTask = Walk.createWalkingTask(person, sLoc, interiorObject, needEVA);
-		}
-		else {
-			walkingTask = Walk.createWalkingTask((Robot)(worker), sLoc, interiorObject);
-		}
-		
+		Walk walkingTask = Walk.createWalkingTask(worker, sLoc, interiorObject, needEVA);
+
 		if (walkingTask != null) {
 			// Add subtask for walking to destination.
 			addSubTask(walkingTask);
