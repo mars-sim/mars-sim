@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * OGGSoundClip.java
- * @date 2021-08-28
+ * @date 2025-09-18
  * @author Lars Naesbye Christensen
  */
 
@@ -53,12 +53,13 @@ public class OGGSoundClip {
 	private boolean mute = false;
 	private boolean paused;
 	private boolean isMasterGainSupported;
-
+	
 	private byte[] convbuffer = new byte[convsize];
 
 	private String name;
 
 	private FloatControl floatControl;
+
 	private SourceDataLine outputLine;
 
 	private SyncState oy;
@@ -76,7 +77,7 @@ public class OGGSoundClip {
 	 * Creates a new clip based on a reference into the class path.
 	 *
 	 * @param ref The reference into the class path which the OGG can be read from
-	 * @param true if it is a background music file (Not a sound effect clip)
+	 * @param music true if it is a background music file (Not a sound effect clip)
 	 * @throws IOException Indicated a failure to find the resource
 	 */
 	public OGGSoundClip(String ref, boolean music) throws IOException {
@@ -113,7 +114,7 @@ public class OGGSoundClip {
 	 * Sets the default gain value (default volume).
 	 */
 	public void setDefaultVol() {
-		determineGain(AudioPlayer.DEFAULT_VOL);
+		determineVolume(AudioPlayer.DEFAULT_VOL);
 	}
 
 	public double getVol() {
@@ -144,21 +145,11 @@ public class OGGSoundClip {
 
 		try {
 			// Note: control is supposed to be in decibel (dB)
-			// FloatControl control = (FloatControl)
-			// outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 
-			// DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat,
-			// AudioSystem.NOT_SPECIFIED);
-			// SourceDataLine dataLine = (SourceDataLine) AudioSystem.getLine(info);
-			// outputLine.open();
 			// Adjust the volume on the output line.
 			if (isMasterGainSupported) {
 				// If inside this if, the Master_Gain must be supported. Yes? // In ubuntu linux
 				// 17.04, it is not supported
-				// floatControl = (FloatControl)
-				// outputLine.getControl(FloatControl.Type.MASTER_GAIN);
-				// This line throws an exception. "Master_Gain not supported"
-				// control.setValue( 100.0F );
 
 				// A positive gain amplifies (boosts) the signal's volume,
 				// A negative gain attenuates (cuts) it.
@@ -171,10 +162,16 @@ public class OGGSoundClip {
 
 				double value = (max - min / 2f) * volume + min / 2f;
 
-				if (value <= min / 2)
-					floatControl.setValue((float)min);
-				else
+				setPause(true);
+				
+				if (value <= min / 2) {
+					floatControl.setValue((float) (min / 2));
+				}
+				else {
 					floatControl.setValue((float)value);
+				}
+				
+				setPause(false);
 
 			} else {
 				// in case of some versions of linux in which MASTER_GAIN is not supported
@@ -188,6 +185,17 @@ public class OGGSoundClip {
 
 	}
 
+	/**
+	 * Computes the volume value for the playback--based on the new value of volume in
+	 * the increment or decrement of 0.05f.
+	 * 
+	 * @param volume the volume
+	 */
+	public void determineVolume(double volume) {
+		determineGain(volume);
+	    // Note that Master Volume not supported.
+	}
+	
 	/**
 	 * Checks the state of the playback.
 	 *
@@ -398,7 +406,6 @@ public class OGGSoundClip {
 				outputLine.open(audioFormat);
 
 				if (!AudioSystem.isLineSupported(info)) {
-					// throw new Exception("Line " + info + " not supported.");
 					logger.log(Level.SEVERE, "Sound system NOT supported. ");
 					disableSound();
 				}
@@ -406,21 +413,26 @@ public class OGGSoundClip {
 				isMasterGainSupported = outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN);
 				if (!isMasterGainSupported) {
 					// in case of some versions of linux in which MASTER_GAIN is not supported
-					logger.log(Level.SEVERE, "MasterGain NOT supported in this machine. Run the sim without audio");
+					logger.log(Level.SEVERE, "Master Gain NOT supported in this machine. Run the sim without audio");
 					disableSound();
-				} else
+				} else {
 					floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+				}
 
+				// Note that isMasterVolumeSupported is false: isMasterVolumeSupported = outputLine.isControlSupported(FloatControl.Type.VOLUME);
+//				if (!isMasterVolumeSupported) {
+//					// in case of some versions of linux in which VOLUME is not supported
+//					// disableSound(); logger.log(Level.SEVERE, "Master Volume NOT supported in this machine. Run the sim without audio");
+//				} else
+//					floatControl1 = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
+				
 			} catch (LineUnavailableException ex) {
-				// throw new Exception("Unable to open the sourceDataLine: " + ex);
 				logger.log(Level.SEVERE, "Unable to open the sourceDataLine: " + ex);
 				disableSound();
 
 			} catch (IllegalArgumentException ex) {
-				// throw new Exception("Illegal Argument: " + ex);
-				// logger.log(Level.SEVERE, "Illegal Argument: " + ex);
 				logger.log(Level.SEVERE,
-						"Sound line/system NOT detected. Please ensure speakers are plugged in. Run the sim without audio");
+						"Sound line/system NOT detected. Please ensure speakers are plugged in. Run the sim without audio: " + ex);
 				disableSound();
 			}
 
@@ -428,7 +440,10 @@ public class OGGSoundClip {
 			this.channels = channels;
 
 //			setBalance(balance);
+			
 			determineGain(volume);
+			determineVolume(volume);
+			
 		} catch (Exception ee) {
 			logger.log(Level.SEVERE, "Sound system NOT supported. Run the sim without audio." + ee);
 			disableSound();

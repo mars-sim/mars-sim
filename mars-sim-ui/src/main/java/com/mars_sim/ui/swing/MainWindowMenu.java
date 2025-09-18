@@ -1,13 +1,14 @@
 /*
  * Mars Simulation Project
  * MainWindowMenu.java
- * @date 2024-09-01
+ * @date 2025-09-18
  * @author Scott Davis
  */
 
 package com.mars_sim.ui.swing;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -344,12 +345,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		// Note: if "-nosound" argument is given when starting mars-sim
 		// then the following sound control won't be shown under settings
 		if (soundPlayer != null) {
-			double volume = soundPlayer.getMusicVolume();
-			int intVolume = (int) Math.round(volume * 10.0);
+			double musicVolume = soundPlayer.getMusicVolume();
+			int intMusicVolume = (int) Math.round(musicVolume * 10.0);
 
 			// Create Background Music Volume Slider
-			musicVolumeSlider = new JSliderMW(SwingConstants.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
-			musicVolumeSlider.setMajorTickSpacing(1);
+			musicVolumeSlider = new JSliderMW(SwingConstants.HORIZONTAL, 0, 10, intMusicVolume); // $NON-NLS-1$
+			musicVolumeSlider.setPreferredSize(new Dimension(20, 100));
+			musicVolumeSlider.setSize(new Dimension(20, 100));
+			musicVolumeSlider.setMajorTickSpacing(2);
 			musicVolumeSlider.setPaintTicks(true);
 			musicVolumeSlider.setPaintLabels(true);
 			musicVolumeSlider.setPaintTrack(true);
@@ -359,7 +362,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				float newVolume = musicVolumeSlider.getValue() / 10F;
 				soundPlayer.setMusicVolume(newVolume);
 			});
-			settingsMenu.add(musicVolumeSlider);
+			
+			// Create submenu for music volume
+			// Note: Unable to show musicVolumeSlider 
+//			JMenuItem musicMenu = new JMenuItem("Music Volume");
+//			musicMenu.add(musicVolumeSlider);
+//			settingsMenu.add(musicMenu);
 
 			settingsMenu.add(createMenuItemAction("mainMenu.musicVolumeUp", VOL_UP_ICON,
 							MUSIC_UP, "mainMenu.musicVolumeUp",
@@ -373,8 +381,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			settingsMenu.add(musicMuteItem);
 
 			// Create Sound Effect Volume Slider
-			effectVolumeSlider = new JSliderMW(SwingConstants.HORIZONTAL, 0, 10, intVolume); // $NON-NLS-1$
-			effectVolumeSlider.setMajorTickSpacing(1);
+			double soundEffectVolume = soundPlayer.getMusicVolume();
+			int intSoundEffectVolume = (int) Math.round(soundEffectVolume * 10.0);
+			
+			effectVolumeSlider = new JSliderMW(SwingConstants.HORIZONTAL, 0, 10, intSoundEffectVolume); // $NON-NLS-1$
+			effectVolumeSlider.setPreferredSize(new Dimension(20, 100));
+			effectVolumeSlider.setSize(new Dimension(20, 100));
+			effectVolumeSlider.setMajorTickSpacing(2);
 			effectVolumeSlider.setPaintTicks(true);
 			effectVolumeSlider.setPaintLabels(true);
 			effectVolumeSlider.setPaintTrack(true);
@@ -385,7 +398,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				float newVolume = effectVolumeSlider.getValue() / 10F;
 				soundPlayer.setSoundVolume(newVolume);
 			});
-			settingsMenu.add(effectVolumeSlider);
+			
+			// Create submenu for sound effect volume
+			// Note: Unable to show effectVolumeSlider 
+//			JMenuItem soundEffectMenu = new JMenuItem("Sound Effect Volume");
+//			soundEffectMenu.add(effectVolumeSlider);
+//			settingsMenu.add(soundEffectMenu);
 
 			settingsMenu.add(createMenuItemAction("mainMenu.effectVolumeUp", VOL_UP_ICON,
 											EFFECT_UP, "mainMenu.effectVolumeUp",
@@ -583,9 +601,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				else {
 					// unmute the music
 					soundPlayer.setUserMuteMusic(false);
-					if (!Simulation.instance().getMasterClock().isPaused())
+					if (!Simulation.instance().getMasterClock().isPaused()) {
 //						soundPlayer.unmuteMusic();
 						soundPlayer.resumeMusic();
+					}
 					musicVolumeSlider.setEnabled(true);
 					musicMuteItem.revalidate();
 					musicMuteItem.repaint();
@@ -600,8 +619,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				} else {
 					// player unmute the sound effect
 					soundPlayer.setUserMuteSoundEffect(false);
-					if (!Simulation.instance().getMasterClock().isPaused())
+					if (!Simulation.instance().getMasterClock().isPaused()) {
 						soundPlayer.unmuteSoundEffect();
+					}
 					effectVolumeSlider.setEnabled(true);
 				}
 				break;

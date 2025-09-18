@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AudioPlayer.java
- * @date 2025-08-17
+ * @date 2025-09-18
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 
@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.sound;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
+
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.MasterClock;
@@ -34,12 +36,15 @@ public class AudioPlayer {
 
 	/** music files directory. */
 	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir(); //$NON-NLS-1$
-	
-	public static final double DEFAULT_VOL = .5;
+	private static final String DEFAULT_MUSIC_DIR = "/music";
+			
+	public static final double DEFAULT_VOL = .75;
 
 	public static final String PROPS_NAME = "audio";
 	private static final String VOLUME = "volume";
 	private static final String MUTE = "mute";
+	private static final String OGG = "ogg";
+
 
 	/** The volume of the audio player (0.0 to 1.0) */
 	public static double currentMusicVol = DEFAULT_VOL;
@@ -81,13 +86,11 @@ public class AudioPlayer {
 		if (mute) {
 			userMuteMusic = false;
 			userMuteSoundEffect = false;
-//			muteSoundEffect(false);
-//			muteMusic(false);
 			currentMusicVol = 0;
 			currentSoundVol = 0;
 		}
 		else {
-			double v = UIConfig.extractDouble(props, VOLUME, 0.5D);
+			double v = UIConfig.extractDouble(props, VOLUME, DEFAULT_VOL);
 			currentMusicVol = v;
 			currentSoundVol = v;
 		}
@@ -102,21 +105,55 @@ public class AudioPlayer {
 		return null;
 	}
 	
+	/**
+	 * Adds music tracks from a folder.
+	 * 
+	 * @param folder
+	 */
+	private static void addMusicTracks(File folder) {
+		File[] listOfFiles = folder.listFiles();
+
+		for (int i = 0; i < listOfFiles.length; i++) {
+			File f = listOfFiles[i];
+			String filename = f.getName();
+			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
+			
+			if (f.isFile() && ext.equalsIgnoreCase(OGG)) {
+				musicTracks.add(f.getName());
+			}
+		}
+	}
+	
+	/**
+	 * Loads the music tracks.
+	 */
 	public static void loadMusicTracks() {
 		allSoundClips = new HashMap<>();
 		musicTracks = new ArrayList<>();
 
-		File folder = new File(MUSIC_DIR);
-
-		boolean dirExist = folder.isDirectory();
-		boolean fileExist = folder.isFile();
+		// Loads music tracks from two folders
+		
+		// 1. Load from the default music directory in resource folder
+		URL defaultURL = AudioPlayer.class.getResource(DEFAULT_MUSIC_DIR);
+		String stringURL = defaultURL.getFile();
+		logger.log(Level.CONFIG, "Default music folder at " +stringURL);
+		File defaultMusicfolder = new File(stringURL);
+		
+		addMusicTracks(defaultMusicfolder);
+		
+		// 2. Load from the music directory in user home folder
+		File userFolder = new File(MUSIC_DIR);
+		logger.log(Level.CONFIG, "User Home music folder at " + MUSIC_DIR);
+		
+		boolean dirExist = userFolder.isDirectory();
+		boolean fileExist = userFolder.isFile();
 		
 		// if it exits as a file, delete it
 		if (fileExist) {
-			logger.log(Level.CONFIG, "'" + folder +  "'" 
+			logger.log(Level.CONFIG, "'" + userFolder +  "'" 
 					+ " is not supposed to exist as a file. Deleting it.");
 			try {
-				FileUtils.forceDelete(folder);
+				FileUtils.forceDelete(userFolder);
 			} catch (IOException e) {
 				logger.severe( "Can't load music files: ", e);
 			}
@@ -124,31 +161,25 @@ public class AudioPlayer {
 		
 		if (!dirExist) {
 			// Create this directory
-			folder.mkdirs();
-			logger.log(Level.CONFIG, "'" + folder +  "'" 
-					+ " folder is created for storing sound tracks");
+			userFolder.mkdirs();
+			logger.log(Level.CONFIG, "'" + userFolder +  "'" 
+					+ " folder is created for storing sound tracks.");
 		}
-		else {
-			File[] listOfFiles = folder.listFiles();
+		
+		addMusicTracks(userFolder);
+		
+		numTracks = musicTracks.size();
+			
+		if (numTracks > 0) {
+			currentMusic = obtainOGGMusicTrack(musicTracks.get(numTracks -1));
+		}
 
-			for (int i = 0; i < listOfFiles.length; i++) {
-				File f = listOfFiles[i];
-				String filename = f.getName();
-				String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
-				
-				if (f.isFile() && ext.equalsIgnoreCase("ogg")) {
-					musicTracks.add(f.getName());
-				}
-			}
-			
-			numTracks = musicTracks.size();
-			
-			if (numTracks > 0) {
-				currentMusic = obtainOGGMusicTrack(musicTracks.get(numTracks -1));
-			}	
-		}
 	}
 	
+	/**
+	 * Loads all the sound effect clip names into a map.
+	 * 
+	 */
 	public void loadSoundEffects() {
 		List<String> soundEffects = new ArrayList<>();
 		soundEffects.add(SoundConstants.SND_EQUIPMENT);
@@ -176,7 +207,7 @@ public class AudioPlayer {
 	}
 
 	/**
-	 * Play a sound clip.
+	 * Plays a sound clip.
 	 * 
 	 * @param filepath the file path to the sound file.
 	 */
@@ -200,13 +231,13 @@ public class AudioPlayer {
 		if (allSoundClips.containsKey(filepath) 
 				&& allSoundClips.get(filepath) != null) {
 			currentSoundClip = allSoundClips.get(filepath);
-			currentSoundClip.determineGain(currentSoundVol);
+			currentSoundClip.determineVolume(currentSoundVol);
 			currentSoundClip.play();
 		} else {
 			try {
 				currentSoundClip = new OGGSoundClip(filepath, false);
 				allSoundClips.put(filepath, currentSoundClip);
-				currentSoundClip.determineGain(currentSoundVol);
+				currentSoundClip.determineVolume(currentSoundVol);
 				currentSoundClip.play();
 			} catch (IOException e) {
 				logger.severe( "Can't load sound effect: ", e);
@@ -234,7 +265,7 @@ public class AudioPlayer {
 		if (musicTracks.contains(filepath) && filepath != null) {
 			currentMusic = obtainOGGMusicTrack(filepath);
 			if (currentMusic != null) {
-				currentMusic.determineGain(currentMusicVol);
+				currentMusic.determineVolume(currentMusicVol);
 				currentMusic.loop();
 			}
 		}
@@ -259,12 +290,12 @@ public class AudioPlayer {
 	}
 
 	/**
-	 * Increase the music volume
+	 * Increases the music volume.
 	 */
 	public void musicVolumeUp() {
-		if (!isVolumeDisabled || !isMusicMute()) {
-			pickANewTrack();
-		}
+//		if (!isVolumeDisabled || !isMusicMute()) {
+//			loopThruBackgroundMusic();
+//		}
 		
 		if (!isVolumeDisabled && hasMasterGain
 				&& currentMusic != null
@@ -275,17 +306,17 @@ public class AudioPlayer {
 				v = 1;
 
 			currentMusicVol = v;
-			currentMusic.determineGain(v);
+			currentMusic.determineVolume(v);
 		}
 	}
 
 	/**
-	 * Decrease the music volume
+	 * Decreases the music volume.
 	 */
 	public void musicVolumeDown() {
-		if (!isVolumeDisabled || !isMusicMute()) {
-			pickANewTrack();
-		}
+//		if (!isVolumeDisabled || !isMusicMute()) {
+//			loopThruBackgroundMusic();
+//		}
 		
 		if (!isVolumeDisabled && hasMasterGain
 				&& currentMusic != null
@@ -296,12 +327,12 @@ public class AudioPlayer {
 				v = 0;
 
 			currentMusicVol = v;
-			currentMusic.determineGain(v);
+			currentMusic.determineVolume(v);
 		}
 	}
 
 	/**
-	 * Increase the sound effect volume
+	 * Increases the sound effect volume.
 	 */
 	public void soundVolumeUp() {
 		if (!isVolumeDisabled && hasMasterGain 
@@ -312,12 +343,12 @@ public class AudioPlayer {
 				v = 1;
 
 			currentSoundVol = v;
-			currentSoundClip.determineGain(v);
+			currentSoundClip.determineVolume(v);
 		}
 	}
 
 	/**
-	 * Decrease the sound effect volume
+	 * Decreases the sound effect volume.
 	 */
 	public void soundVolumeDown() {
 		if (!isVolumeDisabled && hasMasterGain 
@@ -328,7 +359,7 @@ public class AudioPlayer {
 				v = 0;
 
 			currentSoundVol = v;
-			currentSoundClip.determineGain(v);
+			currentSoundClip.determineVolume(v);
 		}
 	}
 
@@ -347,13 +378,16 @@ public class AudioPlayer {
 		currentMusicVol = volume;
 
 		if (!isVolumeDisabled && hasMasterGain && currentMusic != null) {
-			currentMusic.determineGain(volume);
+			currentMusic.determineVolume(volume);
 		}
 	}
 
+	/**
+	 * Restores previous music gain.
+	 */
 	public void restoreLastMusicGain() {
 		if (!isVolumeDisabled && hasMasterGain && currentMusic != null) {
-			currentMusic.determineGain(currentMusicVol);
+			currentMusic.determineVolume(currentMusicVol);
 		}
 	}
 	
@@ -372,17 +406,17 @@ public class AudioPlayer {
 		currentSoundVol = volume;
 
 		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
-			currentSoundClip.determineGain(volume);
+			currentSoundClip.determineVolume(volume);
 		}
 	}
 
 
 	/**
-	 * Restore the last sound effect gain
+	 * Restores the last sound effect gain.
 	 */
 	public void restoreLastSoundEffectGain() {
 		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
-			currentSoundClip.determineGain(currentSoundVol);
+			currentSoundClip.determineVolume(currentSoundVol);
 		}
 	}
 
@@ -498,7 +532,7 @@ public class AudioPlayer {
 			currentMusic.resume();
 		}
 		else {
-			playRandomMusicTrack();
+			loopThruBackgroundMusic();
 		}
 	}
 	
@@ -591,6 +625,7 @@ public class AudioPlayer {
 
 	/**
 	 * Is the volume of the audio player disable ?
+	 * 
 	 * @return
 	 */
 	public static boolean isAudioDisabled() {
@@ -620,7 +655,7 @@ public class AudioPlayer {
 	}
 	
 	/**
-	 * Get the UI properties of the audio player to be stored for later use
+	 * Gets the UI properties of the audio player to be stored for later use.
 	 */
 	public Properties getUIProps() {
         Properties result = new Properties();
