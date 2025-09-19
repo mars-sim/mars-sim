@@ -841,9 +841,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end for Central Hub Type A -->
 
-	<building type="Match Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Core A" width="6.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="72" room-temperature="20.5" base-mass="720">
-		<description> Match Core A is a 3m by 6m utility hub that primarily connects
+		<description> Core A is a 3m by 6m utility hub that primarily connects
 		  other modules together
 		</description>
 		<power-required base-power="1.0" base-power-down-power="0.1" />
@@ -898,11 +898,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 		</functions>
 	</building>
-	<!-- end of Match Core A -->
+	<!-- end of Core A -->
 
-	<building type="Match Core B" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
+	<building type="Core B" width="3.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="36" room-temperature="20.5" base-mass="360">
-		<description> Match Core B is a 3m by 6m utility hub that primarily connects
+		<description> Core B is a 3m by 6m utility hub that primarily connects
 		  other modules together
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
@@ -947,11 +947,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</thermal-generation>
 		</functions>
 	</building>
-	<!-- end of Match Core B -->
+	<!-- end of Core B -->
 
-	<building type="Match Core C" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
+	<building type="Core C" width="3.0" length="7.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="42" room-temperature="20.5" base-mass="420">
-		<description> Match Core C is a 3m by 7m utility hub that primarily connects
+		<description> Core C is a 3m by 7m utility hub that primarily connects
 		  other modules together
 		</description>
 		<power-required base-power="0.5" base-power-down-power="0.05" />
@@ -997,7 +997,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-	<!-- end of Match Core C -->
+	<!-- end of Core C -->
 
 	<building type="Corridor 3x9" width="3.0" length="9.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="54" room-temperature="20.5" base-mass="540">
@@ -3947,7 +3947,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
 	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.0" base-mass="200"
+			wear-lifetime="3340000" maintenance-time="20" room-temperature="18.0" base-mass="100"
 			category="CONNECTION">
 		<description> The Hallway is a pressurized access tube connecting
 			two inhabitable buildings. It allows only one person to access it
@@ -3962,9 +3962,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-generation>
 				<power-source type="Solar Power Source" power="1.0" />
 			</power-generation>
-			
-			<power-storage capacity="20" discharge-rate="1.25" />
-			
+
 			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="0.0" yloc="0.0" />
@@ -4583,7 +4581,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	<!-- A tunnel's length is variable and determined in templates or during construction. -->
 	<building type="Tunnel" width="3.0" length="-1.0" north-south-alignment="length" 
 			construction="CONCRETE" base-level="-1"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="20.0" base-mass="200"
+			wear-lifetime="3340000" maintenance-time="20" room-temperature="18.0" base-mass="200"
 			category="CONNECTION">
 		<description> The Tunnel is an underground pressurized access tube connecting
 			two inhabitable buildings.

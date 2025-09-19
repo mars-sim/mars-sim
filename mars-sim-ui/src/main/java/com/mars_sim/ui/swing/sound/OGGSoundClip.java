@@ -202,14 +202,14 @@ public class OGGSoundClip {
 	 * @return True if the playback has been stopped
 	 */
 	synchronized boolean checkState() {
-		while (paused && (playerThread != null)){
-	    	try {
-				name.wait();
-			} catch (InterruptedException e) {
-				// Restore interrupted state
-			    Thread.currentThread().interrupt();
-			}
-	    }
+//		while (paused && (playerThread != null)){
+//	    	try {
+//				name.wait();
+//			} catch (InterruptedException e) {
+//				// Restore interrupted state
+//			    Thread.currentThread().interrupt();
+//			}
+//	    }
 		
 		return isStopped();
 	}

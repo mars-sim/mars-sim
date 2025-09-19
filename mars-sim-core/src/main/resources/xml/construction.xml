@@ -491,7 +491,7 @@
 			<part type="gasket" number="12" />
 		</frame>
 
-		<frame name="Match Core A Frame" width="6.0" length="6.0"
+		<frame name="Core A Frame" width="6.0" length="6.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 6x6" >
 		 	<resource type="concrete" amount="36.0" />
@@ -510,7 +510,7 @@
 			<part type="gasket" number="8" />
 		</frame>
 
-		<frame name="Match Core B Frame" width="3.0" length="6.0"
+		<frame name="Core B Frame" width="3.0" length="6.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 3x6" >
 		 	<resource type="concrete" amount="18.0" />
@@ -529,7 +529,7 @@
 			<part type="gasket" number="4" />
 		</frame>
 	
-		<frame name="Match Core C Frame" width="3.0" length="6.0"
+		<frame name="Core C Frame" width="3.0" length="6.0"
 		 north-south-alignment="length" base-level="0" constructable="true"
 		 salvagable="true" work-time="1.0" skill-required="2" foundation="Surface Foundation 3x7" >
 		 	<resource type="concrete" amount="20.0" />
@@ -909,9 +909,9 @@
 			</vehicle>
 		</building>
 
-		<building name="Match Core A" width="6.0" length="6.0"
+		<building name="Core A" width="6.0" length="6.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Match Core A Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Core A Frame" >
 		 	<resource type="cement" amount="108.0" />
 		 	<resource type="concrete" amount="82.0" />
 			<part type="aerogel tile" number="130" />
@@ -932,9 +932,9 @@
 		</building>
 
 
-		<building name="Match Core B" width="3.0" length="6.0"
+		<building name="Core B" width="3.0" length="6.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Match Core B Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Core B Frame" >
 		 	<resource type="cement" amount="54.0" />
 		 	<resource type="concrete" amount="41.0" />
 			<part type="aerogel tile" number="65" />
@@ -954,9 +954,9 @@
 			</vehicle>
 		</building>
 
-		<building name="Match Core C" width="3.0" length="7.0"
+		<building name="Core C" width="3.0" length="7.0"
 		 north-south-alignment="length" base-level="-1" constructable="true"
-		 salvagable="true" work-time="1.0" skill-required="3" frame="Match Core C Frame" >
+		 salvagable="true" work-time="1.0" skill-required="3" frame="Core C Frame" >
 			<resource type="cement" amount="60.0" />
 		 	<resource type="concrete" amount="45.0" />
 			<part type="aerogel tile" number="75" />

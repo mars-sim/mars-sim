@@ -65,47 +65,50 @@
         </connection-list>
     </building>
     
-    <building id="H6" type="Corridor 3x3" length="3.0" xloc="-6.0"
+    <building id="H6" type="Corridor 3x3" xloc="-6.0"
         yloc="38" facing="270.0">
         <connection-list>
             <connection id="LAB" hatch-facing="west" />
-            <connection id="14" hatch-facing="east" />
+            <connection id="H7" hatch-facing="east" />
             <connection id="H5" hatch-facing="south" />
         </connection-list>
     </building>
     
-    <building id="14" type="Lounge" xloc="-12.0" yloc="38"
+    <building id="LOU" type="Lounge" xloc="-12.5" yloc="42.5"
         facing="270.0">
         <connection-list>
+            <connection id="H7" hatch-facing="South" />
+        </connection-list>
+    </building>
+    
+    <building id="H7" type="Hallway" length="19.0" xloc="-17.0"
+        yloc="38" facing="270.0">
+        <connection-list>
             <connection id="H6" hatch-facing="west" />
-            <connection id="15" hatch-facing="east" />
+            <connection id="H8" hatch-facing="east" />
+            <connection id="LOU" hatch-facing="North" />
+            <connection id="RQ" hatch-facing="North" />
         </connection-list>
     </building>
-    <building id="15" type="Hallway" length="2.0" xloc="-17.5"
-        yloc="38" facing="270.0">
+    
+    <building id="RQ" type="Residential Quarters" xloc="-21.5"
+        yloc="42.5" facing="270.0">
         <connection-list>
-            <connection id="14" xloc="0.0" yloc="1.0" />
-            <connection id="16" xloc="0.0" yloc="-1.0" />
+            <connection id="H7" hatch-facing="South" />
         </connection-list>
     </building>
-    <building id="16" type="Residential Quarters" xloc="-23.0"
+    
+    <building id="H8" type="Corridor 3x3" xloc="-28.0"
         yloc="38" facing="270.0">
         <connection-list>
-            <connection id="15" xloc="0.0" yloc="4.5" />
-            <connection id="17" xloc="0.0" yloc="-4.5" />
-        </connection-list>
-    </building>
-    <building id="17" type="Hallway" length="2.0" xloc="-28.5"
-        yloc="38" facing="270.0">
-        <connection-list>
-            <connection id="16" xloc="0.0" yloc="1.0" />
-            <connection id="18" xloc="0.0" yloc="-1.0" />
+            <connection id="H7" hatch-facing="west"  />
+            <connection id="18" hatch-facing="east"  />
         </connection-list>
     </building>
     <building id="18" type="Infirmary" xloc="-34.0" yloc="38"
         facing="270.0">
         <connection-list>
-            <connection id="17" xloc="0.0" yloc="4.5" />
+            <connection id="H8" xloc="0.0" yloc="4.5" />
             <connection id="19" xloc="0.0" yloc="-4.5" />
             <connection id="23" xloc="-3.5" yloc="0.0" />
         </connection-list>
