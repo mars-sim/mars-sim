@@ -212,39 +212,70 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		for (Worker m : getMembers()) {
 			Person p = (Person) m;
 			
-			if (!r.isInGarage() && p.isInSettlement()) {
-
-				logger.warning(p, 20_000L, "Case 1: Still inside the settlement. Not on " + r.getName()
-						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-				result = false;
-			}
-			
-			else if (r.isInGarage() &&  
-					(p.isInSettlementVicinity()
-					|| p.isRightOutsideSettlement())) {
-
-				logger.warning(p, 20_000L, "Case 2: Still outside and not on " + r.getName()
-						+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");				
-				
-				if (p.getTaskManager().getTask() instanceof EVAOperation) {
-					logger.warning(p, 20_000L, "Case 2A: " + p.getTaskDescription() 
-								+ ". Soon joining " + getName() + ".");
-				}
-				else if (p.getTaskDescription().equals("")) {
-					logger.warning(p, 20_000L, "Case 2B: Doing no task"
-							+ " outside. Soon joining " + getName() + ".");
+			if (r.isInGarage()) {
+				// rover is in the garage. Members are expected to be boarded
+				if (p.isInVehicle()) {
+					// Best case
 				}
 				
-				result = false;
+				else if (p.isInSettlement() && p.getBuildingLocation() != r.getBuildingLocation()) {
+
+					logger.warning(p, 20_000L, "Case 1A: Still inside settlement but not in garage or in " + r.getName()
+							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+							+ p.getLocationTag().getExtendedLocation() + ".");
+					result = false;
+				}
+				else if (p.isInSettlementVicinity()
+						|| p.isRightOutsideSettlement()) {
+
+					logger.warning(p, 20_000L, "Case 2A: Still outside and not on " + r.getName()
+							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+							+ p.getLocationTag().getExtendedLocation() + ".");				
+					
+					if (p.getTaskManager().getTask() instanceof EVAOperation) {
+						logger.warning(p, 20_000L, "Case 2A1: " + p.getTaskDescription() 
+									+ ". Soon joining " + getName() + ".");
+					}
+					else if (p.getTaskDescription().equals("")) {
+						logger.warning(p, 20_000L, "Case 2A2: Doing no task"
+								+ " outside. Soon joining " + getName() + ".");
+					}
+					
+					result = false;
+				}
+				
 			}
-			
-			else if (!p.isInVehicle()) {
-				logger.warning(p, 20_000L, "Case 3: Not onboard " + r.getName()
-						+ ". Not ready for '" + getName() + "' yet. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-				result = false;
+			else {
+				// rover is not in the garage and is in settlement vicinity. Members are expected to be boarded
+				if (p.isInVehicle()) {
+					// Best case
+				}
+				
+				else if (p.isInSettlement()) {
+
+					logger.warning(p, 20_000L, "Case 1B: Still inside settlement. Not in " + r.getName()
+							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+							+ p.getLocationTag().getExtendedLocation() + ".");
+					result = false;
+				}
+				else if (p.isInSettlementVicinity()
+						|| p.isRightOutsideSettlement()) {
+
+					logger.warning(p, 20_000L, "Case 2B: Still outside and not on " + r.getName()
+							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
+							+ p.getLocationTag().getExtendedLocation() + ".");				
+					
+					if (p.getTaskManager().getTask() instanceof EVAOperation) {
+						logger.warning(p, 20_000L, "Case 2B1: " + p.getTaskDescription() 
+									+ ". Soon joining " + getName() + ".");
+					}
+					else if (p.getTaskDescription().equals("")) {
+						logger.warning(p, 20_000L, "Case 2B2: Doing no task"
+								+ " outside. Soon joining " + getName() + ".");
+					}
+					
+					result = false;
+				}
 			}
 		}
 		
