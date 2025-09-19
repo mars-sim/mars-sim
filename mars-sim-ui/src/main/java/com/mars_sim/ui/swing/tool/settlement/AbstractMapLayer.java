@@ -264,15 +264,49 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
         else if (words[0].contains(T)) {
         	words[0] = words[0].replace(" ", "");
         }	
-        	
-        float rowOffset = s - 1f;
-        int rowSize = (int)(viewpoint.scale() / 1.5f);
 
-		// Split up the name into multiple lines
-		for (int j = 0; j < s; j++) {
-			int y = (int)((j - rowOffset) * rowSize);
-			drawCenteredLabel(words[j], labelFont, position, frontColor, y, viewpoint);
-		}
+
+        if (s == 1) {
+        	drawCenteredLabel(words[0], labelFont, position, frontColor, 0, viewpoint);
+        }
+        else if (s == 2) {
+            float rowOffset = s - 1f;
+            
+            int rowSize = (int)Math.sqrt(viewpoint.scale());
+
+        	// Split up the name into multiple lines
+        	for (int j = 0; j < s; j++) {
+        		if (j == 0) {
+        			int y = (int)(-2.2 * rowOffset * rowSize);
+        			drawCenteredLabel(words[j], labelFont, position, frontColor, y, viewpoint);
+        		}
+        		else if (j == 1) {
+        			int y = (int)(2.2 * rowOffset * rowSize);
+        			drawCenteredLabel(words[j], labelFont, position, frontColor, y, viewpoint);
+        		}
+        	}
+        }
+        else if (s == 3) {
+            float rowOffset = s - 1f;
+            
+            int rowSize = (int)Math.sqrt(viewpoint.scale());
+
+        	// Split up the name into multiple lines
+        	for (int j = 0; j < s; j++) {
+        		if (j == 0) {
+        			int y = (int)(-3.5 * rowOffset * rowSize);
+        			drawCenteredLabel(words[j], labelFont, position, frontColor, y, viewpoint);
+        		}
+        		else if (j == 1) {
+        			int y = (int)(-1.2 * rowOffset * rowSize);
+        			drawCenteredLabel(words[j], labelFont, position, frontColor, y, viewpoint);
+        		}
+        		else if (j == 2) {
+        			int y = (int)(1.2 * rowOffset * rowSize);
+        			drawCenteredLabel(words[j], labelFont, position, frontColor, y, viewpoint);
+        		}
+        	}
+        }
 	}
 
 

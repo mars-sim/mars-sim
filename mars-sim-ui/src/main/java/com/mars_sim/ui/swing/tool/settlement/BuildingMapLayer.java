@@ -143,6 +143,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
         if (showLabel) {
             String[] words = building.getName().replace(HALLWAY, H).replace(TUNNEL, T).split(" ");
+    
             ColorChoice frontColor = BUILDING_COLORS.getOrDefault(building.getCategory(), BUILDING_COLOR);
 
             drawCenteredMultiLabel(words, LABEL_FONT, building.getPosition(),
