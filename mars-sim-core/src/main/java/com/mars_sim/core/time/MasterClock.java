@@ -103,6 +103,11 @@ public class MasterClock implements Serializable {
 	private transient boolean exitProgram;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
+	/** The last time when it was on pause. */
+	private transient long pauseLast;
+	/** The time period when it was on pause. */
+	private transient long pauseTime;
+	
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
 	/** Thread for main clock */
@@ -113,9 +118,6 @@ public class MasterClock implements Serializable {
 	private transient ClockPulse currentPulse;
 	
 	// Data members
-	/** Is pausing millisol in use. */
-	private boolean canPauseTime = false;
-
 	/** The user's preferred simulation time ratio. */
 	private int desiredTR = 0;
 	/** The last sol on the last fireEvent. Need to set to -1. */
@@ -522,7 +524,7 @@ public class MasterClock implements Serializable {
 	 * Sets the exit program flag.
 	 */
 	public void exitProgram() {
-		this.setPaused(true, false);
+		setPaused(true, false);
 		exitProgram = true;
 	}
 
@@ -846,6 +848,9 @@ public class MasterClock implements Serializable {
 	 * Starts the clock.
 	 */
 	public void start() {
+		// Get the total pause time
+		pauseTime = System.currentTimeMillis() - pauseLast;
+		// Continue to increment time
 		clockThreadTask.startRunning();
 
 		startListenerExecutor();
@@ -854,16 +859,19 @@ public class MasterClock implements Serializable {
 
 		timestampPulseStart();
 		
-		logger.info(3_000, "Simulation started.");
+		logger.info(0, "Simulation started.");
 	}
 	
 	/**
 	 * Stops the clock.
 	 */
 	public void stop() {
+		// No longer increment time
 		clockThreadTask.stopRunning();
+		// Track the pause start time
+		pauseLast = System.currentTimeMillis();
 		
-		logger.info(3_000, "Simulation paused.");
+		logger.info(0, "Simulation paused.");
 	}
 
 	/**
@@ -873,7 +881,8 @@ public class MasterClock implements Serializable {
 		if (listenerExecutor == null 
 				|| listenerExecutor.isShutdown()
 				|| listenerExecutor.isTerminated()) {
-			logger.config(10_000, "Setting up thread(s) for clock listener.");
+			
+			logger.config(0, "Setting up thread(s) for clock listener.");
 			listenerExecutor = Executors.newFixedThreadPool(1,
 					new ThreadFactoryBuilder().setNameFormat("clockListener-%d").build());
 		}
@@ -891,8 +900,6 @@ public class MasterClock implements Serializable {
 			clockExecutor = Executors.newSingleThreadExecutor(
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 
-			// Recompute pulse load
-//			computeNewCpuLoad();
 			// Redo the pulses
 			computeReferencePulse();
 		}
@@ -973,16 +980,13 @@ public class MasterClock implements Serializable {
 	public void setPaused(boolean value, boolean showPane) {
 		if (this.isPaused != value) {
 			this.isPaused = value;
-		
-			if (!value) {
-				// When unpause, reset the timestamp from last pulse time
-				timestampPulseStart();
-			}
 
 			if (isPaused) {
+				// Stop the clock thread task
 				stop();
 			}
 			else {
+				// Start the clock thread task and executors
 				start();
 			}
 			
@@ -1152,8 +1156,6 @@ public class MasterClock implements Serializable {
 	 * @param value1
 	 */
 	public void setCommandPause(boolean value0, double value1) {
-		// Check GameManager.mode == GameMode.COMMAND ?
-		canPauseTime = value0;
 		// Note: will need to re-implement the auto pause time for command mode
 		logger.info("Auto pause time: " + value1);
 	}
@@ -1336,12 +1338,14 @@ public class MasterClock implements Serializable {
 
 			// Calculate the real time elapsed [in milliseconds]
 			// Note: this should not include time for rendering UI elements
-			long realElapsedMillisec = tnow - tLast;
+			long realElapsedMillisec = tnow - tLast - pauseTime;
+			
+			pauseTime = 0;
 
 			// Note: Catch the large realElapsedMillisec below. Probably due to power save
 			if (realElapsedMillisec > MAX_ELAPSED) {
 				// Reset the elapsed clock to ignore this pulse
-				logger.config(10_000, "Elapsed real time is " + realElapsedMillisec/1000.0 
+				logger.config(10_000, "realElapsedMillisec is " + realElapsedMillisec/1000.0 
 						+ " secs, exceeding the max time of " + MAX_ELAPSED/1000.0 + " secs.");	
 				// Reset optMilliSolPerPulse
 				optMilliSolPerPulse = referencePulse;
@@ -1350,10 +1354,12 @@ public class MasterClock implements Serializable {
 				// Reset realElaspedMilliSec back to its default time ratio
 				realElapsedMillisec = (long) (leadPulseTime * MILLISECONDS_PER_MILLISOL 
 						/ desiredTR);
+				
+				acceptablePulse = true;
 			}
 			// At the start of the sim, realElapsedMillisec is also zero
 			// Note: find out when the zero realElapsedMillisec will also occur. Probably due to simulation pause ?!
-			else if (realElapsedMillisec == 0.0) {
+			else if (realElapsedMillisec <= 0.0) {
 				// Reset optMilliSolPerPulse
 				optMilliSolPerPulse = referencePulse;
 				// Reset the lead pulse
@@ -1362,7 +1368,9 @@ public class MasterClock implements Serializable {
 				if (leadPulseTime > 0)
 					realElapsedMillisec = (long) (leadPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
-				logger.config("Skipping this frame. Elapsed real time is zero. Setting it to the expected " + realElapsedMillisec + " ms.");
+				logger.config("realElapsedMillisec <= zero, setting it to the expected " + realElapsedMillisec + " ms.");
+				
+				acceptablePulse = true;
 			}
 			
 			else {
@@ -1370,13 +1378,16 @@ public class MasterClock implements Serializable {
 				pulseDeviation = computePulseDev();
 			}
 		
-			if (pulseDeviation > -10 && pulseDeviation < 10) {
-				// If not deviating too much
+			if (pulseDeviation > -2 && pulseDeviation < 2) {
 				acceptablePulse = true;
+			}
+			else {
+				// Deviate too much
+				logger.config("pulseDeviation: " + Math.round(pulseDeviation * 100.0)/1.0 + "%, pulse deviated too much.");
 			}
 			
 			// Elapsed time is acceptable
-			if (leadPulseTime > 0 && clockThreadTask.getRunning() && acceptablePulse) {
+			if (leadPulseTime > 0 && acceptablePulse) {
 				
 				// Calculate the time elapsed for EarthClock, based on latest Mars time pulse
 				float earthMillisec = leadPulseTime * MILLISECONDS_PER_MILLISOL;
@@ -1390,7 +1401,7 @@ public class MasterClock implements Serializable {
 					// Update the uptimer
 					uptimer.updateTime(realElapsedMillisec);
 					// Gets the timestamp for the pulse
-					timestampPulseStart();				
+//					timestampPulseStart();				
 					// Add time to the Earth clock.
 					earthTime = earthTime.plus((long)(earthMillisec * 1000), ChronoField.MICRO_OF_SECOND.getBaseUnit());
 					// Add time pulse to Mars clock.
