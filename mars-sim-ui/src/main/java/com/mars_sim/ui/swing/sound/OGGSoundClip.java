@@ -338,16 +338,14 @@ public class OGGSoundClip {
 			loop();
 			return;
 		}
-		
-		paused = false;
-		
-		setMute(false);
-		
+
 		if (playerThread != null) {
 			synchronized(this){
 				name.notifyAll();
 			}
 		}
+
+		setMute(false);	
 	}
 
 	/**
@@ -725,7 +723,6 @@ public class OGGSoundClip {
 
             paused = mute;
 		}
-
 	}
 
 	public String toString() {

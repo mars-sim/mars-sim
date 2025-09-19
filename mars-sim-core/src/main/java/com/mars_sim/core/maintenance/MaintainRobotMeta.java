@@ -91,10 +91,9 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 			return RatingScore.ZERO_RATING;
 		
 		var factor = TaskUtil.assessRobot(t, r);
-		if (factor.getScore() >= 50)
+		if (factor.getScore() >= 100)
 			factor.addModifier("robot.expert", ROBOT_FACTOR);
-		else 
-			factor.addModifier(NAME, ROBOT_FACTOR);
+
 		return factor;
     }
 
@@ -107,9 +106,15 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 
-		Robot worstRobot = null;
-		double highestScore = 0D;
-		RatingScore score = new RatingScore(0);
+		Robot badRobot0 = null;
+		Robot badRobot1 = null;
+		Robot badRobot2 = null;
+
+		RatingScore highestScore0 = new RatingScore(1D);
+		RatingScore highestScore1 = new RatingScore(1D);
+		RatingScore highestScore2 = new RatingScore(1D);
+
+		RatingScore score = new RatingScore(0D);
 		
 		for (Robot robot : getAllDownRobotCandidates(settlement)) {
 			
@@ -119,19 +124,39 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 			
 			score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
 
-			if (score.getScore() > highestScore) {
-				worstRobot = robot;
-				highestScore = score.getScore();
+			double rawScore = score.getScore();
+			if (rawScore > highestScore0.getScore()) {
+				badRobot0 = robot;
+				highestScore0 = score;
 			}
+			else if (rawScore > highestScore1.getScore()) {
+				badRobot1 = robot;
+				highestScore1 = score;
+			}
+			else if (rawScore > highestScore2.getScore()) {
+				badRobot2 = robot;
+				highestScore2 = score;
+			}		
 		}
 		
-		if (highestScore > 0) {
-			tasks.add(new MaintainRobotJob(this, worstRobot, score));
+		if (highestScore0.getScore() > 1) {
+			tasks.add(new MaintainRobotJob(this, badRobot0, highestScore0));
+		}
+		if (highestScore1.getScore() > 1) {
+			tasks.add(new MaintainRobotJob(this, badRobot1, highestScore1));
+		}
+		if (highestScore2.getScore() > 1) {
+			tasks.add(new MaintainRobotJob(this, badRobot2, highestScore2));
 		}
 		
 		// Reset them
-		worstRobot = null;
-		highestScore = 0D;
+		badRobot0 = null;
+		badRobot1 = null;
+		badRobot2 = null;
+
+		highestScore0 = new RatingScore(1D);
+		highestScore1 = new RatingScore(1D);
+		highestScore2 = new RatingScore(1D);
 		
 		for (Robot robot : getAllGoodRobotCandidates(settlement)) {
 				
@@ -147,15 +172,30 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 				
 				score = MaintenanceUtil.scoreMaintenance(manager, robot, partsPosted);
 	
-				if (score.getScore() > highestScore) {
-					worstRobot = robot;
-					highestScore = score.getScore();
+				double rawScore = score.getScore();
+				if (rawScore > highestScore0.getScore()) {
+					badRobot0 = robot;
+					highestScore0 = score;
 				}
+				else if (rawScore > highestScore1.getScore()) {
+					badRobot1 = robot;
+					highestScore1 = score;
+				}
+				else if (rawScore > highestScore2.getScore()) {
+					badRobot2 = robot;
+					highestScore2 = score;
+				}		
 			}
 		}
 		
-		if (highestScore > 0) {
-			tasks.add(new MaintainRobotJob(this, worstRobot, score));
+		if (highestScore0.getScore() > 1) {
+			tasks.add(new MaintainRobotJob(this, badRobot0, highestScore0));
+		}
+		if (highestScore1.getScore() > 1) {
+			tasks.add(new MaintainRobotJob(this, badRobot1, highestScore1));
+		}
+		if (highestScore2.getScore() > 1) {
+			tasks.add(new MaintainRobotJob(this, badRobot2, highestScore2));
 		}
 
 		return tasks;

@@ -418,7 +418,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (timeLeft >= 1) {
 			callMembersToMission((int)timeLeft);	
 		}
-		else if (getPhaseDuration() - .7 * DEPARTURE_DURATION > 0
+		else if (getPhaseDuration() - .3 * DEPARTURE_DURATION > 0
 				&& getPhaseDuration() - DEPARTURE_DURATION < 0) {
 			canDepart = isEveryoneInRover(member);
 			if (canDepart) {
