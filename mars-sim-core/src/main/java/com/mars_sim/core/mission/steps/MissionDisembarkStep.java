@@ -140,7 +140,7 @@ public class MissionDisembarkStep extends MissionStep {
     private boolean walkToAirLock(Worker w, Settlement target) {
         Building destinationBuilding = target.getBuildingManager().getRandomAirlockBuilding();
         if (destinationBuilding == null) {
-            logger.warning(w, "Cannot find an arirlock in " + target.getName());
+            logger.warning(w, "Cannot find an airlock in " + target.getName());
             return false;
         }
 

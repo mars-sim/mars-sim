@@ -318,13 +318,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 	
 	/**
-	 * Evaluates and ejects members.
+	 * Checks membership and ejects non-members.
 	 * 
 	 * @param member
 	 * @param r
 	 * @return
 	 */
-	private boolean evaluateMemberSuitability(Worker member, Rover r) {
+	private boolean checkMembership(Worker member, Rover r) {
 		
 		boolean canDepart = true;
 		
@@ -345,10 +345,22 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 		}
 
-		// Still enough members ? If so eject late arrivals
+		// Eject the late arrival if enough members
 		if ((getMembers().size() - ejectedMembers.size()) >= MIN_GOING_MEMBERS) { 
 			for (Person ej : ejectedMembers) {
+				// Remove the mission membership
 				removeMember(ej);
+
+				if (r.isInGarage()) {
+					// Force the person to get off the vehicle and back to the garage
+					// Note: may need to evaluate a better way of handling this
+					ej.transfer(r.getGarage());
+				}
+				else {
+					// Let the person automatically leave the vehicle via walking toward a settlement airlock
+					walkToAirLock(ej, r.getSettlement());
+				}
+				
 				logger.warning(ej, "(" + ej.getTaskDescription() + " in " + ej.getLocationTag().getExtendedLocation() 
 						+ ") got ejected from " + r.getName() + " as the rover was departing for " + getName() + ".");
 				addMissionLog("Ejected", ej.getName());
@@ -378,6 +390,27 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		return canDepart;
 	}
 
+	/**
+	 * Walks to an airlock to come back home.
+	 * 
+	 * @param person
+	 * @param settlement
+	 */
+	private void walkToAirLock(Person person, Settlement settlement) {
+		Building destinationBuilding = settlement.getBuildingManager().getRandomAirlockBuilding();
+        if (destinationBuilding == null) {
+            logger.warning(person, "Cannot find an airlock in " + settlement.getName());
+        }
+
+		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
+        Walk walk = Walk.createWalkingTask(person, adjustedLoc, destinationBuilding, true);
+        if (walk != null) {
+        	// Walk back home
+        	assignTask(person, walk);
+        }
+	}
+	
+	
 	/**
 	 * Performs the departing from settlement phase of the mission.
 	 *
@@ -462,7 +495,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				
 		if (canDepart) {
 			// Check if each member is qualified
-			canDepart = evaluateMemberSuitability(member, (Rover)v);
+			canDepart = checkMembership(member, (Rover)v);
 		}
 
 		if (canDepart) {

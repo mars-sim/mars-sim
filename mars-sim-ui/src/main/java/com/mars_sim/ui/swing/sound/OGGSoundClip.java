@@ -255,7 +255,9 @@ public class OGGSoundClip {
 		stop();
 
 		try {
-			bitStream.reset();
+			if (bitStream != null) {
+				bitStream.reset();
+			}
 		} catch (IOException e) {
 			// ignore if no mark
 			logger.log(Level.SEVERE, "IOException in OGGSoundClip's play(). ", e);
@@ -276,7 +278,9 @@ public class OGGSoundClip {
 				 }
 
 				try {
-					bitStream.reset();
+					if (bitStream != null) {
+						bitStream.reset();
+					}
 				} catch (IOException e) {
 					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
 							e);
@@ -291,41 +295,7 @@ public class OGGSoundClip {
 	 * Loop the clip - for background music.
 	 */
 	public void loop() {
-		stop();
-		
-		try {
-			bitStream.reset();
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "IOException in OGGSoundClip's loop(). ", e);
-			// ignore if no mark
-		}
-		
-		playerThread = new Thread() {
-			public void run() {
-				try {
-					playStream(Thread.currentThread());
-				} catch (Exception e) {
-					// Note: "Troubleshooting audio : have you plugged in a speaker/headphone? "
-					// + "Please check your audio source.", e);
-					playerThread = null;
-	
-					if (AudioPlayer.isMusicMute()) {
-						logger.log(Level.CONFIG, "The music is muted.");
-					}
-					else
-						logger.log(Level.SEVERE, "Can't play the bit stream in loop(). ", e);
-				}
-
-				try {
-					bitStream.reset();
-				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Trouble reseting the bit stream for the background track " + name,
-							e);
-				}
-			};
-		};
-		playerThread.setDaemon(true);
-		playerThread.start();
+		play();
 	}
 
 	/**
@@ -333,16 +303,8 @@ public class OGGSoundClip {
 	 * Note: may need to setPause(false) first.
 	 */
 	public void resume() {
-		if (!paused && !isStopped()) {
-			paused = false;
+		if (!paused && isStopped()) {
 			loop();
-			return;
-		}
-
-		if (playerThread != null) {
-			synchronized(this){
-				name.notifyAll();
-			}
 		}
 
 		setMute(false);	

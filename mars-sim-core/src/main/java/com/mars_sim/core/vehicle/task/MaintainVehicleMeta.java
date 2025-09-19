@@ -100,7 +100,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	@Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
 		var factor = TaskUtil.assessRobot(t, r);
-		if (factor.getScore() >= 1)
+		if (factor.getScore() >= 100)
 			factor.addModifier("robot.expert", ROBOT_FACTOR);
 		return factor;
     }
