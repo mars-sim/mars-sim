@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -206,9 +208,17 @@ public class LocationTag implements Serializable {
 	 * @return true if it is
 	 */
 	public boolean isInSettlementVicinity() {
-		if (unit.getSettlement() != null)
+		if ((unit instanceof Vehicle v)
+				&& v.isInGarage()) {
 			return false;
-	
+		}
+		else if ((unit instanceof Person
+				|| unit instanceof Equipment
+				|| unit instanceof Robot)
+				&& unit.getSettlement() != null) {
+			return false;
+		}
+		
 		return (CollectionUtils.findSettlement(unit.getCoordinates()) != null);
 	}
 }

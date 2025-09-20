@@ -273,7 +273,7 @@ abstract class EVAMission extends RoverMission {
 		
 		for (Person p : r.getCrew()) {
 			if (!getMembers().contains(p)) {
-				logger.severe(p, 10_000, "Teleportation scenario 1 detected. Being a crew member in " 
+				logger.severe(p, 10_000, "Teleportation Type 1 detected. Being a crew member in " 
 						+ r.getName() + " but not a mission member.");
 				addMissionLog("Teleportation Type 1 - " + p.getName(), worker.getName());
 				result = true;
@@ -287,7 +287,7 @@ abstract class EVAMission extends RoverMission {
 				
 				if (p.isInSettlement()) {
 
-					logger.severe(p, 10_000, "Teleportation scenario 2 detected. Current location: " 
+					logger.severe(p, 10_000, "Teleportation Type 2 detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 					addMissionLog("Teleportation Type 2 - " + p.getName(), worker.getName());
 					// Note: need to debug why this happens and can't remove a person as member yet
@@ -300,7 +300,7 @@ abstract class EVAMission extends RoverMission {
 				
 				else if (p.isInSettlementVicinity()) {
 
-					logger.severe(p, 10_000, "Teleportation scenario 3 detected. Current location: " 
+					logger.severe(p, 10_000, "Teleportation Type 3 detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 					addMissionLog("Teleportation Type 3 - " + p.getName(), worker.getName());
 					result = true;
@@ -308,7 +308,7 @@ abstract class EVAMission extends RoverMission {
 				
 				else if (p.isRightOutsideSettlement()) {
 
-					logger.severe(p, 10_000, "Teleportation scenario 4 detected. Current location: " 
+					logger.severe(p, 10_000, "Teleportation Type 4 detected. Current location: " 
 						+ p.getLocationTag().getExtendedLocation() + ".");
 					addMissionLog("Teleportation Type 4 - " + p.getName(), worker.getName());
 					result = true;

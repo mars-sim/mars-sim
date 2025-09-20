@@ -983,7 +983,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (myLoc.equals(bedLoc)) {
 			return canWalk;
 		}
-	
+
 		// Create subtask for walking to destination.
 		return createWalkingSubtask(bed.getOwner(), bedLoc, allowFail, true);
 	}

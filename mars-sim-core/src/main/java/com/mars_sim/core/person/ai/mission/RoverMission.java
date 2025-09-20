@@ -896,11 +896,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		crew = rover.getCrew();
         
 		if (!crew.isEmpty()) {
-			// Check to see if anyone is still in the rover.
+			// Check to see if member is still in the vehicle
 			// Walk back to the airlock.
-        	for (Person p : crew) {
-				if (!p.isInSettlement())
-					walkToAirlock(rover, p, disembarkSettlement);
+			if (member instanceof Person p && crew.contains(p)) {
+				walkToAirlock(rover, p, disembarkSettlement);
         	}
 		}
 		else {
@@ -951,55 +950,59 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	private void walkToAirlock(Rover rover, Person person, Settlement disembarkSettlement) {
 
-			// Get random airlock building at settlement.
-			Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
+		// Get random airlock building at settlement.
+		Building destinationBuilding = disembarkSettlement.getBuildingManager().getRandomAirlockBuilding();
 
-			if (destinationBuilding != null) {
-				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
+		if (destinationBuilding != null) {
+			LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(destinationBuilding);
 
-				boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
+			boolean hasStrength = person.getPhysicalCondition().isFitByLevel(1500, 90, 1500);
 
-				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
-				boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
-				
-				if (canWalk) {
-					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
-					if (!canDo) {
-						logger.warning(person, 20_000, "Unable to walk back to " + destinationBuilding + ".");
-					}
-				}
-
-				else if (!hasStrength) {
-					// Note 1: Help this person put on an EVA suit
-					// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
-					logger.info(person, 10_000, 
-							 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
-									disembarkSettlement.getName())); //$NON-NLS-1$
-
-					// Initiate an rescue operation
-					// Note: Gets a lead person to perform it and give him a rescue badge
-					rescueOperation(rover, person, disembarkSettlement);
-
-					logger.info(person, 10_000, "Transported to ("
-							+ person.getPosition() + ") in "
-							+ person.getBuildingLocation().getName()); //$NON-NLS-1$
-
-					// Note: how to force the person to receive some form of medical treatment ?
+			WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, destinationBuilding);
+			boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
 			
-        			Task currentTask = person.getMind().getTaskManager().getTask();
-        			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
-        				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
-        			}
-				}
-				else {
-					logger.severe(person, 10_000, "Cannot find a walk path from "
-									+ rover.getName() + " to " + disembarkSettlement.getName());
+			if (canWalk) {
+				boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+				if (!canDo) {
+					logger.warning(person, 20_000, "Unable to walk back to " + destinationBuilding + ".");
 				}
 			}
 
-			else {
-				logger.severe(person, 10_000, "No airlock found at " + disembarkSettlement);
+			else if (!hasStrength) {
+				// Note 1: Help this person put on an EVA suit
+				// Note 2: consider inflatable medical tent for emergency transport of incapacitated personnel
+				logger.info(person, 10_000, 
+						 Msg.getString("RoverMission.log.emergencyEnterSettlement", person.getName(),
+								disembarkSettlement.getName())); //$NON-NLS-1$
+
+				logger.info(person, 10_000, ""
+						+ "Currently at "
+						+ person.getLocationTag().getExtendedLocation()); 
+
+				// Initiate an rescue operation
+				// Note: Gets a lead person to perform it and give him a rescue badge
+				rescueOperation(rover, person, disembarkSettlement);
+
+				logger.info(person, 10_000, ""
+						+ "Transported to "
+						+ person.getLocationTag().getExtendedLocation()); 
+				
+				// Note: how to force the person to receive some form of medical treatment ?
+		
+    			Task currentTask = person.getMind().getTaskManager().getTask();
+    			if (currentTask != null && !currentTask.getName().equalsIgnoreCase(RequestMedicalTreatment.NAME)) {
+    				person.getMind().getTaskManager().addPendingTask(RequestMedicalTreatment.SIMPLE_NAME);
+    			}
 			}
+			else {
+				logger.severe(person, 10_000, "Cannot find a walk path from "
+								+ rover.getName() + " to " + disembarkSettlement.getName());
+			}
+		}
+
+		else {
+			logger.severe(person, 10_000, "No airlock found at " + disembarkSettlement);
+		}
 	}
 
 	/**
