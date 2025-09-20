@@ -3,7 +3,8 @@ package com.mars_sim.core.map;
 import org.junit.Test;
 
 import com.mars_sim.core.map.MapData.MapState;
-import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 
 import junit.framework.TestCase;
 
@@ -22,7 +23,7 @@ public class MapDataFactoryTest extends TestCase {
     }
 
     @Test
-    public void testLoadResolution() {
+    public void testLoadResolution() throws CoordinatesException {
         var found = MapDataFactory.getMapMetaData(MapDataFactory.DEFAULT_MAP_TYPE);
         var mapData = found.getData(0);
         assertNotNull("Resolution 0 of default", mapData);
@@ -31,7 +32,7 @@ public class MapDataFactoryTest extends TestCase {
         assertEquals("Correct meta data", found, mapData.getMetaData());
         assertEquals("Correct resolution", 0, mapData.getResolution());
 
-        var center = new Coordinates("10 N", "10 E");
+        var center = CoordinatesFormat.fromString("10.0 10.0");
         var image = mapData.createMapImage(center, 100, 100, mapData.getRhoDefault());
         assertEquals("Image width", 100, image.getWidth(null));
         assertEquals("Image height", 100, image.getHeight(null));

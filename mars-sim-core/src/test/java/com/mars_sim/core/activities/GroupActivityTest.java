@@ -8,7 +8,8 @@ import com.mars_sim.core.activities.GroupActivity.ActivityState;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.events.ScheduledEventManager.ScheduledEvent;
-import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.GroupActivityType;
@@ -90,10 +91,10 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
         assertNull("Released meeting place", ga.getMeetingPlace());
     }
 
-    public void testInitialEvent() {
+    public void testInitialEvent() throws CoordinatesException {
         // Simplest first with zero time and no offset
         var now = new MarsTime(1, 1, 1, 0, 1);
-        var locn = new Coordinates("0.0 N", "90.0 E");
+        var locn = CoordinatesFormat.fromString("0.0 90.0");
 
         var s = buildSettlement("East", false, locn);
 

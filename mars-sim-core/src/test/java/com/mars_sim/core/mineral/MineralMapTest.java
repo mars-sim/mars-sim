@@ -3,12 +3,13 @@ package com.mars_sim.core.mineral;
 import java.util.Set;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.map.location.Direction;
 
 public class MineralMapTest extends AbstractMarsSimUnitTest {
 
-    public void testExactLocation() {
+    public void testExactLocation() throws CoordinatesException {
         var config = simConfig.getMineralMapConfiguration();
         var minerals = config.getMineralTypes();
         var type1 = minerals.get(0);
@@ -17,7 +18,7 @@ public class MineralMapTest extends AbstractMarsSimUnitTest {
 
         MineralMap newMap = new MineralMap(config);
 
-        var center = new Coordinates("3 S", "67 E");
+        var center = CoordinatesFormat.fromString("-3.0 67.0");
         
         newMap.addMineral(center, type1, 10);
         newMap.addMineral(center, type2, 20);
@@ -30,7 +31,7 @@ public class MineralMapTest extends AbstractMarsSimUnitTest {
         assertEquals("Type2 Concentrations", 20, found.getConcentration(type2.getName()));
     }
 
-    public void testTwoLocation() {
+    public void testTwoLocation() throws CoordinatesException {
         var config = simConfig.getMineralMapConfiguration();
         var minerals = config.getMineralTypes();
         var type1 = minerals.get(0);
@@ -39,7 +40,7 @@ public class MineralMapTest extends AbstractMarsSimUnitTest {
 
         MineralMap newMap = new MineralMap(config);
 
-        var center = new Coordinates("3 S", "67 E");
+        var center = CoordinatesFormat.fromString("-3.0 67.0");
         
         newMap.addMineral(center, type1, 10);
         newMap.addMineral(center.getNewLocation(new Direction(0.1), 0.01), type2, 20);

@@ -2,6 +2,8 @@ package com.mars_sim.core.environment;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 
 public class LandmarkConfigTest extends AbstractMarsSimUnitTest {
     public void testGetLandmarks() {
@@ -14,11 +16,11 @@ public class LandmarkConfigTest extends AbstractMarsSimUnitTest {
         assertFalse("No landmarks found", results.isEmpty());
     }
 
-    public void testBeagle() {
+    public void testBeagle() throws CoordinatesException {
         var mgr = getSim().getConfig().getLandmarkConfiguration().getLandmarks();
 
         // Check teh lanmark for beagle
-        var center = new Coordinates("10.6 N", "90.0 E");
+        var center = CoordinatesFormat.fromString("10.6 90.0");
         var results = mgr.getFeatures(center, 0.01);
 
         assertEquals("Beagle found", 1, results.size());

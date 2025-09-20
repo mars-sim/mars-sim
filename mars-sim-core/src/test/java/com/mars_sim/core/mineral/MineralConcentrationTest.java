@@ -4,12 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 
 class MineralConcentrationTest {
     @Test
-    void testAdjustMineral() {
-        var base = new Coordinates("45 N", "23 E");
+    void testAdjustMineral() throws CoordinatesException {
+        var base = CoordinatesFormat.fromString("45.0 23.0");
         MineralDeposit conc = new MineralDeposit(base);
 
         conc.adjustMineral("A", 10);
@@ -23,8 +24,8 @@ class MineralConcentrationTest {
     }
 
     @Test
-    void testUpdateMineral() {
-        var base = new Coordinates("45 N", "23 E");
+    void testUpdateMineral() throws CoordinatesException {
+        var base = CoordinatesFormat.fromString("45.0 23.0");
         MineralDeposit conc = new MineralDeposit(base);
 
         conc.adjustMineral("A", 10);
@@ -35,8 +36,8 @@ class MineralConcentrationTest {
 
     
     @Test
-    void testAddMineral() {
-        var base = new Coordinates("45 N", "23 E");
+    void testAddMineral() throws CoordinatesException {
+        var base = CoordinatesFormat.fromString("45.0 23.0");
         MineralDeposit conc = new MineralDeposit(base);
 
         conc.addMineral("A", 10);

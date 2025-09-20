@@ -9,10 +9,11 @@ import com.mars_sim.core.map.location.Coordinates;
 
 class EventScheduleTest {
     private static final int NOW_MSOL = 500;
+    private static final double LONG = Math.PI/2;
 
-    private static final Coordinates CENTER = new Coordinates("10N", "0E");
-    private static final Coordinates ONE_THIRD = new Coordinates("10N", "120E");
-    private static final Coordinates TWO_THIRDS = new Coordinates("10N", "120W");
+    private static final Coordinates CENTER = new Coordinates(LONG, 0D);
+    private static final Coordinates ONE_THIRD = new Coordinates(LONG, Math.PI * 2 / 3);
+    private static final Coordinates TWO_THIRDS = new Coordinates(LONG, -Math.PI * 2 / 3);
 
     @Test
     void testBasic() {
@@ -31,7 +32,7 @@ class EventScheduleTest {
 
     @Test
     void testRolloverBig() {
-        assertCalendar("Rollover big", 0, 300, new Coordinates("10N", "5W"));
+        assertCalendar("Rollover big", 0, 300, new Coordinates(LONG, -0.1));
     }
 
     @Test

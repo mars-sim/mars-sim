@@ -3,13 +3,14 @@ package com.mars_sim.core.mineral;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
-import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 
 public class RandomMineralFactoryTest extends AbstractMarsSimUnitTest {
-    public void testCreateLocalConcentration() {
+    public void testCreateLocalConcentration() throws CoordinatesException {
         var newMap = new MineralMap(simConfig.getMineralMapConfiguration());
 
-        var center = new Coordinates("30 N", "25 W");
+        var center = CoordinatesFormat.fromString("30.0 -25.0");
         RandomMineralFactory.createLocalConcentration(newMap, center);
 
         // Search all types

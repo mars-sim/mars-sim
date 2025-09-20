@@ -5,6 +5,8 @@ import java.util.Collections;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 
 public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
@@ -35,8 +37,8 @@ public class ExplorationManagerTest extends AbstractMarsSimUnitTest {
 
     }
 
-     public void testCreateUnclaimedARegionOfInterest() {
-        var locn = new Coordinates("10N", "10E");
+     public void testCreateUnclaimedARegionOfInterest() throws CoordinatesException {
+        var locn = CoordinatesFormat.fromString("10.0 10.0");
 
         // Find a random location within 20K with minerals
         var sf = getSim().getSurfaceFeatures();

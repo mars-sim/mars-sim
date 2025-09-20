@@ -14,7 +14,7 @@ public class MiningObjectiveTest extends AbstractMarsSimUnitTest {
         var sf = getSim().getSurfaceFeatures();
 
         // Use a huge range for search to guarantee a site
-        var potentials = sf.getMineralMap().findRandomMineralLocation(new Coordinates("0N", "0E"),
+        var potentials = sf.getMineralMap().findRandomMineralLocation(new Coordinates(Math.PI, 0),
                     100000, Collections.emptyList());
 
         // Give big skill to handle small conc
