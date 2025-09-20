@@ -3,11 +3,7 @@ package com.mars_sim.core.map.location;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.text.DecimalFormat;
-
 import org.junit.jupiter.api.Test;
-
-import com.mars_sim.core.tool.Msg;
 
 
 /**
@@ -18,7 +14,6 @@ class TestCoordinates {
 	
     private static final double ERROR_MARGIN_KM = .000000001D;
     private static final double ERROR_MARGIN_RAD = .00001D;
-    private static final String DEG_SIGN = Msg.getString("direction.degreeSign");
 	
     /**
      * Finds the distance resolution for one degree at the equator.
@@ -37,7 +32,6 @@ class TestCoordinates {
         double error = Math.abs(dist - expected);
         assertTrue(error < ERROR_MARGIN_KM);
 
-        /////////////////////////////////////////////////////////
         // 5.92 m resolution
         
         Coordinates c2 = new Coordinates("0.0000", "0");
@@ -51,7 +45,6 @@ class TestCoordinates {
         
         assertTrue(error1 < ERROR_MARGIN_KM);
         
-        /////////////////////////////////////////////////////////
         // 4.18 m resolution
         
         Coordinates c4 = new Coordinates("45", "0.0000");
@@ -367,100 +360,5 @@ class TestCoordinates {
         double thetaError8 = Math.abs(loc8.getTheta() - ((2D * Math.PI) - angleDistanceDiagonal));
         assertTrue(phiError8 < ERROR_MARGIN_RAD);
         assertTrue(thetaError8 < ERROR_MARGIN_RAD);
-    }
-    
-    /**
-     * Test the parseLongitude method.
-     */
-    public void testParseLongitude() {
-        
-        String lonString0 = "226.98" + DEG_SIGN + " E";
-        double lon0 = Math.round(Coordinates.parseLongitude2Theta(lonString0)*100.0)/100.0;
-        assertEquals(3.96, lon0, 0);
-        
-        String lonString1 = "46.98" + DEG_SIGN + " E";
-        double lon1 = Math.round(Coordinates.parseLongitude2Theta(lonString1)*100.0)/100.0;
-        assertEquals(.82, lon1, 0);
-        
-        String lonString01 = "0" + DEG_SIGN + " E";
-        double lon01 = Math.round(Coordinates.parseLongitude2Theta(lonString01)*100.0)/100.0;
-        assertEquals(0D, lon01, 0);
-        
-        String lonString2 = "90.0" + DEG_SIGN + " W";
-        double lon2 = Coordinates.parseLongitude2Theta(lonString2);
-        assertEquals(3D * Math.PI / 2D, lon2, 0);
-        
-        String lonString3 = "90.0 W";
-        double lon3 = Coordinates.parseLongitude2Theta(lonString3);
-        assertEquals(3D * Math.PI / 2D, lon3, 0);
-        
-        String lonString4 = "90,0 W";
-        double lon4 = Coordinates.parseLongitude2Theta(lonString4);
-        assertEquals(3D * Math.PI / 2D, lon4, 0);
-    }
-    
-    /**
-     * Test the parseLatitude method.
-     */
-    public void testParseLatitude() {
-        
-        String latString1 = "0.0" + DEG_SIGN + " N";
-        double lat1 = Coordinates.parseLatitude2Phi(latString1);
-        assertEquals(Math.PI / 2D, lat1, 0);
-        
-        String latString2 = "90.0" + DEG_SIGN + " S";
-        double lat2 = Coordinates.parseLatitude2Phi(latString2);
-        assertEquals(Math.PI, lat2, 0);
-        
-        String latString01 = "17.23" + DEG_SIGN + " N";
-        double lat01 = Math.round(Coordinates.parseLatitude2Phi(latString01)*100.0)/100.0;
-        assertEquals(1.27, lat01, 0);
-               
-        String latString3 = "90.0 N";
-        double lat3 = Coordinates.parseLatitude2Phi(latString3);
-        assertEquals(0D, lat3, 0);
-        
-        String latString4 = "90,0 N";
-        double lat4 = Coordinates.parseLatitude2Phi(latString4);
-        assertEquals(0D, lat4, 0);
-    }
-    
-    /**
-     * Test the getFormattedLongitudeString method.
-     */
-    public void testGetFormattedLongitudeString() {
-        
-        Coordinates loc1 = new Coordinates (0D, 0D);
-        String lonString1 = loc1.getFormattedLongitudeString();
-        DecimalFormat format = new DecimalFormat();
-        char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        String s2 = "0" + decimalPoint + "0000 E";
-        assertEquals(s2, lonString1);
-    }
-    
-    /**
-     * Test the getFormattedLongitudeString method.
-     */
-    public void testGetFormattedLongitudeString2() {
-        
-        Coordinates loc1 = new Coordinates (0D, Math.PI/2D);
-        String lonString1 = loc1.getFormattedLongitudeString();
-        DecimalFormat format = new DecimalFormat();
-        char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        String s2 = "90" + decimalPoint + "0000 E";
-        assertEquals(s2, lonString1);
-    }
-    
-    /**
-     * Test the getFormattedLatitudeString method.
-     */
-    public void testGetFormattedLatitudeString() {
-        
-        Coordinates loc1 = new Coordinates (0D, 0D);
-        String latString1 = loc1.getFormattedLatitudeString();
-        DecimalFormat format = new DecimalFormat();
-        char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        String s2 = "90"+ decimalPoint + "0000 N";
-        assertEquals(s2, latString1);
     }
 }

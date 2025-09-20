@@ -18,6 +18,7 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
@@ -97,13 +98,9 @@ class InitialSettlementModel extends AbstractTableModel {
 	 */
 	public void loadDefaultSettlements(Scenario selected) {
 		settlementInfoList.clear();
-		List<String> usedNames = new ArrayList<>();
 
 		for (InitialSettlement spec : selected.getSettlements()) {
 			SettlementInfo info = toSettlementInfo(spec);
-
-			// Save this name to the list
-			usedNames.add(info.name);
 				
 			settlementInfoList.add(info);
 		}
@@ -172,6 +169,7 @@ class InitialSettlementModel extends AbstractTableModel {
 	 * cell. If we didn't implement this method, then the last column would contain
 	 * text ("true"/"false"), rather than a check box.
 	 */
+	@Override
 	public Class<?> getColumnClass(int c) {
 		return getValueAt(0, c).getClass();
 	}
@@ -275,7 +273,7 @@ class InitialSettlementModel extends AbstractTableModel {
 					else {
 						info.latitude = (String) aValue;
 					}
-					String latError = Coordinates.checkLat(info.latitude);
+					String latError = CoordinatesFormat.checkLat(info.latitude);
 					if (latError != null)
 						setError(latError);
 					break;
@@ -297,7 +295,7 @@ class InitialSettlementModel extends AbstractTableModel {
 					else {
 						info.longitude = (String) aValue;
 					}
-					String lonError = Coordinates.checkLon(info.longitude);
+					String lonError = CoordinatesFormat.checkLon(info.longitude);
 					if (lonError != null)
 						setError(lonError);
 					break;
@@ -331,7 +329,7 @@ class InitialSettlementModel extends AbstractTableModel {
 		}
 
 		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = new ArrayList<String>(ra.getSettlementNames());
+		List<String> candidateNames = new ArrayList<>(ra.getSettlementNames());
 		candidateNames.removeAll(usedNames);
 
 		if (candidateNames.isEmpty())
@@ -407,10 +405,10 @@ class InitialSettlementModel extends AbstractTableModel {
 				}
 			}
 			
-			String latError = Coordinates.checkLat(settlement.latitude);
+			String latError = CoordinatesFormat.checkLat(settlement.latitude);
 			if (latError != null)
 				setError(latError);
-			String lonError = Coordinates.checkLon(settlement.longitude);
+			String lonError = CoordinatesFormat.checkLon(settlement.longitude);
 			if (lonError != null)
 				setError(lonError);
 			

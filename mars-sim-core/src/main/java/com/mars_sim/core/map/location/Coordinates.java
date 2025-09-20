@@ -7,12 +7,8 @@
 package com.mars_sim.core.map.location;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.logging.Logger;
 
 import com.mars_sim.core.map.IntegerMapData;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -27,9 +23,6 @@ public final class Coordinates implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(Coordinates.class.getName());
-
 	/** Mars average radius in km. */
 	public static final double MARS_RADIUS_KM = 3393D;
 	
@@ -38,23 +31,10 @@ public final class Coordinates implements Serializable {
 	public static final double KM_PER_DEGREE_AT_EQUATOR = MARS_CIRCUMFERENCE / 360;
 	public static final double KM_PER_RADIAN_AT_EQUATOR = MARS_CIRCUMFERENCE / (2 * Math.PI);
 	
-	// The resolution of each pixel is approximately 5.9219 m (or 0.00592 km) 
-	public static final double KM_PER_4_DECIMAL_DEGREE_AT_EQUATOR = MARS_CIRCUMFERENCE / 360 / 10_000;
-	
-	private static final double DEG_TO_RADIAN  = Math.PI / 180;
 	private static final double RADIAN_TO_DEG  = 180 / Math.PI;
 	private static final double PI_HALF = Math.PI / 2;
 	private static final double TWO_PI = Math.PI * 2;
 
-	// stored for efficiency but not serialized.
-	private static final transient String NORTH_SHORT = Msg.getString("direction.northShort");
-	private static final transient String EAST_SHORT = Msg.getString("direction.eastShort");
-	private static final transient String SOUTH_SHORT = Msg.getString("direction.southShort");
-	private static final transient String WEST_SHORT = Msg.getString("direction.westShort");
-	private static final transient String LON_BAD_FORMAT = Msg.getString("Coordinates.error.longitudeBadFormat");
-	private static final transient String LAT_BAD_FORMAT = Msg.getString("Coordinates.error.latitudeBadFormat");
-	private static final transient String LON_BEGIN_WITH = Msg.getString("Coordinates.error.longitudeBeginWith");
-	private static final transient String LAT_BEGIN_WITH = Msg.getString("Coordinates.error.latitudeBeginWith");
 
 	// Data members
 	/** Phi value of coordinates PHI is latitude in 0-PI radians.*/
@@ -62,15 +42,8 @@ public final class Coordinates implements Serializable {
 	/** Theta value of coordinates, THETA is longitude in 0-2PI radians. */
 	private final double theta;
 
-	/** Formatted string of the latitude. */
-	private transient String latStr;
-	/** Formatted string of the longitude. */
-	private transient String lonStr;
 	/** Formatted string of both latitude and longitude. */
 	private transient String formattedString;
-	
-	/** Currently, lat and lon are up to 4 decimal places. Thus the decimal format '0.0000' is used. */
-	private static DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
 
 	/**
 	 * Constructs a Coordinates object, hence a constructor.
@@ -117,7 +90,7 @@ public final class Coordinates implements Serializable {
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
 	 */
 	public Coordinates(String latitude, String longitude) {
-		this(parseLatitude2Phi(latitude), parseLongitude2Theta(longitude));
+		this(CoordinatesFormat.parseLatitude2Phi(latitude), CoordinatesFormat.parseLongitude2Theta(longitude));
 	}
 
 	
@@ -278,11 +251,7 @@ public final class Coordinates implements Serializable {
 	 */
 	public String getFormattedString() {
 		if (formattedString == null) {
-			StringBuilder buffer = new StringBuilder();
-			buffer.append(getFormattedLatitudeString());
-			buffer.append(' ');
-			buffer.append(getFormattedLongitudeString());
-			formattedString = buffer.toString();
+			formattedString = CoordinatesFormat.getFormattedString(this);
 		}
 		
 		return formattedString;
@@ -295,10 +264,7 @@ public final class Coordinates implements Serializable {
 	 * @return formatted longitude string for this Coordinates object
 	 */
 	public final String getFormattedLongitudeString() {
-		if (lonStr == null) {
-			lonStr = getFormattedLongitudeString(theta);
-		}
-		return lonStr;
+		return CoordinatesFormat.getFormattedLongitudeString(this);
 	}
 
 	/**
@@ -310,9 +276,9 @@ public final class Coordinates implements Serializable {
 	public double getLongitudeDouble() {
 		double degrees = 0D;
 
-		if ((theta < Math.PI) && (theta >= 0D)) {
+		if ((theta <= Math.PI) && (theta >= 0D)) {
 			degrees = Math.toDegrees(theta);
-		} else if (theta >= Math.PI) {
+		} else if (theta > Math.PI) {
 			degrees = Math.toDegrees(TWO_PI - theta);
 			degrees = -degrees;
 		}
@@ -320,28 +286,7 @@ public final class Coordinates implements Serializable {
 		return degrees;
 	}
 
-	/**
-	 * Gets a common formatted string to represent longitude for a given theta. 
-	 * e.g. "35.6670 E".
-	 *
-	 * @param theta the radian theta value for the location.
-	 * @return formatted longitude string for this Coordinates object
-	 */
-	private static String getFormattedLongitudeString(double theta) {
-		double degrees = 0;
-		String direction = "";
 
-		if ((theta < Math.PI) && (theta >= 0D)) {
-			degrees = Math.toDegrees(theta);
-			direction = EAST_SHORT; //$NON-NLS-1$
-		} else if (theta >= Math.PI) {
-			degrees = Math.toDegrees(TWO_PI - theta);
-			direction = WEST_SHORT; //$NON-NLS-1$
-		}
-
-		// Add a whitespace in between the degree and its directional sign
-		return formatter.format(degrees) + " " + direction;
-	}
 
 	/**
 	 * Gets a common formatted string to represent latitude for this location. 
@@ -350,10 +295,7 @@ public final class Coordinates implements Serializable {
 	 * @return formatted latitude string for this Coordinates object
 	 */
 	public final String getFormattedLatitudeString() {
-		if (latStr == null) {
-			latStr = getFormattedLatitudeString(phi);
-		}
-		return latStr;
+		return CoordinatesFormat.getFormattedLatitudeString(this);
 	}
 
 	/**
@@ -375,28 +317,6 @@ public final class Coordinates implements Serializable {
 		return degrees;
 	}
 
-	/**
-	 * Gets a common formatted string to represent latitude for a given phi.
-	 * e.g. "35.6230 S".
-	 *
-	 * @param phi the radian phi value for the location.
-	 * @return formatted latitude string for this Coordinates object
-	 */
-	private static String getFormattedLatitudeString(double phi) {
-		double degrees = 0;
-		String direction = "";
-
-		if (phi <= PI_HALF) {
-			degrees = ((PI_HALF - phi) / PI_HALF) * 90D;
-			direction = NORTH_SHORT; //$NON-NLS-1$
-		} else {
-			degrees = ((phi - PI_HALF) / PI_HALF) * 90D;
-			direction = SOUTH_SHORT; //$NON-NLS-1$
-		}
-
-		// Add a whitespace in between the degree and its directional sign
-		return formatter.format(degrees) + " " + direction; //$NON-NLS-1$
-	}
 
 	/**
 	 * Converts phi to latitude.
@@ -542,232 +462,6 @@ public final class Coordinates implements Serializable {
 		double finalY = -1D * direction.getCosDirection() * remainder;
 		double finalX = direction.getSinDirection() * remainder;
 		return startCoords.convertRectToSpherical(finalX, finalY);
-	}
-
-	/**
-	 * Parses a latitude string into a phi value. e.g. input: "25.344 N"
-	 * For latitude string: North is positive (+); South is negative (-)
-	 * For phi : it starts from the north pole (phi = 0) to the south pole (phi = PI)
-	 *
-	 * @param latitude as string
-	 * @return phi value in radians
-	 * @throws ParseException if latitude string could not be parsed.
-	 */
-	public static double parseLatitude2Phi(String latitude) {
-		double latValue = 0D;
-
-		String cleanLatitude = latitude.toUpperCase().trim();
-
-		if (cleanLatitude.isEmpty())
-			throw new IllegalStateException("Latitude is blank !");
-
-		// Checks if the latitude string is a pure decimal number
-		boolean pureDecimal = true;
-
-		try {
-			latValue = Double.parseDouble(latitude);
-			if ((latValue > 90D) || (latValue < -90))
-				throw new IllegalStateException("Latitude value out of range : " + latValue);
-			if (latValue >= 0)
-				latValue = 90D - latValue;
-			else
-				latValue = -90D;
-		} catch (NumberFormatException e) {
-			pureDecimal = false;
-		}
-
-		if (!pureDecimal) {
-			try {
-				String numberString = cleanLatitude.substring(0, cleanLatitude.length() - 1).trim();
-				if (numberString.endsWith(Msg.getString("direction.degreeSign"))) //$NON-NLS-1$
-					numberString = numberString.substring(0, numberString.length() - 1);
-				// Replace comma with period from internationalization.
-				numberString = numberString.replace(',', '.');
-				latValue = Double.parseDouble(numberString);
-			} catch (NumberFormatException e) {
-				throw new IllegalStateException("Latitude number invalid : " + latitude);
-			}
-
-			if ((latValue > 90D) || (latValue < -90))
-				throw new IllegalStateException("Latitude value out of range : " + latValue);
-
-			String direction = "" + cleanLatitude.charAt(latitude.length() - 1);
-			if (direction.compareToIgnoreCase(NORTH_SHORT) == 0)
-				latValue = 90D - latValue;
-			else if (direction.compareToIgnoreCase(SOUTH_SHORT) == 0)
-				latValue += 90D;
-			else
-				throw new IllegalStateException("Invalid Latitude direction : " + direction);
-		}
-
-		return DEG_TO_RADIAN * latValue;
-	}
-
-	/**
-	 * Parses a longitude string into a theta value. e.g. input:  "63.5532 W"
-	 * Note: East is positive (+), West is negative (-)
-	 *
-	 * @param longitude as string
-	 * @return theta value in radians
-	 * @throws ParseException if longitude string could not be parsed.
-	 */
-	public static double parseLongitude2Theta(String longitude) {
-		double longValue = 0D;
-
-		String cleanLongitude = longitude.toUpperCase().trim();
-
-		if (cleanLongitude.isEmpty())
-			throw new IllegalStateException("Longitude is blank !");
-
-		// Checks if the longitude string is a pure decimal number
-		boolean pureDecimal = true;
-
-		try {
-			longValue = Double.parseDouble(longitude);
-
-			while (longValue < 0D)
-				longValue += 360;
-			while (longValue > 360)
-				longValue -= 360;
-
-		} catch (NumberFormatException e) {
-			pureDecimal = false;
-		}
-
-		if (!pureDecimal) {
-
-			try {
-				String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
-				if (numberString.endsWith(Msg.getString("direction.degreeSign")))
-					numberString = numberString.substring(0, numberString.length() - 1); // $NON-NLS-1$
-				// Replace "comma" (in case of non-US locale) with "period"
-				numberString = numberString.replace(',', '.');
-				longValue = Double.parseDouble(numberString);
-			} catch (NumberFormatException e) {
-				throw new IllegalStateException("Longitude number invalid: " + longitude);
-			}
-
-			// Note: parse longitude depending on locale and validate
-			String directionStr = "" + cleanLongitude.charAt(cleanLongitude.length() - 1);
-
-			if (directionStr.compareToIgnoreCase(WEST_SHORT) == 0)
-				longValue = 360D - longValue;
-			else if (directionStr.compareToIgnoreCase(EAST_SHORT) != 0)
-				throw new IllegalStateException("Invalid Longitude direction : " + directionStr);
-
-		}
-
-		return DEG_TO_RADIAN * longValue;
-	}
-
-	/**
-	 * Checks for the validity of the input latitude.
-	 *
-	 * @param latitude the input latitude
-	 */
-	public static String checkLat(String latitude) {
-		
-		// Check that settlement latitude is valid.
-		if ((latitude == null) || (latitude.isEmpty())) {
-			return (Msg.getString("Coordinates.error.latitudeMissing")); //$NON-NLS-1$
-		}
-
-		// check if the second from the last character is a digit or a letter,
-		// if a letter, setError
-		if (latitude.length() < 3 && Character.isLetter(latitude.charAt(latitude.length() - 2))) {
-			return LAT_BAD_FORMAT; //$NON-NLS-1$
-		}
-
-		// check if the last character is a digit or a letter,
-		// if a digit, setError
-		if (latitude.length() < 2 && Character.isDigit(latitude.charAt(latitude.length() - 1))) {
-			return LAT_BAD_FORMAT; //$NON-NLS-1$
-		}
-
-		String s = latitude.trim().toUpperCase();
-		String dir = s.substring(s.length() - 1, s.length());
-		Character c = dir.charAt(0);
-		if (Character.isDigit(c)) {
-			logger.warning("An input latitude [" + s + "] is missing the direction sign.");
-			return LAT_BAD_FORMAT; //$NON-NLS-1$
-		}
-
-		if (!(s.endsWith(NORTH_SHORT) //$NON-NLS-1$
-				|| s.endsWith(SOUTH_SHORT)) //$NON-NLS-1$ 
-			) {
-			return Msg.getString("Coordinates.error.latitudeEndWith", //$NON-NLS-1$
-					NORTH_SHORT,	//$NON-NLS-2$
-					SOUTH_SHORT 	//$NON-NLS-3$
-			);
-		}
-		
-		String numLatitude = s.substring(0, s.length() - 1);
-		try {
-			double doubleLatitude = Double.parseDouble(numLatitude);
-			if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
-				return LAT_BEGIN_WITH; //$NON-NLS-1$
-			}
-		} catch (NumberFormatException e) {
-			return LAT_BEGIN_WITH; //$NON-NLS-1$
-		}
-		
-		return null;
-	}
-
-	/**
-	 * Checks for the validity of the input longitude.
-	 *
-	 * @param longitude the input longitude
-	 */
-	public static String checkLon(String longitude) {
-
-		// Check that settlement longitude is valid.
-		if ((longitude == null) || (longitude.isEmpty())) {
-			return Msg.getString("Coordinates.error.longitudeMissing"); //$NON-NLS-1$
-		}
-
-		// check if the second from the last character is a digit or a letter,
-		// if a letter, setError
-		if (longitude.length() < 3 && Character.isLetter(longitude.charAt(longitude.length() - 2))) {
-			return LON_BAD_FORMAT; //$NON-NLS-1$
-		}
-
-		// check if the last character is a digit or a letter,
-		// if a digit, setError
-		if (longitude.length() < 2 && Character.isDigit(longitude.charAt(longitude.length() - 1))) {
-			return LON_BAD_FORMAT; //$NON-NLS-1$
-		}
-
-		String s = longitude.trim().toUpperCase();
-		String dir = s.substring(s.length() - 1, s.length());
-		Character c = dir.charAt(0);
-		if (Character.isDigit(c)) {
-			logger.warning("An input longitude [" + s + "] is missing the direction sign.");
-			return LON_BAD_FORMAT; //$NON-NLS-1$
-		}
-
-		if (!s.endsWith(WEST_SHORT)  //$NON-NLS-1$
-				&& !s.endsWith(EAST_SHORT)  //$NON-NLS-1$
-				) {
-			return Msg.getString("Coordinates.error.longitudeEndWith", //$NON-NLS-1$
-					EAST_SHORT, //$NON-NLS-2$
-					WEST_SHORT //$NON-NLS-3$
-			);
-		}
-
-		String numLongitude = s.substring(0, s.length() - 1);
-		try {
-			double doubleLongitude = Double.parseDouble(numLongitude);
-
-			// Future: should self-correct instead of throwing error
-			if ((doubleLongitude < 0) || (doubleLongitude > 360)) {
-				return LON_BEGIN_WITH; //$NON-NLS-1$
-			}
-		} catch (NumberFormatException e) {
-			return LON_BEGIN_WITH; //$NON-NLS-1$
-		}
-
-		return null;
 	}
 
 	/**

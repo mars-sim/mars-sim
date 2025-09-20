@@ -21,6 +21,8 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.Malfunction.Repairer;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.malfunction.MalfunctionRepairWork;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.Person;
@@ -522,45 +524,26 @@ public class CommandHelper {
 	 * @param context COntext of the conversation
 	 */
 	public static Coordinates getCoordinates(String desc, Conversation context) {
-		double phi = 0;
-		double theta = 0;
-		boolean good = false;
-		
 		do {
-			try {
-				String latitudeStr1 = context.getInput("What is the latitude (e.g. 10.03 N, 5.01 S) of the " 
-						+ desc.toLowerCase() + " coordinate ?");
-				if (latitudeStr1.equalsIgnoreCase("quit") || latitudeStr1.equalsIgnoreCase("/q")
-						|| latitudeStr1.isBlank())
-					return null;
-				else {
-					phi = Coordinates.parseLatitude2Phi(latitudeStr1);
-					good = true;
-				}
-			} catch(IllegalStateException e) {
-				context.println("Not a valid format");
-				good = false;
-			}
-		} while (!good);
-		
-		do {
-			try {
-				String longitudeStr = context.getInput("What is the longitude (e.g. 5.09 E, 18.04 W) of the "
+			String latitudeStr1 = context.getInput("What is the latitude (e.g. 10.03 N, 5.01 S) of the " 
+					+ desc.toLowerCase() + " coordinate ?");
+			if (latitudeStr1.equalsIgnoreCase("quit") || latitudeStr1.equalsIgnoreCase("/q")
+					|| latitudeStr1.isBlank())
+				return null;
+
+			String longitudeStr = context.getInput("What is the longitude (e.g. 5.09 E, 18.04 W) of the "
 						+ desc.toLowerCase() + " coordinate ?");
 				if (longitudeStr.equalsIgnoreCase("quit") || longitudeStr.equalsIgnoreCase("/q")
 						|| longitudeStr.isBlank())
 					return null;
-				else {
-					theta = Coordinates.parseLongitude2Theta(longitudeStr);
-					good = true;
-				}
-			} catch(IllegalStateException e) {
-				context.println("Not a valid format");
-				good = false;
+
+			try {
+				return CoordinatesFormat.fromString(latitudeStr1, longitudeStr);
 			}
-		} while (!good);
-		
-		return new Coordinates(phi, theta);
+			catch(CoordinatesException e) {
+				context.println("Not a valid format : " + e.getMessage());
+			}
+		} while (true);
 	}
 
 	/**

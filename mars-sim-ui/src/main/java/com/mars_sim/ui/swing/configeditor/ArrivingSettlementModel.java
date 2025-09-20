@@ -18,6 +18,7 @@ import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -289,7 +290,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 					else {
 						info.latitude = (String) aValue;
 					}
-					String latError = Coordinates.checkLat(info.latitude);
+					String latError = CoordinatesFormat.checkLat(info.latitude);
 					if (latError != null)
 						setError(latError);
 					break;
@@ -311,7 +312,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 					else {
 						info.longitude = (String) aValue;
 					}
-					String lonError = Coordinates.checkLon(info.longitude);
+					String lonError = CoordinatesFormat.checkLon(info.longitude);
 					if (lonError != null)
 						setError(lonError);
 					break;
@@ -432,10 +433,10 @@ class ArrivingSettlementModel extends AbstractTableModel {
 			}
 			
 			if ((arrival.latitude != null) && (arrival.longitude != null)) {
-				String latError = Coordinates.checkLat(arrival.latitude);
+				String latError = CoordinatesFormat.checkLat(arrival.latitude);
 				if (latError != null)
 					setError(latError);
-				String lonError = Coordinates.checkLon(arrival.longitude);
+				String lonError = CoordinatesFormat.checkLon(arrival.longitude);
 				if (lonError != null)
 					setError(lonError);
 				

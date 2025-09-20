@@ -25,6 +25,7 @@ import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.logging.DiagnosticsManager;
 import com.mars_sim.core.map.common.FileLocator;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.CrewConfig;
 import com.mars_sim.core.tool.RandomUtil;
@@ -84,7 +85,7 @@ public class SimulationBuilder {
 	}
 	
 	private void setLatitude(String lat) {
-		String error = Coordinates.checkLat(lat);
+		String error = CoordinatesFormat.checkLat(lat);
 		if (error != null) {
 			throw new IllegalArgumentException(error);
 		}
@@ -92,7 +93,7 @@ public class SimulationBuilder {
 	}
 	
 	private void setLongitude(String lon) {
-		String error = Coordinates.checkLon(lon);
+		String error = CoordinatesFormat.checkLon(lon);
 		if (error != null) {
 			throw new IllegalArgumentException(error);
 		}
