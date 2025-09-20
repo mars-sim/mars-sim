@@ -612,7 +612,7 @@ public class MainDesktopPane extends JDesktopPane
 			if (mainWindow != null)
 				mainWindow.disposeUnitButton(window.getUnit());
 
-			// Lastly destory the window
+			// Lastly destroy the window
 			window.destroy();
 		}
 	}

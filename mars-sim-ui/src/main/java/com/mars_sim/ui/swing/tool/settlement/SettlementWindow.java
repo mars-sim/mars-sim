@@ -101,7 +101,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		mapPanel.createUI();
 		desktop.setSettlementMapPanel(mapPanel);
 
-		// Added SpotlightLayerUI
+		// Use SpotlightLayerUI
 		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
 		JLayer<JPanel> jlayer = new JLayer<>(mapPanel, layerUI);
 		subPanel.add(jlayer, BorderLayout.CENTER);

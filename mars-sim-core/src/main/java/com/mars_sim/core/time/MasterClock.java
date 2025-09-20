@@ -103,11 +103,7 @@ public class MasterClock implements Serializable {
 	private transient boolean exitProgram;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
-	/** The last time when it was on pause. */
-	private transient long pauseLast;
-	/** The time period when it was on pause. */
-	private transient long pauseTime;
-	
+
 	/** The thread for running the clock listeners. */
 	private transient ExecutorService listenerExecutor;
 	/** Thread for main clock */
@@ -124,9 +120,7 @@ public class MasterClock implements Serializable {
 	private int lastSol = -1;
 	/** The last millisol integer on the last fireEvent. Need to set to -1. */
 	private int lastIntMillisol = -1;
-	/** The maximum wait time between pulses in terms of milli-seconds. */
-	private int maxWaitTimeBetweenPulses;
-	
+
 	/** The task pulse damper - the higher the number, the slower the task pulse width will increase. */
 	private int taskPulseDamper = INITIAL_TASK_PULSE_DAMPER;
 	/** The ref pulse damper - the higher the number, the slower the ref pulse width will increase. */
@@ -254,11 +248,8 @@ public class MasterClock implements Serializable {
 		computeOriginalCPULoad();
 
 		// Set the reference pulse width
-		computeReferencePulse();
-		
-		maxWaitTimeBetweenPulses = config.getDefaultPulsePeriod();
-
-		
+		computeReferencePulse();	
+	
 		// Safety check
 		if (minMilliSolPerPulse > maxMilliSolPerPulse) {
 			logger.severe("The min pulse millisol is higher than the max pulse.");
@@ -270,7 +261,6 @@ public class MasterClock implements Serializable {
 		logger.config("            Min millisol per pulse : " + Math.round(minMilliSolPerPulse * 10_000.0)/10_000.0);
 		logger.config("        Optimal millisol per pulse : " + Math.round(optMilliSolPerPulse * 10_000.0)/10_000.0);
 		logger.config("            Max millisol per pulse : " + Math.round(maxMilliSolPerPulse * 10_000.0)/10_000.0);
-		logger.config(" Max elapsed time between 2 pulses : " + maxWaitTimeBetweenPulses + " ms");
 		logger.config(WHITESPACES);
 	}
 
@@ -383,28 +373,6 @@ public class MasterClock implements Serializable {
 		refPulseRatio = INITIAL_REF_PULSE_RATIO;
 	}
 	
-//	/**
-//	 * Increments the tick factor.
-//	 */
-//	public void incrementTickFactor() {
-//		float tick = pulseFactor;
-//		tick *= 1.1;
-//		if (tick > 2 * pulseFactor)
-//			tick = 2 * pulseFactor;
-//		pulseFactor = tick;
-//	}
-//	
-//	/**
-//	 * Decrements the tick factor.
-//	 */
-//	public void decrementTickFactor() {
-//		float tick = pulseFactor;
-//		tick /= 1.1;
-//		if (tick < pulseFactor / 2)
-//			tick =  pulseFactor / 2;
-//		pulseFactor = tick;
-//	}
-	
 	/**
 	 * Returns the current Martian time.
 	 *
@@ -423,7 +391,6 @@ public class MasterClock implements Serializable {
 		marsTime = newTime;
 		earthTime = initialEarthTime.plus((long)(marsTime.getTotalMillisols() * MarsTime.MILLISOLS_PER_MINUTE),
 									ChronoField.MINUTE_OF_HOUR.getBaseUnit());
-
     }
 	
 	/**
@@ -848,8 +815,6 @@ public class MasterClock implements Serializable {
 	 * Starts the clock.
 	 */
 	public void start() {
-		// Get the total pause time
-		pauseTime = System.currentTimeMillis() - pauseLast;
 		// Continue to increment time
 		clockThreadTask.startRunning();
 
@@ -868,9 +833,7 @@ public class MasterClock implements Serializable {
 	public void stop() {
 		// No longer increment time
 		clockThreadTask.stopRunning();
-		// Track the pause start time
-		pauseLast = System.currentTimeMillis();
-		
+
 		logger.info(0, "Simulation paused.");
 	}
 
@@ -896,7 +859,7 @@ public class MasterClock implements Serializable {
 				|| clockExecutor.isShutdown()
 				|| clockExecutor.isTerminated()) {
 
-			logger.config(10_000, "Setting up the master clock thread executor.");
+			logger.config(0, "Setting up the master clock thread executor.");
 			clockExecutor = Executors.newSingleThreadExecutor(
 					new ThreadFactoryBuilder().setNameFormat("masterclock-%d").build());
 
@@ -1177,6 +1140,10 @@ public class MasterClock implements Serializable {
 	 * Prepares clock listener tasks for setting up threads.
 	 */
 	public class ClockListenerTask implements Callable<String>{
+		
+		private static final String SKIP = "skip";
+		private static final String DONE = "done";
+		
 		private double msolsSkipped = 0;
 		private long lastPulseDelivered = 0;
 		private ClockListener listener;
@@ -1195,41 +1162,40 @@ public class MasterClock implements Serializable {
 		@Override
 		public String call() throws Exception {
 			
-			if (!isPaused) {
+			// May add back :if (isPaused) return DONE
 				
-				try {
-					// The most important job for ClockListener is to send a clock pulse to listener
-					// gets updated.
-					ClockPulse activePulse = currentPulse;
+			try {
+				// The most important job for ClockListener is to send a clock pulse to listener
+				// gets updated.
+				ClockPulse activePulse = currentPulse;
 
-					// Handler is collapsing pulses so check the passed time
-					if (minDuration > 0) {
-						// Compare elapsed real time to the minimum
-						long timeNow = System.currentTimeMillis();
-						if ((timeNow - lastPulseDelivered) < minDuration) {
-							// Less than the minimum so record elapse and skip
-							msolsSkipped += currentPulse.getElapsed();
-							
-							return "skip";
-						}
-
-						// Build new pulse to include skipped time
-						activePulse = currentPulse.addElapsed(msolsSkipped);
-
-						// Reset count
-						lastPulseDelivered = timeNow;
-						msolsSkipped = 0;
+				// Handler is collapsing pulses so check the passed time
+				if (minDuration > 0) {
+					// Compare elapsed real time to the minimum
+					long timeNow = System.currentTimeMillis();
+					if ((timeNow - lastPulseDelivered) < minDuration) {
+						// Less than the minimum so record elapse and skip
+						msolsSkipped += currentPulse.getElapsed();
+						
+						return SKIP;
 					}
 
-					// Call handler
-					listener.clockPulse(activePulse);
+					// Build new pulse to include skipped time
+					activePulse = currentPulse.addElapsed(msolsSkipped);
+
+					// Reset count
+					lastPulseDelivered = timeNow;
+					msolsSkipped = 0;
 				}
-				catch (Exception e) {
-					logger.severe( "Can't send out clock pulse: ", e);
-				}
+
+				// Call handler
+				listener.clockPulse(activePulse);
+			}
+			catch (Exception e) {
+				logger.severe( "Can't send out clock pulse: ", e);
 			}
 			
-			return "done";
+			return DONE;
 		}
 	}
 	
@@ -1299,15 +1265,12 @@ public class MasterClock implements Serializable {
 			// Do NOT delete the followings. Very useful for debugging.
 			if (executionTime > EXE_UPPER_LIMIT) {
 		    	logger.severe(EXE_UPPER_LIMIT, String.format("Abnormal execution time: %d ms.", executionTime));
-				// Slow down the time ratio
-//				decreaseSpeed();	
-				// Set the sleep time
-//				sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
+				// Slow down the time ratio : decreaseSpeed()
+				// Set the sleep time : sleepTime = 0; //NEW_SLEEP * executionTime / 1_000
 			}
 			else if (executionTime > EXE_UPPER_LIMIT / 3) {
 		    	logger.severe(EXE_UPPER_LIMIT / 3, String.format("Abnormal execution time: %d ms.", executionTime));
-				// Set the sleep time
-//				sleepTime = 0; //NEW_SLEEP * executionTime / 1_000;
+				// Set the sleep time : sleepTime = 0; //NEW_SLEEP * executionTime / 1_000
 			}
 		}
 		
@@ -1317,10 +1280,7 @@ public class MasterClock implements Serializable {
 		 * @return true if the pulse was accepted
 		 */
 		private boolean incrementTime() {
-			
-			if (isPaused) {
-				return true;
-			}
+			// May add back: if (isPaused) return true
 			
 			boolean acceptablePulse = false;
 
@@ -1338,14 +1298,12 @@ public class MasterClock implements Serializable {
 
 			// Calculate the real time elapsed [in milliseconds]
 			// Note: this should not include time for rendering UI elements
-			long realElapsedMillisec = tnow - tLast - pauseTime;
-			
-			pauseTime = 0;
-
+			long realElapsedMillisec = tnow - tLast;
+		
 			// Note: Catch the large realElapsedMillisec below. Probably due to power save
 			if (realElapsedMillisec > MAX_ELAPSED) {
 				// Reset the elapsed clock to ignore this pulse
-				logger.config(10_000, "realElapsedMillisec is " + realElapsedMillisec/1000.0 
+				logger.config(10_000, "realElapsedMillisec is " + realElapsedMillisec/10.0 
 						+ " secs, exceeding the max time of " + MAX_ELAPSED/1000.0 + " secs.");	
 				// Reset optMilliSolPerPulse
 				optMilliSolPerPulse = referencePulse;
@@ -1400,8 +1358,8 @@ public class MasterClock implements Serializable {
 				if (!listenerExecutor.isTerminated() && !listenerExecutor.isShutdown()) {
 					// Update the uptimer
 					uptimer.updateTime(realElapsedMillisec);
-					// Gets the timestamp for the pulse
-//					timestampPulseStart();				
+					// Timestamp the pulse
+					timestampPulseStart();				
 					// Add time to the Earth clock.
 					earthTime = earthTime.plus((long)(earthMillisec * 1000), ChronoField.MICRO_OF_SECOND.getBaseUnit());
 					// Add time pulse to Mars clock.
@@ -1431,35 +1389,22 @@ public class MasterClock implements Serializable {
 					calculateSleepTime();				
 					// Double check on execution time
 					checkExecutionTime(executionTime);
-					
 				}
-				else {
+				
+				else if (!isPaused) {
 					// Case 2: acceptablePulse is false	
-					
-				    if (!isPaused) {
-				    	
-						logger.severe(20_000, "acceptablePulse is false. Pulse width deviated too much: " 
+		
+					logger.severe(20_000, "acceptablePulse is false. Pulse width deviated too much: " 
 								+ pulseDeviation + ".");
 		
-						logger.severe(20_000, "Either pause & unpause the sim "
+					logger.severe(20_000, "Either pause & unpause the sim "
 								+ "or lower the TR or adjust the pulse parameters.");
 				
-						// Test if this can restore the simulation
-						leadPulseTime = referencePulse;					
+					// Test if this can restore the simulation
+					leadPulseTime = referencePulse;					
 									    	
-//						// Readjust the time pulses and get the deviation
-						
-//				    	cpuUtil *= .9999;
-//				    	taskPulseDamper *= .9999;
-//				    	refPulseDamper *= .9999;
-//				    	taskPulseRatio *= .9999;
-//				    	refPulseRatio *= .9999;
-//						leadPulseTime *= .9999;
-						
-						// NOTE: check if resuming from power saving can cause this
-//						logger.config(10_000L, "Pulse deviation is too high. Restarting listener executor thread.");				
-//						resetListenerExecutor();
-					}
+					// May need to readjust the time pulses and get the deviation
+					// NOTE: check if resuming from power saving can cause this
 				}
 				
 				// If still going then wait

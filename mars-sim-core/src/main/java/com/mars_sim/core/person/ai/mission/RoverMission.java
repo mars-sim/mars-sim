@@ -856,7 +856,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
         	
 			boolean roverUnloaded = UnloadVehicleEVA.isFullyUnloaded(rover);
             
-        	for (Person p : crew) {
+			if (member instanceof Person p) {
+				
 				if (p.isDeclaredDead()) {
 					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 				}
@@ -887,8 +888,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				// thus allowing person to do other urgent things
 				if (!roverUnloaded && RandomUtil.lessThanRandPercent(50)) {
 					unloadCargo(member, rover);
-				}	
-            }
+				}
+			}
 		}
 	
         // Update and reload the crew members since some may have just left the vehicle

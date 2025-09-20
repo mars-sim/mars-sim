@@ -48,8 +48,6 @@ public class SpotlightLayerUI extends LayerUI<JPanel> {
 	      AWTEvent.MOUSE_EVENT_MASK |
 	      AWTEvent.MOUSE_MOTION_EVENT_MASK
 	    );
-
-
 	  }
 
 	  @Override
@@ -64,7 +62,7 @@ public class SpotlightLayerUI extends LayerUI<JPanel> {
 	    Graphics2D g2 = (Graphics2D)g.create();
 
 	    // Paint the view.
-	    super.paint (g2, c);
+	    super.paint(g2, c);
 
 	    if (mActive && settlementMapPanel.isOptionDisplayed(DisplayOption.DAYLIGHT_LAYER)) {
 			// Create a radial gradient, transparent in the middle.
@@ -75,7 +73,6 @@ public class SpotlightLayerUI extends LayerUI<JPanel> {
 			Color[] colors = {
 					new Color(.9f, .9f, .9f, .9f),
 					new Color(g2.getColor().getRed()/255f, g2.getColor().getGreen()/255f, g2.getColor().getBlue()/255f, 0.0f)
-
 			};
 
 			RadialGradientPaint p =

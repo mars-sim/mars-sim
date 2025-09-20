@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
@@ -43,12 +44,17 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	private static final int MAX_CACHE_ENTRIES = 32;
 
 	// Data members.
+	private double scaleCache;
+	
 	private Map<Settlement, String> settlementBackgroundMap;
 	private Image backgroundTileImage;
+	
 	private Settlement currentSettlement;
-	private double scaleCache;
-	private SettlementMapPanel mapPanel;
 
+	private SettlementMapPanel mapPanel;
+	
+	private MasterClock masterClock;
+	
 	/** LRU cache for scaled tiles. */
 	private final Map<CacheKey, SoftReference<BufferedImage>> scaledTileCache =
 		Collections.synchronizedMap(new LinkedHashMap<>(32, 0.75f, true) {
@@ -91,11 +97,15 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	public BackgroundTileMapLayer(SettlementMapPanel mapPanel) {
 		this.mapPanel = mapPanel;
 		settlementBackgroundMap = new LinkedHashMap<>();
+		
+		masterClock = mapPanel.getDesktop().getSimulation().getMasterClock();
 	}
 
 	@Override
 	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
 
+		if (masterClock.isPaused()) return; 
+		
 		// Save original graphics transforms.
 		var g2d = viewpoint.graphics();
 		AffineTransform saveTransform = g2d.getTransform();

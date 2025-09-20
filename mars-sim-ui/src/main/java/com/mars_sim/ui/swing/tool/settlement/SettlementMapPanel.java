@@ -49,6 +49,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.MoreMath;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -173,7 +174,7 @@ public class SettlementMapPanel extends JPanel {
 		super();
 		this.settlementWindow = settlementWindow;
 		this.desktop = desktop;
-
+		
 		UnitManager unitManager = desktop.getSimulation().getUnitManager();
 
 		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
@@ -1139,6 +1140,10 @@ public class SettlementMapPanel extends JPanel {
 		return dayNightMapLayer;
 	}
 
+	public MainDesktopPane getDesktop() {
+		return desktop;
+	}
+	
 	/**
 	 * Exposes the shared scaled-icon cache for layers that rasterize scalable art (e.g., SVG).
 	 * Layers may key by asset identifier + {@link #getScale()}.
