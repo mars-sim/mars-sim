@@ -91,7 +91,7 @@ class CoordinatesFormatTest {
 
     
     @Test
-    void testFormatParseDecimal() {
+    void testFormatParseDecimal() throws CoordinatesException {
         double[][] values = {{10.1000, 20.2000}, {10.1000, -10.0000}, {-10.0000, 20.200}, {-10.0000, -20.2000},
                            {0.0000, 0.0000}, {90.0000, 180.0000}, {-45.0000, 180.0000},
                            {45.1234, 100.0000}, {-45.1234, -170.0000}
@@ -109,7 +109,7 @@ class CoordinatesFormatTest {
     }
 
     @Test
-    void testFormatParseFull() throws ParseException {
+    void testFormatParseFull() throws ParseException, CoordinatesException {
         double[][] values = {{10.1000,20.2000}, {10.1000,10.0000},
                            {0.5000,1.0000}, {90.0000,175.0000},
                            {45.0000 ,179.0000}, {45.1234,100.0000},

@@ -416,7 +416,7 @@ class InitialSettlementModel extends AbstractTableModel {
 			if ((latError == null) && (lonError == null)) {
 				Coordinates c = new Coordinates(settlement.latitude, settlement.longitude);
 				if (!usedCoordinates.add(c))
-					setError(Msg.getString("Coordinates.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
+					setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
 			}
 			
 			if (settlement.crew != null) {

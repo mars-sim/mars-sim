@@ -444,7 +444,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 				if ((latError == null) && (lonError == null)) {
 					Coordinates c = new Coordinates(arrival.latitude, arrival.longitude);
 					if (!usedCoordinates.add(c))
-						setError(Msg.getString("Coordinates.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
+						setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
 				}
 			}
 		}

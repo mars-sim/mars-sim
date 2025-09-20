@@ -90,7 +90,7 @@ public final class Coordinates implements Serializable {
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
 	 */
 	public Coordinates(String latitude, String longitude) {
-		this(CoordinatesFormat.parseLatitude2Phi(latitude), CoordinatesFormat.parseLongitude2Theta(longitude));
+		this(CoordinatesFormat.parseLatitude2PhiUncheck(latitude), CoordinatesFormat.parseLongitude2ThetaUncheck(longitude));
 	}
 
 	

@@ -27,6 +27,7 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.Member;
@@ -390,7 +391,11 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 				throw new IllegalStateException("Settlement Location must have coordinates attribute");
 			}
 
-			locations.add(CoordinatesFormat.fromString(decimalString));
+			try {
+				locations.add(CoordinatesFormat.fromString(decimalString));
+			} catch (CoordinatesException e) {
+				throw new IllegalStateException("Settlement location badly formatted: " + e.getMessage(), e);
+			}
 		}
 		
 		locations.removeAll(occupiedLocations);

@@ -6,8 +6,10 @@
  */
 package com.mars_sim.core.map.location;
 
-// This should be a checked exception
-public class CoordinatesException extends RuntimeException {
+/**
+ * Problem parsing coordinates.
+ */
+public class CoordinatesException extends Exception {
     
     /**
      * This represents an exception with coordinates parsing.

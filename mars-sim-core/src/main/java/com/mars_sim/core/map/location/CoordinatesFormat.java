@@ -62,6 +62,31 @@ public final class CoordinatesFormat {
     }
 
     /**
+     * Parse latitude string to phi, throwing an unchecked exception if it fails.
+     * @param latitude
+     * @return
+     */
+    static double parseLatitude2PhiUncheck(String latitude) {
+        try {
+            return parseLatitude2Phi(latitude);
+        } catch (CoordinatesException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Parse longitude string to theta, throwing an unchecked exception if it fails.
+     * @param longitude
+     * @return
+     */
+    static double parseLongitude2ThetaUncheck(String longitude) {
+        try {
+            return parseLongitude2Theta(longitude);
+        } catch (CoordinatesException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        }
+    }
+    /**
 	 * Parses a latitude string into a phi value. e.g. input: "25.344 N"
 	 * For latitude string: North is positive (+); South is negative (-)
 	 * For phi : it starts from the north pole (phi = 0) to the south pole (phi = PI)
