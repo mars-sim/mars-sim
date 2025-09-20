@@ -4,7 +4,7 @@
   
   <initial-settlement-list>
     <settlement name="Schiaparelli Point" template="Alpha Base 1" persons="24" robots="12" sponsor="MS" crew="Founders">
-      <location longitude="10.00 W" latitude="10.00 N" />
+      <location coordinates="10.00 -10.00" />
     </settlement>
   </initial-settlement-list>
 </scenario-configuration>

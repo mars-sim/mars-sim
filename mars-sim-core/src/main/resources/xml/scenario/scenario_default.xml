@@ -7,16 +7,16 @@
 
 		<settlement name="Tai Ping" template="Phase 1-TW" persons="8" robots="4" sponsor="TASA">
 			<!-- sits between x and x-->	
-			<location longitude="57.26 E" latitude="25.16 N" />
+			<location coordinates="25.16 57.26" />
 		</settlement>
 		
 		<settlement name="Catarina" template="Phase 1-BR" persons="8" robots="4" sponsor="AEB">
 			<!-- sits between Zvezda and Tian Cheng -->	
-			<location longitude="58.8805 E" latitude="25.0892 N" />
+			<location coordinates="25.0892 58.8805" />
 		</settlement>
 
 		<settlement name="Origin" template="Phase 2-BO" persons="8" robots="8" sponsor="BO">
-			<location longitude="20.46 W" latitude="6.26 N" />
+			<location coordinates="6.26 -20.46" />
 		</settlement>
 		
 		<settlement name="Arcadia" template="Phase 2-EU" persons="8" robots="8" sponsor="ESA">
@@ -24,48 +24,48 @@
 				2 landing proposed sites for ESA ExoMars: 
 				(1). Hypanis Vallis at 314.0 E, 11.9 N    
 			    (2). Mawrth Vallis at 342.0 E, 22.4 N
-			<location longitude="342.0 E" latitude="22.4 N" />			    
+			<location longitude="342.0 E" coordinates="22.4 " />			    
 			-->
-			<location longitude="29.7837 W" latitude="24.3612 N" />
+			<location coordinates="24.3612 -29.7837" />
 		</settlement>
 
 		<settlement name="Hong Tian" template="Phase 2-CN" persons="8" robots="8" sponsor="CNSA">
-			<location longitude="47.8419 W" latitude="15.9873 N" />
+			<location coordinates="15.9873 -47.8419" />
 		</settlement>
 
 		<settlement name="Kyocera" template="Phase 2-JP" persons="12" robots="6" sponsor="JAXA">
-			<location longitude="164 E" latitude="6 N" />
+			<location coordinates="6 164" />
 		</settlement>
 
 		<settlement name="New Seoul" template="Phase 2-KR" persons="16" robots="8" sponsor="KASA">
-			<location longitude="105.8939 W" latitude="40.4244 N" />
+			<location coordinates="40.4244 -105.8939" />
 		</settlement>
 	
 		<settlement name="Tian Cheng" template="Phase 3-ISRA" persons="16" robots="8" sponsor="ISRA">
-			<!-- previously, longitude="20.9156 E" latitude="0.7777 N" -->
-			<location longitude="24.57 E" latitude="9.68 N" />	
+			<!-- previously, longitude="20.9156 E" coordinates="0.7777 " -->
+			<location coordinates="9.68 24.57" />	
 		</settlement>		
 				
 		<settlement name="New Pompeii" template="Phase 3-IN" persons="16" robots="8" sponsor="ISRO">
-			<location longitude="70.9710 W" latitude="26.3650 N" />
+			<location coordinates="26.3650 -70.9710" />
 		</settlement>
 
 		<settlement name="Star Base" template="Phase 3-SX" persons="16" robots="8" sponsor="SPACEX">
     	<!-- 52nd Lunar and Planetary Science Conference 2021 (LPI COntrib. No. 2548), 
         "SpaceX Starship Landing Sites on Mars" 2420.pdf -->   
        		<!-- PM-1 site (Elev -3.2 km) in Phelgra Montes, the 1st prime landing -->
-			<location longitude="163.95 E" latitude="35.23 N" />        		
+			<location coordinates="35.23 163.95" />        		
      		<!-- AP-1site (Elev -3.9 km) in Arcadia Planitia, the 2nd prime landing -->
-			<location longitude="202.1 E" latitude="39.8 N" />       
+			<location coordinates="39.8 202.1" />       
       		<!-- AP-9 site (Elev -3.9 km) in Arcadia Planitia, the 3rd prime landing -->
-			<location longitude="203.35 E" latitude="40.02 N" />        		
+			<location coordinates="40.02 203.35" />        		
      		<!-- EM-16 site (Elev -3.9 km) in Erebus Montes, the 4th prime landing -->
-			<location longitude="192.03 E" latitude="39.89 N" />
+			<location coordinates="39.89 192.03" />
 		</settlement>
 
 		<settlement name="Zvezda" template="Phase 3-RU" persons="16" robots="8" sponsor="RKA">
  			<!-- sits between Catarina and Arcadia --> 
-			<location longitude="81.9044 E" latitude="17.3983 N" />
+			<location coordinates="17.3983 81.9044" />
 		</settlement>
 
 		<settlement name="Korolev" template="Alpha Base 2" persons="44" robots="24" sponsor="RKA">
@@ -73,36 +73,36 @@
  				  https://pubs.usgs.gov/publication/70029300 
  				  https://en.wikipedia.org/wiki/Korolev_(Martian_crater) 
  			--> 
-			<location longitude="164.58 E" latitude="72.77 N" />
+			<location coordinates="72.77 164.58" />
 		</settlement>
 
 		<settlement name="Terminus" template="Alpha Base 1" crew="Alpha" persons="36" robots="18" sponsor="NASA">
-			<location longitude="0.0 W" latitude="0.0 N" />
+			<location coordinates="0.0 0.0" />
 		</settlement>
 			
 		<settlement name="Heritage" template="Hub Base" persons="36" robots="18" sponsor="MS">
-			<location longitude="114.1535 E" latitude="15.1255 N" />
+			<location coordinates="15.1255 114.1535" />
 		</settlement>
 
 		<settlement name="Foundation" template="Sector Base 1" crew="Founders" persons="216" robots="84" sponsor="MS">
-			<location longitude="172.29 E" latitude="24.14 N" />
+			<location coordinates="24.14 172.29" />
 		</settlement>
 		
 	</initial-settlement-list>
 	<arriving-settlement-list>
 		<arriving-settlement name="Halley" template="Phase 2-MS" 
 			persons="8" robots="6" sponsor="MS" arrival-in-sols="3">
-			<location longitude="37.0579 E" latitude="22.6532 N" />				 
+			<location coordinates="22.6532 37.0579" />				 
 		</arriving-settlement>
 
 		<arriving-settlement name="New Madinah" template="Phase 1-SA" 
 			persons="4" robots="4" sponsor="SSA" arrival-in-sols="2">
-			<location longitude="141.3300 W" latitude="45.4157 N" />
+			<location coordinates="45.4157 -141.3300" />
 		</arriving-settlement>
 		
 		<arriving-settlement name="New Dubai" template="Phase 0-AE" 
 			persons="2" robots="4" sponsor="UAESA" arrival-in-sols="1">
-			<location longitude="136.4239 E" latitude="13.5488 N" />
+			<location coordinates="13.5488 136.4239" />
 		</arriving-settlement>		
 	</arriving-settlement-list>
 </scenario-configuration>

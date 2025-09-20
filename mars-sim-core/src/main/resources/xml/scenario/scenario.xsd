@@ -3,8 +3,7 @@
 
     <xs:element name="location">
         <xs:complexType>
-            <xs:attribute name="longitude" type="xs:string"/>
-            <xs:attribute name="latitude" type="xs:string"/>
+            <xs:attribute name="coordinates" type="xs:string"/>
         </xs:complexType>
     </xs:element>
 
