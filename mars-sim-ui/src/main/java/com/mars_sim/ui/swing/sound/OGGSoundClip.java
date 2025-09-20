@@ -221,7 +221,6 @@ public class OGGSoundClip {
 		 paused = value; 
 	 }
 
-
 	/**
 	 * Checks if the stream is paused.
 	 *
@@ -231,10 +230,8 @@ public class OGGSoundClip {
 		return paused;
 	}
 
-
-
 	/**
-	 * Initialise the OGG clip
+	 * Initialises the OGG clip.
 	 *
 	 * @param in The stream we're going to read from
 	 * @throws IOException Indicates a failure to read from the stream
@@ -464,7 +461,9 @@ public class OGGSoundClip {
 			int index = oy.buffer(BUFFER_SIZE);
 			buffer = oy.data;
 			try {
-				bytes = bitStream.read(buffer, index, BUFFER_SIZE);
+				if (bitStream != null) {
+					bytes = bitStream.read(buffer, index, BUFFER_SIZE);
+				}	
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Audio Troubleshooting : have a speaker/headphone been plugged in ? "
 						+ "Please check your audio source. ", e);

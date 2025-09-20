@@ -453,6 +453,7 @@ public class AudioPlayer {
 	 */
 	public void unmuteSoundEffect() {
 		if (!userMuteSoundEffect && currentSoundClip != null && currentSoundClip.isMute()) {
+			userMuteSoundEffect = false;
 			currentSoundClip.setMute(false);
 			restoreLastSoundEffectGain();
 		}
@@ -462,9 +463,32 @@ public class AudioPlayer {
 	 * Mutes the sound Effect.
 	 */
 	public void muteSoundEffect() {
+		userMuteSoundEffect = true;
 		if (currentSoundClip != null) {
 			currentSoundClip.setMute(true);
 			currentSoundClip.stop();
+		}
+	}
+
+	/**
+	 * Unmutes the music.
+	 */
+	public void unmuteMusic() {
+		if (!userMuteMusic && currentMusic != null && currentMusic.isMute()) {
+			userMuteMusic = false;
+			currentMusic.setMute(false);
+			restoreLastMusicGain();
+		}
+	}
+	
+	/**
+	 * Mutes the music.
+	 */
+	public void muteMusic() {
+		userMuteMusic = true;
+		if (currentMusic != null) {
+			currentMusic.setMute(true);
+			currentMusic.stop();
 		}
 	}
 	
