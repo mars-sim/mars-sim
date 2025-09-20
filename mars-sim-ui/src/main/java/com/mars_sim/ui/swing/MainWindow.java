@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindow.java
- * @date 2025-07-17
+ * @date 2025-09-19
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
@@ -868,10 +868,11 @@ public class MainWindow
 		if (isPaused) {
 			desktop.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			desktop.getSoundPlayer().pauseMusic();
+			desktop.getSoundPlayer().muteMusic();
 		}
 		else {
 			desktop.getParent().setCursor(Cursor.getDefaultCursor());
-			desktop.getSoundPlayer().setUserMuteMusic(false);
+			desktop.getSoundPlayer().unmuteMusic();
 			desktop.getSoundPlayer().resumeMusic();
 		}
 	}

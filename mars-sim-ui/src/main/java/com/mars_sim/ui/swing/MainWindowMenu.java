@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindowMenu.java
- * @date 2025-09-18
+ * @date 2025-09-19
  * @author Scott Davis
  */
 
@@ -593,14 +593,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			case MUSIC_MUTE:
 				if (selectedItem.isSelected()) {
 					// mute the music
-					soundPlayer.setUserMuteMusic(true);
+					soundPlayer.muteMusic();
 					musicVolumeSlider.setEnabled(false);
 					musicMuteItem.revalidate();
 					musicMuteItem.repaint();
 				}
 				else {
 					// unmute the music
-					soundPlayer.setUserMuteMusic(false);
+					soundPlayer.unmuteMusic();
 					if (!Simulation.instance().getMasterClock().isPaused()) {
 //						soundPlayer.unmuteMusic();
 						soundPlayer.resumeMusic();

@@ -82,7 +82,8 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
     }
 
     /**
-     * Get the otehr end of the connection
+     * Gets the other end of the connection.
+     * 
      * @return
      */
     public Building getOtherBuilding(Building building) {
