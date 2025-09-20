@@ -66,10 +66,10 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.EntityLabel;
@@ -693,7 +693,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			} 
 			
 			case ADD_MEMBER_EVENT, REMOVE_MEMBER_EVENT, MIN_MEMBERS_EVENT, CAPACITY_EVENT ->
-				memberTableModel.updateMembers();
+				memberTableModel.updateOccupantList();
 
 			case VEHICLE_EVENT -> {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
@@ -870,16 +870,38 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 */
 	private class MemberTableModel extends AbstractTableModel implements UnitListener, EntityModel {
 
+		private static final String NAME = Msg.getString("MainDetailPanel.column.name");
+		private static final String TASK = Msg.getString("MainDetailPanel.column.task");
+		private static final String MEMBER = Msg.getString("MainDetailPanel.column.member");
+		private static final String BOARDED = Msg.getString("MainDetailPanel.column.boarded");
+		private static final String AIRLOCK =  Msg.getString("MainDetailPanel.column.airlock");
+		
 		// Private members.
 		private Mission mission;
-		private List<Worker> members;
-
+		private List<Worker> occupantList;
+		private Vehicle v;
+		private Crewable crewable;
+		
 		/**
 		 * Constructor.
 		 */
 		private MemberTableModel() {
 			mission = null;
-			members = new ArrayList<>();
+			occupantList = new ArrayList<>();
+		}
+
+		/**
+		 * Sets the mission for this table model.
+		 *
+		 * @param newMission the new mission.
+		 */
+		void setMission(Mission newMission) {
+			this.mission = newMission;
+			if ((mission instanceof VehicleMission vm)) {
+				v = vm.getVehicle();
+				crewable = (Crewable)v; 
+			}
+			updateOccupantList();
 		}
 		
 		/**
@@ -889,7 +911,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 */
 		@Override
 		public int getRowCount() {
-			return members.size();
+			return occupantList.size();
 		}
 
 		/**
@@ -899,7 +921,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 */
 		@Override
 		public int getColumnCount() {
-			return 4;
+			return 5;
 		}
 
 		/**
@@ -911,10 +933,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("MainDetailPanel.column.name");
-				case 1 -> Msg.getString("MainDetailPanel.column.task");
-				case 2 -> Msg.getString("MainDetailPanel.column.onboard");
-				case 3 -> Msg.getString("MainDetailPanel.column.airlock");
+				case 0 -> NAME;
+				case 1 -> TASK;
+				case 2 -> MEMBER;
+				case 3 -> BOARDED;
+				case 4 -> AIRLOCK;
 				default -> null;
 			};
 		}
@@ -928,13 +951,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 */
 		@Override
 		public Object getValueAt(int row, int column) {
-			if (row < members.size()) {
-				Worker member = members.get(row);
+			if (row < occupantList.size()) {
+				Worker member = occupantList.get(row);
 				return switch (column) {
 					case 0 -> member.getName();
       				case 1 -> member.getTaskDescription();
-      				case 2 -> isOnboard(member) ? "Y" : "N";
-      				case 3 -> isInAirlock(member) ? "Y" : "N";
+      				case 2 -> isMissionMember(member) ? "Y" : "N";
+      				case 3 -> boarded(member) ? "Y" : "N";
+      				case 4 -> isInAirlock(member) ? "Y" : "N";
      				default -> null;
 				};
 			}
@@ -942,23 +966,26 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 
 		/**
-		 * Is this member currently onboard a rover ?
+		 * Has this member boarded the vehicle ?
 		 *
 		 * @param member
 		 * @return
 		 */
-		boolean isOnboard(Worker member) {
-			if ((mission instanceof VehicleMission vm)
-						&& (member instanceof Person p)) {
-				Vehicle v = vm.getVehicle();
-				if (VehicleType.isDrone(v.getVehicleType())) {
-					return false;
-				}
-				else if (v instanceof Rover r && r.isCrewmember(p)) {
-					return true;
-				}
+		boolean boarded(Worker member) {
+			if (member instanceof Person p) {
+				return (crewable.isCrewmember(p));
 			}
 			return false;
+		}
+		
+		/**
+		 * Is this occupant a mission member ?
+		 *
+		 * @param member
+		 * @return
+		 */
+		boolean isMissionMember(Worker member) {
+			return (mission.getMembers().contains(member));
 		}
 		
 		/**
@@ -968,27 +995,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return
 		 */
 		boolean isInAirlock(Worker member) {
-			if ((mission instanceof VehicleMission vm) 
-				&& (member instanceof Person p)) {		
-				Vehicle v = vm.getVehicle();
-				if (VehicleType.isDrone(v.getVehicleType())) {
-					return false;
-				}
-				else if (v instanceof Rover r && r.isInAirlock(p)) {
-					return true;
-				}	
+			if (member instanceof Person p		
+				&& v instanceof Rover r && r.isInAirlock(p)) {
+				return true;
 			}
 			return false;
-		}
-		
-		/**
-		 * Sets the mission for this table model.
-		 *
-		 * @param newMission the new mission.
-		 */
-		void setMission(Mission newMission) {
-			this.mission = newMission;
-			updateMembers();
 		}
 
 		/**
@@ -999,7 +1010,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
 			Worker member = (Worker) event.getSource();
-			int index = members.indexOf(member);
+			int index = occupantList.indexOf(member);
 			if (type == UnitEventType.NAME_EVENT) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
 			} else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
@@ -1010,41 +1021,38 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 
 		/**
-		 * Updates mission members.
+		 * Updates the occupant list.
 		 */
-		void updateMembers() {
-			
+		void updateOccupantList() {
+			List<Worker> newList = new ArrayList<>(crewable.getCrew());
 			if (mission != null) {
-				
-				clearMembers();
-				members = new ArrayList<>(mission.getMembers());
-				Iterator<Worker> i = members.iterator();
-				while (i.hasNext()) {
-					Worker member = i.next();
-					member.addUnitListener(this);
+				for (Worker w: mission.getMembers()) {
+					if (!newList.contains(w)) {
+						newList.add(w);
+					}
 				}
+			}
+
+			if (!occupantList.equals(newList)) {
+				final var fixedList = newList;
+				// Existing members, not in the new list then remove listener
+				occupantList.stream()
+						.filter(m -> !fixedList.contains(m))
+						.forEach(mm -> mm.removeUnitListener(this));
+
+				// New members, not in the existing list then add listener
+				newList.stream()
+						.filter(m -> !occupantList.contains(m))
+						.forEach(mm -> mm.addUnitListener(this));
+
+				// Replace the old member list with new one.
+				occupantList = newList;
+
+				// Update this row
 				SwingUtilities.invokeLater(new MemberTableUpdater());
-			} else {
-				if (!members.isEmpty()) {
-					clearMembers();
-					SwingUtilities.invokeLater(new MemberTableUpdater());
-				}
 			}
 		}
 
-		/**
-		 * Clears all members from the table.
-		 */
-		private void clearMembers() {
-			if (members != null) {
-				Iterator<Worker> i = members.iterator();
-				while (i.hasNext()) {
-					Worker member = i.next();
-					member.removeUnitListener(this);
-				}
-				members.clear();
-			}
-		}
 
 		/**
 		 * Inner class for updating member table.
@@ -1076,7 +1084,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		@Override
 		public Entity getAssociatedEntity(int row) {
-			return members.get(row);
+			return occupantList.get(row);
 		}
 	}
 }

@@ -186,7 +186,7 @@ abstract class EVAMission extends RoverMission {
 	 */
 	protected void endEVATasks() {
 		// End each member's EVA task.
-		for(Worker member : getMembers()) {
+		for (Worker member : getMembers()) {
 			if (member instanceof Person person) {
 				Task task = person.getMind().getTaskManager().getTask();
 				if (task instanceof EVAOperation eo) {
@@ -203,19 +203,20 @@ abstract class EVAMission extends RoverMission {
 	 * @throws MissionException if problem performing phase.
 	 */
 	private void evaPhase(Worker member) {
-
+		
 		if (activeEVA) {
 			// Check if crew has been at site for more than one sol.
 			double timeDiff = getPhaseDuration();
 			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
-				logger.info(getVehicle(), "Ran out of EVA site time.");
+				logger.info(getVehicle(), 10_000L, "Ran out of EVA site time.");
+				addMissionLog("No More EVA Site Time", member.getName());
 				activeEVA = false;
 			}
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
 			if (activeEVA && !isEnoughSunlightForEVA()) {
-				logger.info(getVehicle(), "Not enough sunlight during the EVA phase of the mission.");
+				logger.info(getVehicle(), 10_000L, "Not enough sunlight during the EVA phase of the mission.");
 				addMissionLog(NOT_ENOUGH_SUNLIGHT, member.getName());
 				activeEVA = false;
 			}
@@ -223,13 +224,15 @@ abstract class EVAMission extends RoverMission {
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
 			if (activeEVA && hasEmergency()) {
-				logger.info(getVehicle(), "A medical emergency was reported during the EVA phase of the mission.");
+				logger.info(getVehicle(), 10_000L, "A medical emergency was reported during the EVA phase of the mission.");
+				addMissionLog("Medical Emergency", member.getName());
 				activeEVA = false;
 			}
 
 			// Check if enough resources for remaining trip. false = not using margin.
 			if (activeEVA && !hasEnoughResourcesForRemainingMission()) {
-				logger.info(getVehicle(), "Not enough resources was reported during the EVA phase of the mission.");
+				logger.info(getVehicle(), 10_000L, "Not enough resources was reported during the EVA phase of the mission.");
+				addMissionLog("Not Enough Resources", member.getName());
 				activeEVA = false;
 			}
 			
@@ -237,26 +240,25 @@ abstract class EVAMission extends RoverMission {
 			if (activeEVA) {
 				// performEVA will check if rover capacity is full
 				activeEVA = performEVA((Person) member);
-				if (!activeEVA) {
-					logger.info(member, "EVA operation Terminated.");
-					addMissionLog("EVA Terminated.", member.getName());
-				}
 			}
-		} 
+		}
 
 		// An EVA-ending event was triggered. End EVA phase.
 		if (!activeEVA) {
+			// Call everyone back inside
+			endEVATasks();
 			
-			// Check below if anyone has been "teleported"
-			if (checkTeleported(member)) {
-				// End phase
-				phaseEVAEnded();
-				setPhaseEnded(true);
-			} 
-			else {
-				// Call everyone back inside
-				endEVATasks();
-			}
+			logger.info(member, 10_000L, "EVA operation Terminated");
+			addMissionLog("EVA Terminated", member.getName());
+			
+			// Note: should it end the EVA phase here ?
+			setPhaseEnded(true);
+		}
+		
+		// Check below if anyone has been "teleported"
+		if (checkTeleported(member)) {
+			// Note: what to do with those who are teleported ? 
+//			Nothing
 		}
 	}
 
@@ -269,59 +271,44 @@ abstract class EVAMission extends RoverMission {
 	boolean checkTeleported(Worker worker) {
 		boolean result = false;
 		
-		Rover r = getRover();
-		
-		for (Person p : r.getCrew()) {
+		if (worker instanceof Person p) {
+			
 			if (!getMembers().contains(p)) {
-				logger.severe(p, 10_000, "Teleportation Type 1 detected. Being a crew member in " 
-						+ r.getName() + " but not a mission member.");
+				logger.severe(p, 10_000, "Teleportation Type 1 detected. Not a mission member.");
 				addMissionLog("Teleportation Type 1 - " + p.getName(), worker.getName());
+				result = true;
+			}
+			
+			if (p.isInSettlement()) {
+
+				logger.severe(p, 10_000, "Teleportation Type 2 detected. Current location: " 
+					+ p.getLocationTag().getExtendedLocation() + ".");
+				addMissionLog("Teleportation Type 2 - " + p.getName(), worker.getName());
+				// Note: need to debug why this happens and can't remove a person as member yet
+			
+				// Use Iterator's remove() method i.remove();
+				// Call memberLeave(member) to set mission to null will cause this member to drop off the member list
+					
+				result = true;
+			}
+			
+			else if (p.isInSettlementVicinity()) {
+
+				logger.severe(p, 10_000, "Teleportation Type 3 detected. Current location: " 
+					+ p.getLocationTag().getExtendedLocation() + ".");
+				addMissionLog("Teleportation Type 3 - " + p.getName(), worker.getName());
+				result = true;
+			}
+			
+			else if (p.isRightOutsideSettlement()) {
+
+				logger.severe(p, 10_000, "Teleportation Type 4 detected. Current location: " 
+					+ p.getLocationTag().getExtendedLocation() + ".");
+				addMissionLog("Teleportation Type 4 - " + p.getName(), worker.getName());
 				result = true;
 			}
 		}
 		
-		for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {    
-			Worker member = i.next();
-
-			if (member instanceof Person p) {
-				
-				if (p.isInSettlement()) {
-
-					logger.severe(p, 10_000, "Teleportation Type 2 detected. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-					addMissionLog("Teleportation Type 2 - " + p.getName(), worker.getName());
-					// Note: need to debug why this happens and can't remove a person as member yet
-				
-					// Use Iterator's remove() method i.remove();
-					// Call memberLeave(member) to set mission to null will cause this member to drop off the member list
-						
-					result = true;
-				}
-				
-				else if (p.isInSettlementVicinity()) {
-
-					logger.severe(p, 10_000, "Teleportation Type 3 detected. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-					addMissionLog("Teleportation Type 3 - " + p.getName(), worker.getName());
-					result = true;
-				}
-				
-				else if (p.isRightOutsideSettlement()) {
-
-					logger.severe(p, 10_000, "Teleportation Type 4 detected. Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-					addMissionLog("Teleportation Type 4 - " + p.getName(), worker.getName());
-					result = true;
-				}
-
-				if (p.getTaskManager().getTask() instanceof EVAOperation) {
-					logger.warning(p, 10_000, "Still doing EVA. Need to end now. Current Location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-					
-					result = true;
-				}			
-			}
-		}
 		return result;
 	}
 	

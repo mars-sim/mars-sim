@@ -455,7 +455,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				&& getPhaseDuration() - DEPARTURE_DURATION < 0) {
 			canDepart = isEveryoneInRover(member);
 			if (canDepart) {
-				addMissionLog("All boarded", getStartingPerson().getName());
+				addMissionLog("All Boarded", getStartingPerson().getName());
 				logger.info(v, 20_000, "Everyone is ready for departing " + settlement.getName() + ".");
 			}
 		}		
@@ -466,7 +466,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		if (canDepart) {
-			canDepart = evaluateDeparture(member, v, settlement);
+			canDepart = evaluateDepartureCriteria(member, v, settlement);
 		}
 		
 		if (canDepart) {	
@@ -476,42 +476,47 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 	
 	/**
-	 * Evaluates for departure.
+	 * Evaluates criteria for departure.
 	 * 
 	 * @param member
 	 * @param v
 	 * @param settlement
 	 * @return
 	 */
-	private boolean evaluateDeparture(Worker member, Vehicle v, Settlement settlement) {
+	private boolean evaluateDepartureCriteria(Worker member, Vehicle v, Settlement settlement) {
 		boolean canDepart = true;
 
 		if (canDepart) {
 			// Can depart if everyone is on the vehicle
 			canDepart = isEveryoneInRover(member);
 			
-			addMissionLog("All boarded", getStartingPerson().getName());
+			if (canDepart) {
+				logger.info(v, 20_000, "All Boarded.");
+				addMissionLog("All Boarded", member.getName());
+			}
 		}
 				
 		if (canDepart) {
 			// Check if each member is qualified
 			canDepart = checkMembership(member, (Rover)v);
+			
+			if (canDepart) {
+				logger.info(v, 20_000, "Membership Checked Out.");
+				addMissionLog("Membership Checked Out", member.getName());
+			}
 		}
 
-		if (canDepart) {
-			logger.info(v, 20_000, "Qualification granted.");
-		}
-		
 		// If the rover is in a garage
 		if (canDepart && v.isInGarage()) {			
 			// Check to ensure it meets the baseline # of EVA suits
 			canDepart = meetBaselineNumEVASuits(settlement, v);
+			
+			if (canDepart) {
+				logger.info(v, 20_000, "Baseline EVA suit Met.");
+				addMissionLog("Baseline EVA suit Met", member.getName());
+			}
 		}
-		
-		if (canDepart) {
-			logger.info(v, 20_000, "Baseline EVA suit required passed.");
-		}
-		
+
 		return canDepart;
 	}
 	
