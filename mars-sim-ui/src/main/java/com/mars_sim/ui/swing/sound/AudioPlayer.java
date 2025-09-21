@@ -7,10 +7,20 @@
 
 package com.mars_sim.ui.swing.sound;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,40 +116,42 @@ public class AudioPlayer {
 	}
 	
 	/**
-	 * Adds music tracks from a folder.
-	 * 
-	 * @param folder
-	 */
-	private static void addMusicTracks(File folder) {
-		File[] listOfFiles = folder.listFiles();
-
-		for (int i = 0; i < listOfFiles.length; i++) {
-			File f = listOfFiles[i];
-			String filename = f.getName();
-			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
-			
-			if (f.isFile() && ext.equalsIgnoreCase(OGG)) {
-				musicTracks.add(f.getName());
-			}
-		}
-	}
-	
-	/**
 	 * Loads the music tracks.
 	 */
-	public static void loadMusicTracks() {
+	public void loadMusicTracks() {
 		allSoundClips = new HashMap<>();
 		musicTracks = new ArrayList<>();
 
 		// Loads music tracks from two folders
 		
-		// 1. Load from the default music directory in resource folder
+		// Note that the approach below may not work for files inside a compiled jar file
+		// 1a. Load from the default music directory in resource folder
+//		URL defaultURL = AudioPlayer.class.getResource(DEFAULT_MUSIC_DIR);
+//		String stringURL = defaultURL.getFile();
+//		logger.log(Level.CONFIG, "Default music folder at " + stringURL);
+//		File defaultMusicfolder = new File(stringURL);
+//		addMusicTracks(defaultMusicfolder);
+		
+		// Note: the approach below has NPE 
+		// 1b. Use InputStream and getResourceAsStream() to load ogg files
+		//    from /music directory inside /resource folder
+//		logger.log(Level.CONFIG, "Default music folder at " + stringURL);
+//		List<String> files = getResourceFiles(stringURL); or DEFAULT_MUSIC_DIR
+//		addMusicTracks(files);
+		
+		// 1c. Use java.java.nio.file to accommodate situation from loading inside a jarfile 
 		URL defaultURL = AudioPlayer.class.getResource(DEFAULT_MUSIC_DIR);
 		String stringURL = defaultURL.getFile();
-		logger.log(Level.CONFIG, "Default music folder at " +stringURL);
-		File defaultMusicfolder = new File(stringURL);
-		
-		addMusicTracks(defaultMusicfolder);
+		try {
+			URI uri = defaultURL.toURI();
+			Path path = getFolderPath(uri, stringURL);
+			File defaultMusicfolder = path.toFile();
+			addMusicTracks(defaultMusicfolder);
+		} catch (URISyntaxException e) {
+			logger.log(Level.SEVERE, "URISyntaxException: " + e);
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "IOException: " + e);
+		}
 		
 		// 2. Load from the music directory in user home folder
 		File userFolder = new File(MUSIC_DIR);
@@ -173,9 +185,95 @@ public class AudioPlayer {
 		if (numTracks > 0) {
 			currentMusic = obtainOGGMusicTrack(musicTracks.get(numTracks -1));
 		}
-
 	}
 	
+	
+	/**
+	 * Gets the path instance when loading from inside a jar file.
+	 * 
+	 * @param uri
+	 * @param folderJar
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	 private Path getFolderPath(URI uri, String folderJar) throws URISyntaxException, IOException {
+		 if ("jar".equals(uri.getScheme())) {
+			 FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap(), null);
+			 return fileSystem.getPath(folderJar);
+		 } 
+		 else {
+			 return Paths.get(uri);
+		 }
+	}
+	 
+	/**
+	 * Adds music tracks from a folder.
+	 * 
+	 * @param folder
+	 */
+	private static void addMusicTracks(File folder) {
+		File[] listOfFiles = folder.listFiles();
+
+		for (int i = 0; i < listOfFiles.length; i++) {
+			File f = listOfFiles[i];
+			String filename = f.getName();
+			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
+			
+			if (f.isFile() && ext.equalsIgnoreCase(OGG)) {
+				musicTracks.add(f.getName());
+			}
+		}
+	}
+	
+	/**
+	 * Adds music tracks from a list of files.
+	 * 
+	 * @param folder
+	 */
+	private static void addMusicTracks(List<String> files) {
+	
+		for (int i = 0; i < files.size(); i++) {
+			String filename = files.get(i);
+			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
+			
+			if (ext.equalsIgnoreCase(OGG)) {
+				musicTracks.add(filename);
+			}
+		}
+	}
+	
+	/**
+	 * Loads the list of files from a folder under the resource folder
+	 * 
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 */
+	private List<String> getResourceFiles(String path) {
+	    List<String> filenames = new ArrayList<>();
+
+	    try (
+	    	InputStream in = getResourceAsStream(path);
+	        BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
+	        String resource;
+
+	        while ((resource = br.readLine()) != null) {
+	            filenames.add(resource);
+	        }
+	    }
+	    
+	    catch (IOException ie) {
+	    	logger.severe( "Can't load music files: ", ie);
+	    }
+
+	    return filenames;
+	}
+
+	private InputStream getResourceAsStream(String resource) {
+	    return getClass().getClassLoader().getResourceAsStream(resource);
+	}
+
 	/**
 	 * Loads all the sound effect clip names into a map.
 	 * 
