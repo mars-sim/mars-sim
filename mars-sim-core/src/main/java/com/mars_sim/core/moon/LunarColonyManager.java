@@ -110,10 +110,10 @@ public class LunarColonyManager implements Serializable, Temporal {
 		coords.add(new Coordinates("5.00", "120.50"));
 		coords.add(new Coordinates("26.00", "148.00"));
 		
-		coords.add(new Coordinates("-69.70 S", "-172.00"));
-		coords.add(new Coordinates("-42.00 S", "-177.90"));
-		coords.add(new Coordinates("-30.20 S", "173.90"));
-		coords.add(new Coordinates("-19.00 S", "-95.00"));
+		coords.add(new Coordinates("-69.70", "-172.00"));
+		coords.add(new Coordinates("-42.00", "-177.90"));
+		coords.add(new Coordinates("-30.20", "173.90"));
+		coords.add(new Coordinates("-19.00", "-95.00"));
 	}
 	
 	/**
