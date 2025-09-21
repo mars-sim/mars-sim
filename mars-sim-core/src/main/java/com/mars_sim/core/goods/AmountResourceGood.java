@@ -103,7 +103,7 @@ class AmountResourceGood extends Good {
 	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
-	private static final double CO2_VALUE_MODIFIER = 0.0075;
+	private static final double CO2_VALUE_MODIFIER = 0.1;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
@@ -129,7 +129,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
 	private static final double CO_FLATTENING_FACTOR = 0.009;
-	private static final double CO2_FLATTENING_FACTOR = 0.0006;
+	private static final double CO2_FLATTENING_FACTOR = 0.01;
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
 	private static final double MINERAL_FLATTENING_FACTOR = 1.1;

@@ -100,6 +100,18 @@ public class MedicalStation implements MedicalAid {
 		return null;
 	}
 	
+	/**
+	 * Checks if this person is a patient.
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public boolean isPatient(Person person) { 
+		if (bedRegistry.keySet().contains(person.getIdentifier())) {
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Adds a patient to a medical bed.
@@ -107,10 +119,8 @@ public class MedicalStation implements MedicalAid {
 	 * @return
 	 */
 	public boolean addPatientToBed(Person person) {
-
-		 Set<Integer> patients = bedRegistry.keySet();
 		 
-		 if (patients.contains(person.getIdentifier())) {
+		 if (isPatient(person)) {
 			 return true;
 		 }
 		 else {
@@ -169,7 +179,7 @@ public class MedicalStation implements MedicalAid {
 	}
 	
 	/**
-	 * Sets the medical beds.
+	 * Sets the medical beds' positions.
 	 * 
 	 * @param bedSet
 	 */

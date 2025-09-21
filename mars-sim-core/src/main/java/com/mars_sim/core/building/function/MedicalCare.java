@@ -83,7 +83,7 @@ public class MedicalCare extends Function implements MedicalAid {
 
 		double supply = 0D;
 		boolean removedBuilding = false;
-		for(Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
+		for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.MEDICAL_CARE)) {
 			if (!newBuilding && building.getBuildingType().equalsIgnoreCase(type) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
@@ -130,6 +130,16 @@ public class MedicalCare extends Function implements MedicalAid {
 		
 	    return success;
     }
+    
+	/**
+	 * Checks if this person is a patient.
+	 * 
+	 * @param person
+	 * @return
+	 */
+	public boolean isPatient(Person person) { 
+		return medicalStation.isPatient(person);
+	}
     
 	/**
 	 * Adds a patient to a medical bed.

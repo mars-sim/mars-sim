@@ -64,7 +64,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String MARSCAL = "MARS-CAL";
 
 	private static final DateTimeFormatter SHORT_TIMESTAMP_FORMATTER = 
-			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
+			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm");
 
 	private static final String DISPLAY_HELP = "display-help";
 	private static final String MAIN_WIKI = "main-wiki";
@@ -124,7 +124,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //$NON-NLS-1$
 		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //$NON-NLS-1$
 
-		addSeparator(new Dimension(20, 20));
+		addSeparator(new Dimension(15, 15));
 
 		// Add Tools buttons
 		addToolButton(NavigatorWindow.NAME, NavigatorWindow.ICON);
@@ -145,7 +145,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Add wiki button
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
 		
-		addSeparator(new Dimension(20, 20));
+		addSeparator(new Dimension(15, 15));
 
 		// Everything after this is on the right hand side
 		add(Box.createHorizontalGlue()); 
@@ -159,13 +159,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		missionSol = createTextLabel("Simulation Sol Count");
 		timePanel.add(missionSol);
 		
-		marsTime = createTextLabel("Universal Mean Time (UMT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
+		marsTime = createTextLabel("Mars Coordinated Time (MCT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
 		timePanel.add(marsTime);
 		
 		calendarPane = setupCalendarPanel(masterClock.getMarsTime());		
 		addToolButton(MARSCAL, "Mars Calendar", "schedule");
 		
-		addSeparator(new Dimension(20, 20));
+		addSeparator(new Dimension(15, 15));
 	}
     
 	/**
@@ -199,8 +199,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void addToolButton(String toolName, String tooltip, Icon icon) {
 		JButton toolButton = new JButton(icon);
 		toolButton.setActionCommand(toolName);
-		toolButton.setPreferredSize(new Dimension(30, 30));
-		toolButton.setMaximumSize(new Dimension(30, 30));
+		toolButton.setPreferredSize(new Dimension(25, 25));
+		toolButton.setMaximumSize(new Dimension(25, 25));
 		if (tooltip == null) {
 			tooltip = Conversion.capitalize(toolName.replace("_", " "));
 		}

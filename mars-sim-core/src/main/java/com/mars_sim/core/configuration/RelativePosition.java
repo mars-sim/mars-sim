@@ -19,7 +19,8 @@ import com.mars_sim.core.map.location.LocalPosition;
 public record RelativePosition(double x, double y) implements Serializable {
 
     /**
-     * Create an absolute LocalPosition for this relative positino in a specific context
+     * Creates an absolute LocalPosition for this relative position in a specific context.
+     * 
      * @param context
      * @return
      */
@@ -32,7 +33,8 @@ public record RelativePosition(double x, double y) implements Serializable {
     }
 
     /**
-	 * Get the Relative position by applying a delta
+	 * Gets the Relative position by applying a delta.
+	 * 
 	 * @param xDelta Adjustment on x axis
 	 * @param yDelta Adjustment on y axis
 	 */

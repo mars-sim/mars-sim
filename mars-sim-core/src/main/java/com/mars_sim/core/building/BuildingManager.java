@@ -979,21 +979,25 @@ public class BuildingManager implements Serializable {
 
 		if (building != null) {
 
-			success = building.getMedical().addPatientToBed(p);
-	
+			success = building.getMedical().isPatient(p);
+			
+			if (!success) {
+				success = building.getMedical().addPatientToBed(p);
+			}
+			
 			if (success) {
 				p.setCurrentBuilding(building);
 				
-				logger.info(p, 0, "Sent to a medical bed in " + building.getName() + ".");
+				logger.info(p, 10_000L, "Sent to a medical bed in " + building.getName() + ".");
 			}
 			else {
-				logger.info(p, 0, "Unable to send to a medical bed in " + building.getName() + ".");
+				logger.info(p, 10_000L, "Unable to send to a medical bed in " + building.getName() + ".");
 			}
 		}
 
 		else {
 			// Send to his/her registered bed
-			logger.log(p, Level.WARNING, 0,	"No medical facility available for "
+			logger.log(p, Level.WARNING, 10_000L,	"No medical facility available for "
 							+ p.getName() + ". Go to his/her bed.");
 			
 			AllocatedSpot bed = p.getBed();
@@ -1012,7 +1016,7 @@ public class BuildingManager implements Serializable {
 			
 					p.setPosition(bedLoc);
 					
-					logger.log(p, Level.WARNING, 0, "Go to his/her bed.");
+					logger.log(p, Level.WARNING, 10_000L, "Go to his/her bed.");
 					
 					return success;
 				}
