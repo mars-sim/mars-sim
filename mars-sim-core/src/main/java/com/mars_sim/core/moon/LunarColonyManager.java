@@ -87,10 +87,10 @@ public class LunarColonyManager implements Serializable, Temporal {
 		// about 60 km south of the Promontorium Heraclides.
 		// https://en.wikipedia.org/wiki/Lunokhod_1
 		
-		coords.add(new Coordinates("89.90 S", "0.00 E"));
-		coords.add(new Coordinates("88.63 N", "24.40 E"));
-		coords.add(new Coordinates("25.85 N", "30.45 E"));
-		coords.add(new Coordinates("38.24 N", "35.00 W"));
+		coords.add(new Coordinates("-89.90 ", "0.00"));
+		coords.add(new Coordinates("88.63", "24.40"));
+		coords.add(new Coordinates("25.85", "30.45"));
+		coords.add(new Coordinates("38.24", "-35.00"));
 		// coords.add(new Coordinates("38.2378 N", "35.0017 W"));
 		
 		// A distinctive echo pattern was found in the LRS data obtained around the Marius Hills Hole (MHH), 
@@ -98,22 +98,22 @@ public class LunarColonyManager implements Serializable, Temporal {
 		// https://agupubs.onlinelibrary.wiley.com/doi/10.1002/2017GL074998
 		// https://www.lroc.asu.edu/posts/202
 		
-		coords.add(new Coordinates("14.00 N", "302.00 E"));
+		coords.add(new Coordinates("14.00", "302.00"));
 		
 		// A list of the preferred landing sites addressing 3 or more of the Science Goals within 
 		// Concept 3. Regions are the Procellarum KREEP Terrane (PKT), the South Pole-Aitken 
 		// Terrane (SPAT), and the Feldspathic Highlands Terrane (FHT).
 		// https://www.researchgate.net/figure/Schroedinger-basin-and-suggested-landing-sites-background-Clementine-UVVIS-mosaic_fig1_234420980
 		
-		coords.add(new Coordinates("23.70 N", "47.40 W"));
-		coords.add(new Coordinates("9.70 N", "20.10 W"));
-		coords.add(new Coordinates("5.00 N", "120.50 E"));
-		coords.add(new Coordinates("26.00 N", "148.00 E"));
+		coords.add(new Coordinates("23.70", "-47.40"));
+		coords.add(new Coordinates("9.70", "-20.10"));
+		coords.add(new Coordinates("5.00", "120.50"));
+		coords.add(new Coordinates("26.00", "148.00"));
 		
-		coords.add(new Coordinates("69.70 S", "172.00 W"));
-		coords.add(new Coordinates("42.00 S", "177.90 W"));
-		coords.add(new Coordinates("30.20 S", "173.90 E"));
-		coords.add(new Coordinates("19.00 S", "95.00 W"));
+		coords.add(new Coordinates("-69.70 S", "-172.00"));
+		coords.add(new Coordinates("-42.00 S", "-177.90"));
+		coords.add(new Coordinates("-30.20 S", "173.90"));
+		coords.add(new Coordinates("-19.00 S", "-95.00"));
 	}
 	
 	/**

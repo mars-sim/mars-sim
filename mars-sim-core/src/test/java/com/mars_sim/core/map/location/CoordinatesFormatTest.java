@@ -32,6 +32,7 @@ class CoordinatesFormatTest {
         assertEquals(3D * Math.PI / 2D, CoordinatesFormat.parseLongitude2Theta("90.0" + DEG_SIGN + " " + WEST), 0);
         assertEquals(3D * Math.PI / 2D, CoordinatesFormat.parseLongitude2Theta("90.0 " + WEST), 0);
         assertEquals(3D * Math.PI / 2D, CoordinatesFormat.parseLongitude2Theta("-90.0"), 0);
+        assertEquals(0, CoordinatesFormat.parseLongitude2Theta("0 W"), 0);
     }
     
     /**
