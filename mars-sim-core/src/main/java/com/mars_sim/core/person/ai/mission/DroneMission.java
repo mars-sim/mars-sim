@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -142,19 +143,48 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		
-        if (member instanceof Person person
-				&& person.isSuperUnfit()){
-        	// For humans
-        	logger.warning(person, 4_000, "Not norminally fit to pilot " + getVehicle() + ".");
-        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
-        	boolean canSleep = assignTask(person, new Sleep(person));
-        	if (canSleep) {
-        		logger.log(member, Level.INFO, 4_000,
-            			"Instructed to sleep ahead of piloting " + getVehicle() + ".");
-            	
-    			return null;
-        	}
-        }
+		boolean areAllOthersUnfit = areAllOthersUnfit(member);	
+
+		if (member instanceof Person person
+			&& person.isSuperUnfit()) {
+	
+        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
+        	
+        	if (areAllOthersUnfit) {
+				logger.warning(person, 10_000L, "As everyone is unfit to operate " + getDrone() + ", " 
+					+ person + " decided to step up to be the pilot.");	
+			} 
+        	
+        	else {
+	        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
+	        	
+				// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
+				double fatigue = person.getPhysicalCondition().getFatigue();
+				if (fatigue > 900) {				
+					boolean canSleep = assignTask(person, new Sleep(person));
+		        	if (canSleep) {
+		        		logger.log(person, Level.INFO, 4_000,
+		            			"Instructed to sleep before piloting " + getVehicle() + " since fatigue is " + Math.round(fatigue) + ".");
+		        		
+		        		return null;
+		        	}
+	        	}
+				
+				double hunger = person.getPhysicalCondition().getHunger();
+				double thirst = person.getPhysicalCondition().getThirst();
+				if (hunger > 900 || thirst > 550) {				
+					boolean canEatDrink = assignTask(person, new EatDrink(person));
+		        	if (canEatDrink) {
+		        		logger.log(person, Level.INFO, 4_000,
+		            			"Instructed to eat/drink before piloting " + getVehicle() 
+		            			+ " (hunger: " + Math.round(fatigue) + "; "
+		            			+ " thirst: " + Math.round(thirst) + ").");
+		        		
+		        		return null;
+		        	}
+	        	}
+			}
+		}
         
         else if (member instanceof Robot robot 
 				&& robot.getSystemCondition().getBatteryLevel() < 5) {
@@ -163,7 +193,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
         	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
         	if (canCharge) {
         		logger.log(member, Level.INFO, 4_000,
-            			"Instructed to charge up the battery ahead of piloting " + getVehicle() + ".");
+            			"Instructed to charge up the battery before piloting " + getVehicle() + ".");
             	
     			return null;
         	}

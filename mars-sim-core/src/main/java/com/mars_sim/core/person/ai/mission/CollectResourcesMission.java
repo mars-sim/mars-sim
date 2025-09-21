@@ -328,7 +328,7 @@ public abstract class CollectResourcesMission extends EVAMission
 				boolean canSleep = assignTask(person, new Sleep(person));
 	        	if (canSleep) {
 	        		logger.log(person, Level.INFO, 4_000,
-	            			"Instructed to sleep in " + getVehicle() + ".");
+	            			"Instructed to sleep in " + getVehicle() + " since fatigue is " + Math.round(fatigue) + ".");
 	        	}
         	}
 			

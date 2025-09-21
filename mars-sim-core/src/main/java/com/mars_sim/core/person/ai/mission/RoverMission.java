@@ -32,6 +32,8 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.EatDrink;
+import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -1059,8 +1061,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				);
 		eventManager.registerNewEvent(rescueEvent);
 	}
-
-
+	
 	/**
 	 * Gets a new instance of an OperateVehicle task for the mission member.
 	 *
@@ -1072,15 +1073,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	protected OperateVehicle createOperateVehicleTask(Worker member, TaskPhase lastOperateVehicleTaskPhase) {
 		OperateVehicle result = null;
 		
-		boolean areAllOthersUnfit = true;
-		// Check if everyone is unfit
-		for (Worker w: getMembers()) {
-			if (!w.equals(member) && w instanceof Person p
-				&& !p.isSuperUnfit()) {
-					areAllOthersUnfit = false;
-			}
-		}
-		
+		boolean areAllOthersUnfit = areAllOthersUnfit(member);
+
 		if (member instanceof Person person) {
 			// Check for fitness
 			if (person.isSuperUnfit()) {
@@ -1088,7 +1082,39 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (areAllOthersUnfit) {
 					logger.warning(person, 10_000L, "As everyone is unfit to operate " + getRover() + ", " 
 						+ person + " decided to step up to be the pilot.");
+					
 				} else {
+					
+			       	// For humans
+		        	logger.warning(person, 4_000, "Super unfit to pilot " + getVehicle() + ".");
+		        	// Note: How to take care of the person if he does not have high fatigue but other health issues ?
+		        	
+					// Note: if a person is not in fatigue but is hungry or thirsty, don't need to sleep
+					double fatigue = person.getPhysicalCondition().getFatigue();
+					if (fatigue > 900) {				
+						boolean canSleep = assignTask(person, new Sleep(person));
+			        	if (canSleep) {
+			        		logger.log(person, Level.INFO, 4_000,
+			            			"Instructed to sleep before piloting " + getVehicle() + " since fatigue is " + Math.round(fatigue) + ".");
+			        		
+			        		return null;
+			        	}
+		        	}
+					
+					double hunger = person.getPhysicalCondition().getHunger();
+					double thirst = person.getPhysicalCondition().getThirst();
+					if (hunger > 900 || thirst > 550) {				
+						boolean canEatDrink = assignTask(person, new EatDrink(person));
+			        	if (canEatDrink) {
+			        		logger.log(person, Level.INFO, 4_000,
+			            			"Instructed to eat/drink before piloting " + getVehicle() 
+			            			+ " (hunger: " + Math.round(fatigue) + "; "
+			            			+ " thirst: " + Math.round(thirst) + ").");
+			        		
+			        		return null;
+			        	}
+		        	}	
+	
 					logger.warning(person, 10_000L, "Super unfit to operate " + getRover() + ".");
 					return null;
 				}

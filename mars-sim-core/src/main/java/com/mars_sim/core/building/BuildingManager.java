@@ -1663,16 +1663,8 @@ public class BuildingManager implements Serializable {
 	 */
 	public static boolean addToActivitySpot(Worker worker, Building building, FunctionType type) {
 		boolean result = false;
-		FunctionType functionType = type;
-		Building originBuilding = worker.getBuildingLocation();
 		
-		if (functionType == null) {
-			
-			Function f = building.getEmptyActivitySpotFunction();
-			if (f != null) {
-				functionType = f.getFunctionType();
-			}
-		}
+		Building originBuilding = worker.getBuildingLocation();
 		
 		if (originBuilding == null) {
 			// Instantly set the worker's current building and add occupant since this worker has
@@ -1680,13 +1672,31 @@ public class BuildingManager implements Serializable {
 			setToBuilding(worker, building);	
 		}
 		
-		if (functionType != null) {
-			result = claimActivitySpot(worker, building, functionType);
+		FunctionType functionType = type;
+		
+		if (type == null) {		
+			// Look for a function with empty activity spot
+			Function f = building.getEmptyActivitySpotFunction();
+			if (f != null) {
+				functionType = f.getFunctionType();
+			}
+			
+			if (functionType != null) {
+				// Try claiming a spot
+				result = claimActivitySpot(worker, building, functionType);
+			}
+			
+			else {
+				// if type is not null and yet there's no empty activity spot
+				logger.info(worker, 10_000L, "Unable to claim a spot since there's no empty activity spot at any function.");
+				
+				return false;
+			}
 		}
-		else if (type != null) {
-			// if type is not null and yet there's no empty activity spot
-			logger.info(worker, 10_000L, "Unable to claim a spot since there's no empty activity spot.");
-			return false;
+		
+		else {
+			// Try claiming a spot
+			result = claimActivitySpot(worker, building, functionType);
 		}
 
 		if (result) {
@@ -1700,9 +1710,12 @@ public class BuildingManager implements Serializable {
 				transferFromBuildingToBuilding(worker, originBuilding, building);
 			}
 		}
+		
 		else {
 			if (functionType != null) {
-				logger.info(worker, 10_000L, "Unable to claim a " + functionType.getName() + " spot.");
+				
+				logger.info(worker, 10_000L, "Unable to claim a spot at " + functionType.getName() + ".");
+				
 				return false;
 			}
 			
@@ -1729,7 +1742,7 @@ public class BuildingManager implements Serializable {
 		LocalPosition loc = f.getAvailableActivitySpot();	
 		
 		if (loc != null) {
-//			logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.");
+			// May add back : logger.info(worker, 10_000L, "Available loc " + loc + " found. Trying to claim it.")
 			// Claim this activity spot
 			return f.claimActivitySpot(loc, worker);
 		}

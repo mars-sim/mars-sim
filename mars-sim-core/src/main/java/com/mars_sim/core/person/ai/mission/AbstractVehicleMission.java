@@ -2159,4 +2159,23 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public final Settlement getStartingSettlement() {
 		return startingSettlement;
 	}
+	
+
+	/**
+	 * Checks if all others are super unfit.
+	 * 
+	 * @param member
+	 * @return
+	 */
+	protected boolean areAllOthersUnfit(Worker member) {
+
+		for (Worker w: getMembers()) {
+			if (!w.equals(member) && w instanceof Person p
+				// Check if everyone is unfit
+				&& !p.isSuperUnfit()) {
+					return false;
+			}
+		}
+		return true;
+	}
 }

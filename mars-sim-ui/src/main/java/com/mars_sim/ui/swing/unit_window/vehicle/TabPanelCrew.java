@@ -30,7 +30,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -46,8 +45,8 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * The TabPanelCrew is a tab panel for a vehicle's crew information.
