@@ -44,6 +44,7 @@ import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.time.MarsTime;
@@ -65,11 +66,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private static final int MAX_FUTURE_ORBITS = 10;
 	
 	// Data members
-	private String errorString = new String();
+	private String errorString = "";
 	// the degree sign 
 	private String deg = Msg.getString("direction.degreeSign"); //$NON-NLS-1$
 	
-	private boolean validation_result = true;
+	private boolean validationResult = true;
 
 	private JTextField nameTF;
 	private JComboBoxMW<String> templateCB;
@@ -131,39 +132,28 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		JPanel topEditPane = new JPanel(new BorderLayout(10, 10));
 		add(topEditPane, BorderLayout.NORTH);
 
-		JPanel topPane = new JPanel(new BorderLayout(10, 10));// GridLayout(2, 1));
+		JPanel topPane = new JPanel(new BorderLayout(10, 10));
 		topEditPane.add(topPane, BorderLayout.NORTH);
 
 		// Create top spring layout.
-		JPanel topSpring = new JPanel(new SpringLayout());// GridLayout(3, 1, 0, 10));
+		JPanel topSpring = new JPanel(new SpringLayout());
 		topPane.add(topSpring, BorderLayout.NORTH);
-
-		// Create name pane.
-		// JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		// topInnerEditPane.add(namePane);
 
 		// Create name title label.
 		JLabel nameTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.settlementName"), //$NON-NLS-1$
 				SwingConstants.TRAILING);
-		// namePane.add(nameTitleLabel);
 		topSpring.add(nameTitleLabel);
 
 		// Create name text field.
-		nameTF = new JTextField(new String(), 25);
+		nameTF = new JTextField("", 25);
 		if (settlement != null) {
 			nameTF.setText(settlement.getName());
 		}
-		// namePane.add(nameTF);
 		topSpring.add(nameTF);
-
-		// Create the template pane.
-		// JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		// topInnerEditPane.add(templatePane);
 
 		// Create template title label.
 		JLabel templateTitleLabel = new JLabel(Msg.getString("ArrivingSettlementEditingPanel.layoutTemplate"), //$NON-NLS-1$
 				SwingConstants.TRAILING);
-		// templatePane.add(templateTitleLabel);
 		topSpring.add(templateTitleLabel);
 
 		// Create template combo box.
@@ -175,7 +165,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		}
 		templateCB.addActionListener(e -> updateTemplateDependentFields((String) templateCB.getSelectedItem()));
 		
-		// templatePane.add(templateCB);
 		topSpring.add(templateCB);
 
 		// 2017-02-11 Create sponsor label.
@@ -197,7 +186,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				10, 10); // xPad, yPad
 
 		JPanel numPane = new JPanel(new GridLayout(1, 2));
-		// topInnerEditPane.add(numPane);
 		topPane.add(numPane, BorderLayout.CENTER);
 
 		// Create population panel.
@@ -236,12 +224,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		}
 		populationTF = new JTextField(4);
 		populationTF.setText(Integer.toString(populationNum));
-		populationTF.setHorizontalAlignment(JTextField.RIGHT);
+		populationTF.setHorizontalAlignment(SwingConstants.RIGHT);
 		populationPane.add(populationTF);
 
 		numOfRobotsTF = new JTextField(4);
 		numOfRobotsTF.setText(Integer.toString(numOfRobots));
-		numOfRobotsTF.setHorizontalAlignment(JTextField.RIGHT);
+		numOfRobotsTF.setHorizontalAlignment(SwingConstants.RIGHT);
 		numOfRobotsPane.add(numOfRobotsTF);
 
 		// Create arrival date pane.
@@ -356,7 +344,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		int solsDiff = (int) Math.round((arrivingTime.getTimeDiff(currentTime) / 1000D));
 		solsTF = new JTextField(4);
 		solsTF.setText(Integer.toString(solsDiff));
-		solsTF.setHorizontalAlignment(JTextField.RIGHT);
+		solsTF.setHorizontalAlignment(SwingConstants.RIGHT);
 		solsTF.setEnabled(false);
 		timeUntilArrivalPane.add(solsTF);
 
@@ -371,7 +359,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		topEditPane.add(southPane, BorderLayout.SOUTH);
 
 		// Create landing location panel.
-		JPanel landingLocationPane = new JPanel(new SpringLayout());// new GridLayout(2, 5, 0, 10));
+		JPanel landingLocationPane = new JPanel(new SpringLayout());
 
 		landingLocationPane
 				.setBorder(new TitledBorder(Msg.getString("ArrivingSettlementEditingPanel.landingLocation"))); //$NON-NLS-1$
@@ -387,8 +375,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		latitudeTF = new JTextField(4);
 		latitudeTitleLabel.setLabelFor(latitudeTF);
 
-		latitudeTF.setHorizontalAlignment(JTextField.RIGHT);
-		// latitudePane.add(latitudeTF);
+		latitudeTF.setHorizontalAlignment(SwingConstants.RIGHT);
 		landingLocationPane.add(latitudeTF);
 
 		// Create latitude direction combo box.
@@ -405,7 +392,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			String dirString = latString.substring(latString.length() - 1, latString.length());
 			latitudeDirectionCB.setSelectedItem(dirString);
 		}
-		// latitudePane.add(latitudeDirectionCB);
 		landingLocationPane.add(latitudeDirectionCB);
 
 		// Create longitude title label.
@@ -418,12 +404,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		longitudeTitleLabel.setLabelFor(longitudeTF);
 
 
-		longitudeTF.setHorizontalAlignment(JTextField.RIGHT);
-		// longitudePane.add(longitudeTF);
+		longitudeTF.setHorizontalAlignment(SwingConstants.RIGHT);
 		landingLocationPane.add(longitudeTF);
 
 		// Create longitude direction combo box.
-		longitudeDirectionCB = new JComboBox<String>();
+		longitudeDirectionCB = new JComboBox<>();
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.westShort")); //$NON-NLS-1$
 		longitudeDirectionCB.addItem(deg + Msg.getString("direction.eastShort")); //$NON-NLS-1$
 		if (settlement != null) {
@@ -448,7 +433,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		add(errorPane, BorderLayout.SOUTH);
 
 		// Create error label
-		errorLabel = new JLabel(new String());
+		errorLabel = new JLabel("");
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
 
@@ -502,16 +487,16 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 * @return true if data is valid.
 	 */
 	private boolean validateData() {
-		validation_result = true;
+		validationResult = true;
 		errorString = null;
 
 		// Validate settlement name.
 		if (nameTF.getText().trim().isEmpty()) {
-			validation_result = false;
+			validationResult = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noName"); //$NON-NLS-1$
 		}
 
-		if (!validation_result) {
+		if (!validationResult) {
 			errorLabel.setText(errorString);
 			return false;
 		}
@@ -519,11 +504,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Validate template.
 		String templateName = (String) templateCB.getSelectedItem();
 		if ((templateName == null) || templateName.trim().isEmpty()) {
-			validation_result = false;
+			validationResult = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noTemplate"); //$NON-NLS-1$
 		}
 
-		if (!validation_result) {
+		if (!validationResult) {
 			errorLabel.setText(errorString);
 			return false;
 		}
@@ -531,22 +516,22 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Validate population number.
 		String populationNumString = populationTF.getText();
 		if (populationNumString.trim().isEmpty()) {
-			validation_result = false;
+			validationResult = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noPopulation"); //$NON-NLS-1$
 		} else {
 			try {
 				int popNum = Integer.parseInt(populationNumString);
 				if (popNum < 0) {
-					validation_result = false;
+					validationResult = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativePopulation"); //$NON-NLS-1$
 				}
 			} catch (NumberFormatException e) {
-				validation_result = false;
+				validationResult = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidPopulation"); //$NON-NLS-1$
 			}
 		}
 		
-		if (!validation_result) {
+		if (!validationResult) {
 			errorLabel.setText(errorString);	
 			return false;
 		}
@@ -554,22 +539,22 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Validate numOfRobots.
 		String numOfRobotsString = numOfRobotsTF.getText();
 		if (numOfRobotsString.trim().isEmpty()) {
-			validation_result = false;
+			validationResult = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.nonumOfRobots"); //$NON-NLS-1$
 		} else {
 			try {
 				int numOfRobots = Integer.parseInt(numOfRobotsString);
 				if (numOfRobots < 0) {
-					validation_result = false;
+					validationResult = false;
 					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativenumOfRobots"); //$NON-NLS-1$
 				}
 			} catch (NumberFormatException e) {
-				validation_result = false;
+				validationResult = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidnumOfRobots"); //$NON-NLS-1$
 			}
 		}
 
-		if (!validation_result) {
+		if (!validationResult) {
 			errorLabel.setText(errorString);
 			return false;
 		}
@@ -578,19 +563,17 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		if (solsTF.isEnabled()) {
 			String timeArrivalString = solsTF.getText().trim();
 			if (timeArrivalString.isEmpty()) {
-				validation_result = false;
+				validationResult = false;
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noSols"); //$NON-NLS-1$
 				enableButton(false);
-//				System.out.println("ArrivingSettlementEditingPanel : Invalid sol. It cannot be empty.");
 			} 
 			
 			else {
-				// System.out.println("calling addChangeListener()");
 				addChangeListener(solsTF, e -> validateSolsTF(timeArrivalString));
 			}
 		}
 
-		if (!validation_result) {
+		if (!validationResult) {
 			errorLabel.setText(errorString);
 			return false;
 		}
@@ -598,86 +581,47 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		// Validate latitude value.
 		String latitudeString = latitudeTF.getText().trim() + " " 
 				+ ((String)latitudeDirectionCB.getSelectedItem()).substring(1, 2);
-		
-//		System.out.println("latitudeString: " + latitudeString);
-		
-		String error0 = Coordinates.checkLat(latitudeString);
+				
+		String error0 = CoordinatesFormat.checkLat(latitudeString);
 		if (error0 != null) {
-			validation_result = false;
+			validationResult = false;
 			errorString = error0;
 		}
 		
-		if (!validation_result) {
+		if (!validationResult) {
 			errorLabel.setText(errorString);
 			return false;
 		}
-		
-//		if (latitudeString.isEmpty()) {
-//			validation_result = false;
-//			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLatitude"); //$NON-NLS-1$
-//		} else {
-//			try {
-//				Double latitudeValue = Double.parseDouble(latitudeString);
-//				if ((latitudeValue < 0D) || (latitudeValue > 90D)) {
-//					validation_result = false;
-//					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLatitude"); //$NON-NLS-1$
-//				}
-//			} catch (NumberFormatException e) {
-//				validation_result = false;
-//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLatitude"); //$NON-NLS-1$
-//			}
-//		}
+
 
 		// Validate longitude value.
 		String longitudeString = longitudeTF.getText().trim() + " " 
 				+ ((String)longitudeDirectionCB.getSelectedItem()).substring(1, 2);
 		
-		String error1 = Coordinates.checkLon(longitudeString);
+		String error1 = CoordinatesFormat.checkLon(longitudeString);
 		if (error1 != null) {
-			validation_result = false;
+			validationResult = false;
 			errorString = error1;
 		}
-		
-//		System.out.println("longitudeString: " + longitudeString);
-		
-		if (!validation_result) {
+				
+		if (!validationResult) {
 			errorLabel.setText(errorString);
 			return false;
 		}
 		
-//		if (longitudeString.isEmpty()) {
-//			validation_result = false;
-//			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.noLongitude"); //$NON-NLS-1$
-//		} else {
-//			try {
-//				Double longitudeValue = Double.parseDouble(longitudeString);
-//				if ((longitudeValue < 0D) || (longitudeValue > 180D)) {
-//					validation_result = false;
-//					errorString = Msg.getString("ArrivingSettlementEditingPanel.error.rangeLongitude"); //$NON-NLS-1$
-//				}
-//			} catch (NumberFormatException e) {
-//				validation_result = false;
-//				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidLongitude"); //$NON-NLS-1$
-//			}
-//		}
-
-//		System.out.println("latitudeString: " + latitudeString + "   longitudeString: " + longitudeString);
-		
 		String repeated = checkRepeatingLatLon(latitudeString, longitudeString);
 		if (repeated != null) {
-			validation_result = false;
+			validationResult = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.collision"); //$NON-NLS-1$
 		}
 		
 
-		if (!validation_result) {
+		if (!validationResult) {
 			errorLabel.setText(errorString);	
 			return false;
 		}
-		
-//		System.out.println("validation_result: " + validation_result + "   " + errorString);
-		
-		return validation_result;
+				
+		return validationResult;
 	}
 
 	/***
@@ -689,15 +633,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		boolean repeated = false;
 	
 		Collection<Settlement> list = unitManager.getSettlements();
-		
-//		int size = list.size();
-		
+				
 		Set<Coordinates> coordinatesSet = new HashSet<>();
 		coordinatesSet.add(new Coordinates(latStr, longStr));
 		
 		for (Settlement s: list) {
 			if (!coordinatesSet.add(s.getCoordinates())) {
-//				System.out.println("Repeated coordinates: " + s.getCoordinates());
 				repeated = true;
 				break;
 			}
@@ -716,7 +657,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 * @param timeArrivalString
 	 */
 	public void validateSolsTF(String timeArrivalString) {
-		// System.out.println("running validateSolsTF()");
 		errorString = null;
 
 		try {
@@ -725,65 +665,18 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 				timeArrivalString = "-1";
 			double timeArrival = Double.parseDouble(timeArrivalString);
 			if (timeArrival < 0D) {
-				validation_result = false;
+				validationResult = false;
 				enableButton(false);
 				errorString = Msg.getString("ArrivingSettlementEditingPanel.error.negativeSols"); //$NON-NLS-1$
 				errorLabel.setText(errorString);
 			} else {
-				boolean good = true;
-				// // Add checking if that sol has already been taken
-				// JList<?> jList = resupplyWindow.getIncomingListPane().getIncomingList();
-				// ListModel<?> model = jList.getModel();
-
-				// for (int i = 0; i < model.getSize(); i++) {
-				// 	Transportable transportItem = (Transportable) model.getElementAt(i);
-
-				// 	if ((transportItem != null)) {
-				// 		if (transportItem instanceof Resupply) {
-				// 			// Create modify resupply mission dialog.
-				// 			Resupply resupply = (Resupply) transportItem;
-				// 			MarsTime arrivingTime = resupply.getArrivalDate();
-				// 			int solsDiff = (int) Math.round((MarsTime.getTimeDiff(arrivingTime, MarsTime) / 1000D));
-				// 			sols.add(solsDiff);
-
-				// 		} else if (transportItem instanceof ArrivingSettlement) {
-				// 			// Create modify arriving settlement dialog.
-				// 			ArrivingSettlement newS = (ArrivingSettlement) transportItem;
-				// 			if (!newS.equals(settlement)) {
-				// 				MarsTime arrivingTime = newS.getArrivalDate();
-				// 				int solsDiff = (int) Math
-				// 						.round((MarsTime.getTimeDiff(arrivingTime, MarsTime) / 1000D));
-				// 				sols.add(solsDiff);
-				// 			}
-				// 		}
-				// 	}
-				//}
-
-				// System.out.println("sols.size() : " + sols.size() );
-
-// 				Iterator<Integer> i = sols.iterator();
-// 				while (i.hasNext()) {
-// 					int sol = i.next();
-// 					if (sol == (int) timeArrival) {
-// //						System.out.println("Invalid entry! Sol " + sol + " has already been taken.");
-// 						validation_result = false;
-// 						good = false;
-// 						enableButton(false);
-// 						errorString = Msg.getString("ArrivingSettlementEditingPanel.error.duplicatedSol"); //$NON-NLS-1$
-// 						errorLabel.setText(errorString);
-// 						break;
-// 					}
-// 				}
-
-				if (good) {
-					validation_result = true;
-					errorString = null;
+					validationResult = true;
+					errorString = "";
 					errorLabel.setText(errorString);
 					enableButton(true);
-				}
 			}
 		} catch (NumberFormatException e) {
-			validation_result = false;
+			validationResult = false;
 			errorString = Msg.getString("ArrivingSettlementEditingPanel.error.invalidSols"); //$NON-NLS-1$
 			enableButton(false);
 			errorLabel.setText(errorString);
@@ -818,7 +711,8 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 		Objects.requireNonNull(text);
 		Objects.requireNonNull(changeListener);
 		DocumentListener dl = new DocumentListener() {
-			private int lastChange = 0, lastNotifiedChange = 0;
+			private int lastChange = 0;
+			private int lastNotifiedChange = 0;
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
@@ -831,7 +725,6 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			}
 
 			public void changedUpdate(DocumentEvent e) {
-				// System.out.println("calling addChangeListener()'s changedUpdate()");
 				lastChange++;
 				SwingUtilities.invokeLater(() -> {
 					if (lastNotifiedChange != lastChange) {
@@ -972,10 +865,8 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	private Coordinates getLandingLocation() {
 		String fullLatString = latitudeTF.getText().trim() + " " 
 				+ ((String)latitudeDirectionCB.getSelectedItem()).substring(1, 2);
-		// System.out.println("fullLatString : " + fullLatString);
 		String fullLonString = longitudeTF.getText().trim() + " " 
 				+ ((String)longitudeDirectionCB.getSelectedItem()).substring(1, 2);
-		// System.out.println("fullLonString : " + fullLonString);
 		return new Coordinates(fullLatString, fullLonString);
 	}
 }

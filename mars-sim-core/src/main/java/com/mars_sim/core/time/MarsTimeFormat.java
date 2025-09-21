@@ -31,7 +31,6 @@ public class MarsTimeFormat {
 			"Vadeun", "Wakumi", "Xetual", "Zungo" };
 
 	private static final String[] WEEK_SOL_NAMES = 
-//		{ "Solisol", "Phobosol", "Deimosol", "Terrasol", "Hermesol", "Venusol", "Jovisol" };	
 		{ "Heliosol", "Neriosol", "Libersol", "Terrasol", "Venusol", "Mercusol", "Jovisol" };
 
 	/**
@@ -49,7 +48,7 @@ public class MarsTimeFormat {
 	 */
 	public static MarsTime fromDateString(String dateString) {
 
-		String parts[] = dateString.split(DASH);
+		String []parts = dateString.split(DASH);
 		int orbit = Integer.parseInt(parts[0]);
 		if (orbit < 0)
 			throw new IllegalArgumentException("Invalid orbit number: " + orbit);
@@ -68,7 +67,7 @@ public class MarsTimeFormat {
 		if (sol < 1)
 			throw new IllegalStateException("Invalid sol number: " + sol);
 
-		double millisol = Double.parseDouble(subParts[1]);
+		double millisol = Double.parseDouble(subParts[1].replace(',', '.'));
 		if (millisol < 0D)
 			throw new IllegalStateException("Invalid millisol number: " + millisol);
 

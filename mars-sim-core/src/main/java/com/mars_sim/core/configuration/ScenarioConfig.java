@@ -27,10 +27,11 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.Member;
 import com.mars_sim.core.structure.InitialSettlement;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -47,8 +48,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String DESCRIPTION_ATTR = "description";
 	private static final String TEMPLATE_ATTR = "template";
 	private static final String LOCATION_EL = "location";
-	private static final String LONGITUDE_ATTR = "longitude";
-	private static final String LATITUDE_ATTR = "latitude";
+	private static final String COORDINATE_ATTR = "coordinates";	
 	private static final String PERSONS_ATTR = "persons";
 	private static final String ROBOTS_ATTR = "robots";
 	private static final String SPONSOR_ATTR = "sponsor";
@@ -58,7 +58,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String ARRIVAL_ATTR = "arrival-in-sols";
 	
 	// Default scenario
-	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};	
+	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};
 	
 	public ScenarioConfig(SimulationConfig config) {
 		super(PREFIX);
@@ -370,8 +370,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 
 	private static Element createLocationElement(Coordinates location) {
 		Element result = new Element(LOCATION_EL);
-		saveOptionalAttribute(result, LONGITUDE_ATTR, location.getFormattedLongitudeString());
-		saveOptionalAttribute(result, LATITUDE_ATTR, location.getFormattedLatitudeString());
+		saveOptionalAttribute(result, COORDINATE_ATTR, CoordinatesFormat.getDecimalString(location));
 		
 		return result;
 	}
@@ -387,19 +386,16 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		List<Coordinates> locations = new ArrayList<>();
 		List<Element> locationNodes = parent.getChildren(LOCATION_EL);
 		for(Element locationElement : locationNodes) {
+			String decimalString = locationElement.getAttributeValue(COORDINATE_ATTR);
+			if (decimalString == null) {
+				throw new IllegalStateException("Settlement Location must have coordinates attribute");
+			}
 
-			String longitudeString = locationElement.getAttributeValue(LONGITUDE_ATTR);
-			String latitudeString = locationElement.getAttributeValue(LATITUDE_ATTR);
-
-			// take care to internationalize the coordinates
-			longitudeString = longitudeString.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			longitudeString = longitudeString.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
-
-			// take care to internationalize the coordinates
-			latitudeString = latitudeString.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			latitudeString = latitudeString.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
-
-			locations.add(new Coordinates(latitudeString, longitudeString));
+			try {
+				locations.add(CoordinatesFormat.fromString(decimalString));
+			} catch (CoordinatesException e) {
+				throw new IllegalStateException("Settlement location badly formatted: " + e.getMessage(), e);
+			}
 		}
 		
 		locations.removeAll(occupiedLocations);
@@ -408,6 +404,6 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			return null;
 		}
 		
-		return locations.get(RandomUtil.getRandomInt(locations.size()-1));		
+		return RandomUtil.getRandomElement(locations);	
 	}
 }

@@ -10,6 +10,8 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.EVAOperation.LightLevel;
@@ -75,21 +77,22 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
     }
     /**
      * This test does not attempt to check the solar irradiance logic just the light levels.
+     * @throws CoordinatesException 
      */
-    public void testIsSunlightAroundGlobal() {
-        var locn = new Coordinates("0.0 N", "0.0 E");
+    public void testIsSunlightAroundGlobal() throws CoordinatesException {
+        var locn = CoordinatesFormat.fromString("0.0 0.0");
         
         assertLightLevel("zero time, center locn", locn, false, false);
 
         // First 90 degress is on the darkside
         
-        locn = new Coordinates("0.0 N", "120.0 E");
+        locn = CoordinatesFormat.fromString("0.0 120.0");
         assertLightLevel("zero time, quarter locn", locn, true, false);
 
-        locn = new Coordinates("0.0 N", "180.0 E");
+        locn = CoordinatesFormat.fromString("0.0 180.0");
         assertLightLevel("zero time, half locn", locn, true, true);
 
-        locn = new Coordinates("0.0 N", "120.0 W");
+        locn = CoordinatesFormat.fromString("0.0 -120.0");
         assertLightLevel("zero time, three quarters locn", locn, true, false);
     }
 
