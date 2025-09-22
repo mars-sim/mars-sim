@@ -145,6 +145,13 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	}
 
 	/**
+	 * Is this luv empty of any occupants ?
+	 */
+	public boolean isEmpty() {
+		return robotOccupants.isEmpty() && occupants.isEmpty();
+	}
+	
+	/**
 	 * Adds a person as crewmember.
 	 * 
 	 * @param person

@@ -1854,6 +1854,11 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return mission;
 	}
 
+	/**
+	 * Sets the mission.
+	 * 
+	 * @param newMission
+	 */
 	public void setMission(Mission newMission) {
 		this.mission = newMission;
 	}

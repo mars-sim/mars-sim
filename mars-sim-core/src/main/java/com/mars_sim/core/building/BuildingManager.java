@@ -1216,6 +1216,7 @@ public class BuildingManager implements Serializable {
 							if (!vacated && !rover.isReserved() 
 								&& !rover.isReservedForMaintenance()
 								&& rover.getMission() == null
+								&& rover.isEmpty()
 								&& garage.removeRover(rover, true)) {
 									vacated = true;
 									break;
@@ -1293,6 +1294,7 @@ public class BuildingManager implements Serializable {
 							if (!vacated && !l.isReserved() 
 								&& !l.isReservedForMaintenance()
 								&& l.getMission() == null
+								&& l.isEmpty()
 								&& garage.removeUtilityVehicle(l, true)) {
 										vacated = true;
 										break;
@@ -1359,6 +1361,15 @@ public class BuildingManager implements Serializable {
 	 * @return true if it's already in the garage or added to a garage
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
+		// Check if the vehicle is already inside garage
+		if (isInGarage(vehicle)) {
+			// Vehicle already on Garage
+//			vehicle.setPrimaryStatus(StatusType.GARAGED);
+			// Directly update the location state type
+//			vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
+			
+			return true;
+		}
 		return (addToGarageBuilding(vehicle) != null);
 	}
 
@@ -1369,21 +1380,26 @@ public class BuildingManager implements Serializable {
 	 */
 	public boolean isInGarage(Vehicle vehicle) {
 		if (settlement != null) {
+			if (getGarages().isEmpty())
+				return false;
+			
 			for (Building garageBuilding : getGarages()) {
 				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
 				if (garage == null) {
-					return false;
+					continue;
 				}
 				
 				if (vehicle instanceof Rover r
-						&& garage.containsRover(r)) {
-						return true;
+					&& garage.containsRover(r)) {
+					return true;
 				}
-				else if (vehicle instanceof Drone d
+				
+				if (vehicle instanceof Drone d
 					&& garage.containsFlyer(d)) {
 					return true;
 				}
-				else if (vehicle instanceof LightUtilityVehicle luv
+				
+				if (vehicle instanceof LightUtilityVehicle luv
 					&& garage.containsUtilityVehicle(luv)) {
 					return true;
 				}

@@ -300,6 +300,13 @@ public class Rover extends GroundVehicle implements Crewable,
 	}
 
 	/**
+	 * Is the rover empty of any occupants ?
+	 */
+	public boolean isEmpty() {
+		return robotOccupants.isEmpty() && occupants.isEmpty();
+	}
+	
+	/**
 	 * Checks if person is a crewmember.
 	 *
 	 * @param person the person to check
