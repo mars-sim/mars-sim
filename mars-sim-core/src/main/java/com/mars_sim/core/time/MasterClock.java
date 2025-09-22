@@ -1326,7 +1326,7 @@ public class MasterClock implements Serializable {
 				if (leadPulseTime > 0)
 					realElapsedMillisec = (long) (leadPulseTime * MILLISECONDS_PER_MILLISOL / desiredTR);
 				// Reset the elapsed clock to ignore this pulse
-				logger.config("realElapsedMillisec <= zero, setting it to the expected " + realElapsedMillisec + " ms.");
+				logger.config("realElapsedMillisec <= 0, setting it to the expected " + realElapsedMillisec + " ms.");
 				
 				acceptablePulse = true;
 			}

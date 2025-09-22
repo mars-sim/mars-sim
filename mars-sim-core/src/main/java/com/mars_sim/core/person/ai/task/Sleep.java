@@ -288,15 +288,11 @@ public class Sleep extends Task {
 
 			Settlement s = person.getSettlement();
 			// Home settlement and bed assigned
-			if (person.getAssociatedSettlement().equals(s) && person.hasBed()) {
-				
-				
-				if (person.getBuildingLocation().getZone() == person.getBed().getOwner().getZone()) {
-					// if the person is in the same zone as the building he's in
-					walkToBed(person, effortDriven);
+			if (person.getAssociatedSettlement().equals(s) && person.hasBed()) {				
+				// if the person is in the same zone as the building he's in
+				walkToBed(person, effortDriven);
 					
-					return;
-				}
+				return;
 			}
 			
 			// Note 1: Consider those in the astronomy observatory. They should be able to create a 

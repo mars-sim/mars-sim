@@ -868,59 +868,66 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			boolean roverUnloaded = UnloadVehicleEVA.isFullyUnloaded(rover);
             
 			if (member instanceof Person p) {
-				
+
 				if (p.isDeclaredDead()) {
 					logger.fine(p, "Dead body will be retrieved from rover " + v.getName() + ".");
 				}
-	
+
 				// Future : Gets a lead person to perform it and give him a rescue badge
 				else if (p.getPhysicalCondition().isUnfitByLevel(1500, 90, 1500, 1000)
 						&& rover.getCrew().contains(p)) {
 					// Initiate an rescue operation
 					rescueOperation(rover, p, disembarkSettlement);
+					addMissionLog("Rescuing " + p.getName(), ((Person)member).getName());
 				}
-	
+
 				else if (isRoverInAGarage
 						&& rover.getCrew().contains(p)) {
 					transferReport(p, rover, disembarkSettlement);	
 				}
-				
-				else {
-					// Rover is NOT in a garage
 
+				else {
 					// Note: need to see if this person needs an EVA suit
 					
 					// Note: This is considered cheating since missing EVA suits are automatically
 					// transfered to the vehicle
 					EVASuitUtil.checkTransferSuitsToVehicle(p, disembarkSettlement, this);
+					
+					// Rover is NOT in a garage
+					walkToAirlock(rover, p, disembarkSettlement);
 				}
-				
-				// Unload rover if necessary.
+			}
 
-				// Note : Set random chance of having person unloading resources,
-				// thus allowing person to do other urgent things
-				if (!roverUnloaded && RandomUtil.lessThanRandPercent(50)) {
-					unloadCargo(member, rover);
+			// Unload rover if necessary.
+
+			// Note : Set random chance of having person unloading resources,
+			// thus allowing person to do other urgent things
+			if (!roverUnloaded && RandomUtil.lessThanRandPercent(50)) {
+				boolean toUnload = unloadCargo(member, rover);
+				if (toUnload) {
+					addMissionLog("Unloading resource", member.getName());
 				}
 			}
 		}
-	
-        // Update and reload the crew members since some may have just left the vehicle
-		crew = rover.getCrew();
-        
+
+		// Note: sometimes a non-member happens to be in this vehicle
 		if (!crew.isEmpty()) {
-			// Check to see if anyone is still in the vehicle
-			// Walk back to the airlock.	
-			for (Person pp: crew) {
-				if (isRoverInAGarage) {
-					transferReport(pp, rover, disembarkSettlement);
-				}
-				else {
-					walkToAirlock(rover, pp, disembarkSettlement);
+			List<Person> occupants = new ArrayList<>(crew);
+			Person person = occupants.get(0);
+			if (!getMembers().contains(person)) {
+				// Recruit this person to help unload the cargo
+				// so that he doesn't stay inside the vehicle
+				boolean toUnload = unloadCargo(person, rover);
+				if (toUnload) {
+					addMissionLog("Unloading resource", person.getName());
 				}
 			}
 		}
-		else {
+		
+		// Question: what should be the end state of the vehicle in order for
+		//           the mission to be ended ?
+		
+		if (crew.isEmpty()) {
 			// Complete disembarking once everyone is out of the Vehicle
 			// Leave the vehicle.
 			releaseVehicle(rover);
