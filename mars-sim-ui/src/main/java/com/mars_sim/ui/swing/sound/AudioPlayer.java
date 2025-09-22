@@ -14,13 +14,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,9 @@ import java.util.Properties;
 import java.util.logging.Level;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.logging.SimLogger;
@@ -54,6 +56,7 @@ public class AudioPlayer {
 	private static final String VOLUME = "volume";
 	private static final String MUTE = "mute";
 	private static final String OGG = "ogg";
+	private static final String FULL_PATH = DEFAULT_MUSIC_DIR + "/*." + OGG;
 
 
 	/** The volume of the audio player (0.0 to 1.0) */
@@ -122,40 +125,29 @@ public class AudioPlayer {
 		allSoundClips = new HashMap<>();
 		musicTracks = new ArrayList<>();
 
-		// Loads music tracks from two folders
+		// Path in jarfile : 
+		// jar:file:/Users/spacebear/git/mars-sim/mars-sim-dist/target/mars-sim-pre-3.10.0/lib/mars-sim-swing.jar!/music/
 		
-		// Note that the approach below may not work for files inside a compiled jar file
-		// 1a. Load from the default music directory in resource folder
-//		URL defaultURL = AudioPlayer.class.getResource(DEFAULT_MUSIC_DIR);
-//		String stringURL = defaultURL.getFile();
-//		logger.log(Level.CONFIG, "Default music folder at " + stringURL);
-//		File defaultMusicfolder = new File(stringURL);
-//		addMusicTracks(defaultMusicfolder);
-		
-		// Note: the approach below has NPE 
-		// 1b. Use InputStream and getResourceAsStream() to load ogg files
-		//    from /music directory inside /resource folder
-//		logger.log(Level.CONFIG, "Default music folder at " + stringURL);
-//		List<String> files = getResourceFiles(stringURL); or DEFAULT_MUSIC_DIR
-//		addMusicTracks(files);
-		
-		// 1c. Use java.java.nio.file to accommodate situation from loading inside a jarfile 
-		URL defaultURL = AudioPlayer.class.getResource(DEFAULT_MUSIC_DIR);
-		String stringURL = defaultURL.getFile();
+		// 1. Load from the music directory within the target folder or within jarfile
+		ClassLoader cl = getClass().getClassLoader(); 
+		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
 		try {
-			URI uri = defaultURL.toURI();
-			Path path = getFolderPath(uri, stringURL);
-			File defaultMusicfolder = path.toFile();
-			addMusicTracks(defaultMusicfolder);
-		} catch (URISyntaxException e) {
-			logger.log(Level.SEVERE, "URISyntaxException: " + e);
+			Resource[] resources = resolver.getResources(FULL_PATH);
+			logger.log(Level.CONFIG, "1. Load from the target folder or within jarfile at " + FULL_PATH);
+			List<String> files = new ArrayList<>();
+			for (Resource r: resources){
+			    logger.info(r.getFilename());
+			    files.add(r.getFilename());
+			}
+			addMusicTracks(files);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "IOException: " + e);
+			logger.log(Level.SEVERE, "Unable to load from the target folder or within jarfile: " + e);
 		}
-		
+
 		// 2. Load from the music directory in user home folder
 		File userFolder = new File(MUSIC_DIR);
-		logger.log(Level.CONFIG, "User Home music folder at " + MUSIC_DIR);
+		logger.log(Level.CONFIG, "2. Load from user home music folder at " + MUSIC_DIR);
+		// e.g. User Home music folder at /Users/spacebear/.mars-sim/music
 		
 		boolean dirExist = userFolder.isDirectory();
 		boolean fileExist = userFolder.isFile();
@@ -199,7 +191,8 @@ public class AudioPlayer {
 	 */
 	 private Path getFolderPath(URI uri, String folderJar) throws URISyntaxException, IOException {
 		 if ("jar".equals(uri.getScheme())) {
-			 FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap(), null);
+			 FileSystem fileSystem = FileSystems.getDefault();
+					 // FileSystems.newFileSystem(uri, Collections.emptyMap(), null);
 			 return fileSystem.getPath(folderJar);
 		 } 
 		 else {
@@ -241,6 +234,17 @@ public class AudioPlayer {
 				musicTracks.add(filename);
 			}
 		}
+	}
+	
+	public List<String> getResourceFilelist(String path) throws Exception{
+	    InputStream in = getResourceAsStream(path); // ClassLoader.getSystemClassLoader().getResourceAsStream(path);
+	    byte[] b = new byte[in.available()];
+	    in.read(b);
+	    String data = new String(b);
+	    String[] s = data.split("\n");
+	    List<String> a = Arrays.asList(s);
+	    List<String> m = new ArrayList<>(a);
+	    return m;
 	}
 	
 	/**
