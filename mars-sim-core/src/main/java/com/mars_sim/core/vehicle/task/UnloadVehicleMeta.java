@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnloadVehicleMeta.java
- * @date 2024-06-17
+ * @date 2025-09-21
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -25,7 +25,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -109,7 +108,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
             if (vehicle.haveStatusType(StatusType.UNLOADING)) {
 				
    				boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-   						vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+   						vehicle.getAssociatedSettlement(), vehicle);
 						
                 SettlementTask job = createUnloadJob(settlement, vehicle, garageTask, this);
 

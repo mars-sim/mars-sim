@@ -99,9 +99,7 @@ public class MaintainGarageVehicle extends Task {
 				clearTask(worker.getName() + " not in a settlement.");
 				return;
 			}
-			
-			vehicle.addToAGarage();
-			
+		
 			building = settlement.getBuildingManager().addToGarageBuilding(vehicle);
 				
 			if (building != null) {

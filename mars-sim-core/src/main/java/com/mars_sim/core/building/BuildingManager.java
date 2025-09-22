@@ -1184,16 +1184,14 @@ public class BuildingManager implements Serializable {
 	 * @return the garage building already in or just added
 	 */
 	public Building addToGarageBuilding(Vehicle vehicle) {
-
+		// if no garage buildings are present in this settlement
+		if (garages.isEmpty()) {
+			return null;
+		}
+		
 		if (vehicle.isBeingTowed() 
 			|| (VehicleType.isRover(vehicle.getVehicleType())
 					&& ((Rover)vehicle).isTowingAVehicle())) {
-			return null;
-		}
-
-		// if no garage buildings are present in this settlement
-		if (garages.isEmpty()) {
-
 			return null;
 		}
 
@@ -1367,7 +1365,6 @@ public class BuildingManager implements Serializable {
 //			vehicle.setPrimaryStatus(StatusType.GARAGED);
 			// Directly update the location state type
 //			vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-			
 			return true;
 		}
 		return (addToGarageBuilding(vehicle) != null);
@@ -1379,30 +1376,28 @@ public class BuildingManager implements Serializable {
 	 * @return true if vehicle is in a garage.
 	 */
 	public boolean isInGarage(Vehicle vehicle) {
-		if (settlement != null) {
-			if (getGarages().isEmpty())
-				return false;
+		if (getGarages().isEmpty())
+			return false;
+		
+		for (Building garageBuilding : getGarages()) {
+			VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
+			if (garage == null) {
+				continue;
+			}
 			
-			for (Building garageBuilding : getGarages()) {
-				VehicleMaintenance garage = garageBuilding.getVehicleMaintenance();
-				if (garage == null) {
-					continue;
-				}
-				
-				if (vehicle instanceof Rover r
-					&& garage.containsRover(r)) {
-					return true;
-				}
-				
-				if (vehicle instanceof Drone d
-					&& garage.containsFlyer(d)) {
-					return true;
-				}
-				
-				if (vehicle instanceof LightUtilityVehicle luv
-					&& garage.containsUtilityVehicle(luv)) {
-					return true;
-				}
+			if (vehicle instanceof Rover r
+				&& garage.containsRover(r)) {
+				return true;
+			}
+			
+			if (vehicle instanceof Drone d
+				&& garage.containsFlyer(d)) {
+				return true;
+			}
+			
+			if (vehicle instanceof LightUtilityVehicle luv
+				&& garage.containsUtilityVehicle(luv)) {
+				return true;
 			}
 		}
 		return false;

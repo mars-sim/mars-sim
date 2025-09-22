@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MaintainVehicleMeta.java
- * @date 2025-08-27
+ * @date 2025-09-21
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -29,6 +29,8 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.vehicle.Flyer;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -144,7 +146,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		if (highestScore > 0) {
 			
 			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-					worstVehicle.getAssociatedSettlement(), worstVehicle instanceof Rover);
+					worstVehicle.getAssociatedSettlement(), worstVehicle);
 			
 			tasks.add(new VehicleMaintenanceJob(this, worstVehicle, !garageTask, score));
 		}
@@ -179,7 +181,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 		if (highestScore > 0) {
 			
 			boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-					worstVehicle.getAssociatedSettlement(), worstVehicle instanceof Rover);
+					worstVehicle.getAssociatedSettlement(), worstVehicle);
 			
 			tasks.add(new VehicleMaintenanceJob(this, worstVehicle, !garageTask, score));
 		}
@@ -220,21 +222,24 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	}
 	
 	/**
-	 *Checks if a garages space is available in a Settlement.
+	 * Checks if a garages space is available in a Settlement.
 	 * 
 	 * @param settlement Location to check.
+	 * @param vehicle
 	 */
-	public static boolean hasGarageSpaces(Settlement settlement, boolean isRover) {
+	public static boolean hasGarageSpaces(Settlement settlement, Vehicle vehicle) {
 
 		for (Building j : settlement.getBuildingManager().getBuildingSet(
 				FunctionType.VEHICLE_MAINTENANCE)) {
 			VehicleMaintenance garage = j.getVehicleParking();
 			
 			boolean hasSpace = false;
-			if (isRover)
+			if (vehicle instanceof Rover)
 				hasSpace = garage.getAvailableRoverCapacity() > 0;
-			else
+			else if (vehicle instanceof Flyer)
 				hasSpace = garage.getAvailableFlyerCapacity() > 0;
+			else if (vehicle instanceof LightUtilityVehicle)
+				hasSpace = garage.getAvailableUtilityVehicleCapacity() > 0;
 				
 			if (hasSpace)
 				return true;
@@ -246,18 +251,22 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 * Counts the number of available garages spaces in a Settlement.
 	 * 
 	 * @param settlement Location to check.
+	 * @param vehicle
 	 */
-	public static int getGarageSpaces(Settlement settlement, boolean isRover) {
+	public static int getGarageSpaces(Settlement settlement, Vehicle vehicle) {
 		int garageSpaces = 0;
 		for(Building j : settlement.getBuildingManager().getBuildingSet(
 				FunctionType.VEHICLE_MAINTENANCE)) {
 			VehicleMaintenance garage = j.getVehicleParking();
 			
-			if (isRover)
+			if (vehicle instanceof Rover)
 				garageSpaces += garage.getAvailableRoverCapacity();
-			else
+			else if (vehicle instanceof Flyer)
 				garageSpaces += garage.getAvailableFlyerCapacity();
+			else if (vehicle instanceof LightUtilityVehicle)
+				garageSpaces += garage.getAvailableUtilityVehicleCapacity();
 		}
+
 		return garageSpaces;
 	}
 }

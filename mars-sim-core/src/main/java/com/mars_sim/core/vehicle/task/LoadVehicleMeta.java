@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * LoadVehicleMeta.java
- * @date 2023-09-02
+ * @date 2025-09-21
  * @author Scott Davis
  */
 package com.mars_sim.core.vehicle.task;
@@ -25,7 +25,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -60,7 +59,7 @@ public class LoadVehicleMeta extends MetaTask
     			return new LoadVehicleGarage(person, vehicle);
     			
     		boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-    				vehicle.getAssociatedSettlement(), vehicle instanceof Rover);
+    				vehicle.getAssociatedSettlement(), vehicle);
             
     		if (garageTask)
     			return new LoadVehicleGarage(person, vehicle);
@@ -123,7 +122,7 @@ public class LoadVehicleMeta extends MetaTask
 				if ((plan != null) && plan.getSettlement().equals(settlement) && !plan.isCompleted()) {
 					
 					boolean garageTask = MaintainVehicleMeta.hasGarageSpaces(
-							settlement, vehicle instanceof Rover);
+							settlement, vehicle);
 							
                     SettlementTask job = createLoadJob(vehicle, settlement, garageTask, this);
                     if (job != null) {
