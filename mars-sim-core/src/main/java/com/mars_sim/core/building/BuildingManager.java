@@ -1216,8 +1216,8 @@ public class BuildingManager implements Serializable {
 							if (!vacated && !rover.isReserved() 
 								&& !rover.isReservedForMaintenance()
 								&& rover.getMission() == null
-								&& rover.isEmpty()
-								&& garage.removeRover(rover, true)) {
+								&& rover.hasNoCrew()
+								&& garage.removeRover(rover, false)) {
 									vacated = true;
 									break;
 							}
@@ -1294,10 +1294,10 @@ public class BuildingManager implements Serializable {
 							if (!vacated && !l.isReserved() 
 								&& !l.isReservedForMaintenance()
 								&& l.getMission() == null
-								&& l.isEmpty()
-								&& garage.removeUtilityVehicle(l, true)) {
-										vacated = true;
-										break;
+								&& l.hasNoCrew()
+								&& garage.removeUtilityVehicle(l, false)) {
+									vacated = true;
+									break;
 							}
 						}
 					}
