@@ -984,7 +984,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 * @return
 		 */
 		boolean isMissionMember(Worker member) {
-			return (mission.getMembers().contains(member));
+			if (mission != null && mission.getMembers().contains(member))
+				return true;
+			return false;
 		}
 		
 		/**

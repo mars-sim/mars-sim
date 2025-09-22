@@ -310,7 +310,9 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @return
 		 */
 		boolean isMissionMember(Worker member) {
-			return (mission.getMembers().contains(member));
+			if (mission != null && mission.getMembers().contains(member))
+				return true;
+			return false;
 		}
 
 		/**

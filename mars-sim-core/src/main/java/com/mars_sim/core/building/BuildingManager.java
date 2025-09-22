@@ -1193,8 +1193,7 @@ public class BuildingManager implements Serializable {
 
 		// if no garage buildings are present in this settlement
 		if (garages.isEmpty()) {
-			// The vehicle may already be PARKED ?
-//			vehicle.setPrimaryStatus(StatusType.PARKED);
+
 			return null;
 		}
 
@@ -1214,10 +1213,12 @@ public class BuildingManager implements Serializable {
 					if (garage.getAvailableRoverCapacity() == 0) {
 						// Try removing a non-reserved vehicle inside a garage		
 						for (Rover rover: garage.getRovers()) {
-							if (!vacated && !rover.isReserved() && rover.getMission() != null) {
-								if (garage.removeRover(rover, true)) {
+							if (!vacated && !rover.isReserved() 
+								&& !rover.isReservedForMaintenance()
+								&& rover.getMission() == null
+								&& garage.removeRover(rover, true)) {
 									vacated = true;
-								}
+									break;
 							}
 						}
 					}
@@ -1251,10 +1252,12 @@ public class BuildingManager implements Serializable {
 					if (garage.getAvailableFlyerCapacity() == 0) {
 						// Try removing a non-reserved drone inside a garage		
 						for (Flyer flyer: garage.getFlyers()) {
-							if (!vacated && !flyer.isReserved() && flyer.getMission() != null) {
-								if (garage.removeFlyer(flyer)) {
+							if (!vacated && !flyer.isReserved() 
+								&& !flyer.isReservedForMaintenance()
+								&& flyer.getMission() == null
+								&& garage.removeFlyer(flyer)) {
 									vacated = true;
-								}
+									break;
 							}
 						}
 					}
@@ -1287,10 +1290,12 @@ public class BuildingManager implements Serializable {
 					if (garage.getAvailableUtilityVehicleCapacity() == 0) {
 						// Try removing a non-reserved vehicle inside a garage		
 						for (LightUtilityVehicle l: garage.getUtilityVehicles()) {
-							if (!vacated && !l.isReserved() && l.getMission() != null) {
-								if (garage.removeUtilityVehicle(l, true)) {
-									vacated = true;
-								}
+							if (!vacated && !l.isReserved() 
+								&& !l.isReservedForMaintenance()
+								&& l.getMission() == null
+								&& garage.removeUtilityVehicle(l, true)) {
+										vacated = true;
+										break;
 							}
 						}
 					}
@@ -1354,16 +1359,6 @@ public class BuildingManager implements Serializable {
 	 * @return true if it's already in the garage or added to a garage
 	 */
 	public boolean addToGarage(Vehicle vehicle) {
-		// Check if the vehicle is already inside garage
-		if (isInGarage(vehicle)) {
-			// Vehicle already on Garage
-			vehicle.setPrimaryStatus(StatusType.GARAGED);
-			// Directly update the location state type
-			vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-			
-			return true;
-		}
-
 		return (addToGarageBuilding(vehicle) != null);
 	}
 
@@ -1383,7 +1378,7 @@ public class BuildingManager implements Serializable {
 				if (vehicle instanceof Rover r
 						&& garage.containsRover(r)) {
 						return true;
-					}
+				}
 				else if (vehicle instanceof Drone d
 					&& garage.containsFlyer(d)) {
 					return true;
