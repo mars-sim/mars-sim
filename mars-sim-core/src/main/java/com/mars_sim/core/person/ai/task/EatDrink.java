@@ -30,6 +30,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
@@ -80,9 +81,9 @@ public class EatDrink extends Task {
 
 	private int meals = 0;
 	
-	private double foodAmount = 0;
+	private double foodAmount = 0D;
 	/** how much eaten [in kg]. */
-	private double cumulativeProportion = 0;
+	private double cumulativeProportion = 0D;
 	private double totalEatingTime = 0D;
 	private double eatingDuration = 0D;
 	private double waterEachServing;
@@ -90,6 +91,7 @@ public class EatDrink extends Task {
 	private PreparedDish cookedMeal;
 	private Cooking kitchen;
 	private PhysicalCondition pc;
+	private UnitHolder containerUnit;
 
 	/**
 	 * Constructor.
@@ -121,24 +123,26 @@ public class EatDrink extends Task {
 
 		////////////////////
 
-		double waterAmount = 0;
+		double waterAmount = 0.0;
 
 		foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 		waterAmount = person.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		
-		var container = person.getContainerUnit();
-		if (container instanceof ResourceHolder c) {
-			// Take preserved food from inventory if it is available.
-			if (foodAmount == 0)
-				foodAmount = c.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
-			if (waterAmount == 0)
-				waterAmount = c.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
-		}
-
 		// If still no water, check bottle
-		if ((waterAmount == 0) && person.hasThermalBottle()) {
+		if ((waterAmount == 0.0) && person.hasThermalBottle()) {
 			var bottle = person.lookForThermalBottle();
 			waterAmount = bottle.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
+		}
+				
+		// Set the container unit of the person
+		containerUnit = person.getContainerUnit();
+		
+		if (containerUnit instanceof ResourceHolder c) {
+			// Take preserved food from inventory if it is available.
+			if (foodAmount == 0.0)
+				foodAmount = c.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
+			if (waterAmount == 0.0)
+				waterAmount = c.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 		}
 
 		// Check if a cooked meal is available in a kitchen building at the settlement.
@@ -153,18 +157,35 @@ public class EatDrink extends Task {
 		/////////////////////////////////////////////////
 
 		if (person.isInSettlement()) {	
-			checkSettlement(hungry, thirsty, waterAmount);
+			walkToDining(hungry, thirsty, waterAmount);
+
+			// Checks if the settlement has food and water.
+			if (hungry && (foodAmount > 0 || meals > 0)) {
+				food = true;
+			}
+
+			if (thirsty && waterAmount > 0) {
+				water = true;
+			}
 		}
 
 		else if (person.isInVehicle()) {
 			Vehicle vehicle = person.getVehicle();
 			
 			if (vehicle.isInGarage()) {
-				checkVehicleInGarage(vehicle, hungry, thirsty, waterAmount);
+				// Note: don't really want the person to unboard and walk out of the vehicle to a dining hall 
+
+				if (hungry && foodAmount > 0) {
+					food = true;
+				}
+
+				if (thirsty && waterAmount > 0) {
+					water = true;
+				}
 			}
 			else {
-				checkPersonVehicle(person.getVehicle(), hungry, thirsty);
-			}	
+				checkPersonInVehicle(person.getVehicle(), hungry, thirsty);
+			}
 		}
 
 		else {
@@ -182,17 +203,17 @@ public class EatDrink extends Task {
 			goForFood();
 		
 		if (water)
-			goForWater();
+			lookForWaterPhase();
 	}
 		
 	/**
-	 * Checks if the settlement has food and water.
+	 * Walks to a dining facility in the settlement where the garage vehicle is at.
 	 * 
 	 * @param hungry
 	 * @param thirsty
 	 * @param waterAmount
 	 */
-	private void checkSettlement(boolean hungry, boolean thirsty, double waterAmount) {
+	private void walkToDining(boolean hungry, boolean thirsty, double waterAmount) {
 		Building currentBuilding = BuildingManager.getBuilding(person);
 		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA) {
 			// Check if there is a local dining building.
@@ -200,53 +221,10 @@ public class EatDrink extends Task {
         	
         	if (diningBuilding != null) {
   
-        		boolean canWalk = walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, false);		
-    			// Take napkin from inventory if available.
-    			if (canWalk) {
-    				// In future, arrange to meet a friend at the diner
-    			}
+        		walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, false);		
+    			// Future: Take napkin from inventory if available.
+    			// Future: Arrange to meet a friend at the diner
         	}			
-		}
-
-		if (hungry && (foodAmount > 0 || meals > 0)) {
-			food = true;
-		}
-
-		if (thirsty && waterAmount > 0) {
-			water = true;
-		}
-	}
-	
-	/**
-	 * Walks to a dining facility in the settlement where the garage vehicle is at.
-	 * 
-	 * @param vehicle
-	 * @param hungry
-	 * @param thirsty
-	 * @param waterAmount
-	 */
-	private void checkVehicleInGarage(Vehicle vehicle, boolean hungry, boolean thirsty, double waterAmount) {
-		Building currentBuilding = vehicle.getGarage();
-		if (currentBuilding != null) {
-			// Check if there is a local dining building.
-        	Building diningBuilding = BuildingManager.getAvailableDiningBuilding(currentBuilding.getSettlement(), currentBuilding.getZone());
-        	
-        	if (diningBuilding != null) {
-  
-        		boolean canWalk = walkToActivitySpotInBuilding(diningBuilding, FunctionType.DINING, false);		
-    			// Take napkin from inventory if available.
-    			if (canWalk) {
-    				// In future, arrange to meet a friend at the diner
-    			}
-        	}			
-		}
-
-		if (hungry && (foodAmount > 0 || meals > 0)) {
-			food = true;
-		}
-
-		if (thirsty && waterAmount > 0) {
-			water = true;
 		}
 	}
 	
@@ -257,7 +235,7 @@ public class EatDrink extends Task {
 	 * @param hungry
 	 * @param thirsty
 	 */
-	private void checkPersonVehicle(Vehicle container, boolean hungry, boolean thirsty) {
+	private void checkPersonInVehicle(Vehicle container, boolean hungry, boolean thirsty) {
 
 		foodAmount = person.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
 		
@@ -297,20 +275,22 @@ public class EatDrink extends Task {
 				}
 				
 				else {
-					checkFoodDessertAmount();
+					lookForFoodPhase();
 				}
 			}
 			else {
-				checkFoodDessertAmount();
+				lookForFoodPhase();
 			}
 		}
 
-		else if (person.isInVehicle()) {
-			
-			checkFoodDessertAmount();
+		else if (person.isInVehicle()) {		
+			lookForFoodPhase();
 		}
 	}
 
+	/**
+	 * Goes for a meal in dining hall preferably.
+	 */
 	private void goDining() {
 
 		boolean want2Chat = true;
@@ -341,12 +321,18 @@ public class EatDrink extends Task {
 	}
 	
 	
-	private void checkFoodDessertAmount() {
+	/**
+	 * Looks for food phase.
+	 */
+	private void lookForFoodPhase() {
 		// Initialize task phase.
 		setPhase(LOOK_FOR_FOOD);
 	}
 
-	private void goForWater() {
+	/**
+	 * Looks for water phase.
+	 */
+	private void lookForWaterPhase() {
 		// if water only
 		// Initialize task phase.
 		setPhase(DRINK_WATER);
@@ -516,25 +502,44 @@ public class EatDrink extends Task {
 				
 		// Check directly from settlement
 		if (person.isInSettlement()) {
-			// Take preserved food from container if it is available.
-			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion);
+			
+			// Take preserved food from settlement if it is available.
+			double shortfall = person.getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
+			// Retrieve a portion from the settlement and store in the person
+			if (proportion * 0.1 - shortfall > 0) {
+				person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
+			}
 			if (proportion > shortfall) {
 				proportion -= shortfall;			
 			}
+
 		}
 		else {
 			// When inside a vehicle, retrieve food from a person or from vehicle
 		
 			if (person.isInVehicle()) {
-				// Person will try refraining from eating food while in a vehicle
-				proportion *= EatDrinkMeta.VEHICLE_FOOD_RATION;
-				proportion = consumeFoodProportion(proportion);
+		
+				if (person.getVehicle().isInGarage()) {
+					// Take preserved food from settlement if it is available.
+					double shortfall = person.getVehicle().getSettlement().retrieveAmountResource(ResourceUtil.FOOD_ID, proportion * 1.1);
+					// Retrieve a portion from the settlement and store in the person
+					if (proportion * 0.1 - shortfall > 0) {
+						person.storeAmountResource(ResourceUtil.FOOD_ID, proportion * 0.1 - shortfall);
+					}
+				}
+				else {
+					// Vehicle is not in a garage
+					// Try refraining from consuming normal amount of food while in a vehicle
+					// or else it runs out quickly
+					proportion *= EatDrinkMeta.VEHICLE_FOOD_RATION;
+					proportion = retrieveFood(proportion);
+				}
 			}
 			
 			else if (person.getMission() != null) {
 				// Person will tends to ration more food while on a mission
 				proportion *= EatDrinkMeta.MISSION_FOOD_RATION;
-				proportion = consumeFoodProportion(proportion);
+				proportion = retrieveFood(proportion);
 			}
 		}
 		
@@ -581,17 +586,16 @@ public class EatDrink extends Task {
 	}
 	
 	/**
-	 * Consumes the food proportion.
+	 * Retrieves the food proportion.
 	 * 
 	 * @param proportion
 	 * @return
 	 */
-	private double consumeFoodProportion(double proportion) {
+	private double retrieveFood(double proportion) {
 		// Assume the person carries preserved food 	
 		double shortfall = person.retrieveAmountResource(ResourceUtil.FOOD_ID, proportion);
 		if (shortfall > 0) {
-			var container = person.getContainerUnit();
-			shortfall = ((ResourceHolder)container).retrieveAmountResource(ResourceUtil.FOOD_ID, shortfall);
+			shortfall = ((ResourceHolder)containerUnit).retrieveAmountResource(ResourceUtil.FOOD_ID, shortfall);
 		}
 		
 		return proportion - shortfall;
@@ -706,7 +710,6 @@ public class EatDrink extends Task {
 
 		double amount = RandomUtil.getRandomDouble(waterEachServing / 2, waterEachServing);
 
-		var containerUnit = person.getContainerUnit();
 		if (containerUnit instanceof MarsSurface) {
 			// Doing EVA outside. Get water from one's EVA suit
 			EVASuit suit = person.getSuit();
@@ -847,7 +850,7 @@ public class EatDrink extends Task {
 		if (person.getSettlement() != null && person.getSettlement()
 				.retrieveAmountResource(ResourceUtil.NAPKIN_ID, NAPKIN_MASS) > 0) {
 			// Throw away napkin waste if one was used.
-			((ResourceHolder)person.getContainerUnit()).storeAmountResource(ResourceUtil.SOLID_WASTE_ID, NAPKIN_MASS);
+			((ResourceHolder)containerUnit).storeAmountResource(ResourceUtil.SOLID_WASTE_ID, NAPKIN_MASS);
 		}
 	}
 }

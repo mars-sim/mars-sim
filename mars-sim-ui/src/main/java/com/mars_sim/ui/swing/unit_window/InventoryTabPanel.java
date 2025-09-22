@@ -631,7 +631,9 @@ public class InventoryTabPanel extends TabPanel {
 		}
 
 		private Equipment getEquipment(int row) {
-			return equipmentList.get(row);
+			if (equipmentList != null && !equipmentList.isEmpty())
+				return equipmentList.get(row);
+			return null;
 		}
         
 		private String getContent(Equipment e) {
@@ -647,7 +649,9 @@ public class InventoryTabPanel extends TabPanel {
 		}
 
 		public int getRowCount() {
-			return equipmentList.size();
+			if (equipmentList != null && !equipmentList.isEmpty())
+				return equipmentList.size();
+			return 0;
 		}
 
 		public int getColumnCount() {
@@ -728,7 +732,9 @@ public class InventoryTabPanel extends TabPanel {
 		
 		@Override
 		public Entity getAssociatedEntity(int row) {
-			return equipmentList.get(row);
+			if (equipmentList != null && !equipmentList.isEmpty())
+				return equipmentList.get(row);
+			return null;
 		}
 		
     	/**

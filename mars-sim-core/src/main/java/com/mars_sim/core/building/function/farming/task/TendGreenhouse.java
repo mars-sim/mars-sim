@@ -41,15 +41,17 @@ public class TendGreenhouse extends TendHousekeeping {
 	
 	private static final String NAME = Msg.getString("Task.description.tendGreenhouse"); //$NON-NLS-1$
 	
-	private static final String GROWING_DETAIL = Msg.getString("Task.description.tendGreenhouse.grow.detail"); //$NON-NLS-1$
+	private static final String GROWING_DETAIL = Msg.getString("Task.description.tendGreenhouse.grow.detail") + " "; //$NON-NLS-1$
+	
 	private static final String DONE_GROWING = "Done with growing ";
 
 	private static final String DONE_SEEDING = Msg.getString("Task.description.tendGreenhouse.seed.done"); //$NON-NLS-1$
 	
-	private static final String TEND = Msg.getString("Task.description.tendGreenhouse.tend"); //$NON-NLS-1$
+	private static final String TEND = Msg.getString("Task.description.tendGreenhouse.tend") + " "; //$NON-NLS-1$
+	
 	private static final String DONE_TENDING = Msg.getString("Task.description.tendGreenhouse.tend.done"); //$NON-NLS-1$
 		
-	private static final String SAMPLE_DETAIL = Msg.getString("Task.description.tendGreenhouse.sample.detail");
+	private static final String SAMPLE_DETAIL = Msg.getString("Task.description.tendGreenhouse.sample.detail") + " ";
 
 	
 	private static final String TISSUES_IN_LAB = " tissues in botany lab.";
@@ -196,7 +198,7 @@ public class TendGreenhouse extends TendHousekeeping {
 
 
 			setDescription((needyCrop.getPhase().getPhaseType() == PhaseType.HARVESTING ?
-							"Harvesting" : TEND) + " " + needyCrop.getName());
+							"Harvesting" : TEND) + needyCrop.getName());
 			previousCropName = needyCrop.getName();
 		}
 		
@@ -317,7 +319,7 @@ public class TendGreenhouse extends TendHousekeeping {
 			goal = greenhouse.chooseCrop2Extract(Farming.STANDARD_AMOUNT_TISSUE_CULTURE);
 			if (goal != null) {
 				greenhouse.getResearch().addToIncubator(goal, Farming.STANDARD_AMOUNT_TISSUE_CULTURE);	
-				setDescription(GROWING_DETAIL + " " + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
+				setDescription(GROWING_DETAIL + goal.toLowerCase() + " for " + Math.round(time * 100.0)/100.0 + " msol");
 			}
 			else {
 				// Can't find any matured crop to sample
@@ -389,7 +391,7 @@ public class TendGreenhouse extends TendHousekeeping {
 	
 					double workTime = time * mod;
 					
-					setDescription(SAMPLE_DETAIL + " " + Farming.TISSUE + " for " + Math.round(time * 100.0)/100.0 + " msol");
+					setDescription(SAMPLE_DETAIL + Farming.TISSUE + " for " + Math.round(time * 100.0)/100.0 + " msol");
 			
 					addExperience(workTime);
 				}

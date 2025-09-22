@@ -43,7 +43,7 @@ public class EnterAirlock extends Task {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.enterAirlock"); //$NON-NLS-1$
 	
-	public static final String DETAIL = Msg.getString("Task.description.enterAirlock.detail"); //$NON-NLS-1$
+	public static final String DETAIL = Msg.getString("Task.description.enterAirlock.detail") + " "; //$NON-NLS-1$
 	
 	/** Task phases. */
 	private static final TaskPhase REQUEST_INGRESS = new TaskPhase(Msg.getString("Task.phase.requestIngress")); //$NON-NLS-1$

@@ -41,7 +41,7 @@ public class MeetTogether extends Task {
 	/** Simple Task name */
 	static final String SIMPLE_NAME = MeetTogether.class.getSimpleName();
 	
-	private static final String DETAIL = Msg.getString("Task.description.meetTogether.detail");
+	private static final String DETAIL = Msg.getString("Task.description.meetTogether.detail") + " ";
 	
     /** Task name */
     private static final String NAME = Msg.getString(

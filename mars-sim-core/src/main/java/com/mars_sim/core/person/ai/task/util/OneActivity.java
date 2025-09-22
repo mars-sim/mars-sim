@@ -27,6 +27,7 @@ public final class OneActivity implements Serializable {
 		this.taskName = taskName;
 		this.description = description;
 		this.phase = phase;
+		this.missionName = missionName;
 	}
 
 	/**
@@ -56,6 +57,11 @@ public final class OneActivity implements Serializable {
 		return phase;
 	}
 
+	/**
+	 * Gets the mission name.
+	 * 
+	 * @return
+	 */
 	public String getMission() {
 		return missionName;
 	}

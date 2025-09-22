@@ -52,7 +52,7 @@ public class ExitAirlock extends Task {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exitAirlock"); //$NON-NLS-1$
 	
-	private static final String DETAIL = Msg.getString("Task.description.exitAirlock.detail"); //$NON-NLS-1$
+	private static final String DETAIL = Msg.getString("Task.description.exitAirlock.detail") + " "; //$NON-NLS-1$
 	
 	private static final String CANT_DON_SUIT = "Can't don an EVA suit - ";
 	private static final String TO_REQUEST_EGRESS = " to request egress"; 

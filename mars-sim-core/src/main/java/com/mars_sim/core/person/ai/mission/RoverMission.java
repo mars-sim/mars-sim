@@ -89,6 +89,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final int DEPARTURE_DURATION = 250;
 	private static final int DEPARTURE_PREPARATION = 15;
 
+	private static final String STATUS_REPORT = "[Status Report] Left ";
+	
 	private boolean justArrived;
 	
 	/**
@@ -823,7 +825,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			String roverName = rover.getName();
 			
 			if (p.isInSettlement()) {
-				logger.info(p, "[Status Report] Left " + roverName
+				logger.info(p, 20_000L, STATUS_REPORT + roverName
 						+ " in " + rover.getBuildingLocation().getName()
 						+ ".  Building: " + p.getBuildingLocation().getName()
 						+ ".  Location State: " + p.getLocationStateType().getName());
@@ -831,7 +833,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			
 			else {						
 				// Not in settlement yet
-				logger.severe(p, "[Status Report] Left " + roverName
+				logger.severe(p, 20_000L, STATUS_REPORT + roverName
 						+ " in " + rover.getLocationStateType().getName()
 						+ ".  Location State: " + p.getLocationStateType().getName());
 			}
@@ -852,12 +854,14 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		Rover rover = (Rover) v;
 		Set<Person> crew = rover.getCrew();
 		
+		// Add vehicle to a garage if available.
+		boolean isRoverInAGarage = disembarkSettlement.getBuildingManager().isInGarage(v);
+	
 		if (!crew.isEmpty()) {
 			
-			// Add vehicle to a garage if available.
-			boolean isRoverInAGarage = disembarkSettlement.getBuildingManager().isInGarage(v);
-		
-            if (!isRoverInAGarage) {        	
+            if (!isRoverInAGarage) {    
+            	// Assume there's an easy way to plug into the settlement to load up resources in EVA suits,
+            	// just in case resources have been depleted
             	preloadEVASuits(crew, rover);	
             }
         	
@@ -870,13 +874,15 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 	
 				// Future : Gets a lead person to perform it and give him a rescue badge
-				else if (p.getPhysicalCondition().isUnfitByLevel(1500, 90, 1500, 1000)) {
+				else if (p.getPhysicalCondition().isUnfitByLevel(1500, 90, 1500, 1000)
+						&& rover.getCrew().contains(p)) {
 					// Initiate an rescue operation
 					rescueOperation(rover, p, disembarkSettlement);
 				}
 	
-				else if (isRoverInAGarage) {
-					transferReport(p, rover, disembarkSettlement);
+				else if (isRoverInAGarage
+						&& rover.getCrew().contains(p)) {
+					transferReport(p, rover, disembarkSettlement);	
 				}
 				
 				else {
@@ -903,11 +909,16 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		crew = rover.getCrew();
         
 		if (!crew.isEmpty()) {
-			// Check to see if member is still in the vehicle
-			// Walk back to the airlock.
-			if (member instanceof Person p && crew.contains(p)) {
-				walkToAirlock(rover, p, disembarkSettlement);
-        	}
+			// Check to see if anyone is still in the vehicle
+			// Walk back to the airlock.	
+			for (Person pp: crew) {
+				if (isRoverInAGarage) {
+					transferReport(pp, rover, disembarkSettlement);
+				}
+				else {
+					walkToAirlock(rover, pp, disembarkSettlement);
+				}
+			}
 		}
 		else {
 			// Complete disembarking once everyone is out of the Vehicle

@@ -31,7 +31,7 @@ public class LoadVehicleEVA extends EVAOperation {
 	/** Simple Task name */
 	public static final String SIMPLE_NAME = LoadVehicleEVA.class.getSimpleName();
 	
-	public static final String DETAIL = Msg.getString("Task.description.loadVehicleEVA.detail");
+	public static final String DETAIL = Msg.getString("Task.description.loadVehicleEVA.detail") + " ";
 	
 	/** Task phases. */
 	private static final TaskPhase LOADING = 

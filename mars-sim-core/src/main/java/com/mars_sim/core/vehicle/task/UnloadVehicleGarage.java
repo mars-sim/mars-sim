@@ -40,7 +40,7 @@ public class UnloadVehicleGarage extends Task {
 	
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleGarage");
 	
-	private static final String DETAIL = Msg.getString("Task.description.unloadVehicleGarage.detail");
+	private static final String DETAIL = Msg.getString("Task.description.unloadVehicleGarage.detail") + " ";
 	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString("Task.phase.unloading")); //$NON-NLS-1$

@@ -28,9 +28,9 @@ public abstract class TendHousekeeping extends Task {
 	/** Task phases. */
 	protected static final TaskPhase CLEANING = new TaskPhase(Msg.getString("Task.phase.cleaning")); //$NON-NLS-1$
 
-	protected static final String CLEANING_DETAIL = Msg.getString("Task.description.tendHousekeeping.cleaning"); //$NON-NLS-1$
+	protected static final String CLEANING_DETAIL = Msg.getString("Task.description.tendHousekeeping.cleaning") + " "; //$NON-NLS-1$
 	
-	protected static final String INSPECTING_DETAIL = Msg.getString("Task.description.tendHousekeeping.inspecting"); //$NON-NLS-1$
+	protected static final String INSPECTING_DETAIL = Msg.getString("Task.description.tendHousekeeping.inspecting") + " "; //$NON-NLS-1$
 		
 	static final double MAX_INSPECT_TIME = 30D;
 	
@@ -86,7 +86,7 @@ public abstract class TendHousekeeping extends Task {
 				return time;
 			}
 
-			setDescription(INSPECTING_DETAIL + " " + goal);
+			setDescription(INSPECTING_DETAIL + goal);
 		}
 		
 		addExperience(time);
@@ -114,7 +114,7 @@ public abstract class TendHousekeeping extends Task {
 				return time;
 			}
 
-			setDescription(CLEANING_DETAIL + " " + goal);
+			setDescription(CLEANING_DETAIL + goal);
 		}
 		
 		addExperience(time);

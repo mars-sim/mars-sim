@@ -27,9 +27,9 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
+import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
-import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -49,15 +49,11 @@ public class ProduceFood extends Task {
 	private static SimLogger logger = SimLogger.getLogger(ProduceFood.class.getName());
 
 	/** Task name */
-    private static final String TASK_DESCRIPTION_PRODUCE_FOOD = "Task.description.produceFood";
-
-    private static final String DETAIL = ".detail";
-    
-    private static final String DETAIL_DESCRIPTION = TASK_DESCRIPTION_PRODUCE_FOOD + DETAIL;
-    
-	private static final String NAME = Msg.getString(
-			TASK_DESCRIPTION_PRODUCE_FOOD); //$NON-NLS-1$
+	private static final String NAME = Msg.getString("Task.description.produceFood"); //$NON-NLS-1$
 	
+	private static final String CHECKING = Msg.getString("Task.description.produceFood.checking"); //$NON-NLS-1$
+	
+	private static final String DETAIL = Msg.getString("Task.description.produceFood.detail") + " "; //$NON-NLS-1$
     /** Task phases. */
     private static final TaskPhase PRODUCE_FOOD = new TaskPhase(Msg.getString(
             "Task.phase.produceFood")); //$NON-NLS-1$
@@ -83,7 +79,8 @@ public class ProduceFood extends Task {
 
 		// Initialize data members
 		if (person.isInSettlement()) {
-		    setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD)); //$NON-NLS-1$
+			
+		    setDescription(NAME);
 	
 			// Get available food production foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(person);
@@ -114,7 +111,8 @@ public class ProduceFood extends Task {
 
 		// Initialize data members
 		if (robot.isInSettlement()) {
-		    setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD)); //$NON-NLS-1$
+			
+		    setDescription(NAME);
 	
 			// Get available food production foodFactory if any.
 			Building foodProductionBuilding = getAvailableFoodProductionBuilding(robot);
@@ -502,8 +500,7 @@ public class ProduceFood extends Task {
 				}
 				
 				// Insert process into setDescription()
-				setDescription(Msg.getString(DETAIL_DESCRIPTION, //$NON-NLS-1$
-                    Conversion.capitalize(process.toString())));
+				setDescription(DETAIL + Conversion.capitalize(process.toString()));
 				
 				if (person != null)
 					logger.log(person, Level.FINE, 30_000, "Worked on '" + process.getInfo().getName() + "'.");
@@ -517,7 +514,7 @@ public class ProduceFood extends Task {
 
 				if (process == null) {
 					endTask();
-					setDescription(Msg.getString(TASK_DESCRIPTION_PRODUCE_FOOD + ".checking")); //$NON-NLS-1$ 
+					setDescription(CHECKING); 
 					return 0;
 				}
 			}		

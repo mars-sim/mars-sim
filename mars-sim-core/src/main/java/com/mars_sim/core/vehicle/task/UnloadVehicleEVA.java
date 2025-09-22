@@ -39,7 +39,7 @@ public class UnloadVehicleEVA extends EVAOperation {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 	
-	private static final String DETAIL = Msg.getString("Task.description.unloadVehicleEVA.detail"); 
+	private static final String DETAIL = Msg.getString("Task.description.unloadVehicleEVA.detail") + " "; 
 	
 	/** Task phases. */
 	private static final TaskPhase UNLOADING = 
