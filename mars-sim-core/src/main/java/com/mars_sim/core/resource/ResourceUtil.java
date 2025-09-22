@@ -134,9 +134,10 @@ public class ResourceUtil {
 	public static final int PROPYLENE_ID = STYRENE_ID + 1;
 	
 	public static final int IRON_POWDER_ID = PROPYLENE_ID + 1;
+	public static final int GLASS_ID = IRON_POWDER_ID + 1;
 	
 	// Must be one after the last fixed resource
-	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = IRON_POWDER_ID + 1;
+	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = GLASS_ID + 1;
 
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
 			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
@@ -187,6 +188,7 @@ public class ResourceUtil {
 		fixedResources.put("fish oil", FISH_OIL_ID);
 		fixedResources.put("food", FOOD_ID);
 		fixedResources.put("food waste", FOOD_WASTE_ID);
+		fixedResources.put("glass", GLASS_ID);
 		fixedResources.put("goethite", GEOTHITE_ID);
 		fixedResources.put("granite", GRANITE_ID);
 		fixedResources.put("grey water", GREY_WATER_ID);
@@ -527,7 +529,7 @@ public class ResourceUtil {
 	}
 	
 	/**
-	 * Is this derived resource ?
+	 * Is this a raw resource ?
 	 * 
 	 * @param resource
 	 * @return
@@ -535,6 +537,33 @@ public class ResourceUtil {
 	public static boolean isRawElement(int resource) {
 		return switch (resource) {
 			case CARBON_ID -> true;
+			default -> false;
+		};
+	}
+	
+	/**
+	 * Is this a critical resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isCriticalResource(int resource) {
+		return switch (resource) {
+			case GLASS_ID -> true;
+			default -> false;
+		};
+	}
+	
+	
+	/**
+	 * Is this a chemical resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isChemicalResource(int resource) {
+		return switch (resource) {
+			case CO2_ID -> true;
 			default -> false;
 		};
 	}

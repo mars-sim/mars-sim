@@ -584,7 +584,9 @@
 		<output resource="water" rate="390.0"  />
 		<output resource="sand" rate="2.0"  />
 		<output resource="magnesium" rate="2.0"  />	
-		<output resource="calcium" rate="2.0"  />					
+		<output resource="calcium" rate="0.5"  />			
+		<output resource="calcium carbonate" rate="0.5"  />
+		<output resource="lime" rate="1.0"  />	
 		<output resource="perchlorate" rate="0.4"  />	
 		<output resource="aluminum oxide" rate="0.8"  />	
 		<output resource="iron oxide" rate="1.6"  />	
@@ -869,30 +871,31 @@
 			
 	<process name="Extract minerals from Bassanite deposits" power-required="0.1" >
 		<input resource="bassanite" rate="50.0" />
-		<input resource="water" rate="5.0" />
-				
+			
 		<output resource="gypsum" rate="45.0" />
 		<output resource="calcium sulfate" rate="3.0" />
-		<output resource="brine water" rate="5.0" />
+		<output resource="brine water" rate="2.0" />
 	</process>
 		
-	<process name="Extract minerals from Sand" power-required="0.2" >
-		<description>Typically, manufactured glass contains around 15% sodium oxide, 70% silica
+	<process name="Make glass from sand" power-required="0.2" >
+		<description> Assume Mars sand has most (if not all) ingredients for making glass.
+			Typically, manufactured glass contains around 15% sodium oxide, 70% silica
 			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate (soda) or sodium oxide
 			serves as a flux to lower the temperature at which the silica melts.
 			https://en.wikipedia.org/wiki/Sodium_oxide
 			https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
 		</description>
-		<input resource="sand" rate="40" />					
-		<input resource="sodium oxide" rate="4" />
+		<input resource="sand" rate="45" />					
+		<input resource="sodium oxide" rate="2" />
+		<input resource="lime" rate="1" />
 
-		<output resource="carbon dioxide" rate="0.5" waste="false" />
-		<output resource="aluminum oxide" rate="9.0" />
+		<output resource="carbon dioxide" rate="1.5" waste="false" />
+		<output resource="aluminum oxide" rate="3.5" />
 		<output resource="iron powder" rate="1.0" />					
 		<output resource="sulfur" rate="4.0" />					
 		<output resource="silica" rate="13.0" />
 		<output resource="silicon" rate="2.0" />
-		<output resource="glass" rate="15.0" />	
+		<output resource="glass" rate="25.0" />	
 	</process>
 
 	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
@@ -910,8 +913,9 @@
 		<input resource="gypsum" rate="50.0" />
 		<input resource="carbon" rate="7.0" />
 
+		<output resource="lime" rate="2" />
 		<output resource="calcium sulfate" rate="2.0" />
-		<output resource="calcium carbonate" rate="27.0" />
+		<output resource="calcium carbonate" rate="25.0" />
 		<output resource="carbon dioxide" rate="12.7" waste="false" />
 		<output resource="brine water" rate="5.2" />
 	</process>
@@ -927,8 +931,9 @@
 		<input resource="gypsum" rate="50.0" />
 		<input resource="carbon monoxide" rate="32.5" />
 		
+		<output resource="lime" rate="2" />
 		<output resource="calcium sulfate" rate="2.0" />
-		<output resource="calcium carbonate" rate="27.0" />
+		<output resource="calcium carbonate" rate="25.0" />
 		<output resource="carbon dioxide" rate="38.1" waste="false" />
 		<output resource="brine water" rate="5.2" />
 	</process>
@@ -946,8 +951,9 @@
 		<input resource="hydrogen" rate="2.3" />
 		<input resource="carbon dioxide" rate="12.8" ambient="true" />
 
+		<output resource="lime" rate="2" />
 		<output resource="calcium sulfate" rate="2.0" />					
-		<output resource="calcium carbonate" rate="27.0" />
+		<output resource="calcium carbonate" rate="25.0" />
 		<output resource="brine water" rate="26.0" />
 	</process>
 			
@@ -957,9 +963,10 @@
 			The core ingredient of gypsum plaster is gypsum rock–hydrous calcium sulfate, 
 			which has a water content of about 20% in chemical combination.
 		</description>					
-		<input resource="gypsum" rate="5.0" />
+		<input resource="gypsum" rate="6.0" />
 
-		<output resource="gypsum plaster" rate="4.0" />
+		<output resource="lime" rate="2" />
+		<output resource="gypsum plaster" rate="3.0" />
 		<output resource="brine water" rate="1.0" />
 	</process>
 					
@@ -992,7 +999,7 @@
 			4. Calcination: The resulting precipitate is filtered, washed, and then calcined (heated) to produce anhydrous sodium carbonate (Na2CO3).
 			
 		</description>	
-		<input resource="Table Salt" rate="11.688" />
+		<input resource="sodium oxide" rate="11.688" />
 		<input resource="water" rate="1.8" />	
 		<input resource="carbon dioxide" rate="4.4" ambient="true" />
 

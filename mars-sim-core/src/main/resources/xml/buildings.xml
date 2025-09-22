@@ -1962,7 +1962,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Do Sylvite Smelting" number-modules="5"/>
 								
 				<!-- 9 processes for extracting ore deposits -->
-				<process-engine name="Extract Minerals from Sand" number-modules="40"/>
+				<process-engine name="Make glass from sand" number-modules="40"/>
 				
 				<process-engine name="Extract Minerals from Basaltic deposits" number-modules="5"/>
 				<process-engine name="Extract Minerals from Smectite deposits" number-modules="5"/>
@@ -2034,7 +2034,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					
 				<!-- 3 silicon/chemical processes -->
 				<process-engine name="Make Quartz from Silica" number-modules="2"/>
-				<process-engine name="Make Soda from Sodium Oxide" number-modules="3"/>
+				<process-engine name="Make soda from sodium oxide" number-modules="3"/>
 				<process-engine name="Bake Calcium Carbonate to Lime"/> 	
 					
 				<!-- 4 types of cement/concrete -->			

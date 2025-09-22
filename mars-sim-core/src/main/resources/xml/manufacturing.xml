@@ -1013,13 +1013,14 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="aluminum oxide" amount=".5" />
-			<resource name="lime" amount="2" />
-			<resource name="iron powder" amount="2" />
-			<resource name="copper" amount="2" />
+			<resource name="lime" amount="1" />
+			<resource name="iron powder" amount="1" />
+			<resource name="copper" amount="1" />
 			<part name="steel ingot" number="1" />
+			<!-- 1 steel ingot is 5 kg -->
 		</inputs>
 		<outputs>
-			<part name="spark plug" number="100" />
+			<part name="spark plug" number="50" />
 		</outputs>
 	</process>
 
@@ -1030,6 +1031,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="sand" amount="2.0" />
 		</inputs>
 		<outputs>
+			<resource name="sodium oxide" amount="0.5" />
+			<resource name="silicon" amount="0.5" />
+			<!-- 1 fiberglass is 1 kg -->
 			<part name="fiberglass" number="1" />
 		</outputs>
 	</process>
@@ -1400,6 +1404,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make small wheels" tech="2" skill="2" work-time="50" process-time="200"
 			tooling="metalwork" power-required="0.5">
 		<inputs>
+			<resource name="magnesium" amount="0.8" />
 			<part name="steel sheet" number="1" />
 			<part name="steel wire" number="20" />
 		</inputs>
@@ -1413,6 +1418,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make rover wheels" tech="2" skill="2" work-time="200" process-time="400"
 			tooling="metalwork" power-required="0.5">
 		<inputs>	
+			<resource name="magnesium" amount="1.6" />
 			<part name="steel sheet" number="2" />
 			<part name="steel wire" number="40" />						
 		</inputs>
@@ -1424,6 +1430,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make small vehicle frame" tech="2" skill="2" work-time="550" process-time="550"
 			tooling="metalwork" power-required="3.0">
 		<inputs>
+			<resource name="magnesium" amount="0.5" />
 			<resource name="acetylene" amount="0.5" />		
 			<part name="steel ingot" number="3" />
 		</inputs>
@@ -1435,6 +1442,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make large vehicle frame" tech="2" skill="2" work-time="300" process-time="300"
 			tooling="metalwork" power-required="5.0">
 		<inputs>
+			<resource name="magnesium" amount="1.0" />
 			<resource name="acetylene" amount="1.0" />	
 			<part name="steel ingot" number="10" />
 		</inputs>
@@ -1489,6 +1497,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make winch" tech="1" skill="1" work-time="40" process-time="80"
 			power-required=".1">
 		<inputs>
+			<resource name="magnesium" amount="0.5" />
 			<resource name="acetylene" amount="0.5" />			
 			<part name="steel ingot" number="6" />
 			<part name="rover wheel" number="2" />			
@@ -1503,6 +1512,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make socket wrench" tech="1" skill="1" work-time="20" process-time="40"
 			power-required=".1">
 		<inputs>
+			<resource name="magnesium" amount="0.5" />
 			<resource name="acetylene" amount="0.1" />			
 			<part name="steel ingot" number="1" />
 		</inputs>
@@ -1514,6 +1524,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make pipe wrench" tech="1" skill="1" work-time="20" process-time="60"
 			power-required=".1">
 		<inputs>
+			<resource name="magnesium" amount="0.3" />
 			<resource name="acetylene" amount="0.1" />	
 			<resource name="iron powder" amount="1.0" />						
 			<part name="steel ingot" number="2" />
@@ -1593,6 +1604,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make Gears" tech="2" skill="2" work-time="20" process-time="60"
 			power-required=".2" tooling="metalwork" >
 		<inputs>
+			<resource name="magnesium" amount=".48" />
 			<part name="iron ingot" number="1" />
 		</inputs>
 		<outputs>
@@ -1603,6 +1615,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture Gearbox" tech="3" skill="3" work-time="100" process-time="200"
 			tooling="Soldering" power-required=".2">
 		<inputs>
+			<resource name="magnesium" amount=".6" />		
 			<part name="iron ingot" number="1" />
 			<part name="plastic sheet" number="1" />
 			<part name="copper wire" number="12" />
@@ -1619,6 +1632,7 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture Actuator" tech="3" skill="3" work-time="600" process-time="200"
 			tooling="Soldering" power-required=".2">
 		<inputs>
+			<resource name="magnesium" amount=".6" />
 			<part name="iron ingot" number="1" />
 			<part name="steel sheet" number="1" />
 			<part name="copper wire" number="12" />
@@ -2394,6 +2408,7 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required="1.0">
 		<inputs>
 			<resource name="silicon" amount="25.0" />
+			<resource name="magnesium" amount=".75" />
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="4" />
 			<part name="wire connector" number="10" />
@@ -2506,7 +2521,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</description> 	
 		<inputs>
 			<resource name="nickel" amount="0.25" />
-			<resource name="lithium" amount=".05" />			
+			<resource name="lithium" amount=".05" />		
 			<resource name="potash lye" amount="0.5" />
 			<resource name="Polyethylene" amount="5.0" >
 				<alternative name="Polypropylene" amount="5.0" />
@@ -3409,6 +3424,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="copper" amount="0.2" />
 			<resource name="iron powder" amount="0.2" />
+			<resource name="magnesium" amount="0.4" />
 			<resource name="Aluminum" amount="0.1" />
 			<part name="plastic sheet" number="1" />
 			<part name="resistor" number="40" />
@@ -3428,6 +3444,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="copper" amount="0.2" />
 			<resource name="iron powder" amount="0.2" />
 			<resource name="Aluminum" amount="0.1" />
+			<resource name="magnesium" amount=".2" />
 			<part name="steel sheet" number="1" />
 			<part name="heating element" number="6" />
 			<part name="resistor" number="10" />

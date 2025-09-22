@@ -102,6 +102,7 @@ class AmountResourceGood extends Good {
 	private static final double METHANE_VALUE_MODIFIER = 0.06;
 	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
+	private static final double ETHYLENE_VALUE_MODIFIER = 8.0;
 	
 	private static final double CO2_VALUE_MODIFIER = 0.1;
 
@@ -229,9 +230,9 @@ class AmountResourceGood extends Good {
 			
 			mod *= switch(ar.getID()) {
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
+				case ResourceUtil.ETHYLENE_ID -> ETHYLENE_VALUE_MODIFIER;
 				default -> 1D;
-			};
-			
+			};	
 			break;
 			
 		case COMPOUND:

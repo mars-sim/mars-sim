@@ -378,7 +378,8 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score += mrate;
 				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
 					score += mrate * LOW_BIAS;
-				} else if (ResourceUtil.isRawMaterial(resource)) { // ore, minerals, sand
+				} else if (ResourceUtil.isRawMaterial(resource)   // ore, minerals, sand
+						|| ResourceUtil.isChemicalResource(resource)) { // carbon dioxide
 					score += mrate / LOW_BIAS;
 				} else if (ResourceUtil.isConstructionResource(resource) // cement, concrete, gypsum, lime, brick
 					|| ResourceUtil.isChemical(resource)) { // ethylene, styrene, propylene 
@@ -424,17 +425,21 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				// and it will not be affected by its vp and supply
 				if (processSpec.isWasteOutputResource(resource)) {
 					score += mrate;
-				} else if (ResourceUtil.isRawMaterial(resource)) {  // ore, minerals, sand
+				} else if (ResourceUtil.isRawMaterial(resource)) {  	// ore, minerals, sand
 					score += mrate * LOW_BIAS ;	
-				} else if (ResourceUtil.isConstructionResource(resource) // cement, concrete, gypsum, lime, brick
-					|| ResourceUtil.isChemical(resource)) { // ethylene, styrene, propylene 
+				} else if (ResourceUtil.isConstructionResource(resource)// cement, concrete, gypsum, lime, brick
+					) { 
 					score += mrate * MID_BIAS;	
-				} else if (ResourceUtil.isTier1Resource(resource) // methane, water
-					|| ResourceUtil.isDerivedResource(resource) // glucose, leaves, soil
-					|| ResourceUtil.isRawElement(resource)) { // carbon
+				} else if (ResourceUtil.isTier1Resource(resource) 		// methane, water
+					|| ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil
+					|| ResourceUtil.isRawElement(resource)      		// carbon
+					|| ResourceUtil.isCriticalResource(resource)		// glass
+					) {
 					score += mrate * HIGH_BIAS;
-				} else if (ResourceUtil.isTier0Resource(resource) // ice, brine water
-				    || ResourceUtil.isWaste(resource)) { // grey water, * waste
+				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water
+				    || ResourceUtil.isWaste(resource)					// grey water, * waste
+					|| ResourceUtil.isChemical(resource)				// ethylene, styrene, propylene 
+					) { 				
 					score += mrate * SUPER_HIGH_BIAS;
 				} else
 					score += mrate;
