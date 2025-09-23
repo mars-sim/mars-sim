@@ -129,11 +129,19 @@ public class ResourceUtil {
 	public static final int SPIRULINA_ID = FISH_MEAT_ID + 1;
 
 	public static final int CARBON_ID = SPIRULINA_ID + 1;
-	public static final int ETHYLENE_ID = CARBON_ID + 1;
-	public static final int STYRENE_ID = ETHYLENE_ID + 1;
-	public static final int PROPYLENE_ID = STYRENE_ID + 1;
 	
-	public static final int IRON_POWDER_ID = PROPYLENE_ID + 1;
+	public static final int ETHANE_ID = CARBON_ID + 1;
+	public static final int ETHYLENE_ID = ETHANE_ID + 1;
+	public static final int POLYCARBONATE_RESIN_ID = ETHYLENE_ID + 1;
+	public static final int POLYESTER_RESIN_ID = POLYCARBONATE_RESIN_ID + 1;
+	public static final int PROPYLENE_ID = POLYESTER_RESIN_ID + 1;
+	public static final int POLYETHYLENE_ID = PROPYLENE_ID + 1;
+	public static final int POLYPROPYLENE_ID = POLYETHYLENE_ID + 1;
+	public static final int POLYSTYRENE_ID = POLYPROPYLENE_ID + 1;
+	public static final int POLYURETHANE_ID = POLYSTYRENE_ID + 1;
+	public static final int STYRENE_ID = POLYURETHANE_ID + 1;
+	
+	public static final int IRON_POWDER_ID = STYRENE_ID  + 1;
 	public static final int GLASS_ID = IRON_POWDER_ID + 1;
 	
 	// Must be one after the last fixed resource
@@ -182,6 +190,7 @@ public class ResourceUtil {
 		fixedResources.put("cross bedding", CROSSBEDDING_ID);
 		fixedResources.put("electronic waste", E_WASTE_ID);
 		fixedResources.put("epsom salt", EPSOM_SALT_ID);
+		fixedResources.put("ethane", ETHANE_ID);
 		fixedResources.put("ethylene", ETHYLENE_ID);
 		fixedResources.put("fertilizer", FERTILIZER_ID);
 		fixedResources.put("fish meat", FISH_MEAT_ID);
@@ -212,8 +221,16 @@ public class ResourceUtil {
 		fixedResources.put("nitrogen", NITROGEN_ID);
 		fixedResources.put("olivine", OLIVINE_ID);
 		fixedResources.put("oxygen", OXYGEN_ID);
+		
+		fixedResources.put("polycarbonate resin", POLYCARBONATE_RESIN_ID);
+		fixedResources.put("polyester resin", POLYESTER_RESIN_ID);
+		fixedResources.put("polyethylene", POLYETHYLENE_ID);
+		fixedResources.put("polypropylene", POLYPROPYLENE_ID);
+		fixedResources.put("polystyrene", POLYSTYRENE_ID);
+		fixedResources.put("polyurethane", POLYURETHANE_ID);
 		fixedResources.put("propylene", PROPYLENE_ID);
 		fixedResources.put("pyroxene", PYROXENE_ID);
+	
 		fixedResources.put("regolith", REGOLITH_ID);
 		fixedResources.put("regolith-b", REGOLITHB_ID);
 		fixedResources.put("regolith-c", REGOLITHC_ID);
@@ -510,7 +527,10 @@ public class ResourceUtil {
 	 */
 	public static boolean isChemical(int resource) {
 		return switch (resource) {
-			case ETHYLENE_ID, PROPYLENE_ID, STYRENE_ID -> true;
+			case ETHANE_ID, ETHYLENE_ID, PROPYLENE_ID, STYRENE_ID,
+				 POLYETHYLENE_ID, POLYPROPYLENE_ID , POLYSTYRENE_ID, 
+				 POLYURETHANE_ID, 
+				 POLYESTER_RESIN_ID, POLYCARBONATE_RESIN_ID -> true;
 			default -> false;
 		};
 	}

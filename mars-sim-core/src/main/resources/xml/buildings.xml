@@ -398,10 +398,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>	
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="60"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="12"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="4"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="24" />
 				<process-engine name="Filter Brine Water" number-modules="24" />
@@ -779,7 +779,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="16"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="48"/>
 				<process-engine name="Methanol Synthesis" number-modules="12"/>
 				<process-engine name="Melt Ice" number-modules="48" />
 				<process-engine name="Filter Brine Water" number-modules="48" />
@@ -1475,7 +1475,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="10"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="10"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
 				<activity>
 					<activity-spot xloc="-1.6" yloc="3.6" />
 				</activity>
@@ -1651,7 +1651,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="20"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="20"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="36"/>
 
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
@@ -2267,12 +2267,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- "Atmospheric Processor" -->
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="24"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="24"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="8"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>				
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="72"/>
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="36"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="36"/>
 			</resource-processing> 
 
 			<storage stock-capacity="100000">
@@ -4105,10 +4105,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="4"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="12"/>
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="60"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="12"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="4"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
 				<process-engine name="Methanol Synthesis" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="24" />
 				<process-engine name="Filter Brine Water" number-modules="24" />
@@ -4521,8 +4521,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Atmospheric processing" number-modules="4"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="4"/>
+				<process-engine name="Atmospheric processing" number-modules="12"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />
 				</activity>

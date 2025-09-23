@@ -363,10 +363,10 @@
 		
 	</description>
 
-		<input resource="carbon monoxide" rate="28" ambient="true" />
+		<input resource="carbon monoxide" rate="28" ambient="false" />
 		<input resource="water" rate="18.0"  />				
 		
-		<output resource="carbon dioxide" rate="44.0"  />
+		<output resource="carbon dioxide" rate="44.0" waste="false" />
 		<output resource="hydrogen" rate="2.0"  />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 

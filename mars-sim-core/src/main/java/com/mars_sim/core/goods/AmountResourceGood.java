@@ -103,8 +103,12 @@ class AmountResourceGood extends Good {
 	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	private static final double ETHYLENE_VALUE_MODIFIER = 8.0;
+	private static final double STYRENE_VALUE_MODIFIER = 8.0;
+	private static final double PROPYLENE_VALUE_MODIFIER = 8.0;
+	private static final double ETHANE_VALUE_MODIFIER = 8.0;
+	private static final double RESIN_VALUE_MODIFIER = 8.0;
 	
-	private static final double CO2_VALUE_MODIFIER = 0.1;
+	private static final double CO2_VALUE_MODIFIER = 0.01;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
@@ -231,6 +235,15 @@ class AmountResourceGood extends Good {
 			mod *= switch(ar.getID()) {
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
 				case ResourceUtil.ETHYLENE_ID -> ETHYLENE_VALUE_MODIFIER;
+				case ResourceUtil.POLYETHYLENE_ID -> ETHYLENE_VALUE_MODIFIER;
+				case ResourceUtil.POLYSTYRENE_ID -> STYRENE_VALUE_MODIFIER;
+				case ResourceUtil.STYRENE_ID -> STYRENE_VALUE_MODIFIER;
+				case ResourceUtil.PROPYLENE_ID -> PROPYLENE_VALUE_MODIFIER;
+				case ResourceUtil.POLYPROPYLENE_ID -> PROPYLENE_VALUE_MODIFIER;
+				case ResourceUtil.POLYURETHANE_ID -> ETHANE_VALUE_MODIFIER;
+				case ResourceUtil.ETHANE_ID -> ETHANE_VALUE_MODIFIER;
+				case ResourceUtil.POLYESTER_RESIN_ID -> RESIN_VALUE_MODIFIER;
+				case ResourceUtil.POLYCARBONATE_RESIN_ID -> RESIN_VALUE_MODIFIER;
 				default -> 1D;
 			};	
 			break;

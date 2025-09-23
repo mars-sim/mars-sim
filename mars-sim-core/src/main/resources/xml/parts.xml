@@ -699,7 +699,7 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="Solar panel" type="electrical" mass="10.0" >
+	<part name="Solar panel" type="electrical" mass="30.0" >
 		<description>Solar photovoltaic panel.</description>
 		<maintenance-entity-list>
 			<entity name="solar power source" probability=".3" max-number="1" />
