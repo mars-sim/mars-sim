@@ -70,7 +70,7 @@
 		<input resource="Water" rate="36.0" />	
 
 		<output resource="Acetic acid" rate="120.0" />
-		<output resource="Carbon dioxide" rate="88.0" waste="false"/>
+		<output resource="Carbon dioxide" rate="88.0" />
 		<output resource="Hydrogen" rate="8.0" />
 	</process>
 
@@ -88,7 +88,7 @@
 		<input resource="Glucose" rate="180.0" />
 		<input resource="water" rate="108.0" />	
 
-		<output resource="Carbon dioxide" rate="264.0" waste="false"/>
+		<output resource="Carbon dioxide" rate="264.0" />
 		<output resource="Hydrogen" rate="24.0" />
 	</process>
 
@@ -196,7 +196,7 @@
 		<input resource="hydrogen" rate="36" />
 		
 		<output resource="methane" rate="48" />
-		<output resource="carbon monoxide" rate="168" waste="true" />
+		<output resource="carbon monoxide" rate="168" />
 		<output resource="water" rate="216" />
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
@@ -366,7 +366,7 @@
 		<input resource="carbon monoxide" rate="28" ambient="false" />
 		<input resource="water" rate="18.0"  />				
 		
-		<output resource="carbon dioxide" rate="44.0" waste="false" />
+		<output resource="carbon dioxide" rate="44.0" />
 		<output resource="hydrogen" rate="2.0"  />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
@@ -472,7 +472,7 @@
 		<output resource="argon" rate="1.94"  />
 		<output resource="water" rate="0.03"  />
 		<output resource="carbon monoxide" rate=".058"  />
-		<output resource="carbon dioxide" rate="95.111" waste="false" />
+		<output resource="carbon dioxide" rate="95.111" />
 	</process> <!-- "Atmospheric Processing" -->
 	
 
@@ -705,7 +705,7 @@
 		<output resource="iron powder" rate="2.0" />
 		<output resource="iron oxide" rate="20.0" />
 		<output resource="manganese" rate="2.0" />						
-		<output resource="carbon dioxide" rate=".5" waste="false" />
+		<output resource="carbon dioxide" rate=".5" />
 	</process>
 
 	<process name="Do Magnetite smelting" power-required="1.3" >
@@ -714,7 +714,7 @@
 			
 			<output resource="iron powder" rate="1.0" />
 			<output resource="iron oxide" rate="20.0" />									
-			<output resource="carbon dioxide" rate=".5" waste="false" />
+			<output resource="carbon dioxide" rate=".5"/>
 			<output resource="oxygen" rate="2.0" />
 			<output resource="titanium" rate="1.0" />				
 	</process>
@@ -728,7 +728,7 @@
 			<output resource="iron oxide" rate="18.0" />	
 			<output resource="iron hydroxide" rate="5.0" />											
 			<output resource="magnesium" rate="2.0" />						
-			<output resource="carbon dioxide" rate="1.0" waste="false" />
+			<output resource="carbon dioxide" rate="1.0" />
 	</process>
 
 	<process name="Do Olivine smelting" power-required="1.3" >
@@ -738,7 +738,7 @@
 			<output resource="magnesium" rate="11.6" />
 			<output resource="iron powder" rate="11.6" />
 			<output resource="silicon" rate="8.1" />
-			<output resource="carbon dioxide" rate="51.2" waste="false" />
+			<output resource="carbon dioxide" rate="51.2" />
 	</process>
 
 	<process name="Do Magnesite smelting" power-required="1.3" >
@@ -746,7 +746,7 @@
 			<input resource="carbon monoxide" rate="16.6" />
 			
 			<output resource="magnesium" rate="14.4" />
-			<output resource="carbon dioxide" rate="52.2" waste="false" />
+			<output resource="carbon dioxide" rate="52.2" />
 			<output resource="silica" rate="5" />
 	</process>
 
@@ -771,7 +771,7 @@
 			<input resource="carbon" rate="2.7" />
 			
 			<output resource="copper" rate="28.7" />
-			<output resource="carbon dioxide" rate="19.9" waste="false" />
+			<output resource="carbon dioxide" rate="19.9" />
 			<!--output resource="hydroxide" rate="  "  /-->
 			<output resource="brine water" rate="4.1" />
 	</process>
@@ -889,7 +889,7 @@
 		<input resource="sodium oxide" rate="2" />
 		<input resource="lime" rate="1" />
 
-		<output resource="carbon dioxide" rate="1.5" waste="false" />
+		<output resource="carbon dioxide" rate="1.5" />
 		<output resource="aluminum oxide" rate="3.5" />
 		<output resource="iron powder" rate="1.0" />					
 		<output resource="sulfur" rate="4.0" />					
@@ -916,7 +916,7 @@
 		<output resource="lime" rate="2" />
 		<output resource="calcium sulfate" rate="2.0" />
 		<output resource="calcium carbonate" rate="25.0" />
-		<output resource="carbon dioxide" rate="12.7" waste="false" />
+		<output resource="carbon dioxide" rate="12.7" />
 		<output resource="brine water" rate="5.2" />
 	</process>
 
@@ -934,7 +934,7 @@
 		<output resource="lime" rate="2" />
 		<output resource="calcium sulfate" rate="2.0" />
 		<output resource="calcium carbonate" rate="25.0" />
-		<output resource="carbon dioxide" rate="38.1" waste="false" />
+		<output resource="carbon dioxide" rate="38.1" />
 		<output resource="brine water" rate="5.2" />
 	</process>
 
@@ -1236,7 +1236,7 @@
 		<input resource="calcium carbonate" rate="50.0"  />
 		
 		<output resource="lime" rate="27.8" />
-		<output resource="carbon dioxide" rate="21.8" waste="false" />
+		<output resource="carbon dioxide" rate="21.8" />
 	</process>
 
 	<!-- NASA's Regenerative ECLSS Water Recovery System (WRS)

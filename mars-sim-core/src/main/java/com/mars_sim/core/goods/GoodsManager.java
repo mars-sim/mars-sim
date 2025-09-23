@@ -839,7 +839,7 @@ public class GoodsManager implements Serializable {
 		// Note : Make sure stored is not zero by adding 1 so that delta is not infinite	
 		
 		// Multiply by THROTTLING to limit the speed of increase to avoid an abrupt rise in demand
-		double delta = (lacking / (1 + stored) - 1);
+		double delta = (lacking / (1 + stored) - 1) / Math.sqrt(pop + 1);
  
 		
 		if (delta > 0) {
@@ -850,7 +850,7 @@ public class GoodsManager implements Serializable {
 					+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
 					+ "  Optimal: " + Math.round(optimal * 100.0)/100.0 
 					+ "  Stored: " + Math.round(stored * 100.0)/100.0
-					+ "  reserve: " + Math.round(reservePerPop * 100.0)/100.0
+					+ "  reserve: " + Math.round(reserve * 100.0)/100.0
 					+ "  lacking: " + Math.round(lacking * 100.0)/100.0
 					+ ".");
 

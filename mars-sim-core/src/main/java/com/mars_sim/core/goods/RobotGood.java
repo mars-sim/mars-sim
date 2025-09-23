@@ -184,17 +184,17 @@ class RobotGood extends Good {
 				* owner.getDemandScore(this);
 	
 		
-		if (previousDemand == 0) {
-			totalDemand = .5 * projected 
+		if (previousDemand == 0D) {
+			totalDemand = .5 * projectedDemand 
 						+ .1 * repairDemand
 						+ .4 * tradeDemand;
 		}
 		else {
 			// Intentionally lose 2% of its value
-			totalDemand = .97 * previousDemand 
-						+ .005 * projected
-						+ .005 * repairDemand
-						+ .005 * tradeDemand;
+			totalDemand = .998 * previousDemand 
+						+ .0005 * projectedDemand
+						+ .0002 * repairDemand
+						+ .0002 * tradeDemand;
 		}
 				
 		owner.setDemandScore(this, totalDemand);

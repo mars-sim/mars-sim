@@ -156,7 +156,7 @@
 		<resource name="Water" reserve="800" optimal="8000" />
 		<resource name="Hydrogen" reserve="800" optimal="8000" />
 		<resource name="Nitrogen" reserve="80" optimal="800" />
-		<resource name="Carbon Dioxide" reserve="20" optimal="200" />
+		<resource name="Carbon dioxide" reserve="10" optimal="30" />
 	</essential-resources>
 
 	<!-- The Standard patterns are the default and but always be present. 

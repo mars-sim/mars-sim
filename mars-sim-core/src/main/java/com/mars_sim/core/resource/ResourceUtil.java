@@ -507,6 +507,20 @@ public class ResourceUtil {
 	}
 	
 	/**
+	 * Is this tier 3 resource ?
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public static boolean isTier3Resource(int resource) {
+		return switch (resource) {
+			case CO2_ID -> true;
+			default -> false;
+		};
+	}
+	
+	
+	/**
 	 * Is this derived resource ?
 	 * 
 	 * @param resource
@@ -573,21 +587,6 @@ public class ResourceUtil {
 			default -> false;
 		};
 	}
-	
-	
-	/**
-	 * Is this a chemical resource ?
-	 * 
-	 * @param resource
-	 * @return
-	 */
-	public static boolean isChemicalResource(int resource) {
-		return switch (resource) {
-			case CO2_ID -> true;
-			default -> false;
-		};
-	}
-	
 	
 	/**
 	 * Is this a raw material resource ?

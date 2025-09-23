@@ -108,7 +108,7 @@ class AmountResourceGood extends Good {
 	private static final double ETHANE_VALUE_MODIFIER = 8.0;
 	private static final double RESIN_VALUE_MODIFIER = 8.0;
 	
-	private static final double CO2_VALUE_MODIFIER = 0.01;
+	private static final double CO2_VALUE_MODIFIER = 1.0;
 
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
@@ -134,7 +134,7 @@ class AmountResourceGood extends Good {
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
 	private static final double CO_FLATTENING_FACTOR = 0.009;
-	private static final double CO2_FLATTENING_FACTOR = 0.01;
+	private static final double CO2_FLATTENING_FACTOR = 1.1;
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
 	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
@@ -147,8 +147,8 @@ class AmountResourceGood extends Good {
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
 	
-	private static final double CHEMICAL_FLATTENING_FACTOR = 4D;
-	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
+	private static final double CHEMICAL_FLATTENING_FACTOR = 6D;
+	private static final double COMPOUND_FLATTENING_FACTOR = 4D;
 	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
 	private static final double ELEMENT_FLATTENING_FACTOR = 4D;
 
@@ -608,10 +608,10 @@ class AmountResourceGood extends Good {
 		// Add trade value. Cache is always false if this method is called
 		this.tradeDemand = owner.determineTradeDemand(this);
 		
-		if (previousDemand == 0) {
+		if (previousDemand == 0D) {
 			// At the start of the sim
 			totalDemand = (
-					.8 * projected 
+					.8 * projectedDemand 
 					+ .2 * tradeDemand);
 
 		}
@@ -626,9 +626,9 @@ class AmountResourceGood extends Good {
 			// Allows only very small fluctuations of demand as possible
 
 			totalDemand = (
-					  .9986 * previousDemand 
-					+ .00012 * projected
-					+ .00005 * tradeDemand); 
+					  .998 * previousDemand 
+					+ .0005 * projectedDemand
+					+ .0005 * tradeDemand); 
 		}
 		
 		// Save the goods demand

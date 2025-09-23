@@ -237,20 +237,20 @@ class VehicleGood extends Good {
 				* owner.getDemandScore(this);
 	
 		double totalDemand;
-		if (previousDemand == 0) {
+		if (previousDemand == 0D) {
 			totalDemand = .5 * average 
 						+ .1 * repairDemand
-						+ .2 * projected 
+						+ .2 * projectedDemand 
 						+ .2 * tradeDemand;
 		}
 
 		else {
 			// Intentionally lose some values over time
-			totalDemand = .97 * previousDemand 
-					+ .003 * average 
-					+ .001 * repairDemand
-					+ .003 * projected 
-					+ .003 * tradeDemand;
+			totalDemand = .998 * previousDemand 
+					+ .0002 * average 
+					+ .0002 * repairDemand
+					+ .0004 * projectedDemand 
+					+ .0002 * tradeDemand;
 		}
 				
 		owner.setDemandScore(this, totalDemand);

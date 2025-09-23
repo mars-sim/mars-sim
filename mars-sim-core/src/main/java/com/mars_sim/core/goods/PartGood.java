@@ -445,11 +445,11 @@ public class PartGood extends Good {
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
 		
-		if (previousDemand == 0) {
+		if (previousDemand == 0D) {
 			// At the start of the sim
 			totalDemand = (
 					.4 * repairDemand 
-					+ .4 * projected 
+					+ .4 * projectedDemand 
 					+ .2 * tradeDemand);
 		}
 
@@ -463,10 +463,10 @@ public class PartGood extends Good {
 			
 			// Allows only very small fluctuations of demand as possible
 			totalDemand = (
-					  .9985 * previousDemand 
-					+ .0001 * repairDemand 
-					+ .00012 * projected 
-					+ .0001 * tradeDemand); 
+					  .998 * previousDemand 
+					+ .0002 * repairDemand 
+					+ .0005 * projectedDemand 
+					+ .0002 * tradeDemand); 
 		}
 		
 		// Save the goods demand

@@ -379,16 +379,18 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
 					score += mrate * LOW_BIAS;
 				} else if (ResourceUtil.isRawMaterial(resource)   // ore, minerals, sand
-						|| ResourceUtil.isChemicalResource(resource)) { // carbon dioxide
+					) { 
 					score += mrate / LOW_BIAS;
 				} else if (ResourceUtil.isConstructionResource(resource) // cement, concrete, gypsum, lime, brick
-					|| ResourceUtil.isChemical(resource)) { // ethylene, styrene, propylene 
+					|| ResourceUtil.isChemical(resource)				// ethylene, styrene, propylene 
+					) { 		
 						score += mrate / MID_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource) // glucose, leaves, soil, ethylene
-					|| ResourceUtil.isInSitu(resource)) { // all regolith types 
+				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil, ethylene
+					|| ResourceUtil.isInSitu(resource)					// all regolith types
+					|| ResourceUtil.isTier3Resource(resource)) {  	// carbon dioxide
 					score += mrate / HIGH_BIAS;
-				} else if (ResourceUtil.isTier0Resource(resource) // ice, brine water
-					|| ResourceUtil.isWaste(resource)) { // grey water, black water, * waste
+				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water
+					|| ResourceUtil.isWaste(resource)) { 				// grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
 				} else {
 					score += mrate;
@@ -431,6 +433,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					) { 
 					score += mrate * MID_BIAS;	
 				} else if (ResourceUtil.isTier1Resource(resource) 		// methane, water
+					|| ResourceUtil.isTier3Resource(resource)			// co2
 					|| ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil
 					|| ResourceUtil.isRawElement(resource)      		// carbon
 					|| ResourceUtil.isCriticalResource(resource)		// glass
