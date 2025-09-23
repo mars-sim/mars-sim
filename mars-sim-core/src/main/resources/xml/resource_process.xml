@@ -23,7 +23,7 @@
 
 <process-list>
 
-	<process name="Photosynthetic Conversion of CO2 to Ethylene" power-required="1.0" >
+	<process name="Photosynthetic Conversion of CO2 to Ethylene" power-required="0.4" >
 		<description>
 		The direct conversion of carbon dioxide to ethylene using cyanobacteria involves an engineered 
 		photosynthetic process. While natural photosynthesis produces glucose and oxygen from carbon 
@@ -201,7 +201,7 @@
 	</process> <!-- "Sabatier RWGS Reactor" -->
 
 		
-	<process name="Continuous Bosch Reactor (C-Bosch)" power-required="0.05" >
+	<process name="Continuous Bosch Reactor (C-Bosch)" power-required="0.01" >
 		<description> 						
 		In recent years, under the SpaceCraft Oxygen Recovery (SCOR) program, 
 		NASA seeks to increase oxygen recovery beyond the state of the art (42%) 
@@ -251,7 +251,7 @@
 		
 	</process> <!-- "Continuous Bosch Reactor (C-Bosch)" -->
 	
-	<process name="Plasma Pyrolysis Assembly (PPA) Reactor" power-required="0.05" >
+	<process name="Plasma Pyrolysis Assembly (PPA) Reactor" power-required="0.01" >
 		<description>
 			By partial pyrolysis in microwave generated plasma, methane is converted to 
 			hydrogen and acetylene:					  
@@ -297,7 +297,7 @@
 	2. https://www.sciencedirect.com/science/article/abs/pii/S0016236102000741
 	-->
 	
-	<process name="Produce Oxygen and Acetylene with Chloride and Carbides" power-required="0.05" >
+	<process name="Produce Oxygen and Acetylene with Chloride and Carbides" power-required="0.01" >
 		<description>
 			This reaction produces acetylene utilizing the electrochemical reduction
 			of CO2 by high-temperature molten salts, namely chloride melts. 
@@ -327,7 +327,7 @@
 		<output resource="oxygen" rate="80.0"  />
 	</process> <!--"Produce Oxygen and Acetylene with Chloride and Carbides"-->
 
-	<process name="Selective Partial Oxidation (SPO) of Methane to Methanol" power-required="0.05" >
+	<process name="Selective Partial Oxidation (SPO) of Methane to Methanol" power-required="0.01" >
 		<description>
 		Requires oxidant : O2 in the presence of very small amount of H2O2. 
 		Catalyst : Colloidal Au-Pd nanop-articles (3-5nm)
@@ -345,7 +345,7 @@
 	</process> <!--"Selective Partial Oxidation (SPO) of Methane to Methanol"-->
 	
 
-	<process name="Water-Gas Shift Reaction (WGSR)" power-required=".1" >
+	<process name="Water-Gas Shift Reaction (WGSR)" power-required=".01" >
 	<description>
 		
 		CO + H2O -> CO2 + H2
@@ -371,7 +371,7 @@
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
 
 
-	<process name="Oxygen Generation System (OGS)" power-required="2.5" defaultOn="true">
+	<process name="Oxygen Generation System (OGS)" power-required="0.625" defaultOn="true">
 	<description> 
 	
 		Oxygen Generation System can split water into H2 and O2.
@@ -409,7 +409,7 @@
 		50A * 120 = 6kW
 	
 		We assume by use of nanosheet and synthesizing appropriate electrocatalyst, 
-		a much lower power usage of 125W system is required for splitting 18 kg water 
+		a much lower power usage of 31.25W system is required for splitting 18 kg water 
 		into 2 kg H2 and 16 kg O2.
 		
 		Reference: 
@@ -426,7 +426,7 @@
 		<output resource="oxygen" rate="320"  />
 	</process> <!-- Oxygen Generator System (OGS) -->
 	
-	<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.1" defaultOn="true">
+	<process name="Low Temperature Plasma CO2 Decomposition" power-required="0.01" defaultOn="true">
 		<description> 
 			The atmosphere is mainly CO2, so there is no need to capture it and plasma can 
 			be ignited in ambient Martian atmosphere. 
@@ -448,7 +448,7 @@
 	</process> <!-- "Low Temperature Plasma CO2 Decomposition" -->
 	
 	     
-	<process name="Atmospheric Processing" power-required="0.04" >
+	<process name="Atmospheric Processing" power-required="0.02" >
 		<description> 
 		 
 		 It is likely that all the nitrogen obtain through atmospheric processing will 
@@ -477,7 +477,7 @@
 	
 
 
-	<process name="Methanol Synthesis" power-required="2" >
+	<process name="Methanol Synthesis" power-required=".1" >
 	<description>
 		Synthesis gas (or Syngas) is used to produce methanol as in the following reaction :
 				CO2 + 3 H2 -> H2O + CH3OH	
@@ -487,6 +487,8 @@
 
 		Assume 1000 kWh per 1000 kg, or 1 kWh per 1 kg, 50 kWh per 50 kg
 		Power required: 50 kWh / 24 h = ~2 kW
+		
+		Assume catalysts are used to reduce power usage by 20x
 		
 		Reference: 
 		1. https://www.essentialchemicalindustry.org/chemicals/methanol.html
@@ -503,7 +505,7 @@
 	</process> <!-- "Methanol Synthesis" -->
 
 
-	<process name="Excavate Ice" power-required="1" >
+	<process name="Excavate Ice" power-required=".5" >
 	<description>
 		This process works hand in hand with the "Melt Ice" resource process.
 		
@@ -526,7 +528,7 @@
 		
 	</process> <!-- "Excavate Ice" -->
 	
-	<process name="Melt Ice" power-required="1.8" >
+	<process name="Melt Ice" power-required="0.18" >
 		<description> This process melts permafrost ice into brine water 
 		
 		a.	Specific heat capacity of ice is 2.09 (or 2.108) J/g/C			
@@ -571,7 +573,7 @@
 	</process>
 
 
-	<process name="Filter Brine Water" power-required="2.4" >
+	<process name="Filter Brine Water" power-required="0.01" >
 		<description> 
 			Removing perchlorate from a Martian settlement's water supply can be done 
 			in a number of ways. Methods to remove perchlorates from water include 
@@ -595,7 +597,7 @@
 	</process>
 
 
-	<process name="Convert Regolith to Ores with Sand" power-required="0.2" >
+	<process name="Convert Regolith to Ores with Sand" power-required="0.05" >
 		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -698,7 +700,7 @@
 	</process>
 
 	<!-- https://geologyscience.com/minerals/hematite/ -->
-	<process name="Do Hematite smelting" power-required="1.3" >
+	<process name="Do Hematite smelting" power-required="0.3" >
 		<input resource="hematite" rate="25.0"  />
 		<input resource="carbon monoxide" rate=".5" />
 		
@@ -708,7 +710,7 @@
 		<output resource="carbon dioxide" rate=".5" />
 	</process>
 
-	<process name="Do Magnetite smelting" power-required="1.3" >
+	<process name="Do Magnetite smelting" power-required="0.3" >
 			<input resource="magnetite" rate="25.0" />
 			<input resource="carbon monoxide" rate=".5" />
 			
@@ -720,7 +722,7 @@
 	</process>
 
 	<!-- https://geologyscience.com/minerals/goethite/ -->
-	<process name="Do Goethite smelting" power-required="1.3" >
+	<process name="Do Goethite smelting" power-required="0.3" >
 			<input resource="goethite" rate="50.0" />
 			<input resource="carbon monoxide" rate=".5" />
 			
@@ -731,7 +733,7 @@
 			<output resource="carbon dioxide" rate="1.0" />
 	</process>
 
-	<process name="Do Olivine smelting" power-required="1.3" >
+	<process name="Do Olivine smelting" power-required="0.3" >
 			<input resource="olivine" rate="50.0" />
 			<input resource="carbon monoxide" rate="32.5" />
 			
@@ -741,7 +743,7 @@
 			<output resource="carbon dioxide" rate="51.2" />
 	</process>
 
-	<process name="Do Magnesite smelting" power-required="1.3" >
+	<process name="Do Magnesite smelting" power-required="0.3" >
 			<input resource="magnesite" rate="50.0" />
 			<input resource="carbon monoxide" rate="16.6" />
 			
@@ -750,7 +752,7 @@
 			<output resource="silica" rate="5" />
 	</process>
 
-	<process name="Do Kamacite smelting" power-required="1.3" >
+	<process name="Do Kamacite smelting" power-required="0.3" >
 			<input resource="kamacite" rate="50.0" />
 			
 			<output resource="iron powder" rate="45.0" />
@@ -758,7 +760,7 @@
 	</process>
 
 
-	<process name="Do Chalcopyrite smelting" power-required="1.3" >
+	<process name="Do Chalcopyrite smelting" power-required="0.3" >
 			<input resource="chalcopyrite" rate="50.0" />
 			
 			<output resource="copper" rate="17.3" />
@@ -766,7 +768,7 @@
 			<output resource="sulfur" rate="17.5" />
 	</process>
 
-	<process name="Do Malachite smelting" power-required="1.3" >
+	<process name="Do Malachite smelting" power-required="0.3" >
 			<input resource="malachite" rate="50.0" />
 			<input resource="carbon" rate="2.7" />
 			
@@ -776,7 +778,7 @@
 			<output resource="brine water" rate="4.1" />
 	</process>
 	
-	<process name="Do Pyroxene smelting" power-required="1.3" >
+	<process name="Do Pyroxene smelting" power-required="0.3" >
 			<input resource="pyroxene" rate="50.0" />
 		
 			<output resource="calcium" rate="2" />	
@@ -799,7 +801,7 @@
 			<output resource="oxygen" rate="22" />
 	</process>
 	
-	<process name="Do Sylvite smelting" power-required="1.3" >
+	<process name="Do Sylvite smelting" power-required="0.3" >
 			<input resource="sylvite" rate="50.0" />
 			
 			<output resource="potassium" rate="26.2" />
@@ -807,7 +809,7 @@
 	</process>
 
 
-	<process name="Do Taenite smelting" power-required="1.3" >
+	<process name="Do Taenite smelting" power-required="0.3" >
 			<input resource="taenite" rate="50.0" />
 			
 			<output resource="iron powder" rate="20.0" />
@@ -847,7 +849,7 @@
 			<output resource="brine water" rate="2.0" />
 	</process>
 
-	<process name="Extract minerals from Allophane deposits" power-required="0.2" >
+	<process name="Extract minerals from Allophane deposits" power-required="0.1" >
 			<input resource="allophane" rate="50.0" />
 			
 			<output resource="aluminum oxide" rate="30.0" />
@@ -877,7 +879,7 @@
 		<output resource="brine water" rate="2.0" />
 	</process>
 		
-	<process name="Make glass from sand" power-required="0.2" >
+	<process name="Make glass from sand" power-required="0.1" >
 		<description> Assume Mars sand has most (if not all) ingredients for making glass.
 			Typically, manufactured glass contains around 15% sodium oxide, 70% silica
 			(silicon dioxide) and 9% lime (calcium oxide). The sodium carbonate (soda) or sodium oxide
@@ -903,7 +905,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="Reduce Gypsum to Calcium Carbonate with Carbon" power-required="0.3" >
+	<process name="Reduce Gypsum to Calcium Carbonate with Carbon" power-required="0.03" >
 		<description>
 			Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
@@ -920,7 +922,7 @@
 		<output resource="brine water" rate="5.2" />
 	</process>
 
-	<process name="Reduce Gypsum to Calcium carbonate with Carbon Monoxide" power-required="0.3" >
+	<process name="Reduce Gypsum to Calcium carbonate with Carbon Monoxide" power-required="0.03" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using carbon monoxide.
 			Wrapping two processes:
@@ -939,7 +941,7 @@
 	</process>
 
 
-	<process name="Reduce Gypsum to Calcium Carbonate with Hydrogen" power-required="0.3" >
+	<process name="Reduce Gypsum to Calcium Carbonate with Hydrogen" power-required="0.03" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using hydrogen.
 			Wrapping two processes:
@@ -970,7 +972,7 @@
 		<output resource="brine water" rate="1.0" />
 	</process>
 					
-	<process name="Make quartz from silica" power-required="0.5" >
+	<process name="Make quartz from silica" power-required="0.05" >
 		<input resource="silica" rate="45.0" />
 		<input resource="calcium carbonate" rate="1.0" />
 		<input resource="sodium carbonate" rate="1.0" />
@@ -1108,7 +1110,7 @@
 		<output resource="concrete" rate="100.0" />
 	</process>
 	
-	<process name="Make magnesium-based concrete 1" power-required="0.5" >
+	<process name="Make magnesium-based concrete 1" power-required="0.2" >
 		<description> 
 			Serpentinization : olivine (Mg,Fe)2 + SiO4 produces H2 and Mg(OH)2, 
 			which in terms produce water 
@@ -1132,7 +1134,7 @@
 		<output resource="concrete" rate="71.0" />
 	</process>
 
-	<process name="Make magnesium-based concrete 2" power-required="0.5" >
+	<process name="Make magnesium-based concrete 2" power-required="0.2" >
 		<description> 
 			Replace water with brine water
 		</description>
@@ -1203,7 +1205,7 @@
 		<output resource="Polypropylene" rate="45" />
 	</process>
 	
-	<process name="Methanol-to-olefin (MTO) process" power-required=".5" >
+	<process name="Methanol-to-olefin (MTO) process" power-required=".05" >
 		<description> The chemical formula of Methanol-to-olefin (MTO) process is 
 			not a single chemical formula.
 			
@@ -1256,7 +1258,7 @@
 
 	-->
 	<!-- Grey Water Recycling process for cleaning grey water. -->
-	<process name="Grey Water Processor" power-required=".32" >
+	<process name="Grey Water Processor" power-required=".04" >
 		<!-- Input: grey water, oxygen, chlorine  -->
 		<!-- resource: the resource added to the process. -->
 		<!-- See resources.xml -->
@@ -1304,7 +1306,7 @@
 	20 kg black water and generate 17 kg grey water and
 	2 kg of toxic waste. There is a lost of 1 kg of water.
 	-->
-	<process name="Black Water Processor" power-required=".315" >
+	<process name="Black Water Processor" power-required=".015" >
 		<input resource="black water" rate="10" />
 		<!-- Residual requirement for using chlorine in water treatment
 				is 0.25 to 1 mg of Cl gas per kg of water. Thus 20 kg water
@@ -1322,7 +1324,7 @@
 	https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20160003882.pdf
 	http://www.nasa.gov/audience/foreducators/k-4/features/F_Recycling_for_Moon.html
 	-->
-	<process name="Solid Waste Management" power-required=".2" >
+	<process name="Solid Waste Management" power-required=".02" >
 		<input resource="solid waste" rate="5" />
 		
 		<output resource="compost" rate="1" />
@@ -1335,7 +1337,7 @@
 		<output resource="carbon" rate="1" />
 	</process>				
 
-	<process name="Food Waste Management" power-required=".1" >
+	<process name="Food Waste Management" power-required=".01" >
 		<input resource="food waste" rate="4" />
 		
 		<output resource="compost" rate=".5" />
@@ -1347,22 +1349,22 @@
 		<output resource="carbon" rate="1" />				
 	</process>		
 
-	<process name="Hazard Waste Incineration" power-required=".5" >
+	<process name="Hazard Waste Incineration" power-required=".05" >
 		<input resource="toxic waste" rate="10" />
 		<output resource="carbon" rate="10" />					
 	</process>		
 
-	<process name="Electronic Waste Disposal" power-required=".5" >
+	<process name="Electronic Waste Disposal" power-required=".05" >
 		<input resource="electronic waste" rate="10" />
 		<output resource="carbon" rate="10" />					
 	</process>
 
-	<process name="Soil Generation from Compost" power-required=".1" >
+	<process name="Soil Generation from Compost" power-required=".01" >
 		<input resource="compost" rate="100" />
 		<output resource="soil" rate="100" />					
 	</process>
 	
-	<process name="Soil Generation from Crop Waste" power-required=".1" >	
+	<process name="Soil Generation from Crop Waste" power-required=".01" >	
 		<input resource="crop waste" rate="100" />
 		<output resource="soil" rate="100" />					
 	</process>

@@ -269,7 +269,6 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 */
 	public double getBaseFullInputRate(Integer resource) {
 		return engine.getBaseFullInputRate(resource);
-
 	}
 	
 	/**
@@ -442,7 +441,7 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return power (kW).
 	 */
 	public double getPowerRequired() {
-		return processSpec.getPowerRequired();
+		return processSpec.getPowerRequired() * getNumModules();
 	}
 
 	/**

@@ -188,7 +188,7 @@ public class ResourceProcessSpec implements Serializable{
 	 * @return Number of msol
 	 */
 	public int getProcessTime() {
-		return processTime ;
+		return processTime;
 	}
 
 	/**
