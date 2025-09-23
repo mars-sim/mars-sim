@@ -125,17 +125,20 @@ public class BinGood extends Good {
 		double average = determineBinDemand(owner, settlement);
 
 		double totalSupply = getAverageBinSupply(settlement.findNumBinsOfType(binType));
-				
+		
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
 		double trade = owner.determineTradeDemand(this);
+		
 		if (previousDemand == 0) {
 			totalDemand = .5 * average + .5 * trade;
 		}
 		else {
-			// Intentionally lose 2% of its value
-			totalDemand = .97 * previousDemand + .005 * average + .005 * trade;
+			// Intentionally lose some of its value
+			totalDemand = .99 * previousDemand 
+						+ .003 * average 
+						+ .005 * trade;
 		}
 				
 		owner.setDemandScore(this, totalDemand);

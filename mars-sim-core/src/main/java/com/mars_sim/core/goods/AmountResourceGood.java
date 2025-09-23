@@ -94,7 +94,7 @@ class AmountResourceGood extends Good {
 	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
 	private static final double ROCK_SALT_VALUE_MODIFIER = .01;
-	private static final double EPSOM_SALT_VALUE_MODIFIER = 0.1;
+	private static final double EPSOM_SALT_VALUE_MODIFIER = .01;
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
@@ -118,14 +118,13 @@ class AmountResourceGood extends Good {
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
 	
-	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 2;
-	private static final double REGOLITH_VALUE_MODIFIER = 2.0;
-	private static final double REGOLITH_VALUE_MODIFIER_1 = 10;
-	private static final double REGOLITH_VALUE_MODIFIER_2 = 10;
+	private static final double REGOLITH_TYPE_VALUE_MODIFIER = .5;
+	private static final double REGOLITH_VALUE_MODIFIER = .5;
+	private static final double REGOLITH_VALUE_MODIFIER_1 = 2.0;
 		
 	// flatten multipliers
-	private static final double ICE_FLATTENING_FACTOR = 1.5;
-	private static final double WATER_FLATTENING_FACTOR = 2.0;
+	private static final double ICE_FLATTENING_FACTOR = 0.5;
+	private static final double WATER_FLATTENING_FACTOR = 0.5;
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
@@ -602,7 +601,7 @@ class AmountResourceGood extends Good {
 			projectedDemand = projected;
 		}
 		else {
-			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+			projectedDemand = .5 * projected + .5 * this.projectedDemand;
 		}
 		
 		// Add trade value. Cache is always false if this method is called
@@ -610,13 +609,13 @@ class AmountResourceGood extends Good {
 		
 		if (previousDemand == 0D) {
 			// At the start of the sim
-			totalDemand = (
-					.8 * projectedDemand 
-					+ .2 * tradeDemand);
+			totalDemand = 
+					  .8 * projectedDemand 
+					+ .2 * tradeDemand;
 
 		}
 		else {
-			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
+			// Intentionally loses a tiny percentage of its value
 			// in order to counter the tendency for all goods to increase 
 			// in value over time. 
 			
@@ -624,11 +623,9 @@ class AmountResourceGood extends Good {
 			// if not careful.
 			
 			// Allows only very small fluctuations of demand as possible
-
-			totalDemand = (
-					  .998 * previousDemand 
-					+ .0005 * projectedDemand
-					+ .0005 * tradeDemand); 
+			totalDemand = .993 * previousDemand
+						+ .005  * projectedDemand
+						+ .0005 * tradeDemand; 
 		}
 		
 		// Save the goods demand
@@ -926,8 +923,8 @@ class AmountResourceGood extends Good {
 		int id = getID();
 		
 		if (id == ResourceUtil.TABLE_SALT_ID) {
-			// Assuming a person takes 3 meals per sol
-			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
+			// Assuming a person takes 1 meal per sol
+			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
 		}
 
 		else if (id == ResourceUtil.CLEANING_AGENT_ID) {
@@ -1194,7 +1191,7 @@ class AmountResourceGood extends Good {
 		}
 		
 		else if (resourceID == ResourceUtil.REGOLITHD_ID) {
-			return base * regolithDemand * REGOLITH_VALUE_MODIFIER_2;
+			return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
 		}
 		
 		// Checks if this resource is a ROCK type

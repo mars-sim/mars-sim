@@ -137,7 +137,7 @@ public class ResourceProcessPanel extends JPanel {
         @Override
 		public String getColumnName(int columnIndex) {
             switch(columnIndex) {
-                case RUNNING_STATE: return "On";
+                case RUNNING_STATE: return "S";
                 case BUILDING_NAME: return "Building";
                 case PROCESS_NAME: return "Process";
                 case INPUT_SCORE: return "In";

@@ -49,10 +49,10 @@ public class EquipmentGood extends Good {
 	
 	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
-	private static final double EVA_SUIT_VALUE = 50;
+	private static final double EVA_SUIT_VALUE = 1.5;
 	private static final double CONTAINER_VALUE = .1;
 
-	private static final double EVA_SUIT_FLATTENING_FACTOR = 2;
+	private static final double EVA_SUIT_FLATTENING_FACTOR = 1.5;
 	private static final double CONTAINER_FLATTENING_FACTOR = .25;
 
 	/** The fixed flatten demand for this resource. */
@@ -245,7 +245,7 @@ public class EquipmentGood extends Good {
 	
 		double projected = newProjDemand * flattenDemand;
 		
-		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		this.projectedDemand = .5 * projected + .5 * this.projectedDemand;
 		
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
@@ -268,10 +268,10 @@ public class EquipmentGood extends Good {
 		}
 		else {
 			// Intentionally lose some values over time
-			totalDemand = .998 * previousDemand 
-						+ .0005 * projectedDemand 
-						+ .0002 * repairDemand
-						+ .0002 * tradeDemand;
+			totalDemand = .993 * previousDemand 
+						+ .005 * projectedDemand
+						+ .0004 * repairDemand
+						+ .0004 * tradeDemand;
 		}
 				
 		owner.setDemandScore(this, totalDemand);

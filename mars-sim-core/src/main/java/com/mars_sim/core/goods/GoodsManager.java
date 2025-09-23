@@ -813,8 +813,7 @@ public class GoodsManager implements Serializable {
 	 * @return the new demand 
 	 */
 	public double moderateLifeResourceDemand(int resourceID) {
-		double lacking = 0;
-
+		
 		var limits = resLimits.get(resourceID);
 		if (limits == null) {
 			throw new IllegalArgumentException("Resource is not essential " + resourceID);
@@ -828,36 +827,39 @@ public class GoodsManager implements Serializable {
 		double demand = getDemandScoreWithID(resourceID);
 
 		double stored = settlement.getAllAmountResourceStored(resourceID);
-	
+		double surplus = 0;
+		double lacking = 0;
+		double delta = 0;
+		
 		if (stored > optimal) {
-			// Thus no need of demand adjustment
+			surplus = stored - optimal;
+			delta = surplus / Math.sqrt(pop + 1);
+		}
+		else if (stored < reserve) {
+			lacking = reserve - stored;
+			delta = lacking / Math.sqrt(pop + 1);
+		}
+
+		double fraction = delta / demand;
+		
+		if (fraction < .0075 || fraction > - .0075) {
+			// Too small. No need of adjustment
 			return 0;
 		}
-			
-		lacking = MathUtils.between(optimal - reserve - stored, 0, 1D * optimal - reserve);
-
-		// Note : Make sure stored is not zero by adding 1 so that delta is not infinite	
 		
-		// Multiply by THROTTLING to limit the speed of increase to avoid an abrupt rise in demand
-		double delta = (lacking / (1 + stored) - 1) / Math.sqrt(pop + 1);
- 
-		
-		if (delta > 0) {
-			String gasName = ResourceUtil.findAmountResourceName(resourceID);
-			logger.info(settlement, 10_000L,
+		String gasName = ResourceUtil.findAmountResourceName(resourceID);
+		logger.info(settlement, 10_000L,
 					gasName + " - " 
-					+ "Injecting Demand: " + Math.round(demand * 100.0)/100.0 
+					+ "Injecting demand change: " + Math.round(demand * 100.0)/100.0 
 					+ " -> " + Math.round((demand + delta) * 100.0)/100.0 
-					+ "  Optimal: " + Math.round(optimal * 100.0)/100.0 
-					+ "  Stored: " + Math.round(stored * 100.0)/100.0
+					+ "  optimal: " + Math.round(optimal * 100.0)/100.0 
+					+ "  stored: " + Math.round(stored * 100.0)/100.0
 					+ "  reserve: " + Math.round(reserve * 100.0)/100.0
 					+ "  lacking: " + Math.round(lacking * 100.0)/100.0
+					+ "  surplus: " + Math.round(surplus * 100.0)/100.0
 					+ ".");
 
-			return delta * demand;
-		}
-		
-		return 0;
+		return demand + delta;
 	}
 
 	/**

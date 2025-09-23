@@ -35,22 +35,20 @@ class VehicleGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final double LUV_FACTOR = 2;
-	private static final double DRONE_FACTOR = 2;
-    private static final double TRANSPORT_VEHICLE_FACTOR = 5;
-	private static final double CARGO_VEHICLE_FACTOR = 4;
-	private static final double EXPLORER_VEHICLE_FACTOR = 3;
-	private static final double LUV_VEHICLE_FACTOR = 4;
-	private static final double DRONE_VEHICLE_FACTOR = 5;
+	private static final double LUV_FACTOR = 3;
+	private static final double DRONE_FACTOR = 3;
+    private static final double TRANSPORT_VEHICLE_FACTOR = 3;
+	private static final double CARGO_VEHICLE_FACTOR = 2;
+	private static final double EXPLORER_VEHICLE_FACTOR = 1.5;
 
-    private static final double INITIAL_VEHICLE_DEMAND = 0;
-	private static final double INITIAL_VEHICLE_SUPPLY = 0;
-	private static final int VEHICLE_VALUE = 20;
-	private static final int LUV_VALUE = 10;
-	private static final int DRONE_VALUE = 50;
+    private static final double INITIAL_VEHICLE_DEMAND = 1;
+	private static final double INITIAL_VEHICLE_SUPPLY = 1;
+	private static final int VEHICLE_VALUE = 10;
+	private static final int LUV_VALUE = 7;
+	private static final int DRONE_VALUE = 30;
 
     private static final double SPEED_TO_DISTANCE = 2D / 60D / 60D / MarsTime.convertSecondsToMillisols(1D) * 1000D;
-	private static final double VEHICLE_FLATTENING_FACTOR = 2;
+	private static final double VEHICLE_FLATTENING_FACTOR = 1;
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -223,7 +221,7 @@ class VehicleGood extends Good {
 		
 		double projected = newProjDemand * flattenDemand;
 		
-		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		this.projectedDemand = .5 * projected + .5 * this.projectedDemand;
 		
 		double average = computeVehiclePartsCost(owner);
 		
@@ -246,11 +244,11 @@ class VehicleGood extends Good {
 
 		else {
 			// Intentionally lose some values over time
-			totalDemand = .998 * previousDemand 
-					+ .0002 * average 
-					+ .0002 * repairDemand
-					+ .0004 * projectedDemand 
-					+ .0002 * tradeDemand;
+			totalDemand = .993 * previousDemand
+						+ .005  * projectedDemand
+						+ .0002 * average 
+						+ .0002 * repairDemand
+						+ .0002 * tradeDemand;
 		}
 				
 		owner.setDemandScore(this, totalDemand);
@@ -329,8 +327,8 @@ class VehicleGood extends Good {
             case CARGO_ROVER -> CARGO_VEHICLE_FACTOR;		
             case TRANSPORT_ROVER -> TRANSPORT_VEHICLE_FACTOR;
             case EXPLORER_ROVER -> EXPLORER_VEHICLE_FACTOR;
-		    case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> DRONE_VEHICLE_FACTOR;
-		    case LUV -> LUV_VEHICLE_FACTOR;
+		    case DELIVERY_DRONE, CARGO_DRONE, PASSENGER_DRONE -> DRONE_FACTOR;
+		    case LUV -> LUV_FACTOR;
         };
 		return demand * (.5 + owner.getCommerceFactor(CommerceType.TRADE)) * typeModifier;
 	}

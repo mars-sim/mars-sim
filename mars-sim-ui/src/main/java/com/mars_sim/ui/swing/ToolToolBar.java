@@ -16,8 +16,6 @@ import java.awt.event.ActionListener;
 import java.time.format.DateTimeFormatter;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -66,6 +64,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final DateTimeFormatter SHORT_TIMESTAMP_FORMATTER = 
 			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm");
 
+	private static final String SOL = "Sol:";
 	private static final String DISPLAY_HELP = "display-help";
 	private static final String MAIN_WIKI = "main-wiki";
 	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //$NON-NLS-1$
@@ -95,9 +94,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Use JToolBar constructor
 		super();
 
-		// WebLaf is breaking the default layout, remove this once totally gone.
-		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-
 		// Initialize data members
 		this.parentMainWindow = parentMainWindow;
 		masterClock = parentMainWindow.getDesktop().getSimulation().getMasterClock();
@@ -111,7 +107,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		// Prepare tool buttons
 		prepareToolButtons();
-		setMaximumSize(new Dimension(0, 32));
+
 		incrementClocks(masterClock);
 	}
 
@@ -147,8 +143,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		addSeparator(new Dimension(15, 15));
 
-		// Everything after this is on the right hand side
-		add(Box.createHorizontalGlue()); 
 
 		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		add(timePanel);
@@ -254,7 +248,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * @param master
 	 */
 	public void incrementClocks(MasterClock master) {
-		missionSol.setText("Sol : " + master.getMarsTime().getMissionSol());
+		missionSol.setText(SOL + master.getMarsTime().getMissionSol());
 		earthDate.setText(master.getEarthTime().format(SHORT_TIMESTAMP_FORMATTER));
 		marsTime.setText(master.getMarsTime().getTruncatedDateTimeStamp());
 	}

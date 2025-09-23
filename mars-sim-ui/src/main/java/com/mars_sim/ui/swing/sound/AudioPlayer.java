@@ -7,19 +7,9 @@
 
 package com.mars_sim.ui.swing.sound;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,10 +123,9 @@ public class AudioPlayer {
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
 		try {
 			Resource[] resources = resolver.getResources(FULL_PATH);
-			logger.log(Level.CONFIG, "1. Load from the target folder or within jarfile at " + FULL_PATH);
+			logger.log(Level.CONFIG, "Loading from the target folder or within jarfile at " + FULL_PATH + ".");
 			List<String> files = new ArrayList<>();
 			for (Resource r: resources){
-			    logger.info(r.getFilename());
 			    files.add(r.getFilename());
 			}
 			addMusicTracks(files);
@@ -146,7 +135,7 @@ public class AudioPlayer {
 
 		// 2. Load from the music directory in user home folder
 		File userFolder = new File(MUSIC_DIR);
-		logger.log(Level.CONFIG, "2. Load from user home music folder at " + MUSIC_DIR);
+		logger.log(Level.CONFIG, "Loading from user home music folder at " + MUSIC_DIR + ".");
 		// e.g. User Home music folder at /Users/spacebear/.mars-sim/music
 		
 		boolean dirExist = userFolder.isDirectory();
@@ -179,27 +168,6 @@ public class AudioPlayer {
 		}
 	}
 	
-	
-	/**
-	 * Gets the path instance when loading from inside a jar file.
-	 * 
-	 * @param uri
-	 * @param folderJar
-	 * @return
-	 * @throws URISyntaxException
-	 * @throws IOException
-	 */
-	 private Path getFolderPath(URI uri, String folderJar) throws URISyntaxException, IOException {
-		 if ("jar".equals(uri.getScheme())) {
-			 FileSystem fileSystem = FileSystems.getDefault();
-					 // FileSystems.newFileSystem(uri, Collections.emptyMap(), null);
-			 return fileSystem.getPath(folderJar);
-		 } 
-		 else {
-			 return Paths.get(uri);
-		 }
-	}
-	 
 	/**
 	 * Adds music tracks from a folder.
 	 * 
@@ -214,6 +182,7 @@ public class AudioPlayer {
 			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
 			
 			if (f.isFile() && ext.equalsIgnoreCase(OGG)) {
+				logger.info(filename);
 				musicTracks.add(f.getName());
 			}
 		}
@@ -231,52 +200,12 @@ public class AudioPlayer {
 			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
 			
 			if (ext.equalsIgnoreCase(OGG)) {
+				logger.info(filename);
 				musicTracks.add(filename);
 			}
 		}
 	}
 	
-	public List<String> getResourceFilelist(String path) throws Exception{
-	    InputStream in = getResourceAsStream(path); // ClassLoader.getSystemClassLoader().getResourceAsStream(path);
-	    byte[] b = new byte[in.available()];
-	    in.read(b);
-	    String data = new String(b);
-	    String[] s = data.split("\n");
-	    List<String> a = Arrays.asList(s);
-	    List<String> m = new ArrayList<>(a);
-	    return m;
-	}
-	
-	/**
-	 * Loads the list of files from a folder under the resource folder
-	 * 
-	 * @param path
-	 * @return
-	 * @throws IOException
-	 */
-	private List<String> getResourceFiles(String path) {
-	    List<String> filenames = new ArrayList<>();
-
-	    try (
-	    	InputStream in = getResourceAsStream(path);
-	        BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
-	        String resource;
-
-	        while ((resource = br.readLine()) != null) {
-	            filenames.add(resource);
-	        }
-	    }
-	    
-	    catch (IOException ie) {
-	    	logger.severe( "Can't load music files: ", ie);
-	    }
-
-	    return filenames;
-	}
-
-	private InputStream getResourceAsStream(String resource) {
-	    return getClass().getClassLoader().getResourceAsStream(resource);
-	}
 
 	/**
 	 * Loads all the sound effect clip names into a map.
@@ -395,10 +324,6 @@ public class AudioPlayer {
 	 * Increases the music volume.
 	 */
 	public void musicVolumeUp() {
-//		if (!isVolumeDisabled || !isMusicMute()) {
-//			loopThruBackgroundMusic();
-//		}
-		
 		if (!isVolumeDisabled && hasMasterGain
 				&& currentMusic != null
 				&& currentMusic.getVol() < 1) {
@@ -415,11 +340,7 @@ public class AudioPlayer {
 	/**
 	 * Decreases the music volume.
 	 */
-	public void musicVolumeDown() {
-//		if (!isVolumeDisabled || !isMusicMute()) {
-//			loopThruBackgroundMusic();
-//		}
-		
+	public void musicVolumeDown() {	
 		if (!isVolumeDisabled && hasMasterGain
 				&& currentMusic != null
 				&& currentMusic.getVol() > 0) {

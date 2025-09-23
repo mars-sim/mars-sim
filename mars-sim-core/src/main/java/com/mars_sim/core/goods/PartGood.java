@@ -72,11 +72,11 @@ public class PartGood extends Good {
 	private static final String WIRE_CONNECTOR = "wire connector";
 
 	private static final int VEHICLE_PART_COST = 3;
-	private static final int ROBOT_VALUE = 30;
-	private static final int EVA_PARTS_VALUE = 20;
+	private static final int ROBOT_VALUE = 20;
+	private static final int EVA_PARTS_VALUE = 2;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
 	
-	private static final double DRILL_DEMAND  = .5;
+	private static final double DRILL_DEMAND  = 1;
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .00005;
 	private static final double GASKET_DEMAND = .05;
@@ -90,17 +90,17 @@ public class PartGood extends Good {
 	private static final double STEEL_DEMAND = .1;
 	private static final double BRICK_DEMAND = 2;
 	private static final double ELECTRICAL_DEMAND = .15;
-	private static final double INSTRUMENT_DEMAND = 6;
+	private static final double INSTRUMENT_DEMAND = 2;
 	private static final double METALLIC_DEMAND = .25;
-	private static final double UTILITY_DEMAND = .25;
-	private static final double TOOL_DEMAND = 4;
+	private static final double UTILITY_DEMAND = .5;
+	private static final double TOOL_DEMAND = 2;
 	private static final double CONSTRUCTION_DEMAND = 1.2;
 	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
 	private static final double BASE_DEMAND = 0.5;
 
-	private static final double ATTACHMENT_PARTS_DEMAND = 20;
-	private static final double AEROGEL_TILE_DEMAND = 0.05;
+	private static final double ATTACHMENT_PARTS_DEMAND = 10;
+	private static final double AEROGEL_TILE_DEMAND = 0.8;
 	private static final double PLASTIC_PIPE_DEMAND = .1;
 
 	
@@ -435,7 +435,7 @@ public class PartGood extends Good {
 			projectedDemand = projected;
 		}
 		else {
-			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+			projectedDemand = .5 * projected + .5 * this.projectedDemand;
 		}
 		
 		// Add trade demand.
@@ -447,10 +447,10 @@ public class PartGood extends Good {
 		
 		if (previousDemand == 0D) {
 			// At the start of the sim
-			totalDemand = (
-					.4 * repairDemand 
+			totalDemand = 
+					  .4 * repairDemand 
 					+ .4 * projectedDemand 
-					+ .2 * tradeDemand);
+					+ .2 * tradeDemand;
 		}
 
 		else {
@@ -462,11 +462,11 @@ public class PartGood extends Good {
 			// if not careful.
 			
 			// Allows only very small fluctuations of demand as possible
-			totalDemand = (
-					  .998 * previousDemand 
-					+ .0002 * repairDemand 
-					+ .0005 * projectedDemand 
-					+ .0002 * tradeDemand); 
+			totalDemand = .993 * previousDemand 
+						+ .005 * projectedDemand
+						+ .0002 * repairDemand 
+						+ .0005 * projectedDemand 
+						+ .0002 * tradeDemand; 
 		}
 		
 		// Save the goods demand
@@ -557,7 +557,7 @@ public class PartGood extends Good {
 	 */
 	private double getEVASuitPartsDemand(GoodsManager owner) {		
 		if (ItemResourceUtil.evaSuitPartIDs != null && ItemResourceUtil.evaSuitPartIDs.contains(getID())) {
-			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandScore(this) / 3;
+			return owner.getEVASuitMod() * EVA_PARTS_VALUE * owner.getDemandScore(this);
 		}
 		return 0;
 	}
