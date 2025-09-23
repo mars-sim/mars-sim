@@ -1276,6 +1276,20 @@ public class Settlement extends Unit implements Temporal,
 		return goodsManager;
 	}
 
+	/**
+	 * Checks if person is in the airlock.
+	 *
+	 * @param person the person to check
+	 * @return
+	 */
+	public boolean isInAirlock(Person person) {
+		for (Building airlockBdg : buildingManager.getAirlocks()) {
+			if (airlockBdg.getEVA().getAirlock().getOccupants123().contains(person.getIdentifier())) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Checks for available airlocks.

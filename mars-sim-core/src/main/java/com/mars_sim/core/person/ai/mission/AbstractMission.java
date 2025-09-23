@@ -56,6 +56,8 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
 
 
 /**
@@ -834,6 +836,35 @@ public abstract class AbstractMission implements Mission, Temporal {
 				// do not assign this task.
 	      		
 	      		// Note: what if it's an emergency that one must wake up and respond ?
+				return false;
+			}
+			
+			if (currentTask.getName().contains("egress")) {
+	      		logger.info(person, 4_000, "Currently egressing an airlock. Not available to be assigned with other tasks.");
+		
+	      		// Note: need to wait until the person has completed the egress
+				return false;
+			}
+			
+			if (currentTask.getName().contains("ingress")) {
+	      		logger.info(person, 4_000, "Currently ingressing. Not available to be assigned with other tasks.");
+		
+	      		// Note: need to wait until the person has completed the egress
+				return false;
+			}
+			
+			Vehicle v = person.getVehicle();
+			if (v != null && v instanceof Rover r && r.isInAirlock(person)) {	
+	      		logger.info(person, 4_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
+		
+	      		// Note: need to wait until the person has exited the vehicular airlock
+				return false;
+			}
+			Settlement settlement = person.getSettlement();
+			if (settlement != null && settlement.isInAirlock(person)) {	
+	      		logger.info(person, 4_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
+		
+	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
 		}
