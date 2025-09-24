@@ -247,6 +247,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			result = true;
 		}
 		else {
+			// Question: how to allow a delay of 1/4 of a sol and check again if a vehicle is available ?
+			
+			// It is a waste to have gone through all the reviews of the mission plan, only to find that
+			// no vehicle is available
+			
 			endMission(NO_AVAILABLE_VEHICLE);
 			logger.warning(getStartingPerson(), "Could not reserve a vehicle for " + getName() + ".");
 			result = false;
@@ -256,7 +261,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	}
 		
 	/**
-	 * Get a comparator of Vehicles for ths mission. The default takes the Vehicle wioth the lognest range
+	 * Gets a comparator of Vehicles for this mission. The default takes the Vehicle with the longest range.
 	 */
 	protected  Comparator<Vehicle> getVehicleComparator() {
 		return new RangeComparator();

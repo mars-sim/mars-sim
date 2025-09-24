@@ -814,198 +814,102 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Checks if a person has any issues in starting a new task.
 	 *
 	 * @param person the person to assign to the task
-	 * @param task   the new task to be assigned
+	 * @param newTask   the new task to be assigned
 	 * @return true if task can be performed.
 	 */
-	protected boolean assignTask(Person person, Task task) {
+	protected boolean assignTask(Person person, Task newTask) {
+		return assignTask(person, newTask, false);
+	}
+		
+
+	/**
+	 * Checks if a person has any issues in starting a new task.
+	 *
+	 * @param person the person to assign to the task
+	 * @param newTask   the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	protected boolean assignTask(Person person, Task newTask, boolean allowSameTask) {
 		// If task is physical effort driven and person too ill, do not assign task.
 		Task currentTask = person.getMind().getTaskManager().getTask();
 
-		if ((currentTask != null) && !currentTask.isDone()) {
+		String newTaskName = newTask.getName();
+		
+		if (currentTask != null && !currentTask.isDone()) {
 
-			if (currentTask.getName().equals(task.getName())){
-	      		logger.info(person, 4_000, "Already doing '" + currentTask.getName() + "' as of this moment.");
+			String currentTaskName = currentTask.getName();
+			
+			if (!allowSameTask && currentTaskName.equals(newTaskName)){
+	      		logger.info(person, 20_000, "Already '" + currentTaskName 
+	      				+ "' as of this moment.");
 				// If the person has been doing this task, 
 				// then there is no need of adding it.
 				return false;
 			}
 
-			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 4_000, "Currently asleep. Not available to be assigned with other tasks.");
+			if (currentTaskName.equals(Sleep.NAME)) {
+	      		logger.info(person, 20_000, "Currently asleep. Not available to be assigned with other tasks.");
 				// If the person is asleep, 
 				// do not assign this task.
 	      		
 	      		// Note: what if it's an emergency that one must wake up and respond ?
 				return false;
 			}
-			
-			if (currentTask.getName().contains("egress")) {
-	      		logger.info(person, 4_000, "Currently egressing an airlock. Not available to be assigned with other tasks.");
-		
-	      		// Note: need to wait until the person has completed the egress
-				return false;
-			}
-			
-			if (currentTask.getName().contains("ingress")) {
-	      		logger.info(person, 4_000, "Currently ingressing. Not available to be assigned with other tasks.");
-		
-	      		// Note: need to wait until the person has completed the egress
-				return false;
-			}
-			
+
 			Vehicle v = person.getVehicle();
 			if (v != null && v instanceof Rover r && r.isInAirlock(person)) {	
-	      		logger.info(person, 4_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
+	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
 		
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
 			Settlement settlement = person.getSettlement();
 			if (settlement != null && settlement.isInAirlock(person)) {	
-	      		logger.info(person, 4_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
+	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
 		
 	      		// Note: need to wait until the person has exited the vehicular airlock
 				return false;
 			}
 		}
 		
-		if (!task.getName().equals(Sleep.NAME) && person.isSuperUnfit()) {
-			logger.warning(person, 4_000, "Super unfit to be assigned with '" + task + "'.");
+		if (!newTaskName.equals(Sleep.NAME) && person.isSuperUnfit()) {
+			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
 			return false;
 		}
 		
-		boolean canPerformTask = !task.isEffortDriven() 
+		boolean canPerformTask = !newTask.isEffortDriven() 
 				|| person.getPerformanceRating() > 0D;
 		
         if (canPerformTask) {
-			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task, false);
+			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(newTask, allowSameTask);
 		}
-
 
 		if (canPerformTask) {
 			/**
 			 * Do not delete. Reserve for debugging.
 			 */
-//			if (currentTask != null) {
-//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-//			}
+//			if (currentTask != null) 
+//				logger.info(person, 20_000, "Assigned with '" + newTaskName + "' to replace '" + currentTaskName + "'.");
 //			else
-//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
+//				logger.info(person, 20_000, "Assigned with '" + newTaskName + "'.");
 		}
 		else
-			logger.info(person, 4_000, "Unable to assign with '" + task.getName() + "'.");
+			logger.info(person, 20_000, "Unable to assign with '" + newTaskName + "'.");
 
 		return canPerformTask;
 	}
-
-	/**
-	 * Checks if a person has any issues in starting a new task.
-	 *
-	 * @param person the person to assign to the task
-	 * @param task   the new task to be assigned
-	 * @param allowSameTask is it allowed to execute the same task as previous
-	 * @return true if task can be performed.
-	 */
-	protected boolean assignTask(Person person, Task task, boolean allowSameTask) {
-		// If task is physical effort driven and person too ill, do not assign task.
-		Task currentTask = person.getMind().getTaskManager().getTask();
-
-		if (currentTask != null) {
-
-			if (currentTask.getName().equals(Sleep.NAME)) {
-	      		logger.info(person, 4_000, "Currently asleep. Not available to be assigned with other tasks.");
-				// If the person is asleep, 
-				// do not assign this task.
-	      		
-	      		// Note: what if it's an emergency that one must wake up and respond ?
-				return false;
-			}
-		}
-		
-		if (!task.getName().equals(Sleep.NAME) && person.isSuperUnfit()) {
-			logger.warning(person, 4_000, "Super unfit to be assigned with '" + task + ".");
-			return false;
-		}
-		
-		boolean canPerformTask = !task.isEffortDriven() 
-				|| person.getPerformanceRating() > 0D;
-		
-        if (canPerformTask) {
-			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(task, allowSameTask);
-		}
-
-
-		if (canPerformTask) {
-			/**
-			 * Do not delete. Reserve for debugging.
-			 */
-//			if (currentTask != null) {
-//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-//			}
-//			else
-//				logger.info(person, 4_000, "Assigned with '" + task.getName() + "'.");
-		}
-		else
-			logger.info(person, 4_000, "Unable to assign with '" + task.getName() + "'.");
-
-		return canPerformTask;
-	}
-
 	
 	/**
 	 * Adds a new task for a robot in the mission. Task may be not assigned if the
 	 * robot has a malfunction.
 	 *
 	 * @param robot the robot to assign to the task
-	 * @param task  the new task to be assigned
+	 * @param newTask  the new task to be assigned
 	 * @return true if task can be performed.
 	 */
-	protected boolean assignTask(Robot robot, Task task) {
-
-		// If robot is malfunctioning, it cannot perform task.
-		if (robot.getMalfunctionManager().hasMalfunction()) {
-			logger.info(robot, 4_000, "Malfunctioned and cannot be assigned with '" + task.getName() + "'.");
-			return false;
-		}
-
-		if (!task.getName().equalsIgnoreCase(Charge.NAME) 
-				&& !robot.getSystemCondition().isBatteryAbove(20)) {
-			logger.info(robot, 4_000, "Battery below 20% and cannot be assigned with '" + task.getName() + "'.");
-			return false;
-		}
-
-		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
-		
-		if (currentTask != null) {
-
-			if (currentTask.getName().equals(task.getName())) {
-				// If the robot has been doing this task, 
-				// then there is no need of adding it.
-				return false;
-			}
-			
-			else if (currentTask.getName().equals(Charge.NAME)) {
-				logger.info(robot, 4_000, "Still charging and cannot be assigned with '" + task.getName() + "'.");
-				return false;
-			}
-		}
-
-		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task, false);
-		
-		if (canPerformTask) {
-			/**
-			 * Do not delete. Reserve for debugging.
-			 */
-//			if (currentTask != null) {
-//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
-//			}
-//			else
-//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "'.");
-		}
-		else
-			logger.info(robot, 10_000L, "Unable to perform '" + task.getName() + "'.");
-		
-		return canPerformTask;
+	protected boolean assignTask(Robot robot, Task newTask) {
+		return assignTask(robot, newTask, false);
 	}
 
 	/**
@@ -1013,21 +917,23 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * robot has a malfunction.
 	 *
 	 * @param robot the robot to assign to the task
-	 * @param task  the new task to be assigned
+	 * @param newTask  the new task to be assigned
 	 * @param allowSameTask is it allowed to execute the same task as previous
 	 * @return true if task can be performed.
 	 */
-	protected boolean assignTask(Robot robot, Task task, boolean allowSameTask) {
+	protected boolean assignTask(Robot robot, Task newTask, boolean allowSameTask) {
 
+		String newTaskName = newTask.getName();
+		
 		// If robot is malfunctioning, it cannot perform task.
 		if (robot.getMalfunctionManager().hasMalfunction()) {
-			logger.info(robot, 4_000, "Malfunctioned and cannot be assigned with '" + task.getName() + "'.");
+			logger.info(robot, 20_000, "Malfunctioned and cannot be assigned with '" + newTaskName+ "'.");
 			return false;
 		}
 
-		if (!task.getName().equalsIgnoreCase(Charge.NAME) 
+		if (!newTaskName.equalsIgnoreCase(Charge.NAME) 
 				&& !robot.getSystemCondition().isBatteryAbove(20)) {
-			logger.info(robot, 4_000, "Battery below 20% and cannot be assigned with '" + task.getName() + "'.");
+			logger.info(robot, 20_000, "Battery below 20% and cannot be assigned with '" + newTaskName + "'.");
 			return false;
 		}
 
@@ -1035,33 +941,33 @@ public abstract class AbstractMission implements Mission, Temporal {
 		
 		if (currentTask != null) {
 
-			if (currentTask.getName().equals(task.getName())) {
-//				logger.info(robot, 4_000, "Already assigned with '" + currentTask.getName() + "'.");
+			if (!allowSameTask && currentTask.getName().equals(newTaskName)) {
+//				logger.info(robot, 20_000, "Already assigned with '" + currentTaskName + "'.");
 				// If the robot has been doing this task, 
 				// then there is no need of adding it.
 				return false;
 			}
 			
 			else if (currentTask.getName().equals(Charge.NAME)) {
-				logger.info(robot, 4_000, "Still charging and cannot be assigned with '" + task.getName() + "'.");
+				logger.info(robot, 20_000, "Still charging and cannot be assigned with '" + newTaskName + "'.");
 				return false;
 			}
 		}
 
-		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(task, allowSameTask);
+		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(newTask, allowSameTask);
 		
 		if (canPerformTask) {
 			/**
 			 * Do not delete. Reserve for debugging.
 			 */
 //			if (currentTask != null) {
-//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "' to replace '" + currentTask.getName() + "'.");
+//				logger.info(robot, 20_000, "Assigned with '" + newTaskName + "' to replace '" + currentTaskName + "'.");
 //			}
 //			else
-//				logger.info(robot, 4_000, "Assigned with '" + task.getName() + "'.");
+//				logger.info(robot, 20_000, "Assigned with '" + newTaskName + "'.");
 		}
 		else
-			logger.info(robot, 10_000L, "Unable to perform '" + task.getName() + "'.");
+			logger.info(robot, 20_000, "Unable to perform '" + newTaskName + "'.");
 		
 		return canPerformTask;
 	}

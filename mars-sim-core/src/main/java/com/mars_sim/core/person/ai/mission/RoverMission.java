@@ -26,6 +26,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
@@ -33,6 +34,7 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EatDrink;
+import com.mars_sim.core.person.ai.task.Relax;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.WalkingSteps;
@@ -359,14 +361,16 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					// Force the person to get off the vehicle and back to the garage
 					// Note: may need to evaluate a better way of handling this
 					ej.transfer(r.getGarage());
+					
+					assignTask(ej, new Relax(ej));
 				}
 				else {
 					// Let the person automatically leave the vehicle via walking toward a settlement airlock
-					walkToAirLock(ej, r.getSettlement());
+					walkToBed(ej, false); // walkToAirLock(ej, r.getSettlement());
 				}
 				
-				logger.warning(ej, "(" + ej.getTaskDescription() + " in " + ej.getLocationTag().getExtendedLocation() 
-						+ ") got ejected from " + r.getName() + " as the rover was departing for " + getName() + ".");
+				logger.warning(ej, ej.getTaskDescription() + " in " + ej.getLocationTag().getExtendedLocation() 
+						+ ". Got ejected from " + r.getName() + " as " + getName() + " was due for departure.");
 				addMissionLog("Ejected", ej.getName());
 			}
 		}
@@ -378,7 +382,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// If the leader is ejected, then the mission must be cancelled
 			logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
 					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
-					+ ") got ejected from " + getName() + " and mission cancelled.");
+					+ ") got ejected from " + getName() + " and mission was cancelled.");
 			addMissionLog(MISSION_LEAD_NO_SHOW.getName(), lead.getName());
 			endMission(MISSION_LEAD_NO_SHOW);
 			canDepart = false;
@@ -414,6 +418,75 @@ public abstract class RoverMission extends AbstractVehicleMission {
         }
 	}
 	
+	/**
+	 * Walks to the bed previously assigned for this person.
+	 * 
+	 * @param person the person who walks to the bed
+	 * @param allowFail true if allowing the walk task to fail
+	 */
+	public boolean walkToBed(Person person, boolean allowFail) {
+		boolean canWalk = false;
+		
+		var bed = person.getBed();
+		if (bed == null) {
+			logger.info(person, 10_000L, "I have no bed assigned to me.");
+			return canWalk;
+		}
+		
+		// Check my own position
+		LocalPosition myLoc = person.getPosition();
+		// Allocate it
+		person.setActivitySpot(bed);
+
+		LocalPosition bedLoc = bed.getAllocated().getPos();
+		if (myLoc.equals(bedLoc)) {
+			return canWalk;
+		}
+
+		// Create subtask for walking to destination.
+		return createWalkingSubtask(person, bed.getOwner(), bedLoc, allowFail, true);
+	}
+	
+	/**
+	 * Creates a walk to an interior position in a building or vehicle.
+	 * 
+	 * @Note: need to ensure releasing the old activity spot prior to calling this method
+	 * and take in the new activity spot after this method.
+	 * @param interiorObject the destination interior object.
+	 * @param sLoc the settlement local position destination.
+	 * @param allowFail true if walking is allowed to fail.
+	 * @param needEVA
+	 */
+	public boolean createWalkingSubtask(Worker worker, LocalBoundedObject interiorObject, LocalPosition sLoc, 
+			boolean allowFail, boolean needEVA) {
+		// Check my own position
+		LocalPosition myLoc = worker.getPosition();
+
+		if (myLoc.equals(sLoc)) {
+			// May add back checking: logger.info(worker, 4_000, "Already at the spot and no need to walk further.")
+			return true;
+		}
+		
+		Walk walkingTask = Walk.createWalkingTask(worker, sLoc, interiorObject, needEVA);
+
+		if (walkingTask != null) {
+			
+	        // Walk back home
+	        assignTask((Person)worker, walkingTask);
+			
+			return true;
+		}
+		else {
+			if (!allowFail) {
+				logger.log(worker, Level.INFO, 4_000, "Failed to walk to " + interiorObject + ".");
+			} 
+			else {
+				logger.log(worker, Level.INFO, 4_000, "Unable to walk to " + interiorObject + ".");
+			}
+		}
+
+		return false;
+	}
 	
 	/**
 	 * Performs the departing from settlement phase of the mission.

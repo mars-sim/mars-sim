@@ -965,7 +965,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * @param person the person who walks to the bed
 	 * @param allowFail true if allowing the walk task to fail
 	 */
-	protected boolean walkToBed(Person person, boolean allowFail) {
+	public boolean walkToBed(Person person, boolean allowFail) {
 		boolean canWalk = false;
 		
 		var bed = person.getBed();
@@ -1419,6 +1419,8 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 		return false;
 	}
+	
+
 	
 	/**
 	 * Sets the standard pulse time.

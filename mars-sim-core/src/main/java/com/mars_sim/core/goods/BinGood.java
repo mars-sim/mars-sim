@@ -24,14 +24,14 @@ public class BinGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final double PROJECTED_CRATE = .1;
-	private static final double PROJECTED_BASKET = .1;
-	private static final double PROJECTED_POT = .1;
+	private static final double PROJECTED_CRATE = 0;
+	private static final double PROJECTED_BASKET = 0;
+	private static final double PROJECTED_POT = 0;
 	
 	private static final double INITIAL_DEMAND = 0;
 	private static final double INITIAL_SUPPLY = 0;
 	
-	private static final double CONTAINER_VALUE = .1;
+	private static final double CONTAINER_VALUE = 0;
 	
     private BinType binType;
 
@@ -131,7 +131,7 @@ public class BinGood extends Good {
 		// This method is not using cache
 		double trade = owner.determineTradeDemand(this);
 		
-		if (previousDemand == 0) {
+		if (previousDemand == 0D) {
 			totalDemand = .5 * average + .5 * trade;
 		}
 		else {

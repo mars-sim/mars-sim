@@ -33,7 +33,8 @@ public interface MetaMission {
 	public String getName();
 
 	/**
-	 * Check the suitability for this Person to be the leader. It currently checks their Job
+	 * Checks the suitability for this Person to be the leader. It currently checks their Job.
+	 * 
 	 * @param person
 	 * @return
 	 */

@@ -52,12 +52,6 @@ public class Walk extends Task {
 	/** default serial id. */
 	private static SimLogger logger = SimLogger.getLogger(Walk.class.getName());
 	
-	/** Simple Task name */
-	public static final String SIMPLE_NAME = Walk.class.getSimpleName();
-
-	/** Simple Task name */
-	public static final String WALK = "Walk";
-	
 	// Static members
 	static final double MIN_PULSE_TIME = 0.0129;
 	// See https://en.wikipedia.org/wiki/Preferred_walking_speed
@@ -68,6 +62,10 @@ public class Walk extends Task {
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.25D;
+	
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = Walk.class.getSimpleName();
+
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.walk"); //$NON-NLS-1$
 	
@@ -81,6 +79,7 @@ public class Walk extends Task {
 	
 	private static final String WALKING_OUTSIDE = Msg.getString("Task.description.walk.outside"); //$NON-NLS-1$
 	private static final String WALKING_IN_ROVER = Msg.getString("Task.description.walk.rover"); //$NON-NLS-1$
+	
 	
 	/** Task phases. */
 	private static final TaskPhase WALKING_SETTLEMENT_INTERIOR = new TaskPhase(
@@ -217,7 +216,7 @@ public class Walk extends Task {
 	 * @param walkingSteps	 Precalculated and verified walking steps
 	 */
 	public Walk(Worker worker, WalkingSteps walkingSteps) {
-		super(WALK, worker, false, false, 0D, null, 100D);
+		super(NAME, worker, false, false, 0D, null, 100D);
 
 		this.walkingSteps = walkingSteps;
 		
