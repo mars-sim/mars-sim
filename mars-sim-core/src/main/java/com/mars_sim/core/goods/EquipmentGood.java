@@ -49,10 +49,10 @@ public class EquipmentGood extends Good {
 	
 	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
-	private static final double EVA_SUIT_VALUE = 1.5;
-	private static final double CONTAINER_VALUE = .1;
+	private static final double EVA_SUIT_VALUE = 0.5;
+	private static final double CONTAINER_VALUE = 0.1;
 
-	private static final double EVA_SUIT_FLATTENING_FACTOR = 1.5;
+	private static final double EVA_SUIT_FLATTENING_FACTOR = 0.5;
 	private static final double CONTAINER_FLATTENING_FACTOR = .25;
 
 	/** The fixed flatten demand for this resource. */
@@ -245,7 +245,7 @@ public class EquipmentGood extends Good {
 	
 		double projected = newProjDemand * flattenDemand;
 		
-		this.projectedDemand = .5 * projected + .5 * this.projectedDemand;
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
 		
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
@@ -293,7 +293,7 @@ public class EquipmentGood extends Good {
 			// Add the whole EVA Suit demand.
 			baseDemand += getWholeEVASuitDemand(owner);
 
-			return baseDemand + owner.getEVASuitMod() * EVA_SUIT_VALUE;
+			return baseDemand * owner.getEVASuitMod() * EVA_SUIT_VALUE;
 		}
 
 		// Determine the number of containers that are needed.
@@ -320,25 +320,25 @@ public class EquipmentGood extends Good {
 
 		switch (equipmentType) {
 			case BAG:
-				return Math.max(baseDemand * ratio * settlement.getRegolithCollectionRate() / 1_000, 1000) * areologistFactor * BAG_DEMAND;
+				return Math.max(baseDemand * ratio * ( 1 + settlement.getRegolithCollectionRate()) / 1_000, 10) * (1 + areologistFactor) * BAG_DEMAND;
 
 			case LARGE_BAG:
-				return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 1000) * LARGE_BAG_DEMAND;
+				return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 10) * LARGE_BAG_DEMAND;
 
 			case BARREL:
-				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 1000) * areologistFactor * BARREL_DEMAND;
+				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 10) * (1 + areologistFactor) * BARREL_DEMAND;
 
 			case SPECIMEN_BOX:
-				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 1000) * areologistFactor * SPECIMEN_BOX_DEMAND;
+				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 10) * (1 + areologistFactor) * SPECIMEN_BOX_DEMAND;
 
 			case GAS_CANISTER:
-				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 1000) * GAS_CANISTER_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_GAS_CANISTERS, 10) * GAS_CANISTER_DEMAND;
 
 			case THERMAL_BOTTLE:
-				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 1000)  * THERMAL_BOTTLE_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_THERMAL_BOTTLE, 10) * THERMAL_BOTTLE_DEMAND;
 
 			case WHEELBARROW:
-				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 1000) * WHEELBARROW_DEMAND;
+				return Math.max(baseDemand * ratio * PROJECTED_WHEELBARROW, 10) * WHEELBARROW_DEMAND;
 							
 			default:
 				throw new IllegalArgumentException("Do not know how to calculate demand for " + equipmentType + ".");

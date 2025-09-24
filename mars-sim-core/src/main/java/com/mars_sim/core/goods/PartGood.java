@@ -72,34 +72,36 @@ public class PartGood extends Good {
 	private static final String WIRE_CONNECTOR = "wire connector";
 
 	private static final int VEHICLE_PART_COST = 3;
-	private static final int ROBOT_VALUE = 20;
-	private static final int EVA_PARTS_VALUE = 2;
+	
+	private static final double ROBOT_VALUE = .25;
+	private static final double EVA_PARTS_VALUE = .25;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 0.1;
 	
+	private static final double BASE_DEMAND = 0.5;
+
 	private static final double DRILL_DEMAND  = 1;
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .00005;
 	private static final double GASKET_DEMAND = .05;
 	private static final double VEHICLE_PART_DEMAND = .4;
 	private static final double EVA_PART_DEMAND = 1;
-    private static final double KITCHEN_DEMAND = 1.5;
+    private static final int KITCHEN_DEMAND = 1;
 	private static final double SCRAP_METAL_DEMAND = .01;
 	private static final double INGOT_METAL_DEMAND = .01;
 	private static final double SHEET_METAL_DEMAND = .025;
 	private static final double TRUSS_DEMAND = .05;
 	private static final double STEEL_DEMAND = .1;
-	private static final double BRICK_DEMAND = 2;
+	private static final double BRICK_DEMAND = .2;
 	private static final double ELECTRICAL_DEMAND = .15;
-	private static final double INSTRUMENT_DEMAND = 2;
+	private static final double INSTRUMENT_DEMAND = 1.2;
 	private static final double METALLIC_DEMAND = .25;
 	private static final double UTILITY_DEMAND = .5;
 	private static final double TOOL_DEMAND = 2;
 	private static final double CONSTRUCTION_DEMAND = 1.2;
 	private static final double GLASS_SHEET_DEMAND = .025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
-	private static final double BASE_DEMAND = 0.5;
-
-	private static final double ATTACHMENT_PARTS_DEMAND = 10;
+	
+	private static final double ATTACHMENT_PARTS_DEMAND = 1.5;
 	private static final double AEROGEL_TILE_DEMAND = 0.8;
 	private static final double PLASTIC_PIPE_DEMAND = .1;
 
@@ -161,8 +163,7 @@ public class PartGood extends Good {
 
 		switch(part.getGoodType()) {
 			case ELECTRICAL: {
-				if (name.contains(LIGHT)
-					|| name.contains(RESISTOR)
+				if (name.contains(RESISTOR)
 					|| name.contains(CAPACITOR)
 					|| name.contains(DIODE)) {
 					return 5;
@@ -435,7 +436,7 @@ public class PartGood extends Good {
 			projectedDemand = projected;
 		}
 		else {
-			projectedDemand = .5 * projected + .5 * this.projectedDemand;
+			projectedDemand = .1 * projected + .9 * this.projectedDemand;
 		}
 		
 		// Add trade demand.

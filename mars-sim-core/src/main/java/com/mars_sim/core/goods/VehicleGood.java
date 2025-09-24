@@ -221,7 +221,7 @@ class VehicleGood extends Good {
 		
 		double projected = newProjDemand * flattenDemand;
 		
-		this.projectedDemand = .5 * projected + .5 * this.projectedDemand;
+		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
 		
 		double average = computeVehiclePartsCost(owner);
 		

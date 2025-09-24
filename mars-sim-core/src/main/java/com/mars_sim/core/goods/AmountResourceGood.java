@@ -146,8 +146,8 @@ class AmountResourceGood extends Good {
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
 	
-	private static final double CHEMICAL_FLATTENING_FACTOR = 6D;
-	private static final double COMPOUND_FLATTENING_FACTOR = 4D;
+	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
+	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
 	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
 	private static final double ELEMENT_FLATTENING_FACTOR = 4D;
 
@@ -162,9 +162,9 @@ class AmountResourceGood extends Good {
 	private static final double ORGANISM_FLATTENING_FACTOR = 2D;
 	private static final double SOYBASED_FLATTENING_FACTOR = 0.5;
 	private static final double ANIMAL_FLATTENING_FACTOR = 2D;
-	private static final double CROP_FLATTENING_FACTOR = 2D;
-	private static final double DERIVED_FLATTENING_FACTOR = 2D;
-	private static final double TISSUE_FLATTENING_FACTOR = 4D;
+	private static final double CROP_FLATTENING_FACTOR = 1.25;
+	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
+	private static final double TISSUE_FLATTENING_FACTOR = 1.25;
 
 	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
 	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.5;
@@ -601,7 +601,7 @@ class AmountResourceGood extends Good {
 			projectedDemand = projected;
 		}
 		else {
-			projectedDemand = .5 * projected + .5 * this.projectedDemand;
+			projectedDemand = .1 * projected + .9 * this.projectedDemand;
 		}
 		
 		// Add trade value. Cache is always false if this method is called
@@ -924,7 +924,7 @@ class AmountResourceGood extends Good {
 		
 		if (id == ResourceUtil.TABLE_SALT_ID) {
 			// Assuming a person takes 1 meal per sol
-			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.AMOUNT_OF_SALT_PER_MEAL; 
+			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.AMOUNT_OF_SALT_PER_MEAL / 10; 
 		}
 
 		else if (id == ResourceUtil.CLEANING_AGENT_ID) {
