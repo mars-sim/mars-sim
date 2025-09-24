@@ -48,7 +48,7 @@ public class HelpGeneratorTest {
     public void testManifestHelp() throws IOException {
         var context = createGenerator();
 
-        // Find a resupplt manifest that has mixture of most things
+        // Find a resupply manifest that has mixture of most things
         var config = context.getConfig().getSettlementTemplateConfiguration().getSupplyManifests()
                         .stream()
                         .filter(v -> v.getName().equals("Resupply for Phase 3"))

@@ -11,7 +11,7 @@ package com.mars_sim.ui.swing.tool.treetable;
 public class TestTreeTableModel {
 	
     // This test assumes certain characteristics of the Alpha Base 1 template
-    public static final String ALPHA_BASE_1 = "Alpha Base 1";
+    public static final String ALPHA_BASE = "Alpha Base 1";
 
 	private static final String COMMAND_STAFF = "Command Staff";
 	
@@ -35,7 +35,7 @@ public class TestTreeTableModel {
      * @return The {@link TreeTableModel}
      */
     public static TreeTableModel createModel() {
-    	String name = ALPHA_BASE_1;
+    	String name = ALPHA_BASE;
     	Object root = name;
         TreeTableModel treeTableModel = new AbstractTreeTableModel(root) {
         	
