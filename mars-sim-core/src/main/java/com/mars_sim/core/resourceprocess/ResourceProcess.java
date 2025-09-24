@@ -364,9 +364,12 @@ public class ResourceProcess implements ScheduledEventHandler {
 						// Retrieve the right amount
 						if (stored > SMALL_AMOUNT) {
 							if (required > stored) {
+								// Halt the process now 
 								resourceProblem(resource, false, required, stored);
 
 								required = stored;
+								// Alter the amount required to whatever available stored amount
+								// and retrieve that amount
 								host.retrieveAmountResource(resource, required);
 								break;
 							}
@@ -374,40 +377,43 @@ public class ResourceProcess implements ScheduledEventHandler {
 								host.retrieveAmountResource(resource, required);
 						}
 						else {
+							// Halt the process now 
 							resourceProblem(resource, false, required, stored);
 							break;
 						}
 					}
 				}
 
-				// Set level
+				// Set the new production level and moderate the output resourceRate below
 				newProdLevel = Math.min(newProdLevel, bottleneck);
 				
 				// Output resources to inventory.
 				for (Integer resource : processSpec.getOutputResources()) {
-						double maxRate = getBaseFullOutputRate(resource);
-						double resourceRate = maxRate * newProdLevel;
-						double required = resourceRate * accumulatedTime;
-						double remainingCap = host.getRemainingCombinedCapacity(resource);
-						
-						// Store the right amount
-						if (remainingCap > SMALL_AMOUNT) {
-							if (required > remainingCap) {
-								resourceProblem(resource, true, required, remainingCap);
-
-								required = remainingCap;
-								host.storeAmountResource(resource, required);
-
-								break;
-							}
-							else
-								host.storeAmountResource(resource, required);
-							
-						}
-						else {
+					double maxRate = getBaseFullOutputRate(resource);
+					double resourceRate = maxRate * newProdLevel;
+					double required = resourceRate * accumulatedTime;
+					double remainingCap = host.getRemainingCombinedCapacity(resource);
+					
+					// Store the right amount
+					if (remainingCap > SMALL_AMOUNT) {
+						if (required > remainingCap) {
+							// Halt the process now 
 							resourceProblem(resource, true, required, remainingCap);
+
+							required = remainingCap;
+							host.storeAmountResource(resource, required);
+
 							break;
 						}
+						else
+							host.storeAmountResource(resource, required);
+						
+					}
+					else {
+						// Halt the process now 
+						resourceProblem(resource, true, required, remainingCap);
+						break;
+					}
 				}
 			}
 
@@ -416,6 +422,14 @@ public class ResourceProcess implements ScheduledEventHandler {
 		}
 	}
 
+	/**
+	 * Prints the resource problem and stops the process.
+	 * 
+	 * @param resource
+	 * @param capacity
+	 * @param required
+	 * @param available
+	 */
 	private void resourceProblem(int resource, boolean capacity, double required, double available) {
 		logger.fine(building, 30_000,
 					(capacity ? "No capacity '" : "Not enough '")
@@ -441,6 +455,9 @@ public class ResourceProcess implements ScheduledEventHandler {
 	 * @return power (kW).
 	 */
 	public double getPowerRequired() {
+		// No need of checking if (isProcessRunning()) since 
+		// ResourceProcessor::getCombinedPowerLoad will check 
+		// if a process is running
 		return processSpec.getPowerRequired() * getNumModules();
 	}
 

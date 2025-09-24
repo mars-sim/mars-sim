@@ -114,7 +114,7 @@ http://canada.marssociety.org/winnipeg/soil.html
 			process-time="300"
 			power-required=".1">
 		<inputs>
-			<resource name="Cane Fiber" amount="2.5" />
+			<resource name="Cane fiber" amount="2.5" />
 			<resource name="crop waste" amount="2.5" />
 			<resource name="water" amount="1" />
 		</inputs>
@@ -842,12 +842,12 @@ Note: 1 kg of H2 is 14.13 liter
 			     62 g          194 g              220 g          36 g
 		</description>
 		<inputs>
-			<resource name="Ethylene Glycol" amount="6.2" />
-			<resource name="Dimethyl Terephthalate" amount="19.4" />
+			<resource name="Ethylene glycol" amount="6.2" />
+			<resource name="Dimethyl terephthalate" amount="19.4" />
 		</inputs>
 		<outputs>
-			<resource name="Polyester Fiber" amount="22.0" />
-			<resource name="water" amount="3.6" />
+			<resource name="Polyester fiber" amount="22.0" />
+			<resource name="Water" amount="3.6" />
 		</outputs>
 	</process>
 
@@ -1110,11 +1110,12 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make Garment" tech="2" skill="1" work-time="50" process-time="100"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.2">
-				<alternative name="Polyester Fiber" amount="0.2" />
+			<resource name="Cane fiber" amount="0.2">
+				<alternative name="Polyester fiber" amount="0.2" />
+				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
-			<resource name="polyurethane" amount="0.1" />
-			<resource name="Polyester Resin" amount="1.0" />
+			<resource name="Polyurethane" amount="0.1" />
+			<resource name="Polyester resin" amount="1.0" />
 		</inputs>
 		<outputs>
 			<part name="Garment" number="2" />
@@ -1128,20 +1129,21 @@ Note: 1 kg of H2 is 14.13 liter
 			See technical papers at https://www.science.gov/topicpages/v/ventilation+garment+lcvg
 		</description>
 		<inputs>
-			<resource name="Cane Fiber" amount="0.5">
-				<alternative name="Polyester Fiber" amount="0.5" />
+			<resource name="Cane Fiber" amount="0.2">
+				<alternative name="Polyester fiber" amount="0.2" />
+				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
-			<resource name="Thermoplastic Elastomer" amount="0.4" />
+			<resource name="Thermoplastic elastomer" amount="0.4" />
 			<resource name="Polypropylene" amount="0.1" />
 			<resource name="Nylon" amount="0.2">
 				<alternative name="Kevlar" amount="0.2"/>
-				<alternative name="Fiber Cloth" amount="0.2"/>
+				<alternative name="Fiber cloth" amount="0.2"/>
 			</resource>
-			<resource name="Paraffin Composites" amount="0.15" />
-			<part name="plastic tubing" number="3" />
+			<resource name="Paraffin composites" amount="0.15" />
+			<part name="Plastic tubing" number="3" />
 		</inputs>
 		<outputs>
-			<part name="Liquid Cooling Garment" number="1" />
+			<part name="Liquid cooling garment" number="1" />
 		</outputs>
 	</process>
 	
@@ -1149,18 +1151,19 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make EVA helmet" tech="2" skill="2" work-time="100" process-time="300"
 			power-required=".2">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.2">
-				<alternative name="Polyester Fiber" amount="0.2" />
+			<resource name="Cane fiber" amount="0.2">
+				<alternative name="Polyester fiber" amount="0.2" />
+				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
 			<resource name="Polyethylene" amount="0.5">
 				<alternative name="Polypropylene" amount="0.5" />
 			</resource>
-			<resource name="Polycarbonate Resin" amount="0.5" />
-			<resource name="Aluminized Mylar" amount="0.25" />
-			<part name="plastic tubing" number="2" />
-			<part name="electrical wire" number="2" />
-			<part name="wire connector" number="10" />
-			<part name="gasket" number="2" />
+			<resource name="Polycarbonate resin" amount="0.5" />
+			<resource name="Aluminized mylar" amount="0.25" />
+			<part name="Plastic tubing" number="2" />
+			<part name="Electrical wire" number="2" />
+			<part name="Wire connector" number="10" />
+			<part name="Gasket" number="2" />
 		</inputs>
 		<outputs>
 			<part name="EVA helmet" number="1" />
@@ -1170,11 +1173,11 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make helmet visor" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".1">
 		<inputs>
-			<resource name="Polycarbonate Resin" amount=".2" />
-			<resource name="glass" amount="3" />
+			<resource name="Polycarbonate resin" amount=".2" />
+			<resource name="Glass" amount="3" />
 		</inputs>
 		<outputs>
-			<part name="helmet visor" number="13" />
+			<part name="Helmet visor" number="13" />
 		</outputs>
 	</process>
 
@@ -1184,18 +1187,19 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Polyethylene" amount="0.2">
 				<alternative name="Polypropylene" amount="0.2" />
 			</resource>
-			<resource name="Cane Fiber" amount="0.3">
-				<alternative name="Polyester Fiber" amount="0.3" />
+			<resource name="Cane fiber" amount="0.3">
+				<alternative name="Polyester fiber" amount="0.3" />
+				<alternative name="Soy fiber" amount="0.3" />
 			</resource>
-			<resource name="Silicone Elastomer" amount="1.0" />
-			<resource name="Polyester Resin" amount="0.5">
-				<alternative name="Polycarbonate Resin" amount="0.5" />
+			<resource name="Silicone elastomer" amount="1.0" />
+			<resource name="Polyester resin" amount="0.5">
+				<alternative name="Polycarbonate resin" amount="0.5" />
 			</resource>
-			<part name="plastic tubing" number="3" />
+			<part name="Plastic tubing" number="3" />
 						
 		</inputs>
 		<outputs>
-			<part name="pressure suit" number="2" />
+			<part name="Pressure suit" number="2" />
 		</outputs>
 	</process>
 
@@ -1204,6 +1208,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="Cane Fiber" amount="0.2">
 				<alternative name="Polyester Fiber" amount="0.2" />
+				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
 			<resource name="polyurethane" amount="0.1" />
 			<resource name="Aluminized Mylar" amount="1.0" />			
@@ -1217,12 +1222,13 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make EVA gloves" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".1">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.1">
-				<alternative name="Polyester Fiber" amount="0.1" />
+			<resource name="Cane fiber" amount="0.1">
+				<alternative name="Polyester fiber" amount="0.1" />
+				<alternative name="Soy fiber" amount="0.1" />
 			</resource>
-			<resource name="polyurethane" amount="0.05" />
-			<part name="fiberglass cloth" number="1" />
-			<part name="fiberglass" number="1" />
+			<resource name="Polyurethane" amount="0.05" />
+			<part name="Fiberglass cloth" number="1" />
+			<part name="Fiberglass" number="1" />
 		</inputs>
 		<outputs>
 			<part name="EVA gloves" number="2" />
@@ -1232,13 +1238,14 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make EVA boots" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".1">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.4">
-				<alternative name="Polyester Fiber" amount="0.4" />
+			<resource name="Cane fiber" amount="0.4">
+				<alternative name="Polyester fiber" amount="0.4" />
+				<alternative name="Soy fiber" amount="0.4" />
 			</resource>
-			<resource name="polyurethane" amount="0.1" />
-			<part name="steel ingot" number="1" />
-			<part name="fiberglass cloth" number="1" />
-			<part name="fiberglass" number="1" />
+			<resource name="Polyurethane" amount="0.1" />
+			<part name="Steel ingot" number="1" />
+			<part name="Fiberglass cloth" number="1" />
+			<part name="Fiberglass" number="1" />
 		</inputs>
 		<outputs>
 			<part name="EVA boots" number="2" />
@@ -1248,12 +1255,13 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make EVA pads" tech="3" skill="3" work-time="200" process-time="50"
 			power-required=".7">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.1">
-				<alternative name="Polyester Fiber" amount="0.1" />
+			<resource name="Cane fiber" amount="0.1">
+				<alternative name="Polyester fiber" amount="0.1" />
+				<alternative name="Soy fiber" amount="0.1" />
 			</resource>
-			<resource name="polyurethane" amount="0.05" />
-			<part name="steel ingot" number="1" />
-			<part name="fiberglass" number="1" />
+			<resource name="Polyurethane" amount="0.05" />
+			<part name="Steel ingot" number="1" />
+			<part name="Fiberglass" number="1" />
 		</inputs>
 		<outputs>
 			<part name="EVA pads" number="3" />
@@ -1267,17 +1275,18 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Polyethylene" amount="5.0">
 				<alternative name="Polypropylene" amount="5.0" />
 			</resource>
-			<resource name="Cane Fiber" amount="0.5">
-				<alternative name="Polyester Fiber" amount="0.5" />
+			<resource name="Cane fiber" amount="0.5">
+				<alternative name="Polyester fiber" amount="0.5" />
+				<alternative name="Soy fiber" amount="0.5" />
 			</resource>
-			<part name="steel ingot" number="1" />
-			<part name="fiberglass cloth" number="1" />
-			<part name="electrical wire" number="2" />
-			<part name="wire connector" number="10" />
-			<part name="plastic tubing" number="3" />
-			<part name="valve" number="1" />
-			<part name="gasket" number="3" />
-			<part name="steel canister" number="1" />
+			<part name="Steel ingot" number="1" />
+			<part name="Fiberglass cloth" number="1" />
+			<part name="Electrical wire" number="2" />
+			<part name="Wire connector" number="10" />
+			<part name="Plastic tubing" number="3" />
+			<part name="Valve" number="1" />
+			<part name="Gasket" number="3" />
+			<part name="Steel canister" number="1" />
 
 		</inputs>
 		<outputs>
@@ -1289,8 +1298,8 @@ Note: 1 kg of H2 is 14.13 liter
 			tooling="Soldering" power-required=".3">
 		<description>Using reinforced fiberglass wrapped in aluminum sheeting to make antenna.</description>
 		<inputs>
-			<resource name="Polyester Resin" amount=".5">
-				<alternative name="Polycarbonate Resin" amount=".5" />
+			<resource name="Polyester resin" amount=".5">
+				<alternative name="Polycarbonate resin" amount=".5" />
 			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
@@ -1391,6 +1400,7 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="Cane Fiber" amount="0.1">
 				<alternative name="Polyester Fiber" amount="0.1" />
+				<alternative name="Soy fiber" amount="0.1" />
 			</resource>
 			<part name="fiberglass cloth" number="1" />
 			<part name="fiberglass" number="1" />
@@ -1677,7 +1687,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Manufacture 5 kW Motor" tech="3" skill="3" work-time="300" process-time="200"
+	<process name="Manufacture 5 kW Motor" tech="3" skill="3" work-time="200" process-time="200"
 			tooling="Soldering" power-required=".2">
 		<inputs>
 			<part name="iron sheet" number="1" />
@@ -1709,7 +1719,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Manufacture 30 kW Motor" tech="3" skill="3" work-time="150" process-time="200"
+	<process name="Manufacture 30 kW Motor" tech="3" skill="3" work-time="150" process-time="150"
 			tooling="Soldering" power-required=".3">
 		<inputs>
 			<part name="iron sheet" number="2" />
@@ -2895,8 +2905,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make biosensor" tech="3" skill="3" work-time="80" process-time="20"
 			tooling="Soldering" power-required=".01">
 		<inputs>
-			<resource name="Cane Fiber" amount="0.1">
-				<alternative name="Polyester Fiber" amount="0.1" />
+			<resource name="Cane fiber" amount="0.05">
+				<alternative name="Polyester fiber" amount="0.05" />
+				<alternative name="Soy fiber" amount="0.05" />
 			</resource>
 			<part name="CMOS sensor" number="1" />
 			<part name="logic board" number="1" />

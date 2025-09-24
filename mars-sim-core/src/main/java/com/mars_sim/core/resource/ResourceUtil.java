@@ -133,7 +133,8 @@ public class ResourceUtil {
 	public static final int ETHANE_ID = CARBON_ID + 1;
 	public static final int ETHYLENE_ID = ETHANE_ID + 1;
 	public static final int POLYCARBONATE_RESIN_ID = ETHYLENE_ID + 1;
-	public static final int POLYESTER_RESIN_ID = POLYCARBONATE_RESIN_ID + 1;
+	public static final int POLYESTER_FIBER_ID = POLYCARBONATE_RESIN_ID + 1;
+	public static final int POLYESTER_RESIN_ID = POLYESTER_FIBER_ID + 1;
 	public static final int PROPYLENE_ID = POLYESTER_RESIN_ID + 1;
 	public static final int POLYETHYLENE_ID = PROPYLENE_ID + 1;
 	public static final int POLYPROPYLENE_ID = POLYETHYLENE_ID + 1;
@@ -223,6 +224,7 @@ public class ResourceUtil {
 		fixedResources.put("oxygen", OXYGEN_ID);
 		
 		fixedResources.put("polycarbonate resin", POLYCARBONATE_RESIN_ID);
+		fixedResources.put("polyester fiber", POLYESTER_FIBER_ID);
 		fixedResources.put("polyester resin", POLYESTER_RESIN_ID);
 		fixedResources.put("polyethylene", POLYETHYLENE_ID);
 		fixedResources.put("polypropylene", POLYPROPYLENE_ID);

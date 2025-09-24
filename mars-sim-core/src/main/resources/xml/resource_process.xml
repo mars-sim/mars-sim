@@ -36,14 +36,17 @@
 	    2CO2 + 4H+ + 2e- + light energy -> C2H4 + 2O2 
 	     g/mol :                 88 + 4 -> 2*12+ 4 + 2 * 32 
 	                                         28  + 64
-	    
+	        
 	    This reaction is driven by an artificial system that replaces photosystem II, allowing electrons 
 	    from an external source (electricity) and light to power the reduction of CO₂ to ethylene via 
 	    photosystem I in engineered cyanobacteria.
 	    
  		This approach bypasses the inefficiencies of natural photosynthesis, such as overlapping light 
  		absorption spectra and competition between oxygen and carbon dioxide for the carbon-fixing enzyme.
-	     
+	    
+	    Note: it could check for solar irradiance, instead of providing artificial light that
+	          uses up power.
+	 
 		</description>						
 		<input resource="carbon dioxide" rate="88.0" ambient="true" />
 		<input resource="hydrogen" rate="4.0" />
@@ -92,27 +95,6 @@
 		<output resource="Hydrogen" rate="24.0" />
 	</process>
 
-
-	<process name="Methanogenesis by Archaea" power-required="0.0" >
-		<description>
-		Methanogenesis is the only way that methanogenic archaea can obtain energy 
-		for growth and these are the only organisms known to produce methane as a catabolic end product.
-		
-	     CH3OH + H2 -> CH4 + H2O 
-	     g/mol : 32 + 2 -> 16 + 18 
-	     
-	     see https://www.microbiologyresearch.org/content/journal/micro/10.1099/00221287-144-9-2377
-	     
-	     -112.5 kJ / mol
-	     
-		</description>						
-		<input resource="Methanol" rate="320.0" />
-		<input resource="Hydrogen" rate="20.0" />	
-
-		<output resource="Methane" rate="160.0" />
-		<output resource="Water" rate="180.0" />
-	</process>
-
 	<process name="Cellulolysis of Fiber into Glucose" power-required="0.0" >
 		<description>
 		 The chemical process for converting fiber into glucose involves breaking down 
@@ -140,6 +122,68 @@
 		<output resource="Glucose" rate="180.0" />
 
 	</process>
+
+	<process name="Methanogenesis by Archaea" power-required="0.0" >
+		<description>
+		Methanogenesis is the only way that methanogenic archaea can obtain energy 
+		for growth and these are the only organisms known to produce methane as a catabolic end product.
+		
+	     CH3OH + H2 -> CH4 + H2O 
+	     g/mol : 32 + 2 -> 16 + 18 
+	     
+	     see https://www.microbiologyresearch.org/content/journal/micro/10.1099/00221287-144-9-2377
+	     
+	     -112.5 kJ / mol
+	     
+		</description>						
+		<input resource="Methanol" rate="320.0" />
+		<input resource="Hydrogen" rate="20.0" />	
+
+		<output resource="Methane" rate="160.0" />
+		<output resource="Water" rate="180.0" />
+	</process>
+
+	<process name="Oxidation of Methane into Methanol by Methanotrophs" power-required="0.0" >
+		<description>
+
+		 Naturally occurring methane-oxidizing microorganisms are known as 
+		 methanotrophs. 
+		 
+		 Methanotrophs can be either bacteria or archaea. Which methanotroph species is 
+		 present is mainly determined by the availability of electron acceptors. 
+		 
+		 Many types of methane oxidizing bacteria (MOB) are known.
+		 	 		 
+		 Some methanotrophs possess an added advantage of sequestering CO2 as 
+		 substrate for enzymatic hydrogenation into methanol, and thereby qualify
+		 as suitable candidates for CO2 sequestration.
+		 
+		 Owing to their ability to utilize methane as the source of carbon and energy, 
+		 methanotrophs serve as excellent candidates for methane sequestration. 
+
+		 The use of microorganisms as biocatalysts for the sequestration of CH4 
+		 and CO2 is an attractive alternative as they require milder operating 
+		 conditions and do not release any toxic by-products. 
+
+		 Assuming the following balanced equation for this 'hypothetical' reaction : 
+		 3 CH4 + CO2 + 2 H2O -> Ch3OH
+		 
+		   48g   44g   36g   -> 128g
+		  
+		 See 
+		 1. https://en.wikipedia.org/wiki/Methanotroph
+		 2. https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2021.636486/full
+		 3. https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2021.678057/full
+		 
+		</description>						
+		<input resource="Methane" rate="48.0" />
+		<input resource="Carbon dioxide" rate="44.0" ambient="true" />
+		<input resource="Water" rate="36.0" />
+		
+		<output resource="Methanol" rate="128.0" />
+
+	</process> 
+		<!-- "Oxidation of Methane into Methanol by Methanotrophs" -->
 		
 	<process name="Sabatier RWGS Reactor" power-required="0.12" defaultOn="true">
 	<description> 
@@ -337,12 +381,25 @@
 		
 		2 Ch4 + O2 -> 2 CH3OH
 		32g ,  32 g , 64 g (or 58.88 at 92%)
+		
+		See
+		1. https://pubs.acs.org/doi/suppl/10.1021/jacs.5c11683/suppl_file/ja5c11683_si_001.pdf
+		2. https://pubs.acs.org/doi/10.1021/jacs.5c11683
+		
+		
+		Alternatively, consider 
+		"Direct photo-oxidation of methane to methanol over a mono-iron hydroxyl site"
+		1. https://www.nature.com/articles/s41563-022-01279-1
+		2. https://neutrons.ornl.gov/content/found-%E2%80%98holy-grail-catalysis%E2%80%99-%E2%80%94-turning-methane-methanol-under-ambient-conditions-using-light
+
+		
 		</description> 
 		<input resource="methane" rate="32"  />
 		<input resource="oxygen" rate="32"  />
 		
 		<output resource="methanol" rate="64"  />
 	</process> <!--"Selective Partial Oxidation (SPO) of Methane to Methanol"-->
+	
 	
 
 	<process name="Water-Gas Shift Reaction (WGSR)" power-required=".01" >
@@ -477,7 +534,7 @@
 	
 
 
-	<process name="Methanol Synthesis" power-required=".1" >
+	<process name="Methanol Synthesis with Syngas" power-required=".1" >
 	<description>
 		Synthesis gas (or Syngas) is used to produce methanol as in the following reaction :
 				CO2 + 3 H2 -> H2O + CH3OH	
@@ -495,14 +552,14 @@
 		2. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6926878/
 		3. https://www.biogreen-energy.com/syngas
 	</description>
-		<!-- Note: Set ambient to false to reduce the probability of 
+		<!-- Note: May set ambient to false to reduce the probability of 
 				overusing hydrogen to produce methanol -->
 		<input resource="carbon dioxide" rate="44" ambient="true" />
 		<input resource="hydrogen" rate="6.0"  />				
 		
 		<output resource="water" rate="18.0"  />
 		<output resource="methanol" rate="32.0"  />
-	</process> <!-- "Methanol Synthesis" -->
+	</process> <!-- "Methanol Synthesis with Syngas" -->
 
 
 	<process name="Excavate Ice" power-required=".5" >

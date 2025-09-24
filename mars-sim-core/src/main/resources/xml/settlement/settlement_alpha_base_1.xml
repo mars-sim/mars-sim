@@ -4,7 +4,7 @@
         default-population="44" number-of-robots="24" sponsor="RKA"
         description="Large Base" objective="CROP_FARM">
         
-    <!-- zone 0 -->        
+    <!-- zone 0 -->
         
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">

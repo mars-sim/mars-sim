@@ -402,7 +402,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
-				<process-engine name="Methanol Synthesis" number-modules="4"/>
+				<process-engine name="Methanol Synthesis with Syngas" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="24" />
 				<process-engine name="Filter Brine Water" number-modules="24" />
 			
@@ -780,7 +780,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="16"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="48"/>
-				<process-engine name="Methanol Synthesis" number-modules="12"/>
+				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>
 				<process-engine name="Melt Ice" number-modules="48" />
 				<process-engine name="Filter Brine Water" number-modules="48" />
 						
@@ -1141,8 +1141,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
-				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
+				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="8"/>
+				<process-engine name="Photo Fermentation by Chlorella" number-modules="16"/>
 				
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
@@ -1216,7 +1216,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="4"/>
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="32"/>
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
@@ -1291,7 +1291,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
+				<process-engine name="Methanogenesis by Archaea" number-modules="12"/>
+				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="16"/>
+				
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
@@ -1366,7 +1368,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="10"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="20"/>
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
 					<activity-spot xloc="-1.34" yloc="1.68" />		
@@ -2309,7 +2311,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
 			<resource-processing power-down-level="0.0">
-				<process-engine name="Methanol Synthesis" number-modules="4"/>
+				<process-engine name="Methanol Synthesis with Syngas" number-modules="4"/>
 			</resource-processing>
 
 			<storage stock-capacity="100000">
@@ -3010,15 +3012,28 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 					<activity-spot xloc="1.49" yloc="-.62" />
 					<activity-spot xloc="1.48" yloc="-2.02" />
-					<activity-spot xloc=".29" yloc="-.9" />
-					<activity-spot xloc=".28" yloc="-2.72" />
 
+
+				</activity>
+			</research>
+			<resource-processing power-down-level="0.0">
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
+				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
+				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="8"/>
+				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
+				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
+				
+				<activity>
 					<activity-spot xloc="-.51" yloc="-.75" />
 					<activity-spot xloc="-.51" yloc="-2.31" />
 					<activity-spot xloc="-1.62" yloc="-1.12" />
-					<activity-spot xloc="-1.61" yloc="-2.19" />
+					<activity-spot xloc="-1.61" yloc="-2.19" />		
+					
+					<activity-spot xloc=".29" yloc="-.9" />
+					<activity-spot xloc=".28" yloc="-2.72" />										
 				</activity>
-			</research>
+			</resource-processing>			
 			<robotic-station capacity="1">
 				<activity>
 					<activity-spot xloc="2.9" yloc="3.7" />
@@ -4109,7 +4124,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="4"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
-				<process-engine name="Methanol Synthesis" number-modules="4"/>
+				<process-engine name="Methanol Synthesis with Syngas" number-modules="4"/>
 				<process-engine name="Melt Ice" number-modules="24" />
 				<process-engine name="Filter Brine Water" number-modules="24" />
 								

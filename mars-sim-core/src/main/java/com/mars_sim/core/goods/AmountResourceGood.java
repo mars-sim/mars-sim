@@ -146,6 +146,8 @@ class AmountResourceGood extends Good {
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
 	
+	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 8.0;
+	
 	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
 	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
 	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
@@ -243,6 +245,7 @@ class AmountResourceGood extends Good {
 				case ResourceUtil.ETHANE_ID -> ETHANE_VALUE_MODIFIER;
 				case ResourceUtil.POLYESTER_RESIN_ID -> RESIN_VALUE_MODIFIER;
 				case ResourceUtil.POLYCARBONATE_RESIN_ID -> RESIN_VALUE_MODIFIER;
+				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
 				default -> 1D;
 			};	
 			break;

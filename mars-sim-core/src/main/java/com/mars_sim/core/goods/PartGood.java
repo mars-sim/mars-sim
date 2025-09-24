@@ -54,6 +54,7 @@ public class PartGood extends Good {
 	private static final String WIRE = "wire";
 	private static final String BATTERY = "battery";
 	private static final String AEROGEL_TILE = "aerogel tile";
+	private static final String DRILLING_RIG = "drilling rig";
 	
 	private static final String PIPE = "pipe";
 	private static final String VALVE = "valve";
@@ -61,7 +62,7 @@ public class PartGood extends Good {
 	private static final String TANK = "tank";
 	private static final String DUCT = "duct";
 	private static final String GASKET = "gasket";
-	private static final String LIGHT = "light";
+	private static final String LOGIC_BOARD = "logic board";
 	private static final String RESISTOR = "resistor";
 	private static final String CAPACITOR = "capacitor";
 	private static final String DIODE = "diode";
@@ -130,7 +131,7 @@ public class PartGood extends Good {
 
 	private static Set<Integer> attachments = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
 																		"backhoe", "bulldozer blade",
-																		"crane boom", "drilling rig",
+																		"crane boom", DRILLING_RIG,
 																		"pneumatic drill", "soil compactor"});
 	
 	/** The fixed flatten demand for this resource. */
@@ -202,6 +203,9 @@ public class PartGood extends Good {
 				return UTILITY_DEMAND;
 		
 			case TOOL:
+				if (name.equalsIgnoreCase(DRILLING_RIG)) {
+					return DRILL_DEMAND / 2;
+				}
 				if (name.contains(DRILL)) {
 					return DRILL_DEMAND;
 				}
@@ -613,18 +617,20 @@ public class PartGood extends Good {
 		// Get highest manufacturing tech level in settlement.
 		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
 		if (techLevel >= 0) {
-			for(ManufactureProcessInfo found : ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)) {
+			for (ManufactureProcessInfo found : ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)) {
 				double manufacturingDemand = getPartManufacturingProcessDemand(owner, settlement, part, found);
 				base += manufacturingDemand * (1 + techLevel);
 			}
 		}
-		
+
 		return Math.min(GoodsManager.MAX_DEMAND, base / 100);
 	}
 
 	/**
 	 * Gets the demand of an input part in a manufacturing process.
-	 *
+	 * @note: if a part serves as an input resource for a manu process, it will show up having
+	 * a demand here. In case of 'Airleak patch', it will have zero demand.
+	 *       
 	 * @param part    the input part.
 	 * @param process the manufacturing process.
 	 * @return demand (# of parts)
@@ -635,7 +641,7 @@ public class PartGood extends Good {
 		double totalInputNum = 0D;
 
 		ProcessItem partInput = null;
-		for(var item : process.getInputList()) {
+		for (var item : process.getInputList()) {
 			if (part.getName().equalsIgnoreCase(item.getName())) {
 				partInput = item;
 			}
@@ -645,7 +651,8 @@ public class PartGood extends Good {
 		if (partInput != null) {
 
 			double outputsValue = 0D;
-			for(var item : process.getOutputList()) {
+			
+			for (var item : process.getOutputList()) {
 				if (!process.getInputList().contains(item)) {
 					outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement, true);
 				}
@@ -660,7 +667,7 @@ public class PartGood extends Good {
 
 			CommerceType cType = null;
 			GoodType type = part.getGoodType();
-			switch(settlement.getObjective()) {
+			switch (settlement.getObjective()) {
 				case BUILDERS_HAVEN: {
 					if (GoodType.UTILITY == type
 					|| GoodType.TOOL == type
@@ -884,7 +891,7 @@ public class PartGood extends Good {
 		// Output a detailed message	
 		logger.info(owner.getSettlement(), 30_000L, 
 				part.getName()
-				+ " - Injecting Demand: "
+				+ " - Injecting Part Demand: "
 				+ Math.round(previousDemand * 1000.0)/1000.0 
 				+ " -> " + Math.round(finalDemand * 1000.0)/1000.0 
 				+ "  Quantity: " + needNum

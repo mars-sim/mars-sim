@@ -597,7 +597,10 @@
 <!-- Utility items derived from crop harvest -->
 	<resource name="Fiber cloth" type="utility" phase="solid" >Cloth made from soy fiber and cane fiber.</resource>
 	<resource name="Polyester fiber" type="chemical" phase="solid" demand-multiplier="1.5">
-		Polyester fiber are strong, heat resistant material for clothing and fabric.
+	 Polyester fiber, most commonly referred to as polyethylene terephthalate (PET), is a 
+	 synthetic fiber derived from the polycondensation of organic diacid and dihydric alcohol, 
+	 primarily terephthalic acid and ethylene glycol. PET are strong, heat resistant material 
+	 for clothing and fabric.
 	</resource>
 	<resource name="Napkin" type="utility" phase="solid" />
 	<resource name="Paper" type="utility" phase="solid" />

@@ -37,9 +37,9 @@ class VehicleGood extends Good {
 
 	private static final double LUV_FACTOR = 3;
 	private static final double DRONE_FACTOR = 3;
-    private static final double TRANSPORT_VEHICLE_FACTOR = 3;
-	private static final double CARGO_VEHICLE_FACTOR = 2;
-	private static final double EXPLORER_VEHICLE_FACTOR = 1.5;
+    private static final double TRANSPORT_VEHICLE_FACTOR = .4;
+	private static final double CARGO_VEHICLE_FACTOR = .3;
+	private static final double EXPLORER_VEHICLE_FACTOR = .3;
 
     private static final double INITIAL_VEHICLE_DEMAND = 1;
 	private static final double INITIAL_VEHICLE_SUPPLY = 1;
