@@ -211,7 +211,7 @@ public class Charge extends Task {
 					RoboticStation station = building.getRoboticStation();
 					
 					if (station != null) {
-						deliverPower(sc, station, batteryLevel, time, 
+						chargeUp(sc, station, batteryLevel, time, 
 								WIRELESS_CHARGING, RoboticStation.WIRELESS_CHARGE_RATE);	
 					}
 					
@@ -226,7 +226,7 @@ public class Charge extends Task {
 			}
 			
 			else {
-				deliverPower(sc, occupiedStation, batteryLevel, time, 
+				chargeUp(sc, occupiedStation, batteryLevel, time, 
 							REGULAR_CHARGING, RoboticStation.CHARGE_RATE);	
 			}
 		}
@@ -265,7 +265,7 @@ public class Charge extends Task {
 	 * @param rate
 	 * @return
 	 */
-	private double deliverPower(SystemCondition sc, RoboticStation station, double batteryLevel, 
+	private double chargeUp(SystemCondition sc, RoboticStation station, double batteryLevel, 
 			double time, String mode, double rate) {
 		
 		setDescription(mode + " at " 

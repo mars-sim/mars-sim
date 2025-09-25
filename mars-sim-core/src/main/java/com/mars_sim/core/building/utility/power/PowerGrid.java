@@ -55,9 +55,11 @@ public class PowerGrid implements Serializable, Temporal {
 	private double powerRequired;
 	private double powerValue;
 
+	private PowerMode powerMode;
+	
 	private Settlement settlement;
 	private BuildingManager manager;
-	private PowerMode powerMode;
+
 
 	/**
 	 * Constructor.
@@ -125,7 +127,12 @@ public class PowerGrid implements Serializable, Temporal {
 		return totalEnergyStored;
 	}
 
-	public String getDisplayStoredEnergy() {
+	/**
+	 * Displays the stored energy in kWh and its percent capacity.
+	 * 
+	 * @return
+	 */
+	public String displayStoredEnergy() {
 		double stored = totalEnergyStored;
 		if (stored < 0D || Double.isNaN(stored) || Double.isInfinite(stored))
 			return "";
@@ -140,7 +147,6 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		return sb.toString();
 	}
-	
 	
 	/**
 	 * Sets the stored energy in the grid.
@@ -271,7 +277,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private void updateEfficiency(double time) {
 		double dFactor = degradationRatePerSol * time / 1000D;
-		systemEfficiency = systemEfficiency - systemEfficiency * dFactor;
+		systemEfficiency = systemEfficiency * (1 - dFactor);
 	}
 
 
@@ -445,7 +451,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param neededPower
 	 */
 	private void handleLackOfPower(double time, double neededPower) {
-//		logger.info(settlement, "neededPower: " + Math.round(neededPower));
+		// May add back for debugging: logger.info(settlement, "neededPower: " + Math.round(neededPower))
 		// insufficient power produced, need to pull energy from batteries to meet the
 		// demand
 		sufficientPower = false;
@@ -465,7 +471,7 @@ public class PowerGrid implements Serializable, Temporal {
 		double timeInHour = time * HOURS_PER_MILLISOL; 
 		
 		// Assume the gauge of the cable is uniformly low, as represented by percentAverageVoltageDrop
-		// TODO: account for the distance of the separation between endpoints
+		// Future: account for the distance of the separation between endpoints
 		double neededEnergy = neededPower * timeInHour / PERC_AVG_VOLT_DROP * 100D;
 
 		// Assume the energy flow is instantaneous and
@@ -615,8 +621,7 @@ public class PowerGrid implements Serializable, Temporal {
 			boolean morePower = canGenMoreThanLoad(building, newPowerMode);
 			double power = 0;
 			
-			if (lifeSupport == life
-//					&& (!gridLackPower && morePower)
+			if (lifeSupport == life // && (!gridLackPower && morePower)
 					&& thisOldPM == oldPowerMode) {
 			
 				/////// IF LACK OF POWER /////// 
@@ -765,19 +770,15 @@ public class PowerGrid implements Serializable, Temporal {
 				
 				neededPower -= power;
 				if (neededPower > 0) {
-					netPower += power;
-//					building.setPowerMode(newPowerMode);
-//					logger.info(building, "3. Power Mode: " + oldPowerMode.getName()
-//					+ " -> " + newPowerMode.getName());
+					netPower += power; // building.setPowerMode(newPowerMode);
+					// May add back for debugging: logger.info(building, "3. Power Mode: " + oldPowerMode.getName()	+ " -> " + newPowerMode.getName());
 				}
 				
 				else {
 					// In case of stepping up power level
 					if (stepUp) {
-						netPower += power;
-//						building.setPowerMode(newPowerMode);
-//						logger.info(building, "4. Power Mode: " + oldPowerMode.getName()
-//						+ " -> " + newPowerMode.getName());
+						netPower += power; // building.setPowerMode(newPowerMode);
+						// May add back for debugging:  logger.info(building, "4. Power Mode: " + oldPowerMode.getName()+ " -> " + newPowerMode.getName());
 					}
 					return netPower;
 				}
@@ -895,7 +896,7 @@ public class PowerGrid implements Serializable, Temporal {
 			double onePercent = max * .01D;
 
 			if (gap > onePercent && excess > 0) {
-				// TODO: need to come up with a better battery model with charge capacity
+				// Future: build a better battery model with charge capacity
 				// parameters from
 				// https://www.mathworks.com/help/physmod/elec/ref/genericbattery.html?requestedDomain=www.mathworks.com
 
@@ -926,7 +927,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param storage PowerStorage
 	 * @param excess  energy
 	 * @param time    in millisols
-	 * @return energy to be delivered
+	 * @return energy accepted during charging [in kWh]
 	 */
 	public double computeStorableEnergy(PowerStorage storage, double excess, double time) {
 		if (excess <= 0)
@@ -966,16 +967,17 @@ public class PowerGrid implements Serializable, Temporal {
 		double nowAmpHr = cRating * ampHrRating * (1 - stateOfCharge);
 		double possiblekWh = nowAmpHr / 1000D * vOut * fudgeFactor ;
 
-		double smallestkWh = Math.min(excess, Math.min(possiblekWh, needed));
+		// Find the smallest amount of energy to be accepted
+		double kWhAccepted = Math.min(excess, Math.min(possiblekWh, needed));
 
 //		logger.info(storage.getBuilding(), "kWh: " + Math.round(stored * 100.0)/100.0
-//				+ "  smallestkWh: " + Math.round(smallestkWh * 10000.0)/10000.0 
+//				+ "  kWhAccepted: " + Math.round(kWhAccepted * 10000.0)/10000.0 
 //				+ "  needed: " + Math.round(needed * 10000.0)/10000.0 
 //				+ "  possiblekWh: " + Math.round(possiblekWh * 10000.0)/10000.0
 //				+ "  ampHrRating: " + Math.round(ampHrRating * 100.0)/100.0
 //				+ "  nowAmpHr: " + Math.round(nowAmpHr * 100.0)/100.0);
 		
-		return smallestkWh;
+		return kWhAccepted;
 	}
 
 	/**

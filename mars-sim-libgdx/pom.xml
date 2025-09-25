@@ -19,7 +19,14 @@
 			<artifactId>mars-sim-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+		        
+        <!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx</artifactId>
+			<version>${libgdx.version}</version>
+        </dependency>
+        
 		<!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-backend-lwjgl -->
         <dependency>
             <groupId>com.badlogicgames.gdx</groupId>
@@ -34,7 +41,7 @@
             <version>${libgdx.version}</version>
             <classifier>natives-desktop</classifier>
         </dependency>               
- 
+  
 		<!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx-box2d -->
 		<dependency>
 		    <groupId>com.badlogicgames.gdx</groupId>
@@ -56,14 +63,7 @@
 			<version>${libgdx.version}</version>
             <classifier>natives-desktop</classifier>
 		</dependency>
-		        
-        <!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx -->
-        <dependency>
-            <groupId>com.badlogicgames.gdx</groupId>
-            <artifactId>gdx</artifactId>
-			<version>${libgdx.version}</version>
-        </dependency>
-        		
+     		
 	</dependencies>
 
 </project>

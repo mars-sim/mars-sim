@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Battery.java
- * @date 2024-07-20
+ * @date 2025-09-24
  * @author Manny Kung
  */
 
@@ -29,11 +29,20 @@ public class Battery implements Serializable {
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
 //    private static final double MAX_AMP_DRAW = 120;
     
-	/**The maximum continuous charge rate (within the safety limit) that this battery can handle. */
+	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_CHARGING = 4;
+	/** 
+	 * The number of cells per module of the battery. 
+	 * Note: 3.6 V * 104 = 374.4 V 
+	 * 4.2 V * 104 = 436.8 V
+	 * e.g. : Tesla Model S has 104 cells per module
+	 */
+	private static final int CELLS_PER_MODULE = 104;
+	/** The internal resistance [in ohms] in each cell. */	
+	private static final double R_CELL = 0.06; 
 	
     /** The standard voltage of this battery pack in volts. */
-    public static final double STANDARD_VOLTAGE = 600;
+    public static final double HIGHEST_MAX_VOLTAGE = 600;
     
     /** The standard voltage of a drone battery pack in volts. */
     public static final double DRONE_VOLTAGE = 48;
@@ -53,9 +62,8 @@ public class Battery implements Serializable {
     private boolean isCharging;
     
     /** The number of battery module. */
-    public int numModule;
-    
-    
+    public int numModules;
+     
     /** The maximum energy capacity of a standard battery module in kWh. */
     public double energyPerModule;
     /** The standby power consumption in kW. */
@@ -66,26 +74,49 @@ public class Battery implements Serializable {
     private double performance;
 	/** The percentage that triggers low power warning. */
     private double lowPowerPercent = 5;
-    
-	/** The current energy stored in kWh. */
+	/** 
+	 * The energy [in kilo Watt-hour] currently stored in the battery. 
+	 * The Watt-hour (Wh) signifies that a battery can supply an amount of power for an hour
+	 * e.g. a 60 Wh battery can power a 60 W light bulb for an hour
+	 */
 	private double kWhStored;
-	/** The energy storage capacity [in kWh, not Wh] capacity. */
+	/** The energy storage capacity [in kWh, not Wh]. */
 	private double energyStorageCapacity;
 	/** 
-	 * The capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
-	 * a particular C-rating. 
+	 * The capacity rating [in ampere-hour or Ah] of the battery in terms of its 
+	 * charging/discharging ability at a particular C-rating. 
 	 * 
-	 * Note: An amp is a measure of electrical current. The hour 
-	 * indicates the length of time that the battery can supply this current.
+	 * An amp is a measure of electrical current. 
+	 * 
+	 * The hour indicates the length of time that the battery can supply this current.
+	 * 
 	 * e.g. a 2.2Ah battery can supply 2.2 amps for an hour.
+	 * 
+	 * Amp hour ratings are based on a standardized discharge rate. Typically, 
+	 * this rate is 20 hours (C/20), but some manufacturers may use different 
+	 * rates (e.g., C/5, C/10).
 	 */
 	private double ampHourStored;
-
+	
 	/** 
 	 * The full capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
 	 * a particular C-rating.
 	 */
 	private double ampHourFullCapacity;
+
+	/**  
+	 * The total internal resistance of the battery.
+	 * rTotal = rCell * # of cells * # of modules
+	 */
+	private double rTotal;
+	
+	/*
+	 * The Terminal voltage is between the battery terminals with load applied. 
+	 * It varies with SOC and discharge/charge current.
+	 * If the load increases, the terminal voltage lowers, due to the internal 
+	 * series resistance of the battery.
+	 */
+	private double terminalVoltage; 
 	
 	private Unit unit;
 	
@@ -96,17 +127,22 @@ public class Battery implements Serializable {
 	 * @param numModule
 	 * @param energyPerModule
 	 */
-    public Battery(Unit unit, int numModule, double energyPerModule) {
+    public Battery(Unit unit, int numModules, double energyPerModule) {
     	this.unit = unit;
         performance = 1.0D;
         operable = true;
-        this.numModule = numModule;
+        
+        this.numModules = numModules;
+		rTotal = R_CELL * numModules * CELLS_PER_MODULE;
+		
         this.energyPerModule = energyPerModule;
-        energyStorageCapacity = energyPerModule * numModule;
-        ampHourStored = energyStorageCapacity * 1000 / STANDARD_VOLTAGE;
+        energyStorageCapacity = energyPerModule * numModules;
+
 		// At the start of sim, set to a random value
         kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
  
+		updateFullAmpHourCapacity();
+		
         updateLowPowerMode();
     }
 
@@ -117,8 +153,8 @@ public class Battery implements Serializable {
     /**
      * Updates the Amp Hour stored capacity [in Ah].
      */
-    private void updateAmpHourCapacity() {
-    	ampHourStored = 1000 * kWhStored / STANDARD_VOLTAGE; 
+    private void updateAmpHourStored() {
+    	ampHourStored = 1000 * kWhStored / HIGHEST_MAX_VOLTAGE; 
     }
     
     /**
@@ -126,7 +162,7 @@ public class Battery implements Serializable {
      * NOTE: DO NOT DELTE. RETAIN THIS METHOD FOR FUTURE USE.
      */
     private void updateFullAmpHourCapacity() {
-    	ampHourFullCapacity = 1000 * energyStorageCapacity / STANDARD_VOLTAGE; 
+    	ampHourFullCapacity = 1000 * energyStorageCapacity / HIGHEST_MAX_VOLTAGE; 
     }
     
     /**
@@ -153,7 +189,7 @@ public class Battery implements Serializable {
      */
     private double getMaxPowerDraw(double time) {
     	// Note: Need to find the physical formula for max power draw
-    	return ampHourStored * STANDARD_VOLTAGE / time / 1000;
+    	return ampHourStored * HIGHEST_MAX_VOLTAGE / time / 1000;
     }
     
     /**
@@ -164,7 +200,7 @@ public class Battery implements Serializable {
      */
     public double getMaxPowerCharging(double hours) {
     	// Note: Need to find the physical formula for max power charge
-    	return MAX_C_RATING_CHARGING * ampHourStored * STANDARD_VOLTAGE / hours / 1000;
+    	return MAX_C_RATING_CHARGING * ampHourStored * HIGHEST_MAX_VOLTAGE / hours / 1000;
     }
     
     /**
@@ -178,6 +214,28 @@ public class Battery implements Serializable {
     	return getMaxPowerCharging(hours) * 3600;
     }
     
+    /**
+     * Delivers the energy to unit's battery.
+     * Note: Not in use
+     * 
+     * @param kWh
+     * @return the diff in kWh energy
+     */
+    public double deliverEnergy(double kWh) {
+    	double newEnergy = kWhStored + kWh;
+        double targetEnergy = 0.95 * energyStorageCapacity;
+    	if (newEnergy > targetEnergy) {
+    		newEnergy = targetEnergy;
+    		isCharging = false;
+    	}
+    	double diff = newEnergy - kWhStored;
+    	kWhStored = newEnergy;
+		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+
+        updateLowPowerMode();
+
+    	return diff;
+    }
     
     /**
      * Gets a given amount of energy within an interval of time from the battery.
@@ -226,7 +284,7 @@ public class Battery implements Serializable {
 
         updateLowPowerMode();
             
-        updateAmpHourCapacity();
+        updateAmpHourStored();
         
         return energyToDeliver;
     }
@@ -259,23 +317,23 @@ public class Battery implements Serializable {
      * 
      * @param kWhPumpedIn amount of energy to consume [in kWh]
      * @param hours time in hrs
-     * @return energy accepted for charging [in kWh]
+     * @return energy accepted during charging [in kWh]
      */
     public double chargeBattery(double kWhPumpedIn, double hours) {
 		
     	double maxChargeEnergy = estimateChargeBattery(hours);
+		// Find the smallest amount of energy to be accepted
+    	double kWhAccepted = Math.min(kWhPumpedIn, maxChargeEnergy);
 		
-    	double energyAccepted = Math.min(kWhPumpedIn, maxChargeEnergy);
-		
-    	kWhStored += energyAccepted;
+    	kWhStored += kWhAccepted;
 
-        updateAmpHourCapacity();
+        updateAmpHourStored();
 
         updateLowPowerMode();
         
 		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
-    	return energyAccepted;
+    	return kWhAccepted;
     }
     
     /**
@@ -323,18 +381,18 @@ public class Battery implements Serializable {
         return performance;
     }
 
-//    /**
-//     * Sets the performance factor.
-//     * 
-//     * @param newPerformance new performance (between 0 and 1).
-//     */
-//    private void setPerformanceFactor(double newPerformance) {
-//        if (newPerformance != performance) {
-//            performance = newPerformance;
-//			if (unit != null)
-//				unit.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
-//        }
-//    }
+    /**
+     * Sets the performance factor.
+     * 
+     * @param newPerformance new performance (between 0 and 1).
+     */
+    private void setPerformanceFactor(double newPerformance) {
+        if (newPerformance != performance) {
+            performance = newPerformance;
+			if (unit != null)
+				unit.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+        }
+    }
 
     /**
      * Gets the unit system stress level.
@@ -379,28 +437,6 @@ public class Battery implements Serializable {
     public boolean isLowPower() {
     	return isLowPower;
     }
-    
-    /**
-     * Delivers the energy to unit's battery.
-     * 
-     * @param kWh
-     * @return the energy accepted
-     */
-    public double deliverEnergy(double kWh) {
-    	double newEnergy = kWhStored + kWh;
-        double targetEnergy = 0.95 * energyStorageCapacity;
-    	if (newEnergy > targetEnergy) {
-    		newEnergy = targetEnergy;
-    		isCharging = false;
-    	}
-    	double diff = newEnergy - kWhStored;
-    	kWhStored = newEnergy;
-		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-
-        updateLowPowerMode();
-
-    	return diff;
-    }
 
     /**
      * Gets the standby power consumption rate.
@@ -421,6 +457,26 @@ public class Battery implements Serializable {
         return 70D;
     }
     
+	public double getTerminalVoltage() {
+		return terminalVoltage;
+	}
+	
+	/**
+	 * Updates the terminal voltage of the battery.
+	 */
+	private void updateTerminalVoltage() {
+		if (energyStorageCapacity > 0) {
+			terminalVoltage = kWhStored / energyStorageCapacity * HIGHEST_MAX_VOLTAGE - ampHourStored * rTotal / 3600;
+		}
+		else {
+			terminalVoltage = 0;
+		}
+    	if (terminalVoltage > HIGHEST_MAX_VOLTAGE) {
+    		terminalVoltage = HIGHEST_MAX_VOLTAGE;
+		}
+	}
+	
+	
     /**
      * Prepares object for garbage collection.
      */

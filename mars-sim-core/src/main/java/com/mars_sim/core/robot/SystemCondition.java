@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SystemCondition.java
- * @date 2024-06-27
+ * @date 2025-09-24
  * @author Manny Kung
  */
 
@@ -35,6 +35,7 @@ public class SystemCondition implements Serializable {
 	
 //	public static final double SECONDARY_LINE_VOLTAGE = 240D;
 	
+    /** The standard voltage of this battery pack in volts. */
 	public static final double HIGHEST_MAX_VOLTAGE = 436.8;
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .075; // [in %]
@@ -47,15 +48,17 @@ public class SystemCondition implements Serializable {
 	 * e.g. : Tesla Model S has 104 cells per module
 	 */
 	private static final int CELLS_PER_MODULE = 104;
-	/**The maximum continuous discharge rate (within the safety limit) of this battery. */
-	private static final int MAX_C_RATING = 4;
+	/** The internal resistance [in ohms] in each cell. */	
+	private static final double R_CELL = 0.06; 
+	
+	/** The maximum continuous discharge rate (within the safety limit) of this battery. */
+	private static final int MAX_C_RATING_CHARGING = 4;
 	/**
 	 * The nominal capacity (Amp hours) of a lithium cell is about 250mAh at the 
 	 * discharge current of 1C.
 	 */
 	private static final double NOMINAL_AMP_HOURS = .25;
-	/** The internal resistance [in ohms] in each cell. */	
-	private static final double R_CELL = 0.06; 
+
 	
     // Data members
     /** Is the robot charging ? */  
@@ -83,7 +86,7 @@ public class SystemCondition implements Serializable {
 	/** The health of the battery. */
 	private double health = 1D; 
     /** The power consumed in the standby mode in kW. */
-    private double standbykW;
+    private double standbyPower;
     /** The power consumed in the power save mode in kW. */
     private double powerSavekW;
     /** Robot's stress level (0.0 - 100.0). */
@@ -98,17 +101,12 @@ public class SystemCondition implements Serializable {
 	 * e.g. a 60 Wh battery can power a 60 W light bulb for an hour
 	 */
 	private double kWhStored;
+	/** The energy storage capacity [in kWh, not Wh]. */
+	private double energyStorageCapacity; 
 	/** The maximum nameplate kWh of this battery. */	
 	public double maxCapNameplate;
-
-	/**  
-	 * The total internal resistance of the battery.
-	 * rTotal = rCell * # of cells * # of modules
-	 */
-	private double rTotal;
-
 	/** 
-	 * The rating [in ampere-hour or Ah] of the battery in terms of its 
+	 * The capacity rating [in ampere-hour or Ah] of the battery in terms of its 
 	 * charging/discharging ability at a particular C-rating. 
 	 * 
 	 * An amp is a measure of electrical current. 
@@ -121,11 +119,20 @@ public class SystemCondition implements Serializable {
 	 * this rate is 20 hours (C/20), but some manufacturers may use different 
 	 * rates (e.g., C/5, C/10).
 	 */
-	private double ampHour;	
+	private double ampHourStored;	
 	
-	/** The energy storage capacity [in kWh, not Wh] capacity. */
-	private double energyStorageCapacity; 
+	/** 
+	 * The full capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
+	 * a particular C-rating.
+	 */
+	private double ampHourFullCapacity;
 	
+	/**  
+	 * The total internal resistance of the battery.
+	 * rTotal = rCell * # of cells * # of modules
+	 */
+	private double rTotal;
+
 	/*
 	 * The Terminal voltage is between the battery terminals with load applied. 
 	 * It varies with SOC and discharge/charge current.
@@ -146,8 +153,9 @@ public class SystemCondition implements Serializable {
         performance = 1.0D;
    
         lowPowerModePercent = spec.getLowPowerModePercent();
-        standbykW = spec.getStandbyPowerConsumption();
-        powerSavekW = POWER_SAVE_CONSUMPTION * standbykW; 
+        standbyPower = spec.getStandbyPowerConsumption();
+        powerSavekW = POWER_SAVE_CONSUMPTION * standbyPower; 
+        
         maxCapNameplate = spec.getMaxCapacity();
         energyStorageCapacity = maxCapNameplate;
         
@@ -157,8 +165,10 @@ public class SystemCondition implements Serializable {
 		// At the start of sim, set to a random value		
     	kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
 
-		updateAmpHourRating();
-
+		updateFullAmpHourCapacity();
+		
+		updateAmpHourStored();
+		
     	updateTerminalVoltage();
 
 //		logger.info(spec.getRobotType().getName() + " - maxCapNameplate: " + maxCapNameplate 
@@ -171,6 +181,20 @@ public class SystemCondition implements Serializable {
 //				+ "  kWhStored: " + kWhStored);
     }
 
+    /**
+     * Updates the Amp Hour stored capacity [in Ah].
+     */
+    private void updateAmpHourStored() {
+    	ampHourStored = 1000 * kWhStored / HIGHEST_MAX_VOLTAGE; 
+    }
+    
+    /**
+     * Updates the Amp Hour rating.
+     */
+    private void updateFullAmpHourCapacity() {
+    	ampHourFullCapacity = 1000 * energyStorageCapacity / HIGHEST_MAX_VOLTAGE; 
+    }
+    
 	/**
 	 * Computes how much stored energy can be delivered when discharging.
 	 * 
@@ -203,7 +227,7 @@ public class SystemCondition implements Serializable {
 		if (vOut <= 0)
 			return 0;
 
-		double ampHr = getAmpHour();
+		double ampHr = getAmpHourStored();
 //		double hr = time * HOURS_PER_MILLISOL;
 		
 		// Use Peukert's Law for lithium ion battery to dampen the power delivery when 
@@ -266,7 +290,7 @@ public class SystemCondition implements Serializable {
     	    		consumeEnergy(MarsTime.HOURS_PER_MILLISOL * powerSavekW, 1);
     	    	}
     	    	else if (!isCharging && !robot.getTaskManager().hasTask() && kWhStored > 0) {
-    	        	consumeEnergy(MarsTime.HOURS_PER_MILLISOL * standbykW, 1);	
+    	        	consumeEnergy(MarsTime.HOURS_PER_MILLISOL * standbyPower, 1);	
     			}
     	    	
     	    	int remainder = msol % 10;
@@ -291,7 +315,7 @@ public class SystemCondition implements Serializable {
     	if (!isCharging) {
 	    	
     		double available = computeAvailableEnergy(consumekWh, R_LOAD, time);
-//    		logger.info(robot, "kWh: " + kWhStored + "  available: " + available + "  consume: " + consumekWh );
+    		// May add back for debuggin: logger.info(robot, "kWh: " + kWhStored + "  available: " + available + "  consume: " + consumekWh)
     		
     		kWhStored -= available;
     		  
@@ -447,7 +471,7 @@ public class SystemCondition implements Serializable {
     }
 
 	public double getMaxCRating() {
-		return MAX_C_RATING;
+		return MAX_C_RATING_CHARGING;
 	}
 	
     /**
@@ -466,12 +490,13 @@ public class SystemCondition implements Serializable {
      * 0.5-1 hour to account for the slower charging rate at the end of the cycle.
      * 
      * @param storekWh
-     * @return the energy unable to accepted
+     * @return the excess energy that is unable to accepted
      */
     public double storeEnergy(double storekWh) {
     	double newEnergy = kWhStored + storekWh;
         double targetEnergy = energyStorageCapacity;
-        double unable2Accept = newEnergy - targetEnergy;
+        double excessEnergy = newEnergy - targetEnergy;
+        
     	if (newEnergy >= targetEnergy) {
     		newEnergy = targetEnergy;   		
     		// Target reached and quit charging
@@ -486,8 +511,8 @@ public class SystemCondition implements Serializable {
 		
 		cumulativeChargeDischarge += storekWh;
 		
-		if (unable2Accept > 0)
-			return unable2Accept;
+		if (excessEnergy > 0)
+			return excessEnergy;
 		
 		return 0;
     }
@@ -499,7 +524,7 @@ public class SystemCondition implements Serializable {
      * @throws Exception if error in configuration.
      */
     public double getStandbyPowerConsumption() {
-        return standbykW;
+        return standbyPower;
     }
 
     /** 
@@ -523,14 +548,11 @@ public class SystemCondition implements Serializable {
     	}
     }
 	
-	public double getAmpHour() {
-		return ampHour;
+	public double getAmpHourStored() {
+		return ampHourStored;
 	}
 	
-	public double getTerminalVoltage() {
-		return terminalVoltage;
-	}
-	
+
 	public double getMaxCapNameplate() {
 		return maxCapNameplate;
 	}
@@ -543,19 +565,16 @@ public class SystemCondition implements Serializable {
 		return health;
 	}
 	
-    /**
-     * Updates the Amp Hour rating.
-     */
-    private void updateAmpHourRating() {
-    	ampHour = 1000 * energyStorageCapacity / HIGHEST_MAX_VOLTAGE; 
-    }
-
+	public double getTerminalVoltage() {
+		return terminalVoltage;
+	}
+	
 	/**
 	 * Updates the terminal voltage of the battery.
 	 */
 	private void updateTerminalVoltage() {
 		if (energyStorageCapacity > 0) {
-			terminalVoltage = kWhStored / energyStorageCapacity * HIGHEST_MAX_VOLTAGE - ampHour * rTotal / 3600;
+			terminalVoltage = kWhStored / energyStorageCapacity * HIGHEST_MAX_VOLTAGE - ampHourStored * rTotal / 3600;
 		}
 		else {
 			terminalVoltage = 0;
@@ -576,7 +595,7 @@ public class SystemCondition implements Serializable {
     	if (energyStorageCapacity > maxCapNameplate)
     		energyStorageCapacity = maxCapNameplate;
 
-    	updateAmpHourRating();
+    	updateAmpHourStored();
     	
 		if (kWhStored > energyStorageCapacity) {
 			kWhStored = energyStorageCapacity;		

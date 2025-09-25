@@ -226,7 +226,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 				break;
 
 			case ENERGY_STORED: 
-				result = settle.getPowerGrid().getDisplayStoredEnergy();
+				result = settle.getPowerGrid().displayStoredEnergy();
 				break;
 				
 			case POPULATION: 
