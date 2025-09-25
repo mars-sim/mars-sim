@@ -55,11 +55,30 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final int HEALTH = MODE+1;
 	private static final int BATTERY = HEALTH+1;
 	private static final int PERFORMANCE = BATTERY+1;
-	private static final int JOB = PERFORMANCE+1;
-	private static final int TASK = JOB+1;
+	private static final int TASK = PERFORMANCE+1;
 	private static final int MISSION_COL = TASK+1;
 
 	private static final int COLUMNCOUNT = MISSION_COL+1;
+	
+	private static final String PERCENT = " % - ";
+	private static final String INOPERABLE = "Inoperable";
+	private static final String OPERABLE = "Operable";
+	private static final String NA = "N/A";
+	private static final String B_LEVEL0 = Msg.getString("RobotTableModel.column.battery.level0");
+	private static final String B_LEVEL1 = Msg.getString("RobotTableModel.column.battery.level1");
+	private static final String B_LEVEL2 = Msg.getString("RobotTableModel.column.battery.level2");
+	private static final String B_LEVEL3 = Msg.getString("RobotTableModel.column.battery.level3");
+	private static final String B_LEVEL4 = Msg.getString("RobotTableModel.column.battery.level4");
+	private static final String B_LEVEL5 = Msg.getString("RobotTableModel.column.battery.level5");
+	private static final String B_LEVEL6 = Msg.getString("RobotTableModel.column.battery.level6");
+	private static final String B_LEVEL7 = Msg.getString("RobotTableModel.column.battery.level7");
+
+	private static final String P_LEVEL0 = Msg.getString("RobotTableModel.column.performance.level0");
+	private static final String P_LEVEL1 = Msg.getString("RobotTableModel.column.performance.level1");
+	private static final String P_LEVEL2 = Msg.getString("RobotTableModel.column.performance.level2");
+	private static final String P_LEVEL3 = Msg.getString("RobotTableModel.column.performance.level3");
+	private static final String P_LEVEL4 = Msg.getString("RobotTableModel.column.performance.level4");
+	
 	private static final ColumnSpec[] COLUMNS;
 
 	private static final Map<UnitEventType, Integer> eventColumnMapping;
@@ -77,7 +96,6 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery"), String.class);
 		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("RobotTableModel.column.performance"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("RobotTableModel.column.location"), String.class);
-		COLUMNS[JOB] = new ColumnSpec(Msg.getString("RobotTableModel.column.job"), String.class);
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("RobotTableModel.column.mission"), String.class);
 		COLUMNS[TASK] = new ColumnSpec(Msg.getString("RobotTableModel.column.task"), String.class);
 
@@ -87,7 +105,6 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		eventColumnMapping.put(UnitEventType.STATUS_EVENT, MODE);
 		eventColumnMapping.put(UnitEventType.BATTERY_EVENT, BATTERY);
 		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		eventColumnMapping.put(UnitEventType.JOB_EVENT, JOB);
 		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK);
 		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK);
 		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK);
@@ -235,8 +252,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		
 		Integer column = eventColumnMapping.get(event.getType());
 			
-		if (column != null && (column > -1) && event.getSource() instanceof Robot) {
-			entityValueUpdated((Robot) event.getSource(), column, column);
+		if (column != null && (column > -1) && event.getSource() instanceof Robot r) {
+			entityValueUpdated(r, column, column);
 		}	
 	}
 
@@ -268,14 +285,14 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				break;
 				
 			case BATTERY: 
-				result = getBatteryStatus(robot.getSystemCondition().getBatteryLevel());
+				result = getBatteryStatus(robot.getSystemCondition().getBatteryPercent());
 				break;
 		
 			case HEALTH: 
 				if (!robot.isOperable())
-					result = "Inoperable";
+					result = INOPERABLE;
 				else
-					result = "Operable";
+					result = OPERABLE;
 				break;
 
 			case PERFORMANCE:
@@ -284,10 +301,6 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 			case LOCATION: 
 				result = robot.getLocationTag().getImmediateLocation();
-				break;
-
-			case JOB: 
-				result = robot.getRobotType().getName();
 				break;
 
 			case TASK: 
@@ -313,27 +326,27 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	/**
 	 * Gives the status of a robot's battery level.
 	 *
-	 * @param level
+	 * @param percent
 	 * @return status
 	 */
-	private static String getBatteryStatus(double level) {
-		String status;
-		if (level < 1)
-			status = Msg.getString("RobotTableModel.column.battery.level0");
-		else if (level < 10)
-			status = Msg.getString("RobotTableModel.column.battery.level1");
-		else if (level < 20)
-			status = Msg.getString("RobotTableModel.column.battery.level2");
-		else if (level < 40)
-			status = Msg.getString("RobotTableModel.column.battery.level3");
-		else if (level < 60)
-			status = Msg.getString("RobotTableModel.column.battery.level4");
-		else if (level < 80)
-			status = Msg.getString("RobotTableModel.column.battery.level5");
-		else if (level < 95)
-			status = Msg.getString("RobotTableModel.column.battery.level6");
+	private static String getBatteryStatus(double percent) {
+		String status = Math.round(percent * 10.0)/10.0 + PERCENT;
+		if (percent < 1)
+			status += B_LEVEL0;
+		else if (percent < 10)
+			status += B_LEVEL1;
+		else if (percent < 20)
+			status += B_LEVEL2;
+		else if (percent < 40)
+			status += B_LEVEL3;
+		else if (percent < 60)
+			status += B_LEVEL4;
+		else if (percent < 80)
+			status += B_LEVEL5;
+		else if (percent < 95)
+			status += B_LEVEL6;
 		else
-			status = Msg.getString("RobotTableModel.column.battery.level7");
+			status += B_LEVEL7;
 		return status;
 	}
 
@@ -344,17 +357,17 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @return status
 	 */
 	private static String getPerformanceStatus(double value) {
-		String status = "N/A";
+		String status = Math.round(value * 100.0)/1.0 + PERCENT;
 		if (value > 98)
-			status = Msg.getString("RobotTableModel.column.performance.level1");
+			status += P_LEVEL4;
 		else if (value < 99)
-			status = Msg.getString("RobotTableModel.column.performance.level2");
+			status += P_LEVEL3;
 		else if (value < 75)
-			status = Msg.getString("RobotTableModel.column.performance.level3");
+			status += P_LEVEL2;
 		else if (value < 50)
-			status = Msg.getString("RobotTableModel.column.performance.level4");
+			status += P_LEVEL1;
 		else if (value < 25)
-			status = Msg.getString("RobotTableModel.column.performance.level5");
+			status += P_LEVEL0;
 		return status;
 	}
 
@@ -385,26 +398,26 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private class LocalMissionListener implements MissionListener {
 
 		/**
-		 * Catch mission update event.
+		 * Catches mission update event.
 		 *
 		 * @param event the mission event.
 		 */
 		public void missionUpdate(MissionEvent event) {
 			MissionEventType eventType = event.getType();
 			Unit unit = (Unit) event.getTarget();
-			if (unit instanceof Robot) {
+			if (unit instanceof Robot r) {
 				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
-					addEntity((Robot) unit);
+					addEntity(r);
 				}
 				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					removeEntity((Robot) unit);
+					removeEntity(r);
 				}
 			}
 		}
 	}
 
 	/**
-	 * UnitListener inner class for events where a Robot joins or leaves a Unit
+	 * UnitListener inner class for events where a Robot joins or leaves a Unit.
 	 */
 	private class RobotChangeListener implements UnitListener {
 

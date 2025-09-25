@@ -603,8 +603,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		return handled;
 	}
 
-	protected void recordStartMass() {
-		vehicle.recordStartMass();
+	/**
+	 * Records the beginning weight of the vehicle and its payload [kg].
+	 */
+	protected void recordStartingMass() {
+		vehicle.recordStartingMass();
 	}
 
 	@Override

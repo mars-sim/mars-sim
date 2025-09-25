@@ -583,10 +583,10 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
      * Consumes a given amount of energy.
      * 
      * @param amount the amount of energy to consume (in kWh)
-     * @param time the duration of time
+     * @param time the duration of time in hrs
 	 */
     public void consumeEnergy(double amount, double time) {
-        condition.consumeEnergy(amount, time);
+        condition.requestEnergy(amount, time);
     }
 
 	/**

@@ -187,8 +187,8 @@ public abstract class DroneMission extends AbstractVehicleMission {
 		}
         
         else if (member instanceof Robot robot 
-				&& robot.getSystemCondition().getBatteryLevel() < 5) {
-			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryLevel() + " %");
+				&& robot.getSystemCondition().getBatteryPercent() < 5) {
+			logger.warning(robot, 4_000, "Battery at " + robot.getSystemCondition().getBatteryPercent() + " %");
 			
         	boolean canCharge = assignTask(robot, new Charge(robot, Charge.findStation(robot)));
         	if (canCharge) {
@@ -253,7 +253,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 			callMembersToMission(0);
 			
 			// Record the start mass right before departing the settlement
-			recordStartMass();
+			recordStartingMass();
 
 			// Embark from settlement
 			if (v.transfer(unitManager.getMarsSurface())) {

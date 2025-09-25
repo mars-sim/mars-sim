@@ -207,9 +207,12 @@ public class ExperienceImpact implements Serializable {
         }
         
         // Checks if the robot is charging
-        if (energyTime > 0.01 && !r.getSystemCondition().isCharging()) {
+        if (energyTime > 0.001 && !r.getSystemCondition().isCharging()
+        		&& !r.getSystemCondition().isPowerSave()
+        		&& !r.getSystemCondition().isInMaintenance()
+        		&& r.isOperable()) {
             // Expend energy based on activity.
-            r.consumeEnergy(energyTime * MarsTime.HOURS_PER_MILLISOL * ROBOT_WORK_POWER, energyTime);
+            r.consumeEnergy(energyTime * MarsTime.HOURS_PER_MILLISOL * ROBOT_WORK_POWER, energyTime * MarsTime.HOURS_PER_MILLISOL);
         }
     }
     

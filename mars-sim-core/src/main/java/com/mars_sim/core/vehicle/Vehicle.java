@@ -57,6 +57,7 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.project.Stage;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.RadiationStatus;
@@ -151,6 +152,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private double iFuelEconomy;
 	/** The instantaneous fuel consumption of the vehicle [Wh/km]. */
 	private double iFuelConsumption;
+	/** The starting mass [kg] of the vehicle from the last mission. */
+	private double startingMass;
 	
 	/** The vehicle specification */
 	private String specName;
@@ -836,12 +839,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return the estimated fuel range of the vehicle (in km)
 	 */
 	public double getEstimatedRange() {
-		double mass = getMass();
-		double bMass = getBeginningMass();
-		double massFactor = (mass + bMass) / 2 / bMass;
-
 		// Before the mission is created, the range would be based on vehicle's fuel capacity
-		return (getBaseRange() + getEstimatedFuelEconomy() * getFuelCapacity() * massFactor) / 2;
+		return .5 * (getBaseRange() + getEstimatedFuelEconomy() * getFuelCapacity());
 	}
 	
 	/**
@@ -892,6 +891,15 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return spec.getFuelCapacity();
 	}
 
+    /**
+     * Returns the percentage of the fuel.
+     * 
+     * @return
+     */
+    public double getFuelPercent() {
+    	return getSpecificAmountResourceStored(getFuelTypeID()) / getFuelCapacity() * 100;
+    }
+    
 	/**
 	 * Sets the average road load speed of the vehicle [kph].
 	 * 
@@ -1090,10 +1098,22 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
-	 * Records the beginning weight of the vehicle and its payload [kg].
+	 * Gets the last starting mass [kg].
 	 */
-	public void recordStartMass() {
-		// Needs to be dropped when new Mission logic rolled out
+	public double getStartingMass() {
+		if (startingMass == 0.0) {
+			return getBeginningMass();
+		}
+		return startingMass;
+	}
+	
+	/**
+	 * Records the beginning weight of the vehicle and its payload [kg].
+	 * @note may be dropped when new Mission logic rolled out
+	 */
+	public void recordStartingMass() {
+		startingMass = getMass();
+		spec.adjustMassModfier(startingMass);
 	}
 	
 	/**
@@ -1103,6 +1123,15 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	public double getInitialFuelEconomy() {
 		return spec.getInitialFuelEconomy();
+	}
+	
+	/**
+	 * Gets the adjusted fuel economy of the vehicle [km/kg] for a trip.
+	 *
+	 * @return
+	 */
+	public double getAdjustedFuelEconomy() {
+		return spec.getAdjustedFuelEconomy();
 	}
 
 	/**
@@ -1114,13 +1143,14 @@ public abstract class Vehicle extends AbstractMobileUnit
 		double base = getBaseFuelEconomy();
 		double cum = getCumFuelEconomy();
 		double init = getInitialFuelEconomy();
+		double adj = getAdjustedFuelEconomy();
 		// Note: init < base always
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
 		if (cum == 0)
-			return (.4 * base + .6 * init) / VehicleController.FUEL_ECONOMY_FACTOR;
+			return (.2 * base + .3 * init + .5 * adj) / VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
-			return (.2 * base + .3 * init + .5 * cum);
+			return (.1 * base + .2 * init + .3 * adj + .4 * cum);
 		}
 	}
 
@@ -1134,6 +1164,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 	
 	/**
+	 * Gets the adjusted fuel consumption of the vehicle [Wh/km] for a trip.
+	 *
+	 * @return
+	 */
+	public double getAdjustedFuelConsumption() {
+		return spec.getAdjustedFuelConsumption();
+	}
+	
+	
+	/**
 	 * Gets the estimated fuel consumption of the vehicle [Wh/km] for a trip.
 	 *
 	 * @return
@@ -1142,13 +1182,14 @@ public abstract class Vehicle extends AbstractMobileUnit
 		double base = getBaseFuelConsumption();
 		double cum = getCumFuelConsumption();
 		double init = getInitialFuelConsumption();
+		double adj = getAdjustedFuelConsumption();
 		// Note: init > base always
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
 		if (cum == 0)
-			return (.4 * base + .6 * init) * VehicleController.FUEL_CONSUMPTION_FACTOR;
+			return (.2 * base + .3 * init + .5 * adj) * VehicleController.FUEL_CONSUMPTION_FACTOR;
 		else {
-			return (.2 * base + .3 * init + .5 * cum);
+			return (.1 * base + .2 * init + .3 * adj + .4 * cum);
 		}
 	}
 	
@@ -1176,10 +1217,9 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return
 	 */
 	public double getBatteryPercent() {
-		return getController().getBattery().getBatteryLevel();
+		return getController().getBattery().getBatteryPercent();
 	}
-	
-	
+		
 	/**
 	 * Gets the number of fuel cell stacks of the vehicle.
 	 *
@@ -1222,6 +1262,11 @@ public abstract class Vehicle extends AbstractMobileUnit
 		this.cumFuelUsedKG += cumFuelUsedKG;
 	}
 
+	/**
+	 * Returns the last leg of distance traveled by vehicle.
+	 *
+	 * @return distance traveled [km]
+	 */
 	public double getLastDistanceTravelled() {
 		return lastDistance;
 	}
@@ -1298,7 +1343,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public double getAllowedAccel() {
 		if (speed <= 1)
 			return getBaseAccel();
-		return getBaseAccel() * getBeginningMass() / getMass();
+		return getBaseAccel() * getStartingMass() / getMass();
 	}
 	
 	/**
@@ -1403,34 +1448,45 @@ public abstract class Vehicle extends AbstractMobileUnit
 			return false;
 		}
 
+		// Determine if calling timePassing, activeTimePassing or no call at all
 		if (isCharging && getContainerUnit() instanceof Settlement settlement) {
+			// Case 1: no call
 			chargeVehicle(pulse, settlement);
 		}
 		
 		// If it's outside and moving
 		else if (primaryStatus == StatusType.MOVING) {
-			// Assume the wear and tear factor is at 100% by being used in a mission
-			malfunctionManager.activeTimePassing(pulse);
+			// Case 2: call activeTimePassing
 			// Add the location to the trail if outside on a mission
 			addToTrail(getCoordinates());
+			// Assume the wear and tear factor is at 100% when in a mission
+			malfunctionManager.activeTimePassing(pulse);
 		}
 
-		// Regardless being outside or inside settlement,
-		// NOT under maintenance
-		else {
-			
-			if (!haveStatusType(StatusType.GARAGED)) {
-				int rand = RandomUtil.getRandomInt(3);
-				// Assume the wear and tear factor is 75% less when not operating 
-				if (rand == 3)
-					malfunctionManager.activeTimePassing(pulse);
-			}
-			
-			else {
-				// Note: during maintenance, it doesn't need to be checking for malfunction.
+		// When parking outside on the surface of Mars
+		else if (haveStatusType(StatusType.PARKED)) {
+			// when 
+			// Case 3: call activeTimePassing at reduced probability
+			int rand = RandomUtil.getRandomInt(4);
+			// Assume the wear and tear factor is only 20% of being in a mission
+			if (rand == 3)
+				malfunctionManager.activeTimePassing(pulse);
+		}
+		
+		// When parking inside in a garage and being stored in a weather proof environment
+		else if (haveStatusType(StatusType.GARAGED)) {
+			// when 
+			// Case 3: call timePassing at reduced probability
+			int rand = RandomUtil.getRandomInt(4);
+			// Assume the wear and tear factor is only 20% of being in a mission
+			if (rand == 3)
 				malfunctionManager.timePassing(pulse);
-			}
-			
+		}
+		// All other situations
+		else {
+			// Case 4: call timePassing
+			// Note: during maintenance, it doesn't need to be checking for malfunction.
+			malfunctionManager.timePassing(pulse);
 		}
 
 		// Background loading check
@@ -1806,21 +1862,19 @@ public abstract class Vehicle extends AbstractMobileUnit
 			// parkInVicinity which will in turns call findNewParkingLoc
 			logger.info(this, "Left garage and parked outside as instructed.");
 		}
-		else {
-			if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE) {
-				// If it's under maintenance, go to a garage if possible
-				// else park outside
-				logger.info(this, "Under maintenance. Looking for a garage.");
-				boolean done = addToAGarage();
-				if (!done) {
-					logger.info(this, "Garage space not found. Parked outside.");
-					findNewParkingLoc();
-				}
-			}
-			else {
-				logger.info(this, "Looking for another spot to park outside.");
+		else if (reservedForMaintenance || getPrimaryStatus() == StatusType.MAINTENANCE) {
+			// If it's under maintenance, go to a garage if possible
+			// else park outside
+			logger.info(this, "Under maintenance. Looking for a garage.");
+			boolean done = addToAGarage();
+			if (!done) {
+				logger.info(this, "Garage space not found. Parked outside.");
 				findNewParkingLoc();
 			}
+		}
+		else {
+			logger.info(this, "Looking for another spot to park outside.");
+			findNewParkingLoc();
 		}
 	}
 

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TabPanelSpecs.java
- * @date 2024-06-24
+ * @date 2025-09-25
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.unit_window.vehicle;
@@ -41,6 +41,8 @@ public class TabPanelSpecs extends TabPanel {
 	private JLabel cumFC;
 	private JLabel estFC;
 	private JLabel estFE;
+	private JLabel adjFC;
+	private JLabel adjFE;
 	private JLabel instantFE;
 	private JLabel instantFC;
 	private JLabel estFCFECoef;
@@ -66,12 +68,12 @@ public class TabPanelSpecs extends TabPanel {
 	@Override
 	protected void buildUI(JPanel center) {
 
-		AttributePanel grid0 = new AttributePanel(6, 2);
+		AttributePanel grid0 = new AttributePanel(7, 2);
 		JPanel topPanel = new JPanel(new BorderLayout(0, 10));
 		center.add(topPanel, BorderLayout.NORTH);
 		topPanel.add(grid0, BorderLayout.NORTH);
 //		addBorder(topPanel, "Fuel Consumption and Economy");
-		topPanel.setBorder(BorderFactory.createTitledBorder("Fuel Consumption (FC) and Fuel Economy (FE)"));
+		topPanel.setBorder(BorderFactory.createTitledBorder("Fuel Consumption (FC) / Fuel Economy (FE)"));
 		
 		grid0.addRow( "Base FC-FC Coef", StyleManager.DECIMAL_PLACES3.format(v.getVehicleSpec().getCoeffBaseFC2FE()));
 		estFCFECoef = grid0.addRow( "Est FC-FE Coef", StyleManager.DECIMAL_PLACES3.format(v.getCoeffEstFC2FE()));		
@@ -81,7 +83,10 @@ public class TabPanelSpecs extends TabPanel {
 		
 		grid0.addRow( "Initial FC", StyleManager.DECIMAL_KWH_KM.format(v.getVehicleSpec().getInitialFuelConsumption()/1000));
 		grid0.addRow( "Initial FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getInitialFuelEconomy()));			
-		
+
+		adjFC = grid0.addRow( "Adj FC", StyleManager.DECIMAL_KWH_KM.format(v.getVehicleSpec().getAdjustedFuelConsumption()/1000));
+		adjFE = grid0.addRow( "Adj FE", StyleManager.DECIMAL_KM_KG.format(v.getVehicleSpec().getAdjustedFuelEconomy()));			
+	
 		cumFC = grid0.addRow( "Cum FC", StyleManager.DECIMAL_KWH_KM.format(v.getCumFuelConsumption()/1000));
 		cumFE = grid0.addRow( "Cum FE", StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()));	
 		
@@ -92,7 +97,7 @@ public class TabPanelSpecs extends TabPanel {
 		instantFE = grid0.addRow( "Instant FE", StyleManager.DECIMAL_KM_KG.format(v.getIFuelEconomy()));
 		
 		AttributePanel grid1 = new AttributePanel(3, 2);
-		JPanel centerPanel = new JPanel(new BorderLayout(0, 20));
+		JPanel centerPanel = new JPanel(new BorderLayout(0, 10));
 		center.add(centerPanel, BorderLayout.CENTER);
 		centerPanel.add(grid1, BorderLayout.NORTH);
 //		addBorder(centerPanel, "DriveTrain (DT) Performance");	
@@ -108,11 +113,11 @@ public class TabPanelSpecs extends TabPanel {
 		grid1.addRow( "Peak Power", StyleManager.DECIMAL_KW.format(v.getVehicleSpec().getPeakPower()));
 				
 		AttributePanel grid2 = new AttributePanel(5, 2);
-		JPanel bottomPanel = new JPanel(new BorderLayout(0, 30));
-		centerPanel.add(bottomPanel, BorderLayout.CENTER);
+		JPanel bottomPanel = new JPanel(new BorderLayout(0, 10));
+		center.add(centerPanel, BorderLayout.SOUTH);
 		bottomPanel.add(grid2, BorderLayout.NORTH);
 //		addBorder(bottomPanel, "DriveTrain (DT) Range Energy");	
-		bottomPanel.setBorder(BorderFactory.createTitledBorder("DriveTrain (DT) Range Energy"));
+		bottomPanel.setBorder(BorderFactory.createTitledBorder("Range / Fuel / Energy"));
 	
 		grid2.addRow( "Fuel", Conversion.capitalize(v.getFuelTypeStr()));
 		grid2.addRow( "Fuel-to-Drive", StyleManager.DECIMAL_KWH_KG.format(v.getVehicleSpec().getFuel2DriveEnergy()/1000));
@@ -156,9 +161,12 @@ public class TabPanelSpecs extends TabPanel {
 		cumFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()));
 		cumFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getCumFuelConsumption()/1000));
 		
+		adjFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getAdjustedFuelEconomy()));
+		adjFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getAdjustedFuelConsumption()/1000));
+		
 		estFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getEstimatedFuelEconomy()));
 		estFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getEstimatedFuelConsumption()/1000));
-	
+		
 		instantFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getIFuelEconomy()));
 		instantFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getIFuelConsumption()/1000));
 		

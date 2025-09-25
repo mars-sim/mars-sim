@@ -96,7 +96,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		AttributePanel battPanel = new AttributePanel(10);
 		dataPanel.add(battPanel, BorderLayout.NORTH);
         
-		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(sc.getBatteryLevel()), 
+		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(sc.getBatteryPercent()), 
 				"The state of the battery is kWh stored / energy storage capacity * 100 percent");
 		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(sc.getkWattHourStored()));
 		cap = battPanel.addRow("Energy Storage Capacity", StyleManager.DECIMAL_KWH.format(sc.getEnergyStorageCapacity()));
@@ -115,7 +115,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 	public void update() {
 		SystemCondition sc = r.getSystemCondition();
 		
-		statePercent.setText(StyleManager.DECIMAL_PERC.format(sc.getBatteryLevel()));
+		statePercent.setText(StyleManager.DECIMAL_PERC.format(sc.getBatteryPercent()));
 		cap.setText(StyleManager.DECIMAL_KWH.format(sc.getEnergyStorageCapacity()));
 		maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(sc.getMaxCapNameplate()));
 		kWhStored.setText(StyleManager.DECIMAL_KWH.format(sc.getkWattHourStored()));

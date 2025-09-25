@@ -347,7 +347,7 @@ import com.mars_sim.core.tool.RandomUtil;
 			 
 			 boolean byBatteryOnly = false;
 			 
-			 double percent = battery.getBatteryLevel();
+			 double percent = battery.getBatteryPercent();
 			 
 			 if (percent == 100.0) {
 				 byBatteryOnly = true;
@@ -632,15 +632,15 @@ import com.mars_sim.core.tool.RandomUtil;
 		 // J = W * h / 
 		 
 		 // Gets energy in Wh. energyWH is + ve 
-		 double energyWH = brakingEnergy / JOULES_PER_WH;  	 
+		 double energyWh = brakingEnergy / JOULES_PER_WH;  	 
 		 // Gets energy in kWh. energyKWH is + ve 
-		 double energyKWH = energyWH / 1000;  
+		 double energykWh = energyWh / 1000;  
 		 // Gets hrsTime
 		 double hrsTime = secs / 3600;
 		// Get the energy stored [kWh] into the battery. energyAcceptedKWH is + ve 
-		 double energyAcceptedKWH = battery.chargeBattery(energyKWH, hrsTime); 
+		 double energyAcceptedkWh = battery.chargeBattery(energykWh, hrsTime); 
 		 // Get the power absorbed in W. powerAbsorbed is + ve 
-		 double powerAbsorbed = energyAcceptedKWH / secs * JOULES_PER_WH * 1000;
+		 double powerAbsorbed = energyAcceptedkWh / secs * JOULES_PER_WH * 1000;
 		 
 		 // Question: how to get new vKPH so as to get new distance travelled ?
 		 
@@ -665,8 +665,8 @@ import com.mars_sim.core.tool.RandomUtil;
 				 + "newForce: " + DECIMAL2_N.format(newForce) + TWO_WHITESPACES
 				 + "brakingPower: " + DECIMAL2_W.format(brakingPower) + TWO_WHITESPACES
 				 + "brakingEnergy: " + DECIMAL2_J.format(brakingEnergy) + TWO_WHITESPACES
-				 + "energyKWH: " + DECIMAL3_KWH.format(energyKWH) + TWO_WHITESPACES
-				 + "energyAcceptedKWH: " + DECIMAL3_KWH.format(energyAcceptedKWH) + TWO_WHITESPACES
+				 + "energyKWH: " + DECIMAL3_KWH.format(energykWh) + TWO_WHITESPACES
+				 + "energyAcceptedKWH: " + DECIMAL3_KWH.format(energyAcceptedkWh) + TWO_WHITESPACES
 				 + "powerAbsorbed: " + DECIMAL2_W.format(powerAbsorbed)
 				 );
 	 

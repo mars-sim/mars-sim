@@ -606,7 +606,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private void depart(Vehicle v, Settlement settlement) {
 
 		// Record the start mass right before departing the settlement
-		recordStartMass();
+		recordStartingMass();
 
 		// Embark from settlement
 		if (v.transfer(unitManager.getMarsSurface())) {

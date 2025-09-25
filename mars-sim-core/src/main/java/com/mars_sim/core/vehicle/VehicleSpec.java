@@ -162,6 +162,8 @@ public class VehicleSpec implements Serializable {
 	private double fuel2DriveEnergy;
 	/** The base acceleration of the vehicle [m/s2]. */
 	private double baseAccel = 1;
+	/** The adjusted acceleration of the vehicle [m/s2]. */
+	private double adjustedAccel;
 	
 	// 1989 NASA Mars Manned Transportation Vehicle - Shuttle Fuel Cell Power Plant (FCP)  7.6 kg/kW
 	// DOE 2010 Targe : Specific power = 650 W_e/L; Power Density = 650 W_e/kg
@@ -185,7 +187,8 @@ public class VehicleSpec implements Serializable {
 	private double batteryCapacity;	
 	
 	/** 
-	 * The base fuel economy of the vehicle [km/kg].  
+	 * The base fuel economy of the vehicle [km/kg]. A purely theoretical figure that
+	 * accounts for the battery and fuel only.  
 	 * Note: Fuel economy of a vehicle refers to the distance traveled 
 	 * by a vehicle and the amount of fuel consumed.
 	 * 
@@ -194,17 +197,25 @@ public class VehicleSpec implements Serializable {
 	private double baseFuelEconomy;
 	
 	/** 
-	 * The initial average fuel economy of the vehicle for a trip [km/kg]. 
+	 * The initial average fuel economy of the vehicle for a trip [km/kg]. A figure that accounts
+	 * for the beginning and end mass of the vehicle.
 	 */
 	private double initialFuelEconomy;
 
+	/** 
+	 * The adjusted average fuel economy of the vehicle for a trip [km/kg]. A figure that accounts
+	 * for the starting mass (derived from last mission) and end mass of the vehicle.
+	 */
+	private double adjustedFuelEconomy;
+	
 	/**
 	 * The coefficient for converting FC to FE 
 	 */
 	private double coefficientBaseFC2FE;
 	
 	/** 
-	 * The base fuel consumption of the vehicle [Wh/km]. 
+	 * The base fuel consumption of the vehicle [Wh/km]. A purely theoretical figure that
+	 * accounts for the battery and fuel only.
 	 * Note: Fuel consumption of a vehicle refers to the energy used 
 	 * by a vehicle to travel each km.
 	 * 
@@ -213,15 +224,43 @@ public class VehicleSpec implements Serializable {
 	private double baseFuelConsumption;
 	
 	/** 
-	 * The initial average fuel consumption of the vehicle [Wh/km]. 
+	 * The initial average fuel consumption of the vehicle [Wh/km]. A figure that accounts
+	 * for the beginning and end mass of the vehicle.
 	 */
 	private double initialFuelConsumption;
+	
+	/** 
+	 * The adjusted average fuel consumption of the vehicle [Wh/km]. A figure that accounts
+	 * for the starting mass (derived from last mission) and end mass of the vehicle.
+	 */
+	private double adjustedFuelConsumption;
 	
 	/** 
 	 * The estimated beginning mass [kg] of the vehicle for a trip.
 	 * Note: base mass + crew weight + full cargo weight
 	 */
 	private double beginningMass;
+	
+	/** 
+	 * The estimated end mass [kg] of the vehicle for a trip.
+	 * Note: base mass + crew weight + resources
+	 */
+	private double endMass;
+	
+	/**
+	 * The modifier due to the mass of the payload
+	 */
+	private double massModifier;
+	
+	/**
+	 * The estimated additional beginning mass for each type of vehicle
+	 */
+	private double additionalBeginningMass = 0;
+	
+	/**
+	 * The estimated additional end mass for each type of vehicle
+	 */
+	private double additionalEndMass = 0;	
 	
 	/** 
 	 * The calculated empty mass [kg] of the vehicle, based on its parts. 
@@ -461,11 +500,6 @@ public class VehicleSpec implements Serializable {
 			fuel2DriveEnergy = URANIUM_OXIDE_WH_PER_KG * drivetrainFuelEfficiency;
 		}
 
-		// Define the estimated additional beginning mass for each type of vehicle
-		double additionalBeginningMass = 0;
-		// Define the estimated additional end mass for each type of vehicle
-		double additionalEndMass = 0;		
-
 		double roadLoadPowerFactor = 0.2;
 		// Assume an average percent of energy to be consumed by onboard power usage 
 		double onboardUsedFraction = onboardEnergyPercent / 100;
@@ -480,7 +514,7 @@ public class VehicleSpec implements Serializable {
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
 				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
-				additionalEndMass = 200;		
+				additionalEndMass = 250;		
 			} break;
 			
 			case CARGO_DRONE: {
@@ -491,7 +525,7 @@ public class VehicleSpec implements Serializable {
 				// Accounts for the fuel (methanol and oxygen) and the traded goods
 				additionalBeginningMass = 400;
 				// Accounts for water and the traded goods
-				additionalEndMass = 200;		
+				additionalEndMass = 250;		
 			} break;
 			
 			case LUV: {
@@ -511,9 +545,9 @@ public class VehicleSpec implements Serializable {
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
 				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 3 + numFuelCellStack * 2);
 				// Accounts for the occupants and their consumables
-				additionalBeginningMass = estimatedTotalCrewWeight + 4 * 20;
+				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 60;
 				// Accounts for the occupant and rock sample, ice or regolith collected
-				additionalEndMass = estimatedTotalCrewWeight + 800;	
+				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 1400;	
 			} break;
 
 			case CARGO_ROVER: {
@@ -522,9 +556,9 @@ public class VehicleSpec implements Serializable {
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
 				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and traded goods 
-				additionalBeginningMass = estimatedTotalCrewWeight + 2 * 20 + 2000;
+				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 80;
 				// Accounts for the occupants and traded goods
-				additionalEndMass = estimatedTotalCrewWeight + 2000;				
+				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 2000;				
 			} break;
 
 			case TRANSPORT_ROVER: {
@@ -533,10 +567,14 @@ public class VehicleSpec implements Serializable {
 				// Assume the peak power is related to the average power, number of battery modules and numbers of fuel cell stack.
 				peakPower = basePower * Math.log10(5.0 + numBatteryModule * 2 + numFuelCellStack * 1.5);
 				// Accounts for the occupants and their consumables and personal possession
-				additionalBeginningMass = estimatedTotalCrewWeight + 8 * (20 + 100);
+				additionalBeginningMass = estimatedTotalCrewWeight + crewSize * 100;
 				// Accounts for the occupants and their personal possession
-				additionalEndMass = estimatedTotalCrewWeight + 8 * 100;				
+				additionalEndMass = estimatedTotalCrewWeight + crewSize * 5 + 2500;				
 			} break;
+		case PASSENGER_DRONE:
+			
+		default:
+			break;
 		}
 
 		// Gets the estimated energy available for drivetrain [in kWh]
@@ -566,19 +604,54 @@ public class VehicleSpec implements Serializable {
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
-		double endMass = calculatedEmptyMass + additionalEndMass;
+		endMass = calculatedEmptyMass + additionalEndMass;
 		// Accounts for the additional payload mass
-		double massModifier = 1 + .2 * (additionalBeginningMass/calculatedEmptyMass 
-				+ additionalEndMass/calculatedEmptyMass);
+		massModifier = calculateMassModifier(additionalBeginningMass, additionalEndMass);
 		
 		// Gets the initial fuel economy for a trip [km/kg]
 		initialFuelEconomy = baseFuelEconomy / massModifier; 
 		// Gets the initial fuel consumption [in Wh/km] of this vehicle
 		initialFuelConsumption = baseFuelConsumption * massModifier;
 		
+		// Set the adjusted fuel economy to the initial fuel economy for now
+		adjustedFuelEconomy = initialFuelEconomy; 
+		// Set the adjusted fuel consumption to the initial fuel consumption for now
+		adjustedFuelConsumption = initialFuelConsumption;
+						
 		// Gets the base acceleration [m/s2]
 		baseAccel = peakPower / (.5 * (endMass + beginningMass)) / baseSpeed * 3600;
 	}
+	
+	/**
+	 * Calculates the modifier due to the mass of the payload.
+	 * 
+	 * @param additionalBeginningMass
+	 * @param additionalEndMass
+	 * @return
+	 */
+	public double calculateMassModifier(double additionalBeginningMass, double additionalEndMass) {
+		// Accounts for the estimated additional beginning mass
+		beginningMass = calculatedEmptyMass + additionalBeginningMass;
+		
+		return 1 + .2 * (additionalBeginningMass + additionalEndMass) / calculatedEmptyMass;
+	}
+	
+	/**
+	 * Adjusts the mass modifier and calculates adjusted fuel parameters.
+	 * 
+	 * @param startingMass
+	 */
+	public void adjustMassModfier(double startingMass) {
+		
+		double newMassModifier = massModifier * startingMass / beginningMass;	
+		// Gets the initial fuel economy for a trip [km/kg]
+		adjustedFuelEconomy = baseFuelEconomy / newMassModifier; 
+		// Gets the initial fuel consumption [in Wh/km] of this vehicle
+		adjustedFuelConsumption = baseFuelConsumption * newMassModifier;		
+		// Gets the base acceleration [m/s2]
+		adjustedAccel = peakPower / (.5 * (endMass + startingMass)) / baseSpeed * 3600;
+	}
+	
 	
 	public final void setWidth(double width) {
 		this.width = width;
@@ -977,12 +1050,20 @@ public class VehicleSpec implements Serializable {
 
 	/**
 	 * Gets the initial fuel economy of the vehicle [km/kg] for a trip.
-	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
 	 *
 	 * @return
 	 */
 	public double getInitialFuelEconomy() {
 		return initialFuelEconomy;
+	}
+	
+	/**
+	 * Gets the adjusted fuel economy of the vehicle [km/kg] for a trip.
+	 *
+	 * @return
+	 */
+	public double getAdjustedFuelEconomy() {
+		return adjustedFuelEconomy;
 	}
 	
 	/**
@@ -1005,12 +1086,20 @@ public class VehicleSpec implements Serializable {
 	
 	/**
 	 * Gets the initial fuel consumption of the vehicle [Wh/km] for a trip.
-	 * Note: Assume that it is half of two fuel consumption values (between the beginning and the end of the trip)
 	 *
 	 * @return
 	 */
 	public double getInitialFuelConsumption() {
 		return initialFuelConsumption;
+	}
+	
+	/**
+	 * Gets the adjusted fuel consumption of the vehicle [Wh/km] for a trip.
+	 *
+	 * @return
+	 */
+	public double getAdjustedFuelConsumption() {
+		return adjustedFuelConsumption;
 	}
 	
 	

@@ -49,6 +49,8 @@ public class TendGreenhouse extends TendHousekeeping {
 	
 	private static final String TEND = Msg.getString("Task.description.tendGreenhouse.tend") + " "; //$NON-NLS-1$
 	
+	private static final String HARVESTING = Msg.getString("Task.description.tendGreenhouse.harvest") + " "; //$NON-NLS-1$
+	
 	private static final String DONE_TENDING = Msg.getString("Task.description.tendGreenhouse.tend.done"); //$NON-NLS-1$
 		
 	private static final String SAMPLE_DETAIL = Msg.getString("Task.description.tendGreenhouse.sample.detail") + " ";
@@ -198,7 +200,7 @@ public class TendGreenhouse extends TendHousekeeping {
 
 
 			setDescription((needyCrop.getPhase().getPhaseType() == PhaseType.HARVESTING ?
-							"Harvesting" : TEND) + needyCrop.getName());
+					HARVESTING : TEND) + needyCrop.getName());
 			previousCropName = needyCrop.getName();
 		}
 		

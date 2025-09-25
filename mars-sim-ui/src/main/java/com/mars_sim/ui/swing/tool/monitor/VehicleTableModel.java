@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * VehicleTableModel.java
- * @date 2024-07-23
+ * @date 2025-09-25
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -48,7 +48,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private static final String OFF = "Off";
 	private static final String TRUE = "True";
 	private static final String FALSE = "False";
-
+	private static final String PERCENT = " %";
+	
 	// Column indexes
 	private static final int NAME = 0;
 	private static final int TYPE = NAME+1;
@@ -65,9 +66,12 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private static final int RESERVED = BEACON+1;
 	private static final int SPEED = RESERVED+1;
 	private static final int MALFUNCTION = SPEED+1;
-	private static final int OXYGEN = MALFUNCTION+1;
-	private static final int METHANOL = OXYGEN+1;
-	private static final int WATER = METHANOL+1;
+	private static final int BATTERY = MALFUNCTION+1;
+	private static final int FUEL = BATTERY+1;
+	private static final int METHANE = FUEL+1;
+	private static final int METHANOL = METHANE+1;
+	private static final int OXYGEN = METHANOL+1;
+	private static final int WATER = OXYGEN+1;
 	private static final int FOOD = WATER+1;
 	private static final int ROCK_SAMPLES = FOOD+1;
 	private static final int ICE = ROCK_SAMPLES+1;
@@ -97,8 +101,11 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		COLUMNS[RESERVED] = new ColumnSpec("Reserved", String.class);
 		COLUMNS[SPEED] = new ColumnSpec("Speed", Double.class);
 		COLUMNS[MALFUNCTION] = new ColumnSpec("Malfunction", String.class);
-		COLUMNS[OXYGEN] = new ColumnSpec("Oxygen", Double.class);
+		COLUMNS[BATTERY] = new ColumnSpec("Battery", String.class);
+		COLUMNS[FUEL] = new ColumnSpec("Fuel", String.class);
+		COLUMNS[METHANE] = new ColumnSpec("Methane", Double.class);
 		COLUMNS[METHANOL] = new ColumnSpec("Methanol", Double.class);
+		COLUMNS[OXYGEN] = new ColumnSpec("Oxygen", Double.class);
 		COLUMNS[WATER] = new ColumnSpec("Water", Double.class);
 		COLUMNS[FOOD] = new ColumnSpec("Food", Double.class);
 		COLUMNS[ROCK_SAMPLES] = new ColumnSpec("Rock Samples", Double.class);
@@ -259,6 +266,40 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				if (failure != null) result = failure.getName();
 			} break;
 
+			case BATTERY : 
+				value = vehicle.getController().getBattery().getBatteryPercent();
+				result = Math.round(value * 10.0)/10.0 + PERCENT;
+				break;
+				
+			case FUEL :
+				value = vehicle.getFuelPercent();
+				result = Math.round(value * 10.0)/10.0 + PERCENT;
+				break;
+
+			case METHANE : 
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
+				break;
+
+			case METHANOL : 
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
+				break;			
+
+			case OXYGEN : 
+				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
+				if (value == 0.0)
+					result = null;
+				else
+					result = value;
+				break;
+				
 			case WATER :
 				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.WATER_ID);
 				if (value == 0.0)
@@ -274,23 +315,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				else
 					result = value;
 				break;
-
-			case OXYGEN : 
-				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
-				if (value == 0.0)
-					result = null;
-				else
-					result = value;
-				break;
-
-			case METHANOL : 
-				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID);
-				if (value == 0.0)
-					result = null;
-				else
-					result = value;
-				break;
-
+				
 			case ROCK_SAMPLES : ;
 				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.ROCK_SAMPLES_ID);
 				if (value == 0.0)
