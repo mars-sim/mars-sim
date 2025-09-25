@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JComponent;
@@ -99,7 +100,8 @@ public abstract class TabPanel extends JScrollPane {
 		this.desktop = desktop;
 		
 		// Create the view panel
-		JPanel viewPanel = new JPanel(new BorderLayout(0, 0));
+		JPanel viewPanel = new JPanel();//new BorderLayout(0, 0));
+		viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.Y_AXIS));
 		createViewport();
 		setViewportView(viewPanel);
 		createVerticalScrollBar();
@@ -117,9 +119,11 @@ public abstract class TabPanel extends JScrollPane {
 		topContentPanel.setBorder(StyleManager.newEmptyBorder());
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
+		Box.createVerticalGlue();
+		
 		// Create center content panel
 		centerContentPanel = new JPanel(new BorderLayout(0, 10));
-		centerContentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		centerContentPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
 	}
 

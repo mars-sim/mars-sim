@@ -8,7 +8,6 @@
 package com.mars_sim.core.equipment;
 
 import java.io.Serializable;
-import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;

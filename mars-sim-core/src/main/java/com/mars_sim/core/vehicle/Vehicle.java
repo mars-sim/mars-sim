@@ -57,7 +57,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.project.Stage;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.RadiationStatus;
@@ -87,6 +86,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	
 	private static final int MAX_NUM_SOLS = 14;
 	
+	private static final double KWH_KG_RATING = 1.0;
 	private static final double MAXIMUM_RANGE = 10_000;
 	
     private static final double VEHICLE_CLEARANCE_0 = 1.4;
@@ -987,11 +987,11 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return
 	 */
 	public double getCumFuelEconomy() {
-		if (odometerMileage == 0 || (cumFuelUsedKG == 0 && cumEnergyUsedKWH == 0))
-			return 0;
+		if (odometerMileage == 0.0 || (cumFuelUsedKG == 0.0 && cumEnergyUsedKWH == 0.0))
+			return 0.0;
 		// kg = kWh / (Wh / kg)
 		// Note: This battery has 1 kWh/kg rating
-		double batteryFuelKG = cumEnergyUsedKWH * 1;
+		double batteryFuelKG = cumEnergyUsedKWH * KWH_KG_RATING;
 		// [km] / [kg] 
 		return odometerMileage / (cumFuelUsedKG + batteryFuelKG);
 	}
@@ -1002,8 +1002,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @return
 	 */
 	public double getCumFuelConsumption() {
-		if (odometerMileage == 0 || (cumFuelUsedKG == 0 && cumEnergyUsedKWH == 0))
-			return 0;
+		if (odometerMileage == 0.0 || (cumFuelUsedKG == 0.0 && cumEnergyUsedKWH == 0.0))
+			return 0.0;
 		// Wh = kg * Wh / kg
 		double fuelWh = cumFuelUsedKG * getVehicleSpec().getFuel2DriveEnergy();
 		// Wh  / km
@@ -1011,18 +1011,16 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
-	 * Gets the coefficient for converting estimated FC to estimated FE.
+	 * Gets the coefficient of estimated FC * estimated FE [Wh / kg].
 	 * 
 	 * @return
 	 */
-	public double getCoeffEstFC2FE() {
+	public double getCoeffEstFCFE() {
 		double estFE = getEstimatedFuelEconomy();
 		double estFC = getEstimatedFuelConsumption();
 		
 		if (estFE > 0 && estFC > 0)
-			// [km / kg]  / [Wh / km]  
-			// km / kg / Wh * km 
-			return estFE / estFC;
+			return estFE * estFC;
 
 		return 0;
 	}
@@ -1147,10 +1145,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 		// Note: init < base always
 		// Note: if cum < base, then trip is less economical more than expected
 		// Note: if cum > base, then trip is more economical than expected
-		if (cum == 0)
-			return (.2 * base + .3 * init + .5 * adj) / VehicleController.FUEL_ECONOMY_FACTOR;
+		if (cum == 0.0)
+			return (.5 * base + .15 * init + .35 * adj) / VehicleController.FUEL_ECONOMY_FACTOR;
 		else {
-			return (.1 * base + .2 * init + .3 * adj + .4 * cum);
+			return (.3 * base + .1 * init + .2 * adj + .4 * cum);
 		}
 	}
 
@@ -1186,10 +1184,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 		// Note: init > base always
 		// Note: if cum > base, then vehicle consumes more than expected
 		// Note: if cum < base, then vehicle consumes less than expected		
-		if (cum == 0)
-			return (.2 * base + .3 * init + .5 * adj) * VehicleController.FUEL_CONSUMPTION_FACTOR;
+		if (cum == 0.0)
+			return (.5 * base + .15 * init + .35 * adj) * VehicleController.FUEL_CONSUMPTION_FACTOR;
 		else {
-			return (.1 * base + .2 * init + .3 * adj + .4 * cum);
+			return (.3 * base + .1 * init + .2 * adj + .4 * cum);
 		}
 	}
 	

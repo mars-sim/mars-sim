@@ -209,9 +209,9 @@ public class VehicleSpec implements Serializable {
 	private double adjustedFuelEconomy;
 	
 	/**
-	 * The coefficient for converting FC to FE 
+	 * The coefficient of FC * FE [Wh / kg]
 	 */
-	private double coefficientBaseFC2FE;
+	private double coefficientBaseFCFE;
 	
 	/** 
 	 * The base fuel consumption of the vehicle [Wh/km]. A purely theoretical figure that
@@ -598,8 +598,8 @@ public class VehicleSpec implements Serializable {
 		baseFuelEconomy = baseRange / (.1 + fuelCapacity);
 		// Gets the base fuel consumption [in Wh/km] of this vehicle. Convert estEnergyConsumed from kWh to Wh.
 		baseFuelConsumption =  1000 * baseEnergyConsumed / (.1 + baseRange);
-		// Gets the base coeff for FC to FE
-		coefficientBaseFC2FE = baseFuelEconomy / baseFuelConsumption;
+		// Gets the base coeff for FC * FE [Wh / kg]
+		coefficientBaseFCFE = baseFuelEconomy * baseFuelConsumption;
 		
 		// Accounts for the estimated additional beginning mass
 		beginningMass = calculatedEmptyMass + additionalBeginningMass;
@@ -1071,8 +1071,8 @@ public class VehicleSpec implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getCoeffBaseFC2FE() {
-		return coefficientBaseFC2FE;
+	public double getCoeffBaseFCFE() {
+		return coefficientBaseFCFE;
 	}
 	
 	/**
