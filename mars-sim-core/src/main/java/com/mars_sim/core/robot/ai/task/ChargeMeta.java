@@ -57,7 +57,7 @@ public class ChargeMeta extends FactoryMetaTask {
         else if (robot.isInSettlement()) {
         	SystemCondition sc = robot.getSystemCondition();
         	
-        	double batteryLevel = sc.getBatteryPercent();
+        	double batteryLevel = sc.getBattery().getBatteryPercent();
         	
         	if (batteryLevel >= LEVEL_UPPER_LIMIT) {
         		return 0;
@@ -69,7 +69,7 @@ public class ChargeMeta extends FactoryMetaTask {
         	// Checks if the battery is below the threshold level for charging
         	else if (batteryLevel <= sc.getRecommendedThreshold()) {
     			double rand = RandomUtil.getRandomDouble(batteryLevel);
-    			if (rand < sc.getLowPowerPercent())
+    			if (rand < sc.getBattery().getLowPowerPercent())
     				// At max, ~20% chance it will need to charge 
     				result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_1;
     		}

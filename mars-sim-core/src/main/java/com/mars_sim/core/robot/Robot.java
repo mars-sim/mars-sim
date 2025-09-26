@@ -586,7 +586,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
      * @param time the duration of time in hrs
 	 */
     public void consumeEnergy(double amount, double time) {
-        condition.requestEnergy(amount, time);
+        condition.getBattery().requestEnergy(amount, time);
     }
 
 	/**
@@ -1271,7 +1271,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * Returns the current amount of energy in kWh. 
 	 */
 	public double getcurrentEnergy() {
-		return condition.getkWattHourStored();
+		return condition.getBattery().getkWattHourStored();
 	}
 	
 	public EquipmentInventory getEquipmentInventory() {

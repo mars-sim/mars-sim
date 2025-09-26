@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.tool.Msg;
@@ -32,8 +33,6 @@ import io.github.parubok.text.multiline.MultilineLabel;
 public class TabPanelGeneralRobot extends TabPanel {
 
 	private static final String ID_ICON = "info";
-	
-	private Robot r;
 
 	private JLabel statePercent;
 	private JLabel cap;
@@ -46,6 +45,10 @@ public class TabPanelGeneralRobot extends TabPanel {
 	private JLabel maxCRating;
 	private JLabel cycles;
 	
+	private Robot r;
+	private SystemCondition sc;
+	private Battery battery;
+	
 	/**
 	 * Constructor.
 	 */
@@ -56,6 +59,8 @@ public class TabPanelGeneralRobot extends TabPanel {
 			Msg.getString("BuildingPanelGeneral.title"),
 			desktop);
 		this.r = r;
+		this.sc = r.getSystemCondition();
+		this.battery = sc.getBattery();
 	}
 
 	/**
@@ -63,7 +68,6 @@ public class TabPanelGeneralRobot extends TabPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		SystemCondition sc = r.getSystemCondition();
 
 		JPanel topPanel = new JPanel(new BorderLayout(10, 10));
 		center.add(topPanel, BorderLayout.NORTH);
@@ -96,35 +100,34 @@ public class TabPanelGeneralRobot extends TabPanel {
 		AttributePanel battPanel = new AttributePanel(10);
 		dataPanel.add(battPanel, BorderLayout.NORTH);
         
-		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(sc.getBatteryPercent()), 
+		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(battery.getBatteryPercent()), 
 				"The state of the battery is kWh stored / energy storage capacity * 100 percent");
-		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(sc.getkWattHourStored()));
-		cap = battPanel.addRow("Energy Storage Capacity", StyleManager.DECIMAL_KWH.format(sc.getEnergyStorageCapacity()));
-		maxCapNameplate = battPanel.addRow("Nameplate Capacity", StyleManager.DECIMAL_KWH.format(sc.getMaxCapNameplate()));	
-		maxCRating = battPanel.addRow("Max C-Rating", StyleManager.DECIMAL_PLACES1.format(sc.getMaxCRating()));		
+		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(battery.getkWattHourStored()));
+		cap = battPanel.addRow("Energy Storage Capacity", StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
+		maxCapNameplate = battPanel.addRow("Nameplate Capacity", StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));	
+		maxCRating = battPanel.addRow("Max C-Rating", StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));		
 		
-		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(sc.getAmpHourStored()));
-		tVolt = battPanel.addRow("Terminal Voltage", StyleManager.DECIMAL_V.format(sc.getTerminalVoltage()));
-		health = battPanel.addRow("Health", StyleManager.DECIMAL2_PERC.format(sc.getHealth() * 100));
-		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL2_PERC.format(sc.getPercentDegrade())
+		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
+		tVolt = battPanel.addRow("Terminal Voltage", StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
+		health = battPanel.addRow("Health", StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
+		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade())
 				+ " per sol");
-		cycles = battPanel.addRow("Charge Cycles", sc.getNumCycles() + "");
+		cycles = battPanel.addRow("Charge Cycles", battery.getNumCycles() + "");
 	}
 
 	@Override
 	public void update() {
-		SystemCondition sc = r.getSystemCondition();
+	
+		statePercent.setText(StyleManager.DECIMAL_PERC.format(battery.getBatteryPercent()));
+		cap.setText(StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
+		maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));
+		kWhStored.setText(StyleManager.DECIMAL_KWH.format(battery.getkWattHourStored()));
+		ampHours.setText(StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
 		
-		statePercent.setText(StyleManager.DECIMAL_PERC.format(sc.getBatteryPercent()));
-		cap.setText(StyleManager.DECIMAL_KWH.format(sc.getEnergyStorageCapacity()));
-		maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(sc.getMaxCapNameplate()));
-		kWhStored.setText(StyleManager.DECIMAL_KWH.format(sc.getkWattHourStored()));
-		ampHours.setText(StyleManager.DECIMAL_AH.format(sc.getAmpHourStored()));
-		
-		tVolt.setText(StyleManager.DECIMAL_V.format(sc.getTerminalVoltage()));
-		health.setText(StyleManager.DECIMAL2_PERC.format(sc.getHealth() * 100));
-		degradPercent.setText(StyleManager.DECIMAL2_PERC.format(sc.getPercentDegrade()) + " per sol");
-		maxCRating.setText(StyleManager.DECIMAL_PLACES1.format(sc.getMaxCRating()));
-		cycles.setText(sc.getNumCycles() + "");
+		tVolt.setText(StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
+		health.setText(StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
+		degradPercent.setText(StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade()) + " per sol");
+		maxCRating.setText(StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));
+		cycles.setText(battery.getNumCycles() + "");
 	}
 }

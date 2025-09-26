@@ -285,7 +285,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				break;
 				
 			case BATTERY: 
-				result = getBatteryStatus(robot.getSystemCondition().getBatteryPercent());
+				result = getBatteryStatus(robot.getSystemCondition().getBattery().getBatteryPercent());
 				break;
 		
 			case HEALTH: 

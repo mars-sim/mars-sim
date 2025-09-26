@@ -101,7 +101,7 @@ public abstract class MissionStep extends ProjectStep {
         boolean shouldAssignTask = false;
 
         if (worker instanceof Robot r) {
-            boolean isRobotBatteryEnough = r.getSystemCondition().isBatteryAbove(10);
+            boolean isRobotBatteryEnough = r.getSystemCondition().getBattery().isBatteryAbove(10);
             boolean isRobotOperational = !r.getMalfunctionManager().hasMalfunction();
             shouldAssignTask = (isRobotOperational && isRobotBatteryEnough);
         }

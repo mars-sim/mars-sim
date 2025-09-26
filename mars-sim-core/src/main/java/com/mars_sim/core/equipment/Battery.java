@@ -41,26 +41,25 @@ public class Battery implements Serializable {
 	/** The percent of the terminal voltage prior to cutoff */
 	public static final double PERCENT_TERMINAL_VOLTAGE = 66.67;
     /** The standard voltage of this battery pack in volts. */
-    public static final double HIGHEST_MAX_VOLTAGE = 600;
+    public static final double HIGHEST_MAX_VOLTAGE = 600; // 436.8;
     /** The standard voltage of a drone battery pack in volts. */
     public static final double DRONE_VOLTAGE = 48;
     
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
-//  private static final double MAX_AMP_DRAW = 120;
+    // May add back: private static final double MAX_AMP_DRAW = 120
   
+	/**
+	 * The nominal capacity (Amp hours) of a lithium cell is about 250mAh at the 
+	 * discharge current of 1C.
+	 */
+	private static final double NOMINAL_AMP_HOURS = .25;
 	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_CHARGING = 4;
-	
-	private static final double POWER_SAVE_CONSUMPTION = .1;
 
 	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .075; // [in %]
-	
-  
-    private static final String KWH = " kWh  ";
-    private static final String KW = " kW  ";
-    
+	 
     // Data members
     /** Is the unit at low power mode ? */  
     private boolean isLowPower;
@@ -85,7 +84,7 @@ public class Battery implements Serializable {
     public double energyPerModule;
     
     /** The standby power consumption in kW. */
-    private double standbyPower = 0.01;
+    private double standbyPower;
     /** unit's stress level (0.0 - 100.0). */
     private double systemLoad;
     /** Performance factor. */
@@ -159,6 +158,7 @@ public class Battery implements Serializable {
         operable = true;
         
         lowPowerPercent = 5;
+        standbyPower = 0.01;
         
         this.numModules = numModules;
 		rTotal = R_CELL * numModules * CELLS_PER_MODULE;
@@ -175,6 +175,17 @@ public class Battery implements Serializable {
         updateLowPowerMode();
         
     	updateTerminalVoltage();
+    }
+    
+    /**
+     * Initializes the power parameters with specific values.
+     * 
+     * @param lowPowerPercent
+     * @param standbyPower
+     */
+    public void initPower(double lowPowerPercent, double standbyPower) {
+    	 this.lowPowerPercent = lowPowerPercent;
+    	 this.standbyPower = standbyPower;
     }
     
     /**
@@ -229,13 +240,6 @@ public class Battery implements Serializable {
 		double possiblekWh = nowAmpHr / 1000D * vOut;
 
 		double availablekWh = Math.min(stored, Math.min(possiblekWh, neededkWh));
-
-//		logger.info(robot, "kWh: " + Math.round(stored * 100.0)/100.0
-//				+ "  available: " + Math.round(availablekWh * 10000.0)/10000.0 
-//				+ "  needed: " + Math.round(needed * 10000.0)/10000.0
-//				+ "  possiblekWh: " + Math.round(possiblekWh * 10000.0)/10000.0
-//				+ "  ampHrRating: " + Math.round(ampHrRating * 100.0)/100.0
-//				+ "  nowAmpHr: " + Math.round(nowAmpHr * 100.0)/100.0);
 		
 		return availablekWh;
 	}
@@ -256,7 +260,6 @@ public class Battery implements Serializable {
     	}
     	else if (pulse.isNewHalfSol()) {
 	        locked = false;
-//	        reconditionBattery();
 	    	diagnoseBattery();
 		}
 
@@ -310,30 +313,7 @@ public class Battery implements Serializable {
     	// Note: Need to find the physical formula for max power charge
     	return getMaxPowerCharging(hours) * 3600;
     }
-    
-//    /**
-//     * Delivers the energy to unit's battery.
-//     * Note: Not in use
-//     * 
-//     * @param kWh
-//     * @return the diff in kWh energy
-//     */
-//    public double deliverEnergy(double kWh) {
-//    	double newEnergy = kWhStored + kWh;
-//        double targetEnergy = 0.95 * energyStorageCapacity;
-//    	if (newEnergy > targetEnergy) {
-//    		newEnergy = targetEnergy;
-//    		isCharging = false;
-//    	}
-//    	double diff = newEnergy - kWhStored;
-//    	kWhStored = newEnergy;
-//		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
-//
-//        updateLowPowerMode();
-//
-//    	return diff;
-//    }
-    
+
     /**
      * Requests energy from the battery.
      * 
@@ -345,39 +325,6 @@ public class Battery implements Serializable {
     	
 		double available = computeAvailableEnergy(consumekWh, R_LOAD, time);
 		// May add back for debugging: logger.info(robot, "kWh: " + kWhStored + "  available: " + available + "  consume: " + consumekWh)
-    	
-//		double powerRequest = consumekWh / time;
-//		
-//		double powerMax = getMaxPowerDraw(time);
-//				
-//		double energyToDeliver = 0;
-//		
-//		boolean lowBatteryAlarm = false;
-//				
-//    	double energyCanSupply = energyStorageCapacity;
-//    	
-//    	if (energyCanSupply <= 0.001)
-//    		logger.log(unit, Level.INFO, 20_000, 
-//          			"No more battery. energyStorageCapacity: " + Math.round(energyStorageCapacity * 1_000.0)/1_000.0 + KWH);
-//    		
-//		if (kWhStored < energyStorageCapacity * lowPowerPercent / 100)
-//			lowBatteryAlarm = true;
-//
-//		energyToDeliver = Math.min(kWhStored, Math.min(energyCanSupply, 
-//						Math.min(powerRequest * time, Math.min(consumekWh, powerMax * time))));
-//
-//    	if (lowBatteryAlarm) {
-//			logger.log(unit, Level.WARNING, 20_000, 
-//      			"[Low Battery Alarm] "
-//                + "kWh: " + + Math.round(consumekWh * 1_000.0)/1_000.0 + KWH
-//      	       	+ "kWhStored: " + Math.round(kWhStored * 1_000.0)/1_000.0 + KWH
-//      			+ "energyCanSupply: " + Math.round(energyCanSupply * 1_000.0)/1_000.0 + KWH
-//              	+ "energyToDeliver: " + + Math.round(energyToDeliver * 1_000.0)/1_000.0 + KWH
-//            	+ "time: " + + Math.round(time * 1_000.0)/1_000.0 + " hrs  "
-//      			+ "powerRequest: " + + Math.round(powerRequest * 1_000.0)/1_000.0 + KW
-//      			+ "powerMax: " + + Math.round(powerMax * 1_000.0)/1_000.0 + KW);
-//    	}
-       	
        	
     	kWhStored -= available; 
     	
@@ -645,7 +592,7 @@ public class Battery implements Serializable {
 	/**
 	 * Diagnoses health and update the status of the battery.
 	 */
-	private void diagnoseBattery() {
+	public void diagnoseBattery() {
 		if (health > 1)
 			health = 1;
 		
@@ -664,14 +611,14 @@ public class Battery implements Serializable {
 	 * Degrades the health of the battery.
 	 * Note: the degradation rate of the battery is % per 1000 milisols
 	 */
-	private void degradeHealth() {
+	public void degradeHealth() {
     	health = health * (1 - percentBatteryDegrade/100/1000);		
 	}
 
 	/**
 	 * Updates the number of charge and discharge cycles.
 	 */
-	private void updateNumCycles() {
+	public void updateNumCycles() {
 		double value = cumulativeChargeDischarge / maxCapNameplate / 2;
 		numChargeCycles = (int)value;
 	}

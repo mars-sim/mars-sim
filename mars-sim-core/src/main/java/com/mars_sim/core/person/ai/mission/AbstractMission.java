@@ -932,7 +932,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		if (!newTaskName.equalsIgnoreCase(Charge.NAME) 
-				&& !robot.getSystemCondition().isBatteryAbove(20)) {
+				&& !robot.getSystemCondition().getBattery().isBatteryAbove(20)) {
 			logger.info(robot, 20_000, "Battery below 20% and cannot be assigned with '" + newTaskName + "'.");
 			return false;
 		}

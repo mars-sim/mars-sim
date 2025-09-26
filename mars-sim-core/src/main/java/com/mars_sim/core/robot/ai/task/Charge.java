@@ -144,7 +144,7 @@ public class Charge extends Task {
 		boolean toCharge = false;
 		
 		SystemCondition sc = robot.getSystemCondition();
-		double batteryLevel = sc.getBatteryPercent();
+		double batteryLevel = sc.getBattery().getBatteryPercent();
 		
 		if (getDuration() == DURATION) {
 			// When this phase is being called for the first time
@@ -154,7 +154,7 @@ public class Charge extends Task {
 		else {
 			
 			double threshold = sc.getRecommendedThreshold();
-			double lowPower = sc.getLowPowerPercent();
+			double lowPower = sc.getBattery().getLowPowerPercent();
 		
 			if (batteryLevel >= LEVEL_UPPER_LIMIT) {
 				endCharging();
@@ -273,7 +273,7 @@ public class Charge extends Task {
 
 		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 		// Note: input energy kWh = rate [1kW] * hours
-		double kWhAccepted = sc.chargeBattery(rate * hrs, hrs);
+		double kWhAccepted = sc.getBattery().chargeBattery(rate * hrs, hrs);
 		
 		if (kWhAccepted < 0.001) {
 			
