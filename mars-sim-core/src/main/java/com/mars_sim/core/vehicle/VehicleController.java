@@ -452,7 +452,7 @@ import com.mars_sim.core.tool.RandomUtil;
 								+ "energyByBattery -> energySuppliedByBattery: " 
 									+ DECIMAL3_WH.format(energyByBattery) + " -> "
 									+ DECIMAL3_WH.format(energySuppliedByBattery) + TWO_WHITESPACES
-								+ "Battery: " + DECIMAL3_KWH.format(battery.getCurrentEnergy()));
+								+ "Battery: " + DECIMAL3_KWH.format(battery.getCurrentStoredEnergy()));
 						
 					 double[] result = propulsion.propelBatteryOnly("Scenario 1B1: Battery only.  ",
 							 aveForce, energySuppliedByBattery, secs, uMS, mass);
@@ -686,7 +686,7 @@ import com.mars_sim.core.tool.RandomUtil;
 	  */
 	 public double getFuelNeededForTrip(Vehicle vehicle, double tripDistance, double fuelEconomy, boolean useMargin) {
 		 // The amount of "fuel" covered by the energy in the battery 
-		 double batterydistance = vehicle.getController().getBattery().getCurrentEnergy() 
+		 double batterydistance = vehicle.getController().getBattery().getCurrentStoredEnergy() 
 				 / vehicle.getEstimatedFuelConsumption();
 		 
 		 double amountFuel = (tripDistance - batterydistance) / fuelEconomy;

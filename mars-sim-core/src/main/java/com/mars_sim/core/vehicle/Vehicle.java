@@ -2452,7 +2452,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */ 
 	public void chargeVehicle(ClockPulse pulse, Settlement settlement) {
 		double timeInHours = pulse.getElapsed() * MarsTime.HOURS_PER_MILLISOL;
-		double allowedEnergy = getController().getBattery().estimateChargeBattery(timeInHours);
+		double allowedEnergy = getController().getBattery().estimateEnergyToReceive(timeInHours);
 		boolean isChargingNeeded = allowedEnergy > 0;
 
 		if (isChargingNeeded) {

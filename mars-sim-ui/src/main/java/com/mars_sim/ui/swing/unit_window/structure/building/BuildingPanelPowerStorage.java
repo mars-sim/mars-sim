@@ -69,12 +69,12 @@ extends BuildingFunctionPanel {
 		center.add(springPanel, BorderLayout.NORTH);
 		
 		// Create capacity label.
-		capacityCache = storage.getCurrentMaxCapacity();
+		capacityCache = storage.getBattery().getEnergyStorageCapacity();
 		capTF = springPanel.addTextField(Msg.getString("BuildingPanelPowerStorage.cap"),
 							 StyleManager.DECIMAL_KWH.format(capacityCache), null);
 		
 		// Create stored label.
-		storedCache = storage.getkWattHourStored();
+		storedCache = storage.getBattery().getCurrentStoredEnergy();
 		storedTF = springPanel.addTextField(Msg.getString("BuildingPanelPowerStorage.stored"),
 									StyleManager.DECIMAL_KWH.format(storedCache), null);
 	}
@@ -86,14 +86,14 @@ extends BuildingFunctionPanel {
 		
 
 		// Update capacity label if necessary.
-		double newCapacity = storage.getCurrentMaxCapacity();
+		double newCapacity = storage.getBattery().getEnergyStorageCapacity();
 		if (capacityCache != newCapacity) {
 			capacityCache = newCapacity;
 			capTF.setText(StyleManager.DECIMAL_KWH.format(capacityCache));
 		}
 
 		// Update stored label if necessary.
-		double newStored = storage.getkWattHourStored();
+		double newStored = storage.getBattery().getCurrentStoredEnergy();
 		if (storedCache != newStored) {
 			storedCache = newStored;
 			storedTF.setText(StyleManager.DECIMAL_KWH.format(storedCache));

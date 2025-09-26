@@ -189,6 +189,17 @@ public class Battery implements Serializable {
     }
     
     /**
+  	 * Computes how much stored energy can be delivered when discharging.
+  	 * 
+  	 * @param neededkWh  energy
+  	 * @param time    in millisols
+  	 * @return energy available to be delivered
+  	 */
+  	public double estimateEnergyToDeliver(double neededkWh, double time) {
+  		return estimateEnergyToDeliver(neededkWh, R_LOAD, time);
+  	}
+  		
+    /**
 	 * Computes how much stored energy can be delivered when discharging.
 	 * 
 	 * @param neededkWh  energy
@@ -196,7 +207,7 @@ public class Battery implements Serializable {
 	 * @param time    in millisols
 	 * @return energy available to be delivered
 	 */
-	public double computeAvailableEnergy(double neededkWh, double rLoad, double time) {
+	public double estimateEnergyToDeliver(double neededkWh, double rLoad, double time) {
 		if (neededkWh <= 0)
 			return 0;
 		
@@ -315,7 +326,7 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Requests energy from the battery.
+     * Requests energy from the battery. This will discharge the battery.
      * 
      * @param consumekWh amount of energy to consume [in kWh]
      * @param time in hrs
@@ -323,7 +334,7 @@ public class Battery implements Serializable {
      */
     public double requestEnergy(double consumekWh, double time) {
     	
-		double available = computeAvailableEnergy(consumekWh, R_LOAD, time);
+		double available = estimateEnergyToDeliver(consumekWh, R_LOAD, time);
 		// May add back for debugging: logger.info(robot, "kWh: " + kWhStored + "  available: " + available + "  consume: " + consumekWh)
        	
     	kWhStored -= available; 
@@ -355,12 +366,12 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Estimates how much energy will be accepted given the maximum charging rate and an interval of time.
+     * Estimates how much energy can be accepted and received given the maximum charging rate and an interval of time.
      * 
      * @param hours time in hrs
      * @return energy to be delivered [in kWh]
      */
-    public double estimateChargeBattery(double hours) {
+    public double estimateEnergyToReceive(double hours) {
    
     	double percentStored = getBatteryPercent();
     	double energyAccepted = 0;
@@ -389,7 +400,7 @@ public class Battery implements Serializable {
      */
     public double chargeBattery(double kWhPumpedIn, double hours) {
 		
-    	double maxChargeEnergy = estimateChargeBattery(hours);
+    	double maxChargeEnergy = estimateEnergyToReceive(hours);
 		// Find the smallest amount of energy to be accepted
     	double kWhAccepted = Math.min(kWhPumpedIn, maxChargeEnergy);
 		
@@ -419,9 +430,9 @@ public class Battery implements Serializable {
     }
 
 	/** 
-	 * Returns the current amount of energy in kWh. 
+	 * Returns the current amount of stored energy in kWh. 
 	 */
-	public double getCurrentEnergy() {
+	public double getCurrentStoredEnergy() {
 		return kWhStored;
 	}
 	

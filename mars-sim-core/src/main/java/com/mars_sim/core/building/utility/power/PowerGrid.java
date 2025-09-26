@@ -35,7 +35,7 @@ public class PowerGrid implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(PowerGrid.class.getName());
 
-	private static final double R_LOAD = 1000D; // assume constant load resistance
+//	private static final double R_LOAD = 1000D; // assume constant load resistance
 
 	private static final double ROLLING_FACTOR = 1.1D; 
 	
@@ -423,7 +423,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		double timeHr = time * HOURS_PER_MILLISOL;
 		double excessEnergy = excess * timeHr * systemEfficiency;
-		double unableToStoreEnergy = storeExcessPower(excessEnergy, time);
+		double unableToStoreEnergy = storeExcessPower(excessEnergy, timeHr);
 		double excessPower = unableToStoreEnergy / timeHr / systemEfficiency;
 
 		if (excess < 0) {
@@ -809,7 +809,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private void updateTotalStoredEnergy() {
 		double store = manager.getBuildingSet(FunctionType.POWER_STORAGE).stream()
-								.mapToDouble(b -> b.getPowerStorage().getkWattHourStored())
+								.mapToDouble(b -> b.getPowerStorage().getBattery().getCurrentStoredEnergy())
 								.sum();
 		setStoredEnergy(store);
 	}
@@ -846,7 +846,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private void updateTotalEnergyStorageCapacity() {
 		double capacity = manager.getBuildingSet(FunctionType.POWER_STORAGE).stream()
-									.mapToDouble(b -> b.getPowerStorage().getCurrentMaxCapacity())
+									.mapToDouble(b -> b.getPowerStorage().getBattery().getEnergyStorageCapacity())
 									.sum();
 		setStoredEnergyCapacity(capacity);
 	}
@@ -883,15 +883,16 @@ public class PowerGrid implements Serializable, Temporal {
 	 * Stores any excess energy into the power grid via battery storage systems in buildings if possible.
 	 * 
 	 * @param excessEnergy excess grid energy (in kW hr).
-	 * @return energy unable to store
+	 * @param timeHr
+	 * @return excess energy that cannot be stored
 	 */
-	private double storeExcessPower(double excessEnergy, double time) {
+	private double storeExcessPower(double excessEnergy, double timeHr) {
 		double excess = excessEnergy;
 		Iterator<Building> i = manager.getBuildingSet(FunctionType.POWER_STORAGE).iterator();
 		while (i.hasNext()) {
 			PowerStorage storage = i.next().getPowerStorage();
-			double stored = storage.getkWattHourStored();
-			double max = storage.getCurrentMaxCapacity();
+			double stored = storage.getBattery().getCurrentStoredEnergy();
+			double max = storage.getBattery().getEnergyStorageCapacity();
 			double gap = max - stored;
 			double onePercent = max * .01D;
 
@@ -902,18 +903,10 @@ public class PowerGrid implements Serializable, Temporal {
 
 				// Note: Tesla runs its batteries up to 4C charging rate
 				// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
-
-				double accept = computeStorableEnergy(storage, excess, time);
-
-				if (accept > 0 && accept <= excess) {
-
-					// update the resultant energy stored in battery
-					stored = stored + accept;
-					// update excess energy
-					excess = excess - accept;
-					// update the energy stored in this battery
-					storage.reconditionBattery(stored);
-				}
+		
+				double kWhAccepted = storage.getBattery().chargeBattery(excess, timeHr);
+				
+				excess = excess - kWhAccepted;
 			}
 		}
 		
@@ -921,112 +914,60 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 
 	/**
-	 * Computes how much stored energy can be taken in during charging.
-	 * Receives energy from the grid to charge up a single battery storage system.
-	 * 
-	 * @param storage PowerStorage
-	 * @param excess  energy
-	 * @param time    in millisols
-	 * @return energy accepted during charging [in kWh]
-	 */
-	public double computeStorableEnergy(PowerStorage storage, double excess, double time) {
-		if (excess <= 0)
-			return 0;
-		
-		double stored = storage.getkWattHourStored();
-		double maxCap = storage.getCurrentMaxCapacity();
-		
-		if (stored >= maxCap)
-			return 0;
-		
-		double needed = maxCap - stored;
-
-		double vTerminal = storage.getTerminalVoltage();
-		// Assume the internal resistance of the battery is constant
-		double rInt = storage.getTotalResistance();
-
-		double stateOfCharge = stored / maxCap;
-		// Use fudge_factor to improve the charging but decreases 
-		// when the battery is getting full
-		double fudgeFactor = 5 * (1 - stateOfCharge);
-		// The output voltage
-		double vOut = vTerminal * R_LOAD / (R_LOAD + rInt);
-
-		if (vOut <= 0)
-			return 0;
-
-		double ampHr = storage.getAmpHourRating();
-//		double hr = time * HOURS_PER_MILLISOL;
-
-		double ampHrRating = ampHr; 
-				
-		// Note: Tesla runs its batteries up to 4C charging rate
-		// see https://teslamotorsclub.com/tmc/threads/limits-of-model-s-charging.36185/
-
-		double cRating = storage.getMaxCRating();
-		double nowAmpHr = cRating * ampHrRating * (1 - stateOfCharge);
-		double possiblekWh = nowAmpHr / 1000D * vOut * fudgeFactor ;
-
-		// Find the smallest amount of energy to be accepted
-		double kWhAccepted = Math.min(excess, Math.min(possiblekWh, needed));
-
-//		logger.info(storage.getBuilding(), "kWh: " + Math.round(stored * 100.0)/100.0
-//				+ "  kWhAccepted: " + Math.round(kWhAccepted * 10000.0)/10000.0 
-//				+ "  needed: " + Math.round(needed * 10000.0)/10000.0 
-//				+ "  possiblekWh: " + Math.round(possiblekWh * 10000.0)/10000.0
-//				+ "  ampHrRating: " + Math.round(ampHrRating * 100.0)/100.0
-//				+ "  nowAmpHr: " + Math.round(nowAmpHr * 100.0)/100.0);
-		
-		return kWhAccepted;
-	}
-
-	/**
 	 * Retrieves stored energy from grid-connected batteries.
 	 * 
 	 * @param needed the energy needed (kWh)
-	 * @param time the hours
-	 * @return energy to be retrieved (kWh)
+	 * @param timeHr the hours
+	 * @return energy that can be retrieved (kWh)
 	 */
-	public double retrieveStoredEnergy(double totalEnergyNeeded, double time) {
-		double retrieved = 0;
+	public double retrieveStoredEnergy(double totalEnergyNeeded, double timeHr) {
+
 		double remainingNeed = totalEnergyNeeded;
-		double totalAvailable = 0;
+//		double totalAvailable = 0;
 		
 		Set<Building> storages = manager.getBuildingSet(FunctionType.POWER_STORAGE);
 		if (!storages.isEmpty()) {
 			
-			for (Building b : storages) {
-				PowerStorage storage = b.getPowerStorage();
-				totalAvailable += storage.computeAvailableEnergy(
-						remainingNeed - totalAvailable, R_LOAD, time);
-			}
-		
-			double neededPerStorage = totalAvailable / storages.size();
+//			for (Building b : storages) {
+//				PowerStorage storage = b.getPowerStorage();
+//				totalAvailable += storage.getBattery().estimateEnergyToDeliver(
+//						remainingNeed - totalAvailable, R_LOAD, timeHr);
+//			}
+//		
+//			double neededPerStorage = totalAvailable / storages.size();
+			
+			// Note: In near future  
+			// First, retrieve energy from the battery where the building possess
+			// Next, retrieve energy evenly across all other batteries and not just one battery  
 			
 			for (Building b : storages) {
-				PowerStorage storage = b.getPowerStorage();
 				
 				if (remainingNeed <= 0) {
 					break;
 				}
+				
+				double kWhDelivered = b.getPowerStorage().getBattery().requestEnergy(remainingNeed, timeHr);
+				
+				remainingNeed = remainingNeed - kWhDelivered;
 
-				double available = storage.computeAvailableEnergy(
-						RandomUtil.getRandomDouble(neededPerStorage, neededPerStorage * 2), R_LOAD, time);
-				double stored = storage.getkWattHourStored();
-
-				if (available > 0) {
-					// update the resultant energy stored in battery
-					stored = stored - available;
-					// update energy needed
-					remainingNeed = remainingNeed - available;
-					// update the energy stored in this battery
-					storage.reconditionBattery(stored);
-					// update the total retrieved energy
-					retrieved = retrieved + available;
-				}
+//				double available = storage.getBattery().estimateEnergyToDeliver(
+//						RandomUtil.getRandomDouble(neededPerStorage, neededPerStorage * 2), R_LOAD, time);
+//				double stored = storage.getBattery().getCurrentStoredEnergy();
+//
+//				if (available > 0) {
+//					// update the resultant energy stored in battery
+//					stored = stored - available;
+//					// update energy needed
+//					remainingNeed = remainingNeed - available;
+//					// update the energy stored in this battery
+//					storage.getBattery().reconditionBattery(stored);
+//					// update the total retrieved energy
+//					retrieved = retrieved + available;
+//				}
 			}
 		}
-		return retrieved;
+		
+		return totalEnergyNeeded - remainingNeed;
 	}
 
 

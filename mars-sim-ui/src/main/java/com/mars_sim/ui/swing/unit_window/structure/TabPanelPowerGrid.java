@@ -389,8 +389,9 @@ public class TabPanelPowerGrid extends TabPanelTable {
 				return Msg.getString("TabPanelPowerGrid.column.generated"); //$NON-NLS-1$
 			else if (columnIndex == 3)
 				return Msg.getString("TabPanelPowerGrid.column.used"); //$NON-NLS-1$
-			else
+			else if (columnIndex == 4)
 				return Msg.getString("TabPanelPowerGrid.column.stored"); //$NON-NLS-1$
+			return null;
 		}
 
 		@Override
@@ -437,13 +438,13 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			
 			else {
 				PowerStorage ps = building.getPowerStorage();
-				double stored = 0;
+				double stored = 0D;
 				if (ps != null) {
-					stored = ps.getkWattHourStored();
+					stored = ps.getBattery().getCurrentStoredEnergy();
 					return Math.round(stored * 10.0) / 10.0;
 				}
 			
-				return 0;
+				return 0D;
 			}
 				
 		}
