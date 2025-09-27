@@ -21,7 +21,6 @@ import javax.swing.ImageIcon;
 
 import org.apache.batik.transcoder.TranscoderException;
 
-import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.ui.swing.tool.svg.SVGIcon;
 
 /**
@@ -215,16 +214,6 @@ public class ImageLoader {
 			imageCache.put(imageName, newImage);
 		}
 		return newImage;
-	}
-
-	/**
-	 * Converts from icon to image.
-	 *
-	 * @param icon
-	 * @return
-	 */
-	public static Image iconToImage(Icon icon) {
-		return MarsTerminal.iconToImage(icon);
 	}
 
 	public void destroy() {

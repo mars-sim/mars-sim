@@ -1344,6 +1344,12 @@ public class MasterClock implements Serializable {
 				logger.config("pulseDeviation: " + Math.round(pulseDeviation * 100.0)/1.0 + "%, pulse deviated too much.");
 			}
 			
+			// Patch the problem of the clock stalling at the start of the sim
+			if (leadPulseTime <= 0) {
+				// Reset the lead pulse to a default value
+				leadPulseTime = 0.001F;
+			}
+
 			// Elapsed time is acceptable
 			if (leadPulseTime > 0 && acceptablePulse) {
 				

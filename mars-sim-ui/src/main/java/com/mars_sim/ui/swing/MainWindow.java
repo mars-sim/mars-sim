@@ -16,6 +16,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -44,7 +45,6 @@ import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.console.InteractiveTerm;
 import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.core.GameManager;
-import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationListener;
 import com.mars_sim.core.SimulationRuntime;
@@ -87,9 +87,7 @@ public class MainWindow
 
 	private transient UIConfig uiconfigs;
 
-	private static SplashWindow splashWindow;
-
-	private static InteractiveTerm interactiveTerm;
+	private InteractiveTerm interactiveTerm;
 
 	// Data members
 	private boolean isIconified = false;
@@ -107,8 +105,6 @@ public class MainWindow
 	private JToggleButton playPauseSwitch;
 
 	private Dimension selectedSize;
-
-	private Dimension terminalSize;
 	
 	private Simulation sim;
 	
@@ -128,15 +124,7 @@ public class MainWindow
 	public MainWindow(boolean cleanUI, Simulation sim) {
 		this.sim = sim;
 
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			logger.log(Level.CONFIG, "Running mars-sim in Command Mode.");
-		} else if (GameManager.getGameMode() == GameMode.SANDBOX) {
-			logger.log(Level.CONFIG, "Running mars-sim in Sandbox Mode.");
-		} else if (GameManager.getGameMode() == GameMode.SPONSOR) {
-			logger.log(Level.CONFIG, "Running mars-sim in Sponsor Mode.");
-		} else if (GameManager.getGameMode() == GameMode.SOCIETY) {
-			logger.log(Level.CONFIG, "Running mars-sim in Society Mode.");
-		}
+		logger.config("Starting as " + GameManager.getGameMode());
 
 		// Set Apache Batik library system property so that it doesn't output:
 		// "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
@@ -171,7 +159,6 @@ public class MainWindow
 		}
 
 		graphicsDevice = gd[0];
-//		String id0 = graphicsDevice.getIDstring();
 		logger.config("Use the first screen.");
 		
 		int screenWidth = graphicsDevice.getDisplayMode().getWidth();
@@ -181,6 +168,9 @@ public class MainWindow
 		frame = new JFrame();
 		frame.setResizable(true);
 		frame.setMinimumSize(new Dimension(640, 640));
+
+		// Setup before loading defaults
+		interactiveTerm = new InteractiveTerm(sim);
 
 		// Set the UI configuration
 		boolean useDefault = uiconfigs.useUIDefault();
@@ -203,23 +193,14 @@ public class MainWindow
 		// Show frame
 		frame.setVisible(true);
 
-		// Dispose the Splash Window
-		disposeSplash();
-
 		// Open all initial windows.
 		desktop.openInitialWindows();
 		
 		if (desktop.getSoundPlayer() == null)
 			return;
 		
-		try {
-			Thread.sleep(15_000);
-			// Starts a background sound track.
-			desktop.playBackgroundMusic();
-		} catch (InterruptedException e) {
-			logger.severe("Problem playing background music: " + e);
-			Thread.currentThread().interrupt();
-		}
+		// Starts a background sound track.
+		desktop.playBackgroundMusic();
 	}
 
 	/**
@@ -262,23 +243,8 @@ public class MainWindow
 		
 		
 		// For Mars Terminal
-		terminalSize = uiconfigs.getMarsTerminalDimension();
-
 		// Set frame size
-		getMarsTerminal().getFrame().setSize(terminalSize);
-		logger.config("Last saved window dimension: "
-				+ terminalSize.width
-				+ " x "
-				+ terminalSize.height
-				+ ".");
-
-		// Display screen at a certain location
-		getMarsTerminal().getFrame().setLocation(uiconfigs.getMarsTerminalLocation());
-		logger.config("Last saved terminal's frame starts at ("
-				+ uiconfigs.getMarsTerminalLocation().x
-				+ ", "
-				+ uiconfigs.getMarsTerminalLocation().y
-				+ ").");
+		positionMarsTerminal(uiconfigs.getMarsTerminalLocation(), uiconfigs.getMarsTerminalDimension());
 	}
 
 	/**
@@ -315,27 +281,21 @@ public class MainWindow
 		
 		
 		// Set Mars Terminal frame size
-		terminalSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMarsTerminalDimension());
+		var terminalSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMarsTerminalDimension());
 
-		getMarsTerminal().getFrame().setSize(terminalSize); 
-
-		logger.config("Default terminal dimension: "
-				+ terminalSize.width
-				+ " x "
-				+ terminalSize.height
-				+ ".");
-
-		getMarsTerminal().getFrame().setLocation(
-				((screenWidth - terminalSize.width) / 2),
-				((screenHeight - terminalSize.height) / 2));
-
-		logger.config("Use default configuration to set the terminal's frame to the center of the screen.");
-		logger.config("The terminal frame is centered and starts at ("
-				+ (screenWidth - terminalSize.width) / 2
-				+ ", "
-				+ (screenHeight - terminalSize.height) / 2
-				+ ").");
+		positionMarsTerminal(new Point(((screenWidth - terminalSize.width) / 2),
+										((screenHeight - terminalSize.height) / 2)),
+				terminalSize);
 	}
+
+	private void positionMarsTerminal(Point location, Dimension terminalSize) {
+		
+		logger.config("Mars Terminal postion: " + location + " dimension: " + terminalSize);
+
+		var marsTerminal = interactiveTerm.getTerminal().getFrame();
+		marsTerminal.setSize(terminalSize);
+		marsTerminal.setLocation(location);
+	};
 
 	/**
 	 * Calculates the screen size.
@@ -398,16 +358,6 @@ public class MainWindow
 	Dimension getSelectedSize() {
 		return selectedSize;
 	}
-
-	/**
-	 * Get the selected screen size for the Mars Terminal window.
-	 * 
-	 * @return
-	 */
-	Dimension getTerminalSize() {
-		return terminalSize;
-	}
-	
 	
 	/**
 	 * Initializes UI elements for the frame
@@ -528,9 +478,6 @@ public class MainWindow
 
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this, 1000L);
-		
-		// Add MarsTerminal to the master clock's listener
-		interactiveTerm.init();
 	}
 
 	/**
@@ -746,31 +693,6 @@ public class MainWindow
 	}
 
 	/**
-	 * Starts the splash window frame
-	 */
-	public static void startSplash() {
-		// Create a splash window
-		if (splashWindow == null) {
-			splashWindow = new SplashWindow();
-		}
-
-		splashWindow.setIconImage();
-		splashWindow.display();
-		splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
-	}
-
-	/**
-	 * Disposes the splash window frame.
-	 * Note: needs to be public as it will also be called by MarsProjectFXGL
-	 */
-	public static void disposeSplash() {
-		if (splashWindow != null) {
-			splashWindow.remove();
-		}
-		splashWindow = null;
-	}
-
-	/**
 	 * Changes the title.
 	 * 
 	 * @param isPaused
@@ -878,15 +800,6 @@ public class MainWindow
 	}
 
 	/**
-	 * Sets the interactive term.
-	 * 
-	 * @param i
-	 */
-	public static void setInteractiveTerm(InteractiveTerm i) {
-		interactiveTerm = i;
-	}
-
-	/**
 	 * Returns the reference of the Mars Terminal.
 	 * 
 	 * @return
@@ -969,13 +882,6 @@ public class MainWindow
 		desktop = null;
 		
 		uiconfigs = null;
-		
-		if (splashWindow != null)
-			splashWindow.destroy();
-		splashWindow = null;
-		
-		interactiveTerm.destroy();
-		interactiveTerm = null;
 		
 		playPauseSwitch = null;
 		selectedSize = null;

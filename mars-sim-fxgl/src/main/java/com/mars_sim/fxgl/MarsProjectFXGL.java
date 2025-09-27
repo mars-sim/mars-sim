@@ -23,15 +23,12 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import javax.swing.SwingUtilities;
-
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.localization.Language;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.ui.swing.MainWindow;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
@@ -123,9 +120,6 @@ public class MarsProjectFXGL extends GameApplication {
 	 @Override
 	 protected void initUI() {
 		first.initUI();
-		
-		// Dispose the Splash Window
-	    SwingUtilities.invokeLater(MainWindow::disposeSplash);
 	 }
 
 	 @Override
@@ -161,8 +155,6 @@ public class MarsProjectFXGL extends GameApplication {
 	 */
 	public static void main(String[] args) {
 	    
-	    SwingUtilities.invokeLater(MainWindow::startSplash);
-
 		 // Create the logs dir in user.home
 		new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
 

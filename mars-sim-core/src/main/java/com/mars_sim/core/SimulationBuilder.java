@@ -11,11 +11,8 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.mars_sim.core.structure.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
@@ -28,6 +25,10 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.CrewConfig;
+import com.mars_sim.core.structure.InitialSettlement;
+import com.mars_sim.core.structure.SettlementBuilder;
+import com.mars_sim.core.structure.SettlementTemplate;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.RandomUtil;
 
 /*
@@ -300,22 +301,6 @@ public class SimulationBuilder {
 			// initialize getTransportManager	
 			sim.getTransportManager().init(sim);
 		}
-
-		while (true) {
-	        try {
-				TimeUnit.MILLISECONDS.sleep(1000);
-				if (!sim.isUpdating()) {
-					logger.config("Starting the Master Clock...");		
-					sim.startClock(false);
-					break;
-				}
-	        } catch (InterruptedException e) {
-				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); 
-				// Restore interrupted state...
-			    Thread.currentThread().interrupt();
-	        }
-		}
-
 		
 		return sim;
 	}
