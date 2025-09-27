@@ -36,7 +36,7 @@ import com.mars_sim.ui.swing.MainWindow;
  */
 public class SplashWindow extends JComponent {
 
-	private record SplashImage(String filename, String source) {};
+	private record SplashImage(String filename, String source) {}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
