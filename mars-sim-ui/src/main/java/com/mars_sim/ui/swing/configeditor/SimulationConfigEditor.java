@@ -186,14 +186,13 @@ public class SimulationConfigEditor {
 	 * 
 	 * @param config the simulation configuration.
 	 */
-	public SimulationConfigEditor(SimulationConfig config, CrewConfig crew) {
+	public SimulationConfigEditor(SimulationConfig config, ScenarioConfig scenarioConfig, CrewConfig crew) {
 
 		// Initialize data members.
 		raFactory = config.getReportingAuthorityFactory();
 		settlementTemplateConfig = config.getSettlementTemplateConfiguration();
 		personConfig = config.getPersonConfig();
 		crewConfig = crew;
-		scenarioConfig = new ScenarioConfig(config);
 
 		// Preload the config to set up the preferred LAF
 		UIConfig configs = new UIConfig();

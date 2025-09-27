@@ -29,7 +29,6 @@ import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
-import com.mars_sim.core.person.CrewConfig;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
@@ -90,11 +89,11 @@ public class MarsProject {
 			}			
 
 			// Preload the Config
-			SimulationConfig.loadConfig();
+			var simConfig = SimulationConfig.loadConfig();
 			
 			if (useSiteEditor) {
 				logger.config("Start the Scenario Editor...");
-				startScenarioEditor(builder);
+				startScenarioEditor(builder, simConfig);
 			}
 			else if (simFile != null) {
 				builder.setSimFile(simFile);
@@ -102,7 +101,7 @@ public class MarsProject {
 			
 			// Go to console main menu if there is no template well-defined in the startup string
 			if (!builder.isFullyDefined() && !useNew) {
-				showUserChoice(builder);
+				showUserChoice(builder, simConfig);
 			}
 
 			// Start the splash window
@@ -131,15 +130,19 @@ public class MarsProject {
 	 * Goes to console for building the sim.
 	 * 
 	 * @param builder
+	 * @param simConfig 
 	 */
-	private void showUserChoice(SimulationBuilder builder) {
+	private void showUserChoice(SimulationBuilder builder, SimulationConfig simConfig) {
 
-		var choice = new StartUpChooser();
+		
+		var choice = new StartUpChooser(builder.getScenarioConfig(),
+										simConfig.getSettlementTemplateConfiguration(),
+										simConfig.getReportingAuthorityFactory());
 
 		switch (choice.getChoice()) {
 			case StartUpChooser.EDIT_SCENARIO -> {
 				logger.config("Start the Scenario Editor...");
-				startScenarioEditor(builder);
+				startScenarioEditor(builder, simConfig);
 			}
 			case StartUpChooser.LOAD_SIM -> {
 				// Load simulation
@@ -157,9 +160,19 @@ public class MarsProject {
 				builder.startSocietySim();					
 			}
 			case StartUpChooser.SCENARIO -> {
-					Scenario scenario = choice.getScenario();
-					if (scenario != null) {
-						builder.setScenarioName(scenario.getName());
+				var scenario = choice.getScenario();
+				if (scenario != null) {
+					builder.setScenarioName(scenario.getName());
+				}
+			}
+			case StartUpChooser.TEMPLATE -> {
+				var t = choice.getTemplate();
+				if (t != null) {
+					builder.setTemplate(t.getName());
+					var a = choice.getAuthority();
+					if (a != null) {
+						builder.setSponsor(a.getName());
+					}
 				}
 			}
 			case StartUpChooser.NEW_SIM -> {
@@ -252,13 +265,12 @@ public class MarsProject {
 	 * Starts the scenario editor.
 	 * 
 	 * @param builder
+	 * @param simConfig 
 	 */
-	private void startScenarioEditor(SimulationBuilder builder) {
+	private void startScenarioEditor(SimulationBuilder builder, SimulationConfig config) {
 		// Start sim config editor
-		var config = SimulationConfig.loadConfig();
-		var crewConfig = new CrewConfig(config);
-		builder.setCrewConfig(crewConfig);
-		SimulationConfigEditor editor = new SimulationConfigEditor(config, crewConfig);
+		SimulationConfigEditor editor = new SimulationConfigEditor(config, builder.getScenarioConfig(),
+							builder.getCrewConfig());
 		logger.config("Starting the Scenario Editor...");
 
 		Scenario scenario = editor.getScenario();

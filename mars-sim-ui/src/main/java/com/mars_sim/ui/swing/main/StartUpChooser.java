@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -25,7 +26,12 @@ import javax.swing.filechooser.FileFilter;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
+import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
+import com.mars_sim.core.configuration.ScenarioConfig;
+import com.mars_sim.core.structure.SettlementTemplate;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MainWindow;
 
@@ -60,12 +66,33 @@ public class StartUpChooser extends JDialog {
     static final int EXIT = 5;
     static final int NEW_SOCIETY = 6;
     
-    private String simFile;
-    private int selected = -1;
+    private String scenarioLabel = Msg.getString("StartUpChooser.scenario");
+    private String templateLabel = Msg.getString("StartUpChooser.template");
 
-    StartUpChooser() {
+    private ScenarioConfig scenarioConfig = null;
+    private AuthorityFactory authorityConfig = null;
+    private SettlementTemplateConfig templateConfig = null;
+
+    private int selected = -1;
+    private String selectedFile;
+    private Scenario selectedScenario;
+    private SettlementTemplate selectedTemplate;
+    private Authority selectedAuthority;
+
+    /**
+     * Show the start chooser to the user. Pass in the various configuration pools for their selection.
+     * @param scenarioConfig
+     * @param templateConfig
+     * @param authorityConfig
+     */
+    StartUpChooser(ScenarioConfig scenarioConfig, SettlementTemplateConfig templateConfig,
+                    AuthorityFactory authorityConfig) {
         super(new JFrame());
 
+        this.scenarioConfig = scenarioConfig;
+        this.templateConfig = templateConfig;
+        this.authorityConfig = authorityConfig;
+        
 		setSize(250, 300);
         setIconImage(MainWindow.getIconImage());
         setResizable(false);
@@ -110,11 +137,24 @@ public class StartUpChooser extends JDialog {
     }
 
     private void selectTemplate() {
-        choiceMade(TEMPLATE);
+        var content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+        content.add(SelectionDialog.createComboPane(templateLabel, templateConfig.getKnownItems(),
+                                                s -> selectedTemplate = s));
+        content.add(SelectionDialog.createComboPane(Msg.getString("StartUpChooser.authority"), authorityConfig.getKnownItems(),
+                                                s -> selectedAuthority = s));
+        if (SelectionDialog.showDialog(this, content, templateLabel)) {
+            choiceMade(TEMPLATE);
+        }
     }
 
     private void selectScenario() {
-        choiceMade(SCENARIO);
+        var content = SelectionDialog.createComboPane(scenarioLabel, scenarioConfig.getKnownItems(), s -> selectedScenario = s);
+
+        if (SelectionDialog.showDialog(this, content, scenarioLabel)) {
+            choiceMade(SCENARIO);
+        }
     }
 
     private synchronized void choiceMade(int choice) {
@@ -131,7 +171,7 @@ public class StartUpChooser extends JDialog {
         chooser.setFileFilter(new SimFileFilter());
 		chooser.setDialogTitle(Msg.getString("MainWindow.dialogLoadSavedSim")); // -NLS-1$
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			simFile = chooser.getSelectedFile().getAbsolutePath();
+			selectedFile = chooser.getSelectedFile().getAbsolutePath();
             choiceMade(LOAD_SIM);
 		}
 	}
@@ -156,12 +196,31 @@ public class StartUpChooser extends JDialog {
      * @return
      */
     public String getSelectedFile() {
-        return simFile;
+        return selectedFile;
     }
 
+    /**
+     * Return the selected Scenario if the user chose to load a scenario.
+     * @return
+     */
     public Scenario getScenario() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getScenario'");
+        return selectedScenario;
     }
 
+    /**
+     * Return the selected Template if the user chose to load a settlement template.
+     * @return
+     */
+    public SettlementTemplate getTemplate() {
+        return selectedTemplate;
+    }
+
+    /**
+     * Return the selected Authority if the user chose to load a settlement template.
+     * This may be null if the default authority is to be used.
+     * @return
+     */
+    public Authority getAuthority() {
+        return selectedAuthority;
+    }
 }
