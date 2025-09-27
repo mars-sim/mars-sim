@@ -353,7 +353,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<!-- capacity: the battery energy storage capacity in the unit of kWh. -->
 			<!-- discharge rate: The max C-rating of the battery in the unit of C. -->
-			<power-storage capacity="40" discharge-rate="1.25"/>
+			<power-storage capacity="50" discharge-rate="1.25"/>
 			
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="2">
@@ -1740,7 +1740,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			
-			<power-storage capacity="80" discharge-rate="1.2"/>
+			<power-storage capacity="40" discharge-rate="1.2"/>
 
 			<recreation capacity="5">
 				<activity>
@@ -1822,7 +1822,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				    fuel-type="methane"	/>
 			</power-generation>
 			
-			<power-storage capacity="80" discharge-rate="1.25"/>
+			<power-storage capacity="40" discharge-rate="1.25"/>
 
 			<recreation capacity="4">
 				<activity>
@@ -2171,7 +2171,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Thermionic Nuclear Power Source" 
 					modules="37" power="3.1" thermal-conversion-efficiency="10.5" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="5" discharge-rate="1.25"/>
+			<power-storage capacity="10" discharge-rate="1.25"/>
 		</functions>
 	</building>
 	
@@ -2186,7 +2186,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Thermionic Nuclear Power Source" 
 					modules="74" power="4.7" thermal-conversion-efficiency="10.37" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="02" discharge-rate="1.25"/>
+			<power-storage capacity="30" discharge-rate="1.25"/>
 		</functions>
 	</building>
 		
@@ -2225,7 +2225,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Fission Power Source" 
 					modules="1" power="175.0" thermal-conversion-efficiency="27.4" percent-loading="83.3"/>
 			</power-generation>
-			<power-storage capacity="40" discharge-rate="1.25"/>
+			<power-storage capacity="20" discharge-rate="1.25"/>
 		</functions>
 	</building>
 
@@ -3221,7 +3221,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="true" power="40.0"
+				<power-source type="Fuel Power Source" toggle="true" power="60.0"
 					fuel-type="methane" />
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>

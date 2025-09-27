@@ -54,8 +54,10 @@ public class Battery implements Serializable {
 	 */
 	private static final double NOMINAL_AMP_HOURS = .25;
 	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
-	private static final int MAX_C_RATING_CHARGING = 4;
-
+	private static final int MAX_C_RATING_CHARGING = 8;
+	/** The maximum continuous discharge rate (within the safety limit) that this battery can handle. */
+	private static final int MAX_C_RATING_DISCHARGING = 4;
+	
 	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .075; // [in %]
@@ -246,8 +248,8 @@ public class Battery implements Serializable {
 		// That same 100Ah battery being discharged at a C-rate of 1C will provide 100Amps 
 		// for one hours, and if discharged at 0.5C rate it provide 50Amps for 2 hours.
 		
-		double cRating = getMaxCRating();
-		double nowAmpHr = ampHrRating * cRating * fudgeFactor * time;
+		double cRatingDischarge = getMaxCRating();
+		double nowAmpHr = ampHrRating * cRatingDischarge * fudgeFactor * time;
 		double possiblekWh = nowAmpHr / 1000D * vOut;
 
 		double availablekWh = Math.min(stored, Math.min(possiblekWh, neededkWh));
@@ -529,7 +531,7 @@ public class Battery implements Serializable {
     }
 
 	public double getMaxCRating() {
-		return MAX_C_RATING_CHARGING;
+		return MAX_C_RATING_DISCHARGING;
 	}
 
     private void updateLowPowerMode() {

@@ -14,6 +14,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
@@ -232,12 +233,12 @@ public class PowerGrid implements Serializable, Temporal {
 		updateEfficiency(pulse.getElapsed());
 
 		// Update the power flow.
-		double neededPower = powerReq * ROLLING_FACTOR - powerGen;
-		sufficientPower = (neededPower < 0);
-		
+		double powerDiff = powerReq * ROLLING_FACTOR - powerGen;
+		sufficientPower = (powerDiff < 0);
+			
 		// Run at the start of the sim once only
 		if (justLoaded				
-			&& pulse.getMarsTime().getMissionSol() == 1
+//			&& pulse.getMarsTime().getMissionSol() == 1
 				&& pulse.getMarsTime().getMillisolInt() >= 1) {
 					// Reset justLoaded
 					justLoaded = false;
@@ -246,11 +247,11 @@ public class PowerGrid implements Serializable, Temporal {
 		if (!justLoaded) {			
 			// May add back for debugging : logger.info(settlement, 0, "neededPower: " + Math.round(neededPower) + "  powerGenerated: " + Math.round(powerGen) + "  powerRequired: " + Math.round(powerReq))
 		
-			if (neededPower < 0) {
-				handleExcessPower(pulse.getElapsed(), neededPower);
+			if (powerDiff < 0) {
+				handleExcessPower(pulse.getElapsed(), powerDiff);
 			}
 			else {
-				handleLackOfPower(pulse.getElapsed(), neededPower);
+				handleLackOfPower(pulse.getElapsed(), powerDiff);
 			}
 		}
 		
@@ -405,10 +406,8 @@ public class PowerGrid implements Serializable, Temporal {
 			sufficientPower = false;
 			return;
 		}
-		
-		
-		// 6. Turn on full power mode on non-inhabitable building
-		// Store excess power in power storage buildings.
+			
+		// 6. Store excess power in power storage buildings.
 
 		double timeHr = time * HOURS_PER_MILLISOL;
 		double excessEnergy = excess * timeHr * systemEfficiency;
@@ -441,6 +440,19 @@ public class PowerGrid implements Serializable, Temporal {
 		excess -= netPower02;
 		// Update the total generated power
 		setGeneratedPower(powerGenerated + netPower02);
+		
+		if (excess < 0) {
+			sufficientPower = false;
+			return;
+		}
+		
+		// 9. Store excess power in power storage buildings.
+
+		excessEnergy = excess * timeHr * systemEfficiency;
+		unableToStoreEnergy = storeExcessPower(excessEnergy, timeHr);
+		excessPower = unableToStoreEnergy / timeHr / systemEfficiency;
+		// Update the total generated power
+		setGeneratedPower(powerGenerated - excessPower);
 		
 		if (excess < 0) {
 			sufficientPower = false;
@@ -514,13 +526,13 @@ public class PowerGrid implements Serializable, Temporal {
 			return;
 		}
 		
-		// 5. Retrieve power from the grid battery for the second time
-		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
-		
-		if (neededPower < 0) {
-			sufficientPower = true;
-			return;
-		}
+//		// 5. Retrieve power from the grid battery for the second time
+//		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
+//		
+//		if (neededPower < 0) {
+//			sufficientPower = true;
+//			return;
+//		}
 		
 		// 6. If still not having sufficient power, reduce power to some buildings
 
@@ -565,16 +577,16 @@ public class PowerGrid implements Serializable, Temporal {
 			return;
 		}
 		
-		// 9. Retrieve power from the grid battery for the third time
-		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
-		
-		if (neededPower < 0) {
-			sufficientPower = true;
-			return;
-		}
+//		// 9. Retrieve power from the grid battery for the third time
+//		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
+//		
+//		if (neededPower < 0) {
+//			sufficientPower = true;
+//			return;
+//		}
 		
 		// 10. If power needs are still not met, turn off the power in each
-		// uninhabitable building until required power reduction is met.
+		// non-inhabitable building until required power reduction is met.
 		double savedPower1 = adjustPowerLevel(true, neededPower, buildings, 
 				false, PowerMode.LOW_POWER, PowerMode.NO_POWER);
 			
@@ -587,13 +599,13 @@ public class PowerGrid implements Serializable, Temporal {
 			return;
 		}
 		
-		// 11. Retrieve power from the grid battery for the fourth time
-		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
-		
-		if (neededPower < 0) {
-			sufficientPower = true;
-			return;
-		}
+//		// 11. Retrieve power from the grid battery for the fourth time
+//		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
+//		
+//		if (neededPower < 0) {
+//			sufficientPower = true;
+//			return;
+//		}
 		
 		// 12. If power needs are still not met, turn on the low power in each inhabitable
 		// building until required power reduction is met.
@@ -609,25 +621,25 @@ public class PowerGrid implements Serializable, Temporal {
 		}
 		
 		// 13. Retrieve power from the grid battery for the fifth time
-		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
+//		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
+//		
+//		if (neededPower < 0) {
+//			sufficientPower = true;
+//			return;
+//		}
 		
-		if (neededPower < 0) {
-			sufficientPower = true;
-			return;
-		}
-		
-		// 14. If power needs are still not met, turn off the power in each inhabitable
-		// building until required power reduction is met.
-		double savedPower3 = adjustPowerLevel(true, neededPower, buildings, 
-				true, PowerMode.LOW_POWER, PowerMode.NO_POWER);
-		
-		neededPower -= savedPower3;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated + savedPower3);
-		
-		if (neededPower < 0) {
-			sufficientPower = true;
-		}
+//		// 14. If power needs are still not met, turn off the power in each inhabitable
+//		// building until required power reduction is met.
+//		double savedPower3 = adjustPowerLevel(true, neededPower, buildings, 
+//				true, PowerMode.LOW_POWER, PowerMode.NO_POWER);
+//		
+//		neededPower -= savedPower3;
+//		// Update the total generated power
+//		setGeneratedPower(powerGenerated + savedPower3);
+//		
+//		if (neededPower < 0) {
+//			sufficientPower = true;
+//		}
 	}
 		
 	/**
@@ -681,7 +693,13 @@ public class PowerGrid implements Serializable, Temporal {
 		Iterator<Building> i = buildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
+
 			boolean life = building.hasFunction(FunctionType.LIFE_SUPPORT);
+			
+			boolean isGenerator = building.getCategory() == BuildingCategory.POWER;
+			if (isGenerator && !life)
+				continue;
+			
 			PowerMode thisOldPM = building.getPowerMode();
 			boolean morePower = canGenMoreThanLoad(building, newPowerMode);
 			double power = 0;
@@ -768,6 +786,10 @@ public class PowerGrid implements Serializable, Temporal {
 			Building building = i.next();
 		
 			if (!building.hasFunction(functionType))
+				continue;
+			
+			boolean isGenerator = building.getCategory() == BuildingCategory.POWER;
+			if (isGenerator && !stepUp)
 				continue;
 			
 			List<PowerSource> sources = building.getPowerGeneration().getPowerSources();

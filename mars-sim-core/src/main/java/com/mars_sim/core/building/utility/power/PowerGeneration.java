@@ -46,6 +46,8 @@ public class PowerGeneration extends Function {
 		// Call Function constructor.
 		super(FunctionType.POWER_GENERATION, spec, building);
 
+		powerGeneratedCache = 0D;
+		
 		// Determine power sources.
 		powerSources = new ArrayList<>();
 		

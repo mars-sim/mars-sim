@@ -112,17 +112,17 @@
         </connection-list>
     </building>
 
-
     <!-- Building Packages -->
     <building-package name="Storage Set 1"/>
    	<building-package name="ERV Set 1"/>
    	<building-package name="Air Set 1 - 1x2"/>
     <building-package name="Sabatier Set 1 - 1x3"/>
 	<building-package name="Syngas Set 1 - 1x1"/>
-	<building-package name="Solar Set 1 - 1x6"/>
+	<building-package name="Solar Set 1 - 1x9"/>
    	<building-package name="Wind Set 1 - 1x6"/>	
-   	<building-package name="TOPAZ-2A Set 1 - 1x2"/>
-	<building-package name="TOPAZ-3 Set 1 - 1x1"/>
+   	<building-package name="TOPAZ-2A Set 1 - 1x3"/>
+	<building-package name="TOPAZ-3 Set 1 - 1x2"/>
+	<building-package name="Methane Set 1 - 1x1" />	
  	<building-package name="Brine Water Well Set 1 - 1x1"/>
  	 
     <vehicle type="Explorer Rover" number="2" />
