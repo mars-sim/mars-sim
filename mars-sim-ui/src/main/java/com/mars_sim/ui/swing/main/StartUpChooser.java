@@ -178,7 +178,7 @@ public class StartUpChooser extends JDialog {
 
     /**
      * Gets the choice made by the user. This method blocks until a choice is made.
-     * @return
+     * @return The choice made by the user.
      */
     public synchronized int getChoice() {
         while (selected == -1) {
@@ -193,7 +193,7 @@ public class StartUpChooser extends JDialog {
 
     /**
      * Gets the selected file if the user chose to load a simulation.
-     * @return
+     * @return Path to the selected file to load; may be null if default is to be used.
      */
     public String getSelectedFile() {
         return selectedFile;
@@ -201,7 +201,7 @@ public class StartUpChooser extends JDialog {
 
     /**
      * Return the selected Scenario if the user chose to load a scenario.
-     * @return
+     * @return Scenario selected.
      */
     public Scenario getScenario() {
         return selectedScenario;
@@ -209,7 +209,7 @@ public class StartUpChooser extends JDialog {
 
     /**
      * Return the selected Template if the user chose to load a settlement template.
-     * @return
+     * @return Template selected.
      */
     public SettlementTemplate getTemplate() {
         return selectedTemplate;
@@ -218,7 +218,7 @@ public class StartUpChooser extends JDialog {
     /**
      * Return the selected Authority if the user chose to load a settlement template.
      * This may be null if the default authority is to be used.
-     * @return
+     * @return Authority selected; may be null.
      */
     public Authority getAuthority() {
         return selectedAuthority;

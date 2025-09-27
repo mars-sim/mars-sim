@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -231,7 +232,7 @@ public class SimulationBuilder {
 	 * 
 	 * @return The new simulation started
 	 */
-	public Simulation start() {
+	public Simulation start(Consumer<String> statusConsumer) {
 		
 		// Load xml files but not until arguments parsed since it may change 
 		// the data directory
@@ -253,7 +254,7 @@ public class SimulationBuilder {
 			sim.createNewSimulation(userTimeRatio); 
 			
 			SettlementBuilder builder = new SettlementBuilder(sim,
-					simConfig);
+					simConfig, statusConsumer);
 			if (useCrews) {
 				// Load crews
 				getCrewConfig();

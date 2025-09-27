@@ -403,7 +403,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param timings 
 	 */
 	private void deliverOthers(Simulation sim, SimulationConfig sc) {
-		SettlementBuilder builder = new SettlementBuilder(sim, sc);
+		SettlementBuilder builder = new SettlementBuilder(sim, sc, null);
 		
 		builder.createSupplies(this, settlement);
 

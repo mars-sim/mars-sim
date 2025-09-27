@@ -14,7 +14,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -37,102 +36,136 @@ import com.mars_sim.ui.swing.MainWindow;
  */
 public class SplashWindow extends JComponent {
 
+	private record SplashImage(String filename, String source) {};
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	private JFrame window;
 
 	// Constant data member
 	private static final String SPLASH_FOLDER = "splash/";
 	private static final String VERSION_STRING = SimulationRuntime.VERSION.getVersionTag();
 	private static final String BUILD_STRING = "Build " + SimulationRuntime.VERSION.getBuild();
 	private static final String MSP_STRING = Msg.getString("SplashWindow.title"); //$NON-NLS-1$
-	private static final String[] AUTHOR_STRING = {
-			"A picture from NASA Ames Research Center. 2005", 
-			"Water Ice drilling. NASA Langley Advanced Concepts Lab AMA",
-			"Family Watching News on Terraforming Mars. Tiago da Silva",
-			"Underground Oasis in Martian Lava Tube. Marstopia Design Contest",
-			"Light enters through trough-shaped ports. Team SEArch+/Apis Cor",
-			"Internal view of Mars Habitat. Hassell + Eckersley O’Callaghan",
-			"Desolate life at a homestead. Settlers (2021) UK movie. humanmars.net",
-			"Agridome for growing food on Mars. Mars Society. 2020", 
-			"Cyanobacteria help detoxify the environment" // Astronomy Magazine. 2023
+	private static final SplashImage[] IMAGES = {
+			new SplashImage("Mars_Canyon.jpg", "A picture from NASA Ames Research Center. 2005"), 
+			new SplashImage("nasa_langley_advanced_concepts_lab.jpg", "Water Ice drilling. NASA Langley Advanced Concepts Lab AMA"),
+			new SplashImage("News_Terraforming_Mars.jpg", "Family Watching News on Terraforming Mars. Tiago da Silva"),
+			new SplashImage("Underground_Oasis_Martian_Lava_Tube.jpg", "Underground Oasis in Martian Lava Tube. Marstopia Design Contest"),
+			new SplashImage("3D_printed_habitat.jpg", "Light enters through trough-shaped ports. Team SEArch+/Apis Cor"),
+			new SplashImage("Interior_home.jpg", "Internal view of Mars Habitat. Hassell + Eckersley O’Callaghan"),
+			new SplashImage("greenhouse_lady.jpg", "Desolate life at a homestead. Settlers (2021) UK movie. humanmars.net"),
+			new SplashImage("MSC-AgriDomes-on-Mars.jpg", "Agridome for growing food on Mars. Mars Society. 2020"), 
+			new SplashImage("Cyanobacteria_terraforming.jpg", "Cyanobacteria help detoxify the environment")
 	};
-	
-	private static final String[] FILE_NAME = {
-			"Mars_Canyon.jpg",
-			"nasa_langley_advanced_concepts_lab.jpg",
-			"News_Terraforming_Mars.jpg",
-			"Underground_Oasis_Martian_Lava_Tube.jpg",
-			"3D_printed_habitat.jpg",
-			"Interior_home.jpg",
-			"greenhouse_lady.jpg",
-			"MSC-AgriDomes-on-Mars.jpg",
-			"Cyanobacteria_terraforming.jpg"
-	};
-	
-	/** The font for displaying {@link #MSP_STRING}. */
-	private final Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 42);
-	/** Measures the pixels needed to display text. */
-	private final FontMetrics titleMetrics = getFontMetrics(titleFont);
-	/** The displayed length of {@link #MSP_STRING} in pixels. */
-	private final int titleWidth = titleMetrics.stringWidth(MSP_STRING);
-	
-	/** The font for displaying {@link #VERSION_STRING}. */
-	private final Font versionStringFont = new Font(Font.SANS_SERIF, Font.BOLD, 30);
-	/** Measures the pixels needed to display text. */
-	private final FontMetrics versionMetrics = getFontMetrics(versionStringFont);
-	/** The displayed length of {@link #VERSION_STRING} in pixels. */
-	private final int versionStringWidth = versionMetrics.stringWidth(VERSION_STRING);
-	
-	/** The font for displaying {@link #VERSION_STRING}. */
-	private final Font versionStringFont1 = new Font("Bell MT", Font.BOLD, 18);
-	/** Measures the pixels needed to display text. */
-	private final FontMetrics versionMetrics1 = getFontMetrics(versionStringFont1);
-	/** The displayed length of {@link #VERSION_STRING} in pixels. */
-	private final int versionStringWidth1 = versionMetrics1.stringWidth(VERSION_STRING);
-	
-	/** The font for displaying {@link #BUILD_STRING}. */
-	private final Font buildStringFont = new Font("Bell MT", Font.BOLD, 16);
-	/** Measures the pixels needed to display text. */
-	private final FontMetrics buildMetrics = getFontMetrics(buildStringFont);
-	/** The displayed length of {@link #BUILD_STRING} in pixels. */
-	private final int buildStringWidth = buildMetrics.stringWidth(BUILD_STRING);
-	
-	/** The font for displaying {@link #AUTHOR_STRING}. */
-	private final Font authorStringFont = new Font("Bell MT", Font.ITALIC, 17);
 
-	private Image splashImage;
+	private static final int STATUS_BOX_H = 30;
+	private static final int STATUS_BOX_W = 300;
+
+	private JFrame window;
 	private int w;
 	private int h;
 
+	private Font authorStringFont = new Font("Bell MT", Font.ITALIC, 17);
+	private int authorY;
+
+	private Font buildStringFont = new Font("Bell MT", Font.BOLD, 16);
+	private int buildX;
+	private int buildY;
+
+	private int versionY;
+	private int versionX;
+	private Color versionColour;
+	private Font versionFont;
+
+	private Font titleFont = new Font("Bookman Old Style", Font.PLAIN, 42);
+	private Color titleColour;
+	private int titleX;
+
+	private String imageSource;
+
+	private String statusMessage = null;
+	private Font statusFont;
+	private Color statusColour;
+	private int statusX;
+	private int statusY;
+
+	private boolean firstDraw = true;
+	private boolean drawImage = true;
+
+	/**
+	 * Get the width of a string in pixels for the specified font.
+	 * @param font
+	 * @param text
+	 * @return
+	 */
+	private  int getStringWidth(Font font, String text) {
+		FontMetrics metrics = getFontMetrics(font);
+		return metrics.stringWidth(text);
+	}
+
 	@SuppressWarnings("serial")
 	public SplashWindow() {
-		int rand = RandomUtil.getRandomInt(FILE_NAME.length - 1);
+		int rand = RandomUtil.getRandomInt(IMAGES.length - 1);
+		imageSource = IMAGES[rand].source();
+		var splashImage = ImageLoader.getImage(SPLASH_FOLDER + IMAGES[rand].filename());
+		ImageIcon splashIcon = new ImageIcon(splashImage);
+		w = splashIcon.getIconWidth();
+		h = splashIcon.getIconHeight();
+
+		statusY = h - (STATUS_BOX_H + 50);
+		statusX = (w - STATUS_BOX_W)/2;
+
+		titleX = (w - getStringWidth(titleFont, MSP_STRING))/2;
+		buildX = w - getStringWidth(buildStringFont, BUILD_STRING) - 10;
+
+		// Select decoration			
+		if (rand == 1)
+			titleColour = Color.DARK_GRAY;
+		else
+			titleColour = Color.ORANGE;
+
+		if (rand == 2) {
+			authorY = h - 20;
+			buildY = h - 35;
+			versionFont = new Font(Font.SANS_SERIF, Font.BOLD, 30);
+			versionColour = Color.ORANGE;
+			versionX = (w - getStringWidth(versionFont, VERSION_STRING))/2;
+			versionY = 90;
+		}
+		else {
+			authorY = h - 15;
+			buildY = h - 15;
+			versionFont = new Font("Bell MT", Font.BOLD, 18);
+			versionColour = Color.WHITE;
+			versionX = w - getStringWidth(versionFont, VERSION_STRING) - 10;
+			versionY = h - 45;
+		}
 		
+		statusFont = buildStringFont;
+		statusColour = versionColour;
+
 		window = new JFrame() {
 			@Override
 			public void paint(Graphics g) {
-				// Draw splash image and superimposed text
 				Graphics2D g2d = (Graphics2D) g;
 				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-				g2d.drawImage(splashImage, 0, 0, this);
+				if (firstDraw || drawImage) {
+					// Draw splash image and superimposed text
+					g2d.drawImage(splashImage, 0, 0, this);
+					drawTitleVersion(g2d);
+					drawAuthorBuild(g2d);
+
+					firstDraw = false;
+				}
+
+				// Always draw status the status message
+				drawImage = true;
+				drawStatus(g2d);
 				
-				int x = splashImage.getWidth(this);
-				
-				drawTitleVersion(g2d, rand, x);
-				
-				drawAuthorBuild(g2d, rand, x);
-				
-				splashImage.flush();
 				g2d.dispose();
 			}
 		};
 
-		splashImage = ImageLoader.getImage(SPLASH_FOLDER + FILE_NAME[rand]);
-		ImageIcon splashIcon = new ImageIcon(splashImage);
-		w = splashIcon.getIconWidth();
-		h = splashIcon.getIconHeight();
 		window.setSize(w, h);
 
 		// Center the splash window on the screen.
@@ -154,47 +187,48 @@ public class SplashWindow extends JComponent {
 		window.setVisible(true);
 	}
 
-	private void drawAuthorBuild(Graphics2D g2d, int rand, int x) {
-
-		g2d.setColor(Color.WHITE);
-
-		g2d.setFont(authorStringFont);
-		
-		if (rand == 2)
-			g2d.drawString(AUTHOR_STRING[rand], 15, h - 20);
-		else
-			g2d.drawString(AUTHOR_STRING[rand], 15, h - 15);
-		
-		g2d.setFont(buildStringFont);
-		
-		if (rand == 2)
-			g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 35);
-		else 
-			g2d.drawString(BUILD_STRING, x - buildStringWidth - 10, h - 15);
+	public void setStatusMessage(String message) {
+		statusMessage = message;
+		drawImage = false; // Do not redraw image, just status
+		window.repaint();
 	}
 	
-	private void drawTitleVersion(Graphics2D g2d, int rand, int x) {
-		
-		if (rand == 1)
-			g2d.setColor(Color.DARK_GRAY);
-		
-		else if (rand > 1)
-			g2d.setColor(Color.ORANGE);
-		
-		g2d.setFont(titleFont);
+	private void drawStatus(Graphics2D g2d) {
+		if (statusMessage == null)
+			return;
 
-		paintTextWithOutline(g2d, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, (x - titleWidth)/2, 50);
+		g2d.setColor(Color.GRAY);
+		g2d.fillRect(statusX, statusY, STATUS_BOX_W, STATUS_BOX_H);
+		g2d.setColor(Color.BLACK);
+		g2d.drawRect(statusX, statusY, STATUS_BOX_W, STATUS_BOX_H);
+
+		g2d.setFont(statusFont);
+		g2d.setColor(statusColour);
+
+		// Draw centered string
+		g2d.drawString(statusMessage, statusX + ((STATUS_BOX_W - getStringWidth(buildStringFont, statusMessage))/2),
+				statusY + STATUS_BOX_H - 8);
+	}
+
+	private void drawAuthorBuild(Graphics2D g2d) {
+
+		g2d.setColor(Color.WHITE);
+		g2d.setFont(authorStringFont);
+		g2d.drawString(imageSource, 15, authorY);
+		
+		g2d.setFont(buildStringFont);
+		g2d.drawString(BUILD_STRING, buildX, buildY);
+	}
 	
-		if (rand == 2) {
-			g2d.setFont(versionStringFont);
-			g2d.setColor(Color.ORANGE);
-			g2d.drawString(VERSION_STRING, (x - versionStringWidth)/2 , 90);
-		}
-		else {
-			g2d.setFont(versionStringFont1);
-			g2d.setColor(Color.WHITE);
-			g2d.drawString(VERSION_STRING, x - versionStringWidth1 - 10, h - 45);
-		}
+	private void drawTitleVersion(Graphics2D g2d) {
+
+		g2d.setColor(titleColour);
+		g2d.setFont(titleFont);
+		paintTextWithOutline(g2d, MSP_STRING, Color.ORANGE, Color.DARK_GRAY, titleFont, titleX, 50);
+		
+		g2d.setFont(versionFont);
+		g2d.setColor(versionColour);
+		g2d.drawString(VERSION_STRING, versionX, versionY);
 		
 	}
 	
@@ -247,10 +281,5 @@ public class SplashWindow extends JComponent {
 
 	public void remove() {
 		window.dispose();
-	}
-
-	public void destroy() {
-		splashImage = null;
-		window = null;
 	}
 }

@@ -109,9 +109,10 @@ public class MarsProject {
 			splashWindow.display();
 
 			// Build and run the simulator
-			sim = builder.start();
+			sim = builder.start(splashWindow::setStatusMessage);
 
 			// Build main window
+			splashWindow.setStatusMessage("Starting the Main Window...");
 			new MainWindow(useCleanUI, sim);
 
 			// Switch from Splash to main window as one
@@ -181,7 +182,8 @@ public class MarsProject {
 			
 			case StartUpChooser.EXIT -> System.exit(0);
 
-			default -> {logger.warning("No choice made, exiting..."); System.exit(0);}
+			default -> {logger.warning("No choice made, exiting...");
+						System.exit(0);}
 		}
 	}
 	

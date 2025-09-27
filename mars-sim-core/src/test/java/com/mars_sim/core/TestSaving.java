@@ -40,7 +40,7 @@ public class TestSaving extends TestCase implements SimulationListener {
 
 
         // Build a realistic simulation with entities to save
-        SettlementBuilder builder = new SettlementBuilder(sim, simConfig);
+        SettlementBuilder builder = new SettlementBuilder(sim, simConfig, null);
         ScenarioConfig config = new ScenarioConfig(simConfig);
         Scenario bootstrap = config.getItem("Single Settlement");
         builder.createInitialSettlements(bootstrap);

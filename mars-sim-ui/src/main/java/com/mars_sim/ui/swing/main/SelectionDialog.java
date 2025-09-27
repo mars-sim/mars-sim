@@ -34,7 +34,7 @@ import com.mars_sim.ui.swing.components.UserConfigurableListRenderer;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
 /**
- * This is a modal dialog used to allow the user to complete a seletino of a lsit of options.
+ * This is a modal dialog used to allow the user to complete a selection of a list of options.
  * It presents a Run and cancel button.
  */
 class SelectionDialog extends JDialog {
@@ -43,7 +43,7 @@ class SelectionDialog extends JDialog {
     private static final int CANCEL = 0;
 
     /**
-     * Create and display the dialog. The selectinod are defined in a content panel this is rendered.
+     * Create and display the dialog. The user selections are defined in a content panel rendered above the buttons.
      * @param frame
      * @param content
      * @param title
@@ -82,7 +82,6 @@ class SelectionDialog extends JDialog {
         desc.setLineWrap(true);
         desc.setWrapStyleWord(true);
         desc.setEditable(false);
-        desc.setText(((T)model.getSelectedItem()).getDescription());
 
         contentPane.add(desc);
 
@@ -92,6 +91,11 @@ class SelectionDialog extends JDialog {
                             listener.accept(item);
                         }}
                         );
+
+        // Set initial selection
+        T inital = (T) model.getSelectedItem();
+        desc.setText(inital.getDescription());
+        listener.accept(inital);
 
         return contentPane;
     }
@@ -134,7 +138,7 @@ class SelectionDialog extends JDialog {
     
     /**
      * Gets the choice made by the user. This method blocks until a choice is made.
-     * @return
+     * @return The choice made by the user; either RUN or CANCEL.
      */
     private synchronized int getChoice() {
         while (selected == -1) {

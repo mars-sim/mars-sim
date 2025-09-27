@@ -132,7 +132,7 @@ public class MarsProjectHeadless {
         // Do it
         try {
             // Build and run the simulator
-            var sim = builder.start();
+            var sim = builder.start(null);
 
 			logger.config("Starting the Master Clock...");		
 			sim.startClock(false);

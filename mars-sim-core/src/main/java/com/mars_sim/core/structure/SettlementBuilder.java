@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.StopWatch;
@@ -79,13 +80,18 @@ public final class SettlementBuilder {
 	private AuthorityFactory raFactory;
 	private NationSpecConfig namingSpecs;
 
-	public SettlementBuilder(Simulation sim, SimulationConfig simConfig) {
+	private Consumer<String> statusConsumer;
+
+	public SettlementBuilder(Simulation sim, SimulationConfig simConfig, Consumer<String> statusConsumer) {
 		super();
 		this.unitManager = sim.getUnitManager();
 		this.settlementTemplateConfig = simConfig.getSettlementTemplateConfiguration();
 		this.robotConfig = simConfig.getRobotConfiguration();
 		this.raFactory = simConfig.getReportingAuthorityFactory();
 		this.namingSpecs = new NationSpecConfig(simConfig);
+
+		// Add an empty consumer to remove excessive if checks
+		this.statusConsumer = (statusConsumer != null) ? statusConsumer : s -> {};
 	}
 
 	/**
@@ -97,6 +103,8 @@ public final class SettlementBuilder {
 			createFullSettlement(spec);
 		}
 
+		statusConsumer.accept("Scenario " + bootstrap.getName() + " loaded.");
+			
 		// If loading full default and game mode then place the Commander
 		if (GameManager.getGameMode() == GameMode.COMMAND) {
 			GameManager.placeInitialCommander(unitManager);
@@ -115,6 +123,7 @@ public final class SettlementBuilder {
 	public Settlement createFullSettlement(InitialSettlement spec) {
 		SettlementTemplate template = settlementTemplateConfig.getItem(spec.getSettlementTemplate());
 		logger.config("Creating '" + spec.getName() + "' based on template '" + spec.getSettlementTemplate() + "'...");
+		statusConsumer.accept("Creating settlement " + spec.getName() + "...");
 
 		StopWatch watch = new StopWatch();
 		watch.start();
