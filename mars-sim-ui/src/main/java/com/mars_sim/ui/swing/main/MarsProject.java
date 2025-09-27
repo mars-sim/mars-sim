@@ -149,7 +149,7 @@ public class MarsProject {
 				// Load simulation
 				logger.config("Load the sim...");
 				var selected = choice.getSelectedFile();
-				if (selected != null) {
+				if (selected == null) {
 					selected = Simulation.SAVE_FILE + Simulation.SAVE_FILE_EXTENSION;
 				}
 				builder.setSimFile(selected);
