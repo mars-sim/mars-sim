@@ -85,12 +85,13 @@ class SelectionDialog extends JDialog {
 
         contentPane.add(desc);
 
-        selector.addItemListener(e -> {if (e.getStateChange() == ItemEvent.SELECTED) {
-                            T item = (T) e.getItem();
-                            desc.setText(item.getDescription());
-                            listener.accept(item);
-                        }}
-                        );
+        selector.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                T item = (T) e.getItem();
+                desc.setText(item.getDescription());
+                listener.accept(item);
+            }
+        });
 
         // Set initial selection
         T inital = (T) model.getSelectedItem();
