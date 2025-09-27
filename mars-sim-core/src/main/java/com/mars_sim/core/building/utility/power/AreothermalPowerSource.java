@@ -20,6 +20,8 @@ extends PowerSource {
 
 	private static final double MAINTENANCE_FACTOR = .5D;
 	
+	private double powerGenerated;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -37,7 +39,10 @@ extends PowerSource {
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return surface.getAreothermalPotential(settlement.getCoordinates());
+		if (powerGenerated == 0D) {
+			return surface.getAreothermalPotential(settlement.getCoordinates());
+		}
+		return powerGenerated;
 	}
 
 	@Override
@@ -46,13 +51,13 @@ extends PowerSource {
 	}
 	
 	/**
-	 * Requests an estimate of the power produced by this power source.
+	 * Measures or estimates the power produced by this power source.
 	 * 
 	 * @param percent The percentage of capacity of this power source
 	 * @return power (kWe)
 	 */
 	@Override
-	public double requestPower(double percent) {
+	public double measurePower(double percent) {
 		return getMaxPower() * percent / 100;
 	}
 }

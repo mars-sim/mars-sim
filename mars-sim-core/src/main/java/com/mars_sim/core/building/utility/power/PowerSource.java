@@ -98,16 +98,17 @@ implements Serializable {
 	 * @param time
 	 */
 	public void setTime(double time) {
-		//Nothing to be by default
+		// Nothing to be by default
+		// Currently used by FuelPowerSource only to inject time
 	}
 	
 	/**
-	 * Requests an estimate of the power produced by this power source.
+	 * Measures or estimates the power produced by this power source.
 	 * 
 	 * @param percent The percentage of capacity of this power source
 	 * @return power (kWe)
 	 */
-	public abstract double requestPower(double percent);
+	public abstract double measurePower(double percent);
 	
 	/**
 	 * Reloads instances after loading from a saved sim.

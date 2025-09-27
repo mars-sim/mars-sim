@@ -154,12 +154,12 @@ public abstract class HeatSource implements Serializable {
 	public abstract double getCurrentHeat();
 
 	/**
-	 * Requests an estimate of the heat produced by this heat source.
+	 * Measures or estimates the heat produced by this heat source.
 	 * 
 	 * @param percent The percentage of capacity of this heat source
 	 * @return Heat (kWt)
 	 */
-	public abstract double requestHeat(double percent);
+	public abstract double measureHeat(double percent);
 	
 	/**
 	 * Gets the current Power produced by this heat source.

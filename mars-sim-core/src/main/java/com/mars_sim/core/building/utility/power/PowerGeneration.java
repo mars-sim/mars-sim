@@ -173,14 +173,24 @@ public class PowerGeneration extends Function {
 			PowerSource powerSource = i.next();
 			if (powerSource instanceof FuelPowerSource source) {
 				
+				// Future: Should look for a better way of inserting the time param to FuelPowerSource
+				
+				// Note: do NOT toggle it on and off here. // source.toggleON()
+				// Toggling on and off should be driven by needs in PowerGrid
+				
 				PowerMode powerMode = building.getPowerMode();
-				if (powerMode == PowerMode.FULL_POWER
-						|| powerMode == PowerMode.LOW_POWER) {
-					source.toggleON();
+				if (powerMode == PowerMode.FULL_POWER) {
+
 					source.setTime(time);
 				}
+				else if (powerMode == PowerMode.LOW_POWER) {
+				
+					// Future: Will need a standardized way to tune how a power source
+					// will respond to low power mode
+					source.setTime(time / 10);
+				}
 				else {
-					source.toggleOFF();
+
 					source.setTime(0);
 				}	
 			}

@@ -79,19 +79,19 @@ public class ElectricHeatSource extends HeatSource {
 	@Override
 	public double getCurrentPower() {
 		double percent = getPercentElectricity();
-		if (percent == 0)
-			return 0;
-		return getCurrentHeat() * percent / 100D 
+		if (percent == 0D)
+			return 0D;
+		return getCurrentHeat() * percent / 100 
 				* electricEfficiency / RATED_ELECTRIC_EFFICIENCY;
 	}
 
 	/**
-	 * Requests an estimate of the heat produced by this heat source.
+	 * Measures or estimates the heat produced by this heat source.
 	 * 
 	 * @return heat [in kW]
 	 */
 	@Override
-	public double requestHeat(double percent) {
+	public double measureHeat(double percent) {
 		return getMaxHeat() * percent / 100 
 				* thermalEfficiency / RATED_THERMAL_EFFICIENCY;
 	}

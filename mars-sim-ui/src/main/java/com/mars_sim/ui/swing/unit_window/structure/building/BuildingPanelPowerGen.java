@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelPowerGen.java
- * @date 2024-06-12
+ * @date 2025-09-26
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
@@ -14,7 +14,8 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.utility.power.FissionPowerSource;
+import com.mars_sim.core.building.utility.power.AdjustablePowerSource;
+import com.mars_sim.core.building.utility.power.FuelPowerSource;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerSource;
@@ -33,7 +34,11 @@ public class BuildingPanelPowerGen
 extends BuildingFunctionPanel {
 
 	private static final String POWER_ICON = "power";
-	
+	private static final String POWER_TYPE = Msg.getString("BuildingPanelPowerGen.powersource.powerType"); //$NON-NLS-1$
+	private static final String MAX_POWER = Msg.getString("BuildingPanelPowerGen.powersource.maxPower"); //$NON-NLS-1$
+	private static final String LOAD_CAP = Msg.getString("BuildingPanelPowerGen.powersource.loadCapacity"); //$NON-NLS-1$
+	private static final String POWER_GEN = Msg.getString("BuildingPanelPowerGen.powersource.powerGen"); //$NON-NLS-1$
+			
 	/** The power production cache. */
 	private double totalProducedCache;
 	/** The total power used cache. */
@@ -52,7 +57,9 @@ extends BuildingFunctionPanel {
 
 	protected JLabel[] maxPowerLabels;
 
-	private JLabel[] loadLabels;
+	private JLabel[] loadCapLabels;
+	
+	private JLabel[] powerGenLabels;
 	
 	/**
 	 * Constructor.
@@ -64,7 +71,7 @@ extends BuildingFunctionPanel {
 
 		// Use BuildingFunctionPanel constructor
 		super(
-			Msg.getString("BuildingPanelPowerGen.title"), 
+			Msg.getString("BuildingPanelPowerGen.title"),  //$NON-NLS-1$
 			ImageLoader.getIconByName(POWER_ICON),
 			building, 
 			desktop
@@ -90,21 +97,21 @@ extends BuildingFunctionPanel {
 		// Prepare power status label.
 		powerModeCache = building.getPowerMode();
 		
-		powerModeLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"),
+		powerModeLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"), //$NON-NLS-1$
 					powerModeCache.getName());
 		
-		totalUsedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerTotalUsed"),
+		totalUsedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerTotalUsed"), //$NON-NLS-1$
 										StyleManager.DECIMAL_KW.format(totalUsedCache));
 
 		// If power producer, prepare power producer label.
 		if (generator != null) {
 			totalProducedCache = generator.getGeneratedPower();
 			
-			totalProducedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.totalProduced"),
+			totalProducedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.totalProduced"), //$NON-NLS-1$
 									  StyleManager.DECIMAL_KW.format(totalProducedCache));
 			
 			int num = sources.size();
-			AttributePanel sPanel = new AttributePanel(num * 3);
+			AttributePanel sPanel = new AttributePanel(num * 4);
 			sPanel.setBorder(StyleManager.createLabelBorder("Sources"));
 
 			var centerPanel = new JPanel(new BorderLayout());
@@ -112,18 +119,18 @@ extends BuildingFunctionPanel {
 			centerPanel.add(sPanel, BorderLayout.NORTH);
 
 			maxPowerLabels = new JLabel[num];
-			loadLabels = new JLabel[num];
-
+			loadCapLabels = new JLabel[num];
+			powerGenLabels = new JLabel[num];
+			
 			int count = 0;
 			for(var powerSource : sources) {
 
-				sPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerType") 
-						+ " " + count,
-						powerSource.getType().getName());
+				sPanel.addRow(POWER_TYPE + " " + (count + 1), powerSource.getType().getName());
 
-				maxPowerLabels[count] = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.maxPower"), "");
-				loadLabels[count] = sPanel.addRow(Msg.getString("BuildingPanelPowerGen.loadCapacity"),
-							"None");
+				maxPowerLabels[count] = sPanel.addRow(MAX_POWER, "");
+				loadCapLabels[count] = sPanel.addRow(LOAD_CAP, "100 %");
+				powerGenLabels[count] = sPanel.addRow(POWER_GEN, "");
+				
 				count++;
 			}
 		}
@@ -165,14 +172,25 @@ extends BuildingFunctionPanel {
 			}
 			
 			int count = 0;
-			for(var powerSource : sources) {
+			for (var powerSource : sources) {
 
 				double maxPower = powerSource.getMaxPower();
 				maxPowerLabels[count].setText(StyleManager.DECIMAL_KW.format(maxPower));
 				
-				if (powerSource instanceof FissionPowerSource fps) {					
-					double loadCapacity = fps.getCurrentLoadCapacity();
-					loadLabels[count].setText(Math.round(loadCapacity *10.0)/10.0 + " %");
+				double powerGen = 0;
+				if (powerSource instanceof FuelPowerSource fuel) {
+					if (fuel.isToggleON())
+						powerGen = fuel.measurePower(100);
+				}
+				else {
+					powerGen = powerSource.measurePower(100);
+				}
+				
+				powerGenLabels[count].setText(StyleManager.DECIMAL_KW.format(powerGen));
+				
+				if (powerSource instanceof AdjustablePowerSource adj) {					
+					double loadCapacity = adj.getCurrentLoadCapacity();
+					loadCapLabels[count].setText(StyleManager.DECIMAL1_PERC.format(loadCapacity));
 				}
 				
 				count++;

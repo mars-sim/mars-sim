@@ -68,7 +68,7 @@ public class FissionPowerSource extends PowerSource implements AdjustablePowerSo
 	 * @return power (kW)
 	 */
 	public double getCurrentPower(Building building) {
-		return currentPowerElectrical;
+		return getCurrentPower();
 	}
 
 	/**
@@ -78,9 +78,18 @@ public class FissionPowerSource extends PowerSource implements AdjustablePowerSo
 	 * @return power (kW)
 	 */
 	public double getAveragePower(Settlement settlement) {
-		return currentPowerElectrical;
+		return getCurrentPower();
 	}
 
+	/**
+	 * Gets the current power generated.
+	 * 
+	 * @return power (kW)
+	 */
+	public double getCurrentPower() {
+		return currentPowerElectrical;
+	}
+	
 	/**
 	 * Gets the current load capacity
 	 * 
@@ -135,13 +144,13 @@ public class FissionPowerSource extends PowerSource implements AdjustablePowerSo
 	}
 	
 	/**
-	 * Requests an estimate of the power produced by this power source.
+	 * Measures or estimates the power produced by this power source.
 	 * 
 	 * @param percent The percentage of capacity of this power source
 	 * @return power (kWe)
 	 */
 	@Override
-	public double requestPower(double percent) {
+	public double measurePower(double percent) {
 		return currentPowerElectrical;
 	}
 }

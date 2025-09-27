@@ -727,13 +727,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-generation>
 				<power-source type="Solar Power Source" power="20.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="30.0"
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
 				    fuel-type="methane"	/>
 			</power-generation>
 			
 			<power-storage capacity="40" discharge-rate="1.25"/>
 			
-			<!-- The building has recreation facilities (movies, games, music, etc.). -->
+			<!-- The central hub has recreation facilities (movies, games, music, etc.). -->
 			<recreation capacity="10">
 				<activity>
 					<activity-spot xloc="5.6" yloc="-2.6" />
@@ -1443,9 +1443,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</farming>
 
 			<life-support capacity="12" power-required="0.6" />
-
+			<!-- The inflatable greenhouse has fuel power source -->
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				<power-source type="Fuel Power Source" toggle="false" power="7.5"
 				    fuel-type="methane"	/>
 			</power-generation>
 			
@@ -1600,8 +1600,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 			<life-support capacity="24" power-required="1.2" />
 
+			<!-- The large greenhouse has fuel power source -->
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="false" power="20.0"
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
 				    fuel-type="methane"	/>
 			</power-generation>
 			
@@ -1735,7 +1736,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
 			
@@ -1817,7 +1818,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<life-support capacity="12" power-required="0.6" />
 
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="false" power="10.0"
+				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
 			</power-generation>
 			
@@ -2367,6 +2368,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				</activity>
 			</living-accommodation>
+			<!-- The compact quarters has fuel power source -->
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
@@ -2445,6 +2447,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.2" yloc="-3.35" />
 				</activity>
 			</living-accommodation>
+			<!-- The residential quarters has fuel power source -->
 			<power-generation>
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
 				    fuel-type="methane"	/>
@@ -2588,7 +2591,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</food-production>
 
 			<life-support capacity="36" power-required="1.8" />
-
+			<!-- The louuge has both the solar power source and fuel power source -->
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
@@ -2757,6 +2760,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<bed-location xloc="-2.0" yloc="-3.15" />
 				</bed>				
 			</medical-care>
+			<!-- The infirmary has both the solar power source and fuel power source -->			
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
@@ -2856,6 +2860,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-0.46" yloc="-2.08" />
 				</activity>
 			</management>
+			<!-- The command center has both the solar power source and fuel power source -->			
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 				<power-source type="Fuel Power Source" toggle="false" power="5.0"
@@ -2946,9 +2951,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="-2.75" yloc="-1.5" />	
 				</activity>
 			</management>
+			<!-- The server farm has both the solar power source and fuel power source -->			
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
-				<power-source type="Fuel Power Source" toggle="false" power="5.0"
+				<power-source type="Fuel Power Source" toggle="false" power="10.0"
 				    fuel-type="methane"	/>
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.1"/>
@@ -2962,7 +2968,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<heat-source type="Solar Heating" capacity="5.0" />
 				<heat-source type="Electric Heating" capacity="25.0" />
 				<heat-source type="Fuel Heating" toggle="true"
-					fuel-type="methane"	capacity="20.0" />
+					fuel-type="methane"	capacity="10.0" />
 			</thermal-generation>
 		</functions>
 	</building>
@@ -3215,7 +3221,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="true" power="30.0"
+				<power-source type="Fuel Power Source" toggle="true" power="40.0"
 					fuel-type="methane" />
 			</power-generation>
 			<power-storage capacity="40" discharge-rate="1.25"/>

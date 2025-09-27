@@ -68,18 +68,18 @@ public class SolarPowerSource extends PowerSource {
 	 */
 	@Override
 	public double getCurrentPower(Building building) {
-		double I = surface.getSolarIrradiance(building.getCoordinates());
+		double sunlight = surface.getSolarIrradiance(building.getCoordinates());
 
-		if (I <= 0)
+		if (sunlight <= 0)
 			return 0;
 		
-		return I / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * getMaxPower() 
+		return sunlight / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE * getMaxPower() 
 				* electricEfficiency / RATED_ELECTRIC_EFFICIENCY;
 	}
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower();
+		return getMaxPower() / 2;
 	}
 
 	@Override
@@ -95,14 +95,14 @@ public class SolarPowerSource extends PowerSource {
 		return electricEfficiency;
 	}
 	
-	 /**
-	   * Requests an estimate of the power produced by this power source.
-	   * 
-	   * @param percent The percentage of capacity of this power source
-	   * @return power (kWe)
-	   */
-	 @Override
-	 public double requestPower(double percent) {
-		 return getCurrentPower(building);
-	 }
+	/**
+	 * Measures or estimates the power produced by this power source.
+	 * 
+	 * @param percent The percentage of capacity of this power source
+	 * @return power (kWe)
+	 */
+	@Override
+	public double measurePower(double percent) {
+		return getCurrentPower(building);
+	}
 }

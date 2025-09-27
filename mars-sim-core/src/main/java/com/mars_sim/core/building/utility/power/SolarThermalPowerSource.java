@@ -54,7 +54,7 @@ public class SolarThermalPowerSource extends PowerSource {
 
 	@Override
 	public double getAveragePower(Settlement settlement) {
-		return getMaxPower();
+		return getMaxPower() / 2;
 	}
 
 	@Override
@@ -62,14 +62,14 @@ public class SolarThermalPowerSource extends PowerSource {
 	    return getMaxPower() * MAINTENANCE_FACTOR;
 	}
 	
-	 /**
-	   * Requests an estimate of the power produced by this power source.
-	   * 
-	   * @param percent The percentage of capacity of this power source
-	   * @return power (kWe)
-	   */
-	 @Override
-	 public double requestPower(double percent) {
-		 return getCurrentPower(building);
-	 }
+	/**
+	 * Measures or estimates the power produced by this power source.
+	 * 
+	 * @param percent The percentage of capacity of this power source
+	 * @return power (kWe)
+	 */
+	@Override
+	public double measurePower(double percent) {
+		return getCurrentPower(building);
+	}
 }

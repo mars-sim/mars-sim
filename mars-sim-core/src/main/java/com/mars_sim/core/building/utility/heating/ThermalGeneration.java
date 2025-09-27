@@ -236,7 +236,7 @@ public class ThermalGeneration extends Function {
 				for (int i=0; i<size; i++) {
 					heatMode = allHeatModes.get(i);
 	
-			    	sHeat = solarHeatSource.requestHeat(heatMode.getPercentage());
+			    	sHeat = solarHeatSource.measureHeat(heatMode.getPercentage());
 		    	
 					if (Double.isNaN(sHeat) || Double.isInfinite(sHeat)) {
 						logger.info(building, "SolarHeatSource has invalid heat value.");
@@ -314,7 +314,7 @@ public class ThermalGeneration extends Function {
 			for (int i=0; i<size; i++) {
 				heatMode = allHeatModes.get(i);
 
-		    	nHeat = nuclearHeatSource.requestHeat(heatMode.getPercentage());
+		    	nHeat = nuclearHeatSource.measureHeat(heatMode.getPercentage());
 				 	
 				if (Double.isNaN(nHeat) || Double.isInfinite(nHeat)) {
 					logger.info(building, "NuclearHeatSource has invalid heat value.");
@@ -386,7 +386,7 @@ public class ThermalGeneration extends Function {
 			for (int i=0; i<size; i++) {
 				heatMode = allHeatModes.get(i);
 				
-		    	eHeat = electricHeatSource.requestHeat(heatMode.getPercentage());
+		    	eHeat = electricHeatSource.measureHeat(heatMode.getPercentage());
 				
 				if (Double.isNaN(eHeat) || Double.isInfinite(eHeat)) {
 					logger.info(building, "ElectricHeatSource has invalid heat value.");
@@ -453,7 +453,7 @@ public class ThermalGeneration extends Function {
 				
 				((FuelHeatSource)fuelHeatSource).setTime(time);
 				((FuelHeatSource)fuelHeatSource).toggleON();
-		    	fHeat = fuelHeatSource.requestHeat(heatMode.getPercentage());
+		    	fHeat = fuelHeatSource.measureHeat(heatMode.getPercentage());
 				
 				if (Double.isNaN(fHeat) || Double.isInfinite(fHeat)) {
 					logger.info(building, "FuelHeatSource has invalid heat value.");
