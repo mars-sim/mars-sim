@@ -47,14 +47,16 @@ public final class CoordinatesFormat {
     }
     
     /**
-     * Create a Coordinates object from a string representation.
+     * Creates a Coordinates object from a string representation.
+     * 
      * @param string
      * @return
      */
-    public static Coordinates fromString(String string) throws CoordinatesException{
+    public static Coordinates fromString(String string) throws CoordinatesException {
         String [] parts = string.trim().split("\\s+");
 
         switch(parts.length) {
+        	case 1: throw new CoordinatesException(Msg.getString("CoordinatesFormat.error.invalidFormat.nonpair"));
             case 2: return fromString(parts[0], parts[1]);
             case 4: return fromString(parts[0] + " " + parts[1], parts[2] + " " + parts[3]);
             default: throw new CoordinatesException(Msg.getString("CoordinatesFormat.error.invalidFormat"));
@@ -62,7 +64,8 @@ public final class CoordinatesFormat {
     }
 
     /**
-     * Parse latitude string to phi, throwing an unchecked exception if it fails.
+     * Parses latitude string to phi, throwing an unchecked exception if it fails.
+     * 
      * @param latitude
      * @return
      */
@@ -75,7 +78,8 @@ public final class CoordinatesFormat {
     }
 
     /**
-     * Parse longitude string to theta, throwing an unchecked exception if it fails.
+     * Parses longitude string to theta, throwing an unchecked exception if it fails.
+     * 
      * @param longitude
      * @return
      */

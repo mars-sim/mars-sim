@@ -105,7 +105,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(battery.getkWattHourStored()));
 		cap = battPanel.addRow("Energy Storage Capacity", StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
 		maxCapNameplate = battPanel.addRow("Nameplate Capacity", StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));	
-		maxCRating = battPanel.addRow("Max C-Rating", StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));		
+		maxCRating = battPanel.addRow("Max C-Rating Discharging", StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));		
 		
 		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
 		tVolt = battPanel.addRow("Terminal Voltage", StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));

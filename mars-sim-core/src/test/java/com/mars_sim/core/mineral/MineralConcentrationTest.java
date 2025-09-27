@@ -10,7 +10,7 @@ import com.mars_sim.core.map.location.CoordinatesFormat;
 class MineralConcentrationTest {
     @Test
     void testAdjustMineral() throws CoordinatesException {
-        var base = CoordinatesFormat.fromString("45.0 23.0");
+        var base = CoordinatesFormat.fromString("35.23 163.95");// 45.0 23.0");
         MineralDeposit conc = new MineralDeposit(base);
 
         conc.adjustMineral("A", 10);

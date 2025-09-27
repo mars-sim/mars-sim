@@ -108,6 +108,10 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Prepare tool buttons
 		prepareToolButtons();
 
+		createDatePanel();
+		
+		addSeparator(new Dimension(15, 15));
+		
 		incrementClocks(masterClock);
 	}
 
@@ -143,6 +147,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		addSeparator(new Dimension(15, 15));
 
+	}
+    
+	/**
+	 * Creates the date panel and add it to the tool tool bar.
+	 */
+	private void createDatePanel() {
 
 		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		add(timePanel);
@@ -158,10 +168,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		calendarPane = setupCalendarPanel(masterClock.getMarsTime());		
 		addToolButton(MARSCAL, "Mars Calendar", "schedule");
-		
-		addSeparator(new Dimension(15, 15));
 	}
-    
+	
 	/**
 	 * Adds a tool bar button.
 	 * 

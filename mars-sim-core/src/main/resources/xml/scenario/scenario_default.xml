@@ -5,9 +5,14 @@
 	<initial-settlement-list>
 	<!-- List of initial settlements in the simulation -->
 
+		<settlement name="New London" template="Phase 1-UK" persons="8" robots="4" sponsor="UKSA">
+			<!-- sits between Star Base and New Seoul -->	
+			<location coordinates="33.4570 144.0189" />
+		</settlement>
+		
 		<settlement name="Tai Ping" template="Phase 1-TW" persons="8" robots="4" sponsor="TASA">
-			<!-- sits between x and x-->	
-			<location coordinates="25.16 57.26" />
+			<!-- sits between New Dubai and Foundation -->	
+			<location coordinates="19.0487 145.0289" />
 		</settlement>
 		
 		<settlement name="Catarina" template="Phase 1-BR" persons="8" robots="4" sponsor="AEB">
@@ -63,7 +68,7 @@
 			<location coordinates="39.89 192.03" />
 		</settlement>
 
-		<settlement name="Zvezda" template="Phase 3-RU" persons="16" robots="8" sponsor="RKA">
+		<settlement name="Wernher-von-Braun-Station" template="Phase 1-DE" persons="8" robots="8" sponsor="DLR">
  			<!-- sits between Catarina and Arcadia --> 
 			<location coordinates="17.3983 81.9044" />
 		</settlement>
@@ -90,8 +95,8 @@
 		
 	</initial-settlement-list>
 	<arriving-settlement-list>
-		<arriving-settlement name="Halley" template="Phase 2-MS" 
-			persons="8" robots="6" sponsor="MS" arrival-in-sols="3">
+		<arriving-settlement name="Halley" template="Phase 1-IT" 
+			persons="8" robots="6" sponsor="ASI" arrival-in-sols="3">
 			<location coordinates="22.6532 37.0579" />				 
 		</arriving-settlement>
 

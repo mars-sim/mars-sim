@@ -334,6 +334,13 @@
 	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="90" facing="90.0" />	
 	</building-package>
 		
+	<building-package name="TOPAZ-3 Set 1 - 1x4">
+	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="30" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="90" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="120" facing="90.0" />	
+	</building-package>
+			
 	<building-package name="Solar Set 1 - 1x3" >   
 	    <standalone type="Medium Battery Array" xloc="45.0"
 	        yloc="-50.0" facing="0.0" />

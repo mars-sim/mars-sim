@@ -84,10 +84,14 @@ public class SimulationBuilder {
 		this.useCrews = useCrew;
 	}
 
-	
-	private void setLocation(String lon) {
+	/**
+	 * Sets the coordinates on the map.
+	 * 
+	 * @param s
+	 */
+	private void setLocation(String s) {
 		try {
-			location = CoordinatesFormat.fromString(lon);
+			location = CoordinatesFormat.fromString(s);
 		} catch (CoordinatesException e) {
 			throw new IllegalArgumentException("Problem with coordinates: " + e.getMessage());
 		}
