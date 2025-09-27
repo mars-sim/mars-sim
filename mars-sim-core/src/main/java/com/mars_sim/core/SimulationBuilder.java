@@ -11,23 +11,24 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
-import com.mars_sim.core.structure.*;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.configuration.ScenarioConfig;
-import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.logging.DiagnosticsManager;
 import com.mars_sim.core.map.common.FileLocator;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
-import com.mars_sim.core.person.Crew;
 import com.mars_sim.core.person.CrewConfig;
+import com.mars_sim.core.structure.InitialSettlement;
+import com.mars_sim.core.structure.SettlementBuilder;
+import com.mars_sim.core.structure.SettlementTemplate;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.RandomUtil;
 
 /*
@@ -43,8 +44,7 @@ public class SimulationBuilder {
 	private static final String DATADIR_ARG = "datadir";  
 	private static final String BASEURL_ARG = "baseurl";  
 	private static final String SPONSOR_ARG = "sponsor";
-	private static final String LATITUDE_ARG = "lat";
-	private static final String LONGITUDE_ARG = "lon";
+	private static final String LOCATION_ARG = "location";
 	private static final String CREW_ARG = "crew";
 	private static final String DIAGNOSTICS_ARG = "diags";
 	private static final String SCENARIO_ARG = "scenario";
@@ -56,11 +56,11 @@ public class SimulationBuilder {
 	private String authorityName = null;
 	private boolean newAllowed = false;
 	private File simFile;
-	private String latitude = null;
-	private String longitude = null;
+	private Coordinates location = null;
 	private boolean useCrews = true;
-	private UserConfigurableConfig<Crew> crewConfig;
+	private CrewConfig crewConfig;
 	private String scenarioName;
+	private ScenarioConfig scenarioConfig;
 
 	public SimulationBuilder() {
 		super();
@@ -83,21 +83,14 @@ public class SimulationBuilder {
 	public void setUseCrews(boolean useCrew) {
 		this.useCrews = useCrew;
 	}
+
 	
-	private void setLatitude(String lat) {
-		String error = CoordinatesFormat.checkLat(lat);
-		if (error != null) {
-			throw new IllegalArgumentException(error);
+	private void setLocation(String lon) {
+		try {
+			location = CoordinatesFormat.fromString(lon);
+		} catch (CoordinatesException e) {
+			throw new IllegalArgumentException("Problem with coordinates: " + e.getMessage());
 		}
-		latitude = lat;
-	}
-	
-	private void setLongitude(String lon) {
-		String error = CoordinatesFormat.checkLon(lon);
-		if (error != null) {
-			throw new IllegalArgumentException(error);
-		}
-		longitude = lon;
 	}
 	
 	/**
@@ -109,7 +102,7 @@ public class SimulationBuilder {
 		template = optionValue;
 	}
 
-	private void setSponsor(String optionValue) {
+	public void setSponsor(String optionValue) {
 		authorityName = optionValue;
 	}
 
@@ -145,15 +138,6 @@ public class SimulationBuilder {
 	}
 
 	/**
-	 * Defines a set of crews to be used.
-	 * 
-	 * @param crewConfig
-	 */
-	public void setCrewConfig(UserConfigurableConfig<Crew> crewConfig) {
-		this.crewConfig  = crewConfig;
-	}
-	
-	/**
 	 * Gets the list of core command line options that are supported by this builder.
 	 * 
 	 * @return the list
@@ -180,10 +164,8 @@ public class SimulationBuilder {
 						.desc("New simulation from a template").get());
 		options.add(Option.builder(SPONSOR_ARG).argName(SPONSOR_ARG).hasArg()
 						.desc("Set the sponsor for the settlement template").get());		
-		options.add(Option.builder(LATITUDE_ARG).argName("latitude").hasArg()
-				.desc("Set the latitude of the new template Settlement").get());	
-		options.add(Option.builder(LONGITUDE_ARG).argName("longitude").hasArg()
-				.desc("Set the longitude of the new template Settlement").get());	
+		options.add(Option.builder(LOCATION_ARG).argName("coordinates").hasArg()
+				.desc("Set the coordinates of the new template Settlement").get());		
 		options.add(Option.builder(CREW_ARG).argName("true|false").hasArg()
 				.desc("Enable or disable use of the crews").get());	
 		options.add(Option.builder(DIAGNOSTICS_ARG).argName("<module>,<module>.....").hasArg()
@@ -219,11 +201,8 @@ public class SimulationBuilder {
 		if (line.hasOption(SCENARIO_ARG)) {
 			setScenarioName(line.getOptionValue(SCENARIO_ARG));
 		}
-		if (line.hasOption(LATITUDE_ARG)) {
-			setLatitude(line.getOptionValue(LATITUDE_ARG));
-		}
-		if (line.hasOption(LONGITUDE_ARG)) {
-			setLongitude(line.getOptionValue(LONGITUDE_ARG));
+		if (line.hasOption(LOCATION_ARG)) {
+			setLocation(line.getOptionValue(LOCATION_ARG));
 		}
 		if (line.hasOption(DATADIR_ARG)) {
 			SimulationRuntime.setDataDir(line.getOptionValue(DATADIR_ARG));
@@ -253,7 +232,7 @@ public class SimulationBuilder {
 	 * 
 	 * @return The new simulation started
 	 */
-	public Simulation start() {
+	public Simulation start(Consumer<String> statusConsumer) {
 		
 		// Load xml files but not until arguments parsed since it may change 
 		// the data directory
@@ -275,9 +254,10 @@ public class SimulationBuilder {
 			sim.createNewSimulation(userTimeRatio); 
 			
 			SettlementBuilder builder = new SettlementBuilder(sim,
-					simConfig);
-			if (useCrews && crewConfig == null) {
-				crewConfig = new CrewConfig(simConfig);
+					simConfig, statusConsumer);
+			if (useCrews) {
+				// Load crews
+				getCrewConfig();
 			}
 			builder.setCrew(crewConfig);
 			
@@ -287,7 +267,7 @@ public class SimulationBuilder {
 			}
 			else {
 				String defaultName = (scenarioName != null) ? scenarioName : ScenarioConfig.PREDEFINED_SCENARIOS[0];
-				ScenarioConfig config = new ScenarioConfig(simConfig);
+				ScenarioConfig config = getScenarioConfig();
 				var bootstrap = config.getItem(defaultName);
 				builder.createInitialSettlements(bootstrap);
 				sim.getTransportManager().loadArrivingSettments(bootstrap,
@@ -300,22 +280,6 @@ public class SimulationBuilder {
 			// initialize getTransportManager	
 			sim.getTransportManager().init(sim);
 		}
-
-		while (true) {
-	        try {
-				TimeUnit.MILLISECONDS.sleep(1000);
-				if (!sim.isUpdating()) {
-					logger.config("Starting the Master Clock...");		
-					sim.startClock(false);
-					break;
-				}
-	        } catch (InterruptedException e) {
-				logger.log(Level.WARNING, "Trouble starting Main Window. ", e); 
-				// Restore interrupted state...
-			    Thread.currentThread().interrupt();
-	        }
-		}
-
 		
 		return sim;
 	}
@@ -386,13 +350,17 @@ public class SimulationBuilder {
 		// Pick a random name
 		List<String> settlementNames = authority.getSettlementNames();		
 		String settlementName = RandomUtil.getRandomElement(settlementNames);
-		
+		if (location == null) {
+			// Pick a fixed location
+			location = new Coordinates(Math.PI / 2D, 0);
+		}
+
 		logger.info("Starting a single settlement sim using template '" + template
 				+ "' with settlement name '" + settlementName + "'.");
 		return new InitialSettlement(settlementName, authority.getName(), template, 
 									 settlementTemplate.getDefaultPopulation(),
 									 settlementTemplate.getDefaultNumOfRobots(),
-									 new Coordinates(latitude, longitude), null);
+									 location, null);
 	}
 
 	/**
@@ -404,4 +372,24 @@ public class SimulationBuilder {
 		return (template != null) || (simFile != null)
 				|| (scenarioName != null);
 	}
+	
+	/**
+	 * Get the repo of Crew configurations
+	 */
+	public CrewConfig getCrewConfig() {
+		if (crewConfig == null) {
+			crewConfig  = new CrewConfig(SimulationConfig.instance());
+		}
+		return crewConfig;
+	}
+	
+	/**
+	 * Get the repo of Scenario configurations
+	 */
+    public ScenarioConfig getScenarioConfig() {
+        if (scenarioConfig == null) {
+			scenarioConfig = new ScenarioConfig(SimulationConfig.loadConfig());
+		}
+		return scenarioConfig;
+    }
 }

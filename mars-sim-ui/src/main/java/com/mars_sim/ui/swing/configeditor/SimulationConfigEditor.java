@@ -186,14 +186,13 @@ public class SimulationConfigEditor {
 	 * 
 	 * @param config the simulation configuration.
 	 */
-	public SimulationConfigEditor(SimulationConfig config) {
+	public SimulationConfigEditor(SimulationConfig config, ScenarioConfig scenarioConfig, CrewConfig crew) {
 
 		// Initialize data members.
 		raFactory = config.getReportingAuthorityFactory();
 		settlementTemplateConfig = config.getSettlementTemplateConfiguration();
 		personConfig = config.getPersonConfig();
-		crewConfig = new CrewConfig(config);
-		scenarioConfig = new ScenarioConfig(config);
+		crewConfig = crew;
 
 		// Preload the config to set up the preferred LAF
 		UIConfig configs = new UIConfig();
@@ -735,32 +734,16 @@ public class SimulationConfigEditor {
 	}
 
 	/**
-	 * Waits for the user to complete the configuration.
+	 * Gets the scenario created in the editor.
 	 */
-	public synchronized void waitForCompletion() {
-        while (!completed ) {
+	public synchronized Scenario getScenario() {
+		while (!completed ) {
             try {
                 wait();
             } catch (InterruptedException e)  {
                 Thread.currentThread().interrupt();
             }
         }
-        logger.config("Close the Site Editor.");
-	}
-
-	/**
-	 * Gets crew configuration if to be used. If returns null then no crews.
-	 * 
-	 * @return
-	 */
-	public UserConfigurableConfig<Crew> getCrewConfig() {
-		return crewConfig;
-	}
-
-	/**
-	 * Gets the scenario created in the editor.
-	 */
-	public Scenario getScenario() {
-		return selectedScenario;
+        return selectedScenario;
 	}
 }

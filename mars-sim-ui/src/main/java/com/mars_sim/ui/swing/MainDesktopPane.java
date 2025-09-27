@@ -179,14 +179,6 @@ public class MainDesktopPane extends JDesktopPane
 			setPreferredSize(selectedSize);
 			logger.config("Main Window initially set to " + selectedSize);
 		}
-		
-		// Set the Mars Terminal's size
-		Dimension terminalSize = mainWindow.getTerminalSize();
-		if (terminalSize != null) {
-			setSize(terminalSize);
-			setPreferredSize(terminalSize);
-			logger.config("Mars Terminal initially set to " + terminalSize);
-		}
 	}
 
 	/**
@@ -809,19 +801,14 @@ public class MainDesktopPane extends JDesktopPane
 		if (unitWindows != null) {
 			for (UnitWindow u : unitWindows) {
 				u.destroy();
-				u = null;
 			}
 			unitWindows = null;
 		}
 		if (toolWindows != null) {
 			for (ToolWindow w : toolWindows) {
 				w.destroy();
-				w = null;
 			}
 			toolWindows = null;
 		}
-
-		mainWindow = null;
 	}
-
 }

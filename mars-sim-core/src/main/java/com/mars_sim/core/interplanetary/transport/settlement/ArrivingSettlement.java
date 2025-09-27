@@ -182,7 +182,7 @@ public class ArrivingSettlement extends Transportable {
 
 	@Override
 	protected synchronized void performArrival(SimulationConfig sc, Simulation sim) {
-		SettlementBuilder build = new SettlementBuilder(sim, sc);
+		SettlementBuilder build = new SettlementBuilder(sim, sc, null);
 		InitialSettlement spec = new InitialSettlement(getName(), sponsorCode,
 													   template, populationNum, numOfRobots,
 													   getLandingLocation(), null);

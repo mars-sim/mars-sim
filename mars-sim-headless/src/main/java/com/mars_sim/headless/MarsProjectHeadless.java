@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-// Deprecated old API removed:
-// import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
@@ -104,7 +102,6 @@ public class MarsProjectHeadless {
             builder.parseCommandLine(line);
 
             if (line.hasOption(REMOTE)) {
-                startServer = true;
                 String portValue = line.getOptionValue(REMOTE);
                 if (portValue != null) {
                     serverPort = Integer.parseInt(portValue);
@@ -135,7 +132,10 @@ public class MarsProjectHeadless {
         // Do it
         try {
             // Build and run the simulator
-            builder.start();
+            var sim = builder.start(null);
+
+			logger.config("Starting the Master Clock...");		
+			sim.startClock(false);
 
             if (startServer) {
                 startRemoteConsole(serverPort, resetAdmin);
