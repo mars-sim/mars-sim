@@ -5,7 +5,7 @@
  * @author Barry Evans
  */
 
-package com.mars_sim.console.chat;
+package com.mars_sim.ui.swing.terminal;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -17,7 +17,13 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.beryx.textio.swing.SwingTextTerminal;
 
-public class TextIOChannel implements UserChannel {
+import com.mars_sim.console.chat.UserChannel;
+import com.mars_sim.console.chat.UserOutbound;
+
+/**
+ * This binds a TextIO terminal to a UserChannel for the console feature
+ */
+class TextIOChannel implements UserChannel {
 
 	private static final String PRESSED_PREFIX = "pressed ";
 	
@@ -32,9 +38,8 @@ public class TextIOChannel implements UserChannel {
 		this.textIO = term;
 		this.terminal = textIO.getTextTerminal();
 		
-		if (terminal instanceof SwingTextTerminal) {
+		if (terminal instanceof SwingTextTerminal swingTerm) {
 			supportsHandlers  = true;
-			SwingTextTerminal swingTerm = (SwingTextTerminal) terminal;
 			
 			// Track when the user keys text
 	        swingTerm.getDocument().addDocumentListener(new DocumentListener() {

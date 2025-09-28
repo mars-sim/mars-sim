@@ -31,7 +31,6 @@ import org.beryx.textio.swing.SwingTextTerminal;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
-import com.mars_sim.console.chat.TextIOChannel;
 import com.mars_sim.console.chat.UserChannel;
 import com.mars_sim.console.chat.simcommand.TopLevel;
 import com.mars_sim.core.GameManager;
@@ -145,7 +144,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	
 	public void positionTerminal(Point location, Dimension terminalSize) {
 		
-		logger.config("Mars Terminal postion: " + location + " dimension: " + terminalSize);
+		logger.config("Mars Terminal position: " + location + " dimension: " + terminalSize);
 		frame.setLocation(location);
 
 		frame.setSize(terminalSize);
