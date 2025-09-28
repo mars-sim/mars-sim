@@ -4,7 +4,7 @@
  * @date 2021-10-02
  * @author Manny Kung
  */
-package com.mars_sim.console;
+package com.mars_sim.ui.swing.terminal;
 
 import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 
@@ -23,7 +23,7 @@ import org.beryx.textio.StringInputReader;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.swing.SwingTextTerminal;
 
-public class SwingHandler {
+class SwingHandler {
 
 	private static final Logger logger = Logger.getLogger(SwingHandler.class.getName());
 	private static String sourceName = logger.getName().substring(logger.getName().lastIndexOf(".") + 1,
@@ -44,7 +44,7 @@ public class SwingHandler {
         this.terminal = (SwingTextTerminal)textIO.getTextTerminal();
         this.dataObject = dataObject;
 
-        this.stringInputReaderSupplier = () -> textIO.newStringInputReader();
+        this.stringInputReaderSupplier = textIO::newStringInputReader;
 
         this.backKeyStroke = terminal.getProperties().getString("custom.back.key", "ctrl U");
 
@@ -106,21 +106,13 @@ public class SwingHandler {
         }
     }
 
-    private final <T> Supplier<T> getDefaultValueSupplier(String fieldName) {
-        return () -> getFieldValue(fieldName);
-    }
-
-    private final <T> Consumer<T> getValueSetter(String fieldName) {
-        return value -> setFieldValue(fieldName, value);
-    }
-
     public class StringTask extends Task<String, StringTask, StringInputReader> {
         public StringTask(String fieldName, String prompt, boolean showPrevious) {
             super(fieldName, prompt,
             		showPrevious,
                     stringInputReaderSupplier,
-                    getDefaultValueSupplier(fieldName),
-                    getValueSetter(fieldName));
+                    () -> getFieldValue(fieldName),
+                    v -> setFieldValue(fieldName, v));
         }
 
         public StringTask addChoices(String... choices) {

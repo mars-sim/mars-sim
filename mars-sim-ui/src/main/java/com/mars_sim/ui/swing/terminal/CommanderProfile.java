@@ -4,7 +4,7 @@
  * @date 2021-11-29
  * @author Manny Kung
  */
-package com.mars_sim.console;
+package com.mars_sim.ui.swing.terminal;
 
 import static org.beryx.textio.ReadInterruptionStrategy.Action.ABORT;
 
@@ -75,9 +75,9 @@ public class CommanderProfile implements BiConsumer<TextIO, RunnerData> {
 	private List<String> authorities;
 
 
-    public CommanderProfile(InteractiveTerm term) {
+    public CommanderProfile(MarsTerminal term) {
 
-    	terminal = term.getTerminal();
+    	terminal = term;
 
     	// Get Country list from known PersonConfig
         NationSpecConfig nameConfig = new NationSpecConfig(config);

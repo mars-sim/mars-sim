@@ -31,10 +31,10 @@ import javax.swing.SwingConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
+import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;

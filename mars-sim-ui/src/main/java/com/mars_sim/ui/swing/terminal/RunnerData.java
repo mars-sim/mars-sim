@@ -5,12 +5,12 @@
  * @author Manny Kung
  */
 
-package com.mars_sim.console;
+package com.mars_sim.ui.swing.terminal;
 
 import java.util.Collections;
 import java.util.Map;
 
-public class RunnerData {
+class RunnerData {
     private final String initData;
     private Map<String, String> sessionData = Collections.emptyMap();
 

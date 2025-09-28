@@ -4,11 +4,11 @@
  * @date 2021-11-29
  * @author Manny Kung
  */
-package com.mars_sim.console;
+package com.mars_sim.ui.swing.terminal;
 
 import org.beryx.textio.TextTerminal;
 
-public class AppUtil {
+class AppUtil {
 
 	private AppUtil() {}
 

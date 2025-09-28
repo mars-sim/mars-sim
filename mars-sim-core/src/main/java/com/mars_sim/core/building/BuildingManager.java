@@ -1230,8 +1230,6 @@ public class BuildingManager implements Serializable {
 						// Directly update the location state type
 						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 						
-						logger.info(r, 60_000,
- 							   "Just stowed inside " + garageBuilding.getName() + ".");
 						return garageBuilding;
 					}
 				}
@@ -1268,9 +1266,7 @@ public class BuildingManager implements Serializable {
 						vehicle.setPrimaryStatus(StatusType.GARAGED);
 						// Directly update the location state type
 						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
-						
-						logger.info(f, 60_000,
- 							   "Just stowed inside " + garageBuilding.getName() + ".");
+
 						return garageBuilding;
 					}
 				}
@@ -1308,8 +1304,6 @@ public class BuildingManager implements Serializable {
 						// Directly update the location state type
 						vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 						
-						logger.info(luv, 60_000,
- 							   "Just stowed inside " + garageBuilding.getName() + ".");
 						return garageBuilding;
 					}
 				}
