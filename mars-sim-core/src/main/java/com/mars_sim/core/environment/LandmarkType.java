@@ -18,11 +18,11 @@ public enum LandmarkType {
     private String name;
 
     private LandmarkType() {
-        this.name = Msg.getString("LandmarkType." + name());
+        this.name = Msg.getStringOptional("LandmarkType", name());
     }
 
     /**
-     * Get teh human readable name
+     * Get the human readable name
      * @return
      */
     public String getName() {

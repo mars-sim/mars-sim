@@ -49,6 +49,8 @@ import com.mars_sim.core.map.IntegerMapData;
 import com.mars_sim.core.map.MapDataFactory;
 import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.CoordinatesException;
+import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
@@ -178,8 +180,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	private static final String MAPTYPE_PROP = "mapType";
 	private static final String RESOLUTION_PROP = "resolution";
 	private static final String LAYER_PROP = "lyr" + MAP_SEPERATOR;
-	private static final String LON_PROP = "longitude";
-	private static final String LAT_PROP = "latitude";
+	private static final String LOCN_PROP = "location";
 
 	/** Tool name. */
 	public static final String NAME = "navigator";
@@ -445,11 +446,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			// Check for layer action and mineral action
 			layerDefined = checkLayerAction(userSettings);
 
-			String latString = userSettings.getProperty(LAT_PROP);
-			String lonString = userSettings.getProperty(LON_PROP);
-			if ((latString != null) && (lonString != null)) {
-				Coordinates userCenter = new Coordinates(latString, lonString);
-				updateCoordsMaps(userCenter);
+			String locnString = userSettings.getProperty(LOCN_PROP);
+			if (locnString != null) {
+				Coordinates userCenter;
+				try {
+					userCenter = CoordinatesFormat.fromString(locnString);
+					updateCoordsMaps(userCenter);
+				} catch (CoordinatesException e) {
+					logger.warning("Cannot use saved locn " + locnString + " " + e.getMessage());
+				}
 			}
 		}
 		
@@ -788,11 +793,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		results.setProperty(MAPTYPE_PROP, mapPanel.getMapMetaData().getId());
 		// Record the resolution
 		results.setProperty(RESOLUTION_PROP, "" + mapPanel.getMapResolution());
-		Coordinates center = mapPanel.getCenterLocation();
-		// Record the longitude
-		results.setProperty(LON_PROP, center.getFormattedLongitudeString());
-		// Record the latitude
-		results.setProperty(LAT_PROP, center.getFormattedLatitudeString());
+		// Record the location
+		results.setProperty(LOCN_PROP, CoordinatesFormat.getDecimalString(mapPanel.getCenterLocation()));
 
 		// Additional layers
 		for (var e : mapLayers) {
