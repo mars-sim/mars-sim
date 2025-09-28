@@ -32,7 +32,7 @@ class CoordinatesFormatTest {
         assertEquals(3D * Math.PI / 2D, CoordinatesFormat.parseLongitude2Theta("90.0" + DEG_SIGN + " " + WEST), 0);
         assertEquals(3D * Math.PI / 2D, CoordinatesFormat.parseLongitude2Theta("90.0 " + WEST), 0);
         assertEquals(3D * Math.PI / 2D, CoordinatesFormat.parseLongitude2Theta("-90.0"), 0);
-        assertEquals(0, CoordinatesFormat.parseLongitude2Theta("0 W"), 0);
+        assertEquals(0, CoordinatesFormat.parseLongitude2Theta("0 " + WEST), 0);
     }
     
     /**
@@ -86,7 +86,7 @@ class CoordinatesFormatTest {
         String latString1 = CoordinatesFormat.getFormattedLatitudeString(loc1);
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        String s2 = "90"+ decimalPoint + "0000 N";
+        String s2 = "90"+ decimalPoint + "0000 " + NORTH;
         assertEquals(s2, latString1);
     }
 
