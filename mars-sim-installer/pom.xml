@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+	<artifactId>mars-sim</artifactId>
+	<groupId>com.mars-sim</groupId>
+	<version>pre-3.10.0</version>
+  </parent>
+  <artifactId>mars-sim-installer</artifactId>
+  <name>mars-sim-installer</name>
+  <packaging>pom</packaging>
+  
+  <properties>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<maven.deploy.skip>true</maven.deploy.skip>
+  </properties>
+  
+  <!-- NOTE: These dependency declarations are required to ensure this project
+       builds after the executable JARs are ready -->
+  <dependencies>
+	<dependency>
+		<groupId>com.mars-sim</groupId>
+		<artifactId>mars-sim-ui</artifactId>
+		<version>${project.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>com.mars-sim</groupId>
+		<artifactId>mars-sim-headless</artifactId>
+		<version>${project.version}</version>
+	</dependency>	
+  </dependencies>
+ 
+  <build>
+    <plugins>
+      <!-- Copy built JAR files directly from target directories -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-executable-jars</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/jars"/>
+                <copy file="${basedir}/../mars-sim-ui/target/mars-sim-swing-${project.version}.jar" 
+                      tofile="${project.build.directory}/jars/mars-sim-swing.jar"/>
+                <copy file="${basedir}/../mars-sim-headless/target/mars-sim-console-${project.version}.jar" 
+                      tofile="${project.build.directory}/jars/mars-sim-console.jar"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- Create native installers using jpackage -->
+      <plugin>
+        <groupId>org.panteleyev</groupId>
+        <artifactId>jpackage-maven-plugin</artifactId>
+        <version>1.6.5</version>
+        <executions>
+          <!-- Mars Sim Swing Application -->
+          <execution>
+            <id>jpackage-swing</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jpackage</goal>
+            </goals>
+            <configuration>
+              <name>MarsSim</name>
+              <appVersion>${project.version}</appVersion>
+              <vendor>Mars Simulation Project</vendor>
+              <copyright>Copyright © 2025 Mars Simulation Project</copyright>
+              <description>Mars Simulation Project - Swing UI</description>
+              <type>APP_IMAGE</type>
+              <input>${project.build.directory}/jars</input>
+              <mainJar>mars-sim-swing.jar</mainJar>
+              <mainClass>com.mars_sim.ui.swing.main.MarsProject</mainClass>
+              <javaOptions>
+                <javaOption>-Xmx4g</javaOption>
+                <javaOption>-Duser.language=en</javaOption>
+                <javaOption>-Duser.region=US</javaOption>
+              </javaOptions>
+              <arguments>
+                <argument>--log</argument>
+              </arguments>
+              <destination>${project.build.directory}/installers</destination>
+              <runtimeImage>${java.home}</runtimeImage>
+            </configuration>
+          </execution>
+          
+          <!-- Mars Sim Console Application -->
+          <execution>
+            <id>jpackage-console</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jpackage</goal>
+            </goals>
+            <configuration>
+              <name>MarsSimConsole</name>
+              <appVersion>${project.version}</appVersion>
+              <vendor>Mars Simulation Project</vendor>
+              <copyright>Copyright © 2025 Mars Simulation Project</copyright>
+              <description>Mars Simulation Project - Console/Headless</description>
+              <type>APP_IMAGE</type>
+              <input>${project.build.directory}/jars</input>
+              <mainJar>mars-sim-console.jar</mainJar>
+              <mainClass>com.mars_sim.headless.MarsProjectHeadlessStarter</mainClass>
+              <javaOptions>
+                <javaOption>-Xmx4g</javaOption>
+                <javaOption>-Duser.language=en</javaOption>
+                <javaOption>-Duser.region=US</javaOption>
+              </javaOptions>
+              <arguments>
+                <argument>--log</argument>
+                <argument>-remote</argument>
+              </arguments>
+              <destination>${project.build.directory}/installers</destination>
+              <runtimeImage>${java.home}</runtimeImage>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

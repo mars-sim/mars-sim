@@ -90,6 +90,20 @@
 				<module>mars-sim-libgdx</module>
 			</modules>
 		</profile>
+		
+		<!-- Profile for creating native installers -->
+		<profile>
+			<id>jpackage</id>
+			<modules>
+				<module>mars-sim-tools</module>
+				<module>mars-sim-headless</module>
+				<module>mars-sim-console</module>
+				<module>mars-sim-core</module>
+				<module>mars-sim-ui</module>
+				<module>mars-sim-dist</module>
+				<module>mars-sim-installer</module>
+			</modules>
+		</profile>
 	</profiles>
 	<dependencies>
 		<dependency>
