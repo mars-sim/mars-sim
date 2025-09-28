@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="marsGradient" cx="0.5" cy="0.3" r="0.8">
+      <stop offset="0%" stop-color="#ff8c42"/>
+      <stop offset="40%" stop-color="#d2691e"/>
+      <stop offset="100%" stop-color="#8b4513"/>
+    </radialGradient>
+    <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#654321" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#2f1b0c" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle (Mars) -->
+  <circle cx="64" cy="64" r="60" fill="url(#marsGradient)" stroke="#654321" stroke-width="2"/>
+  
+  <!-- Mars surface features -->
+  <ellipse cx="45" cy="35" rx="8" ry="6" fill="#a0522d" opacity="0.7"/>
+  <ellipse cx="85" cy="50" rx="6" ry="4" fill="#a0522d" opacity="0.6"/>
+  <ellipse cx="35" cy="75" rx="10" ry="7" fill="#a0522d" opacity="0.5"/>
+  <ellipse cx="90" cy="85" rx="5" ry="4" fill="#a0522d" opacity="0.6"/>
+  
+  <!-- Settlement dome -->
+  <circle cx="64" cy="70" r="25" fill="none" stroke="#c0c0c0" stroke-width="2" opacity="0.8"/>
+  <path d="M 39 70 Q 64 50 89 70" fill="none" stroke="#c0c0c0" stroke-width="1.5" opacity="0.6"/>
+  <path d="M 39 70 Q 64 90 89 70" fill="none" stroke="#c0c0c0" stroke-width="1.5" opacity="0.6"/>
+  <path d="M 50 50 Q 64 45 78 50" fill="none" stroke="#c0c0c0" stroke-width="1" opacity="0.5"/>
+  
+  <!-- Small buildings inside dome -->
+  <rect x="56" y="75" width="6" height="8" fill="#666" opacity="0.7"/>
+  <rect x="64" y="72" width="8" height="11" fill="#555" opacity="0.7"/>
+  <rect x="74" y="76" width="5" height="7" fill="#777" opacity="0.7"/>
+  
+  <!-- Title text -->
+  <text x="64" y="15" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#2f1b0c">MARS</text>
+  <text x="64" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#2f1b0c">SIMULATION</text>
+</svg>

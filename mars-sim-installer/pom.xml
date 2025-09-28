@@ -67,7 +67,7 @@
         <executions>
           <!-- Mars Sim Swing Application -->
           <execution>
-            <id>jpackage-swing</id>
+            <id>jpackage-swing-image</id>
             <phase>package</phase>
             <goals>
               <goal>jpackage</goal>
@@ -90,14 +90,15 @@
               <arguments>
                 <argument>--log</argument>
               </arguments>
-              <destination>${project.build.directory}/installers</destination>
+              <destination>${project.build.directory}/app-images</destination>
               <runtimeImage>${java.home}</runtimeImage>
+              <icon>${basedir}/src/main/resources/icons/mars-sim.png</icon>
             </configuration>
           </execution>
           
           <!-- Mars Sim Console Application -->
           <execution>
-            <id>jpackage-console</id>
+            <id>jpackage-console-image</id>
             <phase>package</phase>
             <goals>
               <goal>jpackage</goal>
@@ -111,7 +112,70 @@
               <type>APP_IMAGE</type>
               <input>${project.build.directory}/jars</input>
               <mainJar>mars-sim-console.jar</mainJar>
-              <mainClass>com.mars_sim.headless.MarsProjectHeadlessStarter</mainClass>
+              <mainClass>com.mars_sim.headless.MarsProjectHeadless</mainClass>
+              <javaOptions>
+                <javaOption>-Xmx4g</javaOption>
+                <javaOption>-Duser.language=en</javaOption>
+                <javaOption>-Duser.region=US</javaOption>
+              </javaOptions>
+              <arguments>
+                <argument>--log</argument>
+                <argument>-remote</argument>
+              </arguments>
+              <destination>${project.build.directory}/app-images</destination>
+              <runtimeImage>${java.home}</runtimeImage>
+              <icon>${basedir}/src/main/resources/icons/mars-sim.png</icon>
+            </configuration>
+          </execution>
+          
+          <!-- Mars Sim Swing Installer -->
+          <execution>
+            <id>jpackage-swing-installer</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jpackage</goal>
+            </goals>
+            <configuration>
+              <name>MarsSim</name>
+              <appVersion>${project.version}</appVersion>
+              <vendor>Mars Simulation Project</vendor>
+              <copyright>Copyright © 2025 Mars Simulation Project</copyright>
+              <description>Mars Simulation Project - Swing UI</description>
+              <input>${project.build.directory}/jars</input>
+              <mainJar>mars-sim-swing.jar</mainJar>
+              <mainClass>com.mars_sim.ui.swing.main.MarsProject</mainClass>
+              <javaOptions>
+                <javaOption>-Xmx4g</javaOption>
+                <javaOption>-Duser.language=en</javaOption>
+                <javaOption>-Duser.region=US</javaOption>
+              </javaOptions>
+              <arguments>
+                <argument>--log</argument>
+              </arguments>
+              <destination>${project.build.directory}/installers</destination>
+              <runtimeImage>${java.home}</runtimeImage>
+              <linuxShortcut>true</linuxShortcut>
+              <linuxMenuGroup>Games</linuxMenuGroup>
+              <icon>${basedir}/src/main/resources/icons/mars-sim.png</icon>
+            </configuration>
+          </execution>
+          
+          <!-- Mars Sim Console Installer -->
+          <execution>
+            <id>jpackage-console-installer</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jpackage</goal>
+            </goals>
+            <configuration>
+              <name>MarsSimConsole</name>
+              <appVersion>${project.version}</appVersion>
+              <vendor>Mars Simulation Project</vendor>
+              <copyright>Copyright © 2025 Mars Simulation Project</copyright>
+              <description>Mars Simulation Project - Console/Headless</description>
+              <input>${project.build.directory}/jars</input>
+              <mainJar>mars-sim-console.jar</mainJar>
+              <mainClass>com.mars_sim.headless.MarsProjectHeadless</mainClass>
               <javaOptions>
                 <javaOption>-Xmx4g</javaOption>
                 <javaOption>-Duser.language=en</javaOption>
@@ -123,6 +187,9 @@
               </arguments>
               <destination>${project.build.directory}/installers</destination>
               <runtimeImage>${java.home}</runtimeImage>
+              <linuxShortcut>true</linuxShortcut>
+              <linuxMenuGroup>Games</linuxMenuGroup>
+              <icon>${basedir}/src/main/resources/icons/mars-sim.png</icon>
             </configuration>
           </execution>
         </executions>

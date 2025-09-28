@@ -23,6 +23,9 @@ jobs:
     - name: Build with Maven
       run:
         mvn  --file pom.xml -B package
+    - name: Build installers
+      run:
+        mvn  --file pom.xml -B package -Pjpackage -Dmaven.test.skip=true
     - name: Extract build version
       run: echo "POM_VERSION=$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
     - name: Create tag
@@ -34,6 +37,15 @@ jobs:
     - name: Create Release
       run: |
         cd ${{github.workspace}}
-        gh release create v${{ env.POM_VERSION }} ./mars-sim-dist/target/mars-sim-${{ env.POM_VERSION }}.zip --verify-tag --draft --title 'Release v${{ env.POM_VERSION }}' --notes-file ./RELEASE.md     
+        # Create release with ZIP distribution
+        gh release create v${{ env.POM_VERSION }} ./mars-sim-dist/target/mars-sim-${{ env.POM_VERSION }}.zip --verify-tag --draft --title 'Release v${{ env.POM_VERSION }}' --notes-file ./RELEASE.md
+        
+        # Add app-images if they exist
+        if [ -d "./mars-sim-installer/target/app-images" ]; then
+          cd mars-sim-installer/target/app-images
+          tar -czf "${{github.workspace}}/mars-sim-${{ env.POM_VERSION }}-linux-app-images.tar.gz" MarsSim MarsSimConsole
+          cd ${{github.workspace}}
+          gh release upload v${{ env.POM_VERSION }} mars-sim-${{ env.POM_VERSION }}-linux-app-images.tar.gz
+        fi
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
