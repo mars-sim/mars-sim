@@ -207,6 +207,11 @@ public class FuelHeatSource extends HeatSource {
 		return building.getSettlement();
 	}
 	
+	/**
+	 * Gets the heat currently offered by this heat source.
+	 * 
+	 * Note: it will consume fuel.
+	 */
 	@Override
 	public double getCurrentHeat() {
 		if (toggleOn) {
@@ -216,6 +221,12 @@ public class FuelHeatSource extends HeatSource {
 		return 0;
 	}
 
+	
+	/**
+	 * Gets the power currently offered by this heat source.
+	 * 
+	 * Note: it will consume fuel.
+	 */
 	@Override
 	public double getCurrentPower() {
 		if (toggleOn) {
@@ -227,6 +238,7 @@ public class FuelHeatSource extends HeatSource {
 	
 	/**
 	 * Measures or estimates the heat produced by this heat source.
+	 * Note: it won't consume fuel.
 	 * 
 	 * @param percent The percentage of capacity of this heat source
 	 * @return Heat (kWt)

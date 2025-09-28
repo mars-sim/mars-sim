@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * HeatSource.java
- * @date 2024-07-03
+ * @date 2025-09-28
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -70,21 +70,30 @@ public abstract class HeatSource implements Serializable {
 		heatModeCache = heatMode;
 		
 		if (heatMode == HeatMode.HEAT_OFF) {
+			// Set heat percent to zero
 			setPercentHeat(0);
-			setPercentElectricity(100);
+			// Q: is it safe to assume one can set electricity percent to (100 minus the heat percent) ?
+			double percentElectricity = 100 - percentHeat;
+			setPercentElectricity(percentElectricity);
+			
 			building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
 			return;
 		}
 		
 		if (heatMode == HeatMode.OFFLINE) {
+			// Since the source is offline, set both heat and electricity percent to zero
 			setPercentHeat(0);
 			setPercentElectricity(0);
+			
 			building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
 			return;
 		}
 		
+		// Heat percent
 		double percentHeat = heatMode.getPercentage();
 		setPercentHeat(percentHeat);
+		
+		// Electricity percent
 		double percentElectricity = 100 - percentHeat;
 		setPercentElectricity(percentElectricity);
 		building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ThermalGeneration.java
- * @date 2024-07-03
+ * @date 2025-09-28
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -17,11 +17,10 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
-import com.mars_sim.core.building.config.SourceSpec;
 import com.mars_sim.core.building.config.GenerationSpec;
+import com.mars_sim.core.building.config.SourceSpec;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.utility.power.SolarPowerSource;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
@@ -216,6 +215,7 @@ public class ThermalGeneration extends Function {
 	 * @return heat generated in kW (heat flow rate)
 	 */
 	public void setGeneratedHeat(double heat) {
+		if (heat < 0) heat = 0D;
 		heatGeneratedCache = heat;
 	}
 
@@ -275,19 +275,19 @@ public class ThermalGeneration extends Function {
 						solarHeatSource.setHeatMode(newHeatMode, building);
 						building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT, building);	
 						
-						// Convert all thermal nuclear heat to electricity
+						// Convert all thermal nuclear heat to electricity by setting it to HEAT_OFF
 						if (nuclearHeatSource != null) {
 							nuclearHeatSource.setHeatMode(HeatMode.HEAT_OFF, building);
 							building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT, building);
 						}
 						
-						// Turn off electric heat
+						// Turn off electric heat and electric power
 						if (electricHeatSource != null) {
 							electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
 							building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT, building);
 						}
 						
-						// Turn off fuel heat
+						// Turn off fuel heat and fuel power
 						if (fuelHeatSource != null) {
 							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
 							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT, building);
@@ -302,7 +302,6 @@ public class ThermalGeneration extends Function {
 						heat[1] = remainHeatReq;			
 						return heat;
 					}
-
 				} // end of for loop	
 			}
 			
@@ -731,7 +730,7 @@ public class ThermalGeneration extends Function {
 		// Update heat surplus in ThermalGeneration
 		setHeatSurplus(heatSurplus);
 		
-		if (devT >= 20 || devT <= -20 
+		if (devT >= 30 || devT <= -30 
 			|| nowT >= 40 || nowT <= 10 
 			|| heatGen >= 60
 			|| heatReq >= 60 || heatReq <= -60)
@@ -756,6 +755,7 @@ public class ThermalGeneration extends Function {
 	 * @return heat in kW.
 	 */
 	public void setHeatSurplus(double heat)  {
+		if (heat < 0) heat = 0D;
 		heatSurplusCache = heat;
 		building.fireUnitUpdate(UnitEventType.HEAT_SURPLUS_EVENT, building);
 	}
@@ -888,12 +888,12 @@ public class ThermalGeneration extends Function {
 	 */
 	public double getElectricPowerGen() {
 		if (electricHeatSource == null)
-			return 0;
+			return 0D;
 		
 		HeatMode heatMode = electricHeatSource.getHeatMode();
 		
 		if (heatMode == HeatMode.OFFLINE)
-			return 0;
+			return 0D;
 
 		return electricHeatSource.getCurrentPower();
 	}
@@ -905,12 +905,12 @@ public class ThermalGeneration extends Function {
 	 */
 	public double getSolarPowerGen() {
 		if (solarHeatSource == null)
-			return 0;
+			return 0D;
 		
 		HeatMode heatMode = solarHeatSource.getHeatMode();
 		
 		if (heatMode == HeatMode.OFFLINE)
-			return 0;
+			return 0D;
 
 		return solarHeatSource.getCurrentPower();
 	}
@@ -922,12 +922,12 @@ public class ThermalGeneration extends Function {
 	 */
 	public double getNuclearPowerGen() {
 		if (nuclearHeatSource == null)
-			return 0;
+			return 0D;
 		
 		HeatMode heatMode = nuclearHeatSource.getHeatMode();
 		
 		if (heatMode == HeatMode.OFFLINE)
-			return 0;
+			return 0D;
 
 		return nuclearHeatSource.getCurrentPower();
 	}
@@ -939,12 +939,12 @@ public class ThermalGeneration extends Function {
 	 */
 	public double getFuelPowerGen() {
 		if (fuelHeatSource == null)
-			return 0;
+			return 0D;
 		
 		HeatMode heatMode = fuelHeatSource.getHeatMode();
 		
 		if (heatMode == HeatMode.OFFLINE)
-			return 0;
+			return 0D;
 
 		return fuelHeatSource.getCurrentPower();
 	}

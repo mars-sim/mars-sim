@@ -91,7 +91,6 @@ extends BuildingFunctionPanel {
 	protected void buildUI(JPanel center) {
 		
 		AttributePanel totalsPanel = new AttributePanel();
-		totalsPanel.setBorder(StyleManager.createLabelBorder("Total"));
 		center.add(totalsPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
@@ -112,7 +111,7 @@ extends BuildingFunctionPanel {
 			
 			int num = sources.size();
 			AttributePanel sPanel = new AttributePanel(num * 4);
-			sPanel.setBorder(StyleManager.createLabelBorder("Sources"));
+			sPanel.setBorder(StyleManager.createLabelBorder("Power Sources"));
 
 			var centerPanel = new JPanel(new BorderLayout());
 			center.add(centerPanel, BorderLayout.CENTER);
@@ -134,8 +133,6 @@ extends BuildingFunctionPanel {
 				count++;
 			}
 		}
-
-		update();
 	}
 
 	/**

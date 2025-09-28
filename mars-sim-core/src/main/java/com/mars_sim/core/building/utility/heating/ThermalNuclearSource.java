@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ThermalNuclearSource.java
- * @date 2022-07-31
+ * @date 2025-09-28
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -68,8 +68,10 @@ public class ThermalNuclearSource extends HeatSource {
 	 */
 	@Override
 	public double getCurrentHeat() {
-		return getMaxHeat() * getPercentHeat() / 100D 
-				* thermalEfficiency / RATED_THERMAL_EFFICIENCY;
+		double percent = getPercentHeat();
+		if (percent == 0D)
+			return 0D;
+        return measureHeat(percent);
 	}
 
 	/**

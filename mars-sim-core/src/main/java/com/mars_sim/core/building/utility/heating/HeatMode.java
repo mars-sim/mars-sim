@@ -13,7 +13,7 @@ import com.mars_sim.core.tool.Msg;
 
 public enum HeatMode {
 
-	HEAT_OFF (0),
+	HEAT_OFF (0),				// If HEAT_OFF, no heat but allows electricity generation
 	ONE_EIGHTH_HEAT (12.5),
 	QUARTER_HEAT (25),
 	THREE_EIGHTH_HEAT (37.5),
@@ -21,8 +21,8 @@ public enum HeatMode {
 	FIVE_EIGHTH_HEAT (62.5),
 	THREE_QUARTER_HEAT (75),
 	SEVEN_EIGHTH_HEAT (87.5),
-	FULL_HEAT (100),
-	OFFLINE (0);
+	FULL_HEAT (100),			// If FULL_HEAT, 100% heat but zero percent electricity generation
+	OFFLINE (0);				// If OFFLINE, no heat and no electricity generation
 
 	private String name;
 	private double percentage;

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SolarHeatSource.java
- * @date 2024-07-03
+ * @date 2025-09-28
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -78,11 +78,10 @@ public class SolarHeatingSource extends HeatSource {
 	
 	@Override
 	public double getCurrentHeat() {
-		double fraction = getSunlight() / SurfaceFeatures.MEAN_SOLAR_IRRADIANCE; 
-		if (fraction == 0)
-			return 0;
-		double available = thermalEfficiency / RATED_THERMAL_EFFICIENCY * getMaxHeat() * getPercentHeat() / 100D;
-        return fraction * available;
+		double percent = getPercentHeat();
+		if (percent == 0D)
+			return 0D;
+        return measureHeat(percent);
     }
 	
 	@Override

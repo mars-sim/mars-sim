@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ElectricHeatSource.java
- * @date 2022-07-31
+ * @date 2025-09-28
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -65,10 +65,9 @@ public class ElectricHeatSource extends HeatSource {
 	@Override
 	public double getCurrentHeat() {
 		double percent = getPercentHeat();
-		if (percent == 0)
-			return 0;
-		return getMaxHeat() * percent / 100D 
-				* thermalEfficiency / RATED_THERMAL_EFFICIENCY;
+		if (percent == 0D)
+			return 0D;
+		return measureHeat(percent);
 	}
 	
 	/**
