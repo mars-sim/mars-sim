@@ -222,7 +222,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 
 		logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.settlementPowerSituation", settlement.getName()));
-
+		
 		// update the total power generated in the grid.
 		double powerGen = updateTotalPowerGenerated();
 
@@ -317,7 +317,7 @@ public class PowerGrid implements Serializable, Temporal {
 	/**
 	 * Handles excess power.
 	 * 
-	 * @param time 
+	 * @param time in millisols
 	 * @param neededPower
 	 */
 	private void handleExcessPower(double time, double neededPower) {
@@ -463,7 +463,7 @@ public class PowerGrid implements Serializable, Temporal {
 	/**
 	 * Handles the demand for power by ramping up the power generation.
 	 * 
-	 * @param time
+	 * @param time in millisols
 	 * @param neededPower
 	 */
 	private void handleLackOfPower(double time, double neededPower) {
@@ -486,7 +486,7 @@ public class PowerGrid implements Serializable, Temporal {
 		}
 
 		double timeInHour = time * HOURS_PER_MILLISOL; 
-	
+
 		// 2. Retrieve power from the grid battery for the first time
 		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
 
@@ -599,7 +599,7 @@ public class PowerGrid implements Serializable, Temporal {
 			return;
 		}
 		
-//		// 11. Retrieve power from the grid battery for the fourth time
+		// 11. Retrieve power from the grid battery for the fourth time
 //		neededPower = retrievePowerGridBattery(timeInHour, neededPower);
 //		
 //		if (neededPower < 0) {
@@ -618,6 +618,7 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		if (neededPower < 0) {
 			sufficientPower = true;
+			return;
 		}
 		
 		// 13. Retrieve power from the grid battery for the fifth time
@@ -651,9 +652,10 @@ public class PowerGrid implements Serializable, Temporal {
 	 */
 	private double retrievePowerGridBattery(double timeInHour, double neededPower) {
 		double newNeededPower = neededPower;
+		
 		// Assume the gauge of the cable is uniformly low, as represented by percentAverageVoltageDrop
 		// Future: account for the distance of the separation between endpoints
-		double neededEnergy = neededPower * timeInHour / PERC_AVG_VOLT_DROP * 100D;
+		double neededEnergy = newNeededPower * timeInHour / PERC_AVG_VOLT_DROP * 100D;
 
 		// Assume the energy flow is instantaneous and
 		// subtract powerHr from the battery reserve

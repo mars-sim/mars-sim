@@ -171,8 +171,9 @@ public class FuelPowerSource extends PowerSource {
 	  * Called by ToggleFuelPowerSource.
 	  * 
 	  * @param time the amount (millisols) of time to add.
+	  * @return is the work done ?
 	  */
-	 public void addToggleWorkTime(double time) {
+	 public boolean addToggleWorkTime(double time) {
 		 toggleRunningWorkTime += time;
 		 if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
 			 toggleRunningWorkTime = 0D;
@@ -180,7 +181,9 @@ public class FuelPowerSource extends PowerSource {
 
 			 String msgKey = (toggleOn ? "FuelPowerSource.log.turnedOn" : "FuelPowerSource.log.turnedOff");
 			 logger.fine(Msg.getString(msgKey,getType().getName())); //$NON-NLS-1$
+			 return true;
 		 }
+		 return false;
 	 }
 
 	 @Override

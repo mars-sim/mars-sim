@@ -356,14 +356,23 @@
 		</maintenance-entity-list>
 	</part>
 
-	<part name="EVA battery" type="EVA" mass="1.2" >
-		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, 
-		 (as of 4 Aug 2024 CATL Condensed battery has 500 Wh/kg)
-		 this rechargeable battery module is rated for 150 W at 18V.  
-		 for providing 8 hrs of electrical power to the EVA suit. 
-		 Energy capacity: 150 W * 8 hrs = 1.2 kWh.  
-		 Weight: 1.2 kWh / 1 kWh/kg = 1.2 kg. 
-		 Amperage: 1.2 kWh / 18 Volt = 66.67 Ah.
+	<part name="EVA battery" type="EVA" mass="1.28" >
+		<description>
+		 (As of 27 Sep 2025 The highest energy density achieved in a practical, rechargeable 
+		 lithium-ion battery is 711.3 Wh/kg, reported by researchers at the Institute of
+		 Physics, Chinese Academy of Sciences, using a lithium-rich manganese-based cathode 
+		 and a thin lithium metal anode. 
+		 
+		 While lithium-air batteries have a theoretical energy density of up to 1,200 Wh/kg, 
+		 they remain experimental and are not yet commercially viable.
+		 
+		 Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, this rechargeable battery 
+		 module is rated for 160 W at 12V, providing 8 hrs of electrical power to the EVA suit. 
+		 
+		 Energy capacity: 160 W * 8 hrs = 1.28 kWh.  
+		 Weight: 1.28 kWh / 1 kWh/kg = 1.28 kg. 
+		 Amperage: 1.28 kWh / 12 Volt = 106.67 Ah (or 1.28 / 12.8 V = 100 Ah)
+		 
 		</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="2" max-number="1" />
@@ -379,10 +388,13 @@
 		<description>Assuming the future achievement of 1 kg/kWh or 1 kWh/kg, 
 		 this 15 kWh rechargeable battery provides 'auxiliary' electrical power to 
 		 the vehicle, on top of the primary fuel cell stack.
-		 With 15 kWh capacity, or it's 37.5 Ah (= 15/.4) and is rated to operate at 400V.
+		 
+		 With 15 kWh capacity, or it's 37.5 Ah (= 15/0.4) and is rated to operate at 400V.
+		 
 		 Assume 6.43 km/kWh (based on a Tesla Model S battery pack weighing 2240 kg 
-		 with 100 kWh capacity that can travel 643 km), 
-		 this battery allows traveling a distance of 96.5 km on a single charge.
+		 with 100 kWh capacity that can travel 643 km), this battery allows traveling a 
+		 distance of 96.5 km on a single charge.
+		 
 		</description>
 		<maintenance-entity-list>
 			<entity name="robot" probability="2" max-number="1" />

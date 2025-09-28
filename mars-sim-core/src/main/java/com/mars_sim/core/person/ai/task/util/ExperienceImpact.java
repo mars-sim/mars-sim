@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillManager;
@@ -28,10 +27,7 @@ public class ExperienceImpact implements Serializable {
     private static final long serialVersionUID = 1L;
     
 	/** Default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(ExperienceImpact.class.getName());
-
-	// Taken from BotTaskManager; should be driven by RobotType
-    private static final double ROBOT_WORK_POWER = 0.2D;
+	// May add back: private static final SimLogger logger = SimLogger.getLogger(ExperienceImpact.class.getName())
 
     /**
      * Represents a weight of the importance of a skill.
@@ -211,8 +207,9 @@ public class ExperienceImpact implements Serializable {
         		&& !r.getSystemCondition().isPowerSave()
         		&& !r.getSystemCondition().isInMaintenance()
         		&& r.isOperable()) {
+        	double timeHrs = energyTime * MarsTime.HOURS_PER_MILLISOL ;
             // Expend energy based on activity.
-            r.consumeEnergy(energyTime * MarsTime.HOURS_PER_MILLISOL * ROBOT_WORK_POWER, energyTime * MarsTime.HOURS_PER_MILLISOL);
+            r.consumeEnergy(r.getConsumptionRate() * timeHrs, timeHrs);
         }
     }
     

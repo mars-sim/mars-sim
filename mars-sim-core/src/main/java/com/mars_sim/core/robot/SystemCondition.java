@@ -30,7 +30,7 @@ public class SystemCondition implements Serializable {
 	
 	private static final double POWER_SAVE_CONSUMPTION = .1;
 
-
+	private static final double ENERGY_PER_MODULE = 15;
 	
     // Data members
 
@@ -60,9 +60,9 @@ public class SystemCondition implements Serializable {
 
         double energyStorageCapacity = spec.getMaxCapacity();
         
-        int numModules = (int)(Math.ceil(energyStorageCapacity/2));
+        int numModules = (int)(Math.ceil(energyStorageCapacity/ENERGY_PER_MODULE));
         
-        battery = new Battery(newRobot, numModules, energyStorageCapacity / numModules);
+        battery = new Battery(newRobot, numModules, ENERGY_PER_MODULE);
        
         battery.initPower(spec.getLowPowerModePercent(), spec.getStandbyPowerConsumption());
     }
@@ -90,11 +90,13 @@ public class SystemCondition implements Serializable {
     		if (pulse.isNewIntMillisol() && msol >= 10 && msol < 995) {
  
     	        // Consume a minute amount of energy even if a robot does not perform any tasks
-    	    	if (onPowerSave && battery.getkWattHourStored() > 0) {
-    	    		battery.requestEnergy(MarsTime.HOURS_PER_MILLISOL * POWER_SAVE_CONSUMPTION * standbyPower, MarsTime.HOURS_PER_MILLISOL);
+    	    	if (onPowerSave && battery.getkWhStored() > 0) {
+    	    		battery.requestEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
+    	    				pulse.getElapsed() * MarsTime.HOURS_PER_MILLISOL);
     	    	}
-    	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask() && battery.getkWattHourStored() > 0) {
-    	    		battery.requestEnergy(MarsTime.HOURS_PER_MILLISOL * standbyPower, MarsTime.HOURS_PER_MILLISOL);	
+    	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask() && battery.getkWhStored() > 0) {
+    	    		battery.requestEnergy(standbyPower, 
+    	    				pulse.getElapsed() * MarsTime.HOURS_PER_MILLISOL);	
     			}
     	    	
     	    	int remainder = msol % 10;

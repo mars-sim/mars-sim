@@ -153,12 +153,12 @@ public class ToggleFuelPowerSource extends Task {
 					walkToMgtBldg(RandomUtil.getARandSet(mgtBuildings));
 				}
 				else {
-					end(powerSource.getType().getName() + ": Management space unavailable.");
+					endTask(powerSource.getType().getName() + ": Management space unavailable.");
 				}
 			}
 		}
 		else {
-			end("Management space unavailable.");
+			endTask("Management space unavailable.");
 		}
 	}
 
@@ -178,7 +178,7 @@ public class ToggleFuelPowerSource extends Task {
 	 *
 	 * @param s
 	 */
-	private void end(String s) {
+	private void endTask(String s) {
 		logger.log(person, Level.WARNING, 20_000, s);
 		endTask();
 	}
@@ -255,19 +255,17 @@ public class ToggleFuelPowerSource extends Task {
         else if (mechanicSkill > 1) {
             workTime += workTime * (.2D * mechanicSkill);
         }
-
-        // Add work to the toggle power source.
-        powerSource.addToggleWorkTime(workTime);
-
+        
         // Add experience points
         addExperience(workTime);
-
-        String toggle = "off";
-        if (toggleOn) toggle = "on";
-
-        logger.log(person, Level.INFO, 30_000L,
-				"Turning " + toggle + " " + powerSource.getType()
-                + " in " + building.getName() + ".");
+        
+        // Add work to the toggle power source.
+        if (powerSource.addToggleWorkTime(workTime)) {
+          String toggle = "off";
+          if (toggleOn) toggle = "on";
+          logger.log(person, Level.INFO, 20_000, "Toggled " + toggle + " " + powerSource.getType()  + " in " + building.getName() + ".");
+          endTask();
+        }
 
         return 0;
     }

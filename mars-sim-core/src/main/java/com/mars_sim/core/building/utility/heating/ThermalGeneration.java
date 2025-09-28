@@ -14,12 +14,14 @@ import java.util.Set;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.SourceSpec;
 import com.mars_sim.core.building.config.GenerationSpec;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.utility.power.SolarPowerSource;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.structure.Settlement;
@@ -82,17 +84,32 @@ public class ThermalGeneration extends Function {
 				switch (sourceType) {
 				case ELECTRIC_HEATING:
 					heatSource = new ElectricHeatSource(building, heat);	
+					
+					if (building.getCategory() == BuildingCategory.CONNECTION) {
+						heat = heat * building.getFloorArea() / 4;
+					}
+					
 					electricHeatSource = heatSource;
 					break;
 
 				case SOLAR_HEATING:
 					heatSource = new SolarHeatingSource(building, heat);
+					
+					if (building.getCategory() == BuildingCategory.CONNECTION) {
+						heat = heat * building.getFloorArea() / 4;
+					}
+					
 					solarHeatSource = heatSource;
 					break;
 					
 				case FUEL_HEATING:
 					boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 					String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
+					
+					if (building.getCategory() == BuildingCategory.CONNECTION) {
+						heat = heat * building.getFloorArea() / 4;
+					}
+
 					heatSource = new FuelHeatSource(building, heat, toggle, fuelType);
 					fuelHeatSource = heatSource;
 					break;
@@ -716,10 +733,10 @@ public class ThermalGeneration extends Function {
 		
 		if (devT >= 20 || devT <= -20 
 			|| nowT >= 40 || nowT <= 10 
-			|| heatGen >= 40
-			|| heatReq >= 40 || heatReq <= -40)
+			|| heatGen >= 60
+			|| heatReq >= 60 || heatReq <= -60)
 //			building.getBuildingType().contains("Large Greenhouse"))
-			logger.warning(building, 0, "3. heatGen: " + Math.round(heatGen * 100.0)/100.0		
+			logger.warning(building, 20_000L, "3. heatGen: " + Math.round(heatGen * 100.0)/100.0		
 					+ "  finalHeatReq: " + Math.round(finalHeatReq * 100.0)/100.0
 					+ "  T: " + Math.round(nowT * 10.0)/10.0
 					+ "  devT: " + Math.round(devT * 10.0)/10.0

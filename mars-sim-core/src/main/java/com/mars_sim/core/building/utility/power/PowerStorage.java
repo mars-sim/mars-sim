@@ -29,9 +29,11 @@ public class PowerStorage extends Function {
 	// May add back : private static final SimLogger logger = SimLogger.getLogger(PowerStorage.class.getName())
 
 	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
-	public static final double SECONDARY_LINE_VOLTAGE = 240D;
-	public static final double BATTERY_MAX_VOLTAGE = 374.4D;
+//	public static final double SECONDARY_LINE_VOLTAGE = 240D;
+//	public static final double BATTERY_MAX_VOLTAGE = 374.4D;
 	public static final double PERCENT_BATTERY_RECONDITIONING_PER_CYCLE = .1; // [in %]
+
+	private static final double ENERGY_PER_MODULE = 15;
 	/**
 	 * This is a building.xml property for the power storage function to control discharge.
 	 */
@@ -64,9 +66,9 @@ public class PowerStorage extends Function {
 		
         double energyStorageCapacity = spec.getCapacity();
 
-        int numModules = (int)(Math.ceil(energyStorageCapacity/2));
+        int numModules = (int)(Math.ceil(energyStorageCapacity / ENERGY_PER_MODULE));
         
-        battery = new Battery(building, numModules, energyStorageCapacity / numModules);
+        battery = new Battery(building, numModules, ENERGY_PER_MODULE);
 	}
 
 	/**

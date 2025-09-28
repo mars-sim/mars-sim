@@ -122,6 +122,8 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	/** The carrying capacity of the robot. */
 	private int carryingCapacity;
 
+	private double rate;
+	
 	private String model;
 	
 	/** The Robot status mode. */
@@ -171,6 +173,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		// Initialize data members.
 		this.robotType = spec.getRobotType();
 		this.model = spec.getMakeModel();
+		this.rate = spec.getConsumptionRate();
 		
 		primaryMode = BotMode.NOMINAL;
 		
@@ -1271,7 +1274,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	 * Returns the current amount of energy in kWh. 
 	 */
 	public double getcurrentEnergy() {
-		return condition.getBattery().getkWattHourStored();
+		return condition.getBattery().getkWhStored();
 	}
 	
 	public EquipmentInventory getEquipmentInventory() {
@@ -1309,6 +1312,13 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		if (spot != null) {
 			spot.leave(this, release);
 		}
+	}
+	
+	/**
+	 * Get the consumption rate for this Robot type.
+	 */
+	public double getConsumptionRate() {
+		return rate;
 	}
 	
 	@Override

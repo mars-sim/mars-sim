@@ -227,6 +227,15 @@
 	        yloc="-30.0" facing="0.0" />   
 	</building-package>
 	
+	<building-package name="Methane Set 1 - 1x3" >
+	    <standalone type="Methane Power Generator" xloc="60.0"
+	        yloc="-20.0" facing="0.0" />
+	    <standalone type="Methane Power Generator" xloc="60.0"
+	        yloc="-30.0" facing="0.0" />   
+	    <standalone type="Methane Power Generator" xloc="60.0"
+	        yloc="-40.0" facing="0.0" />  
+	</building-package>
+	
 	<building-package name="Small Areothermal Well Set 1 - 1x1">
 	    <standalone type="Small Areothermal Well" xloc="75.0"
 	        yloc="-10.0" facing="0.0" />
@@ -317,6 +326,14 @@
 	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="40" facing="90.0" />  
 	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="60" facing="90.0" />
 	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="80" facing="90.0" />    	
+	</building-package>
+		
+    <building-package name="TOPAZ-2A Set 1 - 1x5">
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="20" facing="90.0" />
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="40" facing="90.0" />  
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="80" facing="90.0" />    	
+	    <standalone type="TOPAZ-2A Reactor" xloc="200.0" yloc="100" facing="90.0" />   
 	</building-package>
 	
 	<building-package name="TOPAZ-3 Set 1 - 1x1">

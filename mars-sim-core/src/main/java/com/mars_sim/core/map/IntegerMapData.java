@@ -785,12 +785,12 @@ import com.mars_sim.core.map.location.Coordinates;
  			theta += TWO_PI;
 
  		int row = (int) Math.round(phi * (colorPixels.length / Math.PI));
- 		if (row > colorPixels.length - 1)
- 	 		row--;
+ 		if (row >= colorPixels.length)
+ 	 		row = 0;
  			
  		int column = (int) Math.round(theta * (colorPixels[0].length / TWO_PI));
- 		if (column > colorPixels[0].length - 1)
- 			column--;
+ 		if (column >= colorPixels[0].length)
+ 			column = 0;
  		
  		return colorPixels[row][column];
  	}

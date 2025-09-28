@@ -675,7 +675,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		// Determine power required for each function.
 		for (Function function : getFunctions()) {
-			double power = function.getCombinedPowerLoad();
+			double power = function.getFullPowerRequired();
 			if (power > 0) {
 				result += power;
 			}
@@ -684,6 +684,25 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return result + powerNeededForEVAHeater;
 	}
 
+	/**
+	 * Gets the total power requirement for full-power mode on all functions.
+	 *
+	 * @return power in kW.
+	 */
+	public double getCombinedPowerLoad() {
+		double result = baseFullPowerRequirement;
+
+		// Determine power required for each function.
+		for (Function function : getFunctions()) {
+			double power = function.getCombinedPowerLoad();
+			if (power > 0) {
+				result += power;
+			}
+		}
+
+		return result + powerNeededForEVAHeater;
+	}
+	
 	/**
 	 * Gets the power generated for full-power mode on all functions.
 	 *

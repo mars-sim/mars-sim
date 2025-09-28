@@ -34,7 +34,16 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int TYPE = SETTLEMENT + 1;
 	private static final int CATEGORY = TYPE + 1;
 	
-	private static final int TEMPERATURE = CATEGORY + 1;
+	private static final int POWER_MODE = CATEGORY + 1;
+	private static final int POWER_REQ = POWER_MODE + 1;
+	private static final int POWER_GEN = POWER_REQ + 1;
+	
+	private static final int SOLAR = POWER_GEN + 1;
+	private static final int ELECTRIC = SOLAR + 1;
+	private static final int FUEL = ELECTRIC + 1;
+	private static final int NUCLEAR = FUEL + 1;
+	
+	private static final int TEMPERATURE = NUCLEAR + 1;
 	private static final int DELTA_TEMP = TEMPERATURE + 1;
 	private static final int DEV_TEMP = DELTA_TEMP + 1;
 	
@@ -54,17 +63,9 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	private static final int WATER_HEAT_SINK = AIR_HEAT_SINK + 1;
 
 	private static final int EXCESS_HEAT = WATER_HEAT_SINK + 1;
+
 	
-	private static final int SOLAR = EXCESS_HEAT + 1;
-	private static final int ELECTRIC = SOLAR + 1;
-	private static final int FUEL = ELECTRIC + 1;
-	private static final int NUCLEAR = FUEL + 1;
-	
-	private static final int POWER_MODE = NUCLEAR + 1;
-	private static final int POWER_REQ = POWER_MODE + 1;
-	private static final int POWER_GEN = POWER_REQ + 1;
-	
-	private static final int COLUMNCOUNT = POWER_GEN + 1;
+	private static final int COLUMNCOUNT = EXCESS_HEAT + 1;
 
 	private static final String KW_OPEN_PARA = " kW - ";
 	private static final String PERCENT_CLOSE_PARA = " %";

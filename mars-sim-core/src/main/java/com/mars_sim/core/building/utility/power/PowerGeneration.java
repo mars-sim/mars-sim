@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.building.config.SourceSpec;
@@ -62,6 +63,7 @@ public class PowerGeneration extends Function {
 				PowerSource powerSource = null;
 				PowerSourceType powerType = PowerSourceType.getType(type);
 				switch (powerType) {
+	
 					case FISSION_POWER:
 						powerSource = new FissionPowerSource(numModules, power, conversion, percentLoadCapacity);				
 						break;
@@ -71,7 +73,12 @@ public class PowerGeneration extends Function {
 						break;
 						
 					case SOLAR_POWER:
+						if (building.getCategory() == BuildingCategory.CONNECTION) {
+							power = power * building.getFloorArea() / 4;
+						}
+						
 						powerSource = new SolarPowerSource(building, power);
+						
 						break;
 						
 					case SOLAR_THERMAL:
@@ -82,6 +89,7 @@ public class PowerGeneration extends Function {
 						boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 						String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
 						powerSource = new FuelPowerSource(building, power, toggle, fuelType);
+						
 						break;
 						
 					case WIND_POWER:

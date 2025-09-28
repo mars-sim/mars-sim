@@ -156,7 +156,7 @@ public abstract class ResourceProcessor extends Function {
 	}
 
 	/**
-	 * Gets the amount of power required when function is at full power.
+	 * Gets the amount of power required only when function is running.
 	 *
 	 * @return power (kW)
 	 */
@@ -171,6 +171,21 @@ public abstract class ResourceProcessor extends Function {
 		return result;
 	}
 
+
+	/**
+	 * Gets the amount of power required when function is at full power.
+	 *
+	 * @return power (kW)
+	 */
+	@Override
+	public double getFullPowerRequired() {
+		double result = 0D;
+		for(ResourceProcess process : processes) {
+			result += process.getPowerRequired();
+		}
+		return result;
+	}
+	
 	/**
 	 * Gets the amount of power required when function is at power down level. 
 	 * This is based on the a percentage of the full power using the power down processing level

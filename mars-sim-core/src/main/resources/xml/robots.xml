@@ -40,7 +40,7 @@
 	<robot-list>
 
 		<robot type="GardenBot" make="Standard" mass="60" height="100"
-				standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+				standby-power-consumption="0.1" consumption-rate="0.4" low-power-mode="20">
 			<description>A gardening robot that tends greenhouses, algae ponds, and fish farms.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="35"/>
@@ -57,8 +57,8 @@
 		</robot>
 
 		<robot type="GardenBot" make="Advanced" mass="60" height="100"
-				standby-power-consumption="0.05" consumption-rate="1" low-power-mode="15"
-				max-capacity="30">
+				standby-power-consumption="0.1" consumption-rate="0.35" low-power-mode="15"
+				max-capacity="15">
 			<description>A more advanced gardening robot with higher battery capacity.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="55"/>
@@ -75,7 +75,7 @@
 		</robot>
 		
 		<robot type="MakerBot" make="Standard"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.45" low-power-mode="20">
 			<description>A manufacturing robot that aids resource production.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -92,7 +92,7 @@
 		</robot>				
 		
 		<robot type="MakerBot" make="Advanced"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.4" low-power-mode="15">
 			<description>A manufacturing robot that aids resource production.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -109,7 +109,7 @@
 		</robot>
 		
 		<robot type="RepairBot" make="Standard"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.45" low-power-mode="20">
 			<description>A robot that fix and repair parts and equipment.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -126,7 +126,7 @@
 		</robot>			
 		
 		<robot type="RepairBot" make="Advanced"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.4" low-power-mode="15">
 			<description>A robot that fix and repair parts and equipment.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -143,7 +143,7 @@
 		</robot>			
 		
 		<robot type="ChefBot" make="Standard"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.4" low-power-mode="20">
 			<description>A kitchen robot that prepare food, meals and dessert.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -160,7 +160,7 @@
 		</robot>
 
 		<robot type="ChefBot" make="Advanced"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.35" low-power-mode="15">
 			<description>A kitchen robot that prepare food, meals and dessert.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -177,7 +177,7 @@
 		</robot>
 	
 		<robot type="MedicBot" make="Standard" mass="90"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.3" low-power-mode="20">
 			<description>A robot that provides medical treatment and aid.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -195,7 +195,7 @@
 		</robot>				
 		
 		<robot type="MedicBot" make="Advanced" mass="90"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+					standby-power-consumption="0.1" consumption-rate="0.25" low-power-mode="15">
 			<description>A robot that provides medical treatment and aid.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -214,7 +214,7 @@
 		
 		
 		<robot type="ConstructionBot" make="Standard" mass="120" height="160"
-				standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+				standby-power-consumption="0.15" consumption-rate="0.55" low-power-mode="20">
 			<description>A robot that provides construction missions.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -231,8 +231,8 @@
 			</skill-list>
 		</robot>
 		
-		<robot type="DeliveryBot" make="Standard" mass="50" height="80" max-capacity="20"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+		<robot type="DeliveryBot" make="Standard" mass="50" height="80" max-capacity="15"
+					standby-power-consumption="0.1" consumption-rate=".3" low-power-mode="20">
 			<description>A robot that functions as a pilot and loads and unloads cargoes.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>
@@ -249,8 +249,8 @@
 			</skill-list>
 		</robot>
 
-		<robot type="DeliveryBot" make="Advanced" mass="50" height="80" max-capacity="20"
-					standby-power-consumption="0.05" consumption-rate="1" low-power-mode="20">
+		<robot type="DeliveryBot" make="Advanced" mass="50" height="80" max-capacity="15"
+					standby-power-consumption="0.1" consumption-rate="0.25" low-power-mode="15">
 			<description>A robot that functions as a pilot and loads and unloads cargoes.</description>
 			<robotic-attribute-list>
 				<robotic-attribute name="Strength" value="95"/>

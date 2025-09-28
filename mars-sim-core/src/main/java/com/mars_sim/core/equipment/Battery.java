@@ -11,9 +11,12 @@ import java.io.Serializable;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * This class represents the modeling of an electrical battery.
@@ -32,18 +35,41 @@ public class Battery implements Serializable {
 	 * 4.2 V * 104 = 436.8 V
 	 * e.g. : Tesla Model S has 104 cells per module
 	 */
-	private static final int CELLS_PER_MODULE = 104;
+	
+	// The internal resistance of each cell in a Tesla Model 3 Long Range (LR) battery pack is 
+	// estimated to be approximately 26.8 mΩ. This value is derived from the pack's total 
+	// internal resistance of about 56 mΩ, which is based on a 96s46p cell configuration 
+	// (96 * 46 = 4416 total cells), resulting in a per-brick resistance of 0.583 mΩ and a per-cell
+	// tesistance of 26.8 mΩ (0.583 mΩ × 46).
+	
+	// 0.583 mΩ * 96 = 55.968 mΩ
+	// 0.583 mΩ × 46 = 26.818 mΩ (the resistance of each individual cell)
+	
+	// For the Standard Range (SR) pack, which uses a 96s31p configuration (96 * 31 = 2975 total cells),
+	// the estimated pack resistance is about 83 mΩ. 
+	
+	private static final int CELLS_IN_SERIES_PER_MODULE = 96;
 	/** The internal resistance [in ohms] in each cell. */	
-	private static final double R_CELL = 0.06; 
-
-	private static final double R_LOAD = 1000D; // assume constant load resistance
+	private static final double R_CELL = 0.583 / 1000; 
+	
+	private static final double R_LOAD = 26.818 / 1000; // Assume a constant load resistance of the motor
+	
+	// The nominal voltage of the Tesla Model 3 battery pack is approximately 350 volts, 
+	// derived from a 96-cell series configuration with a nominal cell voltage of 
+	// around 3.65 volts ( 96×3.65 = 350.4 V).
+	
+	/** The nominal voltage per cell. */
+	private static final double NOMINAL_CELL_VOLTAGE = 4.2;
+	// Note: 104 * 4.2V = 403.8
+    /** The standard voltage of this battery pack in volts. */
+    public static final double HIGHEST_MAX_VOLTAGE = CELLS_IN_SERIES_PER_MODULE * NOMINAL_CELL_VOLTAGE; //403.8; //436.8; // 600
+    
 	
 	/** The percent of the terminal voltage prior to cutoff */
-	public static final double PERCENT_TERMINAL_VOLTAGE = 66.67;
-    /** The standard voltage of this battery pack in volts. */
-    public static final double HIGHEST_MAX_VOLTAGE = 600; // 436.8;
+//	public static final double PERCENT_TERMINAL_VOLTAGE = 66.67;
+	
     /** The standard voltage of a drone battery pack in volts. */
-    public static final double DRONE_VOLTAGE = 48;
+    public static final double DRONE_VOLTAGE = HIGHEST_MAX_VOLTAGE / 8;
     
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
     // May add back: private static final double MAX_AMP_DRAW = 120
@@ -52,11 +78,11 @@ public class Battery implements Serializable {
 	 * The nominal capacity (Amp hours) of a lithium cell is about 250mAh at the 
 	 * discharge current of 1C.
 	 */
-	private static final double NOMINAL_AMP_HOURS = .25;
+//	private static final double NOMINAL_AMP_HOURS = .25;
 	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
-	private static final int MAX_C_RATING_CHARGING = 8;
+	private static final int MAX_C_RATING_CHARGING = 1;
 	/** The maximum continuous discharge rate (within the safety limit) that this battery can handle. */
-	private static final int MAX_C_RATING_DISCHARGING = 4;
+	private static final int MAX_C_RATING_DISCHARGING = 2;
 	
 	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
 	/** The percent of health improvement after reconditioning. */
@@ -81,6 +107,7 @@ public class Battery implements Serializable {
 	/** The last number of cycles of charging and discharge the battery. */
 	private int lastNumChargeCycles;
 	
+	private int cableSizeFactor;
 	
     /** The maximum energy capacity of a standard battery module in kWh. */
     public double energyPerModule;
@@ -131,6 +158,11 @@ public class Battery implements Serializable {
 	 */
 	private double rTotal;
 	
+	/**
+	 * The average individual cell voltage 
+	 */
+	private double cellVoltage;
+	
 	/*
 	 * The Terminal voltage is between the battery terminals with load applied. 
 	 * It varies with SOC and discharge/charge current.
@@ -156,6 +188,17 @@ public class Battery implements Serializable {
 	 */
     public Battery(Unit unit, int numModules, double energyPerModule) {
     	this.unit = unit;
+    	
+    	if (unit instanceof Building) {
+        	cableSizeFactor = 20; 
+    	}
+    	else if (unit instanceof Robot) {
+        	cableSizeFactor = 80; 
+    	}
+    	else if (unit instanceof Vehicle) {
+        	cableSizeFactor = 40; 
+    	}
+    	
         performance = 1.0D;
         operable = true;
         
@@ -163,9 +206,12 @@ public class Battery implements Serializable {
         standbyPower = 0.01;
         
         this.numModules = numModules;
-		rTotal = R_CELL * numModules * CELLS_PER_MODULE;
+        // numModules * 0.583 mΩ * 96 = numModules * 55.968 mΩ
+		rTotal = R_CELL * numModules * CELLS_IN_SERIES_PER_MODULE;
+		cellVoltage = NOMINAL_CELL_VOLTAGE;
 		
-        this.energyPerModule = energyPerModule;
+		// For now, energyPerModule is 15 kWh
+        this.energyPerModule = energyPerModule; 
         energyStorageCapacity = energyPerModule * numModules;
         maxCapNameplate = energyStorageCapacity;
         
@@ -189,48 +235,70 @@ public class Battery implements Serializable {
     	 this.lowPowerPercent = lowPowerPercent;
     	 this.standbyPower = standbyPower;
     }
-    
-    /**
-  	 * Computes how much stored energy can be delivered when discharging.
-  	 * 
-  	 * @param neededkWh  energy
-  	 * @param time    in millisols
-  	 * @return energy available to be delivered
-  	 */
-  	public double estimateEnergyToDeliver(double neededkWh, double time) {
-  		return estimateEnergyToDeliver(neededkWh, R_LOAD, time);
-  	}
   		
     /**
 	 * Computes how much stored energy can be delivered when discharging.
 	 * 
 	 * @param neededkWh  energy
-	 * @param rLoad  the load resistance of the external circuit (power grid, vehicle, robot) 
-	 * @param time    in millisols
+	 * @param timeHr    in hours
 	 * @return energy available to be delivered
 	 */
-	public double estimateEnergyToDeliver(double neededkWh, double rLoad, double time) {
-		if (neededkWh <= 0)
-			return 0;
+	public double estimateEnergyToDeliver(double neededkWh, double timeHr) {
+		if (neededkWh <= 0D && timeHr <= 0D)
+			return 0D;
 		
-		double stored = getkWattHourStored();
+		double storedkWh = getkWhStored();
 		
-		double maxCap = getEnergyStorageCapacity();
+//		double maxCap = getEnergyStorageCapacity();
 		
-		if (stored <= 0)
-			return 0;
+		if (storedkWh <= 0)
+			return 0D;
 
 		double vTerminal = getTerminalVoltage();
 		// Assume the internal resistance of the battery is constant
 		double rInt = getTotalResistance();
 		// Assume max stateOfCharge is 1
-		double stateOfCharge = stored / maxCap;
-		// Use fudge_factor (from 0.0 to 5.0) to improve the power delivery but decreases 
-		// as the battery is getting depleted
-		double fudgeFactor = 5 * stateOfCharge * stateOfCharge;
-		// The output voltage
-		double vOut = vTerminal * rLoad / (rLoad + rInt);
+//		double stateOfCharge = storedkWh / maxCap;
 
+		// The output voltage
+		// e.g. nominal voltage of Tesla Model 3 is 350 V
+		// At 100% SoC, it's ~ 403 V
+		
+		// The actual nominal voltage is less than the terminal because some resistive loss is
+		// expected due to internal resistance of the cell
+
+		double powerNominal = storedkWh / timeHr / cableSizeFactor; // in W
+		double currentNominal = powerNominal / vTerminal * 1000; // in Amp
+		double vLoss = currentNominal * rInt; // in Volt
+		double vOut = vTerminal - vLoss; // in Volt
+		
+		// Do NOT delete. May add back for debugging :
+//		if (unit instanceof Building)
+//			logger.info("vTerminal: " + Math.round(vTerminal * 100.0)/100.0
+//				+ "  timeHr: " + Math.round(timeHr * 10_000.0)/10_000.0	
+//				+ "  storedkWh: " + Math.round(storedkWh * 100.0)/100.0	
+//				+ "  powerNominal: " + Math.round(powerNominal * 10000.0)/10000.0	
+//				+ "  currentNominal: " + Math.round(currentNominal * 10000.0)/10000.0	
+//				+ "  vLoss: " + Math.round(vLoss * 10000.0)/10000.0	
+//				+ "  rInt: " + Math.round(rInt * 1000.0)/1000.0	
+//				+ "  vOut: " + Math.round(vOut * 100.0)/100.0
+//				+ " - " + unit);
+				
+//		cellVoltage = vTerminal / HIGHEST_MAX_VOLTAGE * NOMINAL_CELL_VOLTAGE;
+//		double newVOut =  cellVoltage * CELLS_IN_SERIES_PER_MODULE; 
+//		double newAmp = newVOut / rInt;
+//		double newkWh = newAmp * newVOut / 1000 * time * HOURS_PER_MILLISOL;
+		
+		
+		// In case of TEsla Model 3 battery pack, the actual voltage ranges from approximately 
+		// 240–242 volts at the lowest state of charge (0% SoC) to a maximum of 403 volts 
+		// during a full charge.
+		
+		// This variation occurs because the terminal voltage is influenced by the open-circuit 
+		// voltage of the individual cells, which can be as low as 2.85 volts at 0% SoC and 
+		// as high as 4.15 volts at 100% SoC, resulting in a pack voltage range of roughly 
+		// 274 V to 399 V under resting conditions.
+	
 		if (vOut <= 0)
 			return 0;
 
@@ -249,12 +317,26 @@ public class Battery implements Serializable {
 		// for one hours, and if discharged at 0.5C rate it provide 50Amps for 2 hours.
 		
 		double cRatingDischarge = getMaxCRating();
-		double nowAmpHr = ampHrRating * cRatingDischarge * fudgeFactor * time;
+		
+		double nowAmpHr = ampHrRating * cRatingDischarge;
+		
 		double possiblekWh = nowAmpHr / 1000D * vOut;
 
-		double availablekWh = Math.min(stored, Math.min(possiblekWh, neededkWh));
+		double readykWh = Math.min(storedkWh, Math.min(possiblekWh, neededkWh));
 		
-		return availablekWh;
+		// Do NOT delete. May add back for debugging :
+//		if (unit instanceof Building)
+//			logger.info("nowAmpHr: " + Math.round(nowAmpHr * 1000.00)/1000.00
+//				+ "  ampHr: " + Math.round(ampHr * 1000.00)/1000.00		
+//				+ "  cRatingDischarge: " + Math.round(cRatingDischarge * 1000.00)/1000.00
+////				+ "  stateOfCharge: " + Math.round(stateOfCharge * 1000.00)/1000.00
+////				+ "  maxCap: " + Math.round(maxCap * 1000.00)/1000.00
+//				+ "  neededkWh: " + Math.round(neededkWh * 100_000.00)/100_000.00
+//				+ "  possiblekWh: " + Math.round(possiblekWh * 1000.00)/1000.00
+//				+ "  availablekWh: " + Math.round(readykWh * 100_000.00)/100_000.00
+//				+ " - " + unit);
+		
+		return readykWh;
 	}
 	  /**
      * This method reflects a passing of time.
@@ -304,29 +386,8 @@ public class Battery implements Serializable {
     	// Note: Need to find the physical formula for max power draw
     	return ampHourStored * HIGHEST_MAX_VOLTAGE / time / 1000;
     }
-    
-    /**
-     * Gets the maximum power [in kW] that is allowed during charging.
-     * 
-     * @param time in hours
-     * @return maximum power [in kW]
-     */
-    public double getMaxPowerCharging(double hours) {
-    	// Note: Need to find the physical formula for max power charge
-    	return MAX_C_RATING_CHARGING * ampHourStored * HIGHEST_MAX_VOLTAGE / hours / 1000;
-    }
-    
-    /**
-     * Gets the maximum energy [in kWh] that can be accepted during charging.
-     * 
-     * @param time in hours
-     * @return maximum energy [in kWh]
-     */
-    public double getMaxEnergyCharging(double hours) {
-    	// Note: Need to find the physical formula for max power charge
-    	return getMaxPowerCharging(hours) * 3600;
-    }
 
+    
     /**
      * Requests energy from the battery. This will discharge the battery.
      * 
@@ -336,8 +397,9 @@ public class Battery implements Serializable {
      */
     public double requestEnergy(double consumekWh, double time) {
     	
-		double available = estimateEnergyToDeliver(consumekWh, R_LOAD, time);
-		// May add back for debugging: logger.info(robot, "kWh: " + kWhStored + "  available: " + available + "  consume: " + consumekWh)
+		double available = estimateEnergyToDeliver(consumekWh, time);
+		// May add back for debugging: 
+		// May add back for debugging : logger.info(unit, "kWh: " + Math.round(kWhStored * 100.0/100.0) + "  available: " + Math.round(available * 10000.0/10000.0) + "  consume: " + Math.round(consumekWh * 10000.0/1000.0))
        	
     	kWhStored -= available; 
     	
@@ -385,9 +447,21 @@ public class Battery implements Serializable {
 		energyAccepted = percentAccepted / 100.0 * energyStorageCapacity;
 
 	 	// Consider the effect of the charging rate and the time parameter
-    	double maxChargeEnergy = getMaxEnergyCharging(hours);
+    	double maxChargeEnergy = getMaxPowerCharging() * hours;
 		
     	return Math.min(maxChargeEnergy, energyAccepted);
+    }
+    
+    /**
+     * Gets the maximum power [in kW] that is allowed during charging.
+     * 
+     * @return maximum power [in kW]
+     */
+    public double getMaxPowerCharging() {
+    	// Note: Need to find the physical formula for max power charge
+    	double power = MAX_C_RATING_CHARGING * ampHourStored * HIGHEST_MAX_VOLTAGE / 1000;
+    	// May add back for debugging: logger.info("getMaxPowerCharging: " + Math.round(power * 10.0)/10.0 + "  ampHourStored: " + Math.round(ampHourStored* 10.0)/10.0)
+    	return power;
     }
     
     /**
@@ -646,7 +720,7 @@ public class Battery implements Serializable {
 	}
 	
 	/**
-	 * Reconditions the battery.
+	 * Re-conditions the battery.
 	 * 
 	 */
 	public void reconditionBattery() {
@@ -689,11 +763,11 @@ public class Battery implements Serializable {
 	}
 	
 	/**
-	 * Gets the building's stored energy.
+	 * Gets the stored energy.
 	 * 
-	 * @return energy (kW hr).
+	 * @return energy (kWh).
 	 */
-	public double getkWattHourStored() {
+	public double getkWhStored() {
 		return kWhStored;
 	}
 	

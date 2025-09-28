@@ -154,7 +154,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	protected boolean isValid(ClockPulse pulse) {
 		long newPulse = pulse.getId();
-		boolean result = (newPulse > lastPulse);
+		boolean result = (newPulse > lastPulse && pulse.getElapsed() > 0);
 		if (result) {
 			long expectedPulse = lastPulse + 1;
 			if (expectedPulse != newPulse) {

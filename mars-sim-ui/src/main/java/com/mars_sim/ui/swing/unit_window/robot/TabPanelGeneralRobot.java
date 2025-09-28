@@ -102,7 +102,7 @@ public class TabPanelGeneralRobot extends TabPanel {
         
 		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(battery.getBatteryPercent()), 
 				"The state of the battery is kWh stored / energy storage capacity * 100 percent");
-		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(battery.getkWattHourStored()));
+		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(battery.getkWhStored()));
 		cap = battPanel.addRow("Energy Storage Capacity", StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
 		maxCapNameplate = battPanel.addRow("Nameplate Capacity", StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));	
 		maxCRating = battPanel.addRow("Max C-Rating Discharging", StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));		
@@ -121,7 +121,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		statePercent.setText(StyleManager.DECIMAL_PERC.format(battery.getBatteryPercent()));
 		cap.setText(StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
 		maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));
-		kWhStored.setText(StyleManager.DECIMAL_KWH.format(battery.getkWattHourStored()));
+		kWhStored.setText(StyleManager.DECIMAL_KWH.format(battery.getkWhStored()));
 		ampHours.setText(StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
 		
 		tVolt.setText(StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
