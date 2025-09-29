@@ -35,8 +35,8 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.core.SimulationRuntime;
+import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 /**
@@ -80,10 +80,6 @@ public class UIConfig {
 	private static final String HEIGHT = "height";
 	
 	private static final String MARS_TERMINAL = "mars-terminal";
-	private static final String TERMINAL_X = "terminal-x";
-	private static final String TERMINAL_Y = "terminal-y";
-	private static final String TERMINAL_WIDTH = "terminal-width"; 
-	private static final String TERMINAL_HEIGHT = "terminal-height"; 
 	
 	private static final String INTERNAL_WINDOWS = "internal-windows";
 	private static final String WINDOW = "window";
@@ -132,8 +128,8 @@ public class UIConfig {
 				mainWindowPosn = parsePosition(mainWindow);
 
 				Element terminalWindow = root.getChild(MARS_TERMINAL);
-				marsTerminalSize = parseTSize(terminalWindow);
-				marsTerminalPosn = parseTPosition(terminalWindow);
+				marsTerminalSize = parseSize(terminalWindow);
+				marsTerminalPosn = parsePosition(terminalWindow);
 				
 				// Global props
 				useDefault = parseBoolean(root, USE_DEFAULT);
@@ -193,19 +189,6 @@ public class UIConfig {
 		int locationY = Integer.parseInt(window.getAttributeValue(LOCATION_Y));
 		return new Point(locationX, locationY);
 	}
-
-	private static Dimension parseTSize(Element window) {
-		int width = Integer.parseInt(window.getAttributeValue(TERMINAL_WIDTH));
-		int height = Integer.parseInt(window.getAttributeValue(TERMINAL_HEIGHT));
-
-		return new Dimension(width, height);
-	}
-
-	private static Point parseTPosition(Element window) {
-		int locationX = Integer.parseInt(window.getAttributeValue(TERMINAL_X));
-		int locationY = Integer.parseInt(window.getAttributeValue(TERMINAL_Y));
-		return new Point(locationX, locationY);
-	}
 	
 	private static boolean parseBoolean(Element item, String attrName) {
 		return Boolean.parseBoolean(item.getAttributeValue(attrName));
@@ -261,7 +244,7 @@ public class UIConfig {
 		outputWindowCoords(mainWindowElement, realWindow);
 
 		JFrame realTerminal = marsTerminal.getFrame();
-		outputTerminalCoords(marsTerminalElement, realTerminal);
+		outputWindowCoords(marsTerminalElement, realTerminal);
 		
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
@@ -326,13 +309,6 @@ public class UIConfig {
 		windowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
 		windowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
 		windowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
-	}
-
-	private void outputTerminalCoords(Element windowElement, Component realWindow) {			
-		windowElement.setAttribute(TERMINAL_X, Integer.toString(realWindow.getX()));
-		windowElement.setAttribute(TERMINAL_Y, Integer.toString(realWindow.getY()));
-		windowElement.setAttribute(TERMINAL_WIDTH, Integer.toString(realWindow.getWidth()));
-		windowElement.setAttribute(TERMINAL_HEIGHT, Integer.toString(realWindow.getHeight()));
 	}
 	
 	private void outputProperties(Element parent, String name, Properties values) {

@@ -59,7 +59,7 @@ public class SplashWindow extends JComponent {
 	};
 
 	private static final int STATUS_BOX_H = 30;
-	private static final int STATUS_BOX_W = 300;
+	private static final int STATUS_BOX_W = 450;
 
 	private JFrame window;
 	private int w;
@@ -178,7 +178,7 @@ public class SplashWindow extends JComponent {
 		window.setUndecorated(true);
 
 		// Set icon image for window.
-		window.setIconImage(ImageLoader.getImage(MainWindow.LANDER_64_PNG));
+		window.setIconImage(MainWindow.getIconImage());
 
 		// Set cursor style.
 		window.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -207,7 +207,7 @@ public class SplashWindow extends JComponent {
 
 		// Draw centered string
 		g2d.drawString(statusMessage, statusX + ((STATUS_BOX_W - getStringWidth(buildStringFont, statusMessage))/2),
-				statusY + STATUS_BOX_H - 8);
+				statusY + STATUS_BOX_H - 9);
 	}
 
 	private void drawAuthorBuild(Graphics2D g2d) {

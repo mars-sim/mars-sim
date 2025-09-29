@@ -42,8 +42,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import com.formdev.flatlaf.util.SystemInfo;
-import com.mars_sim.console.InteractiveTerm;
-import com.mars_sim.console.MarsTerminal;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationListener;
@@ -55,6 +53,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
+import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 
@@ -87,7 +86,7 @@ public class MainWindow
 
 	private transient UIConfig uiconfigs;
 
-	private InteractiveTerm interactiveTerm;
+	private MarsTerminal terminal;
 
 	// Data members
 	private boolean isIconified = false;
@@ -170,7 +169,7 @@ public class MainWindow
 		frame.setMinimumSize(new Dimension(640, 640));
 
 		// Setup before loading defaults
-		interactiveTerm = new InteractiveTerm(sim);
+		terminal = new MarsTerminal(sim);
 
 		// Set the UI configuration
 		boolean useDefault = uiconfigs.useUIDefault();
@@ -244,7 +243,7 @@ public class MainWindow
 		
 		// For Mars Terminal
 		// Set frame size
-		positionMarsTerminal(uiconfigs.getMarsTerminalLocation(), uiconfigs.getMarsTerminalDimension());
+		terminal.positionTerminal(uiconfigs.getMarsTerminalLocation(), uiconfigs.getMarsTerminalDimension());
 	}
 
 	/**
@@ -283,19 +282,11 @@ public class MainWindow
 		// Set Mars Terminal frame size
 		var terminalSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMarsTerminalDimension());
 
-		positionMarsTerminal(new Point(((screenWidth - terminalSize.width) / 2),
+		terminal.positionTerminal(new Point(((screenWidth - terminalSize.width) / 2),
 										((screenHeight - terminalSize.height) / 2)),
 				terminalSize);
 	}
 
-	private void positionMarsTerminal(Point location, Dimension terminalSize) {
-		
-		logger.config("Mars Terminal postion: " + location + " dimension: " + terminalSize);
-
-		var marsTerminal = interactiveTerm.getTerminal().getFrame();
-		marsTerminal.setSize(terminalSize);
-		marsTerminal.setLocation(location);
-	};
 
 	/**
 	 * Calculates the screen size.
@@ -311,7 +302,8 @@ public class MainWindow
 
 		Dimension frameSize = null;
 		if (useDefault) {
-			frameSize = interactiveTerm.getScreenDimension(gd);
+			var mode = gd.getDisplayMode();
+			frameSize = new Dimension(mode.getWidth(), mode.getHeight());
 			logger.config("Use default screen configuration.");
 			logger.config("Selected screen size is " + frameSize.width + " x " + frameSize.height);
 		} else {
@@ -805,7 +797,7 @@ public class MainWindow
 	 * @return
 	 */
 	public MarsTerminal getMarsTerminal() {
-		return interactiveTerm.getTerminal();
+		return terminal;
 	}
 	
 	/**
