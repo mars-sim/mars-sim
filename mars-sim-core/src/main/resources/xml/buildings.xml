@@ -395,13 +395,19 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3"/>	
+
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
+				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
+						
+				<!--For producing Hydrogen -->
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3"/>	
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="2"/>
+				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="2"/>
 				
 				<process-engine name="Atmospheric processing" number-modules="3"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 				<process-engine name="Melt Ice" number-modules="12" />
 				<process-engine name="Filter Brine Water" number-modules="12" />
@@ -772,15 +778,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">			
 				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="12"/>				
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>	
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>	
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="36"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="36"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="36"/>
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>		
 				
+				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>	
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>
+				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="48"/>
+				
+				<!--For producing Hydrogen -->
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3"/>	
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="2"/>
+				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="2"/>
+					
 				<process-engine name="Atmospheric processing" number-modules="16"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="36"/>
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="12"/>
+				
 				<process-engine name="Melt Ice" number-modules="48" />
 				<process-engine name="Filter Brine Water" number-modules="48" />
 						
@@ -1890,12 +1903,13 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
 			 <!-- "ERV-A" -->
-			<resource-processing power-down-level="0.0">
-				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="8"/>
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>
+			<resource-processing power-down-level="0.0">		
+				
+				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
-				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>	
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="36"/>					
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="8"/>
+				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="8"/>			
 			</resource-processing>
 
 			<storage stock-capacity="300000">
@@ -2162,8 +2176,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			and Cosmos 1867 satellites in space. Based on thermionic energy conversion 
 			with highly enriched uranium oxide pellet as fuel, it was cooled by 
 			liquid-metal consisting of sodium and potassium. It has 37 single-cell TFEs, 
-			with a much improved 10.5% thermal-to-electrical conversion efficiency and 
-			83.3% load capacity to provide 10.03 kWe.</description>
+			with a much improved 10.5% thermal-to-electrical conversion efficiency to 
+			provide ~10.03 kWe at 83.3% load capacity. </description>
 		<power-required base-power="1" base-power-down-power="0.1" />
 		<functions>
 			<power-generation>
@@ -2178,7 +2192,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		wear-lifetime="3340000" maintenance-time="300" room-temperature="0" base-mass="4000">
 		<description>The TOPAZ-3 Reactor doubles the number of TFEs cells to 74 and has 
 			higher thermal output of 4.7kW per cell. At ~10.37% conversion efficiency, 
-			it provides ~30 kWe.</description>
+			it provides ~30.04 kWe.</description>
 		<power-required base-power="1" base-power-down-power="0.1" />
 		<functions>
 			<power-generation>
@@ -2233,7 +2247,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description>
 			The MD4 Nuclear Reactor is a robust, flight-ready nuclear fission power plant. 
 			With the thermal conversion efficiency of 27.4% and at 83.3% load capacity, 
-			it provides a consistent power supply of ~100 kWe.
+			it provides a consistent power supply of ~99.83 kWe.
 			It also includes a 80 kWh backup battery.
 		</description>
 		<power-required base-power="1" base-power-down-power="0.1"/>
@@ -2270,9 +2284,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing power-down-level="0.0">
 				<process-engine name="Atmospheric processing" number-modules="24"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>				
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="48"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="36"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="48"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="12"/>
+				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="72"/>
 			</resource-processing> 
 
 			<storage stock-capacity="100000">
@@ -3326,8 +3340,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<resource-processing power-down-level="0.2">
 				<process-engine name="Excavate Ice" number-modules="4" />
-				<process-engine name="Melt Ice" number-modules="40" />
-				<process-engine name="Filter Brine Water" number-modules="40" />
+				<process-engine name="Melt Ice" number-modules="60" />
+				<process-engine name="Filter Brine Water" number-modules="60" />
 				
 			</resource-processing>
 			
@@ -4120,14 +4134,22 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
-				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3"/>	
+				
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>
-				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="8"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>		
+				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
+				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
+				
+				<!--For producing Hydrogen -->
+				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3"/>	
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
+				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="2"/>
+				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="2"/>
+				
 				
 				<process-engine name="Atmospheric processing" number-modules="3"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
+				
 				<process-engine name="Melt Ice" number-modules="12" />
 				<process-engine name="Filter Brine Water" number-modules="12" />
 								

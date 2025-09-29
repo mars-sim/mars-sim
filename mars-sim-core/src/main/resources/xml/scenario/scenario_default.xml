@@ -38,11 +38,11 @@
 			<location coordinates="15.9873 -47.8419" />
 		</settlement>
 
-		<settlement name="Kyocera" template="Phase 2-JP" persons="12" robots="6" sponsor="JAXA">
+		<settlement name="Kyocera" template="Phase 2-JP" persons="19" robots="6" sponsor="JAXA">
 			<location coordinates="6 164" />
 		</settlement>
 
-		<settlement name="New Seoul" template="Phase 2-KR" persons="16" robots="8" sponsor="KASA">
+		<settlement name="New Seoul" template="Phase 2-KR" persons="14" robots="8" sponsor="KASA">
 			<location coordinates="40.4244 -105.8939" />
 		</settlement>
 	

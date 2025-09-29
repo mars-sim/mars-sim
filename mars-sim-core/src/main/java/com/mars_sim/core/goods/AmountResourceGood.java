@@ -98,9 +98,9 @@ class AmountResourceGood extends Good {
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
-	private static final double OXYGEN_VALUE_MODIFIER = 2;
+	private static final double OXYGEN_VALUE_MODIFIER = 4;
 	private static final double METHANE_VALUE_MODIFIER = 0.06;
-	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
+	private static final double HYDROGEN_VALUE_MODIFIER = 0.25;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	private static final double ETHYLENE_VALUE_MODIFIER = 8.0;
 	private static final double STYRENE_VALUE_MODIFIER = 8.0;
@@ -118,8 +118,8 @@ class AmountResourceGood extends Good {
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
 	
-	private static final double REGOLITH_TYPE_VALUE_MODIFIER = .5;
-	private static final double REGOLITH_VALUE_MODIFIER = .5;
+	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 2.0;
+	private static final double REGOLITH_VALUE_MODIFIER = 2.0;
 	private static final double REGOLITH_VALUE_MODIFIER_1 = 2.0;
 		
 	// flatten multipliers
@@ -128,11 +128,13 @@ class AmountResourceGood extends Good {
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 0.1;
-	private static final double OXYGEN_FLATTENING_FACTOR = 1.0;	
+	private static final double HYDROGEN_FLATTENING_FACTOR = 1.0;
+	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
 	
 	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
-	private static final double CO_FLATTENING_FACTOR = 0.009;
+	// Note: must keep Carbon Monoxide demand high enough so as to start 
+	// 5 important Resource Processes that produce other resources (alongside with Carbon Monoxide)
+	private static final double CO_FLATTENING_FACTOR = 5.0;
 	private static final double CO2_FLATTENING_FACTOR = 1.1;
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
@@ -202,8 +204,8 @@ class AmountResourceGood extends Good {
 		
 		double multiplier = ar.getDemandMultiplier();
 		
-		if (ar.getDemandMultiplier() == 0.0)
-			multiplier = 1;
+		if (multiplier == 0.0)
+			multiplier = 1.0;
 
 		// Calculate fixed values
 		flattenDemand = calculateFlattenDemand(ar) * multiplier;

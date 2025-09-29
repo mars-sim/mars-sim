@@ -179,7 +179,7 @@ public class ToggleFuelPowerSource extends Task {
 	 * @param s
 	 */
 	private void endTask(String s) {
-		logger.log(person, Level.WARNING, 20_000, s);
+		logger.log(person, Level.WARNING, 30_000, s);
 		endTask();
 	}
 
@@ -263,7 +263,7 @@ public class ToggleFuelPowerSource extends Task {
         if (powerSource.addToggleWorkTime(workTime)) {
           String toggle = "off";
           if (toggleOn) toggle = "on";
-          logger.log(person, Level.INFO, 20_000, "Toggled " + toggle + " " + powerSource.getType()  + " in " + building.getName() + ".");
+          logger.log(person, Level.INFO, 40_000, "Toggled " + toggle + " " + powerSource.getType()  + " in " + building.getName() + ".");
           endTask();
         }
 

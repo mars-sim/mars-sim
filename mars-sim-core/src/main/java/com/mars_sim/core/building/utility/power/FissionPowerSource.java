@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FissionPowerSource.java
- * @date 2023-06-02
+ * @date 2025-09-28
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.power;
@@ -47,7 +47,7 @@ public class FissionPowerSource extends PowerSource implements AdjustablePowerSo
 	
 	public FissionPowerSource(int numModules, double thermalPower, double stirlingConversion, double percentLoadCapacity) {
 		// Call PowerSource constructor.
-		super(PowerSourceType.FISSION_POWER, thermalPower);
+		super(PowerSourceType.FISSION_POWER, numModules * thermalPower * stirlingConversion * percentLoadCapacity / 10_000);
 		
 		this.numModules = numModules;
 		this.designPowerThermal = thermalPower;

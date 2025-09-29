@@ -52,6 +52,32 @@
         <first-name value="George" gender="male" />
         <first-name value="Harry" gender="male" />
 
+	<!-- https://www.bounty.com/pregnancy-and-birth/baby-names/top-baby-names/the-latest-top-100-boys-names-chosen-in-the-uk-this-year -->
+
+        <first-name value="Noah" gender="male" />
+        <first-name value="Theo" gender="male" />
+        <first-name value="Luca" gender="male" />
+        <first-name value="Arthur" gender="male" />
+        <first-name value="Archie" gender="male" />
+        
+        <first-name value="George" gender="male" />
+        <first-name value="Albie" gender="male" /> 
+        <first-name value="Finley" gender="male" />
+        <first-name value="Jude" gender="male" />
+        <first-name value="Charlie" gender="male" />
+        
+        <first-name value="Elijah" gender="male" />
+        <first-name value="Tommy" gender="male" />
+        <first-name value="Oakley" gender="male" />
+        <first-name value="Hudson" gender="male" />
+        <first-name value="Rory" gender="male" />
+
+        <first-name value="Reuben" gender="male" />
+        <first-name value="Louie" gender="male" />
+        <first-name value="Reggie" gender="male" />
+        <first-name value="Theodore" gender="male" />
+        <first-name value="Ezra" gender="male" />
+        
 		<!-- https://www.netmums.com/pregnancy/top-1000-baby-girl-names-uk -->
         <first-name value="Amelia" gender="female" />
         <first-name value="Olivia" gender="female" />
@@ -83,6 +109,38 @@
         <first-name value="Poppy" gender="female" />
         <first-name value="Mia" gender="female" />
   
+  		<!-- https://www.bounty.com/pregnancy-and-birth/baby-names/top-baby-names/the-latest-top-100-girls-names-chosen-in-the-uk-this-year -->
+       
+        <first-name value="Harper" gender="female" />
+        <first-name value="Bonnie" gender="female" />
+        <first-name value="Freya" gender="female" />
+        <first-name value="Evie" gender="female" />    
+        <first-name value="Charlotte" gender="female" />
+        
+        <first-name value="Willow" gender="female" />
+        <first-name value="Sienna" gender="female" />
+        <first-name value="Florence" gender="female" />
+        <first-name value="Delilah" gender="female" />  
+        <first-name value="Maisie" gender="female" />
+
+        <first-name value="Lottie" gender="female" />
+        <first-name value="Aria" gender="female" />
+        <first-name value="Millie" gender="female" />
+        <first-name value="Maya" gender="female" />
+        <first-name value="Violet" gender="female" />
+   
+        <first-name value="Arabella" gender="female" />
+        <first-name value="Aurora" gender="female" />
+        <first-name value="Matilda" gender="female" />
+        <first-name value="Sofia" gender="female" />
+        <first-name value="Hallie" gender="female" />
+        
+        <first-name value="Maeve" gender="female" />
+        <first-name value="Mabel" gender="female" />
+        <first-name value="Esme" gender="female" />
+        <first-name value="Ruby" gender="female" />
+        <first-name value="Emily" gender="female" />
+        
     </first-name-list>
     
     <last-name-list>
@@ -143,6 +201,50 @@
         <last-name value="Phillips" />
         <last-name value="Scott" />
         <last-name value="Watson" />
+        
+        <!-- https://one-name.org/modern-british-surnames/statistics/top-surnames/england-wales/top-500-names/  From 46 to 80 -->
+              
+        <last-name value="Parker" />
+        <last-name value="Price" />
+        <last-name value="Bennett" />
+        <last-name value="Young" />
+        <last-name value="Griffiths" />
+        
+        <last-name value="Mitchell" />
+        <last-name value="Kelly" />
+        <last-name value="Cook" />
+        <last-name value="Carter" />
+        <last-name value="Richardson" />
+        
+        <last-name value="Bailey" />
+        <last-name value="Collins" />
+        <last-name value="Bell" />
+        <last-name value="Shaw" />
+        <last-name value="Murphy" />
+             
+		<last-name value="Miller" />
+        <last-name value="Cox" />
+        <last-name value="Richards" />
+        <last-name value="Khan" />
+        <last-name value="Marshall" />
+        
+        <last-name value="Anderson" />
+        <last-name value="Simpson" />
+        <last-name value="Ellis" />
+        <last-name value="Adams" />
+        <last-name value="Singh" />
+        
+        <last-name value="Begum" />
+        <last-name value="Wilkinson" />
+        <last-name value="Foster" />
+        <last-name value="Chapman" />
+        <last-name value="Powell" />
+             
+        <last-name value="Webb" />
+        <last-name value="Rogers" />
+        <last-name value="Gray" />
+        <last-name value="Mason" />
+        <last-name value="Ali" />             
              
     </last-name-list>
 </country>

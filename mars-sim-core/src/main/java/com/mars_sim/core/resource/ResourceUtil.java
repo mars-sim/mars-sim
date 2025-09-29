@@ -474,10 +474,10 @@ public class ResourceUtil {
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isWaste(int resource) {
+	public static boolean isWasteProduct(int resource) {
 		return switch (resource) {
 			case GREY_WATER_ID, BLACK_WATER_ID, SOLID_WASTE_ID, TOXIC_WASTE_ID, 
-				COMPOST_ID, FOOD_WASTE_ID, CROP_WASTE_ID -> true;
+				COMPOST_ID, FOOD_WASTE_ID, CROP_WASTE_ID, CO_ID -> true;
 			default -> false;
 		};
 	}
@@ -490,7 +490,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier0Resource(int resource) {
 		return switch (resource) {
-			case ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID -> true;
+			case ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID, HYDROGEN_ID -> true;
 			default -> false;
 		};
 	}

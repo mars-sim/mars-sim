@@ -51,7 +51,7 @@
 	<resource name="Nitrogen" type="element" phase="gas" demand-multiplier="0.25" >N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
-	<resource name="Carbon monoxide" type="compound" phase="gas" demand-multiplier=".05" />
+	<resource name="Carbon monoxide" type="compound" phase="gas" demand-multiplier="5.0" />
 	<resource name="Chlorine" type="element" phase="gas"/>
 
 <!-- Wastes -->

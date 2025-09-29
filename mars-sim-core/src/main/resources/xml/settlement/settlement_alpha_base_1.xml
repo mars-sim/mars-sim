@@ -240,7 +240,7 @@
 	<building-package name="Solar Thermal Set 1 - 1x9"/>
    	<building-package name="Wind Set 1 - 1x9"/>	
    	<building-package name="TOPAZ-2A Set 1 - 1x5"/>
-	<building-package name="TOPAZ-3 Set 1 - 1x4"/>		 
+	<building-package name="TOPAZ-3 Set 1 - 1x5"/>		 
 	<building-package name="Methane Set 1 - 1x3" />	
   	<building-package name="Brine Water Well Set 1 - 1x3"/>	 	
  
@@ -265,7 +265,7 @@
 	<equipment type="gas canister" number="120" />		
 	<equipment type="large bag" number="120" />
 	<equipment type="specimen box" number="120" />
-    <equipment type="thermal bottle" number="24" />	
+    <equipment type="thermal bottle" number="44" />	
  	<equipment type="wheelbarrow" number="24" />
 
 	<!-- Life Support Resources -->

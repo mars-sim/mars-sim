@@ -376,21 +376,21 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				if (processSpec.isAmbientInputResource(resource)) {
 					// e.g. For CO2, limit the score
 					score += mrate;
-				} else if (ResourceUtil.isTier1Resource(resource)) { // water, methane
+				} else if (ResourceUtil.isTier1Resource(resource)) { 	// water, methane, hydrogen
 					score += mrate * LOW_BIAS;
-				} else if (ResourceUtil.isRawMaterial(resource)   // ore, minerals, sand
+				} else if (ResourceUtil.isRawMaterial(resource)   		// ore, minerals, sand
 					) { 
 					score += mrate / LOW_BIAS;
-				} else if (ResourceUtil.isConstructionResource(resource) // cement, concrete, gypsum, lime, brick
+				} else if (ResourceUtil.isConstructionResource(resource)// cement, concrete, gypsum, lime, brick
 					|| ResourceUtil.isChemical(resource)				// ethylene, styrene, propylene 
 					) { 		
 						score += mrate / MID_BIAS;
 				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil, ethylene
-					|| ResourceUtil.isInSitu(resource)					// all regolith types
-					|| ResourceUtil.isTier3Resource(resource)) {  	// carbon dioxide
+					|| ResourceUtil.isTier3Resource(resource)) {  		// carbon dioxide
 					score += mrate / HIGH_BIAS;
 				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water
-					|| ResourceUtil.isWaste(resource)) { 				// grey water, black water, * waste
+					|| ResourceUtil.isInSitu(resource)					// all regolith types
+					|| ResourceUtil.isWasteProduct(resource)) { 		// grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
 				} else {
 					score += mrate;
@@ -437,10 +437,11 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					|| ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil
 					|| ResourceUtil.isRawElement(resource)      		// carbon
 					|| ResourceUtil.isCriticalResource(resource)		// glass
+					|| ResourceUtil.isInSitu(resource)					// all regolith types
 					) {
 					score += mrate * HIGH_BIAS;
-				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water
-				    || ResourceUtil.isWaste(resource)					// grey water, * waste
+				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water, hydrogen
+				    || ResourceUtil.isWasteProduct(resource)			// grey/black water, compost, all waste, carbon monoxide
 				    || ResourceUtil.isChemical(resource)				// ethylene, styrene, propylene, polystyrene, polyethylene, polypropylene
 					) { 				
 					score += mrate * SUPER_HIGH_BIAS;
