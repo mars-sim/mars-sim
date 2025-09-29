@@ -63,7 +63,7 @@
 
 	
 	
-	<part-package name="standard package">
+	<part-package name="Standard Part Package 1">
 
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->

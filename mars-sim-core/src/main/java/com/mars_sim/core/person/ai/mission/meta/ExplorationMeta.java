@@ -8,12 +8,14 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Exploration;
+import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RoverMission;
@@ -57,19 +59,21 @@ public class ExplorationMeta extends AbstractMetaMission {
 
             RoleType roleType = person.getRole().getType();
 
- 			if (RoleType.CHIEF_OF_SCIENCE == roleType
- 					|| RoleType.SCIENCE_SPECIALIST == roleType
- 					|| RoleType.MISSION_SPECIALIST == roleType
+ 			if (roleType.isCouncil()
+ 					|| RoleType.CHIEF_OF_SCIENCE == roleType
  					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
  					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
+ 		 			|| RoleType.SCIENCE_SPECIALIST == roleType
+ 		 			|| RoleType.MISSION_SPECIALIST == roleType
  					|| RoleType.RESOURCE_SPECIALIST == roleType
- 					|| RoleType.COMMANDER == roleType
- 					|| RoleType.SUB_COMMANDER == roleType
  					) {
 
 				// 1. Check if there are enough specimen containers at the settlement for
 				// collecting rock samples.
-				if (settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX) < Exploration.REQUIRED_SPECIMEN_CONTAINERS) {
+	        	int stored = settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
+	            int needed = Exploration.REQUIRED_SPECIMEN_CONTAINERS;
+		        if (stored < needed) {
+					BuildingManager.injectEquipmentDemand(EquipmentType.SPECIMEN_BOX, settlement, stored, needed);
 					return RatingScore.ZERO_RATING;
 				}
 

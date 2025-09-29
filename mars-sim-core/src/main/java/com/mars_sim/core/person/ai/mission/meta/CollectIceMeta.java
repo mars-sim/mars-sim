@@ -8,11 +8,14 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectIce;
+import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -52,17 +55,25 @@ public class CollectIceMeta extends AbstractMetaMission {
 
 			RoleType roleType = person.getRole().getType();
 
-			if (person.getMind().getJobType() == JobType.AREOLOGIST
-					|| person.getMind().getJobType() == JobType.CHEMIST
-					|| person.getMind().getJobType() == JobType.BOTANIST
-					|| person.getMind().getJobType() == JobType.CHEF
+            if (roleType.isCouncil()
+            		|| person.getMind().getJobType() == JobType.AREOLOGIST
+        			|| person.getMind().getJobType() == JobType.CHEMIST
+        			|| person.getMind().getJobType() == JobType.BOTANIST
+        			|| person.getMind().getJobType() == JobType.CHEF
 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
 					|| RoleType.MISSION_SPECIALIST == roleType
 					|| RoleType.RESOURCE_SPECIALIST == roleType
-					|| RoleType.COMMANDER == roleType
-					|| RoleType.SUB_COMMANDER == roleType
-					) {
+ 					) {
+
+	            // Check if there are enough barrel at the settlement for collecting ice.
+            	int stored = settlement.findNumContainersOfType(EquipmentType.BARREL);
+            	int needed = CollectIce.REQUIRED_BARRELS;
+	            if (stored < needed) {
+	            	BuildingManager.injectEquipmentDemand(EquipmentType.BARREL, settlement, stored, needed);
+	            	return RatingScore.ZERO_RATING;
+	            }
+	            
 				missionProbability = new RatingScore(1);
 	    		missionProbability.addModifier(MINERALS, settlement.getIceProbabilityValue() / VALUE);
 

@@ -93,8 +93,8 @@ class AmountResourceGood extends Good {
 	private static final double ROCK_VALUE_MODIFIER = 0.02;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
-	private static final double ROCK_SALT_VALUE_MODIFIER = .01;
-	private static final double EPSOM_SALT_VALUE_MODIFIER = .01;
+	private static final double ROCK_SALT_VALUE_MODIFIER = .5;
+	private static final double EPSOM_SALT_VALUE_MODIFIER = .05;
 	
 	private static final double FOOD_VALUE_MODIFIER = 1.2;
 	
@@ -129,9 +129,9 @@ class AmountResourceGood extends Good {
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
 	private static final double HYDROGEN_FLATTENING_FACTOR = 0.1;
-	private static final double OXYGEN_FLATTENING_FACTOR = 0.1;	
+	private static final double OXYGEN_FLATTENING_FACTOR = 1.0;	
 	
-	private static final double ACETYLENE_FLATTENING_FACTOR = 0.025;
+	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
 	private static final double CO_FLATTENING_FACTOR = 0.009;
 	private static final double CO2_FLATTENING_FACTOR = 1.1;
 		

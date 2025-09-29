@@ -79,7 +79,7 @@
 	<resource type="water" amount="3600" />
 	<resource type="oxygen" amount="1440" />
 	
-    <part-package name="standard package" number="1" />
+    <part-package name="Standard Part Package 1" number="1" />
 
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">

@@ -134,7 +134,7 @@
 	<resource type="water" amount="4800" />
 	<resource type="oxygen" amount="2880" />
  
-    <part-package name="standard package" number="2" />
+    <part-package name="Standard Part Package 1" number="2" />
  
     <resupply>
        	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1">

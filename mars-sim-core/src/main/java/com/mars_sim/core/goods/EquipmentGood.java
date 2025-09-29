@@ -13,6 +13,7 @@ import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -23,6 +24,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.MathUtils;
@@ -35,6 +37,9 @@ public class EquipmentGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
+	/** default logger. */
+	private static final SimLogger logger = SimLogger.getLogger(EquipmentGood.class.getName());
+
 	private static final int PROJECTED_GAS_CANISTERS = 10;
 	private static final int PROJECTED_THERMAL_BOTTLE = 1;
 	private static final double PROJECTED_WHEELBARROW = 1;
@@ -403,6 +408,36 @@ public class EquipmentGood extends Good {
 	 */
 	private static double getAverageEquipmentSupply(double supplyStored) {
 		return Math.sqrt(1 + supplyStored);
+	}
+	
+	/**
+	 * Injects equipment demand immediately without waiting for goods manager to update it.
+	 * 
+	 * @param type
+	 * @param owner
+	 * @param stored
+	 * @param needNum
+	 */
+	public void injectEquipmentDemand(EquipmentType type, GoodsManager owner, int stored, int needNum) {
+		double previousDemand = owner.getDemandScore(this);
+		
+		int storedNum = stored;
+		if (stored == -1) {
+			storedNum = owner.getSettlement().getEquipmentInventory().findNumContainersOfType(type);
+		}
+		
+		double newDemand = previousDemand * (1 + 0.01 * (needNum - stored));
+		
+		owner.setDemandScore(this, newDemand);
+		
+		// Output a detailed message	
+		logger.info(owner.getSettlement(), 30_000L, 
+				type.getName()
+				+ " - Injecting Part Demand: "
+				+ Math.round(previousDemand * 1000.0)/1000.0 
+				+ " -> " + Math.round(newDemand * 1000.0)/1000.0 
+				+ "  Quantity: " + needNum
+				+ "/" + storedNum + " (needed/stored).");	
 	}
 	
 	public void destroy() {

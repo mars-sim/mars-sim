@@ -338,7 +338,7 @@
 		it has been used as a medicine to reduce headaches and act 
 		as a weak blood thinner.</resource>
 
-	<resource name="Acetylene" type="chemical" phase="gas" demand-multiplier="1.1" >
+	<resource name="Acetylene" type="chemical" phase="gas" demand-multiplier="1.2" >
 		Acetylene is a colorless gas that has a strong garlic-like odor. When 
 		combined with oxygen, it becomes very hot and is classified as the 
 		hottest fuel gas. 

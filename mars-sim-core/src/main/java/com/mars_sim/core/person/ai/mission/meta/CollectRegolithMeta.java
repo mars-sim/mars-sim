@@ -8,10 +8,13 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.mission.CollectIce;
 import com.mars_sim.core.person.ai.mission.CollectRegolith;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -51,16 +54,24 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 
 			RoleType roleType = person.getRole().getType();
 
-			if (person.getMind().getJobType() == JobType.AREOLOGIST
-					|| person.getMind().getJobType() == JobType.CHEMIST
-					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-					|| RoleType.MISSION_SPECIALIST == roleType
-					|| RoleType.RESOURCE_SPECIALIST == roleType
-					|| RoleType.COMMANDER == roleType
-					|| RoleType.SUB_COMMANDER == roleType
-					) {
+	           if (roleType.isCouncil()
+	            		|| person.getMind().getJobType() == JobType.AREOLOGIST
+	        			|| person.getMind().getJobType() == JobType.CHEMIST
+						|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
+						|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
+						|| RoleType.MISSION_SPECIALIST == roleType
+						|| RoleType.RESOURCE_SPECIALIST == roleType
+	        		   ) {
 
+
+	        	// Check if there are enough large bag at the settlement for collecting regolith.
+	        	int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
+	            int needed = CollectRegolith.REQUIRED_LARGE_BAGS;
+		        if (stored < needed) {
+	        	   BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
+	        	   return RatingScore.ZERO_RATING;
+	        	}
+		            
 	    		missionProbability = new RatingScore(1);
 	    		missionProbability.addModifier(MINERALS, settlement.getRegolithProbabilityValue() / VALUE);
 

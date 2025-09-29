@@ -8,16 +8,19 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.mission.CollectRegolith;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 
@@ -57,30 +60,42 @@ public class MiningMeta extends AbstractMetaMission {
     		
             RoleType roleType = person.getRole().getType();
 
- 			if (RoleType.CHIEF_OF_SCIENCE == roleType
- 					|| RoleType.SCIENCE_SPECIALIST == roleType
- 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
- 					|| RoleType.RESOURCE_SPECIALIST == roleType
- 					|| RoleType.MISSION_SPECIALIST == roleType
+            if (roleType.isCouncil()
+					|| RoleType.CHIEF_OF_SCIENCE == roleType
  					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
- 					|| RoleType.COMMANDER == roleType
- 					|| RoleType.SUB_COMMANDER == roleType
+ 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
+ 		 			|| RoleType.SCIENCE_SPECIALIST == roleType
+ 		 			|| RoleType.MISSION_SPECIALIST == roleType
+ 					|| RoleType.RESOURCE_SPECIALIST == roleType
  					) {
-
-	            // Check if there are enough bags at the settlement for collecting minerals.
-	            if (settlement.findNumContainersOfType(EquipmentType.LARGE_BAG) < Mining.NUMBER_OF_LARGE_BAGS)
-	            	return RatingScore.ZERO_RATING;
 
 	            // Check if available light utility vehicles.
 	            //boolean reservableLUV =
 	            if (!Mining.isLUVAvailable(settlement))
 	            	return RatingScore.ZERO_RATING;
 
-	            // Check if LUV attachment parts available.
-	            //boolean availableAttachmentParts =
-	            if (!Mining.areAvailableAttachmentParts(settlement))
+	            // Check if LUV attachment parts available.            
+	            if (!Mining.areAvailableAttachmentParts(settlement)) {
+	            	if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.pneumaticDrillID)) {
+	            		BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID),
+	            				settlement, 1);
+	    			}
+	    			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.backhoeID)) {
+	    				BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.backhoeID),
+	            				settlement, 1);
+	    			}
+    	
 	            	return RatingScore.ZERO_RATING;
+	            }
 
+	            // Check if there are enough bags at the settlement for collecting minerals.
+	        	int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
+	            int needed = Mining.NUMBER_OF_LARGE_BAGS;
+		        if (stored < needed) {
+	            	BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
+	            	return RatingScore.ZERO_RATING;
+	            }
+	            
 				missionProbability = new RatingScore(1D);
 	
 				// Get available rover.

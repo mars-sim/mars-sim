@@ -595,7 +595,7 @@ public class PartGood extends Good {
 				double need = stage.getResourceNeeded(getID());
 				
 				// Inject demand need immediately here
-				injectPartsDemand(ItemResourceUtil.findItemResource(getID()), 
+				injectPartDemand(ItemResourceUtil.findItemResource(getID()), 
 						owner, (int)Math.ceil(need));
 				
 				base += need * CONSTRUCTION_SITE_REQUIRED_PART_FACTOR;
@@ -866,9 +866,7 @@ public class PartGood extends Good {
 	 * @return new demand
 	 */
 	private double getMaintenancePartsDemand(int previousNum, Settlement settlement, Part part, double previousDemand) {
-		
 		int num = settlement.getBuildingManager().getMaintenanceDemand(part);
-		
 		return previousDemand * (1 + (1 + num) * PARTS_MAINTENANCE_VALUE / (1.0 + previousNum));
 	}
 	
@@ -879,7 +877,7 @@ public class PartGood extends Good {
 	 * @param good
 	 * @param owner
 	 */
-	public void injectPartsDemand(Part part, GoodsManager owner, int needNum) {
+	public void injectPartDemand(Part part, GoodsManager owner, int needNum) {
 		double previousDemand = owner.getDemandScore(this);
 		
 		int storedNum = owner.getSettlement().getItemResourceStored(part.getID());

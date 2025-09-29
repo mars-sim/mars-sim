@@ -490,7 +490,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier0Resource(int resource) {
 		return switch (resource) {
-			case ICE_ID, BRINE_WATER_ID -> true;
+			case ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID -> true;
 			default -> false;
 		};
 	}
@@ -559,7 +559,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isConstructionResource(int resource) {
 		return switch (resource) {
-			case CEMENT_ID, CONCRETE_ID, GYPSUM_ID, LIME_ID -> true;
+			case CEMENT_ID, CONCRETE_ID, GYPSUM_ID, LIME_ID, ACETYLENE_ID -> true;
 			default -> false;
 		};
 	}

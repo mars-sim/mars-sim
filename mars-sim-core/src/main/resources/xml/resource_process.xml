@@ -23,7 +23,7 @@
 
 <process-list>
 
-	<process name="Photosynthetic Conversion of CO2 to Ethylene" power-required="0.4" >
+	<process name="Photosynthetic Conversion of CO2 to Ethylene" power-required="0.1" >
 		<description>
 		The direct conversion of carbon dioxide to ethylene using cyanobacteria involves an engineered 
 		photosynthetic process. While natural photosynthesis produces glucose and oxygen from carbon 
@@ -350,8 +350,34 @@
 			which are formed by the reduction of CO2 and cations in the melts. 
 			
 			CO2 is first converted to metallic carbides such as CaC2 and Li2C2, 
-			which deposit onto one of the electrodes.
+			which deposit onto one of the electrodes during the electrochemical process.
 					
+			This conversion occurs within a high-temperature molten salt environment, 
+			specifically a NaCl−KCl−CaCl2−CaO melt saturated with additional CaCl2, 
+			where CO2 is transformed into calcium carbide (CaC2) around the cathode.
+			
+			The key reaction for the formation of calcium carbide from CO₂ and the 
+			molten salt components is:
+			
+			(1) CaO + 3C + CO2 -> CaC2 + 2CO
+
+			The first reaction occurs within the molten salt system where CO₂ is reduced, 
+			and calcium carbide is selectively formed around the cathode.
+			
+ 			The calcium carbide (CaC₂) produced is then used to generate acetylene (C₂H₂)
+ 			when it reacts with water:
+
+			(2) CaC2 + 2H2O -> Ca(OH)2 + C2H2
+			
+			The second reaction is a well-known hydrolysis process where calcium carbide 
+			reacts with water to produce calcium hydroxide and acetylene gas.
+			
+			The overall process, therefore, converts CO₂ and water into acetylene, with 
+			the intermediate formation of calcium carbide in the molten salt environment.
+			
+ 			The method leverages metal carbides as a pivotal point in the conversion process, 
+ 			with the deposited carbides subsequently reacting with water to generate acetylene gas.	
+ 				
 			This process is more sustainable than "Plasma Pyrolysis Assembly (PPA) Reactor"
 			for making Acetylene as it does not consume methane and utilizes 
 			cardon dioxide and water as inputs.
@@ -364,11 +390,18 @@
 			2. https://pubs.acs.org/doi/epdf/10.1021/acssuschemeng.3c08139
  
 		</description> 
-		<input resource="carbon dioxide" rate="88.0" ambient="true"/>
-		<input resource="water" rate="18.0"  />
+		<input resource="Carbon dioxide" rate="88.0" ambient="true"/>
+		<!-- Assume rock salt contains CaCl2 (molecular weight : 111 g/mol)-->
+		<input resource="Rock salt" rate="11.0" />
+		<!-- Assume lime contains CaO (molecular weight : 56 g/mol)-->
+		<input resource="lime" rate="5.6" />
+		<input resource="Water" rate="18.0"  />
 				
-		<output resource="acetylene" rate="26.0"  />
-		<output resource="oxygen" rate="80.0"  />
+		<output resource="Acetylene" rate="26.0"  />
+		<output resource="Oxygen" rate="80.0"  />
+		<output resource="Rock salt" rate="11.1" />
+		<output resource="lime" rate="5.6" />
+		
 	</process> <!--"Produce Oxygen and Acetylene with Chloride and Carbides"-->
 
 	<process name="Selective Partial Oxidation (SPO) of Methane to Methanol" power-required="0.01" >
@@ -402,7 +435,7 @@
 	
 	
 
-	<process name="Water-Gas Shift Reaction (WGSR)" power-required=".01" >
+	<process name="Water-Gas Shift Reaction (WGSR)" power-required="0.01" >
 	<description>
 		
 		CO + H2O -> CO2 + H2
@@ -534,7 +567,7 @@
 	
 
 
-	<process name="Methanol Synthesis with Syngas" power-required=".1" >
+	<process name="Methanol Synthesis with Syngas" power-required="0.1" >
 	<description>
 		Synthesis gas (or Syngas) is used to produce methanol as in the following reaction :
 				CO2 + 3 H2 -> H2O + CH3OH	
@@ -562,7 +595,7 @@
 	</process> <!-- "Methanol Synthesis with Syngas" -->
 
 
-	<process name="Excavate Ice" power-required=".5" >
+	<process name="Excavate Ice" power-required="0.5" >
 	<description>
 		This process works hand in hand with the "Melt Ice" resource process.
 		
@@ -654,7 +687,7 @@
 	</process>
 
 
-	<process name="Convert Regolith to Ores with Sand" power-required="0.05" >
+	<process name="Convert Regolith to Ores with Sand" power-required="0.02" >
 		<description> A Mars Aqueous Regolith Extract (MARE) was prepared from the Phoenix
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
@@ -673,7 +706,7 @@
 	</process>
 
 
-	<process name="Extract Nitrogen Compounds from Regolith" power-required="0.01" >
+	<process name="Extract Nitrogen Compounds from Regolith" power-required="0.02" >
 		<description> 
 			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
 			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
@@ -757,7 +790,7 @@
 	</process>
 
 	<!-- https://geologyscience.com/minerals/hematite/ -->
-	<process name="Do Hematite smelting" power-required="0.3" >
+	<process name="Do Hematite smelting" power-required="0.1" >
 		<input resource="hematite" rate="25.0"  />
 		<input resource="carbon monoxide" rate=".5" />
 		
@@ -767,7 +800,7 @@
 		<output resource="carbon dioxide" rate=".5" />
 	</process>
 
-	<process name="Do Magnetite smelting" power-required="0.3" >
+	<process name="Do Magnetite smelting" power-required="0.1" >
 			<input resource="magnetite" rate="25.0" />
 			<input resource="carbon monoxide" rate=".5" />
 			
@@ -779,7 +812,7 @@
 	</process>
 
 	<!-- https://geologyscience.com/minerals/goethite/ -->
-	<process name="Do Goethite smelting" power-required="0.3" >
+	<process name="Do Goethite smelting" power-required="0.1" >
 			<input resource="goethite" rate="50.0" />
 			<input resource="carbon monoxide" rate=".5" />
 			
@@ -790,7 +823,7 @@
 			<output resource="carbon dioxide" rate="1.0" />
 	</process>
 
-	<process name="Do Olivine smelting" power-required="0.3" >
+	<process name="Do Olivine smelting" power-required="0.1" >
 			<input resource="olivine" rate="50.0" />
 			<input resource="carbon monoxide" rate="32.5" />
 			
@@ -800,7 +833,7 @@
 			<output resource="carbon dioxide" rate="51.2" />
 	</process>
 
-	<process name="Do Magnesite smelting" power-required="0.3" >
+	<process name="Do Magnesite smelting" power-required="0.1" >
 			<input resource="magnesite" rate="50.0" />
 			<input resource="carbon monoxide" rate="16.6" />
 			
@@ -809,7 +842,7 @@
 			<output resource="silica" rate="5" />
 	</process>
 
-	<process name="Do Kamacite smelting" power-required="0.3" >
+	<process name="Do Kamacite smelting" power-required="0.1" >
 			<input resource="kamacite" rate="50.0" />
 			
 			<output resource="iron powder" rate="45.0" />
@@ -817,7 +850,7 @@
 	</process>
 
 
-	<process name="Do Chalcopyrite smelting" power-required="0.3" >
+	<process name="Do Chalcopyrite smelting" power-required="0.1" >
 			<input resource="chalcopyrite" rate="50.0" />
 			
 			<output resource="copper" rate="17.3" />
@@ -825,7 +858,7 @@
 			<output resource="sulfur" rate="17.5" />
 	</process>
 
-	<process name="Do Malachite smelting" power-required="0.3" >
+	<process name="Do Malachite smelting" power-required="0.1" >
 			<input resource="malachite" rate="50.0" />
 			<input resource="carbon" rate="2.7" />
 			
@@ -835,7 +868,7 @@
 			<output resource="brine water" rate="4.1" />
 	</process>
 	
-	<process name="Do Pyroxene smelting" power-required="0.3" >
+	<process name="Do Pyroxene smelting" power-required="0.1" >
 			<input resource="pyroxene" rate="50.0" />
 		
 			<output resource="calcium" rate="2" />	
@@ -858,7 +891,7 @@
 			<output resource="oxygen" rate="22" />
 	</process>
 	
-	<process name="Do Sylvite smelting" power-required="0.3" >
+	<process name="Do Sylvite smelting" power-required="0.1" >
 			<input resource="sylvite" rate="50.0" />
 			
 			<output resource="potassium" rate="26.2" />
@@ -866,7 +899,7 @@
 	</process>
 
 
-	<process name="Do Taenite smelting" power-required="0.3" >
+	<process name="Do Taenite smelting" power-required="0.1" >
 			<input resource="taenite" rate="50.0" />
 			
 			<output resource="iron powder" rate="20.0" />
@@ -1065,7 +1098,7 @@
 		<output resource="sodium carbonate" rate="10.6" />
 	</process>
 
-	<process name="Make cement" power-required=".1" >
+	<process name="Make cement" power-required=".05" >
 		<input resource="regolith" rate="30.0" />
 		<input resource="gypsum" rate="5.0" />
 		<input resource="calcium carbonate" rate="5.0" />

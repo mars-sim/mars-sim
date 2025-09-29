@@ -286,7 +286,7 @@
 		<equipment type="gas canister" number="80" />		
 		<equipment type="large bag" number="80" />
 		<equipment type="specimen box" number="80" />
-    	<equipment type="thermal bottle" number="4" />			
+    	<equipment type="thermal bottle" number="8" />			
    	    <equipment type="wheelbarrow" number="4" />
    	    
 
@@ -297,7 +297,7 @@
 		<!-- Part packages (see part_packages.xml) -->
 		<!-- name: the part package name. -->
 		<!-- number: the number of packages. -->
-		<part-package name="standard package" number="1" />
+		<part-package name="Standard Part Package 1" number="1" />
 
 	</resupply>
 
@@ -312,19 +312,19 @@
 		<equipment type="EVA Suit" number="8" />
 							
 		 <!-- Containers-->
-		<equipment type="barrel" number="80" />
-		<equipment type="bag" number="80" />
-		<equipment type="gas canister" number="80" />		
-		<equipment type="large bag" number="80" />
-		<equipment type="specimen box" number="80" />
-    	<equipment type="thermal bottle" number="4" />	
- 	    <equipment type="wheelbarrow" number="2" />
+		<equipment type="barrel" number="100" />
+		<equipment type="bag" number="100" />
+		<equipment type="gas canister" number="100" />		
+		<equipment type="large bag" number="100" />
+		<equipment type="specimen box" number="100" />
+    	<equipment type="thermal bottle" number="10" />	
+ 	    <equipment type="wheelbarrow" number="6" />
 
 		
 		<resource type="hydrogen" amount="1000.0" />
 		<resource type="food" amount="1657.0" />
 		
-		<part-package name="standard package" number="2" />
+		<part-package name="Standard Part Package 1" number="2" />
 		
 	</resupply>
 
@@ -338,18 +338,18 @@
 		<equipment type="EVA Suit" number="24" />
 		
 		 <!-- Containers-->
-		<equipment type="barrel" number="80" />
-		<equipment type="bag" number="80" />
-		<equipment type="gas canister" number="80" />		
-		<equipment type="large bag" number="80" />
-		<equipment type="specimen box" number="80" />
+		<equipment type="barrel" number="120" />
+		<equipment type="bag" number="120" />
+		<equipment type="gas canister" number="120" />		
+		<equipment type="large bag" number="120" />
+		<equipment type="specimen box" number="120" />
     	<equipment type="thermal bottle" number="12" />	
- 	    <equipment type="wheelbarrow" number="12" />
+ 	    <equipment type="wheelbarrow" number="8" />
 		
-		<resource type="hydrogen" amount="1000.0" />
+		<resource type="hydrogen" amount="2000.0" />
 		<resource type="food" amount="4970.0" />
 		
-		<part-package name="standard package" number="3" />
+		<part-package name="Standard Part Package 1" number="3" />
 		
 	</resupply>
 

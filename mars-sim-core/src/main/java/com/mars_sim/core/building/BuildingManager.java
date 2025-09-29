@@ -64,7 +64,10 @@ import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
+import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.goods.EquipmentGood;
 import com.mars_sim.core.goods.Good;
+import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
@@ -2441,7 +2444,7 @@ public class BuildingManager implements Serializable {
                Map<MaintenanceScope, Integer> partsMaintEntry = partsMaint.get(entity);
                if (partsMaintEntry == null || partsMaintEntry.isEmpty()) {
                    // Post the parts and inject the demand
-                   postInjectPartsDemand(entity, parts);
+                   injectMaintenancePartsDemand(entity, parts);
                }
                
                if (partsMaintEntry != null && partsMaintEntry.equals(parts)) {
@@ -2449,13 +2452,13 @@ public class BuildingManager implements Serializable {
                } 
                else {
                    // Post the parts and inject the demand
-                   postInjectPartsDemand(entity, parts);
+                   injectMaintenancePartsDemand(entity, parts);
                }   
            } 
            else {
                logger.info(entity, 30_000L, "The maint list was empty. " + parts + " just got posted.");
                // Post the parts and inject the demand
-               postInjectPartsDemand(entity, parts);
+               injectMaintenancePartsDemand(entity, parts);
            }
        }
 	}
@@ -2466,17 +2469,41 @@ public class BuildingManager implements Serializable {
 	 * @param entity
 	 * @param parts
 	 */
-	public void postInjectPartsDemand(Malfunctionable entity, Map<MaintenanceScope, Integer> parts) {
-		// Post it
+	public void injectMaintenancePartsDemand(Malfunctionable entity, Map<MaintenanceScope, Integer> parts) {
+		// Post it up as maintenance parts
         partsMaint.put(entity, parts);
+        // Inject demand
         for (MaintenanceScope ms : parts.keySet()) {
         	Part part = ms.getPart();
-            int num = parts.get(ms);
-            Good good = GoodsUtil.getGood(part.getID());
-            
+            int num = parts.get(ms);      
             // Inject the demand onto this part
-            ((PartGood) good).injectPartsDemand(part, settlement.getGoodsManager(), num);
+            injectPartDemand(part, settlement, num);
         }
+	}
+	
+	/**
+	 * Injects part demand directly.
+	 * 
+	 * @param part
+	 * @param settlement
+	 * @param num
+	 */
+	public static void injectPartDemand(Part part, Settlement settlement, int num) {
+		Good good = GoodsUtil.getGood(part.getID());
+		((PartGood) good).injectPartDemand(part, settlement.getGoodsManager(), num);
+	}
+	
+	/**
+	 * Injects equipment demand directly.
+	 * 
+	 * @param type
+	 * @param settlement
+	 * @param stored
+	 * @param needNum
+	 */
+	public static void injectEquipmentDemand(EquipmentType type, Settlement settlement, int stored, int needNum) {
+		Good good = GoodsUtil.getGood(EquipmentType.getResourceID(type));
+		((EquipmentGood) good).injectEquipmentDemand(type, settlement.getGoodsManager(), stored, needNum);
 	}
 	
 	/**
