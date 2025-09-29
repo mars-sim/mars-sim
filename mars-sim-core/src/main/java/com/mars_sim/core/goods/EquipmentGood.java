@@ -24,7 +24,6 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
-import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.MathUtils;

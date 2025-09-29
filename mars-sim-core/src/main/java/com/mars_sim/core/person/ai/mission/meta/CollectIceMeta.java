@@ -15,7 +15,6 @@ import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectIce;
-import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;

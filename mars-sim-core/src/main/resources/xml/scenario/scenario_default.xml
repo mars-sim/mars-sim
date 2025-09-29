@@ -82,7 +82,7 @@
 		</settlement>
 
 		<settlement name="Terminus" template="Alpha Base 2" crew="Alpha" persons="36" robots="18" sponsor="NASA">
-			<location coordinates="0.0 0.0" />
+			<location coordinates="-4.8051 0.0" />
 		</settlement>
 			
 		<settlement name="Heritage" template="Hub Base" persons="36" robots="18" sponsor="MS">

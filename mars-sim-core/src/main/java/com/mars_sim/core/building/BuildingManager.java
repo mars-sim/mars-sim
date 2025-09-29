@@ -67,7 +67,6 @@ import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.EquipmentGood;
 import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
