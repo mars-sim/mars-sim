@@ -20,6 +20,16 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ## Installation
 
+**Option 1: Native Installers (Recommended)**
+
+Download native installers from the [GitHub Releases](https://github.com/mars-sim/mars-sim/releases) page. These installers include an embedded Java runtime, so no separate Java installation is required.
+
+Available installer types:
+- **MarsSim**: Full Swing UI application for interactive use
+- **MarsSimConsole**: Headless console application for server deployment
+
+**Option 2: Manual Installation**
+
 - Install Java JRE or JDK 21 on your machine. 
   See `Prerequisites` at [README.md](https://github.com/mars-sim/mars-sim/blob/master/README.md) 
 
