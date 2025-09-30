@@ -80,31 +80,34 @@ public class PartGood extends Good {
 	
 	private static final double BASE_DEMAND = 0.5;
 
-	private static final double DRILL_DEMAND  = 1;
+	private static final double DRILL_DEMAND  = .75;
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .00005;
 	private static final double GASKET_DEMAND = .05;
 	private static final double VEHICLE_PART_DEMAND = .4;
-	private static final double EVA_PART_DEMAND = 1;
+	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
-	private static final double SCRAP_METAL_DEMAND = .01;
-	private static final double INGOT_METAL_DEMAND = .01;
-	private static final double SHEET_METAL_DEMAND = .025;
-	private static final double TRUSS_DEMAND = .05;
-	private static final double STEEL_DEMAND = .1;
+	private static final int SCRAP_METAL_DEMAND = 1;
+	private static final double INGOT_METAL_DEMAND = .5;
+	private static final double SHEET_METAL_DEMAND = .75;
+	private static final double TRUSS_DEMAND = .5;
+	private static final double STEEL_DEMAND = .5;
 	private static final double BRICK_DEMAND = .2;
-	private static final double ELECTRICAL_DEMAND = .15;
+	private static final double ELECTRICAL_DEMAND = 1.25;
 	private static final double INSTRUMENT_DEMAND = 1.2;
-	private static final double METALLIC_DEMAND = .25;
-	private static final double UTILITY_DEMAND = .5;
-	private static final double TOOL_DEMAND = 2;
+	private static final int METALLIC_DEMAND = 1;
+	private static final double UTILITY_DEMAND = 0.5;
+	private static final double TOOL_DEMAND = 0.75;
 	private static final double CONSTRUCTION_DEMAND = 1.2;
-	private static final double GLASS_SHEET_DEMAND = .025;
+	private static final double GLASS_SHEET_DEMAND = 0.025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
+	private static final double LOGIC_BOARD_DEMAND = 0.5;
+	private static final double ELECTRICAL_WIRE_DEMAND = .25;
+	private static final double WIRE_DEMAND = 0.2;
 	
 	private static final double ATTACHMENT_PARTS_DEMAND = 1.5;
 	private static final double AEROGEL_TILE_DEMAND = 0.8;
-	private static final double PLASTIC_PIPE_DEMAND = .1;
+	private static final double PLASTIC_PIPE_DEMAND = 0.1;
 
 	
 	private static final int PARTS_MAINTENANCE_VALUE = 2;
@@ -119,7 +122,7 @@ public class PartGood extends Good {
 	private static final double WAFER_COST = 50;
 	private static final double BATTERY_COST = 5;
 	private static final double INSTRUMENT_COST = 1;
-	private static final double WIRE_COST = .005;
+	private static final double WIRE_COST = .05;
 	private static final double ELECTRONIC_COST = .5;
     private static final double INITIAL_PART_DEMAND = 30;
 	private static final double INITIAL_PART_SUPPLY = 1;
@@ -167,18 +170,18 @@ public class PartGood extends Good {
 				if (name.contains(RESISTOR)
 					|| name.contains(CAPACITOR)
 					|| name.contains(DIODE)) {
-					return 5;
+					return 2;
 				}
-				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
-					return .01;
 				if (name.equalsIgnoreCase(WIRE_CONNECTOR))
-					return .01;
+					return .2;
 				if (name.equalsIgnoreCase(POWER_CABLE))
-					return .05;
+					return .75;
+				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
+					return ELECTRICAL_WIRE_DEMAND;
 				if (name.equalsIgnoreCase(STEEL_WIRE))
-					return .025;
+					return .5;
 				if (name.contains(WIRE))
-					return .001;
+					return WIRE_DEMAND;
 				
 				return ELECTRICAL_DEMAND;
 			}
@@ -204,7 +207,7 @@ public class PartGood extends Good {
 		
 			case TOOL:
 				if (name.equalsIgnoreCase(DRILLING_RIG)) {
-					return DRILL_DEMAND / 2;
+					return DRILL_DEMAND * 1.2;
 				}
 				if (name.contains(DRILL)) {
 					return DRILL_DEMAND;
@@ -536,7 +539,11 @@ public class PartGood extends Good {
 
 		if (name.equalsIgnoreCase(BRICK))
 			return base * BRICK_DEMAND;
-
+		
+		if (name.equalsIgnoreCase(LOGIC_BOARD))
+			return base * LOGIC_BOARD_DEMAND;
+		
+		
 		return base;
 	}
 

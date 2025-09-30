@@ -118,9 +118,9 @@ class AmountResourceGood extends Good {
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
 	
-	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 2.0;
-	private static final double REGOLITH_VALUE_MODIFIER = 2.0;
-	private static final double REGOLITH_VALUE_MODIFIER_1 = 2.0;
+	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 0.75;
+	private static final double REGOLITH_VALUE_MODIFIER = 0.5;
+	private static final double REGOLITH_VALUE_MODIFIER_1 = 0.5;
 		
 	// flatten multipliers
 	private static final double ICE_FLATTENING_FACTOR = 0.5;
@@ -140,7 +140,7 @@ class AmountResourceGood extends Good {
 	private static final double ORE_FLATTENING_FACTOR = 1.1;
 	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
 	private static final double ROCK_FLATTENING_FACTOR = 1D;
-	private static final double REGOLITH_FLATTENING_FACTOR = 2D;
+	private static final double REGOLITH_FLATTENING_FACTOR = 0.75D;
 	private static final double SAND_FLATTENING_FACTOR = 1D;
 	
 	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;

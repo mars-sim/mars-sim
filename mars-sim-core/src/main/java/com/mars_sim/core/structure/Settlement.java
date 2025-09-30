@@ -261,8 +261,7 @@ public class Settlement extends Unit implements Temporal,
 
 	/** The settlement's outside temperature. */
 	private double outsideTemperature;
-	/** Total Crop area */
-	private double cropArea = -1;
+
 	/** The settlement terrain profile. */
 	private double[] terrainProfile = new double[2];
 	
@@ -2433,22 +2432,20 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Get the Exploration manager for this Settlement
+	 * Gets the Exploration manager for this Settlement.
 	 */
 	public ExplorationManager getExplorations() {
 		return explorations;
 	}
 
 	/**
-	 * Gets the total area of Crops in this Settlement.
+	 * Gets the total possible area of crops in this Settlement.
 	 */
 	public double getTotalCropArea() {
-		if (cropArea < 0D) {
-			cropArea = 0D;
+		double cropArea = 0D;
 			
-			for (Building b : buildingManager.getBuildingSet(FunctionType.FARMING)) {
-				cropArea += b.getFarming().getGrowingArea();
-			}
+		for (Building b : buildingManager.getBuildingSet(FunctionType.FARMING)) {
+			cropArea += b.getFarming().getGrowingArea();
 		}
 
 		return cropArea;

@@ -409,8 +409,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 				<process-engine name="Atmospheric processing" number-modules="3"/>
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
-				<process-engine name="Melt Ice" number-modules="12" />
-				<process-engine name="Filter Brine Water" number-modules="12" />
+				<process-engine name="Melt Ice" number-modules="16" />
+				<process-engine name="Filter Brine Water" number-modules="16" />
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -4150,8 +4150,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Atmospheric processing" number-modules="3"/>
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 				
-				<process-engine name="Melt Ice" number-modules="12" />
-				<process-engine name="Filter Brine Water" number-modules="12" />
+				<process-engine name="Melt Ice" number-modules="16" />
+				<process-engine name="Filter Brine Water" number-modules="16" />
 								
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />

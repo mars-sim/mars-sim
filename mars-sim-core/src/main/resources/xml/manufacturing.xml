@@ -1522,25 +1522,25 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make socket wrench" tech="1" skill="1" work-time="20" process-time="40"
 			power-required=".1">
 		<inputs>
-			<resource name="magnesium" amount="0.5" />
-			<resource name="acetylene" amount="0.1" />			
-			<part name="steel ingot" number="1" />
+			<resource name="Magnesium" amount="0.5" />
+			<resource name="Acetylene" amount="0.1" />			
+			<part name="Steel ingot" number="1" />
 		</inputs>
 		<outputs>
-			<part name="socket wrench" number="5" />
+			<part name="Socket wrench" number="5" />
 		</outputs>
 	</process>
 
 	<process name="Make pipe wrench" tech="1" skill="1" work-time="20" process-time="60"
 			power-required=".1">
 		<inputs>
-			<resource name="magnesium" amount="0.3" />
-			<resource name="acetylene" amount="0.1" />	
-			<resource name="iron powder" amount="1.0" />						
-			<part name="steel ingot" number="2" />
+			<resource name="Magnesium" amount="0.3" />
+			<resource name="Acetylene" amount="0.1" />	
+			<resource name="Iron powder" amount="1.0" />						
+			<part name="Steel ingot" number="2" />
 		</inputs>
 		<outputs>
-			<part name="pipe wrench" number="6" />
+			<part name="Pipe wrench" number="6" />
 		</outputs>
 	</process>
 

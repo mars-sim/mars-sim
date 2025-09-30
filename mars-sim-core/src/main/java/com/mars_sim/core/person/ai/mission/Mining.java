@@ -71,7 +71,7 @@ public class Mining extends EVAMission
 	/** The good value factor of a site. */
 	public static final double MINERAL_GOOD_VALUE_FACTOR = 500;
 	
-	/** The averge good value of a site. */
+	/** The average good value of a site. */
 	static final double AVERAGE_RESERVE_GOOD_VALUE = 50_000;
 
 	/** Amount of time(millisols) to spend at the mining site. */
@@ -93,7 +93,7 @@ public class Mining extends EVAMission
 
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error creating mission.
@@ -201,7 +201,6 @@ public class Mining extends EVAMission
 
 				if (usable)
 					result = true;
-
 			}
 		}
 
@@ -334,7 +333,8 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Attach/deattach the LIV from the Rover
+	 * Attaches or releases the LUV from a rover.
+	 * 
 	 * @param attach
 	 * @return
 	 */
@@ -354,7 +354,7 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Closes down the mining activities
+	 * Closes down the mining activities.
 	 */
 	@Override
 	protected void endEVATasks() {
@@ -365,7 +365,7 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Get the Vehicle comparator that is based on largest cargo
+	 * Gets the Vehicle comparator that is based on largest cargo.
 	 */
 	@Override
 	protected  Comparator<Vehicle> getVehicleComparator() {
