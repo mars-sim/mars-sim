@@ -54,14 +54,15 @@ public abstract class MedicalAidTask extends Task {
         else if (medicalAid instanceof SickBay sb) {
             // Walk to medical activity spot in rover.
             Vehicle vehicle = sb.getVehicle();
+            
             if (vehicle instanceof Rover r) {
-
                 // Walk to rover sick bay activity spot.
             	success = walkToSickBayActivitySpotInRover(r, false);
             }
         }
         else {
             logger.severe(person, "Medical aid could not be determined.");
+            
             endTask();
         }
         

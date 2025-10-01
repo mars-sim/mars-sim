@@ -1694,7 +1694,7 @@ public class BuildingManager implements Serializable {
 			
 			else {
 				// if type is not null and yet there's no empty activity spot
-				logger.info(worker, 10_000L, "Unable to claim a spot since there's no empty activity spot at any function.");
+				logger.info(worker, 20_000L, "Unable to claim a spot since there's no empty activity spot at any function.");
 				
 				return false;
 			}
@@ -1720,7 +1720,7 @@ public class BuildingManager implements Serializable {
 		else {
 			if (functionType != null) {
 				
-				logger.info(worker, 10_000L, "Unable to claim a spot at " + functionType.getName() + ".");
+				logger.info(worker, 20_000L, "Unable to claim a spot at " + functionType.getName() + ".");
 				
 				return false;
 			}
