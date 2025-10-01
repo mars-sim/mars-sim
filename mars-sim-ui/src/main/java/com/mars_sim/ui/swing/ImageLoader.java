@@ -203,6 +203,7 @@ public class ImageLoader {
 
 			if (imageURL == null) {	
 				logger.severe("'" + imageName + "' cannot be found");
+				return null;
 			}
 
 			// Read and load image
