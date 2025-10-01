@@ -78,19 +78,70 @@ class AmountResourceGood extends Good {
 	private static final double ELEMENT_COST = 0.5;
 	private static final double LIFE_SUPPORT_COST = 0.5;
 	
-	// Modifiers
+	// flatten multipliers
+	private static final double ICE_FLATTENING_FACTOR = 0.5;
+	private static final double WATER_FLATTENING_FACTOR = 0.5;
+	
+	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
+	private static final double METHANE_FLATTENING_FACTOR = 1.1;
+	private static final double HYDROGEN_FLATTENING_FACTOR = 1.0;
+	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
+	
+	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
+	// Note: must keep Carbon Monoxide demand high enough so as to start 
+	// 5 important Resource Processes that produce other resources (alongside with Carbon Monoxide)
+	private static final double CO_FLATTENING_FACTOR = 5.0;
+	private static final double CO2_FLATTENING_FACTOR = 1.1;
+		
+	private static final double ORE_FLATTENING_FACTOR = 1.0;
+	private static final double MINERAL_FLATTENING_FACTOR = 1.0;
+	private static final double ROCK_FLATTENING_FACTOR = 1D;
+	private static final double REGOLITH_FLATTENING_FACTOR = 0.75D;
+	private static final double SAND_FLATTENING_FACTOR = 1D;
+	
+	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
+	
+	private static final double OLIVINE_FLATTENING_FACTOR = 0.75;
+	private static final double KAMACITE_FLATTENING_FACTOR = 0.75;
+	
+	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 8.0;
+	
+	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
+	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
+	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
+	private static final double ELEMENT_FLATTENING_FACTOR = 4D;
+
+	private static final double GEMSTONE_FLATTENING_FACTOR = 3D;
+
+	private static final double WASTE_FLATTENING_FACTOR = 0.15;
+	
+	private static final double UTILITY_FLATTENING_FACTOR = 10D;
+	private static final double INSTRUMENT_FLATTENING_FACTOR = 5D;
+
+	private static final double INSECT_FLATTENING_FACTOR = 5D;
+	private static final double ORGANISM_FLATTENING_FACTOR = 2D;
+	private static final double SOYBASED_FLATTENING_FACTOR = 0.5;
+	private static final double ANIMAL_FLATTENING_FACTOR = 2D;
+	private static final double CROP_FLATTENING_FACTOR = 1.25;
+	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
+	private static final double TISSUE_FLATTENING_FACTOR = 1.25;
+
+	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
+	private static final double IRON_POWDER_FLATTENING_FACTOR = 1.5;
+	
+	// Demand Modifiers
     private static final double ICE_VALUE_MODIFIER = 0.75;
 	private static final double WATER_VALUE_MODIFIER = 0.2;
 	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
 	
 	private static final double SOIL_VALUE_MODIFIER = 0.05;
-	private static final double SAND_VALUE_MODIFIER = 0.03;
-	private static final double ORES_VALUE_MODIFIER = 0.05;
+	private static final double SAND_VALUE_MODIFIER = 2.5;
+	private static final double ORES_VALUE_MODIFIER = 1.0;
 	
 	private static final double CONCRETE_VALUE_MODIFIER = 1.5;
 	private static final double CEMENT_VALUE_MODIFIER = 2;
-	private static final double MINERAL_VALUE_MODIFIER = 0.02;
-	private static final double ROCK_VALUE_MODIFIER = 0.02;
+	private static final double MINERAL_VALUE_MODIFIER = 1.2;
+	private static final double ROCK_VALUE_MODIFIER = 0.2;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
 	
 	private static final double ROCK_SALT_VALUE_MODIFIER = .5;
@@ -118,70 +169,17 @@ class AmountResourceGood extends Good {
 	
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
 	
-	private static final double REGOLITH_TYPE_VALUE_MODIFIER = 0.75;
 	private static final double REGOLITH_VALUE_MODIFIER = 0.5;
-	private static final double REGOLITH_VALUE_MODIFIER_1 = 0.5;
-		
-	// flatten multipliers
-	private static final double ICE_FLATTENING_FACTOR = 0.5;
-	private static final double WATER_FLATTENING_FACTOR = 0.5;
-	
-	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
-	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 1.0;
-	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
-	
-	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
-	// Note: must keep Carbon Monoxide demand high enough so as to start 
-	// 5 important Resource Processes that produce other resources (alongside with Carbon Monoxide)
-	private static final double CO_FLATTENING_FACTOR = 5.0;
-	private static final double CO2_FLATTENING_FACTOR = 1.1;
-		
-	private static final double ORE_FLATTENING_FACTOR = 1.1;
-	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
-	private static final double ROCK_FLATTENING_FACTOR = 1D;
-	private static final double REGOLITH_FLATTENING_FACTOR = 0.75D;
-	private static final double SAND_FLATTENING_FACTOR = 1D;
-	
-	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
-	
-	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
-	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
-	
-	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 8.0;
-	
-	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
-	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
-	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
-	private static final double ELEMENT_FLATTENING_FACTOR = 4D;
 
-	private static final double GEMSTONE_FLATTENING_FACTOR = 3D;
-
-	private static final double WASTE_FLATTENING_FACTOR = 0.15;
-	
-	private static final double UTILITY_FLATTENING_FACTOR = 10D;
-	private static final double INSTRUMENT_FLATTENING_FACTOR = 5D;
-
-	private static final double INSECT_FLATTENING_FACTOR = 5D;
-	private static final double ORGANISM_FLATTENING_FACTOR = 2D;
-	private static final double SOYBASED_FLATTENING_FACTOR = 0.5;
-	private static final double ANIMAL_FLATTENING_FACTOR = 2D;
-	private static final double CROP_FLATTENING_FACTOR = 1.25;
-	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
-	private static final double TISSUE_FLATTENING_FACTOR = 1.25;
-
-	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
-	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.5;
-	
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
 	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 400D;
 
-	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500D; 
-	private static final double MAX_MANUFACTURING_DEMAND = 1500D;
-	private static final double MAX_FOOD_PRODUCTION_DEMAND = 1500D;
+	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 500D; 
+	private static final double MAX_MANUFACTURING_DEMAND = 500D;
+	private static final double MAX_FOOD_PRODUCTION_DEMAND = 500D;
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -592,7 +590,7 @@ class AmountResourceGood extends Good {
 			// Tune construction demand.
 			+ getResourceConstructionDemand(settlement)
 			// Adjust the demand on minerals and ores.
-			+ getMineralDemand(owner, settlement);
+			+ getOresMineralsDemand(owner, settlement);
 
 		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 	
@@ -673,7 +671,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 20);
+		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 100);
 	}
 
 	/**
@@ -739,7 +737,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(MAX_MANUFACTURING_DEMAND, demand / 200);
+		return Math.min(MAX_MANUFACTURING_DEMAND, demand / 50);
 	}
 
 	/**
@@ -1117,12 +1115,12 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets mineral demand.
+	 * Gets the ore and mineral demand.
 	 *
 	 * @return
 	 */
-	private double getMineralDemand(GoodsManager owner, Settlement settlement) {
-		double base = .25;
+	private double getOresMineralsDemand(GoodsManager owner, Settlement settlement) {
+		double base = 2;
 		int resourceID = getID();
 		switch(resourceID) {
         	case ResourceUtil.ROCK_SALT_ID:
@@ -1164,16 +1162,16 @@ class AmountResourceGood extends Good {
 		for (int id : ResourceUtil.ROCK_IDS) {
 			if (resourceID == id) {
 				double rockDemand = owner.getDemandScoreWithID(id);
-				return base * (.2 * regolithDemand + .9 * rockDemand) 
-						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
+				return base * (.2 * regolithDemand + .8 * rockDemand) 
+						 * ROCK_VALUE_MODIFIER;
 			}
 		}
 
 		for (int id : ResourceUtil.MINERAL_CONC_IDs) {
 			if (resourceID == id) {
 				double mineralDemand = owner.getDemandScoreWithID(id);
-				return base * (.2 * regolithDemand + .9 * mineralDemand) 
-						/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
+				return base * (.3 * regolithDemand + .7 * mineralDemand) 
+						 * MINERAL_VALUE_MODIFIER;
 			}
 		}
 
@@ -1181,22 +1179,15 @@ class AmountResourceGood extends Good {
 			if (resourceID == id) {
 				double oreDemand = owner.getDemandScoreWithID(id);
 				// loses 10% by default
-				return base * (.3 * regolithDemand + .6 * oreDemand) 
-						/ (1 + oreDemand) * ORES_VALUE_MODIFIER;
+				return base * (.4 * regolithDemand + .6 * oreDemand) 
+						 * ORES_VALUE_MODIFIER;
 			}
 		}
 
-		if (resourceID == ResourceUtil.REGOLITH_ID) {
-			return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
-		}
-		
-		else if (resourceID == ResourceUtil.REGOLITHB_ID 
-				|| resourceID == ResourceUtil.REGOLITHC_ID) {
-			return base * regolithDemand * REGOLITH_VALUE_MODIFIER_1;
-		}
-		
-		else if (resourceID == ResourceUtil.REGOLITHD_ID) {
-			return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
+		for (int id : ResourceUtil.REGOLITH_TYPES_IDS) {
+			if (resourceID == id) {
+				return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
+			}
 		}
 		
 		// Checks if this resource is a ROCK type
@@ -1294,7 +1285,8 @@ class AmountResourceGood extends Good {
 		double demand = 0;
 		int resourceID = getID();
 		// This averaging method make all regolith types to be placed at similar demand
-		if (resourceID == ResourceUtil.REGOLITHB_ID
+		if (resourceID == ResourceUtil.REGOLITH_ID
+			|| resourceID == ResourceUtil.REGOLITHB_ID
 			|| resourceID ==  ResourceUtil.REGOLITHC_ID
 			|| resourceID ==  ResourceUtil.REGOLITHD_ID) {
 
@@ -1312,7 +1304,7 @@ class AmountResourceGood extends Good {
 			
 			// Limit the minimum value of regolith projected demand
 			demand = (cement + concrete + 4 * targetRegolith + 2 * sand + 4 * averageRegolith) 
-					* REGOLITH_TYPE_VALUE_MODIFIER;
+					* REGOLITH_VALUE_MODIFIER;
 		}
 
 		return demand;

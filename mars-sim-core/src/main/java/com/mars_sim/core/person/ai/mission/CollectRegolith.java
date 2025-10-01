@@ -80,7 +80,7 @@ public class CollectRegolith extends CollectResourcesMission {
 			double highest = 0;
 			int bestType = 0;
 			var goodsMgr = worker.getAssociatedSettlement().getGoodsManager();
-			for (int type: ResourceUtil.REGOLITH_TYPES) {
+			for (int type: ResourceUtil.REGOLITH_TYPES_IDS) {
 				double vp = goodsMgr.getGoodValuePoint(type);
 				if (highest < vp) {
 					highest = vp;
@@ -91,9 +91,9 @@ public class CollectRegolith extends CollectResourcesMission {
 			return bestType;
 		}
 		// Randomly pick one of the 4 regolith types
-		int rand = RandomUtil.getRandomInt(ResourceUtil.REGOLITH_TYPES.length - 1);
+		int rand = RandomUtil.getRandomInt(ResourceUtil.REGOLITH_TYPES_IDS.length - 1);
 
-		return ResourceUtil.REGOLITH_TYPES[rand];
+		return ResourceUtil.REGOLITH_TYPES_IDS[rand];
 	}
 	
 	@Override

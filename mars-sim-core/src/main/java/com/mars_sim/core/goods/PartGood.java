@@ -87,9 +87,9 @@ public class PartGood extends Good {
 	private static final double VEHICLE_PART_DEMAND = .4;
 	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
-	private static final int SCRAP_METAL_DEMAND = 1;
-	private static final double INGOT_METAL_DEMAND = .5;
-	private static final double SHEET_METAL_DEMAND = .75;
+	private static final double SCRAP_METAL_DEMAND = .5;
+	private static final double INGOT_METAL_DEMAND = .25;
+	private static final double SHEET_METAL_DEMAND = .25;
 	private static final double TRUSS_DEMAND = .5;
 	private static final double STEEL_DEMAND = .5;
 	private static final double BRICK_DEMAND = .2;

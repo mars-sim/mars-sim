@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.environment.OuterSpace;
 import com.mars_sim.core.equipment.Equipment;
@@ -227,7 +228,7 @@ public class UnitManager implements Serializable, Temporal {
 	public Person getPersonByID(Integer id) {
 		return lookupPerson.get(id);
 	}
-
+	
 	public Robot getRobotByID(Integer id) {
 		return lookupRobot.get(id);
 	}

@@ -81,6 +81,7 @@ import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.shift.ShiftManager;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.person.ai.social.Appraiser;
+import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -307,6 +308,8 @@ public class Settlement extends Unit implements Temporal,
 	private ManufacturingManager manuManager;
 	/** The Rationing manager. */
 	private Rationing rationing;
+	/** The Relation instance.. */
+	private	Relation relation;
 	
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType = ObjectiveType.BUILDERS_HAVEN;
@@ -483,17 +486,16 @@ public class Settlement extends Unit implements Temporal,
 		// Do mission limits; all have a limit of 1 first
 		preferences.putValue(MissionLimitParameters.INSTANCE,
 							 MissionType.CONSTRUCTION.name(), 1);
-
 		// Call weather to add this location
 		weather.addLocation(location);
-
-		explorations = new ExplorationManager(this);
-			
+		// Construct the Exploration Manager.
+		explorations = new ExplorationManager(this);		
 		// Initialize schedule event manager
-		futureEvents = new ScheduledEventManager(masterClock);
-		
+		futureEvents = new ScheduledEventManager(masterClock);	
 		// Initialize the rationing instance
 		rationing = new Rationing(this);
+		// Construct the Relation instance.
+		relation = new Relation(this);
 	}
 
 
@@ -577,7 +579,7 @@ public class Settlement extends Unit implements Temporal,
 		// Create EquipmentInventory instance
 		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 
-		// Stores limited amount of oxygen in this settlement
+		// Store limited amount of oxygen in this settlement
 		storeAmountResource(ResourceUtil.OXYGEN_ID, INITIAL_FREE_OXYGEN_AMOUNT);
 
 		SettlementTemplate sTemplate = settlementTemplateConfig.getItem(template);
@@ -590,25 +592,25 @@ public class Settlement extends Unit implements Temporal,
 		// Create adjacent building map
 		buildingManager.createAdjacentBuildingMap();
 	
-
+		// Initialize shift manager.
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
-
+		// Initialize credit manager.
 		creditManager = new CreditManager(this);
 
-		// Initialize the settlement task manager.
+		// Initialize settlement task manager.
 		taskManager = new SettlementTaskManager(this);
 		
 		// Initialize scientific achievement.
 		scientificAchievement = new EnumMap<>(ScienceType.class);
 
-		// Add chain of command
+		// Add chain of command.
 		chainOfCommand = new ChainOfCommand(this);
 
-		// Set objective()
+		// Set objective
 		setObjective(sTemplate.getObjective(), 2);
 
-		// initialize the missionScores list
+		// Initialize the missionScores list
 		missionScores = new ArrayList<>();
 		missionScores.add(INITIAL_MISSION_PASSING_SCORE);
 

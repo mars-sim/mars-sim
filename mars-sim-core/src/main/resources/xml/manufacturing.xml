@@ -1437,11 +1437,12 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make small vehicle frame" tech="2" skill="2" work-time="550" process-time="550"
+	<process name="Make small vehicle frame" tech="2" skill="2" work-time="300" process-time="200"
 			tooling="metalwork" power-required="3.0">
 		<inputs>
 			<resource name="magnesium" amount="0.5" />
-			<resource name="acetylene" amount="0.5" />		
+			<resource name="acetylene" amount="0.5" />	
+			<resource name="titanium" amount="0.1" />
 			<part name="steel ingot" number="3" />
 		</inputs>
 		<outputs>
@@ -1449,11 +1450,12 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Make large vehicle frame" tech="2" skill="2" work-time="300" process-time="300"
+	<process name="Make large vehicle frame" tech="2" skill="2" work-time="200" process-time="150"
 			tooling="metalwork" power-required="5.0">
 		<inputs>
 			<resource name="magnesium" amount="1.0" />
 			<resource name="acetylene" amount="1.0" />	
+			<resource name="titanium" amount="0.2" />
 			<part name="steel ingot" number="10" />
 		</inputs>
 		<outputs>
@@ -1469,6 +1471,7 @@ Note: 1 kg of H2 is 14.13 liter
 			</resource>
 			<resource name="polystyrene" amount="5" />
 			<resource name="styrene" amount="5.0" />
+			<resource name="titanium" amount=".5" />
 			<part name="fiberglass" number="5" />
 		</inputs>
 		<outputs>
@@ -1476,6 +1479,22 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
+	<process name="Manufacture drone chassis panel" tech="2" skill="3" work-time="50" process-time="50"
+			tooling="metalwork" power-required=".05">
+		<inputs>
+			<resource name="Polyester Resin" amount="3.0">
+				<alternative name="Polycarbonate Resin" amount="3.0" />
+			</resource>
+			<resource name="polystyrene" amount="3" />
+			<resource name="styrene" amount="3.0" />
+			<resource name="titanium" amount=".3" />
+			<part name="fiberglass" number="3" />
+		</inputs>
+		<outputs>
+			<part name="drone chassis panel" number="1" />
+		</outputs>
+	</process>
+	
 	<process name="Manufacture rover windshield" tech="3" skill="2" work-time="100" process-time="150"
 			power-required=".1">
 	<description> The rover windshield use a double stack of aerogel tiles between two layers 

@@ -161,7 +161,7 @@ public class ResourceUtil {
 	public static final int[] ORE_DEPOSIT_IDS = new int[]{ALLOPHANE_ID, AKAGANEITE_ID, BASALTIC_ID,
 														BASSANITE_ID, GYPSUM_ID, SMECTITE_ID};
 	
-	public static final int[] REGOLITH_TYPES = new int[] {REGOLITH_ID, REGOLITHB_ID,
+	public static final int[] REGOLITH_TYPES_IDS = new int[] {REGOLITH_ID, REGOLITHB_ID,
 														REGOLITHC_ID, REGOLITHD_ID};
 
 
@@ -349,7 +349,7 @@ public class ResourceUtil {
 		for (int i: ORE_DEPOSIT_IDS) {
 			essentialResources.add(i);
 		}
-		for (int i: REGOLITH_TYPES) {
+		for (int i: REGOLITH_TYPES_IDS) {
 			essentialResources.add(i);
 		}
 		

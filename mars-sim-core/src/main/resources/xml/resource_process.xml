@@ -920,10 +920,11 @@
 	<!-- https://geologyscience.com/minerals/hematite/ -->
 	<process name="Do Hematite smelting" power-required="0.1" >
 		<input resource="hematite" rate="25.0"  />
-		<input resource="carbon monoxide" rate=".5" />
+		<input resource="carbon monoxide" rate="0.5" />
 		
-		<output resource="iron powder" rate="2.0" />
-		<output resource="iron oxide" rate="20.0" />
+		<output resource="iron powder" rate="6.0" />
+		<output resource="iron oxide" rate="15.0" />
+		<output resource="nickel" rate="2.0" />
 		<output resource="manganese" rate="2.0" />						
 		<output resource="carbon dioxide" rate=".5" />
 	</process>
@@ -933,10 +934,11 @@
 			<input resource="carbon monoxide" rate=".5" />
 			
 			<output resource="iron powder" rate="1.0" />
-			<output resource="iron oxide" rate="20.0" />									
-			<output resource="carbon dioxide" rate=".5"/>
+			<output resource="iron oxide" rate="18.0" />	
+			<output resource="nickel" rate="2.0" />							
 			<output resource="oxygen" rate="2.0" />
-			<output resource="titanium" rate="1.0" />				
+			<output resource="titanium" rate="2.0" />	
+			<output resource="carbon dioxide" rate=".5"/>			
 	</process>
 
 	<!-- https://geologyscience.com/minerals/goethite/ -->
@@ -974,6 +976,9 @@
 			<input resource="kamacite" rate="50.0" />
 			
 			<output resource="iron powder" rate="45.0" />
+			<!-- kamacite is a naturally occurring, homogeneous 
+			 mixture of iron and nickel that forms under 
+			 specific extraterrestrial condition -->
 			<output resource="nickel" rate="5.0" />
 	</process>
 
@@ -1026,7 +1031,6 @@
 			<output resource="chlorine" rate="23.8" />
 	</process>
 
-
 	<process name="Do Taenite smelting" power-required="0.1" >
 			<input resource="taenite" rate="50.0" />
 			
@@ -1040,13 +1044,14 @@
 		</description>
 			<input resource="basaltic" rate="50.0" />
 			
-			<output resource="aluminum oxide" rate="8.0" />
+			<output resource="aluminum oxide" rate="6.0" />
 			<output resource="magnesium" rate="6.0" />
 			<output resource="manganese" rate="2.0" />						
 			<output resource="sodium oxide" rate="5.0" />
 			<output resource="potassium" rate="3.0" />
 			<output resource="titanium" rate="3.0" />
 			<output resource="iron oxide" rate="3.0" />
+			<output resource="nickel" rate="2.0" />
 			<output resource="sand" rate="5.0" />
 			<output resource="brine water" rate="10.0" />
 	</process>
@@ -1070,10 +1075,12 @@
 	<process name="Extract minerals from Allophane deposits" power-required="0.1" >
 			<input resource="allophane" rate="50.0" />
 			
-			<output resource="aluminum oxide" rate="30.0" />
+			<output resource="aluminum oxide" rate="37.0" />
 			<output resource="silica" rate="1.0" />
+			<!-- May have some nickel -->
+			<output resource="nickel" rate="1.0" />
 			<output resource="sand" rate="6.0" />
-			<output resource="brine water" rate="10.0" />
+			<output resource="brine water" rate="5.0" />
 	</process>
 
 	<!-- http://www.handbookofmineralogy.org/pdfs/akaganeite.pdf 
@@ -1081,10 +1088,15 @@
 	<process name="Extract minerals from Akaganeite deposits" power-required="0.1" >
 			<input resource="akaganeite" rate="50.0" />
 			
-			<output resource="iron oxide" rate="29.0" />
-			<output resource="manganese" rate="0.2" />						
+			<output resource="iron powder" rate="3.0" />
+			<output resource="iron oxide" rate="23.0" />					
 			<output resource="iron hydroxide" rate="10.0" />
 			<output resource="iron chloride" rate="2.0" />
+			<!-- Akaganeite (β-FeOOH): Can incorporate zinc up to 10 wt.% during 
+			 formation in chloride-rich environments, with Zn substituting 
+			 for Fe in the structure. -->
+			<output resource="zinc" rate="3.0" />
+			<output resource="manganese" rate="0.2" />	
 			<output resource="potash lye" rate="0.1" />
 			<output resource="brine water" rate="1.0" />
 	</process>
@@ -1584,7 +1596,8 @@
 	
 	<process name="Soil Generation from Crop Waste" power-required=".01" >	
 		<input resource="crop waste" rate="100" />
-		<output resource="soil" rate="100" />					
+		<output resource="soil" rate="20" />	
+		<output resource="carbon" rate="80" />				
 	</process>
 	
 

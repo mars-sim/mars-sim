@@ -129,7 +129,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		RESOURCE_TO_COL.put(ResourceUtil.CEMENT_ID, CEMENT_COL);
 		RESOURCE_TO_COL.put(ResourceUtil.LIME_ID, LIME_COL);
 		
-		for (int i : ResourceUtil.REGOLITH_TYPES) {
+		for (int i : ResourceUtil.REGOLITH_TYPES_IDS) {
 			RESOURCE_TO_COL.put(i, REGOLITHS_COL);
 		}
 		for (int i : ResourceUtil.ORE_DEPOSIT_IDS) {
@@ -249,7 +249,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 					// must be a resource column
 					int resourceId = COL_TO_RESOURCE[columnIndex];
 					result = switch(resourceId) {
-						case REGOLITH_ID -> getTotalAmount(ResourceUtil.REGOLITH_TYPES, settle);
+						case REGOLITH_ID -> getTotalAmount(ResourceUtil.REGOLITH_TYPES_IDS, settle);
 						case ORE_ID -> getTotalAmount(ResourceUtil.ORE_DEPOSIT_IDS, settle);
 						case MINERAL_ID -> getTotalAmount(ResourceUtil.MINERAL_CONC_IDs, settle);
 						case ROCK_ID -> getTotalAmount(ResourceUtil.ROCK_IDS, settle);
