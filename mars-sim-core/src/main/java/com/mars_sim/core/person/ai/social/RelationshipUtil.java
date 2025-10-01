@@ -132,7 +132,7 @@ public class RelationshipUtil implements Serializable {
 	 * @return a list of the people the person knows.
 	 */
 	public static Set<Person> getAllKnownPeople(Person person) {
-		return person.getRelation().getAllKnownPeople(person);
+		return person.getRelation().getAllKnownPeople();
 	}
 	
 	/**

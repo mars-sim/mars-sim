@@ -180,6 +180,10 @@ class AmountResourceGood extends Good {
 	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 500D; 
 	private static final double MAX_MANUFACTURING_DEMAND = 500D;
 	private static final double MAX_FOOD_PRODUCTION_DEMAND = 500D;
+	
+	private static final double REGOLITH_LOWEST_DEMAND = 0.05;
+	private static final double REGOLITH_BASE_DEMAND = 40;
+	
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -1120,7 +1124,7 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private double getOresMineralsDemand(GoodsManager owner, Settlement settlement) {
-		double base = 2;
+		double base = 1;
 		int resourceID = getID();
 		switch(resourceID) {
         	case ResourceUtil.ROCK_SALT_ID:
@@ -1146,19 +1150,19 @@ class AmountResourceGood extends Good {
 				return base * (.5 * concreteDemand + .55 * regolithDemand + .25 * sandDemand) 
 							/ (1 + concreteDemand) * CONCRETE_VALUE_MODIFIER;
 			}
-			case ResourceUtil.SAND_ID: {
-				double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
-				double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
-				// the demand for sand is dragged up or down by that of regolith
-				// loses 10% by default
-				return base * (.2 * regolithDemand + .7 * sandDemand) 
-							/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
-			}
 		}
         
 		double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
 		double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
-
+		base = MathUtils.between(REGOLITH_BASE_DEMAND / regolithDemand, REGOLITH_LOWEST_DEMAND, REGOLITH_BASE_DEMAND);
+		
+		if (resourceID == ResourceUtil.SAND_ID) {
+			// the demand for sand is dragged up or down by that of regolith
+			// loses 10% by default
+			return base * (.2 * regolithDemand + .7 * sandDemand) 
+						/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
+		}
+		
 		for (int id : ResourceUtil.ROCK_IDS) {
 			if (resourceID == id) {
 				double rockDemand = owner.getDemandScoreWithID(id);
@@ -1203,7 +1207,7 @@ class AmountResourceGood extends Good {
 						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 		}
 
-		return base;
+		return 1;
 	}
 
 	/**

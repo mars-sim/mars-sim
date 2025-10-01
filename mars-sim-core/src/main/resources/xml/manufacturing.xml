@@ -943,7 +943,9 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>
 		<inputs>
 			<resource name="Mylar" amount="2.0" />
-			<resource name="Aluminum" amount="0.5" />
+			<resource name="Aluminum" amount="0.5" >
+				<alternative name="Aluminum oxide" amount="1.0"/>
+			</resource>
 		</inputs>
 		<outputs>
 			<resource name="Aluminized Mylar" amount="2.5" />
@@ -1088,7 +1090,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture thermal bottle" tech="1" skill="1" work-time="20" process-time="20"
 			tooling="metalwork" power-required="0.2">
 		<inputs>
-			<resource name="Aluminum" amount="0.8" />			
+			<resource name="Aluminum" amount="0.8" >
+				<alternative name="Aluminum oxide" amount="1.6"/>
+			</resource>			
 			<part name="plastic sheet" number="2" />
 		</inputs>
 		<outputs>
@@ -3268,7 +3272,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="manganese" amount=".1" />	
 			<resource name="nickel" amount=".1" />	
 			<resource name="iron powder" amount=".1" />		
-			<resource name="Aluminum" amount=".1" />								
+			<resource name="Aluminum" amount=".1"  >
+				<alternative name="Aluminum oxide" amount="0.2"/>
+			</resource>					
 			<resource name="glass" amount="4.2" />	
 			<resource name="oxygen" amount=".5" />				
 		</inputs>
@@ -3285,7 +3291,9 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
-			<resource name="Aluminum" amount=".5" />
+			<resource name="Aluminum" amount=".5" >
+				<alternative name="Aluminum oxide" amount="1.0"/>
+			</resource>
 			<resource name="nickel" amount=".025" />
 			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
@@ -3305,7 +3313,9 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>
 		<inputs>
 			<resource name="sodium carbonate" amount=".25" />
-			<resource name="Aluminum" amount=".5" />
+			<resource name="Aluminum" amount=".5"  >
+				<alternative name="Aluminum oxide" amount="1.0"/>
+			</resource>
 			<resource name="nickel" amount=".025" />
 			<resource name="lithium" amount=".025" />
 			<resource name="iron powder" amount=".5" />
@@ -3414,8 +3424,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture resistors" tech="1" skill="2" work-time="50" process-time="30"
 			power-required="1">
 		<inputs>
-			<resource name="Aluminum" amount="0.1" />
-			<resource name="aluminum oxide" amount="0.1" />
+			<resource name="Aluminum" amount="0.1" >
+				<alternative name="Aluminum oxide" amount="0.2"/>
+			</resource>
 			<resource name="zinc" amount="0.1" />
 			<resource name="nickel" amount="0.1" />
 			<resource name="iron powder" amount="0.1" />
@@ -3430,8 +3441,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture capacitors" tech="1" skill="2" work-time="75" process-time="30"
 			power-required="1">
 		<inputs>
-			<resource name="Aluminum" amount="0.1" />
-			<resource name="aluminum oxide" amount="0.1" />
+			<resource name="Aluminum" amount="0.1" >
+				<alternative name="Aluminum oxide" amount="0.2"/>
+			</resource>
 			<resource name="zinc" amount="0.05" />
 			<resource name="nickel" amount="0.05" />
 			<resource name="iron powder" amount="0.05" />
@@ -3450,8 +3462,9 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture diodes" tech="1" skill="2" work-time="200" process-time="50"
 			power-required="1">
 		<inputs>
-			<resource name="Aluminum" amount="0.1" />
-			<resource name="aluminum oxide" amount="0.1" />
+			<resource name="Aluminum" amount="0.2"  >
+				<alternative name="Aluminum oxide" amount="0.4"/>
+			</resource>
 			<resource name="silicon" amount="1" />
 			<resource name="iron powder" amount="0.1" />
 		</inputs>
@@ -3467,7 +3480,9 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="copper" amount="0.2" />
 			<resource name="iron powder" amount="0.2" />
 			<resource name="magnesium" amount="0.4" />
-			<resource name="Aluminum" amount="0.1" />
+			<resource name="Aluminum" amount="0.1"  >
+				<alternative name="Aluminum oxide" amount="0.2"/>
+			</resource>
 			<part name="plastic sheet" number="1" />
 			<part name="resistor" number="40" />
 			<part name="capacitor" number="20" />
@@ -3485,7 +3500,9 @@ Note: 1 kg of H2 is 14.13 liter
 		<inputs>
 			<resource name="copper" amount="0.2" />
 			<resource name="iron powder" amount="0.2" />
-			<resource name="Aluminum" amount="0.1" />
+			<resource name="Aluminum" amount="0.1"  >
+				<alternative name="Aluminum oxide" amount="0.2"/>
+			</resource>
 			<resource name="magnesium" amount=".2" />
 			<part name="steel sheet" number="1" />
 			<part name="heating element" number="6" />
@@ -3558,7 +3575,9 @@ Note: 1 kg of H2 is 14.13 liter
 			power-required=".1">
 		<inputs>
 			<resource name="polystyrene" amount="9" />
-			<resource name="Aluminum" amount=".5" />
+			<resource name="Aluminum" amount=".5" >
+				<alternative name="Aluminum oxide" amount="1.0"/>
+			</resource>
 		</inputs>
 		<outputs>
 			<part name="insulation board" number="10" />

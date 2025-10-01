@@ -559,7 +559,7 @@
 		
 		<output resource="Carbon monoxide" rate="560.0" />
 		<output resource="Hydrogen" rate="40.0"  />
-	</process> <!-- "Steam Methane Reforming (SMR) to Produce Hydrogen" -->
+	</process> <!-- "Dry Methane Reforming (DMR) to Produce Hydrogen" -->
 
 
 	<process name="Water-Gas Shift Reaction (WGSR)" power-required="0.0" >
@@ -801,16 +801,24 @@
 		</description>
 		<input resource="brine water" rate="400.0"  />
 		
-		<output resource="water" rate="390.0"  />
-		<output resource="sand" rate="2.0"  />
-		<output resource="magnesium" rate="2.0"  />	
+		<output resource="water" rate="389.4"  />
+		<output resource="sand" rate="1.8"  />
+		<output resource="magnesium" rate="0.9"  />	
+		<output resource="manganese" rate="0.1"  />	
 		<output resource="calcium" rate="0.5"  />			
 		<output resource="calcium carbonate" rate="0.5"  />
 		<output resource="lime" rate="1.0"  />	
 		<output resource="perchlorate" rate="0.4"  />	
 		<output resource="aluminum oxide" rate="0.8"  />	
 		<output resource="iron oxide" rate="1.6"  />	
-		<output resource="silica" rate="1.2"  />			
+		<output resource="nickel" rate="0.1"  />	
+		<output resource="silica" rate="1.2"  />	
+		<output resource="sulfur" rate="0.1" />	
+		<output resource="copper" rate="0.1" />	
+				
+		<output resource="hematite" rate="0.5"  />	
+		<output resource="goethite" rate="0.5"  />	
+		<output resource="gypsum" rate="0.5"  />			
 				
 	</process>
 
@@ -822,19 +830,19 @@
 		</description>
 		<input resource="regolith" rate="100.0"  />
 
-		<output resource="basaltic" rate="5.0"  />
+		<output resource="basaltic" rate="8.0"  />
 		<output resource="gypsum" rate="25.0"  />
-		<output resource="smectite" rate="2.0"  />
-		<output resource="allophane" rate="2.0"  />
-		<output resource="akaganeite" rate="2.0"  />
-		<output resource="bassanite" rate="2.0"  />
+		<output resource="smectite" rate="5.0"  />
+		<output resource="allophane" rate="5.0"  />
+		<output resource="akaganeite" rate="5.0"  />
+		<output resource="bassanite" rate="5.0"  />
 
-		<output resource="sand" rate="61.9"  />
+		<output resource="sand" rate="46.9"  />
 		<output resource="nitrogen" rate="0.1"  />
 	</process>
 
 
-	<process name="Extract Nitrogen Compounds from Regolith" power-required="0.02" >
+	<process name="Extract Nitrogen Compounds from Regolith" power-required="0.005" >
 		<description> 
 			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
 			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
@@ -851,7 +859,8 @@
 		<output resource="nitrogen" rate="0.1"  />
 		<output resource="ammonia" rate="0.1"  />
 		<output resource="argon" rate="0.1"  />
-		<output resource="regolith" rate="99.5"  />	
+		<output resource="sand" rate="20"  />
+		<output resource="regolith" rate="79.5"  />	
 	</process>
 
 
@@ -1038,7 +1047,7 @@
 			<output resource="nickel" rate="30.0" />
 	</process>
 	
-	<process name="Extract minerals from Basaltic deposits" power-required="0.1" >
+	<process name="Process Basaltic deposits" power-required="0.1" >
 		<description>
 			http://www.psrd.hawaii.edu/May09/Mars.Basaltic.Crust.html
 		</description>
@@ -1056,7 +1065,7 @@
 			<output resource="brine water" rate="10.0" />
 	</process>
 
-	<process name="Extract minerals from Smectite deposits" power-required="0.1" >
+	<process name="Process Smectite deposits" power-required="0.1" >
 			<input resource="smectite" rate="50.0" />
 			
 			<output resource="aluminum oxide" rate="9.0" />
@@ -1072,7 +1081,7 @@
 			<output resource="brine water" rate="2.0" />
 	</process>
 
-	<process name="Extract minerals from Allophane deposits" power-required="0.1" >
+	<process name="Process Allophane deposits" power-required="0.1" >
 			<input resource="allophane" rate="50.0" />
 			
 			<output resource="aluminum oxide" rate="37.0" />
@@ -1085,7 +1094,7 @@
 
 	<!-- http://www.handbookofmineralogy.org/pdfs/akaganeite.pdf 
 		https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2018JE005630 -->
-	<process name="Extract minerals from Akaganeite deposits" power-required="0.1" >
+	<process name="Process Akaganeite deposits" power-required="0.1" >
 			<input resource="akaganeite" rate="50.0" />
 			
 			<output resource="iron powder" rate="3.0" />
@@ -1101,7 +1110,7 @@
 			<output resource="brine water" rate="1.0" />
 	</process>
 			
-	<process name="Extract minerals from Bassanite deposits" power-required="0.1" >
+	<process name="Process Bassanite deposits" power-required="0.1" >
 		<input resource="bassanite" rate="50.0" />
 			
 		<output resource="gypsum" rate="45.0" />
@@ -1135,7 +1144,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="Reduce Gypsum to Calcium Carbonate with Carbon" power-required="0.03" >
+	<!--process name="Reduce Gypsum to Calcium Carbonate with Carbon" power-required="0.03" >
 		<description>
 			Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
@@ -1150,9 +1159,9 @@
 		<output resource="calcium carbonate" rate="25.0" />
 		<output resource="carbon dioxide" rate="12.7" />
 		<output resource="brine water" rate="5.2" />
-	</process>
+	</process-->
 
-	<process name="Reduce Gypsum to Calcium carbonate with Carbon Monoxide" power-required="0.03" >
+	<process name="Reduce Gypsum with Carbon Monoxide" power-required="0.03" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using carbon monoxide.
 			Wrapping two processes:
@@ -1163,15 +1172,16 @@
 		<input resource="gypsum" rate="50.0" />
 		<input resource="carbon monoxide" rate="32.5" />
 		
-		<output resource="lime" rate="2" />
+		<output resource="lime" rate="2.0" />
+		<output resource="sulfur" rate="1.0" />
 		<output resource="calcium sulfate" rate="2.0" />
-		<output resource="calcium carbonate" rate="25.0" />
+		<output resource="calcium carbonate" rate="24.0" />
 		<output resource="carbon dioxide" rate="38.1" />
 		<output resource="brine water" rate="5.2" />
 	</process>
 
 
-	<process name="Reduce Gypsum to Calcium Carbonate with Hydrogen" power-required="0.03" >
+	<process name="Reduce Gypsum with Hydrogen" power-required="0.03" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using hydrogen.
 			Wrapping two processes:
@@ -1183,9 +1193,10 @@
 		<input resource="hydrogen" rate="2.3" />
 		<input resource="carbon dioxide" rate="12.8" ambient="true" />
 
-		<output resource="lime" rate="2" />
+		<output resource="lime" rate="2.0" />
+		<output resource="sulfur" rate="1.0" />
 		<output resource="calcium sulfate" rate="2.0" />					
-		<output resource="calcium carbonate" rate="25.0" />
+		<output resource="calcium carbonate" rate="24.0" />
 		<output resource="brine water" rate="26.0" />
 	</process>
 			

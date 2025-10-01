@@ -1957,11 +1957,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing power-down-level="0.0">
 				<!-- 5 processes for breaking down regolith -->		
-				<process-engine name="Convert Regolith to Ores with Sand" number-modules="40"/>
-				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="15"/>
+				<process-engine name="Convert Regolith to Ores with Sand" number-modules="60"/>
+				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="30"/>
 				<process-engine name="Process Regolith-B rich in Poly-Hydrated Sulfate" number-modules="15"/> 
-				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="02"/>
-				<process-engine name="Process Regolith-D rich in Basaltic" number-modules="02"/>
+				<process-engine name="Process Regolith-C rich in Phyllo-Silicate" number-modules="15"/>
+				<process-engine name="Process Regolith-D rich in Basaltic" number-modules="15"/>
 				
 				<!-- 10 processes for breaking down minerals -->
 				<process-engine name="Do Chalcopyrite Smelting" number-modules="5"/>
@@ -1980,15 +1980,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<!-- 9 processes for extracting ore deposits -->
 				<process-engine name="Make glass from sand" number-modules="40"/>
 				
-				<process-engine name="Extract Minerals from Basaltic deposits" number-modules="5"/>
-				<process-engine name="Extract Minerals from Smectite deposits" number-modules="5"/>
-				<process-engine name="Extract Minerals from Allophane deposits" number-modules="5"/>
-				<process-engine name="Extract Minerals from Akaganeite deposits" number-modules="5"/> 
-				<process-engine name="Extract Minerals from Bassanite deposits" number-modules="5"/> 
+				<process-engine name="Process Basaltic deposits" number-modules="5"/>
+				<process-engine name="Process Smectite deposits" number-modules="5"/>
+				<process-engine name="Process Allophane deposits" number-modules="5"/>
+				<process-engine name="Process Akaganeite deposits" number-modules="5"/> 
+				<process-engine name="Process Bassanite deposits" number-modules="5"/> 
 
-				<process-engine name="Reduce Gypsum to Calcium Carbonate with Carbon" number-modules="5"/>
-				<process-engine name="Reduce Gypsum to Calcium Carbonate with Carbon Monoxide" number-modules="5"/>
-				<process-engine name="Reduce Gypsum to Calcium Carbonate with Hydrogen" number-modules="5"/>
+				<process-engine name="Reduce Gypsum with Carbon Monoxide" number-modules="5"/>
+				<process-engine name="Reduce Gypsum with Hydrogen" number-modules="5"/>
 				
 				<process-engine name="Make Gypsum Plaster via Calcination" number-modules="5"/>							
 			</resource-processing>
