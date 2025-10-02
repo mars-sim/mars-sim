@@ -2179,12 +2179,28 @@ Note: 1 kg of H2 is 14.13 liter
 	<!-- Produces 5 5kg ingots of steel. -->
 	<process name="Do steel ingot nickel alloying" tech="1" skill="1" work-time="10" process-time="50"
 			tooling="furnace" power-required="1.0">
+		<description>
+		For steel produced from recycled scrap using an electric arc furnace (EAF), the energy 
+	    onsumption is approximately 2.25 × 10⁹ J per metric ton (1,000 kg) of steel.
+ 
+ 		This equates to 2.25 × 10⁶ J per kilogram. Therefore, for 25 kg of steel, the energy 
+ 		required would be:
+
+		25 kg * 2.25e6 J/kg = 56.25e6 = 56.25 MJ
+	
+		This is trueif made from recycled scrap via an electric arc furnace, or about 
+		612.5 MJ if produced from virgin iron ore using a basic oxygen furnace.
+		</description>			
+			
 		<inputs>
-			<resource name="iron powder" amount="22.5" />
-			<resource name="nickel" amount="2.5" />
-			<resource name="Carbon" amount=".3" />
+			<resource name="iron powder" amount="24.0" />
+			<!-- 2% wt -->
+			<resource name="nickel" amount="0.5" />
+			<!-- 2% wt -->
+			<resource name="Carbon" amount="0.5" />
 		</inputs>
 		<outputs>
+		<!-- 5kg per steel ingot, totaling 25 kg-->
 			<part name="steel ingot" number="5" />
 		</outputs>
 	</process>

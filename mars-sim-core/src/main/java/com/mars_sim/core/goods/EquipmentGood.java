@@ -51,7 +51,7 @@ public class EquipmentGood extends Good {
 	private static final double THERMAL_BOTTLE_DEMAND = 0.05;
 	private static final double WHEELBARROW_DEMAND = .05;
 	
-	private static final double INITIAL_EQUIPMENT_DEMAND = 0;
+	private static final double INITIAL_EQUIPMENT_DEMAND = 30;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
 	private static final double EVA_SUIT_VALUE = 0.5;
 	private static final double CONTAINER_VALUE = 0.1;
@@ -61,10 +61,6 @@ public class EquipmentGood extends Good {
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
-	/** The projected demand of each refresh cycle. */
-	private double projectedDemand;
-	/** The trade demand for this resource of each refresh cycle. */
-	private double tradeDemand;
 	/** The repair demand for this resource of each refresh cycle. */
 	private double repairDemand;
 	
@@ -103,26 +99,6 @@ public class EquipmentGood extends Good {
     	return flattenDemand;
     }
     
-    /**
-     * Gets the projected demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getProjectedDemand() {
-    	return projectedDemand;
-    }
-	
-    /**
-     * Gets the trade demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getTradeDemand() {
-    	return tradeDemand;
-    }
-	
     /**
      * Gets the repair demand of this resource.
      * 
@@ -239,8 +215,6 @@ public class EquipmentGood extends Good {
 		Settlement settlement = owner.getSettlement();
 
 		double previousDemand = owner.getDemandScore(this);
-
-		double totalDemand = 0;
 		
 		// Determine projected demand for this cycle
 		double newProjDemand = determineEquipmentDemand(owner, settlement);
@@ -249,14 +223,22 @@ public class EquipmentGood extends Good {
 	
 		double projected = newProjDemand * flattenDemand;
 		
-		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		double projectedCache = owner.getProjectedDemandScore(this);
+		if (projectedCache == 0D) {
+			projectedCache = projected;
+		}
+		else {
+			projectedCache = .01 * projected + .99 * projectedCache;
+		}
+		
+		owner.setProjectedDemandScore(this, projectedCache);
 		
 		double totalSupply = getAverageEquipmentSupply(settlement.findNumContainersOfType(equipmentType));
 				
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
-		tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this);
 		
 		// Gets the repair demand
 		// Note: need to look into parts and equipment reliability in MalfunctionManager 
@@ -265,17 +247,32 @@ public class EquipmentGood extends Good {
 			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this);
 		}
 		
-		if (previousDemand == 0D) {
-			totalDemand = .5 * projectedDemand 
+		double ceiling = projectedCache + tradeDemand + repairDemand;	
+
+		double totalDemand = previousDemand;
+		
+		if (previousDemand == INITIAL_EQUIPMENT_DEMAND) {
+			totalDemand = .5 * projectedCache 
 						+ .1 * repairDemand
 						+ .4 * tradeDemand;
 		}
-		else {
-			// Intentionally lose some values over time
-			totalDemand = .993 * previousDemand 
-						+ .005 * projectedDemand
-						+ .0004 * repairDemand
-						+ .0004 * tradeDemand;
+//		else {
+//			// Intentionally lose some values over time
+//			totalDemand = .993 * previousDemand 
+//						+ .005 * projectedCache
+//						+ .0004 * repairDemand
+//						+ .0004 * tradeDemand;
+//		}
+				
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
+		}
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
 		}
 				
 		owner.setDemandScore(this, totalDemand);

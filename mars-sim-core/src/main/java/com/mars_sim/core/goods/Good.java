@@ -41,7 +41,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final long serialVersionUID = 1L;
 
 	static final double LOWEST_PROJECTED_VALUE = 0.01;
-	static final int HIGHEST_PROJECTED_VALUE = 20_000;
+	static final int HIGHEST_PROJECTED_VALUE = 10_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;

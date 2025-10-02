@@ -801,7 +801,7 @@
 		</description>
 		<input resource="brine water" rate="400.0"  />
 		
-		<output resource="water" rate="389.4"  />
+		<output resource="water" rate="389.0"  />
 		<output resource="sand" rate="1.8"  />
 		<output resource="magnesium" rate="0.9"  />	
 		<output resource="manganese" rate="0.1"  />	
@@ -811,7 +811,7 @@
 		<output resource="perchlorate" rate="0.4"  />	
 		<output resource="aluminum oxide" rate="0.8"  />	
 		<output resource="iron oxide" rate="1.6"  />	
-		<output resource="nickel" rate="0.1"  />	
+		<output resource="nickel" rate="0.5"  />	
 		<output resource="silica" rate="1.2"  />	
 		<output resource="sulfur" rate="0.1" />	
 		<output resource="copper" rate="0.1" />	

@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TradeTableModel.java
- * @date 2025-07-22
+ * @date 2025-10-02
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -73,11 +73,11 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[QUANTITY_COL] = new ColumnSpec ("Quantity", Integer.class, ColumnSpec.STYLE_INTEGER);
 		COLUMNS[MASS_COL] = new ColumnSpec ("kg Mass", Double.class, ColumnSpec.STYLE_DIGIT1);
 		
-		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class, ColumnSpec.STYLE_DIGIT3);	
-		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec ("Market Demand", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[DEMAND_COL] = new ColumnSpec ("Demand", Double.class, ColumnSpec.STYLE_DIGIT2);	
+		COLUMNS[MARKET_DEMAND_COL] = new ColumnSpec ("Market Demand", Double.class, ColumnSpec.STYLE_DIGIT2);
 		
-		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Double.class, ColumnSpec.STYLE_DIGIT3);
-		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[VALUE_COL] = new ColumnSpec ("Value", Double.class, ColumnSpec.STYLE_DIGIT2);
+		COLUMNS[MARKET_VALUE_COL] = new ColumnSpec ("Market Value", Double.class, ColumnSpec.STYLE_DIGIT2);
 		
 		COLUMNS[COST_COL] = new ColumnSpec ("Cost", Double.class, ColumnSpec.STYLE_CURRENCY);
 		COLUMNS[MARKET_COST_COL] = new ColumnSpec ("Market Cost ", Double.class, ColumnSpec.STYLE_CURRENCY);
@@ -86,7 +86,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 		COLUMNS[MARKET_PRICE_COL] = new ColumnSpec ("Market Price", Double.class, ColumnSpec.STYLE_CURRENCY);
 		
 		COLUMNS[SUPPLY_COL] = new ColumnSpec ("Supply", Double.class, ColumnSpec.STYLE_DIGIT2);
-		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Double.class, ColumnSpec.STYLE_DIGIT3);
+		COLUMNS[FLATTEN_COL] = new ColumnSpec ("Flattened", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[PROJECTED_COL] = new ColumnSpec ("Projected", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[TRADE_COL] = new ColumnSpec ("Trade", Double.class, ColumnSpec.STYLE_DIGIT2);
 		COLUMNS[REPAIR_COL] = new ColumnSpec ("Repair", Double.class, ColumnSpec.STYLE_DIGIT2);
@@ -120,22 +120,28 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 			
 			UnitEventType eventType = event.getType();
 			switch (eventType) {
-				case UnitEventType.MASS_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), MASS_COL, MASS_COL);
-				case UnitEventType.SUPPLY_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), SUPPLY_COL, SUPPLY_COL);
 				case UnitEventType.VALUE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), VALUE_COL, VALUE_COL);
 				case UnitEventType.DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), DEMAND_COL, DEMAND_COL);
-				case UnitEventType.COST_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
-				case UnitEventType.PRICE_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), PRICE_COL, PRICE_COL);
 				case UnitEventType.MARKET_VALUE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
 				case UnitEventType.MARKET_DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_DEMAND_COL, MARKET_DEMAND_COL);
+				case UnitEventType.PROJECTED_DEMAND_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), PROJECTED_COL, PROJECTED_COL);
+				case UnitEventType.TRADE_DEMAND_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), TRADE_COL, TRADE_COL);
+				case UnitEventType.REPAIR_DEMAND_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), REPAIR_COL, REPAIR_COL);
+				case UnitEventType.MASS_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), MASS_COL, MASS_COL);
+				case UnitEventType.SUPPLY_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), SUPPLY_COL, SUPPLY_COL);			
+				case UnitEventType.COST_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
+				case UnitEventType.PRICE_EVENT ->
+					entityValueUpdated(new CategoryKey<>(s, g), PRICE_COL, PRICE_COL);			
 				case UnitEventType.MARKET_COST_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_COST_COL, MARKET_COST_COL);
 				case UnitEventType.MARKET_PRICE_EVENT ->

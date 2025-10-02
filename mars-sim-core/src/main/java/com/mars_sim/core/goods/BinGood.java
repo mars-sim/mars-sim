@@ -120,7 +120,8 @@ public class BinGood extends Good {
 		
 		double previousDemand = owner.getDemandScore(this);
 
-		double totalDemand = 0;
+		double totalDemand = previousDemand;
+		
 		// Determine average demand.
 		double average = determineBinDemand(owner, settlement);
 
@@ -129,18 +130,31 @@ public class BinGood extends Good {
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
-		double trade = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this);
 		
-		if (previousDemand == 0D) {
-			totalDemand = .5 * average + .5 * trade;
+		double ceiling = average + tradeDemand;
+		
+		if (previousDemand == INITIAL_DEMAND) {
+			totalDemand = .5 * average + .5 * tradeDemand;
 		}
-		else {
-			// Intentionally lose some of its value
-			totalDemand = .99 * previousDemand 
-						+ .003 * average 
-						+ .005 * trade;
+//		else {
+//			// Intentionally lose some of its value
+//			totalDemand = .99 * previousDemand 
+//						+ .003 * average 
+//						+ .005 * trade;
+//		}
+		
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
 		}
-				
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
+		}
+	
 		owner.setDemandScore(this, totalDemand);
 	}
 

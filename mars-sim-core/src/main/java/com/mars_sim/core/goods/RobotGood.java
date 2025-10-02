@@ -21,7 +21,7 @@ class RobotGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 	
-    private static final double INITIAL_ROBOT_DEMAND = 1;
+    private static final double INITIAL_ROBOT_DEMAND = 20;
     private static final double INITIAL_ROBOT_SUPPLY = 1;
 
     private static final double BASE_DEMAND = .5;
@@ -32,10 +32,6 @@ class RobotGood extends Good {
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
-	private double projectedDemand;
-	/** The trade demand for this resource of each refresh cycle. */
-	private double tradeDemand;
-	/** The repair demand for this resource of each refresh cycle. */
 	private double repairDemand;
 	
     private RobotType robotType;
@@ -57,27 +53,7 @@ class RobotGood extends Good {
     public double getFlattenDemand() {
     	return flattenDemand;
     }
-    
-    /**
-     * Gets the projected demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getProjectedDemand() {
-    	return projectedDemand;
-    }
-	
-    /**
-     * Gets the trade demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getTradeDemand() {
-    	return tradeDemand;
-    }
-	
+
     /**
      * Gets the repair demand of this resource.
      * 
@@ -160,43 +136,63 @@ class RobotGood extends Good {
 
 		double previousDemand = owner.getDemandScore(this);
 
-		double totalDemand = 0;
-		
 		// Determine projected demand for this cycle
 		double newProjDemand = determineRobotDemand(owner, settlement);
 
 		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
 		
 		double projected = newProjDemand * flattenDemand;
+			
+		double projectedCache = owner.getProjectedDemandScore(this);
+		if (projectedCache == 0D) {
+			projectedCache = projected;
+		}
+		else {
+			projectedCache = .01 * projected + .99 * projectedCache;
+		}
 		
-		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		owner.setProjectedDemandScore(this, projectedCache);
 		
 		double totalSupply = getNumberForSettlement(settlement);
 				
 		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
-		tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this);
 		
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
 				* owner.getDemandScore(this);
 	
+		double ceiling = projectedCache + tradeDemand + repairDemand;
 		
-		if (previousDemand == 0D) {
-			totalDemand = .5 * projectedDemand 
+		double totalDemand = previousDemand;
+		
+		if (previousDemand == INITIAL_ROBOT_DEMAND) {
+			totalDemand = .5 * projectedCache 
 						+ .1 * repairDemand
 						+ .4 * tradeDemand;
 		}
-		else {
-			// Intentionally lose some of its value
-			totalDemand = .993 * previousDemand 
-						+ .005 * projectedDemand
-						+ .0002 * repairDemand
-						+ .0002 * tradeDemand;
+//		else {
+//			// Intentionally lose some of its value
+//			totalDemand = .993 * previousDemand 
+//						+ .005 * projectedDemand
+//						+ .0002 * repairDemand
+//						+ .0002 * tradeDemand;
+//		}
+		
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
 		}
-				
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
+		}
+		
 		owner.setDemandScore(this, totalDemand);
     }
     

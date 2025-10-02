@@ -74,7 +74,7 @@ public class Sleep extends Task {
 		super(NAME, person, false, false, STRESS_MODIFIER, RandomUtil.getRandomInt(-20, 20) + SLEEP_PERIOD);
 
 		if (person.isOutside()) {
-			logger.log(person, Level.WARNING, 1000, "Not supposed to be falling asleep outside.");
+			logger.log(person, Level.WARNING, 10_000, "Not supposed to be falling asleep outside.");
 
 			endTask();
 		}
@@ -93,7 +93,7 @@ public class Sleep extends Task {
 
 			// Is schedule sleep longer than allowed ?
 			if (maxSleep < getDuration()) {
-				logger.info(person, 0, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
+				logger.info(person, 10_000, "Sleep adjusted for shift starts at " + (int)alarmTime + ". Duration: " + (int)maxSleep);
 				setDuration(maxSleep);
 			}
 
@@ -123,7 +123,7 @@ public class Sleep extends Task {
 		super(NAME, person, false, false, STRESS_MODIFIER, duration);
 
 		if (person.isOutside()) {
-			logger.log(person, Level.WARNING, 0, "Not supposed to be falling asleep outside.");
+			logger.log(person, Level.WARNING, 10_000, "Not supposed to be falling asleep outside.");
 
 			endTask();
 		}
@@ -265,7 +265,7 @@ public class Sleep extends Task {
 		if (getTimeLeft() > untilAlarm) {
 			double newDuration = getTimeCompleted() + untilAlarm;
 
-			logger.info(person,  "Alarm clock set for " + untilAlarm);
+			logger.info(person,  10_000, "Alarm clock set for " + untilAlarm);
 			setDuration(newDuration);
 		}
 	}

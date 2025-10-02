@@ -31,8 +31,11 @@ public class MarketData implements Serializable {
 	 * @return
 	 */
 	private static double smoothValue(double newValue, double oldValue) {
-		if (!Double.isNaN(oldValue)) {
+		if (!Double.isNaN(oldValue) && !Double.isNaN(newValue)) {
 			newValue = (0.95 * oldValue + 0.05 * newValue);
+		}
+		else {
+			newValue = 0.01;
 		}
 		return newValue;
 	}
@@ -52,7 +55,7 @@ public class MarketData implements Serializable {
 		var newValue = smoothValue(data, oldValue);
 		newValue = MathUtils.between(newValue, GoodsManager.MIN_VP, GoodsManager.MAX_FINAL_VP);
 		goodValue = newValue;
-		return newValue; //goodValue - oldValue;
+		return newValue;
 	}
 
 	/**
@@ -70,7 +73,7 @@ public class MarketData implements Serializable {
 		var newDemand = smoothValue(data, oldDemand);		
 		newDemand = MathUtils.between(newDemand, GoodsManager.MIN_DEMAND, GoodsManager.MAX_DEMAND);
 		demand = newDemand;
-		return newDemand; //demand - oldDemand;
+		return newDemand;
 	}
 
 	/**

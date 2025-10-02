@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AmountResourceGood.java
- * @date 2025-07-26
+ * @date 2025-10-02
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -45,7 +45,7 @@ class AmountResourceGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final double INITIAL_AMOUNT_DEMAND = 0;
+	private static final double INITIAL_AMOUNT_DEMAND = 0.01;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
 	private static final double WASTE_WATER_VALUE_MODIFIER = 1.5;
@@ -188,9 +188,9 @@ class AmountResourceGood extends Good {
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand of each refresh cycle. */
-	private double projectedDemand;
+//	private double projectedDemand;
 	/** The trade demand of each refresh cycle. */
-	private double tradeDemand;
+//	private double tradeDemand;
 	/** The ingredient demand of each refresh cycle. */
 	private double ingredientDemand;
 	
@@ -385,26 +385,6 @@ class AmountResourceGood extends Good {
     public double getFlattenDemand() {
     	return flattenDemand;
     }
-	
-    /**
-     * Gets the projected demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getProjectedDemand() {
-    	return projectedDemand;
-    }
-	
-    /**
-     * Gets the trade demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getTradeDemand() {
-    	return tradeDemand;
-    }
     
     @Override
     public GoodCategory getCategory() {
@@ -561,10 +541,13 @@ class AmountResourceGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 
         Settlement settlement = owner.getSettlement();
-        
-		double totalDemand = 0;
-		double totalSupply = 0;	
+ 
+		// Calculate total supply
+		double totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
 
+		// Store the average supply
+		owner.setSupplyScore(this, totalSupply);
+			
 		// Calculate new projected demand
 		double newProjDemand = 
 			// Tune ice demand.
@@ -596,53 +579,67 @@ class AmountResourceGood extends Good {
 			// Adjust the demand on minerals and ores.
 			+ getOresMineralsDemand(owner, settlement);
 
-		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
-	
 		double projected = newProjDemand 
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
 		
-		if (projectedDemand == 0D) {
-			projectedDemand = projected;
+		double projectedCache = owner.getProjectedDemandScore(this);
+		if (projectedCache == 0D) {
+			projectedCache = projected;
 		}
 		else {
-			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+			projectedCache = .01 * projected + .99 * projectedCache;
 		}
 		
+		owner.setProjectedDemandScore(this, projectedCache);
+				
 		// Add trade value. Cache is always false if this method is called
-		this.tradeDemand = owner.determineTradeDemand(this);
-		
-		if (previousDemand == 0D) {
-			// At the start of the sim
-			totalDemand = 
-					  .8 * projectedDemand 
-					+ .2 * tradeDemand;
+		double tradeDemand = owner.determineTradeDemand(this);
 
+		double totalDemand = previousDemand;
+		
+		double ceiling = projectedCache + tradeDemand;
+		
+		if (previousDemand == INITIAL_AMOUNT_DEMAND) {
+			// At the start of the sim
+			totalDemand = .8 * projectedCache 
+						+ .2 * tradeDemand;
 		}
-		else {
-			// Intentionally loses a tiny percentage of its value
-			// in order to counter the tendency for all goods to increase 
-			// in value over time. 
-			
-			// Warning: a lot of Goods could easily will hit 10,000 demand
-			// if not careful.
-			
-			// Allows only very small fluctuations of demand as possible
-			totalDemand = .993 * previousDemand
-						+ .005  * projectedDemand
-						+ .0005 * tradeDemand; 
+//		else if (totalSupply < 0.005 && previousDemand < projectedDemand) {
+//			// Quickly ramp up the totalDemand
+//			totalDemand = .985 * previousDemand
+//						+ .010 * projectedCache
+//						+ .005 * tradeDemand; 
+//		}
+//		else if (previousDemand < projectedDemand + tradeDemand) {
+//			// Intentionally loses a tiny percentage of its value
+//			// in order to counter the tendency for all goods to increase 
+//			// in value over time. 
+//			
+//			// Warning: a lot of Goods could easily will hit 10,000 demand
+//			// if not careful.
+//			
+//			// Allows only very small fluctuations of demand as possible
+//			totalDemand = .993  * previousDemand
+//						+ .005  * projectedCache
+//						+ .0005 * tradeDemand; 
+//		}
+		
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
+		}
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
 		}
 		
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
-		
-		// Calculate total supply
-		totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
-
-		// Store the average supply
-		owner.setSupplyScore(this, totalSupply);
     }
 
     
@@ -675,7 +672,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 100);
+		return MathUtils.between(Math.sqrt(demand), 0.0, MAX_RESOURCE_PROCESSING_DEMAND);
 	}
 
 	/**
@@ -741,7 +738,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return Math.min(MAX_MANUFACTURING_DEMAND, demand / 50);
+		return MathUtils.between(Math.sqrt(demand), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**
@@ -762,7 +759,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return MathUtils.between(demand, 0.5, MAX_FOOD_PRODUCTION_DEMAND);
+		return MathUtils.between(Math.sqrt(demand), 0.0, MAX_FOOD_PRODUCTION_DEMAND);
 	}
 
 	/**
@@ -1019,7 +1016,8 @@ class AmountResourceGood extends Good {
 				}
 			}
 		}
-		return Math.min(GoodsManager.MAX_DEMAND, base);
+
+		return MathUtils.between(base, 0.0, GoodsManager.MAX_DEMAND);
 	}
 
 	/**
@@ -1224,7 +1222,7 @@ class AmountResourceGood extends Good {
 			case ResourceUtil.SOIL_ID -> SOIL_VALUE_MODIFIER;
 			case ResourceUtil.FOOD_WASTE_ID -> 4 * USEFUL_WASTE_VALUE_MODIFIER;
 			case ResourceUtil.SOLID_WASTE_ID -> .2;
-			case ResourceUtil.TOXIC_WASTE_ID -> .05;
+			case ResourceUtil.TOXIC_WASTE_ID -> .1;
 			case ResourceUtil.CROP_WASTE_ID -> 4 * USEFUL_WASTE_VALUE_MODIFIER;
 			case ResourceUtil.COMPOST_ID -> 2 * USEFUL_WASTE_VALUE_MODIFIER;
 			default -> 1D;

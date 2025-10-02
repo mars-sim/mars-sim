@@ -22,7 +22,6 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.MathUtils;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -124,8 +123,10 @@ public class PartGood extends Good {
 	private static final double INSTRUMENT_COST = 1;
 	private static final double WIRE_COST = .05;
 	private static final double ELECTRONIC_COST = .5;
-    private static final double INITIAL_PART_DEMAND = 30;
-	private static final double INITIAL_PART_SUPPLY = 1;
+	
+    private static final double INITIAL_PART_DEMAND = 10;
+	private static final double INITIAL_PART_SUPPLY = 0;
+	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 
 	private static Set<Integer> kithenWare = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
@@ -140,9 +141,9 @@ public class PartGood extends Good {
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The projected demand for this resource of each refresh cycle. */
-	private double projectedDemand;
+//	private double projectedDemand;
 	/** The trade demand for this resource of each refresh cycle. */
-	private double tradeDemand;
+//	private double tradeDemand;
 	/** The repair demand for this resource of each refresh cycle. */
 	private double repairDemand;
 	
@@ -258,26 +259,6 @@ public class PartGood extends Good {
 	@Override
     public double getFlattenDemand() {
     	return flattenDemand;
-    }
-    
-    /**
-     * Gets the projected demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getProjectedDemand() {
-    	return projectedDemand;
-    }
-	
-    /**
-     * Gets the trade demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getTradeDemand() {
-    	return tradeDemand;
     }
 	
     /**
@@ -405,10 +386,12 @@ public class PartGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 		
 		Settlement settlement = owner.getSettlement();
-
-		double totalDemand = 0;
-		double totalSupply = 0;
-
+		
+		// Calculate total supply
+		double totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
+		// Save the average supply
+		owner.setSupplyScore(this, totalSupply);
+    
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
 		double newProjDemand = 
@@ -433,58 +416,67 @@ public class PartGood extends Good {
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(0, settlement, part, previousDemand);
 		
-		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
-
 		double projected = newProjDemand
 			// Flatten certain part demand.
 			* flattenDemand;
-
-		if (projectedDemand == 0D) {
-			projectedDemand = projected;
+		
+		double projectedCache = owner.getProjectedDemandScore(this);
+		if (projectedCache == 0D) {
+			projectedCache = projected;
 		}
 		else {
-			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+			projectedCache = .01 * projected + .99 * projectedCache;
 		}
 		
+		owner.setProjectedDemandScore(this, projectedCache);
+		
 		// Add trade demand.
-		tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this);
 
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
 		
-		if (previousDemand == 0D) {
+		double ceiling = projectedCache + tradeDemand + repairDemand;
+		
+		double totalDemand = previousDemand;
+		
+		if (previousDemand == INITIAL_PART_DEMAND) {
 			// At the start of the sim
 			totalDemand = 
 					  .4 * repairDemand 
-					+ .4 * projectedDemand 
+					+ .4 * projectedCache 
 					+ .2 * tradeDemand;
 		}
 
-		else {
-			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
-			// in order to counter the tendency for all goods to increase 
-			// in value over time. 
-			
-			// Warning: a lot of Goods could easily will hit 10,000 demand
-			// if not careful.
-			
-			// Allows only very small fluctuations of demand as possible
-			totalDemand = .993 * previousDemand 
-						+ .005 * projectedDemand
-						+ .0002 * repairDemand 
-						+ .0005 * projectedDemand 
-						+ .0002 * tradeDemand; 
+//		else {
+//			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
+//			// in order to counter the tendency for all goods to increase 
+//			// in value over time. 
+//			
+//			// Warning: a lot of Goods could easily will hit 10,000 demand
+//			// if not careful.
+//			
+//			// Allows only very small fluctuations of demand as possible
+//			totalDemand = .993 * previousDemand 
+//						+ .005 * projectedCache
+//						+ .0002 * repairDemand 
+//						+ .0002 * tradeDemand; 
+//		}
+		
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
+		}
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
 		}
 		
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
-		
-		// Calculate total supply
-		totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
-
-		// Save the average supply
-		owner.setSupplyScore(this, totalSupply);
     }
 
     /**
