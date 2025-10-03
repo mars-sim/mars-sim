@@ -21,7 +21,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         var v = buildRover(s, "rover1", new LocalPosition(10, 10));
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
         v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
-        v.storeItemResource(ItemResourceUtil.garmentID, ITEM_AMOUNT);
+        v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
         
         double mass = v.getStoredMass();
         // 10 + 10 + .5 * 10 = 25.0
@@ -69,7 +69,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         
         assertEquals("Food unloaded", RESOURCE_AMOUNT, storedFood);
         
-        int storedGarment = s.getItemResourceStored(ItemResourceUtil.garmentID);
+        int storedGarment = s.getItemResourceStored(ItemResourceUtil.GARMENT_ID);
         System.out.println("storedGarment: " + storedGarment);
         
         assertEquals("Garments unloaded", ITEM_AMOUNT, storedGarment);
@@ -93,7 +93,7 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         // Load and make reserved
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, 10D);
         v.storeAmountResource(ResourceUtil.FOOD_ID, 10D);
-        v.storeItemResource(ItemResourceUtil.garmentID, 10);
+        v.storeItemResource(ItemResourceUtil.GARMENT_ID, 10);
 
         // Skip reserved vehicle
         tasks = mt.getSettlementTasks(s);

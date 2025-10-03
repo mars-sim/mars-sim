@@ -31,7 +31,7 @@ public class TestGood extends TestCase {
 	}
 
 	public void testPrinterGood() {
-		Good printer = GoodsUtil.getGood(ItemResourceUtil.printerID);
+		Good printer = GoodsUtil.getGood(ItemResourceUtil.SLS_3D_PRINTER_ID);
 		
 		testGoodsBasics(printer, GoodCategory.ITEM_RESOURCE);
 	}

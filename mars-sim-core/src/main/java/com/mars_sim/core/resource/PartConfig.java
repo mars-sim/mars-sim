@@ -46,10 +46,10 @@ public final class PartConfig  {
 	private static final String MAX_NUMBER = "max-number";
 
 	/** The next global part ID. */
-	private int nextID;
+	private int nextID = ItemResourceUtil.FIRST_FREE_ITEM_RESOURCE_ID;
 	
 	/** The set of parts. */
-	private Set<Part> partSet;
+	private Set<Part> partSet = new TreeSet<>();
 	/** The map of maintenance scopes. */
 	private Map<String, List<MaintenanceScope>> scopeMap = new HashMap<>();
 	/** The collection of part scopes (as defined for each part in parts.xml. */
@@ -63,9 +63,6 @@ public final class PartConfig  {
 	 * @throws Exception if error reading XML document
 	 */
 	public PartConfig(Document itemResourceDoc) {
-		// Pick up from the last resource id
-		nextID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
-
 		// First build a standard scope set for scope comparison.
 		createPartScopesRegistry();
 		// Load all item resources from the parts.xml.
@@ -156,7 +153,7 @@ public final class PartConfig  {
 	 * @throws Exception if error loading item resources.
 	 */
 	private synchronized void loadItemResources(Document itemResourceDoc) {
-		if (partSet != null) {
+		if (!partSet.isEmpty()) {
 			// just in case if another thread is being created
 			return;
 		}
@@ -167,9 +164,8 @@ public final class PartConfig  {
 		Element root = itemResourceDoc.getRootElement();
 		List<Element> partNodes = root.getChildren(PART);
 		for (Element partElement : partNodes) {
-			nextID++;
-			String description = "no description available.";
 
+	
 			// Get name.
 			String name = partElement.getAttributeValue(NAME);
 
@@ -182,6 +178,8 @@ public final class PartConfig  {
 						"PartConfig detected an duplicated part name entry in parts.xml: " + name);
 			}
 			
+			String description = "no description available.";
+
 			// get description
 			Element descriptElem = partElement.getChild(DESCRIPTION);
 			if (descriptElem != null) {
@@ -204,9 +202,22 @@ public final class PartConfig  {
 				throw new IllegalStateException(
 						"PartConfig detected invalid type in parts.xml : " + type);
 
-			// Get part
-			Part p = new Part(name, nextID, description, goodType, mass, 1);
+			int newId = ItemResourceUtil.getFixedId(name);
+			if (newId < 0) {
+				newId = nextID++;
+			}
+			// Create the part
+			Part part = new Part(name, newId, description, goodType, mass, 1);
 
+			for (Part p: partSet) {
+				if (p.getName().equalsIgnoreCase(part.getName()))
+					throw new IllegalStateException(
+							"PartConfig detected an duplicated par entry in parts.xml : " + part.getName());
+			}
+			
+			// Add part to newPartSet.
+			newPartSet.add(part);
+			
 			// Add maintenance entities for part.
 			Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
 			if (entityListElement != null) {
@@ -221,13 +232,10 @@ public final class PartConfig  {
 					else {
 						double probability = Double.parseDouble(entityElement.getAttributeValue(PROBABILITY));
 						int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
-						addPartScope(entityName, new MaintenanceScope(p, entityName, probability, maxNumber));
+						addPartScope(entityName, new MaintenanceScope(part, entityName, probability, maxNumber));
 					}
 				}
-			}
-
-			// Add part to newPartSet.
-			newPartSet.add(p);			
+			}		
 		}
 		
 		// Assign the partSet now built
@@ -260,29 +268,6 @@ public final class PartConfig  {
 		}
 		return Collections.emptyList();
 	}
-	
-//	/**
-//	 * Gets the maintenance schedules for scopes that contains a particular part.
-//	 * 
-//	 * @param scope Possible scopes
-//	 * @param part Filter to part
-//	 * @return
-//	 */
-//	public List<MaintenanceScope> getMaintenance(Collection<String> scopes, Part part) {
-////		List<MaintenanceScope> results = new ArrayList<>();
-////		for (String s : scopes) {
-////			List<MaintenanceScope> list = scopeMap.get(s.toLowerCase());
-////			for (MaintenanceScope m: list) {
-////				if (list != null && (m.getPart().getID() == part.getID())) {
-////					results.add(m);
-////				}
-////			}
-////		}
-////		return results ;
-//		return getMaintenanceScopeList(scopes).stream()
-//				.filter(m -> m.getPart().getID() == part.getID())
-//				.toList();
-//	}
 
 	/**
 	 * Gets a set of all parts.

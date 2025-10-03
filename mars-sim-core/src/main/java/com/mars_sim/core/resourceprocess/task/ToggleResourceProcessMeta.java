@@ -442,7 +442,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score += mrate * MID_BIAS;	
 				} else if (ResourceUtil.isTier1Resource(resource) 		// methane, water
 					|| ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil
-					|| ResourceUtil.isRawElement(resource)      		// carbon
+					|| ResourceUtil.isRawElement(resource)      		// carbon, iron powder, iron oxide
 					|| ResourceUtil.isCriticalResource(resource)		// glass
 					) {
 					score += mrate * HIGH_BIAS;

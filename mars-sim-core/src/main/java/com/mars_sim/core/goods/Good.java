@@ -156,7 +156,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	public void computeAllCosts() {
 
 		// Compute the base output cost
-		if (baseCost== -1) {
+		if (baseCost == -1) {
 			computeBaseOutputCost();
 		}
 
@@ -269,8 +269,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
-	 * Combine 2 values. If either is zero then the otehr is returned. If both are
+	 * Combines 2 values. If either is zero then the other is returned. If both are
 	 * non-zero then the average is returned.
+	 * 
 	 * @param value0
 	 * @param value1
 	 * @return

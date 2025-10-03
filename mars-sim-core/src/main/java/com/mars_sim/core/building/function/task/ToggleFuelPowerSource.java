@@ -263,7 +263,7 @@ public class ToggleFuelPowerSource extends Task {
         if (powerSource.addToggleWorkTime(workTime)) {
           String toggle = "off";
           if (toggleOn) toggle = "on";
-          logger.log(person, Level.INFO, 40_000, "Toggled " + toggle + " " + powerSource.getType()  + " in " + building.getName() + ".");
+          logger.log(person, Level.FINE, 40_000, "Toggled " + toggle + " " + powerSource.getType()  + " in " + building.getName() + ".");
           endTask();
         }
 

@@ -45,7 +45,7 @@ class AmountResourceGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final double INITIAL_AMOUNT_DEMAND = 0.01;
+	private static final double INITIAL_AMOUNT_DEMAND = 0.1;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
 	private static final double WASTE_WATER_VALUE_MODIFIER = 1.5;
@@ -184,6 +184,7 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_LOWEST_DEMAND = 0.05;
 	private static final double REGOLITH_BASE_DEMAND = 40;
 	
+	private static final double BASE_MINERAL_ORE = 5;
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
@@ -577,7 +578,7 @@ class AmountResourceGood extends Good {
 			// Tune construction demand.
 			+ getResourceConstructionDemand(settlement)
 			// Adjust the demand on minerals and ores.
-			+ getOresMineralsDemand(owner, settlement);
+			+ getMineralOreDemand(owner, settlement);
 
 		double projected = newProjDemand 
 			// Flatten certain types of demand.
@@ -672,7 +673,7 @@ class AmountResourceGood extends Good {
 			demand += processDemand;
 		}
 
-		return MathUtils.between(Math.sqrt(demand), 0.0, MAX_RESOURCE_PROCESSING_DEMAND);
+		return MathUtils.between(2 * Math.sqrt(demand), 0.0, MAX_RESOURCE_PROCESSING_DEMAND);
 	}
 
 	/**
@@ -738,7 +739,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return MathUtils.between(Math.sqrt(demand), 0.0, MAX_MANUFACTURING_DEMAND);
+		return MathUtils.between(2 * Math.sqrt(demand), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**
@@ -759,7 +760,7 @@ class AmountResourceGood extends Good {
 			}
 		}
 
-		return MathUtils.between(Math.sqrt(demand), 0.0, MAX_FOOD_PRODUCTION_DEMAND);
+		return MathUtils.between(2 * Math.sqrt(demand), 0.0, MAX_FOOD_PRODUCTION_DEMAND);
 	}
 
 	/**
@@ -1117,12 +1118,12 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the ore and mineral demand.
+	 * Gets mineral/ore demand.
 	 *
 	 * @return
 	 */
-	private double getOresMineralsDemand(GoodsManager owner, Settlement settlement) {
-		double base = 1;
+	private double getMineralOreDemand(GoodsManager owner, Settlement settlement) {
+		double base = BASE_MINERAL_ORE;
 		int resourceID = getID();
 		switch(resourceID) {
         	case ResourceUtil.ROCK_SALT_ID:
@@ -1205,7 +1206,7 @@ class AmountResourceGood extends Good {
 						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 		}
 
-		return 1;
+		return 0;
 	}
 
 	/**

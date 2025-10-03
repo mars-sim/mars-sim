@@ -43,13 +43,13 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
         super.setUp();
         
         Map<Integer, Integer> parts = new HashMap<>(1);
-        ItemResource fiber = ItemResourceUtil.findItemResource(ItemResourceUtil.FIBERGLASS);        
+        ItemResource fiber = ItemResourceUtil.findItemResource(ItemResourceUtil.FIBERGLASS_ID);        
         parts.put(fiber.getID(), 10 * (int)PARTIAL_LOAD);
 
         Map<Integer, Double> resources = new HashMap<>(1);
         resources.put(ResourceUtil.SAND_ID, 10 * PARTIAL_LOAD);
 
-        ItemResource atth = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
+        ItemResource atth = ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID);
         var attachments = List.of(atth.getID());
 
         var vehicles = List.of(new ConstructionVehicleType(VehicleType.LUV, attachments));

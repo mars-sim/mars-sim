@@ -32,7 +32,7 @@ public class SettlementTemplateConfigTest extends AbstractMarsSimUnitTest {
                             ItemResourceUtil.findItemResource("biosensor"));
         assertEquals("Biosensor", 52, num); // biosensors are now in certain packages. Total of 52 for Hub Base
         assertTrue("Has printers", supplies.getParts().get(
-                            ItemResourceUtil.findItemResource(ItemResourceUtil.printerID)) > 0);
+                            ItemResourceUtil.findItemResource(ItemResourceUtil.SLS_3D_PRINTER_ID)) > 0);
 
         assertFalse("Bins is empty", supplies.getBins().isEmpty());
         assertFalse("Buildings is empty", supplies.getBuildings().isEmpty());

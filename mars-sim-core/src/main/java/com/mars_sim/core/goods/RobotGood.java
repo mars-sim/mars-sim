@@ -92,7 +92,7 @@ class RobotGood extends Good {
             case REPAIRBOT: return GoodType.REPAIRBOT;
         }
 
-        throw new IllegalStateException("Cannot mapt robot type " + robotType + " to GoodType");
+        throw new IllegalStateException("Cannot map robot type " + robotType + " to GoodType.");
     }
 
     @Override
@@ -133,7 +133,11 @@ class RobotGood extends Good {
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
 		Settlement settlement = owner.getSettlement();
-
+	
+		double totalSupply = getNumberForSettlement(settlement);
+				
+		owner.setSupplyScore(this, totalSupply);
+		
 		double previousDemand = owner.getDemandScore(this);
 
 		// Determine projected demand for this cycle
@@ -152,10 +156,6 @@ class RobotGood extends Good {
 		}
 		
 		owner.setProjectedDemandScore(this, projectedCache);
-		
-		double totalSupply = getNumberForSettlement(settlement);
-				
-		owner.setSupplyScore(this, totalSupply);
 		
 		// This method is not using cache
 		double tradeDemand = owner.determineTradeDemand(this);

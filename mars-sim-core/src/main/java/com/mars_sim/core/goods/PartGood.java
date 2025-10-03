@@ -108,6 +108,8 @@ public class PartGood extends Good {
 	private static final double AEROGEL_TILE_DEMAND = 0.8;
 	private static final double PLASTIC_PIPE_DEMAND = 0.1;
 
+	private static final double FUEL_CELL_DEMAND = 3;
+	private static final double FUEL_CELL_STACK_DEMAND = 8;
 	
 	private static final int PARTS_MAINTENANCE_VALUE = 2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
@@ -412,7 +414,7 @@ public class PartGood extends Good {
 			// Calculate vehicle part demand.
 			+ getVehiclePartDemand(owner)
 			// Calculate battery cell part demand.
-			+ geFuelCellDemand()
+			+ getFuelCellDemand()
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(0, settlement, part, previousDemand);
 		
@@ -748,7 +750,7 @@ public class PartGood extends Good {
 		if (kithenWare.contains(getID())) {
 			return owner.getDemandScore(this) * KITCHEN_DEMAND;
 		}
-		return 0;
+		return 0D;
 	}
 
 	/**
@@ -762,7 +764,7 @@ public class PartGood extends Good {
 		if (type == GoodType.VEHICLE) {
 			return (1 + owner.getCommerceFactor(CommerceType.TOURISM)/30.0) * VEHICLE_PART_DEMAND;
 		}
-		return 0;
+		return 0D;
 	}
 
 	/**
@@ -771,15 +773,18 @@ public class PartGood extends Good {
 	 * @param owner
 	 * @return
 	 */
-	private double geFuelCellDemand() {
-		String name = getName().toLowerCase();
-		if (name.contains(FUEL_CELL)) {
-			return FC_COST;
+	private double getFuelCellDemand() {
+		int id = getID();
+		if (id == ItemResourceUtil.METHANE_FUEL_CELL_ID
+				|| id == ItemResourceUtil.METHANOL_FUEL_CELL_ID) {
+			return FUEL_CELL_DEMAND;
 		}
-		if (name.contains(STACK)) {
-			return FC_STACK_COST;
+		if (id == ItemResourceUtil.METHANE_FUEL_CELL_STACK_ID
+				|| id == ItemResourceUtil.METHANOL_FUEL_CELL_STACK_ID) {
+			return FUEL_CELL_STACK_DEMAND; 
 		}
-		return 0;
+
+		return 0D;
 	}
 	
     /**

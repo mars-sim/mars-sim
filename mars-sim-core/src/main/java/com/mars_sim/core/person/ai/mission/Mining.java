@@ -217,10 +217,10 @@ public class Mining extends EVAMission
 		boolean result = true;
 
 		try {
-			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.pneumaticDrillID)) {
+			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
 				result = false;
 			}
-			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.backhoeID)) {
+			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
 				result = false;
 			}
 		} catch (Exception e) {
@@ -247,8 +247,8 @@ public class Mining extends EVAMission
 			var luv = attachLUV(true);
 			settlement.removeVicinityParkedVehicle(luv);
 
-			if (!settlement.hasItemResource(ItemResourceUtil.pneumaticDrillID)
-					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
+			if (!settlement.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID)
+					|| !settlement.hasItemResource(ItemResourceUtil.BACKHOE_ID)) {
 				logger.warning(luv, 
 						"Could not load LUV and/or its attachment parts for mission " + getName());
 				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
@@ -256,11 +256,11 @@ public class Mining extends EVAMission
 			}
 			
 			// Load light utility vehicle with attachment parts.
-			settlement.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
-			luv.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			settlement.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			luv.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
-			settlement.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
-			luv.storeItemResource(ItemResourceUtil.backhoeID, 1);
+			settlement.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			luv.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
 
@@ -285,11 +285,11 @@ public class Mining extends EVAMission
 			luv.findNewParkingLoc();
 
 			// Unload attachment parts.
-			luv.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
-			settlement.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			luv.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			settlement.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
-			luv.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
-			settlement.storeItemResource(ItemResourceUtil.backhoeID, 1);
+			luv.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			settlement.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
 

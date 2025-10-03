@@ -75,12 +75,12 @@ public class MiningMeta extends AbstractMetaMission {
 
 	            // Check if LUV attachment parts available.            
 	            if (!Mining.areAvailableAttachmentParts(settlement)) {
-	            	if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.pneumaticDrillID)) {
-	            		BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID),
+	            	if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
+	            		BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID),
 	            				settlement, 1);
 	    			}
-	    			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.backhoeID)) {
-	    				BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.backhoeID),
+	    			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
+	    				BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID),
 	            				settlement, 1);
 	    			}
     	

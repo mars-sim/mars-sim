@@ -1034,7 +1034,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	 * Does this rover have a set of clothing ?
 	 */
 	public boolean hasGarment() {
-		return getItemResourceStored(ItemResourceUtil.garmentID) > 0;
+		return getItemResourceStored(ItemResourceUtil.GARMENT_ID) > 0;
 	}
 
 	@Override

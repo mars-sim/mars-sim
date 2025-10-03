@@ -137,7 +137,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
             double bestDiff = 0D;
             FuelPowerSource bestSource = null;
             PowerGeneration powerGeneration = building.getPowerGeneration();
-            for(PowerSource powerSource : powerGeneration.getPowerSources()) {
+            for (PowerSource powerSource : powerGeneration.getPowerSources()) {
                 if (powerSource instanceof FuelPowerSource fuelSource) {
                     double diff = scorePowerSource(settlement, fuelSource);
                     if (diff > bestDiff) {

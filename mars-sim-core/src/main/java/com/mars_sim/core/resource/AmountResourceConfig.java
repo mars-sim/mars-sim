@@ -33,14 +33,16 @@ public class AmountResourceConfig {
 	private static final String LIFE_SUPPORT = "life-support";
 	private static final String EDIBLE = "edible";
 	private static final String TYPE = "type";
-	private static int nextID = ResourceUtil.FIRST_AMOUNT_FREE_RESOURCE_ID;
+	
+	/** The next global amount resource ID. */
+	private static int nextID = ResourceUtil.FIRST_FREE_AMOUNT_RESOURCE_ID;
 
 	// Data members.
 	private Set<AmountResource> resourceSet = new TreeSet<>();
 	private Set<Integer> tissueCultureSet = new TreeSet<>();
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
 	 * @param amountResourceDoc the amount resource XML document.
 	 * @throws Exception if error reading XML document
@@ -76,6 +78,7 @@ public class AmountResourceConfig {
 			GoodType goodType = GoodType.valueOf(ConfigHelper.convertToEnumName(type));
 					
 			String description = resourceElement.getText();
+			
 			// Get phase 
 			String phaseString = resourceElement.getAttributeValue(PHASE);
 			PhaseType phaseType = PhaseType.valueOf(ConfigHelper.convertToEnumName(phaseString));
