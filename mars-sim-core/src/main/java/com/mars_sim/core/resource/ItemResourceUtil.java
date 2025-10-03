@@ -56,7 +56,9 @@ public class ItemResourceUtil {
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
-	/** String name of the manufacturing process of producing a repair bot. */	
+	/** 
+	 * The String name of the manufacturing process of producing a repair bot.
+	  */	
 	public static final String ASSEMBLE_A_REPARTBOT = "Assemble a RepairBot";
 	
 	private static Map<String, Part> itemResourceByName;
