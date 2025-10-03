@@ -52,34 +52,41 @@ public class ItemResourceUtil {
 	// Must be one after the last fixed resource
 	public static final int FIRST_FREE_ITEM_RESOURCE_ID = PNEUMATIC_DRILL_ID + 1;
 	
-	private static final String FIRE_EXTINGUISHER = "Fire extinguisher";
-	private static final String AIRLEAK_PATCH = "Airleak patch";
-	private static final String WORK_GLOVES = "Work gloves";
-	
-	private static final String PRESSURE_SUIT = "Pressure suit";
-	private static final String GARMENT = "Garment";
-	
-	public static final String BATTERY_MODULE = "Battery module";
-	public static final String ROVER_WHEEL = "Rover wheel";
-	public static final String FIBERGLASS = "Fiberglass";
-	
-	// Light utility vehicle attachment parts for mining or construction.
-	private static final String BACKHOE = "Backhoe";
-	private static final String PNEUMATIC_DRILL = "Pneumatic drill";
-
-	/** String name of the manufacturing process of producing an EVA suit. */	
+	/** 
+	 * The String name of the manufacturing process of producing an EVA suit. 
+	 */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
-	/** String name of the manufacturing process of producing a repair bot. */	
+	/** 
+	 * The String name of the manufacturing process of producing a repair bot.
+	  */	
 	public static final String ASSEMBLE_A_REPARTBOT = "Assemble a RepairBot";
+
 	
+	// Warning: for now  each character in the name string of the parts below must be in lower case
+	// or else the method getFixedId() won't work.
+	private static final String FIRE_EXTINGUISHER = "fire extinguisher";
+	private static final String AIRLEAK_PATCH = "airleak patch";
+	private static final String WORK_GLOVES = "work gloves";
+	
+	private static final String PRESSURE_SUIT = "pressure suit";
+	private static final String GARMENT = "garment";
+	
+	public static final String BATTERY_MODULE = "battery module";
+	public static final String ROVER_WHEEL = "rover wheel";
+	public static final String FIBERGLASS = "fiberglass";
+	
+	// Light utility vehicle attachment parts for mining or construction.
+	private static final String BACKHOE = "backhoe";
+	private static final String PNEUMATIC_DRILL = "pneumatic drill";
+
 	// 3-D printer
-	private static final String SLS_3D_PRINTER = "SLS 3D Printer";
+	private static final String SLS_3D_PRINTER = "sls 3d printer";
 	
-	public static final String METHANE_FUEL_CELL = "Methane fuel cell";
-	public static final String METHANOL_FUEL_CELL = "Methanol fuel cell";
-	public static final String METHANE_FUEL_CELL_STACK = "Methane fuel cell stack";
-	public static final String METHANOL_FUEL_CELL_STACK = "Methanol fuel cell stack";
+	public static final String METHANE_FUEL_CELL = "methane fuel cell";
+	public static final String METHANOL_FUEL_CELL = "methanol fuel cell";
+	public static final String METHANE_FUEL_CELL_STACK = "methane fuel cell stack";
+	public static final String METHANOL_FUEL_CELL_STACK = "methanol fuel cell stack";
 	
 	private static Map<String, Part> itemResourceByName;
 	private static Map<Integer, Part> itemResourceByID;
