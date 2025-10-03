@@ -139,13 +139,8 @@ public class PartGood extends Good {
 																		"backhoe", "bulldozer blade",
 																		"crane boom", DRILLING_RIG,
 																		"pneumatic drill", "soil compactor"});
-	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
-	/** The projected demand for this resource of each refresh cycle. */
-//	private double projectedDemand;
-	/** The trade demand for this resource of each refresh cycle. */
-//	private double tradeDemand;
 	/** The repair demand for this resource of each refresh cycle. */
 	private double repairDemand;
 	
@@ -423,7 +418,7 @@ public class PartGood extends Good {
 			* flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == 0D) {
+		if (projectedCache == INITIAL_PART_DEMAND) {
 			projectedCache = projected;
 		}
 		else {
@@ -439,7 +434,8 @@ public class PartGood extends Good {
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
 		
-		double ceiling = projectedCache + tradeDemand + repairDemand;
+		// Note: the ceiling uses projected, not projectedCache
+		double ceiling = projected + tradeDemand + repairDemand;
 		
 		double totalDemand = previousDemand;
 		

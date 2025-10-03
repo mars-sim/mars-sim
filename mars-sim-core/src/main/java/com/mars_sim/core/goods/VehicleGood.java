@@ -198,7 +198,7 @@ class VehicleGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == 0D) {
+		if (projectedCache == INITIAL_VEHICLE_DEMAND) {
 			projectedCache = projected;
 		}
 		else {
@@ -218,7 +218,8 @@ class VehicleGood extends Good {
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
 				* owner.getDemandScore(this);
 		
-		double ceiling = projectedCache + tradeDemand + repairDemand;
+		// Note: the ceiling uses projected, not projectedCache
+		double ceiling = projected + tradeDemand + repairDemand;
 		
 		double totalDemand = previousDemand;
 		
