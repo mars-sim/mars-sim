@@ -110,9 +110,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("Mission.status.onlyOneMember");
 	
 	// Static members
-	private static final Integer WHEEL_ID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
-	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
-															new String[] {ItemResourceUtil.FIBERGLASS});
+	private static final Set<Integer> UNNEEDED_PARTS = Set.of(ItemResourceUtil.FIBERGLASS_ID);
+
 	// Data members
 	/** The current navpoint index. */
 	private int navIndex = 0;
@@ -1083,7 +1082,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		// Note: need to figure out why a mission vehicle's scope would contain 
 		// the following unneeded parts that must be removed:
-		parts = ItemResourceUtil.removePartMap(parts, unNeededParts);
+		parts = ItemResourceUtil.removePartMap(parts, UNNEEDED_PARTS);
 
 		for (Map.Entry<Integer, Double> entry : parts.entrySet()) {
 			Integer id = entry.getKey();
@@ -1099,10 +1098,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// since the automated process is not reliable
 		switch(vehicle.getVehicleType()) {
 			case EXPLORER_ROVER:
-				result.computeIfAbsent(WHEEL_ID, k -> 2);
+				result.computeIfAbsent(ItemResourceUtil.ROVER_WHEEL_ID, k -> 2);
 				break;
 			case CARGO_ROVER, TRANSPORT_ROVER:
-				result.computeIfAbsent(WHEEL_ID, k -> 4);
+				result.computeIfAbsent(ItemResourceUtil.ROVER_WHEEL_ID, k -> 4);
 				break;
 			default:
 				break;

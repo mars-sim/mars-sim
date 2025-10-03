@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
@@ -52,34 +51,13 @@ public class ItemResourceUtil {
 	// Must be one after the last fixed resource
 	public static final int FIRST_FREE_ITEM_RESOURCE_ID = PNEUMATIC_DRILL_ID + 1;
 	
-	private static final String FIRE_EXTINGUISHER = "Fire extinguisher";
-	private static final String AIRLEAK_PATCH = "Airleak patch";
-	private static final String WORK_GLOVES = "Work gloves";
-	
-	private static final String PRESSURE_SUIT = "Pressure suit";
-	private static final String GARMENT = "Garment";
-	
-	public static final String BATTERY_MODULE = "Battery module";
-	public static final String ROVER_WHEEL = "Rover wheel";
-	public static final String FIBERGLASS = "Fiberglass";
-	
 	// Light utility vehicle attachment parts for mining or construction.
-	private static final String BACKHOE = "Backhoe";
-	private static final String PNEUMATIC_DRILL = "Pneumatic drill";
 
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
 	/** String name of the manufacturing process of producing a repair bot. */	
 	public static final String ASSEMBLE_A_REPARTBOT = "Assemble a RepairBot";
-	
-	// 3-D printer
-	private static final String SLS_3D_PRINTER = "SLS 3D Printer";
-	
-	public static final String METHANE_FUEL_CELL = "Methane fuel cell";
-	public static final String METHANOL_FUEL_CELL = "Methanol fuel cell";
-	public static final String METHANE_FUEL_CELL_STACK = "Methane fuel cell stack";
-	public static final String METHANOL_FUEL_CELL_STACK = "Methanol fuel cell stack";
 	
 	private static Map<String, Part> itemResourceByName;
 	private static Map<Integer, Part> itemResourceByID;
@@ -95,31 +73,25 @@ public class ItemResourceUtil {
 
 	static {
 		// Map the pre-defined resources to their names
-		fixedItemResources.put(AIRLEAK_PATCH, AIRLEAK_PATCH_ID);
-		fixedItemResources.put(BATTERY_MODULE,  BATTERY_MODULE_ID);
-		fixedItemResources.put(FIRE_EXTINGUISHER, FIRE_EXTINGUISHER_ID);
-		fixedItemResources.put(FIBERGLASS, FIBERGLASS_ID);
+		fixedItemResources.put("airleak patch", AIRLEAK_PATCH_ID);
+		fixedItemResources.put("battery module",  BATTERY_MODULE_ID);
+		fixedItemResources.put("fire extinguisher", FIRE_EXTINGUISHER_ID);
+		fixedItemResources.put("fiberglass", FIBERGLASS_ID);
 		
-		fixedItemResources.put(GARMENT, GARMENT_ID);
-		fixedItemResources.put(WORK_GLOVES, WORK_GLOVES_ID);
+		fixedItemResources.put("garment", GARMENT_ID);
+		fixedItemResources.put("work gloves", WORK_GLOVES_ID);
 		
-		fixedItemResources.put(PRESSURE_SUIT, PRESSURE_SUIT_ID);
-		fixedItemResources.put(SLS_3D_PRINTER, SLS_3D_PRINTER_ID);
-		fixedItemResources.put(ROVER_WHEEL, ROVER_WHEEL_ID);
-		fixedItemResources.put(BACKHOE, BACKHOE_ID);
-		fixedItemResources.put(PNEUMATIC_DRILL, PNEUMATIC_DRILL_ID);
+		fixedItemResources.put("pressure suit", PRESSURE_SUIT_ID);
+		fixedItemResources.put("sls 3d printer", SLS_3D_PRINTER_ID);
+		fixedItemResources.put("rover wheel", ROVER_WHEEL_ID);
+		fixedItemResources.put("backhoe", BACKHOE_ID);
+		fixedItemResources.put("pneumatic drill", PNEUMATIC_DRILL_ID);
 		
 		// Map the pre-defined resources to their names
-		fixedItemResources.put(METHANE_FUEL_CELL, METHANE_FUEL_CELL_ID);
-		fixedItemResources.put(METHANOL_FUEL_CELL, METHANOL_FUEL_CELL_ID);
-		fixedItemResources.put(METHANE_FUEL_CELL_STACK, METHANE_FUEL_CELL_STACK_ID);
-		fixedItemResources.put(METHANOL_FUEL_CELL_STACK, METHANOL_FUEL_CELL_STACK_ID);
-		
-		fixedItemResources.put(GARMENT, GARMENT_ID);
-		fixedItemResources.put(PRESSURE_SUIT, PRESSURE_SUIT_ID);
-		fixedItemResources.put(PNEUMATIC_DRILL, PNEUMATIC_DRILL_ID);
-		fixedItemResources.put(BACKHOE, BACKHOE_ID);
-		fixedItemResources.put(SLS_3D_PRINTER, SLS_3D_PRINTER_ID);
+		fixedItemResources.put("methane fuel cell", METHANE_FUEL_CELL_ID);
+		fixedItemResources.put("methanol fuel cell", METHANOL_FUEL_CELL_ID);
+		fixedItemResources.put("methane fuel cell stack", METHANE_FUEL_CELL_STACK_ID);
+		fixedItemResources.put("methanol fuel cell stack", METHANOL_FUEL_CELL_STACK_ID);
 		
 		// This check will only fail if a new resource has not been added correctly
 		int expectedSize = FIRST_FREE_ITEM_RESOURCE_ID - FIRST_ITEM_RESOURCE_ID;
@@ -208,7 +180,7 @@ public class ItemResourceUtil {
 			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 			
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
+				if (info.getName().equalsIgnoreCase(ASSEMBLE_EVA_SUIT)) {
 		        	manufactureProcessInfo = info;
 					evaSuitPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
 		        	break;
@@ -232,7 +204,7 @@ public class ItemResourceUtil {
 			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 			
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equals(ASSEMBLE_A_REPARTBOT)) {
+				if (info.getName().equalsIgnoreCase(ASSEMBLE_A_REPARTBOT)) {
 		        	manufactureProcessInfo = info;
 		        	botPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
 		        	break;
@@ -244,23 +216,6 @@ public class ItemResourceUtil {
 		}
 	}
 	
-	/**
-	 * Creates an item resource. This is only used for test cases but should it be here?
-	 *
-	 * @param resourceName
-	 * @param id
-	 * @param description
-	 * @param massPerItem
-	 * @param solsUsed
-	 * @return
-	 */
-	public static Part createItemResource(String resourceName, int id, String description, GoodType type, double massPerItem,
-			int solsUsed) {
-		Part p = new Part(resourceName, id, description, type, massPerItem, solsUsed);
-		ItemResourceUtil.registerBrandNewPart(p);
-		return p;
-	}
-
 	/**
 	 * Converts a array of string item names into their equivalent IDs.
 	 * Note: Currently, it will look for parts only.
@@ -277,17 +232,6 @@ public class ItemResourceUtil {
 			}
 		}
 		return ids;
-	}
-
-
-	/**
-	 * Registers a new part in all 3 item resource maps.
-	 *
-	 * @param p {@link Part}
-	 */
-	public static void registerBrandNewPart(Part p) {
-		itemResourceByName.put(p.getName().toLowerCase(), p);
-		itemResourceByID.put(p.getID(), p);
 	}
 
 	/**

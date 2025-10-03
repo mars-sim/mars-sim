@@ -7,31 +7,32 @@
 
 package com.mars_sim.core.building.construction;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.goods.GoodType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.vehicle.VehicleType;
 
-import junit.framework.TestCase;
-
 /**
  * Unit test for ConstructionVehicleType.
  */
-public class ConstructionVehicleTypeTest extends TestCase {
+public class ConstructionVehicleTypeTest {
 
     private ConstructionVehicleType vehicleType;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @BeforeEach
+    void setUp() throws Exception {
 
         List<Integer> attachments = new ArrayList<Integer>(1);
-        GoodType type = GoodType.CONSTRUCTION;
-        Part p = ItemResourceUtil.createItemResource("attachment part", 1, "test resource description", type, 1D, 1);
-        attachments.add(p.getID());
+        attachments.add(ItemResourceUtil.BACKHOE_ID);
 
         vehicleType = new ConstructionVehicleType(VehicleType.LUV, attachments);
     }
@@ -40,20 +41,21 @@ public class ConstructionVehicleTypeTest extends TestCase {
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionVehicleType.getAttachmentParts()'
      */
+    @Test
     public void testGetAttachmentParts() {
         List<Integer> parts = vehicleType.getAttachmentParts();
         assertNotNull(parts);
         assertEquals(1, parts.size());
 
-        Part part = ItemResourceUtil.findItemResource(parts.get(0));
-        assertNotNull(part);
-        assertEquals("attachment part", part.getName());
+        var part = parts.get(0);
+        assertEquals(ItemResourceUtil.BACKHOE_ID, part);
     }
 
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionVehicleType.getVehicleType()'
      */
+    @Test
     public void testGetVehicleType() {
         assertEquals(VehicleType.LUV, vehicleType.getVehicleType());
     }
