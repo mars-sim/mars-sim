@@ -208,7 +208,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		for (Person p : crew) {
 			if (!getMembers().contains(p)) {
-				logger.warning(p, "Case 0: " + p.getTaskDescription()
+				logger.warning(p, 20_000L, "Case 0: " + p.getTaskDescription()
 						+ ". Inside " + r.getName() + " but not a mission member of " + getName() + ".");
 				addMissionLog("Not a member - " + p.getName(), ((Person)member).getName());
 				result = false;
@@ -530,6 +530,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		else if (getPhaseDuration() - .3 * DEPARTURE_DURATION > 0
 				&& getPhaseDuration() - DEPARTURE_DURATION < 0) {
+			// Note: this is calling isEveryoneInRover the 1st time to ascertain 
+			// if members are on the vehicle
 			canDepart = isEveryoneInRover(member);
 			if (canDepart) {
 				addMissionLog("All Boarded", getStartingPerson().getName());
@@ -562,17 +564,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	private boolean evaluateDepartureCriteria(Worker member, Vehicle v, Settlement settlement) {
 		boolean canDepart = true;
-
-		if (canDepart) {
-			// Can depart if everyone is on the vehicle
-			canDepart = isEveryoneInRover(member);
-			
-			if (canDepart) {
-				logger.info(v, 20_000, "All Boarded.");
-				addMissionLog("All Boarded", member.getName());
-			}
-		}
-				
+		
 		if (canDepart) {
 			// Check if each member is qualified
 			canDepart = checkMembership(member, (Rover)v);
@@ -580,6 +572,17 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			if (canDepart) {
 				logger.info(v, 20_000, "Membership Checked Out.");
 				addMissionLog("Membership Checked Out", member.getName());
+			}
+		}
+
+		if (canDepart) {
+			// Note: this is calling isEveryoneInRover the 2nd time to ascertain 
+			// if members are on the vehicle
+			canDepart = isEveryoneInRover(member);
+			
+			if (canDepart) {
+				logger.info(v, 20_000, "All Boarded.");
+				addMissionLog("All Boarded", member.getName());
 			}
 		}
 
