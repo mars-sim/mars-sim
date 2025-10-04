@@ -286,7 +286,7 @@ class VehicleGood extends Good {
 	 * @return
 	 */
 	private static double getAverageVehicleSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
+		return Math.sqrt(0.1 + supplyStored);
 	}
 
 	/**

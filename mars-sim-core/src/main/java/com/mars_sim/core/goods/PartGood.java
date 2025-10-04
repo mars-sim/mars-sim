@@ -486,7 +486,7 @@ public class PartGood extends Good {
 	 * @return
 	 */
 	private static double getAverageItemSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
+		return Math.sqrt(0.1 + supplyStored);
 	}
 
 	/**
