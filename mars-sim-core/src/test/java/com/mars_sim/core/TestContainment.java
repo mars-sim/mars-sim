@@ -7,12 +7,13 @@
 
 package com.mars_sim.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -30,11 +31,12 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 
-public class TestContainment extends MarsSimUnitTest {
+class TestContainment extends MarsSimUnitTest {
 
 	private VehicleMaintenance garage;
 	private Settlement settlement;
 
+	@BeforeEach
 	@Override
     public void init() {
 		super.init();
@@ -44,23 +46,23 @@ public class TestContainment extends MarsSimUnitTest {
 		garage = buildGarage(settlement.getBuildingManager(), new LocalPosition(0, 0));
     }
 
-	private void assertContainment(AbstractMobileUnit source, Unit container, Unit topContainer, LocationStateType lon) {
-		assertEquals("Location state type", lon, source.getLocationStateType());
-		assertEquals("Parent container", container, source.getContainerUnit());
+	private void assertContainment(AbstractMobileUnit source, Unit container, LocationStateType lon) {
+		assertEquals(lon, source.getLocationStateType());
+		assertEquals(container, source.getContainerUnit());
 	}
 
 	private static void assertInsideSettlement(String msg, AbstractMobileUnit source, Settlement base) {
-		assertEquals(msg + ": Location state type", LocationStateType.INSIDE_SETTLEMENT, source.getLocationStateType());
-		assertEquals(msg + ": Settlement", base, source.getSettlement());
+		assertEquals(LocationStateType.INSIDE_SETTLEMENT, source.getLocationStateType(), msg + ": Location state type");
+		assertEquals(base, source.getSettlement(), msg + ": Settlement");
 		
-		assertTrue(msg + ": InSettlement", source.isInSettlement());
-		assertTrue(msg + ": IsInside", source.isInside());
-		assertFalse(msg + ": IsOutside", source.isOutside());
+		assertTrue(source.isInSettlement(), msg + ": InSettlement");
+		assertTrue(source.isInside(), msg + ": IsInside");
+		assertFalse(source.isOutside(), msg + ": IsOutside");
 
-		assertFalse(msg + ": isInVehicle", source.isInVehicle());
-		assertNull(msg + ": Vehicle", source.getVehicle());
-		
-		assertEquals(msg + ": Container", base, source.getContainerUnit());
+		assertFalse(source.isInVehicle(), msg + ": isInVehicle");
+		assertNull(source.getVehicle(), msg + ": Vehicle");
+
+		assertEquals(base, source.getContainerUnit(), msg + ": Container");
 	}
 
 	/**
@@ -72,17 +74,17 @@ public class TestContainment extends MarsSimUnitTest {
 	 */
 	private void assertVehicleParked(String msg, Vehicle source, Settlement base) {
 		
-		assertEquals(msg + ": Location state type", LocationStateType.SETTLEMENT_VICINITY, source.getLocationStateType());
-		assertEquals(msg + ": Settlement", base, source.getSettlement());
+		assertEquals(LocationStateType.SETTLEMENT_VICINITY, source.getLocationStateType(), msg + ": Location state type");
+		assertEquals(base, source.getSettlement(), msg + ": Settlement");
 		
-		assertTrue(msg + ": InSettlement", source.isInSettlement());
-		assertFalse(msg + ": IsInside", source.isInside());
-		assertTrue(msg + ": IsOutside", source.isOutside());
+		assertTrue(source.isInSettlement(), msg + ": InSettlement");
+		assertFalse(source.isInside(), msg + ": IsInside");
+		assertTrue(source.isOutside(), msg + ": IsOutside");
 
-		assertFalse(msg + ": isInVehicle", source.isInVehicle());
-		assertNull(msg + ": Vehicle", source.getVehicle());
+		assertFalse(source.isInVehicle(), msg + ": isInVehicle");
+		assertNull(source.getVehicle(), msg + ": Vehicle");
 		
-		assertEquals(msg + ": Container", base, source.getContainerUnit());
+		assertEquals(base, source.getContainerUnit(), msg + ": Container");
 	}
 
 	/**
@@ -101,78 +103,78 @@ public class TestContainment extends MarsSimUnitTest {
 		if (isInGarage)
 			state = LocationStateType.INSIDE_SETTLEMENT;
 	
-		assertEquals(msg + ": Location state type", state, source.getLocationStateType());
+		assertEquals(state, source.getLocationStateType(), msg + ": Location state type");
 		
-		assertEquals(msg + ": Settlement", base, source.getSettlement());
+		assertEquals(base, source.getSettlement(), msg + ": Settlement");
 		
-		assertTrue(msg + ": InSettlement", source.isInSettlement());
+		assertTrue(source.isInSettlement(), msg + ": InSettlement");
 		
 		if (isInGarage) {
-			assertTrue(msg + ": IsInside", source.isInside());
-			assertFalse(msg + ": IsOutside", source.isOutside());
+			assertTrue(source.isInside(), msg + ": IsInside");
+			assertFalse(source.isOutside(), msg + ": IsOutside");
 		}
 		else {
-			assertFalse(msg + ": IsInside", source.isInside());
-			assertTrue(msg + ": IsOutside", source.isOutside());
+			assertFalse(source.isInside(), msg + ": IsInside");
+			assertTrue(source.isOutside(), msg + ": IsOutside");
 		}
 			
-		assertFalse(msg + ": isInVehicle", source.isInVehicle());
+		assertFalse(source.isInVehicle(), msg + ": isInVehicle");
 		
-		assertNull(msg + ": Vehicle", source.getVehicle());
-		assertEquals(msg + ": isGaraged", isInGarage, source.isInGarage());
+		assertNull(source.getVehicle(), msg + ": Vehicle");
+		assertEquals(isInGarage, source.isInGarage(), msg + ": isGaraged");
 		
-		assertEquals(msg + ": Container", base, source.getContainerUnit());
+		assertEquals(base, source.getContainerUnit(), msg + ": Container");
 	}
 	
 	private static void assertInBuilding(String msg, Person source, Building base, Settlement home) {
 		assertInsideSettlement(msg, source, home);
-		assertEquals(msg + ": Building", base, source.getBuildingLocation());
+		assertEquals(base, source.getBuildingLocation(), msg + ": Building");
 	}
 
 	
 	
 	private static void assertInVehicle(String msg, Person source, Vehicle vehicle) {
-		assertEquals(msg + ": person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
+		assertEquals(LocationStateType.INSIDE_VEHICLE, source.getLocationStateType(), msg + ": person's location state type is INSIDE_VEHICLE");
 		
-		assertTrue(msg + ": isInVehicleInGarage", source.isInVehicleInGarage());
+		assertTrue(source.isInVehicleInGarage(), msg + ": isInVehicleInGarage");
 		
-		assertFalse(msg + ": InSettlement", source.isInSettlement());
+		assertFalse(source.isInSettlement(), msg + ": InSettlement");
 		
-		assertTrue(msg + ": IsInside", source.isInside());
-		assertFalse(msg + ": IsOutside", source.isOutside());
+		assertTrue(source.isInside(), msg + ": IsInside");
+		assertFalse(source.isOutside(), msg + ": IsOutside");
 
-		assertTrue(msg + ": isInVehicle", source.isInVehicle());
-		assertEquals(msg + ": Vehicle", vehicle, source.getVehicle());
+		assertTrue(source.isInVehicle(), msg + ": isInVehicle");
+		assertEquals(vehicle, source.getVehicle(), msg + ": Vehicle");
 		
-		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
+		assertEquals(vehicle, source.getContainerUnit(), msg + ": Container");
 	}
 
 	private static void assertInVehicle(String msg, Equipment source, Vehicle vehicle) {
-		assertEquals(msg + ": bag's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, source.getLocationStateType());
-		assertNull(msg + ": bag is still in settlement as vehicle is in settlement", source.getSettlement());
+		assertEquals(LocationStateType.INSIDE_VEHICLE, source.getLocationStateType(), msg + ": bag's location state type is INSIDE_VEHICLE");
+		assertNull(source.getSettlement(), msg + ": bag is still in settlement as vehicle is in settlement");
 		
-		assertFalse(msg + ": isInVehicleInGarage", source.isInVehicleInGarage());
-		assertFalse(msg + ": InSettlement", source.isInSettlement());
+		assertFalse(source.isInVehicleInGarage(), msg + ": isInVehicleInGarage");
+		assertFalse(source.isInSettlement(), msg + ": InSettlement");
 		
-		assertTrue(msg + ": IsInside", source.isInside());
-		assertFalse(msg + ": IsOutside", source.isOutside());
+		assertTrue(source.isInside(), msg + ": IsInside");
+		assertFalse(source.isOutside(), msg + ": IsOutside");
 
-		assertTrue(msg + ": isInVehicle", source.isInVehicle());
-		assertEquals(msg + ": Vehicle", vehicle, source.getVehicle());
+		assertTrue(source.isInVehicle(), msg + ": isInVehicle");
+		assertEquals(vehicle, source.getVehicle(), msg + ": Vehicle");
 		
-		assertEquals(msg + ": Container", vehicle, source.getContainerUnit());
+		assertEquals(vehicle, source.getContainerUnit(), msg + ": Container");
 	}
 	
 	private void assertWithinSettlementVicinity(String msg, AbstractMobileUnit source) {
 		
-		assertFalse(msg + ": InSettlement", source.isInSettlement());
-		assertNull(msg + ": Settlement", source.getSettlement());
-		assertFalse(msg + ": IsInside", source.isInside());
-		assertTrue(msg + ": IsOutside", source.isOutside());
-		assertFalse(msg + ": isInVehicle", source.isInVehicle());
-		assertNull(msg + ": Vehicle", source.getVehicle());
+		assertFalse(source.isInSettlement(), msg + ": InSettlement");
+		assertNull(source.getSettlement(), msg + ": Settlement");
+		assertFalse(source.isInside(), msg + ": IsInside");
+		assertTrue(source.isOutside(), msg + ": IsOutside");
+		assertFalse(source.isInVehicle(), msg + ": isInVehicle");
+		assertNull(source.getVehicle(), msg + ": Vehicle");
 		
-		assertEquals(msg + ": Container", getMarsSurface(), source.getContainerUnit());
+		assertEquals(getMarsSurface(), source.getContainerUnit(), msg + ": Container");
 	}
 
 	
@@ -206,7 +208,7 @@ public class TestContainment extends MarsSimUnitTest {
 			
 		assertVehicleParked("Initial Vehicle", vehicle, settlement);
 		
-		assertTrue("Vehicle parking outside", toRemove);
+		assertTrue(toRemove, "Vehicle parking outside");
 
 	}
 
@@ -234,7 +236,7 @@ public class TestContainment extends MarsSimUnitTest {
 		if (isInGarage)
 			state = LocationStateType.INSIDE_SETTLEMENT;
 		
-		assertContainment(vehicle, settlement, settlement, state);
+		assertContainment(vehicle, settlement, state);
 	}
 	
 	/*
@@ -244,8 +246,8 @@ public class TestContainment extends MarsSimUnitTest {
 	public void testVehicleOnSurface() {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1), EXPLORER_ROVER);
 
-		assertTrue("Transfer to Mars surface but still within settlement vicinity",
-					vehicle.transfer(getMarsSurface()));
+		assertTrue(vehicle.transfer(getMarsSurface()),
+					"Transfer to Mars surface but still within settlement vicinity");
 
 		assertWithinSettlementVicinity("After transfer from Settlement", vehicle);
 	}
@@ -260,10 +262,10 @@ public class TestContainment extends MarsSimUnitTest {
 		
 		assertInsideSettlement("Initial equipment", bag, settlement);
 
-		assertTrue("Transfer to Mars surface but still within settlement vicinity", bag.transfer(getMarsSurface()));
+		assertTrue(bag.transfer(getMarsSurface()), "Transfer to Mars surface but still within settlement vicinity");
 		assertWithinSettlementVicinity("in a settlement vicinity", bag);
 		
-		assertTrue("Transfer to settlement", bag.transfer(settlement));
+		assertTrue(bag.transfer(settlement), "Transfer to settlement");
 		assertInsideSettlement("After return", bag, settlement);
 
 	}
@@ -283,13 +285,13 @@ public class TestContainment extends MarsSimUnitTest {
         // Vehicle leaves garage
         BuildingManager.removeFromGarage(vehicle);
 
-		assertTrue("Vehicle leaving garage. Transfer bag from settlement to vehicle", bag.transfer(vehicle));
+		assertTrue(bag.transfer(vehicle), "Vehicle leaving garage. Transfer bag from settlement to vehicle");
 		
-		assertTrue("Bag's container unit", bag.getContainerUnit() instanceof Rover);
+		assertTrue(bag.getContainerUnit() instanceof Rover, "Bag's container unit");
 		
 		assertInVehicle("In vehicle", bag, vehicle);
 		
-		assertTrue("Transfer bag from vehicle back to settlement", bag.transfer(settlement));
+		assertTrue(bag.transfer(settlement), "Transfer bag from vehicle back to settlement");
 		assertInsideSettlement("After return", bag, settlement);
 
 	}
@@ -307,36 +309,36 @@ public class TestContainment extends MarsSimUnitTest {
 
 		Rover vehicle = buildRover(settlement, "Person Rover", new LocalPosition(1,1), EXPLORER_ROVER);
 
-		assertTrue("Transfer person from settlement to vehicle", person.transfer(vehicle));
+		assertTrue(person.transfer(vehicle), "Transfer person from settlement to vehicle");
 		// Note that once the vehicle is built, it goes to a garage by default
 		assertInVehicle("In vehicle", person, vehicle);
 		
-		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
+		assertEquals(LocationStateType.INSIDE_VEHICLE, person.getLocationStateType(), "Person's location state type is INSIDE_VEHICLE");
 
-		assertTrue("Person in crew", vehicle.getCrew().contains(person));
-		assertFalse("Person in a vehicle. Person is not considered to be in a settlement", person.isInSettlement());
-		assertTrue("Vehicle still in a settlement", vehicle.isInSettlement());
+		assertTrue(vehicle.getCrew().contains(person), "Person in crew");
+		assertFalse(person.isInSettlement(), "Person in a vehicle. Person is not considered to be in a settlement");
+		assertTrue(vehicle.isInSettlement(), "Vehicle still in a settlement");
 		
 		// Vehicle going into a garage
 		settlement.getBuildingManager().addToGarageBuilding(vehicle);
-		assertTrue("Vehicle has entered a garage", vehicle.isInGarage());
+		assertTrue(vehicle.isInGarage(), "Vehicle has entered a garage");
 		assertInsideSettlement("Vehicle still in a settlement", vehicle, settlement);
 
-		assertEquals("vehicle location state type is INSIDE_SETTLEMENT", LocationStateType.INSIDE_SETTLEMENT, vehicle.getLocationStateType());
-		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
+		assertEquals(LocationStateType.INSIDE_SETTLEMENT, vehicle.getLocationStateType(), "vehicle location state type is INSIDE_SETTLEMENT");
+		assertEquals(LocationStateType.INSIDE_VEHICLE, person.getLocationStateType(), "Person's location state type is INSIDE_VEHICLE");
 		
         // Vehicle leaves garage
         BuildingManager.removeFromGarage(vehicle);
         
-		assertEquals("Person's location state type is INSIDE_VEHICLE", LocationStateType.INSIDE_VEHICLE, person.getLocationStateType());
+		assertEquals(LocationStateType.INSIDE_VEHICLE, person.getLocationStateType(), "Person's location state type is INSIDE_VEHICLE");
 		
-		assertFalse("Vehicle has left garage", vehicle.isInGarage());
+		assertFalse(vehicle.isInGarage(), "Vehicle has left garage");
 	
-		assertTrue("person is inside", person.isInside());
+		assertTrue(person.isInside(), "person is inside");
 	
-		assertTrue("Person in crew", vehicle.getCrew().contains(person));
+		assertTrue(vehicle.getCrew().contains(person), "Person in crew");
 		
-		assertTrue("Transfer person from vehicle back to settlement", person.transfer(settlement));
+		assertTrue(person.transfer(settlement), "Transfer person from vehicle back to settlement");
 		
 		assertInsideSettlement("After return", person, settlement);
 	}

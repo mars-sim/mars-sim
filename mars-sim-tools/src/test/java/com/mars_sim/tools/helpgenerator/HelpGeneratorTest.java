@@ -1,9 +1,9 @@
 package com.mars_sim.tools.helpgenerator;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.ScenarioConfig;
@@ -55,7 +55,7 @@ public class HelpGeneratorTest {
                         .findAny()
                         .orElseGet(null);
         
-        assertNotNull("Resupply manifest found", config);
+        assertNotNull(config, "Resupply manifest found");
 
         var vg = new ManifestGenerator(context);
         var content = createDoc(vg, config);
@@ -271,9 +271,9 @@ public class HelpGeneratorTest {
      */
     private Element assertDIV(Document doc, String id) {
         var node = doc.getElementById(id);
-        assertNotNull("'" + id + "' section", node);
-        assertTrue("'" + id + "' has content", node.childNodeSize() > 0);
-        assertEquals("'" + id + "' has a <div>", "div", node.tagName());
+        assertNotNull(node, "'" + id + "' section");
+        assertTrue(node.childNodeSize() > 0, "'" + id + "' has content");
+        assertEquals("div", node.tagName(), "'" + id + "' has a <div>");
         return node;
     }
 
@@ -287,16 +287,16 @@ public class HelpGeneratorTest {
     private void assertTitledTable(Document doc, String id, String title, boolean hasHeading) {
         var div = assertDIV(doc, id);
         var elems = div.children();
-        assertEquals("SubElement count", 2, elems.size());
+        assertEquals(2, elems.size(), "SubElement count");
 
         // First should be a title
-        var titleElem = elems.get(-0);
-        assertEquals("Title heading", 'h', titleElem.tagName().charAt(0));
-        assertEquals("Heading Text", title, titleElem.text());
+        var titleElem = elems.get(0);
+        assertEquals('h', titleElem.tagName().charAt(0), "Title heading");
+        assertEquals(title, titleElem.text(), "Heading Text");
 
         // Next is table
         var tableElem = elems.get(1);
-        assertEquals("<table>", "table", tableElem.tagName());
+        assertEquals("table", tableElem.tagName(), "<table>");
         var tableChildren = tableElem.children();
 
         // Check heading
@@ -323,9 +323,9 @@ public class HelpGeneratorTest {
         int i = 0;
         for(var cell : rowElement.children()) {
             var id = rowId + "," + i++;
-            assertEquals("Cell tag #" + id, cellTag, cell.tagName());
+            assertEquals(cellTag, cell.tagName(), "Cell tag #" + id);
             if (!cell.className().equals("optional"))
-                assertFalse("Cell contents #" + id, cell.text().isEmpty());
+                assertFalse(cell.text().isEmpty(), "Cell contents #" + id);
         }
     }
 
@@ -340,22 +340,22 @@ public class HelpGeneratorTest {
             File[] created = output.listFiles();
 
             // Matches number of type generators plus 1 for index
-            assertEquals("Top level content", HelpContext.GENERATORS.length + 1,
-                                        created.length);
+            assertEquals(HelpContext.GENERATORS.length + 1, created.length,
+                                        "Top level content");
             boolean indexFound = false;
             for(File f : created) {
                 if (f.isFile()) {
                     // Must be index
-                    assertEquals("Top Index file", "index.html", f.getName());
-                    assertTrue("Index has content", f.length() > 10);
+                    assertEquals("index.html", f.getName(), "Top Index file");
+                    assertTrue(f.length() > 10, "Index has content");
                     indexFound = true;
                 }
                 else {
                     // Directory
-                    assertTrue("Type contents " + f.getName(), f.listFiles().length > 1);
+                    assertTrue(f.listFiles().length > 1, "Type contents " + f.getName());
                 }
             }
-            assertTrue("Found index.html file", indexFound);
+            assertTrue(indexFound, "Found index.html file");
         }
         finally {
             // Clean up

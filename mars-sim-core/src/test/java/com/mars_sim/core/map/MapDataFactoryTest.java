@@ -1,41 +1,43 @@
 package com.mars_sim.core.map;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.map.MapData.MapState;
 import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 
-import junit.framework.TestCase;
-
-public class MapDataFactoryTest extends TestCase {
+class MapDataFactoryTest {
     @Test
-    public void testDefaultMap() {
+    void testDefaultMap() {
         var found = MapDataFactory.getMapMetaData(MapDataFactory.DEFAULT_MAP_TYPE);
-        assertNotNull("Default map found", found);
-        assertEquals("Default map id", MapDataFactory.DEFAULT_MAP_TYPE, found.getId());
-        assertTrue("Default Map has resolution layers", found.getNumLevel() > 0);
+        assertNotNull(found, "Default map found");
+        assertEquals(MapDataFactory.DEFAULT_MAP_TYPE, found.getId(), "Default map id");
+        assertTrue(found.getNumLevel() > 0, "Default Map has resolution layers");
     }
 	
     @Test
-    public void testMultipleMaps() {
-        assertTrue("Multiple map types", !MapDataFactory.getLoadedTypes().isEmpty());
+    void testMultipleMaps() {
+        assertTrue(!MapDataFactory.getLoadedTypes().isEmpty(), "Multiple map types");
     }
 
     @Test
-    public void testLoadResolution() throws CoordinatesException {
+    void testLoadResolution() throws CoordinatesException {
         var found = MapDataFactory.getMapMetaData(MapDataFactory.DEFAULT_MAP_TYPE);
         var mapData = found.getData(0);
-        assertNotNull("Resolution 0 of default", mapData);
-        assertEquals("Is ready", mapData.getStatus(), MapState.LOADED);
-        assertTrue("Has default +ve RHO", mapData.getRhoDefault() > 0);
-        assertEquals("Correct meta data", found, mapData.getMetaData());
-        assertEquals("Correct resolution", 0, mapData.getResolution());
+        assertNotNull(mapData, "Resolution 0 of default");
+        assertEquals(MapState.LOADED, mapData.getStatus(), "Is ready");
+        assertTrue(mapData.getRhoDefault() > 0, "Has default +ve RHO");
+        assertEquals(found, mapData.getMetaData(), "Correct meta data");
+        assertEquals(0, mapData.getResolution(), "Correct resolution");
 
         var center = CoordinatesFormat.fromString("10.0 10.0");
         var image = mapData.createMapImage(center, 100, 100, mapData.getRhoDefault());
-        assertEquals("Image width", 100, image.getWidth(null));
-        assertEquals("Image height", 100, image.getHeight(null));
+        assertEquals(100, image.getWidth(null), "Image width");
+        assertEquals(100, image.getHeight(null), "Image height");
     }
 
 }
