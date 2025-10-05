@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task.walk;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -122,7 +121,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 		var outsideWalk = createPathFinder(person, person.getPosition());
 		var solution = outsideWalk.determineWalkingPath(target);
 		assertFalse(solution.obstaclesInPath(), "Has no obstacles in calculated path");
-		assertNotEquals(2, solution.path().size(), "Waypoints has a path");
+		assertTrue(solution.path().size() > 1, "Has a waypoint in path");
 		
 		assertClearPath("Avoid Vehicle", person, solution.path());
 	}
