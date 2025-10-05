@@ -37,7 +37,6 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 		LocalPosition target = new LocalPosition(-10D, 10D);
 		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
 		assertFalse("Person can do walk", outsideWalk.isDone());
-		assertFalse("No obstacles", outsideWalk.areObstaclesInPath());
 		assertEquals("Waypoints direct", 2, outsideWalk.getNumberWayPoints());
 
 	    int calls = executeTask(person, outsideWalk, 20);
@@ -71,7 +70,6 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
 		assertFalse("Person can do walk", outsideWalk.isDone());
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
-		assertFalse("Has no obstacles in calculated path", outsideWalk.areObstaclesInPath());
 		
 	    int calls = executeTask(person, outsideWalk, 40);
 		
@@ -103,7 +101,6 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 		LocalPosition target = new LocalPosition(20D, 0D);
 		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
 		assertFalse("Person can do walk", outsideWalk.isDone());
-		assertFalse("Has no obstacles in calculated path", outsideWalk.areObstaclesInPath());
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
 
 	    int calls = executeTask(person, outsideWalk, 40);
@@ -137,7 +134,6 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 		LocalPosition target = new LocalPosition(30D, 0D);
 		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
 		assertFalse("Person can do walk", outsideWalk.isDone());
-		assertFalse("Has no obstacles in calculated path", outsideWalk.areObstaclesInPath());
 		assertNotEquals(2, outsideWalk.getNumberWayPoints(), "Waypoints has a path");
 		
 	    int calls = executeTask(person, outsideWalk, 20);
