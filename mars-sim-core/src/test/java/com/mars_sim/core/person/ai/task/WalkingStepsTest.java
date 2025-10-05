@@ -7,8 +7,6 @@
 
 package com.mars_sim.core.person.ai.task;
 
-import java.util.Iterator;
-
 import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
@@ -18,7 +16,6 @@ import com.mars_sim.core.building.connection.BuildingConnectorManager;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.WalkingSteps.WalkStep;
-import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 
@@ -406,13 +403,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
      */
     public void testWalkingStepsBuildingToRover() {
 
-        Iterator<Settlement> i = unitManager.getSettlements().iterator();
-        while (i.hasNext()) {
-            unitManager.removeUnit(i.next());
-        }
-        
-        Settlement settlement = new MockSettlement();
-		unitManager.addUnit(settlement);
+        Settlement settlement = buildSettlement();
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
