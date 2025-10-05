@@ -573,6 +573,20 @@ public class LocalAreaUtil {
 	}
 
 	/**
+	 * Checks if a path between 2 points collides with any existing vehicle, building, or
+	 * construction site at a settlement.
+	 *
+	 * @param start	   the starting point.
+	 * @param destination the destination point.
+	 * @param coordinates the global coordinate location to check.
+	 * @return true if line path doesn't collide with anything.
+	 */
+	public static boolean isLinePathCollisionFree(LocalPosition start, LocalPosition destination, Coordinates coordinates) {
+		Line2D line = new Line2D.Double(start.getX(), start.getY(), destination.getX(), destination.getY());
+		return isPathCollisionFree(null, createLinePath(line), coordinates, true);
+	}
+
+	/**
 	 * Checks if a line path collides with any existing vehicle, building, or
 	 * construction site at a settlement.
 	 *
@@ -583,8 +597,6 @@ public class LocalAreaUtil {
 	 */
 	public static boolean isLinePathCollisionFree(Line2D line, Coordinates coordinates, boolean useCache) {
 		// Create line path
-//		Path2D linePath = createLinePath(line);
-
 		return isPathCollisionFree(null, createLinePath(line), coordinates, useCache);
 
 	}

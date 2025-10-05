@@ -1,6 +1,6 @@
 package com.mars_sim.core.test;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.BuildingCategory;
@@ -25,7 +25,7 @@ public abstract class MarsSimUnitTest {
 
     private MarsSimContextImpl context;
 
-    @Before
+    @BeforeEach
     public void init() {
         // Initialize the MarsSimContextImpl for each test
         context = new MarsSimContextImpl();
