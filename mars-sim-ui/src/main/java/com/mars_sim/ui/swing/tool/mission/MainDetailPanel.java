@@ -793,8 +793,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 
 		public void update() {
-			if (mission != null)
+			if (mission != null) {
 				entries = mission.getLog().getEntries();
+			}
 		}
 		
 		/**

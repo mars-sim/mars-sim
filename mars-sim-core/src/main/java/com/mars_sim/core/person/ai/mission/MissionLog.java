@@ -55,37 +55,42 @@ public class MissionLog implements Serializable  {
             return "MissionLogEntry [time=" + time + ", entry=" + entry + "]";
         }		
     }
-
-    private List<MissionLogEntry> log = new ArrayList<>();
-    private MarsTime timestampEmbarked;
+    
     private boolean done = false;
+    
+    private String lastEntry = "";
+    
+    private String lastEnterBy = "";
+    
+    private List<MissionLogEntry> log;
+    
+    private MarsTime timestampEmbarked;
+    
     protected static MasterClock clock;
 
+    public MissionLog() {
+    	log = new ArrayList<>();
+    }
+    
     /**
      * Compares with the previous log entry. 
      * 
      * @param entry
      * @param enterBy
-     * @param size
      * @param i
      */
-    private void compareLog(String entry, String enterBy, int size, int i) {
-    	MissionLogEntry log0 = log.get(size - i);
+    private void compareLog(String entry, String enterBy, int i) {
+    	MissionLogEntry log0 = log.get(i);
     	String entry0 = log0.getEntry();
     	String enterBy0 = log0.getEnterBy();
-    	if (entry0.equals(entry) && enterBy0.equals(enterBy)
-        	) {
-        	// Do not need to add a new log entry
-        }
-    	else if (entry0.equals(entry) && !enterBy0.equals(enterBy)
-	        ) {
-    		// Add new log entry
-	        log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
-	       }
-    	else {
+    	
+    	if (!entry0.equals(entry)
+    		|| !enterBy0.equals(enterBy)) {
     		// Add new log entry
     		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
     	}
+    	
+		// if not meeting above criteria, do not add a new log entry
     }
     
     /**
@@ -95,6 +100,13 @@ public class MissionLog implements Serializable  {
 	 * @param enterBy the name of the person who logs this
      */
     public void addEntry(String entry, String enterBy) {
+    	if (lastEntry.equals(entry) && lastEnterBy.equals(enterBy)) {
+    		return;
+    	}
+    	
+    	lastEntry = entry;
+    	lastEnterBy = enterBy;
+    	
     	int size = log.size();
 
     	if (size == 0) {
@@ -103,24 +115,29 @@ public class MissionLog implements Serializable  {
     	}
     	else if (size == 1) {
     		// Check on log1
-    		compareLog(entry, enterBy, size, 1);
+    		compareLog(entry, enterBy, size - 1);
     	}
     	else if (size == 2) {
     		// Check on log2
-    		compareLog(entry, enterBy, size, 2);
+    		compareLog(entry, enterBy, size - 1);
     		// Check on log1
-    		compareLog(entry, enterBy, size, 1);
+    		compareLog(entry, enterBy, size - 2);
     		
 		}
-    	else {
+    	else if (size == 3) {
     		// Compare with the last 3 log entries
-    		
-    		// Check on log3
-    		compareLog(entry, enterBy, 3, 3);
-    		// Check on log2
-    		compareLog(entry, enterBy, 3, 2);
-    		// Check on log1
-    		compareLog(entry, enterBy, 3, 1);
+       		// Compare with the last 4 log entries
+    		for (int i=1; i < 4; i++) {
+    			// Check on log_
+        		compareLog(entry, enterBy, size - i);
+    		}
+    	}
+    	else {
+    		// Compare with the last 4 log entries
+    		for (int i=1; i < 5; i++) {
+    			// Check on log_
+        		compareLog(entry, enterBy, size - i);
+    		}
     	}
     }
 

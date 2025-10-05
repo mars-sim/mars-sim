@@ -33,7 +33,6 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
-import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.Settlement;

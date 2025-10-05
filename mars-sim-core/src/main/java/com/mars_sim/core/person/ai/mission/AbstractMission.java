@@ -135,13 +135,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private MissionPhase phase = INIT_PHASE;
 	/** Time the phase started */
 	private MarsTime phaseStartTime;
-	/** Log of mission activity	 */
-	private MissionLog log = new MissionLog();
+	/** The log of mission activity	 */
+	private MissionLog log;
 	/** The name of the starting member */
 	private Worker startingMember;
 	/** The mission plan. */
 	private MissionPlanning plan;
-
+	
 	/** A list of mission status. */
 	private Set<MissionStatus> missionStatus;
 	
@@ -192,7 +192,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		missionCapacity = MAX_CAP;
 		
 		signUp = new UnitSet<>();
-
+		
+		log = new MissionLog();
+		
 		Person person = (Person) startingMember;
 
 		if (person.isInSettlement()) {
@@ -220,7 +222,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// let the mission lead have more sleep before departing
 		}
 	}
-
+	
 	/**
 	 * Adds a listener.
 	 *
