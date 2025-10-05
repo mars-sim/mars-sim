@@ -948,7 +948,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPoweredDownPowerRequired() {
+	public double getLowPowerRequired() {
 
 		// Get power required for occupant life support.
 		double powerRequired = 0D;

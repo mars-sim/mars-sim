@@ -141,7 +141,7 @@ public class EVA extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPoweredDownPowerRequired() {
+	public double getLowPowerRequired() {
 		return 0.075;
 	}
 

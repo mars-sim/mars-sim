@@ -827,7 +827,7 @@ public class AlgaeFarming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPoweredDownPowerRequired() {
+	public double getLowPowerRequired() {
 		return getCombinedPowerLoad() * .1;
 	}
 

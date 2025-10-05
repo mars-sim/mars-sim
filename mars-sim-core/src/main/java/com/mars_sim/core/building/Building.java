@@ -731,7 +731,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		// Determine power required for each function.
 		for (Function function : getFunctions()) {
-			result += function.getPoweredDownPowerRequired();
+			result += function.getLowPowerRequired();
 		}
 
 		return result;

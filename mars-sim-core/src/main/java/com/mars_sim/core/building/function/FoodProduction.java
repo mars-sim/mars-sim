@@ -244,7 +244,7 @@ public class FoodProduction extends Function {
 	}
 
 	@Override
-	public double getPoweredDownPowerRequired() {
+	public double getLowPowerRequired() {
 		return getCombinedPowerLoad();
 	}
 

@@ -27,11 +27,11 @@ public abstract class ResourceProcessor extends Function {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private static final String POWER_DOWN_LEVEL = "power-down-level";
+	private static final String LOW_POWER_LEVEL = "low-power-level";
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 
-	private double powerDownProcessingLevel;
+	private double lowPowerProcessingLevel;
 
 	private List<ResourceProcess> processes;
 
@@ -45,7 +45,7 @@ public abstract class ResourceProcessor extends Function {
 		// Use Function constructor
 		super(type, spec, building);
 
-		powerDownProcessingLevel = spec.getDoubleProperty(POWER_DOWN_LEVEL);
+		lowPowerProcessingLevel = spec.getDoubleProperty(LOW_POWER_LEVEL);
 		processes = new ArrayList<>();
 		for (ResourceProcessEngine wspec : processSpecs) {
 			processes.add(new ResourceProcess(wspec, building));
@@ -123,12 +123,12 @@ public abstract class ResourceProcessor extends Function {
 	}
 
 	/**
-	 * Gets the power down mode processing level.
+	 * Gets the low power mode processing level.
 	 *
 	 * @return proportion of max processing rate (0D - 1D)
 	 */
-	public double getPowerDownProcessingLevel() {
-		return powerDownProcessingLevel;
+	public double getLowPowerProcessingLevel() {
+		return lowPowerProcessingLevel;
 	}
 
 	/**
@@ -147,7 +147,7 @@ public abstract class ResourceProcessor extends Function {
 				productionLevel = 1D;
 			else if (getBuilding().getPowerMode() == PowerMode.LOW_POWER) {
 				// Note: For now, low power mode will reduce the processing capability by 50%
-				productionLevel = powerDownProcessingLevel;
+				productionLevel = lowPowerProcessingLevel;
 			}
 			// Run each resource process.
 			for (ResourceProcess p : processes) {
@@ -189,14 +189,13 @@ public abstract class ResourceProcessor extends Function {
 	}
 	
 	/**
-	 * Gets the amount of power required when function is at power down level. 
-	 * This is based on the a percentage of the full power using the power down processing level
+	 * Gets the amount of power required when function is at low power level. 
 	 *
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPoweredDownPowerRequired() {
-		return getCombinedPowerLoad() * powerDownProcessingLevel;
+	public double getLowPowerRequired() {
+		return getCombinedPowerLoad() * lowPowerProcessingLevel;
 	}
 
 	@Override
