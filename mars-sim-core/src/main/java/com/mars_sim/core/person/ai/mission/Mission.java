@@ -27,9 +27,9 @@ public interface Mission extends Entity {
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
 	 * 
-	 * @param reason Reason to abort
+	 * @param reason MissionStatus Reason to abort
 	 */
-	void abortMission(String reason);
+	void abortMission(MissionStatus reason);
 
 	/**
 	 * Aborts just the current phase, the next phase will be started.

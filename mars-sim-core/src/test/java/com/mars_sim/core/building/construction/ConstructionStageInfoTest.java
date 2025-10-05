@@ -34,7 +34,7 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
         super.setUp();
 
         Map<Integer, Integer> parts = new HashMap<>(1);
-        Part p = ItemResourceUtil.findItemResource(ItemResourceUtil.backhoeID);
+        Part p = ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID);
         parts.put(p.getID(), 1);
 
         Map<Integer, Double> resources = new HashMap<>(1);
@@ -45,7 +45,7 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
             new ArrayList<>(1);
         List<Integer> attachments = new ArrayList<>(1);
         
-        Part atth = ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID);
+        Part atth = ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID);
         attachments.add(atth.getID());
 
         vehicles.add(new ConstructionVehicleType(VehicleType.LUV, attachments));
@@ -83,7 +83,7 @@ public class ConstructionStageInfoTest extends AbstractMarsSimUnitTest {
         while (i.hasNext()) {
         	Integer id = i.next();
         	Part part = ItemResourceUtil.findItemResource(id);
-            assertEquals(ItemResourceUtil.backhoeID, part.getID());
+            assertEquals(ItemResourceUtil.BACKHOE_ID, part.getID());
             assertEquals(1, (int) parts.get(id));
         }
     }

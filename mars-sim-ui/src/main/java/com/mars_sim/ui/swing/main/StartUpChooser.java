@@ -38,6 +38,7 @@ import com.mars_sim.ui.swing.MainWindow;
 /**
  * This class is a simple dialog to let user choose how to start the simulation.
  */
+@SuppressWarnings("serial")
 public class StartUpChooser extends JDialog {
     /**
      * Files filter for simulation files.
@@ -80,7 +81,8 @@ public class StartUpChooser extends JDialog {
     private Authority selectedAuthority;
 
     /**
-     * Show the start chooser to the user. Pass in the various configuration pools for their selection.
+     * Shows the start chooser to the user. Pass in the various configuration pools for their selection.
+     * 
      * @param scenarioConfig
      * @param templateConfig
      * @param authorityConfig

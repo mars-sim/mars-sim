@@ -745,7 +745,7 @@ public class PowerGrid implements Serializable, Temporal {
 					// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
 					// Switch from one power mode to another
 					building.setPowerMode(newPowerMode);
-					logger.info(building, "1. Power Mode: " + oldPowerMode.getName()
+					logger.info(building, 20_000, "1. Power Mode: " + oldPowerMode.getName()
 							+ " -> " + newPowerMode.getName());
 				}
 				
@@ -755,7 +755,7 @@ public class PowerGrid implements Serializable, Temporal {
 						netPower += power;
 						// Switch from one power mode to another
 						building.setPowerMode(newPowerMode);	
-						logger.info(building, "2. Power Mode: " + oldPowerMode.getName()
+						logger.info(building, 20_000, "2. Power Mode: " + oldPowerMode.getName()
 								+ " -> " + newPowerMode.getName());
 					}
 

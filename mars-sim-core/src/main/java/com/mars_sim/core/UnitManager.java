@@ -227,7 +227,7 @@ public class UnitManager implements Serializable, Temporal {
 	public Person getPersonByID(Integer id) {
 		return lookupPerson.get(id);
 	}
-
+	
 	public Robot getRobotByID(Integer id) {
 		return lookupRobot.get(id);
 	}

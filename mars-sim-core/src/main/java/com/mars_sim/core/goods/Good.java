@@ -41,7 +41,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final long serialVersionUID = 1L;
 
 	static final double LOWEST_PROJECTED_VALUE = 0.01;
-	static final int HIGHEST_PROJECTED_VALUE = 20_000;
+	static final int HIGHEST_PROJECTED_VALUE = 10_000;
 	
 	private static final double LABOR_FACTOR = 150D ;
 	private static final double PROCESS_TIME_FACTOR = 500D;
@@ -156,7 +156,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	public void computeAllCosts() {
 
 		// Compute the base output cost
-		if (baseCost== -1) {
+		if (baseCost == -1) {
 			computeBaseOutputCost();
 		}
 
@@ -269,8 +269,9 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	}
 
 	/**
-	 * Combine 2 values. If either is zero then the otehr is returned. If both are
+	 * Combines 2 values. If either is zero then the other is returned. If both are
 	 * non-zero then the average is returned.
+	 * 
 	 * @param value0
 	 * @param value1
 	 * @return

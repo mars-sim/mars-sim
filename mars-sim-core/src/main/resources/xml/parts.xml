@@ -422,7 +422,7 @@
 	</part>
 
 
-	<part name="Drone chassis panel" type="vehicle" mass="20.0" >
+	<part name="Drone chassis panel" type="vehicle" mass="12.0" >
 		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
 			<entity name="drone" probability="5" max-number="1" />							

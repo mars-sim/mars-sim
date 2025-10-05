@@ -244,7 +244,7 @@ public class Exploration extends EVAMission
 		if (currentSite == null) {
 			currentSite = retrieveASiteToClaim();
 			if (currentSite == null) {
-				abortMission("Inmvalid exploration site");
+				abortMission(MissionStatus.createResourceStatus("Invalid Exploration Site"));
 				return false;
 			}
 		}

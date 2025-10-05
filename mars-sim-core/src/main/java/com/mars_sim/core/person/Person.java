@@ -1820,14 +1820,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * Does this person have a set of clothing ?
 	 */
 	public boolean hasGarment() {
-		return getItemResourceStored(ItemResourceUtil.garmentID) > 0;
+		return getItemResourceStored(ItemResourceUtil.GARMENT_ID) > 0;
 	}
 
 	/**
 	 * Does this person have a pressure suit ?
 	 */
 	public boolean hasPressureSuit() {
-		return getItemResourceStored(ItemResourceUtil.pressureSuitID) > 0;
+		return getItemResourceStored(ItemResourceUtil.PRESSURE_SUIT_ID) > 0;
 	}
 
 	/**
@@ -1920,8 +1920,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param holder the current equipment holder of the clothing
 	 */
 	public void wearGarment(EquipmentOwner holder) {
-		if (!hasGarment() && holder.retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
-			storeItemResource(ItemResourceUtil.garmentID, 1);
+		if (!hasGarment() && holder.retrieveItemResource(ItemResourceUtil.GARMENT_ID, 1) == 0) {
+			storeItemResource(ItemResourceUtil.GARMENT_ID, 1);
 		}
 	}
 
@@ -1931,8 +1931,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @param holder the current equipment holder of the clothing
 	 */
 	public void wearPressureSuit(EquipmentOwner holder) {
-		if (!hasPressureSuit() && holder.retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
-			storeItemResource(ItemResourceUtil.pressureSuitID, 1);
+		if (!hasPressureSuit() && holder.retrieveItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1) == 0) {
+			storeItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1);
 		}
 	}
 
@@ -1944,8 +1944,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return true if successful
 	 */
 	public boolean unwearGarment(EquipmentOwner holder) {
-		if (hasGarment() && retrieveItemResource(ItemResourceUtil.garmentID, 1) == 0) {
-			if (holder.storeItemResource(ItemResourceUtil.garmentID, 1) == 0) {
+		if (hasGarment() && retrieveItemResource(ItemResourceUtil.GARMENT_ID, 1) == 0) {
+			if (holder.storeItemResource(ItemResourceUtil.GARMENT_ID, 1) == 0) {
 				return true;
 			}
 		}
@@ -1959,8 +1959,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	 * @return true if successful
 	 */
 	public boolean unwearPressureSuit(EquipmentOwner holder) {
-		if (hasPressureSuit() && retrieveItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
-			if (holder.storeItemResource(ItemResourceUtil.pressureSuitID, 1) == 0) {
+		if (hasPressureSuit() && retrieveItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1) == 0) {
+			if (holder.storeItemResource(ItemResourceUtil.PRESSURE_SUIT_ID, 1) == 0) {
 				return true;
 			}
 		}

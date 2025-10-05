@@ -168,7 +168,7 @@ public class RescueSalvageVehicle extends RoverMission {
 			return false;
 		}
 
-		return super.isUsableVehicle(vehicle);
+		return vehicle.isUsableVehicle();
 	}
 
 

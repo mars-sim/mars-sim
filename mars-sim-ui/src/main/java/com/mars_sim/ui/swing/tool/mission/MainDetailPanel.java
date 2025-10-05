@@ -793,8 +793,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		}
 
 		public void update() {
-			if (mission != null)
+			if (mission != null) {
 				entries = mission.getLog().getEntries();
+			}
 		}
 		
 		/**
@@ -899,8 +900,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if ((mission instanceof VehicleMission vm)) {
 				v = vm.getVehicle();
 				crewable = (Crewable)v; 
+				updateOccupantList();
 			}
-			updateOccupantList();
 		}
 		
 		/**

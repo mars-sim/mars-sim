@@ -94,7 +94,7 @@ public class TradeObjectiveTest extends AbstractMarsSimUnitTest {
         Good cement = GoodsUtil.getGood(ResourceUtil.CEMENT_ID);
         Good water = GoodsUtil.getGood(ResourceUtil.WATER_ID);
         Good oxygen = GoodsUtil.getGood(ResourceUtil.OXYGEN_ID);
-        Good garment = GoodsUtil.getGood(ItemResourceUtil.garmentID);
+        Good garment = GoodsUtil.getGood(ItemResourceUtil.GARMENT_ID);
         Good bag = GoodsUtil.getEquipmentGood(EquipmentType.BAG);
 
 
@@ -118,7 +118,7 @@ public class TradeObjectiveTest extends AbstractMarsSimUnitTest {
 
         assertEquals("Buy resources", 2, buyResources.size());
         assertEquals("Oxygen amount", 10, buyResources.get(ResourceUtil.OXYGEN_ID).intValue());
-        assertEquals("Garment amount", 10, buyResources.get(ItemResourceUtil.garmentID).intValue());
+        assertEquals("Garment amount", 10, buyResources.get(ItemResourceUtil.GARMENT_ID).intValue());
 
         Map<Integer,Number> sellResources = new HashMap<>();
         obj.addResourcesToLoad(sellResources, true);

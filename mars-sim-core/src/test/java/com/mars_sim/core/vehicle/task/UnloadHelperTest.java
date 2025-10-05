@@ -71,7 +71,7 @@ public class UnloadHelperTest extends AbstractMarsSimUnitTest{
         v.storeAmountResource(res1, 10D);
         int res2 = ResourceUtil.FOOD_ID;
         v.storeAmountResource(res2, 10D);
-        int part1 = ItemResourceUtil.garmentID;
+        int part1 = ItemResourceUtil.GARMENT_ID;
         v.storeItemResource(part1, 10);
 
         double mass = v.getStoredMass();

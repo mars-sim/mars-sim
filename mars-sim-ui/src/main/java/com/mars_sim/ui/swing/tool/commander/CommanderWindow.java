@@ -103,7 +103,7 @@ public class CommanderWindow extends ToolWindow {
 	public static final String ICON = "dashboard";
     public static final String TITLE = "Command Dashboard";
 
-	private static final String DIPLOMATIC_TAB = "Diplomatic";
+	private static final String DIPLOMATIC_TAB = "Diplomacy";
 
 	private static final String AGRICULTURE_TAB = "Agriculture";
 	private static final String COMPUTING_TAB = "Computing";

@@ -28,18 +28,6 @@ public class ResourceUtil {
 	public static final int FIRST_ROBOT_RESOURCE_ID = 1020;
 	public static final int FIRST_BIN_RESOURCE_ID = 1040;
 
-	protected static Set<Integer> essentialResources;
-
-	// Data members.
-	private static Map<String, AmountResource> amountResourceByName;
-	private static Map<Integer, AmountResource> amountResourceById;
-	private static Set<AmountResource> resources;
-	
-	/** A set of life support resources. */
-	private static Set<Integer> lifeSupportResources;
-
-	private static Set<Integer> oilResources;
-
 	public static final int WATER_ID = FIRST_AMOUNT_RESOURCE_ID;
 	public static final int FOOD_ID = WATER_ID + 1;
 
@@ -143,10 +131,11 @@ public class ResourceUtil {
 	public static final int STYRENE_ID = POLYURETHANE_ID + 1;
 	
 	public static final int IRON_POWDER_ID = STYRENE_ID  + 1;
-	public static final int GLASS_ID = IRON_POWDER_ID + 1;
+	public static final int IRON_OXIDE_ID = IRON_POWDER_ID + 1;
+	public static final int GLASS_ID = IRON_OXIDE_ID + 1;
 	
 	// Must be one after the last fixed resource
-	public static final int FIRST_AMOUNT_FREE_RESOURCE_ID = GLASS_ID + 1;
+	public static final int FIRST_FREE_AMOUNT_RESOURCE_ID = GLASS_ID + 1;
 
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
 			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
@@ -161,10 +150,20 @@ public class ResourceUtil {
 	public static final int[] ORE_DEPOSIT_IDS = new int[]{ALLOPHANE_ID, AKAGANEITE_ID, BASALTIC_ID,
 														BASSANITE_ID, GYPSUM_ID, SMECTITE_ID};
 	
-	public static final int[] REGOLITH_TYPES = new int[] {REGOLITH_ID, REGOLITHB_ID,
+	public static final int[] REGOLITH_TYPES_IDS = new int[] {REGOLITH_ID, REGOLITHB_ID,
 														REGOLITHC_ID, REGOLITHD_ID};
 
+	protected static Set<Integer> essentialResources;
 
+	private static Map<String, AmountResource> amountResourceByName;
+	private static Map<Integer, AmountResource> amountResourceById;
+	private static Set<AmountResource> resources;
+	
+	/** A set of life support resources. */
+	private static Set<Integer> lifeSupportResources;
+
+	private static Set<Integer> oilResources;
+	
 	private static final Map<String, Integer> fixedResources = new HashMap<>();
 
 	static {
@@ -177,6 +176,7 @@ public class ResourceUtil {
 		fixedResources.put("bassanite", BASSANITE_ID);
 		fixedResources.put("black water", BLACK_WATER_ID);
 		fixedResources.put("brine water", BRINE_WATER_ID);
+		fixedResources.put("carbon", CARBON_ID);
 		fixedResources.put("carbon dioxide", CO2_ID);
 		fixedResources.put("carbon monoxide", CO_ID);
 		fixedResources.put("cement", CEMENT_ID);
@@ -209,6 +209,7 @@ public class ResourceUtil {
 		fixedResources.put("kamacite", KAMACITE_ID);
 		fixedResources.put("glucose", GLUCOSE_ID);
 		fixedResources.put("iron powder", IRON_POWDER_ID);
+		fixedResources.put("iron oxide", IRON_OXIDE_ID);
 		fixedResources.put("leaves", LEAVES_ID);
 		fixedResources.put("lime", LIME_ID);
 		fixedResources.put("magnesite", MAGNESITE_ID);
@@ -256,12 +257,12 @@ public class ResourceUtil {
 		fixedResources.put("toilet tissue", TOILET_TISSUE_ID);
 		fixedResources.put("toxic waste", TOXIC_WASTE_ID);
 		fixedResources.put("water", WATER_ID);
-		fixedResources.put("carbon", CARBON_ID);
 
 		// This check will only fail if a new resource has not been added correctly
-		int expectedSize = FIRST_AMOUNT_FREE_RESOURCE_ID - FIRST_AMOUNT_RESOURCE_ID;
+		int expectedSize = FIRST_FREE_AMOUNT_RESOURCE_ID - FIRST_AMOUNT_RESOURCE_ID;
 		if (fixedResources.size() != expectedSize) {
-			throw new IllegalStateException("The number of fixed resources is not correct. Expected: " + expectedSize + ", Actual: " + fixedResources.size());
+			throw new IllegalStateException("The number of fixed resources is not correct. Expected: " 
+					+ expectedSize + ", Actual: " + fixedResources.size());
 		}
 	}
 
@@ -290,7 +291,7 @@ public class ResourceUtil {
 					.filter(entry -> missingFixed.contains(entry.getValue()))
 					.map(Map.Entry::getKey)
 					.collect(Collectors.joining(", "));
-			throw new IllegalStateException("The following fixed resources are missing: " + missingFixedNames);
+			throw new IllegalStateException("The following fixed amount resources are missing: " + missingFixedNames);
 		}
 
 		lifeSupportResources = resources.stream()
@@ -304,6 +305,34 @@ public class ResourceUtil {
 				.collect(Collectors.toSet());
 
 		createEssentialResources();
+	}
+	
+
+	/**
+	 * Creates maps of amount resources.
+	 */
+	private static synchronized void createMaps() {
+		if (amountResourceByName == null) {
+
+			Map<String, AmountResource> tempAmountResourceMap = new HashMap<>();
+			Map<Integer, AmountResource> tempAmountResourceIDMap = new HashMap<>();
+			
+			for (AmountResource resource : resources) {
+				tempAmountResourceMap.put(resource.getName().toLowerCase(), resource);
+				tempAmountResourceIDMap.put(resource.getID(), resource);
+			}
+
+			// Create immutable internals
+			amountResourceByName = Collections.unmodifiableMap(tempAmountResourceMap);
+			amountResourceById = Collections.unmodifiableMap(tempAmountResourceIDMap);
+		}
+	}
+
+	/**
+	 * Maps an id to an amount resources.
+	 */
+	public static int getFixedId(String resourceName) {
+		return fixedResources.getOrDefault(resourceName.toLowerCase(), -1);
 	}
 	
 	/**
@@ -349,7 +378,7 @@ public class ResourceUtil {
 		for (int i: ORE_DEPOSIT_IDS) {
 			essentialResources.add(i);
 		}
-		for (int i: REGOLITH_TYPES) {
+		for (int i: REGOLITH_TYPES_IDS) {
 			essentialResources.add(i);
 		}
 		
@@ -365,34 +394,6 @@ public class ResourceUtil {
 		return essentialResources;
 	}
 	
-	/**
-	 * Creates maps of amount resources.
-	 */
-	private static synchronized void createMaps() {
-		if (amountResourceByName == null) {
-
-			Map<String, AmountResource> tempAmountResourceMap = new HashMap<>();
-			for (AmountResource resource : resources) {
-				tempAmountResourceMap.put(resource.getName().toLowerCase(), resource);
-			}
-
-			Map<Integer, AmountResource> tempAmountResourceIDMap = new HashMap<>();
-			for (AmountResource resource : resources) {
-				tempAmountResourceIDMap.put(resource.getID(), resource);
-			}
-
-			// Create immutable internals
-			amountResourceByName = Collections.unmodifiableMap(tempAmountResourceMap);
-			amountResourceById = Collections.unmodifiableMap(tempAmountResourceIDMap);
-		}
-	}
-
-	/**
-	 * Maps ids to amount resources.
-	 */
-	public static int getFixedId(String resourceName) {
-		return fixedResources.getOrDefault(resourceName.toLowerCase(), -1);
-	}
 
 	/**
 	 * Finds an amount resource name by id.
@@ -474,10 +475,10 @@ public class ResourceUtil {
 	 * @param resource
 	 * @return
 	 */
-	public static boolean isWaste(int resource) {
+	public static boolean isWasteProduct(int resource) {
 		return switch (resource) {
 			case GREY_WATER_ID, BLACK_WATER_ID, SOLID_WASTE_ID, TOXIC_WASTE_ID, 
-				COMPOST_ID, FOOD_WASTE_ID, CROP_WASTE_ID -> true;
+				COMPOST_ID, FOOD_WASTE_ID, CROP_WASTE_ID, CO_ID -> true;
 			default -> false;
 		};
 	}
@@ -490,7 +491,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isTier0Resource(int resource) {
 		return switch (resource) {
-			case ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID -> true;
+			case ICE_ID, BRINE_WATER_ID, ROCK_SALT_ID, HYDROGEN_ID -> true;
 			default -> false;
 		};
 	}
@@ -559,7 +560,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isConstructionResource(int resource) {
 		return switch (resource) {
-			case CEMENT_ID, CONCRETE_ID, GYPSUM_ID, LIME_ID, ACETYLENE_ID -> true;
+			case CEMENT_ID, CONCRETE_ID, LIME_ID, ACETYLENE_ID -> true;
 			default -> false;
 		};
 	}
@@ -572,7 +573,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isRawElement(int resource) {
 		return switch (resource) {
-			case CARBON_ID -> true;
+			case CARBON_ID, IRON_POWDER_ID -> true;
 			default -> false;
 		};
 	}

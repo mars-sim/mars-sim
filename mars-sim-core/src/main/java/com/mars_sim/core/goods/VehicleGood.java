@@ -52,10 +52,6 @@ class VehicleGood extends Good {
 
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
-	/** The projected demand of each refresh cycle. */
-	private double projectedDemand;
-	/** The trade demand for this resource of each refresh cycle. */
-	private double tradeDemand;
 	/** The repair demand for this resource of each refresh cycle. */
 	private double repairDemand;
 	
@@ -112,26 +108,6 @@ class VehicleGood extends Good {
     @Override
     public double getFlattenDemand() {
     	return flattenDemand;
-    }
-    
-    /**
-     * Gets the projected demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getProjectedDemand() {
-    	return projectedDemand;
-    }
-	
-    /**
-     * Gets the trade demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getTradeDemand() {
-    	return tradeDemand;
     }
 	
     /**
@@ -205,7 +181,7 @@ class VehicleGood extends Good {
 
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
-		
+    	
 		double previousDemand = owner.getDemandScore(this);
 		
         Settlement settlement = owner.getSettlement();
@@ -221,11 +197,19 @@ class VehicleGood extends Good {
 		
 		double projected = newProjDemand * flattenDemand;
 		
-		this.projectedDemand = .1 * projected + .9 * this.projectedDemand;
+		double projectedCache = owner.getProjectedDemandScore(this);
+		if (projectedCache == INITIAL_VEHICLE_DEMAND) {
+			projectedCache = projected;
+		}
+		else {
+			projectedCache = .01 * projected + .99 * projectedCache;
+		}
 		
+		owner.setProjectedDemandScore(this, projectedCache);
+	
 		double average = computeVehiclePartsCost(owner);
 		
-		tradeDemand = determineTradeVehicleValue(owner, settlement);
+		double tradeDemand = determineTradeVehicleValue(owner, settlement);
 		
 		// Gets the repair demand
 		// Note: need to look into parts and vehicle reliability in MalfunctionManager 
@@ -233,24 +217,39 @@ class VehicleGood extends Good {
 		// Look at each part in vehicleType
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 
 				* owner.getDemandScore(this);
-	
-		double totalDemand;
-		if (previousDemand == 0D) {
+		
+		// Note: the ceiling uses projected, not projectedCache
+		double ceiling = projected + tradeDemand + repairDemand;
+		
+		double totalDemand = previousDemand;
+		
+		if (previousDemand == INITIAL_VEHICLE_DEMAND) {
 			totalDemand = .5 * average 
 						+ .1 * repairDemand
-						+ .2 * projectedDemand 
+						+ .2 * projectedCache 
 						+ .2 * tradeDemand;
 		}
 
-		else {
-			// Intentionally lose some values over time
-			totalDemand = .993 * previousDemand
-						+ .005  * projectedDemand
-						+ .0002 * average 
-						+ .0002 * repairDemand
-						+ .0002 * tradeDemand;
+//		else {
+//			// Intentionally lose some values over time
+//			totalDemand = .993 * previousDemand
+//						+ .005  * projectedCache
+//						+ .0002 * average 
+//						+ .0002 * repairDemand
+//						+ .0002 * tradeDemand;
+//		}
+
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
 		}
-				
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
+		}		
+		
 		owner.setDemandScore(this, totalDemand);
 	}
 
@@ -287,7 +286,7 @@ class VehicleGood extends Good {
 	 * @return
 	 */
 	private static double getAverageVehicleSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
+		return Math.sqrt(0.1 + supplyStored);
 	}
 
 	/**

@@ -94,7 +94,7 @@ public class ExamineBody extends MedicalAidTask {
 			endTask();
 			return;
 		}
-		
+
 		// Probability affected by the person's stress and fatigue.
         if (examiner instanceof Person p && !p.getPhysicalCondition().isFitByLevel(1000, 50, 500)) {
         	endTask();
@@ -106,11 +106,18 @@ public class ExamineBody extends MedicalAidTask {
 		// Set deathInfo
 		deathInfo = body;
 
+		// Future: need to deal with the need of having more than one doctor to examine the patient.
+		// Ideally it should allow more than one doctors. But in terms of finding a doctor activity spot,
+		// and it would be messy.
+		// Other doctors may have already arrived first and the second one may or may not be necessary
+		// and additional activity spots may or may not be available.
+		// At the end of the day, only need one doctor to sign off the death certificate.
+		
 		// First walk to a medical activity spot 
 		boolean success = walkToDoctorStation(false);  
 
 		if (!success) {
-			logger.info(worker, "Now trying to go to medical again.");
+			logger.info(worker, "Tried to walk to Doctor's station unsuccessfully to examine " + deceasedPerson.getName() + ".");
 			// Note: Avoid calling this to instantly send the doctor there.
 			// Check if the doctor is already at a medical activity spot	
 			success = MedicalCare.dispatchToMedical(worker);

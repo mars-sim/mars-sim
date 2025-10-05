@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HeatSourceType.java
- * @version 3.2.0 2021-06-20
+ * @date 2025-09-28
  * @author Manny Kung
  */
 

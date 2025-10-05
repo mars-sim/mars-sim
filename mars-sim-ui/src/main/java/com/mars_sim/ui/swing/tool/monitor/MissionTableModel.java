@@ -304,7 +304,7 @@ public class MissionTableModel extends AbstractMonitorModel
 
 		switch (columnIndex) {
 			case DATE_FILED:
-				result = mission.getLog().getTimestampCreated();
+				result = mission.getLog().getTimestampFiled();
 				break;
 
 			case DATE_EMBARKED:

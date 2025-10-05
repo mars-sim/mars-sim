@@ -258,10 +258,10 @@ class StartingSettlementPanel extends WizardPanel {
 							result = settlement.findNumVehiclesOfType(VehicleType.LUV);
 						}
 						else if (column == 11) {
-							result = settlement.getItemResourceStored(ItemResourceUtil.pneumaticDrillID);
+							result = settlement.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID);
 						}
 						else if (column == 12) {
-							result = settlement.getItemResourceStored(ItemResourceUtil.backhoeID);
+							result = settlement.getItemResourceStored(ItemResourceUtil.BACKHOE_ID);
 						}
 					}
 				}
@@ -401,10 +401,10 @@ class StartingSettlementPanel extends WizardPanel {
 						if (settlement.findNumVehiclesOfType(VehicleType.LUV) == 0) result = true;
 					}
 					else if (column == 11) {
-						if (settlement.getItemResourceStored(ItemResourceUtil.pneumaticDrillID) == 0) result = true;
+						if (settlement.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID) == 0) result = true;
 					}
 					else if (column == 12) {
-						if (settlement.getItemResourceStored(ItemResourceUtil.backhoeID) == 0) result = true;
+						if (settlement.getItemResourceStored(ItemResourceUtil.BACKHOE_ID) == 0) result = true;
 					}
 				}
 			}

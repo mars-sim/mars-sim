@@ -39,7 +39,7 @@ public class FoodProduction extends Function {
 	private static final int SKILL_GAP = 1;
 
 	// Why are we usign printer to do cooking ?
-	private static final int PRINTER_ID = ItemResourceUtil.printerID;
+	private static final int PRINTER_ID = ItemResourceUtil.SLS_3D_PRINTER_ID;
 
 	private static final double PROCESS_MAX_VALUE = 100D;
 

@@ -71,8 +71,8 @@
    	<building-package name="ERV Set 1"/>
    	<building-package name="Air Set 1 - 1x1"/>
    	<building-package name="Sabatier Set 1 - 1x1"/>
-   	<building-package name="Nuclear Set 1 - Combo 0"/>
-   	<building-package name="Solar Set 1 - 1x6"/>
+   	<building-package name="Nuclear Set 1 - Combo 1"/>
+   	<building-package name="Solar Set 1 - 1x9"/>
  	<building-package name="Brine Water Well Set 1 - 1x1"/>
  	    	    
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->

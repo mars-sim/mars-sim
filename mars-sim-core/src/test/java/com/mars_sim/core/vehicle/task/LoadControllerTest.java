@@ -199,7 +199,7 @@ extends TestCase {
 		manifest.addItem(pipeWrenchID, 10, false);
 
 		testLoadOptionalResources(100, manifest,
-								  ItemResourceUtil.printerID);
+								  ItemResourceUtil.SLS_3D_PRINTER_ID);
 	}
 
 	/*

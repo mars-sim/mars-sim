@@ -159,7 +159,9 @@ public class SimulationConfig {
 	 * -----------------------------------------------------------------------------
 	 */
 
-	/** hidden constructor. */
+	/** 
+	 * Hidden constructor. 
+	 */
 	private SimulationConfig(String xmlLoc) {
 		logger.info("Loading simulation configuration from " + xmlLoc);
 		cachedResources = new ResourceCache(new File(xmlLoc), true);
@@ -168,7 +170,8 @@ public class SimulationConfig {
 	}
 
 	/**
-	 * Load a new instance of the simulation configuration for the default XML files.
+	 * Loads a new instance of the simulation configuration for the default XML files.
+	 * 
 	 * @return
 	 */
 	public static SimulationConfig loadConfig() {
@@ -179,7 +182,7 @@ public class SimulationConfig {
 	}
 
 	/**
-	 * Gets the previously loaded config
+	 * Gets the previously loaded config.
 	 *
 	 * @return SimulationConfig instance
 	 */
@@ -641,7 +644,8 @@ public class SimulationConfig {
 	}
 
 	/**
-	 * load the default config files
+	 * Loads the default config files.
+	 * 
 	 * @throws IOException
 	 * @throws JDOMException
 	 */

@@ -102,6 +102,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 	// Mission Status
 	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("Mission.status.noVehicle");
+	protected static final MissionStatus NO_VEHICLE_WITHIN_RANGE = new MissionStatus("Mission.status.noVehicleWithinRange");
 	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
 	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
 	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
@@ -110,9 +111,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected static final MissionStatus ONLY_ONE_MEMBER = new MissionStatus("Mission.status.onlyOneMember");
 	
 	// Static members
-	private static final Integer WHEEL_ID = ItemResourceUtil.findIDbyItemResourceName(ItemResourceUtil.ROVER_WHEEL);
-	private static Set<Integer> unNeededParts = ItemResourceUtil.convertNameArray2ResourceIDs(
-															new String[] {ItemResourceUtil.FIBERGLASS});
+	private static final Set<Integer> UNNEEDED_PARTS = Set.of(ItemResourceUtil.FIBERGLASS_ID);
+
 	// Data members
 	/** The current navpoint index. */
 	private int navIndex = 0;
@@ -343,7 +343,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param v Vehicle to be released
 	 */
 	protected final void releaseVehicle(Vehicle v) {
-		if ((v != null) && this.equals(v.getMission())) {
+		if ((v != null) && this.equals(v.getMission())) {			
+			// Note: may need to make everyone unboard the vehicle
 			v.setReservedForMission(false);
 			v.setMission(null);
 			v.removeUnitListener(this);
@@ -1083,7 +1084,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 
 		// Note: need to figure out why a mission vehicle's scope would contain 
 		// the following unneeded parts that must be removed:
-		parts = ItemResourceUtil.removePartMap(parts, unNeededParts);
+		parts = ItemResourceUtil.removePartMap(parts, UNNEEDED_PARTS);
 
 		for (Map.Entry<Integer, Double> entry : parts.entrySet()) {
 			Integer id = entry.getKey();
@@ -1099,10 +1100,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// since the automated process is not reliable
 		switch(vehicle.getVehicleType()) {
 			case EXPLORER_ROVER:
-				result.computeIfAbsent(WHEEL_ID, k -> 2);
+				result.computeIfAbsent(ItemResourceUtil.ROVER_WHEEL_ID, k -> 2);
 				break;
 			case CARGO_ROVER, TRANSPORT_ROVER:
-				result.computeIfAbsent(WHEEL_ID, k -> 4);
+				result.computeIfAbsent(ItemResourceUtil.ROVER_WHEEL_ID, k -> 4);
 				break;
 			default:
 				break;
@@ -1772,7 +1773,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param status Reason for the abort.
 	 * @param eventType Optional register an event
 	 */
-	@Override
 	public void abortMission(MissionStatus status, EventType eventType) {
 
 		if (addMissionStatus(status)) {
@@ -1798,7 +1798,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				eventManager.registerNewEvent(newEvent);
 			}
 
-			super.abortMission(status, eventType);
+			super.abortMission(status);
 		}
 	}
 

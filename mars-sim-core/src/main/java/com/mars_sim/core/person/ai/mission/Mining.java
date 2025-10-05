@@ -71,7 +71,7 @@ public class Mining extends EVAMission
 	/** The good value factor of a site. */
 	public static final double MINERAL_GOOD_VALUE_FACTOR = 500;
 	
-	/** The averge good value of a site. */
+	/** The average good value of a site. */
 	static final double AVERAGE_RESERVE_GOOD_VALUE = 50_000;
 
 	/** Amount of time(millisols) to spend at the mining site. */
@@ -93,7 +93,7 @@ public class Mining extends EVAMission
 
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error creating mission.
@@ -201,7 +201,6 @@ public class Mining extends EVAMission
 
 				if (usable)
 					result = true;
-
 			}
 		}
 
@@ -218,10 +217,10 @@ public class Mining extends EVAMission
 		boolean result = true;
 
 		try {
-			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.pneumaticDrillID)) {
+			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
 				result = false;
 			}
-			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.backhoeID)) {
+			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
 				result = false;
 			}
 		} catch (Exception e) {
@@ -248,8 +247,8 @@ public class Mining extends EVAMission
 			var luv = attachLUV(true);
 			settlement.removeVicinityParkedVehicle(luv);
 
-			if (!settlement.hasItemResource(ItemResourceUtil.pneumaticDrillID)
-					|| !settlement.hasItemResource(ItemResourceUtil.backhoeID)) {
+			if (!settlement.hasItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID)
+					|| !settlement.hasItemResource(ItemResourceUtil.BACKHOE_ID)) {
 				logger.warning(luv, 
 						"Could not load LUV and/or its attachment parts for mission " + getName());
 				endMission(LUV_ATTACHMENT_PARTS_NOT_LOADABLE);
@@ -257,11 +256,11 @@ public class Mining extends EVAMission
 			}
 			
 			// Load light utility vehicle with attachment parts.
-			settlement.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
-			luv.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			settlement.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			luv.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
-			settlement.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
-			luv.storeItemResource(ItemResourceUtil.backhoeID, 1);
+			settlement.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			luv.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
 
@@ -286,11 +285,11 @@ public class Mining extends EVAMission
 			luv.findNewParkingLoc();
 
 			// Unload attachment parts.
-			luv.retrieveItemResource(ItemResourceUtil.pneumaticDrillID, 1);
-			settlement.storeItemResource(ItemResourceUtil.pneumaticDrillID, 1);
+			luv.retrieveItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
+			settlement.storeItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID, 1);
 
-			luv.retrieveItemResource(ItemResourceUtil.backhoeID, 1);
-			settlement.storeItemResource(ItemResourceUtil.backhoeID, 1);
+			luv.retrieveItemResource(ItemResourceUtil.BACKHOE_ID, 1);
+			settlement.storeItemResource(ItemResourceUtil.BACKHOE_ID, 1);
 		}
 	}
 
@@ -334,7 +333,8 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Attach/deattach the LIV from the Rover
+	 * Attaches or releases the LUV from a rover.
+	 * 
 	 * @param attach
 	 * @return
 	 */
@@ -354,7 +354,7 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Closes down the mining activities
+	 * Closes down the mining activities.
 	 */
 	@Override
 	protected void endEVATasks() {
@@ -365,7 +365,7 @@ public class Mining extends EVAMission
 	}
 
 	/**
-	 * Get the Vehicle comparator that is based on largest cargo
+	 * Gets the Vehicle comparator that is based on largest cargo.
 	 */
 	@Override
 	protected  Comparator<Vehicle> getVehicleComparator() {

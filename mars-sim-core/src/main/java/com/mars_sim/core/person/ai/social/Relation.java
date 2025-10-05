@@ -36,9 +36,9 @@ public class Relation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Note: For Person:
-	// d0 : e.g. respect
-	// d1 : e.g. care
-	// d2 : e.g. trust
+	// d0 : respect
+	// d1 : care
+	// d2 : trust
 
 	// Note: For Settlement:
 	// d0 : diplomatic
@@ -64,7 +64,7 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Gets the opinion regarding a unit.
+	 * Gets the opinion regarding another appraiser.
 	 * 
 	 * @param appraiser
 	 * @return
@@ -74,10 +74,48 @@ public class Relation implements Serializable {
 			return opinionMap.get(appraised.getIdentifier());
 		}
 		return null;
-//		Future: Need to determine how best to handle null opinion 
-		// return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
+//		Future: Need to determine how best to handle null opinion // return opinionMap.getOrDefault(p.getIdentifier(), EMPTY_OPINION);
 	}
 	
+	/**
+	 * Changes the opinion regarding a unit.
+	 * 
+	 * @param u
+	 * @param mod
+	 */
+	void changeOpinion(Appraiser appraised, double mod) {
+		int id = appraised.getIdentifier();
+		
+		Opinion found = opinionMap.get(id);
+		
+		if (found == null) {
+			// Randomly set the opinion map
+			setRandomOpinion(appraised, 0);
+			
+			found = opinionMap.get(id);
+		}
+
+		double d0 = found.d0;
+		double d1 = found.d1;
+		double d2 = found.d2;
+		
+		int rand = RandomUtil.getRandomInt(6);
+		if (rand == 0) {
+			// Less likely to change the d2 than d1 and d0
+			d2 += mod;
+		}
+		else if (rand == 1 || rand == 2) {
+			d1 += mod;
+		}
+		else { // 3, 4, 5, 6
+			// Most likely to change the d0 than d1 and d2
+			d0 += mod;
+		}
+		
+		found = new Opinion(d0, d1, d2);
+		opinionMap.put(id, found);
+	}
+
 	/**
 	 * Sets a random opinion regarding a unit.
 	 * 
@@ -127,68 +165,27 @@ public class Relation implements Serializable {
 	}
 	
 	/**
-	 * Changes the opinion regarding a unit.
+	 * Gets all people known by the appraiser.
 	 * 
-	 * @param u
-	 * @param mod
-	 */
-	void changeOpinion(Appraiser appraised, double mod) {
-		int id = appraised.getIdentifier();
-		
-		Opinion found = opinionMap.get(id);
-		
-		if (found == null) {
-			// Randomly set the opinion map
-			setRandomOpinion(appraised, 0);
-			
-			found = opinionMap.get(id);
-		}
-
-		double d1 = found.d1;
-		double d2 = found.d2;
-		double d0 = found.d0;
-		int rand = RandomUtil.getRandomInt(6);
-		if (rand == 0) {
-			// Less likely to change the d2 than d1 and d0
-			d2 += mod;
-		}
-		else if (rand == 1 || rand == 2) {
-			d1 += mod;
-		}
-		else { // 3, 4, 5, 6
-			// Most likely to change the d0 than d1 and d2
-			d0 += mod;
-		}
-		
-		found = new Opinion(d0, d1, d2);
-		opinionMap.put(id, found);
-	}
-	
-	/**
-	 * Gets all people known.
-	 * 
-	 * @param person the person
 	 * @return a list of people
 	 */
-	Set<Person> getAllKnownPeople(Person person) {
+	Set<Person> getAllKnownPeople() {
 		return opinionMap.keySet().stream()
 				.map(id -> unitManager.getPersonByID(id))
 				.collect(Collectors.toUnmodifiableSet());
 	}
 
 	/**
-	 * Gets all settlements known.
+	 * Gets all settlements known by the appraiser.
 	 * 
-	 * @param settlement the settlement
 	 * @return a list of settlement
 	 */
-	Set<Settlement> getAllKnownSettlement(Settlement settlement) {
+	Set<Settlement> getAllKnownSettlement() {
 		return opinionMap.keySet().stream()
 				.map(id -> unitManager.getSettlementByID(id))
 				.collect(Collectors.toUnmodifiableSet());
 	}
 
-	
 	/**
 	 * Initializes instances.
 	 * 

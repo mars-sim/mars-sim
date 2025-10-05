@@ -1,12 +1,13 @@
 /*
  * Mars Simulation Project
  * ItemResourceUtil.java
- * @date 2025-07-31
+ * @date 2025-10-02
  * @author Manny Kung
  */
 
 package com.mars_sim.core.resource;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,7 +15,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.goods.GoodType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
@@ -25,38 +25,44 @@ public class ItemResourceUtil {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ItemResourceUtil.class.getName());
 
-	private static final String EXTINGUISHER = "fire extinguisher";
-	private static final String PATCH = "airleak patch";
-	private static final String GLOVE = "work gloves";
+	private static final int FIRST_ITEM_RESOURCE_ID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 	
-	private static final String PRESSURE_SUIT = "pressure suit";
-	private static final String GARMENT = "garment";
+	public static final int AIRLEAK_PATCH_ID = FIRST_ITEM_RESOURCE_ID;
+	public static final int BATTERY_MODULE_ID = AIRLEAK_PATCH_ID + 1;
 	
-	public static final String BATTERY_MODULE = "battery module";
-	public static final String ROVER_WHEEL = "rover wheel";
-	public static final String FIBERGLASS = "fiberglass";
+	public static final int FIRE_EXTINGUISHER_ID = BATTERY_MODULE_ID + 1;
+	public static final int FIBERGLASS_ID = FIRE_EXTINGUISHER_ID + 1;
+	public static final int GARMENT_ID = FIBERGLASS_ID + 1;
+	public static final int WORK_GLOVES_ID = GARMENT_ID + 1;
+	
+	public static final int METHANE_FUEL_CELL_ID = WORK_GLOVES_ID + 1;
+	public static final int METHANOL_FUEL_CELL_ID = METHANE_FUEL_CELL_ID + 1;
+	public static final int METHANE_FUEL_CELL_STACK_ID = METHANOL_FUEL_CELL_ID + 1;
+	public static final int METHANOL_FUEL_CELL_STACK_ID = METHANE_FUEL_CELL_STACK_ID + 1;
+	
+	public static final int PRESSURE_SUIT_ID = METHANOL_FUEL_CELL_STACK_ID + 1;
+	public static final int ROVER_WHEEL_ID = PRESSURE_SUIT_ID + 1;
+	public static final int SLS_3D_PRINTER_ID = ROVER_WHEEL_ID + 1;
 	
 	// Light utility vehicle attachment parts for mining or construction.
-	private static final String BACKHOE = "backhoe";
-	private static final String PNEUMATIC_DRILL = "pneumatic drill";
+	public static final int BACKHOE_ID = SLS_3D_PRINTER_ID + 1;
+	public static final int PNEUMATIC_DRILL_ID = BACKHOE_ID + 1;
+	
+	// Must be one after the last fixed resource
+	public static final int FIRST_FREE_ITEM_RESOURCE_ID = PNEUMATIC_DRILL_ID + 1;
+	
+	// Light utility vehicle attachment parts for mining or construction.
 
 	/** String name of the manufacturing process of producing an EVA suit. */	
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	
-	/** String name of the manufacturing process of producing a repair bot. */	
+	/** 
+	 * The String name of the manufacturing process of producing a repair bot.
+	  */	
 	public static final String ASSEMBLE_A_REPARTBOT = "Assemble a RepairBot";
 	
-	// 3-D printer
-	private static final String SLS_3D_PRINTER = "SLS 3D Printer";
-
-	public static int garmentID;
-	public static int pressureSuitID;
-	public static int pneumaticDrillID;
-	public static int backhoeID;
-	public static int printerID;
-
-	private static Map<String, Part> itemResourceMap;
-	private static Map<Integer, Part> itemResourceIDMap;
+	private static Map<String, Part> itemResourceByName;
+	private static Map<Integer, Part> itemResourceByID;
 	private static Set<Part> partSet;
 	
 	public static Set<Integer> evaSuitPartIDs;
@@ -65,31 +71,103 @@ public class ItemResourceUtil {
 	/** A set of common parts that will be consumed during a malfunction repair. */
 	public static Set<Integer> consumablePartIDs;
 
+	private static final Map<String, Integer> fixedItemResources = new HashMap<>();
+
+	static {
+		// Map the pre-defined resources to their names
+		fixedItemResources.put("airleak patch", AIRLEAK_PATCH_ID);
+		fixedItemResources.put("battery module",  BATTERY_MODULE_ID);
+		fixedItemResources.put("fire extinguisher", FIRE_EXTINGUISHER_ID);
+		fixedItemResources.put("fiberglass", FIBERGLASS_ID);
+		
+		fixedItemResources.put("garment", GARMENT_ID);
+		fixedItemResources.put("work gloves", WORK_GLOVES_ID);
+		
+		fixedItemResources.put("pressure suit", PRESSURE_SUIT_ID);
+		fixedItemResources.put("sls 3d printer", SLS_3D_PRINTER_ID);
+		fixedItemResources.put("rover wheel", ROVER_WHEEL_ID);
+		fixedItemResources.put("backhoe", BACKHOE_ID);
+		fixedItemResources.put("pneumatic drill", PNEUMATIC_DRILL_ID);
+		
+		// Map the pre-defined resources to their names
+		fixedItemResources.put("methane fuel cell", METHANE_FUEL_CELL_ID);
+		fixedItemResources.put("methanol fuel cell", METHANOL_FUEL_CELL_ID);
+		fixedItemResources.put("methane fuel cell stack", METHANE_FUEL_CELL_STACK_ID);
+		fixedItemResources.put("methanol fuel cell stack", METHANOL_FUEL_CELL_STACK_ID);
+		
+		// This check will only fail if a new resource has not been added correctly
+		int expectedSize = FIRST_FREE_ITEM_RESOURCE_ID - FIRST_ITEM_RESOURCE_ID;
+		if (fixedItemResources.size() != expectedSize) {
+			throw new IllegalStateException("The number of fixed item resources is not correct. Expected: " 
+					+ expectedSize + ", Actual: " + fixedItemResources.size());
+		}
+	}
+		
 	/**
-	 * Constructor.
+	 * Default Constructor for ItemResourceUtil.
 	 */
 	private ItemResourceUtil() {
 	}
 
 	/**
-	 * Registers the parts of the simulation.
+	 * Registers the known parts in the helper.
 	 * 
 	 * @param parts
 	 */
 	public static void registerParts(Set<Part> parts) {
 		partSet = parts;
 		createMaps();
-		createIDs();
+		
+		// Double check all predefined item resources are in the list
+		// Cause could be a missing item resource in the XMLfile
+		var missingFixed = new HashSet<>(fixedItemResources.values());
+		missingFixed.removeAll(itemResourceByID.keySet());
+		if (!missingFixed.isEmpty()) {
+			// Display the missing resources
+			var missingFixedNames = fixedItemResources.entrySet().stream()
+					.filter(entry -> missingFixed.contains(entry.getValue()))
+					.map(Map.Entry::getKey)
+					.collect(Collectors.joining(", "));
+			throw new IllegalStateException("The following fixed item resources are missing: " + missingFixedNames);
+		}
 	}
+	
+	/**
+	 * Prepares maps for storing all item resources.
+	 */
+	private static synchronized void createMaps() {
+		if (itemResourceByName == null) {
+
+			Map<String, Part> tempItemResourceMap = new HashMap<>();		
+			Map<Integer, Part> tempItemResourceIDMap = new HashMap<>();
+			
+			for (Part p : partSet) {
+				tempItemResourceMap.put(p.getName().toLowerCase(), p);
+				tempItemResourceIDMap.put(p.getID(), p);
+			}
+			
+			// Create immutable internals
+			itemResourceByName = Collections.unmodifiableMap(tempItemResourceMap);
+			itemResourceByID = Collections.unmodifiableMap(tempItemResourceIDMap);
+		}
+	}
+
+	/**
+	 * Maps an id to an item resources.
+	 */
+	public static int getFixedId(String resourceName) {
+		return fixedItemResources.getOrDefault(resourceName.toLowerCase(), -1);
+	}
+	
 	
 	/**
 	 * Initializes the consumable parts for use during malfunction.
 	 */
 	public static void initConsumableParts() {
 		if (consumablePartIDs == null) {
-			consumablePartIDs = Set.of(findIDbyItemResourceName(EXTINGUISHER),
-										findIDbyItemResourceName(PATCH),
-										findIDbyItemResourceName(GLOVE));
+			consumablePartIDs = Set.of(FIRE_EXTINGUISHER_ID,
+										AIRLEAK_PATCH_ID,
+										WORK_GLOVES_ID);
 		}
 	}
 	
@@ -104,7 +182,7 @@ public class ItemResourceUtil {
 			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 			
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
+				if (info.getName().equalsIgnoreCase(ASSEMBLE_EVA_SUIT)) {
 		        	manufactureProcessInfo = info;
 					evaSuitPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
 		        	break;
@@ -128,7 +206,7 @@ public class ItemResourceUtil {
 			var manufactureConfig = SimulationConfig.instance().getManufactureConfiguration();
 			
 			for (ManufactureProcessInfo info : manufactureConfig.getManufactureProcessList()) {
-				if (info.getName().equals(ASSEMBLE_A_REPARTBOT)) {
+				if (info.getName().equalsIgnoreCase(ASSEMBLE_A_REPARTBOT)) {
 		        	manufactureProcessInfo = info;
 		        	botPartIDs = info.getInputList().stream().map(ProcessItem::getId).collect(Collectors.toSet());
 		        	break;
@@ -140,38 +218,6 @@ public class ItemResourceUtil {
 		}
 	}
 	
-	/**
-	 * Creates an item resource. This is only used for test cases but should it be here?
-	 *
-	 * @param resourceName
-	 * @param id
-	 * @param description
-	 * @param massPerItem
-	 * @param solsUsed
-	 * @return
-	 */
-	public static Part createItemResource(String resourceName, int id, String description, GoodType type, double massPerItem,
-			int solsUsed) {
-		Part p = new Part(resourceName, id, description, type, massPerItem, solsUsed);
-		ItemResourceUtil.registerBrandNewPart(p);
-		return p;
-	}
-
-	/**
-	 * Prepares the id's of a few item resources.
-	 */
-	private static void createIDs() {
-
-		// Create item ids reference
-		garmentID = findIDbyItemResourceName(GARMENT);
-		pressureSuitID = findIDbyItemResourceName(PRESSURE_SUIT);
-
-		pneumaticDrillID = findIDbyItemResourceName(PNEUMATIC_DRILL);
-		backhoeID = findIDbyItemResourceName(BACKHOE);
-
-		printerID = findIDbyItemResourceName(SLS_3D_PRINTER);
-	}
-
 	/**
 	 * Converts a array of string item names into their equivalent IDs.
 	 * Note: Currently, it will look for parts only.
@@ -191,32 +237,6 @@ public class ItemResourceUtil {
 	}
 
 	/**
-	 * Prepares maps for storing all item resources.
-	 */
-	private static void createMaps() {
-		itemResourceMap = new HashMap<>();
-
-		for (Part p : partSet) {
-			itemResourceMap.put(p.getName().toLowerCase(), p);
-		}
-
-		itemResourceIDMap = new HashMap<>();
-		for (Part p : partSet) {
-			itemResourceIDMap.put(p.getID(), p);
-		}
-	}
-
-	/**
-	 * Registers a new part in all 3 item resource maps.
-	 *
-	 * @param p {@link Part}
-	 */
-	public static void registerBrandNewPart(Part p) {
-		itemResourceMap.put(p.getName().toLowerCase(), p);
-		itemResourceIDMap.put(p.getID(), p);
-	}
-
-	/**
 	 * Finds an item resource by name.
 	 *
 	 * @param name the name of the resource.
@@ -224,25 +244,27 @@ public class ItemResourceUtil {
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static ItemResource findItemResource(String name) {
-		// Use Java 8 stream
-		Part ir = getItemResources().stream().filter(item -> item.getName().equalsIgnoreCase(name)).findFirst()
-				.orElse(null);
+		Part ir = itemResourceByName.get(name.toLowerCase());
 		if (ir == null) {
-			throw new IllegalArgumentException("No ItemResource called " + name);	
+			throw new IllegalArgumentException("Part '" + name + "' not found.");	
 		}
 
 		return ir;
 	}
 
 	/**
-	 * Finds an amount resource by id.
+	 * Finds an item resource by id.
 	 *
 	 * @param id the resource's id.
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
 	 */
 	public static Part findItemResource(int id) {
-		return itemResourceIDMap.get(id);
+		Part ir = itemResourceByID.get(id);
+		if (ir == null) {
+			throw new IllegalArgumentException("Part '" + id + "' not found.");
+		}
+		return ir;
 	}
 
 	/**
@@ -274,8 +296,7 @@ public class ItemResourceUtil {
 	 */
 	
 	public static Integer findIDbyItemResourceName(String name) {
-		ItemResource ir = findItemResource(name);
-		return ir.getID();
+		return findItemResource(name).getID();
 	}
 
 	/**

@@ -1,16 +1,24 @@
 package com.mars_sim.core;
 
-import com.mars_sim.core.map.location.LocalPosition;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class EntityTest extends AbstractMarsSimUnitTest {
+import org.junit.Test;
+
+import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.test.MarsSimUnitTest;
+
+public class EntityTest extends MarsSimUnitTest {
     
+    @Test
     public void testSettlementContext() {
         var s = buildSettlement("Test");
         assertNull("Settlement context", s.getContext());
         assertEquals("Settlement name", "Test", s.getName());
     }
 
-    public void testPersonInSettlementContext() {
+    @Test
+    public void personInSettlementContext() {
         var s = buildSettlement("Test");
         var p = buildPerson("Fred", s);
 
@@ -18,18 +26,20 @@ public class EntityTest extends AbstractMarsSimUnitTest {
         assertEquals("Person name", "Fred", p.getName());
     }
 
+    @Test
     public void testVehicleAtSettlementContext() {
         var s = buildSettlement("Test");
-        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
 
         assertEquals("Vehicle context", s.getName(), v.getContext());
         assertEquals("Vehicle name", "Rover", v.getName());
     }
 
+    @Test
     public void testPersonInVehicleContext() {
         var s = buildSettlement("Test");
-        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var p = buildPerson("Fred", s);
 
         p.transfer(v);
@@ -39,36 +49,35 @@ public class EntityTest extends AbstractMarsSimUnitTest {
         assertEquals("Person name", "Fred", p.getName());
     }
 
+    @Test
     public void testPersonOnSurfaceContext() {
         var s = buildSettlement("Test");
         var p = buildPerson("Fred", s);
 
-        var ms = unitManager.getMarsSurface();
-        p.transfer(ms);
+        p.transfer(getContext().getSurface());
 
         assertEquals("Person context", s.getCoordinates().getFormattedString(), p.getContext());
         assertEquals("Person name", "Fred", p.getName());
     }
 
+    @Test
     public void testVehicleOnSurfaceContext() {
         var s = buildSettlement("Test");
-        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
-        var ms = unitManager.getMarsSurface();
-        v.transfer(ms);
+        v.transfer(getContext().getSurface());
 
         assertEquals("Vehicle context", s.getCoordinates().getFormattedString(), v.getContext());
         assertEquals("Vehicle name", "Rover", v.getName());
     }
 
-    
+    @Test
     public void testPersonInVehicleOnSurfaceContext() {
         var s = buildSettlement("Test");
-        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var p = buildPerson("Fred", s);
 
-        var ms = unitManager.getMarsSurface();
-        v.transfer(ms);
+        v.transfer(getContext().getSurface());
         p.transfer(v);
 
         assertEquals("Person context", s.getCoordinates().getFormattedString()

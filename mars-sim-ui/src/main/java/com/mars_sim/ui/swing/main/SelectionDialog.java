@@ -37,6 +37,7 @@ import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
  * This is a modal dialog used to allow the user to complete a selection of a list of options.
  * It presents a Run and cancel button.
  */
+@SuppressWarnings("serial")
 class SelectionDialog extends JDialog {
     private int selected = -1;
     private static final int RUN = 1;

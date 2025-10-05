@@ -100,14 +100,18 @@ public class SponsorTabPanel extends TabPanel {
 		else {
 			
 			Image img = (ImageLoader.getImage(AGENCY_FOLDER + agencyShortName));
-			
-			int originalWidth = img.getWidth(null);
-			int originalHeight = img.getHeight(null);
-			int newWidth = 250; // Desired width
-			int newHeight = (int) ((double) originalHeight / originalWidth * newWidth);
-			
-			Image newImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-			agencyLabel = new JLabel(new ImageIcon(newImg));
+			if (img != null) {
+				int originalWidth = img.getWidth(null);
+				int originalHeight = img.getHeight(null);
+				int newWidth = 250; // Desired width
+				int newHeight = (int) ((double) originalHeight / originalWidth * newWidth);
+				
+				Image newImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+				agencyLabel = new JLabel(new ImageIcon(newImg));
+			}
+			else {
+				agencyLabel = new JLabel();
+			}
 		}
 
 		iconPanel.add(agencyLabel);

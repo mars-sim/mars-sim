@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * UnitEventType.java
- * @date 2024-07-03
+ * @date 2025-10-02
  * @author stpa
  */
 
@@ -108,6 +108,9 @@ public enum UnitEventType {
 	MISSION_EVENT					("mission event"),
 
 	// For Goods and GoodsManager
+	PROJECTED_DEMAND_EVENT 			("projected demand of a good"),
+	TRADE_DEMAND_EVENT 				("trade demand of a good"),
+	REPAIR_DEMAND_EVENT				("repair demand of a good"), 
 	MARKET_VALUE_EVENT				("market value of a good"),
 	MARKET_DEMAND_EVENT				("market demand of a good"),
 	MARKET_PRICE_EVENT				("market price of a good"),

@@ -22,7 +22,6 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.MathUtils;
 
 /*
  * This class is the representation of a Part instance as a Good that is tradable.
@@ -80,32 +79,37 @@ public class PartGood extends Good {
 	
 	private static final double BASE_DEMAND = 0.5;
 
-	private static final double DRILL_DEMAND  = 1;
+	private static final double DRILL_DEMAND  = .75;
 	private static final double BOTTLE_DEMAND = .02;
 	private static final double FIBERGLASS_DEMAND = .00005;
 	private static final double GASKET_DEMAND = .05;
 	private static final double VEHICLE_PART_DEMAND = .4;
-	private static final double EVA_PART_DEMAND = 1;
+	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
-	private static final double SCRAP_METAL_DEMAND = .01;
-	private static final double INGOT_METAL_DEMAND = .01;
-	private static final double SHEET_METAL_DEMAND = .025;
-	private static final double TRUSS_DEMAND = .05;
-	private static final double STEEL_DEMAND = .1;
+	private static final double SCRAP_METAL_DEMAND = .5;
+	private static final double INGOT_METAL_DEMAND = .25;
+	private static final double SHEET_METAL_DEMAND = .25;
+	private static final double TRUSS_DEMAND = .5;
+	private static final double STEEL_DEMAND = .5;
 	private static final double BRICK_DEMAND = .2;
-	private static final double ELECTRICAL_DEMAND = .15;
+	private static final double ELECTRICAL_DEMAND = 1.25;
 	private static final double INSTRUMENT_DEMAND = 1.2;
-	private static final double METALLIC_DEMAND = .25;
-	private static final double UTILITY_DEMAND = .5;
-	private static final double TOOL_DEMAND = 2;
+	private static final int METALLIC_DEMAND = 1;
+	private static final double UTILITY_DEMAND = 0.5;
+	private static final double TOOL_DEMAND = 0.75;
 	private static final double CONSTRUCTION_DEMAND = 1.2;
-	private static final double GLASS_SHEET_DEMAND = .025;
+	private static final double GLASS_SHEET_DEMAND = 0.025;
 	private static final double GLASS_TUBE_DEMAND  = 8;
+	private static final double LOGIC_BOARD_DEMAND = 0.5;
+	private static final double ELECTRICAL_WIRE_DEMAND = .25;
+	private static final double WIRE_DEMAND = 0.2;
 	
 	private static final double ATTACHMENT_PARTS_DEMAND = 1.5;
 	private static final double AEROGEL_TILE_DEMAND = 0.8;
-	private static final double PLASTIC_PIPE_DEMAND = .1;
+	private static final double PLASTIC_PIPE_DEMAND = 0.1;
 
+	private static final double FUEL_CELL_DEMAND = 3;
+	private static final double FUEL_CELL_STACK_DEMAND = 8;
 	
 	private static final int PARTS_MAINTENANCE_VALUE = 2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
@@ -119,10 +123,12 @@ public class PartGood extends Good {
 	private static final double WAFER_COST = 50;
 	private static final double BATTERY_COST = 5;
 	private static final double INSTRUMENT_COST = 1;
-	private static final double WIRE_COST = .005;
+	private static final double WIRE_COST = .05;
 	private static final double ELECTRONIC_COST = .5;
-    private static final double INITIAL_PART_DEMAND = 30;
-	private static final double INITIAL_PART_SUPPLY = 1;
+	
+    private static final double INITIAL_PART_DEMAND = 10;
+	private static final double INITIAL_PART_SUPPLY = 0;
+	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 
 	private static Set<Integer> kithenWare = ItemResourceUtil.convertNameArray2ResourceIDs(new String [] {
@@ -133,13 +139,8 @@ public class PartGood extends Good {
 																		"backhoe", "bulldozer blade",
 																		"crane boom", DRILLING_RIG,
 																		"pneumatic drill", "soil compactor"});
-	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
-	/** The projected demand for this resource of each refresh cycle. */
-	private double projectedDemand;
-	/** The trade demand for this resource of each refresh cycle. */
-	private double tradeDemand;
 	/** The repair demand for this resource of each refresh cycle. */
 	private double repairDemand;
 	
@@ -167,18 +168,18 @@ public class PartGood extends Good {
 				if (name.contains(RESISTOR)
 					|| name.contains(CAPACITOR)
 					|| name.contains(DIODE)) {
-					return 5;
+					return 2;
 				}
-				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
-					return .01;
 				if (name.equalsIgnoreCase(WIRE_CONNECTOR))
-					return .01;
+					return .2;
 				if (name.equalsIgnoreCase(POWER_CABLE))
-					return .05;
+					return .75;
+				if (name.equalsIgnoreCase(ELECTRICAL_WIRE))
+					return ELECTRICAL_WIRE_DEMAND;
 				if (name.equalsIgnoreCase(STEEL_WIRE))
-					return .025;
+					return .5;
 				if (name.contains(WIRE))
-					return .001;
+					return WIRE_DEMAND;
 				
 				return ELECTRICAL_DEMAND;
 			}
@@ -204,7 +205,7 @@ public class PartGood extends Good {
 		
 			case TOOL:
 				if (name.equalsIgnoreCase(DRILLING_RIG)) {
-					return DRILL_DEMAND / 2;
+					return DRILL_DEMAND * 1.2;
 				}
 				if (name.contains(DRILL)) {
 					return DRILL_DEMAND;
@@ -255,26 +256,6 @@ public class PartGood extends Good {
 	@Override
     public double getFlattenDemand() {
     	return flattenDemand;
-    }
-    
-    /**
-     * Gets the projected demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getProjectedDemand() {
-    	return projectedDemand;
-    }
-	
-    /**
-     * Gets the trade demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getTradeDemand() {
-    	return tradeDemand;
     }
 	
     /**
@@ -402,10 +383,12 @@ public class PartGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 		
 		Settlement settlement = owner.getSettlement();
-
-		double totalDemand = 0;
-		double totalSupply = 0;
-
+		
+		// Calculate total supply
+		double totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
+		// Save the average supply
+		owner.setSupplyScore(this, totalSupply);
+    
 		// Get demand for a part.
 		// NOTE: the following estimates are for each orbit (Martian year) :
 		double newProjDemand = 
@@ -426,62 +409,72 @@ public class PartGood extends Good {
 			// Calculate vehicle part demand.
 			+ getVehiclePartDemand(owner)
 			// Calculate battery cell part demand.
-			+ geFuelCellDemand()
+			+ getFuelCellDemand()
 			// Calculate maintenance part demand.
 			+ getMaintenancePartsDemand(0, settlement, part, previousDemand);
 		
-		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
-
 		double projected = newProjDemand
 			// Flatten certain part demand.
 			* flattenDemand;
-
-		if (projectedDemand == 0D) {
-			projectedDemand = projected;
+		
+		double projectedCache = owner.getProjectedDemandScore(this);
+		if (projectedCache == INITIAL_PART_DEMAND) {
+			projectedCache = projected;
 		}
 		else {
-			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+			projectedCache = .01 * projected + .99 * projectedCache;
 		}
 		
+		owner.setProjectedDemandScore(this, projectedCache);
+		
 		// Add trade demand.
-		tradeDemand = owner.determineTradeDemand(this);
+		double tradeDemand = owner.determineTradeDemand(this);
 
 		// Gets the repair part demand
 		// Note: need to look into parts reliability in MalfunctionManager to derive the repair value 
 		repairDemand = (owner.getMaintenanceLevel() + owner.getRepairLevel())/2.0 * owner.getDemandScore(this);
 		
-		if (previousDemand == 0D) {
+		// Note: the ceiling uses projected, not projectedCache
+		double ceiling = projected + tradeDemand + repairDemand;
+		
+		double totalDemand = previousDemand;
+		
+		if (previousDemand == INITIAL_PART_DEMAND) {
 			// At the start of the sim
 			totalDemand = 
 					  .4 * repairDemand 
-					+ .4 * projectedDemand 
+					+ .4 * projectedCache 
 					+ .2 * tradeDemand;
 		}
 
-		else {
-			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
-			// in order to counter the tendency for all goods to increase 
-			// in value over time. 
-			
-			// Warning: a lot of Goods could easily will hit 10,000 demand
-			// if not careful.
-			
-			// Allows only very small fluctuations of demand as possible
-			totalDemand = .993 * previousDemand 
-						+ .005 * projectedDemand
-						+ .0002 * repairDemand 
-						+ .0005 * projectedDemand 
-						+ .0002 * tradeDemand; 
+//		else {
+//			// Intentionally loses a tiny percentage (e.g. 0.0008) of its value
+//			// in order to counter the tendency for all goods to increase 
+//			// in value over time. 
+//			
+//			// Warning: a lot of Goods could easily will hit 10,000 demand
+//			// if not careful.
+//			
+//			// Allows only very small fluctuations of demand as possible
+//			totalDemand = .993 * previousDemand 
+//						+ .005 * projectedCache
+//						+ .0002 * repairDemand 
+//						+ .0002 * tradeDemand; 
+//		}
+		
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
+		}
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
 		}
 		
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
-		
-		// Calculate total supply
-		totalSupply = getAverageItemSupply(settlement.getItemResourceStored(id));
-
-		// Save the average supply
-		owner.setSupplyScore(this, totalSupply);
     }
 
     /**
@@ -493,7 +486,7 @@ public class PartGood extends Good {
 	 * @return
 	 */
 	private static double getAverageItemSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
+		return Math.sqrt(0.1 + supplyStored);
 	}
 
 	/**
@@ -536,7 +529,11 @@ public class PartGood extends Good {
 
 		if (name.equalsIgnoreCase(BRICK))
 			return base * BRICK_DEMAND;
-
+		
+		if (name.equalsIgnoreCase(LOGIC_BOARD))
+			return base * LOGIC_BOARD_DEMAND;
+		
+		
 		return base;
 	}
 
@@ -749,7 +746,7 @@ public class PartGood extends Good {
 		if (kithenWare.contains(getID())) {
 			return owner.getDemandScore(this) * KITCHEN_DEMAND;
 		}
-		return 0;
+		return 0D;
 	}
 
 	/**
@@ -763,7 +760,7 @@ public class PartGood extends Good {
 		if (type == GoodType.VEHICLE) {
 			return (1 + owner.getCommerceFactor(CommerceType.TOURISM)/30.0) * VEHICLE_PART_DEMAND;
 		}
-		return 0;
+		return 0D;
 	}
 
 	/**
@@ -772,15 +769,18 @@ public class PartGood extends Good {
 	 * @param owner
 	 * @return
 	 */
-	private double geFuelCellDemand() {
-		String name = getName().toLowerCase();
-		if (name.contains(FUEL_CELL)) {
-			return FC_COST;
+	private double getFuelCellDemand() {
+		int id = getID();
+		if (id == ItemResourceUtil.METHANE_FUEL_CELL_ID
+				|| id == ItemResourceUtil.METHANOL_FUEL_CELL_ID) {
+			return FUEL_CELL_DEMAND;
 		}
-		if (name.contains(STACK)) {
-			return FC_STACK_COST;
+		if (id == ItemResourceUtil.METHANE_FUEL_CELL_STACK_ID
+				|| id == ItemResourceUtil.METHANOL_FUEL_CELL_STACK_ID) {
+			return FUEL_CELL_STACK_DEMAND; 
 		}
-		return 0;
+
+		return 0D;
 	}
 	
     /**

@@ -30,18 +30,18 @@ public class SuppliesManifestTest extends AbstractMarsSimUnitTest{
         final int MAND = 4;
         var manifest = new SuppliesManifest();
 
-        manifest.addItem(ItemResourceUtil.backhoeID, MAND, true);
-        manifest.addItem(ItemResourceUtil.printerID, MAND, true);
-        manifest.addItem(ItemResourceUtil.pneumaticDrillID, OPT, false);
+        manifest.addItem(ItemResourceUtil.BACKHOE_ID, MAND, true);
+        manifest.addItem(ItemResourceUtil.SLS_3D_PRINTER_ID, MAND, true);
+        manifest.addItem(ItemResourceUtil.PNEUMATIC_DRILL_ID, OPT, false);
 
         var mand = manifest.getItems(true);
         assertEquals("Mandatory Items", 2, mand.size());
-        assertEquals("Backhoe amount", MAND, mand.get(ItemResourceUtil.backhoeID).intValue());
-        assertEquals("Printer amount", MAND, mand.get(ItemResourceUtil.printerID).intValue());
+        assertEquals("Backhoe amount", MAND, mand.get(ItemResourceUtil.BACKHOE_ID).intValue());
+        assertEquals("Printer amount", MAND, mand.get(ItemResourceUtil.SLS_3D_PRINTER_ID).intValue());
 
         var opt = manifest.getItems(false);
         assertEquals("Optional Items", 1, opt.size());
-        assertEquals("Drill amount", OPT, opt.get(ItemResourceUtil.pneumaticDrillID).intValue());
+        assertEquals("Drill amount", OPT, opt.get(ItemResourceUtil.PNEUMATIC_DRILL_ID).intValue());
     }
 
     public void testAddEquipment() {

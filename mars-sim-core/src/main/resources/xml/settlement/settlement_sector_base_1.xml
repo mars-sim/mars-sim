@@ -684,7 +684,7 @@
 	<equipment type="gas canister" number="320" />		
 	<equipment type="large bag" number="320" />
 	<equipment type="specimen box" number="320" />
-    <equipment type="thermal bottle" number="156" />	
+    <equipment type="thermal bottle" number="216" />	
  	<equipment type="wheelbarrow" number="96" />
 
     <!-- Bins -->

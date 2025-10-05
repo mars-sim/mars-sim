@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AmountResourceGood.java
- * @date 2025-07-26
+ * @date 2025-10-02
  * @author Barry Evans
  */
 package com.mars_sim.core.goods;
@@ -45,7 +45,7 @@ class AmountResourceGood extends Good {
 	
 	private static final long serialVersionUID = 1L;
 
-	private static final double INITIAL_AMOUNT_DEMAND = 0;
+	private static final double INITIAL_AMOUNT_DEMAND = 0.1;
 	private static final double INITIAL_AMOUNT_SUPPLY = 0;
 
 	private static final double WASTE_WATER_VALUE_MODIFIER = 1.5;
@@ -78,76 +78,42 @@ class AmountResourceGood extends Good {
 	private static final double ELEMENT_COST = 0.5;
 	private static final double LIFE_SUPPORT_COST = 0.5;
 	
-	// Modifiers
-    private static final double ICE_VALUE_MODIFIER = 0.75;
-	private static final double WATER_VALUE_MODIFIER = 0.2;
-	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
-	
-	private static final double SOIL_VALUE_MODIFIER = 0.05;
-	private static final double SAND_VALUE_MODIFIER = 0.03;
-	private static final double ORES_VALUE_MODIFIER = 0.05;
-	
-	private static final double CONCRETE_VALUE_MODIFIER = 1.5;
-	private static final double CEMENT_VALUE_MODIFIER = 2;
-	private static final double MINERAL_VALUE_MODIFIER = 0.02;
-	private static final double ROCK_VALUE_MODIFIER = 0.02;
-	private static final double METEORITE_VALUE_MODIFIER = 100;
-	
-	private static final double ROCK_SALT_VALUE_MODIFIER = .5;
-	private static final double EPSOM_SALT_VALUE_MODIFIER = .05;
-	
-	private static final double FOOD_VALUE_MODIFIER = 1.2;
-	
-	private static final double OXYGEN_VALUE_MODIFIER = 2;
-	private static final double METHANE_VALUE_MODIFIER = 0.06;
-	private static final double HYDROGEN_VALUE_MODIFIER = 0.005;
-	private static final double METHANOL_VALUE_MODIFIER = 0.05;
-	private static final double ETHYLENE_VALUE_MODIFIER = 8.0;
-	private static final double STYRENE_VALUE_MODIFIER = 8.0;
-	private static final double PROPYLENE_VALUE_MODIFIER = 8.0;
-	private static final double ETHANE_VALUE_MODIFIER = 8.0;
-	private static final double RESIN_VALUE_MODIFIER = 8.0;
-	
-	private static final double CO2_VALUE_MODIFIER = 1.0;
-
-	private static final double LIFE_SUPPORT_FACTOR = .005;
-	private static final double VEHICLE_FUEL_FACTOR = 1;
-	private static final double FARMING_FACTOR = .1;
-
-	private static final double LEAVES_VALUE_MODIFIER = 1.5;
-	
-	private static final double TISSUE_CULTURE_VALUE = 0.5;
-	
-	private static final double REGOLITH_TYPE_VALUE_MODIFIER = .5;
-	private static final double REGOLITH_VALUE_MODIFIER = .5;
-	private static final double REGOLITH_VALUE_MODIFIER_1 = 2.0;
-		
 	// flatten multipliers
 	private static final double ICE_FLATTENING_FACTOR = 0.5;
 	private static final double WATER_FLATTENING_FACTOR = 0.5;
 	
 	private static final double METHANOL_FLATTENING_FACTOR = 0.9;
 	private static final double METHANE_FLATTENING_FACTOR = 1.1;
-	private static final double HYDROGEN_FLATTENING_FACTOR = 0.1;
-	private static final double OXYGEN_FLATTENING_FACTOR = 1.0;	
+	private static final double HYDROGEN_FLATTENING_FACTOR = 1.0;
+	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
 	
-	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
-	private static final double CO_FLATTENING_FACTOR = 0.009;
+
+	// Note: must keep Carbon Monoxide demand high enough so as to start 
+	// 5 important Resource Processes that produce other resources (alongside with Carbon Monoxide)
+	private static final double CO_FLATTENING_FACTOR = 5.0;
 	private static final double CO2_FLATTENING_FACTOR = 1.1;
 		
-	private static final double ORE_FLATTENING_FACTOR = 1.1;
-	private static final double MINERAL_FLATTENING_FACTOR = 1.1;
+	private static final double ORE_FLATTENING_FACTOR = 1.0;
+	private static final double MINERAL_FLATTENING_FACTOR = 1.0;
 	private static final double ROCK_FLATTENING_FACTOR = 1D;
-	private static final double REGOLITH_FLATTENING_FACTOR = 2D;
+	private static final double REGOLITH_FLATTENING_FACTOR = 0.75D;
 	private static final double SAND_FLATTENING_FACTOR = 1D;
 	
 	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
 	
-	private static final double OLIVINE_FLATTENING_FACTOR = 0.5;
-	private static final double KAMACITE_FLATTENING_FACTOR = 0.2;
+	// Minerals
+	private static final double OLIVINE_FLATTENING_FACTOR = 0.75;
+	private static final double KAMACITE_FLATTENING_FACTOR = 0.75;
 	
-	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 8.0;
+	// Chemicals
+	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
+	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 2.0;
+	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
 	
+	// Metals
+	private static final double IRON_POWDER_FLATTENING_FACTOR = 1.5;
+	
+	// types
 	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
 	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
 	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
@@ -168,25 +134,82 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
 	private static final double TISSUE_FLATTENING_FACTOR = 1.25;
 
-	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
-	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.5;
+
+	private static final double LEAVES_VALUE_MODIFIER = 1.5;
+	
+	private static final double REGOLITH_VALUE_MODIFIER = 0.5;
+	
+	
+	// Demand Modifiers
+    private static final double ICE_VALUE_MODIFIER = 0.75;
+	private static final double WATER_VALUE_MODIFIER = 0.2;
+	private static final double BRINE_WATER_VALUE_MODIFIER  = 0.75;
+	
+	private static final double SOIL_VALUE_MODIFIER = 0.05;
+	private static final double SAND_VALUE_MODIFIER = 2.5;
+	private static final double ORES_VALUE_MODIFIER = 1.0;
+	
+	private static final double CONCRETE_VALUE_MODIFIER = 1.0;
+	private static final double CEMENT_VALUE_MODIFIER = 1.0;
+	private static final double MINERAL_VALUE_MODIFIER = 1.2;
+	private static final double ROCK_VALUE_MODIFIER = 0.2;
+	private static final double METEORITE_VALUE_MODIFIER = 100;
+	
+	private static final double ROCK_SALT_VALUE_MODIFIER = .5;
+	private static final double EPSOM_SALT_VALUE_MODIFIER = .05;
+	
+	private static final double FOOD_VALUE_MODIFIER = 1.2;
+	
+	private static final double OXYGEN_VALUE_MODIFIER = 4;
+	private static final double METHANE_VALUE_MODIFIER = 0.06;
+	private static final double HYDROGEN_VALUE_MODIFIER = 0.25;
+	private static final double METHANOL_VALUE_MODIFIER = 0.05;
+	
+	// Chemicals
+
+	private static final double CLEANING_AGENT_MODIFIER = 2.0;
+	private static final double ETHYLENE_MODIFIER = 6.0;
+	private static final double STYRENE_MODIFIER = 4.0;
+	private static final double PROPYLENE_MODIFIER = 3.0;
+	private static final double ETHANE_MODIFIER = 2.0;
+	private static final double RESIN_MODIFIER = 3.0;
+	private static final double ACETYLENE_MODIFIER = 3.0;
+	private static final double FIBER_MODIFIER = 2.0;
+	
+	// gases
+	private static final double CO2_VALUE_MODIFIER = 1.0;
+
+	// metal
+	private static final double IRON_OXIDE_MODIFIER = 5;
+	private static final double IRON_POWDER_MODIFIER = 5;
+
+	// Other factors
+	private static final double TISSUE_CULTURE_VALUE = 0.5;
+	
+	private static final double LIFE_SUPPORT_FACTOR = .005;
+	private static final double VEHICLE_FUEL_FACTOR = 1;
+	private static final double FARMING_FACTOR = .1;
 	
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
-	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 400D;
 
-	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 1500D; 
-	private static final double MAX_MANUFACTURING_DEMAND = 1500D;
-	private static final double MAX_FOOD_PRODUCTION_DEMAND = 1500D;
+	private static final double MAX_RESOURCE_PROCESSING_DEMAND = 500D; 
+	private static final double MAX_MANUFACTURING_DEMAND = 500D;
+	private static final double MAX_FOOD_PRODUCTION_DEMAND = 500D;
+	
+	private static final double REGOLITH_LOWEST_DEMAND = 0.05;
+	private static final double REGOLITH_BASE_DEMAND = 40;
+	
+	// Base factors
+	private static final double BASE_MINERAL_ORE = 5;
+	private static final double BASE_CHEMICAL_DEMAND = 5;
+	private static final double BASE_METAL_DEMAND = 5;
 
+	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
-	/** The projected demand of each refresh cycle. */
-	private double projectedDemand;
-	/** The trade demand of each refresh cycle. */
-	private double tradeDemand;
 	/** The ingredient demand of each refresh cycle. */
 	private double ingredientDemand;
 	
@@ -202,8 +225,8 @@ class AmountResourceGood extends Good {
 		
 		double multiplier = ar.getDemandMultiplier();
 		
-		if (ar.getDemandMultiplier() == 0.0)
-			multiplier = 1;
+		if (multiplier == 0.0)
+			multiplier = 1.0;
 
 		// Calculate fixed values
 		flattenDemand = calculateFlattenDemand(ar) * multiplier;
@@ -235,16 +258,6 @@ class AmountResourceGood extends Good {
 			
 			mod *= switch(ar.getID()) {
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
-				case ResourceUtil.ETHYLENE_ID -> ETHYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYETHYLENE_ID -> ETHYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYSTYRENE_ID -> STYRENE_VALUE_MODIFIER;
-				case ResourceUtil.STYRENE_ID -> STYRENE_VALUE_MODIFIER;
-				case ResourceUtil.PROPYLENE_ID -> PROPYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYPROPYLENE_ID -> PROPYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYURETHANE_ID -> ETHANE_VALUE_MODIFIER;
-				case ResourceUtil.ETHANE_ID -> ETHANE_VALUE_MODIFIER;
-				case ResourceUtil.POLYESTER_RESIN_ID -> RESIN_VALUE_MODIFIER;
-				case ResourceUtil.POLYCARBONATE_RESIN_ID -> RESIN_VALUE_MODIFIER;
 				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
 				default -> 1D;
 			};	
@@ -314,7 +327,7 @@ class AmountResourceGood extends Good {
 			mod = INSTRUMENT_FLATTENING_FACTOR;
 
 			break;
-			
+
 		case MINERAL:
 			mod = MINERAL_FLATTENING_FACTOR;
 			
@@ -380,26 +393,6 @@ class AmountResourceGood extends Good {
 	@Override
     public double getFlattenDemand() {
     	return flattenDemand;
-    }
-	
-    /**
-     * Gets the projected demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getProjectedDemand() {
-    	return projectedDemand;
-    }
-	
-    /**
-     * Gets the trade demand of this resource.
-     * 
-     * @return
-     */
-	@Override
-    public double getTradeDemand() {
-    	return tradeDemand;
     }
     
     @Override
@@ -557,10 +550,13 @@ class AmountResourceGood extends Good {
 		double previousDemand = owner.getDemandScore(this);
 
         Settlement settlement = owner.getSettlement();
-        
-		double totalDemand = 0;
-		double totalSupply = 0;	
+ 
+		// Calculate total supply
+		double totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
 
+		// Store the average supply
+		owner.setSupplyScore(this, totalSupply);
+			
 		// Calculate new projected demand
 		double newProjDemand = 
 			// Tune ice demand.
@@ -590,55 +586,73 @@ class AmountResourceGood extends Good {
 			// Tune construction demand.
 			+ getResourceConstructionDemand(settlement)
 			// Adjust the demand on minerals and ores.
-			+ getMineralDemand(owner, settlement);
-
-		newProjDemand = MathUtils.between(newProjDemand, LOWEST_PROJECTED_VALUE, HIGHEST_PROJECTED_VALUE);
-	
+			+ getMineralOreDemand(owner, settlement)
+			// Get the metal demand.
+			+ getMetalDemand(owner, settlement)
+			// Get the chemical demand.
+			+ getChemicalDemand(owner, settlement);
+					
 		double projected = newProjDemand 
 			// Flatten certain types of demand.
 			* flattenDemand
 			// Adjust the demand on various waste products with the disposal cost.
 			* modifyWasteResource();
 		
-		if (projectedDemand == 0D) {
-			projectedDemand = projected;
+		double projectedCache = owner.getProjectedDemandScore(this);
+		if (projectedCache == INITIAL_AMOUNT_DEMAND) {
+			projectedCache = projected;
 		}
 		else {
-			projectedDemand = .1 * projected + .9 * this.projectedDemand;
+			projectedCache = .01 * projected + .99 * projectedCache;
 		}
 		
+		owner.setProjectedDemandScore(this, projectedCache);
+				
 		// Add trade value. Cache is always false if this method is called
-		this.tradeDemand = owner.determineTradeDemand(this);
-		
-		if (previousDemand == 0D) {
-			// At the start of the sim
-			totalDemand = 
-					  .8 * projectedDemand 
-					+ .2 * tradeDemand;
+		double tradeDemand = owner.determineTradeDemand(this);
 
+		double totalDemand = previousDemand;
+		// Note: the ceiling uses projected, not projectedCache
+		double ceiling = projected + tradeDemand;
+		
+		if (previousDemand == INITIAL_AMOUNT_DEMAND) {
+			// At the start of the simˇ
+			totalDemand = .8 * projectedCache 
+						+ .2 * tradeDemand;
 		}
-		else {
-			// Intentionally loses a tiny percentage of its value
-			// in order to counter the tendency for all goods to increase 
-			// in value over time. 
-			
-			// Warning: a lot of Goods could easily will hit 10,000 demand
-			// if not careful.
-			
-			// Allows only very small fluctuations of demand as possible
-			totalDemand = .993 * previousDemand
-						+ .005  * projectedDemand
-						+ .0005 * tradeDemand; 
+//		else if (totalSupply < 0.005 && previousDemand < projectedDemand) {
+//			// Quickly ramp up the totalDemand
+//			totalDemand = .985 * previousDemand
+//						+ .010 * projectedCache
+//						+ .005 * tradeDemand; 
+//		}
+//		else if (previousDemand < projectedDemand + tradeDemand) {
+//			// Intentionally loses a tiny percentage of its value
+//			// in order to counter the tendency for all goods to increase 
+//			// in value over time. 
+//			
+//			// Warning: a lot of Goods could easily will hit 10,000 demand
+//			// if not careful.
+//			
+//			// Allows only very small fluctuations of demand as possible
+//			totalDemand = .993  * previousDemand
+//						+ .005  * projectedCache
+//						+ .0005 * tradeDemand; 
+//		}
+		
+		// If less than 1, graduating reach toward one 
+		if (totalDemand < ceiling || totalDemand < 1) {
+			// Increment projectedDemand
+			totalDemand *= 1.003;
+		}
+		// If less than 1, graduating reach toward one 
+		else if (totalDemand > ceiling) {
+			// Decrement projectedDemand
+			totalDemand *= 0.997;
 		}
 		
 		// Save the goods demand
 		owner.setDemandScore(this, totalDemand);
-		
-		// Calculate total supply
-		totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
-
-		// Store the average supply
-		owner.setSupplyScore(this, totalSupply);
     }
 
     
@@ -651,7 +665,7 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private static double getAverageAmountSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
+		return Math.sqrt(0.1 + supplyStored);
 	}
 
 
@@ -670,8 +684,8 @@ class AmountResourceGood extends Good {
 			double processDemand = getResourceProcessDemand(owner, i);
 			demand += processDemand;
 		}
-
-		return Math.min(MAX_RESOURCE_PROCESSING_DEMAND, demand / 20);
+		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
+		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_RESOURCE_PROCESSING_DEMAND);
 	}
 
 	/**
@@ -736,8 +750,8 @@ class AmountResourceGood extends Good {
 				demand += manufacturingDemand / 1000D;
 			}
 		}
-
-		return Math.min(MAX_MANUFACTURING_DEMAND, demand / 200);
+		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
+		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**
@@ -757,8 +771,8 @@ class AmountResourceGood extends Good {
 				demand += foodProductionDemand;
 			}
 		}
-
-		return MathUtils.between(demand, 0.5, MAX_FOOD_PRODUCTION_DEMAND);
+		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
+		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_FOOD_PRODUCTION_DEMAND);
 	}
 
 	/**
@@ -1015,7 +1029,8 @@ class AmountResourceGood extends Good {
 				}
 			}
 		}
-		return Math.min(GoodsManager.MAX_DEMAND, base);
+
+		return MathUtils.between(base, 0.0, GoodsManager.MAX_DEMAND);
 	}
 
 	/**
@@ -1115,12 +1130,14 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets mineral demand.
-	 *
+	 * Gets mineral/ore demand.
+	 * 
+	 * @param owner
+	 * @param settlement
 	 * @return
 	 */
-	private double getMineralDemand(GoodsManager owner, Settlement settlement) {
-		double base = .25;
+	private double getMineralOreDemand(GoodsManager owner, Settlement settlement) {
+		double base = BASE_MINERAL_ORE;
 		int resourceID = getID();
 		switch(resourceID) {
         	case ResourceUtil.ROCK_SALT_ID:
@@ -1146,32 +1163,32 @@ class AmountResourceGood extends Good {
 				return base * (.5 * concreteDemand + .55 * regolithDemand + .25 * sandDemand) 
 							/ (1 + concreteDemand) * CONCRETE_VALUE_MODIFIER;
 			}
-			case ResourceUtil.SAND_ID: {
-				double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
-				double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
-				// the demand for sand is dragged up or down by that of regolith
-				// loses 10% by default
-				return base * (.2 * regolithDemand + .7 * sandDemand) 
-							/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
-			}
 		}
         
 		double regolithDemand = owner.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
 		double sandDemand = owner.getDemandScoreWithID(ResourceUtil.SAND_ID);
-
+		base = MathUtils.between(REGOLITH_BASE_DEMAND / regolithDemand, REGOLITH_LOWEST_DEMAND, REGOLITH_BASE_DEMAND);
+		
+		if (resourceID == ResourceUtil.SAND_ID) {
+			// the demand for sand is dragged up or down by that of regolith
+			// loses 10% by default
+			return base * (.2 * regolithDemand + .7 * sandDemand) 
+						/ (1 + sandDemand) * SAND_VALUE_MODIFIER;
+		}
+		
 		for (int id : ResourceUtil.ROCK_IDS) {
 			if (resourceID == id) {
 				double rockDemand = owner.getDemandScoreWithID(id);
-				return base * (.2 * regolithDemand + .9 * rockDemand) 
-						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
+				return base * (.2 * regolithDemand + .8 * rockDemand) 
+						 * ROCK_VALUE_MODIFIER;
 			}
 		}
 
 		for (int id : ResourceUtil.MINERAL_CONC_IDs) {
 			if (resourceID == id) {
 				double mineralDemand = owner.getDemandScoreWithID(id);
-				return base * (.2 * regolithDemand + .9 * mineralDemand) 
-						/ (1 + mineralDemand) * MINERAL_VALUE_MODIFIER;
+				return base * (.3 * regolithDemand + .7 * mineralDemand) 
+						 * MINERAL_VALUE_MODIFIER;
 			}
 		}
 
@@ -1179,22 +1196,15 @@ class AmountResourceGood extends Good {
 			if (resourceID == id) {
 				double oreDemand = owner.getDemandScoreWithID(id);
 				// loses 10% by default
-				return base * (.3 * regolithDemand + .6 * oreDemand) 
-						/ (1 + oreDemand) * ORES_VALUE_MODIFIER;
+				return base * (.4 * regolithDemand + .6 * oreDemand) 
+						 * ORES_VALUE_MODIFIER;
 			}
 		}
 
-		if (resourceID == ResourceUtil.REGOLITH_ID) {
-			return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
-		}
-		
-		else if (resourceID == ResourceUtil.REGOLITHB_ID 
-				|| resourceID == ResourceUtil.REGOLITHC_ID) {
-			return base * regolithDemand * REGOLITH_VALUE_MODIFIER_1;
-		}
-		
-		else if (resourceID == ResourceUtil.REGOLITHD_ID) {
-			return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
+		for (int id : ResourceUtil.REGOLITH_TYPES_IDS) {
+			if (resourceID == id) {
+				return base * regolithDemand * REGOLITH_VALUE_MODIFIER;
+			}
 		}
 		
 		// Checks if this resource is a ROCK type
@@ -1210,9 +1220,72 @@ class AmountResourceGood extends Good {
 						/ (1 + rockDemand) * ROCK_VALUE_MODIFIER;
 		}
 
-		return base;
+		return 0;
 	}
 
+	/**
+	 * Gets the emtal demand.
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @return
+	 */
+	private double getMetalDemand(GoodsManager owner, Settlement settlement) {
+		double base = BASE_METAL_DEMAND;
+		int resourceID = getID();
+		switch(resourceID) {
+        	case ResourceUtil.IRON_OXIDE_ID:
+				return base * IRON_OXIDE_MODIFIER;
+			case ResourceUtil.IRON_POWDER_ID:
+				return base * IRON_POWDER_MODIFIER;
+				
+		}
+		
+		return 0;
+	}
+
+	/**
+	 * Gets the chemical demand.
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @return
+	 */
+	private double getChemicalDemand(GoodsManager owner, Settlement settlement) {
+		double base = BASE_CHEMICAL_DEMAND;
+		int resourceID = getID();
+		switch(resourceID) {
+        	case ResourceUtil.ACETYLENE_ID:
+				return base * ACETYLENE_MODIFIER;
+			case ResourceUtil.CLEANING_AGENT_ID:
+				return base * CLEANING_AGENT_MODIFIER;
+			case ResourceUtil.ETHANE_ID:
+				return base * ETHANE_MODIFIER;
+			case ResourceUtil.ETHYLENE_ID:
+				return base * ETHYLENE_MODIFIER;
+			case ResourceUtil.POLYCARBONATE_RESIN_ID:
+				return base * RESIN_MODIFIER;
+			case ResourceUtil.POLYESTER_FIBER_ID:
+				return base * FIBER_MODIFIER;
+			case ResourceUtil.POLYESTER_RESIN_ID:
+				return base * RESIN_MODIFIER;
+			case ResourceUtil.POLYETHYLENE_ID:
+				return base * ETHYLENE_MODIFIER;
+			case ResourceUtil.POLYPROPYLENE_ID:
+				return base * PROPYLENE_MODIFIER;
+			case ResourceUtil.POLYSTYRENE_ID:
+				return base * STYRENE_MODIFIER;
+			case ResourceUtil.POLYURETHANE_ID:
+				return base * ETHANE_MODIFIER;
+			case ResourceUtil.PROPYLENE_ID:
+				return base * PROPYLENE_MODIFIER;
+			case ResourceUtil.STYRENE_ID:
+				return base * STYRENE_MODIFIER;
+		}
+		
+		return 0;
+	}
+	
 	/**
 	 * Adjusts the demand for waste resources.
 	 *
@@ -1227,7 +1300,7 @@ class AmountResourceGood extends Good {
 			case ResourceUtil.SOIL_ID -> SOIL_VALUE_MODIFIER;
 			case ResourceUtil.FOOD_WASTE_ID -> 4 * USEFUL_WASTE_VALUE_MODIFIER;
 			case ResourceUtil.SOLID_WASTE_ID -> .2;
-			case ResourceUtil.TOXIC_WASTE_ID -> .05;
+			case ResourceUtil.TOXIC_WASTE_ID -> .1;
 			case ResourceUtil.CROP_WASTE_ID -> 4 * USEFUL_WASTE_VALUE_MODIFIER;
 			case ResourceUtil.COMPOST_ID -> 2 * USEFUL_WASTE_VALUE_MODIFIER;
 			default -> 1D;
@@ -1292,7 +1365,8 @@ class AmountResourceGood extends Good {
 		double demand = 0;
 		int resourceID = getID();
 		// This averaging method make all regolith types to be placed at similar demand
-		if (resourceID == ResourceUtil.REGOLITHB_ID
+		if (resourceID == ResourceUtil.REGOLITH_ID
+			|| resourceID == ResourceUtil.REGOLITHB_ID
 			|| resourceID ==  ResourceUtil.REGOLITHC_ID
 			|| resourceID ==  ResourceUtil.REGOLITHD_ID) {
 
@@ -1310,7 +1384,7 @@ class AmountResourceGood extends Good {
 			
 			// Limit the minimum value of regolith projected demand
 			demand = (cement + concrete + 4 * targetRegolith + 2 * sand + 4 * averageRegolith) 
-					* REGOLITH_TYPE_VALUE_MODIFIER;
+					* REGOLITH_VALUE_MODIFIER;
 		}
 
 		return demand;

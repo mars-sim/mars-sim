@@ -51,7 +51,7 @@
 	<resource name="Nitrogen" type="element" phase="gas" demand-multiplier="0.25" >N2 is an odorless gas </resource>
 	<resource name="Argon" type="element" phase="gas"/>
 	
-	<resource name="Carbon monoxide" type="compound" phase="gas" demand-multiplier=".05" />
+	<resource name="Carbon monoxide" type="compound" phase="gas" demand-multiplier="5.0" />
 	<resource name="Chlorine" type="element" phase="gas"/>
 
 <!-- Wastes -->
@@ -782,10 +782,6 @@
     platinum, palladium, and chromium.[4][23] Mars's Tharsis region,
     which contains a group of giant volcanoes, is considered to be an LIP.
 
-	Dark sand dunes are common on the surface of Mars. Their dark tone is due
-	to the volcanic rock called basalt. The basalt dunes are believed to
-	contain the minerals chromite, magnetite, and ilmenite.
-
 	Since the wind has gathered them together, they do not even have to be
 	mined, merely scooped up.These minerals could supply future colonists
 	with chromium, iron, and titanium.
@@ -803,7 +799,21 @@
 	<resource name="Lithium" type="element" phase="solid">An element.</resource>
 	<resource name="Magnesium" type="element" phase="solid">An element.</resource>
 	<resource name="Manganese" type="element" phase="solid">An element.</resource>
-	<resource name="Nickel" type="element" phase="solid">An element.</resource>
+	<resource name="Nickel" type="element" phase="solid">
+	 Nickel is not a major constituent of the Martian crust itself but is enriched in meteorites that have 
+	 impacted the surface, such as iron-nickel meteorites like "Heatshield Rock," which was found to be 
+	 composed of 93% iron and 7% nickel.
+ 
+	 These meteorites, along with other fragments like "Barberton" and "Allan Hills," are evidence of 
+ 	 extraterrestrial material contributing to the surface composition.
+
+	 In addition to meteoritic nickel, nickel has been detected in specific geological contexts, such as 
+	 dendritic and subspherical concretions in the Pahrump Hills and Hartmann's Valley, where it correlates 
+	 with magnesium and sulfur.
+ 
+ 	 The discovery of high-grade nickel and copper in Jezero crater suggests that ultramafic rocks, which 
+ 	 are rich in nickel, may be more common on Mars than previously thought.
+	</resource>
 	<resource name="Phosphorus" type="element" phase="solid">An element.</resource>
 	<resource name="Platinum" type="element" phase="solid">An element.</resource>
 	<resource name="Potassium" type="element" phase="solid">An element.</resource>

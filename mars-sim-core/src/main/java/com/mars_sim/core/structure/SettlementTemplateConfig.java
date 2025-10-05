@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * SettlementTemplateConfig.java
+ * @date 2025-09-30
+ * @author Barry Evans
+ */
+
 package com.mars_sim.core.structure;
 
 import com.mars_sim.core.SimulationConfig;
@@ -105,7 +112,8 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     }
 
     /**
-     * Get the manifest that are used in the Settlement templates
+     * Get. the manifest that are used in the Settlement templates.
+     * 
      * @return
      */
     public List<ResupplyManifest> getSupplyManifests() {
@@ -241,6 +249,13 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         return last;
     }
 
+
+    /**
+     * Parses the item XML.
+     * 
+     * @param doc
+     * @param predefined
+     */
     @Override
     protected SettlementTemplate parseItemXML(Document doc, boolean predefined) {
         Element templateElement = doc.getRootElement();
@@ -400,7 +415,8 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     }
 
     /**
-     * Parse an XML to create a Settlement Supply instance. The buildings are created externally.
+     * Parses an XML to create a Settlement Supply instance. The buildings are created externally.
+     * 
      * @param context The conext this is being parsed
      * @param supplyElement The XML element
      * @param newBuildings The list of building templates

@@ -14,7 +14,6 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.CollectRegolith;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -76,12 +75,12 @@ public class MiningMeta extends AbstractMetaMission {
 
 	            // Check if LUV attachment parts available.            
 	            if (!Mining.areAvailableAttachmentParts(settlement)) {
-	            	if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.pneumaticDrillID)) {
-	            		BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.pneumaticDrillID),
+	            	if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.PNEUMATIC_DRILL_ID)) {
+	            		BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.PNEUMATIC_DRILL_ID),
 	            				settlement, 1);
 	    			}
-	    			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.backhoeID)) {
-	    				BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.backhoeID),
+	    			if (!settlement.getItemResourceIDs().contains(ItemResourceUtil.BACKHOE_ID)) {
+	    				BuildingManager.injectPartDemand(ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID),
 	            				settlement, 1);
 	    			}
     	

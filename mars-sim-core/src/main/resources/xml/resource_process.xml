@@ -432,13 +432,140 @@
 		
 		<output resource="methanol" rate="64"  />
 	</process> <!--"Selective Partial Oxidation (SPO) of Methane to Methanol"-->
-	
-	
+		
+ <!-- 
+	<process name="Catalytic Partial Oxidation of Methane (CPOM) to Produce Hydrogen" power-required="0.00" >
+	<description>
 
-	<process name="Water-Gas Shift Reaction (WGSR)" power-required="0.01" >
+		In partial oxidation, the methane and other hydrocarbons in natural gas react with a 
+		limited amount of oxygen (typically from air) that is not enough to completely oxidize 
+		the hydrocarbons to carbon dioxide and water. 
+		
+		This process is considered more cost-effective than SMR and Dry Reforming Methane (DMR) because it requires 
+		neither catalyst nor external heat, both of which significantly contribute to the 
+		operating costs.
+		
+		With less than the stoichiometric amount of oxygen available, the reaction products 
+		contain primarily hydrogen and carbon monoxide (and nitrogen, if the reaction is 
+		carried out with air rather than pure oxygen), and a relatively small amount of 
+		carbon dioxide and other compounds. 
+		
+		Partial oxidation is an exothermic process—it gives off heat. The process is, 
+		typically, much faster than steam reforming and requires a smaller reactor vessel. 
+		As can be seen in chemical reactions of partial oxidation, this process initially 
+		produces less hydrogen per unit of the input fuel than is obtained by steam reforming 
+		of the same fuel.
+		
+		Among the supports, alumina (Al₂O₃) and ceria (CeO₂) have shown the best performance due 
+		to their high surface area, which promotes high nickel dispersion, and the presence of 
+		oxygen vacancies in CeO₂ that enhance oxygen adsorption and mobility, aiding in 
+		carbon removal.
+		
+ 		Nickel supported on lanthanum oxide (La₂O₃) also exhibits low carbon deposition, 
+ 		attributed to the formation of lanthanum oxycarbonate (La₂O₂CO₃), which gasifies 
+ 		carbon deposits.
+ 		
+		For improved stability and activity, catalysts like Ni/MgO, where a cubic (Mg, Ni)O 
+		solid solution forms, offer high stability against reduction at high temperatures.
+		
+		CH4 + .5O2 -> CO + 2H2 + heat  at 298K. -35 kJ/mol
+		 16    16      28    4  
+		 
+	</description>
+
+		<input resource="Methane" rate="160.0" />
+		<input resource="Oxygen" rate="160.0"  />				
+		
+		<output resource="Carbon monoxide" rate="280.0" />
+		<output resource="Hydrogen" rate="40.0"  />
+	</process> "Catalytic Partial Oxidation of Methane (CPOM) to Produce Hydrogen" -->
+
+ <!-- 
+	<process name="Oxidative Dry Reforming of Methane (ODRM) to Produce Hydrogen" power-required="0.00" >
+	<description>
+
+		This process maintains high methane conversion by integrating exothermic partial oxidation of 
+		methane (POM), which provides the necessary heat for the endothermic dry reforming reaction,
+		thereby enabling self-heating and avoiding the need for an external energy source.
+		 
+		Studies have shown that catalysts like rhodium and ruthenium supported on mixed magnesium 
+		and aluminum oxides achieve steady methane conversion of up to 95% under ODRM conditions, 
+		with stable H₂/CO ratios close to 2, which is favorable for downstream fuel synthesis.
+		
+		The balanced addition of oxygen helps prevent catalyst deactivation by coke formation, 
+		a common issue in pure dry reforming, while maintaining high conversion efficiency.
+		
+		CH4 + CO2  + .5O2 -> 2CO + 2H2 
+		 16    44     16     56     4 
+		 
+	</description>
+
+		<input resource="Methane" rate="160.0" />
+		<input resource="Carbon dioxide" rate="440.0" />
+		<input resource="Oxygen" rate="160.0"  />				
+		
+		<output resource="Carbon monoxide" rate="560.0" />
+		<output resource="Hydrogen" rate="40.0"  />
+	</process> "Oxidative Dry Reforming of Methane (ODRM) to Produce Hydrogen" -->
+	
+	<process name="Steam Methane Reforming (SMR) to Produce Hydrogen" power-required="0.01" >
+	<description>
+
+		Methane steam reforming (MSR) is defined as a process that reacts methane with steam 
+		to produce hydrogen and carbon monoxide as a by-product, representing the most 
+		cost-efficient method for hydrogen production from fossil fuels. It operates 
+		at high temperatures and pressures, and is responsible for over 95% of the 
+		hydrogen supply in the United States.
+		
+		CH4 + H2O -> CO + 2H2	Endothermic process; 800 - 900C;  at 15–50 bar, 251 kJ/mol 
+		 16    18     28    4  
+		 
+		Water Gas Shift reaction  Exothermic reaction; -41.2 kJ/mol  
+		CO + H2O -> CO2 + H2		
+		28   18     44    2  
+
+
+		In overall,
+
+		CH4 + 2H2O -> CO2 + 3H2		206 kJ/mol
+		 16    36      44    6  
+
+
+	</description>
+		<input resource="Methane" rate="160.0" />
+		<input resource="Water" rate="360.0"  />				
+		
+		<output resource="Carbon dioxide" rate="440.0" />
+		<output resource="Hydrogen" rate="60.0"  />
+	</process> <!-- "Steam Methane Reforming (SMR) to Produce Hydrogen" -->
+
+	<process name="Dry Methane Reforming (DMR) to Produce Hydrogen" power-required="0.01" >
+	<description>
+
+		Dry methane reforming (DMR) or CO2 reforming is the third common form of reforming process.
+		
+		Optimizing DRM for lower energy consumption involves using catalysts that enable self-heating 
+		(e.g., via oxidative reforming), designing highly active and stable catalysts with interfacial
+		sites (e.g., Ir/CeO₂₋ₓ) or promoters (e.g., Li in Ni–Al LDH), and integrating process 
+		innovations like pressurized operation and CO₂ recycling to minimize external energy demands.
+
+		CH4 + CO2 -> 2CO + 2H2		; 247 kJ/mol
+		 16   44      56    4  
+
+
+	</description>
+		<input resource="Methane" rate="160.0" />
+		<input resource="Carbon dioxide" rate="440.0" ambient="true"  />				
+		
+		<output resource="Carbon monoxide" rate="560.0" />
+		<output resource="Hydrogen" rate="40.0"  />
+	</process> <!-- "Dry Methane Reforming (DMR) to Produce Hydrogen" -->
+
+
+	<process name="Water-Gas Shift Reaction (WGSR)" power-required="0.0" >
 	<description>
 		
-		CO + H2O -> CO2 + H2
+		CO + H2O -> CO2 + H2 ;  Exothermic reaction; -41.2 kJ/mol
 		28   18     44    2
 		
 		This reaction is a key step in hydrogen production, particularly 
@@ -459,6 +586,7 @@
 		<output resource="carbon dioxide" rate="44.0" />
 		<output resource="hydrogen" rate="2.0"  />
 	</process> <!-- "Water-Gas Shift Reaction (WGSR)" -->
+
 
 
 	<process name="Oxygen Generation System (OGS)" power-required="0.625" defaultOn="true">
@@ -648,8 +776,8 @@
 												
 			Notes: 
 			1. May consider using vacuum chamber, microwaving, or field effects, 
-			electrocatalysis, etc.  to reduce power usage of 
-			ice melting by ~10-fold.	
+			electrocatalysis, exposing to warmer temperature outside, etc. to 
+			reduce power usage of ice melting by ~10-fold.	
 			2. Exposing ice sunlight is the most economic way of melting ice.
 			3. Ice melts when outside temperature is above zero deg Celsius 
 				 
@@ -673,16 +801,24 @@
 		</description>
 		<input resource="brine water" rate="400.0"  />
 		
-		<output resource="water" rate="390.0"  />
-		<output resource="sand" rate="2.0"  />
-		<output resource="magnesium" rate="2.0"  />	
+		<output resource="water" rate="389.0"  />
+		<output resource="sand" rate="1.8"  />
+		<output resource="magnesium" rate="0.9"  />	
+		<output resource="manganese" rate="0.1"  />	
 		<output resource="calcium" rate="0.5"  />			
 		<output resource="calcium carbonate" rate="0.5"  />
 		<output resource="lime" rate="1.0"  />	
 		<output resource="perchlorate" rate="0.4"  />	
 		<output resource="aluminum oxide" rate="0.8"  />	
 		<output resource="iron oxide" rate="1.6"  />	
-		<output resource="silica" rate="1.2"  />			
+		<output resource="nickel" rate="0.5"  />	
+		<output resource="silica" rate="1.2"  />	
+		<output resource="sulfur" rate="0.1" />	
+		<output resource="copper" rate="0.1" />	
+				
+		<output resource="hematite" rate="0.5"  />	
+		<output resource="goethite" rate="0.5"  />	
+		<output resource="gypsum" rate="0.5"  />			
 				
 	</process>
 
@@ -694,19 +830,19 @@
 		</description>
 		<input resource="regolith" rate="100.0"  />
 
-		<output resource="basaltic" rate="5.0"  />
+		<output resource="basaltic" rate="8.0"  />
 		<output resource="gypsum" rate="25.0"  />
-		<output resource="smectite" rate="2.0"  />
-		<output resource="allophane" rate="2.0"  />
-		<output resource="akaganeite" rate="2.0"  />
-		<output resource="bassanite" rate="2.0"  />
+		<output resource="smectite" rate="5.0"  />
+		<output resource="allophane" rate="5.0"  />
+		<output resource="akaganeite" rate="5.0"  />
+		<output resource="bassanite" rate="5.0"  />
 
-		<output resource="sand" rate="61.9"  />
+		<output resource="sand" rate="46.9"  />
 		<output resource="nitrogen" rate="0.1"  />
 	</process>
 
 
-	<process name="Extract Nitrogen Compounds from Regolith" power-required="0.02" >
+	<process name="Extract Nitrogen Compounds from Regolith" power-required="0.005" >
 		<description> 
 			According to https://newatlas.com/nitrates-nitrogen-mars-curiosity-nasa/36700/, 
 			Nitrates are widespread on Mars with concentrations of 1,100 parts per million at the drill sites.
@@ -723,7 +859,8 @@
 		<output resource="nitrogen" rate="0.1"  />
 		<output resource="ammonia" rate="0.1"  />
 		<output resource="argon" rate="0.1"  />
-		<output resource="regolith" rate="99.5"  />	
+		<output resource="sand" rate="20"  />
+		<output resource="regolith" rate="79.5"  />	
 	</process>
 
 
@@ -792,10 +929,11 @@
 	<!-- https://geologyscience.com/minerals/hematite/ -->
 	<process name="Do Hematite smelting" power-required="0.1" >
 		<input resource="hematite" rate="25.0"  />
-		<input resource="carbon monoxide" rate=".5" />
+		<input resource="carbon monoxide" rate="0.5" />
 		
-		<output resource="iron powder" rate="2.0" />
-		<output resource="iron oxide" rate="20.0" />
+		<output resource="iron powder" rate="6.0" />
+		<output resource="iron oxide" rate="15.0" />
+		<output resource="nickel" rate="2.0" />
 		<output resource="manganese" rate="2.0" />						
 		<output resource="carbon dioxide" rate=".5" />
 	</process>
@@ -805,10 +943,11 @@
 			<input resource="carbon monoxide" rate=".5" />
 			
 			<output resource="iron powder" rate="1.0" />
-			<output resource="iron oxide" rate="20.0" />									
-			<output resource="carbon dioxide" rate=".5"/>
+			<output resource="iron oxide" rate="18.0" />	
+			<output resource="nickel" rate="2.0" />							
 			<output resource="oxygen" rate="2.0" />
-			<output resource="titanium" rate="1.0" />				
+			<output resource="titanium" rate="2.0" />	
+			<output resource="carbon dioxide" rate=".5"/>			
 	</process>
 
 	<!-- https://geologyscience.com/minerals/goethite/ -->
@@ -846,6 +985,9 @@
 			<input resource="kamacite" rate="50.0" />
 			
 			<output resource="iron powder" rate="45.0" />
+			<!-- kamacite is a naturally occurring, homogeneous 
+			 mixture of iron and nickel that forms under 
+			 specific extraterrestrial condition -->
 			<output resource="nickel" rate="5.0" />
 	</process>
 
@@ -898,7 +1040,6 @@
 			<output resource="chlorine" rate="23.8" />
 	</process>
 
-
 	<process name="Do Taenite smelting" power-required="0.1" >
 			<input resource="taenite" rate="50.0" />
 			
@@ -906,24 +1047,25 @@
 			<output resource="nickel" rate="30.0" />
 	</process>
 	
-	<process name="Extract minerals from Basaltic deposits" power-required="0.1" >
+	<process name="Process Basaltic deposits" power-required="0.1" >
 		<description>
 			http://www.psrd.hawaii.edu/May09/Mars.Basaltic.Crust.html
 		</description>
 			<input resource="basaltic" rate="50.0" />
 			
-			<output resource="aluminum oxide" rate="8.0" />
+			<output resource="aluminum oxide" rate="6.0" />
 			<output resource="magnesium" rate="6.0" />
 			<output resource="manganese" rate="2.0" />						
 			<output resource="sodium oxide" rate="5.0" />
 			<output resource="potassium" rate="3.0" />
 			<output resource="titanium" rate="3.0" />
 			<output resource="iron oxide" rate="3.0" />
+			<output resource="nickel" rate="2.0" />
 			<output resource="sand" rate="5.0" />
 			<output resource="brine water" rate="10.0" />
 	</process>
 
-	<process name="Extract minerals from Smectite deposits" power-required="0.1" >
+	<process name="Process Smectite deposits" power-required="0.1" >
 			<input resource="smectite" rate="50.0" />
 			
 			<output resource="aluminum oxide" rate="9.0" />
@@ -939,29 +1081,36 @@
 			<output resource="brine water" rate="2.0" />
 	</process>
 
-	<process name="Extract minerals from Allophane deposits" power-required="0.1" >
+	<process name="Process Allophane deposits" power-required="0.1" >
 			<input resource="allophane" rate="50.0" />
 			
-			<output resource="aluminum oxide" rate="30.0" />
+			<output resource="aluminum oxide" rate="37.0" />
 			<output resource="silica" rate="1.0" />
+			<!-- May have some nickel -->
+			<output resource="nickel" rate="1.0" />
 			<output resource="sand" rate="6.0" />
-			<output resource="brine water" rate="10.0" />
+			<output resource="brine water" rate="5.0" />
 	</process>
 
 	<!-- http://www.handbookofmineralogy.org/pdfs/akaganeite.pdf 
 		https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2018JE005630 -->
-	<process name="Extract minerals from Akaganeite deposits" power-required="0.1" >
+	<process name="Process Akaganeite deposits" power-required="0.1" >
 			<input resource="akaganeite" rate="50.0" />
 			
-			<output resource="iron oxide" rate="29.0" />
-			<output resource="manganese" rate="0.2" />						
+			<output resource="iron powder" rate="3.0" />
+			<output resource="iron oxide" rate="23.0" />					
 			<output resource="iron hydroxide" rate="10.0" />
 			<output resource="iron chloride" rate="2.0" />
+			<!-- Akaganeite (β-FeOOH): Can incorporate zinc up to 10 wt.% during 
+			 formation in chloride-rich environments, with Zn substituting 
+			 for Fe in the structure. -->
+			<output resource="zinc" rate="3.0" />
+			<output resource="manganese" rate="0.2" />	
 			<output resource="potash lye" rate="0.1" />
 			<output resource="brine water" rate="1.0" />
 	</process>
 			
-	<process name="Extract minerals from Bassanite deposits" power-required="0.1" >
+	<process name="Process Bassanite deposits" power-required="0.1" >
 		<input resource="bassanite" rate="50.0" />
 			
 		<output resource="gypsum" rate="45.0" />
@@ -995,7 +1144,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="Reduce Gypsum to Calcium Carbonate with Carbon" power-required="0.03" >
+	<!--process name="Reduce Gypsum to Calcium Carbonate with Carbon" power-required="0.03" >
 		<description>
 			Reducing gypsum to calcium carbonate using carbon. Gypsum on earth has up to 8.6 % water. Wrapping two processes below:
 			CaSO&lt;sub&gt;4&lt;/sub&gt; * 2H&lt;sub&gt;2&lt;/sub&gt;O (gypsum) + 2C -> CaS + 2CO&lt;sub&gt;2&lt;/sub&gt; + 2H&lt;sub&gt;2&lt;/sub&gt;O
@@ -1010,9 +1159,9 @@
 		<output resource="calcium carbonate" rate="25.0" />
 		<output resource="carbon dioxide" rate="12.7" />
 		<output resource="brine water" rate="5.2" />
-	</process>
+	</process-->
 
-	<process name="Reduce Gypsum to Calcium carbonate with Carbon Monoxide" power-required="0.03" >
+	<process name="Reduce Gypsum with Carbon Monoxide" power-required="0.03" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using carbon monoxide.
 			Wrapping two processes:
@@ -1023,15 +1172,16 @@
 		<input resource="gypsum" rate="50.0" />
 		<input resource="carbon monoxide" rate="32.5" />
 		
-		<output resource="lime" rate="2" />
+		<output resource="lime" rate="2.0" />
+		<output resource="sulfur" rate="1.0" />
 		<output resource="calcium sulfate" rate="2.0" />
-		<output resource="calcium carbonate" rate="25.0" />
+		<output resource="calcium carbonate" rate="24.0" />
 		<output resource="carbon dioxide" rate="38.1" />
 		<output resource="brine water" rate="5.2" />
 	</process>
 
 
-	<process name="Reduce Gypsum to Calcium Carbonate with Hydrogen" power-required="0.03" >
+	<process name="Reduce Gypsum with Hydrogen" power-required="0.03" >
 		<description>
 			Process for reducing gypsum to calcium carbonate using hydrogen.
 			Wrapping two processes:
@@ -1043,9 +1193,10 @@
 		<input resource="hydrogen" rate="2.3" />
 		<input resource="carbon dioxide" rate="12.8" ambient="true" />
 
-		<output resource="lime" rate="2" />
+		<output resource="lime" rate="2.0" />
+		<output resource="sulfur" rate="1.0" />
 		<output resource="calcium sulfate" rate="2.0" />					
-		<output resource="calcium carbonate" rate="25.0" />
+		<output resource="calcium carbonate" rate="24.0" />
 		<output resource="brine water" rate="26.0" />
 	</process>
 			
@@ -1456,7 +1607,8 @@
 	
 	<process name="Soil Generation from Crop Waste" power-required=".01" >	
 		<input resource="crop waste" rate="100" />
-		<output resource="soil" rate="100" />					
+		<output resource="soil" rate="20" />	
+		<output resource="carbon" rate="80" />				
 	</process>
 	
 

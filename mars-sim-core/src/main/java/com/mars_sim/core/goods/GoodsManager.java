@@ -171,8 +171,9 @@ public class GoodsManager implements Serializable {
 	private Map<CommerceType, Double> factors = new EnumMap<>(CommerceType.class);
 
 	private Map<Integer, Double> goodsValues = new HashMap<>();
-	private Map<Integer, Double> tradeCache = new HashMap<>();
-
+	
+	private Map<Integer, Double> projectedDemandCache = new HashMap<>();
+	private Map<Integer, Double> tradeDemandCache = new HashMap<>();
 	private Map<Integer, Double> demandCache = new HashMap<>();
 	private Map<Integer, Double> supplyCache = new HashMap<>();
 
@@ -214,6 +215,22 @@ public class GoodsManager implements Serializable {
 	}
     
 	/**
+	 * Populates the cache maps.
+	 */
+	private void populateCaches() {
+		// Preload the caches with default values
+		for(Good good : GoodsUtil.getGoodsList()) {
+			int id = good.getID();
+			goodsValues.put(id, 1D);
+			tradeDemandCache.put(id, 0D);
+			deflationIndexMap.put(id, 0);
+			projectedDemandCache.put(id, good.getDefaultDemandValue());
+			demandCache.put(id, good.getDefaultDemandValue());
+			supplyCache.put(id, good.getDefaultSupplyValue());
+		}
+	}
+	
+	/**
      * Gets the flattened demand of a good.
      * 
 	 * @param good
@@ -230,7 +247,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
     public double getProjectedDemand(Good good) {
-		return good.getProjectedDemand();
+    	return getProjectedDemandScore(good);
 	}
     
 	/**
@@ -240,7 +257,7 @@ public class GoodsManager implements Serializable {
 	 * @return
 	 */
     public double getTradeDemand(Good good) {
-		return good.getTradeDemand();
+    	return getTradeDemandScore(good);
 	}
     
 	/**
@@ -251,21 +268,6 @@ public class GoodsManager implements Serializable {
 	 */
     public double getRepairDemand(Good good) {
 		return good.getRepairDemand();
-	}
-    
-	/**
-	 * Populates the cache maps.
-	 */
-	private void populateCaches() {
-		// Preload the good cache
-		for(Good good : GoodsUtil.getGoodsList()) {
-			int id = good.getID();
-			goodsValues.put(id, 1D);
-			tradeCache.put(id, 0D);
-			deflationIndexMap.put(id, 0);
-			demandCache.put(id, good.getDefaultDemandValue());
-			supplyCache.put(id, good.getDefaultSupplyValue());
-		}
 	}
 
 	/**
@@ -356,10 +358,11 @@ public class GoodsManager implements Serializable {
 			if (oldDemand != newDemand) {
 				setDemandScore(good, newDemand);
 			}
-
+			
 			// Calculate the good value
 			double newGoodValue = newDemand / (1 + totalSupply);
-
+//			double newGoodValue = oldDemand / (1 + totalSupply);
+			
 			// Check if it surpasses MAX_VP
 			if (newGoodValue > MAX_VP) {
 				// Update deflationIndexMap for other resources of the same category
@@ -537,7 +540,9 @@ public class GoodsManager implements Serializable {
 					selectedTradeValue = tradeValue;
 			}
 		}
-		tradeCache.put(good.getID(), selectedTradeValue);
+		
+		setTradeDemandScore(good, selectedTradeValue);
+		
 		return selectedTradeValue;
 	}
 
@@ -697,7 +702,52 @@ public class GoodsManager implements Serializable {
 	public double getDemandScore(Good good) {
 		return demandCache.get(good.getID());
 	}
+	
+	/**
+	 * Gets the projected demand score of a good.
+	 * 
+	 * @param good
+	 * @return
+	 */
+	public double getProjectedDemandScore(Good good) {
+		return projectedDemandCache.get(good.getID());
+	}
+	
 
+	/**
+	 * Sets the projected demand score of a good.
+	 * 
+	 * @param good
+	 * @param newScore
+	 */
+	public void setProjectedDemandScore(Good good, double newScore) {
+		double clippedValue = MathUtils.between(newScore, MIN_DEMAND, MAX_DEMAND);
+		projectedDemandCache.put(good.getID(), clippedValue);
+		settlement.fireUnitUpdate(UnitEventType.PROJECTED_DEMAND_EVENT, good);
+	}
+	
+	/**
+	 * Gets the trade demand score of a good.
+	 * 
+	 * @param good
+	 * @return
+	 */
+	public double getTradeDemandScore(Good good) {
+		return tradeDemandCache.get(good.getID());
+	}	
+	
+	/**
+	 * Sets the trade demand score of a good.
+	 * 
+	 * @param good
+	 * @param newScore
+	 */
+	public void setTradeDemandScore(Good good, double newScore) {
+		double clippedValue = MathUtils.between(newScore, 0, MAX_DEMAND);
+		tradeDemandCache.put(good.getID(), clippedValue);
+		settlement.fireUnitUpdate(UnitEventType.TRADE_DEMAND_EVENT, good);
+	}
+	
 	/**
 	 * Sets the demand score of a good.
 	 * 
@@ -1019,12 +1069,21 @@ public class GoodsManager implements Serializable {
 	public void destroy() {
 
 		settlement = null;
-		goodsValues = null;
-		demandCache = null;
-		tradeCache = null;
-
 		deflationIndexMap = null;
+		
+		goodsValues.clear();
+		goodsValues = null;
+		
+		demandCache.clear();
+		demandCache = null;
+		
+		tradeDemandCache.clear();
+		tradeDemandCache = null;
+		
+		projectedDemandCache.clear();
+		projectedDemandCache = null;
 
+		supplyCache.clear();
 		supplyCache = null;
 
 		buyList = null;

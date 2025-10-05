@@ -7,41 +7,44 @@
 
 package com.mars_sim.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.VehicleMaintenance;
-import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.GenderType;
-import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 
-public class TestContainment extends AbstractMarsSimUnitTest {
+public class TestContainment extends MarsSimUnitTest {
 
 	private VehicleMaintenance garage;
 	private Settlement settlement;
-	private MarsSurface surface;
 
 	@Override
-    public void setUp() {
-		super.setUp();
+    public void init() {
+		super.init();
               
-		settlement = buildSettlement();
+		settlement = buildSettlement("Test Containment");
         
-		garage = buildGarage(settlement.getBuildingManager(), new LocalPosition(0, 0), 0D, 0);
-        surface = unitManager.getMarsSurface();
+		garage = buildGarage(settlement.getBuildingManager(), new LocalPosition(0, 0));
     }
 
-	private void testContainment(AbstractMobileUnit source, Unit container, Unit topContainer, LocationStateType lon) {
+	private void assertContainment(AbstractMobileUnit source, Unit container, Unit topContainer, LocationStateType lon) {
 		assertEquals("Location state type", lon, source.getLocationStateType());
 		assertEquals("Parent container", container, source.getContainerUnit());
 	}
@@ -169,19 +172,16 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		assertFalse(msg + ": isInVehicle", source.isInVehicle());
 		assertNull(msg + ": Vehicle", source.getVehicle());
 		
-		assertEquals(msg + ": Container", surface, source.getContainerUnit());
+		assertEquals(msg + ": Container", getMarsSurface(), source.getContainerUnit());
 	}
 
 	
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
+	@Test
 	public void testPersonInGarage() {
-		Person person = Person.create("Worker One", settlement, GenderType.MALE)
-				.setCountry(new NationSpecConfig(getConfig()).getItem("Norway"))
-				.build();
-		
-		unitManager.addUnit(person);
+		var person = buildPerson("Worker One", settlement);
 
 		assertInsideSettlement("Initial person", person, settlement);
 		
@@ -193,8 +193,9 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
+	@Test
 	public void testVehicleInGarage() {
-		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
+		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1), EXPLORER_ROVER);
         
 		// Since garage has been built at constructor, once the vehicle is built, 
 		// it goes into a garage automatically 
@@ -212,8 +213,12 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
+	@Test
 	public void testVehicleNearSettlement() {
-		Vehicle vehicle = buildRover(settlement, "Near Rover", new LocalPosition(1,1));
+		Vehicle vehicle = buildRover(settlement, "Near Rover", new LocalPosition(1,1), EXPLORER_ROVER);
+		
+		// Vehicle leaves garage
+		BuildingManager.removeFromGarage(vehicle);
 
 		vehicle.transfer(settlement);
 
@@ -229,16 +234,18 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 		if (isInGarage)
 			state = LocationStateType.INSIDE_SETTLEMENT;
 		
-		testContainment(vehicle, settlement, settlement, state);
+		assertContainment(vehicle, settlement, settlement, state);
 	}
 	
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
+	@Test
 	public void testVehicleOnSurface() {
-		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
+		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1), EXPLORER_ROVER);
 
-		assertTrue("Transfer to Mars surface but still within settlement vicinity", vehicle.transfer(surface));
+		assertTrue("Transfer to Mars surface but still within settlement vicinity",
+					vehicle.transfer(getMarsSurface()));
 
 		assertWithinSettlementVicinity("After transfer from Settlement", vehicle);
 	}
@@ -246,13 +253,14 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
+	@Test
 	public void testBagOnSurface() {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
 		assertInsideSettlement("Initial equipment", bag, settlement);
-		
-		assertTrue("Transfer to Mars surface but still within settlement vicinity", bag.transfer(surface));
+
+		assertTrue("Transfer to Mars surface but still within settlement vicinity", bag.transfer(getMarsSurface()));
 		assertWithinSettlementVicinity("in a settlement vicinity", bag);
 		
 		assertTrue("Transfer to settlement", bag.transfer(settlement));
@@ -263,14 +271,15 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
+	@Test
 	public void testBagOnVehicle() {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
 		assertInsideSettlement("Initial equipment", bag, settlement);
-		
-		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1));
-		
+
+		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1), EXPLORER_ROVER);
+
         // Vehicle leaves garage
         BuildingManager.removeFromGarage(vehicle);
 
@@ -289,14 +298,15 @@ public class TestContainment extends AbstractMarsSimUnitTest {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
+	@Test
 	public void testPersonOnVehicle() {
 
 		Person person = buildPerson("Test Person", settlement);
 		
 		assertInsideSettlement("Initial Person", person, settlement);
-		
-		Rover vehicle = buildRover(settlement, getName(), new LocalPosition(1,1));
-        
+
+		Rover vehicle = buildRover(settlement, "Person Rover", new LocalPosition(1,1), EXPLORER_ROVER);
+
 		assertTrue("Transfer person from settlement to vehicle", person.transfer(vehicle));
 		// Note that once the vehicle is built, it goes to a garage by default
 		assertInVehicle("In vehicle", person, vehicle);

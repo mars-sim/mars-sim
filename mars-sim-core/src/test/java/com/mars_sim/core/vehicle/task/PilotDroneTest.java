@@ -55,7 +55,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
                                 simConfig.getVehicleConfiguration().getVehicleSpec("delivery drone"),
 								settlement);
 
-	    unitManager.addUnit(flyer);
+	    getSim().getUnitManager().addUnit(flyer);
 	    return flyer;
 	}
 
@@ -66,7 +66,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
 
         // move to plant
-        v.transfer(getSim().getUnitManager().getMarsSurface());
+        v.transfer(surface);
 
         String name = "Test Pilot";
         var p = buildPerson(name, s, JobType.PILOT);
@@ -311,7 +311,6 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         
     	double currentHoveringHeight = .1;
     	
-		double ascentHeight = 0;
 		 // Gain in potential energy
 		double gainPotentialEnergy = 0;
 		// Do NOT ascent anymore. Hover at the this height

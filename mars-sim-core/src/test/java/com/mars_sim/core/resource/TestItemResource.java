@@ -1,63 +1,50 @@
 package com.mars_sim.core.resource;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
-import java.util.Collection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.goods.GoodType;
 
-import junit.framework.TestCase;
+public class TestItemResource {
 
-public class TestItemResource extends TestCase {
-
-    private ItemResource hammer;
-    private ItemResource socketWrench;
-    private ItemResource pipeWrench;
-    private Collection<? extends ItemResource> resources;
-
-    public TestItemResource() {
-        super();
-    }
-
-    @Override
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         SimulationConfig.loadConfig();
-
-        // initialize
-        resources = ItemResourceUtil.getItemResources();
-        GoodType type = GoodType.TOOL;
-        
-        hammer = ItemResourceUtil.createItemResource("hammer", 1, "a hand tool", type, 1.4D, 1);
-        socketWrench = ItemResourceUtil.createItemResource("socket wrench", 2, "a hand tool", type, .5D, 1);
-        pipeWrench = ItemResourceUtil.createItemResource("pipe wrench", 3, "a hand tool", type, 2.5D, 1);
-
-        resources = Arrays.asList(hammer, socketWrench, pipeWrench);
-
     }
 
-    public void testResourceMass() {
-        double hammerMass = hammer.getMassPerItem();
-        assertEquals(1.4D, hammerMass, 0D);
-    }
+    @Test
+    public void testFindByName() {
+        var sheetName = "Steel sheet";
+        var sheet = ItemResourceUtil.findItemResource(sheetName);
 
-    public void testResourceName() {
-        String name = hammer.getName();
-        assertEquals("hammer", name);
+        assertNotNull(sheet);
+        assertEquals(7.8D, sheet.getMassPerItem(), 0D);
+        assertEquals(sheetName, sheet.getName());
+        assertEquals(GoodType.METALLIC, sheet.getGoodType());
     }
-
+    
+    @Test
     public void testFindItemResourceNegative() {
         Exception e = assertThrows(IllegalArgumentException.class, () -> {
         	ItemResourceUtil.findItemResource("test");
         });
 
-        assertEquals("No ItemResource called " + "test", e.getMessage());
+        assertEquals("Part 'test' not found.", e.getMessage());
     }
 
-    public void testGetItemResourcesContents() {
-        assertTrue(resources.contains(hammer));
-        assertTrue(resources.contains(socketWrench));
-        assertTrue(resources.contains(pipeWrench));
+    @Test
+    public void testGetById() {
+        
+        // initialize
+       var found = ItemResourceUtil.findItemResource(ItemResourceUtil.BACKHOE_ID);
+       
+       assertNotNull(found);
+       assertEquals(ItemResourceUtil.BACKHOE_ID, found.getID());
+
     }
 }
