@@ -81,13 +81,13 @@ public class MissionLog implements Serializable  {
      */
     public void addEntry(String entry, String enterBy) {
 		if (!log.isEmpty()) {
-			int comapareSize = Math.min(log.size(), MAX_COMPARE);
-			for(int i=1; i <= comapareSize; i++) {
+			int compareSize = Math.min(log.size(), MAX_COMPARE);
+			for(int i=1; i <= compareSize; i++) {
 				MissionLogEntry log0 = log.get(log.size() - i);
 				String entry0 = log0.getEntry();
 				
 				if (entry0.equals(entry)) {
-					// Same as one of the choosen one, do not add
+					// Same as one of the chosen ones, do not add
 					return;
 				}
 			}
