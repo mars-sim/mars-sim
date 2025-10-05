@@ -801,24 +801,24 @@
 		</description>
 		<input resource="brine water" rate="400.0"  />
 		
-		<output resource="water" rate="389.0"  />
+		<output resource="water" rate="384.0"  />
 		<output resource="sand" rate="1.8"  />
 		<output resource="magnesium" rate="0.9"  />	
 		<output resource="manganese" rate="0.1"  />	
 		<output resource="calcium" rate="0.5"  />			
-		<output resource="calcium carbonate" rate="0.5"  />
+		<output resource="calcium carbonate" rate="1.5"  />
 		<output resource="lime" rate="1.0"  />	
 		<output resource="perchlorate" rate="0.4"  />	
 		<output resource="aluminum oxide" rate="0.8"  />	
 		<output resource="iron oxide" rate="1.6"  />	
 		<output resource="nickel" rate="0.5"  />	
 		<output resource="silica" rate="1.2"  />	
-		<output resource="sulfur" rate="0.1" />	
-		<output resource="copper" rate="0.1" />	
+		<output resource="sulfur" rate="0.2" />	
+		<output resource="copper" rate="1.0" />	
 				
-		<output resource="hematite" rate="0.5"  />	
-		<output resource="goethite" rate="0.5"  />	
-		<output resource="gypsum" rate="0.5"  />			
+		<output resource="hematite" rate="1.5"  />	
+		<output resource="goethite" rate="1.5"  />	
+		<output resource="gypsum" rate="1.5"  />			
 				
 	</process>
 
@@ -830,15 +830,15 @@
 		</description>
 		<input resource="regolith" rate="100.0"  />
 
-		<output resource="basaltic" rate="8.0"  />
-		<output resource="gypsum" rate="25.0"  />
-		<output resource="smectite" rate="5.0"  />
-		<output resource="allophane" rate="5.0"  />
-		<output resource="akaganeite" rate="5.0"  />
-		<output resource="bassanite" rate="5.0"  />
-
-		<output resource="sand" rate="46.9"  />
-		<output resource="nitrogen" rate="0.1"  />
+		<output resource="basaltic" rate="9.0"  />
+		<output resource="smectite" rate="9.0"  />
+		<output resource="allophane" rate="9.0"  />
+		<output resource="akaganeite" rate="9.0"  />
+		<output resource="bassanite" rate="9.0"  />
+		<output resource="gypsum" rate="26.0"  />
+		
+		<output resource="sand" rate="28.5"  />
+		<output resource="nitrogen" rate="0.5"  />
 	</process>
 
 
@@ -1127,8 +1127,8 @@
 			https://www.nasa.gov/sites/default/files/atoms/files/isru-isfr-mrs-nr.pdf
 		</description>
 		<input resource="sand" rate="45" />					
-		<input resource="sodium oxide" rate="2" />
-		<input resource="lime" rate="1" />
+		<input resource="sodium oxide" rate="2.0" />
+		<input resource="lime" rate="1.0" />
 
 		<output resource="carbon dioxide" rate="1.5" />
 		<output resource="aluminum oxide" rate="3.5" />
@@ -1208,7 +1208,7 @@
 		</description>					
 		<input resource="gypsum" rate="6.0" />
 
-		<output resource="lime" rate="2" />
+		<output resource="lime" rate="2.0" />
 		<output resource="gypsum plaster" rate="3.0" />
 		<output resource="brine water" rate="1.0" />
 	</process>

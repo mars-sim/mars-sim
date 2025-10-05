@@ -391,7 +391,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 								   when building is in 'power down' mode. -->
 
 			<!-- "Lander Hab" -->
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
@@ -539,7 +539,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane" capacity="20.0"/>
 			</thermal-generation>
 
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<!-- Grey Water Recycling process for cleaning grey water. -->
 				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
@@ -613,7 +613,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		wear-lifetime="3340000" maintenance-time="300" room-temperature="20.0" base-mass="10000">
 		<description> The Central Hub serves to a nexus for connecting other building modules. It has a flexible air dome and is 
 		designed to be a place of gathering and relaxation.</description>
-		<power-required base-power="5.0" base-power-down-power="1.0"/>
+		<power-required base-power="5.0" base-power-down-power="0.5"/>
 
 		<functions>
 			<cooking capacity="4">
@@ -775,7 +775,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<!-- "Central Hub A" -->
-			<resource-processing power-down-level="0.0">			
+			<resource-processing power-down-level="0.25">			
 				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="12"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>		
@@ -843,7 +843,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="10"/>
 				<process-engine name="Black Water Processor" number-modules="6"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="2"/>			
@@ -904,7 +904,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="2"/>
 			</waste-processing>				
@@ -1118,7 +1118,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<scopes>
 			<scope name="metallic element"/>
 		</scopes>
-		<power-required base-power="5.0" base-power-down-power="0.05" />
+		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 		<functions>		
 			<life-support capacity="12" power-required="0.6">
@@ -1153,7 +1153,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="8"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="16"/>
 				
@@ -1193,7 +1193,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> Bioreactor-E (E stands for Ethylene) host specialized equipment and racks for utilizing cynobacteria 
 			to produce ethylene gas.
 		</description>
-		<power-required base-power="5.0" base-power-down-power="0.05" />
+		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 		<functions>		
 			<life-support capacity="12" power-required="0.6">
@@ -1228,7 +1228,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="32"/>
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
@@ -1268,7 +1268,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<scopes>
 			<scope name="metallic element"/>
 		</scopes>
-		<power-required base-power="5.0" base-power-down-power="0.05" />
+		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 		<functions>		
 			<life-support capacity="12" power-required="0.6">
@@ -1303,7 +1303,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Methanogenesis by Archaea" number-modules="12"/>
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="16"/>
 				
@@ -1345,7 +1345,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<scopes>
 			<scope name="metallic element"/>
 		</scopes>
-		<power-required base-power="5.0" base-power-down-power="0.05" />
+		<power-required base-power="5.0" base-power-down-power="0.5" />
 
 		<functions>		
 			<life-support capacity="12" power-required="0.6">
@@ -1380,7 +1380,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="20"/>
 				<activity>
 					<activity-spot xloc="2.02" yloc="1.7" />	
@@ -1425,7 +1425,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<scopes>
 			<scope name="metallic element"/>
 		</scopes>
-		<power-required base-power="2.0" base-power-down-power=".2"/>
+		<power-required base-power="2.0" base-power-down-power="0.2"/>
 
 		<functions>
 			<!-- The building is capable of growing plant crops. -->
@@ -1489,7 +1489,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<!-- Inflatable Greenhouse -->
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="10"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
 				<activity>
@@ -1549,7 +1549,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				 -->
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="4"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="4"/>	
 				<process-engine name= "Soil Generation from Compost" number-modules="2"/>			
@@ -1666,7 +1666,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="4.25" yloc="-7.7" />
 				</activity>
 			</research>
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="20"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="36"/>
 
@@ -1717,7 +1717,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="40.0" />
 			</thermal-generation>
 					
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="10"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="12"/>		
 				<process-engine name= "Soil Generation from Compost" number-modules="6"/>		
@@ -1903,7 +1903,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
 			 <!-- "ERV-A" -->
-			<resource-processing power-down-level="0.0">		
+			<resource-processing power-down-level="0.25">		
 				
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
@@ -1955,7 +1955,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<!-- 5 processes for breaking down regolith -->		
 				<process-engine name="Convert Regolith to Ores with Sand" number-modules="60"/>
 				<process-engine name="Extract Nitrogen Compounds from Regolith" number-modules="30"/>
@@ -2045,7 +2045,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 					
 				<!-- 3 silicon/chemical processes -->
 				<process-engine name="Make Quartz from Silica" number-modules="2"/>
@@ -2130,7 +2130,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Melt Ice" number-modules="144"/>	
 				<process-engine name="Filter Brine Water" number-modules="144"/>						
 			</resource-processing>
@@ -2158,7 +2158,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="water" amount="9500.0" />
 			</storage>
 
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="10"/>
 				<process-engine name="Black Water Processor"/>
 			</waste-processing>	
@@ -2280,7 +2280,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
 			<!-- "Atmospheric Processor" -->
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="24"/>
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="24"/>				
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="12"/>
@@ -2321,7 +2321,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="24"/>
 			</resource-processing>
 
@@ -2420,7 +2420,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
@@ -2500,7 +2500,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
- 			<waste-processing power-down-level="0.0">
+ 			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
@@ -2730,7 +2730,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="3"/>
 				<process-engine name="Black Water Processor" number-modules="2"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
@@ -2797,7 +2797,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
 				<process-engine name= "Hazard Waste Incineration" number-modules="2"/>
@@ -3032,7 +3032,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 				</activity>
 			</research>
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
 				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
@@ -3247,7 +3247,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		</description>
 		<!-- http://colonizeantarctica.blogspot.com/2008/01/vertical-axis-wind-turbines.html -->
 
-		<power-required base-power="0.1" base-power-down-power="0.05" />
+		<power-required base-power="0.1" base-power-down-power="0.01" />
 
 		<functions>
 			<power-generation>
@@ -3263,7 +3263,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		that generates electricity from Martian sunlight. It is an essential part of
 		a modular distributed renewable energy generation system for the power grid.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.05" />
+		<power-required base-power="0.1" base-power-down-power="0.01" />
 
 		<functions>
 			<power-generation>
@@ -3280,7 +3280,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			reflectors that concentrates sunlight for heating up molten materials
 			that move mechanical turbines generating power.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.05" />
+		<power-required base-power="0.1" base-power-down-power="0.01" />
 
 		<functions>
 			<power-generation>
@@ -3296,7 +3296,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description>  The Small Areothermal Well is an geothermal energy production system
 			that captures the trapped underground heat for the power grid.
 		</description>
-		<power-required base-power="0.05" base-power-down-power="0.0"/>
+		<power-required base-power="0.05" base-power-down-power="0.005"/>
 
 		<functions>
 			<power-generation>
@@ -3312,7 +3312,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			that features more advance geothermal flow path for ground loop design for
 			capturing heat and creating electricity.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.01" />
 
 		<functions>
 			<power-generation>
@@ -3560,7 +3560,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<power-required base-power=".5" base-power-down-power=".05" />
 
 		<functions>
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="64"/>
 			</resource-processing>
 			<storage stock-capacity="30000">
@@ -3814,7 +3814,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0"/>
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="5"/>
 				<process-engine name="Black Water Processor" number-modules="3"/>
 				<process-engine name= "Solid Waste Management" number-modules="1"/>
@@ -3891,7 +3891,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0"/>
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="3"/>
 				<process-engine name="Black Water Processor" number-modules="2"/>
 				<process-engine name= "Hazard Waste Incineration" number-modules="3"/>
@@ -3908,7 +3908,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		 	for making items and synthesizing resource. It provides storage space for
 		 	housing commonly used resources.
 		</description>
-		<power-required base-power="3.0" base-power-down-power=".3" />
+		<power-required base-power="3.0" base-power-down-power="0.3" />
 
 		<functions>
 			<computation computing-unit="4.0" power-demand="1.0">
@@ -3984,7 +3984,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			two inhabitable buildings. It allows only one person to access it
 			at a time.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.01" />
 
 		<functions>
 			<connection />
@@ -4129,7 +4129,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 
 			<!-- "Outpost Hub" -->
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
 				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
@@ -4243,7 +4243,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="2"/>
 				<process-engine name="Black Water Processor" number-modules="1"/>
 				<process-engine name= "Solid Waste Management"/>
@@ -4560,7 +4560,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<!-- "Inground Greenhouse" -->
-			<resource-processing power-down-level="0.0">
+			<resource-processing power-down-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="12"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
 				<activity>
@@ -4608,7 +4608,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0"/>
 			</thermal-generation>
 			
-			<waste-processing power-down-level="0.0">
+			<waste-processing power-down-level="0.25">
 				<process-engine name="Grey Water Processor" number-modules="4"/>
 				<process-engine name= "Soil Generation from Crop Waste" number-modules="4"/>	
 				<process-engine name= "Soil Generation from Compost" number-modules="2"/>	
@@ -4626,7 +4626,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<description> The Tunnel is an underground pressurized access tube connecting
 			two inhabitable buildings.
 		</description>
-		<power-required base-power="0.1" base-power-down-power="0.0" />
+		<power-required base-power="0.1" base-power-down-power="0.01" />
 
 		<functions>
 			<connection />

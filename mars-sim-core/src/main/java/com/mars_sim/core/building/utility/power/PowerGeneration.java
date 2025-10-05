@@ -197,7 +197,9 @@ public class PowerGeneration extends Function {
 				
 					// Future: Will need a standardized way to tune how a power source
 					// will respond to low power mode
-					source.setTime(time / 10);
+					
+					// Note: For now, low power mode will reduce the generated power by 50% 
+					source.setTime(time / 2);
 				}
 				else {
 

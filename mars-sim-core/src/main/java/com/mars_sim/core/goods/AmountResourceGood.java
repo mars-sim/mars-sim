@@ -168,13 +168,14 @@ class AmountResourceGood extends Good {
 	// Chemicals
 
 	private static final double CLEANING_AGENT_MODIFIER = 2.0;
-	private static final double ETHYLENE_MODIFIER = 6.0;
-	private static final double STYRENE_MODIFIER = 4.0;
+	private static final double ETHYLENE_MODIFIER = 12.0;
+	private static final double STYRENE_MODIFIER = 12.0;
 	private static final double PROPYLENE_MODIFIER = 3.0;
 	private static final double ETHANE_MODIFIER = 2.0;
 	private static final double RESIN_MODIFIER = 3.0;
 	private static final double ACETYLENE_MODIFIER = 3.0;
 	private static final double FIBER_MODIFIER = 2.0;
+	private static final double LIME_MODIFIER = 6.0;
 	
 	// gases
 	private static final double CO2_VALUE_MODIFIER = 1.0;
@@ -1281,6 +1282,8 @@ class AmountResourceGood extends Good {
 				return base * PROPYLENE_MODIFIER;
 			case ResourceUtil.STYRENE_ID:
 				return base * STYRENE_MODIFIER;
+			case ResourceUtil.LIME_ID:
+				return base * LIME_MODIFIER;
 		}
 		
 		return 0;

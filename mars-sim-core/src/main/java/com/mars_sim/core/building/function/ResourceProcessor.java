@@ -145,8 +145,10 @@ public abstract class ResourceProcessor extends Function {
 			double productionLevel = 0D;
 			if (getBuilding().getPowerMode() == PowerMode.FULL_POWER)
 				productionLevel = 1D;
-			else if (getBuilding().getPowerMode() == PowerMode.LOW_POWER)
+			else if (getBuilding().getPowerMode() == PowerMode.LOW_POWER) {
+				// Note: For now, low power mode will reduce the processing capability by 50%
 				productionLevel = powerDownProcessingLevel;
+			}
 			// Run each resource process.
 			for (ResourceProcess p : processes) {
 				p.processResources(pulse, productionLevel);

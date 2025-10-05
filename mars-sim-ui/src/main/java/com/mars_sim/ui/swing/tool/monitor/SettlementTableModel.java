@@ -60,7 +60,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	private static final int CONCRETE_COL = 19;
 	private static final int CEMENT_COL = 20;
 	private static final int LIME_COL = 21;
-	private static final int ROCKS_COL = 22;
+	private static final int ETHYLENE_COL = 22;
 	
 	private static final int COLUMNCOUNT = 23;
 	private static final ColumnSpec[] COLUMNS;
@@ -69,9 +69,8 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 
 	// Pseudo resource ids to cover composites
 	private static final int REGOLITH_ID = -1;
-	private static final int ROCK_ID = -2;
-	private static final int MINERAL_ID = -3;
-	private static final int ORE_ID = -4;
+	private static final int MINERAL_ID = -2;
+	private static final int ORE_ID = -3;
 
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
@@ -101,8 +100,8 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		COL_TO_RESOURCE[REGOLITHS_COL] = REGOLITH_ID;	
 		COLUMNS[SAND_COL] = new ColumnSpec("Sand", Double.class);	
 		COL_TO_RESOURCE[SAND_COL] = ResourceUtil.SAND_ID;	
-		COLUMNS[ROCKS_COL] = new ColumnSpec("Rocks", Double.class);	
-		COL_TO_RESOURCE[ROCKS_COL] = ROCK_ID;	
+		COLUMNS[ETHYLENE_COL] = new ColumnSpec("Ethylene", Double.class);	
+		COL_TO_RESOURCE[ETHYLENE_COL] = ResourceUtil.ETHYLENE_ID;	
 		COLUMNS[ORES_COL] = new ColumnSpec("Ores", Double.class);
 		COL_TO_RESOURCE[ORES_COL] = ORE_ID;	
 		COLUMNS[MINERALS_COL] = new ColumnSpec("Minerals", Double.class);
@@ -128,6 +127,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		RESOURCE_TO_COL.put(ResourceUtil.CONCRETE_ID, CONCRETE_COL);
 		RESOURCE_TO_COL.put(ResourceUtil.CEMENT_ID, CEMENT_COL);
 		RESOURCE_TO_COL.put(ResourceUtil.LIME_ID, LIME_COL);
+		RESOURCE_TO_COL.put(ResourceUtil.ETHYLENE_ID, ETHYLENE_COL);
 		
 		for (int i : ResourceUtil.REGOLITH_TYPES_IDS) {
 			RESOURCE_TO_COL.put(i, REGOLITHS_COL);
@@ -137,9 +137,6 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		}
 		for (int i : ResourceUtil.MINERAL_CONC_IDs) {
 			RESOURCE_TO_COL.put(i, MINERALS_COL);
-		}
-		for (int i : ResourceUtil.ROCK_IDS) {
-			RESOURCE_TO_COL.put(i, ROCKS_COL);
 		}
 	}
 
@@ -252,7 +249,6 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 						case REGOLITH_ID -> getTotalAmount(ResourceUtil.REGOLITH_TYPES_IDS, settle);
 						case ORE_ID -> getTotalAmount(ResourceUtil.ORE_DEPOSIT_IDS, settle);
 						case MINERAL_ID -> getTotalAmount(ResourceUtil.MINERAL_CONC_IDs, settle);
-						case ROCK_ID -> getTotalAmount(ResourceUtil.ROCK_IDS, settle);
 						default -> settle.getAllSpecificAmountResourceOwned(resourceId);
 					};
 				}
