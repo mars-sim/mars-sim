@@ -85,8 +85,9 @@ public class MissionLog implements Serializable  {
 			for(int i=1; i <= compareSize; i++) {
 				MissionLogEntry log0 = log.get(log.size() - i);
 				String entry0 = log0.getEntry();
+				String enterBy0 = log0.getEnterBy();
 				
-				if (entry0.equals(entry)) {
+				if (entry0.equals(entry) && !enterBy0.equals(enterBy) ) {
 					// Same as one of the chosen ones, do not add
 					return;
 				}
