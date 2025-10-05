@@ -22,7 +22,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 /**
- * A unit test suite for the CollectResources task class.
+ * A unit test suite for the OutsidePathFinder class.
  */
 class OutsidePathFinderTest extends MarsSimUnitTest {
 

@@ -573,7 +573,7 @@ public class LocalAreaUtil {
 	}
 
 	/**
-	 * Checks if a path between 2 pointscollides with any existing vehicle, building, or
+	 * Checks if a path between 2 points collides with any existing vehicle, building, or
 	 * construction site at a settlement.
 	 *
 	 * @param start	   the starting point.

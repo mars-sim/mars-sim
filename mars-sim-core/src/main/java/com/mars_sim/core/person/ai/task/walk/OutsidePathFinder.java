@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * PathFinder.java
+ * OutsidePathFinder.java
  * @date 2025-10-04
  * @author Barry Evans
  */
