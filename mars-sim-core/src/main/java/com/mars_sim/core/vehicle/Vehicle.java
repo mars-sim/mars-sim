@@ -1949,6 +1949,19 @@ public abstract class Vehicle extends AbstractMobileUnit
 	}
 
 	/**
+	 * Checks if vehicle is usable for this mission. (This method should be added to
+	 * by children)
+	 *
+	 * @param newVehicle the vehicle to check
+	 * @throws IllegalArgumentException if newVehicle is null.
+	 * @throws MissionException         if problem checking vehicle is loadable.
+	 */
+	public boolean isUsableVehicle() {
+		return isVehicleReady() && isEmpty();
+	}
+
+	
+	/**
 	 * Gets the total mass on this vehicle (not including vehicle's weight).
 	 *
 	 * @return

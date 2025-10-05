@@ -899,8 +899,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			if ((mission instanceof VehicleMission vm)) {
 				v = vm.getVehicle();
 				crewable = (Crewable)v; 
+				updateOccupantList();
 			}
-			updateOccupantList();
 		}
 		
 		/**

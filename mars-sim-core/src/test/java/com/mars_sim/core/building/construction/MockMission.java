@@ -18,6 +18,7 @@ import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
+@SuppressWarnings("serial")
 class MockMission implements Mission {
 
     @Override
@@ -26,7 +27,7 @@ class MockMission implements Mission {
     }
 
     @Override
-    public void abortMission(String reason) {
+    public void abortMission(MissionStatus reason) {
         throw new UnsupportedOperationException("Unimplemented method 'abortMission'");
     }
 

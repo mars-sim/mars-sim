@@ -123,6 +123,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		
 		// Check vehicle
 		if (!hasVehicle()) {
+			endMission(NO_AVAILABLE_VEHICLE);
 			return;
 		}
 			
@@ -138,7 +139,7 @@ public abstract class CollectResourcesMission extends EVAMission
 		if (range <= 0D) {
 			logger.warning(getVehicle(), "Zero range for mission " 
 					+ getName() + ".");
-			endMission(NO_AVAILABLE_VEHICLE);
+			endMission(NO_VEHICLE_WITHIN_RANGE);
 			return;
 		}
 

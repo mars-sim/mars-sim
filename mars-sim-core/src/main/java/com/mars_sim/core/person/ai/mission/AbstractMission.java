@@ -41,13 +41,12 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
-import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.ai.job.RobotJob;
-import com.mars_sim.core.robot.ai.task.Charge;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -56,8 +55,6 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.Vehicle;
 
 
 /**
@@ -222,7 +219,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// Note: do NOT set his shift to ON_CALL yet.
 			// let the mission lead have more sleep before departing
 		}
-
 	}
 
 	/**
@@ -682,23 +678,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/**
 	 * Aborts the mission by the user. Will stop current phase.
 	 * 
-	 * @param reason Cause for abort
+	 * @param endStatus Cause for abort
 	 */
 	@Override
-	public final void abortMission(String reason) {
+	public final void abortMission(MissionStatus endStatus) {
 		aborted = true;
 		logger.info(getStartingPerson(), "Aborted " + getName() 
-			+ ": " + reason + ".");
-	}
-
-	/**
-	 * Aborts the mission via established reasons and/or events.
-	 * 
-	 * @param reason Reason to abort
-	 * @param event Optional type of event to create
-	 */
-	public void abortMission(MissionStatus reason, EventType event) {
-		abortMission(reason.getName() + ", " + event.getName());
+			+ ": " + endStatus.getName() + ".");
+		endMission(endStatus);
 	}
 
 	/**
@@ -817,87 +804,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param newTask   the new task to be assigned
 	 * @return true if task can be performed.
 	 */
-	protected boolean assignTask(Person person, Task newTask) {
+	public boolean assignTask(Person person, Task newTask) {
 		return assignTask(person, newTask, false);
-	}
-		
-
-	/**
-	 * Checks if a person has any issues in starting a new task.
-	 *
-	 * @param person the person to assign to the task
-	 * @param newTask   the new task to be assigned
-	 * @param allowSameTask is it allowed to execute the same task as previous
-	 * @return true if task can be performed.
-	 */
-	protected boolean assignTask(Person person, Task newTask, boolean allowSameTask) {
-		// If task is physical effort driven and person too ill, do not assign task.
-		Task currentTask = person.getMind().getTaskManager().getTask();
-
-		String newTaskName = newTask.getName();
-		
-		if (currentTask != null && !currentTask.isDone()) {
-
-			String currentTaskName = currentTask.getName();
-			
-			if (!allowSameTask && currentTaskName.equals(newTaskName)){
-	      		logger.info(person, 20_000, "Already '" + currentTaskName 
-	      				+ "' as of this moment.");
-				// If the person has been doing this task, 
-				// then there is no need of adding it.
-				return false;
-			}
-
-			if (currentTaskName.equals(Sleep.NAME)) {
-	      		logger.info(person, 20_000, "Currently asleep. Not available to be assigned with other tasks.");
-				// If the person is asleep, 
-				// do not assign this task.
-	      		
-	      		// Note: what if it's an emergency that one must wake up and respond ?
-				return false;
-			}
-
-			Vehicle v = person.getVehicle();
-			if (v != null && v instanceof Rover r && r.isInAirlock(person)) {	
-	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
-		
-	      		// Note: need to wait until the person has exited the vehicular airlock
-				return false;
-			}
-			Settlement settlement = person.getSettlement();
-			if (settlement != null && settlement.isInAirlock(person)) {	
-	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
-		
-	      		// Note: need to wait until the person has exited the vehicular airlock
-				return false;
-			}
-		}
-		
-		if (!newTaskName.equals(Sleep.NAME) && person.isSuperUnfit()) {
-			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
-			return false;
-		}
-		
-		boolean canPerformTask = !newTask.isEffortDriven() 
-				|| person.getPerformanceRating() > 0D;
-		
-        if (canPerformTask) {
-			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(newTask, allowSameTask);
-		}
-
-		if (canPerformTask) {
-			/**
-			 * Do not delete. Reserve for debugging.
-			 */
-//			if (currentTask != null) 
-//				logger.info(person, 20_000, "Assigned with '" + newTaskName + "' to replace '" + currentTaskName + "'.");
-//			else
-//				logger.info(person, 20_000, "Assigned with '" + newTaskName + "'.");
-		}
-		else
-			logger.info(person, 20_000, "Unable to assign with '" + newTaskName + "'.");
-
-		return canPerformTask;
 	}
 	
 	/**
@@ -908,68 +816,33 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param newTask  the new task to be assigned
 	 * @return true if task can be performed.
 	 */
-	protected boolean assignTask(Robot robot, Task newTask) {
+	public boolean assignTask(Robot robot, Task newTask) {
 		return assignTask(robot, newTask, false);
 	}
-
+	
+	/**
+	 * Checks if a person has any issues in starting a new task.
+	 *
+	 * @param person the person to assign to the task
+	 * @param newTask   the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	public boolean assignTask(Person person, Task newTask, boolean allowSameTask) {
+		return TaskManager.assignTask(person, newTask, allowSameTask);
+	}
+	
 	/**
 	 * Adds a new task for a robot in the mission. Task may be not assigned if the
 	 * robot has a malfunction.
 	 *
 	 * @param robot the robot to assign to the task
 	 * @param newTask  the new task to be assigned
-	 * @param allowSameTask is it allowed to execute the same task as previous
+		 * @param allowSameTask is it allowed to execute the same task as previous
 	 * @return true if task can be performed.
 	 */
-	protected boolean assignTask(Robot robot, Task newTask, boolean allowSameTask) {
-
-		String newTaskName = newTask.getName();
-		
-		// If robot is malfunctioning, it cannot perform task.
-		if (robot.getMalfunctionManager().hasMalfunction()) {
-			logger.info(robot, 20_000, "Malfunctioned and cannot be assigned with '" + newTaskName+ "'.");
-			return false;
-		}
-
-		if (!newTaskName.equalsIgnoreCase(Charge.NAME) 
-				&& !robot.getSystemCondition().getBattery().isBatteryAbove(20)) {
-			logger.info(robot, 20_000, "Battery below 20% and cannot be assigned with '" + newTaskName + "'.");
-			return false;
-		}
-
-		Task currentTask = robot.getBotMind().getBotTaskManager().getTask();
-		
-		if (currentTask != null) {
-
-			if (!allowSameTask && currentTask.getName().equals(newTaskName)) {
-//				logger.info(robot, 20_000, "Already assigned with '" + currentTaskName + "'.");
-				// If the robot has been doing this task, 
-				// then there is no need of adding it.
-				return false;
-			}
-			
-			else if (currentTask.getName().equals(Charge.NAME)) {
-				logger.info(robot, 20_000, "Still charging and cannot be assigned with '" + newTaskName + "'.");
-				return false;
-			}
-		}
-
-		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(newTask, allowSameTask);
-		
-		if (canPerformTask) {
-			/**
-			 * Do not delete. Reserve for debugging.
-			 */
-//			if (currentTask != null) {
-//				logger.info(robot, 20_000, "Assigned with '" + newTaskName + "' to replace '" + currentTaskName + "'.");
-//			}
-//			else
-//				logger.info(robot, 20_000, "Assigned with '" + newTaskName + "'.");
-		}
-		else
-			logger.info(robot, 20_000, "Unable to perform '" + newTaskName + "'.");
-		
-		return canPerformTask;
+	public boolean assignTask(Robot robot, Task newTask, boolean allowSameTask) {
+		return TaskManager.assignTask(robot, newTask, allowSameTask);
 	}
 	
 	/**
@@ -989,10 +862,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		if (patient != null) {
-			// Abort the mission and return home
-			abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
-						 EventType.MISSION_MEDICAL_EMERGENCY);
-			addMissionLog("Non-mission member", patient.getName());
+			
+			if (this instanceof AbstractVehicleMission avm) {
+				// Abort the mission and return home
+				avm.abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
+							 EventType.MISSION_MEDICAL_EMERGENCY);
+				addMissionLog("Non-mission member", patient.getName());
+			}
+			else {
+				// Abort the mission and return home
+				abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()));
+				addMissionLog("Non-mission member", patient.getName());
+			}
+
 		}
 		return patient != null;
 	}

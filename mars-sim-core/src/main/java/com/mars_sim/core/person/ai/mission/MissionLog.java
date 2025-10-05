@@ -62,6 +62,33 @@ public class MissionLog implements Serializable  {
     protected static MasterClock clock;
 
     /**
+     * Compares with the previous log entry. 
+     * 
+     * @param entry
+     * @param enterBy
+     * @param size
+     * @param i
+     */
+    private void compareLog(String entry, String enterBy, int size, int i) {
+    	MissionLogEntry log0 = log.get(size - i);
+    	String entry0 = log0.getEntry();
+    	String enterBy0 = log0.getEnterBy();
+    	if (entry0.equals(entry) && enterBy0.equals(enterBy)
+        	) {
+        	// Do not need to add a new log entry
+        }
+    	else if (entry0.equals(entry) && !enterBy0.equals(enterBy)
+	        ) {
+    		// Add new log entry
+	        log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
+	       }
+    	else {
+    		// Add new log entry
+    		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
+    	}
+    }
+    
+    /**
      * Adds an entry.
      * 
      * @param entry
@@ -69,29 +96,31 @@ public class MissionLog implements Serializable  {
      */
     public void addEntry(String entry, String enterBy) {
     	int size = log.size();
-    	MissionLogEntry lastLastLog = null;
-    	MissionLogEntry lastLog = null;
-    	
-    	// Future: should look for the same message that occurs within a short time frame
-    	if (size - 2 >= 0) {
-    		lastLastLog = log.get(size - 2);
-        	lastLog = log.get(size - 1);
-        	String lastLastEntry = lastLastLog.getEntry();
-        	String lastEntry = lastLog.getEntry();
-        	String lastLastEnterBy = lastLastLog.getEnterBy();
-        	String lastEnterBy = lastLog.getEnterBy();
-        	if (lastEntry.equals(entry) && lastEnterBy.equals(enterBy)
-        		&& lastLastEntry.equals(entry) && lastLastEnterBy.equals(enterBy)) {
-        		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
-        		// The last log is not needed
-        		log.remove(size - 1);
-        	}
-        	else {
-        		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
-        	}
+
+    	if (size == 0) {
+    		// Add new log entry
+	        log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
     	}
-    	else {    	
-    		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
+    	else if (size == 1) {
+    		// Check on log1
+    		compareLog(entry, enterBy, size, 1);
+    	}
+    	else if (size == 2) {
+    		// Check on log2
+    		compareLog(entry, enterBy, size, 2);
+    		// Check on log1
+    		compareLog(entry, enterBy, size, 1);
+    		
+		}
+    	else {
+    		// Compare with the last 3 log entries
+    		
+    		// Check on log3
+    		compareLog(entry, enterBy, 3, 3);
+    		// Check on log2
+    		compareLog(entry, enterBy, 3, 2);
+    		// Check on log1
+    		compareLog(entry, enterBy, 3, 1);
     	}
     }
 
@@ -102,15 +131,15 @@ public class MissionLog implements Serializable  {
 	 * @param enterBy the name of the person who logs this
      */
     public void addEntry(String entry) {
-    	addEntry(entry, null);
+    	addEntry(entry, "");
     }
     
     /**
-	 * Gets the date filed timestamp of the mission.
+	 * Gets the filed timestamp of the mission.
 	 *
 	 * @return
 	 */
-	public MarsTime getTimestampCreated() {
+	public MarsTime getTimestampFiled() {
 		if (!log.isEmpty()) {
 			return log.get(0).getTime();
 		}
@@ -119,7 +148,7 @@ public class MissionLog implements Serializable  {
 
     
 	/**
-	 * Gets the timestamp when the mission was embarked. This is after any preparation steps.
+	 * Gets the embarked timestamp when the vehicle departed. This is after any preparation steps.
 	 *
 	 * @return
 	 */
@@ -127,8 +156,18 @@ public class MissionLog implements Serializable  {
 		return timestampEmbarked;
 	}
 
+
+    /**
+     * Gets the embarked timestamp.
+     */
+	public void generatedDateEmbarked() {
+		if (timestampEmbarked == null) {
+			timestampEmbarked = clock.getMarsTime();
+		}
+	}
+
 	/**
-	 * Gets the timestamp when the mission was completed.
+	 * Gets the completed timestamp when the mission was done.
 	 *
 	 * @return
 	 */
@@ -143,15 +182,6 @@ public class MissionLog implements Serializable  {
     void setDone() {
         done = true;
     }
-
-    /**
-     * Generates the embarked date.
-     */
-	public void generatedDateEmbarked() {
-		if (timestampEmbarked == null) {
-			timestampEmbarked = clock.getMarsTime();
-		}
-	}
 
     public List<MissionLogEntry> getEntries() {
         return log;
