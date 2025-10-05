@@ -14,7 +14,9 @@ import com.mars_sim.core.map.location.Coordinates;
  * THis class represents a time zone on the Mars surface
  */
 public class MarsZone implements Serializable {
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * The number of time zones on mars
      * The number of zones must be a multiple of 1000
      */

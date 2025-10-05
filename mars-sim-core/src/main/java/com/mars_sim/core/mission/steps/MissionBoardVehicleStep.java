@@ -19,6 +19,7 @@ import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -102,7 +103,7 @@ public class MissionBoardVehicleStep extends MissionStep {
 		
         // Embark from settlement
 		if (!v.transfer(getUnitManager().getMarsSurface())) {
-		    m.abortMission("Vehicle could not exit Settlement");
+		    m.abortMission(MissionStatus.createResourceStatus("Vehicle Unable to Exit Settlement"));
 		}
 
         // Marks everyone departed

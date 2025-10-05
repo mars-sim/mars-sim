@@ -16,7 +16,8 @@ import com.mars_sim.core.structure.Settlement;
  * Holds the objectives for an emergency supply mission.
  */
 public class EmergencySupplyObjective implements MissionObjective {
-    private Settlement destination;
+    private static final long serialVersionUID = 1L;
+	private Settlement destination;
     private Map<Good,Integer> supplies;
     
     public EmergencySupplyObjective(Settlement destination, Map<Good,Integer> emergencyGoods) {

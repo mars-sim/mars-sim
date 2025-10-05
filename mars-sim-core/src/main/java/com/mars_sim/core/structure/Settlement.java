@@ -102,6 +102,7 @@ import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -2062,6 +2063,27 @@ public class Settlement extends Unit implements Temporal,
 		.findAny().orElse(null);
 	}
 	
+	/**
+	 * Gets a mission capable rover.
+	 *
+	 * @return an mission capable rover
+	 * @throws MissionException if problem determining if vehicles are usable.
+	 */
+	public Vehicle getMissionCapableRover() {
+		Collection<Vehicle> list = getParkedGaragedVehicles();
+		if (list.isEmpty())
+			return null;
+		for (Vehicle v : list) {
+			if (VehicleType.isRover(v.getVehicleType())
+					&& !v.haveStatusType(StatusType.MAINTENANCE)
+					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
+					&& v.isUsableVehicle()
+					&& !v.isReserved()) {
+				return v;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * Adds an equipment to be owned by the settlement.

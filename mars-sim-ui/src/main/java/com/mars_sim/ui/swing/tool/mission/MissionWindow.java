@@ -212,7 +212,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		abortButton.setEnabled(false);
 		abortButton.addActionListener(e -> {
 			// End the mission.
-			if (missionCache != null) missionCache.abortMission(AbstractMission.MISSION_ABORTED_BY_PLAYER.getName());
+			if (missionCache != null) missionCache.abortMission(AbstractMission.MISSION_ABORTED_BY_PLAYER);
 		});
 		buttonPane.add(abortButton);
 

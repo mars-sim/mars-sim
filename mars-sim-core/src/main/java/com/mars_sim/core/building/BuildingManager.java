@@ -76,11 +76,14 @@ import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.Converse;
 import com.mars_sim.core.person.ai.task.Sleep;
+import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
@@ -1002,45 +1005,115 @@ public class BuildingManager implements Serializable {
 			logger.log(p, Level.WARNING, 10_000L,	"No medical facility available for "
 							+ p.getName() + ". Go to his/her bed.");
 			
-			AllocatedSpot bed = p.getBed();
-			
-			if (bed != null) {
-					
-				Building b = bed.getOwner();
-				// Question: does it still need to claim since this is already his own bed ?
-				success = b.getLivingAccommodation().claimActivitySpot(bed.getAllocated().getPos(), p);
-				
-				if (success) {
-					// Allocate it to the person
-					p.setActivitySpot(bed);
-					
-					LocalPosition bedLoc = bed.getAllocated().getPos();	
-			
-					p.setPosition(bedLoc);
-					
-					logger.log(p, Level.WARNING, 10_000L, "Go to his/her bed.");
-					
-					return success;
-				}
-			}
-
-			// It will look for a permanent bed if possible
-			AllocatedSpot tempBed = Sleep.findABed(s, p);
-			
-			if (tempBed == null) {
-				// Assign a temporary bed to this person
-				bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);	
-				
-				if (bed != null) {
-					success = true;
-					return success;
-				}
-			}	
+			success = walkToBed(p, s);	
 		}
 		
 		return success;
 	}
 
+	/**
+	 * Walks to a bed.
+	 * 
+	 * @param p
+	 * @param s
+	 * @return
+	 */
+	public static boolean walkToBed(Person p, Settlement s) {
+		boolean success = false;
+		
+		AllocatedSpot bed = p.getBed();
+		
+		if (bed != null) {
+				
+			Building b = bed.getOwner();
+			// Question: does it still need to claim since this is already his own bed ?
+			success = b.getLivingAccommodation().claimActivitySpot(bed.getAllocated().getPos(), p);
+			
+			if (success) {
+				
+				logger.log(p, Level.INFO, 10_000L, "Walking to his/her bed.");
+				
+				success = true;
+			}
+		}
+
+		// It will look for a permanent bed if possible
+		AllocatedSpot tempBed = Sleep.findABed(s, p);
+		
+		if (tempBed == null) {
+			// Assign a temporary bed to this person
+			bed = LivingAccommodation.allocateBed(p.getSettlement(), p, false);	
+			
+			if (bed != null) {
+				
+				success = true;
+			}
+		}	
+		
+		if (success) {
+			// Check my own position
+			LocalPosition myLoc = p.getPosition();
+			// Allocate it
+			p.setActivitySpot(bed);
+
+			LocalPosition bedLoc = bed.getAllocated().getPos();
+			
+			if (myLoc.equals(bedLoc)) {
+				// Already at that location and no need to walk further
+				return success;
+			}
+			else {
+				// Create subtask for walking to destination.
+				return createWalkingSubtask(p, bed.getOwner(), bedLoc, false, true);
+			}
+		}
+		
+		return success;
+	}
+	
+	
+	/**
+	 * Creates a walk to an interior position in a building or vehicle.
+	 * 
+	 * @Note: need to ensure releasing the old activity spot prior to calling this method
+	 * and take in the new activity spot after this method.
+	 * @param interiorObject the destination interior object.
+	 * @param sLoc the settlement local position destination.
+	 * @param allowFail true if walking is allowed to fail.
+	 * @param needEVA
+	 */
+	public static boolean createWalkingSubtask(Worker worker, LocalBoundedObject interiorObject, LocalPosition sLoc, 
+			boolean allowFail, boolean needEVA) {
+		// Check my own position
+		LocalPosition myLoc = worker.getPosition();
+
+		if (myLoc.equals(sLoc)) {
+			// May add back checking: logger.info(worker, 4_000, "Already at the spot and no need to walk further.")
+			return true;
+		}
+		
+		Walk walkingTask = Walk.createWalkingTask(worker, sLoc, interiorObject, needEVA);
+
+		if (walkingTask != null) {
+			
+	        // Walk back home
+			TaskManager.assignTask((Person)worker, walkingTask);
+			
+			return true;
+		}
+		else {
+			if (!allowFail) {
+				logger.log(worker, Level.INFO, 4_000, "Failed to walk to " + interiorObject + ".");
+			} 
+			else {
+				logger.log(worker, Level.INFO, 4_000, "Unable to walk to " + interiorObject + ".");
+			}
+		}
+
+		return false;
+	}
+	
+	
 	/**
 	 * Adds a person to a random habitable building activity spot within a settlement.
 	 * Note: excluding the EVA (and astronomical observation) building

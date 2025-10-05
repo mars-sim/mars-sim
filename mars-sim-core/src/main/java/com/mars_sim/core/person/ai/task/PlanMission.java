@@ -226,8 +226,6 @@ public class PlanMission extends Task {
 			}
 		}
 		
-		
-		
 		// Add experience
 		addExperience(time); 
 

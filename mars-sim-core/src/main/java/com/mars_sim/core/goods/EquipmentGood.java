@@ -224,7 +224,7 @@ public class EquipmentGood extends Good {
 		double projected = newProjDemand * flattenDemand;
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == 0D) {
+		if (projectedCache == INITIAL_EQUIPMENT_DEMAND) {
 			projectedCache = projected;
 		}
 		else {
@@ -247,7 +247,8 @@ public class EquipmentGood extends Good {
 			repairDemand = owner.getEVASuitLevel() * owner.getDemandScore(this);
 		}
 		
-		double ceiling = projectedCache + tradeDemand + repairDemand;	
+		// Note: the ceiling uses projected, not projectedCache
+		double ceiling = projected + tradeDemand + repairDemand;	
 
 		double totalDemand = previousDemand;
 		
@@ -403,7 +404,7 @@ public class EquipmentGood extends Good {
 	 * @return
 	 */
 	private static double getAverageEquipmentSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
+		return Math.sqrt(0.1 + supplyStored);
 	}
 	
 	/**

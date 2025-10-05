@@ -121,13 +121,9 @@ public abstract class MissionProject implements Mission {
     /**
      * Aborts the mission for a reason.
      * 
-     * @param reason Reason why the mission aborted
+     * @param reason MissionStatus why the mission aborted
      */
     @Override
-    public void abortMission(String reason) {
-        abortMission(new MissionStatus(MISSION_ABORT, reason));
-    }
-
     public void abortMission(MissionStatus reason) {
         if (!control.isFinished()) {
             logger.warning(leader, "Mission aborted : " + reason.getName());

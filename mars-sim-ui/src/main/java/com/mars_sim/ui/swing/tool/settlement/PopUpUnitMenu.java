@@ -140,6 +140,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 	 * Class to operatino the demolish of a Building async to avoid the removal causing a problem with 
 	 * the active simulation logic.
 	 */
+	@SuppressWarnings("serial")
 	private class DemolishHandler implements ScheduledEventHandler {
 		private Building b;
 

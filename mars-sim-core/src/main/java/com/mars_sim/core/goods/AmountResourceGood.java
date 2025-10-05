@@ -87,7 +87,7 @@ class AmountResourceGood extends Good {
 	private static final double HYDROGEN_FLATTENING_FACTOR = 1.0;
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
 	
-	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
+
 	// Note: must keep Carbon Monoxide demand high enough so as to start 
 	// 5 important Resource Processes that produce other resources (alongside with Carbon Monoxide)
 	private static final double CO_FLATTENING_FACTOR = 5.0;
@@ -101,11 +101,19 @@ class AmountResourceGood extends Good {
 	
 	private static final double ROCK_SALT_FLATTENING_FACTOR = 0.1;
 	
+	// Minerals
 	private static final double OLIVINE_FLATTENING_FACTOR = 0.75;
 	private static final double KAMACITE_FLATTENING_FACTOR = 0.75;
 	
-	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 8.0;
+	// Chemicals
+	private static final double ACETYLENE_FLATTENING_FACTOR = 1.5;
+	private static final double POLYESTER_FIBER_FLATTENING_FACTOR = 2.0;
+	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
 	
+	// Metals
+	private static final double IRON_POWDER_FLATTENING_FACTOR = 1.5;
+	
+	// types
 	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
 	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
 	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
@@ -126,8 +134,11 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
 	private static final double TISSUE_FLATTENING_FACTOR = 1.25;
 
-	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
-	private static final double IRON_POWDER_FLATTENING_FACTOR = 1.5;
+
+	private static final double LEAVES_VALUE_MODIFIER = 1.5;
+	
+	private static final double REGOLITH_VALUE_MODIFIER = 0.5;
+	
 	
 	// Demand Modifiers
     private static final double ICE_VALUE_MODIFIER = 0.75;
@@ -138,8 +149,8 @@ class AmountResourceGood extends Good {
 	private static final double SAND_VALUE_MODIFIER = 2.5;
 	private static final double ORES_VALUE_MODIFIER = 1.0;
 	
-	private static final double CONCRETE_VALUE_MODIFIER = 1.5;
-	private static final double CEMENT_VALUE_MODIFIER = 2;
+	private static final double CONCRETE_VALUE_MODIFIER = 1.0;
+	private static final double CEMENT_VALUE_MODIFIER = 1.0;
 	private static final double MINERAL_VALUE_MODIFIER = 1.2;
 	private static final double ROCK_VALUE_MODIFIER = 0.2;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
@@ -153,26 +164,33 @@ class AmountResourceGood extends Good {
 	private static final double METHANE_VALUE_MODIFIER = 0.06;
 	private static final double HYDROGEN_VALUE_MODIFIER = 0.25;
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
-	private static final double ETHYLENE_VALUE_MODIFIER = 8.0;
-	private static final double STYRENE_VALUE_MODIFIER = 8.0;
-	private static final double PROPYLENE_VALUE_MODIFIER = 8.0;
-	private static final double ETHANE_VALUE_MODIFIER = 8.0;
-	private static final double RESIN_VALUE_MODIFIER = 8.0;
 	
+	// Chemicals
+
+	private static final double CLEANING_AGENT_MODIFIER = 2.0;
+	private static final double ETHYLENE_MODIFIER = 6.0;
+	private static final double STYRENE_MODIFIER = 4.0;
+	private static final double PROPYLENE_MODIFIER = 3.0;
+	private static final double ETHANE_MODIFIER = 2.0;
+	private static final double RESIN_MODIFIER = 3.0;
+	private static final double ACETYLENE_MODIFIER = 3.0;
+	private static final double FIBER_MODIFIER = 2.0;
+	
+	// gases
 	private static final double CO2_VALUE_MODIFIER = 1.0;
 
+	// metal
+	private static final double IRON_OXIDE_MODIFIER = 5;
+	private static final double IRON_POWDER_MODIFIER = 5;
+
+	// Other factors
+	private static final double TISSUE_CULTURE_VALUE = 0.5;
+	
 	private static final double LIFE_SUPPORT_FACTOR = .005;
 	private static final double VEHICLE_FUEL_FACTOR = 1;
 	private static final double FARMING_FACTOR = .1;
-
-	private static final double LEAVES_VALUE_MODIFIER = 1.5;
 	
-	private static final double TISSUE_CULTURE_VALUE = 0.5;
-	
-	private static final double REGOLITH_VALUE_MODIFIER = 0.5;
-
 	private static final double COOKED_MEAL_INPUT_FACTOR = 0.5;
-	
 	private static final double MANUFACTURING_INPUT_FACTOR = 2D;
 	private static final double FOOD_PRODUCTION_INPUT_FACTOR = 1.2;
 	private static final double CONSTRUCTION_SITE_REQUIRED_RESOURCE_FACTOR = 400D;
@@ -184,14 +202,14 @@ class AmountResourceGood extends Good {
 	private static final double REGOLITH_LOWEST_DEMAND = 0.05;
 	private static final double REGOLITH_BASE_DEMAND = 40;
 	
+	// Base factors
 	private static final double BASE_MINERAL_ORE = 5;
+	private static final double BASE_CHEMICAL_DEMAND = 5;
+	private static final double BASE_METAL_DEMAND = 5;
 
+	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
-	/** The projected demand of each refresh cycle. */
-//	private double projectedDemand;
-	/** The trade demand of each refresh cycle. */
-//	private double tradeDemand;
 	/** The ingredient demand of each refresh cycle. */
 	private double ingredientDemand;
 	
@@ -240,16 +258,6 @@ class AmountResourceGood extends Good {
 			
 			mod *= switch(ar.getID()) {
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;
-				case ResourceUtil.ETHYLENE_ID -> ETHYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYETHYLENE_ID -> ETHYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYSTYRENE_ID -> STYRENE_VALUE_MODIFIER;
-				case ResourceUtil.STYRENE_ID -> STYRENE_VALUE_MODIFIER;
-				case ResourceUtil.PROPYLENE_ID -> PROPYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYPROPYLENE_ID -> PROPYLENE_VALUE_MODIFIER;
-				case ResourceUtil.POLYURETHANE_ID -> ETHANE_VALUE_MODIFIER;
-				case ResourceUtil.ETHANE_ID -> ETHANE_VALUE_MODIFIER;
-				case ResourceUtil.POLYESTER_RESIN_ID -> RESIN_VALUE_MODIFIER;
-				case ResourceUtil.POLYCARBONATE_RESIN_ID -> RESIN_VALUE_MODIFIER;
 				case ResourceUtil.POLYESTER_FIBER_ID -> POLYESTER_FIBER_FLATTENING_FACTOR;
 				default -> 1D;
 			};	
@@ -319,7 +327,7 @@ class AmountResourceGood extends Good {
 			mod = INSTRUMENT_FLATTENING_FACTOR;
 
 			break;
-			
+
 		case MINERAL:
 			mod = MINERAL_FLATTENING_FACTOR;
 			
@@ -578,8 +586,12 @@ class AmountResourceGood extends Good {
 			// Tune construction demand.
 			+ getResourceConstructionDemand(settlement)
 			// Adjust the demand on minerals and ores.
-			+ getMineralOreDemand(owner, settlement);
-
+			+ getMineralOreDemand(owner, settlement)
+			// Get the metal demand.
+			+ getMetalDemand(owner, settlement)
+			// Get the chemical demand.
+			+ getChemicalDemand(owner, settlement);
+					
 		double projected = newProjDemand 
 			// Flatten certain types of demand.
 			* flattenDemand
@@ -587,7 +599,7 @@ class AmountResourceGood extends Good {
 			* modifyWasteResource();
 		
 		double projectedCache = owner.getProjectedDemandScore(this);
-		if (projectedCache == 0D) {
+		if (projectedCache == INITIAL_AMOUNT_DEMAND) {
 			projectedCache = projected;
 		}
 		else {
@@ -600,11 +612,11 @@ class AmountResourceGood extends Good {
 		double tradeDemand = owner.determineTradeDemand(this);
 
 		double totalDemand = previousDemand;
-		
-		double ceiling = projectedCache + tradeDemand;
+		// Note: the ceiling uses projected, not projectedCache
+		double ceiling = projected + tradeDemand;
 		
 		if (previousDemand == INITIAL_AMOUNT_DEMAND) {
-			// At the start of the sim
+			// At the start of the simˇ
 			totalDemand = .8 * projectedCache 
 						+ .2 * tradeDemand;
 		}
@@ -653,7 +665,7 @@ class AmountResourceGood extends Good {
 	 * @return
 	 */
 	private static double getAverageAmountSupply(double supplyStored) {
-		return Math.sqrt(1 + supplyStored);
+		return Math.sqrt(0.1 + supplyStored);
 	}
 
 
@@ -672,8 +684,8 @@ class AmountResourceGood extends Good {
 			double processDemand = getResourceProcessDemand(owner, i);
 			demand += processDemand;
 		}
-
-		return MathUtils.between(2 * Math.sqrt(demand), 0.0, MAX_RESOURCE_PROCESSING_DEMAND);
+		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
+		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_RESOURCE_PROCESSING_DEMAND);
 	}
 
 	/**
@@ -738,8 +750,8 @@ class AmountResourceGood extends Good {
 				demand += manufacturingDemand / 1000D;
 			}
 		}
-
-		return MathUtils.between(2 * Math.sqrt(demand), 0.0, MAX_MANUFACTURING_DEMAND);
+		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
+		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
 	}
 
 	/**
@@ -759,8 +771,8 @@ class AmountResourceGood extends Good {
 				demand += foodProductionDemand;
 			}
 		}
-
-		return MathUtils.between(2 * Math.sqrt(demand), 0.0, MAX_FOOD_PRODUCTION_DEMAND);
+		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
+		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_FOOD_PRODUCTION_DEMAND);
 	}
 
 	/**
@@ -1119,7 +1131,9 @@ class AmountResourceGood extends Good {
 
 	/**
 	 * Gets mineral/ore demand.
-	 *
+	 * 
+	 * @param owner
+	 * @param settlement
 	 * @return
 	 */
 	private double getMineralOreDemand(GoodsManager owner, Settlement settlement) {
@@ -1209,6 +1223,69 @@ class AmountResourceGood extends Good {
 		return 0;
 	}
 
+	/**
+	 * Gets the emtal demand.
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @return
+	 */
+	private double getMetalDemand(GoodsManager owner, Settlement settlement) {
+		double base = BASE_METAL_DEMAND;
+		int resourceID = getID();
+		switch(resourceID) {
+        	case ResourceUtil.IRON_OXIDE_ID:
+				return base * IRON_OXIDE_MODIFIER;
+			case ResourceUtil.IRON_POWDER_ID:
+				return base * IRON_POWDER_MODIFIER;
+				
+		}
+		
+		return 0;
+	}
+
+	/**
+	 * Gets the chemical demand.
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @return
+	 */
+	private double getChemicalDemand(GoodsManager owner, Settlement settlement) {
+		double base = BASE_CHEMICAL_DEMAND;
+		int resourceID = getID();
+		switch(resourceID) {
+        	case ResourceUtil.ACETYLENE_ID:
+				return base * ACETYLENE_MODIFIER;
+			case ResourceUtil.CLEANING_AGENT_ID:
+				return base * CLEANING_AGENT_MODIFIER;
+			case ResourceUtil.ETHANE_ID:
+				return base * ETHANE_MODIFIER;
+			case ResourceUtil.ETHYLENE_ID:
+				return base * ETHYLENE_MODIFIER;
+			case ResourceUtil.POLYCARBONATE_RESIN_ID:
+				return base * RESIN_MODIFIER;
+			case ResourceUtil.POLYESTER_FIBER_ID:
+				return base * FIBER_MODIFIER;
+			case ResourceUtil.POLYESTER_RESIN_ID:
+				return base * RESIN_MODIFIER;
+			case ResourceUtil.POLYETHYLENE_ID:
+				return base * ETHYLENE_MODIFIER;
+			case ResourceUtil.POLYPROPYLENE_ID:
+				return base * PROPYLENE_MODIFIER;
+			case ResourceUtil.POLYSTYRENE_ID:
+				return base * STYRENE_MODIFIER;
+			case ResourceUtil.POLYURETHANE_ID:
+				return base * ETHANE_MODIFIER;
+			case ResourceUtil.PROPYLENE_ID:
+				return base * PROPYLENE_MODIFIER;
+			case ResourceUtil.STYRENE_ID:
+				return base * STYRENE_MODIFIER;
+		}
+		
+		return 0;
+	}
+	
 	/**
 	 * Adjusts the demand for waste resources.
 	 *

@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
@@ -151,7 +152,7 @@ public class ModifyMissionDialog extends ModalInternalFrame {
 	 */
 	private void returnHome() {
 		if (mission != null) {
-			mission.abortMission("Return home");
+			mission.abortMission(MissionStatus.createResourceStatus("Returning Home"));
 			// Q: but what's the principle reason for returning home ?
 		}
 	}

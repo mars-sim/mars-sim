@@ -17,6 +17,7 @@ import com.mars_sim.core.configuration.UserConfigurable;
 /**
  * A generic List renderer that will show UserConfigurables
  */
+@SuppressWarnings("serial")
 public class UserConfigurableListRenderer extends JLabel implements
         ListCellRenderer<UserConfigurable> {
 

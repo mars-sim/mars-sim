@@ -18,7 +18,8 @@ import com.mars_sim.core.vehicle.GroundVehicle;
  */
 public class ConstructionObjective implements MissionObjective {
 
-    private ConstructionSite site;
+    private static final long serialVersionUID = 1L;
+	private ConstructionSite site;
 	private ConstructionStage stage;
 
 	private List<GroundVehicle> constructionVehicles;

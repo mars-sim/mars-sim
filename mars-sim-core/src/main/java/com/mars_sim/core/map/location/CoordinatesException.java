@@ -11,7 +11,9 @@ package com.mars_sim.core.map.location;
  */
 public class CoordinatesException extends Exception {
     
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * This represents an exception with coordinates parsing.
      * @param message
      */

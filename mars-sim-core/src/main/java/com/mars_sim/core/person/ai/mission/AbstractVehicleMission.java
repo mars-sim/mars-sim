@@ -102,6 +102,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	
 	// Mission Status
 	protected static final MissionStatus NO_AVAILABLE_VEHICLE = new MissionStatus("Mission.status.noVehicle");
+	protected static final MissionStatus NO_VEHICLE_WITHIN_RANGE = new MissionStatus("Mission.status.noVehicleWithinRange");
 	protected static final MissionStatus VEHICLE_BEACON_ACTIVE = new MissionStatus("Mission.status.vehicleBeacon");
 	private static final MissionStatus VEHICLE_UNDER_MAINTENANCE = new MissionStatus("Mission.status.vehicleMaintenance");
 	protected static final MissionStatus CANNOT_LOAD_RESOURCES = new MissionStatus("Mission.status.loadResources");
@@ -342,7 +343,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param v Vehicle to be released
 	 */
 	protected final void releaseVehicle(Vehicle v) {
-		if ((v != null) && this.equals(v.getMission())) {
+		if ((v != null) && this.equals(v.getMission())) {			
+			// Note: may need to make everyone unboard the vehicle
 			v.setReservedForMission(false);
 			v.setMission(null);
 			v.removeUnitListener(this);
@@ -1771,7 +1773,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param status Reason for the abort.
 	 * @param eventType Optional register an event
 	 */
-	@Override
 	public void abortMission(MissionStatus status, EventType eventType) {
 
 		if (addMissionStatus(status)) {
@@ -1797,7 +1798,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				eventManager.registerNewEvent(newEvent);
 			}
 
-			super.abortMission(status, eventType);
+			super.abortMission(status);
 		}
 	}
 
