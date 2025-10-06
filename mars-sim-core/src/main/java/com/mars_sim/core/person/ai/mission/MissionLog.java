@@ -87,7 +87,7 @@ public class MissionLog implements Serializable  {
 				String entry0 = log0.getEntry();
 				String enterBy0 = log0.getEnterBy();
 				
-				if (entry0.equals(entry) && !enterBy0.equals(enterBy) ) {
+				if (entry0.equals(entry) && enterBy0.equals(enterBy) ) {
 					// Same as one of the chosen ones, do not add
 					return;
 				}

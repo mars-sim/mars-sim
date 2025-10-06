@@ -72,7 +72,7 @@ class MissionLogTest extends MarsSimUnitTest{
     }
 
     @Test
-    void testAddDuplicateValid() {
+    void testAddDuplicateEntryValid() {
         MissionLog missionLog = new MissionLog();
 
         missionLog.addEntry("Test entry dup", "UnitTest");
@@ -84,6 +84,19 @@ class MissionLogTest extends MarsSimUnitTest{
         assertEquals(2, entries.size());
     }
 
+    @Test
+    void testAddDuplicateEntryUniqueEnterByValid() {
+        MissionLog missionLog = new MissionLog();
+
+        missionLog.addEntry("Test entry dup", "UnitTest0");
+        missionLog.addEntry("Test entry unique", "UnitTest");
+
+        missionLog.addEntry("Test entry dup", "UnitTest1");
+
+        var entries = missionLog.getEntries();
+        assertEquals(3, entries.size());
+    }
+    
     @Test
     void testGetLastEntry() {
         MissionLog missionLog = new MissionLog();
