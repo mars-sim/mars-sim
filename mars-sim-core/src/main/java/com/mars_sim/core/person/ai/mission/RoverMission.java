@@ -352,25 +352,15 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		// Eject the late arrival if enough members
 		if ((getMembers().size() - ejectedMembers.size()) >= MIN_GOING_MEMBERS) { 
-			for (Person ej : ejectedMembers) {
+			for (Person p : ejectedMembers) {
 				// Remove the mission membership
-				removeMember(ej);
+				removeMember(p);
 
-				if (r.isInGarage()) {
-					// Force the person to get off the vehicle and back to the garage
-					// Note: may need to evaluate a better way of handling this
-					ej.transfer(r.getGarage());
-					
-					assignTask(ej, new Relax(ej));
-				}
-				else {
-					// Let the person automatically leave the vehicle via walking toward a settlement airlock
-					walkToAirlock(r, ej, r.getSettlement());
-				}
+				exitRover(p, r, r.getSettlement());
 				
-				logger.warning(ej, ej.getTaskDescription() + " in " + ej.getLocationTag().getExtendedLocation() 
+				logger.warning(p, p.getTaskDescription() + " in " + p.getLocationTag().getExtendedLocation() 
 						+ ". Got ejected from " + r.getName() + " as " + getName() + " was due for departure.");
-				addMissionLog("Ejected", ej.getName());
+				addMissionLog("Ejected", p.getName());
 			}
 		}
 		
@@ -383,6 +373,16 @@ public abstract class RoverMission extends AbstractVehicleMission {
 					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
 					+ ") got ejected from " + getName() + " and mission was cancelled.");
 			
+			for (Person p : r.getCrew()) {
+				// Remove the mission membership
+				removeMember(p);
+
+				exitRover(p, r, r.getSettlement());
+				
+				logger.info(p, getName() + " was cancelled since the mission lead got ejected.");
+				addMissionLog("Mission Cancelled", p.getName());
+			}
+			
 			MissionStatus status = MissionStatus.createResourceStatus(MISSION_LEAD_NO_SHOW.getName());
 			abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
 	
@@ -391,6 +391,26 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		else if (getMembers().size() == 1) {
 			logger.info(r, "Only one person in the mission. Cancelling " + getName() + ".");
+			
+			for (Person p : r.getCrew()) {
+				// Remove the mission membership
+				removeMember(p);
+
+				if (r.isInGarage()) {
+					// Force the person to get off the vehicle and back to the garage
+					// Note: may need to evaluate a better way of handling this
+					p.transfer(r.getGarage());
+					
+					assignTask(p, new Relax(p));
+				}
+				else {
+					// Let the person automatically leave the vehicle via walking toward a settlement airlock
+					walkToAirlock(r, p, r.getSettlement());
+				}
+				
+				logger.info(p, getName() + " was cancelled. One member left.");
+				addMissionLog("Mission Cancelled - Single Member", p.getName());
+			}
 			
 			MissionStatus status = MissionStatus.createResourceStatus(ONLY_ONE_MEMBER.getName());
 			abortMission(status, EventType.MISSION_ONLY_ONE_MEMBER);
@@ -944,26 +964,24 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			List<Person> occupants = new ArrayList<>(crew);
 			
 			for (Person p : occupants) {
-				if (!roverUnloaded) {// && !getMembers().contains(p)) {
+				if (!roverUnloaded) {
 					// Recruit this person to help unload the cargo
 					// so that he doesn't stay inside the vehicle
 					boolean toUnload = unloadCargo(p, rover);
 					if (toUnload) {
-						addMissionLog("Unloading resource by non-member", p.getName());
-					}
-					else {
-						if (rover.isInGarage()) {
-							// Force the person to get off the vehicle and back to the garage
-							// Note: may need to evaluate a better way of handling this
-							p.transfer(rover.getGarage());
-							
-							assignTask(p, new Relax(p));
+						if (getMembers().contains(p)) {
+							addMissionLog("Unloading resource ", p.getName());
 						}
 						else {
-							// Let the person automatically leave the vehicle via walking toward a settlement airlock
-							walkToAirlock(rover, p, disembarkSettlement);
+							addMissionLog("Unloading resource by non-member", p.getName());
 						}
 					}
+					else {
+						exitRover(p, rover, disembarkSettlement);
+					}
+				}
+				else {
+					exitRover(p, rover, disembarkSettlement);
 				}
 			}
 		}
@@ -980,6 +998,27 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 	}
 
+	/**
+	 * Exits the rover.
+	 * 
+	 * @param person
+	 * @param rover
+	 * @param s
+	 */
+	private void exitRover(Person person, Rover rover, Settlement s) {
+		if (rover.isInGarage()) {
+			// Force the person to get off the vehicle and back to the garage
+			// Note: may need to evaluate a better way of handling this
+			person.transfer(rover.getGarage());
+			
+			assignTask(person, new Relax(person));
+		}
+		else {
+			// Let the person automatically leave the vehicle via walking toward a settlement airlock
+			walkToAirlock(rover, person, s);
+		}
+	}
+	
 	/**
 	 * Gives a person the task from unloading the vehicle.
 	 *

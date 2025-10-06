@@ -1778,14 +1778,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (addMissionStatus(status)) {
 			// If the MissionFlag is not present then do it
 			
-			// If mission is still at home then leave the vehicle
-			if (getStage() == Stage.PREPARATION) {
-				releaseVehicle(vehicle);
-			}
-			else {
-				determineEmergencyDestination(status);
-			}
-
 			// Create an event if needed
 			if (eventType != null) {
 				HistoricalEvent newEvent = new MissionHistoricalEvent(eventType,
@@ -1797,8 +1789,16 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 						);
 				eventManager.registerNewEvent(newEvent);
 			}
-
-			super.abortMission(status);
+			
+			// If mission is still at home then leave the vehicle
+			if (getStage() != Stage.PREPARATION) {
+				determineEmergencyDestination(status);
+			}
+			else {
+				releaseVehicle(vehicle);
+			
+				super.abortMission(status);
+			}
 		}
 	}
 

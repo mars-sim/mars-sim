@@ -214,7 +214,7 @@ public class OrbitInfo implements Serializable, Temporal {
 		
 		double instantaneousSunMarsDistance = getHeliocentricDistance(earthTime);
 
-		logger.config("Sun-to-Mars Distance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " km");
+		logger.config("Sun-to-Mars Distance: " + Math.round(instantaneousSunMarsDistance * 1_000_000.0)/1_000_000.0 + " A.U.");
 		
 		sunDirection = new Coordinates(HALF_PI + TILT, Math.PI);
 	}
@@ -501,7 +501,7 @@ public class OrbitInfo implements Serializable, Temporal {
 	/**
 	 * Determines heliocentric distance [in A.U.]. (AM2000, eq. 25, corrected).
 	 *
-	 * @param clock Earth clock
+	 * @param earthTime Earth clock
 	 *
 	 * @return distance in A.U.
 	 */

@@ -336,11 +336,11 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		var cu = getContainerUnit();
 		Vehicle v = getVehicle();
 		if (v != null) {
 			return v.isInGarage();
 		}
+		var cu = getContainerUnit();
 //		if (cu instanceof Settlement s) {
 //			// still inside the garage
 //			return v.isInSettlement() && v.isInGarage();

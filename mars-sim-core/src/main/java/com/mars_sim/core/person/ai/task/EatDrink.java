@@ -157,6 +157,7 @@ public class EatDrink extends Task {
 		/////////////////////////////////////////////////
 
 		if (person.isInSettlement()) {	
+			
 			walkToDining(hungry, thirsty, waterAmount);
 
 			// Checks if the settlement has food and water.
@@ -215,6 +216,7 @@ public class EatDrink extends Task {
 	 */
 	private void walkToDining(boolean hungry, boolean thirsty, double waterAmount) {
 		Building currentBuilding = BuildingManager.getBuilding(person);
+		
 		if (currentBuilding != null && currentBuilding.getCategory() != BuildingCategory.EVA) {
 			// Check if there is a local dining building.
         	Building diningBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.DINING);
