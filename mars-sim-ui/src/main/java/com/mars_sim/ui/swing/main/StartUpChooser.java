@@ -9,6 +9,8 @@ package com.mars_sim.ui.swing.main;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
+import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -24,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileFilter;
 
+import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.authority.Authority;
@@ -96,7 +99,19 @@ public class StartUpChooser extends JDialog {
         this.authorityConfig = authorityConfig;
         
 		setSize(250, 300);
-        setIconImage(MainWindow.getIconImage());
+		
+		if (SystemInfo.isMacOS) {
+			final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
+			Image image = defaultToolkit.getImage(getClass().getResource(MainWindow.LANDER_91_PATH));
+			final Taskbar taskbar = Taskbar.getTaskbar();
+			taskbar.setIconImage(image);
+			// Move the menu bar out of the main window to the top of the screen
+			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+		}
+		else {
+			setIconImage(MainWindow.getIconImage());
+		}
+
         setResizable(false);
 		setTitle(Msg.getString("StartUpChooser.title")); // -NLS-1$
 

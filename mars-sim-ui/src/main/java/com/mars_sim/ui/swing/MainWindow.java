@@ -76,6 +76,8 @@ public class MainWindow
 	public static final String LANDER_64_PNG = "lander_hab64.png";
 	public static final String LANDER_16 = "lander16";
 	
+	public static final String LANDER_91_PATH = ICON_DIR + LANDER_91_PNG;
+	
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
 	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_PROPS = "main-window";
@@ -378,11 +380,9 @@ public class MainWindow
 
 		changeTitle(false);
 
-//		String os = System.getProperty("os.name").toLowerCase(); // e.g. 'linux', 'mac os x'
-//		if (os.contains("mac")) {
 		if (SystemInfo.isMacOS) {
 			final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-			Image image = defaultToolkit.getImage(getClass().getResource(ICON_DIR + LANDER_91_PNG));
+			Image image = defaultToolkit.getImage(getClass().getResource(LANDER_91_PATH));
 			final Taskbar taskbar = Taskbar.getTaskbar();
 			taskbar.setIconImage(image);
 			
