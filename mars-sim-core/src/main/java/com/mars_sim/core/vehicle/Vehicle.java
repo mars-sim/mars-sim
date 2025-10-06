@@ -1957,7 +1957,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @throws MissionException         if problem checking vehicle is loadable.
 	 */
 	public boolean isUsableVehicle() {
-		return isVehicleReady() && isEmpty();
+		return isVehicleReady(); 
+		// Note: isEmpty() doesn't need to be true
 	}
 
 	
