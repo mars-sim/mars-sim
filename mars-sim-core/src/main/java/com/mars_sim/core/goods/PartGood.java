@@ -651,7 +651,7 @@ public class PartGood extends Good {
 			
 			for (var item : process.getOutputList()) {
 				if (!process.getInputList().contains(item)) {
-					outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement, true);
+					outputsValue += ManufactureUtil.getManufactureProcessItemGoodValuePoint(item, settlement, true);
 				}
 			}
 

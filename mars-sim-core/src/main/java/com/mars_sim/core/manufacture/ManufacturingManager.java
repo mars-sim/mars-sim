@@ -373,7 +373,7 @@ public class ManufacturingManager implements Serializable {
     private RatingScore getProcessValue(ProcessInfo info) {
         RatingScore value = new RatingScore();
         info.getOutputList().forEach(i -> value.addBase(i.getName(),
-                        ManufactureUtil.getManufactureProcessItemValue(i, owner, true)));  
+                        ManufactureUtil.getManufactureProcessItemGoodValuePoint(i, owner, true)));  
         
         return value;
     }

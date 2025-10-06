@@ -15,7 +15,7 @@ import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
 
 /**
- * Information about a type of manufacturing process.
+ * Information about a type of process.
  */
 public abstract class ProcessInfo implements Serializable , Comparable<ProcessInfo> {
 
@@ -120,6 +120,18 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	}
 	
 	/**
+	 * Gets a list of process items having the given input resource name.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public List<ProcessItem> getInputItemsByName(String name) {
+		return inputList.stream()
+					.filter(i -> i.getName().equalsIgnoreCase(name))
+					.toList();
+	}
+	
+	/**
 	 * Gets a list of the output items produced by the process.
 	 * 
 	 * @return output items.
@@ -129,7 +141,7 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	}
 
 	/**
-	 * Gets a list of Process having the given output resource name.
+	 * Gets a list of process items having the given output resource name.
 	 * 
 	 * @param name
 	 * @return
@@ -142,6 +154,7 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 
 	/**
 	 * Is the named resource one of the inputs.
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -156,6 +169,7 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 
 	/**
 	 * Is the named resource one of the outputs.
+	 * 
 	 * @param name
 	 * @return
 	 */
@@ -170,6 +184,7 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 
 	/**
 	 * Does a Settlement have the required input resources for this process.
+	 * 
 	 * @param source Source of the resources
 	 * @return
 	 */
@@ -224,6 +239,7 @@ public abstract class ProcessInfo implements Serializable , Comparable<ProcessIn
 	
 	/**
 	 * Returns the used inputs to the given settlement.
+	 * 
 	 * @param settlement
 	 */
 	public void returnInputs(Settlement settlement) {

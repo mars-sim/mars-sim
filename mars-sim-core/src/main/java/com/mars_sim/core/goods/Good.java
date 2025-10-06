@@ -290,8 +290,8 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * manufacturing processes.
 	 *
 	 * @param settlement Place producing the Good
-	 * @return amount (kg for amount resources, number for parts, equipment, and
-	 *         vehicles).
+	 * @return amount [kg] for amount resources, number for parts, equipment, and
+	 *         vehicles.
 	 */
 	protected double getManufacturingProcessOutput(Settlement settlement) {
 
@@ -299,8 +299,32 @@ public abstract class Good implements Serializable, Comparable<Good> {
 
 		for(Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
 			// Go through each ongoing active manufacturing process.
-			for(var process : b.getManufacture().getProcesses()) {
-				for(var item : process.getInfo().getOutputItemsByName(name)) {
+			for (var process : b.getManufacture().getProcesses()) {
+				for (var item : process.getInfo().getOutputItemsByName(name)) {
+					result += item.getAmount();
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the amount of this good needed as input at the settlement by ongoing
+	 * manufacturing processes.
+	 *
+	 * @param settlement the place requiring the Good
+	 * @return amount [kg] for amount resources, number for parts, equipment, and
+	 *         vehicles.
+	 */
+	protected double getManufacturingProcessInput(Settlement settlement) {
+
+		double result = 0D;
+
+		for (Building b : settlement.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE)) {
+			// Go through each ongoing active manufacturing process.
+			for (var process : b.getManufacture().getProcesses()) {
+				for (var item : process.getInfo().getInputItemsByName(name)) {
 					result += item.getAmount();
 				}
 			}

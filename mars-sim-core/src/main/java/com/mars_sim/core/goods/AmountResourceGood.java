@@ -111,19 +111,19 @@ class AmountResourceGood extends Good {
 	private static final double NA2CO3_FLATTENING_FACTOR = 2.0;
 	
 	// Metals
-	private static final double IRON_POWDER_FLATTENING_FACTOR = 1.5;
+	private static final double IRON_POWDER_FLATTENING_FACTOR = 0.5;
 	
 	// types
 	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
 	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
 	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
-	private static final double ELEMENT_FLATTENING_FACTOR = 4D;
+	private static final int ELEMENT_FLATTENING_FACTOR = 2;
 
 	private static final double GEMSTONE_FLATTENING_FACTOR = 3D;
 
 	private static final double WASTE_FLATTENING_FACTOR = 0.15;
 	
-	private static final double UTILITY_FLATTENING_FACTOR = 10D;
+	private static final int UTILITY_FLATTENING_FACTOR = 4;
 	private static final double INSTRUMENT_FLATTENING_FACTOR = 5D;
 
 	private static final double INSECT_FLATTENING_FACTOR = 5D;
@@ -182,7 +182,7 @@ class AmountResourceGood extends Good {
 
 	// metal
 	private static final double IRON_OXIDE_MODIFIER = 5;
-	private static final double IRON_POWDER_MODIFIER = 5;
+	private static final double IRON_POWDER_MODIFIER = 1.5;
 
 	// Other factors
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
@@ -208,11 +208,15 @@ class AmountResourceGood extends Good {
 	private static final double BASE_CHEMICAL_DEMAND = 5;
 	private static final double BASE_METAL_DEMAND = 5;
 
+	// Multipliers
+	private static final double MANUFACTURING_DEMAND_MULTIPLIER = 0.01;
 	
 	/** The fixed flatten demand for this resource. */
 	private double flattenDemand;
 	/** The ingredient demand of each refresh cycle. */
 	private double ingredientDemand;
+	/** The manufacturing demand of each refresh cycle. */
+	private double constantManufacturingDemand = -1D;
 	
 	private double costModifier = -1D;
 	
@@ -544,6 +548,18 @@ class AmountResourceGood extends Good {
         return INITIAL_AMOUNT_SUPPLY;
     }
 
+    /**
+     * Calculates the constant manufacturing demand.
+     * @Note: if a new building is being put in place, must call this method again
+     * to update constantManufacturingDemand
+     * 
+     * @param owner
+     * @param settlement
+     */
+    private void calculateConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
+    	constantManufacturingDemand = getConstantManufacturingDemand(owner, settlement);	
+    }
+    
     @Override
     void refreshSupplyDemandScore(GoodsManager owner) {
         int id = getID();
@@ -552,6 +568,16 @@ class AmountResourceGood extends Good {
 
         Settlement settlement = owner.getSettlement();
  
+
+        if (constantManufacturingDemand == -1D) {
+        	// At startup, compute manufacturingDemand
+        	calculateConstantManufacturingDemand(owner, settlement);	
+        	
+            // Note: whenever a building with a higher tech level is added, 
+        	// will need to figure out how to to flag and call this method 
+        	// again in order to obtain a new demand value for each amount resource
+        }
+        
 		// Calculate total supply
 		double totalSupply = getAverageAmountSupply(settlement.getSpecificAmountResourceStored(id));
 
@@ -578,8 +604,10 @@ class AmountResourceGood extends Good {
 			+ computeTissueDemandDueToCrop(owner)
 			// Tune resource processing demand.
 			+ getResourceProcessingDemand(owner, settlement)
-			// Tune manufacturing demand.
-			+ getResourceManufacturingDemand(owner, settlement)
+			// The constant manufacturing demand of this resource
+			+ constantManufacturingDemand
+			// The current ongoing manufacturing demand.
+			+ getManufacturingProcessInput(settlement)
 			// Tune food production related demand.
 			+ getResourceFoodProductionDemand(owner, settlement)
 			// Tune demand for the ingredients in all meals.
@@ -675,7 +703,7 @@ class AmountResourceGood extends Good {
 	 * settlement.
 	 *
 	 * @param resource the amount resource.
-	 * @return demand (kg)
+	 * @return demand
 	 */
 	private double getResourceProcessingDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
@@ -694,7 +722,7 @@ class AmountResourceGood extends Good {
 	 *
 	 * @param process  the resource process.
 	 * @param resource the amount resource.
-	 * @return demand (kg)
+	 * @return demand
 	 */
 	private double getResourceProcessDemand(GoodsManager owner, ResourceProcess process) {
 
@@ -735,31 +763,10 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the demand for an amount resource as an input in the settlement's
-	 * manufacturing processes.
-	 *
-	 * @return demand (kg)
-	 */
-	private double getResourceManufacturingDemand(GoodsManager owner, Settlement settlement) {
-		double demand = 0D;
-
-		// Get highest manufacturing tech level in settlement.
-		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
-		if (techLevel >= 0) {
-			for (ManufactureProcessInfo i : ManufactureUtil.getManufactureProcessesForTechLevel(techLevel)) {
-				double manufacturingDemand = getResourceManufacturingProcessDemand(owner, settlement, i);
-				demand += manufacturingDemand / 1000D;
-			}
-		}
-		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
-		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
-	}
-
-	/**
 	 * Gets the demand for an amount resource as an input in the settlement's Food
 	 * Production processes.
 	 *
-	 * @return demand (kg)
+	 * @return demand
 	 */
 	private double getResourceFoodProductionDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
@@ -777,17 +784,156 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the demand for an input amount resource in a manufacturing process.
+	 * Gets the demand for an input amount resource in a Food Production process.
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @param process the Food Production process.
+	 * @return demand
+	 */
+	private double getResourceFoodProductionProcessDemand(GoodsManager owner, Settlement settlement, FoodProductionProcessInfo process) {
+		double demand = 0D;
+		String name = resource.getName();
+
+		ProcessItem resourceInput = null;
+		for(ProcessItem i : process.getInputList()) {
+			if ((ItemType.AMOUNT_RESOURCE == i.getType())
+					&& name.equalsIgnoreCase(i.getName())) {
+				resourceInput = i;
+				break;
+			}
+		}
+
+		if (resourceInput != null) {
+			double outputsValue = 0D;
+			for(ProcessItem j : process.getOutputList()) {
+				outputsValue += FoodProductionUtil.getProcessItemValue(j, settlement, true);
+			}
+
+			double totalItems = 0D;
+			for(ProcessItem k : process.getInputList()) {
+				totalItems += k.getAmount();
+			}
+
+			// Determine value of required process power.
+			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
+			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
+
+			double totalInputsValue = (outputsValue - powerValue) * owner.getCommerceFactor(CommerceType.TRADE)
+											* owner.getCommerceFactor(CommerceType.CROP)
+											* FOOD_PRODUCTION_INPUT_FACTOR;
+
+			if (totalItems > 0D) {
+				demand = (1D / totalItems) * totalInputsValue;
+			}
+		}
+
+		return demand;
+	}
+
+	/**
+	 * Gets the resource demand for all available meals.
+	 *
+	 * @param settlement
+	 * @return demand
+	 */
+	private double getAvailableMealDemand(Settlement settlement) {
+
+		if (!resource.isEdible())
+			return 0;
+		
+		double demand = 0D;
+		int id = getID();
+		
+		if (id == ResourceUtil.TABLE_SALT_ID) {
+			// Assuming a person takes 1 meal per sol
+			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.AMOUNT_OF_SALT_PER_MEAL / 10; 
+		}
+
+		else if (id == ResourceUtil.CLEANING_AGENT_ID) {
+			// Assuming a person takes 3 meals per sol
+			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.getCleaningAgentPerSol(); 
+		}
+		
+		else {
+			if (ResourceUtil.getOilResources().contains(id)) {
+				// Assuming a person takes 3 meals per sol
+				return MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
+			}
+
+			// Determine total demand for cooked meal mass for the settlement.
+			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
+			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
+			double cookedMealDemand = settlement.getPopulationFactor() * cookedMealDemandOrbit;
+			var meals = simulationConfig.getMealConfiguration().getDishList();
+			int numMeals = meals.size();
+			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
+			
+			// Determine demand for the resource as an ingredient for each cooked meal
+			// recipe.
+			demand += ingredientDemand * factor;
+
+		}
+
+		return demand;
+	}
+
+	/**
+	 * Gets the base demand for this resource as an ingredient in all meals.
+	 * 
+	 * @param ar
+	 * @param mConfig
+	 * @return demand
+	 */
+	private static double calculateIngredientDemand(AmountResource ar, MealConfig mConfig) {
+		
+		if (!ar.isEdible())
+			return 0;
+		
+		int id = ar.getID();
+		double demand = 0D;
+			for (DishRecipe meal : mConfig.getDishList()) {
+				demand += meal.getIngredientList().stream()
+					.filter(ingredient -> id == ingredient.getAmountResourceID())
+					.mapToDouble(i -> i.getProportion())
+					.sum();
+			}
+		return demand;
+	}
+
+	/**
+	 * Gets the constant demand for an amount resource as an input in the settlement's
+	 * manufacturing processes.
+	 *
+	 * @return demand
+	 */
+	private double getConstantManufacturingDemand(GoodsManager owner, Settlement settlement) {
+		double demand = 0D;
+
+		// Get highest manufacturing tech level in settlement.
+		int techLevel = ManufactureUtil.getHighestManufacturingTechLevel(settlement);
+		for (int i = 0; i <= techLevel; i++) {
+			for (ManufactureProcessInfo info : ManufactureUtil.getManufactureProcessesForTechLevel(i)) {
+				double manufacturingDemand = getConstantManufacturingProcessDemand(owner, settlement, info);
+				demand += manufacturingDemand * MANUFACTURING_DEMAND_MULTIPLIER;
+			}
+		}
+		// Avoid NaN when demand is zero by adding 0.1 before calling Math.sqrt
+		return MathUtils.between(2 * Math.sqrt(demand + 0.1), 0.0, MAX_MANUFACTURING_DEMAND);
+	}
+
+	/**
+	 * Gets the constant demand for an input amount resource in a manufacturing process.
 	 *
 	 * @param process  the manufacturing process.
-	 * @return demand (kg)
+	 * @return demand
 	 */
-	private double getResourceManufacturingProcessDemand(GoodsManager owner, Settlement settlement, ManufactureProcessInfo process) {
+	private double getConstantManufacturingProcessDemand(GoodsManager owner, Settlement settlement, ManufactureProcessInfo process) {
 		double demand = 0D;
 		String r = resource.getName().toLowerCase();
 
 		ProcessItem resourceInput = null;
-		for(var item : process.getInputList()) {
+		for (var item : process.getInputList()) {
 			if ((ItemType.AMOUNT_RESOURCE == item.getType()) && r.equals(item.getName())) {
 				resourceInput = item;
 				break;
@@ -796,7 +942,7 @@ class AmountResourceGood extends Good {
 
 		if (resourceInput != null) {
 			double outputsValue = process.getOutputList().stream()
-					.mapToDouble(j -> ManufactureUtil.getManufactureProcessItemValue(j, settlement, true))
+					.mapToDouble(j -> ManufactureUtil.getManufactureProcessItemGoodValuePoint(j, settlement, true))
 					.sum();
 
 			double totalItems = process.getInputList().stream()
@@ -830,7 +976,7 @@ class AmountResourceGood extends Good {
 	 * 
 	 * @param resource
 	 * @param objective
-	 * @return
+	 * @return demand
 	 */
 	private static CommerceType toCommerceType(AmountResource resource, ObjectiveType objective) {
 		GoodType type = resource.getGoodType();
@@ -879,126 +1025,13 @@ class AmountResourceGood extends Good {
 		}
 		return null;
 	}
-
-	/**
-	 * Gets the demand for an input amount resource in a Food Production process.
-	 *
-	 * @param process  the Food Production process.
-	 * @return demand (kg)
-	 */
-	private double getResourceFoodProductionProcessDemand(GoodsManager owner, Settlement settlement, FoodProductionProcessInfo process) {
-		double demand = 0D;
-		String name = resource.getName();
-
-		ProcessItem resourceInput = null;
-		for(ProcessItem i : process.getInputList()) {
-			if ((ItemType.AMOUNT_RESOURCE == i.getType())
-					&& name.equalsIgnoreCase(i.getName())) {
-				resourceInput = i;
-				break;
-			}
-		}
-
-		if (resourceInput != null) {
-			double outputsValue = 0D;
-			for(ProcessItem j : process.getOutputList()) {
-				outputsValue += FoodProductionUtil.getProcessItemValue(j, settlement, true);
-			}
-
-			double totalItems = 0D;
-			for(ProcessItem k : process.getInputList()) {
-				totalItems += k.getAmount();
-			}
-
-			// Determine value of required process power.
-			double powerHrsRequiredPerMillisol = process.getPowerRequired() * MarsTime.HOURS_PER_MILLISOL;
-			double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
-
-			double totalInputsValue = (outputsValue - powerValue) * owner.getCommerceFactor(CommerceType.TRADE)
-											* owner.getCommerceFactor(CommerceType.CROP)
-											* FOOD_PRODUCTION_INPUT_FACTOR;
-
-			if (totalItems > 0D) {
-				demand = (1D / totalItems) * totalInputsValue;
-			}
-		}
-
-		return demand;
-	}
-
-	/**
-	 * Gets the resource demand for all available meals.
-	 *
-	 * @param resource the amount resource.
-	 * @return demand (kg)
-	 */
-	private double getAvailableMealDemand(Settlement settlement) {
-
-		if (!resource.isEdible())
-			return 0;
-		
-		double demand = 0D;
-		int id = getID();
-		
-		if (id == ResourceUtil.TABLE_SALT_ID) {
-			// Assuming a person takes 1 meal per sol
-			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.AMOUNT_OF_SALT_PER_MEAL / 10; 
-		}
-
-		else if (id == ResourceUtil.CLEANING_AGENT_ID) {
-			// Assuming a person takes 3 meals per sol
-			return MarsTime.AVERAGE_SOLS_PER_ORBIT_NON_LEAPYEAR * Cooking.getCleaningAgentPerSol(); 
-		}
-		
-		else {
-			if (ResourceUtil.getOilResources().contains(id)) {
-				// Assuming a person takes 3 meals per sol
-				return MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR * 3 * Cooking.AMOUNT_OF_OIL_PER_MEAL;
-			}
-
-			// Determine total demand for cooked meal mass for the settlement.
-			double cookedMealDemandSol = personConfig.getFoodConsumptionRate();
-			double cookedMealDemandOrbit = cookedMealDemandSol * MarsTime.SOLS_PER_ORBIT_NON_LEAPYEAR;
-			double cookedMealDemand = settlement.getPopulationFactor() * cookedMealDemandOrbit;
-			var meals = simulationConfig.getMealConfiguration().getDishList();
-			int numMeals = meals.size();
-			double factor = cookedMealDemand / numMeals * COOKED_MEAL_INPUT_FACTOR;
-			
-			// Determine demand for the resource as an ingredient for each cooked meal
-			// recipe.
-			demand += ingredientDemand * factor;
-
-		}
-
-		return demand;
-	}
-
-	/**
-	 * Get the base demand for this resource as an ingredient in all meals.
-	 * @param mConfig
-	 * @return
-	 */
-	private static double calculateIngredientDemand(AmountResource ar, MealConfig mConfig) {
-		
-		if (!ar.isEdible())
-			return 0;
-		
-		int id = ar.getID();
-		double demand = 0D;
-			for (DishRecipe meal : mConfig.getDishList()) {
-				demand += meal.getIngredientList().stream()
-					.filter(ingredient -> id == ingredient.getAmountResourceID())
-					.mapToDouble(i -> i.getProportion())
-					.sum();
-			}
-		return demand;
-	}
-
+	
 	/**
 	 * Gets the demand for an amount resource as an input in building construction.
-	 * This is based on the missing resources of a current stage
-	 *
-	 * @return demand (kg)
+	 * This is based on the missing resources of a current stage.
+	 * 
+	 * @param settlement
+	 * @return
 	 */
 	private double getResourceConstructionDemand(Settlement settlement) {
 		double base = 0D;
@@ -1037,7 +1070,9 @@ class AmountResourceGood extends Good {
 	/**
 	 * Gets the farming demand for the resource.
 	 *
-	 * @return demand (kg) for the resource.
+	 * @param owner
+	 * @param settlement
+	 * @return demand for the resource.
 	 */
 	private double getFarmingDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;
@@ -1055,7 +1090,7 @@ class AmountResourceGood extends Good {
 	 * Gets the individual greenhouse resource demand
 	 *
 	 * @param farm
-	 * @return
+	 * @return demand
 	 */
 	private double getFarmingResourceDemand(Farming farm) {
 		
@@ -1090,7 +1125,7 @@ class AmountResourceGood extends Good {
 	 * Computes the tissue demand.
 	 * 
 	 * @param owner
-	 * @return
+	 * @return demand
 	 */
 	private double computeTissueDemandDueToCrop(GoodsManager owner) {
 
@@ -1106,9 +1141,10 @@ class AmountResourceGood extends Good {
 	
 	/**
 	 * Gets the life support demand for an amount resource.
-	 *
-	 * @param resource the resource to check.
-	 * @return demand (kg)
+	 * 
+	 * @param owner
+	 * @param settlement
+	 * @return demand
 	 */
 	private double getLifeSupportDemand(GoodsManager owner, Settlement settlement) {
 		int resourceID = resource.getID();
@@ -1135,7 +1171,7 @@ class AmountResourceGood extends Good {
 	 * 
 	 * @param owner
 	 * @param settlement
-	 * @return
+	 * @return demand
 	 */
 	private double getMineralOreDemand(GoodsManager owner, Settlement settlement) {
 		double base = BASE_MINERAL_ORE;
@@ -1225,11 +1261,11 @@ class AmountResourceGood extends Good {
 	}
 
 	/**
-	 * Gets the emtal demand.
+	 * Gets the metal demand.
 	 * 
 	 * @param owner
 	 * @param settlement
-	 * @return
+	 * @return demand
 	 */
 	private double getMetalDemand(GoodsManager owner, Settlement settlement) {
 		double base = BASE_METAL_DEMAND;
@@ -1250,7 +1286,7 @@ class AmountResourceGood extends Good {
 	 * 
 	 * @param owner
 	 * @param settlement
-	 * @return
+	 * @return demand
 	 */
 	private double getChemicalDemand(GoodsManager owner, Settlement settlement) {
 		double base = BASE_CHEMICAL_DEMAND;
@@ -1292,7 +1328,7 @@ class AmountResourceGood extends Good {
 	/**
 	 * Adjusts the demand for waste resources.
 	 *
-	 * @return demand (kg)
+	 * @return demand
 	 */
 	private double modifyWasteResource() {
 		return switch(getID()) {
@@ -1314,7 +1350,7 @@ class AmountResourceGood extends Good {
 	 * Gets the potable water usage demand for an amount resource.
 	 *
 	 * @param resource the resource to check.
-	 * @return demand (kg)
+	 * @return demand
 	 */
 	private double getPotableWaterUsageDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0;
@@ -1397,7 +1433,7 @@ class AmountResourceGood extends Good {
 	 * Gets the toilet tissue usage demand.
 	 *
 	 * @param resource the resource to check.
-	 * @return demand (kg)
+	 * @return demand
 	 */
 	private double getToiletryUsageDemand(Settlement settlement) {
 		if (getID() == ResourceUtil.TOILET_TISSUE_ID) {
@@ -1413,7 +1449,7 @@ class AmountResourceGood extends Good {
 	/**
 	 * Gets vehicle fuel demand for an amount resource.
 	 *
-	 * @return demand (kg) for the resource.
+	 * @return demand for the resource.
 	 */
 	private double getVehicleFuelDemand(GoodsManager owner, Settlement settlement) {
 		double demand = 0D;

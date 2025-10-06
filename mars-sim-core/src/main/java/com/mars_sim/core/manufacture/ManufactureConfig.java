@@ -210,7 +210,7 @@ public class ManufactureConfig {
 			}
 		}
 		
-		// Assign the newList now built amd create the map by tech level
+		// Assign the newList now built and create the map by tech level
 		manuProcessInfoList = Collections.unmodifiableList(newList);
 		manuByTechLevel = createListByTech(manuProcessInfoList);
 	}

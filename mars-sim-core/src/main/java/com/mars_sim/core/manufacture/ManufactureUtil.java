@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ManufactureUtil.java
- * @date 2024-09-09
+ * @date 2025-10-06
  * @author Scott Davis
  */
 
@@ -36,7 +36,7 @@ public final class ManufactureUtil {
 	private static final SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static final ManufactureConfig manufactureConfig = simulationConfig.getManufactureConfiguration();
 	
-	/** constructor. */
+	/** Constructor. */
 	private ManufactureUtil() {
 		// Static helper class
 	}
@@ -132,22 +132,22 @@ public final class ManufactureUtil {
 		
 		double inputsValue = 0D;
 		for(var i : process.getInputList()) {
-			inputsValue += getManufactureProcessItemValue(i, settlement, false);
+			inputsValue += getManufactureProcessItemGoodValuePoint(i, settlement, false);
 		}
 
 		double outputsValue = 0D;
 		for(var j : process.getOutputList()) {
-			outputsValue += getManufactureProcessItemValue(j, settlement, true);
+			outputsValue += getManufactureProcessItemGoodValuePoint(j, settlement, true);
 		}
 
 		// Get power value.
 		double processTimeRequired = process.getProcessTimeRequired();
-		double powerValue = process.getPowerRequired() * settlement.getPowerGrid().getPowerValue() * Math.log(1 + processTimeRequired);
+		double powerValue = process.getPowerRequired() * settlement.getPowerGrid().getPowerValue() * Math.sqrt(.1 + processTimeRequired);
 		
 		// Get the time value.
 
 		double workTimeRequired = process.getWorkTimeRequired();
-		double timeValue = Math.log(1 + processTimeRequired + workTimeRequired);
+		double timeValue = Math.sqrt(.1 + processTimeRequired + workTimeRequired);
 		
 		// Add a small degree of randomness to the input value 
 		// to avoid getting stuck at selecting the same process over and over
@@ -171,7 +171,7 @@ public final class ManufactureUtil {
 	 * @return good value.
 	 * @throws Exception if error getting good value.
 	 */
-	public static double getManufactureProcessItemValue(ProcessItem item, Settlement settlement,
+	public static double getManufactureProcessItemGoodValuePoint(ProcessItem item, Settlement settlement,
 			boolean isOutput) {
 		double result = 0;
 
@@ -233,8 +233,8 @@ public final class ManufactureUtil {
 	 *
 	 * @param info       the salvage process information.
 	 * @param settlement the settlement to find the unit.
-	 * @return available salvagable unit, or null if none found.
-	 * @throws Exception if problem finding salvagable unit.
+	 * @return available salvageable unit, or null if none found.
+	 * @throws Exception if problem finding salvageable unit.
 	 */
 	public static Salvagable findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) {
 		Salvagable result = null;
@@ -261,7 +261,7 @@ public final class ManufactureUtil {
 
 		// If malfunctionable, find most worn unit.
 		if (!salvagableUnits.isEmpty()) {
-			// Defaut is first item found
+			// Default is first item found
 			result = salvagableUnits.get(0);
 
 			// Find the lowest wear
