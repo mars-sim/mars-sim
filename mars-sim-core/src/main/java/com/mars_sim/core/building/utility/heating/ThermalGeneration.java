@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ThermalGeneration.java
- * @date 2025-09-28
+ * @date 2025-10-07
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -77,38 +77,26 @@ public class ThermalGeneration extends Function {
 		if (spec instanceof GenerationSpec ss) {
 			for (SourceSpec sourceSpec : ss.getSources()) {
 				double heat = sourceSpec.getCapacity();
+				if (building.getCategory() == BuildingCategory.CONNECTION) {
+					heat = heat * building.getFloorArea() / 12;
+				}
 				HeatSource heatSource = null;
 				HeatSourceType sourceType = HeatSourceType.valueOf(sourceSpec.getType().toUpperCase().replace(" ", "_"));
 				
 				switch (sourceType) {
 				case ELECTRIC_HEATING:
 					heatSource = new ElectricHeatSource(building, heat);	
-					
-					if (building.getCategory() == BuildingCategory.CONNECTION) {
-						heat = heat * building.getFloorArea() / 4;
-					}
-					
 					electricHeatSource = heatSource;
 					break;
 
 				case SOLAR_HEATING:
 					heatSource = new SolarHeatingSource(building, heat);
-					
-					if (building.getCategory() == BuildingCategory.CONNECTION) {
-						heat = heat * building.getFloorArea() / 4;
-					}
-					
 					solarHeatSource = heatSource;
 					break;
 					
 				case FUEL_HEATING:
 					boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 					String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
-					
-					if (building.getCategory() == BuildingCategory.CONNECTION) {
-						heat = heat * building.getFloorArea() / 4;
-					}
-
 					heatSource = new FuelHeatSource(building, heat, toggle, fuelType);
 					fuelHeatSource = heatSource;
 					break;

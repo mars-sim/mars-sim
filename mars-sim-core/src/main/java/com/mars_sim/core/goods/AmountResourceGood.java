@@ -568,7 +568,6 @@ class AmountResourceGood extends Good {
 
         Settlement settlement = owner.getSettlement();
  
-
         if (constantManufacturingDemand == -1D) {
         	// At startup, compute manufacturingDemand
         	calculateConstantManufacturingDemand(owner, settlement);	

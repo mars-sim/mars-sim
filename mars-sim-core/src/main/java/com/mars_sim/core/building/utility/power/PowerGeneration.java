@@ -74,14 +74,16 @@ public class PowerGeneration extends Function {
 						
 					case SOLAR_POWER:
 						if (building.getCategory() == BuildingCategory.CONNECTION) {
-							power = power * building.getFloorArea() / 4;
-						}
-						
+							power = power * building.getFloorArea() / 12;
+						}					
 						powerSource = new SolarPowerSource(building, power);
 						
 						break;
 						
 					case SOLAR_THERMAL:
+						if (building.getCategory() == BuildingCategory.CONNECTION) {
+							power = power * building.getFloorArea() / 12;
+						}
 						powerSource = new SolarThermalPowerSource(building, power);
 						break;
 						
