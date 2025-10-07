@@ -358,13 +358,16 @@
 		The chemical used for reinforcing
 		plastic and for making polycarbonate</resource>
 
+	<resource name="Bis(2-hydroxyethyl) terephthalate" type="chemical" phase="solid"> 
+		The chemical used for making polyester resin (PET) </resource>
+
 	<resource name="Ceramic electrolyte" type="chemical" phase="solid"> 
 		The ceramic electrolyte 
 		is highly ion-conductive and chemically stable for making batteries and fuel cells. 
 		This solid metal oxide is an insulator that will not conduct electricity. However, it 
 		is capable of conducting oxygen ions and suitable for cell reactions. </resource>
 
-	<resource name="Dimethyl terephthalate"  type="chemical" phase="liquid">
+	<resource name="Dimethyl terephthalate" type="chemical" phase="liquid">
 		Dimethyl terephthalate (DMT) is an organic compound with the formula C6H4(COOCH3)2. 
 		It is the diester formed from terephthalic acid and methanol.	
 		It is a white solid that melts to give a distillable colourless liquid.
@@ -379,9 +382,13 @@
 	</resource>		
 	
 	<resource name="Ethylene" type="chemical" phase="gas" demand-multiplier="2" >
-		Ethylene is a colorless, flammable gas with a sweet and musky odor. 
-		It is a hydrocarbon with the chemical formula C2H4, also known as ethene 
-		or polyethylene. Ethylene is widely used in the chemical industry and is 
+		Ethylene is a colorless, flammable gas with a sweet and musky odor.
+		
+		It is a hydrocarbon with the chemical formula C2H4, also known as ethene.
+		
+		Ethylene/ethene is the monomer while polyethylene is the resulting plastic material. 
+		
+		Ethylene is widely used in the chemical industry and is 
 		a natural plant hormone that plays a crucial role in plant growth and 
 		development.
 	</resource>
@@ -410,16 +417,15 @@
 		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
 
 	<resource name="Polyester resin" type="chemical" phase="liquid" demand-multiplier="1.5">
-		Polyester resins are thermoplastic polymers. It's the most widely used resin systems in the marine industry. 
-	 By far the majority of dinghies, yachts and workboats built in composites make use of this 
-	 resin system. Polyesters are produced commercially both as saturated and unsaturated resins. 
-	 The most common, highest volume produced polyester is Polyethylene terephthalate (PET), a 
-	 saturated polyester that finds utilization in such applications as fibers for clothing and 
-	 carpet, food and liquid containers (such as a water/soda bottles), as well as films. 
-	 PET’s non-reactance with many foods makes it an ideal packaging material. Because 
-	 of its easy application and durability, polyester resin is also applied to patch cracks 
-	 and holes that need to remain watertight. See comparison between polyester resin and 
-	 epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
+		Polyester resins are thermoplastic polymers. The most common, highest volume produced 
+		polyester is Polyethylene terephthalate (PET), a saturated polyester that finds 
+		utilization in such applications as fibers for clothing and carpet, food and 
+		liquid containers (such as a water/soda bottles), as well as films. 
+
+	 	PET’s non-reactance with many foods makes it an ideal packaging material. Because 
+	 	of its easy application and durability, polyester resin is also applied to patch cracks 
+	 	and holes that need to remain watertight. See comparison between polyester resin and 
+	 	epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
 	</resource> 
 
 	<resource name="Polyethylene" type="chemical" phase="solid" demand-multiplier="1.5">

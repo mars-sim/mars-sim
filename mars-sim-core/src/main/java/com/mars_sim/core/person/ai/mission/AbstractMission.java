@@ -563,7 +563,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Gets the time that the current phases started.
+	 * Gets the start time in the current phase.
 	 */
 	@Override
 	public MarsTime getPhaseStartTime() {
@@ -571,9 +571,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Gets duration of current Phase.
+	 * Gets time elapsed [in millisols] in the current phase.
 	 */
-	protected double getPhaseDuration() {
+	protected double getPhaseTimeElapse() {
 		return clock.getMarsTime().getTimeDiff(phaseStartTime);
 	}
 

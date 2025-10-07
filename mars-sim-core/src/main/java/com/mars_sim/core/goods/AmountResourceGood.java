@@ -150,7 +150,7 @@ class AmountResourceGood extends Good {
 	private static final double ORES_VALUE_MODIFIER = 1.0;
 	
 	private static final double CONCRETE_VALUE_MODIFIER = 1.0;
-	private static final double CEMENT_VALUE_MODIFIER = 1.0;
+	private static final double CEMENT_VALUE_MODIFIER = 0.75;
 	private static final double MINERAL_VALUE_MODIFIER = 1.2;
 	private static final double ROCK_VALUE_MODIFIER = 0.2;
 	private static final double METEORITE_VALUE_MODIFIER = 100;
@@ -166,13 +166,12 @@ class AmountResourceGood extends Good {
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	// Chemicals
-
 	private static final double CLEANING_AGENT_MODIFIER = 2.0;
 	private static final double ETHYLENE_MODIFIER = 12.0;
 	private static final double STYRENE_MODIFIER = 12.0;
 	private static final double PROPYLENE_MODIFIER = 3.0;
 	private static final double ETHANE_MODIFIER = 2.0;
-	private static final double RESIN_MODIFIER = 3.0;
+	private static final double RESIN_MODIFIER = 10.0;
 	private static final double ACETYLENE_MODIFIER = 3.0;
 	private static final double FIBER_MODIFIER = 2.0;
 	private static final double LIME_MODIFIER = 6.0;

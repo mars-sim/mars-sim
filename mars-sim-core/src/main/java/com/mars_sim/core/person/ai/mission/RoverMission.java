@@ -69,8 +69,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 	private static final String UNABLE_TO_ENTER = Msg.getString("RoverMission.log.unableToEnter"); // $NON-NLS-1$
 	
-	private static final String VEHICLE_NOT_AT_SETTLEMENT = Msg.getString("RoverMission.log.notAtSettlement"); // $NON-NLS-1$
-	
 	private static final String MEMBERSHIP_CHECKED = "Membership Checked";
 	
 	private static final String ALL_BOARDED = "All Boarded";
@@ -79,8 +77,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 	private static final String STATUS_REPORT = "[Status Report] Left ";
 	
-	private static final MissionStatus STATUS_VEHICLE_NOT_AT_SETTLEMENT = MissionStatus.createResourceStatus(VEHICLE_NOT_AT_SETTLEMENT);
-			
+	private static final MissionStatus STATUS_VEHICLE_NOT_AT_SETTLEMENT = MissionStatus.createResourceStatus("RoverMission.log.notAtSettlement");
+	
+	private static final String VEHICLE_NOT_AT_SETTLEMENT = STATUS_VEHICLE_NOT_AT_SETTLEMENT.getName();
+	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
@@ -475,14 +475,14 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		boolean canDepart = false;
 		
-		double timeLeft = DEPARTURE_DURATION - DEPARTURE_FINAL_PREPARATION - getPhaseDuration();
+		double timeLeft = DEPARTURE_DURATION - DEPARTURE_FINAL_PREPARATION - getPhaseTimeElapse();
 		// Set the members' work shift to on-call to get ready. 
 		if (timeLeft < DEPARTURE_DURATION / 2) {
 			callMembersToMission((int)timeLeft);	
 		}
 		
-		if (getPhaseDuration() - .3 * DEPARTURE_DURATION > 0
-				&& getPhaseDuration() - DEPARTURE_DURATION < 0) {
+		if (getPhaseTimeElapse() - .3 * DEPARTURE_DURATION > 0
+				&& getPhaseTimeElapse() - DEPARTURE_DURATION < 0) {
 			
 			if (getStartingPerson().equals(member) && !getRover().isCrewmember((Person)member)) {
 				// Gets a random location within rover.

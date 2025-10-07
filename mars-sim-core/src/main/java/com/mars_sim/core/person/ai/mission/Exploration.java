@@ -231,7 +231,7 @@ public class Exploration extends EVAMission
 	protected boolean performEVA(Person person) {
 
 		// Update exploration site completion.
-		double timeDiff = getPhaseDuration();
+		double timeDiff = getPhaseTimeElapse();
 		double completion = timeDiff / STANDARD_TIME_PER_SITE * 2;
 		if (completion > 1D) {
 			completion = 1D;

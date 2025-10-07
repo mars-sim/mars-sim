@@ -279,10 +279,13 @@
 					44g   2g     28g  18g
 				2.  CO + H2  -> C + H2O
 					28g   2g    12g  18g
-					
-		Challenge : 
-		1. power consumption - high temperature endothermic reactions, catalyst 
-		   resupply, volume/mass.						
+											
+	
+		While the core reaction is exothermic, net energy input is still required to:
+
+		1. Heat reactants to reaction temperature,
+		2. Power gas compression and recycling,
+		3. Run auxiliary systems (e.g., CO₂ adsorption pumps, water electrolysis).
 		
 		</description> 
 		<!-- Note: Set ambient to false to reduce the probability of 
@@ -295,6 +298,34 @@
 		
 	</process> <!-- "Continuous Bosch Reactor (C-Bosch)" -->
 	
+	<process name="Carbon Monoxide Hydrogenation" power-required="0.01" >
+		<description> 						
+        The carbon monoxide hydrogenation step in the Bosch process is
+        exothermic. It releases energy rather than requiring a net input.	
+        
+				  CO + H2  -> C + H2O
+				  28g   2g    12g  18g					
+		This reaction releases approximately 2.3 × 10³ joules per gram 
+		of CO₂ reacted at 650 °C
+		
+		However, initial energy input is still required to:
+		1. Heat the reactor to 450–730 °C,
+		2. Maintain reaction conditions,
+		3. Overcome activation energy barriers.
+
+		While the reaction itself produces heat, the high operating 
+		temperatures and catalyst maintenance (due to carbon fouling) 
+		make the process energy-intensive in practice.
+		
+		</description> 
+		<input resource="carbon monoxide" rate="140.0" />
+		<input resource="hydrogen" rate="10.0"  />
+		
+		<output resource="water" rate="90.0"  />
+		<output resource="carbon" rate="60.0"  />
+		
+	</process> <!-- "Carbon Monoxide Hydrogenation" -->
+		
 	<process name="Plasma Pyrolysis Assembly (PPA) Reactor" power-required="0.01" >
 		<description>
 			By partial pyrolysis in microwave generated plasma, methane is converted to 
@@ -1471,6 +1502,86 @@
 		<output resource="propylene" rate="39" />
 	</process> <!-- "Methanol-to-olefin (MTO) process" -->
 
+	<process name="Esterification into BHET" power-required=".05" >
+		<description> 
+		
+		C₈H₆O₄ + C₂H₆O₂ → C10H10O5 + H₂O
+		
+		Terephthalic acid + Ethylene glycol → 
+		166 g/mol           62 g/mol
+		
+		  Bis(2-hydroxyethyl) terephthalate + Water
+			210 g/mol                          18 g/mol
+			
+		Bis(2-hydroxyethyl) terephthalate (BHET) is an organic compound 
+		that serves as a key intermediate in the production of polyethylene 
+		terephthalate (PET) polyester resin.		
+		
+		Esterification: Typically carried out at 250–300 °C under pressure. 
+		Requires ~300–500 kJ/kg of reaction energy, mainly for heating 
+		and water removal.
+		
+		</description>	
+		<input resource="Terephthalic acid" rate="166" />
+		<input resource="Ethylene glycol" rate="62" />
+		
+		<output resource="Bis(2-hydroxyethyl) terephthalate" rate="210" />
+		<output resource="water" rate="18" />
+	</process> <!-- "Esterification into BHET" -->
+
+
+	<process name="Polycondensation of BHET" power-required=".05" >
+		<description> 
+		
+		n C10H10O5 → [C10H8O4]ₙ + n H20 + (some n C₂H₆O₂)
+		
+		This shows n molecules of BHET (C₁₀H₁₀O₅) forming a PET 
+		polymer chain with repeating units (C₁₀H₈O₄) and releasing 
+		n molecules of water (and some ethylene glycol (C₂H₆O₂)) as a byproduct.
+		
+		Polycondensation: Conducted at 270–290 °C under vacuum. 
+		Requires ~800–1200 kJ/kg, with higher energy input due to 
+		vacuum systems and longer residence times.
+		
+		"Esterification into BHET" and "Polycondensation of BHET" 
+		are a part of the "Polyester Resin (PET) Synthesis"
+
+		Most energy is used for heating, inert gas purging, and 
+		vacuum generation, not the reactions themselves.
+		
+		</description>	
+		<input resource="Bis(2-hydroxyethyl) terephthalate" rate="210" />
+		
+		<output resource="Polyester resin" rate="192" />
+		<output resource="water" rate="18" />
+		<!--output resource="Ethylene glycol" rate="62" /-->
+		
+	</process> <!-- "Polycondensation of BHET" -->
+	
+	<process name="Produce Ethylene Glycol" power-required="0.0" >
+		<description> 
+		
+		Ethylene glycol is primarily produced industrially via the hydrolysis of ethylene oxide. 
+		Ethylene oxide reacts with water under high temperature (150–200 °C) and pressure (1–2 MPa), 
+		often with a small amount of acid or base catalyst:
+		
+		Thus, Ethylene glycol is produced from ethylene (ethene), via the intermediate ethylene oxide. 
+			
+		Ethylene oxide is derived from the oxidation of ethylene using oxygen over a silver catalyst. 
+		
+		The reaction is highly exothermic and requires precise control.	
+		
+				C2H4O + H2O → C₂H₆O₂ or  HO−CH2CH2−OH
+				44 g   18 g    62 g
+	
+		</description>	
+		<input resource="Ethylene" rate="88" />
+		<input resource="water" rate="36" />
+			
+		<output resource="Ethylene Glycol" rate="124" />
+
+	</process> <!-- "Polycondensation of BHET" -->
+	
 
 	<process name="Bake calcium carbonate to lime" power-required=".1"  >
 		<description>

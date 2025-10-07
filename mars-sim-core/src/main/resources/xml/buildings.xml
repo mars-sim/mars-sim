@@ -394,7 +394,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="5"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>
 
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
@@ -778,7 +779,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">			
 				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="12"/>				
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>		
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="20"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="8"/>	
 				
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>
@@ -1909,7 +1911,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
 				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="8"/>
-				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="8"/>			
+				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="8"/>	
+				
+				<!--Using Hydrogen -->
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="30"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="12"/>					
+						
 			</resource-processing>
 
 			<storage stock-capacity="300000">
@@ -2063,13 +2070,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Make Magnesium-based Concrete 2" number-modules="2"/>
 								
 				<!-- 6 industrial chemical ingredients -->	
-				<process-engine name="Produce Ethylene" number-modules="2"/>
+				<process-engine name="Produce Ethylene" number-modules="20"/>
 				<process-engine name="Produce Polyethylene from Ethylene" number-modules="10"/>
 				<process-engine name="Produce Styrene from Ethylene" number-modules="5"/>
 				<process-engine name="Produce Polystyrene from Styrene" number-modules="10"/>
 				<process-engine name="Produce Polypropylene from Propylene" number-modules="10"/>
 				<process-engine name="Methanol-to-Olefin (MTO) process" number-modules="10"/>
 									
+				<process-engine name="Esterification into BHET" number-modules="4"/>									
+				<process-engine name="Polycondensation of BHET" number-modules="4"/>	
+				<process-engine name="Produce Ethylene Glycol" number-modules="10"/>	
+								
 			</resource-processing>
 
 			<storage stock-capacity="300000">
@@ -4132,7 +4143,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="5"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>	
 				
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>		

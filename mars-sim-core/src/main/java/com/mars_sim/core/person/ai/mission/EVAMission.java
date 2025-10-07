@@ -126,7 +126,7 @@ abstract class EVAMission extends RoverMission {
 			logger.info(getRover(), "Stop wait as enough sunlight");
 			setPhaseEnded(true);
 		}
-		else if (getPhaseDuration() > MAX_WAIT_SUBLIGHT) {
+		else if (getPhaseTimeElapse() > MAX_WAIT_SUBLIGHT) {
 			logger.info(getRover(), "Waited long enough");
 			setPhaseEnded(true);
 			startTravellingPhase();
@@ -205,7 +205,7 @@ abstract class EVAMission extends RoverMission {
 		
 		if (activeEVA) {
 			// Check if crew has been at site for more than one sol.
-			double timeDiff = getPhaseDuration();
+			double timeDiff = getPhaseTimeElapse();
 			if (timeDiff > getEstimatedTimeAtEVASite(false)) {
 				logger.info(getVehicle(), 10_000L, "Ran out of EVA site time.");
 				addMissionLog("No More EVA Site Time", member.getName());
@@ -413,7 +413,7 @@ abstract class EVAMission extends RoverMission {
 
 		// Add estimated remaining exploration time at current site if still there.
 		if (evaPhase.equals(getPhase())) {
-			double remainingTime = evaSiteTime - getPhaseDuration();
+			double remainingTime = evaSiteTime - getPhaseTimeElapse();
 			if (remainingTime > 0D)
 				result += remainingTime;
 		}

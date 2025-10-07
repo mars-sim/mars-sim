@@ -46,9 +46,10 @@ public class ResourceUtil {
 	public static final int REGOLITHB_ID = REGOLITH_ID + 1;
 	public static final int REGOLITHC_ID = REGOLITHB_ID + 1;
 	public static final int REGOLITHD_ID = REGOLITHC_ID + 1;
+	public static final int GYPSUM_PLASTER_ID = REGOLITHD_ID + 1;
 	
 	// 6 types of ores 
-	public static final int GYPSUM_ID = REGOLITHD_ID + 1;
+	public static final int GYPSUM_ID = GYPSUM_PLASTER_ID + 1;
 	public static final int BASALTIC_ID = GYPSUM_ID + 1;
 	public static final int SMECTITE_ID = BASALTIC_ID + 1;
 	public static final int ALLOPHANE_ID = SMECTITE_ID + 1;
@@ -120,7 +121,8 @@ public class ResourceUtil {
 	
 	public static final int ETHANE_ID = CARBON_ID + 1;
 	public static final int ETHYLENE_ID = ETHANE_ID + 1;
-	public static final int POLYCARBONATE_RESIN_ID = ETHYLENE_ID + 1;
+	public static final int ETHYLENE_GLYCOL_ID = ETHYLENE_ID + 1;
+	public static final int POLYCARBONATE_RESIN_ID = ETHYLENE_GLYCOL_ID + 1;
 	public static final int POLYESTER_FIBER_ID = POLYCARBONATE_RESIN_ID + 1;
 	public static final int POLYESTER_RESIN_ID = POLYESTER_FIBER_ID + 1;
 	public static final int PROPYLENE_ID = POLYESTER_RESIN_ID + 1;
@@ -193,6 +195,7 @@ public class ResourceUtil {
 		fixedResources.put("epsom salt", EPSOM_SALT_ID);
 		fixedResources.put("ethane", ETHANE_ID);
 		fixedResources.put("ethylene", ETHYLENE_ID);
+		fixedResources.put("ethylene glycol", ETHYLENE_GLYCOL_ID);
 		fixedResources.put("fertilizer", FERTILIZER_ID);
 		fixedResources.put("fish meat", FISH_MEAT_ID);
 		fixedResources.put("fish oil", FISH_OIL_ID);
@@ -203,6 +206,7 @@ public class ResourceUtil {
 		fixedResources.put("granite", GRANITE_ID);
 		fixedResources.put("grey water", GREY_WATER_ID);
 		fixedResources.put("gypsum", GYPSUM_ID);
+		fixedResources.put("gypsum plaster", GYPSUM_PLASTER_ID);
 		fixedResources.put("hematite", HEMATITE_ID);
 		fixedResources.put("hydrogen", HYDROGEN_ID);
 		fixedResources.put("ice", ICE_ID);
@@ -544,7 +548,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isChemical(int resource) {
 		return switch (resource) {
-			case ETHANE_ID, ETHYLENE_ID, PROPYLENE_ID, STYRENE_ID,
+			case ETHANE_ID, ETHYLENE_ID, ETHYLENE_GLYCOL_ID, PROPYLENE_ID, STYRENE_ID,
 				 POLYETHYLENE_ID, POLYPROPYLENE_ID , POLYSTYRENE_ID, 
 				 POLYURETHANE_ID, 
 				 POLYESTER_RESIN_ID, POLYCARBONATE_RESIN_ID -> true;
@@ -560,7 +564,7 @@ public class ResourceUtil {
 	 */
 	public static boolean isConstructionResource(int resource) {
 		return switch (resource) {
-			case CEMENT_ID, CONCRETE_ID, LIME_ID, ACETYLENE_ID -> true;
+			case GYPSUM_PLASTER_ID, GYPSUM_ID, CEMENT_ID, CONCRETE_ID, LIME_ID, ACETYLENE_ID -> true;
 			default -> false;
 		};
 	}
