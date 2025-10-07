@@ -181,25 +181,8 @@ http://canada.marssociety.org/winnipeg/soil.html
 		Over 3000 different types of chemicals "can be used" in papermaking, in practice only about 200 individual chemicals
 		 are typically used, each satisfying a specific need.
 		 -->
-	<process name="Make bleaching chemical for paper making"
-			tech="2" skill="1"
-			work-time="10"
-			process-time="50" tooling="chemical"
-			power-required=".05">
-		<inputs>
-			<resource name="oxygen" amount=".2" />
-			<resource name="sulfur" amount=".05" />
-			<resource name="ammonia" amount=".05" />
-			<resource name="sodium hypochlorite" amount=".05" />
-			<resource name="calcium carbonate" amount=".1" />
-			<resource name="magnesium" amount=".05" />
-		</inputs>
-		<outputs>
-			<resource name="bleaching chemical" amount=".5" />
-		</outputs>
-	</process>
 
-	<process name="Make bleaching chemical for paper making (large batch)"
+	<process name="Make bleaching chemical for paper making"
 			tech="2" skill="1"
 			work-time="50"
 			process-time="200" tooling="chemical"
@@ -216,7 +199,24 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="bleaching chemical" amount="5" />
 		</outputs>
 	</process>
-
+	
+	<process name="Make bleaching chemical for paper making (large batch)"
+			tech="2" skill="1"
+			work-time="50"
+			process-time="200" tooling="chemical"
+			power-required=".3">
+		<inputs>
+			<resource name="oxygen" amount="20" />
+			<resource name="sulfur" amount="5" />
+			<resource name="ammonia" amount="5" />
+			<resource name="sodium hypochlorite" amount="5" />
+			<resource name="calcium carbonate" amount="10" />
+			<resource name="magnesium" amount="5" />
+		</inputs>
+		<outputs>
+			<resource name="bleaching chemical" amount="50" />
+		</outputs>
+	</process>
 
 <!-- https://en.wiki2.org/wiki/Electrochlorination
 		NaCl + H2O + ENERGY → NaOCl + H2 energy is added to sodium chloride (table salt) in water, resulting in sodium hypochlorite and hydrogen gas.
@@ -278,6 +278,50 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
+	<process name="Make hydrogen peroxide"
+			tech="1" skill="2"
+			work-time="5"
+			process-time="68" tooling="chemical"
+			power-required=".1">
+			<!-- May use palladium-gold catalysts, minimizing waste 
+			and avoiding the complex, energy-intensive anthraquinone process -->
+		<inputs>
+			<resource name="oxygen" amount="32.0" />
+			<resource name="hydrogen" amount="2.0" />
+		</inputs>
+		<outputs>
+			<resource name="hydrogen peroxide" amount="34" />
+		</outputs>
+	</process>
+
+	<process name="Make triglyceride"
+			tech="1" skill="2"
+			work-time="5"
+			process-time="30" tooling="chemical"
+			power-required=".1">
+		<description> 
+			May use palladium-gold catalysts, minimizing waste 
+			and avoiding the complex, energy-intensive anthraquinone process.
+			
+			Assume 50% conversion rate
+		</description>
+		<inputs>
+			<resource name="Soybean oil" amount="10.0"  >
+				<alternative name="Sesame oil" amount="10.0" />
+				<alternative name="Peanut oil" amount="10.0" />
+				<alternative name="Rice bran oil" amount="10.0" />
+				<alternative name="Garlic oil" amount="10.0" />
+				<alternative name="Olive oil" amount="10.0" />
+				<alternative name="Fish oil" amount="10.0" />
+			</resource>	
+		</inputs>
+		<outputs>
+			<resource name="Triglyceride" amount="5.0" />
+			<resource name="Food waste" amount="5.0" />
+		</outputs>
+	</process>
+		
+				
 	<process name="Make crop fertilizers"
 			tech="2" skill="1"
 			work-time="10"
@@ -3202,6 +3246,18 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="Produce polycarbonate resin" tech="2" skill="2" work-time="10" process-time="30"
 			tooling="chemical" power-required="0.5">
+			<!-- The best non-polluted method involves non-phosgene process by producing 
+			diphenyl carbonate (DPC) from carbon dioxide (CO₂) and ethylene oxide (EO). 
+			It avoids the use of highly toxic phosgene while utilizing EO production as 
+			a raw material.
+			
+			This approach significantly reduces environmental and health risks, generates fewer 
+			emissions, and produces water and carbon monoxide as by-products instead of hazardous waste.
+
+			The process is considered more environmentally friendly, with lower acidification 
+			potential and reduced energy consumption compared to the phosgene method.
+			-->
+			
 		<inputs>
 			<resource name="Ethylene" amount="1.0" />
 			<resource name="food waste" amount="0.5" />

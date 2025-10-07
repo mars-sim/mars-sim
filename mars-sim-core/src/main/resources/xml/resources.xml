@@ -188,6 +188,8 @@
 	<resource name="White rice" type="derived" phase="solid" edible="true"></resource>
 
 <!-- Types of oil -->
+	<resource name="Triglyceride" type="oil" phase="liquid" edible="true">
+		Triglyceride + 3H2O -> Glycerol C₃H₈O₃. or C3H5(OH)3 + 3Fatty Acids</resource>
 	<resource name="Sesame oil" type="oil" phase="liquid" edible="true">
 		Oil pressed from sesame seeds.</resource>
 	<resource name="Rice bran oil" type="oil" phase="liquid" edible="true">
@@ -328,7 +330,8 @@
 		Unspecified cleaning agent that are composed of acetic acid, sodium hypochlorite, sodium carbonate,  </resource>	
 	<resource name="Bleaching chemical" type="chemical" phase="liquid">
 		Bleaching chemical include chlorine dioxide, oxygen, or hydrogen peroxide. </resource>
-	
+	<resource name="Hydrogen peroxide" type="chemical" phase="liquid" />
+		
 				
 <!-- Industrial chemicals -->
 	<resource name="Acetic acid" type="chemical" phase="solid">
@@ -410,6 +413,26 @@
 		processes.
 	</resource>
 
+	<resource name="Epoxy resin" type="chemical" phase="solid" demand-multiplier="1.5">
+		Epoxy resin is a thermoset polymer formed by the polymerization of epichlorohydrin
+		and bisphenol-A.
+		
+		It is renowned for its high adhesive strength, excellent chemical and heat resistance, 
+		electrical insulation properties, and superior durability for Mining, Civil, 
+		Composites, Electrical and Adhesives applications.
+		
+ 		Epoxy is widely used in structural adhesives, fiber-reinforced plastics, industrial 
+ 		coatings, aerospace and marine applications, and as a protective coating for floors, 
+ 		countertops, and storage tanks.
+		
+		It is also preferred for repairs due to its ability to bond with both epoxy and 
+		polyester surfaces.
+		
+ 		Epoxy generally has a longer curing time than polyester, allowing more working time, 
+ 		and emits fewer, lower-risk fumes during use. However, it is more expensive than 
+ 		polyester resin.
+	</resource> 
+	
 	<resource name="Polycarbonate resin" type="chemical" phase="solid" demand-multiplier="1.5"> 
 		These are partially bio-based
 		polycarbonates made use of renewable feedstocks (food waste) and CO2. See
@@ -417,15 +440,15 @@
 		are strong, tough materials, easily worked, molded, and thermoformed.</resource>
 
 	<resource name="Polyester resin" type="chemical" phase="liquid" demand-multiplier="1.5">
-		Polyester resins are thermoplastic polymers. The most common, highest volume produced 
-		polyester is Polyethylene terephthalate (PET), a saturated polyester that finds 
-		utilization in such applications as fibers for clothing and carpet, food and 
-		liquid containers (such as a water/soda bottles), as well as films. 
+		Polyester resin is a liquid in its uncured state. It's a thermoplastic polymer. 
+		The most common, highest volume produced polyester is Polyethylene terephthalate (PET),
+		a saturated polyester that finds utilization in such applications as fibers for 
+		clothing and carpet, food and liquid containers (such as a water/soda bottles), 
+		as well as films. 
 
 	 	PET’s non-reactance with many foods makes it an ideal packaging material. Because 
 	 	of its easy application and durability, polyester resin is also applied to patch cracks 
-	 	and holes that need to remain watertight. See comparison between polyester resin and 
-	 	epoxy resin at https://www.pcepoxy.com/what-is-the-difference-between-epoxy-and-polyester-resin/
+	 	and holes that need to remain watertight.
 	</resource> 
 
 	<resource name="Polyethylene" type="chemical" phase="solid" demand-multiplier="1.5">
@@ -474,6 +497,27 @@
 		Synthetic styrene, which is chemically identical to naturally occurring styrene, 
 		is manufactured as a chemical building block for
 		materials used to make packaging, insulation </resource>
+
+	 <resource name="Silicone Elastomer" type="chemical" phase="solid"> 
+	 	Highly stretchable, soft silicone elastomers 
+		 are of great interest for the fabrication of stretchable, soft devices. </resource>
+			 		 
+	<resource name="Thermoplastic Elastomer" type="chemical" phase="solid">
+		Thermoplastic elastomers (TPE), sometimes referred to as thermoplastic rubbers, are a 
+		class of copolymers or a physical mix of polymers (usually a plastic and a rubber) 
+		that consist of materials with both thermoplastic and elastomeric properties.
+		
+		The benefit of using thermoplastic elastomers is the ability to stretch to moderate 
+		elongations and return to its near original shape creating a longer life and better 
+		physical range than other materials.
+		
+		TPE film is added to the liquid cooling garment to allow for water vapor or 
+		perspiration to travel out, away from the skin. The film is a monoflim membrance with 
+		superior permeability, water-vapor transmittion, and tear strength properties. It would
+		not allow water to penetrate in the opposite direction back to the skin. It is a one-way
+		water-vapor transport wicking material that maintain a comfortable microclimate between 
+		the fabric's surfaces closet to the skin.
+	</resource>	
 
 	<resource name="Terephthalic acid"  type="chemical" phase="solid">
 		Terephthalic acid is an organic compound with formula C6H4(CO2H)2. 
@@ -591,8 +635,6 @@
 	 SiO2, most commonly found in nature as quartz and in various living
 	 organisms. In many parts of the world, silica is the major constituent
 	 of sand. </resource>
-	 <resource name="Silicone Elastomer" type="compound" phase="solid"> Highly stretchable, soft silicone elastomers 
-		 are of great interest for the fabrication of stretchable, soft devices. </resource>
 	 	
 	<resource name="Sodium oxide" type="compound" phase="solid"> extracted from regolith.</resource>
 			 
@@ -655,23 +697,6 @@
 		See https://www.1-act.com/thermal-solutions/passive/pcm/
 		See https://paraffinwaxco.com/phase-change-materials/
 		See DOI: http://dx.doi.org/10.5772/intechopen.90487
-	</resource>	
-			 		 
-	<resource name="Thermoplastic Elastomer" type="utility" phase="solid">
-		Thermoplastic elastomers (TPE), sometimes referred to as thermoplastic rubbers, are a 
-		class of copolymers or a physical mix of polymers (usually a plastic and a rubber) 
-		that consist of materials with both thermoplastic and elastomeric properties.
-		
-		The benefit of using thermoplastic elastomers is the ability to stretch to moderate 
-		elongations and return to its near original shape creating a longer life and better 
-		physical range than other materials.
-		
-		TPE film is added to the liquid cooling garment to allow for water vapor or 
-		perspiration to travel out, away from the skin. The film is a monoflim membrance with 
-		superior permeability, water-vapor transmittion, and tear strength properties. It would
-		not allow water to penetrate in the opposite direction back to the skin. It is a one-way
-		water-vapor transport wicking material that maintain a comfortable microclimate between 
-		the fabric's surfaces closet to the skin.
 	</resource>	
 		
 	<resource name="Zeolite" type="utility" phase="solid"> Zeolites are naturally occurring 

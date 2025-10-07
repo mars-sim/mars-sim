@@ -134,6 +134,7 @@ class AmountResourceGood extends Good {
 	private static final double DERIVED_FLATTENING_FACTOR = 1.25;
 	private static final double TISSUE_FLATTENING_FACTOR = 1.25;
 
+	private static final double PLASTIC_RELATED_FLATTENING_FACTOR = 6.0;
 
 	private static final double LEAVES_VALUE_MODIFIER = 1.5;
 	
@@ -259,6 +260,14 @@ class AmountResourceGood extends Good {
 
 		case CHEMICAL:
 			mod = CHEMICAL_FLATTENING_FACTOR;	
+			
+			if (ar.getName().equalsIgnoreCase("Dimethyl terephthalate")
+				|| ar.getName().equalsIgnoreCase("Silicone elastomer")
+				|| ar.getName().equalsIgnoreCase("Thermoplastic elastomer")
+				|| ar.getName().equalsIgnoreCase("Terephthalic acid")		
+					) {
+				mod *= PLASTIC_RELATED_FLATTENING_FACTOR;
+			}
 			
 			mod *= switch(ar.getID()) {
 				case ResourceUtil.ROCK_SALT_ID -> ROCK_SALT_FLATTENING_FACTOR;

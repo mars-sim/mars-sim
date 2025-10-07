@@ -398,7 +398,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>
 
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
 						
@@ -412,6 +412,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
+			
+				<!-- Bio-based processes -->
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+			
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -3044,6 +3049,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing low-power-level="0.25">
+				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
 				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
@@ -3051,6 +3057,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
 				
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+								
 				<activity>
 					<activity-spot xloc="-.51" yloc="-.75" />
 					<activity-spot xloc="-.51" yloc="-2.31" />
@@ -4147,23 +4156,25 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>	
 				
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>		
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>		
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
-				
+								
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3"/>	
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
 				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="2"/>
 				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="2"/>
 				
-				
 				<process-engine name="Atmospheric processing" number-modules="3"/>
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
-				
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
-								
+			
+				<!-- Bio-based processes -->
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+												
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
 				</activity>

@@ -23,6 +23,83 @@
 
 <process-list>
 
+	<process name="Green Polymerization of Polycarbonate Resin" power-required=".1" >
+		<description>
+		The best non-polluted method involves non-phosgene process by producing 
+		diphenyl carbonate (DPC) from carbon dioxide (CO₂) and ethylene oxide (EO). 
+		It avoids the use of highly toxic phosgene while utilizing EO production as 
+		a raw material.
+			
+		This approach significantly reduces environmental and health risks, 
+		generates fewer emissions, and produces water and carbon monoxide as 
+		by-products instead of hazardous waste.
+
+		The process is considered more environmentally friendly, with lower 
+		acidification potential and reduced energy consumption compared to 
+		the phosgene method.
+			
+		This represents the melt transesterification of bisphenol A (BPA) 
+		with diphenyl carbonate (DPC) to form polycarbonate and phenol. 
+		
+		The DPC is synthesized from CO₂ and ethylene oxide, avoiding 
+		toxic phosgene.
+		
+		Phenol (also known as carbolic acid, phenolic acid, or benzenol) is 
+		an aromatic organic compound with the molecular formula C6H5OH
+		(MW: 94.11 g/mol)
+		
+		A newer, direct "green" method synthesizes polycarbonate diols from CO₂ 
+		and diols, with the general reaction: 
+		n HO-R-OH + n CO₂ → [O-R-O-CO]ₙ + n H₂O where R is an organic chain, 
+		and water is the only by-product.
+		
+		CO₂ + 2 C₆H₅OH → C₁₃H₁₀O₃ (DPC) + H₂O
+
+		</description>
+		<input resource="bisphenol-a" rate="228.29" />
+		<input resource="carbon dioxide" rate="44.0" />
+		<!--input resource="phenol" rate="188.22" /-->
+								
+		<output resource="Polycarbonate resin" rate="254.29" />
+		<!--output resource="phenol" rate="188.22" /-->
+		<output resource="water" rate="18.0" />
+	</process>
+
+
+	<process name="Insitu Epoxidation of Triglyceride" power-required=".1"  >
+		<description>
+		A greener, non-polluting method for producing epoxy resin involves using 
+		epoxidized vegetable oils, such as epoxidized linseed or soybean oil, 
+		instead of bisphenol-A and epichlorohydrin. 
+		
+		This method avoids toxic chemicals and reduces environmental impact.
+
+		The process uses in situ epoxidation with hydrogen peroxide (H₂O₂) and a 
+		catalyst (e.g., ion-exchange resin or formic acid), where double bonds 
+		in triglycerides are converted to epoxide rings.
+		
+		Simplified Balanced Equation (using a model triglyceride with 
+		three linoleic acid chains):
+			
+		Reactants:
+			Triglyceride (e.g., linolein): C₅₇H₉₈O₆, Molar mass ≈ 875.4 g/mol
+			Hydrogen peroxide (3 mol): 3 × H₂O₂, Molar mass = 3 × 34.0 = 102.0 g/mol
+			
+		Products:
+			Epoxidized triglyceride: C₅₇H₁₀₄O₉, Molar mass ≈ 929.4 g/mol
+			Water (3 mol): 3 × H₂O, Molar mass = 3 × 18.0 = 54.0 g/mol
+			
+		This method produces water as the only byproduct, making it significantly 
+		cleaner than traditional chlorohydrin-based processes.
+		
+		</description>	
+		<input resource="Triglyceride" rate="875.4"  />
+		<input resource="Hydrogen peroxide" rate="102.0"  />
+		
+		<output resource="Epoxy resin" rate="929.4" />
+		<output resource="Water" rate="54.0" />
+	</process>
+	
 	<process name="Photosynthetic Conversion of CO2 to Ethylene" power-required="0.1" >
 		<description>
 		The direct conversion of carbon dioxide to ethylene using cyanobacteria involves an engineered 
@@ -1580,7 +1657,7 @@
 			
 		<output resource="Ethylene Glycol" rate="124" />
 
-	</process> <!-- "Polycondensation of BHET" -->
+	</process> <!-- "Produce Ethylene Glycol" -->
 	
 
 	<process name="Bake calcium carbonate to lime" power-required=".1"  >
