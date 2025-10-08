@@ -936,17 +936,16 @@
 		analogue regolith and analyzed by ion chromatography. The MARE contained (mg/L) 
 		Nitrogen-containing species NO3- has 773 and NO2- has 6.9 
 		</description>
-		<input resource="regolith" rate="100.0"  />
+		<input resource="regolith" rate="100.0" />
 
-		<output resource="basaltic" rate="9.0"  />
-		<output resource="smectite" rate="9.0"  />
-		<output resource="allophane" rate="9.0"  />
-		<output resource="akaganeite" rate="9.0"  />
-		<output resource="bassanite" rate="9.0"  />
-		<output resource="gypsum" rate="26.0"  />
+		<output resource="basaltic" rate="10.0" />
+		<output resource="smectite" rate="10.0" />
+		<output resource="allophane" rate="10.0" />
+		<output resource="akaganeite" rate="10.0" />
+		<output resource="bassanite" rate="10.0" />
+		<output resource="gypsum" rate="30.0" />
 		
-		<output resource="sand" rate="28.5"  />
-		<output resource="nitrogen" rate="0.5"  />
+		<output resource="sand" rate="20.0" />
 	</process>
 
 
@@ -960,15 +959,16 @@
 			Curiosity found Nitrate deposits in Gale Crater from ~110 to ~300 ppm. In Mudstone deposits, 
 			this value ranged from 300 to 1,100 ppm. They speculate that these compounds were formed from thermal shock from impacts, or from lightning.
 		</description> 
-		<input resource="regolith" rate="100.0"  />
+		<input resource="regolith" rate="25.0"  />
 		
-		<output resource="nitrate" rate="0.1"  />
-		<output resource="nitrite" rate="0.1"  />
-		<output resource="nitrogen" rate="0.1"  />
-		<output resource="ammonia" rate="0.1"  />
-		<output resource="argon" rate="0.1"  />
+		<output resource="nitrate" rate="0.5"  />
+		<output resource="nitrite" rate="0.5"  />
+		<output resource="nitrogen" rate="0.5"  />
+		<output resource="ammonia" rate="0.5"  />
+		<output resource="argon" rate="0.5"  />
 		<output resource="sand" rate="20"  />
-		<output resource="regolith" rate="79.5"  />	
+		<output resource="iron powder" rate="1.0" />	
+		<output resource="iron oxide" rate="1.5" />
 	</process>
 
 
@@ -1240,11 +1240,12 @@
 
 		<output resource="carbon dioxide" rate="1.5" />
 		<output resource="aluminum oxide" rate="3.5" />
-		<output resource="iron powder" rate="1.0" />					
+		<output resource="iron powder" rate="1.0" />	
+		<output resource="iron oxide" rate="3.5" />			
 		<output resource="sulfur" rate="4.0" />					
 		<output resource="silica" rate="13.0" />
 		<output resource="silicon" rate="2.0" />
-		<output resource="glass" rate="25.0" />	
+		<output resource="glass" rate="21.5" />	
 	</process>
 
 	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->

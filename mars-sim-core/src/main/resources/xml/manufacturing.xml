@@ -418,8 +418,8 @@ Note: 1 kg of H2 is 14.13 liter
 	
 	<process name="Do carbon monoxide iron reduction"
 			tech="1" skill="1"
-			work-time="50"
-			process-time="200" tooling="chemical"
+			work-time="5"
+			process-time="50" tooling="chemical"
 			power-required=".2">
 		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3CO -> 2Fe + 3CO&lt;sub&gt;2&lt;/sub&gt;</description>
 		<inputs>
@@ -434,8 +434,8 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="Do hydrogen iron reduction"
 			tech="1" skill="1"
-			work-time="50"
-			process-time="200" tooling="chemical"
+			work-time="5"
+			process-time="50" tooling="chemical"
 			power-required=".2">
 		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt;
 		-> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
@@ -1235,7 +1235,7 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Polyester Fiber" amount="0.2" />
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
-			<resource name="polyurethane" amount="0.1" />
+			<resource name="Polyurethane" amount="0.1" />
 			<resource name="Aluminized Mylar" amount="1.0" />			
 			<part name="fiberglass cloth" number="4" />
 		</inputs>
@@ -2541,7 +2541,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
 	<process name="Bake sand brick" tech="0" skill="0" work-time="5" process-time="50" tooling="furnace"
-			power-required=".5">
+			power-required=".1">
 		<inputs>
 			<resource name="sand" amount="30" />
 			<resource name="calcium carbonate" amount="2.6" />
@@ -3955,6 +3955,6 @@ Note: 1 kg of H2 is 14.13 liter
 	<salvage item-name="large bag" type="equipment" tech="1" skill="0" work-time="2">
 		<part-salvage name="fiberglass cloth" number="2" />
 		<part-salvage name="plastic sheet" number="2" />
-	</salvage>
+	</salvage>	
 
 </manufacturing-processes>

@@ -1905,7 +1905,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
@@ -1964,7 +1964,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
@@ -2054,7 +2054,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
@@ -2143,7 +2143,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">

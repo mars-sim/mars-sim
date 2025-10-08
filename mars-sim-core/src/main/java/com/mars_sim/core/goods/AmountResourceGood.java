@@ -88,9 +88,10 @@ class AmountResourceGood extends Good {
 	private static final double OXYGEN_FLATTENING_FACTOR = 0.75;	
 	
 
-	// Note: must keep Carbon Monoxide demand high enough so as to start 
+	// Note1: must keep Carbon Monoxide demand high enough so as to start 
 	// 5 important Resource Processes that produce other resources (alongside with Carbon Monoxide)
-	private static final double CO_FLATTENING_FACTOR = 5.0;
+	// Note2: high CO demand can be counter productive for manufacturing processes that uses it as input 
+	private static final double CO_FLATTENING_FACTOR = 0.5;
 	private static final double CO2_FLATTENING_FACTOR = 1.1;
 		
 	private static final double ORE_FLATTENING_FACTOR = 1.0;
@@ -117,7 +118,7 @@ class AmountResourceGood extends Good {
 	private static final double CHEMICAL_FLATTENING_FACTOR = 2D;
 	private static final double COMPOUND_FLATTENING_FACTOR = 2D;
 	private static final double CONSTRUCTION_FLATTENING_FACTOR = 3D;
-	private static final int ELEMENT_FLATTENING_FACTOR = 2;
+	private static final int ELEMENT_FLATTENING_FACTOR = 8;
 
 	private static final double GEMSTONE_FLATTENING_FACTOR = 3D;
 
@@ -167,22 +168,23 @@ class AmountResourceGood extends Good {
 	private static final double METHANOL_VALUE_MODIFIER = 0.05;
 	
 	// Chemicals
-	private static final double CLEANING_AGENT_MODIFIER = 2.0;
-	private static final double ETHYLENE_MODIFIER = 12.0;
-	private static final double STYRENE_MODIFIER = 12.0;
-	private static final double PROPYLENE_MODIFIER = 3.0;
-	private static final double ETHANE_MODIFIER = 2.0;
-	private static final double RESIN_MODIFIER = 10.0;
-	private static final double ACETYLENE_MODIFIER = 3.0;
-	private static final double FIBER_MODIFIER = 2.0;
-	private static final double LIME_MODIFIER = 6.0;
+	private static final int CLEANING_AGENT_MODIFIER = 2;
+	private static final int ETHYLENE_MODIFIER = 12;
+	private static final int STYRENE_MODIFIER = 12;
+	private static final int PROPYLENE_MODIFIER = 3;
+	private static final int ETHANE_MODIFIER = 2;
+	private static final int H2O2_MODIFIER = 4;
+	private static final int RESIN_MODIFIER = 10;
+	private static final int ACETYLENE_MODIFIER = 3;
+	private static final int FIBER_MODIFIER = 2;
+	private static final int LIME_MODIFIER = 6;
 	
 	// gases
-	private static final double CO2_VALUE_MODIFIER = 1.0;
+	private static final int CO2_VALUE_MODIFIER = 1;
 
 	// metal
-	private static final double IRON_OXIDE_MODIFIER = 5;
-	private static final double IRON_POWDER_MODIFIER = 1.5;
+	private static final int IRON_OXIDE_MODIFIER = 10;
+	private static final double IRON_POWDER_MODIFIER = 1.0;
 
 	// Other factors
 	private static final double TISSUE_CULTURE_VALUE = 0.5;
@@ -1307,6 +1309,10 @@ class AmountResourceGood extends Good {
 				return base * ETHANE_MODIFIER;
 			case ResourceUtil.ETHYLENE_ID:
 				return base * ETHYLENE_MODIFIER;
+			case ResourceUtil.EPOXY_RESIN_ID:
+				return base * RESIN_MODIFIER;
+			case ResourceUtil.H2O2_ID:
+				return base * H2O2_MODIFIER;
 			case ResourceUtil.POLYCARBONATE_RESIN_ID:
 				return base * RESIN_MODIFIER;
 			case ResourceUtil.POLYESTER_FIBER_ID:

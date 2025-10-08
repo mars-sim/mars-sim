@@ -36,7 +36,8 @@ public class ResourceUtil {
 	public static final int ARGON_ID = CO2_ID + 1;
 	public static final int NITROGEN_ID = ARGON_ID + 1;
 	public static final int HYDROGEN_ID = NITROGEN_ID + 1;
-	public static final int METHANE_ID = HYDROGEN_ID + 1;
+	public static final int H2O2_ID = HYDROGEN_ID + 1;
+	public static final int METHANE_ID = H2O2_ID + 1;
 	public static final int METHANOL_ID = METHANE_ID + 1;
 	public static final int CO_ID = METHANOL_ID + 1;
 	public static final int ACETYLENE_ID = CO_ID + 1;
@@ -119,7 +120,9 @@ public class ResourceUtil {
 
 	public static final int CARBON_ID = SPIRULINA_ID + 1;
 	
-	public static final int ETHANE_ID = CARBON_ID + 1;
+	public static final int BHET_ID = CARBON_ID + 1;
+	public static final int EPOXY_RESIN_ID = BHET_ID + 1;
+	public static final int ETHANE_ID = EPOXY_RESIN_ID + 1;
 	public static final int ETHYLENE_ID = ETHANE_ID + 1;
 	public static final int ETHYLENE_GLYCOL_ID = ETHYLENE_ID + 1;
 	public static final int POLYCARBONATE_RESIN_ID = ETHYLENE_GLYCOL_ID + 1;
@@ -131,8 +134,10 @@ public class ResourceUtil {
 	public static final int POLYSTYRENE_ID = POLYPROPYLENE_ID + 1;
 	public static final int POLYURETHANE_ID = POLYSTYRENE_ID + 1;
 	public static final int STYRENE_ID = POLYURETHANE_ID + 1;
+	public static final int TEREPHTHALIC_ACID_ID = STYRENE_ID + 1;
 	
-	public static final int IRON_POWDER_ID = STYRENE_ID  + 1;
+	
+	public static final int IRON_POWDER_ID = TEREPHTHALIC_ACID_ID + 1;
 	public static final int IRON_OXIDE_ID = IRON_POWDER_ID + 1;
 	public static final int GLASS_ID = IRON_OXIDE_ID + 1;
 	
@@ -169,6 +174,8 @@ public class ResourceUtil {
 	private static final Map<String, Integer> fixedResources = new HashMap<>();
 
 	static {
+		// WARNING: all strings below MUST BE in lower-case
+		
 		// Map the pre-defined resources to their names
 		fixedResources.put("acetylene", ACETYLENE_ID);
 		fixedResources.put("akaganeite", AKAGANEITE_ID);
@@ -176,6 +183,7 @@ public class ResourceUtil {
 		fixedResources.put("argon", ARGON_ID);
 		fixedResources.put("basaltic", BASALTIC_ID);
 		fixedResources.put("bassanite", BASSANITE_ID);
+		fixedResources.put("bis(2-hydroxyethyl) terephthalate", BHET_ID);
 		fixedResources.put("black water", BLACK_WATER_ID);
 		fixedResources.put("brine water", BRINE_WATER_ID);
 		fixedResources.put("carbon", CARBON_ID);
@@ -193,6 +201,7 @@ public class ResourceUtil {
 		fixedResources.put("cross bedding", CROSSBEDDING_ID);
 		fixedResources.put("electronic waste", E_WASTE_ID);
 		fixedResources.put("epsom salt", EPSOM_SALT_ID);
+		fixedResources.put("epoxy resin", EPOXY_RESIN_ID);
 		fixedResources.put("ethane", ETHANE_ID);
 		fixedResources.put("ethylene", ETHYLENE_ID);
 		fixedResources.put("ethylene glycol", ETHYLENE_GLYCOL_ID);
@@ -209,6 +218,7 @@ public class ResourceUtil {
 		fixedResources.put("gypsum plaster", GYPSUM_PLASTER_ID);
 		fixedResources.put("hematite", HEMATITE_ID);
 		fixedResources.put("hydrogen", HYDROGEN_ID);
+		fixedResources.put("hydrogen peroxide", H2O2_ID);
 		fixedResources.put("ice", ICE_ID);
 		fixedResources.put("kamacite", KAMACITE_ID);
 		fixedResources.put("glucose", GLUCOSE_ID);
@@ -258,6 +268,9 @@ public class ResourceUtil {
 		fixedResources.put("sylvite", SYLVITE_ID);
 		fixedResources.put("table salt", TABLE_SALT_ID);
 		fixedResources.put("taenite", TAENITE_ID);
+		
+		fixedResources.put("terephthalic acid", TEREPHTHALIC_ACID_ID);
+		
 		fixedResources.put("toilet tissue", TOILET_TISSUE_ID);
 		fixedResources.put("toxic waste", TOXIC_WASTE_ID);
 		fixedResources.put("water", WATER_ID);
@@ -548,9 +561,9 @@ public class ResourceUtil {
 	 */
 	public static boolean isChemical(int resource) {
 		return switch (resource) {
-			case ETHANE_ID, ETHYLENE_ID, ETHYLENE_GLYCOL_ID, PROPYLENE_ID, STYRENE_ID,
+			case H2O2_ID, EPOXY_RESIN_ID, ETHANE_ID, ETHYLENE_ID, ETHYLENE_GLYCOL_ID, PROPYLENE_ID, STYRENE_ID,
 				 POLYETHYLENE_ID, POLYPROPYLENE_ID , POLYSTYRENE_ID, 
-				 POLYURETHANE_ID, 
+				 POLYURETHANE_ID, BHET_ID, TEREPHTHALIC_ACID_ID,
 				 POLYESTER_RESIN_ID, POLYCARBONATE_RESIN_ID -> true;
 			default -> false;
 		};

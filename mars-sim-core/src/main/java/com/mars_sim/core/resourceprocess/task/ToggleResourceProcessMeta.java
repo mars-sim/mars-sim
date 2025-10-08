@@ -389,17 +389,17 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isTier1Resource(resource)) { 	// water, methane, hydrogen
 					score += mrate * LOW_BIAS;
 				} else if (ResourceUtil.isConstructionResource(resource)// cement, concrete, lime, brick
-					|| ResourceUtil.isChemical(resource)				// polyester resin, ethylene, ethylene glycol, styrene, propylene 
 					) { 		
 						score += mrate / MID_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil, ethylene
+				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil 
 					|| ResourceUtil.isTier3Resource(resource)) {  		// carbon dioxide
 					score += mrate / HIGH_BIAS;
 				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water
 					|| ResourceUtil.isInSitu(resource)					// all regolith types
 					|| ResourceUtil.isWasteProduct(resource)) { 		// CO, grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
-				} if (ResourceUtil.isRawMaterial(resource)) {   			// all ores, all minerals, sand)
+				} if (ResourceUtil.isRawMaterial(resource)   			// all ores, all minerals, sand)
+					|| ResourceUtil.isChemical(resource)) {				// polyester resin, ethylene, ethylene glycol, styrene, propylene 
 					score += mrate / MEGA_HIGH_BIAS;
 				}
 				else {
