@@ -848,7 +848,7 @@
 	<resource name="Phosphorus" type="element" phase="solid">An element.</resource>
 	<resource name="Platinum" type="element" phase="solid">An element.</resource>
 	<resource name="Potassium" type="element" phase="solid">An element.</resource>
-	<resource name="scandium" type="element" phase="solid">An element.</resource>
+	<resource name="Scandium" type="element" phase="solid">An element.</resource>
 	<resource name="Silicon" type="element" phase="solid" demand-multiplier="1.5" >An element.</resource>
 	<resource name="Silver" type="element" phase="solid">An element.</resource>
 	<resource name="Sulfur" type="element" phase="solid">An element.</resource>

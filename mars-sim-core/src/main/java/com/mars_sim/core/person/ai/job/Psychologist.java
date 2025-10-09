@@ -74,7 +74,7 @@ public class Psychologist extends Job {
 			result += (double) j.next().getMedical().getTechLevel() / 7D;
 		}
 
-		result = (result + population / 12D) / 5.0;
+		result = (result + population / 12D) / 6.0;
 				
 		return result;
 	}

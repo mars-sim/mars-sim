@@ -64,7 +64,7 @@ public class ComputerScientist extends Job {
 		// Add (labspace * tech level / 2) for all labs with mathematics specialties.
 		result += getBuildingScienceDemand(settlement, ScienceType.COMPUTING, 16D);
 
-		result = (result + population / 16D) / 2.0;
+		result = (result + population / 16D) / 4.0;
 
 		return result;
 	}

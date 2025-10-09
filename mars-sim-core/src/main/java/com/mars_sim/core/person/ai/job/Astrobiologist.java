@@ -55,7 +55,7 @@ extends Job {
 		// Add (labspace * tech level / 2) for all labs with biology specialties in rovers out on missions.
 		result += getMissionScienceDemand(settlement, ScienceType.ASTROBIOLOGY, 16D);
 
-		result = (result + population / 12D) / 2.0;
+		result = (result + population / 12D) / 4.0;
 				
 		return result;
 	}

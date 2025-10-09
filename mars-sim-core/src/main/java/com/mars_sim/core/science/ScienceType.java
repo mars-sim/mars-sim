@@ -23,6 +23,9 @@ import com.mars_sim.core.tool.RandomUtil;
 public enum ScienceType {
 	// the actual enum value is followed by data associated to the value.
 
+	/** The building constructions and settlement layout. */
+	ARCHITECTURE("ARC", SkillType.CONSTRUCTION, JobType.ARCHITECT),
+	
 	/** The study of the evolution of the planet Mars. */
 	AREOLOGY("ARE", SkillType.AREOLOGY, JobType.AREOLOGIST),
 
@@ -89,6 +92,7 @@ public enum ScienceType {
 	 * Initializes engineering subjects.
 	 */
 	static  {
+		engineeringSubjects.add(ARCHITECTURE);
 		engineeringSubjects.add(AREOLOGY);
 		engineeringSubjects.add(COMPUTING);
 		engineeringSubjects.add(ENGINEERING);
@@ -100,6 +104,7 @@ public enum ScienceType {
 	 * Initializes science subjects.
 	 */
 	static  {
+		sciencesSubjects.add(ARCHITECTURE);
 		sciencesSubjects.add(AREOLOGY);
 		sciencesSubjects.add(ASTRONOMY);
 		sciencesSubjects.add(ASTROBIOLOGY);
@@ -126,6 +131,7 @@ public enum ScienceType {
 		}
 
 		// Configure collaborative sciences.
+		Science architecture = collabSciences.get(ScienceType.ARCHITECTURE);
 		Science areology = collabSciences.get(ScienceType.AREOLOGY);
 		Science astronomy = collabSciences.get(ScienceType.ASTRONOMY);
 		Science astrobiology = collabSciences.get(ScienceType.ASTROBIOLOGY);
@@ -141,7 +147,8 @@ public enum ScienceType {
 		Science politics = collabSciences.get(ScienceType.POLITICS);
 		Science sociology = collabSciences.get(ScienceType.SOCIOLOGY);
 		
-		areology.setCollaborativeSciences(new Science[]    { astrobiology, chemistry, physics, meteorology });
+		architecture.setCollaborativeSciences(new Science[]    {computing, engineering, physics, mathematics, sociology});
+		areology.setCollaborativeSciences(new Science[]    { astrobiology, chemistry, physics, meteorology});
 		astronomy.setCollaborativeSciences(new Science[]   { astrobiology, chemistry, mathematics, physics, computing});
 		astrobiology.setCollaborativeSciences(new Science[]    { botany, chemistry, mathematics, medicine, astronomy });
 		botany.setCollaborativeSciences(new Science[]      { astrobiology, chemistry, medicine });
@@ -149,7 +156,7 @@ public enum ScienceType {
 		computing.setCollaborativeSciences(new Science[]   { astronomy, engineering, physics, mathematics, medicine, meteorology });
 		mathematics.setCollaborativeSciences(new Science[] { astronomy, engineering, physics, computing });
 		medicine.setCollaborativeSciences(new Science[]    { astrobiology, botany, chemistry, mathematics });
-		meteorology.setCollaborativeSciences(new Science[] { astronomy, chemistry, mathematics, physics });
+		meteorology.setCollaborativeSciences(new Science[] { astronomy, chemistry, mathematics, physics, computing, areology});
 		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering, computing});
 		psychology.setCollaborativeSciences(new Science[]  { psychology, chemistry, medicine, sociology, politics});
 		politics.setCollaborativeSciences(new Science[]  { psychology, sociology});

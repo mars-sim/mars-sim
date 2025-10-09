@@ -321,6 +321,47 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 		
+	<process name="Break down meteorite"
+			tech="1" skill="2"
+			work-time="30"
+			process-time="30" tooling="chemical"
+			power-required=".1">
+		<description> 
+			Gold has been detected in trace amounts in Martian meteorites 
+			known as SNCs, which are samples of the planet analyzed on Earth.
+ 
+ 			These meteorites contain various elements, including gold, 
+ 			alongside magnesium, aluminum, titanium, iron, and chromium.
+
+		</description>
+		<inputs>
+			<resource name="Meteorite" amount="18.0" />	
+		</inputs>
+		<outputs>
+			<resource name="Aluminum" amount="1.0" />		
+			<resource name="Chromium" amount="1.0" />	
+			<resource name="Copper" amount="1.0" />	
+			<resource name="Gold" amount="1.0" />	
+			<resource name="Iron oxide" amount="1.0" />	
+			
+			<resource name="Lithium" amount="1.0" />	
+			<resource name="Magnesium" amount="1.0" />	
+			<resource name="Manganese" amount="1.0" />	
+			<resource name="Nickel" amount="1.0" />	
+			<resource name="Phosphorus" amount="1.0" />	
+			
+			<resource name="Platinum" amount="1.0" />	
+			<resource name="Potassium" amount="1.0" />	
+			<resource name="Scandium" amount="1.0" />	
+			<resource name="Silver" amount="1.0" />	
+			<resource name="Tin" amount="1.0" />	
+			
+			<resource name="Titanium" amount="1.0" />	
+			<resource name="Vanadium" amount="1.0" />	
+			<resource name="Zinc" amount="1.0" />
+		</outputs>
+	</process>
+				
 				
 	<process name="Make crop fertilizers"
 			tech="2" skill="1"

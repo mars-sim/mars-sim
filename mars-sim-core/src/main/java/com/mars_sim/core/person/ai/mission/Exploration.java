@@ -276,8 +276,8 @@ public class Exploration extends EVAMission
 		currentSite = null;
 	}
 
-		/**
-	 * Get the Vehicle comparator that is based on largest cargo
+	/**
+	 * Gets the Vehicle comparator that is based on largest cargo.
 	 */
 	@Override
 	protected  Comparator<Vehicle> getVehicleComparator() {
@@ -294,7 +294,7 @@ public class Exploration extends EVAMission
 	}
 
 	/**
-	 * Determine the locations of the exploration sites.
+	 * Determines the locations of the exploration sites.
 	 *
 	 * @param roverRange    the rover's driving range
 	 * @param numSites      the number of exploration sites

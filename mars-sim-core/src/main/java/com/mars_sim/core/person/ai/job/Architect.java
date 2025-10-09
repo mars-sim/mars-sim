@@ -51,9 +51,9 @@ extends Job {
 		int population = settlement.getNumCitizens();
 		
 		// Add number of buildings currently at settlement.
-		result += settlement.getBuildingManager().getNumBuildings() / 24D;
+		result += settlement.getBuildingManager().getNumBuildings() / 30D;
 		
-		result = (result + population / 24D) / 2.0;
+		result = (result + population / 24D) / 6.0;
 		
 		return result;
 	}

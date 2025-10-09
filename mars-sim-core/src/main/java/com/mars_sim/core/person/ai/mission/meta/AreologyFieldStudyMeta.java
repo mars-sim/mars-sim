@@ -22,7 +22,7 @@ public class AreologyFieldStudyMeta extends FieldStudyMeta {
 
     AreologyFieldStudyMeta() {
 		super(MissionType.AREOLOGY, 
-				Set.of(JobType.AREOLOGIST, JobType.CHEMIST),
+				Set.of(JobType.AREOLOGIST, JobType.CHEMIST, JobType.PHYSICIST, JobType.ARCHITECT, JobType.METEOROLOGIST, JobType.ASTROBIOLOGIST),
 				ScienceType.AREOLOGY);
 	}
 

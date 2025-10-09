@@ -41,8 +41,8 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 						createPhaseImpact(SkillType.METEOROLOGY));
 
 	// Static members
-	private static final double AVERAGE_ROCK_COLLECTED_SITE = 40 + RandomUtil.getRandomDouble(20);
-	public static final double AVERAGE_ROCK_MASS = .5D + RandomUtil.getRandomDouble(.5);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 100 + RandomUtil.getRandomDouble(20);
+	public static final double AVERAGE_ROCK_MASS = 2D + RandomUtil.getRandomDouble(.5);
 
 	// Data members
 	private double totalCollected = 0;

@@ -26,10 +26,12 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 	private static final Set<RoleType> PREFERRED_ROLES = Set.of(RoleType.CHIEF_OF_SCIENCE,
 							RoleType.MISSION_SPECIALIST, RoleType.CHIEF_OF_MISSION_PLANNING,
-							RoleType.SCIENCE_SPECIALIST, RoleType.COMMANDER,
+							RoleType.SCIENCE_SPECIALIST, RoleType.COMMANDER, RoleType.CREW_SCIENTIST,
 							RoleType.SUB_COMMANDER);
 	private static final String STUDY_BASE = "study";
+	private static final String PROGRESS_BASE = "progress";
 	private static final int WEIGHT = 20;
+	private static final int BASE_SCORE = 5;
 	private ScienceType science;
 
 	public FieldStudyMeta(MissionType type, Set<JobType> preferredLeaderJob,
@@ -44,8 +46,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 		
-		if (settlement.isFirstSol())
-			return RatingScore.ZERO_RATING;
+		if (settlement.isFirstSol()) return RatingScore.ZERO_RATING;
 		
 		RoleType roleType = person.getRole().getType();
 		JobType jobType = person.getMind().getJobType();
@@ -57,31 +58,47 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			return RatingScore.ZERO_RATING;
 		}
 
-		RatingScore missionProbability = new RatingScore(STUDY_BASE, 1D);
+		RatingScore missionProbability = new RatingScore(STUDY_BASE, BASE_SCORE);
 			
 		// Get available rover.
 		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 		if (rover != null) {
-			double newBase = 0;
-
+			double newBase = 1;
+		
 			// Add probability for researcher's primary study (if any).
 			ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
-			if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
+			
+			boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.INVITATION_PHASE == primaryStudy.getPhase()
+					|| 	StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.PAPER_PHASE == primaryStudy.getPhase());
+			
+			if (primaryStudy != null 
+					&& isOngoing
 					&& !primaryStudy.isPrimaryResearchCompleted()
 					&& (science == primaryStudy.getScience())) {
 				newBase += WEIGHT;
 			}
 
 			// Add probability for each study researcher is collaborating on.
-			for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
-				if (StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
+			for (ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
+				if (isOngoing
 						&& !collabStudy.isCollaborativeResearchCompleted(person)
 						&& (science == collabStudy.getContribution(person))) {
 					newBase += WEIGHT/2D;
 				}
 			}
-
+			
 			missionProbability.addBase(STUDY_BASE, newBase);
+			
+			if (StudyStatus.PROPOSAL_PHASE == primaryStudy.getPhase())
+				missionProbability.addModifier(PROGRESS_BASE, 1);
+			else if (StudyStatus.INVITATION_PHASE == primaryStudy.getPhase())
+				missionProbability.addModifier(PROGRESS_BASE, 1.5);
+			else if (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
+				missionProbability.addModifier(PROGRESS_BASE, 2);
+			else if (StudyStatus.PAPER_PHASE == primaryStudy.getPhase())
+				missionProbability.addModifier(PROGRESS_BASE, 2.5);
 		}
 
 		// Crowding modifier
