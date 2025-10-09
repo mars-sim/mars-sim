@@ -27,7 +27,7 @@ import com.mars_sim.core.vehicle.Rover;
  */
 public class ExplorationMeta extends AbstractMetaMission {
 
-	private static final int MAX = 200;
+	private static final int MAX = 50;
 	
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 2;

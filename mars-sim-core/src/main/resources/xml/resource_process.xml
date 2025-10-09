@@ -945,7 +945,8 @@
 		<output resource="bassanite" rate="10.0" />
 		<output resource="gypsum" rate="30.0" />
 		
-		<output resource="sand" rate="20.0" />
+		<output resource="rock samples" rate="5.0" />
+		<output resource="sand" rate="15.0" />
 	</process>
 
 

@@ -73,7 +73,7 @@ public class Areologist extends Job {
 		// rovers out on missions.
 		result += getMissionScienceDemand(settlement, ScienceType.AREOLOGY, 8D);
 
-		result = (result + population / 20D) / 4.0;
+		result = (result + population / 30D) / 5.0;
 				
 		return result;
 	}

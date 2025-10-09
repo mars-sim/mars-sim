@@ -61,7 +61,7 @@ extends JPanel {
 		super(new BorderLayout());
 
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(425, -1));
+		setPreferredSize(new Dimension(225, -1));
 
 		JLabel titleLabel = new JLabel(Msg.getString("StudyDetailPanel.details"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(titleLabel);

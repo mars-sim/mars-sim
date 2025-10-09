@@ -52,7 +52,7 @@ public class Physicist extends Job {
 		result += getMissionScienceDemand(settlement, ScienceType.PHYSICS, 12D);
 
 		
-		result = (result + population / 16D) / 2.0;
+		result = (result + population / 24D) / 5.0;
 				
 		return result;
 	}

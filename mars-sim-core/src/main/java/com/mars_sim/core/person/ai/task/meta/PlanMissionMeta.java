@@ -59,7 +59,8 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 
     public PlanMissionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		setPreferredRole(RoleType.CREW_OPERATION_OFFICER, RoleType.CHIEF_OF_MISSION_PLANNING,
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CHIEF_OF_MISSION_PLANNING,
 				RoleType.MISSION_SPECIALIST);
 		addAllLeadershipRoles();
 	}

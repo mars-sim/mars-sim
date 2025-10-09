@@ -801,6 +801,17 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 	
 	/**
+	 * Checks if a worker has any issues in starting a new task.
+	 *
+	 * @param worker the person to assign to the task
+	 * @param newTask   the new task to be assigned
+	 * @return true if task can be performed.
+	 */
+	public boolean assignTask(Worker worker, Task newTask) {
+		return assignTask(worker, newTask, false);
+	}
+	
+	/**
 	 * Checks if a person has any issues in starting a new task.
 	 *
 	 * @param person the person to assign to the task
@@ -821,6 +832,26 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	public boolean assignTask(Robot robot, Task newTask) {
 		return assignTask(robot, newTask, false);
+	}
+	
+	/**
+	 * Checks if a worker has any issues in starting a new task.
+	 *
+	 * @param worker the worker to assign to the task
+	 * @param newTask   the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
+		if (worker instanceof Person person) {
+
+			return assignTask(person, newTask, allowSameTask);
+		}
+		else if (worker instanceof Robot robot)  {
+			return assignTask(robot, newTask, allowSameTask);
+		}
+		
+		return false;
 	}
 	
 	/**

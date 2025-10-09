@@ -68,24 +68,34 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			// Add probability for researcher's primary study (if any).
 			ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
 			
-			boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == primaryStudy.getPhase()
-					|| StudyStatus.INVITATION_PHASE == primaryStudy.getPhase()
-					|| 	StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
-					|| StudyStatus.PAPER_PHASE == primaryStudy.getPhase());
-			
-			if (primaryStudy != null 
-					&& isOngoing
-					&& !primaryStudy.isPrimaryResearchCompleted()
-					&& (science == primaryStudy.getScience())) {
-				newBase += WEIGHT;
+			if (primaryStudy != null) {
+				boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == primaryStudy.getPhase()
+						|| StudyStatus.INVITATION_PHASE == primaryStudy.getPhase()
+						|| 	StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
+						|| StudyStatus.PAPER_PHASE == primaryStudy.getPhase());
+				
+				if (isOngoing
+						&& !primaryStudy.isPrimaryResearchCompleted()
+						&& (science == primaryStudy.getScience())) {
+					newBase += WEIGHT;
+				}
 			}
 
 			// Add probability for each study researcher is collaborating on.
 			for (ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
-				if (isOngoing
-						&& !collabStudy.isCollaborativeResearchCompleted(person)
-						&& (science == collabStudy.getContribution(person))) {
-					newBase += WEIGHT/2D;
+				
+				if (collabStudy != null) {
+
+					boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == collabStudy.getPhase()
+							|| StudyStatus.INVITATION_PHASE == collabStudy.getPhase()
+							|| 	StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
+							|| StudyStatus.PAPER_PHASE == collabStudy.getPhase());
+				
+					if (isOngoing
+							&& !collabStudy.isCollaborativeResearchCompleted(person)
+							&& (science == collabStudy.getContribution(person))) {
+						newBase += WEIGHT/2D;
+					}
 				}
 			}
 			
@@ -98,7 +108,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			else if (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
 				missionProbability.addModifier(PROGRESS_BASE, 2);
 			else if (StudyStatus.PAPER_PHASE == primaryStudy.getPhase())
-				missionProbability.addModifier(PROGRESS_BASE, 2.5);
+				missionProbability.addModifier(PROGRESS_BASE, 1.5);
 		}
 
 		// Crowding modifier

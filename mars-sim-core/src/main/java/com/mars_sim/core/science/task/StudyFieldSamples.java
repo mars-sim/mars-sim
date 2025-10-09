@@ -86,7 +86,8 @@ public class StudyFieldSamples extends LabTask {
 
 	/**
 	 * Performs the studying samples as part of the lab work.
-	 * @param time Time specit on lab reseach
+	 * 
+	 * @param time Time spent on lab research
 	 */
 	@Override
 	protected void executeResearchActivity(double time) {
