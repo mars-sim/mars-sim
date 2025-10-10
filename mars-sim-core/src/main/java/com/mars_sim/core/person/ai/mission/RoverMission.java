@@ -73,7 +73,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 	private static final String ALL_BOARDED = "All Boarded";
 	
-	private static final String BASELINE_EVA_SUIT_MET = "Baseline EVA suit Met";
+	private static final String BASELINE_EVA_SUIT_MET = "Baseline EVA Suit Met";
 	
 	private static final String STATUS_REPORT = "[Status Report] Left ";
 	
@@ -404,12 +404,29 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (ejectedMembers.contains(getStartingPerson())) {
 
 			Person lead = (Person)member;
+			
+			outProcessMember(lead, r, "Mission Cancelled");
+			
 			// If the leader is ejected, then the mission must be cancelled
 			logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
 					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
 					+ ") got ejected from " + getName() + " and mission was cancelled.");
 			
-			for (Person p : r.getCrew()) {
+			Set<Worker> outProcessingMembers = getMembers();
+			// Must remove the mission lead first or having ConcurrentModificationException
+			outProcessingMembers.remove(lead);
+			// Remove all other members
+			for (Worker w : outProcessingMembers) {
+				
+				outProcessMember((Person)w, r, "Mission Cancelled");
+
+				logger.info(w, getName() + " was cancelled since the mission lead got ejected.");
+			}
+			
+			Set<Person> outCrew = r.getCrew();
+			outCrew.remove(lead);
+			// Just in case anyone still inside the vehicle
+			for (Person p : outCrew) {
 				
 				outProcessMember(p, r, "Mission Cancelled");
 
@@ -487,7 +504,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (getPhaseTimeElapse() - .3 * DEPARTURE_DURATION > 0
 				&& getPhaseTimeElapse() - DEPARTURE_DURATION < 0) {
 			
-			if (!getRover().isCrewmember((Person)member)) {
+			// Check if the person is EVA fit prior to boarding.
+			// If unfit, he may not be able to come out of the airlock
+			if (!getRover().isCrewmember((Person)member) && ((Person)member).isEVAFit()) {
 				// Need to make the member board the vehicle early
 				boardVehicle((Person)member, v);
 			}
@@ -526,25 +545,25 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	/**
 	 * Walks toward the vehicle and boards it. 
 	 * 
-	 * @param person
+	 * @param worker
 	 * @param vehicle
 	 */
-	private void boardVehicle(Worker person, Vehicle vehicle) {
+	private void boardVehicle(Worker worker, Vehicle vehicle) {
 		// Gets a random location within rover.
 		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(vehicle);
 		
-		WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, vehicle);
-		boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
+		WalkingSteps walkingSteps = new WalkingSteps(worker, adjustedLoc, vehicle);
+		boolean canWalk = Walk.canWalkAllSteps(worker, walkingSteps);
 		
 		if (canWalk) {
-			boolean canDo = assignTask(person, new Walk(person, walkingSteps));
+			boolean canDo = assignTask(worker, new Walk(worker, walkingSteps));
 			if (!canDo) {
-				logger.warning(person, 20_000, "Unable to start walking toward " + vehicle + ".");
+				logger.warning(worker, 20_000, "Unable to start walking toward " + vehicle + ".");
 			}
 		}
 
 		else { // this crew member cannot find the walking steps to enter the rover
-			logger.warning(person, 20_000, UNABLE_TO_ENTER + vehicle.getName() + ".");
+			logger.warning(worker, 20_000, UNABLE_TO_ENTER + vehicle.getName() + ".");
 		}
 	}
 	
@@ -649,7 +668,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 			if (member instanceof Person person
 				// If not aboard the rover, board the rover and be ready to depart.
-				&& !getRover().isCrewmember(person)) {
+				&& !getRover().isCrewmember(person) && ((Person)member).isEVAFit()) {
 
 				boardVehicle(person, v);
 			}
@@ -1029,7 +1048,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Force the person to get off the vehicle and back to the garage
 			// Note: may need to evaluate a better way of handling this
 			person.transfer(rover.getGarage());
-			
+
 			assignTask(person, new Relax(person));
 		}
 		else {

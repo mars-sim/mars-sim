@@ -147,7 +147,7 @@ public class ResourceUtil {
 	public static final int[] ROCK_IDS = new int[] {ROCK_SAMPLES_ID, 
 			COLUMNAR_BASALT_ID, GRANITE_ID, SHALE_ID, MUDSTONE_ID, 
 			CONGLOMERATE_ID ,SANDSTONE_ID, CROSSBEDDING_ID, 
-			METEORITE_ID, SCORIAL_ID										
+			METEORITE_ID, SCORIAL_ID								
 	};
 	
 	public static final int[] MINERAL_CONC_IDs = new int[]{CHALCOPYRITE_ID, GEOTHITE_ID,

@@ -195,7 +195,8 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
     }
 
     /**
-     * Compare bsed on the total
+     * Compares with another rating score, based on the total.
+     * 
      * @param o
      * @return
      */

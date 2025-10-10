@@ -51,7 +51,7 @@ public class Exploration extends EVAMission
 	/** Number of specimen containers required for the mission. */
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 8;
 	/** Amount of time to explore a site. */
-	private static final double STANDARD_TIME_PER_SITE = 500.0;
+	private static final double STANDARD_TIME_PER_SITE = 1000.0;
 	
 	/** Exploration Site */
 	private static final String EXPLORATION_SITE = "Exploration Site ";
@@ -230,9 +230,21 @@ public class Exploration extends EVAMission
 	@Override
 	protected boolean performEVA(Person person) {
 
+		boolean canAssign = false;
+		
+		// If person can explore the site, start that task.
+		if (ExploreSite.canExploreSite(person)) {
+//			person.getMind().getTaskManager().addPendingTask(ExploreSite.SIMPLE_NAME);
+			canAssign = assignTask(person, new ExploreSite(person, currentSite, getRover(), this));
+			
+			if (canAssign) {
+				logger.info(person, 20_000, "Ready to explore site and collect rocks.");
+			}
+		}
+		
 		// Update exploration site completion.
-		double timeDiff = getPhaseTimeElapse();
-		double completion = timeDiff / STANDARD_TIME_PER_SITE * 2;
+		double timePassed = getPhaseTimeElapse();
+		double completion = timePassed / STANDARD_TIME_PER_SITE;
 		if (completion > 1D) {
 			completion = 1D;
 		}
@@ -248,14 +260,10 @@ public class Exploration extends EVAMission
 				return false;
 			}
 		}
+		
 		fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
 		objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
-
-		// If person can explore the site, start that task.
-		if (ExploreSite.canExploreSite(person)) {
-			assignTask(person, new ExploreSite(person, currentSite, getRover(), this));
-		}
 
 		return true;
 	}

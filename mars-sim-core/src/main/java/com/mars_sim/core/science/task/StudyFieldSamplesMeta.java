@@ -70,10 +70,12 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 				mostStored = Math.max(stored, mostStored);
 			}
 		}
+		
 		if (mostStored < StudyFieldSamples.SAMPLE_MASS) {
 			return EMPTY_TASKLIST;
 		}
-		double result = mostStored/10.0;
+		
+		double result = mostStored;
   
 		// Create list of possible sciences for studying field samples.
 		var jobScience = TaskUtil.getPersonJobScience(person);

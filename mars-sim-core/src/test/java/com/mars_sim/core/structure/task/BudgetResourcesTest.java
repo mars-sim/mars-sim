@@ -46,7 +46,7 @@ public class BudgetResourcesTest extends AbstractMarsSimUnitTest{
         assertTrue("Ice Probability needs review", s.isIceReviewDue());
         var task = new BudgetResources(p, ReviewGoal.ICE_RESOURCE);
         assertTrue("Ice Cache is not the same as the new Ice Prob", 
-        		s.getIceProbabilityValue() != s.getRecommendedIceValue());
+        		s.getIceDemandCache() != s.getRecommendedIceDemand());
         assertFalse("Task is active", task.isDone());
         assertTrue("Ice Prob review is due", s.isIceReviewDue());
 

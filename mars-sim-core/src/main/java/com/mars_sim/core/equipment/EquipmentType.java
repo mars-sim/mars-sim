@@ -19,7 +19,7 @@ public enum EquipmentType {
 	EVA_SUIT, 
 
 	// Container 
-	BAG, BARREL, GAS_CANISTER, LARGE_BAG,SPECIMEN_BOX,
+	BAG, BARREL, GAS_CANISTER, LARGE_BAG, SPECIMEN_BOX,
 	THERMAL_BOTTLE, WHEELBARROW;
 	
 	private String name;	

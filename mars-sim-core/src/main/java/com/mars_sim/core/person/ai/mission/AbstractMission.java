@@ -844,7 +844,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
 		if (worker instanceof Person person) {
-
 			return assignTask(person, newTask, allowSameTask);
 		}
 		else if (worker instanceof Robot robot)  {

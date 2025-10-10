@@ -281,10 +281,11 @@ public class MissionManager implements Serializable {
 			double settlementRatio = paramMgr.getDoubleValue(
 					MissionWeightParameters.INSTANCE, metaMission.getType().name(), 1D);
 			baseProb.addModifier("settlement.ratio", settlementRatio);
-
-			logger.info(person, metaMission.getType().getName() + " " + baseProb.getOutput());
-			missionProbCache.add(new MissionRating(metaMission, baseProb));
 		}
+		
+//		logger.info(person, metaMission.getType().getName() + " " + baseProb.getOutput());
+		missionProbCache.add(new MissionRating(metaMission, baseProb));
+		
 		return score;
 	}
 

@@ -62,7 +62,7 @@ public class ExplorationPanel extends JPanel
 		add(horz, BorderLayout.CENTER);
 
 		resourceModel = new DefaultListModel<>();
-		horz.add(CollectResourcePanel.createList(resourceModel, "Minerals Collected"));
+		horz.add(CollectResourcePanel.createList(resourceModel, "Rocks Collected"));
 
 		sitesPane = new JPanel();
 		sitesPane.setLayout(new BoxLayout(sitesPane, BoxLayout.PAGE_AXIS));
@@ -73,6 +73,7 @@ public class ExplorationPanel extends JPanel
 
 		// Load the panels with current state
 		updateCollectionValueLabel();
+		
 		objective.getCompletion().keySet().forEach(this::updateSitePanel);
 	}
 

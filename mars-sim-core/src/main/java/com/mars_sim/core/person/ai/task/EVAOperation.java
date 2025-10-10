@@ -623,7 +623,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the person's settlement is at meal time and is doubly hungry.
+	 * Checks if the person settlement is at meal time and is doubly hungry.
 	 *
 	 * @param person
 	 * @param prepTime

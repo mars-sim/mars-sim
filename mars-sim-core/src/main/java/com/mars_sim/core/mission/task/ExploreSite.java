@@ -20,6 +20,7 @@ import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.person.health.task.RequestMedicalTreatment;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -39,16 +40,19 @@ public class ExploreSite extends EVAOperation {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exploreSite"); //$NON-NLS-1$
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = ExploreSite.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring"),
 									createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
 	// Static members
 	/** The average labor time it takes to find the resource. */
-	public static final double LABOR_TIME = 40D;
+	public static final double LABOR_TIME = 50D;
 
 	private static final double AVERAGE_ROCK_COLLECTED_SITE = 200 + RandomUtil.getRandomDouble(-20, 20);
-	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-3, 3);
+	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-1, 1);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
@@ -121,7 +125,15 @@ public class ExploreSite extends EVAOperation {
 	public static boolean canExploreSite(Worker member) {
 
 		if (member instanceof Person person) {
-			if (EVAOperation.shouldEndEVAOperation(person)) {
+			// Note: hasEVASuitProblem requires a person to have donned the suit already
+			// and thus is not suitable for use here
+			//			if (EVAOperation.hasEVASuitProblem(person)) {
+//				logger.info(person, 20_000, "EVA Suit had issues. Unable to explore the site.");
+//				return false;
+//			}
+
+			if (!person.isEVAFit()) {
+				logger.info(person, 20_000, "Not EVA fit to explore the site.");
 				return false;
 			}
 		}
@@ -213,14 +225,14 @@ public class ExploreSite extends EVAOperation {
 		
 		if (hasSpecimenContainer()) {
 
-			double chance = rocksToBeCollected / 250;
+//			double chance = rocksToBeCollected / 100;
 			
-			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
-			if (probability > .9)
-				probability = .9;
-			logger.info(person, 10_000, "Collecting rock probability: " + Math.round(probability * 100.0)/100.0);
-			
-			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+//			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
+//			if (probability > .9)
+//				probability = .9;
+//			logger.info(person, 10_000, "Collecting rock probability: " + Math.round(probability * 100.0)/100.0);
+//			
+//			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
 			
 				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
 				
@@ -246,7 +258,7 @@ public class ExploreSite extends EVAOperation {
 				else {
 					endEVA("No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
 				}
-			}
+//			}
 		}
 		else {
 			endEVA("No specimen boxes available.");

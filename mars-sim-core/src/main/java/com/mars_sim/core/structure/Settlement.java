@@ -227,18 +227,18 @@ public class Settlement extends Unit implements Temporal,
 	private MarsZone zone;
 	
 	/** The previous ice prob value. */
-	private double iceProbabilityCache = 400D;
+	private double iceDemandCache = 400D;
 	/** The current ice prob value. */
-	private double currentIceValue;
+	private double currentIceDemand;
 	/** The recommended ice prob value. */
-	private double recommendedIceValue;
+	private double recommendedIceDemand;
 	
 	/** The previous regolith prob value. */
-	private double regolithProbabilityCache = 400D;
+	private double regolithDemandCache = 400D;
 	/** The current regolith prob value. */
-	private double currentRegolithValue;
+	private double currentRegolithDemand;
 	/** The recommended regolith prob value. */
-	private double recommendedRegolithValue;
+	private double recommendedRegolithDemand;
 	
 	/** The factor due to the population. */
 	private double popFactor = 1;
@@ -936,9 +936,9 @@ public class Settlement extends Unit implements Temporal,
 			// Reset justLoaded
 			justLoaded = false;
 
-			iceProbabilityCache = computeIceProbability();
+			iceDemandCache = computeIceAdjustedDemand();
 
-			regolithProbabilityCache = computeRegolithProbability();
+			regolithDemandCache = computeRegolithAdjustedDemand();
 
 			// Initialize the goods manager
 			goodsManager.updatedMetrics();
@@ -2476,11 +2476,11 @@ public class Settlement extends Unit implements Temporal,
 	} 
 	
 	/**
-	 * Computes the probability of the presence of regolith.
+	 * Computes the adjusted demand of regolith.
 	 *
-	 * @return probability of finding regolith
+	 * @return 
 	 */
-	public double computeRegolithProbability() {
+	public double computeRegolithAdjustedDemand() {
 		double result = 0;
 		double regolithDemand = goodsManager.getDemandScoreWithID(ResourceUtil.REGOLITH_ID);
 		if (regolithDemand > REGOLITH_MAX)
@@ -2540,11 +2540,11 @@ public class Settlement extends Unit implements Temporal,
 
 
 	/**
-	 * Computes the probability of the presence of ice.
+	 * Computes the adjusted demand of ice.
 	 *
 	 * @return probability of finding ice
 	 */
-	public double computeIceProbability() {
+	public double computeIceAdjustedDemand() {
 		double result = 0;
 		double iceDemand = goodsManager.getDemandScoreWithID(ResourceUtil.ICE_ID);
 		if (iceDemand > ICE_MAX)
@@ -2596,25 +2596,25 @@ public class Settlement extends Unit implements Temporal,
 	}
 
 	/**
-	 * Enforces the new ice probability level.
+	 * Enforces the new ice demand level.
 	 */
-	public void enforceIceProbabilityLevel() {
+	public void enforceIceDemandLevel() {
 		// Back up the current level to the cache
-		iceProbabilityCache = currentIceValue;
+		iceDemandCache = currentIceDemand;
 		// Update the current level to the newly recommended level
-		currentIceValue = recommendedIceValue;
+		currentIceDemand = recommendedIceDemand;
 		// Set the approval due back to false if it hasn't happened
 		setIceApprovalDue(false);
 	}
 	
 	/**
-	 * Enforces the new ice probability level.
+	 * Enforces the new ice demand level.
 	 */
-	public void enforceRegolithProbabilityLevel() {
+	public void enforceRegolithDemandLevel() {
 		// Back up the current level to the cache
-		regolithProbabilityCache = currentRegolithValue;
+		regolithDemandCache = currentRegolithDemand;
 		// Update the current level to the newly recommended level
-		currentRegolithValue = recommendedRegolithValue;
+		currentRegolithDemand = recommendedRegolithDemand;
 		// Set the approval due back to false if it hasn't happened
 		setRegolithApprovalDue(false);
 	}
@@ -2692,67 +2692,67 @@ public class Settlement extends Unit implements Temporal,
 	}
 	
 	/**
-	 * Reviews the ice probability.
+	 * Reviews the ice demand.
 	 * 
 	 * @return
 	 */
 	public double reviewIce() {
 		
-		double newProb = computeIceProbability() ;
+		double newDemand = computeIceAdjustedDemand() ;
 		
-		recommendedIceValue = newProb;
+		recommendedIceDemand = newDemand;
 		
-		return iceProbabilityCache - newProb;
+		return iceDemandCache - newDemand;
 	}
 	
 	/**
-	 * Reviews the regolith probability.
+	 * Reviews the regolith demand.
 	 * 
 	 * @return
 	 */
 	public double reviewRegolith() {
 		
-		double newProb = computeRegolithProbability() ;
+		double newDemand = computeRegolithAdjustedDemand() ;
 		
-		recommendedRegolithValue = newProb;
+		recommendedRegolithDemand = newDemand;
 		
-		return regolithProbabilityCache - newProb;
+		return regolithDemandCache - newDemand;
 	}
 	
 	/**
-	 * Returns the recommended ice probability value.
+	 * Returns the recommended ice demand.
 	 * 
 	 * @return
 	 */
-	public double getRecommendedIceValue() {
-		return recommendedIceValue;
+	public double getRecommendedIceDemand() {
+		return recommendedIceDemand;
 	}
 	
 	/**
-	 * Returns the recommended regolith probability value.
+	 * Returns the recommended regolith demand.
 	 * 
 	 * @return
 	 */
-	public double getRecommendedRegolithValue() {
-		return recommendedRegolithValue;
+	public double getRecommendedRegolithDemand() {
+		return recommendedRegolithDemand;
 	}
 	
 	/**
-	 * Returns the cache ice probability value.
+	 * Returns the cache ice demand.
 	 * 
 	 * @return
 	 */
-	public double getIceProbabilityValue() {
-		return iceProbabilityCache;
+	public double getIceDemandCache() {
+		return iceDemandCache;
 	}
 
 	/**
-	 * Returns the cache regolith robability value.
+	 * Returns the cache regolith demand.
 	 * 
 	 * @return
 	 */
-	public double getRegolithProbabilityValue() {
-		return regolithProbabilityCache;
+	public double getRegolithDemandCache() {
+		return regolithDemandCache;
 	}
 
 	/**

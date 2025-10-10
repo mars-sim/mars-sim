@@ -259,9 +259,9 @@ public class ApproveMeasures extends Task {
 		switch(taskNum) {
 	
 			case ICE_RESOURCE:
-				if (newValue != 0) {
+				if (newValue != 0D) {
 					// Set the new ice probability value
-					person.getAssociatedSettlement().enforceIceProbabilityLevel();
+					person.getAssociatedSettlement().enforceIceDemandLevel();
 		
 					logger.info(worker, 30_000, "Approved a new ice probability value for the settlement.");
 				}
@@ -271,9 +271,9 @@ public class ApproveMeasures extends Task {
 				break;
 				
 			case REGOLITH_RESOURCE:
-					if (newValue != 0) {
+					if (newValue != 0D) {
 					// Set the new regolith probability value
-					person.getAssociatedSettlement().enforceRegolithProbabilityLevel();
+					person.getAssociatedSettlement().enforceRegolithDemandLevel();
 		
 					logger.info(worker, 30_000, "Approved a new regolith probability value for the settlement.");
 				}
@@ -284,7 +284,7 @@ public class ApproveMeasures extends Task {
 				
 			case WATER_RATIONING:
 						
-				if (newValue != 0) {
+				if (newValue != 0D) {
 					// Set the new water rationing level
 					person.getAssociatedSettlement().getRationing().enforceNewRationingLevel();
 					

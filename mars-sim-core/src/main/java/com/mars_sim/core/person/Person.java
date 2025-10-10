@@ -609,8 +609,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 	/**
 	 * Creates a string representing the birth time of the person.
-	 * @param clock
-	 *
+	 * 
+	 * @param earthLocalTime
+	 * @param initialAge
 	 */
 	private void calculateBirthDate(LocalDateTime earthLocalTime, int initialAge) {
 		int daysPast = RandomUtil.getRandomInt(0,364);

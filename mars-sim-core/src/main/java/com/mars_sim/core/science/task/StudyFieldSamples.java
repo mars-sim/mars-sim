@@ -51,11 +51,12 @@ public class StudyFieldSamples extends LabTask {
 
 	public static final Set<ScienceType> FIELD_SCIENCES = Set.of(ScienceType.AREOLOGY,
 												ScienceType.ASTRONOMY, ScienceType.ASTROBIOLOGY,
-												ScienceType.CHEMISTRY, ScienceType.ENGINEERING,
-												ScienceType.METEOROLOGY, ScienceType.PHYSICS);
+												ScienceType.CHEMISTRY, // ScienceType.ENGINEERING, ScienceType.PHYSICS
+												ScienceType.METEOROLOGY);
 	/**
-	 * Create a Task to perform lab research. This will select the most appropirate Scientific Study for the Person
+	 * Creates a Task to perform lab research. This will select the most appropriate Scientific Study for the Person
 	 * and create an appropriate Task.
+	 * 
 	 * @param person
 	 * @return
 	 */
@@ -120,7 +121,7 @@ public class StudyFieldSamples extends LabTask {
 	}
 
 	/**
-	 * Improve the mineral concentration estimates of an explored site.
+	 * Improves the mineral concentration estimates of an explored site.
 	 * 
 	 * @param time the amount of time available (millisols).
 	 */

@@ -44,6 +44,7 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	 * @throws MissionException if problem constructing mission.
 	 */
 	public MeteorologyFieldStudy(Person startingPerson, boolean needsReview) {
+		
 		super(MissionType.METEOROLOGY, startingPerson,
 			  ScienceType.METEOROLOGY, FIELD_SITE_TIME, needsReview);
 		

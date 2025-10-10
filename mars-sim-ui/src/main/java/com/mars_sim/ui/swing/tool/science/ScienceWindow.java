@@ -89,8 +89,8 @@ extends ToolWindow {
 		studyDetailPane = new StudyDetailPanel(this);
 		mainPane.add(studyDetailPane, BorderLayout.CENTER);
 
-		setMinimumSize(new Dimension(600, 480));
-		setPreferredSize(new Dimension(600, 600));
+		setMinimumSize(new Dimension(800, 480));
+		setPreferredSize(new Dimension(800, 480));
 		setMaximizable(true);
 		setResizable(true);
 		setVisible(true);

@@ -147,20 +147,20 @@ public enum ScienceType {
 		Science politics = collabSciences.get(ScienceType.POLITICS);
 		Science sociology = collabSciences.get(ScienceType.SOCIOLOGY);
 		
-		architecture.setCollaborativeSciences(new Science[]    {computing, engineering, physics, mathematics, sociology});
+		architecture.setCollaborativeSciences(new Science[]    { computing, engineering, physics, mathematics, sociology});
 		areology.setCollaborativeSciences(new Science[]    { astrobiology, chemistry, physics, meteorology});
 		astronomy.setCollaborativeSciences(new Science[]   { astrobiology, chemistry, mathematics, physics, computing});
-		astrobiology.setCollaborativeSciences(new Science[]    { botany, chemistry, mathematics, medicine, astronomy });
-		botany.setCollaborativeSciences(new Science[]      { astrobiology, chemistry, medicine });
-		chemistry.setCollaborativeSciences(new Science[]   { astrobiology, mathematics, medicine, astronomy});
+		astrobiology.setCollaborativeSciences(new Science[] { botany, chemistry, mathematics, medicine, astronomy });
+		botany.setCollaborativeSciences(new Science[]      { astrobiology, chemistry, medicine, meteorology });
+		chemistry.setCollaborativeSciences(new Science[]   { areology, astrobiology, astronomy, botany, mathematics, medicine, meteorology});
 		computing.setCollaborativeSciences(new Science[]   { astronomy, engineering, physics, mathematics, medicine, meteorology });
 		mathematics.setCollaborativeSciences(new Science[] { astronomy, engineering, physics, computing });
-		medicine.setCollaborativeSciences(new Science[]    { astrobiology, botany, chemistry, mathematics });
-		meteorology.setCollaborativeSciences(new Science[] { astronomy, chemistry, mathematics, physics, computing, areology});
+		medicine.setCollaborativeSciences(new Science[]    { astrobiology, botany, chemistry, computing, mathematics });
+		meteorology.setCollaborativeSciences(new Science[] { areology, astronomy, chemistry, mathematics, physics, computing});
 		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering, computing});
 		psychology.setCollaborativeSciences(new Science[]  { psychology, chemistry, medicine, sociology, politics});
-		politics.setCollaborativeSciences(new Science[]  { psychology, sociology});
-		sociology.setCollaborativeSciences(new Science[]  { psychology, politics});
+		politics.setCollaborativeSciences(new Science[]  { medicine, psychology, sociology});
+		sociology.setCollaborativeSciences(new Science[]  { medicine, psychology, politics});
 	}
 
 	static {

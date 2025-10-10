@@ -35,7 +35,7 @@ abstract class EVAMission extends RoverMission {
 	// Maximum time to wait for sunrise
 	protected static final double MAX_WAIT_SUBLIGHT = 400D;
 
-	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not enough sunlight";
+	private static final String NOT_ENOUGH_SUNLIGHT = "EVA - Not Enough Sunlight";
 
     private MissionPhase evaPhase;
     private boolean activeEVA = true;
@@ -93,10 +93,12 @@ abstract class EVAMission extends RoverMission {
 	 */
 	private boolean canStartEVA() {
 		boolean result = false;
-		if (isEnoughSunlightForEVA()) {
+		// Note: checking for EVA has caused too many Exploration mission to terminate EVA
+		
+//		if (isEnoughSunlightForEVA()) {
 			result = true;
-		}
-		else {
+//		}
+//		else {
 			// Decide what to do
 			MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
 			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
@@ -112,7 +114,7 @@ abstract class EVAMission extends RoverMission {
 				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
 				// May call this the first time but how to avoid duplicate entry : addMissionLog(WAIT_SUNLIGHT.getName(), getStartingPerson().getName()) 
 			}
-		}
+//		}
 		return result;
 	}
 
@@ -135,7 +137,8 @@ abstract class EVAMission extends RoverMission {
 
 
 	/**
-	 * Is there enough sunlight to leave the vehicle for an EVA
+	 * Is there enough sunlight to leave the vehicle for an EVA ?
+	 * 
 	 * @return
 	 */
 	protected boolean isEnoughSunlightForEVA() {
@@ -214,11 +217,11 @@ abstract class EVAMission extends RoverMission {
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
-			if (activeEVA && !isEnoughSunlightForEVA()) {
-				logger.info(getVehicle(), 10_000L, "Not enough sunlight during the EVA phase of the mission.");
-				addMissionLog(NOT_ENOUGH_SUNLIGHT, member.getName());
-				activeEVA = false;
-			}
+//			if (activeEVA && !isEnoughSunlightForEVA()) {
+//				logger.info(getVehicle(), 10_000L, "Not enough sunlight during the EVA phase of the mission.");
+//				addMissionLog(NOT_ENOUGH_SUNLIGHT, member.getName());
+//				activeEVA = false;
+//			}
 
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
