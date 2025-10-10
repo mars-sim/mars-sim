@@ -260,7 +260,7 @@ public class MissionManager implements Serializable {
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			if (canAcceptMission(metaMission, startingSettlement, paramMgr)) {
 				RatingScore baseProb = metaMission.getProbability(person);
-				totalProbCache += updateMissionRating(person, missionProbCache, metaMission, baseProb, paramMgr);
+				totalProbCache += updateMissionRating(missionProbCache, metaMission, baseProb, paramMgr);
 			}
 		}
 		return totalProbCache;
@@ -274,7 +274,7 @@ public class MissionManager implements Serializable {
 		return activeMissions < maxMissions;
 	}
 
-	private double updateMissionRating(Person person, List<MissionRating> missionProbCache,
+	private double updateMissionRating(List<MissionRating> missionProbCache,
 									   MetaMission metaMission, RatingScore baseProb, ParameterManager paramMgr) {
 		double score = baseProb.getScore();
 		if (score > 0) {
@@ -282,8 +282,7 @@ public class MissionManager implements Serializable {
 					MissionWeightParameters.INSTANCE, metaMission.getType().name(), 1D);
 			baseProb.addModifier("settlement.ratio", settlementRatio);
 		}
-		
-//		logger.info(person, metaMission.getType().getName() + " " + baseProb.getOutput());
+
 		missionProbCache.add(new MissionRating(metaMission, baseProb));
 		
 		return score;

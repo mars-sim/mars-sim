@@ -10,17 +10,16 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.environment.MineralSite;
-import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.person.health.task.RequestMedicalTreatment;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -126,12 +125,7 @@ public class ExploreSite extends EVAOperation {
 
 		if (member instanceof Person person) {
 			// Note: hasEVASuitProblem requires a person to have donned the suit already
-			// and thus is not suitable for use here
-			//			if (EVAOperation.hasEVASuitProblem(person)) {
-//				logger.info(person, 20_000, "EVA Suit had issues. Unable to explore the site.");
-//				return false;
-//			}
-
+			// and thus is not suitable for use here : if (EVAOperation.hasEVASuitProblem(person)) { return false
 			if (!person.isEVAFit()) {
 				logger.info(person, 20_000, "Not EVA fit to explore the site.");
 				return false;
@@ -225,40 +219,30 @@ public class ExploreSite extends EVAOperation {
 		
 		if (hasSpecimenContainer()) {
 
-//			double chance = rocksToBeCollected / 100;
+			Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
 			
-//			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
-//			if (probability > .9)
-//				probability = .9;
-//			logger.info(person, 10_000, "Collecting rock probability: " + Math.round(probability * 100.0)/100.0);
-//			
-//			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-			
-				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
-				
-				if (box != null) {
-					double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
-					double cap = box.getRemainingCombinedCapacity(rockId);
-					if (mass <= cap) {
-						double excess = box.storeAmountResource(rockId, mass);
-						mission.recordResourceCollected(rockId, mass);
-						double collected = mass - excess;
-						totalCollected += collected;
-						logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
-								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
-					}
-					else {
-						double excess = box.storeAmountResource(rockId, cap);
-						mission.recordResourceCollected(rockId, cap);
-						double collected = cap - excess;
-						totalCollected += collected;
-						endEVA("Specimen box full.");
-					}
+			if (box != null) {
+				double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
+				double cap = box.getRemainingCombinedCapacity(rockId);
+				if (mass <= cap) {
+					double excess = box.storeAmountResource(rockId, mass);
+					mission.recordResourceCollected(rockId, mass);
+					double collected = mass - excess;
+					totalCollected += collected;
+					logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
+							+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 				}
 				else {
-					endEVA("No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
+					double excess = box.storeAmountResource(rockId, cap);
+					mission.recordResourceCollected(rockId, cap);
+					double collected = cap - excess;
+					totalCollected += collected;
+					endEVA("Specimen box full.");
 				}
-//			}
+			}
+			else {
+				endEVA("No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
+			}
 		}
 		else {
 			endEVA("No specimen boxes available.");

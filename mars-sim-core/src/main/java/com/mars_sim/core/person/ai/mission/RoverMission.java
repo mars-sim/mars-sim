@@ -71,6 +71,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	
 	private static final String MEMBERSHIP_CHECKED = "Membership Checked";
 	
+	private static final String MISSION_CANCELLED = "Mission Cancelled";
+	
 	private static final String ALL_BOARDED = "All Boarded";
 	
 	private static final String BASELINE_EVA_SUIT_MET = "Baseline EVA Suit Met";
@@ -405,7 +407,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 			Person lead = (Person)member;
 			
-			outProcessMember(lead, r, "Mission Cancelled");
+			outProcessMember(lead, r, MISSION_CANCELLED);
 			
 			// If the leader is ejected, then the mission must be cancelled
 			logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
@@ -418,7 +420,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Remove all other members
 			for (Worker w : outProcessingMembers) {
 				
-				outProcessMember((Person)w, r, "Mission Cancelled");
+				outProcessMember((Person)w, r, MISSION_CANCELLED);
 
 				logger.info(w, getName() + " was cancelled since the mission lead got ejected.");
 			}
@@ -428,7 +430,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// Just in case anyone still inside the vehicle
 			for (Person p : outCrew) {
 				
-				outProcessMember(p, r, "Mission Cancelled");
+				outProcessMember(p, r, MISSION_CANCELLED);
 
 				logger.info(p, getName() + " was cancelled since the mission lead got ejected.");
 			}
@@ -508,7 +510,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			// If unfit, he may not be able to come out of the airlock
 			if (!getRover().isCrewmember((Person)member) && ((Person)member).isEVAFit()) {
 				// Need to make the member board the vehicle early
-				boardVehicle((Person)member, v);
+				boardVehicle(member, v);
 			}
 			
 			// Note: this is calling isEveryoneInRover the 1st time to ascertain 

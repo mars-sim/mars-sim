@@ -30,7 +30,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 							RoleType.CHIEF_OF_SUPPLY_RESOURCE, RoleType.RESOURCE_SPECIALIST,
 							RoleType.CHIEF_OF_MISSION_PLANNING, RoleType.MISSION_SPECIALIST, 
 							RoleType.COMMANDER, RoleType.SUB_COMMANDER);
-//	private static final String STUDY_BASE = "study";
+
 	private static final String PRI_STUDY_BASE = "study.primary";
 	private static final String COL_STUDY_BASE = "study.collaborative";
 	private static final String PROGRESS_BASE = "progress";
@@ -50,7 +50,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 		
-//		if (settlement.isFirstSol()) return RatingScore.ZERO_RATING;
+		if (settlement.isFirstSol()) return RatingScore.ZERO_RATING;
 		
 		RoleType roleType = person.getRole().getType();
 		JobType jobType = person.getMind().getJobType();

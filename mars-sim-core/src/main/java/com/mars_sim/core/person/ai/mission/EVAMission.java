@@ -92,29 +92,23 @@ abstract class EVAMission extends RoverMission {
 	 * @return 
 	 */
 	private boolean canStartEVA() {
-		boolean result = false;
+		boolean result = true;
 		// Note: checking for EVA has caused too many Exploration mission to terminate EVA
-		
-//		if (isEnoughSunlightForEVA()) {
-			result = true;
-//		}
-//		else {
-			// Decide what to do
-			MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
-			if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
-					|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
-				// No point waiting, move to next site
-				logger.info(getVehicle(), "Continue to travel since sunrise is too late " + sunrise.getTruncatedDateTimeStamp());
-				addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
-				startTravellingPhase();
-			}
-			else {
-				// Wait for sunrise
-				logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
-				setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
-				// May call this the first time but how to avoid duplicate entry : addMissionLog(WAIT_SUNLIGHT.getName(), getStartingPerson().getName()) 
-			}
-//		}
+//		// May add back: if (isEnoughSunlightForEVA()) { } else {
+		MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
+		if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
+				|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
+			// No point waiting, move to next site
+			logger.info(getVehicle(), "Continue to travel since sunrise is too late " + sunrise.getTruncatedDateTimeStamp());
+			addMissionLog(NOT_ENOUGH_SUNLIGHT, getStartingPerson().getName());
+			startTravellingPhase();
+		}
+		else {
+			// Wait for sunrise
+			logger.info(getVehicle(), "Waiting for sunrise @ " + sunrise.getTruncatedDateTimeStamp());
+			setPhase(WAIT_SUNLIGHT, sunrise.getTruncatedDateTimeStamp());
+			// May call this the first time but how to avoid duplicate entry : addMissionLog(WAIT_SUNLIGHT.getName(), getStartingPerson().getName()) 
+		}
 		return result;
 	}
 
@@ -217,11 +211,11 @@ abstract class EVAMission extends RoverMission {
 
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
-//			if (activeEVA && !isEnoughSunlightForEVA()) {
-//				logger.info(getVehicle(), 10_000L, "Not enough sunlight during the EVA phase of the mission.");
-//				addMissionLog(NOT_ENOUGH_SUNLIGHT, member.getName());
-//				activeEVA = false;
-//			}
+//			May add back: if (activeEVA && !isEnoughSunlightForEVA()) {
+//			May add back: 	logger.info(getVehicle(), 10_000L, "Not enough sunlight during the EVA phase of the mission.")
+//			May add back: 	addMissionLog(NOT_ENOUGH_SUNLIGHT, member.getName())
+//			May add back: 	activeEVA = false
+//			May add back: }
 
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
