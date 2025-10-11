@@ -6,33 +6,40 @@
  */
 package com.mars_sim.core.person.ai.task.util;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import com.mars_sim.core.parameter.ParameterCategory;
+import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
 import com.mars_sim.core.parameter.ParameterValueType;
 
 /**
- * Defines the potential Parameters values for the Task weights
+ * Defines the potential Parameters values for the Task weights.
+ * This is a lazy loading implementation as the MetaTaskUtil is created until later.
  */
-public class TaskParameters extends ParameterCategory{
+public class TaskParameters extends ParameterCategory {
 
     private static final long serialVersionUID = 1L;
-	public static final ParameterCategory INSTANCE = new TaskParameters();
+
+    /**
+     * This is a singleton.
+     */
+	public static final TaskParameters INSTANCE = new TaskParameters();
 
     private TaskParameters() {
         super("TASK_WEIGHT");
     }
 
+    public void registerMetaTasks(List<MetaTask> metaTasks) {
+        metaTasks.forEach(
+            mt -> addParameter(mt.getID(), mt.getName(), ParameterValueType.DOUBLE)
+        );
+    }
+
     /**
-     * Calculates the possible keys based the range of MetaTasks defined.
-     * 
-     * @return Map from id to the corresponding Spec
+     * MetaTasks are lazy loaded so if a key is requested that does not exist, create it.
      */
     @Override
-    protected Map<String, ParameterSpec> calculateSpecs() {
-        return MetaTaskUtil.getAllMetaTasks().stream()
-	 					.collect(Collectors.toMap(MetaTask::getID,
-                                    e-> new ParameterSpec(e.getID(), e.getName(), ParameterValueType.DOUBLE)));
+    protected ParameterKey createMissingKey(String pName) {
+        return addParameter(pName, pName, ParameterValueType.DOUBLE);
     }
 }

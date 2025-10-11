@@ -73,7 +73,7 @@ public class ConstructionSiteTest extends AbstractMarsSimUnitTest {
 
     public void testQuickConstruction() {
         var s = buildSettlement();
-        s.getPreferences().putValue(SettlementParameters.INSTANCE, SettlementParameters.QUICK_CONST, Boolean.TRUE);
+        s.getPreferences().putValue(SettlementParameters.QUICK_CONST, Boolean.TRUE);
 
         var site = new ConstructionSite(s, "Site1", WORKSHOP, phases, PLACE);
 

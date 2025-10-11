@@ -6,10 +6,6 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterValueType;
 
@@ -23,27 +19,9 @@ public class MissionWeightParameters extends ParameterCategory {
 
     private MissionWeightParameters() {
         super("MISSION_WEIGHT");
-    }
 
-    /**
-     * Calculates the possible keys based the range of MissionTypes.
-     * 
-     * @return Map from id to the corresponding Spec
-     */
-    @Override
-    protected Map<String, ParameterSpec> calculateSpecs() {
-        return createMissionTypeParameters(ParameterValueType.DOUBLE);
-    }
-
-    /**
-     * Creates a set of Parameter specs based on the range of MissionTypes.
-
-     * @param t The type of each spec
-     * @return
-     */
-    static Map<String, ParameterSpec> createMissionTypeParameters(ParameterValueType t) {    
-        return Stream.of(MissionType.values())
-	 					.collect(Collectors.toMap(MissionType::name,
-                                        e-> new ParameterSpec(e.name(), e.getName(), t)));
+        for(var mt : MissionType.values()) {
+            addParameter(mt.name(), mt.getName(), ParameterValueType.INTEGER);
+        }
     }
 }

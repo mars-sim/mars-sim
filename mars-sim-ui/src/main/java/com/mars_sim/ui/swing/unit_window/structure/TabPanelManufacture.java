@@ -44,6 +44,7 @@ import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.manufacture.WorkshopProcessInfo;
 import com.mars_sim.core.parameter.ParameterManager;
+import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -279,15 +280,15 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 		super.destroy();
 	}
 
-	private void addParameter(AttributePanel panel, ParameterManager pMgr, String parmId, int maxValue) {
-		var spec = ManufacturingParameters.INSTANCE.getSpec(parmId);
+	private void addParameter(AttributePanel panel, ParameterManager pMgr, ParameterKey key, int maxValue) {
+		var spec = ManufacturingParameters.INSTANCE.getSpec(key);
 
-		int value = pMgr.getIntValue(ManufacturingParameters.INSTANCE, parmId, -1);
+		int value = pMgr.getIntValue(key, -1);
 		JSpinner spinner = new JSpinner(new SpinnerNumberModel(value, 0, maxValue, 1));
 		spinner.setValue(value);
 		spinner.addChangeListener(e -> {
 			var v = (Integer)((JSpinner)e.getSource()).getValue();
-			pMgr.putValue(ManufacturingParameters.INSTANCE, parmId, v);
+			pMgr.putValue(key, v);
 		});
 
 		panel.addLabelledItem(spec.displayName(), spinner);

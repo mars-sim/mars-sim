@@ -81,7 +81,6 @@ public class ConstructionStage implements Serializable {
         this.isConstruction = isConstruction;
         
         var quickConstruction = site.getAssociatedSettlement().getPreferences().getBooleanValue(
-                                                                        SettlementParameters.INSTANCE,
                                                                         SettlementParameters.QUICK_CONST,
                                                            false);
         completedWorkTime = 0D;

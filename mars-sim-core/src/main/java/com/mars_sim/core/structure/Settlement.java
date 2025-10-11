@@ -1818,7 +1818,7 @@ public class Settlement extends Unit implements Temporal,
 
 			// EVA capacity
 			int evaCapacity = (int)Math.ceil(numCitizens * EVA_PERCENTAGE);
-			preferences.putValue(SettlementParameters.INSTANCE, SettlementParameters.MAX_EVA, evaCapacity);
+			preferences.putValue(SettlementParameters.MAX_EVA, evaCapacity);
 
 			// Fire unit update
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
@@ -1837,7 +1837,7 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	private void setMissionLimit(String id, int minMissions, int personRatio) {
 		int optimalMissions = Math.max(minMissions, (numCitizens/personRatio));
-		preferences.putValue(MissionLimitParameters.INSTANCE, id, optimalMissions);
+		preferences.putValue(MissionLimitParameters.INSTANCE.getKey(id), optimalMissions);
 	}
 
 	/**
@@ -2294,7 +2294,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Is this override flag set
 	 */
 	public boolean getProcessOverride(OverrideType type) {
-		return preferences.getBooleanValue(ProcessParameters.INSTANCE, type.name(), false);
+		return preferences.getBooleanValue(ProcessParameters.INSTANCE.getKey(type.name()), false);
 	}
 
 	/**

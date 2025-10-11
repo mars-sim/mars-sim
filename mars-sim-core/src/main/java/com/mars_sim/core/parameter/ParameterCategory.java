@@ -7,10 +7,11 @@
 package com.mars_sim.core.parameter;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -18,25 +19,25 @@ import com.mars_sim.core.tool.Msg;
  * The spec defines the type of the value, the display name, and the id.
  * The id is used as the key for an ParameterManager values.
  */
-public class ParameterCategory implements Serializable {
+public abstract class ParameterCategory implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
 	/**
      * Definition of a single Parameter value.
      */
-    public record ParameterSpec(String id, String displayName, ParameterValueType type) {}
+    public record ParameterSpec(String displayName, ParameterValueType type) {}
 
     private String id;
     private transient String name;
-    private transient Map<String,ParameterSpec> range;
+    private transient Map<ParameterKey,ParameterSpec> range = new HashMap<>();
 
     /**
      * Creates new category with the specific id.
      * 
      * @param id
      */
-    public ParameterCategory(String id) {
+    protected ParameterCategory(String id) {
         this.id = id;
     }
 
@@ -61,37 +62,60 @@ public class ParameterCategory implements Serializable {
     }
 
     /**
-     * Gets the possible parameters that fit into this category.
-     * 
-     * @return Could be an empty collection if the parameters are dynamic.
+     * Register a new parameter in this category.
+     * @param id Unique id within this category
+     * @param displayName Display name for this parameter
+     * @param type Type of value for this parameter
+     * @return The key for this parameter
      */
-    public final Collection<ParameterSpec> getRange() {
-        if (range == null) {
-            range = calculateSpecs();
-        }
-        return range.values();
+    protected ParameterKey addParameter(String id, String displayName, ParameterValueType type) {
+        var spec = new ParameterSpec(displayName, type);
+        var key = new ParameterKey(this, id);
+
+        range.put(key, spec);
+        return key;
+    }
+
+    /**
+     * Get the range of parameters key and their specs.
+     * @return
+     */
+    public Map<ParameterKey, ParameterSpec> getRange() {
+        return Collections.unmodifiableMap(range);
     }
 
     /**
      * Finds the spec of a single parameter value.
      * 
-     * @param id
+     * @param id Key to find spec
      * @return
      */
-    public ParameterSpec getSpec(String id) {
-        if (range == null) {
-            range = calculateSpecs();
-        }
+    public ParameterSpec getSpec(ParameterKey id) {
         return range.get(id);
     }
 
     /**
-     * Subclasses should override this method to provide the list of specs.
+     * Get the key for the registered parameter name.
      * 
-     * @return Default implementation return an empty Map
+     * @return key or null if there is no such parameter
      */
-    protected Map<String, ParameterSpec> calculateSpecs() {
-        return Collections.emptyMap();
+    public ParameterKey getKey(String pName) {
+        for (var entry : range.keySet()) {
+            if (entry.id().equals(pName)) {
+                return entry;
+            }
+        }
+        return createMissingKey(pName);
+    }
+
+    /**
+     * This method is called when a key is requested that does not exist.
+     * The default implementation throws an exception, but subclasses can override it to provide a different behavior.
+     * @param pName
+     * @return
+     */
+    protected ParameterKey createMissingKey(String pName) {
+        throw new IllegalArgumentException("No such parameter " + pName + " in category " + id);
     }
 
     @Override

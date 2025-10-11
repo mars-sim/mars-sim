@@ -160,8 +160,7 @@ public class ConstructionMission extends AbstractMission {
 		
 		// Site prepare time
 		sitePrepTime = SITE_PREPARE_TIME;
-		if (settlement.getPreferences().getBooleanValue(SettlementParameters.INSTANCE,
-                                                        SettlementParameters.QUICK_CONST,
+		if (settlement.getPreferences().getBooleanValue(SettlementParameters.QUICK_CONST,
                                             false)) {
 			sitePrepTime *= 0.1D;
 		}

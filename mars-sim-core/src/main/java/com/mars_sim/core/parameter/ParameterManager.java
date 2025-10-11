@@ -73,19 +73,32 @@ public class ParameterManager implements Serializable {
      * @param id Identifier of the value being defined
      * @param value Actual new value
      */
+    @Deprecated
     public void putValue(ParameterCategory category, String id, Serializable value) {
-        values.put(new ParameterKey(category, id), value);
+        var key = new ParameterKey(category, id);
+        if (category.getSpec(key) == null) {
+            throw new IllegalArgumentException("No such parameter defined: " + category.getId() + "." + id);
+        }
+
+        putValue(key, value);
     }
 
+    /**
+     * Puts a new parameter value into the manager.
+     * @param key Key for the new value
+     * @param value Actual new value
+     */
+    public void putValue(ParameterKey key, Serializable value) { 
+        values.put(key, value);
+    }
     
     /**
      * Removes a value from the parameter manager.
      * 
-     * @param category Category for the new value
-     * @param id Identifier of the value being defined
+     * @param key The key of the value to be removed
      */
-    public void removeValue(ParameterCategory category, String id) {
-        values.remove(new ParameterKey(category, id));
+    public void removeValue(ParameterKey key) {
+        values.remove(key);
     }
 
     /**
@@ -105,8 +118,20 @@ public class ParameterManager implements Serializable {
      * @param defaultValue Default value if is is not defined
      * @return Found value matching category & id or the default
      */
+    @Deprecated
     public double getDoubleValue(ParameterCategory category, String id, double defaultValue) {
         var key = new ParameterKey(category, id);
+        return getDoubleValue(key, defaultValue);
+    }
+
+    /**
+     * Gets a parameter value that is type Double. 
+     * 
+     * @param key Key of the value
+     * @param defaultValue Default value if is is not defined
+     * @return Found value matching category & id or the default
+     */
+    public double getDoubleValue(ParameterKey key, double defaultValue) {
         var value = values.get(key);
         if (value == null) {
             return defaultValue;
@@ -122,8 +147,20 @@ public class ParameterManager implements Serializable {
      * @param defaultValue Default value if is is not defined
      * @return Found value matching category & id or the default
      */
+    @Deprecated
     public int getIntValue(ParameterCategory category, String id, int defaultValue) {
         var key = new ParameterKey(category, id);
+        return getIntValue(key, defaultValue);
+    }
+
+    /**
+     * Gets a parameter value that is type Integer. 
+     * 
+     * @param key Key of the value
+     * @param defaultValue Default value if is is not defined
+     * @return Found value matching category & id or the default
+     */
+    public int getIntValue(ParameterKey key, int defaultValue) {
         var value = values.get(key);
         if (value == null) {
             return defaultValue;
@@ -135,12 +172,11 @@ public class ParameterManager implements Serializable {
      * Gets a parameter value that is type Boolean.
      *  
      * @param category Category of the value
-     * @param id Identifier of the value
-     * @param defaultValue Default value if is is not defined
+     * @param key Key of the value
      * @return Found value matching category & id or the default
      */
-    public boolean getBooleanValue(ParameterCategory category, String id, boolean defaultValue) {
-        var key = new ParameterKey(category, id);
+    public boolean getBooleanValue(ParameterKey key, boolean defaultValue) {
+
         var value = values.get(key);
         if (value == null) {
             return defaultValue;
@@ -157,5 +193,4 @@ public class ParameterManager implements Serializable {
         values.clear();
         values.putAll(preferences.values);
     }
-
 }

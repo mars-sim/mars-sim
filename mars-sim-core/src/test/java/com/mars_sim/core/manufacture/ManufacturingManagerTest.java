@@ -147,7 +147,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
 
         // Add resources and configure paameters
         var pMgr = s.getPreferences();
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, 0);
+        pMgr.putValue(ManufacturingParameters.NEW_MANU_LIMIT, 0);
         var first = p.get(0);
         ProcessInfoTest.loadSettlement(s, first);
         var second = p.get(1);
@@ -158,7 +158,7 @@ public class ManufacturingManagerTest extends AbstractMarsSimUnitTest {
         assertTrue("Queue with zero limit", mgr.getQueue().isEmpty());
 
         // Resources
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, 1);
+        pMgr.putValue(ManufacturingParameters.NEW_MANU_LIMIT, 1);
         mgr.updateQueue();
         assertEquals("Queue contains single item", 1, mgr.getQueue().size());
     }
