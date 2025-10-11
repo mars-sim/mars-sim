@@ -64,7 +64,9 @@
                 <taskdef resource="net/sf/antcontrib/antcontrib.properties"
                          classpathref="maven.plugin.classpath" />
                 
-                <!-- Macro to run JPackage with extra attributes for OS-specific args -->
+                <!-- Macro to run JPackage with extra attributes for OS-specific args
+                   https://docs.oracle.com/en/java/javase/17/docs/specs/man/jpackage.html
+                   -->
                 <macrodef name="runjpackage">
                   <attribute name="type"/>
                   <attribute name="osargs" default=""/>
@@ -110,7 +112,7 @@
                     <isset property="is.mac"/>
                     <then>
                       <echo message="Build DMG for macOS" />
-                      <runjpackage type="dmg" osargs="--icon ${icon.dir}/mars-sim.icns"/>
+                      <runjpackage type="dmg" osargs="--mac-package-name MarsSim"/>
                     </then>
                   </elseif>
                   <elseif>
