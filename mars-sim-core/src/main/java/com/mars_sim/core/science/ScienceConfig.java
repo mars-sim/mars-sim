@@ -111,7 +111,7 @@ public class ScienceConfig {
 	                    .map(j -> j.asJsonObject().getString(TOPIC))
 	                    .toList();
 	        } catch (ClassCastException | NullPointerException | IllegalStateException e) {
-	            logger.log(Level.SEVERE, "Malformed JSON structure in file: " + fileName, e);
+	            logger.severe("Malformed JSON structure in file: " + fileName, e);
 	            throw new IOException("Malformed JSON structure in file: " + fileName, e);
 	        }
     	}
