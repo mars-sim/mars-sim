@@ -106,9 +106,14 @@ public class ScienceConfig {
 				throw new IllegalArgumentException("Science type " + sType.getName() + " is not defiend in file " + fileName);
 			}	        
 	        // Read the json array of topics
-	        results = jsonObject.getJsonArray(TOPICS).stream()
-								.map(j -> j.asJsonObject().getString(TOPIC))
-								.toList();
+	        try {
+	            results = jsonObject.getJsonArray(TOPICS).stream()
+	                    .map(j -> j.asJsonObject().getString(TOPIC))
+	                    .toList();
+	        } catch (ClassCastException | NullPointerException | IllegalStateException e) {
+	            logger.log(Level.SEVERE, "Malformed JSON structure in file: " + fileName, e);
+	            throw new IOException("Malformed JSON structure in file: " + fileName, e);
+	        }
     	}
 		return results;
 	}
