@@ -13,7 +13,6 @@ import java.util.List;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.config.FunctionSpec;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -23,9 +22,6 @@ public class Communication extends Function {
 	
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-  
-	/** default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(Communication.class.getName());
 	
 	public class Band implements Serializable {
 		
@@ -142,18 +138,7 @@ public class Communication extends Function {
 	}
 		
 	private int techLevel;
-	/** The current overall efficiency of power usage. */
-	private double powerEfficiency;
-	/** The power load in kW for each running CU [in kW/CU]. */
-	private double powerDemand;
-	/** The power load in kW needed for cooling each running CU [in kW/CU]. */
-	private double coolingDemand;
-	
 	private List<Channel> availableChannels = new ArrayList<>();
-	
-	static {
-		
-	}
 	
     /**
      * Constructor.
@@ -186,14 +171,6 @@ public class Communication extends Function {
         	Channel e = new Channel(ChannelType.E);
         	availableChannels.add(e);
         }
-        
-        int total = 0;
-        for (Channel c: availableChannels) {
-        	total += c.getNumBand();
-        }
-        
-        logger.config(getBuilding(), "comm channels: " + availableChannels.size()
-        		+ "  comm bands: " + total);
     }
 
     /**

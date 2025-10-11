@@ -151,7 +151,7 @@ public class SimulationBuilder {
 
 		options.add(Option.builder(CONFIG_ARG).argName("directory").hasArg()
 						.desc("Directory for configurations").get());
-		options.add(Option.builder(LOG_ARG)
+		options.add(Option.builder(LOG_ARG).argName("Log file [size K|M|G:count]").optionalArg(true)
 					.desc("Enable file logging").get());
 		options.add(Option.builder(TIMERATIO_ARG).argName("Ratio (power of 2)").hasArg()
 								.desc("Define the time ratio of the simulation").get());
@@ -188,7 +188,7 @@ public class SimulationBuilder {
 			SimulationRuntime.setDataDir(line.getOptionValue(CONFIG_ARG));
 		}
 		if (line.hasOption(LOG_ARG)) {
-			SimulationRuntime.enableFileLogging();
+			SimulationRuntime.enableFileLogging(line.getOptionValue(LOG_ARG));
 		}
 		if (line.hasOption(TIMERATIO_ARG)) {
 			setTimeRatio(Integer.parseInt(line.getOptionValue(TIMERATIO_ARG)));

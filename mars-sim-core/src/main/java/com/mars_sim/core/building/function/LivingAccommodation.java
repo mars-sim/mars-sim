@@ -238,8 +238,6 @@ public class LivingAccommodation extends Function {
 		if (bed != null) {
 			if (permanent) {
 				person.registerBed(bed);
-				logger.log(person, Level.INFO, 0, "Registered " + sp.getName() 
-					+ " at " + sp.getPos() + " as permanent in " + building.getName() + ".");
 				return bed;
 			}
 			else if (isLastOne) {

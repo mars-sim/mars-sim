@@ -84,23 +84,10 @@ public class Storage extends Function {
 			
 			// Stores this resource in this building.
 			inv.storeAmountResource(resourceId, initialAmount);
-		}	
-
-		double totalcap = 0;
-		
-		// Calculate total capacities of specific resources in this building.
-		for (Entry<Integer, Double> i : resourceCapacities.entrySet()) {
-			double amount = i.getValue();
-			totalcap += amount;		
-		}
+		}		
 
 		if (stockCapacity < totalAmount)
-			logger.warning(building, "Lacking " + Math.round((totalAmount - stockCapacity)*100.0)/100.0 + " kg ");
-
-		logger.info(building, "Total Initial Specific Amount Resource: " + Math.round(totalAmount*100.0)/100.0 + " kg "
-				+ " Total Specific Capacity: " + Math.round(totalcap*100.0)/100.0 + " kg "
-				+ " Stock Capacity: " + Math.round(stockCapacity*100.0)/100.0 + " kg ");
-	
+			logger.warning(building, "Initial resources overloaded by " + Math.round((totalAmount - stockCapacity)*100.0)/100.0 + " kg ");
 	}
 
 	/**
