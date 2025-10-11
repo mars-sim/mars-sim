@@ -12,7 +12,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -34,9 +33,6 @@ public class MaintainRobot extends Task  {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(MaintainRobot.class.getName());
 	
 	/** Task name */
 	private static final String NAME = Msg.getString(
@@ -82,7 +78,6 @@ public class MaintainRobot extends Task  {
 
 		String des = DETAIL + entity.getName();
 		setDescription(des);
-		logger.info(worker, 30_000, des + ".");
 	
 		boolean success = false;
 		

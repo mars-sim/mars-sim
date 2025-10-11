@@ -7,8 +7,6 @@
 
 package com.mars_sim.core.building.function.farming;
 
-import java.util.logging.Level;
-
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
@@ -255,11 +253,6 @@ public class AlgaeFarming extends Function {
 		// Give variation to the amount of food nutrient for algae at the start for each tank
 		initalFood = RandomUtil.getRandomDouble(initalFood * 0.95, initalFood * 1.05);
 		currentFood = initalFood;
-		
-	    logger.log(building, Level.CONFIG, 0, "Spirulina: " 
-	    		+ Math.round(currentAlgae * 10.0)/10.0 
-	    		+ " kg.  nutrient: " + Math.round(initalFood * 10.0)/10.0
-	    		+ " kg.  tender time: " + Math.round(tendertime * 100.0)/100.0);
 	}
 
 
