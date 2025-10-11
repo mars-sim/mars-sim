@@ -8,15 +8,13 @@ package com.mars_sim.core.science;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
@@ -24,28 +22,28 @@ import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.tool.RandomUtil;
  
-public class ScienceConfig implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+/**
+ * ScienceConfig class - loads and stores the science configuration parameters.
+ */
+public class ScienceConfig {
  
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ScienceConfig.class.getName());
 
-	private final String SCIENTIFIC_STUDY = "scientific_study";
-	private final String JSON = "json";
-	private final String DIR = "/";
-	private final String SUBJECT = "subject";
-	private final String TOPIC = "topic";
-	private final String TOPICS = TOPIC + "s";
-	private final String DOT = ".";
-	private final String UNDERSCORE = "_";
-	private final String GENERAL = "General";
+	private static final String SCIENTIFIC_STUDY = "scientific_study";
+	private static final String JSON = "json";
+	private static final String DIR = "/";
+	private static final String SUBJECT = "subject";
+	private static final String TOPIC = "topic";
+	private static final String TOPICS = TOPIC + "s";
+	private static final String DOT = ".";
+	private static final String UNDERSCORE = "_";
+	private static final String GENERAL = "General";
 	
-	private final String JSON_DIR = DIR + JSON + DIR;
+	private static final String JSON_DIR = DIR + JSON + DIR;
 
-	private final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
-	private final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
+	private static final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
+	private static final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
     
     private int[] averageTime = null; 
     
@@ -53,7 +51,7 @@ public class ScienceConfig implements Serializable {
 
 	private static int maxStudiesPerPerson = 2;
         
-    private Map<ScienceType, List<Topic>> scienceTopics = new EnumMap<>(ScienceType.class);
+    private Map<ScienceType, List<String>> scienceTopics = new EnumMap<>(ScienceType.class);
 
     /**
      * Constructor.
@@ -90,9 +88,9 @@ public class ScienceConfig implements Serializable {
 		}
     }
  
-    private List<Topic> parseScienceJSON(ScienceType sType) throws IOException {
+    private List<String> parseScienceJSON(ScienceType sType) throws IOException {
     	String fileName = JSON_DIR + sType.name().toLowerCase() + TOPICS_JSON_FILE_EXT;
-		List<Topic> results = new ArrayList<>();
+		List<String> results = null;
     	
         // Load the topic json files
     	try (InputStream fis = this.getClass().getResourceAsStream(fileName);
@@ -106,20 +104,12 @@ public class ScienceConfig implements Serializable {
 			subject = ConfigHelper.convertToEnumName(subject);
 			if (!sType.name().equals(subject)) {
 				throw new IllegalArgumentException("Science type " + sType.getName() + " is not defiend in file " + fileName);
-			}
-	        
+			}	        
 	        // Read the json array of topics
-	        JsonArray jsonArray = jsonObject.getJsonArray(TOPICS);
-			for (int i = 0; i< jsonArray.size(); i++) {
-				JsonObject child = jsonArray.getJsonObject(i);
-				Topic e = new Topic(child.getString(TOPIC));
-				results.add(e);
-			}
-    	} catch (Exception e1) {
-          	logger.log(Level.SEVERE, "Cannot open json file " + fileName + " : " + e1.getMessage());
-		}
-    	
-
+	        results = jsonObject.getJsonArray(TOPICS).stream()
+								.map(j -> j.asJsonObject().getString(TOPIC))
+								.toList();
+    	}
 		return results;
 	}
 
@@ -130,14 +120,11 @@ public class ScienceConfig implements Serializable {
 	 * @return
 	 */
     public String getATopic(ScienceType type) {
-    	if (scienceTopics.containsKey(type)) {
-    		List<Topic> topics = scienceTopics.get(type);
-    		int size = topics.size();
-    		if (size > 0) {
-	    		int num = RandomUtil.getRandomInt(size-1);
-	    		return topics.get(num).getName();
-    		}
-    	}
+		var topics = getTopics(type);
+		if (!topics.isEmpty()) {
+			return RandomUtil.getRandomElement(topics);
+		}
+
     	return GENERAL;	
     }
     
@@ -152,20 +139,13 @@ public class ScienceConfig implements Serializable {
 	public int getMaxStudies() {
 		return maxStudiesPerPerson ;
 	}
-	
-    /**
-     * The Topic of a Subject.
-     */
-    private static class Topic {
-    
-    	String name;
-    	
-    	Topic(String name) {
-    		this.name = name;
-    	}
-    	
-    	String getName() {
-    		return name;
-    	}
-    }
+
+	/**
+	 * Get the topics assigned to a science type.
+	 * @param science
+	 * @return
+	 */
+	public List<String> getTopics(ScienceType science) {
+		return scienceTopics.getOrDefault(science, Collections.emptyList());
+	}
 }
