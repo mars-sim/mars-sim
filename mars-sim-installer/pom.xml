@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+	  <artifactId>mars-sim</artifactId>
+	  <groupId>com.mars-sim</groupId>
+	  <version>3.10.0</version>
+  </parent>
+  <artifactId>mars-sim-installer</artifactId>
+  <name>mars-sim-installer</name>
+  <packaging>pom</packaging>
+  <properties>
+	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jar.dir>${project.build.directory}/jars</jar.dir>
+    <icon.dir>${project.basedir}/icons</icon.dir>
+    <main.jar>mars-sim-swing.jar</main.jar>
+    <mars.website>https://marssim.space/</mars.website>
+  </properties>
+  <!-- NOTE: These dependency declarations are only required to sort this project to the 
+       end of the line in the multimodule build. 
+  -->
+  <dependencies>
+		<dependency>
+			<groupId>com.mars-sim</groupId>
+			<artifactId>mars-sim-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+  </dependencies>
+ 
+  <build>
+    <plugins>
+  
+      <!-- Plug to make JPackage via an antrun -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+            <exclusions>
+              <exclusion>
+                <groupId>ant</groupId>
+                <artifactId>ant</artifactId>
+              </exclusion>
+            </exclusions>
+          </dependency>
+        </dependencies>
+
+        <executions>
+          <execution>
+            <id>create-installers</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <!-- Load ant-contrib tasks -->
+                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                         classpathref="maven.plugin.classpath" />
+                
+                <!-- Macro to run JPackage with extra attributes for OS-specific args -->
+                <macrodef name="runjpackage">
+                  <attribute name="type"/>
+                  <attribute name="osargs" default=""/>
+                  <sequential>
+                    <exec executable="jpackage">
+                      <arg value="--input"/><arg value="${jar.dir}"/>
+                      <arg value="--dest"/><arg value="${project.build.directory}/pkgs"/>
+                      <arg value="--name"/><arg value="Mars Sim"/>
+                      <arg value="--main-jar"/><arg value="${main.jar}"/>
+                      <arg value="--main-class"/><arg value="com.mars_sim.ui.swing.main.MarsProject"/>
+                      <arg value="--vendor"/><arg value="MarsSim Project"/>
+                      <arg value="--app-version"/><arg value="${project.version}"/>
+                      <arg value="--type"/><arg value="@{type}"/>
+                      <arg value="--arguments"/><arg value="-log"/>
+                      <arg value="--java-options"/><arg value="-Xmx2g"/>
+                      <arg value="--about-url"/><arg value="${mars.website}"/>
+
+                      <!-- OS-specific args -->
+                      <arg line="@{osargs}"/>
+                    </exec>
+                  </sequential>
+                </macrodef>
+
+                <echo message="Copying executable jars to ${project.build.directory}/jars"/>
+                <!-- Copy the built jar from the mars-sim-ui project to the jars directory -->
+                <mkdir dir="${jar.dir}"/>
+                <copy file="${basedir}/../mars-sim-ui/target/mars-sim-swing-${project.version}.jar" 
+                      tofile="${jar.dir}/${main.jar}"/>
+
+                <!-- Detect the OS -->
+                <condition property="is.windows"><os family="windows"/></condition>
+                <condition property="is.mac"><os family="mac"/></condition>
+                <condition property="is.linux"><os family="unix"/></condition>
+                <if>
+                  <isset property="is.windows"/>
+                  <then>
+                    <!-- Note this needs the WIX tools to be installed from https://github.com/wixtoolset/wix3/releases
+                        This may change with JDK24 that uses a different version -->
+                    <echo message="Build MSI for Windows" />
+                    <runjpackage type="msi" osargs="--win-menu --win-shortcut --win-dir-chooser --icon ${icon.dir}/mars-sim.ico"/>
+                  </then>
+                  <elseif>
+                    <isset property="is.mac"/>
+                    <then>
+                      <echo message="Build DMG for macOS" />
+                      <runjpackage type="dmg" osargs="--icon ${icon.dir}/mars-sim.icns"/>
+                    </then>
+                  </elseif>
+                  <elseif>
+                    <isset property="is.linux"/>
+                    <then>
+                      <echo message="Build DEB for Linux" />
+                      <runjpackage type="deb" osargs="--linux-shortcut"/>
+                    </then>
+                  </elseif>
+                  <else>
+                    <echo message="Unknown OS, skipping jpackage"/>
+                  </else>
+                </if>
+              </target>      
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
