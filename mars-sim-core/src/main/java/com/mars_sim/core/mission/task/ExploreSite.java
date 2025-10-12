@@ -122,14 +122,12 @@ public class ExploreSite extends EVAOperation {
 	 * @return true if person can explore a site.
 	 */
 	public static boolean canExploreSite(Worker member) {
+		// Note: hasEVASuitProblem requires a person to have donned the suit already
+		// and thus is not suitable for calling (EVAOperation.hasEVASuitProblem()) here
 		
-		if (member instanceof Person person) {
-			// Note: hasEVASuitProblem requires a person to have donned the suit already
-			// and thus is not suitable for use here : if (EVAOperation.hasEVASuitProblem(person)) { return false
-			if (!person.isEVAFit()) {
-				logger.info(person, 20_000, "Not EVA fit to explore the site.");
-				return false;
-			}
+		if (member instanceof Person person && !person.isEVAFit()) {
+			logger.info(person, 20_000, "Not EVA fit to explore the site.");
+			return false;
 		}
 
 		return true;

@@ -291,12 +291,6 @@ abstract class EVAMission extends RoverMission {
 				result = true;
 			}
 			
-			else if (p.isInVehicle()) {
-				logger.severe(p, 10_000, "Current location: " 
-						+ p.getLocationTag().getExtendedLocation() + ".");
-				result = false;
-			}
-			
 			else if (p.isRightOutsideSettlement()) {// && p.isInSettlementVicinity()) {
 
 				logger.severe(p, 10_000, "Teleportation Type 3 detected. Current location: " 
@@ -304,6 +298,9 @@ abstract class EVAMission extends RoverMission {
 				addMissionLog("Teleportation Type 3 - " + p.getName(), worker.getName());
 				result = true;
 			}
+			
+			
+//			May add back: else if (p.isInVehicle()) logger.severe(p, 20_000, "No Teleportation detected. Current location: " + p.getLocationTag().getExtendedLocation() + ".")
 		}
 		
 		return result;
