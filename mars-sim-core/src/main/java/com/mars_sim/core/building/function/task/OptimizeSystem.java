@@ -109,7 +109,7 @@ public class OptimizeSystem extends Task {
 				endTask();
 		}
 		
-		else if (person.isInSettlementVicinity()) {
+		else if (person.isRightOutsideSettlement()) {
 			// If person is in a settlement, try to find a server node.
 			node = person.getAssociatedSettlement().getBuildingManager().getWorstEntropyComputingNodeByProbability(person, true);
 			

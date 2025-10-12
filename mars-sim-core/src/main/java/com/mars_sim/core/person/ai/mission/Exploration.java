@@ -63,7 +63,8 @@ public class Exploration extends EVAMission
 	/** Mission phase. */
 	private static final MissionPhase EXPLORE_SITE = new MissionPhase("Mission.phase.exploreSite");
 	private static final MissionStatus NO_EXPLORATION_SITES = new MissionStatus("Mission.status.noExplorationSites");
-
+	private static final MissionStatus INVALID_EXPLORATION_SITE = new MissionStatus("Mission.status.invalidExplorationSite");
+	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM, ObjectiveType.TRANSPORTATION_HUB);
 
 	private double currentSiteTime;
@@ -229,7 +230,7 @@ public class Exploration extends EVAMission
 	 */
 	@Override
 	protected boolean performEVA(Person person) {
-
+		
 		boolean canAssign = false;
 		
 		// If person can explore the site, start that task.
@@ -250,13 +251,20 @@ public class Exploration extends EVAMission
 		}
 		else if (completion < 0D) {
 			completion = 0D;
-		}
+		}		
 
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
+	
+			// Question: how to check if EVA is supposed to be ended and gracefully terminate calling performEVA
+			// prior to calling currentSite below ?
+			
+			// For instance, currentSite becomes null due to medical emergency in AbstractVehicleMission's
+			// determineEmergencyDestination()
+			
 			currentSite = retrieveASiteToClaim();
 			if (currentSite == null) {
-				abortMission(MissionStatus.createResourceStatus("Invalid Exploration Site"));
+				abortMission(INVALID_EXPLORATION_SITE);
 				return false;
 			}
 		}

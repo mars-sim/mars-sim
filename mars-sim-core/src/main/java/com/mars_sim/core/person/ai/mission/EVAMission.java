@@ -171,6 +171,9 @@ abstract class EVAMission extends RoverMission {
 
 			logger.info(getRover(), "EVA ended due to external trigger.");
 
+			// set activeEVA to false
+			activeEVA = false;
+			
 			endEVATasks();
 		}
 		else
@@ -288,19 +291,17 @@ abstract class EVAMission extends RoverMission {
 				result = true;
 			}
 			
-			else if (p.isInSettlementVicinity()) {
+			else if (p.isInVehicle()) {
+				logger.severe(p, 10_000, "Current location: " 
+						+ p.getLocationTag().getExtendedLocation() + ".");
+				result = false;
+			}
+			
+			else if (p.isRightOutsideSettlement()) {// && p.isInSettlementVicinity()) {
 
 				logger.severe(p, 10_000, "Teleportation Type 3 detected. Current location: " 
 					+ p.getLocationTag().getExtendedLocation() + ".");
 				addMissionLog("Teleportation Type 3 - " + p.getName(), worker.getName());
-				result = true;
-			}
-			
-			else if (p.isRightOutsideSettlement()) {
-
-				logger.severe(p, 10_000, "Teleportation Type 4 detected. Current location: " 
-					+ p.getLocationTag().getExtendedLocation() + ".");
-				addMissionLog("Teleportation Type 4 - " + p.getName(), worker.getName());
 				result = true;
 			}
 		}

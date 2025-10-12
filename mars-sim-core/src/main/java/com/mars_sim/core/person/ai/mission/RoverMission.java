@@ -243,8 +243,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 							+ p.getLocationTag().getExtendedLocation() + ".");
 					result = false;
 				}
-				else if (p.isInSettlementVicinity()
-						|| p.isRightOutsideSettlement()) {
+				else if (p.isRightOutsideSettlement()) {
 
 					logger.warning(p, 20_000L, "Case 2A: Still outside and not on " + r.getName()
 							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
@@ -276,8 +275,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 							+ p.getLocationTag().getExtendedLocation() + ".");
 					result = false;
 				}
-				else if (p.isInSettlementVicinity()
-						|| p.isRightOutsideSettlement()) {
+				else if (p.isRightOutsideSettlement()) {
 
 					logger.warning(p, 20_000L, "Case 2B: Still outside and not on " + r.getName()
 							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
@@ -436,7 +434,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			
 			MissionStatus status = MissionStatus.createResourceStatus(MISSION_LEAD_NO_SHOW.getName());
-			abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
+			abortMission(status, EventType.MISSION_LEAD_NO_SHOW);
 	
 			canDepart = false;
 		}

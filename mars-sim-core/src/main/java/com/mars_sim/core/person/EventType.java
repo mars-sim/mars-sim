@@ -40,7 +40,8 @@ public enum EventType {
 	MISSION_SALVAGE_VEHICLE			(Msg.getString("EventType.mission.salvageVehicle")), //$NON-NLS-1$
 	MISSION_RESCUE_PERSON			(Msg.getString("EventType.mission.rescuePerson")), //$NON-NLS-1$
 	MISSION_ONLY_ONE_MEMBER			(Msg.getString("EventType.mission.onlyOneMember")), //$NON-NLS-1$
-
+	MISSION_LEAD_NO_SHOW			(Msg.getString("EventType.mission.missionLeadNoShow")), //$NON-NLS-1$
+	
 	TASK_START			(Msg.getString("EventType.task.starting")), //$NON-NLS-1$
 	TASK_FINISH			(Msg.getString("EventType.task.finished")), //$NON-NLS-1$
 	TASK_DEVELOPMENT	(Msg.getString("EventType.task.development")), //$NON-NLS-1$

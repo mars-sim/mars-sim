@@ -271,14 +271,14 @@ public abstract class AbstractMobileUnit extends Unit
 		return (getSettlement() != null);
 	}
 
-	/**
-	 * Is this unit in the vicinity of a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	public boolean isInSettlementVicinity() {
-		return tag.isInSettlementVicinity();
-	}
+//	/**
+//	 * Is this unit in the vicinity of a settlement ?
+//	 *
+//	 * @return true if the unit is inside a settlement
+//	 */
+//	public boolean isInSettlementVicinity() {
+//		return tag.isRightOutsideSettlement();
+//	}
 
 	/**
 	 * Gets the vehicle the unit is in, null if person is not in vehicle.

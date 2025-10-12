@@ -101,10 +101,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
 	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
+	public static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency");
 	
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
-
-
+	
 	// Data members
 	/** The number of people that can be in the mission. */
 	private int missionCapacity;
@@ -897,17 +897,15 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (patient != null) {
 			
 			if (this instanceof AbstractVehicleMission avm) {
-				// Abort the mission and return home
-				avm.abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
-							 EventType.MISSION_MEDICAL_EMERGENCY);
-				addMissionLog("Non-mission member", patient.getName());
+				// Generate historical event by calling AbstractVehicleMission's abortMission
+				avm.abortMission(MISSION_MEDICAL_EMERGENCY, EventType.MISSION_MEDICAL_EMERGENCY);
 			}
 			else {
 				// Abort the mission and return home
-				abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()));
-				addMissionLog("Non-mission member", patient.getName());
+				abortMission(MISSION_MEDICAL_EMERGENCY);
 			}
-
+			
+			addMissionLog(MISSION_MEDICAL_EMERGENCY.getName(), patient.getName());
 		}
 		return patient != null;
 	}
