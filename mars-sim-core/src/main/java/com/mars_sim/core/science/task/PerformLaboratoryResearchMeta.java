@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PerformLaboratoryResearchMeta.java
- * @Date 2021-10-05
+ * @date 2025-10-11
  * @author Scott Davis
  */
 package com.mars_sim.core.science.task;
@@ -67,26 +67,41 @@ public class PerformLaboratoryResearchMeta extends FactoryMetaTask {
 	public List<TaskJob> getTaskJobs(Person person) {
 
         ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
+        
         if ((primaryStudy == null) || !person.isInSettlement()
             || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
         	return EMPTY_TASKLIST;
         }
-
+        
         // Add probability for researcher's primary study (if any).
         double base = 0D;
-        if ((StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
-                && !primaryStudy.isPrimaryResearchCompleted()) {
-            base += getStudyScore(person, 50D, primaryStudy.getScience());
-        }
+   
+        if (primaryStudy != null) {
+			boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.INVITATION_PHASE == primaryStudy.getPhase()
+					|| 	StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.PAPER_PHASE == primaryStudy.getPhase());
+				
+			if (isOngoing && !primaryStudy.isPrimaryResearchCompleted()) {
+				 base += getStudyScore(person, 50D, primaryStudy.getScience());
+			}
+		}
 
 	    // Add probability for each study researcher is collaborating on.
-	    for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
-            if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
-                    && !collabStudy.isCollaborativeResearchCompleted(person)) {
-                ScienceType collabScience = collabStudy.getContribution(person);
+	    for (ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
+	    	
+	    	if (collabStudy != null) {
 
-                base += getStudyScore(person, 25D, collabScience);
-	        }
+				boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == collabStudy.getPhase()
+						|| StudyStatus.INVITATION_PHASE == collabStudy.getPhase()
+						|| 	StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
+						|| StudyStatus.PAPER_PHASE == collabStudy.getPhase());
+	    	
+		        if (isOngoing && !collabStudy.isCollaborativeResearchCompleted(person)) {
+		             ScienceType collabScience = collabStudy.getContribution(person);
+		             base += getStudyScore(person, 25D, collabScience);
+		        }
+			}
         }
 
         if (base <= 0)

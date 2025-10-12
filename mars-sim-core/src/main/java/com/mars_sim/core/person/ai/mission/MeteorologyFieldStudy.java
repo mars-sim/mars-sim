@@ -33,7 +33,7 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	public static final double FIELD_SITE_TIME = 500D;
 
 	/** How many specimen boxes per mission member */
-	private static final int SPECIMEN_BOX_MEMBER = 3;
+	private static final int SPECIMEN_BOX_MEMBER = 4;
 
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM);
 

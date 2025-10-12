@@ -1,11 +1,13 @@
 /*
  * Mars Simulation Project
  * MeteorologyStudyFieldWork.java
- * @date 2023-09-17
+ * @date 2025-10-11
  * @author Scott Davis
  */
 package com.mars_sim.core.science.task;
 
+
+import java.util.logging.Level;
 
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.ContainerUtil;
@@ -13,7 +15,6 @@ import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.mission.MeteorologyFieldStudy;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ScientificStudy;
@@ -41,13 +42,14 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 						createPhaseImpact(SkillType.METEOROLOGY));
 
 	// Static members
-	private static final double AVERAGE_ROCK_COLLECTED_SITE = 100 + RandomUtil.getRandomDouble(20);
-	public static final double AVERAGE_ROCK_MASS = 2D + RandomUtil.getRandomDouble(.5);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 100 + RandomUtil.getRandomDouble(-20, 20);
+	public static final double AVERAGE_ROCK_MASS = 3 + RandomUtil.getRandomDouble(-1, 1);
 
 	// Data members
+	private int rockId = -1;
+	  
 	private double totalCollected = 0;
-	private double numSamplesCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
-	private double chance = numSamplesCollected / MeteorologyFieldStudy.FIELD_SITE_TIME;
+	private double rocksToBeCollected = AVERAGE_ROCK_COLLECTED_SITE / AVERAGE_ROCK_MASS;
 
 	/**
 	 * Constructor
@@ -62,25 +64,43 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 		// Use EVAOperation parent constructor.
 		super(NAME, FIELD_WORK, person, leadResearcher, study, rover);
 
+		// Box is empty so choose a rock type at random
+		int randomNum = RandomUtil.getRandomInt(((ResourceUtil.ROCK_IDS).length) - 1);
+		rockId = ResourceUtil.ROCK_IDS[randomNum];
+	
 		// Take specimen containers for rock samples.
 		if (!hasSpecimenContainer()) {
-			takeSpecimenContainer();
+			boolean hasBox = takeSpecimenContainer();
+
+			if (!hasBox) {
+				// If specimen containers are not available, end task.
+				logger.log(person, Level.WARNING, 5_000,
+						"No more specimen box for collecting rocks.");
+				endTask();
+			}
+			else {
+				logger.info(person, 5_000, "Expected to collect " 
+						+ Math.round(rocksToBeCollected * 10.0)/10.0 + " kg rocks.");
+			}
 		}
 	}
 
 	/**
-	 * Performs Rock collecting for this study.
+	 * Performs rock collection for this study.
+	 * 
 	 * @return
 	 */
 	@Override
 	protected boolean performStudy(double time) {
 		boolean completed = false;
-		
+
 		// Collect rock samples.
-		if (totalCollected < AVERAGE_ROCK_COLLECTED_SITE)
-			collectRocks(time);
+		if (totalCollected < AVERAGE_ROCK_COLLECTED_SITE) {
+			int skill = getEffectiveSkillLevel();
+			collectRocks(time * skill);
+		}
 		else {
-			endEVA("Rocks colelcted exceeded set average.");
+			endEVA("Rocks collected exceeded the set average.");
 			completed = true;
 		}
 		
@@ -90,37 +110,40 @@ public class MeteorologyStudyFieldWork extends ScientificStudyFieldWork {
 	/**
 	 * Collect rocks if chosen.
 	 * 
-	 * @param time the amount of time available (millisols).
+	 * @param timeSkill time multiplying skill
 	 * @throws Exception if error collecting rocks.
 	 */
-	private void collectRocks(double time) {
-		if (hasSpecimenContainer()) {			
+	private void collectRocks(double timeSkill) {
+		
+		if (hasSpecimenContainer()) {
 
-			double probability = chance * time;
-			logger.info(person, 10_000, "collectRock::probability: " + probability);
+			Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
 			
-			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-				// Box is empty so choose at random
-				int randomNum = RandomUtil.getRandomInt(((ResourceUtil.ROCK_IDS).length) - 1);
-				int rockId = ResourceUtil.ROCK_IDS[randomNum];
-				// Question: should we use ROCK_SAMPLES_ID instead of rockId ?
-				
-				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, -1);
-				
-				if (box != null) {	
-					double mass = RandomUtil.getRandomDouble(AVERAGE_ROCK_MASS / 2D, AVERAGE_ROCK_MASS * 2D);
-					double cap = box.getRemainingCombinedCapacity(rockId);
-					if (mass <= cap) {
-						double excess = box.storeAmountResource(rockId, mass);
-						totalCollected += mass - excess;
-					}
+			if (box != null) {
+				double mass = AVERAGE_ROCK_MASS * timeSkill * RandomUtil.getRandomDouble(.5, 2);
+				double cap = box.getRemainingCombinedCapacity(rockId);
+				if (mass <= cap) {
+					double excess = box.storeAmountResource(rockId, mass);
+					// May add this in future when objective is added: mission.recordResourceCollected(rockId, mass)
+					double collected = mass - excess;
+					totalCollected += collected;
+					logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
+							+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 				}
 				else {
-					var rockName = ResourceUtil.findAmountResourceName(rockId);
-					logger.info(person, 10_000, "No specimen box is available for " + rockName + ".");
-					endTask();
+					double excess = box.storeAmountResource(rockId, cap);
+					// May add this in future when objective is added: mission.recordResourceCollected(rockId, cap)
+					double collected = cap - excess;
+					totalCollected += collected;
+					endEVA("Specimen box full.");
 				}
 			}
+			else {
+				endEVA("No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
+			}
+		}
+		else {
+			endEVA("No specimen boxes available.");
 		}
 	}
 	

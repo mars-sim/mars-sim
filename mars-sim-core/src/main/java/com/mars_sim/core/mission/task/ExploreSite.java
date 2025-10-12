@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploreSite.java
- * @date 2025-07-06
+ * @date 2025-10-11
  * @author Scott Davis
  */
 package com.mars_sim.core.mission.task;
@@ -50,8 +50,8 @@ public class ExploreSite extends EVAOperation {
 	/** The average labor time it takes to find the resource. */
 	public static final double LABOR_TIME = 50D;
 
-	private static final double AVERAGE_ROCK_COLLECTED_SITE = 200 + RandomUtil.getRandomDouble(-20, 20);
-	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-1, 1);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 100 + RandomUtil.getRandomDouble(-20, 20);
+	public static final double AVERAGE_ROCK_MASS = 3 + RandomUtil.getRandomDouble(-1, 1);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
@@ -93,7 +93,7 @@ public class ExploreSite extends EVAOperation {
 		// Determine location for field work.
 		setRandomOutsideLocation(rover);
 
-		// Box is empty so choose a rock type at random
+		// Box is empty so choose a rock type at random.
 		int randomNum = RandomUtil.getRandomInt(((ResourceUtil.ROCK_IDS).length) - 1);
 		rockId = ResourceUtil.ROCK_IDS[randomNum];
 	
@@ -164,7 +164,7 @@ public class ExploreSite extends EVAOperation {
 		((Exploration)person.getMission()).addSiteTime(time);
 		
 		if (totalCollected > AVERAGE_ROCK_COLLECTED_SITE) {
-			endEVA("Rocks collected exceeded set average.");
+			endEVA("Rocks collected exceeded the set average.");
 			return time;
 		}
 
@@ -178,7 +178,7 @@ public class ExploreSite extends EVAOperation {
 		}
 		else if (value > 0 && rand < .75 * value){
 			// Collect rocks.
-			collectRocks(time);
+			collectRocks(time * skill);
 		}
 		else {
 			boolean isOver50 = site.isCertaintyAverageOver(50);
@@ -187,7 +187,7 @@ public class ExploreSite extends EVAOperation {
 			}
 			else {
 				// Collect rocks.
-				collectRocks(time);
+				collectRocks(time * skill);
 
 				// Checks if the site has been claimed
 				if (!site.isClaimed()) {
@@ -210,17 +210,17 @@ public class ExploreSite extends EVAOperation {
 	/**
 	 * Collects rocks.
 	 *
-	 * @param time the amount of time available (millisols).
+	 * @param timeSkill time multiplying skill
 	 * @throws Exception if error collecting rock samples.
 	 */
-	private void collectRocks(double time) {
+	private void collectRocks(double timeSkill) {
 		
 		if (hasSpecimenContainer()) {
 
 			Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
 			
 			if (box != null) {
-				double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
+				double mass = AVERAGE_ROCK_MASS * timeSkill * RandomUtil.getRandomDouble(.5, 2);
 				double cap = box.getRemainingCombinedCapacity(rockId);
 				if (mass <= cap) {
 					double excess = box.storeAmountResource(rockId, mass);

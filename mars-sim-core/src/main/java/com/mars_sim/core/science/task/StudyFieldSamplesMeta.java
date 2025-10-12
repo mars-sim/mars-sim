@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StudyFieldSamplesMeta.java
- * @date 2023-04-15
+ * @date 2025-10-11
  * @author Scott Davis
  */
 package com.mars_sim.core.science.task;
@@ -34,6 +34,8 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
     /** Task name */
     private static final String NAME = Msg.getString(
             "Task.description.studyFieldSamples"); //$NON-NLS-1$
+    
+    private static final int BASE_SCORE = 100;
     
     public StudyFieldSamplesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -94,7 +96,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 				&& StudyFieldSamples.FIELD_SCIENCES.contains(primaryStudy.getScience())) {
 				Lab lab = LabTask.getLocalLab(person, primaryStudy.getScience());
 				if (lab != null) {
-					double primaryResult = 50D;
+					double primaryResult = BASE_SCORE;
 	
 					// Get lab building crowding modifier.
 					primaryResult *= LabTask.getLabCrowdingModifier(person, lab);
@@ -123,7 +125,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		            if (StudyFieldSamples.FIELD_SCIENCES.contains(collabScience)) {
 						Lab lab = LabTask.getLocalLab(person, collabScience);
 						if (lab != null) {
-							double collabResult = 25D;
+							double collabResult = BASE_SCORE / 2;
 	
 							// Get lab building crowding modifier.
 							collabResult *= LabTask.getLabCrowdingModifier(person, lab);
@@ -138,7 +140,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		        }
 			}
 	    }
-	    
+
 		var score = new RatingScore(result);
 		score = assessPersonSuitability(score, person);
         return createTaskJobs(score);
