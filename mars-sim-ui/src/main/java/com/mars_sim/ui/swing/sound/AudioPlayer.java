@@ -37,10 +37,11 @@ public class AudioPlayer {
 	private static SimLogger logger = SimLogger.getLogger(AudioPlayer.class.getName());
 
 	/** music files directory. */
-	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir(); //$NON-NLS-1$
+	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir();
 	private static final String DEFAULT_MUSIC_DIR = "/music";
 			
-	public static final double DEFAULT_VOL = .75;
+	public static final double DEFAULT_VOL = .95;
+	public static final double STEP = 0.05;
 
 	public static final String PROPS_NAME = "audio";
 	private static final String VOLUME = "volume";
@@ -328,7 +329,7 @@ public class AudioPlayer {
 				&& currentMusic != null
 				&& currentMusic.getVol() < 1) {
 
-			double v = currentMusic.getVol() + .05;
+			double v = currentMusic.getVol() + STEP;
 			if (v > 1)
 				v = 1;
 
@@ -345,7 +346,7 @@ public class AudioPlayer {
 				&& currentMusic != null
 				&& currentMusic.getVol() > 0) {
 
-			double v = currentMusic.getVol() - .05;
+			double v = currentMusic.getVol() - STEP;
 			if (v < 0)
 				v = 0;
 
@@ -361,7 +362,7 @@ public class AudioPlayer {
 		if (!isVolumeDisabled && hasMasterGain 
 				&& currentSoundClip != null
 				&& currentSoundClip.getVol() < 1) {
-			double v = currentSoundClip.getVol() + .05;
+			double v = currentSoundClip.getVol() + STEP;
 			if (v > 1)
 				v = 1;
 
@@ -377,7 +378,7 @@ public class AudioPlayer {
 		if (!isVolumeDisabled && hasMasterGain 
 				&& currentSoundClip != null
 				&& currentSoundClip.getVol() > 0) {
-			double v = currentSoundClip.getVol() - .05;
+			double v = currentSoundClip.getVol() - STEP;
 			if (v < 0)
 				v = 0;
 

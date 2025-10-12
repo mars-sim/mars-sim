@@ -48,7 +48,7 @@ public class OGGSoundClip {
 	private byte[] buffer = null;
 	private int bytes = 0;
 
-	private double volume = .5f;
+	private double volume = AudioPlayer.DEFAULT_VOL;
 
 	private boolean mute = false;
 	private boolean paused;
@@ -129,9 +129,9 @@ public class OGGSoundClip {
 	 */
 	public void determineGain(double volume) {
 		if (volume > 1)
-			volume = 1;
-		else if (volume <= 0) {
-			volume = 0;
+			volume = 1.0;
+		else if (volume <= 0.0) {
+			volume = 0.0;
 			setPause(true);
 		}
 		else
@@ -159,17 +159,14 @@ public class OGGSoundClip {
 
 				double max = floatControl.getMaximum();
 				double min = floatControl.getMinimum();
-
-				double value = (max - min / 2f) * volume + min / 2f;
-
+				
+				double value = volume * (max - min) + min;
+				
+				logger.info("[" + (int)max + " to " + min + "] vol: " + Math.round(volume * 10.0)/10.0 + " ->  gain: " + Math.round(value* 10.0)/10.0);
+				
 				setPause(true);
 				
-				if (value <= min / 2) {
-					floatControl.setValue((float) (min / 2));
-				}
-				else {
-					floatControl.setValue((float)value);
-				}
+				floatControl.setValue((float)value);
 				
 				setPause(false);
 
@@ -395,8 +392,6 @@ public class OGGSoundClip {
 
 			this.rate = rate;
 			this.channels = channels;
-
-//			setBalance(balance);
 			
 			determineGain(volume);
 			determineVolume(volume);
