@@ -4,7 +4,7 @@
  * @date 2024-01-05
  * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.task.meta;
+package com.mars_sim.core.science;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterValueType;
-import com.mars_sim.core.science.ScienceType;
 
 /**
  * Defines the potential Parameter values that control scientific research.
@@ -27,7 +26,8 @@ public class ScienceParameters extends ParameterCategory {
     }
 
     /**
-     * Calculate the possible keys based the range of ScienceTypes.
+     * Calculates the possible keys based the range of ScienceTypes.
+     * 
      * @return Map from id to the corresponding Spec
      */
     @Override

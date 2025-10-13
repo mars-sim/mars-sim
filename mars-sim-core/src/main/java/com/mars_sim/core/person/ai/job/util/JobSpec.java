@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Job.java
+ * JobSpec.java
  * @date 2022-09-01
  * @author Scott Davis
  */
@@ -27,9 +27,9 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 
 /**
- * The Job class represents a person's job.
+ * This class represents the spec of a job.
  */
-public abstract class Job {
+public abstract class JobSpec {
 
 	private Map<RoleType, Double> jobProspects;
 	private JobType jobType;
@@ -43,7 +43,7 @@ public abstract class Job {
 	 * @param jobProspects 
 	 * @param name the name of the job.
 	 */
-	protected Job(JobType jobType, Map<RoleType, Double> jobProspects) {
+	protected JobSpec(JobType jobType, Map<RoleType, Double> jobProspects) {
 		this.jobType = jobType;
 		this.jobProspects = jobProspects;
 	}

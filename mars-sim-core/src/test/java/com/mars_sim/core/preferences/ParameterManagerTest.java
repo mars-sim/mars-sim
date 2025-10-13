@@ -5,7 +5,7 @@ import java.util.List;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
-import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
+import com.mars_sim.core.science.ScienceParameters;
 
 import junit.framework.TestCase;
 

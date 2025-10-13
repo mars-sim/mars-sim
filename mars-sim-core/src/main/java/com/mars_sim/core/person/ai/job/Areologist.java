@@ -10,7 +10,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -19,14 +19,14 @@ import com.mars_sim.core.structure.Settlement;
  * The Areologist class represents a job for an areologist, one who studies the
  * rocks and landforms of Mars.
  */
-public class Areologist extends Job {
+public class Areologist extends JobSpec {
 	
 	/**
 	 * Constructor.
 	 */
 	public Areologist() {
 		// Use Job constructor
-		super(JobType.AREOLOGIST,  Job.buildRoleMap(5.0, 10.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.AREOLOGIST,  JobSpec.buildRoleMap(5.0, 10.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
 	}
 
 	/**

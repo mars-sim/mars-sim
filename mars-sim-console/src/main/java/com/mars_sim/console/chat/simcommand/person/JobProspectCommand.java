@@ -13,7 +13,7 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.Assignment;
 import com.mars_sim.core.person.ai.job.util.AssignmentHistory;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -35,7 +35,7 @@ public class JobProspectCommand extends AbstractPersonCommand {
 		// Details of proposes to change Job
 		response.appendTableHeading("Job", CommandHelper.JOB_WIDTH, "Capability Score", "Prospect Score");
 		for (JobType job : JobType.values()) {
-			Job jobSpec = JobUtil.getJobSpec(job);
+			JobSpec jobSpec = JobUtil.getJobSpec(job);
 			double capScore = Math.round(jobSpec.getCapability(person) * 10.0) / 10.0;
 			double prospectScore = Math.round(
 					JobUtil.getJobProspect(person, job, person.getAssociatedSettlement(), true) * 10.0)

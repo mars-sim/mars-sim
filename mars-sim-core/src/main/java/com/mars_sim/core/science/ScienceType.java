@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ScienceType.java
- * @date 2025-08-22
+ * @date 2025-10-12
  * @author stpa
  */
 
@@ -12,7 +12,6 @@ import java.util.EnumMap;
 import java.util.List;
 
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
@@ -59,8 +58,12 @@ public enum ScienceType {
 	/** Laws of nature. Study of forces and mechanics. */
 	PHYSICS("PHY", SkillType.PHYSICS, JobType.PHYSICIST),
 
-	/** The Study of the politics.  */
-	POLITICS("POL", SkillType.MANAGEMENT, JobType.POLITICIAN),
+	/** 
+	 * The systematic study of politics and power, encompassing the theory, 
+	 * practice, and analysis of government, political institutions, 
+	 * and behavior at local, national, and international levels.   
+	 */
+	POLITICAL_SCIENCE("POL", SkillType.MANAGEMENT, JobType.POLITICIAN),
 	
 	/** The Study of the mind and behavior.  */
 	PSYCHOLOGY("PSY", SkillType.PSYCHOLOGY, JobType.PSYCHOLOGIST),
@@ -115,7 +118,7 @@ public enum ScienceType {
 		sciencesSubjects.add(MEDICINE);
 		sciencesSubjects.add(METEOROLOGY);
 		sciencesSubjects.add(PHYSICS);
-		sciencesSubjects.add(POLITICS);
+		sciencesSubjects.add(POLITICAL_SCIENCE);
 		sciencesSubjects.add(PSYCHOLOGY);
 		sciencesSubjects.add(SOCIOLOGY);
 	}
@@ -144,7 +147,7 @@ public enum ScienceType {
 		Science meteorology = collabSciences.get(ScienceType.METEOROLOGY);
 		Science physics = collabSciences.get(ScienceType.PHYSICS);
 		Science psychology = collabSciences.get(ScienceType.PSYCHOLOGY);
-		Science politics = collabSciences.get(ScienceType.POLITICS);
+		Science politicalScience = collabSciences.get(ScienceType.POLITICAL_SCIENCE);
 		Science sociology = collabSciences.get(ScienceType.SOCIOLOGY);
 		
 		architecture.setCollaborativeSciences(new Science[]    { computing, engineering, physics, mathematics, sociology});
@@ -158,9 +161,9 @@ public enum ScienceType {
 		medicine.setCollaborativeSciences(new Science[]    { astrobiology, botany, chemistry, computing, mathematics });
 		meteorology.setCollaborativeSciences(new Science[] { areology, astronomy, chemistry, mathematics, physics, computing});
 		physics.setCollaborativeSciences(new Science[]     { astronomy, mathematics, engineering, computing});
-		psychology.setCollaborativeSciences(new Science[]  { psychology, chemistry, medicine, sociology, politics});
-		politics.setCollaborativeSciences(new Science[]  { medicine, psychology, sociology});
-		sociology.setCollaborativeSciences(new Science[]  { medicine, psychology, politics});
+		psychology.setCollaborativeSciences(new Science[]  { psychology, chemistry, medicine, sociology, politicalScience});
+		politicalScience.setCollaborativeSciences(new Science[]  { medicine, psychology, sociology});
+		sociology.setCollaborativeSciences(new Science[]  { medicine, psychology, politicalScience});
 	}
 
 	static {
@@ -203,19 +206,35 @@ public enum ScienceType {
 	}
 
 	/**
-	 * Gives back the {@link ScienceType} associated with the given job or
-	 * <code>null</code>.
+	 * Gives back the {@link ScienceType} associated with the given job.
 	 *
-	 * @param job {@link Job}
+	 * @param JobType {@link JobType}
 	 * @return {@link ScienceType}
 	 */
-	public static ScienceType getJobScience(JobType job) {
-		if (job != null) {
-			return matchJobToScience.get(job);
+	public static ScienceType getJobScience(JobType JobType) {
+		if (JobType != null) {
+			return matchJobToScience.get(JobType);
 		}
 		return null;
 	}
 
+	/**
+	 * Gets the related {@link ScienceType}.
+	 *
+	 * @param jobType {@link JobType}
+	 * @return {@link ScienceType}
+	 */
+	public static ScienceType getRelatedJobScience(JobType jobType) {
+		if (jobType != null) {
+			 if (jobType == JobType.CHEMIST) {
+				 return ScienceType.METEOROLOGY;
+			 }
+			
+			return matchJobToScience.get(jobType);
+		}
+		return null;
+	}
+	
 	/**
 	 * Checks if a science is collaborative to a primary science.
 	 *

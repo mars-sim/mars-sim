@@ -15,7 +15,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -23,12 +23,12 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * The Astronomer class represents a job for an astronomer.
  */
-public class Astronomer extends Job  {
+public class Astronomer extends JobSpec  {
 
 	/** Constructor. */
 	public Astronomer() {
 		// Use Job constructor
-		super(JobType.ASTRONOMER, Job.buildRoleMap(5.0, 20.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
+		super(JobType.ASTRONOMER, JobSpec.buildRoleMap(5.0, 20.0, 5.0, 5.0, 20.0, 25.0, 10.0, 30.0));
 	}
 
 	@Override

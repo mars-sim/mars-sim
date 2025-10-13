@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * JobUtil.java
- * @date 2022-09-01
+ * @date 2025-10-12
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.job.util;
@@ -17,8 +17,8 @@ import java.util.Map;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.Architect;
 import com.mars_sim.core.person.ai.job.Areologist;
-import com.mars_sim.core.person.ai.job.Astronomer;
 import com.mars_sim.core.person.ai.job.Astrobiologist;
+import com.mars_sim.core.person.ai.job.Astronomer;
 import com.mars_sim.core.person.ai.job.Botanist;
 import com.mars_sim.core.person.ai.job.Chef;
 import com.mars_sim.core.person.ai.job.Chemist;
@@ -34,6 +34,7 @@ import com.mars_sim.core.person.ai.job.Psychologist;
 import com.mars_sim.core.person.ai.job.Reporter;
 import com.mars_sim.core.person.ai.job.Sociologist;
 import com.mars_sim.core.person.ai.job.Technician;
+import com.mars_sim.core.person.ai.job.Tourist;
 import com.mars_sim.core.person.ai.job.Trader;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.Chefbot;
@@ -59,7 +60,7 @@ public final class JobUtil {
 
 	// Data members
 	/** List of the jobs in the simulation. */
-	private static Map<JobType, Job> jobSpecs;
+	private static Map<JobType, JobSpec> jobSpecs;
 	private static Map<RobotType, RobotJob> robotJobs;
 
 	/**
@@ -77,7 +78,7 @@ public final class JobUtil {
 			return;
 		}
 		
-		List<Job> jobs = new ArrayList<>();
+		List<JobSpec> jobs = new ArrayList<>();
 		jobs.add(new Architect());
 		jobs.add(new Areologist());
 		jobs.add(new Astronomer());
@@ -100,10 +101,11 @@ public final class JobUtil {
 		jobs.add(new Reporter());
 		jobs.add(new Sociologist());
 		jobs.add(new Technician());
+		jobs.add(new Tourist());
 		jobs.add(new Trader());
 		
-		Map<JobType, Job> newSpec = new EnumMap<>(JobType.class);
-		for (Job job : jobs) {
+		Map<JobType, JobSpec> newSpec = new EnumMap<>(JobType.class);
+		for (JobSpec job : jobs) {
 			newSpec.put(job.getType(), job);
 		}
 		jobSpecs = Collections.unmodifiableMap(newSpec);
@@ -128,14 +130,15 @@ public final class JobUtil {
 	}
 
 	/**
-	 * Get the JobSpec for a Job.
+	 * Gets the JobSpec for a Job.
+	 * 
 	 * @param job
 	 * @return
 	 */
-	public static Job getJobSpec(JobType job) {
+	public static JobSpec getJobSpec(JobType job) {
 		if (jobSpecs == null)
 			loadJobs();
-		Job result = jobSpecs.get(job);
+		JobSpec result = jobSpecs.get(job);
 		if (result == null) {
 			throw new IllegalStateException("No JobSpec found for " + job);
 		}
@@ -147,7 +150,7 @@ public final class JobUtil {
 	 * 
 	 * @return list of jobs.
 	 */
-	public static Collection<Job> getJobs() {
+	public static Collection<JobSpec> getJobs() {
 		if (jobSpecs == null)
 			loadJobs();
 		return jobSpecs.values();
@@ -174,7 +177,7 @@ public final class JobUtil {
 	 * @return settlement need minus total job capability of inhabitants with job.
 	 */
 	public static double getRemainingSettlementNeed(Settlement settlement, JobType job) {
-		Job jobSpec = getJobSpec(job);
+		JobSpec jobSpec = getJobSpec(job);
 		double need = jobSpec.getSettlementNeed(settlement);
 		double capability = 0;
 		int num = JobUtil.numJobs(job, settlement);
@@ -220,9 +223,9 @@ public final class JobUtil {
 		// e.g. rather not having 3 botanists when the settlement has only 8 people
 		int numberOfJobs = JobType.values().length;
 		while (selectedJob == originalJob) {
-			Iterator<Job> i = getJobs().iterator();
+			Iterator<JobSpec> i = getJobs().iterator();
 			while (i.hasNext()) {
-				Job job = i.next();
+				JobSpec job = i.next();
 				if (job.getType() != JobType.POLITICIAN) {
 					// Exclude politician job which is reserved for Mayor only
 					double rand = RandomUtil.getRandomDouble(0.8);
@@ -253,7 +256,7 @@ public final class JobUtil {
 	public static Person findBestFit(Settlement settlement, JobType job) {
 		Person person = null;
 		double bestScore = 0;
-		Job jobSpec = getJobSpec(job);
+		JobSpec jobSpec = getJobSpec(job);
 		List<Person> ppl = new ArrayList<>(settlement.getAllAssociatedPeople());
 		for (Person p : ppl) {
 			double score = Math.round(jobSpec.getCapability(p) * 100.0)/100.0;
@@ -277,7 +280,7 @@ public final class JobUtil {
 	 * @return job prospect value (0.0 min)
 	 */
 	public static double getJobProspect(Person person, JobType job, Settlement settlement, boolean isHomeSettlement) {
-		Job jobSpec = jobSpecs.get(job);
+		JobSpec jobSpec = jobSpecs.get(job);
 		double jobCapability = jobSpec.getCapability(person);
 		
 		double remainingNeed = getRemainingSettlementNeed(settlement, job);

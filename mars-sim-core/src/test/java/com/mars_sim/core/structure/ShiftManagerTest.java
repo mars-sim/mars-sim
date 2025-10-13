@@ -170,7 +170,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * Check that the OnDuty override flag works
+     * Checks that the OnDuty override flag works.
      */
     public void testOnCal() {
         Settlement settlement = buildSettlement();
@@ -203,13 +203,14 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * Test the Workstatus before and after a Shift ends.
+     * Tests the Work status before and after a Shift ends.
+     * 
      * @param sm Shift manager controlling shifts
      * @param slot Slot being tested
      * @param shiftEnd Time the shift ends
      * @param scenario Scenario description
-     * @param preEnd The Workstatus befor eshift ends
-     * @param postEnd Work statu after the SHift ends
+     * @param preEnd The Workstatus before shift ends
+     * @param postEnd Work status after the SHift ends
      * 
      */
     private void testWorkStatus(ScheduledEventManager sm, ShiftSlot slot, int shiftEnd, String scenario,
@@ -218,7 +219,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         sm.timePassing(createPulse(1, shiftEnd - 10, false, false));
         assertEquals(scenario + " during shift", preEnd, slot.getStatus());
 
-        // Shift of duty bu on call
+        // Shift of duty but on call
         sm.timePassing(createPulse(1, shiftEnd, false, false));
         assertEquals(scenario + " after shift", postEnd, slot.getStatus());
     }

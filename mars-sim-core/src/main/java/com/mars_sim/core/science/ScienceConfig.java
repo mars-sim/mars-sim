@@ -45,12 +45,12 @@ public class ScienceConfig {
 	private static final String TOPICS_JSON_FILE_EXT = UNDERSCORE + TOPICS + DOT + JSON;
 	private static final String SCIENTIFIC_STUDY_JSON = SCIENTIFIC_STUDY + DOT + JSON;
     
+	private static int maxStudiesPerPerson = 2;
+	  
     private int[] averageTime = null; 
     
     private int aveNumCollaborators;
-
-	private static int maxStudiesPerPerson = 2;
-        
+      
     private Map<ScienceType, List<String>> scienceTopics = new EnumMap<>(ScienceType.class);
 
     /**
@@ -60,7 +60,7 @@ public class ScienceConfig {
 		JsonObject jsonObject = null;
 
         // Load the scientific study param json files
-        try(InputStream fis = this.getClass().getResourceAsStream(JSON_DIR + SCIENTIFIC_STUDY_JSON);
+        try (InputStream fis = this.getClass().getResourceAsStream(JSON_DIR + SCIENTIFIC_STUDY_JSON);
 			JsonReader jsonReader = Json.createReader(fis)) {
         	// Get JsonObject from JsonReader
         	jsonObject = jsonReader.readObject();
@@ -73,12 +73,12 @@ public class ScienceConfig {
         maxStudiesPerPerson = jsonObject.getInt("max_studies_per_person");
 
 		averageTime = new int[SciencePhaseTime.values().length];
-		for(SciencePhaseTime pt : SciencePhaseTime.values()) {
+		for (SciencePhaseTime pt : SciencePhaseTime.values()) {
 			averageTime[pt.ordinal()] = jsonObject.getInt(pt.name().toLowerCase() + "_time");
 		}
     	     
     	// Create a list of science topic filenames
-		for(ScienceType sType : ScienceType.values()) {
+		for (ScienceType sType : ScienceType.values()) {
 			try {
 				var topics = parseScienceJSON(sType);
 				scienceTopics.put(sType, topics);
@@ -142,11 +142,12 @@ public class ScienceConfig {
     }
 
 	public int getMaxStudies() {
-		return maxStudiesPerPerson ;
+		return maxStudiesPerPerson;
 	}
 
 	/**
-	 * Get the topics assigned to a science type.
+	 * Gets the topics assigned to a science type.
+	 * 
 	 * @param science
 	 * @return
 	 */

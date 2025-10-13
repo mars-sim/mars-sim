@@ -14,7 +14,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -22,12 +22,12 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * The Psychologist class represents a job for evaluating a person's mind and behavior.
  */
-public class Psychologist extends Job {
+public class Psychologist extends JobSpec {
 	
 	/** Constructor. */
 	public Psychologist() {
 		// Use Job constructor
-		super(JobType.PSYCHOLOGIST, Job.buildRoleMap(5.0, 0.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
+		super(JobType.PSYCHOLOGIST, JobSpec.buildRoleMap(5.0, 0.0, 5.0, 25.0, 20.0, 10.0, 15.0, 20.0));
 	}
 
 	/**

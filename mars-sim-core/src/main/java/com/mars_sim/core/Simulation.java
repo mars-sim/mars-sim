@@ -64,7 +64,7 @@ import com.mars_sim.core.moon.Moon;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.Mind;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.mission.AbstractMission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.role.RoleUtil;
@@ -513,7 +513,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		TaskManager.initializeInstances(this, simulationConfig);
 		
-		Job.initializeInstances(unitManager, missionManager);
+		JobSpec.initializeInstances(unitManager, missionManager);
 		
 		// Initialize instances prior to UnitManager initiation
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
@@ -633,7 +633,7 @@ public class Simulation implements ClockListener, Serializable {
 		
 		TaskManager.initializeInstances(sim, simulationConfig);
 		
-		Job.initializeInstances(unitManager, missionManager);
+		JobSpec.initializeInstances(unitManager, missionManager);
 		
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
 				medicalManager, eventManager,

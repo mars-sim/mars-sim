@@ -40,6 +40,7 @@ import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
@@ -372,7 +373,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 			member.setMission(null);
 			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
 
-			person.getShiftSlot().setOnCall(false);
+			
+	      	if (RoleType.GUEST != person.getRole().getType()) {      
+	      		person.getShiftSlot().setOnCall(false);
+	      	}	
 
 			registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
 			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
@@ -1036,6 +1040,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 			recruitPerson(startingMember, next.candidate);
 		}
 
+		List<Person> tourists = startingMember.getAssociatedSettlement().getTouristList();
+		
+		// Add a tourist to this mission
+		// It's preferable for missions with more than 3 members to add a tourist
+		if (!tourists.isEmpty() &&  minMembers > 3 && members.size() < minMembers) {
+			tourists.get(0).setMission(this);			
+		}
+		
 		if (members.size() < minMembers) {
 			endMission(NOT_ENOUGH_MEMBERS);
 			return false;

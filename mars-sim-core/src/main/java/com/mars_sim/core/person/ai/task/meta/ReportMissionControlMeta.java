@@ -41,19 +41,22 @@ public class ReportMissionControlMeta extends FactoryMetaTask {
     }
 
 	/**
-	 * Assess if a Person is suitable to create a report for mission control.
+	 * Assesses if a Person is suitable to create a report for mission control.
 	 * Assessment is based on the role type and the availability of a Management station.
+	 * 
 	 * @param person Being assessed
 	 * @return Rating 
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
-        if (!person.isInside()
+        
+    	RoleType roleType = person.getRole().getType();
+    
+        if (RoleType.GUEST == roleType || !person.isInside()
 	        || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
             return EMPTY_TASKLIST;
 		}
-            
-        RoleType roleType = person.getRole().getType();
+
 		double base = switch(roleType) {
 			case PRESIDENT -> 70D;
             case MAYOR -> 60D;

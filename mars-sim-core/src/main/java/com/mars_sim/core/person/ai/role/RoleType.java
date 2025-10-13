@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoleType.java
- * @date 2023-11-14
+ * @date 2025-10-12
  * @author Manny Kung
  */
 
@@ -40,7 +40,9 @@ public enum RoleType implements Named {
 	ADMINISTRATOR						(RoleLevel.COUNCIL),
 	DEPUTY_ADMINISTRATOR				(RoleLevel.COUNCIL),
 	COMMANDER							(RoleLevel.COUNCIL),
-	SUB_COMMANDER						(RoleLevel.COUNCIL)
+	SUB_COMMANDER						(RoleLevel.COUNCIL),
+	
+	GUEST								(RoleLevel.VISITOR)
 	;
 	
 	private String name;
@@ -82,6 +84,10 @@ public enum RoleType implements Named {
 	
 	public boolean isCouncil() {
 		return level == RoleLevel.COUNCIL;
+	}
+	
+	public boolean isVisitor() {
+		return level == RoleLevel.VISITOR;
 	}
 	
 	public boolean isLeadership() {

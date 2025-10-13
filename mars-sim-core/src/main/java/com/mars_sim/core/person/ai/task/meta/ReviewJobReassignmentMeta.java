@@ -9,10 +9,10 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.Assignment;
@@ -77,6 +77,10 @@ public class ReviewJobReassignmentMeta extends MetaTask
 		RoleType roleType = p.getRole().getType();
 		RatingScore factor = RatingScore.ZERO_RATING;
 
+	   	if (RoleType.GUEST == roleType) {
+            return factor;
+        }
+		
         if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
 			&& (roleType != null)
 			&& (roleType.isCouncil()
@@ -84,7 +88,7 @@ public class ReviewJobReassignmentMeta extends MetaTask
         			|| (roleType == RoleType.MISSION_SPECIALIST
 							&& p.getAssociatedSettlement().getNumCitizens() <= 4))) {
 			factor = super.assessPersonSuitability(t, p);
-            if (factor.getScore() == 0) {
+            if (factor.getScore() == 0D) {
                 return factor;
             }
 			

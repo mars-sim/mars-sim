@@ -14,20 +14,20 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
 /**
  * The Pilot class represents a pilot job.
  */
-public class Pilot extends Job {
+public class Pilot extends JobSpec {
 	/**
 	 * Constructor.
 	 */
 	public Pilot() {
 		// Use Job constructor
-		super(JobType.PILOT, Job.buildRoleMap(5.0, 5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
+		super(JobType.PILOT, JobSpec.buildRoleMap(5.0, 5.0, 20.0, 20.0, 25.0, 5.0, 15.0, 10.0));
 	}
 
 	/**

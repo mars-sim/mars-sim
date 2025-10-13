@@ -344,6 +344,7 @@ public abstract class MetaTask {
      */
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         RatingScore factor = RatingScore.ZERO_RATING;
+	   	
         if (p.isInSettlement()) {
 			factor = new RatingScore(t.getScore());
 			factor = assessPersonSuitability(factor, p);

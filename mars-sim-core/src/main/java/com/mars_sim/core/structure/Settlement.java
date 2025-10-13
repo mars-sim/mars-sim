@@ -73,6 +73,7 @@ import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -355,7 +356,9 @@ public class Settlement extends Unit implements Temporal,
 	private Set<Person> indoorPeople;
 	/** The settlement's list of robots within. */
 	private Set<Robot> robotsWithin;
-
+	/** The list of tourists registered with the settlement. */
+	private Set<Person> touristPool;
+	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
 	
@@ -395,8 +398,8 @@ public class Settlement extends Unit implements Temporal,
 		ownedVehicles = new UnitSet<>();
 		vicinityParkedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
+		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-		
 	
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
@@ -424,6 +427,7 @@ public class Settlement extends Unit implements Temporal,
 		ownedVehicles = new UnitSet<>();
 		vicinityParkedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
+		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 
 		final double GEN_MAX = 1_000_000;
@@ -477,6 +481,7 @@ public class Settlement extends Unit implements Temporal,
 		ownedVehicles = new UnitSet<>();
 		vicinityParkedVehicles = new UnitSet<>();
 		indoorPeople = new UnitSet<>();
+		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
 		allowTradeMissionSettlements = new HashMap<>();
 		
@@ -1724,11 +1729,44 @@ public class Settlement extends Unit implements Temporal,
 			return true;
 		}
 		
-		// Fire the unit event type
-		fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, p);
-		return indoorPeople.add(p);
+		boolean canAdd = indoorPeople.add(p);
+		
+		if (canAdd) {
+			// Fire the unit event type
+			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, p);
+			
+			if (JobType.TOURIST == p.getMind().getJobType()) {
+				registerTouristPool(p);
+			}
+			
+			return true;
+		}
+
+		return false;
 	}
 	
+	/**
+	 * Registers the tourist for this settlement.
+	 *
+	 * @param p the person
+	 * @return true if added successfully
+	 */
+	public boolean registerTouristPool(Person p) {
+		if (touristPool.contains(p)) {
+			return true;
+		}
+
+		return touristPool.add(p);
+	}
+	
+	/**
+	 * Gets a list of the tourists who are currently inside the settlement.
+	 *
+	 * @return list of tourists within
+	 */
+	public List<Person> getTouristList() {
+		return new ArrayList<>(touristPool);
+	}
 
 	/**
 	 * Removes this person's physical location from being inside this settlement.

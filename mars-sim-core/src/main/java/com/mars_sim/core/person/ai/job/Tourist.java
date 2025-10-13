@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Reporter.java
+ * Tourist.java
  * @date 2025-10-12
  * @author Manny Kung
  */
@@ -14,9 +14,10 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 
-public class Reporter extends JobSpec {
+public class Tourist extends JobSpec {
 	
 	private static final double TRADING_RANGE = 1500D;
 	private static final double SETTLEMENT_MULTIPLIER = 1D;
@@ -24,9 +25,9 @@ public class Reporter extends JobSpec {
 	/**
 	 * Constructor.
 	 */
-	public Reporter() {
+	public Tourist() {
 		// Use Job constructor.
-		super(JobType.REPORTER, JobSpec.buildRoleMap(15.0, 10.0, 5.0, 20.0, 20.0, 10.0, 10.0, 10.0));
+		super(JobType.TOURIST, JobSpec.buildRoleMap(20.0, 5.0, 5.0, 35.0, 10.0, 10.0, 10.0, 5.0));
 	}
 
 	/**
@@ -68,9 +69,13 @@ public class Reporter extends JobSpec {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = .2;
+		double result = 0.1;
 
 		int population = settlement.getNumCitizens();
+		
+		if (ObjectiveType.TOURISM == settlement.getObjective()) {
+			result = 1.0;
+		}
 		
 		Iterator<Settlement> i = unitManager.getSettlements().iterator();
 		while (i.hasNext()) {

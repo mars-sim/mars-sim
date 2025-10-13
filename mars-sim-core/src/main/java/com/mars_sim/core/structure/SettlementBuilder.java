@@ -407,9 +407,9 @@ public final class SettlementBuilder {
 	 *
 	 * @param settlement Hosting settlement
 	 * @param targetPopulation Population goal
-	 * @param assignRoles Should roles be assigned to the new people?
+	 * @param noDefaultRole True if there's no default role for this person and need to look for one for him
 	 */
-	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
+	public void createPeople(Settlement settlement, int targetPopulation, boolean noDefaultRole) {
 
 		Authority sponsor = settlement.getReportingAuthority();
 		
@@ -457,10 +457,21 @@ public final class SettlementBuilder {
 			person.getPreference().initializePreference();
 			// Assign a job
 			person.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
-
-			if (assignRoles) {
-				RoleType choosen = RoleUtil.findBestRole(person);
-				person.setRole(choosen);
+		
+			JobType jobType = person.getMind().getJobType();
+			
+			if (jobType == JobType.TOURIST) {
+				person.setRole(RoleType.GUEST);
+			}		
+			else if (noDefaultRole) {
+				
+				if (jobType == JobType.TOURIST) {
+					person.setRole(RoleType.GUEST);
+				}
+				else {
+					RoleType choosen = RoleUtil.findBestRole(person);
+					person.setRole(choosen);
+				}
 			}
 		}
 	}

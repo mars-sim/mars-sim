@@ -50,13 +50,14 @@ public class WriteReportMeta extends FactoryMetaTask {
 	 */
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
-    		
-		if (!person.isInside()
+		
+		RoleType roleType = person.getRole().getType();
+
+		if (RoleType.GUEST == roleType || !person.isInside()
 			|| !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			return EMPTY_TASKLIST;
 		}
-		
-		RoleType roleType = person.getRole().getType();
+
 		double base =  switch(roleType) {
 			case PRESIDENT -> 70D;
 			case MAYOR -> 60D;

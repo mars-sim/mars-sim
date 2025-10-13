@@ -15,6 +15,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.PlanMission;
@@ -89,7 +90,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        if (!p.isInSettlement() || !p.getMind().canStartNewMission()) {
+        if (JobType.TOURIST == p.getMind().getJobType() || !p.isInSettlement() || !p.getMind().canStartNewMission()) {
             return RatingScore.ZERO_RATING;
         }
     		
@@ -102,7 +103,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
             return RatingScore.ZERO_RATING;
             
         var factor = super.assessPersonSuitability(t, p);
-        if (factor.getScore() == 0) {
+        if (factor.getScore() == 0D) {
             return factor;
         }
 

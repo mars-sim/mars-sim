@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * JobType.java
- * @Date 2021-09-27
+ * @Date 2026-10-12
  * @author Manny Kung
  */
 
@@ -19,7 +19,7 @@ public enum JobType implements Named{
 	ARCHITECT, AREOLOGIST, ASTRONOMER, ASTROBIOLOGIST, BOTANIST,
 	CHEF, CHEMIST, COMPUTER_SCIENTIST, DOCTOR, ENGINEER, MATHEMATICIAN,
 	METEOROLOGIST, PHYSICIST, PILOT, POLITICIAN, PSYCHOLOGIST,
-	REPORTER, SOCIOLOGIST, TECHNICIAN, TRADER;
+	REPORTER, SOCIOLOGIST, TECHNICIAN, TOURIST, TRADER;
 
 	// Internals allows to be built is static initialiser method
 	// Academic subjects

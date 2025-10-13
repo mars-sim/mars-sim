@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.training.TrainingType;
@@ -56,7 +56,7 @@ public class RoleUtil implements Serializable {
 	 */
 	public static void initialize() {
 		if (roleWeights.isEmpty()) {
-			for (Job j : JobUtil.getJobs()) {
+			for (JobSpec j : JobUtil.getJobs()) {
 				JobType id = j.getType();
 				roleWeights.put(id, j.getRoleProspects());
 			}

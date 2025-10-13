@@ -17,7 +17,7 @@ import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
 
 /**
- * The RecordActivity class is a task for recording events/activities
+ * The RecordActivity class is a task for recording events/activities.
  */
 public class RecordActivity extends Task {
 
@@ -48,6 +48,8 @@ public class RecordActivity extends Task {
 			int rand = RandomUtil.getRandomInt(3);
 			if (rand == 3)
 				walkToRandomLocation(false);
+			
+			// Future: follow and interview a person
 			
 			// Initialize phase
 			setPhase(RECORDING);
@@ -103,7 +105,7 @@ public class RecordActivity extends Task {
 
 	@Override
 	protected void addExperience(double time) {
-		// TODO: what experience to add
+		// What experience to add
 		double newPoints = time / 20D;
 		int exp = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE);
 		int art = worker.getNaturalAttributeManager().getAttribute(NaturalAttributeType.ARTISTRY);
