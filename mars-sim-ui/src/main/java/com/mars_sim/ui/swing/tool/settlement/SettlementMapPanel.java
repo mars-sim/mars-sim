@@ -14,7 +14,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -35,7 +34,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
@@ -77,7 +75,8 @@ public class SettlementMapPanel extends JPanel {
 	 * Run the given task on the Swing EDT (immediately if already on EDT).
 	 */
 	private static void onEdt(Runnable r) {
-		if (SwingUtilities.isEventDispatchThread()) r.run();
+		if (SwingUtilities.isEventDispatchThread()) 
+			r.run();
 		else SwingUtilities.invokeLater(r);
 	}
 
@@ -106,9 +105,9 @@ public class SettlementMapPanel extends JPanel {
 	private static final double SELECTION_RANGE = 0.25; // Settlement coordinate frame, 25 cm
 
 	// Zoom bounds/quantization (helps caching + stability)
-	private static final double MIN_SCALE = 1D;
-	private static final double MAX_SCALE = 200D;
-	private static final double SCALE_QUANTUM = 0.5D; // Quantize to 0.5 px/m steps
+//	private static final double MIN_SCALE = 1D;
+//	private static final double MAX_SCALE = 200D;
+//	private static final double SCALE_QUANTUM = 0.5D; // Quantize to 0.5 px/m steps
 
 	// Data members
 	private boolean exit = true;
@@ -150,8 +149,8 @@ public class SettlementMapPanel extends JPanel {
 	private Set<DisplayOption> displayOptions = EnumSet.noneOf(DisplayOption.class);
 
 	// -------- Event coalescing for scale updates --------
-	private Timer zoomCoalesceTimer;
-	private volatile Double pendingScale = null; // when non-null, an update is queued
+//	private Timer zoomCoalesceTimer;
+//	private volatile Double pendingScale = null; // when non-null, an update is queued
 
 	// -------- Event coalescing for simulation tick -> UI --------
 	/** Coalesces simulation-tick UI updates so we don't flood the EDT. */
@@ -206,7 +205,8 @@ public class SettlementMapPanel extends JPanel {
 		yPos = UIConfig.extractDouble(userSettings, Y_PROP, 0D);
 		rotation = UIConfig.extractDouble(userSettings, ROTATION_PROP, 0D);
 		// Always quantize stored scale
-		scale = quantizeScale(UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE));
+		scale = UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE);
+//		scale = quantizeScale(UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE));
 		for (DisplayOption op : DisplayOption.values()) {
 			if (UIConfig.extractBoolean(userSettings, op.name(), false)) {
 				displayOptions.add(op);
@@ -225,8 +225,8 @@ public class SettlementMapPanel extends JPanel {
 		selectedSite = new HashMap<>();
 
 		// Throttle zoom changes to avoid flood of repaints/rasterizations
-		zoomCoalesceTimer = new Timer(50, e -> applyPendingScale());
-		zoomCoalesceTimer.setRepeats(false);
+//		zoomCoalesceTimer = new Timer(50, e -> applyPendingScale());
+//		zoomCoalesceTimer.setRepeats(false);
 	}
 
 	void createUI() {
@@ -397,16 +397,16 @@ public class SettlementMapPanel extends JPanel {
 		// Ensure listeners are detached to allow GC of this panel
 		removeInteractionListeners();
 
-		// --- PATCH: Stop and detach the zoom coalescing timer to avoid stray events & leaks ---
-		if (zoomCoalesceTimer != null) {
-			zoomCoalesceTimer.stop();
-			// Clear listeners to break strong references early
-			for (ActionListener l : zoomCoalesceTimer.getActionListeners()) {
-				zoomCoalesceTimer.removeActionListener(l);
-			}
-			zoomCoalesceTimer = null;
-			pendingScale = null;
-		}
+//		// --- PATCH: Stop and detach the zoom coalescing timer to avoid stray events & leaks ---
+//		if (zoomCoalesceTimer != null) {
+//			zoomCoalesceTimer.stop();
+//			// Clear listeners to break strong references early
+//			for (ActionListener l : zoomCoalesceTimer.getActionListeners()) {
+//				zoomCoalesceTimer.removeActionListener(l);
+//			}
+//			zoomCoalesceTimer = null;
+//			pendingScale = null;
+//		}
 		super.removeNotify();
 	}
 
@@ -533,47 +533,50 @@ public class SettlementMapPanel extends JPanel {
 	 * @param newScale (pixels per meter).
 	 */
 	public void setScale(double newScale) {
-		// Queue the new scale; apply after a short delay (coalescing)
-		pendingScale = newScale;
-		if (zoomCoalesceTimer != null) {
-			onEdt(() -> zoomCoalesceTimer.restart()); // ensure Swing Timer is touched on EDT
-		} else {
-			onEdt(this::applyPendingScale);
-		}
-	}
-
-	/**
-	 * Applies the pending scale (quantized and clamped) and repaints once.
-	 * Must be invoked on the EDT.
-	 */
-	private void applyPendingScale() {
-		assert SwingUtilities.isEventDispatchThread() : "applyPendingScale must run on EDT";
-
-		final double target = (pendingScale != null ? pendingScale : scale);
-		pendingScale = null;
-
-		final double q = quantizeScale(target);
-		if (Math.abs(q - this.scale) < 1e-9) {
-			// Nothing to do
-			return;
-		}
-
-		this.scale = q;
-
-		// Avoid re-entrant slider event storms: do not call setZoomValue here.
-
-		revalidate();
+		this.scale = newScale;
 		repaint();
+		
+//		// Queue the new scale; apply after a short delay (coalescing)
+//		pendingScale = newScale;
+//		if (zoomCoalesceTimer != null) {
+//			onEdt(() -> zoomCoalesceTimer.restart()); // ensure Swing Timer is touched on EDT
+//		} else {
+//			onEdt(this::applyPendingScale);
+//		}
 	}
 
-	/**
-	 * Quantize and clamp the scale to keep cache keys stable and avoid extremes.
-	 */
-	private static double quantizeScale(double s) {
-		double clamped = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
-		double steps = Math.round(clamped / SCALE_QUANTUM);
-		return steps * SCALE_QUANTUM;
-	}
+//	/**
+//	 * Applies the pending scale (quantized and clamped) and repaints once.
+//	 * Must be invoked on the EDT.
+//	 */
+//	private void applyPendingScale() {
+//		assert SwingUtilities.isEventDispatchThread() : "applyPendingScale must run on EDT";
+//
+//		final double target = (pendingScale != null ? pendingScale : scale);
+//		pendingScale = null;
+//
+//		final double q = quantizeScale(target);
+//		if (Math.abs(q - this.scale) < 1e-9) {
+//			// Nothing to do
+//			return;
+//		}
+//
+//		this.scale = q;
+//
+//		// Avoid re-entrant slider event storms: do not call setZoomValue here.
+//
+//		revalidate();
+//		repaint();
+//	}
+
+//	/**
+//	 * Quantizes and clamps the scale to keep cache keys stable and avoid extremes.
+//	 */
+//	private static double quantizeScale(double s) {
+//		double clamped = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
+//		double steps = Math.round(clamped / SCALE_QUANTUM);
+//		return steps * SCALE_QUANTUM;
+//	}
 
 	/**
 	 * Gets the map rotation.
@@ -951,7 +954,7 @@ public class SettlementMapPanel extends JPanel {
 	/**
 	 * Selects a vehicle.
 	 *
-	 * @param settlementPosition Poition to search
+	 * @param settlementPosition Position to search
 	 * @return selectedVehicle
 	 */
 	private Vehicle selectVehicleAt(LocalPosition settlementPosition) {
@@ -1233,10 +1236,10 @@ public class SettlementMapPanel extends JPanel {
 	public void destroy() {
 
 		// Stop timers and free caches
-		if (zoomCoalesceTimer != null) {
-			zoomCoalesceTimer.stop();
-			zoomCoalesceTimer = null;
-		}
+//		if (zoomCoalesceTimer != null) {
+//			zoomCoalesceTimer.stop();
+//			zoomCoalesceTimer = null;
+//		}
 		iconCache.clear();
 
 		// Remove listeners to prevent leaks
