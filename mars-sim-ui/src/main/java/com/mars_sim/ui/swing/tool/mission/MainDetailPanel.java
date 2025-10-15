@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainDetailPanel.java
- * @date 2025-07-06
+ * @date 2025-10-15
  * @author Scott Davis
  */
 
@@ -18,6 +18,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -85,44 +87,42 @@ import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
- * The tab panel for showing mission details.
+ * The main tab panel for showing mission  details.
  */
 @SuppressWarnings("serial")
 public class MainDetailPanel extends JPanel implements MissionListener, UnitListener {
 
 	private static final int MAX_LENGTH = 48;
-	private static final int WIDTH = 250;
-	private static final int MEMBER_HEIGHT = 125;
-	private static final int LOG_HEIGHT = 200;
+	private static final int OBJ_HEIGHT = 230;
+	private static final int MEMBER_HEIGHT = 140;
+	private static final int LOG_HEIGHT = 230;
 	
 	// Private members
 	private JLabel vehicleStatusLabel;
 	private JLabel speedLabel;
 	private JLabel distanceNextNavLabel;
 	private JLabel traveledLabel;
-	
 	private JLabel typeTextField;
 	private JLabel designationTextField;
-	private EntityLabel settlementTextField;
-	private EntityLabel leadTextField;
 	private JLabel phaseTextField;
 	private JLabel statusTextField;
+
+	private JScrollPane memberScrollPane;
+	private JPanel memberOuterPane;
+
+	private JTabbedPane objectivesPane;
+	
+	private EntityLabel settlementTextField;
+	private EntityLabel leadTextField;
+	private EntityLabel vehicleLabel;
 	
 	private MemberTableModel memberTableModel;
+	private LogTableModel logTableModel;
 
-	private JScrollPane memberPane;
-	private JPanel memberOuterPane;
-	
 	private Mission missionCache;
 	private Vehicle currentVehicle;
 	private MissionWindow missionWindow;
 	private MainDesktopPane desktop;
-
-	private LogTableModel logTableModel;
-
-	private JTabbedPane objectivesPane;
-
-	private EntityLabel vehicleLabel;
 
 
 	/**
@@ -147,67 +147,66 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		add(scrollPane, BorderLayout.CENTER);
 
 		// Create the main panel.
-		JPanel mainBox = new JPanel(new BorderLayout(1, 1));
+		JPanel mainBox = new JPanel();
+		mainBox.setLayout(new BoxLayout(mainBox, BoxLayout.Y_AXIS));
+		
 		scrollPane.setViewportView(mainBox);
 
-		// Create the top box.
-		JPanel topBox = new JPanel(new BorderLayout(1, 1));
-		mainBox.add(topBox, BorderLayout.NORTH);
+		mainBox.add(initProfilePane());
+		
+		Box.createVerticalGlue();
+		
+		mainBox.add(initLogPane());
 
-		// Create the center box.
-		JPanel centerBox = new JPanel(new BorderLayout(1, 1));
-		mainBox.add(centerBox, BorderLayout.CENTER);
+		Box.createVerticalGlue();
+		
+		mainBox.add(initTravelPane());
 
-		// Create the member panel.
-		JPanel bottomBox = new JPanel(new BorderLayout(1, 1));
-		mainBox.add(bottomBox, BorderLayout.SOUTH);
-
-		topBox.add(initMissionPane(), BorderLayout.CENTER);
-		topBox.add(initLogPane(), BorderLayout.SOUTH);
-
-		centerBox.add(initTravelPane(), BorderLayout.CENTER);
-
-		memberOuterPane = new JPanel(new BorderLayout(1, 1));
+		Box.createVerticalGlue();
+		
+		memberOuterPane = new JPanel(new BorderLayout());
 			
-		memberPane = initMemberPane();
-		memberOuterPane.add(memberPane, BorderLayout.CENTER);
+		memberScrollPane = initMemberPane();
+		memberOuterPane.add(memberScrollPane, BorderLayout.NORTH);
 				
-		bottomBox.add(memberOuterPane, BorderLayout.NORTH);
+		mainBox.add(memberOuterPane, BorderLayout.NORTH);
 
+		Box.createVerticalGlue();
+		
 		objectivesPane = initObjectivePane();
-		bottomBox.add(objectivesPane, BorderLayout.SOUTH);
+		mainBox.add(objectivesPane, BorderLayout.NORTH);
 		
 		// Update the log table model
 		logTableModel.update();
 	}
 
 	/**
-	 * Initializes the mission pane.
+	 * Initializes the mission profile pane.
 	 * 
 	 * @return
 	 */
-	private JPanel initMissionPane() {
+	private JPanel initProfilePane() {
 
-		// Create the vehicle pane.
-		JPanel missionLayout = new JPanel(new BorderLayout());
+		// Create the profile pane.
+		JPanel profileLayout = new JPanel();
 		Border blackline = StyleManager.createLabelBorder("Profile");
-		missionLayout.setBorder(blackline);
+		profileLayout.setBorder(blackline);
 	
-		// Prepare count spring layout panel.
-		AttributePanel missionPanel = new AttributePanel();
-		missionLayout.add(missionPanel, BorderLayout.NORTH);
+		// Prepare attribute panel.
+		AttributePanel attributePanel = new AttributePanel(6);
+		profileLayout.add(attributePanel, BorderLayout.NORTH);
 		
-		typeTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.column.name"), "", null);
-		phaseTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.phase"), "", null);
-		designationTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.designation"), "",null);
+		typeTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.column.name"), "", null);
+		phaseTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.phase"), "", null);
+		designationTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.designation"), "",null);
 		settlementTextField = new EntityLabel(desktop);
-		missionPanel.addLabelledItem(Msg.getString("MainDetailPanel.settlement"), settlementTextField);
+		attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.settlement"), settlementTextField);
 
 		leadTextField = new EntityLabel(desktop);
-		missionPanel.addLabelledItem(Msg.getString("MainDetailPanel.startingMember"), leadTextField);
-		statusTextField = missionPanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null);
+		attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.startingMember"), leadTextField);
+		statusTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null);
 		
-		return missionLayout;
+		return profileLayout;
 	}
 	
 	/**
@@ -217,24 +216,22 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 */
 	private JPanel initTravelPane() {
 		
-		JPanel mainLayout = new JPanel(new BorderLayout());
-		mainLayout.setAlignmentX(CENTER_ALIGNMENT);
-		mainLayout.setAlignmentY(CENTER_ALIGNMENT);
+		JPanel travelLayout = new JPanel();
 		Border blackline = StyleManager.createLabelBorder("Travel");
-		mainLayout.setBorder(blackline);
+		travelLayout.setBorder(blackline);
 		
-		// Prepare travel grid layout.
-		AttributePanel travelGridPane = new AttributePanel();
-		mainLayout.add(travelGridPane, BorderLayout.CENTER);
+		// Prepare attribute panel.
+		AttributePanel attributePanel = new AttributePanel(5);
+		travelLayout.add(attributePanel, BorderLayout.NORTH);
 
 		vehicleLabel = new EntityLabel(desktop);
-		travelGridPane.addLabelledItem("Vehicle", vehicleLabel);
-		vehicleStatusLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleStatus"), "", null);
-		speedLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.vehicleSpeed"), "", null);
-		distanceNextNavLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.distanceNextNavPoint"), "", null);
-		traveledLabel = travelGridPane.addTextField(Msg.getString("MainDetailPanel.distanceTraveled"), "", null);
+		attributePanel.addLabelledItem("Vehicle", vehicleLabel);
+		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.vehicleStatus"), "", null);
+		speedLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.vehicleSpeed"), "", null);
+		distanceNextNavLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.distanceNextNavPoint"), "", null);
+		traveledLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.distanceTraveled"), "", null);
 
-		return mainLayout;
+		return travelLayout;
 	}
 
 	/**
@@ -254,7 +251,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		logTable.getColumnModel().getColumn(2).setPreferredWidth(70);
 		
 		var scroller = StyleManager.createScrollBorder("Phase Log", logTable);
-		var dim = new Dimension(WIDTH, LOG_HEIGHT);
+		var dim = new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, LOG_HEIGHT);
 		scroller.setPreferredSize(dim);
 		scroller.setMinimumSize(dim);
 		return scroller;
@@ -267,7 +264,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 */
 	private JScrollPane initMemberPane() {
 		
-		if (memberPane == null) {		
+		if (memberScrollPane == null) {		
 			// Create member table model.
 			memberTableModel = new MemberTableModel();
 	
@@ -281,14 +278,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			EntityLauncher.attach(memberTable, desktop);
 
-			memberPane = StyleManager.createScrollBorder("Team Mambers", memberTable);
-			var dim = new Dimension(WIDTH, MEMBER_HEIGHT);
-			memberPane.setPreferredSize(dim);
-			memberPane.setMinimumSize(dim);
+			memberScrollPane = StyleManager.createScrollBorder("Team Mambers", memberTable);
+			var dim = new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MEMBER_HEIGHT);
+			memberScrollPane.setPreferredSize(dim);
+			memberScrollPane.setMinimumSize(dim);
 
 		}
 		
-		return memberPane;
+		return memberScrollPane;
 	}
 
 	/**
@@ -575,13 +572,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 			objectivesPane.removeTabAt(0);
 		}
 	}
+	
 	/**
 	 * Updates the custom mission panel with a mission.
 	 *
 	 * @param mission the mission.
 	 */
 	private void updateCustomPanel(Mission mission) {
-		// Drop old panels expecgt first one legacy
+		// Drop old panels except first one
 		clearObjectives();
 
 		if (mission != null) {
@@ -600,7 +598,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				};
 
 				if (newPanel != null) {
-					var dim = new Dimension(WIDTH, 300);
+					var dim = new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, OBJ_HEIGHT);
 					objectivesPane.setMinimumSize(dim);
 					objectivesPane.setPreferredSize(dim);
 	 				objectivesPane.addTab(newPanel.getName(), newPanel);
@@ -611,7 +609,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	}
 
 	/**
-	 * Mission event update.
+	 * Updates with a mission event.
 	 */
 	@Override
 	public void missionUpdate(MissionEvent e) {

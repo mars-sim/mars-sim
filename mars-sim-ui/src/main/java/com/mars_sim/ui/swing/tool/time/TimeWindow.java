@@ -62,7 +62,7 @@ public class TimeWindow extends ToolWindow {
 	public static final String ICON = "time";
 	public static final String TITLE = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
-	public static final int WIDTH = 300;
+	public static final int WIDTH = 320;
 	public static final int HEIGHT = 650;
 	
 	// Label Strings
