@@ -93,7 +93,8 @@ public class SplashWindow extends JComponent {
 	private boolean drawImage = true;
 
 	/**
-	 * Get the width of a string in pixels for the specified font.
+	 * Gets the width of a string in pixels for the specified font.
+	 * 
 	 * @param font
 	 * @param text
 	 * @return

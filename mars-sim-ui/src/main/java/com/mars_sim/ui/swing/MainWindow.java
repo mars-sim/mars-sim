@@ -752,7 +752,7 @@ public class MainWindow
 				return;
 			
 			int now = pulse.getMarsTime().getMillisolInt();	
-			
+//			logger.info("now: " + now);
 			if (now != millisolIntCache && now != 1000 && now % 15 == 2) {
 
 				desktop.getSoundPlayer().loopThruBackgroundMusic();

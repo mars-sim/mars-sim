@@ -55,7 +55,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 400.0;
+    private static final double BASE_SCORE = 1.0;
 	private static final double MAX_SCORE = 750.0;
 	private static final int MAX_AGE = 7;
 	private static final double SOL_SCORE = (MAX_SCORE - BASE_SCORE) / MAX_AGE;
