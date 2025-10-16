@@ -150,7 +150,7 @@ public class MaintainRobot extends Task  {
 	private double maintainPhase(double time) {    	
 		// If worker is incapacitated, end task.
 		if (worker.getPerformanceRating() <= .1) {
-			robotInService.getSystemCondition().setMaintenance(false);
+//			robotInService.getSystemCondition().setMaintenance(false);
 			endTask();
 			return time;
 		}
@@ -159,6 +159,7 @@ public class MaintainRobot extends Task  {
 
 		// If equipment has malfunction, end task.
 		if (manager.hasMalfunction()) {
+			// Turn off maintenance and wait for repair
 			robotInService.getSystemCondition().setMaintenance(false);
 			endTask();
 			return time * .75;
@@ -189,8 +190,11 @@ public class MaintainRobot extends Task  {
 		}
 		
 		if (finishedMaintenance || doneInspection || timeCompleted >= getDuration()) {
+			double point = timeCompleted * (1 + .25 * skill);
 			// Reduce fatigue
-			manager.reduceFatigue(timeCompleted * (1 + .25 * skill));
+			manager.reduceFatigue(point);
+			
+			robotInService.getSystemCondition().tuneUpPerformance(point);
 			// No more maintenance is needed
 			robotInService.getSystemCondition().setMaintenance(false);
 		

@@ -416,13 +416,14 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private int getNameLength() {
         Collection<Settlement> list = unitManager.getSettlements();
-        int max = 12;
+        int min = 10;
         for (Settlement s: list) {
             int size = s.getName().length();
-            if (max < size)
-                max = size;
+            if (min < size) {
+                min = size;
+            }
         }
-        return max;
+        return min;
     }
 
     /**
@@ -432,7 +433,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         settlementCBModel = new SettlementComboBoxModel();
         settlementListBox = new JComboBox<>(settlementCBModel);
-        settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
+        settlementListBox.setPreferredSize(new Dimension(getNameLength() * 9, 30));
         settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
         settlementListBox.setRenderer(new NamedListCellRenderer());
         settlementListBox.addItemListener(event -> {

@@ -63,7 +63,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final String PERCENT = " % - ";
 	private static final String INOPERABLE = "Inoperable";
 	private static final String OPERABLE = "Operable";
-	private static final String NA = "N/A";
+	
 	private static final String B_LEVEL0 = Msg.getString("RobotTableModel.column.battery.level0");
 	private static final String B_LEVEL1 = Msg.getString("RobotTableModel.column.battery.level1");
 	private static final String B_LEVEL2 = Msg.getString("RobotTableModel.column.battery.level2");
@@ -73,11 +73,14 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final String B_LEVEL6 = Msg.getString("RobotTableModel.column.battery.level6");
 	private static final String B_LEVEL7 = Msg.getString("RobotTableModel.column.battery.level7");
 
+	private static final String P_DISABLE = Msg.getString("RobotTableModel.column.performance.disable");
 	private static final String P_LEVEL0 = Msg.getString("RobotTableModel.column.performance.level0");
 	private static final String P_LEVEL1 = Msg.getString("RobotTableModel.column.performance.level1");
 	private static final String P_LEVEL2 = Msg.getString("RobotTableModel.column.performance.level2");
 	private static final String P_LEVEL3 = Msg.getString("RobotTableModel.column.performance.level3");
 	private static final String P_LEVEL4 = Msg.getString("RobotTableModel.column.performance.level4");
+	private static final String P_LEVEL5 = Msg.getString("RobotTableModel.column.performance.level5");
+	
 	
 	private static final ColumnSpec[] COLUMNS;
 
@@ -237,7 +240,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		if (entities != null && !entities.isEmpty()) {	
 			resetEntities(entities);
 		}
-		// Listen to the settlements for new People
+		// Listen to the settlements for new robots
 		settlements.forEach(s -> s.addUnitListener(settlementListener));
 
 		return true;
@@ -351,23 +354,27 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	}
 
 	/**
-	 * Give the status of a robot's hunger level
+	 * Gives the status of a robot's performance level.
 	 *
 	 * @param hunger
 	 * @return status
 	 */
 	private static String getPerformanceStatus(double value) {
-		String status = Math.round(value * 100.0)/1.0 + PERCENT;
-		if (value > 98)
+		String status = Math.round(value * 1000.0)/10.0 + PERCENT;
+		if (value > .90)
+			status += P_LEVEL5;
+		else if (value > .80)
 			status += P_LEVEL4;
-		else if (value < 99)
+		else if (value > .65)
 			status += P_LEVEL3;
-		else if (value < 75)
+		else if (value > .40)
 			status += P_LEVEL2;
-		else if (value < 50)
+		else if (value > .15)
 			status += P_LEVEL1;
-		else if (value < 25)
+		else if (value > 0.0)
 			status += P_LEVEL0;
+		else  
+			status += P_DISABLE;
 		return status;
 	}
 

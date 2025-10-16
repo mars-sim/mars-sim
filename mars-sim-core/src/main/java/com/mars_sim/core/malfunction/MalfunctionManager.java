@@ -1329,11 +1329,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the maintenance scope list for a specific collection of scopes, e.g. type of vehicle or function.
+	 * Gets the whole maintenance scope collection.
 	 * 
 	 * @return
 	 */
-	public List<MaintenanceScope> getMaintenanceScopeList() {
+	public List<MaintenanceScope> getMaintenanceScopeCollection() {
 		if (scopeCollection.containsKey(scopes)) {
 			return scopeCollection.get(scopes);
 		}
@@ -1342,7 +1342,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			for (String s : scopes) {
 				List<MaintenanceScope> list = scopeMap.get(s.toLowerCase());
 				if (list != null) {
-					// It needs to allow duplicate MaintenanceScope objects
+					// This list will have duplicated MaintenanceScope objects
 					results.addAll(list);
 				}
 			}
@@ -1418,6 +1418,34 @@ public class MalfunctionManager implements Serializable, Temporal {
 				}
 			}
 		}
+	}
+	
+	public double findWorstFatigueByScope(String scope) {
+		List<MaintenanceScope> list = scopeMap.get(scope);
+		int num = list.size();
+		double worst = 0;
+		for (MaintenanceScope ms: list) {
+			double fatigue = ms.getFatigue();
+			if (fatigue > worst) {
+				worst = fatigue; 
+			}
+		}
+		return worst;
+	}
+	
+	/**
+	 * Finds the worst fatigue in each scope and takes the average.
+	 * 
+	 * @return
+	 */
+	public double findAverageWorstFatigue() {
+		double total = 0;
+		int size = scopes.size();
+		for (String scope: scopes) {
+			double worst = findWorstFatigueByScope(scope);
+			total += worst;
+		}
+		return total / size;
 	}
 	
 	/**

@@ -78,7 +78,7 @@ public class ThermalGeneration extends Function {
 			for (SourceSpec sourceSpec : ss.getSources()) {
 				double heat = sourceSpec.getCapacity();
 				if (building.getCategory() == BuildingCategory.CONNECTION) {
-					heat = heat * building.getFloorArea() / 12;
+					heat = heat * building.getFloorArea() / 9;
 				}
 				HeatSource heatSource = null;
 				HeatSourceType sourceType = HeatSourceType.valueOf(sourceSpec.getType().toUpperCase().replace(" ", "_"));

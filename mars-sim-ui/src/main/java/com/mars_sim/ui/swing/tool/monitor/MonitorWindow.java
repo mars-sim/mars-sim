@@ -264,7 +264,7 @@ public class MonitorWindow extends ToolWindow
 		
 		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
 
-		
+		// Create eventsTab instance
 		eventsTab = new EventTab(this, desktop);
 		newTabs.add(eventsTab);
 		

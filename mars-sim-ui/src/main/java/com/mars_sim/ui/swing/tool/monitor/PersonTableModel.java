@@ -300,7 +300,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}		
 		}
-
 		
 		if (entities != null && !entities.isEmpty()) {		
 			resetEntities(entities);

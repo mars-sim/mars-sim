@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionTab.java
- * @date 2021-12-07
+ * @date 2025-10-15
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -25,7 +25,7 @@ public class MissionTab extends TableTab {
 	 */
 	public MissionTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(window, new MissionTableModel(window.getDesktop().getSimulation()), true, true, MissionWindow.ICON);
+		super(window, new MissionTableModel(window.getDesktop().getSimulation(), true), true, true, MissionWindow.ICON);
 				
 		setEntityDriven(true);
 		setNavigatable(true);

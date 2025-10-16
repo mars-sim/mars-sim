@@ -40,7 +40,7 @@ public class AudioPlayer {
 	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir();
 	private static final String DEFAULT_MUSIC_DIR = "/music";
 			
-	public static final double DEFAULT_VOL = .5;
+	public static final double DEFAULT_VOL = .25;
 	public static final double STEP = 0.05;
 
 	public static final String PROPS_NAME = "audio";
@@ -73,6 +73,7 @@ public class AudioPlayer {
 	
 	private MasterClock masterClock;
 
+//	private OggPlayer oggPlayer = new OggPlayer();
 
 	/**
 	 * The class for managing the audio.
@@ -288,6 +289,7 @@ public class AudioPlayer {
 	 */
 	public void playMusic(String filename) {
 		if (!isPlaying()) {
+//			oggPlayer.play(musicTracks.get(filename), filename);
 			loadMusic(filename);
 		}
 	}
