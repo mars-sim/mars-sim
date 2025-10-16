@@ -200,7 +200,8 @@ public interface Mission extends Entity {
 	void removeMissionListener(MissionListener oldListener);
 
 	/**
-	 * Get the list of objectives for this mission.
+	 * Gets the list of objectives for this mission.
+	 * 
 	 * @return
 	 */
     List<MissionObjective> getObjectives();

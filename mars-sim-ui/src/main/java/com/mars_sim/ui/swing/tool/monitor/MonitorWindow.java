@@ -89,6 +89,7 @@ public class MonitorWindow extends ToolWindow
 	private static final int WIDTH = 1366;
 	private static final int HEIGHT = 640;
 
+	public static final String ALL = "All";
 	public static final String NAME = "monitor";
 	public static final String ICON = "monitor";
     public static final String TITLE = Msg.getString("MonitorWindow.title");
@@ -148,7 +149,7 @@ public class MonitorWindow extends ToolWindow
 
 	private MonitorTab activeTab;
 
-	private Map<Authority,Set<Settlement>> authorities;
+	private Map<Authority, Set<Settlement>> authorities;
 
 	private JLabel selectionDescription;
 
@@ -421,6 +422,7 @@ public class MonitorWindow extends ToolWindow
 		SortedComboBoxModel<Entity> model = new SortedComboBoxModel<>(choices, new SelectionComparator());
 		model.setSelectedItem(selected);
 		selectionCombo = new JComboBox<>(model);
+//		selectionCombo.insertItemAt(ALL, 0);
 		selectionCombo.setOpaque(false);
 		selectionCombo.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
 		selectionCombo.setPreferredSize(new Dimension(200, 25));
@@ -811,6 +813,9 @@ public class MonitorWindow extends ToolWindow
 				Entity value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 
+			// Center horizontally
+			setHorizontalAlignment(CENTER); 
+			
 			this.setFont(list.getFont());
 
 			if (isSelected) {
@@ -821,13 +826,17 @@ public class MonitorWindow extends ToolWindow
 				setForeground(list.getForeground());
 			}
 
+			
 			if (value instanceof Settlement s) {
 				this.setText(s.getName());
 			}
 			else if (value instanceof Authority a) {
 				this.setText(a.getName() + " (" + authorities.get(a).size() + ")");
 			}
-
+			else {
+				this.setText(ALL);
+            }
+			
 			return this;
 		}
 	}

@@ -66,7 +66,6 @@ public class TableTab extends MonitorTab {
 	 * @param singleSelection Does this table only allow single selection?
 	 * @param icon name        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
 	 */
-	@SuppressWarnings("serial")
 	protected TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String iconname) {
 		super(model, mandatory, true, ImageLoader.getIconByName(iconname));

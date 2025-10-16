@@ -1,25 +1,21 @@
 /*
  * Mars Simulation Project
  * MissionTableModel.java
- * @date 2025-10-15
+ * @date 2025-10-16
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -85,17 +81,11 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 	
-	private UnitListener settlementListener;
-	
-	private boolean allSettlements;
-	
 	private boolean monitorMissions = false;
 
 	private GameMode mode = GameManager.getGameMode();
 	
 	private List<Mission> missionCache;
-	
-	private Set<Settlement> settlements = Collections.emptySet();
 	
 	private Settlement commanderSettlement;
 
@@ -122,18 +112,16 @@ public class MissionTableModel extends EntityTableModel<Mission>
 		COLUMNS[TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.travelled"), Double.class);	
 		COLUMNS[TOTAL_ESTIMATED_DISTANCE_KM] = new ColumnSpec(Msg.getString("MissionTableModel.column.total.proposed"), Double.class);
 	}
-
 	
 	/**
 	 * Constructor 1.
 	 */
-	public MissionTableModel(Simulation sim, boolean allSettlements) {
+	public MissionTableModel(Simulation sim) {
 		super(Msg.getString("MissionTableModel.tabName"), "MissionTableModel.numberOfMissions", COLUMNS);
 
 		missionManager = sim.getMissionManager();
 		if (mode == GameMode.COMMAND) {
 			commanderSettlement = sim.getUnitManager().getCommanderSettlement();
-
 			// Must take a copy
 			missionCache = new ArrayList<>(missionManager.getMissionsForSettlement(commanderSettlement));
 		}
@@ -144,14 +132,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 
 		missionManager.addListener(this);
 
-		this.allSettlements = allSettlements;
-
-		if (allSettlements) {
-			Collection<Settlement> settlements = CollectionUtils.sortByName(unitManager.getSettlements());
-			this.settlements = new HashSet<>(settlements);
-//			resetEntities(settlements);
-		}
-		
+		// Mark this column up so as to hide it to save space in case of a single settlement view
 		setSettlementColumn(STARTING_SETTLEMENT);
 	}
 	
@@ -164,14 +145,14 @@ public class MissionTableModel extends EntityTableModel<Mission>
     public void setMonitorEntites(boolean activate) {
 		if (activate != monitorMissions) {
 			if (activate) {
-				for(Mission m : missionCache) {
+				for (Mission m : missionCache) {
 					if (!m.isDone()) {
 						m.addMissionListener(this);
 					}
 				}
 			}
 			else {
-				for(Mission m : missionCache) {
+				for (Mission m : missionCache) {
 					m.removeMissionListener(this);
 				}
 			}
@@ -184,27 +165,14 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-		
-		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
-		}
-		
-		this.settlements = filter;
-		
-//		if (entities != null && !entities.isEmpty()) {		
-//			resetEntities(entities);
-//		}
 
-		// Listen to the settlements
-		settlements.forEach(s -> s.addUnitListener(settlementListener));
-
+		Collection<Mission> missions = missionCache.stream()
+				.filter(m -> filter.contains(m.getAssociatedSettlement()))
+				.toList();
+	
+		resetEntities(missions);
+		
 		return true;
-		
-//		if (!allSettlements) {
-//			CollectionUtils.sortByName(filter);		
-//			resetEntities(filter);
-//		}
-//		return !allSettlements;
 	}
 
 	/**
@@ -272,7 +240,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	}
 
 	/**
-	 * Catch mission update event.
+	 * Catches mission update event.
 	 *
 	 * @param event the mission event.
 	 */
