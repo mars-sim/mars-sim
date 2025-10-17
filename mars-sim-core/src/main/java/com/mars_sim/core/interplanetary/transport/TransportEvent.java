@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TransportEvent.java
- * @date 2024-08-10
+ * @date 2025-10-16
  * @author Scott Davis
  */
 package com.mars_sim.core.interplanetary.transport;
@@ -31,7 +31,7 @@ public class TransportEvent extends HistoricalEvent {
 		super(HistoricalEventCategory.TRANSPORT, eventType, transportItem, transportItem.getName(),
 				null, null,
 				// Not very nice
-				(transportItem instanceof Resupply ? ((Resupply) transportItem).getSettlement() : null),
+				(transportItem instanceof Resupply r ? r.getSettlement() : null),
 				transportItem.getSettlementName(),
 				transportItem.getLandingLocation()
 		);

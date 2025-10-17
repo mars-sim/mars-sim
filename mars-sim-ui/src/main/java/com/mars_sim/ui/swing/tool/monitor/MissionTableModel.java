@@ -120,8 +120,18 @@ public class MissionTableModel extends EntityTableModel<Mission>
 		super(Msg.getString("MissionTableModel.tabName"), "MissionTableModel.numberOfMissions", COLUMNS);
 
 		missionManager = sim.getMissionManager();
+		
+		updateMissionCache();
+		
+		missionManager.addListener(this);
+
+		// Mark this column up so as to hide it to save space in case of a single settlement view
+		setSettlementColumn(STARTING_SETTLEMENT);
+	}
+	
+	private synchronized void updateMissionCache() {
 		if (mode == GameMode.COMMAND) {
-			commanderSettlement = sim.getUnitManager().getCommanderSettlement();
+			commanderSettlement = unitManager.getCommanderSettlement();
 			// Must take a copy
 			missionCache = new ArrayList<>(missionManager.getMissionsForSettlement(commanderSettlement));
 		}
@@ -130,10 +140,6 @@ public class MissionTableModel extends EntityTableModel<Mission>
 			missionCache = new ArrayList<>(missionManager.getMissions());
 		}
 
-		missionManager.addListener(this);
-
-		// Mark this column up so as to hide it to save space in case of a single settlement view
-		setSettlementColumn(STARTING_SETTLEMENT);
 	}
 	
 	/**
@@ -143,6 +149,9 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	 * @param activate 
 	 */
     public void setMonitorEntites(boolean activate) {
+    	
+    	updateMissionCache();
+    	
 		if (activate != monitorMissions) {
 			if (activate) {
 				for (Mission m : missionCache) {
@@ -166,6 +175,8 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
 
+		updateMissionCache();
+		
 		Collection<Mission> missions = missionCache.stream()
 				.filter(m -> filter.contains(m.getAssociatedSettlement()))
 				.toList();
@@ -238,7 +249,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	public Object getObject(int row) {
 		return missionCache.get(row);
 	}
-
+	
 	/**
 	 * Catches mission update event.
 	 *
@@ -306,12 +317,8 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	 */
 	@Override
 	public Object getEntityValue(Mission mission, int columnIndex) {
-//		if (rowIndex >= missionCache.size()) {
-//			return null;
-//		}
 
 		Object result = null;
-//		Mission mission = missionCache.get(rowIndex);
 
 		switch (columnIndex) {
 			case DATE_FILED:
