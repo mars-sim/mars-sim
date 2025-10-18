@@ -196,6 +196,8 @@ public class MetaTaskUtil {
 		allMetaTasks.add(new WriteReportMeta());
 		allMetaTasks.add(new YogaMeta());
 		
+		TaskParameters.INSTANCE.registerMetaTasks(allMetaTasks);
+		
 		// Build the name lookup for later
 		idToMetaTask = allMetaTasks.stream()
 				.collect(Collectors.toMap(MetaTask::getID, Function.identity()));

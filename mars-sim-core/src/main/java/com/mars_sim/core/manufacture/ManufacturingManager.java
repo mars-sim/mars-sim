@@ -157,9 +157,9 @@ public class ManufacturingManager implements Serializable {
 
         // Add the controlling preferences 
         var pMgr = owner.getPreferences();
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_LIMIT);
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.MAX_QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
+        pMgr.putValue(ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
+        pMgr.putValue(ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_LIMIT);
+        pMgr.putValue(ManufacturingParameters.MAX_QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
 
     }
 
@@ -316,8 +316,7 @@ public class ManufacturingManager implements Serializable {
      */
     private int getQueueCapacity() {
         // Add new queue items if queue is within limit
-        var maxQueue = owner.getPreferences().getIntValue(ManufacturingParameters.INSTANCE,
-                                        ManufacturingParameters.MAX_QUEUE_SIZE,
+        var maxQueue = owner.getPreferences().getIntValue(ManufacturingParameters.MAX_QUEUE_SIZE,
                                         DEFAULT_QUEUE_SIZE);
         return maxQueue - queue.size();
     }
@@ -349,12 +348,11 @@ public class ManufacturingManager implements Serializable {
     private void createManuQueueItems() {
         var pMgr = owner.getPreferences();
         int maxProcesses = Math.min(getQueueCapacity(),
-                                    pMgr.getIntValue(ManufacturingParameters.INSTANCE,
-                                                     ManufacturingParameters.NEW_MANU_LIMIT,
+                                    pMgr.getIntValue(ManufacturingParameters.NEW_MANU_LIMIT,
                                                      DEFAULT_LIMIT));
         if (maxProcesses > 0) {
 
-            var scoreThreshold = pMgr.getIntValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
+            var scoreThreshold = pMgr.getIntValue(ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
 
             var potential = getQueuableManuProcesses()
                     .filter(i -> i.isResourcesAvailable(owner))

@@ -6,9 +6,10 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.tool.Msg;
 
-public enum MissionType {
+public enum MissionType implements Named {
 
 	AREOLOGY,
 	BIOLOGY,

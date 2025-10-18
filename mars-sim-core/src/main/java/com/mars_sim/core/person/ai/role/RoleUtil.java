@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.person.ai.role;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -28,10 +27,8 @@ import com.mars_sim.core.tool.RandomUtil;
 /**
  * The RoleUtil class determines the roles of the settlers in a simulation.
  */
-public class RoleUtil implements Serializable {
+public class RoleUtil {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
 
 	private static Map<JobType, Map<RoleType, Double>> roleWeights
 							= new EnumMap<>(JobType.class);
@@ -47,8 +44,7 @@ public class RoleUtil implements Serializable {
 	private static List<RoleType> leadershipRoles;
 
 	
-	public RoleUtil() {
-		initialize();
+	private RoleUtil() {
 	}
 
 	/**
