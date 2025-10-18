@@ -2335,7 +2335,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Is this override flag set
 	 */
 	public boolean getProcessOverride(OverrideType type) {
-		return preferences.getBooleanValue(ProcessParameters.INSTANCE.getKey(type.name()), false);
+		return preferences.getBooleanValue(ProcessParameters.INSTANCE.getKey(type), false);
 	}
 
 	/**

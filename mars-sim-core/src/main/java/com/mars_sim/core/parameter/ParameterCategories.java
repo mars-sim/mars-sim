@@ -46,7 +46,7 @@ public class ParameterCategories {
     }
 
     /**
-     * Fidn the ParameterCategory for the given id.
+     * Find the ParameterCategory for the given id.
      * @param categoryId
      * @return
      */

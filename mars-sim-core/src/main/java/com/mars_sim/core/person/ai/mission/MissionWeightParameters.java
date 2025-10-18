@@ -17,6 +17,6 @@ public class MissionWeightParameters extends ParameterEnumCategory<MissionType> 
 	public static final MissionWeightParameters INSTANCE = new MissionWeightParameters();
 
     private MissionWeightParameters() {
-        super("MISSION_WEIGHT", ParameterValueType.INTEGER, MissionType.class);
+        super("MISSION_WEIGHT", ParameterValueType.DOUBLE, MissionType.class);
     }
 }

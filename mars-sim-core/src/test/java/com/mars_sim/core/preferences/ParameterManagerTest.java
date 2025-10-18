@@ -142,7 +142,7 @@ class ParameterManagerTest {
         // Combine the two managers so all values will be the higher value
         var mgr3 = new ParameterManager(List.of(mgr, mgr2));
         assertEquals(4, mgr3.getValues().size(), "Preference count");
-        assertEquals(HIGH_DOUBLE + LOW_DOUBLE, (Double) mgr3.getDoubleValue(CATEGORY.double1, 0), 0.01, "Combined double value");
+        assertEquals(HIGH_DOUBLE + LOW_DOUBLE, mgr3.getDoubleValue(CATEGORY.double1, 0), 0.01, "Combined double value");
         assertEquals(HIGH_INT + LOW_INT, mgr3.getIntValue(CATEGORY.int1, 0), "Combined int value");
         assertTrue(mgr3.getBooleanValue(CATEGORY.bool1, false), "Boolean value");
         assertFalse(mgr3.getBooleanValue(CATEGORY.bool2, true), "Boolean value");
