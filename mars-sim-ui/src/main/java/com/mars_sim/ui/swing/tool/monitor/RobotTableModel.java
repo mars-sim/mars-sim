@@ -225,8 +225,9 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
 		}
 		else {
-			// For now it makes no difference between robots in a settlement 
-			// and the robots a settlement owns since robots cannot live a settlement
+			// In future, there will be a difference between robots in a settlement 
+			// and the robots that a settlement owns.
+			// But for now, robots cannot go outside of a settlement. 
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
 			entities = settlements.stream()
 						.map(Settlement::getAllAssociatedRobots)

@@ -185,7 +185,7 @@ public class LocalPosition implements Serializable {
 	 * @return
 	 */
 	public String getShortFormat() {
-		return String.format("(%.1f, %.1f)", x, y);
+		return String.format("(%.2f, %.2f)", x, y);
 	}
 
 	@Override
