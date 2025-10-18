@@ -416,7 +416,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score.addModifier("settlement", person.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE, getID(), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getID()), 1D));
 		
 		return score;
 	}
@@ -445,7 +445,7 @@ public abstract class MetaTask {
 
 		// Apply the home base modifier
 		score.addModifier("settlement", robot.getAssociatedSettlement().getPreferences()
-							.getDoubleValue(TaskParameters.INSTANCE, getID(), 1D));
+							.getDoubleValue(TaskParameters.INSTANCE.getKey(getID()), 1D));
 		
 		return score;
 	}

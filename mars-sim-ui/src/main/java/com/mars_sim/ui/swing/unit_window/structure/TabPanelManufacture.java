@@ -44,7 +44,7 @@ import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.manufacture.WorkshopProcessInfo;
 import com.mars_sim.core.parameter.ParameterManager;
-import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
+import com.mars_sim.core.parameter.ParameterKey;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;

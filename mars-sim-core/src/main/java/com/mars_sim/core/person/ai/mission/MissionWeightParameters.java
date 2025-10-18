@@ -6,22 +6,17 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import com.mars_sim.core.parameter.ParameterCategory;
+import com.mars_sim.core.parameter.ParameterEnumCategory;
 import com.mars_sim.core.parameter.ParameterValueType;
 
 /**
  * Defines the Parameter values to control Mission weights
  */
-public class MissionWeightParameters extends ParameterCategory {
+public class MissionWeightParameters extends ParameterEnumCategory<MissionType> {
 
-    private static final long serialVersionUID = 1L;
-	public static final ParameterCategory INSTANCE = new MissionWeightParameters();
+	public static final MissionWeightParameters INSTANCE = new MissionWeightParameters();
 
     private MissionWeightParameters() {
-        super("MISSION_WEIGHT");
-
-        for(var mt : MissionType.values()) {
-            addParameter(mt.name(), mt.getName(), ParameterValueType.INTEGER);
-        }
+        super("MISSION_WEIGHT", ParameterValueType.INTEGER, MissionType.class);
     }
 }

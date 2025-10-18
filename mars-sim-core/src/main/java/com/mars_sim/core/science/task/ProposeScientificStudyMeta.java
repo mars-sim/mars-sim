@@ -115,7 +115,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
 		RatingScore result = new RatingScore(base);
 		result.addModifier(SCIENCE_MODIFIER, settlement.getPreferences()
-								.getDoubleValue(ScienceParameters.INSTANCE, science.name(), 1D));
+								.getDoubleValue(ScienceParameters.INSTANCE.getKey(science), 1D));
 		// Crowding modifier
 		if (person.isInSettlement()) {
 			Building b = BuildingManager.getAvailableBuilding(science, person);

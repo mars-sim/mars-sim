@@ -8,14 +8,13 @@ package com.mars_sim.core.structure;
 
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterValueType;
-import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
+import com.mars_sim.core.parameter.ParameterKey;
 
 /**
  * Defines the parameters values that are applicable to the behaviour of a Settlement.
  */
 public final class SettlementParameters extends ParameterCategory {
 
-    private static final long serialVersionUID = 1L;
 	public static final SettlementParameters INSTANCE = new SettlementParameters();
 
     public static final ParameterKey QUICK_CONST = INSTANCE.addParameter(

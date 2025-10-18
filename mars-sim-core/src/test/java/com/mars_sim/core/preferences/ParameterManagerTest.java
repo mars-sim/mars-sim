@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterManager;
-import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
+import com.mars_sim.core.parameter.ParameterKey;
 import com.mars_sim.core.parameter.ParameterValueType;
 
 class ParameterManagerTest {
@@ -20,7 +20,7 @@ class ParameterManagerTest {
         private static final String INT1 = "Int1";
         private static final String BOOL2 = "Bool2";
         private static final String BOOL1 = "Bool1";
-        private static final long serialVersionUID = 1L;
+
         protected ParameterKey bool1;
         protected ParameterKey bool2;
         protected ParameterKey int1;

@@ -74,7 +74,6 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         int settlementMissions = missionManager.getMissionsForSettlement(settlement).size();
 
         int optimalMissions = settlement.getPreferences().getIntValue(
-                                                MissionLimitParameters.INSTANCE,
                                                 MissionLimitParameters.TOTAL_MISSIONS, 0);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {

@@ -268,8 +268,8 @@ public class MissionManager implements Serializable {
 
 	private boolean canAcceptMission(MetaMission metaMission,
 									 Settlement settlement, ParameterManager paramMgr) {
-		int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE,
-				metaMission.getType().name(), Integer.MAX_VALUE);
+		int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE.getKey(metaMission.getType()),
+											Integer.MAX_VALUE);
 		int activeMissions = numParticularMissions(metaMission.getType(), settlement);
 		return activeMissions < maxMissions;
 	}
@@ -279,7 +279,7 @@ public class MissionManager implements Serializable {
 		double score = baseProb.getScore();
 		if (score > 0) {
 			double settlementRatio = paramMgr.getDoubleValue(
-					MissionWeightParameters.INSTANCE, metaMission.getType().name(), 1D);
+					MissionWeightParameters.INSTANCE.getKey(metaMission.getType()), 1D);
 			baseProb.addModifier("settlement.ratio", settlementRatio);
 
 			logger.info(person, metaMission.getType().getName() + " " + baseProb.getOutput());

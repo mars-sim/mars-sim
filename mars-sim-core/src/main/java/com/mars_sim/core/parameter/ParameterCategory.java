@@ -6,12 +6,10 @@
  */
 package com.mars_sim.core.parameter;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -19,9 +17,7 @@ import com.mars_sim.core.tool.Msg;
  * The spec defines the type of the value, the display name, and the id.
  * The id is used as the key for an ParameterManager values.
  */
-public abstract class ParameterCategory implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public abstract class ParameterCategory {
 
 	/**
      * Definition of a single Parameter value.
@@ -29,8 +25,8 @@ public abstract class ParameterCategory implements Serializable {
     public record ParameterSpec(String displayName, ParameterValueType type) {}
 
     private String id;
-    private transient String name;
-    private transient Map<ParameterKey,ParameterSpec> range = new HashMap<>();
+    private String name;
+    private Map<ParameterKey,ParameterSpec> range = new HashMap<>();
 
     /**
      * Creates new category with the specific id.
@@ -101,7 +97,7 @@ public abstract class ParameterCategory implements Serializable {
      */
     public ParameterKey getKey(String pName) {
         for (var entry : range.keySet()) {
-            if (entry.id().equals(pName)) {
+            if (entry.getId().equals(pName)) {
                 return entry;
             }
         }

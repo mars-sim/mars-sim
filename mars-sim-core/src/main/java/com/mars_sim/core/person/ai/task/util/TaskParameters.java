@@ -9,7 +9,7 @@ package com.mars_sim.core.person.ai.task.util;
 import java.util.List;
 
 import com.mars_sim.core.parameter.ParameterCategory;
-import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
+import com.mars_sim.core.parameter.ParameterKey;
 import com.mars_sim.core.parameter.ParameterValueType;
 
 /**
@@ -17,8 +17,6 @@ import com.mars_sim.core.parameter.ParameterValueType;
  * This is a lazy loading implementation as the MetaTaskUtil is created until later.
  */
 public class TaskParameters extends ParameterCategory {
-
-    private static final long serialVersionUID = 1L;
 
     /**
      * This is a singleton.

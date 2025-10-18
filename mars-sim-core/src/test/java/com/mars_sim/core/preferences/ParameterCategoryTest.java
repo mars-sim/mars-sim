@@ -10,6 +10,7 @@ import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterValueType;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
+import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskParameters;
@@ -25,8 +26,6 @@ class ParameterCategoryTest {
     private static final String KEY_PREFIX = "key_";
 
 	class TestCategory extends ParameterCategory {
-
-        private static final long serialVersionUID = 1L;
 
 		public TestCategory() {
             super(CAT_NAME);
@@ -47,7 +46,7 @@ class ParameterCategoryTest {
         var range = cat.getRange();
         assertEquals(VALUE_COUNT, range.size(), "Number of values");
         for(var v : range.entrySet()) {
-            assertEquals(DISPLAY_PREFIX + v.getKey().id(), v.getValue().displayName(), "Value name");
+            assertEquals(DISPLAY_PREFIX + v.getKey().getId(), v.getValue().displayName(), "Value name");
         }
     }
 
@@ -60,8 +59,8 @@ class ParameterCategoryTest {
             var id = KEY_PREFIX + i;
             var key = cat.getKey(id);
             assertNotNull(key, "Key of Value #" + i);
-            assertEquals(cat, key.category(), "Category of Value #" + i);
-            assertEquals(id, key.id(), "Id of Value #" + i);
+            assertEquals(cat, key.getCategory(), "Category of Value #" + i);
+            assertEquals(id, key.getId(), "Id of Value #" + i);
 
             var s = cat.getSpec(key);
             assertEquals(types[i % types.length], s.type(), "Type of Value #" + i);
@@ -83,9 +82,26 @@ class ParameterCategoryTest {
                      "Science values");
 
         SimulationConfig.loadConfig();
+
+        RoleUtil.initialize();
         MetaTaskUtil.initializeMetaTasks();
         assertEquals(MetaTaskUtil.getAllMetaTasks().size(),
                      TaskParameters.INSTANCE.getRange().size(),
                      "Task values");
+    }
+
+    @Test
+    void testEnumCategory() {
+        var cat = ScienceParameters.INSTANCE;
+
+        for(var s : ScienceType.values()) {
+            var key = cat.getKey(s.name());
+            assertNotNull(key, "Key for " + s.name());
+            var spec = cat.getSpec(key);
+            assertNotNull(spec, "Spec for " + s.name());
+            assertEquals(s.getName(), spec.displayName(), "Spec name for " + s.name());
+            assertEquals(ParameterValueType.DOUBLE, spec.type(), "Spec type for " + s.name());
+
+        }
     }
 }

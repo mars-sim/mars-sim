@@ -19,12 +19,6 @@ import java.util.Map;
 public class ParameterManager implements Serializable {
     
     private static final long serialVersionUID = 1L;
-
-	/**
-     * The key used for Parameters
-     */
-    public record ParameterKey(ParameterCategory category, String id)
-                    implements Serializable {}
     
     private Map<ParameterKey,Serializable> values = new HashMap<>();
 
@@ -68,23 +62,6 @@ public class ParameterManager implements Serializable {
 
     /**
      * Puts a new parameter value into the manager.
-     * 
-     * @param category Category for the new value
-     * @param id Identifier of the value being defined
-     * @param value Actual new value
-     */
-    @Deprecated
-    public void putValue(ParameterCategory category, String id, Serializable value) {
-        var key = new ParameterKey(category, id);
-        if (category.getSpec(key) == null) {
-            throw new IllegalArgumentException("No such parameter defined: " + category.getId() + "." + id);
-        }
-
-        putValue(key, value);
-    }
-
-    /**
-     * Puts a new parameter value into the manager.
      * @param key Key for the new value
      * @param value Actual new value
      */
@@ -113,20 +90,6 @@ public class ParameterManager implements Serializable {
     /**
      * Gets a parameter value that is type Double. 
      * 
-     * @param category Category of the value
-     * @param id Identifier of the value
-     * @param defaultValue Default value if is is not defined
-     * @return Found value matching category & id or the default
-     */
-    @Deprecated
-    public double getDoubleValue(ParameterCategory category, String id, double defaultValue) {
-        var key = new ParameterKey(category, id);
-        return getDoubleValue(key, defaultValue);
-    }
-
-    /**
-     * Gets a parameter value that is type Double. 
-     * 
      * @param key Key of the value
      * @param defaultValue Default value if is is not defined
      * @return Found value matching category & id or the default
@@ -137,20 +100,6 @@ public class ParameterManager implements Serializable {
             return defaultValue;
         }
         return (Double)value;
-    }
-
-    /**
-     * Gets a parameter value that is type Integer. 
-     * 
-     * @param category Category of the value
-     * @param id Identifier of the value
-     * @param defaultValue Default value if is is not defined
-     * @return Found value matching category & id or the default
-     */
-    @Deprecated
-    public int getIntValue(ParameterCategory category, String id, int defaultValue) {
-        var key = new ParameterKey(category, id);
-        return getIntValue(key, defaultValue);
     }
 
     /**

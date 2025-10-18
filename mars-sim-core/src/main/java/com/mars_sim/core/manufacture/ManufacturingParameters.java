@@ -7,7 +7,7 @@
 package com.mars_sim.core.manufacture;
 
 import com.mars_sim.core.parameter.ParameterCategory;
-import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
+import com.mars_sim.core.parameter.ParameterKey;
 import com.mars_sim.core.parameter.ParameterValueType;
 
 /**
@@ -15,7 +15,6 @@ import com.mars_sim.core.parameter.ParameterValueType;
  */
 public class ManufacturingParameters extends ParameterCategory {
 
-    private static final long serialVersionUID = 1L;
 	public static final ManufacturingParameters INSTANCE = new ManufacturingParameters();
 
     public static final ParameterKey NEW_MANU_LIMIT = INSTANCE.addParameter("new_manu_limit",
