@@ -36,7 +36,7 @@ public class MissionHistoricalEvent extends HistoricalEvent {
 			AbstractMobileUnit entity) {
 		// Use HistoricalEvent constructor.
 		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, entity,
-					mission.getAssociatedSettlement().getName(),
+					mission.getAssociatedSettlement(),
 					entity.getCoordinates());
 	}
 
@@ -55,7 +55,7 @@ public class MissionHistoricalEvent extends HistoricalEvent {
 	 * @param coordinates	the coordinates where it belongs
 	 */
     public MissionHistoricalEvent(EventType eventType, Mission mission, String cause, String whileDoing,
-            String member, Unit entity, String homeTown, Coordinates coordinates) {
+            String member, Unit entity, Settlement homeTown, Coordinates coordinates) {
 		super(HistoricalEventCategory.MISSION, eventType, mission, cause, whileDoing, member, entity,
 					homeTown, coordinates);
     }

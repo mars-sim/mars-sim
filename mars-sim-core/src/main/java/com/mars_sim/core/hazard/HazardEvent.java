@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.hazard;
 
-
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
@@ -34,6 +33,6 @@ public class HazardEvent extends HistoricalEvent {
 	public HazardEvent(EventType eventType, Object source, String whatCause, String whileDoing, String whoAffected,
 			Unit entity) {
 		super(HistoricalEventCategory.HAZARD, eventType, source, whatCause, whileDoing, whoAffected,
-				entity);
+				entity, entity.getAssociatedSettlement());
 	}
 }

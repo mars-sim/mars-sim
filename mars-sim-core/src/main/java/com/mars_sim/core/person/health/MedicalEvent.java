@@ -6,12 +6,10 @@
  */
 package com.mars_sim.core.person.health;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.tool.Conversion;
 
 /**
  * This class represents the historical action of a medical problem occurring or
@@ -34,11 +32,11 @@ public class MedicalEvent extends HistoricalEvent {
 		super(HistoricalEventCategory.MEDICAL,  
 				eventType, 
 				illness, 
-				Conversion.capitalize0(illness.getComplaint().getName()),
+				illness.getComplaint().getName(),
 				worker.getTaskDescription(),
 				worker.getName(),
-				(Unit)worker,
-				worker.getAssociatedSettlement().getName(),
+				worker,
+				worker.getAssociatedSettlement(),
 				worker.getCoordinates());
 	}
 }

@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
@@ -46,7 +45,6 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 
 	// Event that are too low level to display
 	private static final Set<EventType> BLOCKED_EVENTS = Set.of(
-			EventType.MISSION_EMERGENCY_BEACON_ON,
 			EventType.MISSION_EMERGENCY_BEACON_OFF,
 			EventType.MISSION_EMERGENCY_DESTINATION,
 			EventType.MISSION_NOT_ENOUGH_RESOURCES,
@@ -73,7 +71,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 
 	private HistoricalEventManager eventManager;
 	private Set<HistoricalEventCategory> blockedTypes = new HashSet<>();
-	private Set<String> settlementNames = Collections.emptySet();
+	private Set<Settlement> settlements = Collections.emptySet();
 
 	/**
 	 * Constructor. Create a new Event model based on the specified event manager.
@@ -99,9 +97,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> settlements) {
 
-		settlementNames = settlements.stream()
-				.map(Settlement::getName)
-				.collect(Collectors.toSet());
+		this.settlements = settlements;
 		
 		reloadEvents();
 		return true;
@@ -137,7 +133,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 * @return
 	 */
 	private boolean isDisplayable(HistoricalEvent event) {
-		if (!settlementNames.contains(event.getHomeTown())) {
+		if (!settlements.contains(event.getHomeTown())) {
 			return false;
 		}
 		HistoricalEventCategory category = event.getCategory();
@@ -194,7 +190,8 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 				break;
 	
 			case SETTLEMENT: {
-				result = event.getHomeTown();
+				var home = event.getHomeTown();
+				result = home != null ? home.getName() : null;
 			}
 				break;
 				
@@ -210,6 +207,16 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 		return result;
 	}
 
+	/**
+	 * Gets the Entity associaedt to the event
+	 *
+	 * @param row Indexes of Unit to retrieve.
+	 * @return Unit at specified position.
+	 */
+	@Override
+	public Object getObject(int row) {
+		return getEntity(row).getEntity();
+	}
 	/**
 	 * New event has been added.
 	 */

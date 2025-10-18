@@ -8,7 +8,7 @@ package com.mars_sim.core.events;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.structure.Settlement;
@@ -43,9 +43,9 @@ public abstract class HistoricalEvent implements Serializable {
 	private String whatCause;
 	private String whileDoing;
 	private String who;
-	private Unit entity;
-	private String homeTown;
-	private String coordinates;
+	private Entity entity;
+	private Settlement homeTown;
+	private Coordinates coordinates;
 
 	/**
 	 * Constructs an event with the appropriate information. The time is not defined
@@ -61,10 +61,9 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, Unit entity) {
+			String whileDoing, String whoAffected, Entity entity, Settlement settlement) {
 		this(category, type, source, whatCause, whileDoing, whoAffected, entity,
-				entity.getAssociatedSettlement().getName(),
-				entity.getAssociatedSettlement().getCoordinates());
+				settlement, settlement.getCoordinates());
 	}
 
 	/**
@@ -77,13 +76,13 @@ public abstract class HistoricalEvent implements Serializable {
 	 * @param whatCause		The cause for this event
 	 * @param whileDoing	during or While doing what
 	 * @param whoAffected	Who is being primarily affected by this event
-	 * @param entity		the building/vehicle where it occurs
-	 * @param homeTown		the associated settlement where it belongs
+	 * @param entity		where the event occurs
+	 * @param settlement	the associated settlement where it belongs
 	 * @param coordinates	the coordinates where it belongs
 	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
 	 */
 	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, Unit entity, String homeTown, Coordinates coordinates) {
+			String whileDoing, String whoAffected, Entity entity, Settlement settlement, Coordinates coordinates) {
 		this.category = category;
 		this.type = type;
 		this.source = source;
@@ -91,8 +90,8 @@ public abstract class HistoricalEvent implements Serializable {
 		this.whileDoing = whileDoing;
 		this.who = whoAffected;
 		this.entity = entity;
-		this.homeTown = homeTown;
-		this.coordinates = coordinates.getFormattedString();
+		this.homeTown = settlement;
+		this.coordinates = coordinates;;
 	}
 
 	/**
@@ -136,7 +135,7 @@ public abstract class HistoricalEvent implements Serializable {
 	 * 
 	 * @return he building/vehicle entity string
 	 */
-	public Unit getEntity() {
+	public Entity getEntity() {
 		return entity;
 	}
 
@@ -145,7 +144,7 @@ public abstract class HistoricalEvent implements Serializable {
 	 * 
 	 * @return the coordinates string
 	 */
-	public String getCoordinates() {
+	public Coordinates getCoordinates() {
 		return coordinates;
 	}
 
@@ -154,7 +153,7 @@ public abstract class HistoricalEvent implements Serializable {
 	 * 
 	 * @return the associated settlement string
 	 */
-	public String getHomeTown() {
+	public Settlement getHomeTown() {
 		return homeTown;
 	}
 	

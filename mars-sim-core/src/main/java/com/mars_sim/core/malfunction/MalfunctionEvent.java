@@ -32,6 +32,7 @@ public class MalfunctionEvent extends HistoricalEvent {
 	 */
 	public MalfunctionEvent(EventType type, Malfunction malfunction, String whileDoing,
 			String whoAffected, Unit entity) {
-		super(HistoricalEventCategory.MALFUNCTION, type, malfunction, malfunction.getName(), whileDoing, whoAffected, entity);
+		super(HistoricalEventCategory.MALFUNCTION, type, malfunction, malfunction.getName(), whileDoing, whoAffected, entity,
+				entity.getAssociatedSettlement());
 	}
 }

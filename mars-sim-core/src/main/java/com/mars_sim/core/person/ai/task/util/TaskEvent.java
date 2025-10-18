@@ -37,7 +37,6 @@ public class TaskEvent extends HistoricalEvent {
 				"Tracking Task",
 				description,
 				unit.getName(),
-				(Unit)source
-		);
+				unit, unit.getAssociatedSettlement());
 	}
 }

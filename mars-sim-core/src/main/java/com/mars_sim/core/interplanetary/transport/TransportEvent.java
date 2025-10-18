@@ -29,10 +29,9 @@ public class TransportEvent extends HistoricalEvent {
 	public TransportEvent(Transportable transportItem, EventType eventType, String location) {
 		// Future: Add the type of rocket
 		super(HistoricalEventCategory.TRANSPORT, eventType, transportItem, transportItem.getName(),
-				null, null,
-				// Not very nice
+				"", "",
+				transportItem,
 				(transportItem instanceof Resupply r ? r.getSettlement() : null),
-				transportItem.getSettlementName(),
 				transportItem.getLandingLocation()
 		);
 	}
