@@ -149,6 +149,7 @@ public class TabPanelPreferences extends TabPanelTable {
 			case INTEGER -> Integer.valueOf(1);
 		};
 		tableModel.addEntry(key, newValue);
+		nameCombo.removeItem(key);
 	}
 
 	private void deleteEntry() {
