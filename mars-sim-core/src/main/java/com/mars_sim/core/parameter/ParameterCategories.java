@@ -9,8 +9,8 @@ package com.mars_sim.core.parameter;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
-import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.TaskParameters;
+import com.mars_sim.core.science.ScienceParameters;
 import com.mars_sim.core.structure.ProcessParameters;
 import com.mars_sim.core.structure.SettlementParameters;
 

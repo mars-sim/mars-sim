@@ -55,7 +55,7 @@ public class DoInventory extends Task {
 		// Use Task constructor.
 		super(NAME, person, true, false, STRESS_MODIFIER, 10D + RandomUtil.getRandomInt(30));
 
-		if (person.isInSettlement() || person.isInSettlementVicinity()) {
+		if (person.isInSettlement() || person.isRightOutsideSettlement()) {
 			
 			boolean anyZone = false;
 			

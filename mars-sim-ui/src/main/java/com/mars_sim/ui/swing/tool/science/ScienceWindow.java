@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceWindow.java
- * @version 3.2.0 2021-06-20
+ * date 2025-10-09
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.science;
@@ -43,10 +43,10 @@ extends ToolWindow {
 	private ScientificStudy selectedStudy;
 
 	/**
-	 * Constructor
+	 * Constructor.
+	 * 
 	 * @param desktop the main desktop panel.
 	 */
-	@SuppressWarnings("serial")
 	public ScienceWindow(MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
@@ -89,9 +89,10 @@ extends ToolWindow {
 		studyDetailPane = new StudyDetailPanel(this);
 		mainPane.add(studyDetailPane, BorderLayout.CENTER);
 
-		setMinimumSize(new Dimension(480, 480));
+		setMinimumSize(new Dimension(800, 480));
+		setPreferredSize(new Dimension(800, 480));
 		setMaximizable(true);
-		setResizable(false);
+		setResizable(true);
 		setVisible(true);
 		
 		// Pack window.
@@ -100,6 +101,7 @@ extends ToolWindow {
 
 	/**
 	 * Sets the scientific study to display in the science window.
+	 * 
 	 * @param study the scientific study to display.
 	 */
 	public void setScientificStudy(ScientificStudy study) {
@@ -112,6 +114,7 @@ extends ToolWindow {
 
 	/**
 	 * Gets the displayed scientific study.
+	 * 
 	 * @return study or null if none displayed.
 	 */
 	public ScientificStudy getScientificStudy() {
@@ -119,7 +122,8 @@ extends ToolWindow {
 	}
 
 	/**
-	 * Update the window.
+	 * Updates the window.
+	 * 
 	 * @param pulse Unused clock pulse; window is time independent
 	 */
 	@Override

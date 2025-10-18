@@ -124,7 +124,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * Inner enum with valid source types. 
 	 */
 	private enum ValidSourceType {
-		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_INHABITANTS, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, BURIED_PEOPLE, MISSION_PEOPLE;
+		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, MISSION_PEOPLE;
 	}
 
 	private ValidSourceType sourceType;
@@ -218,11 +218,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {	
-		if ((sourceType != ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) &&
-			(sourceType != ValidSourceType.BURIED_PEOPLE) &&
-			(sourceType != ValidSourceType.SETTLEMENT_INHABITANTS)) {
-				return false;
-		}
 
 		if (settlementListener != null) {
 			settlements.forEach(s -> s.removeUnitListener(settlementListener));
@@ -287,7 +282,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 								.collect(Collectors.toList());
 				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
 											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-
 			}
 			else {
 
@@ -300,7 +294,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}		
 		}
-
 		
 		if (entities != null && !entities.isEmpty()) {		
 			resetEntities(entities);
@@ -348,23 +341,6 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		if (isBuried) {
 			this.isLiveCB = false;
 			this.isDeceasedCB = false;
-		}
-	}
-	
-	/**
-	 * Catches unit update event.
-	 *
-	 * @param event the unit event.
-	 */
-	@Override
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
-
-		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-
-		if (column != null && column > -1) {
-			Person unit = (Person) event.getSource();
-			entityValueUpdated(unit, column, column);
 		}
 	}
 
@@ -494,7 +470,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 	
 	/**
-     * Return the score breakdown if TASK_DESC column is selected
+     * Returns the score breakdown if TASK_DESC column is selected.
+     * 
      * @param rowIndex Row index of cell
      * @param columnIndex Column index of cell
      * @return Return null by default
@@ -514,6 +491,23 @@ public class PersonTableModel extends UnitTableModel<Person> {
         return result;
     }
 
+	
+	/**
+	 * Catches unit update event.
+	 *
+	 * @param event the unit event.
+	 */
+	@Override
+	public void unitUpdate(UnitEvent event) {
+		UnitEventType eventType = event.getType();
+
+		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
+
+		if (column != null && column > -1) {
+			Person unit = (Person) event.getSource();
+			entityValueUpdated(unit, column, column);
+		}
+	}
 
 	/**
 	 * Prepares the model for deletion.

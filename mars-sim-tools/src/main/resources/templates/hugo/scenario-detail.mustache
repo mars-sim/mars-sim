@@ -8,7 +8,7 @@
 |Name|Sponsor|Template|Persons|Robots|Location|Crew|
 |---|---|---|---|---|---|---|
 {{#scenario.settlements}}
-|{{name}}|{{sponsor}}|[{{settlementTemplate}}]({{settlementfolder}}{{#filename}}{{settlementTemplate}}{{/filename}})|{{populationNumber}}|{{numOfRobots}}|{{location.formattedString}}|[{{crew}}]({{crewfolder}}{{#filename}}{{crew}}{{/filename}})|
+|{{name}}|[{{sponsor}}]({{authorityfolder}}{{#filename}}{{sponsor}}{{/filename}})|[{{settlementTemplate}}]({{settlementfolder}}{{#filename}}{{settlementTemplate}}{{/filename}})|{{populationNumber}}|{{numOfRobots}}|{{location.formattedString}}|[{{crew}}]({{crewfolder}}{{#filename}}{{crew}}{{/filename}})|
 {{/scenario.settlements}}
 
 
@@ -18,7 +18,7 @@
 |Name|Sponsor|Template|Persons|Robots|Arrival (sols)|Location|
 |---|---|---|---|---|---|------|
 {{#scenario.arrivals}}
-|{{name}}|{{sponsorCode}}|[{{template}}]({{settlementfolder}}{{#filename}}{{template}}{{/filename}})|{{populationNum}}|{{numOfRobots}}|{{arrivalSols}}|{{landingLocation.formattedString}}|
+|{{name}}|[{{sponsorCode}}]({{authorityfolder}}{{#filename}}{{sponsorCode}}{{/filename}})|[{{template}}]({{settlementfolder}}{{#filename}}{{template}}{{/filename}})|{{populationNum}}|{{numOfRobots}}|{{arrivalSols}}|{{landingLocation.formattedString}}|
 {{/scenario.arrivals}}
 
 {{/scenario.arrivals.isEmpty}}

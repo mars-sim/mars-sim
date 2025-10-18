@@ -120,7 +120,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		objective = new FieldStudyObjectives(study, study.getScience(), fieldSiteTime);
 		addObjective(objective);
 
-		addNavpoint(fieldSite, "a field research site");
+		addNavpoint(fieldSite, "Field Research Site");
 
 		// Add mission members.
 		addMembers(members, false);
@@ -152,20 +152,38 @@ public abstract class FieldStudyMission extends EVAMission {
 
 		// Add primary study if in research phase.
 		ScientificStudy primaryStudy = researcher.getResearchStudy().getStudy();
-		if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
-				&& !primaryStudy.isPrimaryResearchCompleted()
-				&& (science == primaryStudy.getScience())) {
-			// Primary study added twice to double chance of random selection.
-			possibleStudies.add(primaryStudy);
-			possibleStudies.add(primaryStudy);
+		
+		if (primaryStudy != null) {
+			boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.INVITATION_PHASE == primaryStudy.getPhase()
+					|| 	StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.PAPER_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.PEER_REVIEW_PHASE == primaryStudy.getPhase());
+		
+			if (isOngoing
+					&& !primaryStudy.isPrimaryResearchCompleted()
+					&& (science == primaryStudy.getScience())) {
+				// Primary study added twice to double chance of random selection.
+				possibleStudies.add(primaryStudy);
+				possibleStudies.add(primaryStudy);
+			}
 		}
 
 		// Add all collaborative studies in research phase.
-		for( ScientificStudy collabStudy : researcher.getResearchStudy().getCollabStudies()) {
-			if (StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
-					&& !collabStudy.isCollaborativeResearchCompleted(researcher)
-					&& (science == collabStudy.getContribution(researcher))) {
-				possibleStudies.add(collabStudy);
+		for (ScientificStudy collabStudy : researcher.getResearchStudy().getCollabStudies()) {
+			
+			if (collabStudy != null) {
+
+				boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == collabStudy.getPhase()
+						|| StudyStatus.INVITATION_PHASE == collabStudy.getPhase()
+						|| 	StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
+						|| StudyStatus.PAPER_PHASE == collabStudy.getPhase()
+						|| StudyStatus.PEER_REVIEW_PHASE == primaryStudy.getPhase());
+			
+					if (isOngoing && !collabStudy.isCollaborativeResearchCompleted(researcher)
+						&& (science == collabStudy.getContribution(researcher))) {
+					possibleStudies.add(collabStudy);
+				}
 			}
 		}
 
@@ -197,7 +215,7 @@ public abstract class FieldStudyMission extends EVAMission {
 		double limit = range / 4D;
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		var fieldSite = startingLocation.getNewLocation(direction, siteDistance);
-		addNavpoint(fieldSite, "a field research site");
+		addNavpoint(fieldSite, "Field Fesearch Site");
 	}
 
 	@Override

@@ -60,7 +60,8 @@ public class ArrivingSettlement extends Transportable {
 	}
 
 	/**
-	 * The shared Transport manager handles arriving settlements
+	 * Gets the shared Transport manager handles arriving settlement.
+	 * 
 	 * @return Settlement's scheduled events
 	 */
 	@Override

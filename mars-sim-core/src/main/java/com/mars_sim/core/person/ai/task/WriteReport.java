@@ -71,25 +71,20 @@ public class WriteReport extends Task {
 				if (dining != null) {
 					// Walk to the dining building.
 					walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-				}
-//				else {
-//					// work anywhere
-//				}				
+				}		
 			}
+			
+			// May work anywhere
+			
 			// Initialize phase
 			setPhase(WRITING_REPORT);
-			
-			// set the boolean to true so that it won't be done again today
-//			person.getPreference().setTaskDue(this, true);
-			// }
-		} else if (person.isInVehicle()) {
+		}
+		
+		else if (person.isInVehicle()) {
 
 			if (person.getVehicle() instanceof Rover) {
 				walkToPassengerActivitySpotInRover((Rover) person.getVehicle(), true);
-
-				// set the boolean to true so that it won't be done again today
-//				person.getPreference().setTaskDue(this, true);
-				
+			
 				// Initialize phase
 				setPhase(WRITING_REPORT);
 			}
@@ -119,12 +114,12 @@ public class WriteReport extends Task {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double writingPhase(double time) {
-		// Do nothing
+		// Future: record the time and create documents
 		return 0D;
 	}
 
 	/**
-	 * Release office space
+	 * Releases office space.
 	 */
 	@Override
 	protected void clearDown() {
@@ -133,29 +128,4 @@ public class WriteReport extends Task {
 			office.removeStaff();
 		}
 	}
-
-//	/**
-//	 * Gets an available building with the administration function.
-//	 * 
-//	 * @param person the person looking for the office.
-//	 * @return an available office space or null if none found.
-//	 */
-//	public static Building getAvailableOffice(Person person) {
-//		Building result = null;
-//
-//		// If person is in a settlement, try to find a building with an office.
-//		if (person.isInSettlement()) {
-//			BuildingManager buildingManager = person.getSettlement().getBuildingManager();
-//			List<Building> offices = buildingManager.getBuildings(FunctionType.ADMINISTRATION);
-//			offices = BuildingManager.getNonMalfunctioningBuildings(offices);
-//			offices = BuildingManager.getLeastCrowdedBuildings(offices);
-//
-//			if (offices.size() > 0) {
-//				Map<Building, Double> selectedOffices = BuildingManager.getBestRelationshipBuildings(person, offices);
-//				result = RandomUtil.getWeightedRandomObject(selectedOffices);
-//			}
-//		}
-//
-//		return result;
-//	}
 }

@@ -75,7 +75,7 @@ public class CollectResourceObjective implements MissionObjective {
     }
 
     /**
-     * Gets the collection goal at each site.
+     * Gets the collection goal (resources in [kg]) at each site.
      * 
      * @return
      */

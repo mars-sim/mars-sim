@@ -206,7 +206,7 @@ public abstract class AbstractStudyListPanel extends JPanel {
 
 		// Create study table.
 		studyTable = new JTable(studyTableModel);
-		studyTable.setPreferredScrollableViewportSize(new Dimension(500, 200));
+		studyTable.setPreferredScrollableViewportSize(new Dimension(480, 260));
 		studyTable.setCellSelectionEnabled(false);
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

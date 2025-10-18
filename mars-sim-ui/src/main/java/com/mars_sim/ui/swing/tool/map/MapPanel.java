@@ -90,7 +90,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private List<MapHotspot> hotspots = new ArrayList<>();
 
 	/**
-	 * Constructor 4.
+	 * Constructor.
 	 * 
 	 * @param desktop
 	 */
@@ -180,8 +180,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, MAX_SLIDER, 25);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-        zoomSlider.setPreferredSize(new Dimension(60, 400));
-        zoomSlider.setSize(new Dimension(60, 400));
+        zoomSlider.setPreferredSize(new Dimension(60, 300));
+        zoomSlider.setSize(new Dimension(60, 300));
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setForeground(Color.ORANGE.darker().darker());
@@ -199,7 +199,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 		zoomSlider.setLabelTable(labelTable);
     }
-		
+
 	/**
 	 * Converts the RHO. This means convert the slider value
 	 * into a rho that is between the min & max of the MapDisplay.

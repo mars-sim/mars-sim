@@ -23,8 +23,8 @@ import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
-import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.TaskParameters;
+import com.mars_sim.core.science.ScienceParameters;
 import com.mars_sim.core.structure.Settlement;
 
 /**

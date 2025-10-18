@@ -10,10 +10,8 @@ import java.io.Serializable;
 import java.util.Collection;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -131,7 +129,9 @@ public class LocationTag implements Serializable {
 				}			
 				break;
 			case INSIDE_VEHICLE:
-				result = unit.getVehicle().getName();
+				if (unit.isInVehicle()) {
+					result = unit.getVehicle().getName();
+				}
 				break;
 			case MARS_SURFACE: {
 				Settlement s = findSettlementVicinity();
@@ -202,23 +202,24 @@ public class LocationTag implements Serializable {
 		return null;
 	}
 
-	/**
-	 * Checks if an unit is in the vicinity of a settlement.
-	 *
-	 * @return true if it is
-	 */
-	public boolean isInSettlementVicinity() {
-		if ((unit instanceof Vehicle v)
-				&& v.isInGarage()) {
-			return false;
-		}
-		else if ((unit instanceof Person
-				|| unit instanceof Equipment
-				|| unit instanceof Robot)
-				&& unit.getSettlement() != null) {
-			return false;
-		}
-		
-		return (CollectionUtils.findSettlement(unit.getCoordinates()) != null);
-	}
+//	/**
+//	 * Checks if an unit is in the vicinity of a settlement.
+//	 *
+//	 * @return true if it is
+//	 */
+//	public boolean isInSettlementVicinity() {
+//		// Note: if v.getSettlement() is not null, it may or may not be inside a garage
+//		if ((unit instanceof Vehicle v)
+//				&& v.isInGarage()) {
+//			return false;
+//		}
+//		else if ((unit instanceof Person
+//				|| unit instanceof Equipment
+//				|| unit instanceof Robot)
+//				&& unit.getSettlement() != null) {
+//			return false;
+//		}
+//		
+//		return (CollectionUtils.findSettlement(unit.getCoordinates()) != null);
+//	}
 }

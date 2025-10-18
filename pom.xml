@@ -76,6 +76,19 @@
 		  </build>
 		</profile>
 		
+		<!-- Profile for release -->
+		<profile>
+			<id>installer</id>
+			<modules>
+				<module>mars-sim-tools</module>
+				<module>mars-sim-headless</module>
+				<module>mars-sim-console</module>
+				<module>mars-sim-core</module>
+				<module>mars-sim-ui</module>
+				<module>mars-sim-installer</module>
+			</modules>
+		</profile>
+
 		<!-- Profile for JavaFX -->
 		<profile>
 			<id>javaFX</id>
@@ -195,7 +208,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.0</version>
+					<version>3.14.1</version>
 					<configuration>
 						<release>${release}</release>
 						<compilerArgs>

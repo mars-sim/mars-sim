@@ -74,7 +74,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	            }
 	            
 				missionProbability = new RatingScore(1);
-	    		missionProbability.addModifier(MINERALS, settlement.getIceProbabilityValue() / VALUE);
+	    		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getIceDemandCache() / VALUE);
 
 				// Job modifier.
 	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));

@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
@@ -54,7 +55,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 400.0;
+    private static final double BASE_SCORE = 1.0;
 	private static final double MAX_SCORE = 750.0;
 	private static final int MAX_AGE = 7;
 	private static final double SOL_SCORE = (MAX_SCORE - BASE_SCORE) / MAX_AGE;
@@ -79,6 +80,10 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+    	if (JobType.TOURIST == p.getMind().getJobType()) {
+            return RatingScore.ZERO_RATING;
+        }
+    	
         RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
@@ -88,7 +93,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 			// Is this Person allowed to review this Mission
 			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p.getName(), pop)) {
 				factor = super.assessPersonSuitability(t, p);
-				if (factor.getScore() == 0) {
+				if (factor.getScore() == 0D) {
 					return factor;
 				}
 

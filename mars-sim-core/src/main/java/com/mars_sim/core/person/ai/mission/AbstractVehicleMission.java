@@ -1128,7 +1128,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// Create Mission Flag
 				MissionStatus status = MissionStatus.createResourceStatus(missingResourceId);
 				abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
-				addMissionLog("Non-mission member", getStartingPerson().getName());
+				addMissionLog(EventType.MISSION_NOT_ENOUGH_RESOURCES.getName(), getStartingPerson().getName());
 			}
 		}
 
@@ -1141,7 +1141,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 *
 	 * @param neededResources map of amount and item resources and their Double
 	 *                        amount or Integer number.
-	 * @return The resourceId of the 1st resource that is lacking; otherwise -1
+	 * @return The resourceId of the 1st resource that is lacking; if it has enough, return -1
 	 */
 	private int hasEnoughResources(Map<Integer, Number> neededResources) {
 
@@ -1212,34 +1212,47 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		if (newDestination != null) {
 			double newDistance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
-			boolean enough = true;
+			int id = 0;
 
-			// for drone mission, Will need to alert the player differently if it runs out of fuel
-			if (vehicle instanceof GroundVehicle) {
-
-				enough = hasEnoughResources(getResourcesNeededForTrip(false, newDistance)) < 0;
+			if (vehicle instanceof GroundVehicle v) {
+				
+				id = hasEnoughResources(getResourcesNeededForTrip(false, newDistance));
 
 				// Check if enough resources to get to settlement.
-				if (enough) {
-					travelDirectToSettlement(newDestination);
-
-					logger.info(getVehicle(), "Returning to " + newDestination.getName() + ".");
-					// Creating emergency destination mission event for going to a new settlement.
-					if (!newDestination.equals(oldHome)) {
-						HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
-								this,
-								reason.getName(),
-								getName(),
-								getStartingPerson().getName(),
-								vehicle
-								);
-						eventManager.registerNewEvent(newEvent);
-					}
+				if (id == -1D) {
+					// Nothing is lacking
+					logger.info(v, "Reported no lacking of resources. Turning toward " + newDestination.getName() +
+							". New distance: " + Math.round(newDistance * 1000.0)/1000.0);
 				}
+				
 				else {
+					// Supposedly lacking in resources to go to this new destination. Turn on beacon
+					// Note: but it may suffice since the amount of resource needed is just an estimate and each person
+					//       can ration food and water			
 					requestHelp = true;
+					
+					// Question, should it starting driving toward the settlement as close as possible
+					//           or wait for rescue ?
+					
+					logger.info(v, "Possibly lacking resources. Turning toward " + newDestination.getName() +
+							". New distance: " + Math.round(newDistance * 1000.0)/1000.0);
+				}	
+				
+				travelDirectToSettlement(newDestination);
+				
+				// Creating emergency destination mission event for going to a new settlement.
+				if (!newDestination.equals(oldHome)) {
+					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
+							this,
+							reason.getName(),
+							getName(),
+							getStartingPerson().getName(),
+							vehicle
+							);
+					eventManager.registerNewEvent(newEvent);
 				}
 			}
+			// Note: for Drone mission, Will need to alert the player differently if it runs out of fuel
 		}
 		else {
 			requestHelp = true;
@@ -1795,6 +1808,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				determineEmergencyDestination(status);
 			}
 			else {
+				// Already at home
+				
 				releaseVehicle(vehicle);
 			
 				super.abortMission(status);
@@ -1808,10 +1823,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected void travelDirectToSettlement(Settlement newDestination) {
 
 		// Clear remaining route and add a new one
-		// Set the new destination as the travel mission's next and final navpoint.
 		clearRemainingNavpoints();
-
+		// Set the new destination as the travel mission's next and final navpoint.
 		addNavpoint(new NavPoint(newDestination, vehicle.getCoordinates()));
+		
 		if (getPhase().equals(TRAVELLING)) {
 			// Already travelling so just change destination
 			startTravelToNextNode();

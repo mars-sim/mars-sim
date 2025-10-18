@@ -273,15 +273,15 @@ public class SettlementTransparentPanel extends JComponent {
         controlPane.setBackground(new Color(0,0,0,128));
         controlPane.setOpaque(false);
 
-        var controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        controlCenterPane.setBackground(new Color(0,0,0,128));
-        controlCenterPane.setOpaque(false);
-        controlCenterPane.add(zoomSlider);
-        controlCenterPane.setAlignmentY(CENTER_ALIGNMENT);
+        var zoomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        zoomPane.setBackground(new Color(0,0,0,128));
+        zoomPane.setOpaque(false);
+        zoomPane.add(zoomSlider);
+        zoomPane.setAlignmentY(CENTER_ALIGNMENT);
 
         controlPane.add(buttonPane, BorderLayout.NORTH);
         controlPane.add(labelPane, BorderLayout.SOUTH);
-        controlPane.add(controlCenterPane, BorderLayout.CENTER);
+        controlPane.add(zoomPane, BorderLayout.CENTER);
 
         var eastPane = new JPanel(new BorderLayout());
         eastPane.setBackground(new Color(0,0,0,15));
@@ -416,13 +416,14 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private int getNameLength() {
         Collection<Settlement> list = unitManager.getSettlements();
-        int max = 12;
+        int min = 10;
         for (Settlement s: list) {
             int size = s.getName().length();
-            if (max < size)
-                max = size;
+            if (min < size) {
+                min = size;
+            }
         }
-        return max;
+        return min;
     }
 
     /**
@@ -432,7 +433,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         settlementCBModel = new SettlementComboBoxModel();
         settlementListBox = new JComboBox<>(settlementCBModel);
-        settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
+        settlementListBox.setPreferredSize(new Dimension(getNameLength() * 9, 30));
         settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
         settlementListBox.setRenderer(new NamedListCellRenderer());
         settlementListBox.addItemListener(event -> {
@@ -716,8 +717,8 @@ public class SettlementTransparentPanel extends JComponent {
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, 150, 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 75));
-        zoomSlider.setPreferredSize(new Dimension(50, 350));
-        zoomSlider.setSize(new Dimension(50, 350));
+        zoomSlider.setPreferredSize(new Dimension(50, 400));
+        zoomSlider.setSize(new Dimension(50, 400));
 
         zoomSlider.setMajorTickSpacing(30);
         zoomSlider.setMinorTickSpacing(10);
@@ -751,13 +752,13 @@ public class SettlementTransparentPanel extends JComponent {
 
                 if (numClicks > 0) {
                     // wheel down -> zoom out
-                    if (value > min) {
+                    if (value - 1 >= min) {
                         zoomSlider.setValue(value - 1);
                     }
                 }
                 else if (numClicks < 0) {
                     // wheel up -> zoom in
-                    if (value < max) {
+                    if (value + 1 <= max) {
                         zoomSlider.setValue(value + 1);
                     }
                 }
@@ -780,7 +781,7 @@ public class SettlementTransparentPanel extends JComponent {
         zoomListener = e -> {
             int value = ((JSlider) e.getSource()).getValue();
             if (zoomDebounce == null) {
-                zoomDebounce = new javax.swing.Timer(75, ae -> convertTo(value));
+                zoomDebounce = new javax.swing.Timer(50, ae -> convertTo(value));
                 zoomDebounce.setRepeats(false);
                 zoomDebounce.start();
             }
@@ -789,7 +790,7 @@ public class SettlementTransparentPanel extends JComponent {
             }
             else {
                 zoomDebounce = null;
-                zoomDebounce = new javax.swing.Timer(75, ae -> convertTo(value));
+                zoomDebounce = new javax.swing.Timer(50, ae -> convertTo(value));
                 zoomDebounce.setRepeats(false);
                 zoomDebounce.start();
             }
@@ -914,7 +915,8 @@ public class SettlementTransparentPanel extends JComponent {
     public void setZoomValue(int value) {
         if (zoomSlider != null && zoomSlider.getValue() != value) {
             if (zoomDebounce != null && zoomDebounce.isRunning()) {
-                zoomDebounce.stop(); // prevent a stale convertTo firing
+            	// Prevent a stale convertTo firing
+                zoomDebounce.stop(); 
             }
             zoomSlider.setValue(value);
         }
@@ -931,7 +933,7 @@ public class SettlementTransparentPanel extends JComponent {
         infoButton.setContentAreaFilled(false);
         infoButton.setBorderPainted(false);
         infoButton.addActionListener(e -> {
-                Settlement settlement = mapPanel.getSettlement();
+        	Settlement settlement = mapPanel.getSettlement();
                 if (settlement != null) {
                     desktop.showDetails(settlement);
                 }
@@ -1138,7 +1140,8 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Ask for a new Settlement name
+     * Asks for a new Settlement name.
+     * 
      * @return pop up jDialog
      */
     private String askNameDialog() {
@@ -1225,7 +1228,9 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Gets the sunlight data and display it on the top left panel of the settlement map.
-     * (UI label updates are marshaled to EDT)
+     * (UI label updates are marshaled to EDT).
+     * 
+     * @param location
      */
     private void displaySunData(Coordinates location) {
         double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());

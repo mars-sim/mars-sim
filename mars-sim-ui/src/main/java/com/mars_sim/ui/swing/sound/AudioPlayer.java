@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AudioPlayer.java
- * @date 2025-09-18
+ * @date 2025-10-14
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 
@@ -37,10 +37,11 @@ public class AudioPlayer {
 	private static SimLogger logger = SimLogger.getLogger(AudioPlayer.class.getName());
 
 	/** music files directory. */
-	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir(); //$NON-NLS-1$
+	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir();
 	private static final String DEFAULT_MUSIC_DIR = "/music";
 			
-	public static final double DEFAULT_VOL = .75;
+	public static final double DEFAULT_VOL = .25;
+	public static final double STEP = 0.05;
 
 	public static final String PROPS_NAME = "audio";
 	private static final String VOLUME = "volume";
@@ -56,27 +57,32 @@ public class AudioPlayer {
 	private static boolean hasMasterGain = true;
 	private static boolean isVolumeDisabled;
 
-	private boolean userMuteMusic = false;
-	private boolean userMuteSoundEffect = false;
-	
 	/** The current clip sound. */
 	private static OGGSoundClip currentSoundClip;
 	private static OGGSoundClip currentMusic;
 
 	private static Map<String, OGGSoundClip> allSoundClips;
-
-	private static List<String> musicTracks;
+	private static Map<String, String> musicTracks;
+	private static List<String> musicList;
+	
 	private static List<Integer> playedTracks = new ArrayList<>();
 
 	private static int playTimes = 0;
 	private static int numTracks;
+	volatile static boolean playing;
 	
 	private MasterClock masterClock;
 
+//	private OggPlayer oggPlayer = new OggPlayer();
 
+	/**
+	 * The class for managing the audio.
+	 * 
+	 * @param desktop
+	 */
 	public AudioPlayer(MainDesktopPane desktop) {
 
-		masterClock = desktop.getSimulation().getMasterClock();
+		masterClock = desktop.getSimulation().getMasterClock();	
 		
 		if (!isVolumeDisabled) {
 			loadMusicTracks();
@@ -87,8 +93,6 @@ public class AudioPlayer {
 		Properties props = config.getPropSet(PROPS_NAME);
 		boolean mute = UIConfig.extractBoolean(props, MUTE, true);
 		if (mute) {
-			userMuteMusic = false;
-			userMuteSoundEffect = false;
 			currentMusicVol = 0;
 			currentSoundVol = 0;
 		}
@@ -99,11 +103,18 @@ public class AudioPlayer {
 		}
 	}
 		
-	public static OGGSoundClip obtainOGGMusicTrack(String name) {
+	/**
+	 * Creates an OGGSoundClip instance for a music/sound file.
+	 * 
+	 * @param parent
+	 * @param filename
+	 * @return
+	 */
+	public static OGGSoundClip obtainOGGMusicTrack(String parent, String filename) {
 		try {
-			return new OGGSoundClip(name, true);
+			return new OGGSoundClip(parent, filename , true);
 		} catch (IOException e) {
-			logger.severe( "Can't obtain the ogg music file '" + name + "': ", e);
+			logger.severe( "Can't obtain the ogg music file '" + (parent + filename) + "': ", e);
 		}
 		return null;
 	}
@@ -113,7 +124,7 @@ public class AudioPlayer {
 	 */
 	public void loadMusicTracks() {
 		allSoundClips = new HashMap<>();
-		musicTracks = new ArrayList<>();
+		musicTracks = new HashMap<>();
 
 		// Path in jarfile : 
 		// jar:file:/Users/spacebear/git/mars-sim/mars-sim-dist/target/mars-sim-pre-3.10.0/lib/mars-sim-swing.jar!/music/
@@ -123,19 +134,26 @@ public class AudioPlayer {
 		ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
 		try {
 			Resource[] resources = resolver.getResources(FULL_PATH);
-			logger.log(Level.CONFIG, "Loading from the target folder or within jarfile at " + FULL_PATH + ".");
-			List<String> files = new ArrayList<>();
-			for (Resource r: resources){
-			    files.add(r.getFilename());
+			
+			if (resources.length > 0) {
+				logger.log(Level.CONFIG, "Loading music file(s) from the target folder or within jarfile at " + FULL_PATH);
+	
+				for (Resource r: resources) {
+					String filename = r.getFilename();
+				    String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
+					
+					if (ext.equalsIgnoreCase(OGG)) {
+						logger.info(filename);
+						musicTracks.put(filename, r.getFile().getParent());
+					}
+				}
 			}
-			addMusicTracks(files);
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Unable to load from the target folder or within jarfile: " + e);
+			logger.log(Level.SEVERE, "Unable to load from the mars-sim's target folder or within jarfile: " + e);
 		}
 
 		// 2. Load from the music directory in user home folder
 		File userFolder = new File(MUSIC_DIR);
-		logger.log(Level.CONFIG, "Loading from user home music folder at " + MUSIC_DIR + ".");
 		// e.g. User Home music folder at /Users/spacebear/.mars-sim/music
 		
 		boolean dirExist = userFolder.isDirectory();
@@ -163,8 +181,10 @@ public class AudioPlayer {
 		
 		numTracks = musicTracks.size();
 			
+		musicList = new ArrayList<>(musicTracks.keySet());
 		if (numTracks > 0) {
-			currentMusic = obtainOGGMusicTrack(musicTracks.get(numTracks -1));
+			String music = musicList.get(numTracks -1);
+			currentMusic = obtainOGGMusicTrack(musicTracks.get(music), music);
 		}
 	}
 	
@@ -175,41 +195,27 @@ public class AudioPlayer {
 	 */
 	private static void addMusicTracks(File folder) {
 		File[] listOfFiles = folder.listFiles();
+		
+		int length = listOfFiles.length;
+				
+		if (length > 0) {
+			logger.log(Level.CONFIG, "Loading music file(s) from user home music folder at " + MUSIC_DIR);
 
-		for (int i = 0; i < listOfFiles.length; i++) {
-			File f = listOfFiles[i];
-			String filename = f.getName();
-			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
-			
-			if (f.isFile() && ext.equalsIgnoreCase(OGG)) {
-				logger.info(filename);
-				musicTracks.add(f.getName());
+			for (int i = 0; i < length; i++) {
+				File f = listOfFiles[i];
+				String filename = f.getName();
+				String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
+				
+				if (f.isFile() && ext.equalsIgnoreCase(OGG)) {
+					logger.info(filename);
+					musicTracks.put(f.getName(), folder.getParent());
+				}
 			}
 		}
 	}
-	
-	/**
-	 * Adds music tracks from a list of files.
-	 * 
-	 * @param folder
-	 */
-	private static void addMusicTracks(List<String> files) {
-	
-		for (int i = 0; i < files.size(); i++) {
-			String filename = files.get(i);
-			String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
-			
-			if (ext.equalsIgnoreCase(OGG)) {
-				logger.info(filename);
-				musicTracks.add(filename);
-			}
-		}
-	}
-	
 
 	/**
 	 * Loads all the sound effect clip names into a map.
-	 * 
 	 */
 	public void loadSoundEffects() {
 		List<String> soundEffects = new ArrayList<>();
@@ -228,7 +234,7 @@ public class AudioPlayer {
 
 		for (String s : soundEffects) {
 			try {
-				allSoundClips.put(s, new OGGSoundClip(s, false));
+				allSoundClips.put(s, new OGGSoundClip(null, s, false));
 			} catch (IOException e) {
 				logger.severe( "Can't load the sound effect files: ", e);
 			}
@@ -262,14 +268,14 @@ public class AudioPlayer {
 		if (allSoundClips.containsKey(filepath) 
 				&& allSoundClips.get(filepath) != null) {
 			currentSoundClip = allSoundClips.get(filepath);
-			currentSoundClip.determineVolume(currentSoundVol);
 			currentSoundClip.play();
+			currentSoundClip.determineGain(currentSoundVol);
 		} else {
 			try {
-				currentSoundClip = new OGGSoundClip(filepath, false);
+				currentSoundClip = new OGGSoundClip(null, filepath, false);
 				allSoundClips.put(filepath, currentSoundClip);
-				currentSoundClip.determineVolume(currentSoundVol);
 				currentSoundClip.play();
+				currentSoundClip.determineGain(currentSoundVol);
 			} catch (IOException e) {
 				logger.severe( "Can't load sound effect: ", e);
 			}
@@ -279,25 +285,36 @@ public class AudioPlayer {
 	/**
 	 * Plays a music track.
 	 * 
-	 * @param filepath the file path to the music track.
+	 * @param filename
 	 */
-	public static void playMusic(String filepath) {
-		if (!isMusicMute()) {
-			loadMusic(filepath);
+	public void playMusic(String filename) {
+		if (!isPlaying()) {
+//			oggPlayer.play(musicTracks.get(filename), filename);
+			loadMusic(filename);
 		}
 	}
 
+	/**
+	 * Checks if it's playing.
+	 */
+	public boolean isPlaying() {
+		return currentMusic != null && currentMusic.isPlaying();
+	}
+	
 	/**
 	 * Loads up the music track.
 	 * 
 	 * @param filepath the file path to the music track.
 	 */
 	public static void loadMusic(String filepath) {
-		if (musicTracks.contains(filepath) && filepath != null) {
-			currentMusic = obtainOGGMusicTrack(filepath);
+		if (musicList.contains(filepath) && filepath != null) {
+			String parent = musicTracks.get(filepath);
+			currentMusic = obtainOGGMusicTrack(parent, filepath);
 			if (currentMusic != null) {
-				currentMusic.determineVolume(currentMusicVol);
+				// Do NOT call resume() or else ogg file won't play
+//				currentMusic.resume();
 				currentMusic.loop();
+				currentMusic.determineGain(currentMusicVol);
 			}
 		}
 	}
@@ -325,15 +342,15 @@ public class AudioPlayer {
 	 */
 	public void musicVolumeUp() {
 		if (!isVolumeDisabled && hasMasterGain
-				&& currentMusic != null
-				&& currentMusic.getVol() < 1) {
+				&& currentMusic != null) {
 
-			double v = currentMusic.getVol() + .05;
+			double v = currentMusicVol + STEP;
 			if (v > 1)
-				v = 1;
+				v = 1.0;
 
 			currentMusicVol = v;
-			currentMusic.determineVolume(v);
+			currentMusic.determineGain(v);
+			logger.info("New Music Volume: " + v);
 		}
 	}
 
@@ -342,15 +359,15 @@ public class AudioPlayer {
 	 */
 	public void musicVolumeDown() {	
 		if (!isVolumeDisabled && hasMasterGain
-				&& currentMusic != null
-				&& currentMusic.getVol() > 0) {
+				&& currentMusic != null) {
 
-			double v = currentMusic.getVol() - .05;
+			double v = currentMusicVol - STEP;
 			if (v < 0)
-				v = 0;
+				v = 0.0;
 
 			currentMusicVol = v;
-			currentMusic.determineVolume(v);
+			currentMusic.determineGain(v);
+			logger.info("New Music Volume: " + v);
 		}
 	}
 
@@ -359,14 +376,14 @@ public class AudioPlayer {
 	 */
 	public void soundVolumeUp() {
 		if (!isVolumeDisabled && hasMasterGain 
-				&& currentSoundClip != null
-				&& currentSoundClip.getVol() < 1) {
-			double v = currentSoundClip.getVol() + .05;
+				&& currentSoundClip != null) {
+			double v = currentSoundVol + STEP;
 			if (v > 1)
-				v = 1;
+				v = 1.0;
 
 			currentSoundVol = v;
-			currentSoundClip.determineVolume(v);
+			currentSoundClip.determineGain(v);
+			logger.info("New Sound Volume: " + v);
 		}
 	}
 
@@ -375,14 +392,14 @@ public class AudioPlayer {
 	 */
 	public void soundVolumeDown() {
 		if (!isVolumeDisabled && hasMasterGain 
-				&& currentSoundClip != null
-				&& currentSoundClip.getVol() > 0) {
-			double v = currentSoundClip.getVol() - .05;
+				&& currentSoundClip != null) {
+			double v = currentSoundVol - STEP;
 			if (v < 0)
-				v = 0;
+				v = 0.0;
 
 			currentSoundVol = v;
-			currentSoundClip.determineVolume(v);
+			currentSoundClip.determineGain(v);
+			logger.info("New Sound Volume: " + v);
 		}
 	}
 
@@ -393,15 +410,15 @@ public class AudioPlayer {
 	 */
 	public void setMusicVolume(double volume) {
 
-		if (volume < 0F)
-			volume = 0;
-		if (volume > 1F)
-			volume = 1F;
+		if (volume < 0)
+			volume = 0.0;
+		if (volume > 1)
+			volume = 1.0;
 
 		currentMusicVol = volume;
 
 		if (!isVolumeDisabled && hasMasterGain && currentMusic != null) {
-			currentMusic.determineVolume(volume);
+			currentMusic.determineGain(volume);
 		}
 	}
 
@@ -410,7 +427,7 @@ public class AudioPlayer {
 	 */
 	public void restoreLastMusicGain() {
 		if (!isVolumeDisabled && hasMasterGain && currentMusic != null) {
-			currentMusic.determineVolume(currentMusicVol);
+			currentMusic.determineGain(currentMusicVol);
 		}
 	}
 	
@@ -421,15 +438,15 @@ public class AudioPlayer {
 	 */
 	public void setSoundVolume(double volume) {
 
-		if (volume < 0F)
-			volume = 0;
-		if (volume > 1F)
-			volume = 1F;
+		if (volume < 0)
+			volume = 0.0;
+		if (volume > 1)
+			volume = 1.0;
 
 		currentSoundVol = volume;
 
 		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
-			currentSoundClip.determineVolume(volume);
+			currentSoundClip.determineGain(volume);
 		}
 	}
 
@@ -439,7 +456,7 @@ public class AudioPlayer {
 	 */
 	public void restoreLastSoundEffectGain() {
 		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
-			currentSoundClip.determineVolume(currentSoundVol);
+			currentSoundClip.determineGain(currentSoundVol);
 		}
 	}
 
@@ -475,8 +492,7 @@ public class AudioPlayer {
 	 * Unmutes the sound effect.
 	 */
 	public void unmuteSoundEffect() {
-		if (!userMuteSoundEffect && currentSoundClip != null && currentSoundClip.isMute()) {
-			userMuteSoundEffect = false;
+		if (currentSoundClip != null && currentSoundClip.isMute()) {
 			currentSoundClip.setMute(false);
 			restoreLastSoundEffectGain();
 		}
@@ -486,7 +502,6 @@ public class AudioPlayer {
 	 * Mutes the sound Effect.
 	 */
 	public void muteSoundEffect() {
-		userMuteSoundEffect = true;
 		if (currentSoundClip != null) {
 			currentSoundClip.setMute(true);
 			currentSoundClip.stop();
@@ -497,8 +512,7 @@ public class AudioPlayer {
 	 * Unmutes the music.
 	 */
 	public void unmuteMusic() {
-		if (!userMuteMusic && currentMusic != null && currentMusic.isMute()) {
-			userMuteMusic = false;
+		if (currentMusic != null && currentMusic.isMute()) {
 			currentMusic.setMute(false);
 			restoreLastMusicGain();
 		}
@@ -508,7 +522,6 @@ public class AudioPlayer {
 	 * Mutes the music.
 	 */
 	public void muteMusic() {
-		userMuteMusic = true;
 		if (currentMusic != null) {
 			currentMusic.setMute(true);
 			currentMusic.stop();
@@ -521,40 +534,12 @@ public class AudioPlayer {
 	 * @param value
 	 */
 	public void setUserMuteMusic(boolean value) {
-		userMuteMusic = value;
 		if (currentMusic != null && !currentMusic.isMute()) {
 			// Note: should check if it is already mute since 
 			// user may pause and unpause consecutively too fast 
 			currentMusic.setMute(value);
 			restoreLastMusicGain();
 		}
-	}
-
-	/**
-	 * Gets the user mute music.
-	 * 
-	 * @return
-	 */
-	public boolean userMuteMusic() {
-		return userMuteMusic;
-	}
-	
-	/**
-	 * Sets the user mute sound effect.
-	 * 
-	 * @param value
-	 */
-	public void setUserMuteSoundEffect(boolean value) {
-		userMuteSoundEffect = value;
-	}
-	
-	/**
-	 * Gets the user mute sound effect.
-	 * 
-	 * @return
-	 */
-	public boolean userMuteSoundEffect() {
-		return userMuteSoundEffect;
 	}
 
 	/**
@@ -599,6 +584,7 @@ public class AudioPlayer {
 	 */
 	public void loopThruBackgroundMusic() {
 		if (isMusicTrackStopped()) {
+			logger.info("Loading playRandomMusicTrack");
 			playRandomMusicTrack();
 		}		
 	}
@@ -606,7 +592,7 @@ public class AudioPlayer {
 	/**
 	 * Picks a new music track to play
 	 */
-	public static void pickANewTrack() {
+	public void pickANewTrack() {
 		int rand = 0;
 		// At the start of the sim, refrain from playing the last few tracks due to
 		// their sudden loudness
@@ -623,7 +609,7 @@ public class AudioPlayer {
 			if (!playedTracks.contains(rand)) {
 				isNewTrack = true;
 
-				String name = musicTracks.get(rand);
+				String name = musicList.get(rand);
 				// Play this music
 				playMusic(name);
 				// Print its name
@@ -644,27 +630,41 @@ public class AudioPlayer {
 	 * Plays a randomly selected music track.
 	 */
 	public void playRandomMusicTrack() {
-		if (numTracks == 0)
+		if (numTracks == 0) {
 			return;
-		else if (isMusicMute())
+		}
+//		else if (isMusicMute()) {
+//			logger.info(5_000, "Music muted.");
+//			return;
+//		}
+		else if (masterClock.isPaused()) {
+			logger.info(5_000, "Master clock on pause.");
 			return;
-		else if (masterClock.isPaused())
+		}
+		else if (isVolumeDisabled) {
+			logger.info(5_000, "Volume is disable.");
 			return;
-		else if (isVolumeDisabled)
+		}
+		else if (!isMusicTrackStopped()) {
+			logger.info(5_000, "Music track not stopped.");
 			return;
-		else if (!isMusicTrackStopped())
-			return;
+		}
 		else {
+//			logger.info("1. passed all checks.");
 			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay
 			// them
 			if (currentMusic != null
 					&& playTimes < 2) {
+				logger.info(5_000, "Case 1. pickANewTrack.");
 				pickANewTrack();
-			} else if (currentMusic != null && !currentMusic.isMute() && currentMusic.getVol() != 0
+			} else if (currentMusic != null && !currentMusic.isMute()
 					&& playTimes < 4) {
+				logger.info(5_000, "Case 2. playTimes < 4. playMusic.");
 				playMusic(currentMusic.toString());
+				logger.config("Playing background music " + " '" + currentMusic.toString() + "'.");
 				playTimes++;
 			} else {
+				logger.info(5_000, "Case 3. pickANewTrack.");
 				pickANewTrack();
 			}
 		}
@@ -710,12 +710,20 @@ public class AudioPlayer {
 		result.setProperty(MUTE, Boolean.toString(AudioPlayer.isEffectMute()));
 
 		return result;
-    }
+    }	
+		
 
+	
 	public void destroy() {
 		allSoundClips = null;
 		currentSoundClip = null;
 		currentMusic = null;
+		musicTracks.clear();
 		musicTracks = null;
+		musicList = null;
+		playedTracks.clear();
+		playedTracks = null;
 	}
+
+
 }

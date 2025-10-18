@@ -30,8 +30,9 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
     }
 
 	/**
-	 * This model as a Settlement column. This is a special column that can be visbile/hidden according
+	 * This model as a Settlement column. This is a special column that can be visible/hidden according
 	 * to the selection.
+	 * 
 	 * @param settlementColumn
 	 */
 	protected void setSettlementColumn(int settlementColumn) {
@@ -39,8 +40,9 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	}
 
 	/**
-	 * Get the index of the Settlement column if defined. This is a special column that can be visbile/hidden according
+	 * Gets the index of the Settlement column if defined. This is a special column that can be visible/hidden according
 	 * to the selection.
+	 * 
 	 * @return
 	 */
 	@Override

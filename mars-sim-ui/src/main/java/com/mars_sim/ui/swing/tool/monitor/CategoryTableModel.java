@@ -34,7 +34,6 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
         super(name, countingMsgKey, names);
         this.categories = cats;
     }
-
         
 	/**
 	 * Sets whether the changes to the Entities should be monitor for change. 

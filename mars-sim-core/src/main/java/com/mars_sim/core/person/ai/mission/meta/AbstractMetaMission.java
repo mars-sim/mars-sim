@@ -30,7 +30,7 @@ public class AbstractMetaMission implements MetaMission {
 	protected static final String LEADER = "leader";
 	protected static final String PERSON_EXTROVERT = "extrovert";
 	protected static final String OVER_CROWDING = "crowding";
-	protected static final String MINERALS = "minerals";
+	protected static final String DEMAND_PROBABILITY = "demand";
 
 	private static MasterClock masterClock;
 

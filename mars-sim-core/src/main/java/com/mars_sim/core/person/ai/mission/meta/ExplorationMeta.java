@@ -27,7 +27,7 @@ import com.mars_sim.core.vehicle.Rover;
  */
 public class ExplorationMeta extends AbstractMetaMission {
 
-	private static final int MAX = 200;
+	private static final int MAX = 50;
 	
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 2;
@@ -52,53 +52,55 @@ public class ExplorationMeta extends AbstractMetaMission {
     		return RatingScore.ZERO_RATING;
     	}
     	
-		Settlement settlement = person.getSettlement();
-		
-		if (settlement != null) {
+		Settlement settlement = person.getAssociatedSettlement();
 
-            RoleType roleType = person.getRole().getType();
+        RoleType roleType = person.getRole().getType();
 
- 			if (roleType.isCouncil()
- 					|| RoleType.CHIEF_OF_SCIENCE == roleType
- 					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
- 					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
- 		 			|| RoleType.SCIENCE_SPECIALIST == roleType
- 		 			|| RoleType.MISSION_SPECIALIST == roleType
- 					|| RoleType.RESOURCE_SPECIALIST == roleType
- 					) {
+		if (roleType.isCouncil()
+//				|| RoleType.CHIEF_OF_SCIENCE == roleType
+				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
+				|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
+//	 			|| RoleType.SCIENCE_SPECIALIST == roleType
+	 			|| RoleType.MISSION_SPECIALIST == roleType
+				|| RoleType.RESOURCE_SPECIALIST == roleType
+				) {
 
-				// 1. Check if there are enough specimen containers at the settlement for
-				// collecting rock samples.
-	        	int stored = settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
-	            int needed = Exploration.REQUIRED_SPECIMEN_CONTAINERS;
-		        if (stored < needed) {
-					BuildingManager.injectEquipmentDemand(EquipmentType.SPECIMEN_BOX, settlement, stored, needed);
-					return RatingScore.ZERO_RATING;
-				}
+			// 1. Check if there are enough specimen containers at the settlement for
+			// collecting rock samples.
+        	int stored = settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
+            int needed = Exploration.REQUIRED_SPECIMEN_CONTAINERS;
+	        if (stored < needed) {
+				BuildingManager.injectEquipmentDemand(EquipmentType.SPECIMEN_BOX, settlement, stored, needed);
+				
+				return RatingScore.ZERO_RATING;
+			}
 
-				missionProbability = new RatingScore(1);
-								
-				// Get available rover.
-				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
-				if (rover != null) {
-					// Check if any mineral locations within rover range and obtain their concentration
-					missionProbability.addModifier(MINERALS, Math.min(MAX,
-									settlement.getExplorations().getTotalMineralValue(rover)) / VALUE);
-				}
+			// Get available rover.
+			Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
+			
+			if (rover == null) {
+				return RatingScore.ZERO_RATING;
+			}
+			
+			missionProbability = new RatingScore(1);
+							
 
-				// Job modifier.
-				missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-				missionProbability = applyCommerceAverage(missionProbability, settlement, CommerceType.TOURISM,
-													CommerceType.RESEARCH);
+			// Check if any mineral locations within rover range and obtain their concentration
+			missionProbability.addModifier(DEMAND_PROBABILITY, Math.min(MAX,
+								settlement.getExplorations().getTotalMineralValue(rover)) / VALUE);
 
-				// if introvert, score  0 to  50 --> -2 to 0
-				// if extrovert, score 50 to 100 -->  0 to 2
-				// Increase probability if extrovert
-				int extrovert = person.getExtrovertmodifier();
-				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+			// Job modifier.
+			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+			missionProbability = applyCommerceAverage(missionProbability, settlement, CommerceType.TOURISM,
+												CommerceType.RESEARCH);
 
-				missionProbability.applyRange(0, LIMIT);
- 			}
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Increase probability if extrovert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+
+			missionProbability.applyRange(0, LIMIT);
 		}
 
 		return missionProbability;

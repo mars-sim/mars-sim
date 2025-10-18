@@ -89,7 +89,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 
 	
 	/**
-	 * Load the default settlements in the table.
+	 * Loads the default settlements in the table.
 	 */
 	public void loadDefaultSettlements(Scenario selected) {
 		arrivalInfos.clear();
@@ -107,6 +107,12 @@ class ArrivingSettlementModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 
+	/**
+	 * Returns the arrival info, given the spec.
+	 * 
+	 * @param spec
+	 * @return
+	 */
 	private ArrivalInfo toArrivalInfo(ArrivingSettlement spec) {
 		var info = new ArrivalInfo();
 		info.name = spec.getSettlementName();

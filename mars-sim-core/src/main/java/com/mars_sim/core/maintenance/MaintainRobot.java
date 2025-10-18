@@ -12,7 +12,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -34,9 +33,6 @@ public class MaintainRobot extends Task  {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(MaintainRobot.class.getName());
 	
 	/** Task name */
 	private static final String NAME = Msg.getString(
@@ -82,7 +78,6 @@ public class MaintainRobot extends Task  {
 
 		String des = DETAIL + entity.getName();
 		setDescription(des);
-		logger.info(worker, 30_000, des + ".");
 	
 		boolean success = false;
 		
@@ -155,7 +150,7 @@ public class MaintainRobot extends Task  {
 	private double maintainPhase(double time) {    	
 		// If worker is incapacitated, end task.
 		if (worker.getPerformanceRating() <= .1) {
-			robotInService.getSystemCondition().setMaintenance(false);
+//			robotInService.getSystemCondition().setMaintenance(false);
 			endTask();
 			return time;
 		}
@@ -164,6 +159,7 @@ public class MaintainRobot extends Task  {
 
 		// If equipment has malfunction, end task.
 		if (manager.hasMalfunction()) {
+			// Turn off maintenance and wait for repair
 			robotInService.getSystemCondition().setMaintenance(false);
 			endTask();
 			return time * .75;
@@ -194,8 +190,11 @@ public class MaintainRobot extends Task  {
 		}
 		
 		if (finishedMaintenance || doneInspection || timeCompleted >= getDuration()) {
+			double point = timeCompleted * (1 + .25 * skill);
 			// Reduce fatigue
-			manager.reduceFatigue(timeCompleted * (1 + .25 * skill));
+			manager.reduceFatigue(point);
+			
+			robotInService.getSystemCondition().tuneUpPerformance(point);
 			// No more maintenance is needed
 			robotInService.getSystemCondition().setMaintenance(false);
 		

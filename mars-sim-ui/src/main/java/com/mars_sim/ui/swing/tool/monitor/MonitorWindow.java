@@ -68,17 +68,35 @@ import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 public class MonitorWindow extends ToolWindow
 			implements ConfigurableWindow, TableModelListener{
 
-	private static class SelectionComparator implements Comparator<Entity> {
+	/**
+	 * This is a comparator that sorts in the following order:
+	 * 1) String
+	 * 2) Authority
+	 * 3) Settlement
+	 */
+	private static class SelectionComparator implements Comparator<Object> {
 
 		@Override
-		public int compare(Entity o1, Entity o2) {
-			if ((o1 instanceof Settlement) && (o2 instanceof Authority)) {
+		public int compare(Object o1, Object o2) {
+			// String are always first
+			if (o1 instanceof String) {
 				return -1;
 			}
-			else if ((o1 instanceof Authority) && (o2 instanceof Settlement)) {
+			else if (o2 instanceof String) {
 				return 1;
 			}
-			return o1.getName().compareTo(o2.getName());
+			if ((o1 instanceof Settlement) && (o2 instanceof Authority)) {
+				return 1;
+			}
+			else if ((o1 instanceof Authority) && (o2 instanceof Settlement)) {
+				return -1;
+			}
+			else if ((o1 instanceof Entity e1) && (o2 instanceof Entity e2)) {
+				return e1.getName().compareTo(e2.getName());
+			}
+
+			// Should never get here
+			return 0;
 		}
 	}
 
@@ -89,13 +107,13 @@ public class MonitorWindow extends ToolWindow
 	private static final int WIDTH = 1366;
 	private static final int HEIGHT = 640;
 
+	private static final String ALL = "All";
 	public static final String NAME = "monitor";
 	public static final String ICON = "monitor";
     public static final String TITLE = Msg.getString("MonitorWindow.title");
 
 	// Added an custom icon for each tab
 	private static final String COLONY_ICON = "settlement";
-	private static final String MARS_ICON = "mars";
 	private static final String BOT_ICON = "robot";
 	private static final String VEHICLE_ICON = "vehicle";
 	private static final String CROP_ICON = "crop";
@@ -134,7 +152,7 @@ public class MonitorWindow extends ToolWindow
 	protected ButtonGroup group = new ButtonGroup();
 	
 	/** Selection Combo box */
-	private JComboBox<Entity> selectionCombo;
+	private JComboBox<Object> selectionCombo;
 	
 	private JPanel statusPanel;
 	
@@ -148,7 +166,7 @@ public class MonitorWindow extends ToolWindow
 
 	private MonitorTab activeTab;
 
-	private Map<Authority,Set<Settlement>> authorities;
+	private Map<Authority, Set<Settlement>> authorities;
 
 	private JLabel selectionDescription;
 
@@ -174,7 +192,7 @@ public class MonitorWindow extends ToolWindow
 		Properties savedProps = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 
 		// Set up settlements
-		List<Entity> choices = setupSelectionChoices();
+		var choices = setupSelectionChoices();
 		Entity defaultSelection = choices.get(0);
 		String previousChoice = (savedProps != null ? savedProps.getProperty(SETTLEMENT_PROP) : null);
 		if (previousChoice != null) {
@@ -248,23 +266,19 @@ public class MonitorWindow extends ToolWindow
 		List<MonitorTab> newTabs = new ArrayList<>();
 
 		// Add tabs into the table	
-		if (choices.size() > 1) {
-			newTabs.add(new UnitTab(this, new SettlementTableModel(true), true, MARS_ICON));
-		}
-		
-		newTabs.add(new UnitTab(this, new SettlementTableModel(false), true, COLONY_ICON));
+		newTabs.add(new UnitTab(this, new SettlementTableModel(), true, COLONY_ICON));
 		newTabs.add(new UnitTab(this, new PersonTableModel(), true, PEOPLE_ICON));
 		newTabs.add(new UnitTab(this, new RobotTableModel(), true, BOT_ICON));
 		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
 		newTabs.add(new UnitTab(this, new CropTableModel(getDesktop().getSimulation().getConfig()), true, CROP_ICON));
 		
-		newTabs.add(new TableTab(this, new FoodInventoryTableModel(), true, false, FOOD_ICON));
+		newTabs.add(new TableTab(this, new FoodTableModel(), true, false, FOOD_ICON));
 
 		newTabs.add(new TableTab(this, new BacklogTableModel(), true, false, TASK_ICON));
 		
 		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
 
-		
+		// Create eventsTab instance
 		eventsTab = new EventTab(this, desktop);
 		newTabs.add(eventsTab);
 		
@@ -283,7 +297,6 @@ public class MonitorWindow extends ToolWindow
 	 * Adds the bottom bar.
 	 */
 	private void addBottomBar() {
-//		JButton buttonProps;
 		// Prepare row count label
 		rowCount = new JLabel("  ");
 		rowCount.setPreferredSize(new Dimension(120, STATUS_HEIGHT));
@@ -417,8 +430,10 @@ public class MonitorWindow extends ToolWindow
 	 * @param selected
 	 */
 	private void buildSelectionCombo(List<Entity> choices, Entity selected) {
+		List<Object> converted = new ArrayList<>(choices); // List is a pain
 
-		SortedComboBoxModel<Entity> model = new SortedComboBoxModel<>(choices, new SelectionComparator());
+		SortedComboBoxModel<Object> model = new SortedComboBoxModel<>(converted, new SelectionComparator());
+		model.addElement(ALL);
 		model.setSelectedItem(selected);
 		selectionCombo = new JComboBox<>(model);
 		selectionCombo.setOpaque(false);
@@ -447,7 +462,7 @@ public class MonitorWindow extends ToolWindow
 	 */
 	private void addNewSettlement(Unit unit) {
 		if (unit instanceof Settlement s) {
-			SortedComboBoxModel<Entity> ms = (SortedComboBoxModel<Entity>) selectionCombo.getModel();
+			SortedComboBoxModel<Object> ms = (SortedComboBoxModel<Object>) selectionCombo.getModel();
 			ms.addElement(s);
 
 			var ra = s.getReportingAuthority();
@@ -456,6 +471,9 @@ public class MonitorWindow extends ToolWindow
 				authorities.put(ra, new HashSet<>());
 			}
 			authorities.get(ra).add(s);
+
+			// Force a refresh in case new Settlement should be displayed
+			updateTab();
 		}
 	}
 
@@ -480,14 +498,18 @@ public class MonitorWindow extends ToolWindow
 								.collect(Collectors.joining (", "));
 
 		}
-
-		// Change to the selected settlement in SettlementMapPanel
-		if ((newSelection != null) && !newSelection.equals(currentSelection)) {
-			// Set the selected settlement
-			currentSelection = newSelection;
-			// Need to update the existing tab
-			updateTab();
+		else if (event.getItem() instanceof String str) {
+			if (!str.equals(ALL)) {
+				// Should always be ALL
+				return;
+			}
+			newSelection = new HashSet<>(unitManager.getSettlements());
 		}
+
+		// Change to the selection
+		currentSelection = newSelection;
+		updateTab();
+
 		selectionDescription.setText(newDescription);
 	}
 
@@ -789,14 +811,17 @@ public class MonitorWindow extends ToolWindow
 	@Override
 	public Properties getUIProps() {
 		Properties result = new Properties();
-		Entity e = (Entity) selectionCombo.getSelectedItem();
-		result.setProperty(SETTLEMENT_PROP, e.getName());
+		Object e = selectionCombo.getSelectedItem();
+		if (e instanceof Entity ent) {
+			result.setProperty(SETTLEMENT_PROP, ent.getName());
+		}
 		result.setProperty(TAB_PROP, getSelectedTab().getName());
+	
 		return result;
 	}
 	
 	private class SelectionComboRenderer extends JLabel implements
-        ListCellRenderer<Entity> {
+        ListCellRenderer<Object> {
 
 		public SelectionComboRenderer() {
 
@@ -807,10 +832,13 @@ public class MonitorWindow extends ToolWindow
 
 		@Override
 		public Component getListCellRendererComponent(
-				JList<? extends Entity> list,
-				Entity value, int index, boolean isSelected,
+				JList<? extends Object> list,
+				Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 
+			// Center horizontally
+			setHorizontalAlignment(CENTER); 
+			
 			this.setFont(list.getFont());
 
 			if (isSelected) {
@@ -821,13 +849,17 @@ public class MonitorWindow extends ToolWindow
 				setForeground(list.getForeground());
 			}
 
+			
 			if (value instanceof Settlement s) {
 				this.setText(s.getName());
 			}
 			else if (value instanceof Authority a) {
 				this.setText(a.getName() + " (" + authorities.get(a).size() + ")");
 			}
-
+			else if (value instanceof String s) {
+				this.setText(s);
+            }
+			
 			return this;
 		}
 	}

@@ -288,17 +288,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 					<!-- Clockwise from right most room to the left most room -->
 					<!-- Room 1 -->
-					<activity-spot xloc="0.76" yloc="3.78" name="Bunk 1" />
-					<activity-spot xloc="0.28" yloc="3.78" name="Bunk 1"/>					
+					<activity-spot xloc="0.9" yloc="3.8" name="Bunk 1" />
+					<activity-spot xloc="0.4" yloc="3.2" name="Bunk 1"/>					
 					<!-- Room 2 -->
-					<activity-spot xloc="-0.303" yloc="3.78" name="Bunk 2"/>
-					<activity-spot xloc="-0.802" yloc="3.78" name="Bunk 2"/>
+					<activity-spot xloc="-0.9" yloc="3.8" name="Bunk 2"/>
+					<activity-spot xloc="-0.4" yloc="3.2" name="Bunk 2"/>
 					<!-- Room 3 -->
-					<activity-spot xloc="-3.84" yloc="0.319" name="Bunk 3"/>
-					<activity-spot xloc="-3.84" yloc="0.79" name="Bunk 3"/>
+					<activity-spot xloc="-3.8" yloc="0.9" name="Bunk 3"/>
+					<activity-spot xloc="-3.2" yloc="0.4" name="Bunk 3"/>
 					<!-- Room 4 -->
-					<activity-spot xloc="-3.84" yloc="-0.725" name="Bunk 4"/>
-					<activity-spot xloc="-3.84" yloc="-0.235" name="Bunk 4"/>
+					<activity-spot xloc="-3.8" yloc="-0.9" name="Bunk 4"/>
+					<activity-spot xloc="-3.2" yloc="-0.4" name="Bunk 4"/>
 					
 				</activity>
 			</living-accommodation>
@@ -394,10 +394,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="5"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>
 
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
 						
@@ -411,6 +412,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
+			
+				<!-- Bio-based processes -->
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+			
 			
 				<!-- Activity spot for toggling resource process on and off. -->
 				<activity>
@@ -778,7 +784,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">			
 				<process-engine name="Sabatier RWGS Reactor" number-modules="36"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="12"/>				
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="12"/>		
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="20"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="8"/>	
 				
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="32"/>	
 				<process-engine name="Oxygen Generation System (OGS)" number-modules="8"/>
@@ -1898,7 +1905,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			
@@ -1909,7 +1916,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="12"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
 				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="8"/>
-				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="8"/>			
+				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="8"/>	
+				
+				<!--Using Hydrogen -->
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="30"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="12"/>					
+						
 			</resource-processing>
 
 			<storage stock-capacity="300000">
@@ -1952,7 +1964,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
@@ -2042,7 +2054,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
@@ -2063,13 +2075,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Make Magnesium-based Concrete 2" number-modules="2"/>
 								
 				<!-- 6 industrial chemical ingredients -->	
-				<process-engine name="Produce Ethylene" number-modules="2"/>
+				<process-engine name="Produce Ethylene" number-modules="20"/>
 				<process-engine name="Produce Polyethylene from Ethylene" number-modules="10"/>
 				<process-engine name="Produce Styrene from Ethylene" number-modules="5"/>
 				<process-engine name="Produce Polystyrene from Styrene" number-modules="10"/>
 				<process-engine name="Produce Polypropylene from Propylene" number-modules="10"/>
 				<process-engine name="Methanol-to-Olefin (MTO) process" number-modules="10"/>
 									
+				<process-engine name="Esterification into BHET" number-modules="4"/>									
+				<process-engine name="Polycondensation of BHET" number-modules="4"/>	
+				<process-engine name="Produce Ethylene Glycol" number-modules="10"/>	
+								
 			</resource-processing>
 
 			<storage stock-capacity="300000">
@@ -2127,7 +2143,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		<functions>
 			<earth-return capacity="4" />
 			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
+				<power-source type="Solar Power Source" power="7.5" />
 			</power-generation>
 			<power-storage capacity="20" discharge-rate="1.25"/>
 			<resource-processing low-power-level="0.25">
@@ -2346,35 +2362,35 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<living-accommodation capacity="20" guesthouse="true">
 				<activity>					
 												
-					<activity-spot xloc="-2.45" yloc="2.11" name="Bunk 1" />
-					<activity-spot xloc="-2.45" yloc="1.59" name="Bunk 1" />
+					<activity-spot xloc="1.9" yloc="1.65" name="Bunk 2" />
+					<activity-spot xloc="2.48" yloc="2.2" name="Bunk 2" />
 					
-					<activity-spot xloc="-2.45" yloc=".67" name="Bunk 3" />
-					<activity-spot xloc="-2.45" yloc=".175" name="Bunk 3" />
+					<activity-spot xloc="1.9" yloc="0.25" name="Bunk 4" />
+					<activity-spot xloc="2.48" yloc="0.8" name="Bunk 4" />
 					
-					<activity-spot xloc="-2.45" yloc="-.705" name="Bunk 5" />
-					<activity-spot xloc="-2.45" yloc="-1.23" name="Bunk 5" />
+					<activity-spot xloc="1.9" yloc="-1.2" name="Bunk 6" />
+					<activity-spot xloc="2.48" yloc="-0.65" name="Bunk 6" />
 					
-					<activity-spot xloc="-2.45" yloc="-2.16" name="Bunk 7" />
-					<activity-spot xloc="-2.45" yloc="-2.675" name="Bunk 7" />
+					<activity-spot xloc="1.9" yloc="-2.65" name="Bunk 8" />
+					<activity-spot xloc="2.48" yloc="-2.05" name="Bunk 8" />
 					
-					<activity-spot xloc="-2.45" yloc="-3.125" name="Bunk 9" />
-					<activity-spot xloc="-2.45" yloc="-3.655" name="Bunk 9" />
+					<activity-spot xloc="1.9" yloc="-3.2" name="Bunk 10" />
+					<activity-spot xloc="2.48" yloc="-3.8" name="Bunk 10" />
 
-					<activity-spot xloc="2.45" yloc="2.11" name="Bunk 2" />
-					<activity-spot xloc="2.45" yloc="1.59" name="Bunk 2" />
+					<activity-spot xloc="-1.9" yloc="1.65" name="Bunk 1" />
+					<activity-spot xloc="-2.48" yloc="2.2" name="Bunk 1" />
 					
-					<activity-spot xloc="2.45" yloc=".67" name="Bunk 4" />
-					<activity-spot xloc="2.45" yloc=".175" name="Bunk 4" />
+					<activity-spot xloc="-1.9" yloc="0.25" name="Bunk 3" />
+					<activity-spot xloc="-2.48" yloc="0.8" name="Bunk 3" />
 					
-					<activity-spot xloc="2.45" yloc="-.705" name="Bunk 6" />
-					<activity-spot xloc="2.45" yloc="-1.23" name="Bunk 6" />
+					<activity-spot xloc="-1.9" yloc="-1.2" name="Bunk 5" />
+					<activity-spot xloc="-2.48" yloc="-0.65" name="Bunk 5" />
 					
-					<activity-spot xloc="2.45" yloc="-2.16" name="Bunk 8" />
-					<activity-spot xloc="2.45" yloc="-2.675" name="Bunk 8" />
+					<activity-spot xloc="-1.9" yloc="-2.65" name="Bunk 7" />
+					<activity-spot xloc="-2.48" yloc="-2.05" name="Bunk 7" />
 					
-					<activity-spot xloc="2.45" yloc="-3.125" name="Bunk 10" />
-					<activity-spot xloc="2.45" yloc="-3.655" name="Bunk 10" />
+					<activity-spot xloc="-1.9" yloc="-3.2" name="Bunk 9" />
+					<activity-spot xloc="-2.48" yloc="-3.8" name="Bunk 9" />
 
 				</activity>
 			</living-accommodation>
@@ -3033,6 +3049,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</research>
 			<resource-processing low-power-level="0.25">
+				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
 				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
@@ -3040,6 +3057,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
 				
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+								
 				<activity>
 					<activity-spot xloc="-.51" yloc="-.75" />
 					<activity-spot xloc="-.51" yloc="-2.31" />
@@ -3128,7 +3148,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</storage>
 			<thermal-generation>
 				<heat-source type="Solar Heating" capacity="20.0" />
-				<heat-source type="Electric Heating" capacity="35.0" />
+				<heat-source type="Electric Heating" capacity="40.0" />
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="30.0" />
 			</thermal-generation>
@@ -4132,26 +4152,29 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Sabatier RWGS Reactor" number-modules="8"/>
 				<process-engine name="Selective Partial Oxidation (SPO) of Methane to Methanol" number-modules="3"/>				
-				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="3"/>	
+				<process-engine name="Continuous Bosch Reactor (C-Bosch)" number-modules="5"/>	
+				<process-engine name="Carbon Monoxide Hydrogenation" number-modules="2"/>	
 				
 				<process-engine name="Produce Oxygen and Acetylene with Chloride and Carbides" number-modules="8"/>	
-				<process-engine name="Oxygen Generation System (OGS)" number-modules="4"/>		
+				<process-engine name="Oxygen Generation System (OGS)" number-modules="2"/>		
 				<!-- THE BEST PROCESS for making O2 : Use CO2 to make O2 and CO -->
 				<process-engine name="Low Temperature Plasma CO2 Decomposition" number-modules="24"/>
-				
+								
 				<!--For producing Hydrogen -->
 				<process-engine name="Plasma Pyrolysis Assembly (PPA) Reactor" number-modules="3"/>	
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="8"/>
 				<process-engine name="Dry Methane Reforming (DMR) to Produce Hydrogen" number-modules="2"/>
 				<process-engine name="Steam Methane Reforming (SMR) to Produce Hydrogen" number-modules="2"/>
 				
-				
 				<process-engine name="Atmospheric processing" number-modules="3"/>
 				<process-engine name="Methanol Synthesis with Syngas" number-modules="3"/>
-				
 				<process-engine name="Melt Ice" number-modules="16" />
 				<process-engine name="Filter Brine Water" number-modules="16" />
-								
+			
+				<!-- Bio-based processes -->
+				<process-engine name="Green Polymerization of Polycarbonate Resin" number-modules="3"/>
+				<process-engine name="Insitu Epoxidation of Triglyceride" number-modules="1"/>
+												
 				<activity>
 					<activity-spot xloc="-2.6" yloc="-2.13" />
 				</activity>

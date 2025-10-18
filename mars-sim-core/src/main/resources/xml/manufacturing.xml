@@ -181,25 +181,8 @@ http://canada.marssociety.org/winnipeg/soil.html
 		Over 3000 different types of chemicals "can be used" in papermaking, in practice only about 200 individual chemicals
 		 are typically used, each satisfying a specific need.
 		 -->
-	<process name="Make bleaching chemical for paper making"
-			tech="2" skill="1"
-			work-time="10"
-			process-time="50" tooling="chemical"
-			power-required=".05">
-		<inputs>
-			<resource name="oxygen" amount=".2" />
-			<resource name="sulfur" amount=".05" />
-			<resource name="ammonia" amount=".05" />
-			<resource name="sodium hypochlorite" amount=".05" />
-			<resource name="calcium carbonate" amount=".1" />
-			<resource name="magnesium" amount=".05" />
-		</inputs>
-		<outputs>
-			<resource name="bleaching chemical" amount=".5" />
-		</outputs>
-	</process>
 
-	<process name="Make bleaching chemical for paper making (large batch)"
+	<process name="Make bleaching chemical for paper making"
 			tech="2" skill="1"
 			work-time="50"
 			process-time="200" tooling="chemical"
@@ -216,7 +199,24 @@ http://canada.marssociety.org/winnipeg/soil.html
 			<resource name="bleaching chemical" amount="5" />
 		</outputs>
 	</process>
-
+	
+	<process name="Make bleaching chemical for paper making (large batch)"
+			tech="2" skill="1"
+			work-time="50"
+			process-time="200" tooling="chemical"
+			power-required=".3">
+		<inputs>
+			<resource name="oxygen" amount="20" />
+			<resource name="sulfur" amount="5" />
+			<resource name="ammonia" amount="5" />
+			<resource name="sodium hypochlorite" amount="5" />
+			<resource name="calcium carbonate" amount="10" />
+			<resource name="magnesium" amount="5" />
+		</inputs>
+		<outputs>
+			<resource name="bleaching chemical" amount="50" />
+		</outputs>
+	</process>
 
 <!-- https://en.wiki2.org/wiki/Electrochlorination
 		NaCl + H2O + ENERGY → NaOCl + H2 energy is added to sodium chloride (table salt) in water, resulting in sodium hypochlorite and hydrogen gas.
@@ -278,6 +278,91 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 	
+	<process name="Make hydrogen peroxide"
+			tech="1" skill="2"
+			work-time="5"
+			process-time="68" tooling="chemical"
+			power-required=".1">
+			<!-- May use palladium-gold catalysts, minimizing waste 
+			and avoiding the complex, energy-intensive anthraquinone process -->
+		<inputs>
+			<resource name="oxygen" amount="32.0" />
+			<resource name="hydrogen" amount="2.0" />
+		</inputs>
+		<outputs>
+			<resource name="hydrogen peroxide" amount="34" />
+		</outputs>
+	</process>
+
+	<process name="Make triglyceride"
+			tech="1" skill="2"
+			work-time="5"
+			process-time="30" tooling="chemical"
+			power-required=".1">
+		<description> 
+			May use palladium-gold catalysts, minimizing waste 
+			and avoiding the complex, energy-intensive anthraquinone process.
+			
+			Assume 50% conversion rate
+		</description>
+		<inputs>
+			<resource name="Soybean oil" amount="10.0"  >
+				<alternative name="Sesame oil" amount="10.0" />
+				<alternative name="Peanut oil" amount="10.0" />
+				<alternative name="Rice bran oil" amount="10.0" />
+				<alternative name="Garlic oil" amount="10.0" />
+				<alternative name="Olive oil" amount="10.0" />
+				<alternative name="Fish oil" amount="10.0" />
+			</resource>	
+		</inputs>
+		<outputs>
+			<resource name="Triglyceride" amount="5.0" />
+			<resource name="Food waste" amount="5.0" />
+		</outputs>
+	</process>
+		
+	<process name="Break down meteorite"
+			tech="1" skill="2"
+			work-time="30"
+			process-time="30" tooling="chemical"
+			power-required=".1">
+		<description> 
+			Gold has been detected in trace amounts in Martian meteorites 
+			known as SNCs, which are samples of the planet analyzed on Earth.
+ 
+ 			These meteorites contain various elements, including gold, 
+ 			alongside magnesium, aluminum, titanium, iron, and chromium.
+
+		</description>
+		<inputs>
+			<resource name="Meteorite" amount="18.0" />	
+		</inputs>
+		<outputs>
+			<resource name="Aluminum" amount="1.0" />		
+			<resource name="Chromium" amount="1.0" />	
+			<resource name="Copper" amount="1.0" />	
+			<resource name="Gold" amount="1.0" />	
+			<resource name="Iron oxide" amount="1.0" />	
+			
+			<resource name="Lithium" amount="1.0" />	
+			<resource name="Magnesium" amount="1.0" />	
+			<resource name="Manganese" amount="1.0" />	
+			<resource name="Nickel" amount="1.0" />	
+			<resource name="Phosphorus" amount="1.0" />	
+			
+			<resource name="Platinum" amount="1.0" />	
+			<resource name="Potassium" amount="1.0" />	
+			<resource name="Scandium" amount="1.0" />	
+			<resource name="Silver" amount="1.0" />	
+			<resource name="Tin" amount="1.0" />	
+			
+			<resource name="Titanium" amount="1.0" />	
+			<resource name="Vanadium" amount="1.0" />	
+			<resource name="Zinc" amount="1.0" />
+		</outputs>
+	</process>
+				
+				
 	<process name="Make crop fertilizers"
 			tech="2" skill="1"
 			work-time="10"
@@ -374,8 +459,8 @@ Note: 1 kg of H2 is 14.13 liter
 	
 	<process name="Do carbon monoxide iron reduction"
 			tech="1" skill="1"
-			work-time="50"
-			process-time="200" tooling="chemical"
+			work-time="5"
+			process-time="50" tooling="chemical"
 			power-required=".2">
 		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3CO -> 2Fe + 3CO&lt;sub&gt;2&lt;/sub&gt;</description>
 		<inputs>
@@ -390,8 +475,8 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<process name="Do hydrogen iron reduction"
 			tech="1" skill="1"
-			work-time="50"
-			process-time="200" tooling="chemical"
+			work-time="5"
+			process-time="50" tooling="chemical"
 			power-required=".2">
 		<description>Fe&lt;sub&gt;2&lt;/sub&gt;O&lt;sub&gt;3&lt;/sub&gt; + 3H&lt;sub&gt;2&lt;/sub&gt;
 		-> 2Fe + 3H&lt;sub&gt;2&lt;/sub&gt;O</description>
@@ -611,8 +696,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make satellite dish" tech="2" skill="3" work-time="200" process-time="200"
 			tooling="Soldering" power-required="0.4">
 		<inputs>
-			<resource name="Polyester Resin" amount=".5">
-				<alternative name="polycarbonate resin" amount=".5" />
+			<resource name="Polyester resin" amount=".5">
+				<alternative name="Polycarbonate resin" amount=".5" />
 			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />		
@@ -727,8 +812,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make radio antenna" tech="2" skill="2" work-time="100" process-time="100"
 			tooling="3d printer" power-required=".3">
 		<inputs>
-			<resource name="Polyester Resin" amount=".5">
-				<alternative name="Polycarbonate Resin" amount=".5" />
+			<resource name="Polyester resin" amount=".5">
+				<alternative name="Polycarbonate resin" amount=".5" />
 			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
@@ -808,27 +893,6 @@ Note: 1 kg of H2 is 14.13 liter
 		</inputs>
 		<outputs>
 			<part name="plastic tubing" number="10" />
-		</outputs>
-	</process>
-
-	<process name="Produce ethylene glycol" tech="2" skill="1" work-time="10" process-time="40"
-			tooling="chemical" power-required="0.05">
-		<description>
-			This is to produce ethylene glycol (CH2OH)2. Ethylene glycol is produced from ethylene 
-			(ethene), via the intermediate ethylene oxide. 
-			
-			Ethylene oxide reacts with water to produce ethylene glycol according to the 
-			chemical equation:
-
-				C2H4O + H2O → HO−CH2CH2−OH
-				44 g   18 g    62 g
-		</description>
-		<inputs>
-			<resource name="Ethylene" amount="4.4" />
-			<resource name="Water" amount="1.8" />
-		</inputs>
-		<outputs>
-			<resource name="Ethylene Glycol" amount="6.2" />
 		</outputs>
 	</process>
 	
@@ -1177,8 +1241,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Make helmet visor" tech="2" skill="2" work-time="100" process-time="200"
 			power-required=".1">
 		<inputs>
-			<resource name="Polycarbonate resin" amount=".2" />
-			<resource name="Glass" amount="3" />
+			<resource name="Polycarbonate resin" amount="0.2" />
+			<resource name="Glass" amount="3.0" />
 		</inputs>
 		<outputs>
 			<part name="Helmet visor" number="13" />
@@ -1196,9 +1260,7 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Soy fiber" amount="0.3" />
 			</resource>
 			<resource name="Silicone elastomer" amount="1.0" />
-			<resource name="Polyester resin" amount="0.5">
-				<alternative name="Polycarbonate resin" amount="0.5" />
-			</resource>
+			<resource name="Polyester resin" amount="0.5" />
 			<part name="Plastic tubing" number="3" />
 						
 		</inputs>
@@ -1214,7 +1276,7 @@ Note: 1 kg of H2 is 14.13 liter
 				<alternative name="Polyester Fiber" amount="0.2" />
 				<alternative name="Soy fiber" amount="0.2" />
 			</resource>
-			<resource name="polyurethane" amount="0.1" />
+			<resource name="Polyurethane" amount="0.1" />
 			<resource name="Aluminized Mylar" amount="1.0" />			
 			<part name="fiberglass cloth" number="4" />
 		</inputs>
@@ -1470,8 +1532,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture vehicle chassis panel" tech="2" skill="3" work-time="100" process-time="100"
 			tooling="metalwork" power-required=".1">
 		<inputs>
-			<resource name="Polyester Resin" amount="5.0">
-				<alternative name="Polycarbonate Resin" amount="5.0" />
+			<resource name="Polyester resin" amount="5.0">
+				<alternative name="Polycarbonate resin" amount="5.0" />
 			</resource>
 			<resource name="polystyrene" amount="5" />
 			<resource name="styrene" amount="5.0" />
@@ -1486,8 +1548,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture drone chassis panel" tech="2" skill="3" work-time="50" process-time="50"
 			tooling="metalwork" power-required=".05">
 		<inputs>
-			<resource name="Polyester Resin" amount="3.0">
-				<alternative name="Polycarbonate Resin" amount="3.0" />
+			<resource name="Polyester resin" amount="2.0">
+				<alternative name="Polycarbonate resin" amount="2.0" />
 			</resource>
 			<resource name="polystyrene" amount="3" />
 			<resource name="styrene" amount="3.0" />
@@ -1760,12 +1822,14 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Manufacture propeller" tech="2" skill="3" work-time="80" process-time="120"
 			power-required=".3">
 		<inputs>
-			<resource name="Polycarbonate Resin" amount="1.5" />
+			<resource name="Polycarbonate resin" amount="1.0" >
+				<alternative name="Polyester resin" amount="1.0" />
+			</resource>
 			<resource name="titanium" amount=".25" />
 			<resource name="iron powder" amount=".25" />			
 		</inputs>
 		<outputs>
-			<part name="propeller" number="1" />
+			<part name="propeller" number="2" />
 		</outputs>
 	</process>
 
@@ -1775,8 +1839,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Polyethylene" amount="3.0">
 				<alternative name="Polypropylene" amount="3.0" />
 			</resource>
-			<resource name="Polyester Resin" amount="5.0">
-				<alternative name="Polycarbonate Resin" amount="5.0" />
+			<resource name="Polyester resin" amount="5.0">
+				<alternative name="Polycarbonate resin" amount="5.0" />
 			</resource>
 			<resource name="polystyrene" amount="10.0" />			
 			<resource name="styrene" amount="2.0" />
@@ -1798,8 +1862,8 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="Polyethylene" amount=".5">
 				<alternative name="Polypropylene" amount=".5" />
 			</resource>
-			<resource name="Polyester Resin" amount="2.0">
-				<alternative name="Polycarbonate Resin" amount="2.0" />
+			<resource name="Polyester resin" amount="2.0">
+				<alternative name="Polycarbonate resin" amount="2.0" />
 			</resource>
 			<resource name="polystyrene" amount="1.0" />
 			<resource name="styrene" amount="1.0" />
@@ -2447,8 +2511,8 @@ Note: 1 kg of H2 is 14.13 liter
 	<process name="Fabricate turbine blade" tech="2" skill="3" work-time="50" process-time="50"
 			power-required="1.0">
 		<inputs>
-			<resource name="Polyester Resin" amount=".5">
-				<alternative name="Polycarbonate Resin" amount=".5" />
+			<resource name="Polyester resin" amount=".5">
+				<alternative name="Polycarbonate resin" amount=".5" />
 			</resource>
 			<resource name="styrene" amount=".5" />
 			<part name="fiberglass" number="1" />
@@ -2518,7 +2582,7 @@ Note: 1 kg of H2 is 14.13 liter
 
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
 	<process name="Bake sand brick" tech="0" skill="0" work-time="5" process-time="50" tooling="furnace"
-			power-required=".5">
+			power-required=".1">
 		<inputs>
 			<resource name="sand" amount="30" />
 			<resource name="calcium carbonate" amount="2.6" />
@@ -3221,8 +3285,20 @@ Note: 1 kg of H2 is 14.13 liter
 		</outputs>
 	</process>
 
-	<process name="Produce polycarbonate resin" tech="2" skill="2" work-time="50" process-time="200"
+	<process name="Produce polycarbonate resin" tech="2" skill="2" work-time="10" process-time="30"
 			tooling="chemical" power-required="0.5">
+			<!-- The best non-polluted method involves non-phosgene process by producing 
+			diphenyl carbonate (DPC) from carbon dioxide (CO₂) and ethylene oxide (EO). 
+			It avoids the use of highly toxic phosgene while utilizing EO production as 
+			a raw material.
+			
+			This approach significantly reduces environmental and health risks, generates fewer 
+			emissions, and produces water and carbon monoxide as by-products instead of hazardous waste.
+
+			The process is considered more environmentally friendly, with lower acidification 
+			potential and reduced energy consumption compared to the phosgene method.
+			-->
+			
 		<inputs>
 			<resource name="Ethylene" amount="1.0" />
 			<resource name="food waste" amount="0.5" />
@@ -3230,11 +3306,11 @@ Note: 1 kg of H2 is 14.13 liter
 			<resource name="bisphenol-a" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="Polycarbonate Resin" amount="3.0" />
+			<resource name="Polycarbonate resin" amount="3.0" />
 		</outputs>
 	</process>
 
-	<process name="Produce polyurethane" tech="3" skill="2" work-time="50" process-time="200"
+	<process name="Produce polyurethane" tech="3" skill="2" work-time="10" process-time="20"
 			tooling="chemical" power-required="0.5">
 		<inputs>
 			<resource name="crop waste" amount="2.0" />
@@ -3255,7 +3331,7 @@ Note: 1 kg of H2 is 14.13 liter
 			double stacks of aerogel tiles.
 		</description>
 		<inputs>
-			<resource name="Polycarbonate Resin" amount="3.5" />
+			<resource name="Polycarbonate resin" amount="3.5" />
 			<part name="aerogel tile" number="8" />
 		</inputs>
 		<outputs>
@@ -3651,7 +3727,7 @@ Note: 1 kg of H2 is 14.13 liter
 			branch circuits from overloads and short circuits. 
 		</description>		 
 		<inputs>
-			<resource name="Polycarbonate Resin" amount="1">
+			<resource name="Polycarbonate resin" amount="1">
 				<alternative name="Styrene" amount="1"/>
 			</resource>
 			<part name="Steel Sheet" number="1"/>
@@ -3675,7 +3751,7 @@ Note: 1 kg of H2 is 14.13 liter
 			to it.
 		</description>		 
 		<inputs>
-			<resource name="Polycarbonate Resin" amount=".2">
+			<resource name="Polycarbonate resin" amount=".2">
 				<alternative name="Styrene" amount=".2"/>
 			</resource>
 			<part name="Electrical Wire" number="2"/>
@@ -3695,7 +3771,7 @@ Note: 1 kg of H2 is 14.13 liter
 		</description>		 
 		<inputs>
 			<resource name="Sand" amount=".25"/>
-			<resource name="Polycarbonate Resin" amount=".05">
+			<resource name="Polycarbonate resin" amount=".05">
 				<alternative name="Styrene" amount=".05"/>
 			</resource>
 			<part name="Electrical Wire" number="1"/>	
@@ -3920,6 +3996,6 @@ Note: 1 kg of H2 is 14.13 liter
 	<salvage item-name="large bag" type="equipment" tech="1" skill="0" work-time="2">
 		<part-salvage name="fiberglass cloth" number="2" />
 		<part-salvage name="plastic sheet" number="2" />
-	</salvage>
+	</salvage>	
 
 </manufacturing-processes>

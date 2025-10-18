@@ -48,11 +48,10 @@ public class OGGSoundClip {
 	private byte[] buffer = null;
 	private int bytes = 0;
 
-	private double volume = .5f;
-
 	private boolean mute = false;
 	private boolean paused;
 	private boolean isMasterGainSupported;
+	private boolean isMasterVolumeSupported;
 	
 	private byte[] convbuffer = new byte[convsize];
 
@@ -76,16 +75,17 @@ public class OGGSoundClip {
 	/**
 	 * Creates a new clip based on a reference into the class path.
 	 *
-	 * @param ref The reference into the class path which the OGG can be read from
+	 * @param parent
+	 * @param filename
 	 * @param music true if it is a background music file (Not a sound effect clip)
 	 * @throws IOException Indicated a failure to find the resource
 	 */
-	public OGGSoundClip(String ref, boolean music) throws IOException {
-		name = ref;
+	public OGGSoundClip(String parent, String filename, boolean music) throws IOException {
+		name = parent + "/" + filename;
 
 		try {
 			if (music) {
-				File f = new File(AudioPlayer.MUSIC_DIR, ref);
+				File f = new File(parent, filename);
 				if (f.exists() && f.canRead()) {
 					InputStream targetStream = new FileInputStream(f);
 					init(targetStream);
@@ -93,10 +93,10 @@ public class OGGSoundClip {
 			}
 			else {
 				init(Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + ref));
+					.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + filename));
 			}
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Couldn't find: " + ref + ": " + e);
+			logger.log(Level.SEVERE, "Couldn't find: " + filename + ": " + e);
 		}
 	}
 
@@ -111,14 +111,18 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Sets the default gain value (default volume).
+	 * Initialises the OGG clip.
+	 *
+	 * @param in The stream we're going to read from
+	 * @throws IOException Indicates a failure to read from the stream
 	 */
-	public void setDefaultVol() {
-		determineVolume(AudioPlayer.DEFAULT_VOL);
-	}
-
-	public double getVol() {
-		return volume;
+	private void init(InputStream in) throws IOException {
+		if (in == null) {
+			logger.log(Level.SEVERE, "Couldn't find the input source");
+			disableSound();
+		}
+		bitStream = new BufferedInputStream(in);
+		bitStream.mark(Integer.MAX_VALUE);
 	}
 
 	/**
@@ -129,17 +133,16 @@ public class OGGSoundClip {
 	 */
 	public void determineGain(double volume) {
 		if (volume > 1)
-			volume = 1;
-		else if (volume <= 0) {
-			volume = 0;
+			volume = 1.0;
+		else if (volume < 0.0) {
+			volume = 0.0;
 			setPause(true);
 		}
 		else
 			setPause(false);
-		
-		this.volume = volume;
 
 		if (outputLine == null) {
+//			logger.info("determineGain(): outputLine == null");
 			return;
 		}
 
@@ -159,17 +162,14 @@ public class OGGSoundClip {
 
 				double max = floatControl.getMaximum();
 				double min = floatControl.getMinimum();
-
-				double value = (max - min / 2f) * volume + min / 2f;
-
+				
+				double value = volume * (max - min) + min;
+				
+				logger.info("[" + (int)max + " to " + min + "] vol: " + Math.round(volume * 10.0)/10.0 + " ->  gain: " + Math.round(value* 10.0)/10.0);
+				
 				setPause(true);
 				
-				if (value <= min / 2) {
-					floatControl.setValue((float) (min / 2));
-				}
-				else {
-					floatControl.setValue((float)value);
-				}
+				floatControl.setValue((float)value);
 				
 				setPause(false);
 
@@ -188,13 +188,13 @@ public class OGGSoundClip {
 	/**
 	 * Computes the volume value for the playback--based on the new value of volume in
 	 * the increment or decrement of 0.05f.
+	 * Note that Master Volume not supported.
 	 * 
 	 * @param volume the volume
 	 */
-	public void determineVolume(double volume) {
-		determineGain(volume);
-	    // Note that Master Volume not supported.
-	}
+//	public void determineVolume(double volume) {
+//		determineGain(volume);
+//	}
 	
 	/**
 	 * Checks the state of the playback.
@@ -202,14 +202,16 @@ public class OGGSoundClip {
 	 * @return True if the playback has been stopped
 	 */
 	synchronized boolean checkState() {
-//		while (paused && (playerThread != null)){
-//	    	try {
-//				name.wait();
-//			} catch (InterruptedException e) {
-//				// Restore interrupted state
-//			    Thread.currentThread().interrupt();
-//			}
-//	    }
+		
+		while (paused && (playerThread != null)) {
+			
+	    	try {
+				name.wait();
+			} catch (InterruptedException e) {
+				// Restore interrupted state
+			    Thread.currentThread().interrupt();
+			}
+	    }
 		
 		return isStopped();
 	}
@@ -231,25 +233,10 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Initialises the OGG clip.
-	 *
-	 * @param in The stream we're going to read from
-	 * @throws IOException Indicates a failure to read from the stream
-	 */
-	private void init(InputStream in) throws IOException {
-		if (in == null) {
-			logger.log(Level.SEVERE, "Couldn't find the input source");
-			disableSound();
-		}
-		bitStream = new BufferedInputStream(in);
-		bitStream.mark(Integer.MAX_VALUE);
-	}
-
-	/**
-	 * Play the clip once - for sound effects
+	 * Plays the clip once for sound effects.
 	 */
 	public void play() {
-		stop();
+//		stop();
 
 		try {
 			if (bitStream != null) {
@@ -263,15 +250,18 @@ public class OGGSoundClip {
 		playerThread = new Thread() {
 			public void run() {
 				 try {
-					 playStream(Thread.currentThread());
+					 playStream();
 				 } catch (Exception e) {	
 						playerThread = null;
 						
 					 if (AudioPlayer.isEffectMute()) {
 						 logger.log(Level.CONFIG, "The sound effect is muted.");
 					 }
-					 else
-						 logger.log(Level.SEVERE, "Can't play the bit stream in play(). ", e);
+					 if (AudioPlayer.isMusicMute()) {
+						 logger.log(Level.CONFIG, "The music is muted.");
+					 }
+					
+					 logger.log(Level.SEVERE, "Can't play the bit stream in play(). ", e);
 				 }
 
 				try {
@@ -289,7 +279,7 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Loop the clip - for background music.
+	 * Loops the clip for background music.
 	 */
 	public void loop() {
 		play();
@@ -300,11 +290,21 @@ public class OGGSoundClip {
 	 * Note: may need to setPause(false) first.
 	 */
 	public void resume() {
-		if (!paused && isStopped()) {
+		if (paused) {
+			paused = false;
+		}
+		
+		setMute(false);	
+		
+		if (isStopped()) {
 			loop();
 		}
-
-		setMute(false);	
+		
+		if (playerThread != null) {
+			synchronized(this){
+				this.notifyAll();
+			}
+		}
 	}
 
 	/**
@@ -313,7 +313,16 @@ public class OGGSoundClip {
 	 * @return True if the clip has been stopped
 	 */
 	public boolean isStopped() {
-		return ((playerThread == null) || (!playerThread.isAlive()));
+		return (playerThread == null || !playerThread.isAlive());
+	}
+
+	/**
+	 * Checks if the clip is still playing.
+	 *
+	 * @return
+	 */
+	public boolean isPlaying() {
+		return !isStopped();
 	}
 	
 	public void disableSound() {
@@ -355,51 +364,48 @@ public class OGGSoundClip {
 					false // littleEndian
 			);
 
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat,
+	                    AudioSystem.NOT_SPECIFIED);
+			 
+            if (!AudioSystem.isLineSupported(info)) {
+            	logger.log(Level.SEVERE, "Line " + info + " not supported.");
+                return;
+            }
 
-			try {
-				outputLine = (SourceDataLine) AudioSystem.getLine(info);
-				// outputLine.addLineListener(this);
-				outputLine.open(audioFormat);
+            try {
+                outputLine = (SourceDataLine) AudioSystem.getLine(info);
+                outputLine.open(audioFormat);
+                
+    			isMasterGainSupported = outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN);
+    			
+    			if (!isMasterGainSupported) {
+    				// in case of some versions of linux in which MASTER_GAIN is not supported
+    				logger.log(Level.SEVERE, "Master Gain NOT supported in this machine. Run the sim without audio");
+    				disableSound();
+    			} else {
+    				floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+    			}
+    			
+//				// Note that isMasterVolumeSupported is false: 
+    			isMasterVolumeSupported = outputLine.isControlSupported(FloatControl.Type.VOLUME);
+				if (!isMasterVolumeSupported) {
+					// in case of some versions of linux in which VOLUME is not supported
+					logger.log(Level.SEVERE, "Master Volume NOT supported in this machine.");
+				} 
+//    			else floatControl1 = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
+    			
+            } catch (LineUnavailableException ex) {
+            	logger.log(Level.SEVERE, "Unable to open the sourceDataLine: " + ex);
+            	disableSound();
+            } catch (IllegalArgumentException ex) {
+            	logger.log(Level.SEVERE, "Illegal Argument: " + ex);
+            	disableSound();
+            }
 
-				if (!AudioSystem.isLineSupported(info)) {
-					logger.log(Level.SEVERE, "Sound system NOT supported. ");
-					disableSound();
-				}
-
-				isMasterGainSupported = outputLine.isControlSupported(FloatControl.Type.MASTER_GAIN);
-				if (!isMasterGainSupported) {
-					// in case of some versions of linux in which MASTER_GAIN is not supported
-					logger.log(Level.SEVERE, "Master Gain NOT supported in this machine. Run the sim without audio");
-					disableSound();
-				} else {
-					floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
-				}
-
-				// Note that isMasterVolumeSupported is false: isMasterVolumeSupported = outputLine.isControlSupported(FloatControl.Type.VOLUME);
-//				if (!isMasterVolumeSupported) {
-//					// in case of some versions of linux in which VOLUME is not supported
-//					// disableSound(); logger.log(Level.SEVERE, "Master Volume NOT supported in this machine. Run the sim without audio");
-//				} else
-//					floatControl1 = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
-				
-			} catch (LineUnavailableException ex) {
-				logger.log(Level.SEVERE, "Unable to open the sourceDataLine: " + ex);
-				disableSound();
-
-			} catch (IllegalArgumentException ex) {
-				logger.log(Level.SEVERE,
-						"Sound line/system NOT detected. Please ensure speakers are plugged in. Run the sim without audio: " + ex);
-				disableSound();
-			}
-
-			this.rate = rate;
-			this.channels = channels;
-
-//			setBalance(balance);
-			
-			determineGain(volume);
-			determineVolume(volume);
+            this.rate = rate;
+            this.channels = channels;
+		
+            // Note: do Not call determineGain(volume) here or else it won't play
 			
 		} catch (Exception ee) {
 			logger.log(Level.SEVERE, "Sound system NOT supported. Run the sim without audio." + ee);
@@ -417,9 +423,11 @@ public class OGGSoundClip {
 				outputLine.stop();
 				outputLine.close();
 			}
-			initJavaSound(channels, rate);
-			outputLine.start();
 		}
+		
+		initJavaSound(channels, rate);
+		outputLine.start();
+		
 		return outputLine;
 	}
 
@@ -427,6 +435,7 @@ public class OGGSoundClip {
 	 * Taken from JOrbisPlayer
 	 */
 	private void initJOrbis() {
+
 		oy = new SyncState();
 		os = new StreamState();
 		og = new Page();
@@ -446,15 +455,14 @@ public class OGGSoundClip {
 	/*
 	 * Taken from the JOrbis Player
 	 */
-	private void playStream(Thread me) {// throws InternalException {
+	private void playStream() {
 		boolean chained = false;
-
 		initJOrbis();
 
 		while (true) {
-			if (checkState()) {
-				return;
-			}
+//			if (!checkState()) {
+//				return;
+//			}
 
 			int eos = 0;
 
@@ -463,24 +471,33 @@ public class OGGSoundClip {
 			try {
 				if (bitStream != null) {
 					bytes = bitStream.read(buffer, index, BUFFER_SIZE);
-				}	
+				}
+				else {
+					logger.log(Level.SEVERE, "Ogg bitstream is null.");
+				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, "Audio Troubleshooting : have a speaker/headphone been plugged in ? "
 						+ "Please check your audio source. ", e);
+				return;
 			}
 
 			oy.wrote(bytes);
 
 			if (chained) {
 				chained = false;
-			} else {
-				if (oy.pageout(og) != 1) {
-					if (bytes < BUFFER_SIZE)
-						break;
-					// throw new InternalException("Input does not appear to be an Ogg bitstream.");
-					logger.log(Level.SEVERE, "Input does not appear to be an Ogg bitstream.");
-				}
-			}
+			} 
+            else {
+                if (oy.pageout(og) != 1) {
+                	logger.log(Level.SEVERE, "oy.pageout(og) != 1");
+                    if (bytes < BUFFER_SIZE) {
+                    	logger.log(Level.SEVERE, "bytes < BUFFER_SIZE.");
+                        break;
+                    }
+                    logger.log(Level.SEVERE, "Input does not appear to be an Ogg bitstream.");
+                    return;
+                }
+            }
+			
 			os.init(og.serialno());
 			os.reset();
 
@@ -488,30 +505,30 @@ public class OGGSoundClip {
 			vc.init();
 
 			if (os.pagein(og) < 0) {
-				// error stream version mismatch perhaps
+				// Error stream version mismatch perhaps
 				logger.log(Level.SEVERE, "Error reading first page of OGG bitstream data.");
+//				return;
 			}
 
 			if (os.packetout(op) != 1) {
-				// no page? must not be vorbis
-				// throw new InternalException("Error reading initial header packet.");
-				logger.log(Level.SEVERE, "Error reading initial header packet.");
+				// No page? must not be vorbis
+				logger.log(Level.SEVERE, "Error reading initial Vorbis header packet.");
+//				return;
 			}
 
 			if (vi.synthesis_headerin(vc, op) < 0) {
-				// error case; not a vorbis header
-				// throw new InternalException("This Ogg bitstream does not contain Vorbis audio
-				// data.");
-				logger.log(Level.SEVERE, "This Ogg bitstream does not contain Vorbis audio data.");
+				// Error case: not a vorbis header
+				logger.log(Level.SEVERE, "This Ogg bitstream does not contain Vorbis header.");
+//				return;
 			}
 
 			int i = 0;
-
+			
 			while (i < 2) {
 				while (i < 2) {
-					if (checkState()) {
-						return;
-					}
+//					if (checkState()) {
+//						return;
+//					}
 
 					int result = oy.pageout(og);
 					if (result == 0)
@@ -539,7 +556,7 @@ public class OGGSoundClip {
 				} catch (Exception e) {
 					// throw new InternalException(e);
 					// Note: when loading from a saved sim, the following log statement appears excessively
-//					logger.log(Level.SEVERE, "Exception in reading bitstream.", e);
+					logger.log(Level.SEVERE, "Exception in reading bitstream.", e);
 				}
 				
 				if (bytes == 0 && i < 2) {
@@ -557,13 +574,23 @@ public class OGGSoundClip {
 			int[] _index = new int[vi.channels];
 
 			getOutputLine(vi.channels, vi.rate);
-
+//			logger.info("Just called getOutputLine(). outputLine is " + outputLine);
+			
 			while (eos == 0) {
 				while (eos == 0) {
-					if (playerThread != me) {
-						return;
-					}
 
+//                    if (player != me) {
+//                        try {
+//                            bitStream.close();
+//                            outputLine.drain();
+//                            outputLine.stop();
+//                            outputLine.close();
+//                            outputLine = null;
+//                        } catch (Exception ee) {
+//                        }
+//                        return;
+//                    }
+                    
 					int result = oy.pageout(og);
 					if (result == 0)
 						break; // need more data
@@ -580,9 +607,9 @@ public class OGGSoundClip {
 						}
 
 						while (true) {
-							if (checkState()) {
-								return;
-							}
+//							if (checkState()) {
+//								return;
+//							}
 
 							result = os.packetout(op);
 							if (result == 0)

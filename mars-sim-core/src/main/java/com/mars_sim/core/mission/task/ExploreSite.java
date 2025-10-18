@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ExploreSite.java
- * @date 2025-07-06
+ * @date 2025-10-11
  * @author Scott Davis
  */
 package com.mars_sim.core.mission.task;
@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.environment.MineralSite;
-import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Exploration;
@@ -39,16 +39,19 @@ public class ExploreSite extends EVAOperation {
 	/** Task name */
 	private static final String NAME = Msg.getString("Task.description.exploreSite"); //$NON-NLS-1$
 
+	/** Simple Task name */
+	public static final String SIMPLE_NAME = ExploreSite.class.getSimpleName();
+	
 	/** Task phases. */
 	private static final TaskPhase EXPLORING = new TaskPhase(Msg.getString("Task.phase.exploring"),
 									createPhaseImpact(SkillType.AREOLOGY, SkillType.PROSPECTING));
 
 	// Static members
 	/** The average labor time it takes to find the resource. */
-	public static final double LABOR_TIME = 40D;
+	public static final double LABOR_TIME = 50D;
 
-	private static final double AVERAGE_ROCK_COLLECTED_SITE = 200 + RandomUtil.getRandomDouble(-20, 20);
-	public static final double AVERAGE_ROCK_MASS = 5 + RandomUtil.getRandomDouble(-3, 3);
+	private static final double AVERAGE_ROCK_COLLECTED_SITE = 100 + RandomUtil.getRandomDouble(-20, 20);
+	public static final double AVERAGE_ROCK_MASS = 3 + RandomUtil.getRandomDouble(-1, 1);
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5 + RandomUtil.getRandomDouble(5);
 
     public static final LightLevel LIGHT_LEVEL = LightLevel.LOW;
@@ -90,7 +93,7 @@ public class ExploreSite extends EVAOperation {
 		// Determine location for field work.
 		setRandomOutsideLocation(rover);
 
-		// Box is empty so choose a rock type at random
+		// Box is empty so choose a rock type at random.
 		int randomNum = RandomUtil.getRandomInt(((ResourceUtil.ROCK_IDS).length) - 1);
 		rockId = ResourceUtil.ROCK_IDS[randomNum];
 	
@@ -119,11 +122,12 @@ public class ExploreSite extends EVAOperation {
 	 * @return true if person can explore a site.
 	 */
 	public static boolean canExploreSite(Worker member) {
-
-		if (member instanceof Person person) {
-			if (EVAOperation.shouldEndEVAOperation(person)) {
-				return false;
-			}
+		// Note: hasEVASuitProblem requires a person to have donned the suit already
+		// and thus is not suitable for calling (EVAOperation.hasEVASuitProblem()) here
+		
+		if (member instanceof Person person && !person.isEVAFit()) {
+			logger.info(person, 20_000, "Not EVA fit to explore the site.");
+			return false;
 		}
 
 		return true;
@@ -160,7 +164,7 @@ public class ExploreSite extends EVAOperation {
 		((Exploration)person.getMission()).addSiteTime(time);
 		
 		if (totalCollected > AVERAGE_ROCK_COLLECTED_SITE) {
-			endEVA("Rocks collected exceeded set average.");
+			endEVA("Rocks collected exceeded the set average.");
 			return time;
 		}
 
@@ -174,7 +178,7 @@ public class ExploreSite extends EVAOperation {
 		}
 		else if (value > 0 && rand < .75 * value){
 			// Collect rocks.
-			collectRocks(time);
+			collectRocks(time * skill);
 		}
 		else {
 			boolean isOver50 = site.isCertaintyAverageOver(50);
@@ -183,7 +187,7 @@ public class ExploreSite extends EVAOperation {
 			}
 			else {
 				// Collect rocks.
-				collectRocks(time);
+				collectRocks(time * skill);
 
 				// Checks if the site has been claimed
 				if (!site.isClaimed()) {
@@ -206,46 +210,36 @@ public class ExploreSite extends EVAOperation {
 	/**
 	 * Collects rocks.
 	 *
-	 * @param time the amount of time available (millisols).
+	 * @param timeSkill time multiplying skill
 	 * @throws Exception if error collecting rock samples.
 	 */
-	private void collectRocks(double time) {
+	private void collectRocks(double timeSkill) {
 		
 		if (hasSpecimenContainer()) {
 
-			double chance = rocksToBeCollected / 250;
+			Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
 			
-			double probability = site.getNumEstimationImprovement() * chance * time * getEffectiveSkillLevel();
-			if (probability > .9)
-				probability = .9;
-			logger.info(person, 10_000, "Collecting rock probability: " + Math.round(probability * 100.0)/100.0);
-			
-			if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-			
-				Container box = person.findContainer(EquipmentType.SPECIMEN_BOX, false, rockId);
-				
-				if (box != null) {
-					double mass = AVERAGE_ROCK_MASS * RandomUtil.getRandomDouble(.5, 2);
-					double cap = box.getRemainingCombinedCapacity(rockId);
-					if (mass <= cap) {
-						double excess = box.storeAmountResource(rockId, mass);
-						mission.recordResourceCollected(rockId, mass);
-						double collected = mass - excess;
-						totalCollected += collected;
-						logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
-								+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
-					}
-					else {
-						double excess = box.storeAmountResource(rockId, cap);
-						mission.recordResourceCollected(rockId, cap);
-						double collected = cap - excess;
-						totalCollected += collected;
-						endEVA("Specimen box full.");
-					}
+			if (box != null) {
+				double mass = AVERAGE_ROCK_MASS * timeSkill * RandomUtil.getRandomDouble(.5, 2);
+				double cap = box.getRemainingCombinedCapacity(rockId);
+				if (mass <= cap) {
+					double excess = box.storeAmountResource(rockId, mass);
+					mission.recordResourceCollected(rockId, mass);
+					double collected = mass - excess;
+					totalCollected += collected;
+					logger.info(person, 10_000, "Collected " + Math.round(collected * 100.0)/100.0 
+							+ " kg " + ResourceUtil.findAmountResourceName(rockId) + " into a specimen box.");
 				}
 				else {
-					endEVA("No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
+					double excess = box.storeAmountResource(rockId, cap);
+					mission.recordResourceCollected(rockId, cap);
+					double collected = cap - excess;
+					totalCollected += collected;
+					endEVA("Specimen box full.");
 				}
+			}
+			else {
+				endEVA("No specimen box available for " + ResourceUtil.findAmountResourceName(rockId) + ".");
 			}
 		}
 		else {

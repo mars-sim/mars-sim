@@ -11,17 +11,17 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
-public class Technician extends Job {
+public class Technician extends JobSpec {
 	/**
 	 * Constructor.
 	 */
 	public Technician() {
 		// Use Job constructor
-		super(JobType.TECHNICIAN, Job.buildRoleMap(5.0, 10.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
+		super(JobType.TECHNICIAN, JobSpec.buildRoleMap(5.0, 10.0, 20.0, 15.0, 15.0, 15.0, 15.0, 15.0));
 	}
 
 	/**

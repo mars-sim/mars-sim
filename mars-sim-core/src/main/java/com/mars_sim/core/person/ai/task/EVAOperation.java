@@ -223,12 +223,19 @@ public abstract class EVAOperation extends Task {
     }
 
 	/**
-	 * Request any current EVA is ended at the next opportunity
+	 * Requests any current EVA is ended at the next opportunity.
 	 */
 	public void requestEndEVA() {
 		endEVARequested = true;
 	}
 
+	/**
+	 * Is ending the current EVA in effect ?
+	 */
+	public boolean isRequestEndEVATrue() {
+		return endEVARequested;
+	}
+	
 	/**
 	 * Adds time at EVA site.
 	 *
@@ -623,7 +630,7 @@ public abstract class EVAOperation extends Task {
 	}
 
 	/**
-	 * Checks if the person's settlement is at meal time and is doubly hungry.
+	 * Checks if the person settlement is at meal time and is doubly hungry.
 	 *
 	 * @param person
 	 * @param prepTime

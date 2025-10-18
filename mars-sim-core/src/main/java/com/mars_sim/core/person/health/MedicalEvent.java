@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MedicalEvent.java
- * @date 2025-08-14
+ * @date 2025-10-16
  * @author Scott Davis
  */
 package com.mars_sim.core.person.health;

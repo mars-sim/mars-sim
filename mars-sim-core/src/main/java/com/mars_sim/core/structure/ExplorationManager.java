@@ -203,7 +203,7 @@ public class ExplorationManager implements Serializable {
 				.count();
 	}
 
-	/**null
+	/**
 	 * Returns list of declared locations of Region Of Interest (ROI).
 	 * 
 	 * @return

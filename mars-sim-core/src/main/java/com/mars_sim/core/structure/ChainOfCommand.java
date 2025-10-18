@@ -231,7 +231,7 @@ public class ChainOfCommand implements Serializable {
 		
 		// Compare their leadership scores
 		for (Person candidate : people) {
-			if (candidate.isDeclaredDead()) {
+			if (candidate.isDeclaredDead() || RoleType.GUEST == candidate.getRole().getType()) {
 				continue;
 			}
 	
@@ -582,7 +582,7 @@ public class ChainOfCommand implements Serializable {
 
 		// compare their scores
 		for (Person p : people) {
-			if (p.isDeclaredDead()) {
+			if (p.isDeclaredDead() || RoleType.GUEST == p.getRole().getType()) {
 				continue;
 			}
 			SkillManager skillMgr = p.getSkillManager();

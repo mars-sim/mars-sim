@@ -93,7 +93,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
 			// Effort-driven task modifier.
 			factor = super.assessPersonSuitability(t, person);
-			if (factor.getScore() == 0) {
+			if (factor.getScore() == 0D) {
 				return factor;
 			}
 
@@ -119,7 +119,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
 			// Effort-driven task modifier.
 			factor = super.assessRobotSuitability(t, robot);
-			if (factor.getScore() == 0) {
+			if (factor.getScore() == 0D) {
 				return factor;
 			}
 
@@ -173,7 +173,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 		
 		Vehicle vehicle = person.getVehicle();
 		if (vehicle != null && 
-				(vehicle.isInGarage() || vehicle.isInSettlement() || vehicle.isInSettlementVicinity())) {
+				(vehicle.isInGarage() || vehicle.isInSettlement() || vehicle.isRightOutsideSettlement())) {
 			// In future, need to model how this person is to be transported 
 			return true;
 		}

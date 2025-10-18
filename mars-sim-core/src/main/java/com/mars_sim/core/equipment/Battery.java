@@ -554,15 +554,14 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Sets the performance factor.
+     * Sets the battery performance factor.
      * 
      * @param newPerformance new performance (between 0 and 1).
      */
     private void setPerformanceFactor(double newPerformance) {
-        if (newPerformance != performance) {
+        if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
             performance = newPerformance;
-			if (unit != null)
-				unit.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			unit.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
         }
     }
 

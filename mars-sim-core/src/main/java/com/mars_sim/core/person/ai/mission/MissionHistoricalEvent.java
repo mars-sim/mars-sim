@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionHistoricalEvent.java
- * @date 2023-11-04
+ * @date 2025-10-16
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -11,6 +11,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 
 /**

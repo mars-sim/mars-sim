@@ -430,7 +430,7 @@
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.4"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="4"/>
-				<preference type="SCIENCE" name="POLITICS" modifier="7"/>	
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="7"/>	
 			</capability>
 			<capability description="Develop space labs and facilitate knowledge transfer">
 				<preference type="SCIENCE" name="ASTRONOMY" modifier="4"/>
@@ -444,7 +444,7 @@
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
 				<preference type="MISSION" name="TRADE" modifier="1.6"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="2"/>
-				<preference type="SCIENCE" name="POLITICS" modifier="6"/>	
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="6"/>	
 			</capability>
 			<capability description="Establish international partnership in the space sector">
 				<preference type="MISSION" name="DELIVERY" modifier="1.5"/>
@@ -452,7 +452,7 @@
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="RESCUE_SALVAGE_VEHICLE" modifier="4"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
-				<preference type="SCIENCE" name="POLITICS" modifier="5"/>	
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="5"/>	
 			</capability>
 		</agenda>
 										
@@ -485,7 +485,7 @@
 				<preference type="SCIENCE" name="COMPUTING" modifier="4"/>	
 				<preference type="SCIENCE" name="MATHEMATICS" modifier="6"/>
 				<preference type="SCIENCE" name="PHYSICS" modifier="3"/>
-				<preference type="SCIENCE" name="POLITICS" modifier="7"/>	
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="7"/>	
 			</capability>
 		</agenda>
 
@@ -503,7 +503,7 @@
 			<capability description="Level the playing level and create new sponsorship for emerging players">
 				<preference type="MISSION" name="TRADE" modifier="1.3"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>	
-				<preference type="SCIENCE" name="POLITICS" modifier="4"/>										
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="4"/>										
 			</capability>
 			<capability description="Identify social factors in developing partnership">
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
@@ -531,13 +531,13 @@
 				<preference type="MISSION" name="TRADE" modifier="1.4"/>
 				<preference type="SCIENCE" name="SOCIOLOGY" modifier="8"/>
 				<preference type="SCIENCE" name="ENGINEERING" modifier="4"/>
-				<preference type="SCIENCE" name="POLITICS" modifier="4"/>
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="4"/>
 			</capability>
 			<capability description="Spearhead new projects for cooperations">
 				<preference type="MISSION" name="TRADE" modifier="1.3"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
-				<preference type="SCIENCE" name="POLITICS" modifier="6"/>								
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="6"/>								
 			</capability>
 			<capability description="Identify human factors in the domain of operational safety">
 				<preference type="MISSION" name="EMERGENCY_SUPPLY" modifier="1.3"/>
@@ -551,7 +551,7 @@
 				<preference type="MISSION" name="DELIVERY" modifier="1.9"/>
 				<preference type="MISSION" name="TRADE" modifier="2"/>
 				<preference type="MISSION" name="TRAVEL_TO_SETTLEMENT" modifier="1.2"/>
-				<preference type="SCIENCE" name="POLITICS" modifier="4"/>
+				<preference type="SCIENCE" name="POLITICAL_SCIENCE" modifier="4"/>
 				<preference type="SCIENCE" name="PSYCHOLOGY" modifier="3"/>
 				<preference type="SCIENCE" name="SOCIOLOGY" modifier="8"/>
 			</capability>

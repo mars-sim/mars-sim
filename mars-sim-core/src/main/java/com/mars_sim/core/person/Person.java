@@ -186,7 +186,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 
 	/** The person's EVA times. */
 	private SolMetricDataLogger<String> eVATaskTime;
-	
+	/** The person's work shift slot. */
 	private ShiftSlot shiftSlot;
 
 	/**
@@ -237,12 +237,14 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		condition.initialize();
 		// Initialize field data in circadian clock
 		circadian.initialize();
-		// Create preferences
-//		preference = new Preference(this);
 		// Create job history
 		jobHistory = new AssignmentHistory();
 		// Create the role
 		role = new Role(this);
+		
+		// Note: at this point, role is not null but role type is still null,
+		//       and job type is still null 
+	
 		// Create shift schedule
 		shiftSlot = settlement.getShiftManager().allocationShift(this);	
 		// Set up life support type
@@ -253,6 +255,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		eVATaskTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 		// Construct the EquipmentInventory instance. Start with the default
 		eqmInventory = new EquipmentInventory(this, 100D);
+		
 		eqmInventory.setSpecificResourceCapacity(ResourceUtil.FOOD_ID, CARRYING_CAPACITY_FOOD);
 		// Construct the ResearchStudy instance
 		research = new ResearchStudy();
@@ -303,9 +306,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Initialize field data in PhysicalCondition
 		condition.initialize();
 		// Initialize field data in circadian clock
-		circadian.initialize();
-
-		
+		circadian.initialize();	
 		// Create job history
 		jobHistory = new AssignmentHistory();
 		// Create the role
@@ -323,14 +324,12 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		return new PersonBuilder(name, settlement, gender);
 	}
 
-	
 	/**
 	 * Allocates a new shift.
 	 */
 	public void allocateNewShift() {
-		getAssociatedSettlement().getShiftManager().assignNewShift(this);
+		getAssociatedSettlement().getShiftManager().assignNewShift(this, 150);
 	}
-	
 	
 	/**
 	 * Computes a person's chromosome map based on the characteristics of their nation.
@@ -560,6 +559,10 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			// Set the job as Politician
 			mind.assignJob(JobType.POLITICIAN, true, JobUtil.SETTLEMENT, AssignmentType.APPROVED, JobUtil.SETTLEMENT);
 		}
+		
+		else if (RoleType.GUEST == role.getType()) {         
+          	shiftSlot.setGuest(true);
+    	}
 	}
 
 	/**
@@ -594,23 +597,31 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 	}
 
 	/**
-	 * Get details of the 
+	 * Gets details of the shift.
 	 */
 	public ShiftSlot getShiftSlot() {
 		return shiftSlot;
 	}
 
 	/**
-	 * Is this Person OnDuty. This does not include On Call.
+	 * Is this Person On-Duty. This does not include On Call.
 	 */
 	public boolean isOnDuty() {
 		return shiftSlot.getStatus() == WorkStatus.ON_DUTY;
 	}
 
 	/**
+	 * Is this Person On-Call ?
+	 */
+	public boolean isOnCall() {
+		return shiftSlot.getStatus() == WorkStatus.ON_CALL;
+	}
+	
+	/**
 	 * Creates a string representing the birth time of the person.
-	 * @param clock
-	 *
+	 * 
+	 * @param earthLocalTime
+	 * @param initialAge
 	 */
 	private void calculateBirthDate(LocalDateTime earthLocalTime, int initialAge) {
 		int daysPast = RandomUtil.getRandomInt(0,364);
@@ -859,9 +870,9 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 				// Check if a person's age should be updated
 				age = updateAge(pulse.getMasterClock().getEarthTime());
 
-				// Checks if a person has a role
-				if (role.getType() == null)
-					role.obtainNewRole();
+//				// Checks if a person has a role
+//				if (role.getType() == null)
+//					role.obtainNewRole();
 			}
 		}
 	}
@@ -1715,7 +1726,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 			//     and the previous cu is in settlement vicinity
 			//     then the new location state is settlement vicinity
 			else if (oldCU instanceof Vehicle v
-					&& v.isInSettlementVicinity()
+					&& v.isRightOutsideSettlement()
 					&& newContainer instanceof MarsSurface) {
 						newLocnState = LocationStateType.SETTLEMENT_VICINITY;
 			}

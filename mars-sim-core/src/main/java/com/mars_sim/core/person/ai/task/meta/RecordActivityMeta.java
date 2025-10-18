@@ -31,9 +31,9 @@ public class RecordActivityMeta extends FactoryMetaTask {
             "Task.description.recordActivity"); //$NON-NLS-1$
 
     public RecordActivityMeta() {
-		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
 		setTrait(TaskTrait.ARTISTIC);
-		setPreferredJob(JobType.REPORTER);
+		setPreferredJob(JobType.REPORTER, JobType.TOURIST);
 		setPreferredRole(RoleType.CREW_OPERATION_OFFICER);
 	}
 

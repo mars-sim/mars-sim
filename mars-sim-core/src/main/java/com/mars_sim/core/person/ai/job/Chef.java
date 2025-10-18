@@ -14,19 +14,19 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
 /**
  * The Chef class represents a job for a chef.
  */
-public class Chef extends Job {
+public class Chef extends JobSpec {
 		
 	/** constructor. */
 	public Chef() {
 		// Use Job constructor
-		super(JobType.CHEF, Job.buildRoleMap(35.0, 5.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
+		super(JobType.CHEF, JobSpec.buildRoleMap(35.0, 5.0, 5.0, 5.0, 5.0, 20.0, 15.0, 15.0));
 	}
 
 	/**

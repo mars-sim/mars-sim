@@ -10,7 +10,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -20,12 +20,12 @@ import com.mars_sim.core.structure.Settlement;
  * that specializes in operating and programming computer software 
  * and computing devices.
  */
-public class ComputerScientist extends Job {
+public class ComputerScientist extends JobSpec {
 	
 	/** Constructor. */
 	public ComputerScientist() {
 		// Use Job constructor
-		super(JobType.COMPUTER_SCIENTIST, Job.buildRoleMap(0.0, 30.0, 10.0, 10.0, 15.0, 10.0, 5.0, 20.0));
+		super(JobType.COMPUTER_SCIENTIST, JobSpec.buildRoleMap(0.0, 30.0, 10.0, 10.0, 15.0, 10.0, 5.0, 20.0));
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class ComputerScientist extends Job {
 		// Add (labspace * tech level / 2) for all labs with mathematics specialties.
 		result += getBuildingScienceDemand(settlement, ScienceType.COMPUTING, 16D);
 
-		result = (result + population / 16D) / 2.0;
+		result = (result + population / 16D) / 4.0;
 
 		return result;
 	}

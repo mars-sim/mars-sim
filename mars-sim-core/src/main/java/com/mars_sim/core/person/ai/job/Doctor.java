@@ -14,7 +14,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -22,12 +22,12 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * The Doctor class represents a job for an medical treatment expert.
  */
-public class Doctor extends Job {
+public class Doctor extends JobSpec {
 		
 	/** Constructor. */
 	public Doctor() {
 		// Use Job constructor
-		super(JobType.DOCTOR, Job.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 20.0));
+		super(JobType.DOCTOR, JobSpec.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 20.0));
 	}
 
 	/**

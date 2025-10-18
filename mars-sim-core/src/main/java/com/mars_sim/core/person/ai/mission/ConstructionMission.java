@@ -342,7 +342,7 @@ public class ConstructionMission extends AbstractMission {
 		}
 		
 		// Check if site preparation time has expired
-		if (getPhaseDuration() >= sitePrepTime) {
+		if (getPhaseTimeElapse() >= sitePrepTime) {
 			setPhaseEnded(true);
 		}
 	}

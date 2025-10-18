@@ -22,8 +22,9 @@ public class BasicTaskJob extends AbstractTaskJob {
     private String mtID;
 
     /**
-     * Create a basic implemmation of a TaskJob that references a MetaTask as the generator
+     * Creates a basic implementation of a TaskJob that references a MetaTask as the generator
      * of the actual Task.
+     * 
      * @param factory Creator of the Task
      * @param score The score of the activity
      */

@@ -144,21 +144,42 @@ public class SimulationRuntime {
 
     /**
      * Programmically enables file logging. This will use the configured log folder.
+     * @param string 
      */
-    public static void enableFileLogging() {
+    public static void enableFileLogging(String string) {
         if (!fileLogEnabled) {
             String logdir  = getLogDir();
             (new File(logdir)).mkdirs();
 
             try {
-				String logFile = logdir + File.separator + "mars_simu.log";
-                Handler fileHandler = new FileHandler(logFile, 100000, 3, true);
+				int sizePerFile = 500000; // 500 KB
+				int fileBacklog = 3;
+
+				// Parse optional arguments
+				if (string != null) {
+					String[] parts = string.split(":");
+					if (parts.length != 2) {
+						throw new IllegalArgumentException("Invalid log argument '" + string + "'. Expected format is <size>:<count>");
+					}
+
+					try {
+						sizePerFile = parseMemorySize(parts[0]);
+						fileBacklog = Integer.parseInt(parts[1]);
+					}
+					catch(Exception e) {
+						throw new IllegalArgumentException("Invalid log format: " + e.getMessage(), e);
+					}
+				}
+				// Create the file handler
+				String logFile = logdir + File.separator + "mars_simu_%u.%g.log";
+                Handler fileHandler = new FileHandler(logFile, sizePerFile, fileBacklog, true);
                 fileHandler.setFilter(new SimuLoggingFilter());
                 fileHandler.setFormatter(new SimuLoggingFormatter());
                 fileHandler.setLevel (Level.ALL);
-				
-				logger.config("File logging enabled to " + logFile + ".");
-				
+
+				logger.config("File logging enabled to " + logFile + " with " + fileBacklog + " files of "
+								+ String.format("%,d", sizePerFile) + " each.");
+
                 // Get top level logger
                 Logger.getLogger("").addHandler(fileHandler);
 				
@@ -198,4 +219,43 @@ public class SimulationRuntime {
 			}
 		}
     }
+
+	/**
+	 * Parses a memory size string (e.g., "2G", "512M", "1024K") into bytes.
+	 * 
+	 * @param size The memory size string to parse
+	 * @return The size in bytes
+	 * @throws IllegalArgumentException if the format is invalid
+	 */
+	public static int parseMemorySize(String size) {
+		if (size == null || size.trim().isEmpty()) {
+			return 0;
+		}
+		
+		size = size.trim().toUpperCase();
+		int multiplier = 1;
+		String numberPart = null;
+		
+		if (size.endsWith("K")) {
+			multiplier = 1024;
+			numberPart = size.substring(0, size.length() - 1);
+		} else if (size.endsWith("M")) {
+			multiplier = 1024 * 1024;
+			numberPart = size.substring(0, size.length() - 1);
+		} else if (size.endsWith("G")) {
+			multiplier = 1024 * 1024 * 1024;
+			numberPart = size.substring(0, size.length() - 1);
+		}
+		else {
+			throw new IllegalArgumentException("Invalid size selector: " + size);
+		}
+		
+		// Use Commons Lang3 for safe number parsing
+		if (org.apache.commons.lang3.math.NumberUtils.isCreatable(numberPart)) {
+			double number = org.apache.commons.lang3.math.NumberUtils.toDouble(numberPart);
+			return (int) (number * multiplier);
+		}
+		
+		throw new IllegalArgumentException("Invalid size format: " + size);
+	}
 }

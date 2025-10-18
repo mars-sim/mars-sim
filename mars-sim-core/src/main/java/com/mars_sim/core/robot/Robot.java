@@ -450,13 +450,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		if (value) {
 			super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
 			botMind.setInactive();
-			condition.setPerformanceFactor(0);
-//			this.setPrimaryStatus(BotMode.MALFUNCTION);
-//			toBeSalvaged();
 		}
 		else {
 			super.setDescription(getDescription().replace(INOPERABLE, OPERABLE));
-			condition.setPerformanceFactor(1);
 		}
 		
 		isInoperable = value;
@@ -499,8 +495,6 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 						malfunctionManager.activeTimePassing(pulse);
 					}	
 				}
-			} else {
-				setInoperable(true);
 			}
 		}
 

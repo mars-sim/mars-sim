@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavpointPanel.java
- * @date 2024-08-01
+ * @date 2025-10-15
  * @author Scott Davis
  */
 
@@ -57,8 +57,7 @@ public class NavpointPanel
 extends JPanel
 implements MissionListener {
 
-	private static final int WIDTH = 512;
-	private static final int HEIGHT = 512;
+	private static final int HEIGHT = 430;
 	private static final double TWO_PI = Math.PI * 2D;
 	
 	// Private members.
@@ -110,7 +109,7 @@ implements MissionListener {
 		navpointTablePane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		navpointTablePane.setBorder(new MarsPanelBorder());		
 		
-		// Define splitPane to house mapDisplayPane and ..
+		// Define splitPane to house mapPane and navpointTable
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapDisplayPane, navpointTablePane);
 	    splitPane.setOneTouchExpandable(true);
 	    splitPane.setDividerLocation(HEIGHT + 10);
@@ -118,7 +117,7 @@ implements MissionListener {
 		
 		// Create the map panel.
 		mapPanel = new MapPanel(missionWindow.getDesktop());
-		mapPane.setPreferredSize(new Dimension(400, 512));
+		mapPane.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, HEIGHT));
 
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
@@ -141,7 +140,7 @@ implements MissionListener {
 		mapPanel.addMapLayer(trailLayer, 3);
 		mapPanel.addMapLayer(navpointLayer, 4);
   
-        mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));  
+        mapPanel.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, HEIGHT));  
         
         mapPane.add(mapPanel);
         
@@ -196,7 +195,8 @@ implements MissionListener {
         
         // Create the navpoint table.
         navpointTable = new JTable(navpointTableModel);
-        navpointTable.setPreferredSize(new Dimension(WIDTH, MissionWindow.TABLE_HEIGHT));  
+        navpointTable.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MissionWindow.TABLE_HEIGHT));  
+        navpointTable.setMinimumSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MissionWindow.TABLE_HEIGHT));  
         navpointTable.setRowSelectionAllowed(true);
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         navpointTable.getSelectionModel().addListSelectionListener(e -> {

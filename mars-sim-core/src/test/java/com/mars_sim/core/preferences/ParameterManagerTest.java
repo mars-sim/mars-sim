@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.parameter.ParameterCategory;
-import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.parameter.ParameterKey;
+import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.parameter.ParameterValueType;
 
 class ParameterManagerTest {
