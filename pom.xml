@@ -197,7 +197,15 @@
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-surefire-plugin</artifactId>
-				    <version>3.5.3</version>
+				    <version>3.5.4</version>
+				   <!-- surefire-junit-platform below is needed for maven-surefire-plugin -->
+			        <dependencies>
+				        <dependency>
+				            <groupId>org.apache.maven.surefire</groupId>
+				            <artifactId>surefire-junit-platform</artifactId>
+				            <version>3.5.4</version>
+				        </dependency>
+			        </dependencies>
 				    <configuration>
                         <argLine>-Duser.language=en -Duser.region=US</argLine>
 						<includes>

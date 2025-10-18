@@ -219,8 +219,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<communication tech-level="1" >
 				<activity>
 					<!-- The left and right seats of the west dining table -->
-					<activity-spot xloc="3.53" yloc="-1.4" />
-					<activity-spot xloc="2.02" yloc="-1.4" />
+					<activity-spot xloc="3.47" yloc="-1.39" />
+					<activity-spot xloc="2.06" yloc="-1.39" />
 				</activity>
 			</communication>
 
@@ -255,8 +255,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc="1.04" yloc="-0.62" />
 					<activity-spot xloc="1.04" yloc="-2.15" />
 					<!-- The left and right seats of the East table -->
-					<activity-spot xloc="1.7" yloc="-1.4" />
-					<activity-spot xloc="0.35" yloc="-1.4" />
+					<activity-spot xloc="1.71" yloc="-1.39" />
+					<activity-spot xloc="0.36" yloc="-1.39" />
 				</activity>
 			</dining>
 
