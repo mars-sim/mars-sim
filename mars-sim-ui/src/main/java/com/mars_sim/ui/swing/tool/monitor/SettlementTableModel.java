@@ -6,13 +6,11 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
@@ -140,26 +138,15 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 		}
 	}
 
-	private boolean allSettlements;
-
 	/**
 	 * Constructs a SettlementTableModel model that displays all Settlements in the
 	 * simulation.
 	 */
-	public SettlementTableModel(boolean allSettlements) {
-		super(UnitType.SETTLEMENT, (allSettlements ? "Mars" : "Settlement"), "SettlementTableModel.countingSettlements",
+	public SettlementTableModel() {
+		super(UnitType.SETTLEMENT, "Settlement", "SettlementTableModel.countingSettlements",
 				COLUMNS);
-		this.allSettlements = allSettlements;
 
 		setupCaches();
-		
-		if (allSettlements) {
-			
-			Collection<Settlement> settlements = CollectionUtils.sortByName(unitManager.getSettlements());
-			resetEntities(settlements);
-			
-			listenForUnits();
-		}
 	}
 
 	private void setupCaches() {
@@ -173,12 +160,9 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-
-		if (!allSettlements) {
-			CollectionUtils.sortByName(filter);		
-			resetEntities(filter);
-		}
-		return !allSettlements;
+		resetEntities(filter);
+		
+		return true;
 	}
 
 	/**
