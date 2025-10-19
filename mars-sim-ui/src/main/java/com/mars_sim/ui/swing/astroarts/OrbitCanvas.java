@@ -140,6 +140,8 @@ class OrbitCanvas extends Canvas {
 		bObjectName = false;
 		bDistanceLabel = true;
 		bDateLabel = true;
+		
+		revalidate();
 		repaint();
 	}
 	
@@ -587,7 +589,7 @@ class OrbitCanvas extends Canvas {
 		g2d.drawImage(offscreen, 0, 0, null);
 		
 //		offscreen.flush();
-		g2d.dispose();
+//		g2d.dispose();
 	}
 	
 	/**
