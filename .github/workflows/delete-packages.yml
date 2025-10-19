@@ -1,4 +1,6 @@
 name: Remove Untagged Packages
+permissions:
+  packages: write
 
 on:
   workflow_dispatch:
