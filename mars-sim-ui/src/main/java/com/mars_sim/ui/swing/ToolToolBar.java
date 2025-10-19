@@ -28,22 +28,17 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.astroarts.OrbitViewer;
-import com.mars_sim.ui.swing.sound.AudioPlayer;
+import com.mars_sim.ui.swing.astroarts.OrbitWindow;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -167,7 +162,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 
-		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
+		addToolButton(OrbitWindow.NAME, "Orbit Viewer", OrbitWindow.ICON);
 		
 		addSeparator(new Dimension(20, 20));
 	}

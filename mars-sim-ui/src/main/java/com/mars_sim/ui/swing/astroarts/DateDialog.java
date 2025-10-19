@@ -55,19 +55,18 @@ public class DateDialog extends ModalInternalFrame {
 	
 	protected OrbitViewer	viewer;
 	
-	public DateDialog(OrbitViewer viewer, ATime atime) {
+	public DateDialog(OrbitViewer viewer, ATime atime, LocalDateTime earthTime) {
 		super("Input Date", true, // resizable
 				false, // closable
 				false, // maximizable
 				false); // iconifiable
 		
 		this.viewer = viewer;
-		
 		super.setFrameIcon(MainWindow.getLanderIcon());
 		
 		// Set the layout.
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(200, 400));
+		setPreferredSize(new Dimension(200, 500));
 		
 		JPanel currentPanel = new JPanel(new BorderLayout());
 		currentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -115,7 +114,6 @@ public class DateDialog extends ModalInternalFrame {
 		buttonSimDate.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(buttonSimDate);
 		buttonSimDate.addActionListener(e -> {
-				LocalDateTime earthTime = viewer.getDesktop().getSimulation().getMasterClock().getEarthTime();
 				monthCB.setSelectedIndex(earthTime.getMonthValue() - 1);
 				tfDate.setText(Integer.toString(earthTime.getDayOfMonth()));
 				tfYear.setText(Integer.toString(earthTime.getYear()));    					
@@ -217,14 +215,7 @@ public class DateDialog extends ModalInternalFrame {
 		setSize(new Dimension(200, 250));
 		setPreferredSize(new Dimension(200, 250));		
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);	
-					
-		viewer.getDesktop().add(this);
-			
-		Dimension desktopSize = viewer.getDesktop().getParent().getSize();
-		Dimension jInternalFrameSize = this.getSize();
-		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-		int height = (int)((desktopSize.height - jInternalFrameSize.height) / 1.4);
-		setLocation(width, height);
+
 			
 	    viewer.repaint();
 

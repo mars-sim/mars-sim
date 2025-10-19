@@ -48,7 +48,7 @@ import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
-import com.mars_sim.ui.swing.astroarts.OrbitViewer;
+import com.mars_sim.ui.swing.astroarts.OrbitWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
@@ -350,7 +350,7 @@ public class MainDesktopPane extends JDesktopPane
 				case MonitorWindow.NAME -> new MonitorWindow(this);
 				case MissionWindow.NAME -> new MissionWindow(this);
 				case ResupplyWindow.NAME -> new ResupplyWindow(this);
-				case OrbitViewer.NAME -> new OrbitViewer(this);
+				case OrbitWindow.NAME -> new OrbitWindow(this);
 				default -> null;
 			};
 			if (w == null) {
