@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -28,14 +27,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
@@ -43,7 +38,6 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
-import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -66,7 +60,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private static final Logger logger = Logger.getLogger(ToolToolBar.class.getName());
+	// May add back: private static final Logger logger = Logger.getLogger(ToolToolBar.class.getName())
 	
 	private static final String SAVE = "SAVE";
 	private static final String SAVEAS = "SAVEAS";
@@ -114,11 +108,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Set name
 		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
 
-		setFloatable(true);
+//		setFloatable(true);
 
-//		setRollover(true);
+		setRollover(true);
 		
-		setAlignmentY(SwingConstants.CENTER);
+		setAlignmentY(Component.CENTER_ALIGNMENT);
+		setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		addSeparator(new Dimension(20, 20));
 		
@@ -143,6 +138,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		// Add wiki button
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
+		// Add orbit viewer
+		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
 		// Add guide button
 		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
 		
@@ -167,8 +164,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 
-		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
-		
 		addSeparator(new Dimension(20, 20));
 	}
   
