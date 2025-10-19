@@ -1,8 +1,15 @@
 package com.mars_sim.ui.swing.astroarts;
 
-import com.mars_sim.core.astroarts.ATime;
+import java.awt.BorderLayout;
 
-public class OrbitViewerMain implements Runnable {
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
+import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.time.MasterClock;
+
+
+public class OrbitViewerMain {
 
 	private OrbitViewer orbitViewer = null;
 	
@@ -11,42 +18,24 @@ public class OrbitViewerMain implements Runnable {
 	 */
 	private OrbitViewerMain()  { 
 	    
-//		JFrame frame = new JFrame("Orbit Viewer");
-//		frame.setSize(1024, 1024);
-//
-//		frame.setLayout(new BorderLayout());
-//		
-////		frame.getContentPane().add(createGUI(), BorderLayout.CENTER);
-//		
-//		frame.setBackground(Color.BLACK);
-//		  
-//		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+		JFrame frame = new JFrame("Orbit Viewer");
+		frame.setSize(1024, 1024);
 
-		// Player Thread
-		
-		orbitViewer = new OrbitViewer() ;
-		
-//		frame.pack();
-//        frame.setVisible(true);
+		var config = SimulationConfig.loadConfig();
+		var masterClock = new MasterClock(config, 10);
+
+		orbitViewer = new OrbitViewer(masterClock);
+		frame.setLayout(new BorderLayout());
+
+		frame.getContentPane().add(orbitViewer);
+
+        frame.setVisible(true);
+		frame.repaint();
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
 	}
 
     public static void main(String[] args) {
     	new OrbitViewerMain();
     }
-    
-	/**
-	 * Play forever
-	 */
-	public void run() {
-		while (true) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				break;
-			}
-			ATime atime = orbitViewer.getAtime();
-			atime.changeDate(orbitViewer.timeStep, orbitViewer.playDirection);
-			orbitViewer.setNewDate(atime);
-		}
-	}
 }

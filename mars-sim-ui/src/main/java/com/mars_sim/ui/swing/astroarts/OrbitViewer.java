@@ -15,7 +15,6 @@ package com.mars_sim.ui.swing.astroarts;
 
 import java.awt.Adjustable;
 import java.awt.BorderLayout;
-import java.awt.Color;
 
 /**
  * Orbit Projector
@@ -71,40 +70,33 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 
 import com.mars_sim.core.astroarts.ATime;
 import com.mars_sim.core.astroarts.Astro;
 import com.mars_sim.core.astroarts.Comet;
 import com.mars_sim.core.astroarts.TimeSpan;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 
 /**
  * This Class creates a pictorial representation of a solar system showing the orbits of all planets plus a satellite of interest
  */
 @SuppressWarnings("serial")
-public class OrbitViewer extends ToolWindow
+public class OrbitViewer extends JPanel
 implements ActionListener {
 
-	public static final String NAME = "astro";
-	public static final String ICON = "astro";
 	
 	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 600;
 	private static final int INITIAL_ZOOM_LEVEL = 175;
 	private static final int ONE_STEP = 5;
-	
-	private static final String THREAD_NAME = "OrbitViewer";
-	
+		
 	private int xvalue = 255;
 	private int yvalue = 130;
 	
@@ -120,13 +112,16 @@ implements ActionListener {
 	private JScrollBar 		scrollVert;
 	private OrbitCanvas		orbitCanvas;
 	private JButton			buttonDate;
-	private DateDialog		dateDialog = null;
+	private JButton			buttonForStep;
+	private JButton			buttonStop;
+	private JButton			buttonRevStep;
 
+	private DateDialog		dateDialog = null;
+	private MasterClock	    masterClock = null;
 	/**
 	 * Player thread
 	 */
 	private OrbitPlayer		orbitPlayer;
-	private transient Thread			playerThread = null;
 
 	/**
 	 * Current Time Setting
@@ -147,8 +142,8 @@ implements ActionListener {
 		new TimeSpan("1 Year", 1, 0,  0, 0, 0, 0.0),
 	};
 
-	public TimeSpan timeStep = timeStepSpan[0];
-	int playDirection = ATime.F_INCTIME;
+	private TimeSpan timeStep = timeStepSpan[0];
+	private int playDirection = ATime.F_INCTIME;
 
     /**
      * Centered Object
@@ -232,55 +227,21 @@ implements ActionListener {
 	/**
 	 * Initialization.
 	 */
-	public OrbitViewer(MainDesktopPane desktop) { 
-		// Call ModalInternalFrame constructor
-        super(NAME, "Orbit Viewer", desktop);
+	public OrbitViewer(MasterClock masterClock) {
 
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
-
+		this.masterClock = masterClock;
 		String[][] array = getParameterInfo();
 		rowOfMatrix = array.length;
-
-	 	setLayout(new BorderLayout());
 
 		createGUI();
 
-		// Player Thread
+		// Player Thread	
 		orbitPlayer = new OrbitPlayer(this);
-		playerThread = null;
 	}
 
-	/**
-	 * Initialization.
-	 */
-	OrbitViewer() { 
-		super(NAME, "Orbit Viewer", null);
-	    
-		JFrame frame = new JFrame("Orbit Viewer");
-		frame.setSize(1024, 1024);
-		
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+	private void createGUI() {
 
-		String[][] array = getParameterInfo();
-		rowOfMatrix = array.length;
-
-		frame.setLayout(new BorderLayout());
-		
-		frame.getContentPane().add(createGUI(), BorderLayout.CENTER);
-		
-		setBackground(Color.BLACK);
-		
-		// Player Thread
-		orbitPlayer = new OrbitPlayer(this);
-		playerThread = null;
-		
-		orbitPlayer.run();
-		
-		frame.pack();
-        frame.setVisible(true);
-	}
-    
-	private JPanel createGUI() {
+		setLayout(new BorderLayout());
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 
@@ -473,7 +434,7 @@ implements ActionListener {
 		ctrlPanel.add(buttonRevPlay);
 
 		// Reverse-Step Button
-		JButton buttonRevStep = new JButton("|<");
+		buttonRevStep = new JButton("|<");
 		buttonRevStep.setToolTipText("Reverse One Step");
 		buttonRevStep.setActionCommand(REV_STEP);
 		buttonRevStep.addActionListener(this);
@@ -488,7 +449,7 @@ implements ActionListener {
 		ctrlPanel.add(buttonRevStep);
 
 		// Stop Button
-		JButton buttonStop = new JButton("||");
+		buttonStop = new JButton("||");
 		buttonStop.setToolTipText("Stop");
 		buttonStop.setActionCommand(STOP);
 		buttonStop.addActionListener(this);
@@ -503,7 +464,7 @@ implements ActionListener {
 		ctrlPanel.add(buttonStop);
 
 		// Step Button
-		JButton buttonForStep = new JButton(">|");
+		buttonForStep = new JButton(">|");
 		buttonForStep.setToolTipText("One Step Forward");
 		buttonForStep.setActionCommand(STEP);
 		buttonForStep.addActionListener(this);
@@ -728,10 +689,11 @@ implements ActionListener {
 		gbl.setConstraints(ctrlPanel, gbc);
 		add(ctrlPanel);
 
+		// Set buttons as stopped player state
+		setButtonState(false);
+
 		setSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
 		setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		return mainPanel;
 	}
 
 
@@ -857,67 +819,41 @@ implements ActionListener {
 	private void setNewDate() {
 		this.atime = limitATime(this.atime);
 		orbitCanvas.setDate(this.atime);
-		orbitCanvas.repaint();
 	}
 
-	/**
-	 * OrbitPlayer interface
-	 */
-	public ATime getAtime() {
+	ATime advanceTime() {
+		atime.changeDate(timeStep, playDirection);
+		atime = limitATime(atime);
+
+		orbitCanvas.setDate(atime);
 		return atime;
-	}
-	public void setNewDate(ATime atime) {
-		this.atime = limitATime(atime);
-		orbitCanvas.setDate(this.atime);
-		orbitCanvas.repaint();
-	}
-
-	/**
-	 * Override Function start()
-	 */
-	public void start() {
-		// if you want, you can initialize date here
-	}
-
-	/**
-	 * Override Function stop()
-	 */
-	public void stop() {
-		if (dateDialog != null) {
-			dateDialog.dispose();
-			endDateDialog(null);
-		}
-		if (playerThread != null) {
-			orbitPlayer.stop();
-			playerThread = null;
-			buttonDate.setEnabled(true);
-		}
 	}
 
 	/**
 	 * Destroy.
 	 */
-	@Override
 	public void destroy() {
-		removeAll();
-		super.destroy();
+		orbitPlayer.stop();
 	}
 
-	private void play(int direction){
-		if (playerThread != null
-			&&  playDirection != direction) {
-			orbitPlayer.stop();
-			playerThread = null;
-		}
-		if (playerThread == null) {
-			buttonDate.setEnabled(false);
-			playDirection = direction;
-			playerThread = new Thread(orbitPlayer, THREAD_NAME);
-			playerThread.setPriority(Thread.MIN_PRIORITY);
-			playerThread.start();
-		}
+	private void setButtonState(boolean playing) {
+		buttonDate.setEnabled(!playing);
+		buttonForStep.setEnabled(!playing);
+		buttonRevStep.setEnabled(!playing);
+		buttonStop.setEnabled(playing);
+	}
+
+	private void startPlayer(int direction){
+		playDirection = direction;
+		setButtonState(true);
+		orbitPlayer.start();
 	}
 	
+	private void stopPlayer() {
+		orbitPlayer.stop();
+		setButtonState(false);
+	}
+
 	/**
      * Action event occurs.
      *
@@ -932,23 +868,20 @@ implements ActionListener {
 			case SELECT_DATE:
 				// Set Date
 				if (dateDialog == null) {
-					dateDialog = new DateDialog(this, atime);
+					dateDialog = new DateDialog(this, atime, masterClock.getEarthTime());
+					dateDialog.setVisible(true);
 					return;
 				}
                 dateDialog.setVisible(!dateDialog.isVisible());
 				break;
 			case PLAY:
-				play(ATime.F_INCTIME);
+				startPlayer(ATime.F_INCTIME);
 				break;
 			case REV_PLAY:
-				play(ATime.F_DECTIME);
+				startPlayer(ATime.F_DECTIME);
 				break;
 			case STOP:
-				if (playerThread != null) {
-					orbitPlayer.stop();
-					playerThread = null;
-					buttonDate.setEnabled(true);//enable();
-				}
+				stopPlayer();
 				break;
 			case STEP:
 				atime.changeDate(timeStep, ATime.F_INCTIME);
