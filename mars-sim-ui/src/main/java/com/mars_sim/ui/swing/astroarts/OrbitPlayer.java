@@ -16,8 +16,7 @@ import com.mars_sim.core.logging.SimLogger;
 public class OrbitPlayer implements Runnable {
 	
 	private SimLogger logger = SimLogger.getLogger(OrbitPlayer.class.getName());
-
-			 
+		 
 	private OrbitViewer	orbitViewer;
 	private boolean active = true;
 	

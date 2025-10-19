@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindow.java
- * @date 2025-09-19
+ * @date 2025-10-18
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
@@ -10,11 +10,11 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Taskbar;
@@ -35,11 +35,17 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicToolBarUI;
 
 import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.GameManager;
@@ -53,6 +59,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -83,6 +90,8 @@ public class MainWindow
 	private static final String MAIN_PROPS = "main-window";
 	private static final String EXTERNAL_BROWSER = "use-external";
 
+	private static final String VOLUME = "volume";
+	
 	/** The main window frame. */
 	private static JFrame frame;
 
@@ -95,15 +104,15 @@ public class MainWindow
 
 	private int millisolIntCache;
 	
+	private int initX;
+	private int initY;
+	
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
 	/** The tool bar. */
 	private ToolToolBar toolToolbar;
 	/** The main desktop. */
 	private MainDesktopPane desktop;
-
-	/** WebSwitch for the control of play or pause the simulation */
-	private JToggleButton playPauseSwitch;
 
 	private Dimension selectedSize;
 	
@@ -113,6 +122,9 @@ public class MainWindow
 
 	private JMemoryMeter memoryBar;
 
+	/** The control of play or pause the simulation. */
+	private JToggleButton playPauseSwitch;
+	
 	private transient HelpLibrary helpLibrary;
 
 	private boolean useExternalBrowser;
@@ -269,9 +281,9 @@ public class MainWindow
 				+ selectedSize.height
 				+ ".");
 
-		frame.setLocation(
-				((screenWidth - selectedSize.width) / 2),
-				((screenHeight - selectedSize.height) / 2));
+		initX = (int)(screenWidth - selectedSize.width) / 2;
+		initY = (int)(screenHeight - selectedSize.height) / 2;
+		frame.setLocation(initX, initY);
 
 		logger.config("Use default configuration to set main window's frame to the center of the screen.");
 		logger.config("The main window frame is centered and starts at ("
@@ -356,7 +368,6 @@ public class MainWindow
 	/**
 	 * Initializes UI elements for the frame
 	 */
-	@SuppressWarnings("serial")
 	private void init() {
 	
 		frame.addWindowListener(new WindowAdapter() {
@@ -424,12 +435,25 @@ public class MainWindow
 		toolToolbar = new ToolToolBar(this);
 		toolToolbar.requestFocusInWindow();
 		
-		// Create speed buttons
-		createSpeedButtons(toolToolbar);
-		
 		// Add toolToolbar to mainPane
 		contentPane.add(toolToolbar, BorderLayout.NORTH);
 
+		// Add a floating tool bar
+		JToolBar floatingBar = new JToolBar();
+		floatingBar.setFloatable(true);
+		JPanel floatPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+		floatPanel.add(floatingBar);
+		
+		floatingBar.add(createSpeedBar());
+		
+		floatingBar.add(createVolumeSlider());
+
+		contentPane.add(floatPanel, BorderLayout.SOUTH);
+		
+//		BasicToolBarUI ui = (BasicToolBarUI) floatingBar.getUI();
+//		// Sets the toolbar to float at the specified point
+//		ui.setFloating(true, new Point(initX, initY));
+		
 		// Add bottomPane for holding unitToolbar and statusBar
 		JPanel bottomPane = new JPanel(new BorderLayout());
 
@@ -472,6 +496,130 @@ public class MainWindow
 		masterClock.addClockListener(this, 1000L);
 	}
 
+	  
+		/**
+		 * Creates the speed bar and buttons.
+		 * 
+		 * @return
+		 */
+		private JPanel createSpeedBar() {
+			
+			JPanel speedPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			speedPanel.setToolTipText("Speed Control");
+			
+			// Add the decrease speed button
+			JButton decreaseSpeed = new JButton("\u2212");//u23EA");
+			decreaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 13));
+			decreaseSpeed.setPreferredSize(new Dimension(25, 25));
+//			decreaseSpeed.setMaximumSize(new Dimension(25, 25));
+			decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
+			
+			decreaseSpeed.addActionListener(e -> {
+				if (!masterClock.isPaused()) {
+					masterClock.decreaseSpeed();
+				}
+			});
+			
+			// Create pause switch
+			createPauseSwitch();
+
+			JButton increaseSpeed = new JButton("\u002B");//\u23E9");
+			increaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 13));
+			increaseSpeed.setPreferredSize(new Dimension(25, 25));
+//			increaseSpeed.setMaximumSize(new Dimension(25, 25));
+			increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
+
+			increaseSpeed.addActionListener(e -> {
+				if (!masterClock.isPaused()) {
+					masterClock.increaseSpeed();
+				}
+			});
+			
+			// Add the increase speed button
+			speedPanel.add(decreaseSpeed);
+			speedPanel.add(playPauseSwitch);
+			speedPanel.add(increaseSpeed);
+			
+			return speedPanel;
+		}
+		
+		/**
+		 * Creates the pause button.
+		 */
+		private JToggleButton createPauseSwitch() {
+			playPauseSwitch = new JToggleButton("\u23E8");
+			playPauseSwitch.setFont(new Font(Font.DIALOG, Font.BOLD, 13));
+			playPauseSwitch.setPreferredSize(new Dimension(25, 25));
+//			playPauseSwitch.setMaximumSize(new Dimension(25, 25));
+			playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
+			playPauseSwitch.addActionListener(e -> {
+					boolean isSel = playPauseSwitch.isSelected();
+					if (isSel) {
+						// To show play symbol
+						playPauseSwitch.setText("\u23F5");
+					}
+					else {
+						// To show pause symbol 
+						playPauseSwitch.setText("\u23F8");
+					}		
+					masterClock.setPaused(isSel, false);	
+				});
+			playPauseSwitch.setText("\u23F8");
+			
+			return playPauseSwitch;
+		}
+		
+		public JToggleButton getPlayPauseSwitch() {
+			return playPauseSwitch;
+		}
+		
+		/**
+		 * Creates the music volume slider.
+		 * 
+		 * @return 
+		 */
+		private JPanel createVolumeSlider() {
+
+			Icon icon = ImageLoader.getIconByName(VOLUME);
+			JPanel volPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+			volPanel.setToolTipText("Volume Control");
+			volPanel.add(new JLabel(icon));
+			
+	        JSlider slider = new JSlider();
+	        slider.setMajorTickSpacing(50);
+	        slider.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 6));
+	        slider.setPaintLabels(true);
+	        slider.setToolTipText("Music and Sound Volume Slider");
+	        volPanel.add(slider);
+	        slider.setPreferredSize(new Dimension(160, 25));
+
+	        //this is for setting the value
+	        slider.addChangeListener(new ChangeListener() {
+
+	            @Override
+	            public void stateChanged(ChangeEvent e) {
+	                JSlider src = (JSlider)e.getSource();
+
+	                double value = src.getValue() / 100.0;
+	                
+	                try {
+	                	getAudioPlayer().setMusicVolume(value);
+
+	                } catch (Exception ex) {
+	                	logger.severe("Unable to set new music volume: " + ex);
+	                }
+	            }
+	        });
+
+	        try {
+	            slider.setValue((int) (AudioPlayer.DEFAULT_VOL * 100));
+	        } catch (Exception e) {
+	        	logger.severe("Unable to set new music volume: " + e);
+	        }
+	        
+	        return volPanel;
+	    }
+		
 	/**
 	 * Updates the LAF style to a new value.
 	 */
@@ -482,71 +630,71 @@ public class MainWindow
 		}
 	}
 
-	private void createSpeedButtons(ToolToolBar toolBar) {
-		
-		JPanel panel = new JPanel(new BorderLayout());
-		JPanel speedPanel = new JPanel(new GridLayout(1, 3));
-		panel.add(speedPanel, BorderLayout.EAST);
-		
-		// Add the decrease speed button
-		JButton decreaseSpeed = new JButton("\u23EA");
-		decreaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-		decreaseSpeed.setPreferredSize(new Dimension(30, 30));
-		decreaseSpeed.setMaximumSize(new Dimension(30, 30));
-		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
-		
-		decreaseSpeed.addActionListener(e -> {
-			if (!masterClock.isPaused()) {
-				masterClock.decreaseSpeed();
-			}
-		});
-		
-		// Create pause switch
-		createPauseSwitch();
-
-		JButton increaseSpeed = new JButton("\u23E9");
-		increaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-		increaseSpeed.setPreferredSize(new Dimension(30, 30));
-		increaseSpeed.setMaximumSize(new Dimension(30, 30));
-		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
-
-		increaseSpeed.addActionListener(e -> {
-			if (!masterClock.isPaused()) {
-				masterClock.increaseSpeed();
-			}
-		});
-		
-		// Add the increase speed button
-		speedPanel.add(decreaseSpeed);
-		speedPanel.add(playPauseSwitch);
-		speedPanel.add(increaseSpeed);
-		toolBar.add(panel);
-		
-	}
-
-	/**
-	 * Creates the pause button.
-	 */
-	private void createPauseSwitch() {
-		playPauseSwitch = new JToggleButton("\u23E8");
-		playPauseSwitch.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
-		playPauseSwitch.setPreferredSize(new Dimension(30, 30));
-		playPauseSwitch.setMaximumSize(new Dimension(30, 30));
-		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
-		playPauseSwitch.addActionListener(e -> {
-				boolean isSel = playPauseSwitch.isSelected();
-				if (isSel) {
-					// To show play symbol
-					playPauseSwitch.setText("\u23F5");
-				}
-				else {
-					// To show pause symbol 
-					playPauseSwitch.setText("\u23F8");
-				}		
-				masterClock.setPaused(isSel, false);	
-			});
-		playPauseSwitch.setText("\u23F8");
-	}
+//	private void createSpeedButtons(ToolToolBar toolBar) {
+//		
+//		JPanel panel = new JPanel(new BorderLayout());
+//		JPanel speedPanel = new JPanel(new GridLayout(1, 3));
+//		panel.add(speedPanel, BorderLayout.EAST);
+//		
+//		// Add the decrease speed button
+//		JButton decreaseSpeed = new JButton("\u23EA");
+//		decreaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+//		decreaseSpeed.setPreferredSize(new Dimension(30, 30));
+//		decreaseSpeed.setMaximumSize(new Dimension(30, 30));
+//		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
+//		
+//		decreaseSpeed.addActionListener(e -> {
+//			if (!masterClock.isPaused()) {
+//				masterClock.decreaseSpeed();
+//			}
+//		});
+//		
+//		// Create pause switch
+//		createPauseSwitch();
+//
+//		JButton increaseSpeed = new JButton("\u23E9");
+//		increaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+//		increaseSpeed.setPreferredSize(new Dimension(30, 30));
+//		increaseSpeed.setMaximumSize(new Dimension(30, 30));
+//		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
+//
+//		increaseSpeed.addActionListener(e -> {
+//			if (!masterClock.isPaused()) {
+//				masterClock.increaseSpeed();
+//			}
+//		});
+//		
+//		// Add the increase speed button
+//		speedPanel.add(decreaseSpeed);
+//		speedPanel.add(playPauseSwitch);
+//		speedPanel.add(increaseSpeed);
+//		toolBar.add(panel);
+//		
+//	}
+//
+//	/**
+//	 * Creates the pause button.
+//	 */
+//	private void createPauseSwitch() {
+//		playPauseSwitch = new JToggleButton("\u23E8");
+//		playPauseSwitch.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
+//		playPauseSwitch.setPreferredSize(new Dimension(30, 30));
+//		playPauseSwitch.setMaximumSize(new Dimension(30, 30));
+//		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
+//		playPauseSwitch.addActionListener(e -> {
+//				boolean isSel = playPauseSwitch.isSelected();
+//				if (isSel) {
+//					// To show play symbol
+//					playPauseSwitch.setText("\u23F5");
+//				}
+//				else {
+//					// To show pause symbol 
+//					playPauseSwitch.setText("\u23F8");
+//				}		
+//				masterClock.setPaused(isSel, false);	
+//			});
+//		playPauseSwitch.setText("\u23F8");
+//	}
 
 	/**
 	 * Get the window's frame.
@@ -566,6 +714,15 @@ public class MainWindow
 		return desktop;
 	}
 
+	/**
+	 * Gets the audio player.
+	 * 
+	 * @return
+	 */
+	public AudioPlayer getAudioPlayer() {
+		return desktop.getSoundPlayer();
+	}
+	
 	/**
 	 * Performs the process of saving a simulation.
 	 * Note: if defaultFile is false, displays a FileChooser to select the
@@ -781,13 +938,11 @@ public class MainWindow
 		
 		if (isPaused) {
 			desktop.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			desktop.getSoundPlayer().pauseMusic();
 			desktop.getSoundPlayer().muteMusic();
 		}
 		else {
 			desktop.getParent().setCursor(Cursor.getDefaultCursor());
 			desktop.getSoundPlayer().unmuteMusic();
-			desktop.getSoundPlayer().resumeMusic();
 		}
 	}
 
@@ -874,8 +1029,7 @@ public class MainWindow
 		desktop = null;
 		
 		uiconfigs = null;
-		
-		playPauseSwitch = null;
+
 		selectedSize = null;
 		
 		sim = null;

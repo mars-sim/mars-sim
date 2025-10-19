@@ -586,7 +586,7 @@ class OrbitCanvas extends Canvas {
 		
 		g2d.drawImage(offscreen, 0, 0, null);
 		
-		offscreen.flush();
+//		offscreen.flush();
 		g2d.dispose();
 	}
 	

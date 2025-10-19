@@ -136,13 +136,10 @@ public class OGGSoundClip {
 			volume = 1.0;
 		else if (volume < 0.0) {
 			volume = 0.0;
-			setPause(true);
 		}
-		else
-			setPause(false);
 
 		if (outputLine == null) {
-//			logger.info("determineGain(): outputLine == null");
+			logger.info("determineGain(): outputLine == null");
 			return;
 		}
 
@@ -163,15 +160,15 @@ public class OGGSoundClip {
 				double max = floatControl.getMaximum();
 				double min = floatControl.getMinimum();
 				
-				double value = volume * (max - min) + min;
+				double value = volume * (max - min/2) + min/2;
 				
-				logger.info("[" + (int)max + " to " + min + "] vol: " + Math.round(volume * 10.0)/10.0 + " ->  gain: " + Math.round(value* 10.0)/10.0);
+				logger.info("[Gain: " + (int)min + " to " + (int)max + "] vol of " + Math.round(volume * 100.0)/100.0 + " -> gain of " + Math.round(value* 10.0)/10.0);
 				
-				setPause(true);
+//				setPause(true);
 				
 				floatControl.setValue((float)value);
 				
-				setPause(false);
+//				setPause(false);
 
 			} else {
 				// in case of some versions of linux in which MASTER_GAIN is not supported
@@ -203,108 +200,17 @@ public class OGGSoundClip {
 	 */
 	synchronized boolean checkState() {
 		
-		while (paused && (playerThread != null)) {
-			
-	    	try {
-				name.wait();
-			} catch (InterruptedException e) {
-				// Restore interrupted state
-			    Thread.currentThread().interrupt();
-			}
-	    }
+//		while (paused && (playerThread != null)) {
+//			
+//	    	try {
+//				name.wait();
+//			} catch (InterruptedException e) {
+//				// Restore interrupted state
+//			    Thread.currentThread().interrupt();
+//			}
+//	    }
 		
 		return isStopped();
-	}
-
-	/**
-	 * Pauses or unpauses the playback.
-	 */
-	 public void setPause(boolean value) { 
-		 paused = value; 
-	 }
-
-	/**
-	 * Checks if the stream is paused.
-	 *
-	 * @return True if the stream is paused
-	 */
-	public boolean isPaused() {
-		return paused;
-	}
-
-	/**
-	 * Plays the clip once for sound effects.
-	 */
-	public void play() {
-//		stop();
-
-		try {
-			if (bitStream != null) {
-				bitStream.reset();
-			}
-		} catch (IOException e) {
-			// ignore if no mark
-			logger.log(Level.SEVERE, "IOException in OGGSoundClip's play(). ", e);
-		}
-
-		playerThread = new Thread() {
-			public void run() {
-				 try {
-					 playStream();
-				 } catch (Exception e) {	
-						playerThread = null;
-						
-					 if (AudioPlayer.isEffectMute()) {
-						 logger.log(Level.CONFIG, "The sound effect is muted.");
-					 }
-					 if (AudioPlayer.isMusicMute()) {
-						 logger.log(Level.CONFIG, "The music is muted.");
-					 }
-					
-					 logger.log(Level.SEVERE, "Can't play the bit stream in play(). ", e);
-				 }
-
-				try {
-					if (bitStream != null) {
-						bitStream.reset();
-					}
-				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
-							e);
-				}
-			};
-		};
-		playerThread.setDaemon(true);
-		playerThread.start();
-	}
-
-	/**
-	 * Loops the clip for background music.
-	 */
-	public void loop() {
-		play();
-	}
-
-	/**
-	 * Resumes the playback.
-	 * Note: may need to setPause(false) first.
-	 */
-	public void resume() {
-		if (paused) {
-			paused = false;
-		}
-		
-		setMute(false);	
-		
-		if (isStopped()) {
-			loop();
-		}
-		
-		if (playerThread != null) {
-			synchronized(this){
-				this.notifyAll();
-			}
-		}
 	}
 
 	/**
@@ -343,6 +249,103 @@ public class OGGSoundClip {
 	}
 
 	/**
+	 * Pauses or unpauses the playback.
+	 */
+	 public void setPause(boolean value) { 
+		 paused = value; 
+	 }
+
+	/**
+	 * Checks if the stream is paused.
+	 *
+	 * @return True if the stream is paused
+	 */
+	public boolean isPaused() {
+		return paused;
+	}
+
+	/**
+	 * Plays the clip once for sound effects.
+	 * 
+	 * @param vol
+	 */
+	public void play(double vol) {
+//		stop();
+
+		try {
+			if (bitStream != null) {
+				bitStream.reset();
+			}
+		} catch (IOException e) {
+			// ignore if no mark
+			logger.log(Level.SEVERE, "IOException in OGGSoundClip's play(). ", e);
+		}
+
+		playerThread = new Thread() {
+			public void run() {
+				 try {
+					 playStream(vol);
+				 } catch (Exception e) {	
+						playerThread = null;
+						
+					 if (AudioPlayer.isEffectMute()) {
+						 logger.log(Level.CONFIG, "The sound effect is muted.");
+					 }
+					 if (AudioPlayer.isMusicMute()) {
+						 logger.log(Level.CONFIG, "The music is muted.");
+					 }
+					
+					 logger.log(Level.SEVERE, "Can't play the bit stream in play(). ", e);
+				 }
+
+				try {
+					if (bitStream != null) {
+						bitStream.reset();
+					}
+				} catch (IOException e) {
+					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
+							e);
+				}
+			};
+		};
+		playerThread.setDaemon(true);
+		playerThread.start();
+	}
+
+	/**
+	 * Loops the clip for background music.
+	 * 
+	 * @param vol
+	 */
+	public void loop(double vol) {
+		play(vol);
+	}
+
+	/**
+	 * Resumes the playback.
+	 * Note: may need to setPause(false) first.
+	 * 
+	 * @param vol
+	 */
+	public void resume(double vol) {
+		if (paused) {
+			paused = false;
+		}
+		
+		setMute(false);	
+		
+		if (isStopped()) {
+			loop(vol);
+		}
+		
+		else if (playerThread != null) {
+			synchronized(this){
+				this.notifyAll();
+			}
+		}
+	}
+
+	/**
 	 * Closes the stream being played.
 	 */
 	public void close() {
@@ -355,10 +358,14 @@ public class OGGSoundClip {
 		}
 	}
 
-	/*
-	 * Taken from JOrbisPlayer
+	/**
+	 * Initializes the java sound.
+	 * 
+	 * @param channels
+	 * @param rate
+	 * @param vol
 	 */
-	private void initJavaSound(int channels, int rate) {
+	private void initJavaSound(int channels, int rate, double vol) {
 		try {
 			AudioFormat audioFormat = new AudioFormat(rate, 16, channels, true, // PCM_Signed
 					false // littleEndian
@@ -384,14 +391,16 @@ public class OGGSoundClip {
     				disableSound();
     			} else {
     				floatControl = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
+    				// Set it to a specific vol
+    				determineGain(vol);
     			}
     			
 //				// Note that isMasterVolumeSupported is false: 
-    			isMasterVolumeSupported = outputLine.isControlSupported(FloatControl.Type.VOLUME);
-				if (!isMasterVolumeSupported) {
-					// in case of some versions of linux in which VOLUME is not supported
-					logger.log(Level.SEVERE, "Master Volume NOT supported in this machine.");
-				} 
+//    			isMasterVolumeSupported = outputLine.isControlSupported(FloatControl.Type.VOLUME);
+//				if (!isMasterVolumeSupported) {
+//					// in case of some versions of linux in which VOLUME is not supported
+//					logger.log(Level.SEVERE, "Master Volume NOT supported in this machine.");
+//				} 
 //    			else floatControl1 = (FloatControl) outputLine.getControl(FloatControl.Type.VOLUME);
     			
             } catch (LineUnavailableException ex) {
@@ -413,10 +422,15 @@ public class OGGSoundClip {
 		}
 	}
 
-	/*
-	 * Taken from JOrbisPlayer
+	/**
+	 * Gets the outputline and inits the sound.
+	 * 
+	 * @param channels
+	 * @param rate
+	 * @param vol
+	 * @return
 	 */
-	private SourceDataLine getOutputLine(int channels, int rate) {
+	private SourceDataLine getOutputLine(int channels, int rate, double vol) {
 		if (outputLine == null || this.rate != rate || this.channels != channels) {
 			if (outputLine != null) {
 				outputLine.drain();
@@ -425,7 +439,7 @@ public class OGGSoundClip {
 			}
 		}
 		
-		initJavaSound(channels, rate);
+		initJavaSound(channels, rate, vol);
 		outputLine.start();
 		
 		return outputLine;
@@ -453,9 +467,11 @@ public class OGGSoundClip {
 	}
 
 	/*
-	 * Taken from the JOrbis Player
+	 * Plays the sound stream.
+	 * 
+	 * @param vol
 	 */
-	private void playStream() {
+	private void playStream(double vol) {
 		boolean chained = false;
 		initJOrbis();
 
@@ -573,7 +589,7 @@ public class OGGSoundClip {
 			float[][][] _pcmf = new float[1][][];
 			int[] _index = new int[vi.channels];
 
-			getOutputLine(vi.channels, vi.rate);
+			getOutputLine(vi.channels, vi.rate, vol);
 //			logger.info("Just called getOutputLine(). outputLine is " + outputLine);
 			
 			while (eos == 0) {

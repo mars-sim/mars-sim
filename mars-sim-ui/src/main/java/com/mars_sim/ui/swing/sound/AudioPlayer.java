@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * AudioPlayer.java
- * @date 2025-10-14
+ * @date 2025-10-18
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
 
@@ -40,7 +40,7 @@ public class AudioPlayer {
 	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir();
 	private static final String DEFAULT_MUSIC_DIR = "/music";
 			
-	public static final double DEFAULT_VOL = .25;
+	public static final double DEFAULT_VOL = 0.65;
 	public static final double STEP = 0.05;
 
 	public static final String PROPS_NAME = "audio";
@@ -249,6 +249,7 @@ public class AudioPlayer {
 	 * @param filepath the file path to the sound file.
 	 */
 	public void playSound(String filepath) {
+		logger.info("playSound: " + filepath);
 		if (!isVolumeDisabled && !isEffectMute() && filepath != null && !filepath.equals("")) {
 			loadSound(filepath);
 		}
@@ -264,18 +265,16 @@ public class AudioPlayer {
 			logger.severe( "allSoundClips is null.");
 			return;
 		}
-		
+		logger.info("loadSound: " + filepath);
 		if (allSoundClips.containsKey(filepath) 
 				&& allSoundClips.get(filepath) != null) {
 			currentSoundClip = allSoundClips.get(filepath);
-			currentSoundClip.play();
-			currentSoundClip.determineGain(currentSoundVol);
+			currentSoundClip.play(currentSoundVol);
 		} else {
 			try {
 				currentSoundClip = new OGGSoundClip(null, filepath, false);
 				allSoundClips.put(filepath, currentSoundClip);
-				currentSoundClip.play();
-				currentSoundClip.determineGain(currentSoundVol);
+				currentSoundClip.play(currentSoundVol);
 			} catch (IOException e) {
 				logger.severe( "Can't load sound effect: ", e);
 			}
@@ -309,12 +308,14 @@ public class AudioPlayer {
 	public static void loadMusic(String filepath) {
 		if (musicList.contains(filepath) && filepath != null) {
 			String parent = musicTracks.get(filepath);
-			currentMusic = obtainOGGMusicTrack(parent, filepath);
+			currentMusic = obtainOGGMusicTrack(parent, filepath);		
 			if (currentMusic != null) {
 				// Do NOT call resume() or else ogg file won't play
 //				currentMusic.resume();
-				currentMusic.loop();
-				currentMusic.determineGain(currentMusicVol);
+				logger.info("Music Volume: " + currentMusicVol);
+				currentMusicVol = DEFAULT_VOL;
+				logger.info("Music Volume: " + currentMusicVol);
+				currentMusic.loop(currentMusicVol);
 			}
 		}
 	}
@@ -450,15 +451,14 @@ public class AudioPlayer {
 		}
 	}
 
-
-	/**
-	 * Restores the last sound effect gain.
-	 */
-	public void restoreLastSoundEffectGain() {
-		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
-			currentSoundClip.determineGain(currentSoundVol);
-		}
-	}
+//	/**
+//	 * Restores the last sound effect gain.
+//	 */
+//	public void restoreLastSoundEffectGain() {
+//		if (!isVolumeDisabled && hasMasterGain && currentSoundClip != null) {
+//			currentSoundClip.determineGain(currentSoundVol);
+//		}
+//	}
 
 	/**
 	 * Checks if the audio player's music is muted.
@@ -494,7 +494,7 @@ public class AudioPlayer {
 	public void unmuteSoundEffect() {
 		if (currentSoundClip != null && currentSoundClip.isMute()) {
 			currentSoundClip.setMute(false);
-			restoreLastSoundEffectGain();
+//			restoreLastSoundEffectGain();
 		}
 	}
 
@@ -504,7 +504,7 @@ public class AudioPlayer {
 	public void muteSoundEffect() {
 		if (currentSoundClip != null) {
 			currentSoundClip.setMute(true);
-			currentSoundClip.stop();
+//			currentSoundClip.stop();
 		}
 	}
 
@@ -524,23 +524,23 @@ public class AudioPlayer {
 	public void muteMusic() {
 		if (currentMusic != null) {
 			currentMusic.setMute(true);
-			currentMusic.stop();
+//			currentMusic.stop();
 		}
 	}
 	
 	/**
-	 * Sets the user mute music.
-	 * 
-	 * @param value
-	 */
-	public void setUserMuteMusic(boolean value) {
-		if (currentMusic != null && !currentMusic.isMute()) {
-			// Note: should check if it is already mute since 
-			// user may pause and unpause consecutively too fast 
-			currentMusic.setMute(value);
-			restoreLastMusicGain();
-		}
-	}
+//	 * Sets the user mute music.
+//	 * 
+//	 * @param value
+//	 */
+//	public void setUserMuteMusic(boolean value) {
+//		if (currentMusic != null && !currentMusic.isMute()) {
+//			// Note: should check if it is already mute since 
+//			// user may pause and unpause consecutively too fast 
+//			currentMusic.setMute(value);
+//			restoreLastMusicGain();
+//		}
+//	}
 
 	/**
 	 * Checks if the music track ever started or has stopped
@@ -554,37 +554,37 @@ public class AudioPlayer {
 	}
 
 
-	/**
-	 * Resumes playing the music.
-	 */
-	public void resumeMusic() {
-		if (currentMusic != null && !isVolumeDisabled) {
-			currentMusic.setMute(false);
-			restoreLastMusicGain();
-			currentMusic.resume();
-		}
-		else {
-			loopThruBackgroundMusic();
-		}
-	}
+//	/**
+//	 * Resumes playing the music.
+//	 */
+//	public void resumeMusic() {
+//		if (currentMusic != null && !isVolumeDisabled) {
+////			currentMusic.setMute(false);
+////			restoreLastMusicGain();
+//			currentMusic.resume(currentMusicVol);
+//		}
+////		else {
+////			loopThruBackgroundMusic();
+////		}
+//	}
 	
-	/**
-	 * Pauses the music.
-	 */
-	public void pauseMusic() {
-		if (isMusicMute())
-			return;
-		if (currentMusic != null && !isVolumeDisabled) {
-			currentMusic.setPause(true);
-		}
-	}
+//	/**
+//	 * Pauses the music.
+//	 */
+//	public void pauseMusic() {
+//		if (isMusicMute())
+//			return;
+//		if (currentMusic != null && !isVolumeDisabled) {
+//			currentMusic.setPause(true);
+//		}
+//	}
 	
 	/**
 	 * Loops through the background tracks.
 	 */
 	public void loopThruBackgroundMusic() {
 		if (isMusicTrackStopped()) {
-			logger.info("Loading playRandomMusicTrack");
+			logger.info("Run playRandomMusicTrack");
 			playRandomMusicTrack();
 		}		
 	}

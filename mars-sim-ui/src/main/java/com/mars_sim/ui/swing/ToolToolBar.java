@@ -1,19 +1,26 @@
 /*
  * Mars Simulation Project
  * ToolToolBar.java
- * @date 2025-07-05
+ * @date 2025-10-18
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.LinearGradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -21,12 +28,14 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
@@ -34,6 +43,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -55,7 +65,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static final Logger logger = Logger.getLogger(ToolToolBar.class.getName());
+	
 	private static final String SAVE = "SAVE";
 	private static final String SAVEAS = "SAVEAS";
 	private static final String EXIT = "EXIT";
@@ -67,6 +79,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String SOL = "Sol:";
 	private static final String DISPLAY_HELP = "display-help";
 	private static final String MAIN_WIKI = "main-wiki";
+	
 	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //$NON-NLS-1$
 	
 	/** Main window that contains this toolbar. */
@@ -80,7 +93,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JLabel earthDate;
 	private JLabel missionSol;
 	private JLabel marsTime;
-
+	
 	private JPanel calendarPane;
 	private MasterClock masterClock;
 
@@ -103,14 +116,37 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		setFloatable(true);
 
-		setRollover(true);
+//		setRollover(true);
+		
+		setAlignmentY(SwingConstants.CENTER);
+		
+		addSeparator(new Dimension(20, 20));
 		
 		// Prepare tool buttons
 		prepareToolButtons();
 
 		createDatePanel();
+	
+		addSeparator(new Dimension(20, 20));
 		
-		addSeparator(new Dimension(15, 15));
+		calendarPane = setupCalendarPanel(masterClock.getMarsTime());	
+
+		addToolButton(MARSCAL, "Mars Calendar", "schedule");
+		
+		addSeparator(new Dimension(20, 20));
+
+		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //$NON-NLS-1$
+		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //$NON-NLS-1$
+		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //$NON-NLS-1$
+
+		addSeparator(new Dimension(20, 20));
+
+		// Add wiki button
+		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
+		// Add guide button
+		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
+		
+		addSeparator(new Dimension(20, 20));
 		
 		incrementClocks(masterClock);
 	}
@@ -119,12 +155,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * Prepares tool buttons.
 	 */
 	private void prepareToolButtons() {
-
-		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //$NON-NLS-1$
-		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //$NON-NLS-1$
-		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //$NON-NLS-1$
-
-		addSeparator(new Dimension(15, 15));
 
 		// Add Tools buttons
 		addToolButton(NavigatorWindow.NAME, NavigatorWindow.ICON);
@@ -139,35 +169,27 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
 		
-		// Add guide button
-		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
-		
-		// Add wiki button
-		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
-		
-		addSeparator(new Dimension(15, 15));
-
+		addSeparator(new Dimension(20, 20));
 	}
-    
+  
+	
 	/**
 	 * Creates the date panel and add it to the tool tool bar.
 	 */
 	private void createDatePanel() {
-
-		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		add(timePanel);
 		
-		earthDate = createTextLabel("Greenwich Mean Time (GMT) for Earth");
-		timePanel.add(earthDate);
-			
-		missionSol = createTextLabel("Simulation Sol Count");
+		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		marsTime = createTextLabel(12, Font.PLAIN, true, true, "Mars Coordinated Time (MCT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
+		timePanel.add(marsTime);		
+	
+		missionSol = createTextLabel(12, Font.BOLD, false, false, "Simulation Sol Count");
 		timePanel.add(missionSol);
 		
-		marsTime = createTextLabel("Mars Coordinated Time (MCT) for Mars. Format: 'Orbit-Month-Sol:Millisols Weeksol'");
-		timePanel.add(marsTime);
+		earthDate = createTextLabel(12, Font.PLAIN, false, true, "Greenwich Mean Time (GMT) for Earth");
+		timePanel.add(earthDate);
 		
-		calendarPane = setupCalendarPanel(masterClock.getMarsTime());		
-		addToolButton(MARSCAL, "Mars Calendar", "schedule");
+		add(timePanel);
 	}
 	
 	/**
@@ -212,10 +234,48 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	}
 	
 	
-	private JLabel createTextLabel(String tooltip) {
+	/**
+	 * Creates text label.
+	 * 
+	 * @param size
+	 * @param style
+	 * @param tooltip
+	 * @return
+	 */
+	private JLabel createTextLabel(int size, int style, boolean isFront, boolean haveBorder, String tooltip) {
+		Icon icon = null;
+		if (haveBorder) {
+			icon = new Icon() {
+				@Override public void paintIcon(Component c, Graphics g, int x, int y) {
+					Graphics2D g2  = (Graphics2D)g.create();
+			        Point2D start  = new Point2D.Float(0f, 0f);
+			        Point2D end    = new Point2D.Float(99f, 0f);
+			        float[] dist   = {0.0f, 0.5f, 1.0f};
+			        Color[] colors = { Color.YELLOW, Color.ORANGE, Color.WHITE};
+			        g2.setPaint(new LinearGradientPaint(start, end, dist, colors));
+			        g2.fillRect(x, y, 100, 10);
+			        g2.dispose();
+				}
+			      @Override public int getIconWidth()  { return 10; }
+			      @Override public int getIconHeight() { return 10; }
+			};
+		}
+		
 		JLabel label = new JLabel();
-		Border margin = new EmptyBorder(2,5,2,5);
-		label.setBorder(new CompoundBorder(BorderFactory.createLoweredBevelBorder(), margin));
+		label.setVerticalAlignment(SwingConstants.CENTER);
+		label.setAlignmentY(SwingConstants.CENTER);
+		label.setFont(new Font(Font.SANS_SERIF, style, size));
+		if (haveBorder) {
+			if (isFront) {
+				label.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 0, icon));
+			}
+			else {
+				label.setBorder(BorderFactory.createMatteBorder(2, 0, 2, 2, icon));
+			}
+		}
+		else {
+			label.setBorder(new SoftBevelBorder(BevelBorder.RAISED));
+		}
 		label.setToolTipText(tooltip);
 		return label;
 	}

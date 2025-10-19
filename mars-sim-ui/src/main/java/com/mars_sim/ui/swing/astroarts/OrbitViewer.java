@@ -253,14 +253,9 @@ implements ActionListener {
 	/**
 	 * Initialization.
 	 */
-	private OrbitViewer() { 
+	OrbitViewer() { 
 		super(NAME, "Orbit Viewer", null);
 	    
-		init();
-	}
-	
-	public void init() {
-		
 		JFrame frame = new JFrame("Orbit Viewer");
 		frame.setSize(1024, 1024);
 		
@@ -278,6 +273,8 @@ implements ActionListener {
 		// Player Thread
 		orbitPlayer = new OrbitPlayer(this);
 		playerThread = null;
+		
+		orbitPlayer.run();
 		
 		frame.pack();
         frame.setVisible(true);
@@ -461,7 +458,8 @@ implements ActionListener {
 		gbcCtrlPanel.fill = GridBagConstraints.HORIZONTAL;
 		
 		// Reverse-Play Button
-		JButton buttonRevPlay = new JButton("<<");
+		JButton buttonRevPlay = new JButton("<");
+		buttonRevPlay.setToolTipText("Reverse Play Continuously");
 		buttonRevPlay.setActionCommand(REV_PLAY);
 		buttonRevPlay.addActionListener(this);
 		gbcCtrlPanel.gridx = 0;
@@ -476,6 +474,7 @@ implements ActionListener {
 
 		// Reverse-Step Button
 		JButton buttonRevStep = new JButton("|<");
+		buttonRevStep.setToolTipText("Reverse One Step");
 		buttonRevStep.setActionCommand(REV_STEP);
 		buttonRevStep.addActionListener(this);
 		gbcCtrlPanel.gridx = 1;
@@ -490,6 +489,7 @@ implements ActionListener {
 
 		// Stop Button
 		JButton buttonStop = new JButton("||");
+		buttonStop.setToolTipText("Stop");
 		buttonStop.setActionCommand(STOP);
 		buttonStop.addActionListener(this);
 		gbcCtrlPanel.gridx = 2;
@@ -504,6 +504,7 @@ implements ActionListener {
 
 		// Step Button
 		JButton buttonForStep = new JButton(">|");
+		buttonForStep.setToolTipText("One Step Forward");
 		buttonForStep.setActionCommand(STEP);
 		buttonForStep.addActionListener(this);
 		gbcCtrlPanel.gridx = 3;
@@ -517,7 +518,8 @@ implements ActionListener {
 		ctrlPanel.add(buttonForStep);
 
 		// Play Button
-		JButton buttonForPlay = new JButton(">>");
+		JButton buttonForPlay = new JButton(">");
+		buttonForPlay.setToolTipText("Play Forward Continuously");
 		buttonForPlay.setActionCommand(PLAY);
 		buttonForPlay.addActionListener(this);
 		gbcCtrlPanel.gridx = 4;

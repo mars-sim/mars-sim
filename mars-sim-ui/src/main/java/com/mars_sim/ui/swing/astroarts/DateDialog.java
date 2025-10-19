@@ -56,28 +56,27 @@ public class DateDialog extends ModalInternalFrame {
 	protected OrbitViewer	viewer;
 	
 	public DateDialog(OrbitViewer viewer, ATime atime) {
-		super("Input Date", false, // resizable
+		super("Input Date", true, // resizable
 				false, // closable
 				false, // maximizable
 				false); // iconifiable
 		
 		this.viewer = viewer;
-			
+		
+		super.setFrameIcon(MainWindow.getLanderIcon());
+		
 		// Set the layout.
 		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(200, 400));
 		
 		JPanel currentPanel = new JPanel(new BorderLayout());
 		currentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(currentPanel, BorderLayout.CENTER);
-		
-		JPanel currentDatePanel = new JPanel(new BorderLayout(5, 5));			
-		currentDatePanel.setBorder(StyleManager.createLabelBorder("Current Date"));	
-		currentPanel.add(currentDatePanel);
-		
-		super.setFrameIcon(MainWindow.getLanderIcon());
+		add(currentPanel, BorderLayout.CENTER);
 
-		AttributePanel attrPanel = new AttributePanel(3);
-		currentDatePanel.add(attrPanel, BorderLayout.CENTER);
+		currentPanel.setBorder(StyleManager.createLabelBorder("Current Date"));	
+
+		AttributePanel attrPanel = new AttributePanel(3, 1);
+		currentPanel.add(attrPanel, BorderLayout.NORTH);
 		
 		// Controls
 		monthCB = new JComboBox<>();
@@ -106,7 +105,7 @@ public class DateDialog extends ModalInternalFrame {
 		
 		JPanel choosePanel = new JPanel(new BorderLayout());
 		choosePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(choosePanel, BorderLayout.NORTH);
+		add(choosePanel, BorderLayout.NORTH);
 		
 		JPanel chooseDatePanel = new JPanel(new GridLayout(4, 1, 0, 0));			
 		chooseDatePanel.setBorder(StyleManager.createLabelBorder("Choose Your Date"));	
@@ -186,7 +185,7 @@ public class DateDialog extends ModalInternalFrame {
 		group.add(buttonCustom);
 						
 		JPanel southPanel = new JPanel(new GridLayout(1, 2, 4, 4));
-		getContentPane().add(southPanel, BorderLayout.SOUTH);
+		add(southPanel, BorderLayout.SOUTH);
 		
 		buttonOk = new JButton("OK");
 		southPanel.add(buttonOk);
