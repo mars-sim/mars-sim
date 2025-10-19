@@ -149,4 +149,13 @@ public abstract class Metric {
      * @return The range of Sols
      */
     public abstract Set<Integer> getSolRange();
+
+    /**
+     * Gets the number of data points in this metric.
+     * 
+     * @return The number of data points
+     */
+    public abstract int getSize();
+
+    public abstract DataPoint getDataPoint(int item);
 }

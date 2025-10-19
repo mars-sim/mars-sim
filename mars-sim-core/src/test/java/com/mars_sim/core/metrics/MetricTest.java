@@ -59,11 +59,36 @@ class MetricTest extends MarsSimUnitTest{
      * @param mSol Millisols into the sol
      * @param value Value to record
      */
-    private void recordValue(Metric metric, int sol, int mSol, double value) {
+    private MarsTime recordValue(Metric metric, int sol, int mSol, double value) {
         int delta = ((sol - startTime.getMissionSol()) * 1000) + mSol;
         MarsTime time = startTime.addTime(delta);
         masterClock.setMarsTime(time);
         metric.recordValue(value);
+
+        return time;
+    }
+    @Test
+    @DisplayName("getDataPoint should retrieve correct data point")
+    void testDataPoint() {
+        // When
+        Metric newMetric = createMetric(metricKey);
+        var time1 = recordValue(newMetric, 1, 5, 10.0);
+        var time2 = recordValue(newMetric, 1, 15, 20.0);
+        var time3 = recordValue(newMetric, 2, 15, 20.0);
+
+        assertEquals(3, newMetric.getSize());
+
+        var dp1 = newMetric.getDataPoint(0);
+        assertEquals(time1, dp1.getWhen());
+        assertEquals(10.0, dp1.getValue(), 0.001);
+
+        var dp2 = newMetric.getDataPoint(1);
+        assertEquals(time2, dp2.getWhen());
+        assertEquals(20.0, dp2.getValue(), 0.001);
+
+        var dp3 = newMetric.getDataPoint(2);
+        assertEquals(time3, dp3.getWhen());
+        assertEquals(20.0, dp3.getValue(), 0.001);
     }
 
     @Test

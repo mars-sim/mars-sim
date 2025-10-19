@@ -6,8 +6,9 @@
  */
 package com.mars_sim.core.metrics.memory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,7 +22,10 @@ import com.mars_sim.core.metrics.MetricKey;
  * These are organized by Sol (Martian days); each one represents a series of data points for that Sol.
  */
 public class MemoryMetric extends Metric {
-    private final Map<Integer,Set<DataPoint>> solSeries;
+    private Map<Integer,List<DataPoint>> solSeries;
+    private int size = 0;
+    private int firstSol = Integer.MAX_VALUE;
+    private int lastSol = Integer.MIN_VALUE;
     
     /**
      * Creates a new Metric with the specified key.
@@ -41,16 +45,19 @@ public class MemoryMetric extends Metric {
     public Set<Integer> getSolRange() {
         return solSeries.keySet();
     }
-    
-    @Override
-    public String toString() {
-        return String.format("Metric InMemory{key=%s", getKey());
-    }
 
     @Override
     protected void addDataPoint(int sol, DataPoint dataPoint) {
-        var series = solSeries.computeIfAbsent(sol, k ->new HashSet<>());
+        var series = solSeries.computeIfAbsent(sol, k -> new ArrayList<>());
+
+        if (sol < firstSol) {
+            firstSol = sol;
+        }
+        if (sol > lastSol) {
+            lastSol = sol;
+        }
         series.add(dataPoint);
+        size++;
     }
 
     @Override
@@ -59,5 +66,26 @@ public class MemoryMetric extends Metric {
         if (series != null) {
             series.forEach(evaluator::accept);
         }
+    }
+
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    @Override
+    public DataPoint getDataPoint(int item) {
+        // Find correct sol series
+        for(int s = firstSol; s <= lastSol; s++) {
+            var series = solSeries.get(s);
+            if (series != null) {
+                if (item < series.size()) {
+                    return series.get(item);
+                } else {
+                    item -= series.size();
+                }
+            }
+        }
+        return null;
     }
 }

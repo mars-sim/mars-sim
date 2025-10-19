@@ -31,16 +31,17 @@ public class MetricManager {
     }
     
     /**
-     * Returns all categories used by a specific entity.
+     * Returns all categories used. Can be filtered by entity.
      * 
-     * @param asset The entity to get categories for
-     * @return List of category names used by the entity
+     * @param asset The entity to filter by, or null for all entities
+     * @return List of categories choosen
      */
     public List<String> getCategories(Entity asset) {
         return metrics.keySet().stream()
-                .filter(key -> key.asset().equals(asset))
+                .filter(key -> (asset == null) || key.asset().equals(asset))
                 .map(MetricKey::category)
                 .distinct()
+                .sorted()
                 .toList();
     }
     
@@ -52,7 +53,7 @@ public class MetricManager {
      */
     public List<Entity> getEntities(String category) {
         return metrics.keySet().stream()
-                .filter(key -> key.category().equals(category))
+                .filter(key -> (category == null) || key.category().equals(category))
                 .map(MetricKey::asset)
                 .distinct()
                 .toList();
