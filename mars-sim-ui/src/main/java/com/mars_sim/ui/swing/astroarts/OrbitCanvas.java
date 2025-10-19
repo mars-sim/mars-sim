@@ -118,6 +118,8 @@ class OrbitCanvas extends Canvas {
 	private boolean bObjectName;
 	private boolean bDistanceLabel;
 	private boolean bDateLabel;
+
+	private Image offscreen;
 	
 	/**
 	 * Constructor
@@ -387,7 +389,6 @@ class OrbitCanvas extends Canvas {
         }
 
 		// Get Off-Screen Image Graphics Context
-		var offscreen = createImage(this.sizeCanvas.width, this.sizeCanvas.height);
 		Graphics2D g2d = (Graphics2D) offscreen.getGraphics();
 		
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -602,6 +603,7 @@ class OrbitCanvas extends Canvas {
 		if (this.sizeCanvas.width <= 0 || this.sizeCanvas.height <= 0) {
 			return;
 		}
+		offscreen = createImage(this.sizeCanvas.width, this.sizeCanvas.height);
 		update(g);
 	}	
 }
