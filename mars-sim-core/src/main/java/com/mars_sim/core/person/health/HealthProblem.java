@@ -71,7 +71,7 @@ public class HealthProblem implements Serializable {
 	}
 
 	/**
-	 * Register a historical event assocaited to this health problem
+	 * Register a historical event associated to this health problem
 	 * @param eventType
 	 */
 	public void registerHistoricalEvent(HistoricalEventType eventType) {

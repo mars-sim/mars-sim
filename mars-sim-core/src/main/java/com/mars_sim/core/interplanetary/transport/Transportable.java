@@ -135,7 +135,7 @@ public abstract class Transportable
 
 	/**
 	 * Performs the arrival of the transportable.
-	 * @return Rerturn an event that descibes the arrival
+	 * @return Return an event that describes the arrival
 	 */
 	protected abstract HistoricalEvent performArrival(SimulationConfig sc, Simulation sim);
 

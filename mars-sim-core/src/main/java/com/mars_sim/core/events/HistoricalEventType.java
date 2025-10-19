@@ -61,7 +61,7 @@ public enum HistoricalEventType {
 	}
 
 	/**
-	 * Languiage specific name for display in user interface.
+	 * Language specific name for display in user interface.
 	 * @return
 	 */
 	public final String getName() {

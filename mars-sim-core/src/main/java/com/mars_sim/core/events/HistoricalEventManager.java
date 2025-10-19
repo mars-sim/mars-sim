@@ -8,6 +8,7 @@
 package com.mars_sim.core.events;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -31,12 +32,13 @@ public class HistoricalEventManager implements Serializable {
 	 * This defines the maximum number of events that are stored. It should be a
 	 * standard property.
 	 */
-	private final static int TRANSIENT_EVENTS = 50;
+	private static final int TRANSIENT_EVENTS = 50;
+	static final int MATCH_RANGE = 5;
 
 	private transient List<HistoricalEventListener> listeners;
 
 	// Static list - don't want to be serialized
-	private static List<HistoricalEvent> lastEvents = new CopyOnWriteArrayList<>();
+	private transient List<HistoricalEvent> lastEvents = new CopyOnWriteArrayList<>();
 
 	private MasterClock masterClock;
 
@@ -71,11 +73,17 @@ public class HistoricalEventManager implements Serializable {
 			listeners.remove(oldListener);
 	}
 
-	private boolean isSameEvent(HistoricalEvent newEvent) {
-		if (lastEvents != null && !lastEvents.isEmpty()) {
-			for (HistoricalEvent e : lastEvents) {
+	/**
+	 * Is this new event distinct from recent events?
+	 * @param newEvent
+	 * @return
+	 */
+	private boolean isDistinct(HistoricalEvent newEvent) {
+		if (lastEvents != null) {
+			int index = Math.max(0, lastEvents.size() - (MATCH_RANGE + 1)); // Start at beginning of check range
+			for (; index < lastEvents.size(); index++) {
+				HistoricalEvent e = lastEvents.get(index);
 				if (e.getType() == newEvent.getType()
-						&& e.getCategory() == newEvent.getCategory()
 						&& e.getSource().equals(newEvent.getSource())
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
 						&& e.getWhileDoing().equals(newEvent.getWhileDoing())
@@ -101,15 +109,11 @@ public class HistoricalEventManager implements Serializable {
 
 		HistoricalEventType type = newEvent.getType();
 
-		if (type == HistoricalEventType.MISSION_START)
-			return;
-		else if (type == HistoricalEventType.MISSION_JOINING)
-			return;
-		else if (type == HistoricalEventType.MISSION_FINISH)
+		if (type == HistoricalEventType.MISSION_JOINING)
 			return;
 		else if (type == HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES)
 			return;
-		else if (isSameEvent(newEvent))
+		else if (isDistinct(newEvent))
 			return;
 
 		newEvent.setTimestamp(masterClock.getMarsTime());
@@ -137,7 +141,7 @@ public class HistoricalEventManager implements Serializable {
 	 * @return
 	 */
 	public List<HistoricalEvent> getEvents() {
-		return lastEvents;
+		return (lastEvents != null) ? lastEvents : Collections.emptyList();
 	}
 
 	/**

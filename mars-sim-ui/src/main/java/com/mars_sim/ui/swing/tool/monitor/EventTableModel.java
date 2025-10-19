@@ -208,7 +208,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	}
 
 	/**
-	 * Gets the Entity associaedt to the event
+	 * Gets the Entity associated to the event
 	 *
 	 * @param row Indexes of Unit to retrieve.
 	 * @return Unit at specified position.
