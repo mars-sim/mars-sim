@@ -11,11 +11,11 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.time.MarsTime;
 
 /**
@@ -160,7 +160,7 @@ public abstract class Transportable
 	 */
 	public void cancel() {
 		state = TransitState.CANCELED;
-		tm.fireEvent(TransportManager.createEvent(this, EventType.TRANSPORT_ITEM_CANCELLED));
+		tm.fireEvent(TransportManager.createEvent(this, HistoricalEventType.TRANSPORT_ITEM_CANCELLED));
 
 		getOwningManager().removeEvent(this);
 	}
@@ -178,7 +178,7 @@ public abstract class Transportable
 			case PLANNED:
 				// Launch has arrived
 				state = TransitState.IN_TRANSIT;
-				event = TransportManager.createEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED);
+				event = TransportManager.createEvent(this, HistoricalEventType.TRANSPORT_ITEM_LAUNCHED);
 				nextEvent = (int) arrivalDate.getTimeDiff(now);
 				break;
 			case IN_TRANSIT:

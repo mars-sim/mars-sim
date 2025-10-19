@@ -10,7 +10,6 @@ import java.io.Serializable;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
@@ -26,15 +25,8 @@ public class HistoricalEvent implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Category of event.
-	 * 
-	 * @see HistoricalEventManager
-	 * @see HistoricalEventCategory
-	 */
-	private HistoricalEventCategory category;
 	/** Type of historical events. */
-	private EventType type;
+	private HistoricalEventType type;
 
 	/** Time event occurred. */
 	private MarsTime timestamp;
@@ -51,8 +43,7 @@ public class HistoricalEvent implements Serializable {
 	 * Constructs an event with the appropriate information. The time is not defined
 	 * until the event is registered with the Event Manager.
 	 * 
-	 * @param category		{@link HistoricalEventCategory} Category of event
-	 * @param type			{@link EventType} Type of event
+	 * @param type			{@link HistoricalEventType} Type of event
 	 * @param source		The source for this event
 	 * @param whatCause		The cause for this event
 	 * @param whileDoing	during or While doing what
@@ -60,9 +51,9 @@ public class HistoricalEvent implements Serializable {
 	 * @param entity		the building/vehicle where it occurs
 	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
 	 */
-	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
+	public HistoricalEvent(HistoricalEventType type, Object source, String whatCause,
 			String whileDoing, String whoAffected, Entity entity, Settlement settlement) {
-		this(category, type, source, whatCause, whileDoing, whoAffected, entity,
+		this(type, source, whatCause, whileDoing, whoAffected, entity,
 				settlement, settlement.getCoordinates());
 	}
 
@@ -70,8 +61,7 @@ public class HistoricalEvent implements Serializable {
 	 * Constructs an event with the appropriate information. The time is not defined
 	 * until the event is registered with the Event Manager.
 	 * 
-	 * @param category		{@link HistoricalEventCategory} Category of event
-	 * @param type			{@link EventType} Type of event
+	 * @param type			{@link HistoricalEventType} Type of event
 	 * @param source		The source for this event
 	 * @param whatCause		The cause for this event
 	 * @param whileDoing	during or While doing what
@@ -81,9 +71,8 @@ public class HistoricalEvent implements Serializable {
 	 * @param coordinates	the coordinates where it belongs
 	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
 	 */
-	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String whatCause,
+	public HistoricalEvent(HistoricalEventType type, Object source, String whatCause,
 			String whileDoing, String whoAffected, Entity entity, Settlement settlement, Coordinates coordinates) {
-		this.category = category;
 		this.type = type;
 		this.source = source;
 		this.whatCause = whatCause;
@@ -171,7 +160,7 @@ public class HistoricalEvent implements Serializable {
 	 * 
 	 * @return String representing the type.
 	 */
-	public EventType getType() {
+	public HistoricalEventType getType() {
 		return type;
 	}
 
@@ -190,6 +179,6 @@ public class HistoricalEvent implements Serializable {
 	 * @return {@link HistoricalEventCategory}
 	 */
 	public HistoricalEventCategory getCategory() {
-		return category;
+		return type.getCategory();
 	}
 }

@@ -11,9 +11,8 @@ import java.util.logging.Level;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.events.HistoricalEventCategory;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -165,8 +164,7 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
             		unit = r;
             	}
             	                	
-                HistoricalEvent startingEvent = new HistoricalEvent(HistoricalEventCategory.TASK, 
-                                                            EventType.TASK_START, 
+                HistoricalEvent startingEvent = new HistoricalEvent(HistoricalEventType.TASK_START, 
                                                             healthProblem.getSufferer(),"Tracking Task",
                                                             getName(), unit.getName(),
                                                             unit, unit.getAssociatedSettlement());

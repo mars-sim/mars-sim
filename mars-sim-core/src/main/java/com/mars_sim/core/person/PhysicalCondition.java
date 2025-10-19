@@ -22,6 +22,7 @@ import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -1542,7 +1543,7 @@ public class PhysicalCondition implements Serializable {
 		person.setDeclaredDead();
 		
 	    // Create medical event for performing an post-mortem exam
-	    problem.registerHistoricalEvent(EventType.MEDICAL_DEATH);
+	    problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_DEATH);
 	    
 		// Add the person's death info to the postmortem exam waiting list
 		// Note: what if a person died in a settlement outside of home town ?

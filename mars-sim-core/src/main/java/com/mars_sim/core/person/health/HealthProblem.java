@@ -10,10 +10,10 @@ import java.io.Serializable;
 
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.events.HistoricalEventCategory;
+
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.time.MarsTime;
@@ -65,7 +65,7 @@ public class HealthProblem implements Serializable {
 		requiresBedRest = false;
 
 		// Create medical event for health problem.
-		registerHistoricalEvent(EventType.MEDICAL_STARTS);
+		registerHistoricalEvent(HistoricalEventType.MEDICAL_STARTS);
 
 		logger.fine(person, " had a new health problem of " + complaintType.getName());
 	}
@@ -74,8 +74,8 @@ public class HealthProblem implements Serializable {
 	 * Register a historical event assocaited to this health problem
 	 * @param eventType
 	 */
-	public void registerHistoricalEvent(EventType eventType) {
-		var event = new HistoricalEvent(HistoricalEventCategory.MEDICAL, eventType, 
+	public void registerHistoricalEvent(HistoricalEventType eventType) {
+		var event = new HistoricalEvent(eventType, 
 				this, this.getComplaint().getName(),
 				sufferer.getTaskDescription(), sufferer.getName(),
 				sufferer,
@@ -203,7 +203,7 @@ public class HealthProblem implements Serializable {
 		setState(HealthProblemState.BEING_TREATED);
 
 		// Create medical event for treatment.
-		registerHistoricalEvent(EventType.MEDICAL_TREATED);
+		registerHistoricalEvent(HistoricalEventType.MEDICAL_TREATED);
 
 		logger.info(getSufferer(), "Began to receive treatment for " + getComplaint().getName() + ".");
 	}
@@ -228,7 +228,7 @@ public class HealthProblem implements Serializable {
 		setState(HealthProblemState.DEGRADING);
 
 		// Create medical event for degrading.
-		registerHistoricalEvent(EventType.MEDICAL_DEGRADES);
+		registerHistoricalEvent(HistoricalEventType.MEDICAL_DEGRADES);
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class HealthProblem implements Serializable {
 				requiresBedRest = getComplaint().requiresBedRestRecovery();
 				
 				// Create medical event for recovering.
-				registerHistoricalEvent(EventType.MEDICAL_RECOVERY);
+				registerHistoricalEvent(HistoricalEventType.MEDICAL_RECOVERY);
 			} else {
 				setCured();
 			}
@@ -270,7 +270,7 @@ public class HealthProblem implements Serializable {
 		setState(HealthProblemState.CURED);
 
 		// Create medical event for cured.
-		registerHistoricalEvent(EventType.MEDICAL_CURED);
+		registerHistoricalEvent(HistoricalEventType.MEDICAL_CURED);
 	}
 
 	/**

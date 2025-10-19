@@ -20,13 +20,12 @@ import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.events.HistoricalEventCategory;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -893,7 +892,7 @@ public abstract class EVAOperation extends Task {
 		HealthProblem problem = p.getPhysicalCondition().getMostSerious();
 				
 		if (problem == null) {
-			var rescueEvent = new HistoricalEvent(HistoricalEventCategory.MISSION, EventType.MISSION_RESCUE_PERSON,
+			var rescueEvent = new HistoricalEvent(HistoricalEventType.MISSION_RESCUE_PERSON,
 				p.getMission(),
 				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
@@ -904,7 +903,7 @@ public abstract class EVAOperation extends Task {
 
 		}
 		else {
-			problem.registerHistoricalEvent(EventType.MEDICAL_RESCUE);
+			problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_RESCUE);
 		}
 	}
 

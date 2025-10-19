@@ -31,12 +31,12 @@ import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.GroupActivityType;
@@ -192,7 +192,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			tm.addNewTransportItem(followOn);
 		}
 
-		return TransportManager.createEvent(this, EventType.TRANSPORT_ITEM_ARRIVED);
+		return TransportManager.createEvent(this, HistoricalEventType.TRANSPORT_ITEM_ARRIVED);
 	}
 
 	/**

@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.time.MasterClock;
 
 
@@ -72,7 +71,7 @@ public class HistoricalEventManager implements Serializable {
 			listeners.remove(oldListener);
 	}
 
-	public boolean isSameEvent(HistoricalEvent newEvent) {
+	private boolean isSameEvent(HistoricalEvent newEvent) {
 		if (lastEvents != null && !lastEvents.isEmpty()) {
 			for (HistoricalEvent e : lastEvents) {
 				if (e.getType() == newEvent.getType()
@@ -100,15 +99,15 @@ public class HistoricalEventManager implements Serializable {
 		if (newEvent.getCategory() == HistoricalEventCategory.TASK)
 			return;
 
-		EventType type = newEvent.getType();
+		HistoricalEventType type = newEvent.getType();
 
-		if (type == EventType.MISSION_START)
+		if (type == HistoricalEventType.MISSION_START)
 			return;
-		else if (type == EventType.MISSION_JOINING)
+		else if (type == HistoricalEventType.MISSION_JOINING)
 			return;
-		else if (type == EventType.MISSION_FINISH)
+		else if (type == HistoricalEventType.MISSION_FINISH)
 			return;
-		else if (type == EventType.MISSION_NOT_ENOUGH_RESOURCES)
+		else if (type == HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES)
 			return;
 		else if (isSameEvent(newEvent))
 			return;

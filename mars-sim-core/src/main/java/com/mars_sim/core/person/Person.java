@@ -41,6 +41,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.Mind;
@@ -753,7 +754,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Throw unit event
 		fireUnitUpdate(UnitEventType.REVIVED_EVENT);
 		// Generate medical event
-		problem.registerHistoricalEvent(EventType.MEDICAL_RESUSCITATED);
+		problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_RESUSCITATED);
 
 		// Reset declaredDead
 		declaredDead = false;

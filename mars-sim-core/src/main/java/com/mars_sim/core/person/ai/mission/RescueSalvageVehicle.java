@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -248,7 +248,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		}
 
 		// Set mission event.
-		registerHistoricalEvent(member, EventType.MISSION_RENDEZVOUS,
+		registerHistoricalEvent(member, HistoricalEventType.MISSION_RENDEZVOUS,
 								(objective.isRescue() ? "Rescue Stranded Vehicle" : "Salvage Vehicle"));
 	}
 
@@ -277,7 +277,7 @@ public class RescueSalvageVehicle extends RoverMission {
 
     	Malfunction serious = objective.getRecoverVehicle().getMalfunctionManager().getMostSeriousMalfunction();
 		if (serious != null) {
-			registerHistoricalEvent(getStartingPerson(), EventType.MISSION_SALVAGE_VEHICLE, serious.getName());
+			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_SALVAGE_VEHICLE, serious.getName());
 		}
 	}
 

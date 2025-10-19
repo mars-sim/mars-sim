@@ -28,13 +28,13 @@ import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.events.HistoricalEventCategory;
+
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -305,14 +305,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			setDescription("");		
 			// Fires task end event
 			eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
-			// Create ending task historical event if needed.
-			if (createEvents) {
-				registerNewEvent(new HistoricalEvent(HistoricalEventCategory.TASK,
-											EventType.TASK_FINISH, this,
-											"Tracking Task", getDescription(),
-											eventTarget.getName(),
-											eventTarget, eventTarget.getAssociatedSettlement()));
-			}
 		}
 	}
 

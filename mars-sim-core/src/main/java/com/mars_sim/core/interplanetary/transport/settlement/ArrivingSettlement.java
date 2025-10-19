@@ -10,11 +10,10 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.events.HistoricalEventCategory;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.time.MarsTime;
@@ -192,7 +191,7 @@ public class ArrivingSettlement extends Transportable {
 													   getLandingLocation(), null);
 		var s = build.createFullSettlement(spec);
 
-		return new HistoricalEvent(HistoricalEventCategory.TRANSPORT, EventType.TRANSPORT_ITEM_ARRIVED, this,
+		return new HistoricalEvent(HistoricalEventType.TRANSPORT_ITEM_ARRIVED, this,
 						this.getName(), "", "", this, s);
 	}
 
