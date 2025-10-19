@@ -70,8 +70,4 @@ public enum EventType {
 	public final String toString() {
 		return getName();
 	}
-	
-	public static EventType int2enum(int ordinal) {
-		return EventType.values()[ordinal];
-	}
 }

@@ -61,8 +61,8 @@ import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.hazard.HazardEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -1399,13 +1399,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 			victimNames = "";
 			
 		// Pick the last person who witness this event in the affected building. Could be no one.
-		HistoricalEvent hEvent = new HazardEvent(
-				EventType.HAZARD_ACTS_OF_GOD,
-				this,
-				mal.getMalfunctionMeta().getName(),
-				"",
-				victimNames,
-				this);
+		HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventCategory.HAZARD, EventType.HAZARD_ACTS_OF_GOD,
+								this, mal.getMalfunctionMeta().getName(),
+					 "", victimNames,
+								this, getAssociatedSettlement());
 
 		if (eventManager == null)
 			eventManager = Simulation.instance().getEventManager();

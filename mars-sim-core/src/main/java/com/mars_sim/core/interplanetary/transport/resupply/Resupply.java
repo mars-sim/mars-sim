@@ -30,10 +30,13 @@ import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.ScheduledEventManager;
+import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
+import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.structure.GroupActivityType;
@@ -157,7 +160,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * Generates the delivery event.
 	 */
 	@Override
-	public synchronized void performArrival(SimulationConfig sc, Simulation sim) {
+	public synchronized HistoricalEvent performArrival(SimulationConfig sc, Simulation sim) {
 		// Deliver buildings to the destination settlement.
 		logger.info(this, "Preparing for the arrival of a resupply mission.");
 
@@ -188,6 +191,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 												newArrival, settlement);
 			tm.addNewTransportItem(followOn);
 		}
+
+		return TransportManager.createEvent(this, EventType.TRANSPORT_ITEM_ARRIVED);
 	}
 
 	/**

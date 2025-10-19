@@ -10,6 +10,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
@@ -134,8 +135,9 @@ public abstract class Transportable
 
 	/**
 	 * Performs the arrival of the transportable.
+	 * @return Rerturn an event that descibes the arrival
 	 */
-	protected abstract void performArrival(SimulationConfig sc, Simulation sim);
+	protected abstract HistoricalEvent performArrival(SimulationConfig sc, Simulation sim);
 
 	/**
 	 * Reinitializes a loading item to the active UnitManager.
@@ -158,7 +160,7 @@ public abstract class Transportable
 	 */
 	public void cancel() {
 		state = TransitState.CANCELED;
-		tm.fireEvent(this, EventType.TRANSPORT_ITEM_CANCELLED);
+		tm.fireEvent(TransportManager.createEvent(this, EventType.TRANSPORT_ITEM_CANCELLED));
 
 		getOwningManager().removeEvent(this);
 	}
@@ -171,21 +173,25 @@ public abstract class Transportable
 	 */
 	public int execute(MarsTime now) {
 		int nextEvent = 0;
+		HistoricalEvent event = null;
 		switch(state) {
 			case PLANNED:
 				// Launch has arrived
 				state = TransitState.IN_TRANSIT;
-				tm.fireEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED);
+				event = TransportManager.createEvent(this, EventType.TRANSPORT_ITEM_LAUNCHED);
 				nextEvent = (int) arrivalDate.getTimeDiff(now);
 				break;
 			case IN_TRANSIT:
 				// Arrvived
-				tm.fireEvent(this, EventType.TRANSPORT_ITEM_ARRIVED);
 				state = TransitState.ARRIVED;
-				performArrival(SimulationConfig.instance(), Simulation.instance());
+				event = performArrival(SimulationConfig.instance(), Simulation.instance());
 				break;
 			default:
 				// Unexpected event			
+		}
+
+		if (event != null) {
+			tm.fireEvent(event);
 		}
 		return nextEvent;
 	}

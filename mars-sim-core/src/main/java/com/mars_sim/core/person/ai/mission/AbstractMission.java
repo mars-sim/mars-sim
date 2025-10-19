@@ -30,6 +30,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -164,7 +165,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	// Static members
 	protected static UnitManager unitManager;
-	protected static HistoricalEventManager eventManager;
+	private static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
@@ -332,7 +333,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param type
 	 * @param message
 	 */
-	private void registerHistoricalEvent(Worker member, EventType type, String message) {
+	protected void registerHistoricalEvent(Worker member, EventType type, String message) {
 		Unit container = null;
 		Coordinates coordinates = null;
 		if (member.isInSettlement()) {
@@ -353,9 +354,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Creating mission joining event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
-				message, missionString, member.getName(), 
-				container, member.getAssociatedSettlement(), coordinates);
+		HistoricalEvent newEvent = new HistoricalEvent(HistoricalEventCategory.MISSION, type, this, message,
+														missionString, member.getName(), container,
+														getAssociatedSettlement(), coordinates);
 		eventManager.registerNewEvent(newEvent);
 	}
 

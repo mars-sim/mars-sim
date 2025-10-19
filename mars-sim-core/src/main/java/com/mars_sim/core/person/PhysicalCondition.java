@@ -37,7 +37,6 @@ import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
-import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.CuredProblem;
@@ -1543,9 +1542,7 @@ public class PhysicalCondition implements Serializable {
 		person.setDeclaredDead();
 		
 	    // Create medical event for performing an post-mortem exam
-	    MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
-	    // Register event
-	    Task.registerNewEvent(event);
+	    problem.registerHistoricalEvent(EventType.MEDICAL_DEATH);
 	    
 		// Add the person's death info to the postmortem exam waiting list
 		// Note: what if a person died in a settlement outside of home town ?

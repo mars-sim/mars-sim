@@ -21,7 +21,7 @@ import com.mars_sim.core.time.MarsTime;
  * optional Unit that is the source of the event and an optional Object that has
  * triggered the event.
  */
-public abstract class HistoricalEvent implements Serializable {
+public class HistoricalEvent implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -91,7 +91,7 @@ public abstract class HistoricalEvent implements Serializable {
 		this.who = whoAffected;
 		this.entity = entity;
 		this.homeTown = settlement;
-		this.coordinates = coordinates;;
+		this.coordinates = coordinates;
 	}
 
 	/**

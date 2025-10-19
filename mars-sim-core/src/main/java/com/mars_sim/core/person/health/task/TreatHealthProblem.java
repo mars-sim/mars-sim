@@ -10,6 +10,8 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.function.MedicalCare;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
@@ -17,7 +19,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
-import com.mars_sim.core.person.ai.task.util.TaskEvent;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
@@ -163,13 +164,12 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
             	else if (worker instanceof Robot r) {
             		unit = r;
             	}
-            	
-                TaskEvent startingEvent = new TaskEvent(unit,
-                		this, 
-                		healthProblem.getSufferer(),
-                		EventType.TASK_START,
-                		getName()
-                );
+            	                	
+                HistoricalEvent startingEvent = new HistoricalEvent(HistoricalEventCategory.TASK, 
+                                                            EventType.TASK_START, 
+                                                            healthProblem.getSufferer(),"Tracking Task",
+                                                            getName(), unit.getName(),
+                                                            unit, unit.getAssociatedSettlement());
                 registerNewEvent(startingEvent);
             }
         }

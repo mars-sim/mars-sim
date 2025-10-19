@@ -24,7 +24,6 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.EventType;
@@ -1191,14 +1190,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		BuildingManager.addPatientToMedicalBed(p, s);
 
 		// Register the historical event
-		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
-				this,
-				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
-				p.getTaskDescription(),
-				p.getName(),
-				p
-				);
-		eventManager.registerNewEvent(rescueEvent);
+		registerHistoricalEvent(p, EventType.MISSION_RESCUE_PERSON, PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()));
 	}
 	
 	/**

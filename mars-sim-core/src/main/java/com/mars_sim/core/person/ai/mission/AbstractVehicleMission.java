@@ -27,7 +27,6 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
@@ -484,15 +483,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				vehicle.setEmergencyBeacon(true);
 		
 				// Creating mission emergency beacon event.
-				HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON,
-						this,
-						reason.getName(),
-						getName(),
-						getStartingPerson().getName(),
-						vehicle
-						);
-		
-				eventManager.registerNewEvent(newEvent);
+				registerHistoricalEvent(getStartingPerson(), EventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
 			}
 		}
 
@@ -1242,14 +1233,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				
 				// Creating emergency destination mission event for going to a new settlement.
 				if (!newDestination.equals(oldHome)) {
-					HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
-							this,
-							reason.getName(),
-							getName(),
-							getStartingPerson().getName(),
-							vehicle
-							);
-					eventManager.registerNewEvent(newEvent);
+					registerHistoricalEvent(getStartingPerson(), EventType.MISSION_EMERGENCY_DESTINATION, reason.getName());
 				}
 			}
 			// Note: for Drone mission, Will need to alert the player differently if it runs out of fuel
@@ -1275,16 +1259,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public void setEmergencyBeacon(Worker member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
-			// Creating mission emergency beacon event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON,
-					this,
-					reason,
-					this.getName(),
-					member.getName(),
-					vehicle
-					);
-
-			eventManager.registerNewEvent(newEvent);
+			registerHistoricalEvent(member, EventType.MISSION_EMERGENCY_BEACON_ON, reason);
 			logger.info(vehicle, member.getName()
 					+ " activated emergency beacon.");
 		} else {
@@ -1793,14 +1768,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			// Create an event if needed
 			if (eventType != null) {
-				HistoricalEvent newEvent = new MissionHistoricalEvent(eventType,
-						this,
-						status.getName(),
-						getName(),
-						getStartingPerson().getName(),
-						vehicle
-						);
-				eventManager.registerNewEvent(newEvent);
+				registerHistoricalEvent(getStartingPerson(), eventType, status.getName());
 			}
 			
 			// If mission is still at home then leave the vehicle
