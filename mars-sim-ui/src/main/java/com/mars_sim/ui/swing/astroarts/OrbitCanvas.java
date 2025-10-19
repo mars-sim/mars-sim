@@ -141,6 +141,8 @@ class OrbitCanvas extends Canvas {
 		bObjectName = false;
 		bDistanceLabel = true;
 		bDateLabel = true;
+		
+		revalidate();
 		repaint();
 	}
 	

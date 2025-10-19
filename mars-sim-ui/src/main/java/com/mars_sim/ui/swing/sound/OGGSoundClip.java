@@ -162,13 +162,9 @@ public class OGGSoundClip {
 				
 				double value = volume * (max - min/2) + min/2;
 				
-				logger.info("[Gain: " + (int)min + " to " + (int)max + "] vol of " + Math.round(volume * 100.0)/100.0 + " -> gain of " + Math.round(value* 10.0)/10.0);
-				
-//				setPause(true);
-				
+				// May add back for debugging: logger.info("[Gain: " + (int)min + " to " + (int)max + "] vol of " + Math.round(volume * 100.0)/100.0 + " -> gain of " + Math.round(value* 10.0)/10.0)
+						
 				floatControl.setValue((float)value);
-				
-//				setPause(false);
 
 			} else {
 				// in case of some versions of linux in which MASTER_GAIN is not supported

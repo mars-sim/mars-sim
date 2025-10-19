@@ -20,7 +20,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -61,7 +60,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-	private static final Logger logger = Logger.getLogger(ToolToolBar.class.getName());
+	// May add back: private static final Logger logger = Logger.getLogger(ToolToolBar.class.getName())
 	
 	private static final String SAVE = "SAVE";
 	private static final String SAVEAS = "SAVEAS";
@@ -109,11 +108,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Set name
 		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
 
-		setFloatable(true);
+//		setFloatable(true);
 
-//		setRollover(true);
+		setRollover(true);
 		
-		setAlignmentY(SwingConstants.CENTER);
+		setAlignmentY(Component.CENTER_ALIGNMENT);
+		setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		addSeparator(new Dimension(20, 20));
 		
@@ -138,6 +138,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		// Add wiki button
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
+		// Add orbit viewer
+		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
 		// Add guide button
 		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
 		
@@ -162,8 +164,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 
-		addToolButton(OrbitWindow.NAME, "Orbit Viewer", OrbitWindow.ICON);
-		
 		addSeparator(new Dimension(20, 20));
 	}
   
