@@ -11,25 +11,38 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Image;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
 
 import com.formdev.flatlaf.util.SystemInfo;
@@ -90,7 +103,21 @@ public class StartUpChooser extends JDialog {
     private Scenario selectedScenario;
     private SettlementTemplate selectedTemplate;
     private Authority selectedAuthority;
+    
+    private List<JButton> buttonList = new ArrayList<>();
+    
+    private JButton currentButtonFocus;
 
+    private GradientPaint gradient;
+    
+    private Border dashBorder;
+    
+    private Font font18 = new Font(Font.DIALOG, Font.BOLD, 18);
+    private Font font14 = new Font(Font.DIALOG, Font.PLAIN, 14);
+    
+    private Color darkBrown = new Color(78, 53, 36);
+    private Color bearBrown = new Color(101, 56, 24);
+    
     /**
      * Shows the start chooser to the user. Pass in the various configuration pools for their selection.
      * 
@@ -137,6 +164,7 @@ public class StartUpChooser extends JDialog {
                             BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         instructions.setHorizontalAlignment(SwingConstants.CENTER);
         instructions.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        instructions.setForeground(darkBrown);
         contentPanel.add(instructions, BorderLayout.NORTH);
 
 		// Sets the dialog content panel.
@@ -147,6 +175,13 @@ public class StartUpChooser extends JDialog {
         
         contentPanel.add(buttonPanel, BorderLayout.CENTER);
 
+        gradient = new GradientPaint(
+        	    0, 0, Color.YELLOW,
+        	    80, 80, Color.ORANGE
+        	);
+        
+        dashBorder = BorderFactory.createDashedBorder(gradient, 2.0f, 2.0f, 1.0f, true);
+        
         addStartButton(buttonPanel, "newSim", e -> choiceMade(NEW_SIM));
         addStartButton(buttonPanel, "load", e -> selectSimFile());
         addStartButton(buttonPanel, "loadDefault", e -> choiceMade(LOAD_SIM));
@@ -166,42 +201,106 @@ public class StartUpChooser extends JDialog {
 				choiceMade(EXIT);
 			}
 		});
+        
+        // Set up keyboard binding
+        addKeyboardBinding(buttonPanel);
     }
 
+    private void addKeyboardBinding(JPanel buttonPanel) {
+    	InputMap inputMap = buttonPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+    	ActionMap actionMap = buttonPanel.getActionMap();
+
+    	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "moveUp");
+    	inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "moveDown");
+
+    	currentButtonFocus = buttonList.get(0);
+    	
+    	actionMap.put("moveUp", new AbstractAction() {
+    	    public void actionPerformed(ActionEvent e) {
+    	        // Logic to move focus up
+    	        moveFocusUp();
+    	    }
+    	});
+
+    	actionMap.put("moveDown", new AbstractAction() {
+    	    public void actionPerformed(ActionEvent e) {
+    	        // Logic to move focus down
+    	        moveFocusDown();
+    	    }
+    	});
+    }
+    
+    private void moveFocusUp() {
+    	int index = buttonList.indexOf(currentButtonFocus);
+    	int nextIndex = index - 1;
+    	int size = buttonList.size();
+    	if (nextIndex == -1) {
+    		nextIndex = size - 1;
+    	}
+    	currentButtonFocus = buttonList.get(nextIndex);
+    	currentButtonFocus.requestFocusInWindow();
+    }
+
+    private void moveFocusDown() {
+    	int index = buttonList.indexOf(currentButtonFocus);
+    	int nextIndex = index + 1;
+    	int size = buttonList.size();
+    	if (nextIndex == size) {
+    		nextIndex = 0;
+    	}
+    	currentButtonFocus = buttonList.get(nextIndex);
+    	currentButtonFocus.requestFocusInWindow();
+    }
+    
     private void addStartButton(JPanel panel, String labelKey, ActionListener action) {
         JButton button = new JButton(Msg.getString("StartUpChooser." + labelKey));
+        buttonList.add(button);
+        button.setFocusable(true);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setAlignmentY(Component.CENTER_ALIGNMENT);
-//        button.setPreferredSize(new Dimension(-1, 30));
+        button.putClientProperty( "JButton.buttonType", "roundRect" );
         button.setOpaque(false);
         button.setContentAreaFilled(false);
         button.setBorderPainted(false);
-//        button.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
-        button.setFont(new Font(Font.DIALOG, Font.PLAIN, 14));
-        button.setForeground(new Color(75, 54, 33));//92, 64, 51));
+        button.setFocusPainted(false);
+        button.setFont(font14);
+        button.setForeground(bearBrown);
         button.setToolTipText(Msg.getString("StartUpChooser." + labelKey + ".tooltip"));
         button.addActionListener(action);
 
         panel.add(Box.createVerticalGlue());       
-//        panel.add(Box.createVerticalStrut(3));
         panel.add(button);
+        
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.requestFocusInWindow();
+            }
+        });
         
         button.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-            	button.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
+            	button.setFont(font18);
                 button.setBorderPainted(true);
-                button.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 1));
+                button.setBorder(dashBorder);
+                currentButtonFocus = button;
             }
 
             @Override
             public void focusLost(FocusEvent e) {
-            	button.setFont(new Font(Font.DIALOG, Font.PLAIN, 14));
-//            	button.setBorder(button.getBorder());
+            	button.setFont(font14);
             	// Remove the border
             	button.setBorderPainted(false);
             }
         });
+        
+        // Note: By default, a JButton is triggered by the Spacebar when it has focus, 
+        // as Swing automatically binds the SPACE key to the button's action.
+        
+        // Trigger the button with the Enter key,
+    	button.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "pressed");
+    	button.getActionMap().put("pressed", button.getAction());
     }
 
     private void selectTemplate() {
