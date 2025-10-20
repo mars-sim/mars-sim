@@ -139,7 +139,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Add wiki button
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
 		// Add orbit viewer
-		addToolButton(OrbitViewer.NAME, "Orbit Viewer", OrbitViewer.ICON);
+		addToolButton(OrbitWindow.NAME, "Orbit Window", OrbitWindow.ICON);
 		// Add guide button
 		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
 		

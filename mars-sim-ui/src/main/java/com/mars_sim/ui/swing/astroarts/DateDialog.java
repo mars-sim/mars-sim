@@ -56,7 +56,7 @@ public class DateDialog extends ModalInternalFrame {
 	protected OrbitViewer	viewer;
 	
 	public DateDialog(OrbitViewer viewer, ATime atime, LocalDateTime earthTime) {
-		super("Input Date", true, // resizable
+		super("Input Date", false, // resizable
 				false, // closable
 				false, // maximizable
 				false); // iconifiable

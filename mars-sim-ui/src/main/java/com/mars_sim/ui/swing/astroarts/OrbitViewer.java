@@ -91,12 +91,14 @@ import com.mars_sim.ui.swing.StyleManager;
 public class OrbitViewer extends JPanel
 implements ActionListener {
 
+	public static final String NAME = "astro";
+	public static final String ICON = "astro";
 	
 	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 600;
 	private static final int INITIAL_ZOOM_LEVEL = 175;
 	private static final int ONE_STEP = 5;
-		
+
 	private int xvalue = 255;
 	private int yvalue = 130;
 	
