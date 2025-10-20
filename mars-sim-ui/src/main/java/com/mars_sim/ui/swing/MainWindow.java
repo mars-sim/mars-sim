@@ -446,28 +446,32 @@ public class MainWindow
 		mainPane.add(contentPane, BorderLayout.CENTER);
 
 		// Add a sliding left panel menu
-		createSlidingLeftPanel(contentPane);
-		
-//    	
+		if (desktop.getSoundPlayer() != null) {
+			createSlidingLeftPanel(contentPane);
+		}	
+    	
      	// Add toolbar pane
-		JPanel toolbarPane = new JPanel(new BorderLayout());//new FlowLayout(FlowLayout.CENTER));
+		JPanel toolbarPane = new JPanel(new BorderLayout()); 
+		// Note: use BorderLayout for now since it has the advantage of 
+		// centering the earth/Mars date stamp on the screen
+		// while FlowLayout(FlowLayout.CENTER)) will result in icons clump together
+		// Cannot use toolbarPane.setLayout(new BoxLayout(toolbarPane, BoxLayout.X_AXIS)) since 
+		// it makes icons not stretching out enough
 		toolbarPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-//		toolbarPane.setLayout(new BoxLayout(toolbarPane, BoxLayout.X_AXIS));
 		contentPane.add(toolbarPane, BorderLayout.NORTH);
 		
 		 // Add a floating speed bar
      	JToolBar floatingSpeedBar = new JToolBar(SwingConstants.HORIZONTAL);
      	floatingSpeedBar.setAlignmentX(Component.LEFT_ALIGNMENT);
-//     	floatingSpeedBar.setFloatable(true);
-     	floatingSpeedBar.add(createSpeedBar());
-		
-//     	toolbarPane.add(Box.createHorizontalStrut(0));
-		
+     	// Note: do NOT use floatingSpeedBar.setFloatable(true).
+     	// If user clicks close while it's floating, it does not re-positioning itself
+     	// back to top left corner. Rather it creates the unintended consequence 
+     	// of having two rows of tool bar
+     	floatingSpeedBar.add(createSpeedBar());	
+	
     	// Add floatingSpeedBar to toolbarPane
 		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
-		
-//     	toolbarPane.add(Box.createHorizontalStrut(0));
-		
+	
      	// Prepare tool toolbar
      	toolToolbar = new ToolToolBar(this);
      	toolToolbar.requestFocusInWindow();
