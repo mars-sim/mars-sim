@@ -11,7 +11,6 @@ import java.io.Serializable;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.EventType;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
 /**

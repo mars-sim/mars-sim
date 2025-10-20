@@ -10,7 +10,6 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.inventory.Inventory;
-import com.almasb.fxgl.inventory.view.InventoryView;
 import com.almasb.fxgl.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -88,7 +87,7 @@ public class InventorySample extends GameApplication {
     @Override
     protected void initGame() {
         // Add initial items in player inventory
-        inventorySubScene.playerInventory.add(woodEntity, "Wood", "Wood description", inventorySubScene.view, 15);
+        inventorySubScene.playerInventory.add(woodEntity, "Wood", "Wood description", inventorySubScene..view, 15);
         inventorySubScene.playerInventory.add(stoneEntity, "Stone", "Stone description", inventorySubScene.view, 10);
         inventorySubScene.playerInventory.add(crystalEntity, "Crystal", "Crystal description", inventorySubScene.view, 5);
         

@@ -14,6 +14,7 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
 /**
  * The Orbit Viewer Window.
  */
+@SuppressWarnings("serial")
 public class OrbitWindow extends ToolWindow {
 
 	public static final String NAME = "astro";

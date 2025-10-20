@@ -20,8 +20,6 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -33,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -48,7 +45,6 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -550,29 +546,29 @@ public class MainWindow
         return contentPane;
     }
 	
-	private class ToggleAction implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Timer slideTimer = new Timer(10, new ActionListener() {
-                private int currentX = leftSlidingPanel.getX();
-                private final int targetX = isPanelVisible ? HIDDEN_X : VISIBLE_X;
-                private final int step = (targetX > currentX) ? 5 : -5;
-
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    currentX += step;
-                    if ((step > 0 && currentX >= targetX) || (step < 0 && currentX <= targetX)) {
-                        currentX = targetX;
-                        ((Timer) evt.getSource()).stop();
-                        isPanelVisible = !isPanelVisible;
-                        toggleButton.setText(isPanelVisible ? "\u2630" : "\u2630");
-                    }
-                    leftSlidingPanel.setLocation(currentX, 0);
-                }
-            });
-            slideTimer.start();
-        }
-    }
+//	private class ToggleAction implements ActionListener {
+//        @Override
+//        public void actionPerformed(ActionEvent e) {
+//            Timer slideTimer = new Timer(10, new ActionListener() {
+//                private int currentX = leftSlidingPanel.getX();
+//                private final int targetX = isPanelVisible ? HIDDEN_X : VISIBLE_X;
+//                private final int step = (targetX > currentX) ? 5 : -5;
+//
+//                @Override
+//                public void actionPerformed(ActionEvent evt) {
+//                    currentX += step;
+//                    if ((step > 0 && currentX >= targetX) || (step < 0 && currentX <= targetX)) {
+//                        currentX = targetX;
+//                        ((Timer) evt.getSource()).stop();
+//                        isPanelVisible = !isPanelVisible;
+//                        toggleButton.setText(isPanelVisible ? "\u2630" : "\u2630");
+//                    }
+//                    leftSlidingPanel.setLocation(currentX, 0);
+//                }
+//            });
+//            slideTimer.start();
+//        }
+//    }
 	
 	/**
 	 * Creates the speed bar and buttons.

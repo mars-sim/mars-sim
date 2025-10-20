@@ -6,7 +6,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ------------------------------------------|---------------------
 
-## Version 3.10.0 (19 Oct 2025)
+## Version 3.10.0 (21 Oct 2025)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
