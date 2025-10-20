@@ -10,13 +10,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventListener;
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.person.EventType;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
@@ -45,15 +44,14 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	private static final int COLUMNCOUNT = 9;
 
 	// Event that are too low level to display
-	private static final Set<EventType> BLOCKED_EVENTS = Set.of(
-			EventType.MISSION_EMERGENCY_BEACON_ON,
-			EventType.MISSION_EMERGENCY_BEACON_OFF,
-			EventType.MISSION_EMERGENCY_DESTINATION,
-			EventType.MISSION_NOT_ENOUGH_RESOURCES,
-			EventType.MISSION_MEDICAL_EMERGENCY,
-			EventType.MISSION_RENDEZVOUS,
-			EventType.MISSION_RESCUE_PERSON,
-			EventType.MISSION_SALVAGE_VEHICLE);
+	private static final Set<HistoricalEventType> BLOCKED_EVENTS = Set.of(
+			HistoricalEventType.MISSION_EMERGENCY_BEACON_OFF,
+			HistoricalEventType.MISSION_EMERGENCY_DESTINATION,
+			HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES,
+			HistoricalEventType.MISSION_MEDICAL_EMERGENCY,
+			HistoricalEventType.MISSION_RENDEZVOUS,
+			HistoricalEventType.MISSION_RESCUE_PERSON,
+			HistoricalEventType.MISSION_SALVAGE_VEHICLE);
 
 	/** Names of the displayed columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -73,7 +71,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 
 	private HistoricalEventManager eventManager;
 	private Set<HistoricalEventCategory> blockedTypes = new HashSet<>();
-	private Set<String> settlementNames = Collections.emptySet();
+	private Set<Settlement> settlements = Collections.emptySet();
 
 	/**
 	 * Constructor. Create a new Event model based on the specified event manager.
@@ -99,9 +97,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> settlements) {
 
-		settlementNames = settlements.stream()
-				.map(Settlement::getName)
-				.collect(Collectors.toSet());
+		this.settlements = settlements;
 		
 		reloadEvents();
 		return true;
@@ -137,11 +133,11 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 * @return
 	 */
 	private boolean isDisplayable(HistoricalEvent event) {
-		if (!settlementNames.contains(event.getHomeTown())) {
+		if (!settlements.contains(event.getHomeTown())) {
 			return false;
 		}
 		HistoricalEventCategory category = event.getCategory();
-		EventType eventType = event.getType();
+		HistoricalEventType eventType = event.getType();
 		return !blockedTypes.contains(category) && !BLOCKED_EVENTS.contains(eventType);
 	}
 
@@ -194,7 +190,8 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 				break;
 	
 			case SETTLEMENT: {
-				result = event.getHomeTown();
+				var home = event.getHomeTown();
+				result = home != null ? home.getName() : null;
 			}
 				break;
 				
@@ -210,6 +207,16 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 		return result;
 	}
 
+	/**
+	 * Gets the Entity associated to the event
+	 *
+	 * @param row Indexes of Unit to retrieve.
+	 * @return Unit at specified position.
+	 */
+	@Override
+	public Object getObject(int row) {
+		return getEntity(row).getEntity();
+	}
 	/**
 	 * New event has been added.
 	 */

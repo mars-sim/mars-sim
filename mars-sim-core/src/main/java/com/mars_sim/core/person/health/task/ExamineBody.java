@@ -11,8 +11,8 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.MedicalCare;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -22,7 +22,6 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
-import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
@@ -335,8 +334,6 @@ public class ExamineBody extends MedicalAidTask {
 					+ deceasedPerson.getName() + ". Cause of death : " + cause);
 
 		// Create medical event for performing an post-mortem exam
-		MedicalEvent event = new MedicalEvent(worker, problem, EventType.MEDICAL_POSTMORTEM_EXAM); 
-		// Register event
-		registerNewEvent(event);
+		problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_POSTMORTEM_EXAM); 
 	}
 }

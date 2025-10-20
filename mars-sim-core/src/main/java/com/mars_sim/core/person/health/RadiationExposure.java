@@ -15,9 +15,8 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.hazard.HazardEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.RadiationStatus;
 import com.mars_sim.core.structure.Settlement;
@@ -243,7 +242,6 @@ public class RadiationExposure implements Serializable, Temporal {
 
 	private static final String EXPOSED_TO = "Exposed to ";
 	private static final String DOSE_OF = " mSv cumulativeDoses of ";
-	private static final String RAD = "radiation ";
 	private static final String EVA_OPERATION = " during an EVA operation.";
 
 	private int solCache = 1, counter30 = 1, counter360 = 1;
@@ -638,13 +636,9 @@ public class RadiationExposure implements Serializable, Temporal {
 					logger.info(person, str + " while " + activity);
 				}
 
-				HistoricalEvent hEvent = new HazardEvent(EventType.HAZARD_RADIATION_EXPOSURE,
-						rad,
-						rad.toString(),
-						person.getTaskDescription(),
-						person.getName(), 
-						person
-						);
+				HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventType.HAZARD_RADIATION_EXPOSURE,
+												rad, rad.toString(), person.getTaskDescription(),
+												person.getName(), person, person.getAssociatedSettlement());
 				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
 				person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);

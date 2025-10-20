@@ -30,11 +30,12 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
+
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MissionObjective;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -164,7 +165,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	// Static members
 	protected static UnitManager unitManager;
-	protected static HistoricalEventManager eventManager;
+	private static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
@@ -201,7 +202,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (person.isInSettlement()) {
 
 			// Created mission starting event.
-			registerHistoricalEvent(person, EventType.MISSION_START, "Mission Starting");
+			registerHistoricalEvent(person, HistoricalEventType.MISSION_START, "Mission Starting");
 
 			// Log mission starting.
 			int n = members.size();
@@ -316,7 +317,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			members.add(member);
 
 			signUp.add(member);
-			registerHistoricalEvent(member, EventType.MISSION_JOINING,
+			registerHistoricalEvent(member, HistoricalEventType.MISSION_JOINING,
 									"Adding a member");
 	
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
@@ -332,7 +333,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param type
 	 * @param message
 	 */
-	private void registerHistoricalEvent(Worker member, EventType type, String message) {
+	protected void registerHistoricalEvent(Worker member, HistoricalEventType type, String message) {
 		Unit container = null;
 		Coordinates coordinates = null;
 		if (member.isInSettlement()) {
@@ -353,9 +354,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Creating mission joining event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
-				message, missionString, member.getName(), 
-				container, member.getAssociatedSettlement().getName(), coordinates);
+		HistoricalEvent newEvent = new HistoricalEvent(type, this, message,
+														missionString, member.getName(), container,
+														getAssociatedSettlement(), coordinates);
 		eventManager.registerNewEvent(newEvent);
 	}
 
@@ -378,7 +379,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	      		person.getShiftSlot().setOnCall(false);
 	      	}	
 
-			registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
+			registerHistoricalEvent(person, HistoricalEventType.MISSION_FINISH, "Removing a member");
 			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
 		}
 	}
@@ -902,7 +903,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			
 			if (this instanceof AbstractVehicleMission avm) {
 				// Generate historical event by calling AbstractVehicleMission's abortMission
-				avm.abortMission(MISSION_MEDICAL_EMERGENCY, EventType.MISSION_MEDICAL_EMERGENCY);
+				avm.abortMission(MISSION_MEDICAL_EMERGENCY, HistoricalEventType.MISSION_MEDICAL_EMERGENCY);
 			}
 			else {
 				// Abort the mission and return home

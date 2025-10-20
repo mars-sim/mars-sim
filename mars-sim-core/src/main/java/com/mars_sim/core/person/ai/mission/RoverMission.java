@@ -24,10 +24,9 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.PhysicalConditionFormat;
@@ -434,7 +433,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			
 			MissionStatus status = MissionStatus.createResourceStatus(MISSION_LEAD_NO_SHOW.getName());
-			abortMission(status, EventType.MISSION_LEAD_NO_SHOW);
+			abortMission(status, HistoricalEventType.MISSION_LEAD_NO_SHOW);
 	
 			canDepart = false;
 		}
@@ -450,7 +449,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			}
 			
 			MissionStatus status = MissionStatus.createResourceStatus(ONLY_ONE_MEMBER.getName());
-			abortMission(status, EventType.MISSION_ONLY_ONE_MEMBER);
+			abortMission(status, HistoricalEventType.MISSION_ONLY_ONE_MEMBER);
 
 			canDepart = false;
 		}
@@ -1191,14 +1190,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		BuildingManager.addPatientToMedicalBed(p, s);
 
 		// Register the historical event
-		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
-				this,
-				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
-				p.getTaskDescription(),
-				p.getName(),
-				p
-				);
-		eventManager.registerNewEvent(rescueEvent);
+		registerHistoricalEvent(p, HistoricalEventType.MISSION_RESCUE_PERSON, PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()));
 	}
 	
 	/**
