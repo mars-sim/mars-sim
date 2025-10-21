@@ -51,7 +51,7 @@ public class OGGSoundClip {
 	private boolean mute = false;
 	private boolean paused;
 	private boolean isMasterGainSupported;
-	private boolean isMasterVolumeSupported;
+//	private boolean isMasterVolumeSupported;
 	
 	private byte[] convbuffer = new byte[convsize];
 
@@ -139,7 +139,7 @@ public class OGGSoundClip {
 		}
 
 		if (outputLine == null) {
-			logger.info("determineGain(): outputLine == null");
+			//	May add back for debugging: logger.info("determineGain(): outputLine == null")
 			return;
 		}
 
