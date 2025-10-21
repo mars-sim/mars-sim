@@ -16,7 +16,7 @@
 		<release>21</release>
 		
 		<sonar.java.source>21</sonar.java.source>
-		<fxgl.version>21.1</fxgl.version>
+		<fxgl.version>11.17</fxgl.version>
 		
 		<!-- These 3 have an interdepency -->
 		<junit-jupiter.version>6.0.0</junit-jupiter.version>
@@ -30,7 +30,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
-		<libgdx.version>1.14.0</libgdx.version>
+		<libgdx.version>1.13.5</libgdx.version>
 		<lwjgl.version>3.3.6</lwjgl.version>
 		<slf4j.version>2.0.17</slf4j.version>
 
