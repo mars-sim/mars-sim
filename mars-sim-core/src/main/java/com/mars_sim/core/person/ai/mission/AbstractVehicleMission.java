@@ -1706,8 +1706,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return the description of the current navpoint.
 	 */
 	public final String getCurrentNavpointDescription() {
-		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
-			&& navIndex < navPoints.size()) {
+		if (navIndex < navPoints.size()) {
 			return navPoints.get(navIndex).getDescription();
 		}
 		
