@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -985,11 +984,9 @@ public class MainWindow
 			return;
 		
 		if (isPaused) {
-			desktop.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			desktop.getSoundPlayer().muteMusic();
 		}
 		else {
-			desktop.getParent().setCursor(Cursor.getDefaultCursor());
 			desktop.getSoundPlayer().unmuteMusic();
 		}
 	}

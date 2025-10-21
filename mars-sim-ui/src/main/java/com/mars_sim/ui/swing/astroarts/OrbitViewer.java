@@ -118,7 +118,6 @@ implements ActionListener {
 	private JButton			buttonStop;
 	private JButton			buttonRevStep;
 
-	private DateDialog		dateDialog = null;
 	private MasterClock	    masterClock = null;
 	/**
 	 * Player thread
@@ -869,12 +868,9 @@ implements ActionListener {
 		
 			case SELECT_DATE:
 				// Set Date
-				if (dateDialog == null) {
-					dateDialog = new DateDialog(this, atime, masterClock.getEarthTime());
-					dateDialog.setVisible(true);
-					return;
-				}
-                dateDialog.setVisible(!dateDialog.isVisible());
+				var dateDialog = new DateDialog(this, atime, masterClock.getEarthTime());
+				dateDialog.setLocationRelativeTo(this);
+				dateDialog.setVisible(true);
 				break;
 			case PLAY:
 				startPlayer(ATime.F_INCTIME);
@@ -955,8 +951,7 @@ implements ActionListener {
 	/**
 	 * message sent by DateDialog (when disposed)
 	 */
-	public void endDateDialog(ATime atime) {
-		dateDialog = null;
+	void endDateDialog(ATime atime) {
 		buttonDate.setEnabled(true);
 		if (atime != null) {
 			this.atime = limitATime(atime);
