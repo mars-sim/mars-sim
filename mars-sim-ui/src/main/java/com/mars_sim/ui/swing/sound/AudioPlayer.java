@@ -40,7 +40,7 @@ public class AudioPlayer {
 	public static final String MUSIC_DIR = SimulationRuntime.getMusicDir();
 	private static final String DEFAULT_MUSIC_DIR = "/music";
 			
-	public static final double DEFAULT_VOL = 0.65;
+	public static final double DEFAULT_VOL = 0.5;
 	public static final double STEP = 0.05;
 
 	public static final String PROPS_NAME = "audio";

@@ -20,6 +20,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
+import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -31,13 +32,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -46,8 +45,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.GameManager;
@@ -92,7 +89,10 @@ public class MainWindow
 	private static final String MAIN_PROPS = "main-window";
 	private static final String EXTERNAL_BROWSER = "use-external";
 
-	private static final String VOLUME = "volume";
+	private static final String SOUND = "sound";
+	private static final String SOUND_MUTE = "sound_mute";
+	private static final String MUSIC = "music";
+	private static final String MUSIC_MUTE = "music_mute";
 	
 	/** The main window frame. */
 	private static JFrame frame;
@@ -103,15 +103,16 @@ public class MainWindow
 
 	// Data members
 	private boolean isIconified = false;
-    private boolean isPanelVisible = false;
+//    private boolean isPanelVisible = false;
     
 	private int millisolIntCache;
 	private int initX;
 	private int initY;
-
+	private int sliderMusicVolCache;
+	
     private final int PANEL_WIDTH = 45;
     private final int HIDDEN_X = -PANEL_WIDTH + 45; // Slide partially off-screen
-    private final int VISIBLE_X = 0;
+//    private final int VISIBLE_X = 0;
     
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
@@ -132,9 +133,7 @@ public class MainWindow
 	
 	/** The control of play or pause the simulation. */
 	private JToggleButton playPauseSwitch;
-	
-    private JButton toggleButton;
-    
+ 
 	private transient HelpLibrary helpLibrary;
 
 	private boolean useExternalBrowser;
@@ -523,16 +522,8 @@ public class MainWindow
         leftSlidingPanel.setBounds(HIDDEN_X, 0, PANEL_WIDTH, 400);
 
      	// Add a floating volume bar
-     	JToolBar floatingVolumeBar = new JToolBar(SwingConstants.VERTICAL);
-     	Dimension d1 = new Dimension(35, 200);
-     	floatingVolumeBar.setSize(d1);
-     	floatingVolumeBar.setPreferredSize(d1);
-     	floatingVolumeBar.setMaximumSize(d1);
-     	floatingVolumeBar.setMinimumSize(d1);
-     	floatingVolumeBar.setAlignmentX(Component.CENTER_ALIGNMENT);
-     	floatingVolumeBar.setFloatable(true);
-     	floatingVolumeBar.add(createVolumeSlider(d1));
-     	leftSlidingPanel.add(floatingVolumeBar, BorderLayout.SOUTH);
+     	JToolBar floatingVolumeBar = createMusicSlider();
+     	leftSlidingPanel.add(floatingVolumeBar, BorderLayout.NORTH);
 
         // Add components
         contentPane.add(leftSlidingPanel, BorderLayout.WEST);
@@ -656,47 +647,56 @@ public class MainWindow
 	/**
 	 * Creates the music volume slider.
 	 * 
-	 * @param d0
+	 * @param d1
 	 * @return 
 	 */
-	private JPanel createVolumeSlider(Dimension d0) {
+	private JToolBar createMusicSlider() {
+		JToolBar floatingMusicBar = new JToolBar(SwingConstants.VERTICAL);
+     	Dimension d1 = new Dimension(35, 200);
+     	floatingMusicBar.setSize(d1);
+     	floatingMusicBar.setPreferredSize(d1);
+     	floatingMusicBar.setMaximumSize(d1);
+     	floatingMusicBar.setMinimumSize(d1);
+     	floatingMusicBar.setAlignmentX(Component.CENTER_ALIGNMENT);
+     	floatingMusicBar.setFloatable(true);
+		
+     	floatingMusicBar.setToolTipText("Volume Control");
 
-		Icon icon = ImageLoader.getIconByName(VOLUME);
-		JPanel volPanel = new JPanel();
-		volPanel.setSize(d0);
-		volPanel.setPreferredSize(d0);
-		volPanel.setMaximumSize(d0);
-		volPanel.setMinimumSize(d0);
-		volPanel.setLayout(new BoxLayout(volPanel, BoxLayout.Y_AXIS));
-		volPanel.setToolTipText("Volume Control");
-		volPanel.add(new JLabel(icon));
+		sliderMusicVolCache = (int)(AudioPlayer.DEFAULT_VOL * 100);
+		
+		Icon musicIcon = ImageLoader.getIconByName(MUSIC);
+		Icon musicMuteIcon = ImageLoader.getIconByName(MUSIC_MUTE);
+		JToggleButton toggleButton = new JToggleButton(musicIcon);
+		toggleButton.setSelected(true);
+		toggleButton.setSelectedIcon(musicIcon);
+		toggleButton.setIcon(musicMuteIcon);
+		floatingMusicBar.add(toggleButton);
 		
         JSlider slider = new JSlider(SwingConstants.VERTICAL);
+        floatingMusicBar.add(slider);
+        
+        toggleButton.addItemListener(e -> {
+		    if (e.getStateChange() == ItemEvent.SELECTED) {
+		    	if (sliderMusicVolCache == 0)
+		    		slider.setValue(5);
+		    	else
+		    		slider.setValue(sliderMusicVolCache);
+		    } 
+		    else if (e.getStateChange() == ItemEvent.DESELECTED) {
+			    sliderMusicVolCache = slider.getValue();
+			    slider.setValue(0);
+		    }
+		});
+		
         slider.setMajorTickSpacing(50);
-        slider.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 6));
+//        slider.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 6));
         slider.setPaintLabels(true);
         slider.setToolTipText("Music and Sound Volume Slider");
-        volPanel.add(slider);
-        slider.setPreferredSize(new Dimension(35, 175));
-        slider.setMaximumSize(new Dimension(35, 175));
-        
-        //this is for setting the value
-        slider.addChangeListener(new ChangeListener() {
-
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JSlider src = (JSlider)e.getSource();
-
-                double value = src.getValue() / 100.0;
-                
-                try {
-                	getAudioPlayer().setMusicVolume(value);
-
-                } catch (Exception ex) {
-                	logger.severe("Unable to set new music volume: " + ex);
-                }
-            }
-        });
+        d1 = new Dimension(30, 165);
+        slider.setSize(d1);
+     	slider.setMinimumSize(d1);
+        slider.setPreferredSize(d1);
+        slider.setMaximumSize(d1);
 
         try {
             slider.setValue((int) (AudioPlayer.DEFAULT_VOL * 100));
@@ -704,7 +704,32 @@ public class MainWindow
         	logger.severe("Unable to set new music volume: " + e);
         }
         
-        return volPanel;
+        //this is for setting the value
+        slider.addChangeListener(e -> {
+  
+            int value = ((JSlider)e.getSource()).getValue();
+            
+            Icon icon = toggleButton.getIcon();
+            
+            if (icon != null) {
+                if (value == 0) {
+                	toggleButton.setSelected(false);
+                }
+                else if (!toggleButton.isSelected()) {
+                	toggleButton.setSelected(true);
+                }   
+            }
+            
+            try {
+            	getAudioPlayer().setMusicVolume(value / 100.0);
+
+            } catch (Exception ex) {
+            	logger.severe("Unable to set new music volume: " + ex);
+            }
+        });
+
+        
+        return floatingMusicBar;
     }
 		
 	/**
