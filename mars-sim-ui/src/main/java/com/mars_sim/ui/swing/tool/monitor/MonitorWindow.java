@@ -481,12 +481,12 @@ public class MonitorWindow extends ToolWindow
 	 */
 	private void changeSelection(ItemEvent event) {
 		applySelection(event.getItem());
-
 		updateTab();
 	}
 	
 	/**
-	 * Update the internal selectino status based on a new item
+	 * Updates the internal selection status based on a new item.
+	 * 
 	 * @param item
 	 */
 	private void applySelection(Object item) {
@@ -599,7 +599,6 @@ public class MonitorWindow extends ToolWindow
 		MonitorTab selectedTab = getSelectedTab();
 		if (selectedTab == null)
 			return;
-		
 		// Continue and recreate a new tab
 		selectNewTab(selectedTab);
 	}

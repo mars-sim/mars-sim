@@ -83,6 +83,8 @@ public class StartUpChooser extends JDialog {
         }
     }
 
+    private static final String WHITESPACE  = " ";
+    
     static final int NEW_SIM = 0;
     static final int LOAD_SIM = 1;
     static final int EDIT_SCENARIO = 2;
@@ -90,6 +92,7 @@ public class StartUpChooser extends JDialog {
     static final int TEMPLATE = 4;
     static final int EXIT = 5;
     static final int NEW_SOCIETY = 6;
+    
     
     private String scenarioLabel = Msg.getString("StartUpChooser.scenario");
     private String templateLabel = Msg.getString("StartUpChooser.template");
@@ -180,7 +183,7 @@ public class StartUpChooser extends JDialog {
         	    80, 80, Color.ORANGE
         	);
         
-        dashBorder = BorderFactory.createDashedBorder(gradient, 2.0f, 2.0f, 1.0f, true);
+        dashBorder = BorderFactory.createDashedBorder(gradient, 2.5f, 7.0f, 1.5f, true);
         
         addStartButton(buttonPanel, "newSim", e -> choiceMade(NEW_SIM));
         addStartButton(buttonPanel, "load", e -> selectSimFile());
@@ -253,7 +256,7 @@ public class StartUpChooser extends JDialog {
     }
     
     private void addStartButton(JPanel panel, String labelKey, ActionListener action) {
-        JButton button = new JButton(Msg.getString("StartUpChooser." + labelKey));
+        JButton button = new JButton(WHITESPACE + Msg.getString("StartUpChooser." + labelKey) + WHITESPACE);
         buttonList.add(button);
         button.setFocusable(true);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);

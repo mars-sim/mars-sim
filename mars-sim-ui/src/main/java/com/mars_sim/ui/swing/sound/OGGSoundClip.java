@@ -132,11 +132,6 @@ public class OGGSoundClip {
 	 * @param volume the volume
 	 */
 	public void determineGain(double volume) {
-		if (volume > 1)
-			volume = 1.0;
-		else if (volume < 0.0) {
-			volume = 0.0;
-		}
 
 		if (outputLine == null) {
 			//	May add back for debugging: logger.info("determineGain(): outputLine == null")
@@ -157,13 +152,26 @@ public class OGGSoundClip {
 				// is unaffected.
 				// Note that gain measures dB, not amplitude.
 
-				double max = floatControl.getMaximum();
-				double min = floatControl.getMinimum();
+				float max = floatControl.getMaximum(); // max =~ -80
+				float min = floatControl.getMinimum(); // min =~ 6
 				
-				double value = volume * (max - min/2) + min/2;
+//				double value = volume * (max - min/2) + min/2;
 				
-				// May add back for debugging: logger.info("[Gain: " + (int)min + " to " + (int)max + "] vol of " + Math.round(volume * 100.0)/100.0 + " -> gain of " + Math.round(value* 10.0)/10.0)
-						
+				float value = 0;
+				
+				if (volume >= 1) {
+					volume = 1.0;
+					value = max;
+				}
+				else if (volume <= 0.0) {
+					volume = 0.0;
+					value = min;
+				}
+				else	
+					value = 20.0f * (float)Math.log10(volume);		
+				
+//				May add back for debugging: logger.info((int)min + " to " + (int)max + " " + "Vol: " + Math.round(volume * 100.0)/100.0 + " -> Gain: " + Math.round(value* 10.0)/10.0)
+	
 				floatControl.setValue((float)value);
 
 			} else {

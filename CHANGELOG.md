@@ -6,7 +6,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ------------------------------------------|---------------------
 
-## Version 3.10.0 (21 Oct 2025)
+## Version 3.10.0 (22 Oct 2025)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -57,32 +57,33 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ### B. UI IMPROVEMENT :
  <OL>
-    <LI>Person Favorite displays the list of dish names</LI>
-    <li>Navigator Window provides filters for teh Exploration, Unit & Landmark layers</li>
-    <li>Redesign of the Navigator Window controls so layers are managed via a Tree control</li>
-    <li>Navigator window is no longer a fixed size and can be resized</li>
-    <li>Mission details panel redesigned</li>
-    <li>New standard way to display Entities with details and location button provided</li>
+    <LI>Person Favorite displays the list of dish names.</LI>
+    <li>Navigator Window provides filters for teh Exploration, Unit & Landmark layers.</li>
+    <li>Redesign of the Navigator Window controls so layers are managed via a Tree control.</li>
+    <li>Navigator window is no longer a fixed size and can be resized.</li>
+    <li>Mission details panel redesigned.</li>
+    <li>New standard way to display Entities with details and location button provided.</li>
 	<LI>Display the average age and gender atio of a settlement.</LI>
 	<li>Add 3 dark themes and a light theme.</li>
 	<li>Enable top menu bar in macOS.</li>
 	<li>Enable mars-sim dock icon in macOS.</li>
 	<li>Relocate speed buttons to top left of the main window.</li>
 	<li>Add 'Life Core A' and 'Half Core A/B' buildings.</li>
-	<li>Add Preferences tab in SettlementUnitWindow. </li>
-	<li>Add buildings svg images for new Bio-reactor labs and various Core connectors. </li>
-	<li>Improve construction tab with queue table. </li>
-	<li>Add deep borehole small drilling site. </li>
-	<li>Show spot locations within building in Settlement Map's status bar. </li>
-	<li>Fast track building maintenance if repair parts are posted and ready. <li>
-	<li>Remove memory leak when scrolling up and down Settlement map's zoom slider. <li>
+	<li>Add Preferences tab in SettlementUnitWindow.</li>
+	<li>Add buildings svg images for new Bio-reactor labs and various Core connectors.</li>
+	<li>Improve construction tab with queue table.</li>
+	<li>Add deep borehole small drilling site.</li>
+	<li>Show spot locations within building in Settlement Map's status bar.</li>
+	<li>Fast track building maintenance if repair parts are posted and ready.<li>
+	<li>Remove memory leak when scrolling up and down Settlement map's zoom slider.<li>
 	<li>Update mass/quantity properly in Monitor Tool's Good tab.</li>	
 	<li>Add settlement wide construction and manufacturing queue.</li>
 	<li>Convert various missions to Objective pattern.</li>	
-	<li>Reduce heap memory when zooming in the Settlement local Map</li>
-	<li>Replace console main menu with a swing-based startup chooser menu</li>
-	<li>Allow each tab in Monitor Tool to choose from All, a sponsor or a settlement in authority combobox. </li>
-	<li>Add a floating toolbar to host sound control and speed control.</li>	
+	<li>Reduce heap memory when zooming in the Settlement local Map.</li>
+	<li>Replace console main menu with a swing-based startup chooser menu.</li>
+	<li>Allow each tab in Monitor Tool to filter settlements (All, a sponsor or a settlement).</li>
+	<li>Add a sound effect toolbar and a music toolbar.</li>	
+	<li>Add a startup chooser.</li>	
   </OL>  
 
 ### C. FIXES :

@@ -341,6 +341,8 @@ public class AudioPlayer {
 			if (v > 1)
 				v = 1.0;
 
+			unmuteMusic();
+			
 			currentMusicVol = v;
 			
 			determineMusicGain(v);
@@ -356,8 +358,10 @@ public class AudioPlayer {
 		if (!isVolumeDisabled && hasMasterGain) {
 
 			double v = currentMusicVol - STEP;
-			if (v < 0)
+			if (v <= 0) {
 				v = 0.0;
+				muteMusic();	
+			}
 
 			currentMusicVol = v;
 
@@ -376,6 +380,8 @@ public class AudioPlayer {
 			if (v > 1)
 				v = 1.0;
 
+			unmuteSoundEffect();
+			
 			currentSoundVol = v;
 		
 			determineSoundGain(v);
@@ -390,8 +396,10 @@ public class AudioPlayer {
 	public void soundVolumeDown() {
 		if (!isVolumeDisabled && hasMasterGain) {
 			double v = currentSoundVol - STEP;
-			if (v < 0)
+			if (v <= 0) {
 				v = 0.0;
+				muteSoundEffect();
+			}
 
 			currentSoundVol = v;
 
@@ -408,10 +416,16 @@ public class AudioPlayer {
 	 */
 	public void setMusicVolume(double volume) {
 
-		if (volume < 0)
+		if (volume <= 0) {
 			volume = 0.0;
-		if (volume > 1)
+			muteMusic();
+		}
+		else if (volume > 1) {
 			volume = 1.0;
+		}
+		else {
+			unmuteMusic();
+		}
 
 		currentMusicVol = volume;
 		
@@ -445,11 +459,15 @@ public class AudioPlayer {
 	 */
 	public void setSoundVolume(double volume) {
 
-		if (volume < 0)
+		if (volume <= 0) {
 			volume = 0.0;
-		if (volume > 1)
+			muteSoundEffect();
+		}
+		else if (volume > 1)
 			volume = 1.0;
-
+		else
+			unmuteSoundEffect();
+		
 		currentSoundVol = volume;
 
 		determineSoundGain(volume);
