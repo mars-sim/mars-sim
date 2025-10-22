@@ -1077,7 +1077,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 				if (entireData) {
 					fireTableDataChanged();
 				} else {
-					fireTableCellUpdated(row, column);
+			       	if (row >= 0 && row < getRowCount()) {
+		                fireTableCellUpdated(row, column);
+		            }
 				}
 			}
 		}

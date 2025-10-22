@@ -205,7 +205,7 @@ extends AbstractTableModel {
 	@Override
 	public void setValueAt(Object value, int row, int col) {
 
-		if (row < supplyList.size()) {
+		if (row >= 0 && row < supplyList.size()) {
 			SupplyItem item = supplyList.get(row);
 			if (col == 0) {
 				item.category = (String) value;
