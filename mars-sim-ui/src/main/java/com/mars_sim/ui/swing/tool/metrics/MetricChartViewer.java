@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * MetricChartViewer.java
+ * @date 2025-10-25
+ * @author Barry Evans
+ */
 package com.mars_sim.ui.swing.tool.metrics;
 
 import java.awt.BorderLayout;
@@ -6,8 +12,9 @@ import java.awt.FlowLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,8 +22,8 @@ import javax.swing.JTabbedPane;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CompassFormat;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
@@ -32,7 +39,6 @@ import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 public class MetricChartViewer extends JPanel {
     
     // Constants
-    private static final String SOL_LABEL = "Sol (Martian Day)";
     private static final String SELECT_PROMPT = "-- Select --";
     
     private transient MetricManager metricManager;
@@ -43,6 +49,8 @@ public class MetricChartViewer extends JPanel {
     private JButton newButton;
     private JButton removeButton;
     private JButton addButton;
+    private JCheckBox cummulative;
+    private JCheckBox shapes;
         
     /**
      * Creates a new MetricChartViewer component with the specified MetricManager.
@@ -52,7 +60,6 @@ public class MetricChartViewer extends JPanel {
     public MetricChartViewer(MetricManager metricManager) {
         this.metricManager = metricManager;
         initializeComponents();
-        setupLayout();
         setupEventHandlers();
         populateInitialData();
     }
@@ -61,36 +68,21 @@ public class MetricChartViewer extends JPanel {
      * Initializes all the UI components.
      */
     private void initializeComponents() {
-        tabbedPane = new JTabbedPane();
-        
-        // Initialize combo boxes - will be populated later
-        entityComboBox = new JComboBox<>();
-        entityComboBox.setRenderer(new NamedListCellRenderer());
-        categoryComboBox = new JComboBox<>();
-        measureComboBox = new JComboBox<>();
 
-        newButton = new JButton("New Chart");
-        addButton = new JButton("Add To Chart");
-        removeButton = new JButton("Remove Chart");
-        
-        // Initially disable buttons
-        newButton.setEnabled(false);
-        removeButton.setEnabled(false);
-    }
-    
-    /**
-     * Sets up the layout of the component.
-     */
-    private void setupLayout() {
         setLayout(new BorderLayout());
         
         // Create the control panel
         JPanel controlPanel = createControlPanel();
         add(controlPanel, BorderLayout.NORTH);
-        
+
         // Add the tabbed pane
+        tabbedPane = new JTabbedPane();
         add(tabbedPane, BorderLayout.CENTER);
-        
+                        
+        // Initially disable buttons
+        newButton.setEnabled(false);
+        updateButtonState();
+
         // Set preferred size
         setPreferredSize(new Dimension(800, 600));
     }
@@ -99,26 +91,67 @@ public class MetricChartViewer extends JPanel {
      * Creates the control panel with dropdowns and buttons.
      */
     private JPanel createControlPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createTitledBorder("Chart Controls"));
         
+        JPanel keyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
         // Add labels and dropdowns
-        panel.add(new JLabel("Entity:"));
-        panel.add(entityComboBox);
+        keyPanel.add(new JLabel("Entity:"));
+        entityComboBox = new JComboBox<>();
+        entityComboBox.setRenderer(new NamedListCellRenderer());
+        keyPanel.add(entityComboBox);
         
-        panel.add(new JLabel("Category:"));
-        panel.add(categoryComboBox);
+        keyPanel.add(new JLabel("Category:"));
+        categoryComboBox = new JComboBox<>();
+        keyPanel.add(categoryComboBox);
         
-        panel.add(new JLabel("Measure:"));
-        panel.add(measureComboBox);
-        
-        // Add some spacing
-        panel.add(Box.createHorizontalStrut(20));
-        
+        keyPanel.add(new JLabel("Measure:"));
+        measureComboBox = new JComboBox<>();
+        keyPanel.add(measureComboBox);
+        panel.add(keyPanel);
+         
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
+        newButton = new JButton("New Chart");
+        newButton.addActionListener(e -> addNewChart());
+        addButton = new JButton("Add To Chart");
+        addButton.addActionListener(e -> addToChart());
+        removeButton = new JButton("Remove Chart");
+        removeButton.addActionListener(e -> removeSelectedChart());
+
+        cummulative = new JCheckBox("Cumulative Totals");
+        cummulative.addActionListener(e -> {
+            int selectedIndex = tabbedPane.getSelectedIndex();
+            if (selectedIndex >= 0) {
+                ChartPanel chartPanel = (ChartPanel) tabbedPane.getComponentAt(selectedIndex);
+                JFreeChart chart = chartPanel.getChart();
+                XYPlot plot = chart.getXYPlot();
+                var dataset = (MetricDataset) plot.getDataset();
+                dataset.setCumulative(cummulative.isSelected());
+            }
+        });
+
+        shapes = new JCheckBox("Show Shapes");
+        shapes.addActionListener(e -> {
+            int selectedIndex = tabbedPane.getSelectedIndex();
+            if (selectedIndex >= 0) {
+                ChartPanel chartPanel = (ChartPanel) tabbedPane.getComponentAt(selectedIndex);
+                JFreeChart chart = chartPanel.getChart();
+                XYPlot plot = chart.getXYPlot();
+                ((XYLineAndShapeRenderer) plot.getRenderer()).setDefaultShapesVisible(shapes.isSelected());
+            }
+        });
+
         // Add buttons
-        panel.add(newButton);
-        panel.add(addButton);
-        panel.add(removeButton);
+        controlPanel.add(newButton);
+        controlPanel.add(addButton);
+        controlPanel.add(removeButton);
+        controlPanel.add(cummulative);
+        controlPanel.add(shapes);
+
+        panel.add(controlPanel);
         
         return panel;
     }
@@ -131,12 +164,8 @@ public class MetricChartViewer extends JPanel {
         entityComboBox.addActionListener(e -> entitySelected());
         categoryComboBox.addActionListener(c -> categorySelected());
         
-        newButton.addActionListener(e -> addNewChart());
-        addButton.addActionListener(e -> addToChart());
-        removeButton.addActionListener(e -> removeSelectedChart());
-        
         // Update remove button state when tab selection changes
-        tabbedPane.addChangeListener(e -> updateRemoveButtonState());
+        tabbedPane.addChangeListener(e -> updateButtonState());
     }
 
     private void populateMeasureComboBox() {
@@ -168,7 +197,6 @@ public class MetricChartViewer extends JPanel {
         populateMeasureComboBox();
     }
 
-    
     /**
      * Populates the dropdown components with data from the MetricManager.
      */
@@ -225,12 +253,18 @@ public class MetricChartViewer extends JPanel {
     }
     
     /**
-     * Updates the enabled state of the remove button based on available tabs.
+     * Updates the enabled state of the control buttons base don selected tab
      */
-    private void updateRemoveButtonState() {
-        removeButton.setEnabled(tabbedPane.getTabCount() > 0);
+    private void updateButtonState() {
+        boolean isTabSelected = tabbedPane.getSelectedIndex() >= 0;
+        removeButton.setEnabled(isTabSelected);
+        addButton.setEnabled(isTabSelected);
     }
 
+    /**
+     * Gets the currently selected Metric based on dropdown selections.
+     * @return
+     */
     private Metric getSelectedMetric() {
         Object entityObj = entityComboBox.getSelectedItem();
         String category = (String) categoryComboBox.getSelectedItem();
@@ -247,6 +281,9 @@ public class MetricChartViewer extends JPanel {
         return null;
     }
         
+    /**
+     * Adds the selected metric to the currently selected chart tab.
+     */
     private void addToChart() {
         int selectedIndex = tabbedPane.getSelectedIndex();
         var data = getSelectedMetric();
@@ -259,6 +296,8 @@ public class MetricChartViewer extends JPanel {
             dataset.addMetric(data);
 
             tabbedPane.setTitleAt(selectedIndex, dataset.getTitle());
+            chart.setTitle(dataset.getTitle());
+            measureComboBox.setSelectedIndex(0);
         }
     }
 
@@ -271,7 +310,11 @@ public class MetricChartViewer extends JPanel {
         if (data != null) {
             // Create the chart
             var dataset = new MetricDataset();
-            dataset.addMetric(data);
+            dataset.setCumulative(cummulative.isSelected());
+            if (!dataset.addMetric(data)) {
+                // Metric already present, do not add duplicate chart
+                return;
+            }
 
             JFreeChart chart = createMetricChart(dataset);
             
@@ -287,11 +330,10 @@ public class MetricChartViewer extends JPanel {
             tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
             
             // Update button states
-            updateRemoveButtonState();
+            updateButtonState();
             
             // Reset selections to encourage creating different charts
-            entityComboBox.setSelectedIndex(0); // Reset to "-- Select --"
-            categoryComboBox.setSelectedIndex(0);
+            measureComboBox.setSelectedIndex(0); // Reset to "-- Select --"
         }
     }
     
@@ -302,25 +344,26 @@ public class MetricChartViewer extends JPanel {
         int selectedIndex = tabbedPane.getSelectedIndex();
         if (selectedIndex >= 0) {
             tabbedPane.removeTabAt(selectedIndex);
-            updateRemoveButtonState();
+            updateButtonState();
         }
     }
     
     private JFreeChart createMetricChart(MetricDataset dataset) {
 
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer(true,
-                true);
+        var renderer = new XYLineAndShapeRenderer(true,
+                shapes.isSelected());
         renderer.setDefaultToolTipGenerator(new MetricToolTipGenerator());
 
         var timeAxis = new NumberAxis("MSol");
+        timeAxis.setNumberFormatOverride(new MarsTimeFormatter());
         timeAxis.setAutoRangeIncludesZero(false);
+
         var valueAxis = new NumberAxis("Values");
         valueAxis.setAutoRangeIncludesZero(false);  // override default
 
         XYPlot plot = new XYPlot(dataset, timeAxis, valueAxis, renderer);
 
-        return new JFreeChart("Title", JFreeChart.DEFAULT_TITLE_FONT,
+        return new JFreeChart(dataset.getTitle(), JFreeChart.DEFAULT_TITLE_FONT,
                 plot, true);
     }
-
 }

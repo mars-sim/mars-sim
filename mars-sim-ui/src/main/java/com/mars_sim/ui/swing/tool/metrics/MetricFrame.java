@@ -41,26 +41,25 @@ public class MetricFrame {
         Entity rover1 = new TestEntity("Rover 1");
         Entity rover2 = new TestEntity("Rover 2");
 
-        for(int step = 1; step <= 3; step++) {
+        for(int step = 1; step <= 10; step++) {
             var now = clock.getMarsTime();
             now = now.addTime(500D);
             clock.setMarsTime(now);
 
-            metricManager.addValue(rover1, "Rover1&2", "Measure", -15 * step);
-            metricManager.addValue(rover2, "Rover1&2", "Temperature", 5 * step);
-            metricManager.addValue(rover1, "Rover1&2", "Temperature", 5 * step);
+            metricManager.addValue(rover1, "Full", "Measure", -15 * step);
+            metricManager.addValue(rover2, "Full", "Temperature", 5 * step);
+            metricManager.addValue(rover1, "Full", "Temperature", 8 * step);
 
-            metricManager.addValue(rover1, "Rover1", "Pressure", 0.7 * step);
-            metricManager.addValue(rover1, "Rover1", "Pressure", 0.9 * step);
+            if (step % 2 == 0) {
+                metricManager.addValue(rover1, "Half", "Pressure", 0.7 * step);
+                metricManager.addValue(rover2, "Half", "Energy", 120 * step);
+            }
 
-            metricManager.addValue(rover2, "Rover2", "Energy", 120 * step);
-            metricManager.addValue(rover2, "Rover2", "Energy", 150 * step);
+            metricManager.addValue(rover1, "Full", "Performance", 85 * step);
+            metricManager.addValue(rover2, "Full", "Performance", 90 * step);
 
-            metricManager.addValue(rover1, "Rover1&2", "Performance", 85 * step);
-            metricManager.addValue(rover2, "Rover1&2", "Performance", 90 * step);
-
-            metricManager.addValue(rover1, "Rover1&2", "Metric", 75 * step);
-            metricManager.addValue(rover2, "Rover1&2", "Metric", 80 * step);
+            metricManager.addValue(rover1, "Full", "Metric", 75 * step);
+            metricManager.addValue(rover2, "Full", "Metric", 80 * step);
         }
         return metricManager;
     }
