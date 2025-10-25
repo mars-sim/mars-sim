@@ -67,7 +67,7 @@ public class SimulationRuntime {
 
 		// Catch all
 		if (found == null) {
-			found = new Version("Unknown", "Unknown", false);
+			found = new Version();
 		}
 		VERSION = found;
 	}
@@ -83,8 +83,8 @@ public class SimulationRuntime {
 			JAVA_TAG.substring(0, JAVA_TAG.indexOf("(") - 1) : JAVA_TAG);
 	/** OS architecture string. */
 	private static final String OS_ARCH = (System.getProperty("os.arch").contains("64") ? "64-bit" : "32-bit");
-	public static final String SHORT_TITLE = Msg.getString("Simulation.title", VERSION.getVersionTag()); 
-	public static final String LONG_TITLE = SHORT_TITLE
+	public static final String SHORT_TITLE = Msg.getString("Simulation.title"); 
+	public static final String LONG_TITLE = SHORT_TITLE + " " + VERSION.getVersionTag()
 			+ " - " + OS_ARCH + " " + JAVA_VERSION + " - " + NUM_CORES
 			+ ((NUM_CORES == 1) ? " Core" : " Cores"); 
 	
