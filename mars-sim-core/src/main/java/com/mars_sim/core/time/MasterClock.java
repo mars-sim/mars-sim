@@ -40,25 +40,26 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 	/** The maximum speed allowed .*/
-	public static final int TIER_3_TOP = 32;
+	public static final int TIER_3_TOP = 28;
 	/** The maximum speed allowed .*/
-	public static final int TIER_2_TOP = 24;
+	public static final int TIER_2_TOP = 22;
 	/** The high speed setting. */
 	public static final int TIER_1_TOP = 16;
 	/** The mid speed setting. */
 	public static final int TIER_0_TOP = 8;
 	
-	// 1x,    2x, 4x, 8x, 16x,    32x, 64x, 128x, 256x 
-	public static final float LOW_SPEED_RATIO = (float)Math.pow(2.0, 1.0 * TIER_0_TOP); 
-	// 384x, 576x, 864x, 1296x,    1944x, 2916x, 4374x, 6561x
+	// 1x, 
+	// 2x, 4x, 8x, 16x,    32x, 64x, 128x, 256x 
+	public static final float LOW_SPEED_RATIO = (float)Math.pow(2.0, TIER_0_TOP); 
+	// 384x, 576x, 864x, 1,296x,    1,944x, 2,916x, 4,374x, 6,561x
 	public static final float MID_SPEED_RATIO = LOW_SPEED_RATIO 
-									* (float)Math.pow(1.5, 1.0 * TIER_1_TOP - TIER_0_TOP);
-	// 8201x, 10,251x, 12,813x, 16,016x,    20,020x, 25,025x, 31,281x, 39,101x
+									* (float)Math.pow(1.5, TIER_1_TOP - TIER_0_TOP);
+	// 8,201x, 10,251x, 12,813x, 16,016x,    20,020x, 25,025x, 
 	public static final float HIGH_SPEED_RATIO = MID_SPEED_RATIO
-									* (float)Math.pow(1.25, 1.0 * TIER_2_TOP - TIER_1_TOP);
-	// 48,876x, 54,985x, 61,858x, 69,590x,     78,288x, 88,074x, 99,083x, 111,468x
+									* (float)Math.pow(1.25, TIER_2_TOP - TIER_1_TOP);
+	// 31,281x, 35,191, 39,589x, 44,537x, 50,104x, 56,367x
 	public static final float SUPER_HIGH_SPEED_RATIO = HIGH_SPEED_RATIO
-									* (float)Math.pow(1.125, 1.0 * TIER_3_TOP - TIER_2_TOP);
+									* (float)Math.pow(1.125, TIER_3_TOP - TIER_2_TOP);
 	
 	/** The Maximum number of pulses in the log .*/
 	private static final int MAX_PULSE_LOG = 40;
@@ -208,6 +209,11 @@ public class MasterClock implements Serializable {
 
 		// Create a dedicated thread for the Clock
 		clockThreadTask = new ClockThreadTask();
+		
+		logger.info("LOW_SPEED_RATIO: " + LOW_SPEED_RATIO);
+		logger.info("MID_SPEED_RATIO: " + MID_SPEED_RATIO);
+		logger.info("HIGH_SPEED_RATIO: " + HIGH_SPEED_RATIO);
+		logger.info("SUPER_HIGH_SPEED_RATIO: " + SUPER_HIGH_SPEED_RATIO);
 		
 		if (userTimeRatio > 0) {
 			if (userTimeRatio <= LOW_SPEED_RATIO) {

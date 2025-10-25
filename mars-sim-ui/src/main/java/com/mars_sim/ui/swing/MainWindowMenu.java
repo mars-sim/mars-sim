@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MainWindowMenu.java
- * @date 2025-09-19
+ * @date 2025-10-24
  * @author Scott Davis
  */
 
@@ -29,7 +29,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -41,6 +40,7 @@ import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeWindow;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The MainWindowMenu class is the menu for the main window.
@@ -56,41 +56,26 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private static final String OPEN_GUIDE = "guide";
 	private static final String TUTORIAL = "tutorial";
 	private static final String ABOUT = "about";
-	private static final String NEW = "new";
+	private static final String VERSION = "version";
+	private static final String CHANGELOG = "changelog";
 	private static final String LAF = "laf";
 	private static final String UNIT_TOOLBAR = "unitbar";
 	private static final String TOOL_TOOLBAR = "toolbar";
 	private static final String EXTERNAL_BROWSER = "browser";
-//	private static final String EFFECT_UP = "effectUp";
-//	private static final String EFFECT_DOWN = "effectdown";
-//	private static final String EFFECT_MUTE = "effectmute";
-//	private static final String MUSIC_UP = "musicup";
-//	private static final String MUSIC_DOWN = "musicdown";
-//	private static final String MUSIC_MUTE = "musicmute";
-	
 	private static final String LOOK_AND_FEEL_ICON = "action/theme";
 	private static final String BROWSER_ICON = "action/browser";
 	
-//	private static final String VOL_UP_ICON = "action/vol_up";
-//	private static final String VOL_DOWN_ICON = "action/vol_down";
-	
+	private static final String VERSION_URL = Msg.getString("version.url"); //$NON-NLS-1$
+
 	// Data members
 	/** The main window frame. */
 	private MainWindow mainWindow;
-	/** The audio player instance. */
-	private AudioPlayer soundPlayer;
 	/** Unit Bar menu item. */
 	private JCheckBoxMenuItem showUnitBarItem;
 	/** Tool Bar menu item. */
 	private JCheckBoxMenuItem showToolBarItem;
 	/** Tool Bar menu item. */
 	private JCheckBoxMenuItem useExternalBrowser;
-
-
-	/** Music mute menu item. */
-//	private JCheckBoxMenuItem musicMuteItem;
-	/** Sound Effect mute menu item. */
-//	private JCheckBoxMenuItem soundEffectMuteItem;
 
 	private JMenu toolsMenu;
 
@@ -152,7 +137,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	}
 
 	/**
-	 * Dynamically build the windows menu showing Tools & Unit
+	 * Dynamically builds the windows menu showing Tools & Unit.
+	 * 
 	 * @param me
 	 */
 	protected void buildWindowsMenu(MenuEvent me) {
@@ -175,7 +161,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	}
 
 	/**
-	 * Create an internal window control menu
+	 * Creates an internal window control menu.
+	 * 
 	 * @return
 	 */
 	private JMenu createWindowControlMenu(String title, JInternalFrame internal) {
@@ -214,7 +201,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	}
 
 	/**
-	 * Create the tools menu
+	 * Creates the tools menu.
 	 */
 	private JMenu createToolsMenu() {
 		var newMenu = new JMenu(Msg.getString("mainMenu.tools")); //$NON-NLS-1$
@@ -243,6 +230,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		return newMenu;
 	}
 
+	/**
+	 * Creates the help menu.
+	 * 
+	 * @return
+	 */
 	private JMenu createHelpMenu() {
 		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
 		helpMenu.setMnemonic(KeyEvent.VK_H); // Alt + H
@@ -254,9 +246,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	
 		helpMenu.add(new JSeparator());
 			
-		helpMenu.add(createMenuItem("mainMenu.new", "action/new", NEW, null,
-				KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_DOWN_MASK, false)));
+		helpMenu.add(createMenuItem("mainMenu.changelog", "action/changelog", CHANGELOG, null,
+				KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK, false)));
 
+		helpMenu.add(createMenuItem("mainMenu.version", "action/version", VERSION, null,
+				KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK, false)));
+				
 		helpMenu.add(createMenuItem("mainMenu.tutorial", "action/tutorial", TUTORIAL, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
 		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
@@ -264,13 +259,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		return helpMenu;
 	}
 
-    /**
-     * Opens the about dialog box.
-     */
-    public void openAboutDialog() {
-    	JOptionPane.showMessageDialog(mainWindow, MarsTerminal.ABOUT_MSG, MarsTerminal.MARS_SIM, JOptionPane.INFORMATION_MESSAGE);
-    }
-    
+
 	private JMenu createSettingsMenu(MainDesktopPane desktop) {
 
 		// Create settings menu
@@ -329,37 +318,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			lafItem.addActionListener(this);
 			lafMenu.add(lafItem);
 			group.add(lafItem);
-		}
-
-		// Create Background Music Volume slider menu item
-		soundPlayer = desktop.getSoundPlayer();
-		
-		// Note: if "-nosound" argument is given when starting mars-sim
-		// then the following sound control won't be shown under settings
-		if (soundPlayer != null) {
-
-//			settingsMenu.add(createMenuItemAction("mainMenu.musicVolumeUp", VOL_UP_ICON,
-//							MUSIC_UP, "mainMenu.musicVolumeUp",
-//							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, KeyEvent.CTRL_DOWN_MASK, false)));
-//			settingsMenu.add(createMenuItemAction("mainMenu.musicVolumeDown", VOL_DOWN_ICON,
-//							MUSIC_DOWN, "mainMenu.musicVolumeDown",
-//							KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, KeyEvent.CTRL_DOWN_MASK, false)));
-//			musicMuteItem = createCheckMenuItemAction(Msg.getString("mainMenu.muteMusic"), null,
-//												MUSIC_MUTE, "mainMenu.muteMusic",
-//												KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_DOWN_MASK, false));
-//			settingsMenu.add(musicMuteItem);
-
-	
-//			settingsMenu.add(createMenuItemAction("mainMenu.effectVolumeUp", VOL_UP_ICON,
-//											EFFECT_UP, "mainMenu.effectVolumeUp",
-//											KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, KeyEvent.CTRL_DOWN_MASK, false)));
-//			settingsMenu.add(createMenuItemAction("mainMenu.effectVolumeDown", VOL_DOWN_ICON,
-//											EFFECT_DOWN, "mainMenu.effectVolumeDown",
-//											KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, KeyEvent.CTRL_DOWN_MASK, false)));
-//			soundEffectMuteItem = createCheckMenuItemAction(Msg.getString("mainMenu.muteEffect"), null,
-//												EFFECT_MUTE, "mainMenu.muteEffect",
-//												KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK, false));
-//			settingsMenu.add(soundEffectMuteItem);
 		}
 
 		return settingsMenu;
@@ -432,7 +390,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	}
 
 	/**
-	 * Create a menu items for the Tool window
+	 * Creates a menu items for the Tool window.
+	 * 
 	 * @param name
 	 * @param title
 	 * @param iconName
@@ -454,6 +413,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		return item;
 	}
 
+	/**
+	 * Configures a menu item.
+	 * 
+	 * @param item
+	 * @param iconName
+	 * @param tooltipKey
+	 * @param keyStroke
+	 */
 	private void configureMenuItem(JMenuItem item, String iconName,  String tooltipKey,
 								KeyStroke keyStroke) {
 		if (iconName != null) {
@@ -503,85 +470,15 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 			case EXTERNAL_BROWSER:
 				desktop.getMainWindow().setExternalBrowser(selectedItem.isSelected());
 				break;
-//			case MUSIC_UP: {
-//				double musicVolume = soundPlayer.getMusicVolume();
-//				double newVolume = musicVolume + AudioPlayer.STEP;
-//				if (newVolume <= 1) {
-//					// turn up 
-//					soundPlayer.musicVolumeUp();
-//				}
-//				
-//			} break;
-//			case MUSIC_DOWN: {
-//				double musicVolume = soundPlayer.getMusicVolume();
-//				double newVolume = musicVolume - AudioPlayer.STEP;
-//				if (newVolume >= 0) {
-//					// turn down
-//					soundPlayer.musicVolumeDown();
-//				}
-//			} break;
-//			case EFFECT_UP: {
-//				double soundEffectVolume = soundPlayer.getMusicVolume();		
-//				double newVolume = soundEffectVolume + AudioPlayer.STEP;
-//				if (newVolume <= 1) {
-//					// turn up
-//					soundPlayer.soundVolumeUp();
-//				}
-//			} break;
-//			case EFFECT_DOWN:{
-//				double soundEffectVolume = soundPlayer.getMusicVolume();		
-//				double newVolume = soundEffectVolume - AudioPlayer.STEP;
-//				if (newVolume > 0) {
-//					// turn down
-//					soundPlayer.soundVolumeDown();
-//				}
-//			} break;
-//			case MUSIC_MUTE:
-//				if (AudioPlayer.isMusicMute()) {
-//					musicMuteItem.setSelected(false);
-//				}
-//				else {
-//					musicMuteItem.setSelected(true);
-//				}
-				
-//				if (selectedItem.isSelected()) {
-//					// mute the music
-//					soundPlayer.muteMusic();
-////					musicMuteItem.setSelected(false);
-//					musicMuteItem.revalidate();
-//					musicMuteItem.repaint();
-//				}
-//				else {
-//					// unmute the music
-////					soundPlayer.unmuteMusic();
-//					if (!Simulation.instance().getMasterClock().isPaused()) {
-//						soundPlayer.unmuteMusic();
-//						soundPlayer.resumeMusic();
-//					}
-////					musicMuteItem.setSelected(true);
-//					musicMuteItem.revalidate();
-//					musicMuteItem.repaint();
-//				}
-//				break;
-//			case EFFECT_MUTE:
-//				if (selectedItem.isSelected()) {
-//					// mute the sound effect
-//					soundPlayer.muteSoundEffect();
-////					soundEffectMuteItem.setSelected(false);
-//				} else {
-//					// player unmute the sound effect
-//					if (!Simulation.instance().getMasterClock().isPaused()) {
-//						soundPlayer.unmuteSoundEffect();
-//					}
-////					soundEffectMuteItem.setSelected(true);
-//				}
-//				break;
 			case ABOUT:
 				newGuideURL = Msg.getString("doc.about"); //$NON-NLS-1$
 				openAboutDialog();		
 				break;
-			case NEW:
-				newGuideURL = Msg.getString("doc.whatsnew"); //$NON-NLS-1$
+			case CHANGELOG:
+				newGuideURL = Msg.getString("doc.versionHistory"); //$NON-NLS-1$
+				break;
+			case VERSION:
+				checkVersion();		
 				break;
 			case OPEN_GUIDE:
 				newGuideURL = Msg.getString("doc.guide"); //$NON-NLS-1$
@@ -603,6 +500,20 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		}
 	}
 
+    /**
+     * Opens the about dialog box.
+     */
+    public void openAboutDialog() {
+    	JOptionPane.showMessageDialog(mainWindow, MarsTerminal.ABOUT_MSG, MarsTerminal.MARS_SIM, JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    /**
+     * Opens browser to check latest version.
+     */
+    public void checkVersion() {
+    	SwingHelper.openBrowser(VERSION_URL);
+    }
+    
 	/** 
 	 * MenuListener method overriding. 
 	 */
@@ -619,11 +530,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		showUnitBarItem.setSelected(mainWindow.getUnitToolBar().isVisible());
 		showToolBarItem.setSelected(mainWindow.getToolToolBar().isVisible());
 		useExternalBrowser.setSelected(mainWindow.useExternalBrowser());
-
-//		if (soundPlayer != null) { 
-//			musicMuteItem.setSelected(AudioPlayer.isMusicMute());
-//			soundEffectMuteItem.setSelected(AudioPlayer.isEffectMute());
-//		}
 	}
 
 	@Override

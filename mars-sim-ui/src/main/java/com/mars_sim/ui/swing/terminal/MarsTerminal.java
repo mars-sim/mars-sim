@@ -40,7 +40,6 @@ import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.MainWindow;
 
-@SuppressWarnings("serial")
 public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	
     private static final Logger logger = Logger.getLogger(MarsTerminal.class.getName());
@@ -48,7 +47,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	/** Icon image filename for frame */
     public static final String MARS_SIM = "Mars Simulation Project";
     public static final String ABOUT_MSG =
-			"     " + "     Version " + SimulationRuntime.VERSION.getVersionTag() + "\n"
+			"     Version " + SimulationRuntime.VERSION.getVersionTag() + "\n"
 			+ "     " + SimulationRuntime.VERSION.getBuildString();
 		
 	private static final int DEFAULT_WIDTH = 1024;
