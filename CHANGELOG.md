@@ -6,7 +6,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 
 ------------------------------------------|---------------------
 
-## Version 3.10.0 (22 Oct 2025)
+## Version 3.10.0 (25 Oct 2025)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 <OL>
@@ -29,7 +29,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 	<li>Add Alpha Base template variants'.</li>
 	<li>Optimize getting a set of buildings.</li>
 	<li>Moderate food resource and food production.</li>
-	<li>Lower structural heat loss due to promixity of adjacent building.</li>
+	<li>Lower structural heat loss due to proximity of adjacent building.</li>
 	<li>Add bunk beds in some buildings for accommodating more settlers.</li>
 	<li>Add Parameter Categories for customizing preferences in each settlement. </li>
 	<li>Add Brine Water Well building to lessen the need for digging local ice and ice collection mission.</li>	
@@ -41,9 +41,9 @@ GitHub: https://github.com/mars-sim/mars-sim
 	<li>Rework various settlement templates and experiment with new building placements.</li>	
 	<li>Create and rework coordinate format to be non-locale based in support of internationalization.</li>	
 	<li>Add more German and UK person, settlement and vehicle names.</li>
-	<li>Add Agenzia Spaziale Italiana, German Sapce Agency (DLR) and UK Space Agency (UKSA).</li>	
+	<li>Add Agenzia Spaziale Italiana, German Space Agency (DLR) and UK Space Agency (UKSA).</li>	
 	<li>Add part fatigues to vehicles, robots and buildings and they may be lowered by inspection and maintenance.</li>
-	<li>Limit resource demand with a ceiling imposed by the sume of projected, trade and repair demand.</li>		
+	<li>Limit resource demand with a ceiling imposed by the sum of projected, trade and repair demand.</li>		
 	<li>Rebalance resources demand and supply chain.</li>
 	<li>Add new bio-based and chemical-based resource processes.</li>
 	<li>Allow hallways to have sufficient heat capacity by generating heat per square meter of area.</li>	
