@@ -25,11 +25,13 @@ public final class Version {
 	private static final String VERSION_PROPERTY = "git.build.version";
 	private static final String DIRTY_PROPERTY = "git.dirty";
 	private static final String BUILD_PROPERTY = "git.commit.id.abbrev";
+	private static final String DATE_PROPERTY = "git.build.time";
+
 
 	private String build;
 	private String versionTag;
 	private boolean isDirty;
-
+	private String buildTime;
 	
 	
 	/**
@@ -46,15 +48,27 @@ public final class Version {
 		var build = props.getProperty(BUILD_PROPERTY, NOT_SPECIFIED);
 		var isDirty = props.getProperty(DIRTY_PROPERTY, "false").equalsIgnoreCase("true");
 		var versionTag = props.getProperty(VERSION_PROPERTY, NOT_SPECIFIED);
-		
-		return new Version(versionTag, build, isDirty);
+		var buildDate = props.getProperty(DATE_PROPERTY, NOT_SPECIFIED);
+
+		return new Version(versionTag, build, isDirty, buildDate);
+	}
+
+	/**
+	 * Default constructor for unknown version.
+	 */
+	public Version() {
+		this.versionTag = NOT_SPECIFIED;
+		this.build = NOT_SPECIFIED;
+		this.isDirty = false;
+		this.buildTime = NOT_SPECIFIED;
 	}
 
 	// Private constructor to stop instantiation.
-	public Version(String versionTag, String build, boolean isDirty) {
+	public Version(String versionTag, String build, boolean isDirty, String buildDate) {
 		this.versionTag = versionTag;
 		this.build = build;
 		this.isDirty = isDirty;
+		this.buildTime = buildDate;
 	}
 
 	/**
@@ -86,6 +100,14 @@ public final class Version {
 	}
 
 	/**
+	 * Gets the build time string.
+	 * @return
+	 */
+	public String getBuildTime() {
+		return buildTime;
+	}
+
+	/**
 	 * Stores the version details to an external output source.
 	 * 
 	 * @param sink Destination of version
@@ -98,6 +120,7 @@ public final class Version {
 		props.setProperty(BUILD_PROPERTY, build);
 		props.setProperty(DIRTY_PROPERTY, Boolean.toString(isDirty));
 		props.setProperty(VERSION_PROPERTY, versionTag);
+		props.setProperty(DATE_PROPERTY, buildTime);
 
 		props.store(sink, "Version properties");
 	}
@@ -110,8 +133,8 @@ public final class Version {
 		return versionTag + " - Build " + build + (isDirty ? "-dirty" : "");
 	}
 
-	public String getBuildString() {
-		return "Build " + build + (isDirty ? "-dirty" : "");
+	public String getBuildDescription() {
+		return build + (isDirty ? "-dirty" : "");
 	}
 	
 	@Override

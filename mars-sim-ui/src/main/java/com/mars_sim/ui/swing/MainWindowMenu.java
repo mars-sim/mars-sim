@@ -28,8 +28,8 @@ import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -40,7 +40,6 @@ import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeWindow;
-import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The MainWindowMenu class is the menu for the main window.
@@ -64,8 +63,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	private static final String EXTERNAL_BROWSER = "browser";
 	private static final String LOOK_AND_FEEL_ICON = "action/theme";
 	private static final String BROWSER_ICON = "action/browser";
-	
-	private static final String VERSION_URL = Msg.getString("version.url"); //$NON-NLS-1$
 
 	// Data members
 	/** The main window frame. */
@@ -472,7 +469,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				break;
 			case ABOUT:
 				newGuideURL = Msg.getString("doc.about"); //$NON-NLS-1$
-				openAboutDialog();		
 				break;
 			case CHANGELOG:
 				newGuideURL = Msg.getString("doc.versionHistory"); //$NON-NLS-1$
@@ -501,17 +497,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	}
 
     /**
-     * Opens the about dialog box.
-     */
-    public void openAboutDialog() {
-    	JOptionPane.showMessageDialog(mainWindow, MarsTerminal.ABOUT_MSG, MarsTerminal.MARS_SIM, JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-    /**
      * Opens browser to check latest version.
      */
-    public void checkVersion() {
-    	SwingHelper.openBrowser(VERSION_URL);
+    private void checkVersion() {
+		var message = 
+			"Version: " + SimulationRuntime.VERSION.getVersionTag() + "\n"
+			+ "Base: " + SimulationRuntime.VERSION.getBuild() + "\n"
+			+ "Built On: " + SimulationRuntime.VERSION.getBuildTime();
+    	JOptionPane.showMessageDialog(mainWindow, message, SimulationRuntime.SHORT_TITLE, JOptionPane.INFORMATION_MESSAGE);
     }
     
 	/** 
