@@ -106,12 +106,6 @@ public class SystemCondition implements Serializable {
     	    		battery.requestEnergy(standbyPower, 
     	    				time * MarsTime.HOURS_PER_MILLISOL);	
     			}
-	
-    	    	int remainder = msol % 10;
-    			if (remainder == 1) {	
-    				battery.degradeHealth();
-    				battery.updateNumCycles();
-    			}
     		}
 		}
     	
