@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class VersionTest {
     @Test
     void testSaveAndReload() throws IOException {
-        Version orig = new Version("A", "B", true);
+        Version orig = new Version("A", "B", true, "date");
         byte[] content;
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             orig.store(output);

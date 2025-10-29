@@ -144,6 +144,7 @@
                       <includeOnlyProperty>^git.build.version$</includeOnlyProperty>
                       <includeOnlyProperty>^git.branch$</includeOnlyProperty>
                       <includeOnlyProperty>^git.dirty$</includeOnlyProperty>
+					  <includeOnlyProperty>^git.build.time$</includeOnlyProperty>
                     </includeOnlyProperties>
 			    </configuration>
 			</plugin>

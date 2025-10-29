@@ -209,11 +209,6 @@ public class MasterClock implements Serializable {
 		// Create a dedicated thread for the Clock
 		clockThreadTask = new ClockThreadTask();
 		
-		logger.info("LOW_SPEED_RATIO: " + LOW_SPEED_RATIO);
-		logger.info("MID_SPEED_RATIO: " + MID_SPEED_RATIO);
-		logger.info("HIGH_SPEED_RATIO: " + HIGH_SPEED_RATIO);
-		logger.info("SUPER_HIGH_SPEED_RATIO: " + SUPER_HIGH_SPEED_RATIO);
-		
 		if (userTimeRatio > 0) {
 			int tr = 1;
 			while (tr < userTimeRatio) {
