@@ -99,11 +99,11 @@ public class SystemCondition implements Serializable {
  
     	        // Consume a minute amount of energy even if a robot does not perform any tasks
     	    	if (onPowerSave && battery.getkWhStored() > 0) {
-    	    		battery.requestEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
+    	    		battery.consumeEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
     	    				time * MarsTime.HOURS_PER_MILLISOL);
     	    	}
     	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask() && battery.getkWhStored() > 0) {
-    	    		battery.requestEnergy(standbyPower, 
+    	    		battery.consumeEnergy(standbyPower, 
     	    				time * MarsTime.HOURS_PER_MILLISOL);	
     			}
     		}

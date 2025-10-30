@@ -15,6 +15,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -89,6 +90,16 @@ public class Battery implements Serializable {
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .1; // [in %]
 	 
+	public static final double UPPER_LIMIT_TEMPERATURE = 80;
+	
+	public static final double INITIAL_TEMPERATURE = 22;
+	
+	public static final double HEAT_TRANSFER_COEFF_HEATING = 6;
+	
+	public static final double HEAT_TRANSFER_COEFF_COOLING = 12;
+	
+	public static final double SURFACE_AREA_HEAT_DISSIPATION = 20;
+	
     // Data members
     /** Is the unit at low power mode ? */  
     private boolean isLowPower;
@@ -101,8 +112,6 @@ public class Battery implements Serializable {
     
     /** The number of battery module. */
     public int numModules;
-	/** The last number of cycles of charging and discharge the battery. */
-	private int lastNumChargeCycles;
 	
 	private int cableSizeFactor;
 	
@@ -175,6 +184,8 @@ public class Battery implements Serializable {
 	/** The health of the battery. */
 	private double health = 1D; 
 	
+	private double internalTemperature = INITIAL_TEMPERATURE;
+			
 	private Unit unit;
 	
     /**
@@ -357,9 +368,56 @@ public class Battery implements Serializable {
 	    	diagnoseBattery();
 		}
 
+    	internalTemperature -= time;
+    	
+    	if (internalTemperature > UPPER_LIMIT_TEMPERATURE) {
+			internalTemperature = UPPER_LIMIT_TEMPERATURE;
+		}
+    	
+		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE) {
+    		double deltaTemperature = applyForcedAirCooling(time 
+    				* MathUtils.between(internalTemperature, INITIAL_TEMPERATURE, UPPER_LIMIT_TEMPERATURE) / UPPER_LIMIT_TEMPERATURE);
+			internalTemperature -= deltaTemperature;
+    	}
+    	
+    	else if (internalTemperature < INITIAL_TEMPERATURE) {
+    		internalTemperature = INITIAL_TEMPERATURE;
+    	}
+    	
         return operable;
     }
 
+    /**
+     * Computes the rise of temperature due to current.
+     * 
+     * @param amp
+     * @return
+     */
+    private double computeDeltaTemperature(double amp) {
+    	double heatInternal = amp * amp * rTotal + amp * 0.0001;
+    	return heatInternal / HEAT_TRANSFER_COEFF_HEATING / SURFACE_AREA_HEAT_DISSIPATION;
+    	// May add back for debugging: logger.severe("heatInternal=" + heatInternal + "  deltaT=" + deltaT); return deltaT
+    }
+    
+    /**
+     * Turns on active cooling.
+     * 
+     * @param timeFactor
+     * @return
+     */
+    private double applyForcedAirCooling(double timeFactor) {
+    	double amp = timeFactor * 5;
+    	double powerFlow = amp * amp * rTotal;
+    	double cop = 3;
+    	double powerAir = powerFlow * 0.5;
+    	double powerAct = powerAir * cop;
+    	double deltaTemperature = (powerAct - powerFlow) * HEAT_TRANSFER_COEFF_COOLING * SURFACE_AREA_HEAT_DISSIPATION;
+    	// May add back for debugging: logger.severe(0, "delta power=" + (powerAct - powerFlow) + "  deltaTemperature=" + deltaTemperature)
+    	// It will consume energy to cool the battery
+    	kWhStored -= powerAir;
+    	return deltaTemperature;
+    }
+    
     /**
      * Updates the Amp Hour stored capacity [in Ah].
      */
@@ -388,13 +446,13 @@ public class Battery implements Serializable {
 
     
     /**
-     * Requests energy from the battery. This will discharge the battery.
+     * Consumes energy from the battery. This will discharge the battery.
      * 
      * @param consumekWh amount of energy to consume [in kWh]
      * @param time in hrs
      * @return energy to be delivered [in kWh]
      */
-    public double requestEnergy(double consumekWh, double time) {
+    public double consumeEnergy(double consumekWh, double time) {
     	
 		double available = estimateEnergyToDeliver(consumekWh, time);
 		// May add back for debugging : logger.info(unit, "kWh: " + Math.round(kWhStored * 100.0/100.0) + "  available: " + Math.round(available * 10000.0/10000.0) + "  consume: " + Math.round(consumekWh * 10000.0/1000.0))
@@ -403,6 +461,8 @@ public class Battery implements Serializable {
 		
     	kWhStored -= available;
     	
+    	internalTemperature += computeDeltaTemperature(1000 * available / HIGHEST_MAX_VOLTAGE / time / MarsTime.HOURS_PER_MILLISOL);
+    	  	
     	if ((previouskWhStored - kWhStored) / previouskWhStored / time > .1) {
     	    // If drawing too much energy at a time, it hurts the battery and degrade health
     	    degradeHealth();
@@ -485,6 +545,8 @@ public class Battery implements Serializable {
 		
     	kWhStored += kWhAccepted;
 
+    	internalTemperature += computeDeltaTemperature(1000 * kWhAccepted / HIGHEST_MAX_VOLTAGE / hours);
+    	
         updateAmpHourStored();
 
         updateLowPowerMode();
@@ -596,6 +658,15 @@ public class Battery implements Serializable {
     	return kWhStored / energyStorageCapacity * 100;
     }
 
+    /**
+     * Gets the internal temperature.
+     * 
+     * @return
+     */
+    public double getInternalTemperature() {
+    	return internalTemperature;    
+    }
+    
     /**
 	 * Gets the current max storage capacity of the battery.
 	 * 

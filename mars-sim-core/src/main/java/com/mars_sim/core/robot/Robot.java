@@ -583,7 +583,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
      * @param time the duration of time in hrs
 	 */
     public void consumeEnergy(double amount, double time) {
-        condition.getBattery().requestEnergy(amount, time);
+        condition.getBattery().consumeEnergy(amount, time);
     }
 
 	/**

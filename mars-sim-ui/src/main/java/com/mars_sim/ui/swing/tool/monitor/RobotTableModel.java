@@ -54,7 +54,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final int MODE = SETTLEMENT+1;
 	private static final int HEALTH = MODE+1;
 	private static final int BATTERY = HEALTH+1;
-	private static final int PERFORMANCE = BATTERY+1;
+	private static final int BATTERY_TEMPERATURE = BATTERY+1;
+	private static final int PERFORMANCE = BATTERY_TEMPERATURE+1;
 	private static final int TASK = PERFORMANCE+1;
 	private static final int MISSION_COL = TASK+1;
 
@@ -96,7 +97,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("RobotTableModel.column.settlement"), String.class);
 		COLUMNS[MODE] = new ColumnSpec(Msg.getString("RobotTableModel.column.mode"), String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("RobotTableModel.column.health"), String.class);
-		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery"), String.class);
+		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.percent"), String.class);
+		COLUMNS[BATTERY_TEMPERATURE] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.temperature"), Double.class);
 		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("RobotTableModel.column.performance"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("RobotTableModel.column.location"), String.class);
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("RobotTableModel.column.mission"), String.class);
@@ -292,6 +294,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				result = getBatteryStatus(robot.getSystemCondition().getBattery().getBatteryPercent());
 				break;
 		
+			case BATTERY_TEMPERATURE:
+				result = Math.round(robot.getSystemCondition().getBattery().getInternalTemperature() * 10.0) / 10.0;
+				break;
+				
 			case HEALTH: 
 				if (!robot.isOperable())
 					result = INOPERABLE;
