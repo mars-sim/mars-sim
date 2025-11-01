@@ -5,7 +5,7 @@ import com.mars_sim.core.AbstractMarsSimUnitTest;
 public class MineralMapConfigTest extends AbstractMarsSimUnitTest {
 
     public void testGetMineralTypes() {
-        var config = simConfig.getMineralMapConfiguration();
+        var config = getConfig().getMineralMapConfiguration();
         var minerals = config.getMineralTypes();
 
         assertTrue("Minerals loaded", !minerals.isEmpty());

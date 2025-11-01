@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.BeforeEach;
 
+import com.mars_sim.core.MarsSimContext;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -38,7 +40,11 @@ public abstract class MarsSimUnitTest {
         return context.getConfig();
     }
 
-    protected MarsSimContextImpl getContext() {
+    protected Simulation getSim() {
+        return context.getSim();
+    }
+    
+    protected MarsSimContext getContext() {
         return context;
     }
 

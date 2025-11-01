@@ -10,7 +10,7 @@ import com.mars_sim.core.map.location.Direction;
 public class MineralMapTest extends AbstractMarsSimUnitTest {
 
     public void testExactLocation() throws CoordinatesException {
-        var config = simConfig.getMineralMapConfiguration();
+        var config = getConfig().getMineralMapConfiguration();
         var minerals = config.getMineralTypes();
         var type1 = minerals.get(0);
         var type2 = minerals.get(1);
@@ -32,7 +32,7 @@ public class MineralMapTest extends AbstractMarsSimUnitTest {
     }
 
     public void testTwoLocation() throws CoordinatesException {
-        var config = simConfig.getMineralMapConfiguration();
+        var config = getConfig().getMineralMapConfiguration();
         var minerals = config.getMineralTypes();
         var type1 = minerals.get(0);
         var type2 = minerals.get(1);

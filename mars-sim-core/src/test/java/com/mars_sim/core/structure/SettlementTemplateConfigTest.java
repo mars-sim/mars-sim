@@ -6,7 +6,7 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 
 public class SettlementTemplateConfigTest extends AbstractMarsSimUnitTest {
     public void testGetAll() {
-        var st = simConfig.getSettlementTemplateConfiguration();
+        var st = getConfig().getSettlementTemplateConfiguration();
 
         var known = st.getKnownItems();
         assertFalse("Settlement templates defined", known.isEmpty());
@@ -16,7 +16,7 @@ public class SettlementTemplateConfigTest extends AbstractMarsSimUnitTest {
     }
 
     public void testHubBase() {
-        var st = simConfig.getSettlementTemplateConfiguration();
+        var st = getConfig().getSettlementTemplateConfiguration();
 
         var hubBase = st.getItem("Hub Base");
         assertNotNull("Hub Base template found", hubBase);

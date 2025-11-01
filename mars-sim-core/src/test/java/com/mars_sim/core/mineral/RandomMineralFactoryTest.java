@@ -8,7 +8,7 @@ import com.mars_sim.core.map.location.CoordinatesFormat;
 
 public class RandomMineralFactoryTest extends AbstractMarsSimUnitTest {
     public void testCreateLocalConcentration() throws CoordinatesException {
-        var newMap = new MineralMap(simConfig.getMineralMapConfiguration());
+        var newMap = new MineralMap(getConfig().getMineralMapConfiguration());
 
         var center = CoordinatesFormat.fromString("30.0 -25.0");
         RandomMineralFactory.createLocalConcentration(newMap, center);

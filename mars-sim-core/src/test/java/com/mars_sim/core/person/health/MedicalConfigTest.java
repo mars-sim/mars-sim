@@ -7,7 +7,7 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 public class MedicalConfigTest extends AbstractMarsSimUnitTest{
     public void testMinorOperationTreatment() {
         // Minor op needed tech level 2
-        var c = simConfig.getMedicalConfiguration().getTreatmentsByLevel(2);
+        var c = getConfig().getMedicalConfiguration().getTreatmentsByLevel(2);
         assertTrue("Treatment list is not empty", !c.isEmpty());
 
         var matched = c.stream()
@@ -23,7 +23,7 @@ public class MedicalConfigTest extends AbstractMarsSimUnitTest{
     }
 
     public void testDressingTreatment() {
-        var c = simConfig.getMedicalConfiguration().getTreatmentsByLevel(1);
+        var c = getConfig().getMedicalConfiguration().getTreatmentsByLevel(1);
         assertTrue("Treatment list is not empty", !c.isEmpty());
 
         var matched = c.stream()
@@ -39,7 +39,7 @@ public class MedicalConfigTest extends AbstractMarsSimUnitTest{
     }
 
     public void testTreatmentByLevel() {
-        var medConfig = simConfig.getMedicalConfiguration();
+        var medConfig = getConfig().getMedicalConfiguration();
 
         // Check level contents is in the previous level
         var previous = medConfig.getTreatmentsByLevel(1);
@@ -59,10 +59,10 @@ public class MedicalConfigTest extends AbstractMarsSimUnitTest{
 
     
     public void testDehydrationComplaint() {
-        var c = simConfig.getMedicalConfiguration().getComplaintList();
+        var c = getConfig().getMedicalConfiguration().getComplaintList();
         assertTrue("Complaint list is not empty", !c.isEmpty());
 
-        var found = simConfig.getMedicalConfiguration().getComplaintByName(ComplaintType.DEHYDRATION);
+        var found = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.DEHYDRATION);
         assertNotNull("Found dehydration complaint", found);
 
         assertTrue("Is environmental", found.isEnvironmental());
@@ -79,10 +79,10 @@ public class MedicalConfigTest extends AbstractMarsSimUnitTest{
     }
 
     public void testAppendicitisComplaint() {
-        var c = simConfig.getMedicalConfiguration().getComplaintList();
+        var c = getConfig().getMedicalConfiguration().getComplaintList();
         assertTrue("Complaint list is not empty", !c.isEmpty());
 
-        var found = simConfig.getMedicalConfiguration().getComplaintByName(ComplaintType.APPENDICITIS);
+        var found = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.APPENDICITIS);
         assertNotNull("Found appendictics complaint", found);
 
         assertFalse("Is environmental", found.isEnvironmental());
@@ -100,10 +100,10 @@ public class MedicalConfigTest extends AbstractMarsSimUnitTest{
 
 		
     public void testBurnsComplaint() {
-        var c = simConfig.getMedicalConfiguration().getComplaintList();
+        var c = getConfig().getMedicalConfiguration().getComplaintList();
         assertTrue("Complaint list is not empty", !c.isEmpty());
 
-        var found = simConfig.getMedicalConfiguration().getComplaintByName(ComplaintType.BURNS);
+        var found = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.BURNS);
         assertNotNull("Found burns complaint", found);
 
         assertFalse("Is environmental", found.isEnvironmental());

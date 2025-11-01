@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -20,7 +21,6 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.process.ProcessInfoTest;
-import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;

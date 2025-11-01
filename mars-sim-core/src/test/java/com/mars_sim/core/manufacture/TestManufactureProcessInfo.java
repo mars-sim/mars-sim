@@ -23,7 +23,7 @@ public class TestManufactureProcessInfo extends AbstractMarsSimUnitTest {
     public void setUp() {
 		super.setUp();
 		
-		ManufactureConfig config = simConfig.getManufactureConfiguration();
+		ManufactureConfig config = getConfig().getManufactureConfiguration();
 
 		 for (ManufactureProcessInfo info : config.getManufactureProcessList()) {
 	        if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {

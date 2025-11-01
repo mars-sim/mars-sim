@@ -23,7 +23,7 @@ public class AssignmentHistoryTest extends AbstractMarsSimUnitTest {
         Settlement home = buildSettlement();
         Person p = buildPerson("Job", home);
 
-        MasterClock clock = sim.getMasterClock();
+        MasterClock clock = getSim().getMasterClock();
         MarsTime base = clock.getMarsTime();
 
         int j = 1;
@@ -67,7 +67,7 @@ public class AssignmentHistoryTest extends AbstractMarsSimUnitTest {
         Settlement home = buildSettlement();
         Person p = buildPerson("Job", home);
 
-        MasterClock master = sim.getMasterClock();
+        MasterClock master = getSim().getMasterClock();
         master.setMarsTime(master.getMarsTime().addTime(10));
 
         AssignmentHistory jh = p.getJobHistory();  

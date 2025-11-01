@@ -17,7 +17,7 @@ public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
                             FunctionType.FARMING, LocalPosition.DEFAULT_POSITION, 0D, true);
     
     
-		var spec = simConfig.getBuildingConfiguration().getFunctionSpec(GREENHOUSE, FunctionType.RESEARCH);
+		var spec = getConfig().getBuildingConfiguration().getFunctionSpec(GREENHOUSE, FunctionType.RESEARCH);
 
 	    building.addFunction(spec);
 		s.getBuildingManager().refreshFunctionMapForBuilding(building);

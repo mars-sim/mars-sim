@@ -7,7 +7,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 public class VehicleConfigTest extends AbstractMarsSimUnitTest {
     public void testGetVehicleSpec() {
-        var vConfig = simConfig.getVehicleConfiguration();
+        var vConfig = getConfig().getVehicleConfiguration();
 
         var found = vConfig.getVehicleSpec("Explorer Rover");
         
@@ -39,7 +39,7 @@ public class VehicleConfigTest extends AbstractMarsSimUnitTest {
     }
 
     public void testGetVehicleSpecs() {
-        var vConfig = simConfig.getVehicleConfiguration();
+        var vConfig = getConfig().getVehicleConfiguration();
 
         var all = vConfig.getVehicleSpecs();
         assertTrue("Has vehicle specs", VehicleType.values().length <= all.size());

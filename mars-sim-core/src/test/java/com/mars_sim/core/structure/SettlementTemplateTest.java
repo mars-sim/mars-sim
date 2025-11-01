@@ -9,14 +9,14 @@ public class SettlementTemplateTest extends AbstractMarsSimUnitTest {
     private static final String MANIFEST = "Standard Resupply 1";
 
     public void testSettlementTemplates() {
-        var config = simConfig.getSettlementTemplateConfiguration();
+        var config = getConfig().getSettlementTemplateConfiguration();
 
         assertTrue("Settlement templates defined", !config.getItemNames().isEmpty());
         assertNotNull("Settlement template " + ALPHA_BASE_1, config.getItem(ALPHA_BASE_1));
     }
 
     public void testResupply() {
-        var template =  simConfig.getSettlementTemplateConfiguration().getItem(ALPHA_BASE_1);
+        var template =  getConfig().getSettlementTemplateConfiguration().getItem(ALPHA_BASE_1);
 
         var resupplies = template.getResupplyMissionTemplates();
         assertFalse("Settlement has resupplies", resupplies.isEmpty());

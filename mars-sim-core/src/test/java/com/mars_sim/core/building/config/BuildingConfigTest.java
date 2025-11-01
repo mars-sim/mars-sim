@@ -34,7 +34,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 	}
 
     public void testLanderHabFunctions() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
         assertNotNull("Building spec " + LANDER_HAB, spec);
@@ -44,7 +44,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
     }
 
     public void testLanderHabActivitySpots() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
 
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
@@ -98,7 +98,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      * This test is very tied to the building spec of LANDER_HAB
      */
     public void testLanderHabNamedSpots() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
 
@@ -117,7 +117,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      * This test is very tied to the building spec of LANDER_HAB
      */
     public void testGreenhouseScope() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         BuildingSpec spec = bc.getBuildingSpec(INFLATABLE_GREENHOUSE);
 
@@ -134,7 +134,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      * This test is very tied to the building spec of the inflatable greenhouse
      */
     public void testInflatableGreenhouse() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         var found = bc.getBuildingSpec(INFLATABLE_GREENHOUSE);
         
@@ -170,7 +170,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testGarage() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Garage");
         
@@ -200,7 +200,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testResearchFunction() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         var found = (ResearchSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.RESEARCH);
         
@@ -220,7 +220,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testThermalFunction() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         var found = (GenerationSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.THERMAL_GENERATION);
         
@@ -245,7 +245,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testMedicalFunction() {
-        var bc = simConfig.getBuildingConfiguration();
+        var bc = getConfig().getBuildingConfiguration();
 
         var found = (MedicalCareSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.MEDICAL_CARE);
         
@@ -264,7 +264,8 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
      */
     @SuppressWarnings("unchecked")
 	public void testWorkshop() {
-        var bc = simConfig.getBuildingConfiguration();
+        var sc = getConfig();
+        var bc = sc.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Workshop");
         
@@ -289,7 +290,7 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         Map<Tooling, Integer> tools = (Map<Tooling, Integer>) manufacture.getProperty("tooling");
         assertTrue("Multiple tools", tools.size() > 1); // 3D printers, furnace, and lifting
 
-        var furnace = simConfig.getManufactureConfiguration().getTooling("furnace");
+        var furnace = sc.getManufactureConfiguration().getTooling("furnace");
         assertEquals("Furnaces", 1, tools.get(furnace).intValue());
     }
 }

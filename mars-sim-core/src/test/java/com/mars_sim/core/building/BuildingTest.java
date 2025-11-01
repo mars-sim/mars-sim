@@ -10,7 +10,7 @@ public class BuildingTest extends AbstractMarsSimUnitTest{
     private static final String LANDER_HAB = "Lander Hab";
 
     public void testCreateLanderHab() {
-        var habSpec = simConfig.getBuildingConfiguration().getBuildingSpec(LANDER_HAB);
+        var habSpec = getConfig().getBuildingConfiguration().getBuildingSpec(LANDER_HAB);
 
         Settlement s = buildSettlement();
         BoundedObject bounds = new BoundedObject(LocalPosition.DEFAULT_POSITION, -1, -1, 90D);

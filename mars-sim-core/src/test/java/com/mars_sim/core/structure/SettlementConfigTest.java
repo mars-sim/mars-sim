@@ -13,13 +13,13 @@ public class SettlementConfigTest extends AbstractMarsSimUnitTest {
     private static final Object MIGHT_PARTY = "Night Sky Party";
 
     public void testGetEssentialResources() {
-        var config = simConfig.getSettlementConfiguration();
+        var config = getConfig().getSettlementConfiguration();
 
         assertTrue("Config has essential resources", !config.getEssentialResources().isEmpty());
     }
 
     public void testDefaultShiftPattern() {
-        var config = simConfig.getSettlementConfiguration();
+        var config = getConfig().getSettlementConfiguration();
 
         // Check standard shifts
         testShiftSize(config, STANDARD_2_SHIFT, 2);
@@ -34,7 +34,7 @@ public class SettlementConfigTest extends AbstractMarsSimUnitTest {
     }
 
     public void testShiftByPopulation() {
-        var config = simConfig.getSettlementConfiguration();
+        var config = getConfig().getSettlementConfiguration();
     
         var large = config.getShiftByPopulation(30);
         assertTrue("Large shift has smaller min pop", 30 > large.getMinPopulation());
@@ -48,7 +48,7 @@ public class SettlementConfigTest extends AbstractMarsSimUnitTest {
     }
 
     public void testGetActivityByPopulation() {
-        var config = simConfig.getSettlementConfiguration();
+        var config = getConfig().getSettlementConfiguration();
 
         var small = config.getActivityByPopulation(8);
         assertTrue("Large ruleset has medium min pop", 8 > small.minPop());
