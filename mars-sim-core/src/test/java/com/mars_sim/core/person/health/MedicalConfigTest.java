@@ -1,130 +1,146 @@
 package com.mars_sim.core.person.health;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 
-public class MedicalConfigTest extends AbstractMarsSimUnitTest{
-    public void testMinorOperationTreatment() {
+class MedicalConfigTest {
+
+    private MedicalConfig medConfig;
+
+    @BeforeEach
+    void setUp() {
+        var config = SimulationConfig.loadConfig();
+        medConfig = config.getMedicalConfiguration();
+    }
+    
+    @Test
+    void testMinorOperationTreatment() {
         // Minor op needed tech level 2
-        var c = getConfig().getMedicalConfiguration().getTreatmentsByLevel(2);
-        assertTrue("Treatment list is not empty", !c.isEmpty());
+        var c = medConfig.getTreatmentsByLevel(2);
+        assertTrue(!c.isEmpty(), "Treatment list is not empty");
 
         var matched = c.stream()
                     .filter(cp -> cp.getName().equals("Minor Operation"))
                     .toList();
-        assertEquals("Found treatment", 1, matched.size());
+        assertEquals(1, matched.size(), "Found treatment");
         var found = matched.get(0);
 
-        assertFalse("Self admin", found.getSelfAdminister());
-        assertEquals("Skill level", 3, found.getSkill());
-        assertEquals("Facility level", 2, found.getFacilityLevel());
-        assertEquals("Treatment time", 200D, found.getDuration());
+        assertFalse(found.getSelfAdminister(), "Self admin");
+        assertEquals(3, found.getSkill(), "Skill level");
+        assertEquals(2, found.getFacilityLevel(), "Facility level");
+        assertEquals(200D, found.getDuration(), "Treatment time");
     }
 
-    public void testDressingTreatment() {
-        var c = getConfig().getMedicalConfiguration().getTreatmentsByLevel(1);
-        assertTrue("Treatment list is not empty", !c.isEmpty());
+    @Test
+    void testDressingTreatment() {
+        var c = medConfig.getTreatmentsByLevel(1);
+        assertTrue(!c.isEmpty(), "Treatment list is not empty");
 
         var matched = c.stream()
                     .filter(cp -> cp.getName().equals("Dressing"))
                     .toList();
-        assertEquals("Found treatment", 1, matched.size());
+        assertEquals(1, matched.size(), "Found treatment");
         var found = matched.get(0);
 
-        assertTrue("Self admin", found.getSelfAdminister());
-        assertEquals("Skill level", 0, found.getSkill());
-        assertEquals("Facility level", 1, found.getFacilityLevel());
-        assertEquals("Treatment time", 50D, found.getDuration());
+        assertTrue(found.getSelfAdminister(), "Self admin");
+        assertEquals(0, found.getSkill(), "Skill level");
+        assertEquals(1, found.getFacilityLevel(), "Facility level");
+        assertEquals(50D, found.getDuration(), "Treatment time");
     }
 
-    public void testTreatmentByLevel() {
-        var medConfig = getConfig().getMedicalConfiguration();
-
+    @Test
+    void testTreatmentByLevel() {
         // Check level contents is in the previous level
         var previous = medConfig.getTreatmentsByLevel(1);
-        assertTrue("Treatment level #1 is not empty", !previous.isEmpty());
+        assertTrue(!previous.isEmpty(), "Treatment level #1 is not empty");
 
         // Check that tech level upto 10 returns what is expected
         for(int i = 2; i <= 10; i++) {
             var n = medConfig.getTreatmentsByLevel(i);
-            assertTrue("Level #" + i + " has treatments", !n.isEmpty());
+            assertTrue(!n.isEmpty(), "Level #" + i + " has treatments");
 
             // Level N can do all treatments already in N-1
-            assertTrue("Level #" + i + " treatments are in previous level", n.containsAll(previous));
+            assertTrue(n.containsAll(previous), "Level #" + i + " treatments are in previous level");
 
             previous = n;
         }
     }
 
     
-    public void testDehydrationComplaint() {
-        var c = getConfig().getMedicalConfiguration().getComplaintList();
-        assertTrue("Complaint list is not empty", !c.isEmpty());
+    @Test
+    void testDehydrationComplaint() {
+        var c = medConfig.getComplaintList();
+        assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.DEHYDRATION);
-        assertNotNull("Found dehydration complaint", found);
+        var found = medConfig.getComplaintByName(ComplaintType.DEHYDRATION);
+        assertNotNull(found, "Found dehydration complaint");
 
-        assertTrue("Is environmental", found.isEnvironmental());
-        assertTrue("Needs bed rest", found.requiresBedRestRecovery());
-        assertEquals("Probability", 0D, found.getProbability());
-        assertEquals("Seriousness", 20, found.getSeriousness());
-        assertEquals("Degrade period", 3000D, found.getDegradePeriod());
+        assertTrue(found.isEnvironmental(), "Is environmental");
+        assertTrue(found.requiresBedRestRecovery(), "Needs bed rest");
+        assertEquals(0D, found.getProbability(), "Probability");
+        assertEquals(20, found.getSeriousness(), "Seriousness");
+        assertEquals(3000D, found.getDegradePeriod(), "Degrade period");
         assertRecoveryPeriod(found, 1, 1 * MedicalConfig.RECOVERY_SPAN);
-        assertEquals("Performance impact", 0.8D, found.getPerformanceFactor());
-        assertEquals("Effort influence", PhysicalEffort.NONE, found.getEffortInfluence());
+        assertEquals(0.8D, found.getPerformanceFactor(), "Performance impact");
+        assertEquals(PhysicalEffort.NONE, found.getEffortInfluence(), "Effort influence");
 
-        assertNull("Treatment", found.getRecoveryTreatment());
-        assertNull("Next complaint", found.getNextPhase());
+        assertNull(found.getRecoveryTreatment(), "Treatment");
+        assertNull(found.getNextPhase(), "Next complaint");
     }
 
-    public void testAppendicitisComplaint() {
-        var c = getConfig().getMedicalConfiguration().getComplaintList();
-        assertTrue("Complaint list is not empty", !c.isEmpty());
+    @Test
+    void testAppendicitisComplaint() {
+        var c = medConfig.getComplaintList();
+        assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.APPENDICITIS);
-        assertNotNull("Found appendictics complaint", found);
+        var found = medConfig.getComplaintByName(ComplaintType.APPENDICITIS);
+        assertNotNull(found, "Found appendictics complaint");
 
-        assertFalse("Is environmental", found.isEnvironmental());
-        assertTrue("Needs bed rest", found.requiresBedRestRecovery());
-        assertEquals("Probability", 0.5D, found.getProbability());
-        assertEquals("Seriousness", 60, found.getSeriousness());
-        assertEquals("Degrade period", 7000D, found.getDegradePeriod());
+        assertFalse(found.isEnvironmental(), "Is environmental");
+        assertTrue(found.requiresBedRestRecovery(), "Needs bed rest");
+        assertEquals(0.5D, found.getProbability(), "Probability");
+        assertEquals(60, found.getSeriousness(), "Seriousness");
+        assertEquals(7000D, found.getDegradePeriod(), "Degrade period");
         assertRecoveryPeriod(found, 13, 15);
-        assertEquals("Performance impact", 0.5D, found.getPerformanceFactor());
-        assertEquals("Effort influence", PhysicalEffort.NONE, found.getEffortInfluence());
+        assertEquals(0.5D, found.getPerformanceFactor(), "Performance impact");
+        assertEquals(PhysicalEffort.NONE, found.getEffortInfluence(), "Effort influence");
 
-        assertEquals("Treatment", "Minor Operation", found.getRecoveryTreatment().getName());
-        assertEquals("Next complaint", ComplaintType.RUPTURED_APPENDIX, found.getNextPhase().getType());
+        assertEquals("Minor Operation", found.getRecoveryTreatment().getName(), "Treatment");
+        assertEquals(ComplaintType.RUPTURED_APPENDIX, found.getNextPhase().getType(), "Next complaint");
     }
 
 		
-    public void testBurnsComplaint() {
-        var c = getConfig().getMedicalConfiguration().getComplaintList();
-        assertTrue("Complaint list is not empty", !c.isEmpty());
+    @Test
+    void testBurnsComplaint() {
+        var c = medConfig.getComplaintList();
+        assertTrue(!c.isEmpty(), "Complaint list is not empty");
 
-        var found = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.BURNS);
-        assertNotNull("Found burns complaint", found);
+        var found = medConfig.getComplaintByName(ComplaintType.BURNS);
+        assertNotNull(found, "Found burns complaint");
 
-        assertFalse("Is environmental", found.isEnvironmental());
-        assertTrue("Needs bed rest", found.requiresBedRestRecovery());
-        assertEquals("Probability", 1D, found.getProbability());
-        assertEquals("Seriousness", 50, found.getSeriousness());
-        assertEquals("Degrade period", 5000D, found.getDegradePeriod());
+        assertFalse(found.isEnvironmental(), "Is environmental");
+        assertTrue(found.requiresBedRestRecovery(), "Needs bed rest");
+        assertEquals(1D, found.getProbability(), "Probability");
+        assertEquals(50, found.getSeriousness(), "Seriousness");
+        assertEquals(5000D, found.getDegradePeriod(), "Degrade period");
         assertRecoveryPeriod(found, 20, 20 * MedicalConfig.RECOVERY_SPAN);
-        assertEquals("Performance impact", 0.4D, found.getPerformanceFactor());
-        assertEquals("Effort influence", PhysicalEffort.LOW, found.getEffortInfluence());
+        assertEquals(0.4D, found.getPerformanceFactor(), "Performance impact");
+        assertEquals(PhysicalEffort.LOW, found.getEffortInfluence(), "Effort influence");
 
-        assertEquals("Treatment", "Dressing", found.getRecoveryTreatment().getName());
+        assertEquals("Dressing", found.getRecoveryTreatment().getName(), "Treatment");
     }
 
     private void assertRecoveryPeriod(Complaint c, double min, double max) {
         var r = c.getRecoveryRange();
-        assertEquals("Recovery min", min, r.min());
-        assertEquals("Recovery max", max, r.max());
+        assertEquals(min, r.min(), "Recovery min");
+        assertEquals(max, r.max(), "Recovery max");
 
         var value = c.getRecoveryPeriod();
-        assertTrue("Value within range", ((min*1000D <= value)
-                            && (value <= max*1000D)));
+        assertTrue(((min*1000D <= value) && (value <= max*1000D)), "Value within range");
     }
 }

@@ -1,25 +1,36 @@
 package com.mars_sim.core.structure;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 
-public class SettlementConfigTest extends AbstractMarsSimUnitTest {
+class SettlementConfigTest {
 
     private static final String STANDARD_4_SHIFT = "Standard 4 Shift";
 	private static final String STANDARD_3_SHIFT = "Standard 3 Shift";
 	private static final String STANDARD_2_SHIFT = "Standard 2 Shift";
     private static final Object MIGHT_PARTY = "Night Sky Party";
+    private SettlementConfig config;
 
-    public void testGetEssentialResources() {
-        var config = getConfig().getSettlementConfiguration();
-
-        assertTrue("Config has essential resources", !config.getEssentialResources().isEmpty());
+    @BeforeEach
+    void setUp() {
+        var simConfig = SimulationConfig.loadConfig();
+        config = simConfig.getSettlementConfiguration();
     }
 
-    public void testDefaultShiftPattern() {
-        var config = getConfig().getSettlementConfiguration();
+    @Test
+    void testGetEssentialResources() {
+
+        assertTrue(!config.getEssentialResources().isEmpty(), "Config has essential resources");
+    }
+
+    @Test
+    void testDefaultShiftPattern() {
 
         // Check standard shifts
         testShiftSize(config, STANDARD_2_SHIFT, 2);
@@ -29,54 +40,54 @@ public class SettlementConfigTest extends AbstractMarsSimUnitTest {
 
     private void testShiftSize(SettlementConfig config, String name, int shifts) {
         var shift = config.getShiftByName(name);
-        assertNotNull("Shift pattern " + name, shift);
-        assertEquals("Shift size for " + name, shifts, shift.getShifts().size());
+        assertNotNull(shift, "Shift pattern " + name);
+        assertEquals(shifts, shift.getShifts().size(), "Shift size for " + name);
     }
 
-    public void testShiftByPopulation() {
-        var config = getConfig().getSettlementConfiguration();
+    @Test
+    void testShiftByPopulation() {
     
         var large = config.getShiftByPopulation(30);
-        assertTrue("Large shift has smaller min pop", 30 > large.getMinPopulation());
-        assertEquals("Shift pattern for large", "Standard 3 Shift", large.getName());
+        assertTrue(30 > large.getMinPopulation(), "Large shift has smaller min pop");
+        assertEquals("Standard 3 Shift", large.getName(), "Shift pattern for large");
 
 
         var small = config.getShiftByPopulation(8);
-        assertTrue("Small shift has smaller min pop", 8 >= small.getMinPopulation());
-        assertEquals("Shift pattern for small", "Standard 2 Shift", small.getName());
+        assertTrue(8 >= small.getMinPopulation(), "Small shift has smaller min pop");
+        assertEquals("Standard 2 Shift", small.getName(), "Shift pattern for small");
 
     }
 
-    public void testGetActivityByPopulation() {
-        var config = getConfig().getSettlementConfiguration();
+    @Test
+    void testGetActivityByPopulation() {
 
         var small = config.getActivityByPopulation(8);
-        assertTrue("Large ruleset has medium min pop", 8 > small.minPop());
-        assertEquals("Activity Ruleset for small", "Small Settlement", small.name());
-        assertFalse("Small Activity Ruleset has meetings", small.meetings().isEmpty());
+        assertTrue(8 > small.minPop(), "Large ruleset has medium min pop");
+        assertEquals("Small Settlement", small.name(), "Activity Ruleset for small");
+        assertFalse(small.meetings().isEmpty(), "Small Activity Ruleset has meetings");
 
 
         var verysmall = config.getActivityByPopulation(4);
-        assertNull("No activities for vry small population", verysmall);
+        assertNull(verysmall, "No activities for vry small population");
 
         var large = config.getActivityByPopulation(30);
-        assertTrue("Large ruleset has smaller min pop", 30 > large.minPop());
-        assertEquals("Activity Ruleset for large", "Large Settlement", large.name());
+        assertTrue(30 > large.minPop(), "Large ruleset has smaller min pop");
+        assertEquals("Large Settlement", large.name(), "Activity Ruleset for large");
 
         // Large settlement should have night party
         var training = large.meetings().stream().filter(ga -> ga.name().equals(MIGHT_PARTY)).findFirst().get();
-        assertNotNull("Movie Night Group Activity found", training);
-        assertEquals("Activity Score", 400, training.score());
-        assertEquals("Activity Pop", 0.2D, training.percentagePop());
-        assertEquals("Activity Wait", 80, training.waitDuration());
-        assertEquals("Activity Duration", 150, training.activityDuration());
-        assertEquals("Activity Scope", TaskScope.NONWORK_HOUR, training.scope());
-        assertEquals("Activity Start Time", 850, training.calendar().getTimeOfDay());
-        assertEquals("Activity Freq", 10, training.calendar().getFrequency());
-        assertEquals("Activity 1st Event", 2, training.calendar().getFirstSol());
+        assertNotNull(training, "Movie Night Group Activity found");
+        assertEquals(400, training.score(), "Activity Score");
+        assertEquals(0.2D, training.percentagePop(), "Activity Pop");
+        assertEquals(80, training.waitDuration(), "Activity Wait");
+        assertEquals(150, training.activityDuration(), "Activity Duration");
+        assertEquals(TaskScope.NONWORK_HOUR, training.scope(), "Activity Scope");
+        assertEquals(850, training.calendar().getTimeOfDay(), "Activity Start Time");
+        assertEquals(10, training.calendar().getFrequency(), "Activity Freq");
+        assertEquals(2, training.calendar().getFirstSol(), "Activity 1st Event");
 
         var impact = training.impact();
-        assertEquals("Activity has skills", 1, impact.getImpactedSkills().size());
-        assertTrue("Activity has correct skill", impact.getImpactedSkills().contains(SkillType.ASTRONOMY));
+        assertEquals(1, impact.getImpactedSkills().size(), "Activity has skills");
+        assertTrue(impact.getImpactedSkills().contains(SkillType.ASTRONOMY), "Activity has correct skill");
     }
 }

@@ -7,33 +7,37 @@
 
 package com.mars_sim.core.manufacture;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TestManufactureProcessInfo extends AbstractMarsSimUnitTest {
+import com.mars_sim.core.SimulationConfig;
+
+class TestManufactureProcessInfo {
 
 
 	private static final String ASSEMBLE_EVA_SUIT = "Assemble EVA suit";
 	private static final String EVA_SUIT = "EVA suit";
 	
 	private ManufactureProcessInfo mInfo;
+	private ManufactureConfig config;
 	
-    @Override
-    public void setUp() {
-		super.setUp();
-		
-		ManufactureConfig config = getConfig().getManufactureConfiguration();
-
-		 for (ManufactureProcessInfo info : config.getManufactureProcessList()) {
+    @BeforeEach
+    void setUp() {
+		config = SimulationConfig.loadConfig().getManufactureConfiguration();
+    }
+    
+    @Test
+    void testEVASuitParts() {
+    	for (ManufactureProcessInfo info : config.getManufactureProcessList()) {
 	        if (info.getName().equals(ASSEMBLE_EVA_SUIT)) {
 	        	mInfo = info;
 	        }
 		 }
-    }
-    
-    public void testEVASuitParts() {
-    	
+
     	var inputList = mInfo.getInputList();
 		
 		// [eva helmet, helmet visor, pressure suit, coveralls, Liquid Cooling Garment, 
@@ -44,7 +48,8 @@ public class TestManufactureProcessInfo extends AbstractMarsSimUnitTest {
 		assertEquals(16, inputList.size());
     }
     
-    public void testEVASuitProcess() {
+    @Test
+    void testEVASuitProcess() {
     	   
 		List<ManufactureProcessInfo> list = ManufactureUtil.getManufactureProcessesWithGivenOutput(EVA_SUIT);
 		assertEquals(ASSEMBLE_EVA_SUIT, list.get(0).getName());
