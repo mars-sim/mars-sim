@@ -7,18 +7,23 @@
 
 package com.mars_sim.core.equipment;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Set;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.test.MarsSimUnitTest;
 
 /**
  * Tests the EquipmentInventory.
  */
-public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
+class EquipmentInventoryTest extends MarsSimUnitTest {
 
 
 	private static final double CAPACITY_AMOUNT = 1000D;
@@ -26,17 +31,18 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 
 	private Settlement settlement = null;
 
-    @Override
-    public void setUp() {
-		super.setUp();
+    @BeforeEach
+    public void init() {
+		super.init();
 
-		settlement = buildSettlement();
+		settlement = buildSettlement("Eqm Inv");
     }
 
 	/*
 	 * Test method loading equipment with amount resources.
 	 */
-	public void testAmountInEquipmentLoading() {
+	@Test
+	void testAmountInEquipmentLoading() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int co2 = ResourceUtil.CO2_ID;
 		int rock = ResourceUtil.ROCK_SAMPLES_ID;
@@ -50,59 +56,61 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 		
 		double excess = ((Container)bag).storeAmountResource(rock, rockMass);
 		
-		assertEquals("Bag cannot store the rock.", 0D, excess);
+		assertEquals(0D, excess, "Bag cannot store the rock.");
 				
-		assertEquals("CO2 stored.", co2Mass, inv.getSpecificAmountResourceStored(co2));
+		assertEquals(co2Mass, inv.getSpecificAmountResourceStored(co2), "CO2 stored.");
 		
 		// Note: rock is stored inside a bag and not in settlement
-		assertEquals("Rock stored.", 0D, inv.getSpecificAmountResourceStored(rock));
+		assertEquals(0D, inv.getSpecificAmountResourceStored(rock), "Rock stored.");
 						
-		assertEquals("Resources held in inventory.", Set.of(co2), inv.getSpecificResourceStoredIDs());
+		assertEquals(Set.of(co2), inv.getSpecificResourceStoredIDs(), "Resources held in inventory.");
 
 		// Remove some rock from bag
 		bag.retrieveAmountResource(rock, rockMass/2);
-		assertEquals("Rock after bag unload.", rockMass/2, bag.getSpecificAmountResourceStored(rock));
+		assertEquals(rockMass/2, bag.getSpecificAmountResourceStored(rock), "Rock after bag unload.");
 		
 		// Remove the bag
 		inv.removeEquipment(bag);
-		assertEquals("Remaining capacity after bag remove.", CAPACITY_AMOUNT - co2Mass, inv.getRemainingSpecificCapacity(co2));
-		assertEquals("Total mass after bag remove.", co2Mass, inv.getStoredMass());
-		assertEquals("Resources held after bag remove.", Set.of(co2), inv.getSpecificResourceStoredIDs());
+		assertEquals(CAPACITY_AMOUNT - co2Mass, inv.getRemainingSpecificCapacity(co2), "Remaining capacity after bag remove.");
+		assertEquals(co2Mass, inv.getStoredMass(), "Total mass after bag remove.");
+		assertEquals(Set.of(co2), inv.getSpecificResourceStoredIDs(), "Resources held after bag remove.");
 	}
 
 	/*
 	 * Test method loading amount resources.
 	 */
-	public void testAmountLoading() {
+	@Test
+	void testAmountLoading() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int resource = ResourceUtil.CO2_ID;
 
 		double excess = inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
 //		System.out.println("excess: " + excess);
 		
-		assertEquals("No excess on 1st load", 0D, excess);
+		assertEquals(0D, excess, "No excess on 1st load");
 		
 		double stored = inv.getSpecificAmountResourceStored(resource);
 //		System.out.println("stored: " + stored);
 		
-		assertEquals("Stored capacity after 1st load", CAPACITY_AMOUNT/2, stored);
+		assertEquals(CAPACITY_AMOUNT/2, stored, "Stored capacity after 1st load");
 		
 		double cap = inv.getRemainingSpecificCapacity(resource);
 //		System.out.println("cap: " + cap);
 				
-		assertEquals("Remaining after 1st load capacity", CAPACITY_AMOUNT/2, cap);
-		assertEquals("Total mass after 1st load", CAPACITY_AMOUNT/2, inv.getStoredMass());
+		assertEquals(CAPACITY_AMOUNT/2, cap, "Remaining after 1st load capacity");
+		assertEquals(CAPACITY_AMOUNT/2, inv.getStoredMass(), "Total mass after 1st load");
 
-		assertEquals("No excess on 2nd load", 0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2));
-		assertEquals("Stored capacity after 2nd load", CAPACITY_AMOUNT, inv.getSpecificAmountResourceStored(resource));
-		assertEquals("Remaining after 2nd load capacity", 0D, inv.getRemainingSpecificCapacity(resource));
-		assertEquals("Total mass after 2nd load", CAPACITY_AMOUNT, inv.getStoredMass());
+		assertEquals(0D, inv.storeAmountResource(resource, CAPACITY_AMOUNT/2), "No excess on 2nd load");
+		assertEquals(CAPACITY_AMOUNT, inv.getSpecificAmountResourceStored(resource), "Stored capacity after 2nd load");
+		assertEquals(0D, inv.getRemainingSpecificCapacity(resource), "Remaining after 2nd load capacity");
+		assertEquals(CAPACITY_AMOUNT, inv.getStoredMass(), "Total mass after 2nd load");
 	}
 
 	/*
 	 * Test method loading parts.
 	 */
-	public void testPartsOverloading() {
+	@Test
+	void testPartsOverloading() {
 		Part drillPart = (Part) ItemResourceUtil.findItemResource(PNEUMATIC_DRILL);
 		int maxDrills = 2;
 		
@@ -110,128 +118,114 @@ public class EquipmentInventoryTest extends AbstractMarsSimUnitTest {
 
 		int returned = inv.storeItemResource(drillPart.getID(), maxDrills);
 
-		assertEquals("No excess on capacity load", 0, returned);
-		assertEquals("Stored Pneumatic Drills after load", maxDrills, inv.getItemResourceStored(drillPart.getID()));
-		assertEquals("Stored mass after Pneumatic Drill load", maxDrills * drillPart.getMassPerItem(),
-													inv.getStoredMass());
+		assertEquals(0, returned, "No excess on capacity load");
+		assertEquals(maxDrills, inv.getItemResourceStored(drillPart.getID()), "Stored Pneumatic Drills after load");
+		assertEquals(maxDrills * drillPart.getMassPerItem(), inv.getStoredMass(), "Stored mass after Pneumatic Drill load");
 
 		// Try and load one more and should fail
-		assertEquals("Excess on overload", 1, inv.storeItemResource(drillPart.getID(), 1));
+		assertEquals(1, inv.storeItemResource(drillPart.getID(), 1), "Excess on overload");
 	}
 
 
 	/*
 	 * Test method over-loading amount resources.
 	 */
-	public void testAmountOverloading() {
+	@Test
+	void testAmountOverloading() {
 		int resource = ResourceUtil.CO2_ID;
 		
 		EquipmentInventory inv = new EquipmentInventory(settlement, 0);
 		inv.setSpecificResourceCapacity(resource, CAPACITY_AMOUNT);
 		
 		double sCap = inv.getSpecificCapacity(resource);
-		assertEquals("Check specific capacity", CAPACITY_AMOUNT, sCap);
-		System.out.println("sCap: " + sCap);
+		assertEquals(CAPACITY_AMOUNT, sCap, "Check specific capacity");
 		
 		double cargo = inv.getCargoCapacity();
-		assertEquals("No cargo capacity", 0D, cargo);
-		System.out.println("cargo: " + cargo);	
+		assertEquals(0D, cargo, "No cargo capacity");
 		
 		double stock = inv.getStockCapacity();
-		assertEquals("No stock capacity", 0D, stock);
-		System.out.println("stock: " + stock);	
+		assertEquals(0D, stock, "No stock capacity");
 		
 		double rCCap = inv.getRemainingCombinedCapacity(resource);
-		assertEquals("Check remaining combined capacity", CAPACITY_AMOUNT, rCCap);
-		System.out.println("rCCap: " + rCCap);
+		assertEquals(CAPACITY_AMOUNT, rCCap, "Check remaining combined capacity");
 			
 		// Add half the capacity
 		double excess = inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
-		assertEquals("No excess on capacity load", 0D, excess);
-		System.out.println("excess: " + excess);
+		assertEquals(0D, excess, "No excess on capacity load");
 		
 		// Check amount stored
 		double stored = inv.getSpecificAmountResourceStored(resource);
-		assertEquals("Check specific amount stored", CAPACITY_AMOUNT/2, stored);
-		System.out.println("stored: " + stored);
+		assertEquals(CAPACITY_AMOUNT/2, stored, "Check specific amount stored");
 		
 		// Add twice the capacity
 		excess = inv.storeAmountResource(resource, 2*CAPACITY_AMOUNT);
-		System.out.println("excess: " + excess);
-		assertEquals("Excess on overload", CAPACITY_AMOUNT * 1.5, excess);
+		assertEquals(CAPACITY_AMOUNT * 1.5, excess, "Excess on overload");
 		
 		stored = inv.getSpecificAmountResourceStored(resource);
-		assertEquals("Stored capacity after overload", CAPACITY_AMOUNT, stored);
-		System.out.println("stored: " + stored);
+		assertEquals(CAPACITY_AMOUNT, stored, "Stored capacity after overload");
 		
 		double rsCap = inv.getRemainingSpecificCapacity(resource);
-		System.out.println("rsCap: " + rsCap);
 		
-		assertEquals("Remaining after overload", 0D, rsCap);
+		assertEquals(0D, rsCap, "Remaining after overload");
 	}
 
 	/*
 	 * Test method unloading amount resources.
 	 */
-	public void testAmountUnloading() {
+	@Test
+	void testAmountUnloading() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int resource = ResourceUtil.CO2_ID;
 			
 		double excess = inv.storeAmountResource(resource, CAPACITY_AMOUNT);
-//		System.out.println("excess: " + excess);
-		assertEquals("No Excess", 0.0, excess);
+		assertEquals(0.0, excess, "No Excess");
 		
-		assertEquals("Shortfall on 1st retrieve", 0D, inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2));
+		assertEquals(0D, inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2), "Shortfall on 1st retrieve");
 		
 		double stored = inv.getSpecificAmountResourceStored(resource);
-		System.out.println("stored: " + stored);
 		
-		assertEquals("Stored on 1st retrieve", CAPACITY_AMOUNT/2, stored);
+		assertEquals(CAPACITY_AMOUNT/2, stored, "Stored on 1st retrieve");
 		
 		double remain = inv.getRemainingSpecificCapacity(resource);
-		System.out.println("remain: " + remain);
 		
-		assertEquals("Remaining after 1st retrieve", CAPACITY_AMOUNT/2, remain);
+		assertEquals(CAPACITY_AMOUNT/2, remain, "Remaining after 1st retrieve");
 		
 		double mass = inv.getStoredMass();
-		System.out.println("mass: " + mass);
 		
-		assertEquals("Total mass after 1st retrieve", CAPACITY_AMOUNT/2, mass);
+		assertEquals(CAPACITY_AMOUNT/2, mass, "Total mass after 1st retrieve");
 
-		assertEquals("Shortfall on 2nd retrieve", 0D, inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2));
+		assertEquals(0D, inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2), "Shortfall on 2nd retrieve");
 		
 		stored = inv.getSpecificAmountResourceStored(resource);
-		System.out.println("stored: " + stored);
 		
-		assertEquals("Stored on 2nd retrieve", 0D, stored);
+		assertEquals(0D, stored, "Stored on 2nd retrieve");
 		
 		remain = inv.getRemainingSpecificCapacity(resource);
-		System.out.println("remain: " + remain);
 	
-		assertEquals("Remaining after 2nd retrieve", CAPACITY_AMOUNT, remain);
+		assertEquals(CAPACITY_AMOUNT, remain, "Remaining after 2nd retrieve");
 		
 		mass = inv.getStoredMass();
-		System.out.println("mass: " + mass);
 		
-		assertEquals("Total mass after 2nd retrieve", 0.0, mass);
+		assertEquals(0.0, mass, "Total mass after 2nd retrieve");
 
-		assertEquals("Shortfall on empty inventory", 100D, inv.retrieveAmountResource(resource, 100D));
+		assertEquals(100D, inv.retrieveAmountResource(resource, 100D), "Shortfall on empty inventory");
 	}
 
 	/*
 	 * Test method loading combined amount resources.
 	 */
-	public void testMultiples() {
+	@Test
+	void testMultiples() {
 		EquipmentInventory inv = new EquipmentInventory(settlement, CAPACITY_AMOUNT);
 		int resource = ResourceUtil.CO2_ID;
 		int resource2  = ResourceUtil.OXYGEN_ID;
 
 		// if Using general/cargo capacity instead of the dedicated capacity for a resource
-		assertEquals("Remaining capacity 1st resource", CAPACITY_AMOUNT, inv.getRemainingCargoCapacity());
-		assertEquals("Remaining capacity 2nd resource", CAPACITY_AMOUNT, inv.getRemainingCargoCapacity());
+		assertEquals(CAPACITY_AMOUNT, inv.getRemainingCargoCapacity(), "Remaining capacity 1st resource");
+		assertEquals(CAPACITY_AMOUNT, inv.getRemainingCargoCapacity(), "Remaining capacity 2nd resource");
 
 		inv.storeAmountResource(resource, CAPACITY_AMOUNT/2);
 		inv.storeAmountResource(resource2, CAPACITY_AMOUNT/4);
-		assertEquals("Total mass after combined load", (CAPACITY_AMOUNT/2 + CAPACITY_AMOUNT/4), inv.getStoredMass());
+		assertEquals((CAPACITY_AMOUNT/2 + CAPACITY_AMOUNT/4), inv.getStoredMass(), "Total mass after combined load");
 	}
 }

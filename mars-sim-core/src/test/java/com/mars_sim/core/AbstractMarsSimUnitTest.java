@@ -22,7 +22,6 @@ import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
-import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimContextImpl;
@@ -49,10 +48,10 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 
 	protected static final double MSOLS_PER_EXECUTE = 0.1D;
 	   
-	protected MarsSurface surface;
-	protected Simulation sim;
-	protected SimulationConfig simConfig;
-	protected MarsSimContextImpl marsSimContext;
+	private MarsSurface surface;
+	private Simulation sim;
+	private SimulationConfig simConfig;
+	private MarsSimContextImpl marsSimContext;
 
 	private UnitManager unitManager;
 
@@ -64,6 +63,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public AbstractMarsSimUnitTest(String name) {
 		super(name);
 	}
+
 
 	@Override
 	@Before
@@ -85,14 +85,21 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		surface = marsSimContext.getSurface();
 	}
 
+	@Override
 	public Simulation getSim() {
 		return sim;
 	}
 
-	protected SimulationConfig getConfig() {
+	@Override
+	public SimulationConfig getConfig() {
 		return simConfig;
 	}
 	
+	@Override
+	public MarsSurface getSurface() {
+		return surface;
+	}
+
 	protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
 		return buildRover(settlement, name, parked, EXPLORER_ROVER);
 	}

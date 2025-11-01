@@ -635,7 +635,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
 		Person person = buildPerson("Walker", settlement);
 
-		person.transfer(surface);
+		person.transfer(getSurface());
 
 		LocalPosition target = new LocalPosition(4D, 4D);
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building0);
@@ -681,7 +681,7 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
         Person person = buildPerson("Walker", settlement);
 
-        person.transfer(surface);
+        person.transfer(getSurface());
         
         WalkingSteps walkingSteps = new WalkingSteps(person, new LocalPosition(3D, 3D), building0);
         
@@ -705,12 +705,12 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 
 		LocalPosition parkedPosition = new LocalPosition(15D, -10D);
         Rover rover = buildRover(settlement, "Test Rover", parkedPosition);
-        rover.transfer(surface);
+        rover.transfer(getSurface());
         
 		Person person = buildPerson("Walker", settlement);
 
         person.setPosition(new LocalPosition(20D,15D));
-        person.transfer(surface);
+        person.transfer(getSurface());
 
         WalkingSteps walkingSteps = new WalkingSteps(person, parkedPosition, rover);
         

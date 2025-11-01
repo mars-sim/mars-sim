@@ -6,11 +6,14 @@
  */
 package com.mars_sim.core.mission;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -18,8 +21,9 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.test.MarsSimUnitTest;
 
-public class MissionProjectTest extends AbstractMarsSimUnitTest {
+class MissionProjectTest extends MarsSimUnitTest {
     /**
      *
      */
@@ -73,26 +77,28 @@ public class MissionProjectTest extends AbstractMarsSimUnitTest {
         }
     }
 
-    public void testCreation() {
-        Settlement home = buildSettlement();
+    @Test
+    void testCreation() {
+        Settlement home = buildSettlement("Home");
         Person leader = buildPerson("Leader", home);
         MissionProject mp = new TestMission(MISSION_NAME, leader, 0);
 
-        assertEquals("Mission name", MISSION_NAME, mp.getName());
-        assertEquals("Mission settlement", home, mp.getAssociatedSettlement());
-        assertEquals("Mission leader", leader, mp.getStartingPerson());
+        assertEquals(MISSION_NAME, mp.getName(), "Mission name");
+        assertEquals(home, mp.getAssociatedSettlement(), "Mission settlement");
+        assertEquals(leader, mp.getStartingPerson(), "Mission leader");
     }
 
-    public void testResources() {
-        Settlement home = buildSettlement();
+    @Test
+    void testResources() {
+        Settlement home = buildSettlement("Home");
         Person leader = buildPerson("Leader", home);
         int numSteps = 3;
         TestMission mp = new TestMission(MISSION_NAME, leader, numSteps);
 
         SuppliesManifest manifest = mp.getResources(true);
         Map<Integer,Double> needed = manifest.getAmounts(true);
-        assertEquals("Oxygen needed", numSteps * OXYGEN_VALUE, needed.get(ResourceUtil.OXYGEN_ID));
-        assertEquals("Food needed", numSteps * FOOD_VALUE, needed.get(ResourceUtil.FOOD_ID));
-        assertEquals("Number of resources needed", 2, needed.size());
+        assertEquals(numSteps * OXYGEN_VALUE, needed.get(ResourceUtil.OXYGEN_ID), "Oxygen needed");
+        assertEquals(numSteps * FOOD_VALUE, needed.get(ResourceUtil.FOOD_ID), "Food needed");
+        assertEquals(2, needed.size(), "Number of resources needed");
     }
 }

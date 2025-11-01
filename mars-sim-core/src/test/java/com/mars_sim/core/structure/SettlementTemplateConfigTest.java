@@ -1,49 +1,62 @@
 package com.mars_sim.core.structure;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.resource.ItemResourceUtil;
 
-public class SettlementTemplateConfigTest extends AbstractMarsSimUnitTest {
-    public void testGetAll() {
-        var st = simConfig.getSettlementTemplateConfiguration();
+class SettlementTemplateConfigTest {
+    private SimulationConfig config;
 
-        var known = st.getKnownItems();
-        assertFalse("Settlement templates defined", known.isEmpty());
-
-        var name = st.getItemNames();
-        assertEquals("Names and template counts", name.size(), known.size());
+    @BeforeEach
+    void setUp() {
+        config = SimulationConfig.loadConfig();
     }
 
-    public void testHubBase() {
-        var st = simConfig.getSettlementTemplateConfiguration();
+    @Test
+    void testGetAll() {
+        var st = config.getSettlementTemplateConfiguration();
+
+        var known = st.getKnownItems();
+        assertFalse(known.isEmpty(), "Settlement templates defined");
+
+        var name = st.getItemNames();
+        assertEquals(name.size(), known.size(), "Names and template counts");
+    }
+
+    @Test
+    void testHubBase() {
+        var st = config.getSettlementTemplateConfiguration();
 
         var hubBase = st.getItem("Hub Base");
-        assertNotNull("Hub Base template found", hubBase);
-        assertEquals("Name of template", "Hub Base", hubBase.getName());
+        assertNotNull(hubBase, "Hub Base template found");
+        assertEquals("Hub Base", hubBase.getName(), "Name of template");
 
-        assertEquals("Shift pattern", "Standard 4 Shift", hubBase.getShiftDefinition().getName());
+        assertEquals("Standard 4 Shift", hubBase.getShiftDefinition().getName(), "Shift pattern");
     
         var supplies = hubBase.getSupplies();
-        assertFalse("Equipment is empty", supplies.getEquipment().isEmpty());
+        assertFalse(supplies.getEquipment().isEmpty(), "Equipment is empty");
 
-        assertFalse("Parts is empty", supplies.getParts().isEmpty());
+        assertFalse(supplies.getParts().isEmpty(), "Parts is empty");
         int num = supplies.getParts().get(
                             ItemResourceUtil.findItemResource("biosensor"));
-        assertEquals("Biosensor", 52, num); // biosensors are now in certain packages. Total of 52 for Hub Base
-        assertTrue("Has printers", supplies.getParts().get(
-                            ItemResourceUtil.findItemResource(ItemResourceUtil.SLS_3D_PRINTER_ID)) > 0);
+        assertEquals(52, num, "Biosensor"); // biosensors are now in certain packages. Total of 52 for Hub Base
+        assertTrue(supplies.getParts().get(
+                            ItemResourceUtil.findItemResource(ItemResourceUtil.SLS_3D_PRINTER_ID)) > 0, "Has printers");
 
-        assertFalse("Bins is empty", supplies.getBins().isEmpty());
-        assertFalse("Buildings is empty", supplies.getBuildings().isEmpty());
-        assertFalse("Resources is empty", supplies.getResources().isEmpty());
-        assertFalse("Vehciles is empty", supplies.getVehicles().isEmpty());
+        assertFalse(supplies.getBins().isEmpty(), "Bins is empty");
+        assertFalse(supplies.getBuildings().isEmpty(), "Buildings is empty");
+        assertFalse(supplies.getResources().isEmpty(), "Resources is empty");
+        assertFalse(supplies.getVehicles().isEmpty(), "Vehciles is empty");
 
-        assertFalse("Robots is empty", hubBase.getPredefinedRobots().isEmpty());
+        assertFalse(hubBase.getPredefinedRobots().isEmpty(), "Robots is empty");
 
-        assertEquals("Supply mission", 1, hubBase.getResupplyMissionTemplates().size());
+        assertEquals(1, hubBase.getResupplyMissionTemplates().size(), "Supply mission");
 
-        assertEquals("Sponsor", "MS", hubBase.getSponsor().getName());
+        assertEquals("MS", hubBase.getSponsor().getName(), "Sponsor");
 
     }
 }

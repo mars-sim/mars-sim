@@ -1,5 +1,6 @@
 package com.mars_sim.core.test;
 
+import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
@@ -18,7 +19,6 @@ import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -115,6 +115,7 @@ public class MarsSimContextImpl implements MarsSimContext {
         return sim;
     }
     
+    @Override
     public SimulationConfig getConfig() {
         return simConfig;
     }

@@ -41,7 +41,7 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
     @Override
     public void setUp() {
 		super.setUp();
-		clock = sim.getMasterClock();
+		clock = getSim().getMasterClock();
 
 		mgr = new ScheduledEventManager(clock);
     }
@@ -98,7 +98,7 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 		int duration = 100;
 
 		// No events
-		MarsTime now = sim.getMasterClock().getMarsTime();
+		MarsTime now = clock.getMarsTime();
 		mgr.timePassing(createPulse(now, false, false));
 
 		// Add handler in different not time order

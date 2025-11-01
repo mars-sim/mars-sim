@@ -12,7 +12,7 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
     
     public void testAdd() {
         History<Integer> h = new History<>();
-        MasterClock master = sim.getMasterClock();
+        MasterClock master = getSim().getMasterClock();
         
         MarsTime firstTime = master.getMarsTime();
         h.add(1);
@@ -33,7 +33,7 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
 
     public void testRange() {
         History<Integer> h = new History<>();
-        MasterClock master = sim.getMasterClock();
+        MasterClock master = getSim().getMasterClock();
         
         MarsDate firstDate = master.getMarsTime().getDate();
         h.add(1);
@@ -63,7 +63,7 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
 
     public void testAddSameTime() {
         History<Integer> h = new History<>();
-        MasterClock master = sim.getMasterClock();
+        MasterClock master = getSim().getMasterClock();
         
         MarsTime firstTime = master.getMarsTime();
         h.add(1);
@@ -77,7 +77,7 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
 
     public void testAddSameValue() {
         History<Integer> h = new History<>();
-        MasterClock master = sim.getMasterClock();
+        MasterClock master = getSim().getMasterClock();
         
         MarsTime firstTime = master.getMarsTime();
         h.add(1);

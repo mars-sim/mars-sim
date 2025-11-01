@@ -1,6 +1,7 @@
 package com.mars_sim.core.building.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.maintenance.MaintenanceUtil;
@@ -8,7 +9,6 @@ import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.science.task.MarsSimContext;
 
 public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
 	

@@ -57,7 +57,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         int currentShift = 0;
         int quantum = 10;
-        MarsTime now = sim.getMasterClock().getMarsTime();
+        MarsTime now = getSim().getMasterClock().getMarsTime();
         for(int t = 0; t < 100; t++) {
             now = now.addTime(quantum);
             futures.timePassing(createPulse(now, false, false));
@@ -128,7 +128,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         }
 
         // Check shifts don;t change
-        MarsTime now = sim.getMasterClock().getMarsTime().addTime((sm.getRotationSols() * 1000) - 1);
+        MarsTime now = getSim().getMasterClock().getMarsTime().addTime((sm.getRotationSols() * 1000) - 1);
         futures.timePassing(createPulse(now, false, false));
         long leaveCount = origAllocation.keySet().stream()
                             .filter(s -> s.getStatus() == WorkStatus.ON_LEAVE)

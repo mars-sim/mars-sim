@@ -2,6 +2,7 @@ package com.mars_sim.core.science.task;
 
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;

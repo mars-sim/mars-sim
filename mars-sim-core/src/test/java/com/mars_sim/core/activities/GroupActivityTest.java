@@ -124,11 +124,11 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
 
     public void testCreateSpecialActivity() {
         var s = buildSettlement();
-        var now = sim.getMasterClock().getMarsTime();
+        var now = getSim().getMasterClock().getMarsTime();
 
         // Need to check the template
-        var sConfig = simConfig.getSettlementConfiguration();
-        var template = simConfig.getSettlementTemplateConfiguration().getItem(s.getTemplate());
+        var sConfig = getConfig().getSettlementConfiguration();
+        var template = getConfig().getSettlementTemplateConfiguration().getItem(s.getTemplate());
         var schedued = sConfig.getActivityByPopulation(template.getDefaultPopulation());
         var expected = schedued.specials().get(GroupActivityType.ANNOUNCEMENT);
         assertNotNull("Mock settlement supports Announcements", expected);
@@ -147,11 +147,11 @@ public class GroupActivityTest extends AbstractMarsSimUnitTest {
     public void testCreatePersonBirthday() {
         var s = buildSettlement();
         var p = buildPerson("Birthday", s);
-        var now = sim.getMasterClock().getMarsTime();
+        var now = getSim().getMasterClock().getMarsTime();
 
         // Need to check the template
-        var sConfig = simConfig.getSettlementConfiguration();
-        var template = simConfig.getSettlementTemplateConfiguration().getItem(s.getTemplate());
+        var sConfig = getConfig().getSettlementConfiguration();
+        var template = getConfig().getSettlementTemplateConfiguration().getItem(s.getTemplate());
         var schedued = sConfig.getActivityByPopulation(template.getDefaultPopulation());
         var birthday = schedued.specials().get(GroupActivityType.BIRTHDAY);
   

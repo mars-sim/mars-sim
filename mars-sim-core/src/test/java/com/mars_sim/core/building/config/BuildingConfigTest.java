@@ -1,19 +1,23 @@
 package com.mars_sim.core.building.config;
 
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.Tooling;
 import com.mars_sim.core.resource.ResourceUtil;
 
 
-public class BuildingConfigTest extends AbstractMarsSimUnitTest {
+public class BuildingConfigTest {
 
     private static final String INFLATABLE_GREENHOUSE = "Inflatable Greenhouse";
 
@@ -33,25 +37,35 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
 		return lifeSupportSpec;
 	}
 
-    public void testLanderHabFunctions() {
-        var bc = simConfig.getBuildingConfiguration();
 
-        BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
-        assertNotNull("Building spec " + LANDER_HAB, spec);
+    private SimulationConfig config;
 
-        // Lander Hab has many functions
-        assertEquals("Number of Functions in " + LANDER_HAB, 21, spec.getFunctionSupported().size());
+    @BeforeEach
+    void setUp() {
+        config = SimulationConfig.loadConfig();
     }
 
-    public void testLanderHabActivitySpots() {
-        var bc = simConfig.getBuildingConfiguration();
+    @Test
+    void testLanderHabFunctions() {
+        var bc = config.getBuildingConfiguration();
+
+        BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
+        assertNotNull(spec, "Building spec " + LANDER_HAB);
+
+        // Lander Hab has many functions
+        assertEquals(21, spec.getFunctionSupported().size(), "Number of Functions in " + LANDER_HAB);
+    }
+
+    @Test
+    void testLanderHabActivitySpots() {
+        var bc = config.getBuildingConfiguration();
 
 
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
 
         // Check names of beds but could check any Function
         FunctionSpec beds = spec.getFunctionSpec(FunctionType.LIVING_ACCOMMODATION);
-        assertTrue("Has beds in " + LANDER_HAB, !beds.getActivitySpots().isEmpty());
+        assertTrue(!beds.getActivitySpots().isEmpty(), "Has beds in " + LANDER_HAB);
 
         Map<String, Integer> bedNames = new HashMap<>();
         for (var b : beds.getActivitySpots()) { 
@@ -80,9 +94,9 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
         }
         
         if (!hasBunkBeds)
-        	assertEquals("Number of unique beds names", beds.getActivitySpots().size(), bedNames.size());      
+        	assertEquals(beds.getActivitySpots().size(), bedNames.size(), "Number of unique beds names");      
         else
-        	assertEquals("Number of beds including bunk beds", beds.getActivitySpots().size(), totalNum);   
+        	assertEquals(beds.getActivitySpots().size(), totalNum, "Number of beds including bunk beds");   
         
         
         Set<String> names = beds.getActivitySpots().stream()
@@ -91,205 +105,214 @@ public class BuildingConfigTest extends AbstractMarsSimUnitTest {
              
         // Note: Each bunk bed will have 2 activity spots. Thus activity spots' names may NOT be unique 
         
-        assertEquals("Number of unique names", names.size(), bedNames.keySet().size());
+        assertEquals(names.size(), bedNames.keySet().size(), "Number of unique names");
     }
 
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */
-    public void testLanderHabNamedSpots() {
-        var bc = simConfig.getBuildingConfiguration();
+    @Test
+    void testLanderHabNamedSpots() {
+        var bc = config.getBuildingConfiguration();
 
         BuildingSpec spec = bc.getBuildingSpec(LANDER_HAB);
 
         // Check names of exercise stations but could check any Function
         FunctionSpec exercise = spec.getFunctionSpec(FunctionType.EXERCISE);
-        assertTrue("Has exercise in " + LANDER_HAB, !exercise.getActivitySpots().isEmpty());
+        assertTrue(!exercise.getActivitySpots().isEmpty(), "Has exercise in " + LANDER_HAB);
 
         Set<String> names = exercise.getActivitySpots().stream()
                                 .map(NamedPosition::name)
                                 .collect(Collectors.toSet());
-        assertTrue("Exercise spot called 'Bike'", names.contains("Bike"));
-        assertTrue("Exercise spot called 'Running Machine'", names.contains("Weight Lifting"));
+        assertTrue(names.contains("Bike"), "Exercise spot called 'Bike'");
+        assertTrue(names.contains("Weight Lifting"), "Exercise spot called 'Running Machine'");
     }
 
         /**
      * This test is very tied to the building spec of LANDER_HAB
      */
-    public void testGreenhouseScope() {
-        var bc = simConfig.getBuildingConfiguration();
+    @Test
+    void testGreenhouseScope() {
+        var bc = config.getBuildingConfiguration();
 
         BuildingSpec spec = bc.getBuildingSpec(INFLATABLE_GREENHOUSE);
 
         var scopes = spec.getSystemScopes();
 
-        assertEquals("Scope size", 4, scopes.size());
-        assertTrue("Building scope", scopes.contains("building"));
-        assertTrue("Habitable Scope", scopes.contains("habitable"));
-        assertTrue("Type Scope", scopes.contains(INFLATABLE_GREENHOUSE));
-        assertTrue("Metalic Scope", scopes.contains("metallic element"));
+        assertEquals(4, scopes.size(), "Scope size");
+        assertTrue(scopes.contains("building"), "Building scope");
+        assertTrue(scopes.contains("habitable"), "Habitable Scope");
+        assertTrue(scopes.contains(INFLATABLE_GREENHOUSE), "Type Scope");
+        assertTrue(scopes.contains("metallic element"), "Metalic Scope");
     }   
 
     /**
      * This test is very tied to the building spec of the inflatable greenhouse
      */
-    public void testInflatableGreenhouse() {
-        var bc = simConfig.getBuildingConfiguration();
+    @Test
+    void testInflatableGreenhouse() {
+        var bc = config.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec(INFLATABLE_GREENHOUSE);
         
-        assertNotNull("Found", found);
+        assertNotNull(found, "Found");
 
-        assertEquals("width", 6D, found.getWidth());
-        assertEquals("length", 9D, found.getLength());
-        assertEquals("width", 6D, found.getWidth());
+        assertEquals(6D, found.getWidth(), "width");
+        assertEquals(9D, found.getLength(), "length");
+        assertEquals(6D, found.getWidth(), "width");
 
-        assertEquals("Construction", ConstructionType.INFLATABLE, found.getConstruction());
+        assertEquals(ConstructionType.INFLATABLE, found.getConstruction(), "Construction");
 
-        assertEquals("Functions", Set.of(FunctionType.FARMING, FunctionType.LIFE_SUPPORT,
+        assertEquals(Set.of(FunctionType.FARMING, FunctionType.LIFE_SUPPORT,
                                          FunctionType.POWER_GENERATION, FunctionType.POWER_STORAGE,
                                          FunctionType.RECREATION, FunctionType.RESEARCH,
                                          FunctionType.RESOURCE_PROCESSING, FunctionType.ROBOTIC_STATION,
                                          FunctionType.STORAGE, FunctionType.THERMAL_GENERATION, 
                                          FunctionType.WASTE_PROCESSING),
-                                        found.getFunctionSupported());
+                                        found.getFunctionSupported(), "Functions");
 
         var fSpec = (StorageSpec) found.getFunctionSpec(FunctionType.STORAGE);
 
         var storage = fSpec.getCapacityResources();
-        assertEquals("Oxygen capacity", 5000D, storage.get(ResourceUtil.OXYGEN_ID));
-        assertEquals("Nitrogen capacity", 2500D, storage.get(ResourceUtil.NITROGEN_ID));
+        assertEquals(5000D, storage.get(ResourceUtil.OXYGEN_ID), "Oxygen capacity");
+        assertEquals(2500D, storage.get(ResourceUtil.NITROGEN_ID), "Nitrogen capacity");
 
         var initial = fSpec.getInitialResources();
-        assertEquals("Carbon stored", 100D, initial.get(ResourceUtil.CO2_ID));
+        assertEquals(100D, initial.get(ResourceUtil.CO2_ID), "Carbon stored");
     }
 
     
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */
+    @Test
     @SuppressWarnings("unchecked")
-	public void testGarage() {
-        var bc = simConfig.getBuildingConfiguration();
+	void testGarage() {
+        var bc = config.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Garage");
         
-        assertNotNull("Found", found);
+        assertNotNull(found, "Found");
 
-        assertEquals("width", 12D, found.getWidth());
-        assertEquals("length", 16D, found.getLength());
+        assertEquals(12D, found.getWidth(), "width");
+        assertEquals(16D, found.getLength(), "length");
 
-        assertEquals("Construction", ConstructionType.PRE_FABRICATED, found.getConstruction());
+        assertEquals(ConstructionType.PRE_FABRICATED, found.getConstruction(), "Construction");
 
-        assertEquals("Functions", Set.of(FunctionType.VEHICLE_MAINTENANCE, FunctionType.LIFE_SUPPORT,
+        assertEquals(Set.of(FunctionType.VEHICLE_MAINTENANCE, FunctionType.LIFE_SUPPORT,
                                          FunctionType.POWER_GENERATION, FunctionType.POWER_STORAGE,
                                          FunctionType.ROBOTIC_STATION,
                                          FunctionType.STORAGE, FunctionType.THERMAL_GENERATION),
-                                        found.getFunctionSupported());
+                                        found.getFunctionSupported(), "Functions");
 
         VehicleMaintenanceSpec spec = (VehicleMaintenanceSpec) found.getFunctionSpec(FunctionType.VEHICLE_MAINTENANCE);
 
-        assertEquals("Flyer parking", 2, spec.getFlyerParking().size());
-        assertEquals("Rover parking", 2, spec.getRoverParking().size());
-        assertEquals("LUV parking", 2, spec.getUtilityParking().size());
+        assertEquals(2, spec.getFlyerParking().size(), "Flyer parking");
+        assertEquals(2, spec.getRoverParking().size(), "Rover parking");
+        assertEquals(2, spec.getUtilityParking().size(), "LUV parking");
 
     }
 
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */
+    @Test
     @SuppressWarnings("unchecked")
-	public void testResearchFunction() {
-        var bc = simConfig.getBuildingConfiguration();
+	void testResearchFunction() {
+        var bc = config.getBuildingConfiguration();
 
         var found = (ResearchSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.RESEARCH);
         
-        assertNotNull("Found", found);
+        assertNotNull(found, "Found");
 
         var science = found.getScience();
-        assertEquals("Science", 8, science.size());
+        assertEquals(8, science.size(), "Science");
 
-        assertEquals("Research tech", 3, found.getTechLevel());
-        assertEquals("Research capacity", 3, found.getCapacity());
-        assertEquals("Research spots", 3, found.getActivitySpots().size());
+        assertEquals(3, found.getTechLevel(), "Research tech");
+        assertEquals(3, found.getCapacity(), "Research capacity");
+        assertEquals(3, found.getActivitySpots().size(), "Research spots");
     }
 
     
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */
+    @Test
     @SuppressWarnings("unchecked")
-	public void testThermalFunction() {
-        var bc = simConfig.getBuildingConfiguration();
+	void testThermalFunction() {
+        var bc = config.getBuildingConfiguration();
 
         var found = (GenerationSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.THERMAL_GENERATION);
         
-        assertNotNull("Found", found);
+        assertNotNull(found, "Found");
 
         var thermals = found.getSources();
-        assertEquals("Sources", 3, thermals.size());
+        assertEquals(3, thermals.size(), "Sources");
 
-        assertEquals("Type 1", "Solar Heating", thermals.get(0).getType());
-        assertEquals("Capacity 1", 5D, thermals.get(0).getCapacity());
+        assertEquals("Solar Heating", thermals.get(0).getType(), "Type 1");
+        assertEquals(5D, thermals.get(0).getCapacity(), "Capacity 1");
         
-        assertEquals("Type 1", "Electric Heating", thermals.get(1).getType());
-        assertEquals("Capacity 1", 20D, thermals.get(1).getCapacity());
+        assertEquals("Electric Heating", thermals.get(1).getType(), "Type 1");
+        assertEquals(20D, thermals.get(1).getCapacity(), "Capacity 1");
 
-        assertEquals("Type 2", "Fuel Heating", thermals.get(2).getType());
-        assertEquals("Capacity 2", 20D, thermals.get(2).getCapacity());
-        assertEquals("Fuel 2", "methane", thermals.get(2).getAttribute(SourceSpec.FUEL_TYPE));
+        assertEquals("Fuel Heating", thermals.get(2).getType(), "Type 2");
+        assertEquals(20D, thermals.get(2).getCapacity(), "Capacity 2");
+        assertEquals("methane", thermals.get(2).getAttribute(SourceSpec.FUEL_TYPE), "Fuel 2");
     }
 
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */
+    @Test
     @SuppressWarnings("unchecked")
-	public void testMedicalFunction() {
-        var bc = simConfig.getBuildingConfiguration();
+	void testMedicalFunction() {
+        var bc = config.getBuildingConfiguration();
 
         var found = (MedicalCareSpec) bc.getFunctionSpec(LANDER_HAB, FunctionType.MEDICAL_CARE);
         
-        assertNotNull("Found", found);
+        assertNotNull(found, "Found");
 
         var beds = found.getBeds();
-        assertEquals("Beds", 2, beds.size());
+        assertEquals(2, beds.size(), "Beds");
 
-        assertEquals("Medical tech", 4, found.getTechLevel());
-        assertEquals("Medical spots", 2, found.getActivitySpots().size());
+        assertEquals(4, found.getTechLevel(), "Medical tech");
+        assertEquals(2, found.getActivitySpots().size(), "Medical spots");
     }
 
 
     /**
      * This test is very tied to the building spec of LANDER_HAB
      */
+    @Test
     @SuppressWarnings("unchecked")
-	public void testWorkshop() {
-        var bc = simConfig.getBuildingConfiguration();
+	void testWorkshop() {
+        var sc = config;
+        var bc = sc.getBuildingConfiguration();
 
         var found = bc.getBuildingSpec("Workshop");
         
-        assertNotNull("Found", found);
+        assertNotNull(found, "Found");
 
-        assertEquals("width", 7D, found.getWidth());
-        assertEquals("length", 9D, found.getLength());
+        assertEquals(7D, found.getWidth(), "width");
+        assertEquals(9D, found.getLength(), "length");
 
-        assertEquals("Construction", ConstructionType.PRE_FABRICATED, found.getConstruction());
+        assertEquals(ConstructionType.PRE_FABRICATED, found.getConstruction(), "Construction");
 
-        assertEquals("Functions", Set.of(FunctionType.COMPUTATION, FunctionType.LIFE_SUPPORT,
+        assertEquals(Set.of(FunctionType.COMPUTATION, FunctionType.LIFE_SUPPORT,
                                          FunctionType.MANUFACTURE, FunctionType.POWER_GENERATION,
                                          FunctionType.POWER_STORAGE, FunctionType.ROBOTIC_STATION,
                                          FunctionType.STORAGE, FunctionType.THERMAL_GENERATION),
-                                        found.getFunctionSupported());
+                                        found.getFunctionSupported(), "Functions");
 
         
         var fSpec = (StorageSpec) found.getFunctionSpec(FunctionType.STORAGE);
-        assertEquals("Cement capacity", 500D, fSpec.getCapacityResources().get(ResourceUtil.CEMENT_ID));
+        assertEquals(500D, fSpec.getCapacityResources().get(ResourceUtil.CEMENT_ID), "Cement capacity");
 
         FunctionSpec manufacture = found.getFunctionSpec(FunctionType.MANUFACTURE);
         Map<Tooling, Integer> tools = (Map<Tooling, Integer>) manufacture.getProperty("tooling");
-        assertTrue("Multiple tools", tools.size() > 1); // 3D printers, furnace, and lifting
+        assertTrue(tools.size() > 1, "Multiple tools"); // 3D printers, furnace, and lifting
 
-        var furnace = simConfig.getManufactureConfiguration().getTooling("furnace");
-        assertEquals("Furnaces", 1, tools.get(furnace).intValue());
+        var furnace = sc.getManufactureConfiguration().getTooling("furnace");
+        assertEquals(1, tools.get(furnace).intValue(), "Furnaces");
     }
 }

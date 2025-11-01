@@ -1,32 +1,44 @@
 package com.mars_sim.core.structure;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class SettlementTemplateTest extends AbstractMarsSimUnitTest {
+import com.mars_sim.core.SimulationConfig;
+
+class SettlementTemplateTest {
 	
+    private static final String ALPHA_BASE_1 = "Alpha Base 1";
     private static final Object RESUPPLY_MISSION = "Bi-Monthly Delivery";
     private static final String MANIFEST = "Standard Resupply 1";
+    private SettlementTemplateConfig config;
 
-    public void testSettlementTemplates() {
-        var config = simConfig.getSettlementTemplateConfiguration();
-
-        assertTrue("Settlement templates defined", !config.getItemNames().isEmpty());
-        assertNotNull("Settlement template " + ALPHA_BASE_1, config.getItem(ALPHA_BASE_1));
+    @BeforeEach
+    void setUp() {
+        config = SimulationConfig.loadConfig().getSettlementTemplateConfiguration();
     }
 
-    public void testResupply() {
-        var template =  simConfig.getSettlementTemplateConfiguration().getItem(ALPHA_BASE_1);
+    @Test
+    void testSettlementTemplates() {
+
+        assertTrue(!config.getItemNames().isEmpty(), "Settlement templates defined");
+        assertNotNull(config.getItem(ALPHA_BASE_1), "Settlement template " + ALPHA_BASE_1);
+    }
+
+    @Test
+    void testResupply() {
+        var template =  config.getItem(ALPHA_BASE_1);
 
         var resupplies = template.getResupplyMissionTemplates();
-        assertFalse("Settlement has resupplies", resupplies.isEmpty());
+        assertFalse(resupplies.isEmpty(), "Settlement has resupplies");
 
         var resupply = resupplies.stream().filter(r -> r.getName().equals(RESUPPLY_MISSION))
                                         .findFirst().get();
-        assertEquals("Resupply Manifest", MANIFEST, resupply.getManifest().getName());
+        assertEquals(MANIFEST, resupply.getManifest().getName(), "Resupply Manifest");
         var schedule = resupply.getSchedule();
-        assertEquals("Resupply time of day", 400, schedule.getTimeOfDay());
-        assertEquals("Resupply time to first sol", 1, schedule.getFirstSol());
-        assertEquals("Resupply frequency", 62, schedule.getFrequency());
+        assertEquals(400, schedule.getTimeOfDay(), "Resupply time of day");
+        assertEquals(1, schedule.getFirstSol(), "Resupply time to first sol");
+        assertEquals(62, schedule.getFrequency(), "Resupply frequency");
     }
 }

@@ -1,6 +1,7 @@
 package com.mars_sim.core.person.health.task;
 
 import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.function.FunctionType;
@@ -10,7 +11,6 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
-import com.mars_sim.core.science.task.MarsSimContext;
 import com.mars_sim.core.structure.Settlement;
 
 public class SelfTreatHealthProblemTest extends AbstractMarsSimUnitTest {

@@ -39,7 +39,7 @@ public class BuildingCategoryTest extends AbstractMarsSimUnitTest {
     private void assertBuildingType(String buildingType, BuildingCategory expected) {
                 
         var s = buildSettlement();
-        var spec = simConfig.getBuildingConfiguration().getBuildingSpec(buildingType);
+        var spec = getConfig().getBuildingConfiguration().getBuildingSpec(buildingType);
 
         var b = new Building(s, "1", 1, spec.getName(), BOUNDS, spec);
         assertEquals(buildingType, expected, b.getCategory());

@@ -28,10 +28,10 @@ public class GoodsManagerTest extends AbstractMarsSimUnitTest {
 
         var gm = new GoodsManager(s);
 
-        var ess = simConfig.getSettlementConfiguration().getEssentialResources();
+        var ess = getConfig().getSettlementConfiguration().getEssentialResources();
 
         int reviewDue = gm.getResourceReviewDue();
-        assertEquals("Essential resoruces needing review at start", ess.keySet().size(), reviewDue);
+        assertEquals("Essential resources needing review at start", ess.keySet().size(), reviewDue);
 
         int reserved = gm.reserveResourceReview();
 

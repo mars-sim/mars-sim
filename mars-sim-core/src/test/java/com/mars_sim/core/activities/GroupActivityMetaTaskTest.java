@@ -94,7 +94,7 @@ public class GroupActivityMetaTaskTest extends AbstractMarsSimUnitTest{
         }
 
         // Create an activity  
-        var now = sim.getMasterClock().getMarsTime();
+        var now = getSim().getMasterClock().getMarsTime();
         var ga = GroupActivity.createPersonActivity("Promotion", GroupActivityType.ANNOUNCEMENT, s,
                                                 i, 0, now);
 

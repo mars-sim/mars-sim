@@ -31,7 +31,7 @@ public class PersonBuilderTest extends AbstractMarsSimUnitTest {
     public void testOptional() {
         var home = buildSettlement();
 
-        AuthorityFactory af = simConfig.getReportingAuthorityFactory();
+        AuthorityFactory af = getConfig().getReportingAuthorityFactory();
         var ra = af.getItem(TEST_RA);
         
         	    

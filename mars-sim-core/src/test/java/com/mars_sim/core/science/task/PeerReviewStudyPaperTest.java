@@ -26,7 +26,7 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
         assertTrue("Review task completed", t.isDone());
 
         double elasped = study.getTotalPeerReviewTimeRequired() * 1.1;
-        study.timePassing(createPulse(sim.getMasterClock().getMarsTime().addTime(elasped), false, false));
+        study.timePassing(createPulse(getSim().getMasterClock().getMarsTime().addTime(elasped), false, false));
         assertTrue("Study complete", study.isCompleted());
     }
 

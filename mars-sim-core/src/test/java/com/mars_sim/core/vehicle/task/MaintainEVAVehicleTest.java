@@ -52,7 +52,7 @@ public class MaintainEVAVehicleTest extends AbstractMarsSimUnitTest {
         var mm = v.getMalfunctionManager();
 
         // Create a massive pulse to trigger maintenance
-        var master = sim.getMasterClock();
+        var master = getSim().getMasterClock();
         var pulse = new ClockPulse(1, mm.getStandardInspectionWindow(), master.getMarsTime(), master, false, false, true, false);
         mm.activeTimePassing(pulse);
         assertGreaterThan("Vehicle maintenance time", 0D, mm.getEffectiveTimeSinceLastMaintenance());
