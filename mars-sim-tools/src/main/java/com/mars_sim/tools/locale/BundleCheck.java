@@ -39,6 +39,7 @@ import com.mars_sim.core.environment.DustStormType;
 import com.mars_sim.core.environment.LandmarkType;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventCategory;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.food.FoodType;
 import com.mars_sim.core.goods.GoodCategory;
 import com.mars_sim.core.interplanetary.transport.TransitState;
@@ -204,6 +205,7 @@ public class BundleCheck {
         loadEnum(results, ComplaintType.class);
         loadEnum(results, PowerMode.class);
         loadEnum(results, TransitState.class);
+        loadEnum(results, HistoricalEventType.class);
 
         return results;
     }

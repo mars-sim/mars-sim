@@ -52,9 +52,10 @@ public class EventCommand extends ChatCommand {
 				response.appendLabeledString("Cause", e.getWhatCause());
 				response.appendLabeledString("Entity", (e.getEntity() != null ?
 								e.getEntity().getName() : ""));
-				response.appendLabeledString("Coords", e.getCoordinates());
-				response.appendLabeledString("Settlement", e.getHomeTown());
-				
+				response.appendLabeledString("Coords", e.getCoordinates().getFormattedString());
+				var homeTown = e.getHomeTown();
+				response.appendLabeledString("Settlement", homeTown != null ? homeTown.getName() : "");
+
 				response.appendBlankLine();
 			}
 			

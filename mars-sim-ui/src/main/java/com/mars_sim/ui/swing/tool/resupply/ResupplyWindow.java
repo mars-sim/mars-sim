@@ -33,12 +33,12 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventListener;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -230,13 +230,13 @@ public class ResupplyWindow extends ToolWindow
 	@Override
 	public void eventAdded(HistoricalEvent he) {
 		if (HistoricalEventCategory.TRANSPORT == he.getCategory()) {
-			if (EventType.TRANSPORT_ITEM_MODIFIED == he.getType()) {
+			if (HistoricalEventType.TRANSPORT_ITEM_MODIFIED == he.getType()) {
 				Transportable selected = getSelectedNode();
 				if ((selected != null) && he.getSource().equals(selected)) {
 					detailPane.setTransportable(selected);
 				}
 			}
-			else if ((EventType.TRANSPORT_ITEM_CREATED == he.getType())
+			else if ((HistoricalEventType.TRANSPORT_ITEM_CREATED == he.getType())
 					&& (he.getSource() instanceof Transportable t)) {
 				addTreeNode(t);
 			}
