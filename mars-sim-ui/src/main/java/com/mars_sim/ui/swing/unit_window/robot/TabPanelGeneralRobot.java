@@ -112,7 +112,7 @@ public class TabPanelGeneralRobot extends TabPanel {
 		health = battPanel.addRow("Health", StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
 		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade())
 				+ " per sol");
-		cycles = battPanel.addRow("Charge Cycles", battery.getNumCycles() + "");
+		cycles = battPanel.addRow("Charge Cycles", StyleManager.DECIMAL_PLACES2.format(battery.getNumCycles()) + "");
 	}
 
 	@Override
@@ -128,6 +128,6 @@ public class TabPanelGeneralRobot extends TabPanel {
 		health.setText(StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
 		degradPercent.setText(StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade()) + " per sol");
 		maxCRating.setText(StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));
-		cycles.setText(battery.getNumCycles() + "");
+		cycles.setText(StyleManager.DECIMAL_PLACES2.format(battery.getNumCycles()) + "");
 	}
 }

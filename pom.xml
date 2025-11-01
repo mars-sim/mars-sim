@@ -8,7 +8,7 @@
 	<groupId>com.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.10.0</version>
+	<version>3.11.0</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.19.0</version>
+			<version>5.20.0</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>
@@ -188,7 +188,7 @@
 				<plugin>
 				    <groupId>org.codehaus.mojo</groupId>
 				    <artifactId>versions-maven-plugin</artifactId>
-				    <version>2.19.0</version>
+				    <version>2.19.1</version>
 				    <configuration>
 				        <generateBackupPoms>false</generateBackupPoms>
 				    </configuration>
@@ -197,7 +197,15 @@
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-surefire-plugin</artifactId>
-				    <version>3.5.3</version>
+				    <version>3.5.4</version>
+				   <!-- surefire-junit-platform below is needed for maven-surefire-plugin -->
+			        <dependencies>
+				        <dependency>
+				            <groupId>org.apache.maven.surefire</groupId>
+				            <artifactId>surefire-junit-platform</artifactId>
+				            <version>3.5.4</version>
+				        </dependency>
+			        </dependencies>
 				    <configuration>
                         <argLine>-Duser.language=en -Duser.region=US</argLine>
 						<includes>

@@ -109,7 +109,7 @@ class OrbitCanvas extends Canvas {
 	/**
 	 * off-screen Image
 	 */
-	private Image offscreen;
+	//private Image offscreen;
 	
 	/**
 	 * Object Name Drawing Flag
@@ -118,6 +118,8 @@ class OrbitCanvas extends Canvas {
 	private boolean bObjectName;
 	private boolean bDistanceLabel;
 	private boolean bDateLabel;
+
+	private Image offscreen;
 	
 	/**
 	 * Constructor
@@ -133,13 +135,14 @@ class OrbitCanvas extends Canvas {
 		// Set Initial Date
 		this.atime = atime;
 		setDate(this.atime);
-		// no off screen image
-		offscreen = null;
+
 		// no name labels
 		bPlanetName = false;
 		bObjectName = false;
 		bDistanceLabel = true;
 		bDateLabel = true;
+		
+		revalidate();
 		repaint();
 	}
 	
@@ -194,6 +197,8 @@ class OrbitCanvas extends Canvas {
 		for (int i = 0; i < 9; i++) {
 			planetPos[i] = Planet.getPos(Planet.MERCURY+i, atime);
 		}
+
+		repaint();
 	}
 	
 	/**
@@ -386,8 +391,7 @@ class OrbitCanvas extends Canvas {
         }
 
 		// Get Off-Screen Image Graphics Context
-		Graphics gg = offscreen.getGraphics();
-		Graphics2D g2d = (Graphics2D) gg;
+		Graphics2D g2d = (Graphics2D) offscreen.getGraphics();
 		
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -585,9 +589,11 @@ class OrbitCanvas extends Canvas {
 					 sizeCanvas.width,     sizeCanvas.height     );
 		
 		g2d.drawImage(offscreen, 0, 0, null);
-		
-		offscreen.flush();
+		//offscreen.flush();
 		g2d.dispose();
+
+		// Draw the backing image onto the screen
+		g.drawImage(offscreen, 0, 0, null);
 	}
 	
 	/**
@@ -595,14 +601,11 @@ class OrbitCanvas extends Canvas {
 	 */
 	@Override
 	public void paint(Graphics g) {
-		if (offscreen == null) {
-			this.sizeCanvas = getSize();
-			offscreen = createImage(this.sizeCanvas.width,
-									this.sizeCanvas.height);
-			update(g);
-		} else {
-			g.drawImage(offscreen, 0, 0, null);
+		this.sizeCanvas = getSize();
+		if (this.sizeCanvas.width <= 0 || this.sizeCanvas.height <= 0) {
+			return;
 		}
-	}
-	
+		offscreen = createImage(this.sizeCanvas.width, this.sizeCanvas.height);
+		update(g);
+	}	
 }

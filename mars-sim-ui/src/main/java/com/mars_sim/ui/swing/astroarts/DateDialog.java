@@ -11,7 +11,6 @@
 package com.mars_sim.ui.swing.astroarts;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -29,8 +28,6 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.astroarts.ATime;
-import com.mars_sim.ui.swing.MainWindow;
-import com.mars_sim.ui.swing.ModalInternalFrame;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -39,7 +36,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 *  Date Setting Dialog
 */
 @SuppressWarnings("serial")
-public class DateDialog extends ModalInternalFrame {
+public class DateDialog extends JDialog {
 			
 	protected JTextField		tfYear;
 	protected JTextField		tfDate;
@@ -55,29 +52,23 @@ public class DateDialog extends ModalInternalFrame {
 	
 	protected OrbitViewer	viewer;
 	
-	public DateDialog(OrbitViewer viewer, ATime atime) {
-		super("Input Date", false, // resizable
-				false, // closable
-				false, // maximizable
-				false); // iconifiable
-		
+	public DateDialog(OrbitViewer viewer, ATime atime, LocalDateTime earthTime) {
+		super();
+		setTitle("Input Date");// iconifiable
+		setModal(true);
 		this.viewer = viewer;
-			
+		
 		// Set the layout.
 		setLayout(new BorderLayout());
 		
 		JPanel currentPanel = new JPanel(new BorderLayout());
 		currentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(currentPanel, BorderLayout.CENTER);
-		
-		JPanel currentDatePanel = new JPanel(new BorderLayout(5, 5));			
-		currentDatePanel.setBorder(StyleManager.createLabelBorder("Current Date"));	
-		currentPanel.add(currentDatePanel);
-		
-		super.setFrameIcon(MainWindow.getLanderIcon());
+		add(currentPanel, BorderLayout.CENTER);
 
-		AttributePanel attrPanel = new AttributePanel(3);
-		currentDatePanel.add(attrPanel, BorderLayout.CENTER);
+		currentPanel.setBorder(StyleManager.createLabelBorder("Current Date"));	
+
+		AttributePanel attrPanel = new AttributePanel(3, 1);
+		currentPanel.add(attrPanel, BorderLayout.NORTH);
 		
 		// Controls
 		monthCB = new JComboBox<>();
@@ -106,7 +97,7 @@ public class DateDialog extends ModalInternalFrame {
 		
 		JPanel choosePanel = new JPanel(new BorderLayout());
 		choosePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(choosePanel, BorderLayout.NORTH);
+		add(choosePanel, BorderLayout.NORTH);
 		
 		JPanel chooseDatePanel = new JPanel(new GridLayout(4, 1, 0, 0));			
 		chooseDatePanel.setBorder(StyleManager.createLabelBorder("Choose Your Date"));	
@@ -116,7 +107,6 @@ public class DateDialog extends ModalInternalFrame {
 		buttonSimDate.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(buttonSimDate);
 		buttonSimDate.addActionListener(e -> {
-				LocalDateTime earthTime = viewer.getDesktop().getSimulation().getMasterClock().getEarthTime();
 				monthCB.setSelectedIndex(earthTime.getMonthValue() - 1);
 				tfDate.setText(Integer.toString(earthTime.getDayOfMonth()));
 				tfYear.setText(Integer.toString(earthTime.getYear()));    					
@@ -186,48 +176,32 @@ public class DateDialog extends ModalInternalFrame {
 		group.add(buttonCustom);
 						
 		JPanel southPanel = new JPanel(new GridLayout(1, 2, 4, 4));
-		getContentPane().add(southPanel, BorderLayout.SOUTH);
+		add(southPanel, BorderLayout.SOUTH);
 		
 		buttonOk = new JButton("OK");
 		southPanel.add(buttonOk);
 		buttonOk.addActionListener(e -> {
     				ATime at = null;
-    				JComponent source = (JComponent) e.getSource();
 
-    		        if (source == buttonOk) {
-    					int nYear = Integer.parseInt(tfYear.getText());
-    					int nMonth = monthCB.getSelectedIndex() + 1;
-    					int nDate  = Integer.parseInt(tfDate.getText());
-    					if (1600 <= nYear && nYear <= 2199 &&
-    								1 <= nMonth && nMonth <= 12 &&
-    								1 <= nDate  && nDate  <= 31) {
-    						at = new ATime(nYear, nMonth, nDate, 0.0);
-    					}
+					int nYear = Integer.parseInt(tfYear.getText());
+					int nMonth = monthCB.getSelectedIndex() + 1;
+					int nDate  = Integer.parseInt(tfDate.getText());
+					if (1600 <= nYear && nYear <= 2199 &&
+								1 <= nMonth && nMonth <= 12 &&
+								1 <= nDate  && nDate  <= 31) {
+						at = new ATime(nYear, nMonth, nDate, 0.0);
+					}
     				
-    				}
     				dispose();
     				viewer.endDateDialog(at);
-    				viewer.repaint();
 		});
 	
 		
-		buttonCancel = new JButton("CANCEL");
+		buttonCancel = new JButton("Cancel");
 		southPanel.add(buttonCancel);
 		buttonCancel.addActionListener(e -> setVisible(false));
-	
-		setSize(new Dimension(200, 250));
-		setPreferredSize(new Dimension(200, 250));		
+		
+		pack();
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);	
-					
-		viewer.getDesktop().add(this);
-			
-		Dimension desktopSize = viewer.getDesktop().getParent().getSize();
-		Dimension jInternalFrameSize = this.getSize();
-		int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-		int height = (int)((desktopSize.height - jInternalFrameSize.height) / 1.4);
-		setLocation(width, height);
-			
-	    viewer.repaint();
-
 	}
 }

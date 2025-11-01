@@ -981,7 +981,7 @@ public class PowerGrid implements Serializable, Temporal {
 					break;
 				}
 				
-				double kWhDelivered = b.getPowerStorage().getBattery().requestEnergy(remainingNeed, timeHr);
+				double kWhDelivered = b.getPowerStorage().getBattery().consumeEnergy(remainingNeed, timeHr);
 				
 //				logger.info(b.getName() + " -  kWhDelivered: " + Math.round(kWhDelivered * 1000.)/1000.0 
 //						+ "  remainingNeed: " + Math.round(remainingNeed * 1000.)/1000.0

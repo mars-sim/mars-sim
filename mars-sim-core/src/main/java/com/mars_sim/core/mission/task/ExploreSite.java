@@ -161,7 +161,7 @@ public class ExploreSite extends EVAOperation {
 			return time;
 
 		// Add to the cumulative combined site time
-		((Exploration)person.getMission()).addSiteTime(time);
+		((Exploration)mission).addSiteTime(time);
 		
 		if (totalCollected > AVERAGE_ROCK_COLLECTED_SITE) {
 			endEVA("Rocks collected exceeded the set average.");
@@ -260,7 +260,7 @@ public class ExploreSite extends EVAOperation {
 		
 		double onSiteBonus = 2D;
 		
-		double siteTime = ((Exploration)person.getMission()).getCurrentSiteTime();
+		double siteTime = ((Exploration)mission).getCurrentSiteTime();
 			
 		double probability = (time * siteTime / 100.0) 
 				* skill

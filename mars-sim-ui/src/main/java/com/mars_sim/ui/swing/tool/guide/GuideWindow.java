@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * GuideWindow.java
- * @date 2021-12-14
+ * @date 2025-10-24
  * @author Lars Naesbye Christensen
  */
 
@@ -153,11 +153,13 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		
 		// Pack window.
 		// WARNING: using pack() here will shrink the window to one line tall in swing mode
-		displayHelpByName(Msg.getString("doc.whatsnew"));
+		
+		displayHelpByName(Msg.getString("doc.versionHistory"));
 	}
 
 	/**
-	 * Take the logical name and uses the HelpLibrary to convert it to a URI
+	 * Takes the logical name and uses the HelpLibrary to convert it to a URI.
+	 * 
 	 * @param name
 	 */
 	private void displayHelpByName(String name) {
@@ -182,7 +184,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
     }
     
 	/**
-	 * Set a URL String for display.
+	 * Sets a URL String for display.
 	 */
 	public void displayURI(URI pageAddress) {
 		if (pageAddress != null) {
@@ -212,6 +214,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 	/**
 	 * Handles a click on a link.
+	 * 
 	 * @param event the HyperlinkEvent
 	 */
 	@Override
@@ -238,7 +241,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	}
 	
 	/** 
-	 * Prepare tool window for deletion. 
+	 * Prepares tool window for deletion. 
 	 */
 	@Override
 	public void destroy() {

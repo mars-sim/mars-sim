@@ -6,34 +6,17 @@
  */
 package com.mars_sim.core.science;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import com.mars_sim.core.parameter.ParameterCategory;
+import com.mars_sim.core.parameter.ParameterEnumCategory;
 import com.mars_sim.core.parameter.ParameterValueType;
 
 /**
  * Defines the potential Parameter values that control scientific research.
  */
-public class ScienceParameters extends ParameterCategory {
+public class ScienceParameters extends ParameterEnumCategory<ScienceType> {
 
-    private static final long serialVersionUID = 1L;
-	public static final ParameterCategory INSTANCE = new ScienceParameters();
+	public static final ScienceParameters INSTANCE = new ScienceParameters();
 
     private ScienceParameters() {
-        super("SCIENCE");
-    }
-
-    /**
-     * Calculates the possible keys based the range of ScienceTypes.
-     * 
-     * @return Map from id to the corresponding Spec
-     */
-    @Override
-    protected Map<String, ParameterSpec> calculateSpecs() {
-        return Stream.of(ScienceType.values())
-	 					.collect(Collectors.toMap(ScienceType::name,
-                                    e-> new ParameterSpec(e.name(), e.getName(), ParameterValueType.DOUBLE)));
+        super("SCIENCE", ParameterValueType.DOUBLE, ScienceType.class);
     }
 }

@@ -128,7 +128,7 @@ public class MonitorWindow extends ToolWindow
 	private static final String COLUMN_ICON = "action/column";
 	private static final String FILTER_ICON = "action/filter";
 
-	private static final String SETTLEMENT_PROP = "SETTLEMENT";
+	private static final String FILTER_PROP = "FILTER";
 	private static final String TAB_PROP = "TAB";
 
 	// Data members
@@ -191,10 +191,10 @@ public class MonitorWindow extends ToolWindow
 		// Get any saved props
 		Properties savedProps = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 
-		// Set up settlements
+		// Set up default selection
 		var choices = setupSelectionChoices();
-		Entity defaultSelection = choices.get(0);
-		String previousChoice = (savedProps != null ? savedProps.getProperty(SETTLEMENT_PROP) : null);
+		Object defaultSelection = ALL;
+		String previousChoice = (savedProps != null ? savedProps.getProperty(FILTER_PROP) : null);
 		if (previousChoice != null) {
 			for(Entity s : choices) {
 				if (s.getName().equals(previousChoice)) {
@@ -203,24 +203,20 @@ public class MonitorWindow extends ToolWindow
 			}
 		}
 
-		// Setup the selection
-		if (defaultSelection instanceof Settlement s) {
-			currentSelection = Set.of(s);
-		}
-		else if (defaultSelection instanceof Authority a) {
-			currentSelection = authorities.get(a);
-		}
-
 		// Create the settlement combo box
         buildSelectionCombo(choices, defaultSelection);
 
 		// Create top pane
 		JPanel topPane = new JPanel(new FlowLayout());
+		topPane.add(new JLabel("Settlement Filter:"));
 		topPane.add(selectionCombo);
 		selectionDescription = new JLabel("");
 		topPane.add(selectionDescription);
 
 		mainPane.add(topPane, BorderLayout.NORTH);
+		
+		// Update the selection description
+		applySelection(defaultSelection);
 
 		// Create tabbed pane for the table
 		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -256,7 +252,7 @@ public class MonitorWindow extends ToolWindow
 		
 		// Lastly activate the default tab
 		selectNewTab(getSelectedTab());
-		
+
 	}
 
 	/**
@@ -429,7 +425,7 @@ public class MonitorWindow extends ToolWindow
 	 * @param choices
 	 * @param selected
 	 */
-	private void buildSelectionCombo(List<Entity> choices, Entity selected) {
+	private void buildSelectionCombo(List<Entity> choices, Object selected) {
 		List<Object> converted = new ArrayList<>(choices); // List is a pain
 
 		SortedComboBoxModel<Object> model = new SortedComboBoxModel<>(converted, new SelectionComparator());
@@ -442,7 +438,7 @@ public class MonitorWindow extends ToolWindow
 	
 		// Add renderer
 		selectionCombo.setRenderer(new SelectionComboRenderer());
-
+		
 		// Set the item listener only after the setup is done
 		selectionCombo.addItemListener(this::changeSelection);
 
@@ -453,6 +449,7 @@ public class MonitorWindow extends ToolWindow
 			}
 		};
 		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
+
 	}
 
 	/**
@@ -467,8 +464,8 @@ public class MonitorWindow extends ToolWindow
 
 			var ra = s.getReportingAuthority();
 			if (!authorities.containsKey(ra)) {
-				ms.addElement(ra);
 				authorities.put(ra, new HashSet<>());
+				ms.addElement(ra);
 			}
 			authorities.get(ra).add(s);
 
@@ -483,22 +480,32 @@ public class MonitorWindow extends ToolWindow
 	 * @param event
 	 */
 	private void changeSelection(ItemEvent event) {
+		applySelection(event.getItem());
+		updateTab();
+	}
+	
+	/**
+	 * Updates the internal selection status based on a new item.
+	 * 
+	 * @param item
+	 */
+	private void applySelection(Object item) {
 		String newDescription = "";
 		Set<Settlement> newSelection = null;
 
-		if (event.getItem() instanceof Settlement s) {
+		if (item instanceof Settlement s) {
 			newSelection = Set.of(s);
 		}
-		else if (event.getItem() instanceof Authority a) {
+		else if (item instanceof Authority a) {
 			newSelection = authorities.get(a);
-
-			newDescription = newSelection.stream()
-								.map(Settlement::getName)
-								.sorted()
-								.collect(Collectors.joining (", "));
-
+			if (newSelection != null) {
+				newDescription = newSelection.stream()
+									.map(Settlement::getName)
+									.sorted()
+									.collect(Collectors.joining(", ", "(", ")"));
+			}
 		}
-		else if (event.getItem() instanceof String str) {
+		else if (item instanceof String str) {
 			if (!str.equals(ALL)) {
 				// Should always be ALL
 				return;
@@ -508,8 +515,6 @@ public class MonitorWindow extends ToolWindow
 
 		// Change to the selection
 		currentSelection = newSelection;
-		updateTab();
-
 		selectionDescription.setText(newDescription);
 	}
 
@@ -594,7 +599,6 @@ public class MonitorWindow extends ToolWindow
 		MonitorTab selectedTab = getSelectedTab();
 		if (selectedTab == null)
 			return;
-		
 		// Continue and recreate a new tab
 		selectNewTab(selectedTab);
 	}
@@ -813,8 +817,9 @@ public class MonitorWindow extends ToolWindow
 		Properties result = new Properties();
 		Object e = selectionCombo.getSelectedItem();
 		if (e instanceof Entity ent) {
-			result.setProperty(SETTLEMENT_PROP, ent.getName());
+			result.setProperty(FILTER_PROP, ent.getName());
 		}
+
 		result.setProperty(TAB_PROP, getSelectedTab().getName());
 	
 		return result;
@@ -854,7 +859,8 @@ public class MonitorWindow extends ToolWindow
 				this.setText(s.getName());
 			}
 			else if (value instanceof Authority a) {
-				this.setText(a.getName() + " (" + authorities.get(a).size() + ")");
+				var children = authorities.get(a);
+				this.setText(a.getName() + " (" + (children != null ? children.size() : 0) + ")");
 			}
 			else if (value instanceof String s) {
 				this.setText(s);

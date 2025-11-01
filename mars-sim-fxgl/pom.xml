@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.mars-sim</groupId>
     <artifactId>mars-sim</artifactId>
-    <version>3.10.0</version>
+    <version>3.11.0</version>
   </parent>
   <artifactId>mars-sim-fxgl</artifactId>
   <name>mars-sim-fxgl</name>

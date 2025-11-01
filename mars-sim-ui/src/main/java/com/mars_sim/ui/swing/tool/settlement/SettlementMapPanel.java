@@ -1189,6 +1189,11 @@ public class SettlementMapPanel extends JPanel {
 		return settlementTransparentPanel;
 	}
 
+	/**
+	 * Updates with the clock pulse.
+	 * 
+	 * @param pulse
+	 */
 	void update(ClockPulse pulse) {
 		// Clock pulses arrive on worker threads (MasterClock/ThreadPool). Swing must be updated on the EDT.
 		if (uiUpdateScheduled.compareAndSet(false, true)) {
@@ -1203,7 +1208,8 @@ public class SettlementMapPanel extends JPanel {
 				}
 			});
 		}
-		// repaint(); // avoid repaint flood; layers request repaints when needed
+		
+		repaint();
 	}
 
 	/**

@@ -451,7 +451,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 		}
 
 		public void run() {
-			if (row < getRowCount()) {
+			if (row >= 0 && row < getRowCount()) {
 				for(int column : columns) {
 					if (column < getColumnCount())
 						fireTableCellUpdated(row, column);

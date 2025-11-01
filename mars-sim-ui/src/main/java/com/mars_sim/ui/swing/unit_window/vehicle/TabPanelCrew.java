@@ -397,16 +397,17 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		public void unitUpdate(UnitEvent event) {
 			UnitEventType type = event.getType();
 			Worker member = (Worker) event.getSource();
-			int index = occupantList.indexOf(member);
-			if (index < 0) {
-				return;
-			}
-			if (type == UnitEventType.NAME_EVENT) {
-				fireTableCellUpdated(index, 0);
-			} else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
-					|| (type == UnitEventType.TASK_ENDED_EVENT) || (type == UnitEventType.TASK_SUBTASK_EVENT)
-					|| (type == UnitEventType.TASK_NAME_EVENT)) {
-				fireTableCellUpdated(index, 1);
+			int rowIndex = occupantList.indexOf(member);
+
+			if (rowIndex >= 0 && rowIndex < getRowCount()) {
+				if (type == UnitEventType.NAME_EVENT) {
+		            fireTableCellUpdated(rowIndex, 0);
+				} 
+				else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
+						|| (type == UnitEventType.TASK_ENDED_EVENT) || (type == UnitEventType.TASK_SUBTASK_EVENT)
+						|| (type == UnitEventType.TASK_NAME_EVENT)) {
+					fireTableCellUpdated(rowIndex, 1);
+				}
 			}
 		}
 	}

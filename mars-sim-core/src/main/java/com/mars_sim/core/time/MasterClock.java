@@ -40,25 +40,31 @@ public class MasterClock implements Serializable {
 	/** Initialized logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MasterClock.class.getName());
 	/** The maximum speed allowed .*/
-	public static final int TIER_3_TOP = 32;
+	public static final int TIER_3_TOP = 28;
 	/** The maximum speed allowed .*/
-	public static final int TIER_2_TOP = 24;
+	public static final int TIER_2_TOP = 22;
 	/** The high speed setting. */
 	public static final int TIER_1_TOP = 16;
 	/** The mid speed setting. */
 	public static final int TIER_0_TOP = 8;
 	
-	// 1x,    2x, 4x, 8x, 16x,    32x, 64x, 128x, 256x 
-	public static final float LOW_SPEED_RATIO = (float)Math.pow(2.0, 1.0 * TIER_0_TOP); 
-	// 384x, 576x, 864x, 1296x,    1944x, 2916x, 4374x, 6561x
+	public static final float BASE_RATIO_0 = 2.0f; 
+	public static final float BASE_RATIO_1 = 1.5f; 
+	public static final float BASE_RATIO_2 = 1.25f; 
+	public static final float BASE_RATIO_3 = 1.125f;
+	
+	// 1x, 
+	// 2x, 4x, 8x, 16x,    32x, 64x, 128x, 256x 
+	public static final float LOW_SPEED_RATIO = (float)Math.pow(BASE_RATIO_0, TIER_0_TOP); 
+	// 384x, 576x, 864x, 1,296x,    1,944x, 2,916x, 4,374x, 6,561x
 	public static final float MID_SPEED_RATIO = LOW_SPEED_RATIO 
-									* (float)Math.pow(1.5, 1.0 * TIER_1_TOP - TIER_0_TOP);
-	// 8201x, 10,251x, 12,813x, 16,016x,    20,020x, 25,025x, 31,281x, 39,101x
+									* (float)Math.pow(BASE_RATIO_1, TIER_1_TOP - TIER_0_TOP);
+	// 8,201x, 10,251x, 12,813x, 16,016x,    20,020x, 25,025x, 
 	public static final float HIGH_SPEED_RATIO = MID_SPEED_RATIO
-									* (float)Math.pow(1.25, 1.0 * TIER_2_TOP - TIER_1_TOP);
-	// 48,876x, 54,985x, 61,858x, 69,590x,     78,288x, 88,074x, 99,083x, 111,468x
+									* (float)Math.pow(BASE_RATIO_2, TIER_2_TOP - TIER_1_TOP);
+	// 31,281x, 35,191, 39,589x, 44,537x, 50,104x, 56,367x
 	public static final float SUPER_HIGH_SPEED_RATIO = HIGH_SPEED_RATIO
-									* (float)Math.pow(1.125, 1.0 * TIER_3_TOP - TIER_2_TOP);
+									* (float)Math.pow(BASE_RATIO_3, TIER_3_TOP - TIER_2_TOP);
 	
 	/** The Maximum number of pulses in the log .*/
 	private static final int MAX_PULSE_LOG = 40;
@@ -74,13 +80,7 @@ public class MasterClock implements Serializable {
 
 	/** The execution time limit [in ms] before action is taken. */
 	private static final int EXE_UPPER_LIMIT = 9_000;
-	
-	/** The TPS lower limit before action is taken. */
-//	private static final double TPS_LOWER_LIMIT = 0.1;
-				
-	/** The sleep time [in ms] for letting other CPU tasks to get done. */
-//	private static final int NEW_SLEEP = 20;
-	
+
 	/** The initial task pulse dampener for controlling the speed of the task pulse width increase. */
 	public static final int INITIAL_TASK_PULSE_DAMPER = 500;
 	/** The initial ref pulse dampener for controlling the speed of the ref pulse width increase. */
@@ -210,30 +210,11 @@ public class MasterClock implements Serializable {
 		clockThreadTask = new ClockThreadTask();
 		
 		if (userTimeRatio > 0) {
-			if (userTimeRatio <= LOW_SPEED_RATIO) {
-				desiredTR = (int)LOW_SPEED_RATIO;
-				while (desiredTR > userTimeRatio) {
-					decreaseSpeed();
-				}
+			int tr = 1;
+			while (tr < userTimeRatio) {
+				tr = findSpeed(tr);
 			}
-			else if (userTimeRatio <= MID_SPEED_RATIO) {
-				desiredTR = (int)MID_SPEED_RATIO;
-				while (desiredTR > userTimeRatio) {
-					decreaseSpeed();
-				}
-			}
-			else if (userTimeRatio <= HIGH_SPEED_RATIO) {
-				desiredTR = (int)HIGH_SPEED_RATIO;
-				while (desiredTR > userTimeRatio) {
-					decreaseSpeed();
-				}
-			}	
-			else if (userTimeRatio <= SUPER_HIGH_SPEED_RATIO) {
-				desiredTR = (int)SUPER_HIGH_SPEED_RATIO;
-				while (desiredTR > userTimeRatio) {
-					decreaseSpeed();
-				}
-			}	
+			desiredTR = tr;
 		}
 		else {
 			desiredTR = config.getTimeRatio();
@@ -263,8 +244,97 @@ public class MasterClock implements Serializable {
 		logger.config("            Max millisol per pulse : " + Math.round(maxMilliSolPerPulse * 10_000.0)/10_000.0);
 		logger.config(WHITESPACES);
 	}
+	
+	/**
+	 * Finds the initial time ratio.
+	 * 
+	 * @param initial
+	 * @return 
+	 */
+	public int findSpeed(int initial) {
 
- 
+		if (initial >= SUPER_HIGH_SPEED_RATIO) {
+			return (int)SUPER_HIGH_SPEED_RATIO;
+		}
+		else if (initial >= HIGH_SPEED_RATIO) {
+			return (int)(initial * BASE_RATIO_3);
+		}
+		else if (initial >= MID_SPEED_RATIO) {
+			return (int)(initial * BASE_RATIO_2);
+		}
+		else if (initial >= LOW_SPEED_RATIO) {
+			return (int)(initial * BASE_RATIO_1);
+		}
+		else {
+			return (int)(initial * BASE_RATIO_0);
+		}
+	}
+	
+
+	/**
+	 * Increases the speed or time ratio.
+	 */
+	public synchronized void increaseSpeed() {
+		int tr = desiredTR;
+		
+		if (tr >= SUPER_HIGH_SPEED_RATIO) {
+			return;
+		}
+		else if (tr >= HIGH_SPEED_RATIO) {
+			tr = (int)(tr * 1.125);
+		}
+		else if (tr >= MID_SPEED_RATIO) {
+			tr = (int)(tr * 1.25);
+		}
+		else if (desiredTR >= LOW_SPEED_RATIO) {
+			tr = (int)(tr * 1.5);
+		}
+		else {
+			tr = (int)(tr * BASE_RATIO_0);
+		}
+		
+		logger.config("Speed increased from " + desiredTR + " to " + tr + ".");
+		
+		desiredTR = tr;
+		
+		// Recompute the optimal pulse width
+		computeReferencePulse();
+		// Recompute the delta TR
+		calculateDeltaTR();
+	}
+
+	/**
+	 * Decreases the speed or time ratio.
+	 */
+	public synchronized void decreaseSpeed() {
+		int tr = desiredTR;
+		
+		if (tr > HIGH_SPEED_RATIO) {
+			tr = (int)Math.round(tr / BASE_RATIO_3);
+		}
+		else if (tr > MID_SPEED_RATIO) {
+			tr = (int)Math.round(tr / BASE_RATIO_2);
+		}
+		else if (tr > LOW_SPEED_RATIO) {
+			tr = (int)Math.round(tr / BASE_RATIO_1);
+		}
+		else if (tr > 1) {
+			tr = (int)Math.round(tr / BASE_RATIO_0);
+		}
+		else {
+			return;
+		}
+		
+		logger.config("Speed decreased from " + desiredTR + " to " + tr + ".");
+		
+		desiredTR = tr;
+
+		// Recompute the reference pulse width and optimal pulse width
+		computeReferencePulse();
+		// Compute the delta TR
+		calculateDeltaTR();
+	}
+	
 	/**
 	 * Computes the original cpu utjl or load.
 	 */
@@ -868,71 +938,6 @@ public class MasterClock implements Serializable {
 		}
 		clockExecutor.execute(clockThreadTask);
 	}
-	
-	/**
-	 * Increases the speed or time ratio.
-	 */
-	public synchronized void increaseSpeed() {
-		int tr = desiredTR;
-		
-		if (tr >= SUPER_HIGH_SPEED_RATIO) {
-			return;
-		}
-		else if (tr >= HIGH_SPEED_RATIO) {
-			tr = (int)(tr * 1.125);
-		}
-		else if (tr >= MID_SPEED_RATIO) {
-			tr = (int)(tr * 1.25);
-		}
-		else if (desiredTR >= LOW_SPEED_RATIO) {
-			tr = (int)(tr * 1.5);
-		}
-		else {
-			tr = tr * 2;
-		}
-		
-		logger.config("Speed increased from " + desiredTR + " to " + tr + ".");
-		
-		desiredTR = tr;
-		
-		// Recompute the optimal pulse width
-		computeReferencePulse();
-		// Recompute the delta TR
-		calculateDeltaTR();
-	}
-
-	/**
-	 * Decreases the speed or time ratio.
-	 */
-	public synchronized void decreaseSpeed() {
-		int tr = desiredTR;
-		
-		if (tr > HIGH_SPEED_RATIO) {
-			tr = (int)Math.round(tr / 1.125);
-		}
-		else if (tr > MID_SPEED_RATIO) {
-			tr = (int)Math.round(tr / 1.25);
-		}
-		else if (tr > LOW_SPEED_RATIO) {
-			tr = (int)Math.round(tr / 1.5);
-		}
-		else if (tr > 1) {
-			tr = (int)Math.round(tr / 2D);
-		}
-		else {
-			return;
-		}
-		
-		logger.config("Speed decreased from " + desiredTR + " to " + tr + ".");
-		
-		desiredTR = tr;
-
-		// Recompute the reference pulse width and optimal pulse width
-		computeReferencePulse();
-		// Compute the delta TR
-		calculateDeltaTR();
-	}
-
 
 	/**
 	 * Sets if the simulation is paused or not.

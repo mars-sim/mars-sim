@@ -428,7 +428,7 @@ import com.mars_sim.core.tool.RandomUtil;
 				 }
 				 
 				 // Calculate energy that can be delivered by battery 
-				 double energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;
+				 double energySuppliedByBattery = battery.consumeEnergy(energyByBattery / 1000, hrsTime) * 1000;
 		 
 //				 // Test to see how much can be drawn from the battery
 //				 if (VehicleType.isDrone(vehicle.getVehicleType())) {

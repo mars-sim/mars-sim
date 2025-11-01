@@ -31,11 +31,11 @@
         facing="270.0">
         <connection-list>
             <connection id="MCD0" hatch-facing="west" />
-            <connection id="MCC0" hatch-facing="east" />
+            <connection id="C0" hatch-facing="east" />
         </connection-list>
     </building>
 
-   <building id="MCC0" type="Match Core C" xloc="-18.0" yloc="0.0"
+   <building id="C0" type="Core C" xloc="-18.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="IG0" hatch-facing="west" />
@@ -46,7 +46,7 @@
     <building id="W0" type="Workshop" xloc="-24.0"
         yloc="0.0" facing="90.0">
         <connection-list>
-            <connection id="MCC0" hatch-facing="west" />
+            <connection id="C0" hatch-facing="west" />
         </connection-list>
     </building>
  

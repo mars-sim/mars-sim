@@ -125,7 +125,7 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 		            if (StudyFieldSamples.FIELD_SCIENCES.contains(collabScience)) {
 						Lab lab = LabTask.getLocalLab(person, collabScience);
 						if (lab != null) {
-							double collabResult = BASE_SCORE / 2;
+							double collabResult = BASE_SCORE / 2D;
 	
 							// Get lab building crowding modifier.
 							collabResult *= LabTask.getLabCrowdingModifier(person, lab);

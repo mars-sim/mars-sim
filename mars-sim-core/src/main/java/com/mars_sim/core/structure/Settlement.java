@@ -490,8 +490,7 @@ public class Settlement extends Unit implements Temporal,
 		preferences.resetValues(sponsor.getPreferences());
 
 		// Do mission limits; all have a limit of 1 first
-		preferences.putValue(MissionLimitParameters.INSTANCE,
-							 MissionType.CONSTRUCTION.name(), 1);
+		preferences.putValue(MissionLimitParameters.INSTANCE.getKey(MissionType.CONSTRUCTION), 1);
 		// Call weather to add this location
 		weather.addLocation(location);
 		// Construct the Exploration Manager.
@@ -1840,23 +1839,27 @@ public class Settlement extends Unit implements Temporal,
 			// Assign a permanent bed reservation if possible
 			LivingAccommodation.allocateBed(this, p, true);
 			// Update the population factor
-			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));		
+			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));
+
 			// Update mission limit dependent upon population
-			setMissionLimit(MissionLimitParameters.TOTAL_MISSIONS, 1, 5);
-			setMissionLimit(MissionType.MINING.name(), 0, 8);
-			setMissionLimit(MissionType.COLLECT_ICE.name(), 1, 5);
-			setMissionLimit(MissionType.COLLECT_REGOLITH.name(), 1, 5);
-			setMissionLimit(MissionType.EXPLORATION.name(), 1, 5);
-			setMissionLimit(MissionType.AREOLOGY.name(), 1, 6);
-			setMissionLimit(MissionType.BIOLOGY.name(), 1, 6);
-			setMissionLimit(MissionType.METEOROLOGY.name(), 1, 6);
-			setMissionLimit(MissionType.TRADE.name(), 0, 10);
-			setMissionLimit(MissionType.TRAVEL_TO_SETTLEMENT.name(), 0, 20);
-			setMissionLimit(MissionType.DELIVERY.name(), 0, 6);
+			setMissionLimit(MissionType.MINING, 0, 8);
+			setMissionLimit(MissionType.COLLECT_ICE, 1, 5);
+			setMissionLimit(MissionType.COLLECT_REGOLITH, 1, 5);
+			setMissionLimit(MissionType.EXPLORATION, 1, 5);
+			setMissionLimit(MissionType.AREOLOGY, 1, 6);
+			setMissionLimit(MissionType.BIOLOGY, 1, 6);
+			setMissionLimit(MissionType.METEOROLOGY, 1, 6);
+			setMissionLimit(MissionType.TRADE, 0, 10);
+			setMissionLimit(MissionType.TRAVEL_TO_SETTLEMENT, 0, 20);
+			setMissionLimit(MissionType.DELIVERY, 0, 6);
+
+			// Set total mission limit
+			int optimalMissions = Math.max(1, (numCitizens/5));
+			preferences.putValue(MissionLimitParameters.TOTAL_MISSIONS, optimalMissions);
 
 			// EVA capacity
 			int evaCapacity = (int)Math.ceil(numCitizens * EVA_PERCENTAGE);
-			preferences.putValue(SettlementParameters.INSTANCE, SettlementParameters.MAX_EVA, evaCapacity);
+			preferences.putValue(SettlementParameters.MAX_EVA, evaCapacity);
 
 			// Fire unit update
 			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
@@ -1869,13 +1872,13 @@ public class Settlement extends Unit implements Temporal,
 	/**
 	 * Calculates the mission limit parameter based on the population and person ratio.
 	 * 
-	 * @param id Id of the parameter value
-	 * @param minMissions Minimum numebr of missions
+	 * @param type Type of Mission to control
+	 * @param minMissions Minimum number of missions
 	 * @param personRatio Ratio of person to mission
 	 */
-	private void setMissionLimit(String id, int minMissions, int personRatio) {
+	private void setMissionLimit(MissionType type, int minMissions, int personRatio) {
 		int optimalMissions = Math.max(minMissions, (numCitizens/personRatio));
-		preferences.putValue(MissionLimitParameters.INSTANCE, id, optimalMissions);
+		preferences.putValue(MissionLimitParameters.INSTANCE.getKey(type), optimalMissions);
 	}
 
 	/**
@@ -2322,7 +2325,7 @@ public class Settlement extends Unit implements Temporal,
 	public void setProcessOverride(OverrideType type, boolean override) {
 		logger.log(this, Level.CONFIG, 0L, "Player " + (override ? "enables" : "disable")
 						+ " the override on '" + type.getName() + "'.");
-		preferences.putValue(ProcessParameters.INSTANCE, type.name(), Boolean.valueOf(override));
+		preferences.putValue(ProcessParameters.INSTANCE.getKey(type), Boolean.valueOf(override));
 	}
 
 	/**
@@ -2332,7 +2335,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return Is this override flag set
 	 */
 	public boolean getProcessOverride(OverrideType type) {
-		return preferences.getBooleanValue(ProcessParameters.INSTANCE, type.name(), false);
+		return preferences.getBooleanValue(ProcessParameters.INSTANCE.getKey(type), false);
 	}
 
 	/**
@@ -2924,7 +2927,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @param disable
 	 */
 	public void setMissionDisable(MissionType mission, boolean disable) {
-		preferences.putValue(MissionWeightParameters.INSTANCE, mission.name(), (disable ? 0D : 1D));
+		preferences.putValue(MissionWeightParameters.INSTANCE.getKey(mission), (disable ? 0D : 1D));
 	}
 
 	public void setAllowTradeMissionFromASettlement(Settlement settlement, boolean allowed) {
@@ -2942,7 +2945,7 @@ public class Settlement extends Unit implements Temporal,
 	 * @return probability value
 	 */
 	public boolean isMissionEnable(MissionType mission) {
-		return preferences.getIntValue(MissionLimitParameters.INSTANCE, mission.name(), 0) > 0;
+		return preferences.getIntValue(MissionLimitParameters.INSTANCE.getKey(mission), 0) > 0;
 	}
 
 	/**

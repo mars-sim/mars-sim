@@ -1,25 +1,120 @@
 # Mars Simulation Project
 
 Copyright &copy; 2025 Scott Davis  
-Project: https://mars-sim.com  
+Project: https://marssim.space
 GitHub: https://github.com/mars-sim/mars-sim  
 
 ------------------------------------------|---------------------
 
-## Version 3.10.0 (Q3 2025)
+## Version 3.10.0 (25 Oct 2025)
 
 ### A. CORE ENGINE IMPROVEMENTS :
--
+<OL>
+    <LI>Meal time schedules are flexible and follow the sunrise.</LI>
+	<LI>Different toolsets requirements can be defined for Manufacturing Processes.</LI>
+    <LI>Manufacture function can provide multiple toolings for processes.</LI>
+	<LI>Simplify the start up for the Simulation configuration.</LI>
+    <LI>Default configuration directory can be changed by a commandline argument.</LI>
+    <LI>File logging is controlled from a commandline argument.</LI>
+    <li>Dessert creation merged into normal Dish/Meal configurations.</li>
+    <li>Mission outcome/objectives are held seperate from the Mission class. This support future of mixed purpose Missions.</li>
+	<LI>Remodel and display a perosn's blood type.</LI>
+	<LI>Remodel a person's eating appetite.</LI>
+	<LI>Rebalance biomass yield on food crop.</LI>
+	<li>Add Sector Base Template with population of 120.</li>
+	<li>Replace with efficient pathfinding algorithm for settlement interior walk.</li>
+	<li>Rework Loading Dock Garage to support 3 bays for rovers.</li>
+	<li>Add 2 LUV bays in both garages.</li>
+	<li>Add to garage when a vehicle returns to a settlement.</li>
+	<li>Add Alpha Base template variants'.</li>
+	<li>Optimize getting a set of buildings.</li>
+	<li>Moderate food resource and food production.</li>
+	<li>Lower structural heat loss due to proximity of adjacent building.</li>
+	<li>Add bunk beds in some buildings for accommodating more settlers.</li>
+	<li>Add Parameter Categories for customizing preferences in each settlement. </li>
+	<li>Add Brine Water Well building to lessen the need for digging local ice and ice collection mission.</li>	
+	<li>Implement construction queue.</li>
+	<li>Improve inspection and maintenance. Allow auditing outside buildings remotely.</li>
+	<li>Create MarsZone, StorageSpec, Research Spec, GenerationSpect and SourceSpec.</li>
+	<li>Unify access to walking methods for persons and robots.</li>	
+	<li>Rework how local construction tasks are executed during a construction mission.</li>
+	<li>Rework various settlement templates and experiment with new building placements.</li>	
+	<li>Create and rework coordinate format to be non-locale based in support of internationalization.</li>	
+	<li>Add more German and UK person, settlement and vehicle names.</li>
+	<li>Add Agenzia Spaziale Italiana, German Space Agency (DLR) and UK Space Agency (UKSA).</li>	
+	<li>Add part fatigues to vehicles, robots and buildings and they may be lowered by inspection and maintenance.</li>
+	<li>Limit resource demand with a ceiling imposed by the sum of projected, trade and repair demand.</li>		
+	<li>Rebalance resources demand and supply chain.</li>
+	<li>Add new bio-based and chemical-based resource processes.</li>
+	<li>Allow hallways to have sufficient heat capacity by generating heat per square meter of area.</li>	
+	<li>Add Sociology and Architecture as a science subject.</li>
+	<li>Switch to supporting JUnit 5 and 6.</li>	
+	<li>Rework mission log entries.</li>	
+	<li>Add the initial model of generating tourists for large settlements.</li>	
+	<li>Add new background music ogg files.</li>	
+	<li>Implement new area collision algorithm for walking outside.</li>	
+ </OL>
 
 ### B. UI IMPROVEMENT :
--
+ <OL>
+    <LI>Person Favorite displays the list of dish names.</LI>
+    <li>Navigator Window provides filters for teh Exploration, Unit & Landmark layers.</li>
+    <li>Redesign of the Navigator Window controls so layers are managed via a Tree control.</li>
+    <li>Navigator window is no longer a fixed size and can be resized.</li>
+    <li>Mission details panel redesigned.</li>
+    <li>New standard way to display Entities with details and location button provided.</li>
+	<LI>Display the average age and gender atio of a settlement.</LI>
+	<li>Add 3 dark themes and a light theme.</li>
+	<li>Enable top menu bar in macOS.</li>
+	<li>Enable mars-sim dock icon in macOS.</li>
+	<li>Relocate speed buttons to top left of the main window.</li>
+	<li>Add 'Life Core A' and 'Half Core A/B' buildings.</li>
+	<li>Add Preferences tab in SettlementUnitWindow.</li>
+	<li>Add buildings svg images for new Bio-reactor labs and various Core connectors.</li>
+	<li>Improve construction tab with queue table.</li>
+	<li>Add deep borehole small drilling site.</li>
+	<li>Show spot locations within building in Settlement Map's status bar.</li>
+	<li>Fast track building maintenance if repair parts are posted and ready.</li>
+	<li>Remove memory leak when scrolling up and down Settlement map's zoom slider.</li>
+	<li>Update mass/quantity properly in Monitor Tool's Good tab.</li>	
+	<li>Add settlement wide construction and manufacturing queue.</li>
+	<li>Convert various missions to Objective pattern.</li>	
+	<li>Reduce heap memory when zooming in the Settlement local Map.</li>
+	<li>Replace console main menu with a swing-based startup chooser menu.</li>
+	<li>Allow each tab in Monitor Tool to filter settlements (All, a sponsor or a settlement).</li>
+	<li>Add a sound effect toolbar and a music toolbar.</li>	
+	<li>Add a startup chooser.</li>	
+  </OL>  
 
 ### C. FIXES :
--
+<OL>
+    <LI>Correct how GoodsManager uses properties when updating the value.</LI>
+    <LI>Correct missing main window title.</LI>
+	<LI>Correct male and female gender ratio.</LI>
+	<LI>Correct the use of Alive/Deceased/Buried checkboxes in Monitor Tool's Citizens tab.</LI>
+	<LI>Correct the use of stock capacity.</LI>
+	<li>Correct mouse button detection for macOS in Settlement Map.</li>
+	<li>Proper artificial lighting for growing crops in greenhouses.</li>
+	<li>Correct hatch-facing attribute interpretation for building locations.</li>
+	<li>Correct getting a computational node.</li>
+	<li>Fix getting a random settlement name.</li>
+	<li>Fix calculating local vs. market demand and value points.</li>
+	<li>Fix area calculation for hab and hub.</li>
+	<li>Fix repairbots getting stuck in EVA airlocks.</li>
+	<li>Correct the use of population factor for computing demand and good value.</li>
+	<li>Return zero rating for emergency mission.</li>
+	<li>Clean up astroart code.</li>	
+	<li>Update mass/quantity properly in Monitor Tool's Good tab.</li>		
+	<li>Correct the way the ChainOfCommand elect leaders and chiefs and release old roles.</li>		
+	<li>Identify and correct teleportation of mission members during mission back to their home settlement.</li>
+	<li>Correct the way the power grid would selectively shut down various types of buildings that may generate power to have net position power.</li>		
+	<li>Correct inability to automatically starting Field Study missions.</li>		
+	<li>Correct collecting rocks in Exploration and various field missions.</li>			
+  </OL>
 
 ------------------------------------------|---------------------
 
-## Version 3.9.0 (March 2025)
+## Version 3.9.0 (15 Mar 2025)
 
 ### A. CORE ENGINE IMPROVEMENTS :
 
@@ -43,29 +138,6 @@ GitHub: https://github.com/mars-sim/mars-sim
 - Resource Process: fix problematic toggle logic.
 - Monitor Tool: Displays newly arrived Settlements in Monitor Tool.
 
-
-------------------------------------------|---------------------
-## Version 3.8.1 (Tue xx xxx 2024)
-
-### A. CORE ENGINE IMPROVEMENTS :
-- Battery: rework ingredients for making vehicle's battery modules and EVA battery.
-- Fertilizer: rework resources for making fertilizers.
-- Loading: rework loading/unloading resources independent from vehicle mission.
-- Java: update from Java 19 to Java 21.
-- Rating: unify how rating score for both mission and task is computed.
-- Resource: correct potassium production and related manu processes.
-  
-### B. UI IMPROVEMENT :
-
-- OpenCL: add a button to turn on/off GPU map loading.
-- Surface Map: add rendering shade relief gray maps.
-  
-
-### C. FIXES :
-
-- Manufacturing: fix settlement-driven manufacturing and food production.
-- Map Zoom: correct seamless zoom level transition when changing from one map to another.
-- Salvage: fix salvaging vehicles and equipment.
 
 ------------------------------------------|---------------------
 ## Version 3.8.0 (Tue 27 Aug 2024)

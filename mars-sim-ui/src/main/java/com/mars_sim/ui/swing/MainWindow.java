@@ -1,29 +1,32 @@
 /*
  * Mars Simulation Project
  * MainWindow.java
- * @date 2025-09-19
+ * @date 2025-10-18
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
+import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
+import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -35,9 +38,13 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -53,6 +60,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -83,6 +91,10 @@ public class MainWindow
 	private static final String MAIN_PROPS = "main-window";
 	private static final String EXTERNAL_BROWSER = "use-external";
 
+	private static final String SOUND = "sound";
+	private static final String MUSIC = "music";
+	private static final String _MUTE = "_mute";
+	
 	/** The main window frame. */
 	private static JFrame frame;
 
@@ -92,18 +104,22 @@ public class MainWindow
 
 	// Data members
 	private boolean isIconified = false;
-
+//    private boolean isPanelVisible = false;
+    
 	private int millisolIntCache;
+	private int initX;
+	private int initY;
+	private List<Integer> volCache = new ArrayList<>();
 	
+    private static final int PANEL_WIDTH = 40;
+    private static final int BAR_LENGTH = 200;
+    
 	/** The unit tool bar. */
 	private UnitToolBar unitToolbar;
 	/** The tool bar. */
 	private ToolToolBar toolToolbar;
 	/** The main desktop. */
 	private MainDesktopPane desktop;
-
-	/** WebSwitch for the control of play or pause the simulation */
-	private JToggleButton playPauseSwitch;
 
 	private Dimension selectedSize;
 	
@@ -113,6 +129,11 @@ public class MainWindow
 
 	private JMemoryMeter memoryBar;
 
+	private JPanel leftSlidingPanel;
+	
+	/** The control of play or pause the simulation. */
+	private JToggleButton playPauseSwitch;
+ 
 	private transient HelpLibrary helpLibrary;
 
 	private boolean useExternalBrowser;
@@ -269,9 +290,9 @@ public class MainWindow
 				+ selectedSize.height
 				+ ".");
 
-		frame.setLocation(
-				((screenWidth - selectedSize.width) / 2),
-				((screenHeight - selectedSize.height) / 2));
+		initX = (int)(screenWidth - selectedSize.width) / 2;
+		initY = (int)(screenHeight - selectedSize.height) / 2;
+		frame.setLocation(initX, initY);
 
 		logger.config("Use default configuration to set main window's frame to the center of the screen.");
 		logger.config("The main window frame is centered and starts at ("
@@ -356,7 +377,6 @@ public class MainWindow
 	/**
 	 * Initializes UI elements for the frame
 	 */
-	@SuppressWarnings("serial")
 	private void init() {
 	
 		frame.addWindowListener(new WindowAdapter() {
@@ -420,16 +440,39 @@ public class MainWindow
 		contentPane.add(desktop, BorderLayout.CENTER);
 		mainPane.add(contentPane, BorderLayout.CENTER);
 
-		// Prepare tool toolbar
-		toolToolbar = new ToolToolBar(this);
-		toolToolbar.requestFocusInWindow();
+		// Add a sliding left panel menu
+		if (desktop.getSoundPlayer() != null) {
+			createSlidingLeftPanel(contentPane);
+		}	
+    	
+     	// Add toolbar pane
+		JPanel toolbarPane = new JPanel(new BorderLayout()); 
+		// Note: use BorderLayout for now since it has the advantage of 
+		// centering the earth/Mars date stamp on the screen
+		// while FlowLayout(FlowLayout.CENTER)) will result in icons clump together
+		// Cannot use toolbarPane.setLayout(new BoxLayout(toolbarPane, BoxLayout.X_AXIS)) since 
+		// it makes icons not stretching out enough
+		toolbarPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+		contentPane.add(toolbarPane, BorderLayout.NORTH);
 		
-		// Create speed buttons
-		createSpeedButtons(toolToolbar);
-		
-		// Add toolToolbar to mainPane
-		contentPane.add(toolToolbar, BorderLayout.NORTH);
-
+		 // Add a floating speed bar
+     	JToolBar floatingSpeedBar = new JToolBar(SwingConstants.HORIZONTAL);
+     	floatingSpeedBar.setAlignmentX(Component.LEFT_ALIGNMENT);
+     	// Note: do NOT use floatingSpeedBar.setFloatable(true).
+     	// If user clicks close while it's floating, it does not re-positioning itself
+     	// back to top left corner. Rather it creates the unintended consequence 
+     	// of having two rows of tool bar
+     	floatingSpeedBar.add(createSpeedBar());	
+	
+    	// Add floatingSpeedBar to toolbarPane
+		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
+	
+     	// Prepare tool toolbar
+     	toolToolbar = new ToolToolBar(this);
+     	toolToolbar.requestFocusInWindow();
+     	// Add toolToolbar to toolbarPane
+     	toolbarPane.add(toolToolbar, BorderLayout.CENTER);
+    
 		// Add bottomPane for holding unitToolbar and statusBar
 		JPanel bottomPane = new JPanel(new BorderLayout());
 
@@ -448,7 +491,6 @@ public class MainWindow
 		unitToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_UNIT_BAR, false));
 		toolToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_TOOL_BAR, true));
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
-
 
 		// Prepare menu
 		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
@@ -471,28 +513,49 @@ public class MainWindow
 		// Add this class to the master clock's listener
 		masterClock.addClockListener(this, 1000L);
 	}
+	  
+	public JPanel createSlidingLeftPanel(JPanel contentPane) {
+	
+        // Create left sliding panel
+        leftSlidingPanel = new JPanel();//new BorderLayout());
+        setUpSize(PANEL_WIDTH, BAR_LENGTH * 2, leftSlidingPanel);
+        leftSlidingPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+	 	volCache.add((int)(getAudioPlayer().getMusicVolume() * 100));
+	 	volCache.add((int)(getAudioPlayer().getSoundEffectVolume() * 100));
+ 	
+     	// Add a floating volume bar
+     	JToolBar musicBar = createSoundMusicSlider(0, volCache);
+     	leftSlidingPanel.add(musicBar);//, BorderLayout.NORTH);
+
+     	// Add a floating volume bar
+     	JToolBar soundBar = createSoundMusicSlider(1, volCache);
+     	leftSlidingPanel.add(soundBar);//, BorderLayout.SOUTH);
+     	
+        // Add components
+        contentPane.add(leftSlidingPanel, BorderLayout.WEST);
+
+        return contentPane;
+    }
+	
 	/**
-	 * Updates the LAF style to a new value.
+	 * Creates the speed bar and buttons.
+	 * 
+	 * @return
 	 */
-	public void updateLAF(String newStyle) {
-		// Set up the look and feel library to be used
-		if (StyleManager.setLAF(newStyle)) {
-			SwingUtilities.updateComponentTreeUI(frame);
-		}
-	}
-
-	private void createSpeedButtons(ToolToolBar toolBar) {
+	private JPanel createSpeedBar() {
 		
-		JPanel panel = new JPanel(new BorderLayout());
-		JPanel speedPanel = new JPanel(new GridLayout(1, 3));
-		panel.add(speedPanel, BorderLayout.EAST);
+		JPanel speedPanel = new JPanel(new FlowLayout());//new GridLayout(1, 3));
+		speedPanel.setToolTipText("Speed Control");
+		
+		Dimension d1 = new Dimension(25, 25);
 		
 		// Add the decrease speed button
-		JButton decreaseSpeed = new JButton("\u23EA");
-		decreaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-		decreaseSpeed.setPreferredSize(new Dimension(30, 30));
-		decreaseSpeed.setMaximumSize(new Dimension(30, 30));
+		JButton decreaseSpeed = new JButton("-");//"\u2212");//u23EA");
+		decreaseSpeed.setAlignmentX(SwingConstants.CENTER);
+		decreaseSpeed.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		decreaseSpeed.setPreferredSize(d1);
+		decreaseSpeed.setMaximumSize(d1);
 		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
 		
 		decreaseSpeed.addActionListener(e -> {
@@ -502,12 +565,13 @@ public class MainWindow
 		});
 		
 		// Create pause switch
-		createPauseSwitch();
+		createPauseSwitch(d1);
 
-		JButton increaseSpeed = new JButton("\u23E9");
-		increaseSpeed.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-		increaseSpeed.setPreferredSize(new Dimension(30, 30));
-		increaseSpeed.setMaximumSize(new Dimension(30, 30));
+		JButton increaseSpeed = new JButton("+");//"\u002B");//\u23E9");
+		increaseSpeed.setAlignmentX(SwingConstants.CENTER);
+		increaseSpeed.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		increaseSpeed.setPreferredSize(d1);
+		increaseSpeed.setMaximumSize(d1);
 		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
 
 		increaseSpeed.addActionListener(e -> {
@@ -520,18 +584,21 @@ public class MainWindow
 		speedPanel.add(decreaseSpeed);
 		speedPanel.add(playPauseSwitch);
 		speedPanel.add(increaseSpeed);
-		toolBar.add(panel);
 		
+		return speedPanel;
 	}
-
+	
 	/**
 	 * Creates the pause button.
+	 * 
+	 * @param d1
 	 */
-	private void createPauseSwitch() {
+	private JToggleButton createPauseSwitch(Dimension d1) {
 		playPauseSwitch = new JToggleButton("\u23E8");
-		playPauseSwitch.setFont(new Font(Font.DIALOG, Font.BOLD, 18));
-		playPauseSwitch.setPreferredSize(new Dimension(30, 30));
-		playPauseSwitch.setMaximumSize(new Dimension(30, 30));
+		playPauseSwitch.setAlignmentX(SwingConstants.CENTER);
+		playPauseSwitch.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+		playPauseSwitch.setPreferredSize(d1);
+		playPauseSwitch.setMaximumSize(d1);
 		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
 		playPauseSwitch.addActionListener(e -> {
 				boolean isSel = playPauseSwitch.isSelected();
@@ -546,6 +613,134 @@ public class MainWindow
 				masterClock.setPaused(isSel, false);	
 			});
 		playPauseSwitch.setText("\u23F8");
+		
+		return playPauseSwitch;
+	}
+	
+	public JToggleButton getPlayPauseSwitch() {
+		return playPauseSwitch;
+	}
+	
+	/**
+	 * Creates the sound and music volume slider.
+	 * 
+	 * @param d1
+	 * @return 
+	 */
+	private JToolBar createSoundMusicSlider(int index, List<Integer> volCache) {
+		JToolBar bar = new JToolBar(SwingConstants.VERTICAL);
+		setUpSize(PANEL_WIDTH, BAR_LENGTH, bar);
+     	bar.setAlignmentX(Component.CENTER_ALIGNMENT);
+     	bar.setFloatable(true);
+     	
+     	JLabel emptyLabel = new JLabel("  ");
+     	setUpSize(10, 10, emptyLabel);
+     	bar.add(emptyLabel);
+     	
+     	String type = null;
+     	int volSlider = 0;
+     	if (index == 0) {
+     		type = MUSIC;
+     		volSlider = (int)(getAudioPlayer().getMusicVolume() * 100);
+     	}
+     	else {
+     		type = SOUND;
+     		volSlider = (int)(getAudioPlayer().getSoundEffectVolume() * 100);
+     	}
+		
+		Icon icon = ImageLoader.getIconByName(type);
+		Icon musicMuteIcon = ImageLoader.getIconByName(type + _MUTE);
+		JToggleButton toggleButton = new JToggleButton(icon);
+		setUpSize(PANEL_WIDTH - 5, PANEL_WIDTH - 5, toggleButton);
+		toggleButton.setAlignmentX(SwingConstants.CENTER);// Component.CENTER_ALIGNMENT);
+		toggleButton.setToolTipText("Toggle on and off " + type + " volume");
+		toggleButton.setSelected(true);
+		toggleButton.setSelectedIcon(icon);
+		toggleButton.setIcon(musicMuteIcon);
+		bar.add(toggleButton);
+		
+        JSlider slider = new JSlider(SwingConstants.VERTICAL);
+        bar.add(slider);
+        
+        toggleButton.addItemListener(e -> {
+        	final int i = index;
+
+		    if (e.getStateChange() == ItemEvent.SELECTED) {	
+		    	if (volCache.get(i) == 0)
+		    		slider.setValue(25);
+		    	else
+		    		slider.setValue(volCache.get(i));
+		    } 
+		    else if (e.getStateChange() == ItemEvent.DESELECTED) {
+		    	volCache.set(i, slider.getValue());
+			    slider.setValue(0);
+		    }
+		});
+		
+        slider.setMajorTickSpacing(50);
+        slider.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 8));
+        slider.setPaintLabels(true);
+        slider.setToolTipText(type + " volume slider");
+        setUpSize(PANEL_WIDTH, BAR_LENGTH - PANEL_WIDTH - 10, slider);
+        slider.setAlignmentX(SwingConstants.CENTER);// Component.CENTER_ALIGNMENT);
+
+        //this is for setting the value
+        slider.addChangeListener(e -> {
+            int value = ((JSlider)e.getSource()).getValue();         
+            if (icon != null) {
+                if (value == 0) {
+                	toggleButton.setSelected(false);
+                }
+                else if (!toggleButton.isSelected()) {
+                	toggleButton.setSelected(true);
+                }   
+            }
+            
+            try {
+            	if (index == 0)
+            		getAudioPlayer().setMusicVolume(value / 100.0);
+            	else
+            		getAudioPlayer().setSoundVolume(value / 100.0);
+            	
+            } catch (Exception ex) {
+            	logger.severe("Unable to set new music volume: " + ex);
+            }
+        });
+        
+
+        try {
+            slider.setValue(volSlider);
+        } catch (Exception e) {
+        	logger.severe("Unable to set new " + type + " volume: " + e);
+        }
+        
+        
+        return bar;
+    }
+	
+	/**
+	 * Sets up the size of a component.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param comp
+	 */
+	private void setUpSize(int x, int y, Component comp) {
+		Dimension d1 = new Dimension(x, y);
+		comp.setSize(d1);
+		comp.setMinimumSize(d1);
+		comp.setPreferredSize(d1);
+		comp.setMaximumSize(d1);
+	}
+	
+	/**
+	 * Updates the LAF style to a new value.
+	 */
+	public void updateLAF(String newStyle) {
+		// Set up the look and feel library to be used
+		if (StyleManager.setLAF(newStyle)) {
+			SwingUtilities.updateComponentTreeUI(frame);
+		}
 	}
 
 	/**
@@ -566,6 +761,15 @@ public class MainWindow
 		return desktop;
 	}
 
+	/**
+	 * Gets the audio player.
+	 * 
+	 * @return
+	 */
+	public AudioPlayer getAudioPlayer() {
+		return desktop.getSoundPlayer();
+	}
+	
 	/**
 	 * Performs the process of saving a simulation.
 	 * Note: if defaultFile is false, displays a FileChooser to select the
@@ -780,14 +984,10 @@ public class MainWindow
 			return;
 		
 		if (isPaused) {
-			desktop.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			desktop.getSoundPlayer().pauseMusic();
 			desktop.getSoundPlayer().muteMusic();
 		}
 		else {
-			desktop.getParent().setCursor(Cursor.getDefaultCursor());
 			desktop.getSoundPlayer().unmuteMusic();
-			desktop.getSoundPlayer().resumeMusic();
 		}
 	}
 
@@ -874,8 +1074,7 @@ public class MainWindow
 		desktop = null;
 		
 		uiconfigs = null;
-		
-		playPauseSwitch = null;
+
 		selectedSize = null;
 		
 		sim = null;

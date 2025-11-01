@@ -1,5 +1,7 @@
 package com.mars_sim.core.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.BeforeEach;
 
 import com.mars_sim.core.SimulationConfig;
@@ -9,6 +11,7 @@ import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.MockSettlement;
@@ -76,6 +79,32 @@ public abstract class MarsSimUnitTest {
      * @return
      */
     protected Settlement buildSettlement(String name) {
-        return context.buildSettlement(name, false,  MockSettlement.DEFAULT_COORDINATES);
+        return buildSettlement(name, false,  MockSettlement.DEFAULT_COORDINATES);
     }
+
+    /**
+     * Build a mock settlement with full control
+     * @param name
+     * @param withGoodsManager
+     * @param coords
+     * @return
+     */
+    protected Settlement buildSettlement(String name, boolean withGoodsManager, Coordinates coords) {
+        return context.buildSettlement(name, withGoodsManager,  coords);
+    }
+
+    /**
+     * Should this be a static import
+     * @param message
+     * @param maxValue
+     * @param actual
+     */
+	public static void assertLessThan(String message, double maxValue, double actual) {
+		if (actual >= maxValue) {
+			fail(message + " ==> " +
+					"Expected: a value less than <" + maxValue + "> " +
+					"Actual was <" + actual + ">");
+		}
+	}
+	
 }

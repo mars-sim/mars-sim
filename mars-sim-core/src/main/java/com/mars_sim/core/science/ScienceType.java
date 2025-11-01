@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.tool.Msg;
@@ -19,7 +20,7 @@ import com.mars_sim.core.tool.RandomUtil;
 /**
  * Science field names and researcher job descriptions.
  */
-public enum ScienceType {
+public enum ScienceType implements Named {
 	// the actual enum value is followed by data associated to the value.
 
 	/** The building constructions and settlement layout. */
@@ -189,6 +190,7 @@ public enum ScienceType {
 	 * 
 	 * @return 
 	 */
+	@Override
 	public final String getName() {
 		return this.name;
 	}
@@ -262,6 +264,5 @@ public enum ScienceType {
 	 */
 	public static ScienceType getRandomEngineeringSubject() {
 		return RandomUtil.getRandomElement(engineeringSubjects);
-	}
-	
+	}	
 }

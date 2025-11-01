@@ -309,7 +309,9 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 
         @Override
         public void run() {
-            fireTableCellUpdated(rowIndex, colIndex);
+        	if (rowIndex >= 0 && rowIndex < getRowCount()) {
+                fireTableCellUpdated(rowIndex, colIndex);
+            }
         }
     }
 }

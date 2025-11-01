@@ -65,10 +65,8 @@ public abstract class DigLocalMeta extends MetaTask
     private static final double MIN_CAPACITY = 0.25D; // Minimum capacity to trigger digging
     /* The maximum shift fraction completed for a person to start this task.
     If above this value, the person will not consider picking this task. */
- private static final double MAX_SHIFT_FRACTION = 0.66D;
-    
-	private static final SettlementParameters SETTLE_CAT = SettlementParameters.INSTANCE;
-	
+    private static final double MAX_SHIFT_FRACTION = 0.66D;
+    	
 	private EquipmentType containerType;
 
     protected DigLocalMeta(String name, EquipmentType containerType) {
@@ -117,7 +115,7 @@ public abstract class DigLocalMeta extends MetaTask
         
         // Calculate the capacity for more EVAs
         int maxEVA = (int)Math.sqrt(1.0 + rationingLevel) 
-        		+ settlement.getPreferences().getIntValue(SETTLE_CAT, SettlementParameters.MAX_EVA,
+        		+ settlement.getPreferences().getIntValue(SettlementParameters.MAX_EVA,
                                                     DEFAULT_EVA_NUM);
         
         if (!isEmergency) {

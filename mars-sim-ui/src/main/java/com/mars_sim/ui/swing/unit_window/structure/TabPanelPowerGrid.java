@@ -459,7 +459,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	    	int numRow = getRowCount();
 	    	int numCol = getColumnCount();
 	    	for (int i=0; i< numRow; i++) {	
-	    		for (int j=0; j< numCol; j++) {	
+	    		for (int j=0; j< numCol; j++) {
 		    		if (j != 1)
 		    			fireTableCellUpdated(i, j);
 	    		}

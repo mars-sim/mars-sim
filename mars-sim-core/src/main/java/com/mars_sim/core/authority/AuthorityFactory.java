@@ -106,25 +106,18 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 
 					// Backward compatible with the old naming scheme
 					String pTypeValue = preNode.getAttributeValue(TYPE_ATTR);
-					ParameterCategory pType;
-					switch(pTypeValue) {
-						case "MISSION", "MISSION_WEIGHT":
-							pType = MissionWeightParameters.INSTANCE;
-							break;
-						case "TASK", "TASK_WEIGHT":
-							pType = TaskParameters.INSTANCE;
-							break;
-						case "SCIENCE":
-							pType = ScienceParameters.INSTANCE;
-							break;
-						default:
-							throw new IllegalArgumentException("Authority " + name
-									+ " has an unsupport preference type " + pTypeValue);	
-					}
+					ParameterCategory pType = switch(pTypeValue) {
+						case "MISSION", "MISSION_WEIGHT" -> MissionWeightParameters.INSTANCE;
+						case "TASK", "TASK_WEIGHT" -> TaskParameters.INSTANCE;
+						case "SCIENCE" -> ScienceParameters.INSTANCE;
+						default -> throw new IllegalArgumentException("Authority " + name
+								+ " has an unsupport preference type " + pTypeValue);
+					};
+					
 					Serializable value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
 					String pName = preNode.getAttributeValue(NAME_ATTR).toUpperCase();
-
-					preferences.putValue(pType, pName, value);
+					var key = pType.getKey(pName);
+					preferences.putValue(key, value);
 				}
 
 				subs.add(new MissionCapability(description, preferences));

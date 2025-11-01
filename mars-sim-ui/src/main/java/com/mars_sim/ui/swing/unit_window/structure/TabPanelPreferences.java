@@ -24,18 +24,12 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.manufacture.ManufacturingParameters;
+import com.mars_sim.core.parameter.ParameterCategories;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterCategory.ParameterSpec;
+import com.mars_sim.core.parameter.ParameterKey;
 import com.mars_sim.core.parameter.ParameterManager;
-import com.mars_sim.core.parameter.ParameterManager.ParameterKey;
-import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
-import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
-import com.mars_sim.core.person.ai.task.util.TaskParameters;
-import com.mars_sim.core.science.ScienceParameters;
-import com.mars_sim.core.structure.ProcessParameters;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
@@ -48,26 +42,18 @@ public class TabPanelPreferences extends TabPanelTable {
 	/**
 	 * Represents a renderable version for a Parameter Key with a displayable label.
 	 */
-	private static final record RenderableKey(ParameterCategory category, ParameterSpec spec) {
+	private static final record RenderableKey(ParameterKey key, ParameterSpec spec) {
 		@Override
 		public String toString() {
 			return spec.displayName();
 		}	
 		
 		public ParameterKey key() {
-			return new ParameterKey(category, spec.id());
+			return key;
 		}
 	}
 
 	private static final String ICON = "favourite";
-
-	private static final ParameterCategory[] CATEGORIES = {ManufacturingParameters.INSTANCE,
-															MissionWeightParameters.INSTANCE,
-															MissionLimitParameters.INSTANCE,
-															ProcessParameters.INSTANCE,
-															ScienceParameters.INSTANCE,
-															SettlementParameters.INSTANCE,
-															TaskParameters.INSTANCE};
 
 	// Maintains a cache of preferences already having a renderable equivalent
 	private PreferenceTableModel tableModel;
@@ -75,6 +61,8 @@ public class TabPanelPreferences extends TabPanelTable {
 	private JComboBox<RenderableKey> nameCombo;
 
 	private ParameterManager mgr;
+
+	private transient ParameterCategory[] categories;
 
 	/**
 	 * Constructor.
@@ -85,13 +73,13 @@ public class TabPanelPreferences extends TabPanelTable {
 	public TabPanelPreferences(Settlement unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
 		super(
-			Msg.getString("TabPanelPreferences.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelPreferences.title"), //-NLS-1$
 			ImageLoader.getIconByName(ICON),
-			Msg.getString("TabPanelPreferences.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelPreferences.title"), //-NLS-1$
 			unit, desktop
 		);
 		mgr = unit.getPreferences();
-
+		categories = ParameterCategories.getSettlementCategories();
 	}
 	
 	/**
@@ -106,7 +94,7 @@ public class TabPanelPreferences extends TabPanelTable {
 		newPanel.setBorder(StyleManager.createLabelBorder("Add new Preference"));
 		topPanel.add(newPanel, BorderLayout.NORTH);
 
-		typeCombo = new JComboBox<>(CATEGORIES);
+		typeCombo = new JComboBox<>(categories);
 		typeCombo.addItemListener(i -> populateNameCombo());
 		typeCombo.setRenderer(new ParameterCategoryRenderer());
 		newPanel.add(typeCombo);
@@ -161,6 +149,7 @@ public class TabPanelPreferences extends TabPanelTable {
 			case INTEGER -> Integer.valueOf(1);
 		};
 		tableModel.addEntry(key, newValue);
+		nameCombo.removeItem(key);
 	}
 
 	private void deleteEntry() {
@@ -170,7 +159,7 @@ public class TabPanelPreferences extends TabPanelTable {
 			idx = t.getRowSorter().convertRowIndexToModel(idx);
  			RenderableKey selection = tableModel.getValue(idx);
 			int input = JOptionPane.showConfirmDialog(this, 
-                "Delete Preference " + selection.category.getName() + ":" + selection.spec.displayName(), "Delete Preference", 
+                "Delete Preference " + selection.key.getCategory().getName() + ":" + selection.spec.displayName(), "Delete Preference", 
                 JOptionPane.OK_CANCEL_OPTION);
 			if (input == 0) {
 				tableModel.removeEntry(selection);
@@ -190,9 +179,9 @@ public class TabPanelPreferences extends TabPanelTable {
 
 		var possibles = selectedType.getRange();
 		var existing = mgr.getValues().keySet();
-		List<RenderableKey> newItems = possibles.stream()
-									.map(e -> new RenderableKey(selectedType, e))
-									.filter(r -> !existing.contains(r.key()))
+		List<RenderableKey> newItems = possibles.entrySet().stream()
+									.filter(e -> !existing.contains(e.getKey()))
+									.map(e -> new RenderableKey(e.getKey(), e.getValue()))
 									.sorted((v1, v2) -> v1.spec().displayName().compareTo(v2.spec().displayName()))
 									.toList();
 		
@@ -212,8 +201,16 @@ public class TabPanelPreferences extends TabPanelTable {
 
 		private PreferenceTableModel(ParameterManager source) {
 			this.target = source;
+
+			var missing = target.getValues().keySet().stream()
+				.filter(k -> k.getCategory().getSpec(k) == null)
+				.toList();
+			if (!missing.isEmpty()) {
+				System.out.println("Preference keys with missing specs: " + missing);
+			}
+
 			items = new ArrayList<>(target.getValues().keySet().stream()
-						.map(k -> new RenderableKey(k.category(), k.category().getSpec(k.id())))
+						.map(k -> new RenderableKey(k, k.getCategory().getSpec(k)))
 						.toList());
 		}
 
@@ -227,7 +224,7 @@ public class TabPanelPreferences extends TabPanelTable {
 		public void addEntry(RenderableKey newKey, Serializable value) {
 			if (!items.contains(newKey)) {
 				items.add(newKey);
-				target.putValue(newKey.category(), newKey.spec().id(), value);
+				target.putValue(newKey.key(), value);
 				int newRow = items.size()-1;
 				fireTableRowsInserted(newRow, newRow);
 			}
@@ -240,7 +237,7 @@ public class TabPanelPreferences extends TabPanelTable {
 			int idx = items.indexOf(newKey);
 			if (idx >= 0) {
 				items.remove(newKey);
-				target.removeValue(newKey.category(), newKey.spec().id());
+				target.removeValue(newKey.key());
 				fireTableRowsDeleted(idx, idx);
 			}
 		}
@@ -279,7 +276,7 @@ public class TabPanelPreferences extends TabPanelTable {
 			if (row < items.size()) {
 				var entry = items.get(row);
 				return switch(column) {
-					case 0 -> entry.category().getName();
+					case 0 -> entry.key().getCategory().getName();
 					case 1 -> entry.spec().displayName();
 					case 2 -> target.getValues().get(entry.key());
 					default -> throw new IllegalArgumentException("Unexpected value: " + column);
@@ -312,7 +309,7 @@ public class TabPanelPreferences extends TabPanelTable {
 					throw new IllegalArgumentException("Cannot handle preference value of type "
 										+ selectedRow.spec().type());
 				}
-				target.putValue(selectedRow.category(), selectedRow.spec().id(), newValue);
+				target.putValue(selectedRow.key(), newValue);
 			}
 		}
 	}
