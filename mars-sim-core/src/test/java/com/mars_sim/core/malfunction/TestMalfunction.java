@@ -9,7 +9,6 @@ import com.mars_sim.core.vehicle.Rover;
 public class TestMalfunction extends AbstractMarsSimUnitTest {
 
 
-	private static final String INSIDE_MALFUNCTION = "Class A Combustible Fire";
 	private static final String AIR_LEAK ="Air Leak";
 	
 	private int counter = 0;
@@ -22,7 +21,7 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
     public void setUp() {
 		super.setUp();
 
-        MalfunctionConfig config = simConfig.getMalfunctionConfiguration();
+        MalfunctionConfig config = getConfig().getMalfunctionConfiguration();
         for (MalfunctionMeta m : config.getMalfunctionList()) {
         	if (m.getName().equals(AIR_LEAK)) {
         		insideMeta = m;

@@ -1,92 +1,110 @@
 package com.mars_sim.core.building.function.farming;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class CropConfigTest extends AbstractMarsSimUnitTest {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-    public void testPhaseType() {
+import com.mars_sim.core.SimulationConfig;
+
+class CropConfigTest {
+
+    private SimulationConfig simConfig;
+
+    @BeforeEach
+    void setUp() {
+        simConfig = SimulationConfig.loadConfig();
+    }
+
+    @Test
+    void testPhaseType() {
         // Check all the special preconfigured PhaseTypes can be resolved
-        assertEquals("Germination", PhaseType.GERMINATION, Phase.getAssociatedPhaseType("Germination"));
-        assertEquals("Planting", PhaseType.PLANTING, Phase.getAssociatedPhaseType("Planting"));
-        assertEquals("Harvest", PhaseType.HARVESTING, Phase.getAssociatedPhaseType("Harvesting"));
-        assertEquals("Finished", PhaseType.FINISHED, Phase.getAssociatedPhaseType("Finished"));
+        assertEquals(PhaseType.GERMINATION, Phase.getAssociatedPhaseType("Germination"), "Germination");
+        assertEquals(PhaseType.PLANTING, Phase.getAssociatedPhaseType("Planting"), "Planting");
+        assertEquals(PhaseType.HARVESTING, Phase.getAssociatedPhaseType("Harvesting"), "Harvest");
+        assertEquals(PhaseType.FINISHED, Phase.getAssociatedPhaseType("Finished"), "Finished");
 
-        assertEquals("Other 1", PhaseType.OTHER, Phase.getAssociatedPhaseType("Sprouting"));
-        assertEquals("Other 2", PhaseType.OTHER, Phase.getAssociatedPhaseType("Leafing"));
+        assertEquals(PhaseType.OTHER, Phase.getAssociatedPhaseType("Sprouting"), "Other 1");
+        assertEquals(PhaseType.OTHER, Phase.getAssociatedPhaseType("Leafing"), "Other 2");
     }
 
-    public void testGetStats() {
-        var config = getConfig().getCropConfiguration();
+    @Test
+    void testGetStats() {
+        var config = simConfig.getCropConfiguration();
 
-        assertTrue("Average growing sols", config.getAverageCropGrowingTime() > 0);
-        assertTrue("Farming area", config.getFarmingAreaNeededPerPerson() > 0);
+        assertTrue(config.getAverageCropGrowingTime() > 0, "Average growing sols");
+        assertTrue(config.getFarmingAreaNeededPerPerson() > 0, "Farming area");
 
     }
 
-    public void testFungi() {
+    @Test
+    void testFungi() {
         testCropCategory("Fungi",7,  false);
     }
 
-    public void testBulbs() {
+    @Test
+    void testBulbs() {
         testCropCategory("Bulbs",9,  true);
     }
 
     private void testCropCategory(String name, int numPhases, boolean needsLight) {
                         
-        var config = getConfig().getCropConfiguration();
+        var config = simConfig.getCropConfiguration();
         var cat = config.getCropCategories().stream().filter(v -> v.getName().equals(name)).findFirst().orElse(null);
 
-        assertNotNull(name + " found", cat);
-        assertEquals("Name", name, cat.getName());
-        assertEquals(name + " needs light", needsLight, cat.needsLight());
-        assertEquals(name + " phsaes", numPhases, cat.getPhases().size());
+        assertNotNull(cat, name + " found");
+        assertEquals(name, cat.getName(), "Name");
+        assertEquals(needsLight, cat.needsLight(), name + " needs light");
+        assertEquals(numPhases, cat.getPhases().size(), name + " phsaes");
         var inGround = cat.getInGroundPercentage();
-        assertTrue(name + " inground %age", (1D < inGround) && (inGround <= 95D));
+        assertTrue((1D < inGround) && (inGround <= 95D), name + " inground %age");
 
         double total = 0;
         var phases = cat.getPhases();
         for(int i = 0; i < phases.size(); i++) {
             var phase = phases.get(i);
             total += phase.getPercentGrowth();
-            assertEquals(phase.getPhaseType() + " cummulatiive growth", total,
-                    phase.getCumulativePercentGrowth(), 0.0001);
+            assertEquals(total, phase.getCumulativePercentGrowth(), 0.0001, phase.getPhaseType() + " cummulatiive growth");
 
             var nextPhase = cat.getNextPhase(phase);
             if (i == (phases.size() - 1)) {
                 // Last phase so next phase should be null
-                assertNull("Next phase at last phase", nextPhase);
+                assertNull(nextPhase, "Next phase at last phase");
             }
             else {
-                assertEquals("Next phase", phases.get(i+1), nextPhase);
+                assertEquals(phases.get(i+1), nextPhase, "Next phase");
             }
 
         }
     }
 
-    public void testGetCropTypes() {
-        var config = getConfig().getCropConfiguration();
+    @Test
+    void testGetCropTypes() {
+        var config = simConfig.getCropConfiguration();
 
-        assertTrue("Crop types", config.getCropTypes().size() > 0);
+        assertTrue(config.getCropTypes().size() > 0, "Crop types");
     }
 
-    public void testGarlic() {
+    @Test
+    void testGarlic() {
         testCropSpec("Garlic", "Bulbs", 85);
     }
 
-    public void testRice() {
+    @Test
+    void testRice() {
         testCropSpec("Rice", "Grains", 100);
     }
 
 
     private void testCropSpec(String name, String category, int growingSols) {
                         
-        var config = getConfig().getCropConfiguration();
+        var config = simConfig.getCropConfiguration();
         var cat = config.getCropCategories().stream().filter(v -> v.getName().equals(category)).findFirst().orElse(null);
 
         var spec = config.getCropTypeByName(name);
-        assertNotNull(name + " found", spec);
-        assertEquals("Name", name, spec.getName());
-        assertEquals(name + " category", cat, spec.getCropCategory());
-        assertEquals(name + " growing sols", growingSols, spec.getGrowingSols());
+        assertNotNull(spec, name + " found");
+        assertEquals(name, spec.getName(), "Name");
+        assertEquals(cat, spec.getCropCategory(), name + " category");
+        assertEquals(growingSols, spec.getGrowingSols(), name + " growing sols");
     }
 }

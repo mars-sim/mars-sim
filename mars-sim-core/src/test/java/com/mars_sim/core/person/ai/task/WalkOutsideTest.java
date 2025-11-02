@@ -30,7 +30,7 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(surface);
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue("Person starts outside", person.isOutside());
 
@@ -59,7 +59,7 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(surface);
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue("Person starts outside", person.isOutside());
 	
@@ -85,13 +85,13 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 	/**
 	 * Test the determineObstacleAvoidancePath method.
 	 */
-	public void testAvoidVehicle() {
+	public void testAvoidRover() {
 		// Create test settlement.
 		Settlement settlement = buildSettlement();
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(surface);
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue("Person starts outside", person.isOutside());
 	
@@ -123,7 +123,7 @@ public class WalkOutsideTest extends AbstractMarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(surface);
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue("Person starts outside", person.isOutside());
 	
