@@ -14,14 +14,14 @@ public class ToggleResourceProcessTest extends MarsSimUnitTest {
     @Test
     public void testStartToggleOn() {
         var s = buildSettlement("Resource", true);
-        var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+        var b = ToggleResourceProcessMetaTest.buildProcessing(getContext(), s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
 
         // Pick a process and add resources
         var p = r.getProcesses().get(0);
 
         // Reset toggle for now
-        ToggleResourceProcessMetaTest.moveToToggle(this, p);
+        ToggleResourceProcessMetaTest.moveToToggle(getContext(), p);
 
         var w = buildPerson("worker", s);
         var t = new ToggleResourceProcess(w, false, p.getSpec());
@@ -43,14 +43,14 @@ public class ToggleResourceProcessTest extends MarsSimUnitTest {
     @Test
     public void testStartToggleOnDuplicate() {
         var s = buildSettlement("Resource", true);
-        var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+        var b = ToggleResourceProcessMetaTest.buildProcessing(getContext(), s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
 
         // Pick a process and add resources
         var p = r.getProcesses().get(0);
 
         // Reset toggle for now
-        ToggleResourceProcessMetaTest.moveToToggle(this, p);
+        ToggleResourceProcessMetaTest.moveToToggle(getContext(), p);
 
         var w = buildPerson("worker", s);
         var t = new ToggleResourceProcess(w, false, p.getSpec());
@@ -64,7 +64,7 @@ public class ToggleResourceProcessTest extends MarsSimUnitTest {
     @Test
     public void testStartNoToggle() {
         var s = buildSettlement("Resource", true);
-        var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+        var b = ToggleResourceProcessMetaTest.buildProcessing(getContext(), s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
 
         // Pick a process and add resources

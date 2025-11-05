@@ -28,7 +28,7 @@ public class DigLocalTest extends MarsSimUnitTest {
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
         
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
@@ -39,7 +39,7 @@ public class DigLocalTest extends MarsSimUnitTest {
         assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
         assertEquals(DigLocalRegolith.COLLECT_REGOLITH, task.getPhase(), "Task completed collection");
 
         // Do collection
@@ -67,7 +67,7 @@ public class DigLocalTest extends MarsSimUnitTest {
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
         
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
@@ -78,7 +78,7 @@ public class DigLocalTest extends MarsSimUnitTest {
         assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
         assertEquals(DigLocalIce.COLLECT_ICE, task.getPhase(), "Task completed collection");
 
         // Do collection
@@ -105,7 +105,7 @@ public class DigLocalTest extends MarsSimUnitTest {
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
-        EVAOperationTest.prepareForEva(this, p);
+        EVAOperationTest.prepareForEva(getContext(), p);
         
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
@@ -132,7 +132,7 @@ public class DigLocalTest extends MarsSimUnitTest {
         
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
-        EVAOperationTest.prepareForEva(this, p);
+        EVAOperationTest.prepareForEva(getContext(), p);
 
         var tasks = mt.getSettlementTasks(s);
         assertTrue(tasks.isEmpty(), "No Tasks when no container");

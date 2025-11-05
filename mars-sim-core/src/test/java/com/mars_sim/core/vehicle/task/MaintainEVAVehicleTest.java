@@ -27,7 +27,7 @@ public class MaintainEVAVehicleTest extends MarsSimUnitTest {
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
 
         var task = new MaintainEVAVehicle(p, v);
         assertFalse(task.isDone(), "Task created"); 
@@ -35,7 +35,7 @@ public class MaintainEVAVehicleTest extends MarsSimUnitTest {
         assertTrue(v.haveStatusType(StatusType.MAINTENANCE), "Vehicle status is Maintenance");
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 100);
@@ -48,7 +48,7 @@ public class MaintainEVAVehicleTest extends MarsSimUnitTest {
         assertGreaterThan("Vehicle maintenance time has been reset and increase again", 0D, mm.getEffectiveTimeSinceLastMaintenance());
     
         // Return to base
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
         assertTrue(task.isDone(), "Task completed"); 
     }
 

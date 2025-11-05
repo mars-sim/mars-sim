@@ -26,7 +26,7 @@ public class WorkshopProcessTest extends MarsSimUnitTest {
         assertTrue(processInfo.getProcessTimeRequired() > 0, "Process has prcoess time");
         
         var s = buildSettlement("Test", true);
-        var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
+        var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
         var w = b.getManufacture();
 
         var p = new ManufactureProcess(processInfo, w);
@@ -53,7 +53,7 @@ public class WorkshopProcessTest extends MarsSimUnitTest {
         assertTrue(processInfo.getProcessTimeRequired() > 0, "Process has prcoess time");
         
         var s = buildSettlement("Test", true);
-        var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
+        var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
         var w = b.getManufacture();
 
 
@@ -85,7 +85,7 @@ public class WorkshopProcessTest extends MarsSimUnitTest {
         assertEquals(0D, processInfo.getProcessTimeRequired(), "Process has no process time");
         
         var s = buildSettlement("Test", true);
-        var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
+        var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
         var w = b.getManufacture();
 
         var canister = EquipmentFactory.createEquipment(EquipmentType.GAS_CANISTER, s);

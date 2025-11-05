@@ -60,12 +60,12 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
         var mt = new InviteStudyCollaboratorMeta();
 
         // Study ignore until correct phase
-        var proposalStudy = buildStudyToProposalPhase(s, this, ScienceType.BOTANY, JobType.BOTANIST);
+        var proposalStudy = buildStudyToProposalPhase(s, getContext(), ScienceType.BOTANY, JobType.BOTANIST);
         var tasks = mt.getTaskJobs(proposalStudy.getPrimaryResearcher());
         assertTrue(tasks.isEmpty(), "No tasks found");
 
         // Get invite phase study
-        var inviteStudy = buildStudyToInvitePhase(s, this, ScienceType.BOTANY, JobType.BOTANIST);
+        var inviteStudy = buildStudyToInvitePhase(s, getContext(), ScienceType.BOTANY, JobType.BOTANIST);
         tasks = mt.getTaskJobs(inviteStudy.getPrimaryResearcher());
         // Note: The researcher won't be able to find anyone to invite
         assertFalse(tasks.isEmpty(), "Tasks found");

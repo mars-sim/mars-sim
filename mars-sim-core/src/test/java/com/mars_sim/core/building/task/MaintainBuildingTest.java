@@ -40,7 +40,7 @@ public class MaintainBuildingTest extends MarsSimUnitTest {
         // Not used: assertTrue(tasks.isEmpty(), "No tasks found");
 
         // One building needs maintenance
-        buildingNeedMaintenance(b1, this);
+        buildingNeedMaintenance(b1, getContext());
         tasks = mt.getSettlementTasks(s);
 
     	// Question : why would sometimes both buildings (b1, b2) will incur the need for maintenance ?
@@ -72,7 +72,7 @@ public class MaintainBuildingTest extends MarsSimUnitTest {
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
 
         // Set building needs maintenance by moving time forward twice minimum
-        buildingNeedMaintenance(b, this);
+        buildingNeedMaintenance(b, getContext());
         var manager = b.getMalfunctionManager();
         assertGreaterThan("Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
 

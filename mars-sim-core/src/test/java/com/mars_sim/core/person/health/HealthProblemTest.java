@@ -16,12 +16,12 @@ public class HealthProblemTest extends MarsSimUnitTest {
     @Test
     public void testCured() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
         var pc = p.getPhysicalCondition();
 
         var startedOn = getSim().getMasterClock().getMarsTime();
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, p, ComplaintType.BROKEN_BONE);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.BROKEN_BONE);
         assertEquals(1, pc.getProblems().size(), "Problems registered");
         assertEquals(0, pc.getHealthHistory().size(), "Problems history");
 

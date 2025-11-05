@@ -18,11 +18,11 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
     @Test
     public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
         sb.getMedical().requestTreatment(hp);
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
@@ -53,7 +53,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
     @Test
     public void testCreateVehicleTask() {
         var s = buildSettlement("Hospital");
-        SelfTreatHealthProblemTest.buildMediCare(this, s);
+        SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var r = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var sb = r.getSickBay();
 
@@ -61,7 +61,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
         patient.transfer(r);
 
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
         sb.requestTreatment(hp);
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
@@ -94,13 +94,13 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
     @Test
     public void testMetaTask() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var mt = new TreatMedicalPatientMeta();
 
         // Self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.LACERATION);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.LACERATION);
         sb.getMedical().requestTreatment(hp);
 
         var doctor = buildPerson("Docter", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
@@ -109,7 +109,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
         assertTrue(tasks.isEmpty(), "No dotor health problems");
 
         // Not self healing
-        hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
+        hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
         sb.getMedical().requestTreatment(hp);
         tasks = mt.getTaskJobs(doctor);
         assertFalse(tasks.isEmpty(), "Problems found");

@@ -21,7 +21,7 @@ public class ManufacturingMetaTaskTest extends MarsSimUnitTest {
         var s = buildSettlement("Workshop", true);
         
         var mgr = s.getManuManager();
-        var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
+        var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
         var m = b.getManufacture();
         var processes = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(
                                     m.getTechLevel());
@@ -58,8 +58,8 @@ public class ManufacturingMetaTaskTest extends MarsSimUnitTest {
         var s = buildSettlement("Workshop", true);
         
         // Build 2 workshops
-        ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
-        var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
+        ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
+        var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
         var m = b.getManufacture();
         var processes = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(
                                     m.getTechLevel());
@@ -82,7 +82,7 @@ public class ManufacturingMetaTaskTest extends MarsSimUnitTest {
         var s = buildSettlement("Workshop", true);
         
         // Build workshops
-        var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
+        var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
         var m = b.getManufacture();
         var processes = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(
                                     m.getTechLevel());
@@ -110,8 +110,8 @@ public class ManufacturingMetaTaskTest extends MarsSimUnitTest {
         var s = buildSettlement("Workshop", true);
         
         // Build 2 workshops
-        ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
-        var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
+        ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
+        var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
         var m = b.getManufacture();
 
         // Check how many printers are available

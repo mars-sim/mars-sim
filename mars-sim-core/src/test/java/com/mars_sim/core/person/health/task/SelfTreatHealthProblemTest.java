@@ -38,11 +38,11 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
     @Test
     public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
-        var sb = buildMediCare(this, s);
+        var sb = buildMediCare(getContext(), s);
         var p = buildPerson("Mr. Physician 0", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         // Laceration is self heal
-        var hp = addComplaint(this, p, ComplaintType.LACERATION);
+        var hp = addComplaint(getContext(), p, ComplaintType.LACERATION);
 
         var pc = p.getPhysicalCondition();
         assertEquals(1, pc.getProblems().size(), "Single health problem");
@@ -76,14 +76,14 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
     @Test
     public void testCreateVehicleTask() {
         var s = buildSettlement("Hospital");
-        buildMediCare(this, s);  // Build a settlement medical center to make sure there is no teleporting
+        buildMediCare(getContext(), s);  // Build a settlement medical center to make sure there is no teleporting
         var r = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var p = buildPerson("Mr. Physician 1", s, JobType.DOCTOR);
         p.transfer(r);
         assertTrue(p.isInVehicle(), "Person starts in Vehicle");
 
         // Laceration is self heal
-        var hp = addComplaint(this, p, ComplaintType.LACERATION);
+        var hp = addComplaint(getContext(), p, ComplaintType.LACERATION);
 
         var sb = r.getSickBay();
         var pc = p.getPhysicalCondition();
@@ -119,18 +119,18 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
     @Test
     public void testMetaTask() {
         var s = buildSettlement("Hospital");
-        var sb = buildMediCare(this, s);
+        var sb = buildMediCare(getContext(), s);
         var p = buildPerson("Mr. Physician 2", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var mt = new SelfTreatHealthProblemMeta();
 
         // Broken bone is not self heal
-        addComplaint(this, p, ComplaintType.BROKEN_BONE);
+        addComplaint(getContext(), p, ComplaintType.BROKEN_BONE);
         var tasks = mt.getTaskJobs(p);
         assertTrue(tasks.isEmpty(), "No self heal tasks");
 
         // Laceration is self heal
-        addComplaint(this, p, ComplaintType.LACERATION);
+        addComplaint(getContext(), p, ComplaintType.LACERATION);
         tasks = mt.getTaskJobs(p);
         assertFalse(tasks.isEmpty(), "Self heal tasks");
     }

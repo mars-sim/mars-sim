@@ -40,7 +40,7 @@ public class RespondToStudyInvitationTest extends MarsSimUnitTest {
 
     private ScientificStudy getStudy(Person c, ScienceType science, JobType researchJob) {
         var study = InviteStudyCollaboratorTest.buildStudyToInvitePhase(c.getAssociatedSettlement(),
-                                        this, science, researchJob);
+                                        getContext(), science, researchJob);
         study.addInvitedResearcher(c);
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired());
         study.timePassing(createPulse(0, 0, false, false));

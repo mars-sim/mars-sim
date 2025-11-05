@@ -41,14 +41,14 @@ public class UnloadVehicleEVATest extends MarsSimUnitTest {
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
         p.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.STRENGTH, 100);
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
 
         v.addSecondaryStatus(StatusType.UNLOADING);
         var task = new UnloadVehicleEVA(p, v);
         assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
 
         double storedO2Settlement0 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Settlement0: " + storedO2Settlement0);
@@ -84,7 +84,7 @@ public class UnloadVehicleEVATest extends MarsSimUnitTest {
         assertEquals(ITEM_AMOUNT, storedGarment, "Garments unloaded");
 
         // Return to base
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
         assertTrue(task.isDone(), "Task completed"); 
     }
 

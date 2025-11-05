@@ -32,11 +32,11 @@ public class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
     @Test
     public void testGetResourceProcessingTasks() {
         var s = buildSettlement("Resource", true);
-        var b = buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+        var b = buildProcessing(getContext(), s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = b.getResourceProcessing();
 
         // Create a second processor to test multiple
-        buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
+        buildProcessing(getContext(), s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
     
         var mt = new ToggleResourceProcessMeta();
 
@@ -66,7 +66,7 @@ public class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
         assertTrue(results.isEmpty(), "No tasks without toggle");
 
         // Reset toggle for now
-        moveToToggle(this, p);
+        moveToToggle(getContext(), p);
         results = mt.getSettlementTasks(s);
 //        System.out.println(results);
         // Note: how does resetting the toggle affect the amount of resources ? 
@@ -78,7 +78,7 @@ public class ToggleResourceProcessMetaTest extends MarsSimUnitTest {
         assertTrue(results.isEmpty(), "No tasks as not running long enough");
 
         // Run the process to the next toggle phase
-        moveToToggle(this, p);
+        moveToToggle(getContext(), p);
         results = mt.getSettlementTasks(s);
         assertEquals(1, results.size(), "Single runing task");
     }

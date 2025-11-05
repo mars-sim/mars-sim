@@ -18,11 +18,11 @@ public class RestingMedicalRecoveryTest extends MarsSimUnitTest {
   @Test
   public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, p, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.APPENDICITIS);
         hp.startRecovery();
 
         assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovering");
@@ -49,7 +49,7 @@ public class RestingMedicalRecoveryTest extends MarsSimUnitTest {
     @Test
     public void testMetaTask() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var mt = new RestingMedicalRecoveryMeta();
@@ -59,7 +59,7 @@ public class RestingMedicalRecoveryTest extends MarsSimUnitTest {
         assertTrue(tasks.isEmpty(), "No resting needed");
 
         // Make person need bed rest
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.APPENDICITIS);
         hp.startRecovery();
 
         tasks = mt.getTaskJobs(patient);

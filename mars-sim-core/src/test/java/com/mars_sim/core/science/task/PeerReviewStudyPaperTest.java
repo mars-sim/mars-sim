@@ -39,7 +39,7 @@ public class PeerReviewStudyPaperTest extends MarsSimUnitTest {
 
     private ScientificStudy buildStudyToPeerReviewPhase(Settlement s, ScienceType science, JobType researchJob) {
         
-        var study = CompileScientificStudyResultsTest.buildStudyToPaperPhase(s, this, science, researchJob);
+        var study = CompileScientificStudyResultsTest.buildStudyToPaperPhase(s, getContext(), science, researchJob);
 
         // Simulate paper phase
         var elapsed = study.getTotalPrimaryPaperWorkTimeRequired();

@@ -23,7 +23,7 @@ public class ExamineBodyTest extends MarsSimUnitTest {
     @Test
     public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         
         Set<ActivitySpot> spots = sb.getFunction(FunctionType.MEDICAL_CARE).getActivitySpots();
         
@@ -33,7 +33,7 @@ public class ExamineBodyTest extends MarsSimUnitTest {
         assertEquals(sb, patient.getBuildingLocation(), "Patient is at ");
         
         // Laceration is self heal
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.DEHYDRATION);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.DEHYDRATION);
         patient.getPhysicalCondition().recordDead(hp, true, PhysicalCondition.STANDARD_QUOTE_0);
         var death = patient.getPhysicalCondition().getDeathDetails();
 
@@ -89,7 +89,7 @@ public class ExamineBodyTest extends MarsSimUnitTest {
     @Test
     public void testExamineBodyMetaTask() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var mt = new ExamineBodyMeta();
@@ -99,7 +99,7 @@ public class ExamineBodyTest extends MarsSimUnitTest {
         assertTrue(tasks.isEmpty(), "No bodies to examine");
 
         // Make person dead
-        var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.STARVATION);
+        var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.STARVATION);
         patient.getPhysicalCondition().recordDead(hp, true, PhysicalCondition.STANDARD_QUOTE_1);
 
         tasks = mt.getSettlementTasks(s);

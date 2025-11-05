@@ -43,7 +43,7 @@ public class MaintainBuildingEVATest extends MarsSimUnitTest {
         // Note: there is a chance that tasks are made since scoreMaintenance currently has a probability component
         // assertTrue(tasks.isEmpty(), "No tasks found");
         // One building needs maintenance
-        MaintainBuildingTest.buildingNeedMaintenance(b1, this);
+        MaintainBuildingTest.buildingNeedMaintenance(b1, getContext());
         tasks = mt.getSettlementTasks(s);
         // Question : why would sometimes both buildings (b1, b2) will incur the need for maintenance ?
         // Answer : getSettlementTasks() will consider both buildings always
@@ -71,12 +71,12 @@ public class MaintainBuildingEVATest extends MarsSimUnitTest {
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
 
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
 
         var b = buildERV(s.getBuildingManager(), new LocalPosition(20, 20));
-        MaintainBuildingTest.buildingNeedMaintenance(b, this);
+        MaintainBuildingTest.buildingNeedMaintenance(b, getContext());
 
         var manager = b.getMalfunctionManager();
         assertGreaterThan("EVA Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
@@ -92,7 +92,7 @@ public class MaintainBuildingEVATest extends MarsSimUnitTest {
         assertEquals(EVAOperation.WALK_TO_OUTSIDE_SITE, task.getPhase(), "EVA walking outside");
 
         // Move onsite
-        int callUsed = EVAOperationTest.executeEVAWalk(this, eva, task);
+        int callUsed = EVAOperationTest.executeEVAWalk(getContext(), eva, task);
         assertGreaterThan("Calls Used ", 0, callUsed);
  
         assertFalse(task.isDone(), "EVA Task still active");

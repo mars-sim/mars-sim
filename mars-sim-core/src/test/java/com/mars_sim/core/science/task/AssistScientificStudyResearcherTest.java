@@ -79,7 +79,7 @@ public class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
     }
 
     private PerformLaboratoryResearch createActiveResearch(Settlement s, ScienceType science, JobType researchJob) {
-        var study = LabTaskTest.buildStudyToResearchPhase(s, this, science, researchJob);
+        var study = LabTaskTest.buildStudyToResearchPhase(s, getContext(), science, researchJob);
 
         var p = study.getPrimaryResearcher();
         p.getSkillManager().addNewSkill(science.getSkill(), 2); // Must have higher skill

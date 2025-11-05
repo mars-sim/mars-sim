@@ -38,7 +38,7 @@ import com.mars_sim.core.vehicle.Rover;
  * Abstract base class to support running Unit Tests for JUnit 5.
  * It uses the shared MarsSimContextImpl class to provide utility methods
  */
-public abstract class MarsSimUnitTest implements MarsSimContext {
+public abstract class MarsSimUnitTest {
 
     // This test assumes certain characteristics of the Alpha Base 1 template
     public static final String ALPHA_BASE_1 = "Alpha Base 1";
@@ -60,12 +60,10 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
         context = new MarsSimContextImpl();
     }
 
-    @Override
     public SimulationConfig getConfig() {
         return context.getConfig();
     }
 
-    @Override
     public Simulation getSim() {
         return context.getSim();
     }
@@ -78,7 +76,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
         return context.getSurface();
     }
 
-    @Override
     public MarsSurface getSurface() {
         return context.getSurface();
     }
@@ -92,7 +89,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 		return context.buildBuilding(buildingManager, type, cat, pos, facing, lifeSupport);
 	}
 
-    @Override
     public Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
 							FunctionType fType, LocalPosition pos, double facing, boolean lifesupport) {
 		return context.buildFunction(buildingManager, type, cat, fType, pos, facing, lifesupport);
@@ -115,7 +111,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
                 FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
 	}
 	
-	@Override
 	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return context.buildResearch(buildingManager, pos, facing);
 	}
@@ -125,7 +120,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 								FunctionType.RECREATION,  pos, facing, true);
 	}
 
-	@Override
 	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return context.buildEVA(buildingManager, pos, facing);
 	}
@@ -135,7 +129,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 					FunctionType.LIVING_ACCOMMODATION,  pos, facing, true);
 	}
 
-	@Override
 	public Person buildPerson(String name, Settlement settlement) {
 		return context.buildPerson(name, settlement);
 	}
@@ -361,7 +354,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
      * @param newHalfSol Has half a sol just passed ? 
      * @return
      */
-	@Override
 	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
 		return context.createPulse(marsTime, newSol, newHalfSol);
 	}

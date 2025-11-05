@@ -34,7 +34,7 @@ public class LabTaskTest extends MarsSimUnitTest {
     @Test
     public void testStudyFieldSamples() {
         var s = buildSettlement("Study", true);
-        var study = buildStudyToResearchPhase(s, this, ScienceType.CHEMISTRY, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, getContext(), ScienceType.CHEMISTRY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         // Add some rocks to test
@@ -60,7 +60,7 @@ public class LabTaskTest extends MarsSimUnitTest {
     @Test
     public void testPerformPrimaryLabResearch() {
         var s = buildSettlement("Study", true);
-        var study = buildStudyToResearchPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, getContext(), ScienceType.ASTROBIOLOGY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var task  = PerformLaboratoryResearch.createTask(p);
@@ -79,7 +79,7 @@ public class LabTaskTest extends MarsSimUnitTest {
     @Test
     public void testPerformCollabLabResearch() {
         var s = buildSettlement("Study", true);
-        var study = buildStudyToResearchPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
+        var study = buildStudyToResearchPhase(s, getContext(), ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
         var prim = study.getPrimaryResearcher();
         var collab = buildPerson("Collab", s, JobType.ASTROBIOLOGIST, prim.getBuildingLocation(), FunctionType.RESEARCH);   
         study.addCollaborativeResearcher(collab, ScienceType.ASTROBIOLOGY);
@@ -101,7 +101,7 @@ public class LabTaskTest extends MarsSimUnitTest {
     public void testMathModelling() {
         var s = buildSettlement("Study", true);
 
-        var study = buildStudyToResearchPhase(s, this, ScienceType.MATHEMATICS, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, getContext(), ScienceType.MATHEMATICS, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var task  = PerformMathematicalModeling.createTask(p);
@@ -121,7 +121,7 @@ public class LabTaskTest extends MarsSimUnitTest {
     public void testLabMetaTask() {
         var s = buildSettlement("Study", true);
 
-        var study = buildStudyToResearchPhase(s, this, ScienceType.ASTROBIOLOGY, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, getContext(), ScienceType.ASTROBIOLOGY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var lmt = new PerformLaboratoryResearchMeta();
@@ -132,7 +132,7 @@ public class LabTaskTest extends MarsSimUnitTest {
     public void testStudyFieldMetaTask() {
         var s = buildSettlement("Study", true);
 
-        var study = buildStudyToResearchPhase(s, this, ScienceType.CHEMISTRY, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, getContext(), ScienceType.CHEMISTRY, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         // Add some rocks to test
@@ -147,7 +147,7 @@ public class LabTaskTest extends MarsSimUnitTest {
     public void testMathMetaTask() {
         var s = buildSettlement("Study", true);
 
-        var study = buildStudyToResearchPhase(s, this, ScienceType.MATHEMATICS, JobType.BOTANIST);
+        var study = buildStudyToResearchPhase(s, getContext(), ScienceType.MATHEMATICS, JobType.BOTANIST);
         var p = study.getPrimaryResearcher();
 
         var mmt = new PerformMathematicalModelingMeta();

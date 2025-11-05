@@ -75,7 +75,7 @@ public class PrescribeMedicationTest extends MarsSimUnitTest {
     @Test
     public void testDetermineRadiation() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         buildPerson("Health1", s, JobType.ENGINEER, sb, FunctionType.MEDICAL_CARE);
 
         var p = createRadiationPatient(s, sb);
@@ -89,7 +89,7 @@ public class PrescribeMedicationTest extends MarsSimUnitTest {
     @Test
     public void testCreationRadiation() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var p = createRadiationPatient(s, sb);
         var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
@@ -112,7 +112,7 @@ public class PrescribeMedicationTest extends MarsSimUnitTest {
     @Test
     public void testPersonMeta() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var doctor = buildPerson("Docter", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
         buildPerson("Health1", s, JobType.ENGINEER, sb, FunctionType.MEDICAL_CARE);
 
@@ -130,7 +130,7 @@ public class PrescribeMedicationTest extends MarsSimUnitTest {
     @Test
     public void testRobotMeta() {
         var s = buildSettlement("Hospital");
-        var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var doctor = buildRobot("Medic", s, RobotType.MEDICBOT, sb, FunctionType.MEDICAL_CARE);
         buildPerson("Health1", s, JobType.ENGINEER, sb, FunctionType.MEDICAL_CARE);
 

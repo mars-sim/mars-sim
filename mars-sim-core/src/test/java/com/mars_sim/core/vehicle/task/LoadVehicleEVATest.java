@@ -24,7 +24,7 @@ public class LoadVehicleEVATest extends MarsSimUnitTest {
         var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
 
         // Create a loading plan and preload Settlement
         var resources = new SuppliesManifest();
@@ -38,14 +38,14 @@ public class LoadVehicleEVATest extends MarsSimUnitTest {
         assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
         assertGreaterThan("Final stored mass", 0D, v.getStoredMass());
 
         // Return to base
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
         assertTrue(task.isDone(), "Task completed"); 
 
     }
