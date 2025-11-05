@@ -1,4 +1,6 @@
 package com.mars_sim.core.mission.objectives;
+import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;

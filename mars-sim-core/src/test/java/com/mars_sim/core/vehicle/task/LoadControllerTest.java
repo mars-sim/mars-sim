@@ -6,6 +6,8 @@
  */
 
 package com.mars_sim.core.vehicle.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
+
 
 import java.util.HashMap;
 import java.util.Map;

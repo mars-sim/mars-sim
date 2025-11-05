@@ -1,4 +1,6 @@
 package com.mars_sim.core.person.health.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;

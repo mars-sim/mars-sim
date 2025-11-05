@@ -5,6 +5,8 @@
  * @author Manny Kung
  */
 package com.mars_sim.core.structure;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;

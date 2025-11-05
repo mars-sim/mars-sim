@@ -425,37 +425,4 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 	public ClockPulse createPulse(double elapsed) {
 		return context.createPulse(elapsed);
 	}
-
-	/**
-	 * Better Assert method.
-	 */
-	public static void assertGreaterThan(String message, double minValue, double actual) {
-		if (actual <= minValue) {
-			fail(message + " ==> " +
-					"Expected: a value greater than <" + minValue + "> " +
-					"Actual was <" + actual + ">");
-		}
-	}
-
-    /**
-     * Should this be a static import
-     * @param message
-     * @param maxValue
-     * @param actual
-     */
-	public static void assertLessThan(String message, double maxValue, double actual) {
-		if (actual >= maxValue) {
-			fail(message + " ==> " +
-					"Expected: a value less than <" + maxValue + "> " +
-					"Actual was <" + actual + ">");
-		}
-	}
-	
-	public static void assertEqualLessThan(String message, double maxValue, double actual) {
-		if (actual > maxValue) {
-			fail(message + " ==> " +
-					"Expected: a value less than <" + maxValue + ">\n" +
-					"Actual was <" + actual + ">");
-		}
-	}
 }

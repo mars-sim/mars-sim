@@ -1,4 +1,6 @@
 package com.mars_sim.core.building.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
