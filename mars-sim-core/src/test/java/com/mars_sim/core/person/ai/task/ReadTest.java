@@ -19,7 +19,7 @@ public class ReadTest extends MarsSimUnitTest{
     @Test
     public void testCreateTaskRecreation() {
         var s = buildSettlement("Read");
-        var d = buildRecreation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var d = buildRecreation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("reader", s, JobType.ENGINEER, d, FunctionType.RECREATION);
 
         var task = Read.createTask(p);
@@ -51,7 +51,7 @@ public class ReadTest extends MarsSimUnitTest{
     @Test
     public void testCreateTaskBed() {
         var s = buildSettlement("Read");
-        var d = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var d = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("reader", s, JobType.ENGINEER, d, FunctionType.LIVING_ACCOMMODATION);
 
         assertNotNull(p.getBed(), "Person has bed");
@@ -62,7 +62,7 @@ public class ReadTest extends MarsSimUnitTest{
     @Test
     public void testReadMeta() {
         var s = buildSettlement("Read");
-        var d = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var d = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("reader", s, JobType.ENGINEER, d, FunctionType.LIVING_ACCOMMODATION);
 
         var mt = new ReadMeta();

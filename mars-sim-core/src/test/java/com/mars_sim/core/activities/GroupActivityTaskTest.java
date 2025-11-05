@@ -26,7 +26,7 @@ public class GroupActivityTaskTest extends MarsSimUnitTest {
     @Test
     public void testPerformMappedPhase() {
         var s = buildSettlement("mock");
-        var accom = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
+        var accom = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
         var t = new MarsTime(1, 1, 1, 0, 1);
 

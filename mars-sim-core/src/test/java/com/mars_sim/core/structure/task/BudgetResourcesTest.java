@@ -48,7 +48,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
     @Test
     public void testCreateIceReviewTask() {
         var s = buildSettlement("Budget", true);
-        var b = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var b = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("Accountant", s);
         BuildingManager.addToActivitySpot(p, b, FunctionType.LIVING_ACCOMMODATION);
 

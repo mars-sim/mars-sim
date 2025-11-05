@@ -128,7 +128,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	    return rover1;
 	}
 
-	protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
 									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);
 	    
@@ -165,7 +165,7 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 		return marsSimContext.buildResearch(buildingManager, pos, facing, id);
 	}
 
-	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LIVING,
 								FunctionType.RECREATION,  pos, facing, true);
 	}
@@ -174,8 +174,12 @@ public abstract class AbstractMarsSimUnitTest extends TestCase
 	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		return marsSimContext.buildEVA(buildingManager, pos, facing, id);
 	}
+	
+	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return buildEVA(buildingManager, pos, facing, 0);
+	}
 
-	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return buildFunction(buildingManager, "Residential Quarters", BuildingCategory.LIVING,
 					FunctionType.LIVING_ACCOMMODATION,  pos, facing, true);
 	}

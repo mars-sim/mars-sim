@@ -103,10 +103,10 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 	}
 
     protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos) {
-		return buildGarage(buildingManager, pos, 0D, 1);
+		return buildGarage(buildingManager, pos, 0D);
 	}
 
-	protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
 									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);
 	    
@@ -128,7 +128,7 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 		return context.buildResearch(buildingManager, pos, facing, id);
 	}
 
-	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LIVING,
 								FunctionType.RECREATION,  pos, facing, true);
 	}
@@ -137,8 +137,12 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
 		return context.buildEVA(buildingManager, pos, facing, id);
 	}
+	
+	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return buildEVA(buildingManager, pos, facing, 0);
+	}
 
-	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return buildFunction(buildingManager, "Residential Quarters", BuildingCategory.LIVING,
 					FunctionType.LIVING_ACCOMMODATION,  pos, facing, true);
 	}
@@ -155,31 +159,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 	public Person buildPerson(String name, Settlement settlement, JobType job,
 					Building place, FunctionType activity) {
 		return context.buildPerson(name, settlement, job, place, activity);
-	}
-
-	public Person buildPatient(String name, Settlement settlement, JobType job,
-			Building place, FunctionType activity) {
-
-		GenderType gender = GenderType.MALE;
-		int rand = RandomUtil.getRandomInt(1);
-		if (rand == 1)
-			gender = GenderType.FEMALE;
-		
-		Person person = Person.create(name, settlement, gender)
-				.build();
-		
-		person.setJob(job, "Test");
-		
-		person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE, 100);
-		
-		getSim().getUnitManager().addUnit(person);
-		
-		if (place != null) {
-			boolean success = BuildingManager.addPatientToMedicalBed(person, settlement);
-			assertTrue(success, "Successful in adding " + person + " to a " + activity.getName() + " activity spot");
-		}
-		
-		return person;
 	}
 	
 	public Person buildPerson(String name, Settlement settlement, RoleType role, JobType job) {

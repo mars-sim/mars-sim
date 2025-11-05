@@ -8,16 +8,54 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.BodyRegionType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.RadiationType;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.RandomUtil;
 
 public class PrescribeMedicationTest extends MarsSimUnitTest {
+	
+	/**
+	 * Build a patient person and add to a medical bed.
+	 * @param name
+	 * @param settlement
+	 * @param job
+	 * @param place
+	 * @param activity
+	 * @return
+	 */
+	private Person buildPatient(String name, Settlement settlement, JobType job,
+			Building place, FunctionType activity) {
+
+		GenderType gender = GenderType.MALE;
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1)
+			gender = GenderType.FEMALE;
+		
+		Person person = Person.create(name, settlement, gender)
+				.build();
+		
+		person.setJob(job, "Test");
+		
+		person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE, 100);
+		
+		getSim().getUnitManager().addUnit(person);
+		
+		if (place != null) {
+			boolean success = BuildingManager.addPatientToMedicalBed(person, settlement);
+			assertTrue(success, "Successful in adding " + person + " to a " + activity.getName() + " activity spot");
+		}
+		
+		return person;
+	}
 	
     private Person createRadiationPatient(Settlement s, Building sb) {
         var p = buildPatient("Patient", s, JobType.ENGINEER, sb, FunctionType.MEDICAL_CARE);

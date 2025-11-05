@@ -47,7 +47,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
         assertNotNull(connectorManager);
 
-        Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
 
         Building building1 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D);
 
@@ -88,7 +88,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         LocalPosition target = new LocalPosition(-12D, 0D);
-        Building building0 = buildEVA(buildingManager, LOCAL_POSITION1, 0D, 0);
+        Building building0 = buildEVA(buildingManager, LOCAL_POSITION1, 0D);
         Building building1 = buildBuilding(buildingManager, target, 270D);
 
         buildingManager.setupBuildingFunctionsMap();
@@ -121,8 +121,8 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         LocalPosition target = new LocalPosition(-12D, 0D);
-        Building building0 = buildAccommodation(buildingManager, LOCAL_POSITION1, 0D, 0); 
-        Building building1 = buildEVA(buildingManager, target, 270D, 1); 
+        Building building0 = buildAccommodation(buildingManager, LOCAL_POSITION1, 0D); 
+        Building building1 = buildEVA(buildingManager, target, 270D); 
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -159,7 +159,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         LocalPosition target = new LocalPosition(-12D, 0D);
-        Building building0 = buildAccommodation(buildingManager, LOCAL_POSITION1, 0D, 0);
+        Building building0 = buildAccommodation(buildingManager, LOCAL_POSITION1, 0D);
         Building building1 = buildBuilding(buildingManager, new LocalPosition(BUILDING_LENGTH + 1, 0D), 0D);
 
         assertFalse(LocalAreaUtil.isPositionWithinLocalBoundedObject(target, building1), "Target is not in the target building");
@@ -194,9 +194,9 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 	
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         var target = new LocalPosition(-12D, 0D);
-        Building building1 = buildEVA(buildingManager, target, 270D, 1);
+        Building building1 = buildEVA(buildingManager, target, 270D);
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = buildPerson("Walker", settlement);
@@ -245,7 +245,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
 
         buildingManager.setupBuildingFunctionsMap();
         
@@ -290,7 +290,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -322,7 +322,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -373,7 +373,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
                 
         Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D), EXPLORER_ROVER);
         
-        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -426,7 +426,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         LocalPosition parked = new LocalPosition(15D, -10D);
         Rover rover = buildRover(settlement, "Test Rover", parked, EXPLORER_ROVER);
         
-        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = buildPerson("Walker", settlement);
@@ -479,7 +479,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         LocalPosition parked = new LocalPosition(15D, -10D);
         Rover rover = buildRover(settlement, "Test Rover", parked, EXPLORER_ROVER);
 
-        Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         buildingManager.setupBuildingFunctionsMap();
         
 		Person person = buildPerson("Walker", settlement);
@@ -561,7 +561,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
-        var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D,  0);
+        var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         garage.addRover(rover);
 
         buildingManager.setupBuildingFunctionsMap();
@@ -607,7 +607,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         rover.transfer(settlement);
         
-        var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         garage.addRover(rover);
         buildingManager.setupBuildingFunctionsMap();
         
@@ -650,7 +650,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
 
         buildingManager.setupBuildingFunctionsMap();
 

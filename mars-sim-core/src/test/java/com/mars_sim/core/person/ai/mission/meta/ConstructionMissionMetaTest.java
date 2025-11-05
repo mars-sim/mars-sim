@@ -48,7 +48,7 @@ public class ConstructionMissionMetaTest extends MarsSimUnitTest {
     @Test
     public void testProbabiltySalvageSite() {
         var s = buildSettlement("mock");
-        var a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);

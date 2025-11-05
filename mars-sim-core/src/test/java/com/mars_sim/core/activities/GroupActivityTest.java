@@ -40,7 +40,7 @@ public class GroupActivityTest extends MarsSimUnitTest {
     @Test
     public void testOneOffCycle() {
         var s = buildSettlement("mock");
-        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
+        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
         var t = new MarsTime(1, 1, 1, 0, 1);
 
@@ -75,7 +75,7 @@ public class GroupActivityTest extends MarsSimUnitTest {
     @Test
     public void testRepeatCycle() {
         var s = buildSettlement("mock");
-        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
+        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
         var t = new MarsTime(1, 1, 1, 0, 1);
 

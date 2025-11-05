@@ -13,7 +13,7 @@ import com.mars_sim.core.map.location.LocalPosition;
 public class VehicleMaintenanceTest extends MarsSimUnitTest {
     public void createGarage() {
         var s = buildSettlement("mock");
-        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var f = (VehicleMaintenanceSpec) getConfig().getBuildingConfiguration().getFunctionSpec("Garage", FunctionType.VEHICLE_MAINTENANCE);
 
@@ -35,7 +35,7 @@ public class VehicleMaintenanceTest extends MarsSimUnitTest {
         assertFalse(r.isInGarage(), "Rover initially in garage");
 
         // Rover is added to the garage by default
-        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         int cap = g.getRoverCapacity();
 
         assertFalse(g.containsRover(r), "Rover found");

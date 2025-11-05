@@ -57,7 +57,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
         Settlement settlement = buildSettlement("mock");
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
 
 		Person person = buildPerson("Walker", settlement);
 		Worker worker = (Worker)person;
@@ -84,7 +84,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
         Settlement settlement = buildSettlement("mock");
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        var g = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var g = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         Building b1 = g.getBuilding();
         
    		
@@ -205,7 +205,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
 
 
-        Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         Building b2 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D);
         Building b3 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D);
         Building b4 = buildBuilding(buildingManager, new LocalPosition(-18D, 0D), 270D);
@@ -241,7 +241,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
 
 
-        Building b3 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building b3 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         Building b4 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D);
         Building b5 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D);
 

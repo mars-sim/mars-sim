@@ -31,7 +31,7 @@ public class GroupActivityMetaTaskTest extends MarsSimUnitTest{
         buildPerson("P1", s);
         buildPerson("P2", s);
 
-        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
+        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
         var t = getSim().getMasterClock().getMarsTime();
         var ga = new GroupActivity(ONE, s, t);
@@ -82,7 +82,7 @@ public class GroupActivityMetaTaskTest extends MarsSimUnitTest{
     @Test
     public void testPersonSuitability() {
         var s = buildSettlement("mock");
-        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH, 0);
+        buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
         // Create a friendship group where friend has a better opinion of the instigator and the enemy
         var i = buildPerson("instigator", s);

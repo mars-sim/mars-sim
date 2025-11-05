@@ -27,7 +27,7 @@ public class FunctionTest extends MarsSimUnitTest {
     @Test
     public void testBuildActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var b = building.getRecreation();
         assertNotNull(b, "Builidng has Recreation");
 
@@ -46,7 +46,7 @@ public class FunctionTest extends MarsSimUnitTest {
     @Test
     public void testClaimActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var b = building.getRecreation();
 
         Person p = buildPerson("Worker", home);
@@ -68,7 +68,7 @@ public class FunctionTest extends MarsSimUnitTest {
     @Test
     public void testLeaveActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var b = building.getRecreation();
 
         Person p = buildPerson("Worker", home);
@@ -108,7 +108,7 @@ public class FunctionTest extends MarsSimUnitTest {
     @Test
     public void testActivitySpotPosition() {
         var home = buildSettlement("Test");
-        var building1 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 90D, 0);
+        var building1 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 90D);
         var spots1 = building1.getRecreation().getActivitySpots();
         
         // Check the 2 sets of Activy spots are offset according to the Building
@@ -122,11 +122,11 @@ public class FunctionTest extends MarsSimUnitTest {
     public void testCreateActivitySpot() {
         var home = buildSettlement("Test");
         var p1 = LocalPosition.DEFAULT_POSITION;
-        var building1 = buildRecreation(home.getBuildingManager(), p1, 0D, 0).getRecreation();
+        var building1 = buildRecreation(home.getBuildingManager(), p1, 0D).getRecreation();
         var spots1 = building1.getActivitySpots();
 
         var p2 = new LocalPosition(p1.getX() + X_OFFSET, p1.getY() + Y_OFFSET);
-        var building2 = buildRecreation(home.getBuildingManager(), p2, 0D, 1).getRecreation();
+        var building2 = buildRecreation(home.getBuildingManager(), p2, 0D).getRecreation();
         
         // Check the 2 sets of Activy spots are offset according to the Building
         for(var as : spots1) {
@@ -140,9 +140,9 @@ public class FunctionTest extends MarsSimUnitTest {
     @Test
     public void testReassignActivitySpot() {
         var home = buildSettlement("Test");
-        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var building = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var b1 = building.getRecreation();
-        var building2 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        var building2 = buildRecreation(home.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var b2 = building2.getRecreation();
         Person p = buildPerson("Worker", home);
 

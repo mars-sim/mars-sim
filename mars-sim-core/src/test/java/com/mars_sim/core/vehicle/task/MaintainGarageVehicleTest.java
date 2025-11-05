@@ -21,7 +21,7 @@ public class MaintainGarageVehicleTest extends MarsSimUnitTest {
     @Test
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
-        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var mm = v.getMalfunctionManager();
@@ -49,7 +49,7 @@ public class MaintainGarageVehicleTest extends MarsSimUnitTest {
     @Test
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base");
-        buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         

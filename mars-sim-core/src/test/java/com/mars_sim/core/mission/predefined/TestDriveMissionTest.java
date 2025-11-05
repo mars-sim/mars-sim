@@ -37,7 +37,7 @@ public class TestDriveMissionTest extends MarsSimUnitTest {
     @Test
     public void testCreation() {
         Settlement home = buildSettlement("mock");
-        buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH, 1);
+        buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH);
         buildRover(home, "Rover 1", null, EXPLORER_ROVER);
         Person leader = buildPerson("Leader", home);
         for(int i = 0; i < 1 + MissionProject.MIN_POP; i++) {

@@ -31,7 +31,7 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
 		Settlement s = buildSettlement();
 
 		// Allows rover to go directly into Garage
-		buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+		buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
 		Rover r = buildRover(s, "Test", null, EXPLORER_ROVER);
 		mgr = r.getMalfunctionManager();
