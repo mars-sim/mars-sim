@@ -72,10 +72,6 @@ public abstract class MarsSimUnitTest {
         return context;
     }
 
-    protected MarsSurface getMarsSurface() {
-        return context.getSurface();
-    }
-
     public MarsSurface getSurface() {
         return context.getSurface();
     }
@@ -99,16 +95,6 @@ public abstract class MarsSimUnitTest {
 									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);
 	    
 	    return building0.getVehicleParking();
-	}
-
-	public Building buildCommand(BuildingManager buildingManager) {
-		return buildFunction(buildingManager, "Command Center", BuildingCategory.FARMING,
-                FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
-	}
-	
-	public Building buildGreenhouse(BuildingManager buildingManager) {
-		return buildFunction(buildingManager, "Large Greenhouse", BuildingCategory.FARMING,
-                FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
 	}
 	
 	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing) {

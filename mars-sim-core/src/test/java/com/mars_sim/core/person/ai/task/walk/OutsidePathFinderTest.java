@@ -50,7 +50,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue(person.isOutside(), "Person starts outside");
 
@@ -83,7 +83,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue(person.isOutside(), "Person starts outside");
 	
@@ -110,7 +110,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue(person.isOutside(), "Person starts outside");
 
@@ -136,7 +136,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(new LocalPosition(-10, -10));
 		assertTrue(person.isOutside(), "Person starts outside");
 

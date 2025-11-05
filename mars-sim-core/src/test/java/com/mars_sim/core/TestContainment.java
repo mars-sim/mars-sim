@@ -174,7 +174,7 @@ class TestContainment extends MarsSimUnitTest {
 		assertFalse(source.isInVehicle(), msg + ": isInVehicle");
 		assertNull(source.getVehicle(), msg + ": Vehicle");
 		
-		assertEquals(getMarsSurface(), source.getContainerUnit(), msg + ": Container");
+		assertEquals(getSurface(), source.getContainerUnit(), msg + ": Container");
 	}
 
 	
@@ -246,7 +246,7 @@ class TestContainment extends MarsSimUnitTest {
 	public void testVehicleOnSurface() {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1), EXPLORER_ROVER);
 
-		assertTrue(vehicle.transfer(getMarsSurface()),
+		assertTrue(vehicle.transfer(getSurface()),
 					"Transfer to Mars surface but still within settlement vicinity");
 
 		assertWithinSettlementVicinity("After transfer from Settlement", vehicle);
@@ -262,7 +262,7 @@ class TestContainment extends MarsSimUnitTest {
 		
 		assertInsideSettlement("Initial equipment", bag, settlement);
 
-		assertTrue(bag.transfer(getMarsSurface()), "Transfer to Mars surface but still within settlement vicinity");
+		assertTrue(bag.transfer(getSurface()), "Transfer to Mars surface but still within settlement vicinity");
 		assertWithinSettlementVicinity("in a settlement vicinity", bag);
 		
 		assertTrue(bag.transfer(settlement), "Transfer to settlement");
