@@ -50,7 +50,7 @@ public class GoodsManagerTest extends MarsSimUnitTest {
         if (passed)
         	assertEquals(initialDemand, newDemand, "Demand remains the same after budget review");
         else
-        	assertNotEquals("Demand has changed after budget review", initialDemand, newDemand);
+        	assertNotEquals(initialDemand, newDemand, "Demand has changed after budget review");
         
     }
 }

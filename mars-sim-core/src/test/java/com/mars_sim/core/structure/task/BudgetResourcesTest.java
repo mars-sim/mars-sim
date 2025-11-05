@@ -35,7 +35,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         var ph = task.getPhase();
         executeTaskUntilPhase(p, task, 1000);
         assertFalse(task.isDone(), "Task is still active");
-        assertNotEquals("Phase changed", ph, task.getPhase());
+        assertNotEquals(ph, task.getPhase(), "Phase changed");
 
         // Approval
         executeTaskForDuration(p, task, task.getTimeLeft());
@@ -60,7 +60,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         var ph = task.getPhase();
         executeTaskUntilPhase(p, task, 1000);
         assertFalse(task.isDone(), "Task is still active");
-        assertNotEquals("Phase changed", ph, task.getPhase());
+        assertNotEquals(ph, task.getPhase(), "Phase changed");
 
         // Approval
         executeTaskForDuration(p, task, task.getTimeLeft());
@@ -82,7 +82,7 @@ public class BudgetResourcesTest extends MarsSimUnitTest{
         var ph = task.getPhase();
         executeTaskUntilPhase(p, task, 1000);
         assertTrue(!task.isDone() || task.injectDemand(), "Task is either still active or has failed");
-        assertNotEquals("Phase changed", ph, task.getPhase());
+        assertNotEquals(ph, task.getPhase(), "Phase changed");
 
         // Approval
         executeTaskForDuration(p, task, task.getTimeLeft());

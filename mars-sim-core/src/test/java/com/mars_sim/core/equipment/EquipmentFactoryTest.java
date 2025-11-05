@@ -25,7 +25,7 @@ public class EquipmentFactoryTest extends MarsSimUnitTest {
 
         for(EquipmentType et : EquipmentType.values()) {
             var m = EquipmentFactory.getEquipmentMass(et);
-            assertNotEquals(et.name() + " valid mass", EquipmentFactory.DEFAULT_MASS, m);
+            assertNotEquals(EquipmentFactory.DEFAULT_MASS, m, et.name() + " valid mass");
         }
     }
 }
