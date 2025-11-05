@@ -84,10 +84,10 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
     }
 
     protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos) {
-		return buildBuilding(buildingManager, pos, 0D, 1);
+		return buildBuilding(buildingManager, pos, 0D);
 	}
 
-    protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+    protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, true);
 	}
 
@@ -250,17 +250,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
     protected Settlement buildSettlement(String name) {
         return buildSettlement(name, false,  MockSettlement.DEFAULT_COORDINATES);
     }
-
-	/**
-	 * Builds a settlement.
-	 * Note: without BuildingManager.
-	 *  
-	 * @param initialPopulation
-	 * @return
-	 */
-	protected Settlement buildSettlement(int initialPopulation) {
-		return buildSettlement(MockSettlement.DEFAULT_NAME, initialPopulation);
-	}
 
 	/**
 	 * Builds a settlement.

@@ -49,9 +49,9 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 
         Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
-        Building building1 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
+        Building building1 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D);
 
-        Building building2 = buildBuilding(buildingManager, new LocalPosition(-6D, 6D), 270D, 2);
+        Building building2 = buildBuilding(buildingManager, new LocalPosition(-6D, 6D), 270D);
 
         connectorManager.addBuildingConnection(new BuildingConnector(building0,
                 LOCAL_POSITION1, 90D, building2, LOCAL_POSITION1, 270D));
@@ -89,7 +89,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 
         LocalPosition target = new LocalPosition(-12D, 0D);
         Building building0 = buildEVA(buildingManager, LOCAL_POSITION1, 0D, 0);
-        Building building1 = buildBuilding(buildingManager, target, 270D, 1);
+        Building building1 = buildBuilding(buildingManager, target, 270D);
 
         buildingManager.setupBuildingFunctionsMap();
 
@@ -160,7 +160,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 
         LocalPosition target = new LocalPosition(-12D, 0D);
         Building building0 = buildAccommodation(buildingManager, LOCAL_POSITION1, 0D, 0);
-        Building building1 = buildBuilding(buildingManager, new LocalPosition(BUILDING_LENGTH + 1, 0D), 0D, 1);
+        Building building1 = buildBuilding(buildingManager, new LocalPosition(BUILDING_LENGTH + 1, 0D), 0D);
 
         assertFalse(LocalAreaUtil.isPositionWithinLocalBoundedObject(target, building1), "Target is not in the target building");
         buildingManager.setupBuildingFunctionsMap();
@@ -698,7 +698,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
+        Building building0 = buildBuilding(buildingManager, LocalPosition.DEFAULT_POSITION, 0D);
         buildingManager.setupBuildingFunctionsMap();
 
         Person person = buildPerson("Walker", settlement);

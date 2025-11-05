@@ -71,7 +71,7 @@ public class WalkOutsideTest extends MarsSimUnitTest {
 		assertTrue(person.isOutside(), "Person starts outside");
 	
 		// Add a Building in the way
-		buildBuilding(settlement.getBuildingManager(), new LocalPosition(1D + BUILDING_WIDTH, -BUILDING_LENGTH/2), 0D, 0);
+		buildBuilding(settlement.getBuildingManager(), new LocalPosition(1D + BUILDING_WIDTH, -BUILDING_LENGTH/2), 0D);
 		
 		LocalPosition target = new LocalPosition(20D, 0D);
 		WalkOutside outsideWalk = new WalkOutside(person, person.getPosition(), target, true);
@@ -137,7 +137,7 @@ public class WalkOutsideTest extends MarsSimUnitTest {
 		assertTrue(person.isOutside(), "Person starts outside");
 	
 		// Add a Building in the way
-		buildBuilding(settlement.getBuildingManager(), new LocalPosition(10D + BUILDING_WIDTH, -BUILDING_LENGTH/2), 0D, 0);
+		buildBuilding(settlement.getBuildingManager(), new LocalPosition(10D + BUILDING_WIDTH, -BUILDING_LENGTH/2), 0D);
 		buildRover(settlement, "Rover", new LocalPosition(10D, -1D));
 		
 		LocalPosition target = new LocalPosition(30D, 0D);

@@ -32,7 +32,7 @@ public class ChainOfCommandTest extends MarsSimUnitTest {
      */
     @Test
     public void testCommander() {
-        Settlement settlement = buildSettlement(5);
+        Settlement settlement = buildSettlement("TestSettlement", 5);
   
         ChainOfCommand coc = settlement.getChainOfCommand();	
   

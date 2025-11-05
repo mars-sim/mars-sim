@@ -206,9 +206,9 @@ public class WalkInteriorTest extends MarsSimUnitTest {
 
 
         Building b1 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
-        Building b2 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D, 1);
-        Building b3 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 2);
-        Building b4 = buildBuilding(buildingManager, new LocalPosition(-18D, 0D), 270D, 3);
+        Building b2 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D);
+        Building b3 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D);
+        Building b4 = buildBuilding(buildingManager, new LocalPosition(-18D, 0D), 270D);
 
         connectorManager.addBuildingConnection(new BuildingConnector(b1, HATCH1_POSITION, 90D, b2, HATCH1_POSITION, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(b3, HATCH2_POSITION, 270D, b2, HATCH2_POSITION, 90D));
@@ -242,8 +242,8 @@ public class WalkInteriorTest extends MarsSimUnitTest {
 
 
         Building b3 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
-        Building b4 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D, 2);
-        Building b5 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D, 1);
+        Building b4 = buildBuilding(buildingManager, new LocalPosition(-6D, 0D), 270D);
+        Building b5 = buildBuilding(buildingManager, new LocalPosition(-12D, 0D), 270D);
 
         connectorManager.addBuildingConnection(new BuildingConnector(b3, HATCH1_POSITION, 90D, b4, HATCH1_POSITION, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(b5, HATCH2_POSITION, 270D, b4, HATCH2_POSITION, 90D));
