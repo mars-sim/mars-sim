@@ -1,6 +1,11 @@
 package com.mars_sim.core.vehicle.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
@@ -9,10 +14,11 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.StatusType;
 
-public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
+public class UnloadVehicleGarageTest extends MarsSimUnitTest {
     private static final int ITEM_AMOUNT = 10;
     private static final int RESOURCE_AMOUNT = 10;
 
+    @Test
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
@@ -33,7 +39,7 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
 
         v.addSecondaryStatus(StatusType.UNLOADING);
         var task = new UnloadVehicleGarage(p, v);
-        assertFalse("Task created", task.isDone()); 
+        assertFalse(task.isDone(), "Task created"); 
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
@@ -41,16 +47,17 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
         mass = v.getStoredMass();
 //        System.out.println("mass: " + mass);
         
-        assertEquals("Final stored mass", 0.0, mass);
-        assertEquals("Oxygen unloaded", RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)));
-        assertEquals("Food unloaded", RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID)));
-        assertEquals("Garments unloaded", ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.GARMENT_ID));
-        assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
+        assertEquals(0.0, mass, "Final stored mass");
+        assertEquals(RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID)), "Oxygen unloaded");
+        assertEquals(RESOURCE_AMOUNT, Math.round(s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID)), "Food unloaded");
+        assertEquals(ITEM_AMOUNT, s.getItemResourceStored(ItemResourceUtil.GARMENT_ID), "Garments unloaded");
+        assertFalse(v.haveStatusType(StatusType.UNLOADING), "Vehicle has UNLOADING");
 
         // Return to base
-        assertTrue("Task completed", task.isDone()); 
+        assertTrue(task.isDone(), "Task completed"); 
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base", true);
         buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
@@ -60,7 +67,7 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
 
         // Skip empty vehicle
         var tasks = mt.getSettlementTasks(s);
-        assertEquals("Mo unload tasks found", 0, tasks.size());
+        assertEquals(0, tasks.size(), "Mo unload tasks found");
 
         // Load and make reserved
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
@@ -69,15 +76,15 @@ public class UnloadVehicleGarageTest extends AbstractMarsSimUnitTest {
 
         // Skip reserved vehicle
         tasks = mt.getSettlementTasks(s);
-        assertEquals("Skip reserved vehicle", 0, tasks.size());
+        assertEquals(0, tasks.size(), "Skip reserved vehicle");
 
          // Find vehicle with unload status
          v.addSecondaryStatus(StatusType.UNLOADING);
          
         tasks = mt.getSettlementTasks(s);
-        assertEquals("Found vehicle", 1, tasks.size());
+        assertEquals(1, tasks.size(), "Found vehicle");
         // No garages so EVA 
         var t = tasks.get(0);
-        assertFalse("Task is not EVA", t.isEVA());
+        assertFalse(t.isEVA(), "Task is not EVA");
     }
 }

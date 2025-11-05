@@ -1,6 +1,11 @@
 package com.mars_sim.core.science.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
@@ -11,7 +16,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 
-public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
+public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
     /**
      * Build a study to the Proposal phase
      */
@@ -26,7 +31,7 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // Build a study
         var sim = context.getSim();
         var study = sim.getScientificStudyManager().createScientificStudy(p, science, 10);
-        assertEquals("Person assigned Study", study, p.getResearchStudy().getStudy());
+        assertEquals(study, p.getResearchStudy().getStudy(), "Person assigned Study");
         return study;
     }
 
@@ -40,11 +45,12 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // Complete Proposal
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired() + 10D);
         study.timePassing(context.createPulse(context.getSim().getMasterClock().getMarsTime(), false, false));
-        assertEquals("Study start phase", StudyStatus.INVITATION_PHASE, study.getPhase());
+        assertEquals(StudyStatus.INVITATION_PHASE, study.getPhase(), "Study start phase");
 
         return study;
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Study", true);
 
@@ -56,17 +62,18 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // Study ignore until correct phase
         var proposalStudy = buildStudyToProposalPhase(s, this, ScienceType.BOTANY, JobType.BOTANIST);
         var tasks = mt.getTaskJobs(proposalStudy.getPrimaryResearcher());
-        assertTrue("No tasks found", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No tasks found");
 
         // Get invite phase study
         var inviteStudy = buildStudyToInvitePhase(s, this, ScienceType.BOTANY, JobType.BOTANIST);
         tasks = mt.getTaskJobs(inviteStudy.getPrimaryResearcher());
         // Note: The researcher won't be able to find anyone to invite
-        assertFalse("Tasks found", tasks.isEmpty());
+        assertFalse(tasks.isEmpty(), "Tasks found");
         
     }
 
 
+    @Test
     public void testCreateTask() {
         var s = buildSettlement("Study", true);
         var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
@@ -88,19 +95,18 @@ public class InviteStudyCollaboratorTest extends AbstractMarsSimUnitTest {
         // Advance Study and retest
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired());
         study.timePassing(createPulse(0, 0, false, false));
-        assertEquals("Study advanced to invitation phase", StudyStatus.INVITATION_PHASE,
-                            study.getPhase());
+        assertEquals(StudyStatus.INVITATION_PHASE, study.getPhase(), "Study advanced to invitation phase");
         
         // Create invite task
         var task = new InviteStudyCollaborator(p);
-        assertFalse("Invite task created", task.isDone());
+        assertFalse(task.isDone(), "Invite task created");
 
         executeTask(p, task, 20);
-        assertTrue("Invite task done", task.isDone());
+        assertTrue(task.isDone(), "Invite task done");
 
         // Check if he has been invited
-        assertTrue("Collaborator 1 added to study", study.getInvitedResearchers().contains(c1));
-        assertTrue("Collaborator 2 added to study", study.getInvitedResearchers().contains(c2));
+        assertTrue(study.getInvitedResearchers().contains(c1), "Collaborator 1 added to study");
+        assertTrue(study.getInvitedResearchers().contains(c2), "Collaborator 2 added to study");
 
     }
 }

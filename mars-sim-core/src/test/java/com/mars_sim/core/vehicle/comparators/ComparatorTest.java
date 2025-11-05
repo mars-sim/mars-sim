@@ -1,16 +1,20 @@
 package com.mars_sim.core.vehicle.comparators;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 
-public class ComparatorTest extends AbstractMarsSimUnitTest {
+public class ComparatorTest extends MarsSimUnitTest {
+    @Test
     public void testLab() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
@@ -20,13 +24,14 @@ public class ComparatorTest extends AbstractMarsSimUnitTest {
 
         Collections.sort(v, new LabRangeComparator());
         
-        assertEquals("Worst lab", t, v.get(0));
-        assertEquals("Best lab", e, v.get(2));
+        assertEquals(t, v.get(0), "Worst lab");
+        assertEquals(e, v.get(2), "Best lab");
 
     }
 
+    @Test
     public void testRange() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
@@ -36,13 +41,14 @@ public class ComparatorTest extends AbstractMarsSimUnitTest {
 
         Collections.sort(v, new RangeComparator());
         
-        assertEquals("Shortest range", e, v.get(0));
-        assertEquals("Longest range", c, v.get(2));
+        assertEquals(e, v.get(0), "Shortest range");
+        assertEquals(c, v.get(2), "Longest range");
 
     }
 
+    @Test
     public void testCargo() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
@@ -52,12 +58,13 @@ public class ComparatorTest extends AbstractMarsSimUnitTest {
 
         Collections.sort(v, new CargoRangeComparator());
         
-        assertEquals("Smallest cargo", e, v.get(0));
-        assertEquals("Largest cargo", c, v.get(2));
+        assertEquals(e, v.get(0), "Smallest cargo");
+        assertEquals(c, v.get(2), "Largest cargo");
     }
 
+    @Test
     public void testCrew() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
         var t = buildRover(s, "Transport", LocalPosition.DEFAULT_POSITION, TRANSPORT_ROVER);
         var c = buildRover(s, "Cargo", LocalPosition.DEFAULT_POSITION, CARGO_ROVER);
@@ -67,7 +74,7 @@ public class ComparatorTest extends AbstractMarsSimUnitTest {
 
         Collections.sort(v, new CrewRangeComparator());
         
-        assertEquals("Smallest crew", c, v.get(0));
-        assertEquals("Largest crew", t, v.get(2));
+        assertEquals(c, v.get(0), "Smallest crew");
+        assertEquals(t, v.get(2), "Largest crew");
     }
 }

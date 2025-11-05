@@ -1,15 +1,19 @@
 package com.mars_sim.core.data;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.time.MarsDate;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
-public class HistoryTest extends AbstractMarsSimUnitTest {
+public class HistoryTest extends MarsSimUnitTest {
     
+    @Test
     public void testAdd() {
         History<Integer> h = new History<>();
         MasterClock master = getSim().getMasterClock();
@@ -22,15 +26,16 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
         h.add(2);
 
         List<HistoryItem<Integer>> changes = h.getChanges();
-        assertEquals("Histoy size", 2, changes.size());
-        assertEquals("1st time", firstTime, changes.get(0).getWhen());
-        assertEquals("1st value", Integer.valueOf(1), changes.get(0).getWhat());
+        assertEquals(2, changes.size(), "Histoy size");
+        assertEquals(firstTime, changes.get(0).getWhen(), "1st time");
+        assertEquals(Integer.valueOf(1), changes.get(0).getWhat(), "1st value");
 
-        assertEquals("2nd time", secondTime, changes.get(1).getWhen());
-        assertEquals("2nd value", Integer.valueOf(2), changes.get(1).getWhat());
+        assertEquals(secondTime, changes.get(1).getWhen(), "2nd time");
+        assertEquals(Integer.valueOf(2), changes.get(1).getWhat(), "2nd value");
 
     }
 
+    @Test
     public void testRange() {
         History<Integer> h = new History<>();
         MasterClock master = getSim().getMasterClock();
@@ -55,12 +60,13 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
         
 
         List<MarsDate> range = h.getRange();
-        assertEquals("Range size", 3, range.size());
-        assertEquals("1st date", firstDate, range.get(0));
-        assertEquals("2nd date", middleDate, range.get(1));
-        assertEquals("3rd date", lastDate, range.get(2));
+        assertEquals(3, range.size(), "Range size");
+        assertEquals(firstDate, range.get(0), "1st date");
+        assertEquals(middleDate, range.get(1), "2nd date");
+        assertEquals(lastDate, range.get(2), "3rd date");
     }
 
+    @Test
     public void testAddSameTime() {
         History<Integer> h = new History<>();
         MasterClock master = getSim().getMasterClock();
@@ -70,11 +76,12 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
         h.add(2);
 
         List<HistoryItem<Integer>> changes = h.getChanges();
-        assertEquals("History size", 1, changes.size());
-        assertEquals("Last time", firstTime, changes.get(0).getWhen());
-        assertEquals("Last value", Integer.valueOf(2), changes.get(0).getWhat());
+        assertEquals(1, changes.size(), "History size");
+        assertEquals(firstTime, changes.get(0).getWhen(), "Last time");
+        assertEquals(Integer.valueOf(2), changes.get(0).getWhat(), "Last value");
     }
 
+    @Test
     public void testAddSameValue() {
         History<Integer> h = new History<>();
         MasterClock master = getSim().getMasterClock();
@@ -87,8 +94,8 @@ public class HistoryTest extends AbstractMarsSimUnitTest {
         h.add(1);
 
         List<HistoryItem<Integer>> changes = h.getChanges();
-        assertEquals("History size", 1, changes.size());
-        assertEquals("Last time", firstTime, changes.get(0).getWhen());
-        assertEquals("Last value", Integer.valueOf(1), changes.get(0).getWhat());
+        assertEquals(1, changes.size(), "History size");
+        assertEquals(firstTime, changes.get(0).getWhen(), "Last time");
+        assertEquals(Integer.valueOf(1), changes.get(0).getWhat(), "Last value");
     }
 }

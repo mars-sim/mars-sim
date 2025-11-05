@@ -1,6 +1,10 @@
 package com.mars_sim.core.person.ai.task;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -14,7 +18,7 @@ import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class EatDrinkTest extends AbstractMarsSimUnitTest {
+public class EatDrinkTest extends MarsSimUnitTest {
     
     private static final double INITIAL_RESOURCE = 100D;
 
@@ -23,18 +27,20 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
                                 FunctionType.DINING,  pos, facing, true);
     }
 
+    @Test
     public void testSettlementWater() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
         s.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
         testWater(p);
-        assertTrue("Water consumed", s.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
+        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
     }
 
+    @Test
     public void testBottleWater() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
 
@@ -44,20 +50,21 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         p.assignThermalBottle();
 
         testWater(p);
-        assertTrue("Water consumed", b.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
+        assertTrue(b.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
     }
 
+    @Test
     public void testVehicleWater() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
         var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION);
         v.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
         p.transfer(v);
-        assertTrue("In vehicle", p.isInVehicle());
+        assertTrue(p.isInVehicle(), "In vehicle");
 
         testWater(p);
-        assertTrue("Water consumed", v.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE);
+        assertTrue(v.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
 
     }
 
@@ -65,26 +72,28 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         var pc = p.getPhysicalCondition();
         pc.setThirst(PhysicalCondition.MAX_THIRST);
         var initialThirst = pc.getThirst();
-        assertTrue("Person is thirty", initialThirst > 0);
+        assertTrue(initialThirst > 0, "Person is thirty");
 
         var t = new EatDrink(p);
-        assertFalse("EatDrink task not complete", t.isDone());
+        assertFalse(t.isDone(), "EatDrink task not complete");
       
         executeTask(p, t, 150);
-        assertTrue("Eatdrnk completed", t.isDone());
-        assertTrue("Person is less thirty", pc.getThirst() < initialThirst);
+        assertTrue(t.isDone(), "Eatdrnk completed");
+        assertTrue(pc.getThirst() < initialThirst, "Person is less thirty");
     }
 
+    @Test
     public void testSettlementFood() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
 
         testHunger(p, s);
     }
 
+    @Test
     public void testSettlementFoodWater() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
 
@@ -94,17 +103,18 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
 
         testHunger(p, s);
 
-        assertTrue("Person is less thirsty", pc.getThirst() < initialThirst);
+        assertTrue(pc.getThirst() < initialThirst, "Person is less thirsty");
 
     }
 
+    @Test
     public void testVehicleFood() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
         var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION);
 
         p.transfer(v);
-        assertTrue("In vehicle", p.isInVehicle());
+        assertTrue(p.isInVehicle(), "In vehicle");
 
         testHunger(p, v);
     }
@@ -115,14 +125,14 @@ public class EatDrinkTest extends AbstractMarsSimUnitTest {
         var pc = p.getPhysicalCondition();
         pc.setHunger(PhysicalCondition.HUNGER_THRESHOLD + 1);
         pc.setThirst(0D);
-        assertTrue("Person is hungry", pc.isHungry());
+        assertTrue(pc.isHungry(), "Person is hungry");
 
         var t = new EatDrink(p);
-        assertFalse("EatDrink task not complete", t.isDone());
+        assertFalse(t.isDone(), "EatDrink task not complete");
 
         executeTask(p, t, 1000);
-        assertTrue("Eatdrnk completed", t.isDone());
-        assertFalse("Person is not hungry", pc.isHungry());
-        assertTrue("Food consumed", rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID) < INITIAL_RESOURCE);
+        assertTrue(t.isDone(), "Eatdrnk completed");
+        assertFalse(pc.isHungry(), "Person is not hungry");
+        assertTrue(rh.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID) < INITIAL_RESOURCE, "Food consumed");
     }
 }

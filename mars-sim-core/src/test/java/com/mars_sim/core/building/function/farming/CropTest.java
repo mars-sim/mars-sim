@@ -1,6 +1,10 @@
 package com.mars_sim.core.building.function.farming;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -10,21 +14,24 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.time.MarsTime;
 
-public class CropTest extends AbstractMarsSimUnitTest{
+public class CropTest extends MarsSimUnitTest{
     
 	public Building buildGreenhouse(BuildingManager buildingManager) {
 		return buildFunction(buildingManager, "Large Greenhouse", BuildingCategory.FARMING,
                 FunctionType.FARMING,  LocalPosition.DEFAULT_POSITION, 0D, true);
 	}
 
+    @Test
     public void testGrowingWhiteMustard() {
         testCropGrowth("White Mustard");  // Select a crop with a short growing cycle
     }
 
+    @Test
     public void testGrowingSpringOnion() {
         testCropGrowth("Spring Onion");  // Select a crop with a short growing cycle
     }
     
+    @Test
     public void testGrowingGreenBellPepper() {
         testCropGrowth("Green Bell Pepper");  // Select a crop with a short growing cycle
     }
@@ -41,11 +48,11 @@ public class CropTest extends AbstractMarsSimUnitTest{
 
         var crop = new Crop(1, spec, 2, f, false, 0D);
         var cat = spec.getCropCategory();
-        assertEquals("No crop growth", 0D, crop.getPercentGrowth());
+        assertEquals(0D, crop.getPercentGrowth(), "No crop growth");
 
         double timePerPulse = 2D;
         var phase = crop.getPhase();
-        assertEquals(cropName + " starting phase", cat.getPhases().get(0), phase);
+        assertEquals(cat.getPhases().get(0), phase, cropName + " starting phase");
 
         // Calculate a maximum growing time
         var masterClock = getSim().getMasterClock();
@@ -60,7 +67,7 @@ public class CropTest extends AbstractMarsSimUnitTest{
             // Move time until Phase changes
             while(phase.equals(crop.getPhase())) {
                 // Check time has not gone too long 
-                assertTrue(cropName + " too much time past", endTime.getTimeDiff(masterClock.getMarsTime()) > 0D);
+                assertTrue(endTime.getTimeDiff(masterClock.getMarsTime()) > 0D, cropName + " too much time past");
 
                 if (workRequired > 0) {
                     crop.addWork(w, timePerPulse);
@@ -77,8 +84,7 @@ public class CropTest extends AbstractMarsSimUnitTest{
 
                 crop.timePassing(pulse, 1D, SurfaceFeatures.MAX_SOLAR_IRRADIANCE, greyRate, 1D);
             }
-            assertEquals(cropName + " moved to next phase after #" + phaseId, phases.get(phaseId + 1),
-                                        crop.getPhase());
+            assertEquals(phases.get(phaseId + 1), crop.getPhase(), cropName + " moved to next phase after #" + phaseId);
 
             phaseId++;
             phase = crop.getPhase();
@@ -88,8 +94,8 @@ public class CropTest extends AbstractMarsSimUnitTest{
         
         double cropCache = crop.getCropCache();
         
-        // assertTrue(cropName + " crop harvested over 10%", (harvested.value()/harvested.max()) > 0.5D);
-        assertEquals(cropName + " stored", cropCache + s.getSpecificAmountResourceStored(spec.getCropID()), harvested.value(), 0.01);
+        // assertTrue((harvested.value()/harvested.max()) > 0.5D, cropName + " crop harvested over 10%");
+        assertEquals(cropCache + s.getSpecificAmountResourceStored(spec.getCropID()), harvested.value(), 0.01, cropName + " stored");
    
         return crop;
     }

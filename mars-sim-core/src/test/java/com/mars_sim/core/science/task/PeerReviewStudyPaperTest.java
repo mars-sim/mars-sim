@@ -1,6 +1,12 @@
 package com.mars_sim.core.science.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -10,7 +16,8 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.Settlement;
 
-public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
+public class PeerReviewStudyPaperTest extends MarsSimUnitTest {
+    @Test
     public void testCreateReviewTask() {
         var s = buildSettlement("Study", true);
         var study = buildStudyToPeerReviewPhase(s, ScienceType.BOTANY, JobType.BOTANIST);
@@ -19,15 +26,15 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
         BuildingManager.addToActivitySpot(r, study.getPrimaryResearcher().getBuildingLocation(), FunctionType.RESEARCH);
 
         var t = PeerReviewStudyPaper.createTask(r);
-        assertNotNull("Review task created", t);
-        assertFalse("Review task started", t.isDone());
+        assertNotNull(t, "Review task created");
+        assertFalse(t.isDone(), "Review task started");
 
         executeTaskForDuration(r, t, t.getTimeLeft() * 1.1);
-        assertTrue("Review task completed", t.isDone());
+        assertTrue(t.isDone(), "Review task completed");
 
         double elasped = study.getTotalPeerReviewTimeRequired() * 1.1;
         study.timePassing(createPulse(getSim().getMasterClock().getMarsTime().addTime(elasped), false, false));
-        assertTrue("Study complete", study.isCompleted());
+        assertTrue(study.isCompleted(), "Study complete");
     }
 
     private ScientificStudy buildStudyToPeerReviewPhase(Settlement s, ScienceType science, JobType researchJob) {
@@ -39,11 +46,11 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
         study.addPrimaryPaperWorkTime(elapsed);
         var now = getSim().getMasterClock().getMarsTime().addTime(elapsed);
         study.timePassing(createPulse(now, false, false));
-        assertEquals("Study advanced to review phase", StudyStatus.PEER_REVIEW_PHASE,
-                            study.getPhase());
+        assertEquals(StudyStatus.PEER_REVIEW_PHASE, study.getPhase(), "Study advanced to review phase");
         return study;
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Study", true);
         var study = buildStudyToPeerReviewPhase(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
@@ -55,13 +62,13 @@ public class PeerReviewStudyPaperTest extends AbstractMarsSimUnitTest {
 
         var mt = new PeerReviewStudyPaperMeta();
         var tasks = mt.getTaskJobs(r);
-        assertEquals("Found 1 task", 1, tasks.size());
+        assertEquals(1, tasks.size(), "Found 1 task");
 
         // Add a starting study which shouldbe ignored
         var startStudy = ProposeScientificStudy.createStudy(study.getPrimaryResearcher());
-        assertNotNull("Starting study", startStudy);
+        assertNotNull(startStudy, "Starting study");
         tasks = mt.getTaskJobs(r);
-        assertEquals("Still found 1 task", 1, tasks.size());
+        assertEquals(1, tasks.size(), "Still found 1 task");
 
     }
 }

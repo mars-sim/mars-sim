@@ -1,12 +1,16 @@
 package com.mars_sim.core.building.connection;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.MockSettlement;
 
-public class HatchTest extends AbstractMarsSimUnitTest {
+public class HatchTest extends MarsSimUnitTest {
 
 	
     private static final LocalPosition BUILDING_POSITION = new LocalPosition(0D, 0D);
@@ -14,6 +18,7 @@ public class HatchTest extends AbstractMarsSimUnitTest {
     private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, 10, 10, 0);
 
 
+	@Test
 	public void testConstructor() {
         
         MockSettlement settlement = new MockSettlement();
@@ -33,6 +38,7 @@ public class HatchTest extends AbstractMarsSimUnitTest {
         assertEquals(Hatch.LENGTH, hatch.getLength());
     }
     
+    @Test
     public void testSetLocation() {
         MockSettlement settlement = new MockSettlement();
         MockBuilding building1 = new MockBuilding(settlement, "1", BUILDING_POSN);
@@ -46,6 +52,7 @@ public class HatchTest extends AbstractMarsSimUnitTest {
         assertEquals(HATCH_POSITION, hatch.getPosition());
     }
     
+    @Test
     public void testEquals() {
         
         MockSettlement settlement = new MockSettlement();

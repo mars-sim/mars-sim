@@ -1,6 +1,11 @@
 package com.mars_sim.core.building.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
@@ -10,7 +15,7 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 
-public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
+public class MaintainBuildingTest extends MarsSimUnitTest {
 	
     static void buildingNeedMaintenance(Building b, MarsSimContext context) {
         MalfunctionManager manager = b.getMalfunctionManager();
@@ -19,6 +24,7 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
         manager.activeTimePassing(context.createPulse(mTime, false, false));
     }
     
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Maintenance");
         var b1 = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
@@ -29,7 +35,7 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
         var tasks = mt.getSettlementTasks(s);
         
         // Note: there is a chance that tasks are made since scoreMaintenance() currently  has a probability component
-        // Not used: assertTrue("No tasks found", tasks.isEmpty());
+        // Not used: assertTrue(tasks.isEmpty(), "No tasks found");
 
         // One building needs maintenance
         buildingNeedMaintenance(b1, this);
@@ -48,13 +54,14 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
 	        var foundB2 = found2.getFocus();
 	        
 	        if (!found1.isEVA()) {
-	        	assertEquals("Found building B1 with maintenance", b1, foundB1);
+	        	assertEquals(b1, foundB1, "Found building B1 with maintenance");
 	        }
 	        
-	        assertEquals("Found building B2", b2, foundB2);
+	        assertEquals(b2, foundB2, "Found building B2");
         }
     }
     
+    @Test
     public void testCreateTask() {
 
         var s = buildSettlement("Maintain");
@@ -68,15 +75,15 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
         assertGreaterThan("Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
 
         var task = new MaintainBuilding(p, b);
-        assertFalse("Task created", task.isDone());
+        assertFalse(task.isDone(), "Task created");
 
         // Do the initial walk
         executeTaskUntilSubTask(p, task, 10);
-        assertTrue("Walk completed", task.getSubTask().isDone());
-        assertFalse("Task still active", task.isDone());
+        assertTrue(task.getSubTask().isDone(), "Walk completed");
+        assertFalse(task.isDone(), "Task still active");
  
-        assertFalse("Task still active", task.isDone());
-        assertEquals("Engineer location", b, p.getBuildingLocation());
+        assertFalse(task.isDone(), "Task still active");
+        assertEquals(b, p.getBuildingLocation(), "Engineer location");
         
         // Do maintenance for a few calls to ensure maintenance is happening
         executeTaskUntilPhase(p, task, 2);
@@ -85,7 +92,7 @@ public class MaintainBuildingTest extends AbstractMarsSimUnitTest {
 
         // Complete until the end
         executeTaskForDuration(p, task, task.getTimeLeft() * 1.1);
-        assertTrue("Task created", task.isDone());
-        assertEquals("Maintenance period reset", 0D, manager.getEffectiveTimeSinceLastMaintenance());
+        assertTrue(task.isDone(), "Task created");
+        assertEquals(0D, manager.getEffectiveTimeSinceLastMaintenance(), "Maintenance period reset");
     }
 }

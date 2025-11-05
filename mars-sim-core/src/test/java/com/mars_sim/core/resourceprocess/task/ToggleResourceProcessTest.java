@@ -1,11 +1,17 @@
 package com.mars_sim.core.resourceprocess.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 
-public class ToggleResourceProcessTest extends AbstractMarsSimUnitTest {
+public class ToggleResourceProcessTest extends MarsSimUnitTest {
 
 
+    @Test
     public void testStartToggleOn() {
         var s = buildSettlement("Resource", true);
         var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
@@ -20,20 +26,21 @@ public class ToggleResourceProcessTest extends AbstractMarsSimUnitTest {
         var w = buildPerson("worker", s);
         var t = new ToggleResourceProcess(w, false, p.getSpec());
 
-        assertFalse("Started task", t.isDone());
-        assertTrue("Worker assigned", p.isWorkerAssigned());
-        assertEquals("Select process", p, t.getResourceProcess());
-        assertEquals("Selected Building", b, t.getBuilding());
-        assertFalse("Process not running", p.isProcessRunning());
+        assertFalse(t.isDone(), "Started task");
+        assertTrue(p.isWorkerAssigned(), "Worker assigned");
+        assertEquals(p, t.getResourceProcess(), "Select process");
+        assertEquals(b, t.getBuilding(), "Selected Building");
+        assertFalse(p.isProcessRunning(), "Process not running");
 
         var completed = p.addToggleWorkTime(p.getRemainingToggleWorkTime() + 1);
-        assertTrue("Toggle completed", completed);
-        assertTrue("Process running", p.isProcessRunning());
+        assertTrue(completed, "Toggle completed");
+        assertTrue(p.isProcessRunning(), "Process running");
 
         t.endTask();
-        assertFalse("Worker relased", p.isWorkerAssigned());
+        assertFalse(p.isWorkerAssigned(), "Worker relased");
     }
 
+    @Test
     public void testStartToggleOnDuplicate() {
         var s = buildSettlement("Resource", true);
         var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
@@ -47,13 +54,14 @@ public class ToggleResourceProcessTest extends AbstractMarsSimUnitTest {
 
         var w = buildPerson("worker", s);
         var t = new ToggleResourceProcess(w, false, p.getSpec());
-        assertFalse("Started task", t.isDone());
+        assertFalse(t.isDone(), "Started task");
 
         var w1 = buildPerson("worker 2", s);
         var t1 = new ToggleResourceProcess(w1, false, p.getSpec());
-        assertTrue("Failed to start", t1.isDone());
+        assertTrue(t1.isDone(), "Failed to start");
     }
 
+    @Test
     public void testStartNoToggle() {
         var s = buildSettlement("Resource", true);
         var b = ToggleResourceProcessMetaTest.buildProcessing(this, s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
@@ -65,6 +73,6 @@ public class ToggleResourceProcessTest extends AbstractMarsSimUnitTest {
         var w = buildPerson("worker", s);
         var t = new ToggleResourceProcess(w, false, p.getSpec());
 
-        assertTrue("Task not started", t.isDone());
+        assertTrue(t.isDone(), "Task not started");
     }
 }

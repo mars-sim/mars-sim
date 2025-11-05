@@ -1,7 +1,12 @@
 package com.mars_sim.core.person.health.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.Person;
@@ -12,7 +17,7 @@ import com.mars_sim.core.person.health.RadiationType;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 
-public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
+public class PrescribeMedicationTest extends MarsSimUnitTest {
 	
     private Person createRadiationPatient(Settlement s, Building sb) {
         var p = buildPatient("Patient", s, JobType.ENGINEER, sb, FunctionType.MEDICAL_CARE);
@@ -23,12 +28,13 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
         e.addDose(RadiationType.SEP, BodyRegionType.SKIN, 2000D);
         var pulse = createPulse(1, 0, true, true);
         pc.timePassing(pulse, s);
-        assertTrue("Patient is radiation sick", e.isSick());
-        assertTrue("Patient is radiation poisoned", pc.isRadiationPoisoned());
+        assertTrue(e.isSick(), "Patient is radiation sick");
+        assertTrue(pc.isRadiationPoisoned(), "Patient is radiation poisoned");
 
         return p;
     }
 
+    @Test
     public void testDetermineRadiation() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -39,9 +45,10 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
         var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var found = PrescribeMedication.determinePatient(doctor);
-        assertEquals("Found stressed out patient", p, found);
+        assertEquals(p, found, "Found stressed out patient");
     }
 
+    @Test
     public void testCreationRadiation() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -49,21 +56,22 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
         var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
 
         var task = new PrescribeMedication(doctor);
-        assertEquals("Found patient", p, task.getPatient());
-        assertFalse("Task is active", task.isDone());
+        assertEquals(p, task.getPatient(), "Found patient");
+        assertFalse(task.isDone(), "Task is active");
 
 
         // Complete to the end
         executeTask(doctor, task, 2000);
-        assertTrue("Task completed", task.isDone());
+        assertTrue(task.isDone(), "Task completed");
         var meds = p.getPhysicalCondition().getMedicationList();
-        assertEquals("Patient has medication", 1, meds.size());
+        assertEquals(1, meds.size(), "Patient has medication");
         
         // Check has radiation medication
         var radMeds = meds.get(0);
-        assertEquals("Radiation meds", ComplaintType.RADIATION_SICKNESS, radMeds.getComplaintType());
+        assertEquals(ComplaintType.RADIATION_SICKNESS, radMeds.getComplaintType(), "Radiation meds");
     }
 
+    @Test
     public void testPersonMeta() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -73,14 +81,15 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
         var mt = new PrescribeMedicationMeta();
 
         var tasks = mt.getTaskJobs(doctor);
-        assertTrue("No medication tasks found", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No medication tasks found");
 
         // Add a radiation person
         createRadiationPatient(s, sb);
         tasks = mt.getTaskJobs(doctor);
-        assertEquals("One medication task found", 1, tasks.size());
+        assertEquals(1, tasks.size(), "One medication task found");
     }
 
+    @Test
     public void testRobotMeta() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -90,11 +99,11 @@ public class PrescribeMedicationTest extends AbstractMarsSimUnitTest {
         var mt = new PrescribeMedicationMeta();
 
         var tasks = mt.getTaskJobs(doctor);
-        assertTrue("No medication tasks found", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No medication tasks found");
 
         // Add a radiation person
         createRadiationPatient(s, sb);
         tasks = mt.getTaskJobs(doctor);
-        assertEquals("One medication task found", 1, tasks.size());
+        assertEquals(1, tasks.size(), "One medication task found");
     }
 }

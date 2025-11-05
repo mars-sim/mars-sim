@@ -1,88 +1,99 @@
 package com.mars_sim.core.building.function.cooking;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 
-public class MealConfigTest extends AbstractMarsSimUnitTest {
+public class MealConfigTest extends MarsSimUnitTest {
 
+    @Test
     public void testGetDishList() {
         var mealConf = getConfig().getMealConfiguration();
 
         var mains = mealConf.getDishList(DishCategory.MAIN);
-        assertFalse("Mains are not empty", mains.isEmpty());
+        assertFalse(mains.isEmpty(), "Mains are not empty");
 
         var sides = mealConf.getDishList(DishCategory.SIDE);
-        assertFalse("Sides are not empty", sides.isEmpty());
+        assertFalse(sides.isEmpty(), "Sides are not empty");
 
         var desserts = mealConf.getDishList(DishCategory.DESSERT);
-        assertFalse("Desserts are not empty", desserts.isEmpty());
+        assertFalse(desserts.isEmpty(), "Desserts are not empty");
     }
 
+    @Test
     public void testGarlicBread() {
         var name = "Garlic Bread";
         var mealConf = getConfig().getMealConfiguration();
 
         var rice = mealConf.getHotMeal(name);
 
-        assertNotNull(name, rice);
-        assertEquals("Name", name, rice.getName());
-        assertEquals("Salt", 0.01, rice.getSalt());
-        assertEquals("Oil", 0.15, rice.getOil());
-        assertEquals("Category", DishCategory.SIDE, rice.getCategory());
+        assertNotNull(rice, name);
+        assertEquals(name, rice.getName(), "Name");
+        assertEquals(0.01, rice.getSalt(), "Salt");
+        assertEquals(0.15, rice.getOil(), "Oil");
+        assertEquals(DishCategory.SIDE, rice.getCategory(), "Category");
 
         var ingredients = rice.getIngredientList();
-        assertEquals("Ingredients", 3, ingredients.size());
+        assertEquals(3, ingredients.size(), "Ingredients");
     }
 
+    @Test
     public void testDessertDish() {
         var name = "Strawberries";
         var mealConf = getConfig().getMealConfiguration();
 
         var dish = mealConf.getHotMeal(name);
 
-        assertNotNull(name, dish);
-        assertEquals("Name", name, dish.getName());
-        assertEquals("Salt", 0D, dish.getSalt());
-        assertEquals("Oil", 0D, dish.getOil());
-        assertEquals("Category", DishCategory.DESSERT, dish.getCategory());
+        assertNotNull(dish, name);
+        assertEquals(name, dish.getName(), "Name");
+        assertEquals(0D, dish.getSalt(), "Salt");
+        assertEquals(0D, dish.getOil(), "Oil");
+        assertEquals(DishCategory.DESSERT, dish.getCategory(), "Category");
 
         var ingredients = dish.getIngredientList();
-        assertEquals("Ingredients", 2, ingredients.size());
-        assertEquals("Ingredient 0", "Strawberry", ingredients.get(0).getName());
-        assertEquals("Ingredient 1", "Sugar", ingredients.get(1).getName());
+        assertEquals(2, ingredients.size(), "Ingredients");
+        assertEquals("Strawberry", ingredients.get(0).getName(), "Ingredient 0");
+        assertEquals("Sugar", ingredients.get(1).getName(), "Ingredient 1");
     }
 
+    @Test
     public void testMainDish() {
         var name = "Garlic Tofu and Potatoes";
         var mealConf = getConfig().getMealConfiguration();
 
         var mainDish = mealConf.getHotMeal(name);
 
-        assertNotNull(name, mainDish);
-        assertEquals("Name", name, mainDish.getName());
-        assertEquals("Salt", 0.01, mainDish.getSalt());
-        assertEquals("Oil", 0.005, mainDish.getOil());
-        assertEquals("Category", DishCategory.MAIN, mainDish.getCategory());
+        assertNotNull(mainDish, name);
+        assertEquals(name, mainDish.getName(), "Name");
+        assertEquals(0.01, mainDish.getSalt(), "Salt");
+        assertEquals(0.005, mainDish.getOil(), "Oil");
+        assertEquals(DishCategory.MAIN, mainDish.getCategory(), "Category");
 
         var ingredients = mainDish.getIngredientList();
-        assertEquals("Ingredients", 5, ingredients.size());
-        assertTrue("Ingredient 0 mandatory", ingredients.get(0).isMandatory());
-        assertTrue("Ingredient 1 mandatory", ingredients.get(1).isMandatory());
-        assertTrue("Ingredient 2 mandatory", ingredients.get(2).isMandatory());
+        assertEquals(5, ingredients.size(), "Ingredients");
+        assertTrue(ingredients.get(0).isMandatory(), "Ingredient 0 mandatory");
+        assertTrue(ingredients.get(1).isMandatory(), "Ingredient 1 mandatory");
+        assertTrue(ingredients.get(2).isMandatory(), "Ingredient 2 mandatory");
 
-        assertFalse("Ingredient 3 mandatory", ingredients.get(3).isMandatory());
-        assertEquals("Ingredient 3 impact", 0.75, ingredients.get(3).getImpact());
-        assertFalse("Ingredient 4 mandatory", ingredients.get(4).isMandatory());
-        assertEquals("Ingredient 4 impact", 0.5, ingredients.get(4).getImpact());
+        assertFalse(ingredients.get(3).isMandatory(), "Ingredient 3 mandatory");
+        assertEquals(0.75, ingredients.get(3).getImpact(), "Ingredient 3 impact");
+        assertFalse(ingredients.get(4).isMandatory(), "Ingredient 4 mandatory");
+        assertEquals(0.5, ingredients.get(4).getImpact(), "Ingredient 4 impact");
     }
 
+    @Test
     public void testAvailableIngredients() {
         var mealConf = getConfig().getMealConfiguration();
         var meal = mealConf.getHotMeal("Garlic Tofu and Potatoes");
 
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
-        assertFalse("Ingredients not available", meal.isIngredientsAvailable(s));
+        assertFalse(meal.isIngredientsAvailable(s), "Ingredients not available");
     
         // Add just optional ingredients    
         for(var i : meal.getIngredientList()) {
@@ -90,7 +101,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
                 s.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
             }
         }
-        assertFalse("Mandatory ingredients not available", meal.isIngredientsAvailable(s));
+        assertFalse(meal.isIngredientsAvailable(s), "Mandatory ingredients not available");
         
         // Add mandatory ingredients    
         for(var i : meal.getIngredientList()) {
@@ -98,14 +109,15 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
                 s.storeAmountResource(i.getAmountResourceID(), i.getDryMass());
             }
         }
-        assertTrue("All ingredients available", meal.isIngredientsAvailable(s));
+        assertTrue(meal.isIngredientsAvailable(s), "All ingredients available");
     }
 
+    @Test
     public void testRetrieveIngredients() {
         var mealConf = getConfig().getMealConfiguration();
         var meal = mealConf.getHotMeal("Garlic Tofu and Potatoes");
 
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
         // Add mandatory ingredients    
         for(var i : meal.getIngredientList()) {
@@ -117,7 +129,7 @@ public class MealConfigTest extends AbstractMarsSimUnitTest {
         // CLaim all ingredients
         var minimalQuality = meal.retrieveIngredients(s);
         for(var i : meal.getIngredientList()) {
-            assertEquals("Ingredient stored " + i.getName(), 0D, s.getSpecificAmountResourceStored(i.getAmountResourceID()));
+            assertEquals(0D, s.getSpecificAmountResourceStored(i.getAmountResourceID()), "Ingredient stored " + i.getName());
         }
 
         // Add all ingriedients

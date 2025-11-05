@@ -1,6 +1,12 @@
 package com.mars_sim.core.science.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.social.RelationshipType;
@@ -8,7 +14,8 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 
-public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest {
+public class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
+    @Test
     public void testCreateTask() {
         Settlement s = buildSettlement("Research", true);
         var research = createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
@@ -19,9 +26,9 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
         assistant.getSkillManager().addNewSkill(SkillType.ASTROBIOLOGY, 1); // Must have higher skill
 
         var t = AssistScientificStudyResearcher.createTask(assistant);
-        assertFalse("Task is not false", t.isDone());
-        assertEquals("Assisted research", research,  t.getAssisted());
-        assertEquals("Assistant ", assistant,  research.getResearchAssistant());
+        assertFalse(t.isDone(), "Task is not false");
+        assertEquals(research, t.getAssisted(), "Assisted research");
+        assertEquals(assistant, research.getResearchAssistant(), "Assistant ");
 
         // Assistant task does very little but changes relationship
         var researcher = research.getResearcher();
@@ -33,10 +40,11 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
 
         research.endTask(); // End research task should end this assistance task
         executeTaskForDuration(assistant, t, 100);
-        assertTrue("Assistance complete", t.isDone());
-        assertNull("Assistant releases ", research.getResearchAssistant());
+        assertTrue(t.isDone(), "Assistance complete");
+        assertNull(research.getResearchAssistant(), "Assistant releases ");
     }
 
+    @Test
     public void testMetaTask() {
         Settlement s = buildSettlement("Research", true);
         createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
@@ -49,9 +57,10 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
         var mt = new AssistScientificStudyResearcherMeta();
         var tasks = mt.getTaskJobs(p);
 
-        assertFalse("Tasks found for researcher", tasks.isEmpty());
+        assertFalse(tasks.isEmpty(), "Tasks found for researcher");
     }
 
+    @Test
     public void testMetaTaskTooSkilled() {
         Settlement s = buildSettlement("Research", true);
         createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
@@ -64,7 +73,7 @@ public class AssistScientificStudyResearcherTest extends AbstractMarsSimUnitTest
         var mt = new AssistScientificStudyResearcherMeta();
         var tasks = mt.getTaskJobs(p);
 
-        assertTrue("Tasks found for researcher", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "Tasks found for researcher");
     }
 
     private PerformLaboratoryResearch createActiveResearch(Settlement s, ScienceType science, JobType researchJob) {

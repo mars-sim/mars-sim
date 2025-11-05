@@ -5,11 +5,17 @@
  * @author Manny Kung
  */
 package com.mars_sim.core.structure;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -17,11 +23,12 @@ import com.mars_sim.core.person.ai.role.RoleType;
 /**
  * Test the internals of the ChainOfCommand class
  */
-public class ChainOfCommandTest extends AbstractMarsSimUnitTest {
+public class ChainOfCommandTest extends MarsSimUnitTest {
 
     /**
      * Test that the commander can vacate his role.
      */
+    @Test
     public void testCommander() {
         Settlement settlement = buildSettlement(5);
   
@@ -47,14 +54,14 @@ public class ChainOfCommandTest extends AbstractMarsSimUnitTest {
         		.filter(p -> p.getRole().getType() == RoleType.COMMANDER)
         		.findFirst().orElse(null);
         
-        assertNotNull("First commander elected", commander);
-        assertEquals("# of people in this settlement", 5, personList.size());
+        assertNotNull(commander, "First commander elected");
+        assertEquals(5, personList.size(), "# of people in this settlement");
        
         assertGreaterThan("Roles available", 0, coc.getRoleAvailability().size());
         
-        assertTrue("Does the roleRegistery have the commander role ?", coc.getRoleRegistry().containsKey(RoleType.COMMANDER));
+        assertTrue(coc.getRoleRegistry().containsKey(RoleType.COMMANDER), "Does the roleRegistery have the commander role ?");
             
-        assertFalse("Is Commander role is available ?", coc.isRoleAvailable(RoleType.COMMANDER));
+        assertFalse(coc.isRoleAvailable(RoleType.COMMANDER), "Is Commander role is available ?");
         
         commander.setDeclaredDead(true);
       
@@ -62,11 +69,11 @@ public class ChainOfCommandTest extends AbstractMarsSimUnitTest {
         		.filter(p -> p.isDeclaredDead())
         		.findFirst().orElse(null);
         
-        assertTrue("Someone died", dead != null);
+        assertTrue(dead != null, "Someone died");
       
         personList = new ArrayList<>(settlement.getCitizens());
         
-        assertEquals("Roles available", 4, personList.size());
+        assertEquals(4, personList.size(), "Roles available");
        
 //        for (Person p: personList) System.out.println(p.getName() + " : " + p.getRole().getType().getName() + ", " + p.getMind().getJobType().getName());
             
@@ -77,7 +84,7 @@ public class ChainOfCommandTest extends AbstractMarsSimUnitTest {
         		.findFirst().orElse(null);
         
 
-        assertNotNull("New commander elected", commander1);
+        assertNotNull(commander1, "New commander elected");
              
     }
 

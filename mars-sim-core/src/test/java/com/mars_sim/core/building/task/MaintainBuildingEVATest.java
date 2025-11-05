@@ -1,6 +1,11 @@
 package com.mars_sim.core.building.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -12,7 +17,7 @@ import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.time.MasterClock;
 
-public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
+public class MaintainBuildingEVATest extends MarsSimUnitTest {
 
     private Building buildERV(BuildingManager buildingManager, LocalPosition localPosition) {
         return buildFunction(
@@ -25,6 +30,7 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
                 false);
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("EVA Maintenance");
         var b1 = buildERV(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION);
@@ -33,7 +39,7 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
         var mt = new MaintainBuildingMeta();
         var tasks = mt.getSettlementTasks(s);
         // Note: there is a chance that tasks are made since scoreMaintenance currently has a probability component
-        // assertTrue("No tasks found", tasks.isEmpty());
+        // assertTrue(tasks.isEmpty(), "No tasks found");
         // One building needs maintenance
         MaintainBuildingTest.buildingNeedMaintenance(b1, this);
         tasks = mt.getSettlementTasks(s);
@@ -46,12 +52,13 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
             var foundB1 = found1.getFocus();
             var foundB2 = found2.getFocus();
             if (found1.isEVA()) {
-                assertEquals("Found building B1 with maintenance", b1, foundB1);
+                assertEquals(b1, foundB1, "Found building B1 with maintenance");
             }
-            assertEquals("Found building B2", b2, foundB2);
+            assertEquals(b2, foundB2, "Found building B2");
         }
     }
 
+    @Test
     public void testCreateEVATask() {
         var s = buildSettlement("EVA Maintenance");
 
@@ -74,31 +81,31 @@ public class MaintainBuildingEVATest extends AbstractMarsSimUnitTest {
 
         var task = new MaintainBuildingEVA(p, b);
 
-        assertFalse("EVA Task created", task.isDone()); 
+        assertFalse(task.isDone(), "EVA Task created"); 
 
         // Do NOT assert on duration here: getDuration() can legitimately be 0.0 at creation time
         // because EVAOperation tracks walking/onsite time internally across phases.
 
         // Initial phase is walking outside
-        assertEquals("EVA walking outside", EVAOperation.WALK_TO_OUTSIDE_SITE, task.getPhase());
+        assertEquals(EVAOperation.WALK_TO_OUTSIDE_SITE, task.getPhase(), "EVA walking outside");
 
         // Move onsite
         int callUsed = EVAOperationTest.executeEVAWalk(this, eva, task);
         assertGreaterThan("Calls Used ", 0, callUsed);
  
-        assertFalse("EVA Task still active", task.isDone());
+        assertFalse(task.isDone(), "EVA Task still active");
         
         assertGreaterThan("EVA Maintenance due", 0D, manager.getEffectiveTimeSinceLastMaintenance());
 
-        assertEquals("EVA Maintenance started", 0D, manager.getInspectionWorkTimeCompleted());
+        assertEquals(0D, manager.getInspectionWorkTimeCompleted(), "EVA Maintenance started");
 
         // Confirm we are now in onsite MAINTAIN phase
-        assertEquals("EVA walk completed", MaintainBuildingEVA.MAINTAIN, task.getPhase());
+        assertEquals(MaintainBuildingEVA.MAINTAIN, task.getPhase(), "EVA walk completed");
 
         // Start maintenance (run one tick). Do NOT assert on inspectionWorkTimeCompleted:
         // it may be reset to zero immediately when an inspection completes (same as MaintainBuildingTest).
         executeTaskUntilPhase(p, task, 1);
-        assertFalse("Task still active", task.isDone());
+        assertFalse(task.isDone(), "Task still active");
 
         // Complete maintenance
         executeTaskForDuration(p, task, manager.getBaseMaintenanceWorkTime() * 1.1);

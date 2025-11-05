@@ -5,12 +5,18 @@
  * @author Barry Evans
  */
 package com.mars_sim.core.mission.predefined;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 
 
 import java.util.Collection;
 import java.util.Map;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionVehicleProject;
@@ -22,14 +28,15 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
 
-public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
+public class TestDriveMissionTest extends MarsSimUnitTest {
     /**
      *
      */
     private static final String MISSION_NAME = "test-mission";
 
+    @Test
     public void testCreation() {
-        Settlement home = buildSettlement();
+        Settlement home = buildSettlement("mock");
         buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH, 1);
         buildRover(home, "Rover 1", null);
         Person leader = buildPerson("Leader", home);
@@ -39,28 +46,28 @@ public class TestDriveMissionTest extends AbstractMarsSimUnitTest {
         MissionVehicleProject mp = new TestDriveMission(MISSION_NAME, leader);
 
         // Check vehicle details
-        assertFalse("Mission active", mp.isDone());
+        assertFalse(mp.isDone(), "Mission active");
         Vehicle assigned = mp.getVehicle();
-        assertNotNull("Assign Vehicle", assigned);
-        assertEquals("Vehicle mission", mp, assigned.getMission());
+        assertNotNull(assigned, "Assign Vehicle");
+        assertEquals(mp, assigned.getMission(), "Vehicle mission");
 
         // Check route
-        assertEquals("Mission navpoints", 2, mp.getNavpoints().size());
-        assertEquals("Mission distance", TestDriveMission.TRAVEL_DIST * 2, mp.getTotalDistanceProposed(),  0.01D);
+        assertEquals(2, mp.getNavpoints().size(), "Mission navpoints");
+        assertEquals(TestDriveMission.TRAVEL_DIST * 2, mp.getTotalDistanceProposed(), 0.01D, "Mission distance");
 
         // Check Members
         Collection<Worker> members = mp.getMembers();
-        assertEquals("Mission members", 2, members.size());
-        assertTrue("Member " + leader.getName(), members.contains(leader));
+        assertEquals(2, members.size(), "Mission members");
+        assertTrue(members.contains(leader), "Member " + leader.getName());
 
         // Run to the loading stage
-        assertTrue("Initial stage completed", executeMission(leader, assigned, mp, 10));
+        assertTrue(executeMission(leader, assigned, mp, 10), "Initial stage completed");
 
         // Check the plan has content
         LoadingController plan = assigned.getLoadingPlan();
-        assertNotNull("Loading plan created", plan);
+        assertNotNull(plan, "Loading plan created");
         Map<Integer, Double> resources = plan.getAmountManifest(true);
-        assertTrue("Plan has Oxygen", resources.get(ResourceUtil.OXYGEN_ID).doubleValue() > 0D);
+        assertTrue(resources.get(ResourceUtil.OXYGEN_ID).doubleValue() > 0D, "Plan has Oxygen");
     }
 
     /**

@@ -1,6 +1,10 @@
 package com.mars_sim.core.building.function.farming.task;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.function.FunctionType;
@@ -8,7 +12,7 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
-public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
+public class TendGreenhouseTest extends MarsSimUnitTest {
     
     private static final String GREENHOUSE = "Inground Greenhouse";
 
@@ -24,6 +28,7 @@ public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
         return building;
     }
 
+    @Test
     public void testPersonSampling() {
         var s = buildSettlement("Fish", true);
         var b = buildGreenhouse(s);
@@ -31,13 +36,14 @@ public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
         var farm = b.getFarming();
 
         var task = new TendGreenhouse(p, farm, TendGreenhouse.SAMPLING);
-        assertFalse("Tending task created", task.isDone());
+        assertFalse(task.isDone(), "Tending task created");
 
         executeTask(p, task, 10000);
 
-        assertTrue("Tending task completed", task.isDone());       
+        assertTrue(task.isDone(), "Tending task completed");       
     }
 
+    @Test
     public void testPersonTransfer() {
         var s = buildSettlement("Fish");
         var b = buildGreenhouse(s);
@@ -45,13 +51,14 @@ public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
         var farm = b.getFarming();
 
         var task = new TendGreenhouse(p, farm, TendGreenhouse.TRANSFERRING_SEEDLING);
-        assertFalse("Seeding task created", task.isDone());
+        assertFalse(task.isDone(), "Seeding task created");
 
         executeTask(p, task, 5000);
 
-        assertTrue("Seeding task completed", task.isDone());       
+        assertTrue(task.isDone(), "Seeding task completed");       
     }
 
+    @Test
     public void testPersonTending() {
         var s = buildSettlement("Fish");
         var b = buildGreenhouse(s);
@@ -59,15 +66,16 @@ public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
         var farm = b.getFarming();
 
         var task = new TendGreenhouse(p, farm, TendGreenhouse.TENDING);
-        assertFalse("Tending task created", task.isDone());
+        assertFalse(task.isDone(), "Tending task created");
 
         executeTask(p, task, 5000);
 
-        assertTrue("Tending task completed", task.isDone());       
+        assertTrue(task.isDone(), "Tending task completed");       
 
         assertGreaterThan("Cummulative work", 0D, farm.getCumulativeWorkTime());
     }
 
+    @Test
     public void testPersonGrowingTissue() {
         var s = buildSettlement("Fish");
         var b = buildGreenhouse(s);
@@ -75,10 +83,10 @@ public class TendGreenhouseTest extends AbstractMarsSimUnitTest {
         var farm = b.getFarming();
 
         var task = new TendGreenhouse(p, farm, TendGreenhouse.GROWING_TISSUE);
-        assertFalse("Growing task created", task.isDone());
+        assertFalse(task.isDone(), "Growing task created");
 
         executeTask(p, task, 5000);
 
-        assertTrue("Growing task completed", task.isDone());       
+        assertTrue(task.isDone(), "Growing task completed");       
     }
 }

@@ -1,6 +1,10 @@
 package com.mars_sim.core.building.function.farming.task;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.function.FunctionType;
@@ -9,12 +13,13 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 
-public class TendFishTankTest extends AbstractMarsSimUnitTest {
+public class TendFishTankTest extends MarsSimUnitTest {
     private Building buildFishery(Settlement s) {
         return buildFunction(s.getBuildingManager(), "Fish Farm", BuildingCategory.FARMING,
                             FunctionType.FISHERY, LocalPosition.DEFAULT_POSITION, 0D, true);
     }
 
+    @Test
     public void testPersonTending() {
         var s = buildSettlement("Fish");
         var b = buildFishery(s);
@@ -22,12 +27,12 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
         var tank = b.getFishery();
 
         var task = new TendFishTank(p, tank, TendFishTank.TENDING);
-        assertFalse("Tending task created", task.isDone());
+        assertFalse(task.isDone(), "Tending task created");
 
         var remaining = executeTaskForDuration(p, task, TendFishTank.MAX_TEND * 1.1);
         assertGreaterThan("Remaining Task time", 0D, remaining);
 
-        assertTrue("Tending task completed", task.isDone());       
+        assertTrue(task.isDone(), "Tending task completed");       
 
         assertGreaterThan("Cummulative work", 0D, tank.getCumulativeWorkTime());
     }
@@ -35,6 +40,7 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
     /**
      * This is common and actually testing TendHousekeeping
      */
+    @Test
     public void testPersonInspecting() {
         var s = buildSettlement("Fish");
         var b = buildFishery(s);
@@ -43,12 +49,12 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
         var origScore = tank.getHousekeeping().getAverageInspectionScore();
 
         var task = new TendFishTank(p, tank, TendFishTank.INSPECTING);
-        assertFalse("Inspect task created", task.isDone());
+        assertFalse(task.isDone(), "Inspect task created");
 
         var remaining = executeTaskForDuration(p, task, TendFishTank.MAX_INSPECT_TIME * 1.1);
         assertGreaterThan("Remaining Task time", 0D, remaining);
 
-        assertTrue("Inspect task completed", task.isDone());       
+        assertTrue(task.isDone(), "Inspect task completed");       
         var newScore = tank.getHousekeeping().getAverageInspectionScore();
         assertGreaterThan("Inspect improved", origScore, newScore);
         assertGreaterThan("Cumulative work", 0D, tank.getCumulativeWorkTime());
@@ -57,6 +63,7 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
     /**
      * This is common and actually testing TendHousekeeping
      */
+    @Test
     public void testPersonCleaning() {
         
         var s = buildSettlement("Fish");
@@ -66,16 +73,17 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
         var origClean = tank.getHousekeeping().getAverageCleaningScore();
 
         var task = new TendFishTank(p, tank, TendFishTank.CLEANING);
-        assertFalse("Clean task created", task.isDone());
+        assertFalse(task.isDone(), "Clean task created");
 
         executeTaskForDuration(p, task, TendFishTank.MAX_CLEANING_TIME * 1.1);
 
-        assertTrue("Clean task completed", task.isDone());       
+        assertTrue(task.isDone(), "Clean task completed");       
         var newClean = tank.getHousekeeping().getAverageCleaningScore();
         assertGreaterThan("Cleaning improved", origClean, newClean);
         assertGreaterThan("Cumulative work", 0D, tank.getCumulativeWorkTime());
     }
 
+    @Test
     public void testPersonFishing() {
 
         var s = buildSettlement("Fish");
@@ -87,13 +95,13 @@ public class TendFishTankTest extends AbstractMarsSimUnitTest {
         int origSize = tank.getNumFish();
 
         var task = new TendFishTank(p, b.getFishery(), TendFishTank.CATCHING);
-        assertFalse("Fishing task created", task.isDone());
+        assertFalse(task.isDone(), "Fishing task created");
 
         executeTaskForDuration(p, task, TendFishTank.MAX_FISHING * 1.1);
-        assertTrue("Fishing task completed", task.isDone());
+        assertTrue(task.isDone(), "Fishing task completed");
         
-        assertTrue("Fish meat created", s.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) >0D);
-        assertTrue("Fish oil created", s.getSpecificAmountResourceStored(ResourceUtil.FISH_OIL_ID) >0D);
+        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) >0D, "Fish meat created");
+        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_OIL_ID) >0D, "Fish oil created");
         assertLessThan("Fish count has reduced", origSize, tank.getNumFish());
     }
 }

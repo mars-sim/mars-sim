@@ -1,6 +1,11 @@
 package com.mars_sim.core.person.health.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
@@ -8,8 +13,9 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
 
-public class TreatMedicalPatientTest extends AbstractMarsSimUnitTest {
+public class TreatMedicalPatientTest extends MarsSimUnitTest {
 
+    @Test
     public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -24,26 +30,27 @@ public class TreatMedicalPatientTest extends AbstractMarsSimUnitTest {
         doctor.getSkillManager().addNewSkill(SkillType.MEDICINE, 20);
 
         var task = TreatMedicalPatient.createTask(doctor);
-        assertFalse("Task created", task.isDone());
+        assertFalse(task.isDone(), "Task created");
      
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(doctor, task, 1000);
         executeTask(doctor, task, 100);
         
-        assertTrue("Health problem treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
-        assertFalse("Health problem not waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
+        assertTrue(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertFalse(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
 
         // Complete treatment
         executeTaskForDuration(doctor, task, recoveryTime * 1.5);
 
-        assertTrue("Task completed", task.isDone());
-        assertEquals("Complaints remaining", 1, patient.getPhysicalCondition().getProblems().size());
+        assertTrue(task.isDone(), "Task completed");
+        assertEquals(1, patient.getPhysicalCondition().getProblems().size(), "Complaints remaining");
 
-        assertEquals("Complaint in recovery", HealthProblemState.RECOVERING, hp.getState());
-        assertFalse("Health problem removed from Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+        assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
 
     }
 
+    @Test
     public void testCreateVehicleTask() {
         var s = buildSettlement("Hospital");
         SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -63,27 +70,28 @@ public class TreatMedicalPatientTest extends AbstractMarsSimUnitTest {
         doctor.getSkillManager().addNewSkill(SkillType.MEDICINE, 20);
 
         var task = TreatMedicalPatient.createTask(doctor);
-        assertFalse("Task created", task.isDone());
+        assertFalse(task.isDone(), "Task created");
      
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(doctor, task, 1000);
         executeTask(doctor, task, 1);
-        assertTrue("Health problem treated at Medical care", sb.getProblemsBeingTreated().contains(hp));
-        assertFalse("Health problem not waiting at Medical care", sb.getProblemsAwaitingTreatment().contains(hp));
+        assertTrue(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertFalse(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
 
         // Complete treatment
         executeTaskForDuration(doctor, task, recoveryTime * 1.5);
 
-        assertTrue("Task completed", task.isDone());
-        assertEquals("Complaints remaining", 1, patient.getPhysicalCondition().getProblems().size());
+        assertTrue(task.isDone(), "Task completed");
+        assertEquals(1, patient.getPhysicalCondition().getProblems().size(), "Complaints remaining");
 
-        assertEquals("Complaint in recovery", HealthProblemState.RECOVERING, hp.getState());
-        assertFalse("Health problem removed from Medical care", sb.getProblemsBeingTreated().contains(hp));
-        assertTrue("Doctor starts in Vehicle", doctor.isInVehicle());
-        assertTrue("Patient starts in Vehicle", patient.isInVehicle());
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+        assertFalse(sb.getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
+        assertTrue(doctor.isInVehicle(), "Doctor starts in Vehicle");
+        assertTrue(patient.isInVehicle(), "Patient starts in Vehicle");
 
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -98,12 +106,12 @@ public class TreatMedicalPatientTest extends AbstractMarsSimUnitTest {
         var doctor = buildPerson("Docter", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
         doctor.getSkillManager().addNewSkill(SkillType.MEDICINE, 20);
         var tasks = mt.getTaskJobs(doctor);
-        assertTrue("No dotor health problems", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No dotor health problems");
 
         // Not self healing
         hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
         sb.getMedical().requestTreatment(hp);
         tasks = mt.getTaskJobs(doctor);
-        assertFalse("Problems found", tasks.isEmpty());
+        assertFalse(tasks.isEmpty(), "Problems found");
     }
 }

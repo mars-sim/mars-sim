@@ -1,6 +1,11 @@
 package com.mars_sim.core.vehicle.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
@@ -8,8 +13,9 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 
-public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
+public class LoadVehicleGarageTest extends MarsSimUnitTest {
 	
+    @Test
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
@@ -28,16 +34,17 @@ public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
         v.setLoading(resources);
 
         var task = new LoadVehicleGarage(p, v);
-        assertFalse("Task created", task.isDone()); 
+        assertFalse(task.isDone(), "Task created"); 
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
         assertGreaterThan("Final stored mass", 0D, v.getStoredMass());
 
         // Return to base
-        assertTrue("Task completed", task.isDone()); 
+        assertTrue(task.isDone(), "Task completed"); 
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base", true);
         buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
@@ -50,7 +57,7 @@ public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
 
         // Check with no loading
         var tasks = mt.getSettlementTasks(s);
-        assertTrue("No load tasks found", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No load tasks found");
 
         // Set rover to be loading
         var resources = new SuppliesManifest();
@@ -58,9 +65,9 @@ public class LoadVehicleGarageTest extends AbstractMarsSimUnitTest {
         v.setLoading(resources);
 
         tasks = mt.getSettlementTasks(s);
-        assertEquals("One load tasks found", 1, tasks.size());
+        assertEquals(1, tasks.size(), "One load tasks found");
         var t = tasks.get(0);
-        assertFalse("Load in not eva", t.isEVA());
-        assertEquals("Correct vehicle selected", v, t.getFocus());
+        assertFalse(t.isEVA(), "Load in not eva");
+        assertEquals(v, t.getFocus(), "Correct vehicle selected");
     }
 }

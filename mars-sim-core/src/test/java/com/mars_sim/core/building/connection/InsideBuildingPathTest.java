@@ -1,22 +1,30 @@
 package com.mars_sim.core.building.connection;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.MockSettlement;
 
-public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
+public class InsideBuildingPathTest extends MarsSimUnitTest {
 
     private static final LocalPosition POSITION_5X5 = new LocalPosition(5D, 5D);
 	private static final LocalPosition POSITION_10X5 = new LocalPosition(10D, 5D);
 	private static final LocalPosition POSITION_10X10 = new LocalPosition(10D, 10D);
     private static final BoundedObject BUILDING_POSN = new BoundedObject(0, 0, 20, 20, 0);
 
+	@Test
 	public void testEmptyPath() {
         
         InsideBuildingPath path = new InsideBuildingPath(Collections.emptyList());
@@ -28,6 +36,7 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
         assertEquals(0, remainingLocations.size());
     }
     
+    @Test
     public void testAddPathLocation() {
 
         
@@ -50,6 +59,7 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
         assertTrue(remainingLocations2.isEmpty());
     }
     
+    @Test
     public void testIteratePathLocation() {
         
         
@@ -67,6 +77,7 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
         assertEquals(location2, path.getNextPathLocation());
     }
     
+    @Test
     public void testGetRemainingLocations() {
         
         
@@ -105,6 +116,7 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
         assertNotNull(remainingLocations3);
     }
     
+    @Test
     public void testIsEndOfPath() {
         
         MockSettlement settlement = new MockSettlement();
@@ -130,6 +142,7 @@ public class InsideBuildingPathTest extends AbstractMarsSimUnitTest {
         assertTrue(path.isEndOfPath());
     }
     
+    @Test
     public void testGetPathLength() {
         
         

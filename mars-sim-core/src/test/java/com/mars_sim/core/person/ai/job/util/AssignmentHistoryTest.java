@@ -6,10 +6,13 @@
  */
 
 package com.mars_sim.core.person.ai.job.util;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -17,10 +20,11 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
 
-public class AssignmentHistoryTest extends AbstractMarsSimUnitTest {
+public class AssignmentHistoryTest extends MarsSimUnitTest {
 
+    @Test
     public void testGetCummulativeJobRating() {
-        Settlement home = buildSettlement();
+        Settlement home = buildSettlement("mock");
         Person p = buildPerson("Job", home);
 
         MasterClock clock = getSim().getMasterClock();
@@ -37,34 +41,35 @@ public class AssignmentHistoryTest extends AbstractMarsSimUnitTest {
 
         List<HistoryItem<Assignment>> history = jh.getJobAssignmentList();
         // Add 1 for the first job
-        assertEquals("History size", jobs.length + 1, history.size());
+        assertEquals(jobs.length + 1, history.size(), "History size");
 
         double total = 0;
         j = 0;
         for(HistoryItem<Assignment> i : history) {
             Assignment a = i.getWhat();
-            assertEquals("History item time #" +j, base.addTime(j * 100), i.getWhen());
-            assertEquals("History item State #" +j, AssignmentType.APPROVED, a.getStatus());
+            assertEquals(base.addTime(j * 100), i.getWhen(), "History item time #" +j);
+            assertEquals(AssignmentType.APPROVED, a.getStatus(), "History item State #" +j);
             if (j > 0) {
                 // Skip checking the initial job
-                assertEquals("History item initiator #" + j, "Name" + j, a.getInitiator());
-                assertEquals("History item Job #" +j, jobs[j-1], a.getType());
+                assertEquals(a.getInitiator(), "History item initiator #" + j, "Name" + j);
+                assertEquals(jobs[j-1], a.getType(), "History item Job #" +j);
             }
             a.setJobRating(j, j);
             int newRating = (int)(Assignment.INITIAL_RATING * Assignment.OLD_RATING_WEIGHT
                                             + Assignment.NEW_RATING_WEIGHT * j);
-            assertEquals("New job rating #", j, newRating, a.getJobRating());
+            assertEquals(j, newRating, a.getJobRating(), "New job rating #");
             total += newRating;
             j++;
         }
 
-        assertEquals("Cumulative Score", total/history.size(), jh.getCummulativeJobRating());
+        assertEquals(total/history.size(), jh.getCummulativeJobRating(), "Cumulative Score");
 
     }
 
 
+    @Test
     public void testGetCummulativePendingJobRating() {
-        Settlement home = buildSettlement();
+        Settlement home = buildSettlement("mock");
         Person p = buildPerson("Job", home);
 
         MasterClock master = getSim().getMasterClock();
@@ -81,12 +86,12 @@ public class AssignmentHistoryTest extends AbstractMarsSimUnitTest {
         history.get(history.size()-1).getWhat().setJobRating(10, 1);
 
         // Note Person has 1 JobAssignment as part of the constructor
-        assertEquals("Hstory with pending", 3, history.size());
-        assertEquals("Pending cummlative", (double)Assignment.INITIAL_RATING, jh.getCummulativeJobRating());
+        assertEquals(3, history.size(), "Hstory with pending");
+        assertEquals((double)Assignment.INITIAL_RATING, jh.getCummulativeJobRating(), "Pending cummlative");
 
         Assignment approved = jh.getLastApproved();
-        assertEquals("Approved Job", JobType.ARCHITECT, approved.getType());
-        assertEquals("Approved status", AssignmentType.APPROVED, approved.getStatus());
+        assertEquals(JobType.ARCHITECT, approved.getType(), "Approved Job");
+        assertEquals(AssignmentType.APPROVED, approved.getStatus(), "Approved status");
 
 
     }

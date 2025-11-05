@@ -1,23 +1,29 @@
 package com.mars_sim.core.manufacture;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
 
-public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
+public class WorkshopProcessTest extends MarsSimUnitTest {
     private static final String FURNACE_PROCESS = "Cast aluminum ingot";
 
+    @Test
     public void testManuProcessFailed() {
         ManufactureProcessInfo processInfo = getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
                             .filter(p -> p.getName().equals(FURNACE_PROCESS))
                             .findAny().get();
-        assertTrue("Process has prcoess time", processInfo.getProcessTimeRequired() > 0);
+        assertTrue(processInfo.getProcessTimeRequired() > 0, "Process has prcoess time");
         
         var s = buildSettlement("Test", true);
         var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
@@ -25,25 +31,26 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
 
         var p = new ManufactureProcess(processInfo, w);
         p.startProcess();
-        assertTrue("Manufacture process started", p.isActive());
-        assertTrue("Workshop has process", w.getProcesses().contains(p));
+        assertTrue(p.isActive(), "Manufacture process started");
+        assertTrue(w.getProcesses().contains(p), "Workshop has process");
 
-        assertTrue("Process active after Process", p.addProcessTime(processInfo.getProcessTimeRequired()));
+        assertTrue(p.addProcessTime(processInfo.getProcessTimeRequired()), "Process active after Process");
 
         p.stopProcess(true);
 
-        assertEquals("Tools at end", 0, w.getToolDetails().get(p.getTooling()).getInUse());
-        assertFalse("Manufacture process stopped", p.isActive());
-        assertFalse("Workshop has no process", w.getProcesses().contains(p));
+        assertEquals(0, w.getToolDetails().get(p.getTooling()).getInUse(), "Tools at end");
+        assertFalse(p.isActive(), "Manufacture process stopped");
+        assertFalse(w.getProcesses().contains(p), "Workshop has no process");
 
         assertResources(s, processInfo.getInputList());
     }
 
+    @Test
     public void testManuProcess() {
         ManufactureProcessInfo processInfo = getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
                             .filter(p -> p.getName().equals(FURNACE_PROCESS))
                             .findAny().get();
-        assertTrue("Process has prcoess time", processInfo.getProcessTimeRequired() > 0);
+        assertTrue(processInfo.getProcessTimeRequired() > 0, "Process has prcoess time");
         
         var s = buildSettlement("Test", true);
         var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
@@ -52,29 +59,30 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
 
         var p = new ManufactureProcess(processInfo, w);
         var tool = w.getToolDetails().get(p.getTooling());
-        assertEquals("Tools before start", 0, tool.getInUse());
+        assertEquals(0, tool.getInUse(), "Tools before start");
 
         p.startProcess();
-        assertTrue("Manufacture process started", p.isActive());
-        assertTrue("Workshop has process", w.getProcesses().contains(p));
-        assertEquals("Tools after start", 1, tool.getInUse());
+        assertTrue(p.isActive(), "Manufacture process started");
+        assertTrue(w.getProcesses().contains(p), "Workshop has process");
+        assertEquals(1, tool.getInUse(), "Tools after start");
 
-        assertTrue("Process active after Process", p.addProcessTime(processInfo.getProcessTimeRequired()));
-        assertFalse("Process active after Work", p.addWorkTime(processInfo.getWorkTimeRequired(), 1));
+        assertTrue(p.addProcessTime(processInfo.getProcessTimeRequired()), "Process active after Process");
+        assertFalse(p.addWorkTime(processInfo.getWorkTimeRequired(), 1), "Process active after Work");
 
-        assertFalse("Manufacture process stopped", p.isActive());
-        assertFalse("Workshop has no process", w.getProcesses().contains(p));
-        assertEquals("Tools at end", 0, tool.getInUse());
+        assertFalse(p.isActive(), "Manufacture process stopped");
+        assertFalse(w.getProcesses().contains(p), "Workshop has no process");
+        assertEquals(0, tool.getInUse(), "Tools at end");
 
 
         assertResources(s, processInfo.getOutputList());
     }
 
+    @Test
     public void testSalvProcess() {
         SalvageProcessInfo processInfo = getConfig().getManufactureConfiguration().getSalvageInfoList().stream()
                             .filter(p -> p.getName().equals(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
                             .findAny().get();
-        assertEquals("Process has no process time", 0D, processInfo.getProcessTimeRequired());
+        assertEquals(0D, processInfo.getProcessTimeRequired(), "Process has no process time");
         
         var s = buildSettlement("Test", true);
         var b = ManufacturingManagerTest.buildWorkshop(this, s.getBuildingManager());
@@ -85,18 +93,18 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
 
         var p = new SalvageProcess(processInfo, w, canister);
         p.startProcess();
-        assertTrue("Salvage process started", p.isActive());
-        assertTrue("Workshop has process", w.getProcesses().contains(p));
-        assertFalse("Canister not registered", s.getEquipmentSet().contains(canister));
+        assertTrue(p.isActive(), "Salvage process started");
+        assertTrue(w.getProcesses().contains(p), "Workshop has process");
+        assertFalse(s.getEquipmentSet().contains(canister), "Canister not registered");
 
-        assertFalse("Process active after Work", p.addWorkTime(processInfo.getWorkTimeRequired(), 1));
+        assertFalse(p.addWorkTime(processInfo.getWorkTimeRequired(), 1), "Process active after Work");
 
-        assertFalse("Salvage process stopped", p.isActive());
-        assertFalse("Workshop has no process", w.getProcesses().contains(p));
+        assertFalse(p.isActive(), "Salvage process stopped");
+        assertFalse(w.getProcesses().contains(p), "Workshop has no process");
 
         for(var i: processInfo.getOutputList()) {
             if (i.getType() == ItemType.PART) {
-                assertTrue("Settlement has output " + i.getName(), s.getItemResourceStored(i.getId()) > 0D);
+                assertTrue(s.getItemResourceStored(i.getId()) > 0D, "Settlement has output " + i.getName());
             }
         }
     }
@@ -105,10 +113,10 @@ public class WorkshopProcessTest extends AbstractMarsSimUnitTest {
         for(var i: processItems) {
             switch(i.getType()) {
                 case AMOUNT_RESOURCE:
-                    assertTrue("Settlement has output " + i.getName(), s.getSpecificAmountResourceStored(i.getId()) >= i.getAmount());
+                    assertTrue(s.getSpecificAmountResourceStored(i.getId()) >= i.getAmount(), "Settlement has output " + i.getName());
                     break;
                 case PART:
-                    assertTrue("Settlement has output " + i.getName(), s.getItemResourceStored(i.getId()) >= i.getAmount());
+                    assertTrue(s.getItemResourceStored(i.getId()) >= i.getAmount(), "Settlement has output " + i.getName());
                     break;
                 default:
             }

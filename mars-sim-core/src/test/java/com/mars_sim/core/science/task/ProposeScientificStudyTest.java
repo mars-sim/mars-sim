@@ -1,6 +1,12 @@
 package com.mars_sim.core.science.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -8,7 +14,8 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.StudyStatus;
 
-public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
+public class ProposeScientificStudyTest extends MarsSimUnitTest {
+    @Test
     public void testChefProposal() {
         var s = buildSettlement("Study", true);
         buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
@@ -18,9 +25,10 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
         var mt = new ProposeScientificStudyMeta();
 
         var tasks = mt.getTaskJobs(p);
-        assertTrue("Chef has no tasks", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "Chef has no tasks");
     }
 
+    @Test
     public void testBiologistProposal() {
         var s = buildSettlement("Study", true);
         buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
@@ -29,9 +37,10 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
         var mt = new ProposeScientificStudyMeta();
 
         var mayorTasks = mt.getTaskJobs(p);
-        assertFalse("Biologist has tasks", mayorTasks.isEmpty());
+        assertFalse(mayorTasks.isEmpty(), "Biologist has tasks");
     }
     
+    @Test
     public void testAssignedStudy() {
        
         var s = buildSettlement("Study", true);
@@ -44,17 +53,17 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
 
         var mt = new ProposeScientificStudyMeta();
         var tasks = mt.getTaskJobs(p);
-        assertFalse("Existing study found", tasks.isEmpty());
+        assertFalse(tasks.isEmpty(), "Existing study found");
 
         // Advance Study and retest
         study.addProposalWorkTime(study.getTotalProposalWorkTimeRequired());
         study.timePassing(createPulse(0, 0, false, false));
-        assertEquals("Study advanced to invitation phase", StudyStatus.INVITATION_PHASE,
-                            study.getPhase());
+        assertEquals(StudyStatus.INVITATION_PHASE, study.getPhase(), "Study advanced to invitation phase");
         tasks = mt.getTaskJobs(p);
-        assertTrue("Existing study ignored", tasks.isEmpty());                     
+        assertTrue(tasks.isEmpty(), "Existing study ignored");                     
     }
 
+    @Test
     public void testCreateTask() {
        
         var s = buildSettlement("Study");
@@ -67,16 +76,16 @@ public class ProposeScientificStudyTest extends AbstractMarsSimUnitTest {
 
         var t = ProposeScientificStudy.createTask(p);
 
-        assertNotNull("Propose task created", t);
+        assertNotNull(t, "Propose task created");
 
         var st = p.getResearchStudy().getStudy();
-        assertNotNull("Study created", st);
-        assertEquals("Person is primary researcher", p, st.getPrimaryResearcher());
-        assertEquals("Science of study", ScienceType.getJobScience(jobType), st.getScience());
+        assertNotNull(st, "Study created");
+        assertEquals(p, st.getPrimaryResearcher(), "Person is primary researcher");
+        assertEquals(ScienceType.getJobScience(jobType), st.getScience(), "Science of study");
 
         executeTaskForDuration(p, t, st.getTotalProposalWorkTimeRequired() * 2); // Allow for zero  skill
 
-        assertTrue("Proposal done", t.isDone());
+        assertTrue(t.isDone(), "Proposal done");
         assertGreaterThan("Study proposal work", 0D, st.getProposalWorkTimeCompleted());
     }
 }

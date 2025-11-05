@@ -1,14 +1,20 @@
 package com.mars_sim.core.person.health.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
 
-public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
+public class RequestMedicalTreatmentTest extends MarsSimUnitTest {
 	
+    @Test
     public void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -19,81 +25,83 @@ public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
         var task = RequestMedicalTreatment.createTask(patient);
-        assertFalse("Task created", task.isDone());
+        assertFalse(task.isDone(), "Task created");
      
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(patient, task, 1000);
         executeTask(patient, task, 30);
         
-        assertFalse("Health problem treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
-        assertTrue("Health problem not waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
-        assertEquals("Waiting for treatment", RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase());
+        assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertTrue(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
+        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Waiting for treatment");
         
         // Simulate someone helping
         sb.getMedical().startTreatment(hp, recoveryTime);
         executeTask(patient, task, 1);
         
-        assertTrue("Health problem treated at Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
-        assertFalse("Health problem not waiting at Medical care", sb.getMedical().getProblemsAwaitingTreatment().contains(hp));
-        assertEquals("Started for treatment", RequestMedicalTreatment.TREATMENT, task.getPhase());
+        assertTrue(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertFalse(sb.getMedical().getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
+        assertEquals(RequestMedicalTreatment.TREATMENT, task.getPhase(), "Started for treatment");
         
         // Treatment
         hp.timePassing(recoveryTime*1.1, patient.getPhysicalCondition());
         sb.getMedical().stopTreatment(hp);
         executeTask(patient, task, 10);
 
-        assertTrue("Task completed", task.isDone());
-        assertEquals("Complaints remaining", 1, patient.getPhysicalCondition().getProblems().size());
+        assertTrue(task.isDone(), "Task completed");
+        assertEquals(1, patient.getPhysicalCondition().getProblems().size(), "Complaints remaining");
 
-        assertEquals("Complaint in recovery", HealthProblemState.RECOVERING, hp.getState());
-        assertFalse("Health problem removed from Medical care", sb.getMedical().getProblemsBeingTreated().contains(hp));
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+        assertFalse(sb.getMedical().getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
     }
 
+    @Test
     public void testCreateVehicle() {
         var s = buildSettlement("Hospital");
         SelfTreatHealthProblemTest.buildMediCare(this, s);
         var patient = buildPerson("Patient", s, JobType.DOCTOR);
         var r = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION);
         patient.transfer(r);
-        assertTrue("Person starts in Vehicle", patient.isInVehicle());
+        assertTrue(patient.isInVehicle(), "Person starts in Vehicle");
 
         // Laceration is self heal
         var hp = SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
         var recoveryTime = hp.getComplaint().getRecoveryTreatment().getDuration();
 
         var task = RequestMedicalTreatment.createTask(patient);
-        assertFalse("Task created", task.isDone());
+        assertFalse(task.isDone(), "Task created");
         var sb = r.getSickBay();
 
         // Do the walk; then first step of treatment
         executeTaskUntilSubTask(patient, task, 1000);
         executeTask(patient, task, 30);
         
-        assertFalse("Health problem treated at Medical care", sb.getProblemsBeingTreated().contains(hp));
-        assertTrue("Health problem not waiting at Medical care", sb.getProblemsAwaitingTreatment().contains(hp));
-        assertEquals("Waiting for treatment", RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase());
+        assertFalse(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertTrue(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
+        assertEquals(RequestMedicalTreatment.WAITING_FOR_TREATMENT, task.getPhase(), "Waiting for treatment");
         
         // Simulate someone helping
         sb.startTreatment(hp, recoveryTime);
         executeTask(patient, task, 1);
         
-        assertTrue("Health problem treated at Medical care", sb.getProblemsBeingTreated().contains(hp));
-        assertFalse("Health problem not waiting at Medical care", sb.getProblemsAwaitingTreatment().contains(hp));
-        assertEquals("Started for treatment", RequestMedicalTreatment.TREATMENT, task.getPhase());
+        assertTrue(sb.getProblemsBeingTreated().contains(hp), "Health problem treated at Medical care");
+        assertFalse(sb.getProblemsAwaitingTreatment().contains(hp), "Health problem not waiting at Medical care");
+        assertEquals(RequestMedicalTreatment.TREATMENT, task.getPhase(), "Started for treatment");
         
         // Treatment
         hp.timePassing(recoveryTime*1.1, patient.getPhysicalCondition());
         sb.stopTreatment(hp);
         executeTask(patient, task, 10);
 
-        assertTrue("Task completed", task.isDone());
-        assertEquals("Complaints remaining", 1, patient.getPhysicalCondition().getProblems().size());
+        assertTrue(task.isDone(), "Task completed");
+        assertEquals(1, patient.getPhysicalCondition().getProblems().size(), "Complaints remaining");
 
-        assertEquals("Complaint in recovery", HealthProblemState.RECOVERING, hp.getState());
-        assertFalse("Health problem removed from Medical care", sb.getProblemsBeingTreated().contains(hp));
-        assertTrue("Person stays in Vehicle", patient.isInVehicle());
+        assertEquals(HealthProblemState.RECOVERING, hp.getState(), "Complaint in recovery");
+        assertFalse(sb.getProblemsBeingTreated().contains(hp), "Health problem removed from Medical care");
+        assertTrue(patient.isInVehicle(), "Person stays in Vehicle");
     }
 
+    @Test
     public void testMetaTaskSettlement() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(this, s);
@@ -104,11 +112,11 @@ public class RequestMedicalTreatmentTest extends AbstractMarsSimUnitTest {
         // Self heal
         SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.LACERATION);
         var tasks = mt.getTaskJobs(patient);
-        assertTrue("No doctor health problems", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No doctor health problems");
 
         // Not self healing
         SelfTreatHealthProblemTest.addComplaint(this, patient, ComplaintType.APPENDICITIS);
         tasks = mt.getTaskJobs(patient);
-        assertFalse("Problems found", tasks.isEmpty());
+        assertFalse(tasks.isEmpty(), "Problems found");
     }
 }

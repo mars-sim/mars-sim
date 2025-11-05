@@ -5,49 +5,56 @@
  * @author Barry Evans
  */
 package com.mars_sim.core.structure;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 
 /**
  * Tests the internals of the ShiftManager.
  */
-public class SettlementCodeTest extends AbstractMarsSimUnitTest {
+public class SettlementCodeTest extends MarsSimUnitTest {
 
     /**
      * Test the code logic
      */
+    @Test
     public void testSingleSettlement() {
         Settlement settlement = buildSettlement("First Second");
-        assertEquals("Single Settlement code", "FS", settlement.getSettlementCode());
+        assertEquals("FS", settlement.getSettlementCode(), "Single Settlement code");
     }
 
     /**
      * Tests the code logic based on words.
      */
+    @Test
     public void testWordSettlement() {
         buildSettlement("First Second");
         Settlement settlement2 = buildSettlement("First Second Forth");
 
-        assertEquals("Second Settlement code", "FF", settlement2.getSettlementCode());
+        assertEquals("FF", settlement2.getSettlementCode(), "Second Settlement code");
     }
 
     /**
      * Tests the code logic based on words.
      */
+    @Test
     public void testLettersSettlement() {
         buildSettlement("First Second");
         Settlement settlement2 = buildSettlement("First Sx");
 
-        assertEquals("Second Settlement code", "FI", settlement2.getSettlementCode());
+        assertEquals("FI", settlement2.getSettlementCode(), "Second Settlement code");
     }
 
     /**
      * Tests the code logic based on letters with punctuation.
      */
+    @Test
     public void testLettersPuncSettlement() {
         buildSettlement("First Second");
         Settlement settlement2 = buildSettlement("F#-rst Sx");
 
-        assertEquals("Second Settlement code", "FR", settlement2.getSettlementCode());
+        assertEquals("FR", settlement2.getSettlementCode(), "Second Settlement code");
     }
 }

@@ -6,8 +6,14 @@
  */
 
 package com.mars_sim.core.person.ai.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -22,7 +28,7 @@ import com.mars_sim.core.vehicle.Rover;
 /**
  * A unit test suite for the WalkingSteps task class.
  */
-public class WalkingStepsTest extends AbstractMarsSimUnitTest {
+public class WalkingStepsTest extends MarsSimUnitTest {
 	
 
 	private static final LocalPosition LOCAL_POSITION2 = new LocalPosition(-7.5D, 0D);
@@ -32,9 +38,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
      * Test constructing walking steps from building interior to building interior with a
      * valid walking path between them.
      */
+    @Test
     public void testWalkingStepsBuildingToBuildingPath() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -73,9 +80,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
      * Test constructing walking steps from EVA building interior to building interior with no
      * valid walking path between them and no airlocks.
      */
+    @Test
     public void testWalkingStepsEVABuildingToBuildingNoPath() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -105,9 +113,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
      * Test constructing walking steps from EVA building interior to building interior with no
      * valid walking path between them.
      */
+    @Test
     public void testWalkingStepsBuildingToEVABuildingNoPath() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -120,14 +129,14 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
-        assertNotNull("Person's starting building", person.getBuildingLocation());
+        assertNotNull(person.getBuildingLocation(), "Person's starting building");
 
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
         assertNotNull(walkingSteps);
 
         boolean canWalk = walkingSteps.canWalkAllSteps();
         
-        assertFalse("No walking path found", canWalk);
+        assertFalse(canWalk, "No walking path found");
 
         assertNotNull(walkingSteps.getWalkingStepsList());
         
@@ -142,9 +151,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
      * Test constructing walking steps from building interior to building interior with no
      * valid walking path between them and no airlocks.
      */
+    @Test
     public void testWalkingStepsBuildingToBuildingNoPath() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -152,13 +162,13 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
         Building building0 = buildAccommodation(buildingManager, LOCAL_POSITION1, 0D, 0);
         Building building1 = buildBuilding(buildingManager, new LocalPosition(BUILDING_LENGTH + 1, 0D), 0D, 1);
 
-        assertFalse("Target is not in the target building", LocalAreaUtil.isPositionWithinLocalBoundedObject(target, building1));
+        assertFalse(LocalAreaUtil.isPositionWithinLocalBoundedObject(target, building1), "Target is not in the target building");
         buildingManager.setupBuildingFunctionsMap();
 
 		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
-        assertNotNull("Person is in building", person.getBuildingLocation());
+        assertNotNull(person.getBuildingLocation(), "Person is in building");
 
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
 
@@ -177,9 +187,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
      * Test constructing walking steps from building interior to building interior with no
      * valid walking path between them and airlocks.
      */
+    @Test
     public void testWalkingStepsBuildingToBuildingNoPathAirlocks() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 	
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -191,17 +202,17 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 		Person person = buildPerson("Walker", settlement);
 
         BuildingManager.addToBuilding(person, building0);
-        assertNotNull("Person in start building", person.getBuildingLocation());
+        assertNotNull(person.getBuildingLocation(), "Person in start building");
 
         WalkingSteps walkingSteps = new WalkingSteps(person, target, building1);
 
-        assertTrue("Found a walking path", walkingSteps.canWalkAllSteps());
+        assertTrue(walkingSteps.canWalkAllSteps(), "Found a walking path");
 
-        assertNotNull("Has a walking path", walkingSteps.getWalkingStepsList());
+        assertNotNull(walkingSteps.getWalkingStepsList(), "Has a walking path");
 
-        assertEquals("Walking path steps", 5, walkingSteps.getWalkingStepsNumber());
+        assertEquals(5, walkingSteps.getWalkingStepsNumber(), "Walking path steps");
 
-        assertEquals("Path size", 5, walkingSteps.getWalkingStepsList().size());
+        assertEquals(5, walkingSteps.getWalkingStepsList().size(), "Path size");
 
         WalkStep walkStep1 = walkingSteps.getWalkingStepsList().get(0);
 
@@ -227,9 +238,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from building interior to exterior with an airlock.
      */
+    @Test
     public void testWalkingStepsBuildingToExteriorAirlock() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -271,9 +283,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from building interior to exterior with no airlock.
      */
+    @Test
     public void testWalkingStepsBuildingToExteriorNoAirlock() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -302,9 +315,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from a rover to exterior.
      */
+    @Test
     public void testWalkingStepsRoverToExterior() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -350,9 +364,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from a rover to a building.
      */
+    @Test
     public void testWalkingStepsRoverToBuilding() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
                 
@@ -401,9 +416,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from a building to a rover.
      */
+    @Test
     public void testWalkingStepsBuildingToRover() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -453,9 +469,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from a building to a rover with no building airlock.
      */
+    @Test
     public void testWalkingStepsBuildingToRoverNoAirlock() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -485,9 +502,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from a rover to a rover.
      */
+    @Test
     public void testWalkingStepsRoverToRover() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
 		LocalPosition parked1 = new LocalPosition(15D, -10D);
 		Rover rover1 = buildRover(settlement, "test Rover 1", parked1);
@@ -535,9 +553,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from a building to a rover in a garage.
      */
+    @Test
     public void testWalkingStepsBuildingToRoverInGarage() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -578,9 +597,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from a rover in a garage to a building.
      */
+    @Test
     public void testWalkingStepsRoverToBuildingInGarage() {
         
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -623,9 +643,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from exterior to building interior with an airlock.
      */
+    @Test
     public void testWalkingStepsExteriorToBuildingAirlock() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -670,9 +691,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
 	/**
      * Test constructing walking steps from exterior to building interior with no airlock.
      */
+    @Test
     public void testWalkingStepsExteriorToBuildingNoAirlock() {
         
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
@@ -699,9 +721,10 @@ public class WalkingStepsTest extends AbstractMarsSimUnitTest {
     /**
      * Test constructing walking steps from exterior to a rover.
      */
+    @Test
     public void testWalkingStepsExteriorToRover() {
 
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
 		LocalPosition parkedPosition = new LocalPosition(15D, -10D);
         Rover rover = buildRover(settlement, "Test Rover", parkedPosition);
