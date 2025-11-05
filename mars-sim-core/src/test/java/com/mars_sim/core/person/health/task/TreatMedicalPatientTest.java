@@ -54,7 +54,7 @@ public class TreatMedicalPatientTest extends MarsSimUnitTest {
     public void testCreateVehicleTask() {
         var s = buildSettlement("Hospital");
         SelfTreatHealthProblemTest.buildMediCare(this, s);
-        var r = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION);
+        var r = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var sb = r.getSickBay();
 
         var patient = buildPerson("Patient", s, JobType.DOCTOR);

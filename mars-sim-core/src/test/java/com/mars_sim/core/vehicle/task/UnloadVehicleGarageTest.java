@@ -26,7 +26,7 @@ public class UnloadVehicleGarageTest extends MarsSimUnitTest {
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
         v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
@@ -63,7 +63,7 @@ public class UnloadVehicleGarageTest extends MarsSimUnitTest {
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base", true);
         buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
 
         var mt = new UnloadVehicleMeta();
 

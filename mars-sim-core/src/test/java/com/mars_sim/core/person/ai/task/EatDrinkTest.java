@@ -57,7 +57,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     public void testVehicleWater() {
         var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
-        var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         v.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
         p.transfer(v);
@@ -111,7 +111,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     public void testVehicleFood() {
         var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
-        var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
         p.transfer(v);
         assertTrue(p.isInVehicle(), "In vehicle");

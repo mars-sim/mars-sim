@@ -23,7 +23,7 @@ public class MaintainGarageVehicleTest extends MarsSimUnitTest {
         var s = buildSettlement("Vehicle base");
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var mm = v.getMalfunctionManager();
         assertGreaterThan("Vehicle maintenance time", 0D, mm.getEffectiveTimeSinceLastMaintenance());
 
@@ -51,7 +51,7 @@ public class MaintainGarageVehicleTest extends MarsSimUnitTest {
         var s = buildSettlement("Vehicle base");
         buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         
         var mm = v.getMalfunctionManager();
 

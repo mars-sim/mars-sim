@@ -106,7 +106,7 @@ public class WalkInteriorTest extends MarsSimUnitTest {
         assertEquals(target, person.getPosition(), "Person position");
         
         // Create a rover
-        Rover r = buildRover(settlement, "rover1", new LocalPosition(10, 10));
+        Rover r = buildRover(settlement, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
     	assertTrue(r.isInSettlement(), "Rover in settlement");
     	assertTrue(r.addToAGarage(), "Rover in garage");
   		

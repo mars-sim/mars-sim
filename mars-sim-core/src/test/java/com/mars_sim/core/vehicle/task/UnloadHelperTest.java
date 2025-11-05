@@ -22,8 +22,8 @@ public class UnloadHelperTest extends MarsSimUnitTest{
     public void testReleaseTowedVehicle() {
         var s = buildSettlement("towing");
 
-        var towing = buildRover(s, "towing", LocalPosition.DEFAULT_POSITION);
-        var towed = buildRover(s, "towed", LocalPosition.DEFAULT_POSITION);
+        var towing = buildRover(s, "towing", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
+        var towed = buildRover(s, "towed", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         towing.setTowedVehicle(towed);
 
         UnloadHelper.releaseTowedVehicle(towing, s);
@@ -36,7 +36,7 @@ public class UnloadHelperTest extends MarsSimUnitTest{
     public void testUnloadDeceased() {
         var s = buildSettlement("towing");
 
-        var v = buildRover(s, "towing", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "towing", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var p1 = buildPerson("Alive", s);
         p1.transfer(v);
         var p2 = buildPerson("Dead", s);
@@ -53,7 +53,7 @@ public class UnloadHelperTest extends MarsSimUnitTest{
     public void testUnloadEVASuits() {
         var s = buildSettlement("towing");
 
-        var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         int suits = 3;
         for(int i = 0; i < suits; i++) {
             var e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
@@ -73,7 +73,7 @@ public class UnloadHelperTest extends MarsSimUnitTest{
     @Test
     public void testUnloadInventory() {
         var s = buildSettlement("towing");
-        var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         s.getEquipmentInventory().setCargoCapacity(50);
         v.getEquipmentInventory().setCargoCapacity(60);
         

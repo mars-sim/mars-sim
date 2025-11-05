@@ -32,7 +32,7 @@ public class DriveGroundVehicleTest extends MarsSimUnitTest {
     @Test
     public void testDriveVehicle() {
         var s = buildSettlement("Test Settlement");
-        var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
 
@@ -80,7 +80,7 @@ public class DriveGroundVehicleTest extends MarsSimUnitTest {
     @Test
     public void testDriveVehicleNoFuel() {
         var s = buildSettlement("Test Settlement");
-        var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, OXYGEN_AMOUNT);
 

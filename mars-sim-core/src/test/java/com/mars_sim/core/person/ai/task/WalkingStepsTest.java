@@ -330,7 +330,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 
         BuildingManager.addToBuilding(person, building0);
 
-        Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D));
+        Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D), EXPLORER_ROVER);
 
         person.transfer(rover);
 
@@ -371,7 +371,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
                 
-        Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D));
+        Rover rover = buildRover(settlement, "Test Rover", new LocalPosition(15D, -10D), EXPLORER_ROVER);
         
         Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
 
@@ -424,7 +424,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         LocalPosition parked = new LocalPosition(15D, -10D);
-        Rover rover = buildRover(settlement, "Test Rover", parked);
+        Rover rover = buildRover(settlement, "Test Rover", parked, EXPLORER_ROVER);
         
         Building building0 = buildEVA(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
@@ -477,7 +477,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         BuildingManager buildingManager = settlement.getBuildingManager();
 
         LocalPosition parked = new LocalPosition(15D, -10D);
-        Rover rover = buildRover(settlement, "Test Rover", parked);
+        Rover rover = buildRover(settlement, "Test Rover", parked, EXPLORER_ROVER);
 
         Building building0 = buildAccommodation(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
         buildingManager.setupBuildingFunctionsMap();
@@ -508,10 +508,10 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         Settlement settlement = buildSettlement("mock");
 		
 		LocalPosition parked1 = new LocalPosition(15D, -10D);
-		Rover rover1 = buildRover(settlement, "test Rover 1", parked1);
+		Rover rover1 = buildRover(settlement, "test Rover 1", parked1, EXPLORER_ROVER);
 
 		LocalPosition parked2 = new LocalPosition(-50D, 20D);
-        Rover rover2 = buildRover(settlement, "Test Rover 2", parked2);
+        Rover rover2 = buildRover(settlement, "Test Rover 2", parked2, EXPLORER_ROVER);
         
 		Person person = buildPerson("Walker", settlement);
 
@@ -560,7 +560,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D,  0);
         garage.addRover(rover);
 
@@ -604,7 +604,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
 		
         BuildingManager buildingManager = settlement.getBuildingManager();
 
-        Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION);
+        Rover rover = buildRover(settlement, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         rover.transfer(settlement);
         
         var garage = buildGarage(buildingManager, LocalPosition.DEFAULT_POSITION, 0D, 0);
@@ -727,7 +727,7 @@ public class WalkingStepsTest extends MarsSimUnitTest {
         Settlement settlement = buildSettlement("mock");
 
 		LocalPosition parkedPosition = new LocalPosition(15D, -10D);
-        Rover rover = buildRover(settlement, "Test Rover", parkedPosition);
+        Rover rover = buildRover(settlement, "Test Rover", parkedPosition, EXPLORER_ROVER);
         rover.transfer(getSurface());
         
 		Person person = buildPerson("Walker", settlement);

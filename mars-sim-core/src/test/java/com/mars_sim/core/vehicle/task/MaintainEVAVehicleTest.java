@@ -21,7 +21,7 @@ public class MaintainEVAVehicleTest extends MarsSimUnitTest {
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var mm = v.getMalfunctionManager();
         assertGreaterThan("Vehicle maintenance time", 0D, mm.getEffectiveTimeSinceLastMaintenance());
 
@@ -56,7 +56,7 @@ public class MaintainEVAVehicleTest extends MarsSimUnitTest {
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base");
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var mm = v.getMalfunctionManager();
 
         // Create a massive pulse to trigger maintenance

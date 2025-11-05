@@ -201,10 +201,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 		return person;
 	}
 
-    protected Rover buildRover(Settlement settlement, String name, LocalPosition parked) {
-		return buildRover(settlement, name, parked, EXPLORER_ROVER);
-	}
-
     /**
      * Build a rover and add it to the unit manager.
      * @param settlement

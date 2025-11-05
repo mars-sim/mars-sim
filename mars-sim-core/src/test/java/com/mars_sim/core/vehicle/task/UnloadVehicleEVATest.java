@@ -27,7 +27,7 @@ public class UnloadVehicleEVATest extends MarsSimUnitTest {
         var s = buildSettlement("Vehicle base");
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
         v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
@@ -92,7 +92,7 @@ public class UnloadVehicleEVATest extends MarsSimUnitTest {
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base", true);
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
 
         var mt = new UnloadVehicleMeta();
 

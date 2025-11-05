@@ -77,7 +77,7 @@ public class SelfTreatHealthProblemTest extends MarsSimUnitTest {
     public void testCreateVehicleTask() {
         var s = buildSettlement("Hospital");
         buildMediCare(this, s);  // Build a settlement medical center to make sure there is no teleporting
-        var r = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION);
+        var r = buildRover(s, "rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var p = buildPerson("Mr. Physician 1", s, JobType.DOCTOR);
         p.transfer(r);
         assertTrue(p.isInVehicle(), "Person starts in Vehicle");

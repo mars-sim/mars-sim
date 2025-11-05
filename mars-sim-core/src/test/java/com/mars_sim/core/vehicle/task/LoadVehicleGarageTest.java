@@ -23,7 +23,7 @@ public class LoadVehicleGarageTest extends MarsSimUnitTest {
         var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN, g.getBuilding(), FunctionType.VEHICLE_MAINTENANCE);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
 
@@ -52,8 +52,8 @@ public class LoadVehicleGarageTest extends MarsSimUnitTest {
         buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
-        buildRover(s, "rover2", new LocalPosition(10, 13));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
+        buildRover(s, "rover2", new LocalPosition(10, 13), EXPLORER_ROVER);
 
         var mt = new LoadVehicleMeta();
 

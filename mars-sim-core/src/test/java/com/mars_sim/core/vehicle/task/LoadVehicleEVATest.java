@@ -21,7 +21,7 @@ public class LoadVehicleEVATest extends MarsSimUnitTest {
         var s = buildSettlement("Vehicle base");
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
         var eva = EVAOperationTest.prepareForEva(this, p);
@@ -55,8 +55,8 @@ public class LoadVehicleEVATest extends MarsSimUnitTest {
         var s = buildSettlement("Vehicle base", true);
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
-        buildRover(s, "rover2", new LocalPosition(10, 13));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
+        buildRover(s, "rover2", new LocalPosition(10, 13), EXPLORER_ROVER);
 
         var mt = new LoadVehicleMeta();
 
