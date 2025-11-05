@@ -95,13 +95,13 @@ public class MarsSimContextImpl implements MarsSimContext {
     }
 
     @Override
-    public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+    public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing) {
         return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LABORATORY,
                             FunctionType.RESEARCH, pos, facing, true);
     }
 
     @Override
-    public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
+    public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing) {
         var building0 = buildFunction(buildingManager, "EVA Airlock", BuildingCategory.EVA,
                         FunctionType.EVA, pos, facing, true);
         

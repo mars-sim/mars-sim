@@ -23,7 +23,7 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
     static ScientificStudy buildStudyToProposalPhase(Settlement s, MarsSimContext context,
                                 ScienceType science, JobType researchJob) {
         // Build a settlement with a lab and put a Person in it
-        var l = context.buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        var l = context.buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = context.buildPerson("Researcher", s);
         p.setJob(researchJob, "Boss");
         BuildingManager.addToActivitySpot(p, l, FunctionType.RESEARCH);
@@ -76,7 +76,7 @@ public class InviteStudyCollaboratorTest extends MarsSimUnitTest {
     @Test
     public void testCreateTask() {
         var s = buildSettlement("Study", true);
-        var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("Researcher", s);
         var c1 = buildPerson("Collab1", s);
         var c2 = buildPerson("Collab2", s);

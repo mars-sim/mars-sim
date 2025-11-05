@@ -63,7 +63,7 @@ public class EVAOperationTest extends MarsSimUnitTest{
      */
     public static EVA prepareForEva(MarsSimContext context, Person p) {
         var s = p.getAssociatedSettlement();
-        var b = context.buildEVA(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0); // Keep id for MarsSimContext interface
+        var b = context.buildEVA(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         BuildingManager.addToActivitySpot(p, b, FunctionType.EVA);
         Equipment e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
         e.storeAmountResource(ResourceUtil.OXYGEN_ID, EVASuit.OXYGEN_CAPACITY);

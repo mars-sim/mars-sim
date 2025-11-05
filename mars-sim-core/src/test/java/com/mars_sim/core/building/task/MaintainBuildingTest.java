@@ -29,9 +29,9 @@ public class MaintainBuildingTest extends MarsSimUnitTest {
     @Test
     public void testMetaTask() {
         var s = buildSettlement("Maintenance");
-        var b1 = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        var b1 = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         // 2nd building check logic
-        var b2 = buildResearch(s.getBuildingManager(), new LocalPosition(10, 10), 0D, 2);
+        var b2 = buildResearch(s.getBuildingManager(), new LocalPosition(10, 10), 0D);
 
         var mt = new MaintainBuildingMeta();
         var tasks = mt.getSettlementTasks(s);
@@ -67,7 +67,7 @@ public class MaintainBuildingTest extends MarsSimUnitTest {
     public void testCreateTask() {
 
         var s = buildSettlement("Maintain");
-        var b = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        var b = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("Engineer", s, JobType.ENGINEER, b, FunctionType.RESEARCH);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
 

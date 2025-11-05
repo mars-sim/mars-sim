@@ -18,9 +18,9 @@ public interface MarsSimContext {
 
     Person buildPerson(String name, Settlement s);
 
-    Building buildResearch(BuildingManager buildingManager, LocalPosition position, double facing, int i);
+    Building buildResearch(BuildingManager buildingManager, LocalPosition position, double facing);
 
-    Building buildEVA(BuildingManager buildingManager, LocalPosition position, double facing, int id);
+    Building buildEVA(BuildingManager buildingManager, LocalPosition position, double facing);
 
     SimulationConfig getConfig();
     

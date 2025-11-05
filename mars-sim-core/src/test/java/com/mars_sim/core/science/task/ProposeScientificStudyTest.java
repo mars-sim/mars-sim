@@ -20,7 +20,7 @@ public class ProposeScientificStudyTest extends MarsSimUnitTest {
     @Test
     public void testChefProposal() {
         var s = buildSettlement("Study", true);
-        buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("Chef", s);
         p.setJob(JobType.CHEF, "Boss");
 
@@ -33,7 +33,7 @@ public class ProposeScientificStudyTest extends MarsSimUnitTest {
     @Test
     public void testBiologistProposal() {
         var s = buildSettlement("Study", true);
-        buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("Biologist", s);
         p.setJob(JobType.ASTROBIOLOGIST, "Boss");
         var mt = new ProposeScientificStudyMeta();
@@ -69,7 +69,7 @@ public class ProposeScientificStudyTest extends MarsSimUnitTest {
     public void testCreateTask() {
        
         var s = buildSettlement("Study");
-        var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var p = buildPerson("Researcher", s);
         BuildingManager.addToActivitySpot(p, l, FunctionType.RESEARCH);
 

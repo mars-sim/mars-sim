@@ -55,7 +55,7 @@ public class PeerReviewStudyPaperTest extends MarsSimUnitTest {
         var s = buildSettlement("Study", true);
         var study = buildStudyToPeerReviewPhase(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
-        var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 1);
+        var l = buildResearch(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         var r = buildPerson("Reviewer", s);
         r.setJob(JobType.ASTROBIOLOGIST, "Boss");
         BuildingManager.addToActivitySpot(r, l, FunctionType.RESEARCH);

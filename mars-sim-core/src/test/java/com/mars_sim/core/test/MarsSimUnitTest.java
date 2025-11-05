@@ -124,8 +124,8 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 	}
 	
 	@Override
-	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		return context.buildResearch(buildingManager, pos, facing, id);
+	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return context.buildResearch(buildingManager, pos, facing);
 	}
 
 	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing) {
@@ -134,12 +134,8 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
 	}
 
 	@Override
-	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing, int id) {
-		return context.buildEVA(buildingManager, pos, facing, id);
-	}
-	
-	protected Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing) {
-		return buildEVA(buildingManager, pos, facing, 0);
+	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return context.buildEVA(buildingManager, pos, facing);
 	}
 
 	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing) {
