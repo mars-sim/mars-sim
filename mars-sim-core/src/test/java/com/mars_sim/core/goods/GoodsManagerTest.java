@@ -1,10 +1,9 @@
 package com.mars_sim.core.goods;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
-
-
-import static org.junit.Assert.assertNotEquals;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;

@@ -1,11 +1,11 @@
 package com.mars_sim.core.person.health.task;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.Assert.assertNotEquals;
 
 import java.util.Set;
 import com.mars_sim.core.test.MarsSimUnitTest;
