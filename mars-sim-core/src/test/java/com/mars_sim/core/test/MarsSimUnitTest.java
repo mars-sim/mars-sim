@@ -83,10 +83,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
         return context.getSurface();
     }
 
-    protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos) {
-		return buildBuilding(buildingManager, pos, 0D);
-	}
-
     protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos, double facing) {
 		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, true);
 	}
@@ -100,10 +96,6 @@ public abstract class MarsSimUnitTest implements MarsSimContext {
     public Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
 							FunctionType fType, LocalPosition pos, double facing, boolean lifesupport) {
 		return context.buildFunction(buildingManager, type, cat, fType, pos, facing, lifesupport);
-	}
-
-    protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos) {
-		return buildGarage(buildingManager, pos, 0D);
 	}
 
 	protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing) {

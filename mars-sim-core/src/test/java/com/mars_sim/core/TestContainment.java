@@ -43,7 +43,7 @@ class TestContainment extends MarsSimUnitTest {
               
 		settlement = buildSettlement("Test Containment");
         
-		garage = buildGarage(settlement.getBuildingManager(), new LocalPosition(0, 0));
+		garage = buildGarage(settlement.getBuildingManager(), new LocalPosition(0, 0), 0D);
     }
 
 	private void assertContainment(AbstractMobileUnit source, Unit container, LocationStateType lon) {
