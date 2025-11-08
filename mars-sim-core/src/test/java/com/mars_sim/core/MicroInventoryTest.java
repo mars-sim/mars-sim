@@ -6,27 +6,38 @@
  */
 
 package com.mars_sim.core;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 import com.mars_sim.core.equipment.MicroInventory;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
-import junit.framework.TestCase;
+
 
 /**
  * Tests the micro inventory
  */
-public class MicroInventoryTest
-extends TestCase {
+public class MicroInventoryTest {
 
 
 	private static final double CAPACITY_AMOUNT = 200D;
 	
 	private Settlement settlement = null;
 	
-	@Override
-    public void setUp() throws Exception {
+	@BeforeEach
+
+	
+	@BeforeEach
+
+
+	
+	public void setUp() throws Exception {
         SimulationConfig.loadConfig();
         Simulation.instance().testRun();
         
@@ -41,6 +52,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
+	@Test
+
 	public void testLoading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
@@ -61,6 +74,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
+	@Test
+
 	public void testOverloading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
@@ -76,6 +91,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
+	@Test
+
 	public void testUnsupported() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;

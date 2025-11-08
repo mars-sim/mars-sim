@@ -1,17 +1,32 @@
 package com.mars_sim.core.resource;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 
-import junit.framework.TestCase;
 
-public class TestAmountResourceTypeStorage extends TestCase {
 
-    @Override
+public class TestAmountResourceTypeStorage {
+
+    @BeforeEach
+
+
+    @BeforeEach
+
+
+
     public void setUp() {
         SimulationConfig.loadConfig();
     }
+
+    @Test
+
 
     public void testInventoryAmountResourceTypeCapacityGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -21,12 +36,18 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals("Amount resource type capacity set correctly.", 100D, amountCO2, 0D);
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeCapacityNotSet() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         double amountCO2 = storage.getAmountResourceTypeCapacity(carbonDioxide);
         assertEquals("Amount resource type capacity set correctly.", 0D, amountCO2, 0D);
     }
+
+    @Test
+
 
     public void testInventoryAmountResourceTypeCapacityNegativeCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -41,6 +62,8 @@ public class TestAmountResourceTypeStorage extends TestCase {
     /**
      * Test the removeAmountResourceTypeCapacity method.
      */
+    @Test
+
     public void testRemoveAmountResourceTypeCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -71,6 +94,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals(0D, amountCarbonDioxide4);
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeStoreGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -79,6 +105,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         double amountTypeStored = storage.getAmountResourceTypeStored(carbonDioxide);
         assertEquals("Amount resource type stored is correct.", 100D, amountTypeStored, 0D);
     }
+
+    @Test
+
 
     public void testInventoryAmountResourceTypeStoreOverload() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -91,6 +120,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeStoreNegativeAmount() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -102,6 +134,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeStoreNoCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -112,6 +147,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeRemainingCapacityGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -121,12 +159,18 @@ public class TestAmountResourceTypeStorage extends TestCase {
         assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         double remainingCapacity = storage.getAmountResourceTypeRemainingCapacity(carbonDioxide);
         assertEquals("Amount type capacity remaining is correct amount.", 0D, remainingCapacity, 0D);
     }
+
+    @Test
+
 
     public void testInventoryAmountResourceTypeRetrieveGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -137,6 +181,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         double remainingCapacity = storage.getAmountResourceTypeRemainingCapacity(carbonDioxide);
         assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
     }
+
+    @Test
+
 
     public void testInventoryAmountResourceTypeRetrieveTooMuch() {
         try {
@@ -150,6 +197,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeRetrieveNegative() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -162,6 +212,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         catch (Exception e) {}
     }
 
+    @Test
+
+
     public void testInventoryAmountResourceTypeRetrieveNoCapacity() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -171,6 +224,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         }
         catch (Exception e) {}
     }
+
+    @Test
+
 
     public void testInventoryAmountResourceTypeTotalAmount() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -183,6 +239,9 @@ public class TestAmountResourceTypeStorage extends TestCase {
         double totalStored = storage.getTotalAmountResourceTypesStored(false);
         assertEquals("Amount total stored is correct.", 30D, totalStored, 0D);
     }
+
+    @Test
+
 
     public void testInventoryAmountResourceTypeAllStored() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();

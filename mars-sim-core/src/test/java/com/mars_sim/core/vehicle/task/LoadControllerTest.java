@@ -6,6 +6,12 @@
  */
 
 package com.mars_sim.core.vehicle.task;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
 
 
@@ -32,13 +38,12 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
-import junit.framework.TestCase;
+
 
 /**
  * Tests the loading controller operation for vehicles.
  */
-public class LoadControllerTest
-extends TestCase {
+public class LoadControllerTest {
 
 	// Extra amount to add to resource to handle double arithmetic mismatch
 	private static final double EXTRA_RESOURCE = 0.01D;
@@ -54,8 +59,14 @@ extends TestCase {
 	private Integer smallHammerID;
 	private Integer fireExtinguisherID;
 
-	@Override
-    public void setUp() {
+	@BeforeEach
+
+
+	@BeforeEach
+
+
+
+	public void setUp() {
 
         SimulationConfig config = SimulationConfig.loadConfig();
         Simulation.instance().testRun();
@@ -89,6 +100,8 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
+	@Test
+
 	public void testBackgroundLoading() {
 		var requiredResourcesMap = new SuppliesManifest();
 		requiredResourcesMap.addAmount(ResourceUtil.OXYGEN_ID, 20D, true);
@@ -110,6 +123,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
+	@Test
+
 	public void testLoadRequiredEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
@@ -122,6 +137,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
+	@Test
+
 	public void testLoadOptionalEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
@@ -136,6 +153,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
+	@Test
+
 	public void testLoadMissingOptionalEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
@@ -167,6 +186,8 @@ extends TestCase {
 	/*
 	 * Test method loading Resource Items
 	 */
+	@Test
+
 	public void testLoadRequiredItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
@@ -179,6 +200,8 @@ extends TestCase {
 	/*
 	 * Test method loading Resource Items
 	 */
+	@Test
+
 	public void testLoadOptionalItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
@@ -193,6 +216,8 @@ extends TestCase {
 	/*
 	 * Load with optional resource present
 	 */
+	@Test
+
 	public void testLoadMissingOptionalItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
@@ -207,6 +232,8 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
+	@Test
+
 	public void testLoadRequiredAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 30D, true);
@@ -220,6 +247,8 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
+	@Test
+
 	public void testLoadFailedAmountResources() {
 		var requiredResourcesMap = new SuppliesManifest();
 		// Add 2000kg food to the manifest
@@ -245,6 +274,8 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
+	@Test
+
 	public void testLoadOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 20D, true);
@@ -259,6 +290,8 @@ extends TestCase {
 	/*
 	 * Load with optional resource present
 	 */
+	@Test
+
 	public void testLoadMissingOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 100D, true);
@@ -272,6 +305,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
+	@Test
+
 	public void testLoadFull() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 5, true);

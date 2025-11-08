@@ -1,13 +1,17 @@
 package com.mars_sim.core.project;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.Assert.assertThrows;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.mars_sim.core.person.ai.task.util.Worker;
 
-import junit.framework.TestCase;
 
 
-public class ProjectTest extends TestCase {
+
+public class ProjectTest {
     @SuppressWarnings("serial")
 	static final class TestStep extends ProjectStep {
 
@@ -44,6 +48,9 @@ public class ProjectTest extends TestCase {
         }
     }
 
+    @Test
+
+
     public void testExecuteOneStep() {
         Project p = new Project("Test");
 
@@ -66,6 +73,9 @@ public class ProjectTest extends TestCase {
         assertEquals("Step fully expected", 0, step1.expectedCount);
 
     }
+
+    @Test
+
 
     public void testExecuteTwoStep() {
         Project p = new Project("Test");
@@ -118,6 +128,9 @@ public class ProjectTest extends TestCase {
 
     }
 
+    @Test
+
+
     public void testAbort() {
         Project p = new Project("Test");
 
@@ -145,6 +158,10 @@ public class ProjectTest extends TestCase {
         assertEquals("Step2 never ended", 0, step2.endCount);
         assertEquals("Step2 fully expected", 1, step2.expectedCount);
     }
+
+
+    @Test
+
 
 
     public void testRemoveStep() {
@@ -189,6 +206,11 @@ public class ProjectTest extends TestCase {
 
 
 
+    @Test
+
+
+
+
     public void testCreateBadStep() {
 
         // Add a step with Active stage
@@ -200,6 +222,9 @@ public class ProjectTest extends TestCase {
                         new TestStep(Stage.DONE, 0, null);
                     });
     }
+
+    @Test
+
 
     public void testAddingBadStage() {
         Project p = new Project("Bad");

@@ -1,15 +1,30 @@
 package com.mars_sim.core.resource;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 import com.mars_sim.core.SimulationConfig;
 
-import junit.framework.TestCase;
 
-public class TestAmountResourcePhaseStorage extends TestCase {
+
+public class TestAmountResourcePhaseStorage {
 	
-    @Override
+    @BeforeEach
+
+	
+    @BeforeEach
+
+
+	
     public void setUp() {
         SimulationConfig.loadConfig();
     }
+	
+	@Test
+
 	
 	public void testInventoryAmountResourcePhaseCapacityGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -18,11 +33,17 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		assertEquals("Amount resource phase capacity set correctly.", 100D, amountGas, 0D);
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseCapacityNotSet() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		double amountGas = storage.getAmountResourcePhaseCapacity(PhaseType.GAS);
 		assertEquals("Amount resource phase capacity set correctly.", 0D, amountGas, 0D);
 	}
+	
+	@Test
+
 	
 	public void testInventoryAmountResourcePhaseCapacityNegativeCapacity() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -33,6 +54,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseStoreGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
@@ -41,6 +65,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		double amountPhaseStored = storage.getAmountResourcePhaseStored(PhaseType.GAS);
 		assertEquals("Amount resource phase stored is correct.", 100D, amountPhaseStored, 0D);
 	}
+	
+	@Test
+
 	
 	public void testInventoryAmountResourcePhaseStoreOverload() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -53,6 +80,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseStoreNegativeAmount() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
@@ -64,6 +94,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseStoreNoCapacity() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		AmountResource hydrogen = ResourceUtil.findAmountResource(ResourceUtil.HYDROGEN_ID);
@@ -74,6 +107,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseTypeGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
@@ -83,12 +119,18 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		assertEquals("Amount phase stored is of correct type.", hydrogen, resource);
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseTypeNoResource() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		AmountResource resource = storage.getAmountResourcePhaseType(PhaseType.GAS);
 		assertNull("Amount phase type stored is null.", resource);
 	}
+	
+	@Test
+
 	
 	public void testInventoryAmountResourcePhaseRemainingCapacityGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -99,11 +141,17 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		assertEquals("Amount phase capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseRemainingCapacityNoCapacity() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		double remainingCapacity = storage.getAmountResourcePhaseRemainingCapacity(PhaseType.GAS);
 		assertEquals("Amount phase capacity remaining is correct amount.", 0D, remainingCapacity, 0D);
 	}
+	
+	@Test
+
 	
 	public void testInventoryAmountResourcePhaseRetrieveGood() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -114,6 +162,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		double remainingCapacity = storage.getAmountResourcePhaseRemainingCapacity(PhaseType.GAS);
 		assertEquals("Amount phase capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
 	}
+	
+	@Test
+
 	
 	public void testInventoryAmountResourcePhaseRetrieveTooMuch() {
 		try {
@@ -127,6 +178,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseRetrieveNegative() {
 		try {
 			AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -139,6 +193,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
+	@Test
+
+	
 	public void testInventoryAmountResourcePhaseRetrieveNoCapacity() {
 		try {
 			AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -147,6 +204,9 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		}
 		catch (Exception e) {}
 	}
+	
+	@Test
+
 	
 	public void testInventoryAmountResourcePhaseTotalAmount() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();

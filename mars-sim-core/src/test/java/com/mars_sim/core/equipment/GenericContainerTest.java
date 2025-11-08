@@ -6,8 +6,12 @@
  */
 
 package com.mars_sim.core.equipment;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import static org.junit.Assert.assertThrows;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
@@ -17,19 +21,24 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
-import junit.framework.TestCase;
+
 
 /**
  * Tests the logic of a Generic container
  */
-public class GenericContainerTest
-extends TestCase {
+public class GenericContainerTest {
 
 	// Extra amount to add to resource to handle double arithmetic mismatch
 	private Settlement settlement;
 	
-	@Override
-    public void setUp() {
+	@BeforeEach
+
+	
+	@BeforeEach
+
+
+	
+	public void setUp() {
 		// Create new simulation instance.
         SimulationConfig.loadConfig();
         
@@ -46,6 +55,8 @@ extends TestCase {
 	/*
 	 * Tests container associated settlement assignment.
 	 */
+	@Test
+
 	public void testAssociatedSettlement() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 	
@@ -56,6 +67,8 @@ extends TestCase {
 	/*
 	 * Tests container with a single resource.
 	 */
+	@Test
+
 	public void testSingleResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
@@ -81,6 +94,8 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
+	@Test
+
 	public void testTwoResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
@@ -103,6 +118,8 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
+	@Test
+
 	public void testEmptying() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
@@ -131,6 +148,8 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
+	@Test
+
 	public void testNoneReusable() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
@@ -149,6 +168,8 @@ extends TestCase {
 	/*
 	 * Tests container with 2 resources.
 	 */
+	@Test
+
 	public void testReusable() {
 		GenericContainer c = new GenericContainer("Specimen", EquipmentType.SPECIMEN_BOX, true, settlement);
 		
@@ -168,6 +189,8 @@ extends TestCase {
 	/*
 	 * Tests container with Liquids & Solids.
 	 */
+	@Test
+
 	public void testBarrelLiquid() {
 		EquipmentType cType = EquipmentType.BARREL;
 		GenericContainer c = new GenericContainer(cType.getName(), cType, true, settlement);
@@ -194,6 +217,8 @@ extends TestCase {
 	/*
 	 * Test container with Gas.
 	 */
+	@Test
+
 	public void testCanisterGas() {
 		assertPhaseSupported(EquipmentType.GAS_CANISTER, PhaseType.GAS);
 	}
@@ -201,13 +226,21 @@ extends TestCase {
 	/*
 	 * Test container with Solids.
 	 */
+	@Test
+
 	public void testLargeBagSolid() {
 		assertPhaseSupported(EquipmentType.LARGE_BAG, PhaseType.SOLID);
 	}
 	
+	@Test
+
+	
 	public void testBoxSolid() {
 		assertPhaseSupported(EquipmentType.SPECIMEN_BOX, PhaseType.SOLID);
 	}
+	
+	@Test
+
 	
 	public void testBagSolid() {
 		assertPhaseSupported(EquipmentType.BAG, PhaseType.SOLID);

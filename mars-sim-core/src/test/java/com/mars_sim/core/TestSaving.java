@@ -1,6 +1,13 @@
 package com.mars_sim.core;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import static org.junit.Assert.assertNotEquals;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,18 +24,24 @@ import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 
-import junit.framework.TestCase;
+
 
 /**
  * Unit test suite for the saving and loading a simulation
  */
-public class TestSaving extends TestCase implements SimulationListener {
+public class TestSaving implements SimulationListener {
 
     private SimulationConfig simConfig;
     private String saveFeedback;
     private File saveFile = null;
 
-    @Override
+    @BeforeEach
+
+
+    @BeforeEach
+
+
+
     public void setUp() throws Exception {
 		// Create new simulation instance.
         simConfig = SimulationConfig.loadConfig();
@@ -73,7 +86,13 @@ public class TestSaving extends TestCase implements SimulationListener {
         assertEquals("Has complaint", complaint, laterP.getPhysicalCondition().getMostSerious().getComplaint());
     }
 
-    @Override
+    @AfterEach
+
+
+    @AfterEach
+
+
+
     public void tearDown() {
         // Delete the saved file
         if ((saveFile != null) && saveFile.isFile()) {

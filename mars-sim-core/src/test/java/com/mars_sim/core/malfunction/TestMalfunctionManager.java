@@ -1,6 +1,11 @@
 //package com.mars_sim.core.malfunction;
 //
+//import static org.junit.jupiter.api.Assertions.assertEquals;
+//
 //import java.util.HashMap;
+//
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
 //
 //import com.mars_sim.core.Coordinates;
 //import com.mars_sim.core.Simulation;
@@ -8,15 +13,14 @@
 //import com.mars_sim.core.equipment.EVASuit;
 //import com.mars_sim.core.person.health.ComplaintType;
 //
-//import junit.framework.TestCase;
-//
-//public class TestMalfunctionManager extends TestCase {
-//    @Override
+//public class TestMalfunctionManager {
+//    @BeforeEach
 //    public void setUp() throws Exception {
 //        SimulationConfig.loadConfig();
 //        Simulation.instance().testRun();
 //    }
 //
+//    @Test
 //    public void testGetEVAMalfunctions() throws Exception {
 //		EVASuit suit = new EVASuit(new Coordinates(0D, 0D)); //(EVASuit) EquipmentFactory.createEquipment(EVASuit.TYPE, new Coordinates(0D, 0D), false);
 //		MalfunctionManager manager = suit.getMalfunctionManager();

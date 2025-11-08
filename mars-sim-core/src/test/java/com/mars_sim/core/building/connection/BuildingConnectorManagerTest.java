@@ -1,6 +1,15 @@
 package com.mars_sim.core.building.connection;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import static org.junit.Assert.assertNotEquals;
+
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,9 +28,9 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
-import junit.framework.TestCase;
 
-public class BuildingConnectorManagerTest extends TestCase {
+
+public class BuildingConnectorManagerTest {
 
 	private static final String SECTOR_BASE_1 = "Sector Base 1";
 	
@@ -29,7 +38,13 @@ public class BuildingConnectorManagerTest extends TestCase {
     
     private SimulationConfig simConfig;
     
-	@Override
+	@BeforeEach
+
+    
+	@BeforeEach
+
+
+    
 	public void setUp() {
 	    // Create new simulation instance.
         simConfig = SimulationConfig.loadConfig();
@@ -41,6 +56,9 @@ public class BuildingConnectorManagerTest extends TestCase {
         							 simConfig.getPersonConfig(), simConfig.getCropConfiguration(), sim.getSurfaceFeatures(),
         							 sim.getWeather(), sim.getUnitManager());
 	}
+    
+    @Test
+
     
     public void testConstructorNoBuildingTemplates() {        
         Settlement settlement = new MockSettlement();
@@ -54,6 +72,9 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertNotNull(connections);
         assertEquals(0, connections.size());
     }
+
+    @Test
+
 
     public void testConstructorWithBuildingTemplates() {
 
@@ -125,6 +146,9 @@ public class BuildingConnectorManagerTest extends TestCase {
 
     }
 
+    @Test
+
+
     public void testShortestPathAdjacent() {
         
         Settlement settlement = new MockSettlement();
@@ -180,6 +204,9 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertTrue(path2.isEndOfPath());
 
     }
+
+     @Test
+
 
      public void testShortestPathMiddleBuilding() {
         
@@ -256,6 +283,9 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertTrue(path3.isEndOfPath());
     }
 
+    @Test
+
+
     public void testShortestPathSameBuilding() {
         
         Settlement settlement = new MockSettlement();
@@ -294,6 +324,9 @@ public class BuildingConnectorManagerTest extends TestCase {
         return newBuilding;
     }
 
+    @Test
+
+
     public void testLargeRoute() {
         var largeTemplate = SECTOR_BASE_1;
         List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration()
@@ -317,6 +350,9 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertNotNull("Found route", path);
         assertPathValidity(path, lHab, lHab.getPosition(), core, core.getPosition());
     }
+
+      @Test
+
 
       public void testCachedLargeRoute() {
         var largeTemplate = SECTOR_BASE_1;
