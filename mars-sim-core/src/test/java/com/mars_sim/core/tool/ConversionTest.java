@@ -10,14 +10,14 @@ class ConversionTest {
     void testCapitalize() {
         var seed = "One two THREE";
         var changed = Conversion.capitalize(seed);
-        assertEquals(changed, "One Two Three", "Changed");
+        assertEquals("Changed", "One Two Three", changed);
     }
 
     @Test
     void testSplit() {
         var seed = "OneTwoThree";
         var changed = Conversion.split(seed);
-        assertEquals(changed, "One Two Three", "Changed");
+        assertEquals("Changed", "One Two Three", changed);
     }
 
 
@@ -25,14 +25,14 @@ class ConversionTest {
     void testTrimShort() {
         var seed = "small";
         var trimmed = Conversion.trim(seed, 10);
-        assertEquals(seed, trimmed, "Trimmed");
+        assertEquals("Trimmed", seed, trimmed);
     }
 
     @Test
     void testTrimLong() {
         var seed = "Long text forever";
         var trimmed = Conversion.trim(seed, 10);
-        assertEquals(10, trimmed.length(), "Trimmed length");
-        assertTrue(trimmed.endsWith("..."), "Has ending");
+        assertEquals("Trimmed length", 10, trimmed.length());
+        assertTrue("Has ending", trimmed.endsWith("..."));
     }
 }

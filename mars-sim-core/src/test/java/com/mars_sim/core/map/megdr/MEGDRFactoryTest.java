@@ -24,8 +24,8 @@ class MEGDRFactoryTest {
             short directElevation = directReader.getElevation(phi, theta);
             short arrayElevation = arrayReader.getElevation(phi, theta);
 
-            assertEquals(arrayElevation, directElevation, "Array & Direct elevation");
-            assertEquals(arrayElevation, memoryElevation, "Array & Memory elevation");
+            assertEquals("Array & Direct elevation", arrayElevation, directElevation);
+            assertEquals("Array & Memory elevation", arrayElevation, memoryElevation);
         }
     }
 }

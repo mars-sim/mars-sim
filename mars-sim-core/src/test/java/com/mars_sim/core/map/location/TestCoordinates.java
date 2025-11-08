@@ -68,28 +68,28 @@ class TestCoordinates {
         double inc = 0.1D;
         var horzRight = new Coordinates(locInit.getPhi(), locInit.getTheta() + inc);
         var angle = locInit.getAngle(horzRight);
-        assertEquals(inc, angle, 0.01, "Horizontal right arc");
+        assertEquals("Horizontal right arc", inc, angle, 0.01);
 
         var horzLeft = new Coordinates(locInit.getPhi(), locInit.getTheta() - inc);
         angle = locInit.getAngle(horzLeft);
-        assertEquals(inc, angle, 0.01, "Horizontal left arc");
+        assertEquals("Horizontal left arc", inc, angle, 0.01);
 
         var vertTop = new Coordinates(locInit.getPhi() -inc, locInit.getTheta());
         angle = locInit.getAngle(vertTop);
-        assertEquals(inc, angle, 0.01, "Vertical top arc");
+        assertEquals("Vertical top arc", inc, angle, 0.01);
 
         var vertBottom = new Coordinates(locInit.getPhi() + inc, locInit.getTheta());
         angle = locInit.getAngle(vertBottom);
-        assertEquals(inc, angle, 0.01, "Vertical bottom arc");
+        assertEquals("Vertical bottom arc", inc, angle, 0.01);
 
         double diagInc = Math.sqrt((inc * inc)/2); 
         var northEast = new Coordinates(locInit.getPhi() - diagInc, locInit.getTheta() + diagInc);
         angle = locInit.getAngle(northEast);
-        assertEquals(inc, angle, 0.01, "North East arc");
+        assertEquals("North East arc", inc, angle, 0.01);
 
         var southWest = new Coordinates(locInit.getPhi() + diagInc, locInit.getTheta() - diagInc);
         angle = locInit.getAngle(southWest);
-        assertEquals(inc, angle, 0.01, "SOuth West arc");
+        assertEquals("SOuth West arc", inc, angle, 0.01);
     }
 
     /**
@@ -229,22 +229,22 @@ class TestCoordinates {
         // Position north of initial.
         Coordinates loc1 = new Coordinates(Math.PI / 4D, 0D);
         Direction direction1 = locInit.getDirectionToPoint(loc1);
-        assertEquals(0D, direction1.getDirection(), 0D, "Direction North");
+        assertEquals("Direction North", 0D, direction1.getDirection(), 0D);
         
         // Position east of initial.
         Coordinates loc2 = new Coordinates(Math.PI / 2D, Math.PI / 4D);
         Direction direction2 = locInit.getDirectionToPoint(loc2);
-        assertEquals(Math.PI / 2D, direction2.getDirection(), 0D, "Direction East");
+        assertEquals("Direction East", Math.PI / 2D, direction2.getDirection(), 0D);
         
         // Position south of initial.
         Coordinates loc3 = new Coordinates(3D * Math.PI / 4D, 0D);
         Direction direction3 = locInit.getDirectionToPoint(loc3);
-        assertEquals(Math.PI, direction3.getDirection(), 0D, "Direction South");
+        assertEquals("Direction South", Math.PI, direction3.getDirection(), 0D);
         
         // Position west of initial.
         Coordinates loc4 = new Coordinates(Math.PI / 2D, 3D * Math.PI / 2D);
         Direction direction4 = locInit.getDirectionToPoint(loc4);
-        assertEquals(3D * Math.PI / 2D, direction4.getDirection(), 0D, "Direction west");
+        assertEquals("Direction west", 3D * Math.PI / 2D, direction4.getDirection(), 0D);
         
         double offset = Math.PI / Coordinates.MARS_CIRCUMFERENCE / 500D;
         

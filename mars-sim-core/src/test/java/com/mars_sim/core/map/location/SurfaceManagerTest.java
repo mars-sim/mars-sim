@@ -49,7 +49,7 @@ class SurfaceManagerTest {
         for(int i = 0; i < testBands/2; i++) {
             var found = mgr.getFeatures(center, i * thetaPerBand * 1.01);
 
-            assertEquals(found.size(), expected, "Slice #" + i);
+            assertEquals("Slice #" + i, expected, found.size());
             expected += 2;
         }
     }
@@ -81,7 +81,7 @@ class SurfaceManagerTest {
         for(int i = 0; i < testBands; i++) {
             var found = mgr.getFeatures(center, i * phiPerBand);
             // Note: the line below always fails
-            assertEquals(found.size(), expected, "Slice #" + i);
+            assertEquals("Slice #" + i, expected, found.size());
             expected += 2;
         }
     }
@@ -109,7 +109,7 @@ class SurfaceManagerTest {
         for(int i = 0; i < testBands; i++) {
             var found = mgr.getFeatures(center, i * phiPerBand);
             // Note: the line below always fails
-            assertEquals(found.size(), i+1, "Slice #" + i);
+            assertEquals("Slice #" + i, i+1, found.size());
         }
     }
 }

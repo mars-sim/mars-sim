@@ -20,7 +20,7 @@ class MissionLogTest extends MarsSimUnitTest{
 
         var entriesText = enntries.stream().map(e -> e.getEntry()).toList();
         for (int i = 0; i < count; i++) {
-            assertEquals(entriesText.get(i), "Test entry" + i);
+            assertEquals("Test entry" + i, entriesText.get(i));
         }
     }
 
@@ -106,6 +106,6 @@ class MissionLogTest extends MarsSimUnitTest{
         }
 
         var lastEntry = missionLog.getLastEntry();
-        assertEquals(lastEntry.getEntry(), "Test entry" + (count - 1));
+        assertEquals("Test entry" + (count - 1), lastEntry.getEntry());
     }
 }

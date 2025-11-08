@@ -34,7 +34,7 @@ public class TestItemResource {
         	ItemResourceUtil.findItemResource("test");
         });
 
-        assertEquals(e.getMessage(), "Part 'test' not found.");
+        assertEquals("Part 'test' not found.", e.getMessage());
     }
 
     @Test

@@ -89,14 +89,14 @@ public class ProjectTest {
         Worker worker = null;
         p.execute(worker);
         assertEquals(Stage.ACTIVE, p.getStage(), "Stage is Active");
-        assertEquals(p.getStep().getDescription(), "Step 1", "Project 1st step");
+        assertEquals("Step 1", p.getStep().getDescription(), "Project 1st step");
         assertEquals(2, p.getRemainingSteps().size(), "Number of step after starting");
 
 
         // Xecute second time
         p.execute(worker);
         assertEquals(Stage.CLOSEDOWN, p.getStage(), "Step1 stage is DONE");
-        assertEquals(p.getStep().getDescription(), "Step 2", "Project 2nd step");
+        assertEquals("Step 2", p.getStep().getDescription(), "Project 2nd step");
         assertEquals(1, step1.startCount, "Step1 started once");
         assertEquals(1, step1.endCount, "Step1 ended once");
         assertEquals(0, step1.expectedCount, "Step1 fully expected");
@@ -167,7 +167,7 @@ public class ProjectTest {
         Worker worker = null;
         p.execute(worker);
         assertEquals(Stage.PREPARATION, p.getStage(), "Stage is Active");
-        assertEquals(p.getStep().getDescription(), "Step 1", "Project step");
+        assertEquals("Step 1", p.getStep().getDescription(), "Project step");
 
 
         // Swap last step
@@ -177,7 +177,7 @@ public class ProjectTest {
         // Xecute end of first step, stage is new last step
         p.execute(worker);
         assertEquals(Stage.CLOSEDOWN, p.getStage(), "Process stage is Closedown");
-        assertEquals(p.getStep().getDescription(), "New Step", "Project step");
+        assertEquals("New Step", p.getStep().getDescription(), "Project step");
 
         // Last step executed
         p.execute(worker);
