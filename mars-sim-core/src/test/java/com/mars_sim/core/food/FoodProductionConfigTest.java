@@ -1,9 +1,9 @@
 package com.mars_sim.core.food;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,7 +46,7 @@ class FoodProductionConfigTest {
                     Maps.uniqueIndex(foodConfig.getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get(PACKAGE_FOOD);
-        assertNotNull("Food processes defined", process);
+        assertNotNull(process, "Food processes defined");
         assertEquals(PACKAGE_INPUTS, process.getInputList().size(), "primary inputs");
 
         // Check the alternative are present and they have different inputs
@@ -55,8 +55,8 @@ class FoodProductionConfigTest {
 
         for(var altName : PACKAGE_ALTERNATIVES) {
             var found = processByName.get(PACKAGE_FOOD + FoodProductionConfig.RECIPE_PREFIX + altName);
-            assertNotNull(PACKAGE_FOOD + " alternative " + altName, found);
-            assertEquals(PACKAGE_FOOD + " alternative  inputs " + altName, PACKAGE_INPUTS, found.getInputList().size());
+            assertNotNull(found, PACKAGE_FOOD + " alternative " + altName);
+            assertEquals( PACKAGE_INPUTS, found.getInputList().size(), PACKAGE_FOOD + " alternative  inputs " + altName);
             alternatives.add(found.getInputList());
         }
 
@@ -70,7 +70,7 @@ class FoodProductionConfigTest {
                     Maps.uniqueIndex(foodConfig.getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get("Process Soybean into Soy Flour");
-        assertNotNull("Food processes defined", process);
+        assertNotNull(process, "Food processes defined");
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
         expectedInputs.add(ManufactureConfigTest.createAmount("Soybean", 1D));

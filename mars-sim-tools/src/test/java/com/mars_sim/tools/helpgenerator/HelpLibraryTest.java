@@ -1,7 +1,7 @@
 package com.mars_sim.tools.helpgenerator;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -23,12 +23,12 @@ class HelpLibraryTest {
         File output = Files.createTempDirectory("generator").toFile();
         try {
             var partDetails = HelpLibrary.class.getResourceAsStream("/templates/html-help/part-detail.mustache");
-            assertNotNull("Parts details can be found", partDetails);
+            assertNotNull(partDetails, "Parts details can be found");
 
             var library = new HelpLibrary(config, output);
             var entryPoint = library.getPage(HelpLibrary.STARTING_PAGE);
 
-            assertNotNull("Help starting file", entryPoint);
+            assertNotNull(entryPoint, "Help starting file");
         }
         finally {
             // Clean up
@@ -47,18 +47,18 @@ class HelpLibraryTest {
 
             File generatedDir = new File(output, HelpLibrary.GENERATED_DIR);
             FileUtils.deleteDirectory(generatedDir);
-            assertTrue("Generated reomved", !generatedDir.exists());
+            assertTrue(!generatedDir.exists(), "Generated removed");
 
             // Check library is not recreated when version is the same
             new HelpLibrary(config, output);
-            assertTrue("Generated not recreated", !generatedDir.exists());
+            assertTrue(!generatedDir.exists(), "Generated not recreated");
 
             // Change version file
             try(FileWriter version = new FileWriter(new File(output, HelpLibrary.VERSION_FILE))) {
                 version.write("#Any old rubbish");
             }
             new HelpLibrary(config, output);
-            assertTrue("Generated recreated", generatedDir.exists());
+            assertTrue(generatedDir.exists(), "Generated recreated");
 
         }
         finally {

@@ -8,9 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,8 +26,7 @@ import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
 
-
-public class BuildingConnectorManagerTest {
+class BuildingConnectorManagerTest {
 
 	private static final String SECTOR_BASE_1 = "Sector Base 1";
 	
@@ -39,12 +35,7 @@ public class BuildingConnectorManagerTest {
     private SimulationConfig simConfig;
     
 	@BeforeEach
-
-    
-
-
-    
-	public void setUp() {
+    void setUp() {
 	    // Create new simulation instance.
         simConfig = SimulationConfig.loadConfig();
         
@@ -57,9 +48,7 @@ public class BuildingConnectorManagerTest {
 	}
     
     @Test
-
-    
-    public void testConstructorNoBuildingTemplates() {        
+    void testConstructorNoBuildingTemplates() {        
         Settlement settlement = new MockSettlement();
 
         List<BuildingTemplate> buildingTemplates = new ArrayList<>(0);
@@ -73,9 +62,7 @@ public class BuildingConnectorManagerTest {
     }
 
     @Test
-
-
-    public void testConstructorWithBuildingTemplates() {
+    void testConstructorWithBuildingTemplates() {
 
         Settlement settlement = new MockSettlement();
 
@@ -146,9 +133,7 @@ public class BuildingConnectorManagerTest {
     }
 
     @Test
-
-
-    public void testShortestPathAdjacent() {
+    void testShortestPathAdjacent() {
         
         Settlement settlement = new MockSettlement();
 
@@ -204,10 +189,8 @@ public class BuildingConnectorManagerTest {
 
     }
 
-     @Test
-
-
-     public void testShortestPathMiddleBuilding() {
+    @Test
+    void testShortestPathMiddleBuilding() {
         
         Settlement settlement = new MockSettlement();
 
@@ -283,9 +266,7 @@ public class BuildingConnectorManagerTest {
     }
 
     @Test
-
-
-    public void testShortestPathSameBuilding() {
+    void testShortestPathSameBuilding() {
         
         Settlement settlement = new MockSettlement();
 
@@ -324,9 +305,7 @@ public class BuildingConnectorManagerTest {
     }
 
     @Test
-
-
-    public void testLargeRoute() {
+    void testLargeRoute() {
         var largeTemplate = SECTOR_BASE_1;
         List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration()
         		.getItem(largeTemplate).getSupplies().getBuildings();
@@ -341,19 +320,17 @@ public class BuildingConnectorManagerTest {
         var lHab = bMgr.getBuildingByTemplateID("RHAB1"); // Residential Hab
         var lab = bMgr.getBuildingByTemplateID("LAB605"); // Laboratory
         var path = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());
-        assertNotNull("Found route", path);
+        assertNotNull(path, "Found route");
         assertPathValidity(path, lHab, lHab.getPosition(), lab, lab.getPosition());
 
         var core = bMgr.getBuildingByTemplateID("MCC907"); 
         path = manager.determineShortestPath(lHab, lHab.getPosition(), core, core.getPosition());
-        assertNotNull("Found route", path);
+        assertNotNull(path, "Found route");
         assertPathValidity(path, lHab, lHab.getPosition(), core, core.getPosition());
     }
 
       @Test
-
-
-      public void testCachedLargeRoute() {
+      void testCachedLargeRoute() {
         var largeTemplate = SECTOR_BASE_1;
         List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration()
         		.getItem(largeTemplate).getSupplies().getBuildings();
@@ -380,9 +357,9 @@ public class BuildingConnectorManagerTest {
         var steps2 = path2.getPathLocations();
         assertEquals(steps, steps2, "Steps path");
 
-        // Check the repeat path finding half the original time to show cachign has worked
+        // Check the repeat path finding half the original time to show caching has worked
         assertTrue(secondDuration < (firstDuration/2), "Reduced time on repeat path");
-        assertNotEquals("Cached path different", path, path2);
+        assertNotEquals(path, path2, "Cached path different");
         assertPathValidity(path2, lHab, lHab.getPosition(), lab, lab.getPosition());
 
         // Try reverse path
@@ -400,7 +377,7 @@ public class BuildingConnectorManagerTest {
         long thirdDuration = System.currentTimeMillis() - startTime;
         assertTrue(thirdDuration < (firstDuration/2), "Reduced time on changed path");
 
-        assertNotEquals("Cached path2 different", path, path3);
+        assertNotEquals(path, path3, "Cached path3 different");
         assertPathValidity(path3, lHab, newStart, lab, lab.getPosition());
 
     }
@@ -414,7 +391,7 @@ public class BuildingConnectorManagerTest {
      * @param lHab
      * @param lab
      */
-    public static void assertPathValidity(InsideBuildingPath path, Building start, LocalPosition startPosn,
+    static void assertPathValidity(InsideBuildingPath path, Building start, LocalPosition startPosn,
                                 Building end, LocalPosition endPosn) {
         var steps = path.getPathLocations();
 

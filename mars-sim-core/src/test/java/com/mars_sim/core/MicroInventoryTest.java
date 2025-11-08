@@ -23,7 +23,7 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * Tests the micro inventory
  */
-public class MicroInventoryTest {
+class MicroInventoryTest {
 
 
 	private static final double CAPACITY_AMOUNT = 200D;
@@ -31,13 +31,7 @@ public class MicroInventoryTest {
 	private Settlement settlement = null;
 	
 	@BeforeEach
-
-	
-	@BeforeEach
-
-
-	
-	public void setUp() throws Exception {
+	void setUp() {
         SimulationConfig.loadConfig();
         Simulation.instance().testRun();
         
@@ -53,7 +47,7 @@ public class MicroInventoryTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-	public void testLoading() {
+	void testLoading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
 		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
@@ -74,7 +68,7 @@ public class MicroInventoryTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-	public void testOverloading() {
+	void testOverloading() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
 		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
@@ -90,7 +84,7 @@ public class MicroInventoryTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-	public void testUnsupported() {
+	void testUnsupported() {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
 		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
@@ -110,7 +104,7 @@ public class MicroInventoryTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-	public void testUnloading()  {
+	void testUnloading()  {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
 		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
@@ -168,7 +162,7 @@ public class MicroInventoryTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-	public void testMultiples()  {
+	void testMultiples()  {
 		MicroInventory inv = new MicroInventory(settlement);
 		int resource = ResourceUtil.CO2_ID;
 		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);

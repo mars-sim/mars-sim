@@ -12,9 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
-
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,12 +57,7 @@ public class LoadControllerTest {
 	private Integer fireExtinguisherID;
 
 	@BeforeEach
-
-
-
-
-
-	public void setUp() {
+	void setUp() {
 
         SimulationConfig config = SimulationConfig.loadConfig();
         Simulation.instance().testRun();
@@ -100,8 +92,7 @@ public class LoadControllerTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	@Test
-
-	public void testBackgroundLoading() {
+	void testBackgroundLoading() {
 		var requiredResourcesMap = new SuppliesManifest();
 		requiredResourcesMap.addAmount(ResourceUtil.OXYGEN_ID, 20D, true);
 		requiredResourcesMap.addAmount(ResourceUtil.METHANOL_ID, 10D, true);
@@ -123,8 +114,7 @@ public class LoadControllerTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-
-	public void testLoadRequiredEquipment() {
+	void testLoadRequiredEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -137,8 +127,7 @@ public class LoadControllerTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-
-	public void testLoadOptionalEquipment() {
+	void testLoadOptionalEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -153,8 +142,7 @@ public class LoadControllerTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-
-	public void testLoadMissingOptionalEquipment() {
+	void testLoadMissingOptionalEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -186,8 +174,7 @@ public class LoadControllerTest {
 	 * Test method loading Resource Items
 	 */
 	@Test
-
-	public void testLoadRequiredItemResources() {
+	 void testLoadRequiredItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
@@ -200,8 +187,7 @@ public class LoadControllerTest {
 	 * Test method loading Resource Items
 	 */
 	@Test
-
-	public void testLoadOptionalItemResources() {
+	void testLoadOptionalItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
@@ -216,8 +202,7 @@ public class LoadControllerTest {
 	 * Load with optional resource present
 	 */
 	@Test
-
-	public void testLoadMissingOptionalItemResources() {
+	void testLoadMissingOptionalItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
@@ -232,8 +217,7 @@ public class LoadControllerTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	@Test
-
-	public void testLoadRequiredAmountResources() {
+	void testLoadRequiredAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 30D, true);
 		manifest.addAmount(ResourceUtil.WATER_ID, 10D, true);
@@ -247,8 +231,7 @@ public class LoadControllerTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	@Test
-
-	public void testLoadFailedAmountResources() {
+	void testLoadFailedAmountResources() {
 		var requiredResourcesMap = new SuppliesManifest();
 		// Add 2000kg food to the manifest
 		requiredResourcesMap.addAmount(ResourceUtil.FOOD_ID, 50D, true);
@@ -258,8 +241,8 @@ public class LoadControllerTest {
 		// Run the loader but do not load an resources into the settlement
 		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
 			controller.load(person, 1D);
-			assertFalse("Load completed #" + i, controller.isCompleted());
-			assertFalse("Load failed #" + i, controller.isFailure());
+			assertFalse(controller.isCompleted(), "Load completed #" + i);
+			assertFalse(controller.isFailure(), "Load failed #" + i);
 		}
 
 		// Do the last load and it should fail
@@ -274,8 +257,7 @@ public class LoadControllerTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
 	@Test
-
-	public void testLoadOptionalAmountResources() {
+	void testLoadOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 20D, true);
 		manifest.addAmount(ResourceUtil.WATER_ID, 10D, true);
@@ -290,8 +272,7 @@ public class LoadControllerTest {
 	 * Load with optional resource present
 	 */
 	@Test
-
-	public void testLoadMissingOptionalAmountResources() {
+	void testLoadMissingOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 100D, true);
 
@@ -305,8 +286,7 @@ public class LoadControllerTest {
 	 * Test method loading Equipment
 	 */
 	@Test
-
-	public void testLoadFull() {
+	void testLoadFull() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 5, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -495,7 +475,7 @@ public class LoadControllerTest {
 	private static void assertLessThan(String message, double expected, double stored) {
 		boolean test = expected <= stored;
 		if (!test) {
-			assertTrue(message + ":" + expected + " <= " + stored, test);
+			assertTrue(test, message + ":" + expected + " <= " + stored);
 		}
 	}
 

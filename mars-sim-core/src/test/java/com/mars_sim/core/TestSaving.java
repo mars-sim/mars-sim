@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,25 +26,20 @@ import com.mars_sim.core.structure.SettlementBuilder;
 /**
  * Unit test suite for the saving and loading a simulation
  */
-public class TestSaving implements SimulationListener {
+class TestSaving implements SimulationListener {
 
     private SimulationConfig simConfig;
     private String saveFeedback;
     private File saveFile = null;
 
     @BeforeEach
-
-
-    @BeforeEach
-
-
-
-    public void setUp() throws Exception {
+    void setUp() {
 		// Create new simulation instance.
         simConfig = SimulationConfig.loadConfig();
     }
 
-    public void testSaving() throws IOException {
+    @Test
+    void testSaving() throws IOException {
         Simulation sim = Simulation.instance();
         sim.createNewSimulation(64); 
 
@@ -87,7 +79,7 @@ public class TestSaving implements SimulationListener {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         // Delete the saved file
         if ((saveFile != null) && saveFile.isFile()) {
            saveFile.delete();
