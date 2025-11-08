@@ -75,7 +75,7 @@ class ConstructionStageInfoTest {
      */
     @Test
     void testGetName() {
-        assertEquals("test stage", info.getName());
+        assertEquals(info.getName(), "test stage");
     }
 
     /*

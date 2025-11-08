@@ -33,9 +33,9 @@ class SettlementTemplateConfigTest {
 
         var hubBase = st.getItem("Hub Base");
         assertNotNull(hubBase, "Hub Base template found");
-        assertEquals("Hub Base", hubBase.getName(), "Name of template");
+        assertEquals(hubBase.getName(), "Hub Base", "Name of template");
 
-        assertEquals("Standard 4 Shift", hubBase.getShiftDefinition().getName(), "Shift pattern");
+        assertEquals(hubBase.getShiftDefinition().getName(), "Standard 4 Shift", "Shift pattern");
     
         var supplies = hubBase.getSupplies();
         assertFalse(supplies.getEquipment().isEmpty(), "Equipment is empty");
@@ -56,7 +56,7 @@ class SettlementTemplateConfigTest {
 
         assertEquals(1, hubBase.getResupplyMissionTemplates().size(), "Supply mission");
 
-        assertEquals("MS", hubBase.getSponsor().getName(), "Sponsor");
+        assertEquals(hubBase.getSponsor().getName(), "MS", "Sponsor");
 
     }
 }

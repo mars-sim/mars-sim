@@ -46,7 +46,7 @@ public class ManufactureConfigTest {
     void testTooling() {
         var f = manuConfig.getTooling("furnace");
         assertNotNull(f, "Furnace Tooling defined");
-        assertEquals("Furnace", f.name(), "Has correct name");
+        assertEquals(f.name(), "Furnace", "Has correct name");
         assertNotNull(f.description(), "Furnace description");
     }
 
@@ -105,7 +105,7 @@ public class ManufactureConfigTest {
                         ManufactureProcessInfo::getName);
         var process = processByName.get("Cast iron ingot");
         assertNotNull(process, "Manufacturng processes defined");
-        assertEquals("Furnace", process.getTooling().name(), "Tool");
+        assertEquals(process.getTooling().name(), "Furnace", "Tool");
         assertEquals(25D, process.getWorkTimeRequired(), 0D, "Work time");
         assertEquals(75D, process.getProcessTimeRequired(), 0D, "Process time");
         assertEquals(2, process.getSkillLevelRequired(), "Skill");
@@ -129,7 +129,7 @@ public class ManufactureConfigTest {
                         ManufactureProcessInfo::getName);
         var process = processByName.get(MAKE_RADIO_ANTENNA);
         assertNotNull(process, "Manufacturng processes defined");
-        assertEquals("3D Printer", process.getTooling().name(), "Tool");
+        assertEquals(process.getTooling().name(), "3D Printer", "Tool");
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();

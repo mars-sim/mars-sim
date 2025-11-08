@@ -110,7 +110,7 @@ class MedicalConfigTest {
         assertEquals(0.5D, found.getPerformanceFactor(), "Performance impact");
         assertEquals(PhysicalEffort.NONE, found.getEffortInfluence(), "Effort influence");
 
-        assertEquals("Minor Operation", found.getRecoveryTreatment().getName(), "Treatment");
+        assertEquals(found.getRecoveryTreatment().getName(), "Minor Operation", "Treatment");
         assertEquals(ComplaintType.RUPTURED_APPENDIX, found.getNextPhase().getType(), "Next complaint");
     }
 
@@ -132,7 +132,7 @@ class MedicalConfigTest {
         assertEquals(0.4D, found.getPerformanceFactor(), "Performance impact");
         assertEquals(PhysicalEffort.LOW, found.getEffortInfluence(), "Effort influence");
 
-        assertEquals("Dressing", found.getRecoveryTreatment().getName(), "Treatment");
+        assertEquals(found.getRecoveryTreatment().getName(), "Dressing", "Treatment");
     }
 
     private void assertRecoveryPeriod(Complaint c, double min, double max) {

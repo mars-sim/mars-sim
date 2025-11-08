@@ -14,7 +14,7 @@ public class EntityTest extends MarsSimUnitTest {
     void testSettlementContext() {
         var s = buildSettlement("Test");
         assertNotNull("Settlement context", s.getContext());
-        assertEquals("Test", s.getName());
+        assertEquals(s.getName(), "Test");
     }
 
     @Test
@@ -23,7 +23,7 @@ public class EntityTest extends MarsSimUnitTest {
         var p = buildPerson("Fred", s);
 
         assertEquals(s.getName(), p.getContext());
-        assertEquals("Fred", p.getName());
+        assertEquals(p.getName(), "Fred");
     }
 
     @Test
@@ -33,7 +33,7 @@ public class EntityTest extends MarsSimUnitTest {
 
 
         assertEquals(s.getName(), v.getContext());
-        assertEquals("Rover", v.getName());
+        assertEquals(v.getName(), "Rover");
     }
 
     @Test
@@ -46,7 +46,7 @@ public class EntityTest extends MarsSimUnitTest {
 
         assertEquals(s.getName() + Entity.ENTITY_SEPERATOR
                                          + v.getName(), p.getContext());
-        assertEquals("Fred", p.getName());
+        assertEquals(p.getName(), "Fred");
     }
 
     @Test
@@ -57,7 +57,7 @@ public class EntityTest extends MarsSimUnitTest {
         p.transfer(getContext().getSurface());
 
         assertEquals(s.getCoordinates().getFormattedString(), p.getContext());
-        assertEquals("Fred", p.getName());
+        assertEquals(p.getName(), "Fred");
     }
 
     @Test
@@ -68,7 +68,7 @@ public class EntityTest extends MarsSimUnitTest {
         v.transfer(getContext().getSurface());
 
         assertEquals(s.getCoordinates().getFormattedString(), v.getContext());
-        assertEquals("Rover", v.getName());
+        assertEquals(v.getName(), "Rover");
     }
 
     @Test
@@ -82,6 +82,6 @@ public class EntityTest extends MarsSimUnitTest {
 
         assertEquals(s.getCoordinates().getFormattedString()
                     + Entity.ENTITY_SEPERATOR + v.getName(), p.getContext());
-        assertEquals("Fred", p.getName());
+        assertEquals(p.getName(), "Fred");
     }
 }

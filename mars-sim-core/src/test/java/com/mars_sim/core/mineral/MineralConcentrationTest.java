@@ -16,10 +16,10 @@ class MineralConcentrationTest {
         conc.adjustMineral("A", 10);
         conc.adjustMineral("B", 20);
 
-        assertEquals("Mineral A", 10, conc.getConcentration("A"));
-        assertEquals("Mineral B", 20, conc.getConcentration("B"));
+        assertEquals(10, conc.getConcentration("A"), "Mineral A");
+        assertEquals(20, conc.getConcentration("B"), "Mineral B");
 
-        assertEquals("Mineral C", 0, conc.getConcentration("C"));
+        assertEquals(0, conc.getConcentration("C"), "Mineral C");
 
     }
 
@@ -31,7 +31,7 @@ class MineralConcentrationTest {
         conc.adjustMineral("A", 10);
         conc.adjustMineral("A", 20);
 
-        assertEquals("Mineral A", 15, conc.getConcentration("A"));
+        assertEquals(15, conc.getConcentration("A"), "Mineral A");
     }
 
     
@@ -43,6 +43,6 @@ class MineralConcentrationTest {
         conc.addMineral("A", 10);
         conc.addMineral("A", 20);
 
-        assertEquals("Mineral A", 30, conc.getConcentration("A"));
+        assertEquals(30, conc.getConcentration("A"), "Mineral A");
     }
 }

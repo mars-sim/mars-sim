@@ -17,14 +17,14 @@ class CollectResourceObjectiveTest {
         obj.recordResourceCollected(2, 3, 20.0);
 
         var sites = obj.getCollectedAtSites();
-        assertEquals("Site 1", 20D, sites.get(1), 0D);
-        assertEquals("Site 2", 30D, sites.get(2), 0D);
+        assertEquals(20D, sites.get(1), 0D, "Site 1");
+        assertEquals(30D, sites.get(2), 0D, "Site 2");
 
         var resources = obj.getResourcesCollected();
-        assertEquals("Resoruces recorded", 3, resources.size());
-        assertEquals("Resource 1", 20D, resources.get(1), 0D);
-        assertEquals("Resource 2", 10D, resources.get(2), 0D);
-        assertEquals("Resource 3", 20D, resources.get(3), 0D);
+        assertEquals(3, resources.size(), "Resoruces recorded");
+        assertEquals(20D, resources.get(1), 0D, "Resource 1");
+        assertEquals(10D, resources.get(2), 0D, "Resource 2");
+        assertEquals(20D, resources.get(3), 0D, "Resource 3");
 
     }
 }

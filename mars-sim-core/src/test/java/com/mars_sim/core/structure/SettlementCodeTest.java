@@ -22,7 +22,7 @@ public class SettlementCodeTest extends MarsSimUnitTest {
     @Test
     public void testSingleSettlement() {
         Settlement settlement = buildSettlement("First Second");
-        assertEquals("FS", settlement.getSettlementCode(), "Single Settlement code");
+        assertEquals(settlement.getSettlementCode(), "FS", "Single Settlement code");
     }
 
     /**
@@ -33,7 +33,7 @@ public class SettlementCodeTest extends MarsSimUnitTest {
         buildSettlement("First Second");
         Settlement settlement2 = buildSettlement("First Second Forth");
 
-        assertEquals("FF", settlement2.getSettlementCode(), "Second Settlement code");
+        assertEquals(settlement2.getSettlementCode(), "FF", "Second Settlement code");
     }
 
     /**
@@ -44,7 +44,7 @@ public class SettlementCodeTest extends MarsSimUnitTest {
         buildSettlement("First Second");
         Settlement settlement2 = buildSettlement("First Sx");
 
-        assertEquals("FI", settlement2.getSettlementCode(), "Second Settlement code");
+        assertEquals(settlement2.getSettlementCode(), "FI", "Second Settlement code");
     }
 
     /**
@@ -55,6 +55,6 @@ public class SettlementCodeTest extends MarsSimUnitTest {
         buildSettlement("First Second");
         Settlement settlement2 = buildSettlement("F#-rst Sx");
 
-        assertEquals("FR", settlement2.getSettlementCode(), "Second Settlement code");
+        assertEquals(settlement2.getSettlementCode(), "FR", "Second Settlement code");
     }
 }

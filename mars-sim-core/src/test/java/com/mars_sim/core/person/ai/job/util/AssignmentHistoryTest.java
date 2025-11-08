@@ -51,7 +51,7 @@ public class AssignmentHistoryTest extends MarsSimUnitTest {
             assertEquals(AssignmentType.APPROVED, a.getStatus(), "History item State #" +j);
             if (j > 0) {
                 // Skip checking the initial job
-                assertEquals("Name" + j, a.getInitiator(), "History item initiator #" + j);
+                assertEquals(a.getInitiator(), "Name" + j, "History item initiator #" + j);
                 assertEquals(jobs[j-1], a.getType(), "History item Job #" +j);
             }
             a.setJobRating(j, j);

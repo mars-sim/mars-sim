@@ -23,7 +23,7 @@ class VersionTest {
         // Reload
         try  (ByteArrayInputStream input = new ByteArrayInputStream(content)) {
             var reloaded = Version.fromStream(input);
-            assertEquals("Versions are the same", orig, reloaded);
+            assertEquals(orig, reloaded, "Versions are the same");
         }
     }
 
@@ -31,8 +31,8 @@ class VersionTest {
     void testDefaultVersion() {
         var build = SimulationRuntime.VERSION;
 
-        assertTrue("Default version", build.getVersionTag().length() > 0);
-        assertTrue("Default build", build.getBuild().length() > 0);
+        assertTrue(build.getVersionTag().length() > 0, "Default version");
+        assertTrue(build.getBuild().length() > 0, "Default build");
 
     }
 }

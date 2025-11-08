@@ -27,17 +27,16 @@ class ResourceCacheTest {
             long origTime = extracted.lastModified();
 
             assertNotNull("File extracted", extracted);
-            assertEquals("Name of file", DEST_NAME, extracted.getName());
+            assertEquals(DEST_NAME, extracted.getName(), "Name of file");
 
             // Check contents
             String extractedChecksum = Hash.MD5.getChecksumString(extracted);
             String resourceChecksum = Hash.MD5.getChecksumString(getClass().getResourceAsStream(TEST_RESOURCE));
-            assertEquals("Contents match", resourceChecksum, extractedChecksum);
+            assertEquals(resourceChecksum, extractedChecksum, "Contents match");
 
             // Extract against
             var extracted2 = cache.extractContent(TEST_RESOURCE, DEST_NAME);
-            assertEquals("Files not changed", origTime,
-                                                        extracted2.lastModified());
+            assertEquals(extracted2.lastModified(), origTime, "Files not changed");
         }
         finally {
             // Clean up
@@ -70,7 +69,7 @@ class ResourceCacheTest {
 
             // Check the present of a backup
             File backupCopy = new File(output, ResourceCache.BACKUP_DIR + "/" + DEST_NAME);
-            assertTrue("Backup file exists", backupCopy.isFile());
+            assertTrue(backupCopy.isFile(), "Backup file exists");
         }
         finally {
             // Clean up
@@ -91,8 +90,8 @@ class ResourceCacheTest {
             // Extract to file again with a new ResourceCace
             var cache2 = new ResourceCache(output, true);
             var extracted2 = cache2.extractContent(TEST_RESOURCE, DEST_NAME);
-            assertEquals("File size not changed", origSize, extracted2.length());
-            assertEquals("File unchanged", origTime, extracted2.lastModified());
+            assertEquals(origSize, extracted2.length(), "File size not changed");
+            assertEquals(origTime, extracted2.lastModified(), "File unchanged");
         }
         finally {
             // Clean up
@@ -123,8 +122,8 @@ class ResourceCacheTest {
             var extracted = cache.extractContent(TEST_RESOURCE, DEST_NAME);
 
             // Extract files should match the original as itis excluded
-            assertEquals("File size", origSize, extracted.length());
-            assertEquals("File change", origTime, extracted.lastModified());
+            assertEquals(origSize, extracted.length(), "File size");
+            assertEquals(origTime, extracted.lastModified(), "File change");
 
 
         }

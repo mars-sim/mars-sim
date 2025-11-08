@@ -32,7 +32,7 @@ public class VehicleConfigTest {
         assertEquals(VehicleType.EXPLORER_ROVER, found.getType());
         assertTrue(found.getDescription().startsWith("The Explorer Rover "), "Description");
 
-        assertEquals("A", found.getModelName());
+        assertEquals(found.getModelName(), "A");
         assertEquals(3.5D, found.getWidth());
         assertEquals(8D, found.getLength());
         assertEquals(4, found.getCrewSize());

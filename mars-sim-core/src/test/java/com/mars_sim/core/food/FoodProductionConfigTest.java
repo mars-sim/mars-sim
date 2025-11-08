@@ -36,7 +36,7 @@ class FoodProductionConfigTest {
     @Test
     void testProcessesLoaded() {
         var manuProcesses = foodConfig.getProcessList();
-        assertTrue("Food processes defined", !manuProcesses.isEmpty());
+        assertTrue(!manuProcesses.isEmpty(), "Food processes defined");
     }
 
     @Test
@@ -47,7 +47,7 @@ class FoodProductionConfigTest {
                         FoodProductionProcessInfo::getName);
         var process = processByName.get(PACKAGE_FOOD);
         assertNotNull("Food processes defined", process);
-        assertEquals("primary inputs", PACKAGE_INPUTS, process.getInputList().size());
+        assertEquals(PACKAGE_INPUTS, process.getInputList().size(), "primary inputs");
 
         // Check the alternative are present and they have different inputs
         Set<List<ProcessItem>> alternatives = new HashSet<>();
@@ -60,7 +60,7 @@ class FoodProductionConfigTest {
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", PACKAGE_ALTERNATIVES.length + 1, alternatives.size());
+        assertEquals(PACKAGE_ALTERNATIVES.length + 1, alternatives.size(), "All alternatives have different inputs");
     }
 
     @Test
@@ -77,13 +77,13 @@ class FoodProductionConfigTest {
         expectedInputs.add(ManufactureConfigTest.createAmount("Water", 1D));
         expectedInputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
-        assertEquals("Antenna expected inputs", expectedInputs, process.getInputList());
+        assertEquals(expectedInputs, process.getInputList(), "Antenna expected inputs");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
         expectedOutputs.add(ManufactureConfigTest.createAmount("Soy Flour", 1D));
         expectedOutputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
-        assertEquals("Antenna expected outputs", expectedOutputs, process.getOutputList());
+        assertEquals(expectedOutputs, process.getOutputList(), "Antenna expected outputs");
 
     }
 

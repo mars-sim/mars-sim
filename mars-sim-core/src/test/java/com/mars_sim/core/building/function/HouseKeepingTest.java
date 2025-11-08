@@ -19,7 +19,7 @@ class HouseKeepingTest {
         keep.cleaned(LOWEST, 1);
         String lowest = keep.getLeastCleaned();
 
-        assertEquals("Lowest clean", LOWEST, lowest);
+        assertEquals(LOWEST, lowest, "Lowest clean");
     }
 
     @Test
@@ -30,7 +30,7 @@ class HouseKeepingTest {
         keep.inspected(LOWEST, 1);
         String lowest = keep.getLeastInspected();
 
-        assertEquals("Lowest inspected", LOWEST, lowest);
+        assertEquals(LOWEST, lowest, "Lowest inspected");
     }
 
     @Test
@@ -42,17 +42,17 @@ class HouseKeepingTest {
         keep.degradeCleaning(10);
 
         var degradeValue = keep.getAverageCleaningScore();
-        assertTrue("Clean value lower after degrade", degradeValue < origValue);
+        assertTrue(degradeValue < origValue, "Clean value lower after degrade");
 
         // Do inspect
         keep.cleaned(CLEAN_NAMES[0], 40);
         keep.cleaned(CLEAN_NAMES[1], 40);
 
         var newValue = keep.getAverageCleaningScore();
-        assertTrue("Clean value higher than orig", origValue < newValue);
+        assertTrue(origValue < newValue, "Clean value higher than orig");
 
         // Check work
-        assertEquals("Cumulative work", 80D, keep.getCumulativeWorkTime(), 0D);
+        assertEquals(80D, keep.getCumulativeWorkTime(), 0D, "Cumulative work");
     }
 
     @Test
@@ -64,16 +64,16 @@ class HouseKeepingTest {
         keep.degradeInspected(10);
 
         var degradeValue = keep.getAverageInspectionScore();
-        assertTrue("Inspection value lower after degrade", degradeValue < origValue);
+        assertTrue(degradeValue < origValue, "Inspection value lower after degrade");
 
         // Do inspect
         keep.inspected(INSPECT_NAMES[0], 40);
         keep.inspected(INSPECT_NAMES[1], 40);
 
         var newValue = keep.getAverageInspectionScore();
-        assertTrue("Inspection value higher than orig", origValue < newValue);
+        assertTrue(origValue < newValue, "Inspection value higher than orig");
 
         // Check work
-        assertEquals("Cumulative work", 80D, keep.getCumulativeWorkTime(), 0D);
+        assertEquals(80D, keep.getCumulativeWorkTime(), 0D, "Cumulative work");
     }
 }

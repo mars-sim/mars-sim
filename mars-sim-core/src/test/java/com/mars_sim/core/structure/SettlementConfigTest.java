@@ -49,12 +49,12 @@ class SettlementConfigTest {
     
         var large = config.getShiftByPopulation(30);
         assertTrue(30 > large.getMinPopulation(), "Large shift has smaller min pop");
-        assertEquals("Standard 3 Shift", large.getName(), "Shift pattern for large");
+        assertEquals(large.getName(), "Standard 3 Shift", "Shift pattern for large");
 
 
         var small = config.getShiftByPopulation(8);
         assertTrue(8 >= small.getMinPopulation(), "Small shift has smaller min pop");
-        assertEquals("Standard 2 Shift", small.getName(), "Shift pattern for small");
+        assertEquals(small.getName(), "Standard 2 Shift", "Shift pattern for small");
 
     }
 
@@ -63,7 +63,7 @@ class SettlementConfigTest {
 
         var small = config.getActivityByPopulation(8);
         assertTrue(8 > small.minPop(), "Large ruleset has medium min pop");
-        assertEquals("Small Settlement", small.name(), "Activity Ruleset for small");
+        assertEquals(small.name(), "Small Settlement", "Activity Ruleset for small");
         assertFalse(small.meetings().isEmpty(), "Small Activity Ruleset has meetings");
 
 
@@ -72,7 +72,7 @@ class SettlementConfigTest {
 
         var large = config.getActivityByPopulation(30);
         assertTrue(30 > large.minPop(), "Large ruleset has smaller min pop");
-        assertEquals("Large Settlement", large.name(), "Activity Ruleset for large");
+        assertEquals(large.name(), "Large Settlement", "Activity Ruleset for large");
 
         // Large settlement should have night party
         var training = large.meetings().stream().filter(ga -> ga.name().equals(MIGHT_PARTY)).findFirst().get();

@@ -430,9 +430,9 @@ public class BuildingConnectorManagerTest {
         var currentBuilding = start;
         for(var step : steps) {
             switch(step) {
-                case BuildingLocation bl -> assertEquals("Step " + i + " is in buildingLocation ", currentBuilding, bl.getBuilding());
-                case Building b -> assertEquals("Step " + i + " is Building ", currentBuilding, b);
-                case Hatch h -> assertEquals("Step " + i + " is Hatch ", currentBuilding, h.getBuilding());
+                case BuildingLocation bl -> assertEquals(bl.getBuilding(), currentBuilding, "Step " + i + " is in buildingLocation ");
+                case Building b -> assertEquals(b, currentBuilding, "Step " + i + " is Building ");
+                case Hatch h -> assertEquals(h.getBuilding(), currentBuilding, "Step " + i + " is Hatch ");
                 case BuildingConnector bc -> {
                     if (bc.getBuilding1().equals(currentBuilding)) {
                         currentBuilding = bc.getBuilding2();
