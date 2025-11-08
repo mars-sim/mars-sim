@@ -1,10 +1,13 @@
 package com.mars_sim.core.data;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
  
-public class RatingTest extends TestCase {
+public class RatingTest {
 
     private static final double BASE = 100;
     private static final double BASE2 = 50;
@@ -14,51 +17,54 @@ public class RatingTest extends TestCase {
     private static final String MOD2 = "Mod2";
     private static final double MOD2_VALUE = 0.5D;
 
+    @Test
     public void testAddModifier() {
         RatingScore r = new RatingScore(BASE);
-        assertEquals("Only base", BASE, r.getScore());
+        assertEquals(BASE, r.getScore(), "Only base");
         var b = r.getBases();
-        assertEquals("Bases present", 1, b.size());
-        assertEquals("1st Base", BASE, b.get(RatingScore.BASE));
+        assertEquals(1, b.size(), "Bases present");
+        assertEquals(BASE, b.get(RatingScore.BASE), "1st Base");
 
 
         r.addModifier(MOD1, MOD1_VALUE);
-        assertEquals("Apply " + MOD1, BASE * MOD1_VALUE, r.getScore());
+        assertEquals(BASE * MOD1_VALUE, r.getScore(), "Apply " + MOD1);
 
         r.addModifier(MOD2, MOD2_VALUE);
-        assertEquals("Apply " + MOD2, BASE * MOD1_VALUE * MOD2_VALUE, r.getScore());
+        assertEquals(BASE * MOD1_VALUE * MOD2_VALUE, r.getScore(), "Apply " + MOD2);
 
         Map<String, Double> mods = r.getModifiers();
-        assertEquals("Number of modifiers", 2, mods.size());
-        assertEquals("Value of " + MOD1, MOD1_VALUE, mods.get(MOD1));
-        assertEquals("Value of " + MOD2, MOD2_VALUE, mods.get(MOD2));
+        assertEquals(2, mods.size(), "Number of modifiers");
+        assertEquals(MOD1_VALUE, mods.get(MOD1), "Value of " + MOD1);
+        assertEquals(MOD2_VALUE, mods.get(MOD2), "Value of " + MOD2);
     }
 
+    @Test
     public void testSetBase() {
         RatingScore r = new RatingScore("test", BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
         r.addBase("test", BASE2);
-        assertEquals("Set base " + MOD1, BASE2 * MOD1_VALUE, r.getScore());
+        assertEquals(BASE2 * MOD1_VALUE, r.getScore(), "Set base " + MOD1);
     }
 
-    
+    @Test
     public void testAddBase() {
         RatingScore r = new RatingScore("test", BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
         r.addBase("tests", BASE2);
-        assertEquals("Set base " + MOD1, (BASE + BASE2) * MOD1_VALUE, r.getScore());
+        assertEquals((BASE + BASE2) * MOD1_VALUE, r.getScore(), "Set base " + MOD1);
     }
 
+    @Test
     public void testCompare() {
         RatingScore r1 = new RatingScore("test", 2);
         RatingScore r2 = new RatingScore("test", 1);
 
-        assertTrue("Compare base only", r1.compareTo(r2) > 0);
+        assertTrue(r1.compareTo(r2) > 0, "Compare base only");
 
         r2.addModifier(MOD1, 4);
-        assertTrue("Compare modifiers", r1.compareTo(r2) < 0);
+        assertTrue(r1.compareTo(r2) < 0, "Compare modifiers");
 
     }
 }

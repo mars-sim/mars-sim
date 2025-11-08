@@ -7,16 +7,22 @@
 
 package com.mars_sim.core.person;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.training.TrainingType;
 
-import junit.framework.TestCase;
-
-public class PersonConfigTest extends TestCase {
+public class PersonConfigTest {
 
     private PersonConfig pc;
 
+    @BeforeEach
     public void setUp() {
         SimulationConfig config = SimulationConfig.loadConfig();
         pc = config.getPersonConfig();
@@ -25,33 +31,36 @@ public class PersonConfigTest extends TestCase {
     /**
      * This test is based on the values defined in PersonConfig or people.xml.
      */
+    @Test
     public void testGetTrainingModifier() {
 
 
         // Test know values
-        assertEquals("Case 1", 5,
-                        pc.getTrainingModifier(RoleType.COMPUTING_SPECIALIST, TrainingType.ANTARCTICA_EDEN_ISS));
-        assertEquals("Case 2", 1,
-                        pc.getTrainingModifier(RoleType.SCIENCE_SPECIALIST, TrainingType.AIRBORNE_AND_RANGER_SCHOOL)); 
+        assertEquals(5,
+                        pc.getTrainingModifier(RoleType.COMPUTING_SPECIALIST, TrainingType.ANTARCTICA_EDEN_ISS), "Case 1");
+        assertEquals(1,
+                        pc.getTrainingModifier(RoleType.SCIENCE_SPECIALIST, TrainingType.AIRBORNE_AND_RANGER_SCHOOL), "Case 2"); 
 
         // test mission values
-        assertEquals("Missing 1", 0,
-                        pc.getTrainingModifier(RoleType.AGRICULTURE_SPECIALIST, TrainingType.MILITARY_DEPLOYMENT)); 
+        assertEquals(0,
+                        pc.getTrainingModifier(RoleType.AGRICULTURE_SPECIALIST, TrainingType.MILITARY_DEPLOYMENT), "Missing 1"); 
 
     }
 
+    @Test
     public void testGetValues() {
-        assertTrue("Base capacity set", pc.getBaseCapacity() > 0);
-        assertTrue("CO2 explled set", pc.getCO2ExpelledRate() > 0);
+        assertTrue(pc.getBaseCapacity() > 0, "Base capacity set");
+        assertTrue(pc.getCO2ExpelledRate() > 0, "CO2 explled set");
 
     }
 
+    @Test
     public void testGetDefaultPhysicalChars() {
         var d = pc.getDefaultPhysicalChars();
 
-        assertNotNull("Default physical charactertics", d);
-        assertTrue("Default height", d.getAverageHeight() > 0);
-        assertTrue("Default weight", d.getAverageWeight() > 0);
+        assertNotNull(d, "Default physical charactertics");
+        assertTrue(d.getAverageHeight() > 0, "Default height");
+        assertTrue(d.getAverageWeight() > 0, "Default weight");
 
     }
 }

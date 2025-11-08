@@ -1,33 +1,40 @@
 package com.mars_sim.core.person;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PopulationCharacteristicsTest extends TestCase {
+import org.junit.jupiter.api.Test;
+
+public class PopulationCharacteristicsTest {
+    @Test
     public void testGetAverageHeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 10, 4, 0, 0);
-        assertEquals("Average height", 7D, a.getAverageHeight());
+        assertEquals(7D, a.getAverageHeight(), "Average height");
     }
 
+    @Test
     public void testGetAverageWeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 0, 0, 20, 10);
-        assertEquals("Average weight", 15D, a.getAverageWeight());  
+        assertEquals(15D, a.getAverageWeight(), "Average weight");  
     }
 
+    @Test
     public void testGetRandomHeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 130, 130, 20, 10);
         double mh = a.getRandomHeight(GenderType.MALE);
-        assertTrue("Random male height created", mh > 0);
+        assertTrue(mh > 0, "Random male height created");
 
         double fh = a.getRandomHeight(GenderType.FEMALE);
-        assertTrue("Random female height created", fh > 0);
+        assertTrue(fh > 0, "Random female height created");
     }
 
+    @Test
     public void testGetRandomWeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 130, 130, 20, 10);
         double mw = a.getRandomWeight(GenderType.MALE, 130);
-        assertTrue("Random male weight created", mw > 0);
+        assertTrue(mw > 0, "Random male weight created");
 
         double fw = a.getRandomWeight(GenderType.FEMALE, 130);
-        assertTrue("Random female weight created", fw > 0);
+        assertTrue(fw > 0, "Random female weight created");
     }
 }
