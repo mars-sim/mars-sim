@@ -21,7 +21,7 @@
 //    }
 //
 //    @Test
-//    public void testGetEVAMalfunctions() throws Exception {
+//    void testGetEVAMalfunctions() throws Exception {
 //		EVASuit suit = new EVASuit(new Coordinates(0D, 0D)); //(EVASuit) EquipmentFactory.createEquipment(EVASuit.TYPE, new Coordinates(0D, 0D), false);
 //		MalfunctionManager manager = suit.getMalfunctionManager();
 ////		Malfunction malfunction1 = new MockMalfunction("test malfunction1", 10, 0D, 100D, 50D);

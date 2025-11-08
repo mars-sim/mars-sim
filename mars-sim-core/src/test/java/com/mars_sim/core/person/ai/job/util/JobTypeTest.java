@@ -13,22 +13,22 @@ import org.junit.jupiter.api.Test;
 public class JobTypeTest {
 
     @Test
-    public void testDoctorGroups() {
+    void testDoctorGroups() {
         testGroups(JobType.DOCTOR, true, true, true, false, false, false);
     }
 
     @Test
-    public void testEngineerGroups() {
+    void testEngineerGroups() {
         testGroups(JobType.ENGINEER, false, false, true, false, true, true);
     }
 
     @Test
-    public void testBiologistGroups() {
+    void testBiologistGroups() {
         testGroups(JobType.ASTROBIOLOGIST, false, true, true, true, false, false);
     }
 
     @Test
-    public void testMathGroups() {
+    void testMathGroups() {
         testGroups(JobType.MATHEMATICIAN, false, false, true, false, false, false);
     }
 

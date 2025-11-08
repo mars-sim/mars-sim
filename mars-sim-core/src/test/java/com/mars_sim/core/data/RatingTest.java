@@ -18,7 +18,7 @@ public class RatingTest {
     private static final double MOD2_VALUE = 0.5D;
 
     @Test
-    public void testAddModifier() {
+    void testAddModifier() {
         RatingScore r = new RatingScore(BASE);
         assertEquals(BASE, r.getScore(), "Only base");
         var b = r.getBases();
@@ -39,7 +39,7 @@ public class RatingTest {
     }
 
     @Test
-    public void testSetBase() {
+    void testSetBase() {
         RatingScore r = new RatingScore("test", BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
@@ -48,7 +48,7 @@ public class RatingTest {
     }
 
     @Test
-    public void testAddBase() {
+    void testAddBase() {
         RatingScore r = new RatingScore("test", BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
@@ -57,7 +57,7 @@ public class RatingTest {
     }
 
     @Test
-    public void testCompare() {
+    void testCompare() {
         RatingScore r1 = new RatingScore("test", 2);
         RatingScore r2 = new RatingScore("test", 1);
 

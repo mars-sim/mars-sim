@@ -25,9 +25,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeCapacityGood() {
+    void testInventoryAmountResourceTypeCapacityGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -36,9 +34,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeCapacityNotSet() {
+    void testInventoryAmountResourceTypeCapacityNotSet() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         double amountCO2 = storage.getAmountResourceTypeCapacity(carbonDioxide);
@@ -46,9 +42,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeCapacityNegativeCapacity() {
+    void testInventoryAmountResourceTypeCapacityNegativeCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         try {
@@ -62,8 +56,7 @@ public class TestAmountResourceTypeStorage {
      * Test the removeAmountResourceTypeCapacity method.
      */
     @Test
-
-    public void testRemoveAmountResourceTypeCapacity() {
+    void testRemoveAmountResourceTypeCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
 
@@ -94,9 +87,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeStoreGood() {
+    void testInventoryAmountResourceTypeStoreGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -106,9 +97,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeStoreOverload() {
+    void testInventoryAmountResourceTypeStoreOverload() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -120,9 +109,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeStoreNegativeAmount() {
+    void testInventoryAmountResourceTypeStoreNegativeAmount() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -134,9 +121,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeStoreNoCapacity() {
+    void testInventoryAmountResourceTypeStoreNoCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         try {
@@ -147,9 +132,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeRemainingCapacityGood() {
+    void testInventoryAmountResourceTypeRemainingCapacityGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -159,9 +142,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() {
+    void testInventoryAmountResourceTypeRemainingCapacityNoCapacity() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         double remainingCapacity = storage.getAmountResourceTypeRemainingCapacity(carbonDioxide);
@@ -169,9 +150,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeRetrieveGood() {
+    void testInventoryAmountResourceTypeRetrieveGood() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
@@ -182,9 +161,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeRetrieveTooMuch() {
+    void testInventoryAmountResourceTypeRetrieveTooMuch() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
             AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -197,9 +174,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeRetrieveNegative() {
+    void testInventoryAmountResourceTypeRetrieveNegative() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
             AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -212,9 +187,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeRetrieveNoCapacity() {
+    void testInventoryAmountResourceTypeRetrieveNoCapacity() {
         try {
             AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
             AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
@@ -225,9 +198,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeTotalAmount() {
+    void testInventoryAmountResourceTypeTotalAmount() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         AmountResource oxygen = ResourceUtil.findAmountResource(ResourceUtil.OXYGEN_ID);
@@ -240,9 +211,7 @@ public class TestAmountResourceTypeStorage {
     }
 
     @Test
-
-
-    public void testInventoryAmountResourceTypeAllStored() {
+    void testInventoryAmountResourceTypeAllStored() {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         AmountResource oxygen = ResourceUtil.findAmountResource(ResourceUtil.OXYGEN_ID);

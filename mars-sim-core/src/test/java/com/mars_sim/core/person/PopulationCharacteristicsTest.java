@@ -7,19 +7,19 @@ import org.junit.jupiter.api.Test;
 
 public class PopulationCharacteristicsTest {
     @Test
-    public void testGetAverageHeight() {
+    void testGetAverageHeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 10, 4, 0, 0);
         assertEquals(7D, a.getAverageHeight(), "Average height");
     }
 
     @Test
-    public void testGetAverageWeight() {
+    void testGetAverageWeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 0, 0, 20, 10);
         assertEquals(15D, a.getAverageWeight(), "Average weight");  
     }
 
     @Test
-    public void testGetRandomHeight() {
+    void testGetRandomHeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 130, 130, 20, 10);
         double mh = a.getRandomHeight(GenderType.MALE);
         assertTrue(mh > 0, "Random male height created");
@@ -29,7 +29,7 @@ public class PopulationCharacteristicsTest {
     }
 
     @Test
-    public void testGetRandomWeight() {
+    void testGetRandomWeight() {
         PopulationCharacteristics a = new PopulationCharacteristics(40, 40, 130, 130, 20, 10);
         double mw = a.getRandomWeight(GenderType.MALE, 130);
         assertTrue(mw > 0, "Random male weight created");

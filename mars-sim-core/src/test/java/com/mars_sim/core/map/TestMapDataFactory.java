@@ -43,7 +43,7 @@ public class TestMapDataFactory {
      * Test the locationWithinLocalBoundedObject method.
      */
     @Test
-    public void testSurfMap() {
+    void testSurfMap() {
         //MapDataFactory factory = new MapDataFactory();
 
         // MapData data = factory.getMapData(MapDataFactory.SURFACE_MAP_DATA);

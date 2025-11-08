@@ -46,7 +46,7 @@ public class ProjectTest {
     }
 
     @Test
-    public void testExecuteOneStep() {
+    void testExecuteOneStep() {
         Project p = new Project("Test");
 
         assertEquals(Stage.WAITING, p.getStage(), "Waiting with no steps");
@@ -70,7 +70,7 @@ public class ProjectTest {
     }
 
     @Test
-    public void testExecuteTwoStep() {
+    void testExecuteTwoStep() {
         Project p = new Project("Test");
 
         assertEquals(Stage.WAITING, p.getStage(), "Waiting with no steps");
@@ -122,7 +122,7 @@ public class ProjectTest {
     }
 
     @Test
-    public void testAbort() {
+    void testAbort() {
         Project p = new Project("Test");
 
         TestStep step1 = new TestStep(Stage.ACTIVE, 2, "Step 1");
@@ -152,7 +152,7 @@ public class ProjectTest {
 
 
     @Test
-    public void testRemoveStep() {
+    void testRemoveStep() {
         Project p = new Project("Test");
 
         TestStep step1 = new TestStep(Stage.PREPARATION, 2, "Step 1");
@@ -195,7 +195,7 @@ public class ProjectTest {
 
 
     @Test
-    public void testCreateBadStep() {
+    void testCreateBadStep() {
 
         // Add a step with Active stage
         assertThrows(IllegalArgumentException.class, () ->  {
@@ -208,7 +208,7 @@ public class ProjectTest {
     }
 
     @Test
-    public void testAddingBadStage() {
+    void testAddingBadStage() {
         Project p = new Project("Bad");
         p.addStep(new TestStep(Stage.CLOSEDOWN, 0, null));
 

@@ -54,8 +54,7 @@ public class TestLocalAreaUtil {
      * Test the locationWithinLocalBoundedObject method.
      */
     @Test
-
-    public void testLocationWithinLocalBoundedObject() {
+    void testLocationWithinLocalBoundedObject() {
         
         Settlement settlement = new MockSettlement();
  
@@ -83,9 +82,7 @@ public class TestLocalAreaUtil {
     }
 
     @Test
-
-
-    public void testRotate45Degrees() {
+    void testRotate45Degrees() {
             
         Settlement settlement = new MockSettlement();
  

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class MarsTimeTest {
 
     @Test
-    public void testAddTime() {
+    void testAddTime() {
         MarsTime start = new MarsTime(1,1, 1, 100D, 1);
 
         MarsTime later = start.addTime(1000D);
@@ -18,7 +18,7 @@ public class MarsTimeTest {
     }
 
     @Test
-    public void testAddTimeMonthEnd() {
+    void testAddTimeMonthEnd() {
         MarsTime start = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 100D, 1);
 
         MarsTime later = start.addTime(1000D);
@@ -29,7 +29,7 @@ public class MarsTimeTest {
     }
 
     @Test
-    public void testAddTimeMonthEndMSols() {
+    void testAddTimeMonthEndMSols() {
         MarsTime start = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
 
         MarsTime later = start.addTime(500D);
@@ -39,7 +39,7 @@ public class MarsTimeTest {
     }
 
     @Test
-    public void testTimeEquals() {
+    void testTimeEquals() {
         MarsTime start = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
         MarsTime same = new MarsTime(1,1, MarsTime.SOLS_PER_MONTH_LONG, 600D, 1);
 
@@ -47,7 +47,7 @@ public class MarsTimeTest {
     }
 
     @Test
-    public void testDifferenceTime() {
+    void testDifferenceTime() {
         MarsTime start = new MarsTime(1,1, 1, 100D, 1);
 
         MarsTime later = new MarsTime(1,1, 1, 150D, 1);
@@ -58,7 +58,7 @@ public class MarsTimeTest {
     }
 
     @Test
-    public void testCompare() {
+    void testCompare() {
         MarsTime start = new MarsTime(1,1, 1, 100D, 1);
 
         assertEquals(0, start.compareTo(start), "Compare same time");
@@ -69,7 +69,7 @@ public class MarsTimeTest {
     }
 
     @Test
-    public void testMarsDate() {
+    void testMarsDate() {
         MarsTime start = new MarsTime(1,1, 1, 100D, 1);
         MarsTime later = new MarsTime(1,1, 1, 150D, 1);
 

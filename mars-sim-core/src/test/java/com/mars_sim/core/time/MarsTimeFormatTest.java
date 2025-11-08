@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 public class MarsTimeFormatTest {
 
     @Test
-    public void testFromDate1() {
+    void testFromDate1() {
         testMarsTime("01-Adir-02:123.000", 1, 1, 2, 123D);
     }
 
     @Test
-    public void testFromDate2() {
+    void testFromDate2() {
         testMarsTime("01-Flo-12:789.123", 1, 6, 12, 789.123D);
     }
 
@@ -26,7 +26,7 @@ public class MarsTimeFormatTest {
     }
 
     @Test
-    public void testConvert() {
+    void testConvert() {
         MarsTime start = new MarsTime(1, 4, 15, 123.456, 1);
         String text = MarsTimeFormat.getDateTimeStamp(start);
         MarsTime result = MarsTimeFormat.fromDateString(text);

@@ -26,7 +26,7 @@ public class NationSpecConfigTest {
     }
 
     @Test
-    public void testGenerateName() {
+    void testGenerateName() {
         for (String c : config.getCountries()) {
             generateForCountry(c, RandomUtil.getRandomInt(20, 30));
         }
@@ -45,12 +45,12 @@ public class NationSpecConfigTest {
     }
 
     @Test
-    public void testGetNorway() {
+    void testGetNorway() {
         testNationSpec("Norway", true);
     }
 
     @Test
-    public void testGetSpain() {
+    void testGetSpain() {
         testNationSpec("Spain", true);
     }
 

@@ -35,42 +35,42 @@ public class TestGood {
 	}
 
 	@Test
-	public void testPrinterGood() {
+	void testPrinterGood() {
 		Good printer = GoodsUtil.getGood(ItemResourceUtil.SLS_3D_PRINTER_ID);
 		
 		testGoodsBasics(printer, GoodCategory.ITEM_RESOURCE);
 	}
 
 	@Test
-	public void testRobotGood() {
+	void testRobotGood() {
 		Good g = GoodsUtil.getGood(RobotType.getResourceID(RobotType.CHEFBOT));
 		
 		testGoodsBasics(g, GoodCategory.ROBOT);
 	}
 
 	@Test
-	public void testBarrelGood() {
+	void testBarrelGood() {
 		Good g = GoodsUtil.getGood(EquipmentType.getResourceID(EquipmentType.BARREL));
 		
 		testGoodsBasics(g, GoodCategory.CONTAINER);
 	}
 
 	@Test
-	public void testRoverGood() {
+	void testRoverGood() {
 		Good g = GoodsUtil.getGood(VehicleType.getVehicleID(VehicleType.CARGO_ROVER));
 		
 		testGoodsBasics(g, GoodCategory.VEHICLE);
 	}
 
 	@Test
-	public void testEVAGood() {
+	void testEVAGood() {
 		Good g = GoodsUtil.getGood(EquipmentType.getResourceID(EquipmentType.EVA_SUIT));
 		
 		testGoodsBasics(g, GoodCategory.EQUIPMENT);
 	}
 
 	@Test
-	public void testOxygenGood() {
+	void testOxygenGood() {
 		Good g = GoodsUtil.getGood(ResourceUtil.OXYGEN_ID);
 		
 		testGoodsBasics(g, GoodCategory.AMOUNT_RESOURCE);

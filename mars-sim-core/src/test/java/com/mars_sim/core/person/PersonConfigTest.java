@@ -32,7 +32,7 @@ public class PersonConfigTest {
      * This test is based on the values defined in PersonConfig or people.xml.
      */
     @Test
-    public void testGetTrainingModifier() {
+    void testGetTrainingModifier() {
 
 
         // Test know values
@@ -48,14 +48,14 @@ public class PersonConfigTest {
     }
 
     @Test
-    public void testGetValues() {
+    void testGetValues() {
         assertTrue(pc.getBaseCapacity() > 0, "Base capacity set");
         assertTrue(pc.getCO2ExpelledRate() > 0, "CO2 explled set");
 
     }
 
     @Test
-    public void testGetDefaultPhysicalChars() {
+    void testGetDefaultPhysicalChars() {
         var d = pc.getDefaultPhysicalChars();
 
         assertNotNull(d, "Default physical charactertics");

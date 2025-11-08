@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 public class ShiftTest {
     @Test
-    public void testShiftCompletedSameSol() {
+    void testShiftCompletedSameSol() {
         ShiftSpec spec = new ShiftSpec("SameDay", 400, 900, 0);
         Shift shift = new Shift(spec, 0);
         
@@ -23,7 +23,7 @@ public class ShiftTest {
     }
 
     @Test
-    public void testShiftCompletedDifferentSol() {
+    void testShiftCompletedDifferentSol() {
         ShiftSpec spec = new ShiftSpec("TwoDay", 800, 300, 0);
         Shift shift = new Shift(spec, 0);
         

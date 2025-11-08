@@ -55,8 +55,7 @@ public class GenericContainerTest {
 	 * Tests container associated settlement assignment.
 	 */
 	@Test
-
-	public void testAssociatedSettlement() {
+	void testAssociatedSettlement() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 	
 		Settlement as = c.getAssociatedSettlement();
@@ -67,8 +66,7 @@ public class GenericContainerTest {
 	 * Tests container with a single resource.
 	 */
 	@Test
-
-	public void testSingleResource() {
+	void testSingleResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
@@ -92,8 +90,7 @@ public class GenericContainerTest {
 	 * Tests container with 2 resources.
 	 */
 	@Test
-
-	public void testTwoResource() {
+	void testTwoResource() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
@@ -116,8 +113,7 @@ public class GenericContainerTest {
 	 * Tests container with 2 resources.
 	 */
 	@Test
-
-	public void testEmptying() {
+	void testEmptying() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
@@ -146,8 +142,7 @@ public class GenericContainerTest {
 	 * Tests container with 2 resources.
 	 */
 	@Test
-
-	public void testNoneReusable() {
+	void testNoneReusable() {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 		
 		int secondResource = ResourceUtil.ICE_ID;
@@ -166,8 +161,7 @@ public class GenericContainerTest {
 	 * Tests container with 2 resources.
 	 */
 	@Test
-
-	public void testReusable() {
+	void testReusable() {
 		GenericContainer c = new GenericContainer("Specimen", EquipmentType.SPECIMEN_BOX, true, settlement);
 		
 		int secondResource = ResourceUtil.ICE_ID;
@@ -187,8 +181,7 @@ public class GenericContainerTest {
 	 * Tests container with Liquids & Solids.
 	 */
 	@Test
-
-	public void testBarrelLiquid() {
+	void testBarrelLiquid() {
 		EquipmentType cType = EquipmentType.BARREL;
 		GenericContainer c = new GenericContainer(cType.getName(), cType, true, settlement);
 
@@ -215,8 +208,7 @@ public class GenericContainerTest {
 	 * Test container with Gas.
 	 */
 	@Test
-
-	public void testCanisterGas() {
+	void testCanisterGas() {
 		assertPhaseSupported(EquipmentType.GAS_CANISTER, PhaseType.GAS);
 	}
 	
@@ -224,22 +216,17 @@ public class GenericContainerTest {
 	 * Test container with Solids.
 	 */
 	@Test
-
-	public void testLargeBagSolid() {
+	void testLargeBagSolid() {
 		assertPhaseSupported(EquipmentType.LARGE_BAG, PhaseType.SOLID);
 	}
 	
 	@Test
-
-	
-	public void testBoxSolid() {
+	void testBoxSolid() {
 		assertPhaseSupported(EquipmentType.SPECIMEN_BOX, PhaseType.SOLID);
 	}
 	
 	@Test
-
-	
-	public void testBagSolid() {
+	void testBagSolid() {
 		assertPhaseSupported(EquipmentType.BAG, PhaseType.SOLID);
 	}
 	

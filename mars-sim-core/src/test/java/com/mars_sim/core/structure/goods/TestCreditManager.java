@@ -24,7 +24,7 @@ public class TestCreditManager {
     }
 
     @Test
-    public void testSetCredit() {
+    void testSetCredit() {
         Collection<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
         Settlement settlement1 = new MockSettlement();
         settlements.add(settlement1);

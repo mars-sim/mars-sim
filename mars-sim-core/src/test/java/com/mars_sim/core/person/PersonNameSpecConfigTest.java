@@ -30,7 +30,7 @@ public class PersonNameSpecConfigTest {
     }
 
     @Test
-    public void testGenerateName() {
+    void testGenerateName() {
         for (String c : config.getCountries()) {
             generateForCountry(c, RandomUtil.getRandomInt(20, 30));
         }
