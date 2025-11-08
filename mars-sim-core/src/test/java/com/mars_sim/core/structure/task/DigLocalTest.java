@@ -1,7 +1,15 @@
 package com.mars_sim.core.structure.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
+import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -13,13 +21,14 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class DigLocalTest extends AbstractMarsSimUnitTest {
+public class DigLocalTest extends MarsSimUnitTest {
+    @Test
     public void testCreateRegolithTask() {
         var s = buildSettlement("Dig base");
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
         
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
@@ -27,19 +36,19 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         EquipmentFactory.createEquipment(DigLocalRegolith.CONTAINER_TYPE, s);
 
         var task = new DigLocalRegolith(p);
-        assertFalse("Task created", task.isDone()); 
+        assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
-        assertEquals("Task completed collection", DigLocalRegolith.COLLECT_REGOLITH, task.getPhase());
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
+        assertEquals(DigLocalRegolith.COLLECT_REGOLITH, task.getPhase(), "Task completed collection");
 
         // Do collection
         executeTaskUntilPhase(p, task, 2000);
-        assertEquals("Task completed collection", DigLocal.WALK_TO_BIN, task.getPhase());
+        assertEquals(DigLocal.WALK_TO_BIN, task.getPhase(), "Task completed collection");
 
         // Walk to bin
         executeTaskUntilPhase(p, task, 1000);
-        assertEquals("Walk to drop completed", DigLocal.DROP_OFF_RESOURCE, task.getPhase());
+        assertEquals(DigLocal.DROP_OFF_RESOURCE, task.getPhase(), "Walk to drop completed");
 
         // Drop off resources
         executeTaskUntilPhase(p, task, 1000);
@@ -52,12 +61,13 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         assertGreaterThan("Collected Regolith", 0D, collected);
     }
 
+    @Test
     public void testCreateIceTask() {
         var s = buildSettlement("Dig base");
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
         
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
@@ -65,19 +75,19 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         EquipmentFactory.createEquipment(DigLocalIce.CONTAINER_TYPE, s);
 
         var task = new DigLocalIce(p);
-        assertFalse("Task created", task.isDone()); 
+        assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
-        assertEquals("Task completed collection", DigLocalIce.COLLECT_ICE, task.getPhase());
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
+        assertEquals(DigLocalIce.COLLECT_ICE, task.getPhase(), "Task completed collection");
 
         // Do collection
         executeTaskUntilPhase(p, task, 2000);
-        assertEquals("Task completed collection", DigLocal.WALK_TO_BIN, task.getPhase());
+        assertEquals(DigLocal.WALK_TO_BIN, task.getPhase(), "Task completed collection");
 
         // Walk to bin
         executeTaskUntilPhase(p, task, 1000);
-        assertEquals("Walk to drop completed", DigLocal.DROP_OFF_RESOURCE, task.getPhase());
+        assertEquals(DigLocal.DROP_OFF_RESOURCE, task.getPhase(), "Walk to drop completed");
 
         // Drop off resources
         executeTaskUntilPhase(p, task, 1000);
@@ -88,13 +98,14 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
     }
 
 
+    @Test
     public void testCreateTaskWithBin() {
         var s = buildSettlement("Dig base");
         var st = buildRegolithStorage(s.getBuildingManager(), new LocalPosition(100D, 100D), 0D);
 
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
-        EVAOperationTest.prepareForEva(this, p);
+        EVAOperationTest.prepareForEva(getContext(), p);
         
         // DigLocal uses the Settlement airlock tracking logic.... it shouldn't
         s.checkAvailableAirlocks();
@@ -102,7 +113,7 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
         EquipmentFactory.createEquipment(DigLocalRegolith.CONTAINER_TYPE, s);
 
         var task = new DigLocalRegolith(p);
-        assertFalse("Task created", task.isDone());
+        assertFalse(task.isDone(), "Task created");
 
         assertLessThan("Drop off is Storage bin", DigLocal.MAX_DROPOFF_DISTANCE * 2.5D,
                                         st.getPosition().getDistanceTo(task.getDropOffLocation()));
@@ -114,31 +125,32 @@ public class DigLocalTest extends AbstractMarsSimUnitTest {
                 FunctionType.STORAGE,  pos, facing, true);
     }
 
+    @Test
     public void testIceMetaTask() {
         var s = buildSettlement("Ice");
         var mt = new DigLocalIceMeta();
         
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
-        EVAOperationTest.prepareForEva(this, p);
+        EVAOperationTest.prepareForEva(getContext(), p);
 
         var tasks = mt.getSettlementTasks(s);
-        assertTrue("No Tasks when no container", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No Tasks when no container");
         EquipmentFactory.createEquipment(DigLocalIce.CONTAINER_TYPE, s);
 
         // Everything ready
         tasks = mt.getSettlementTasks(s);
-        assertFalse("Tasks found", tasks.isEmpty());
+        assertFalse(tasks.isEmpty(), "Tasks found");
         var task = tasks.get(0);
  
-        assertTrue("Task is EVA", task.isEVA());
+        assertTrue(task.isEVA(), "Task is EVA");
 
         double cap = s.getSpecificCapacity(ResourceUtil.ICE_ID);
-        assertTrue("Capacity is zero", cap == 0.0);
+        assertTrue(cap == 0.0, "Capacity is zero");
         
         // Fill capacity
         s.storeAmountResource(ResourceUtil.ICE_ID, 5);
         tasks = mt.getSettlementTasks(s);
-        assertFalse("Has Tasks even if no capacity", tasks.isEmpty());
+        assertFalse(tasks.isEmpty(), "Has Tasks even if no capacity");
     }
 }

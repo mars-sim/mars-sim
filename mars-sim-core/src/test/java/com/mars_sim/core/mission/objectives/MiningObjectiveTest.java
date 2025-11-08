@@ -1,15 +1,21 @@
 package com.mars_sim.core.mission.objectives;
+import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
-public class MiningObjectiveTest extends AbstractMarsSimUnitTest {
+public class MiningObjectiveTest extends MarsSimUnitTest {
     
+    @Test
     public void testExtractedMineral() {
         var sf = getSim().getSurfaceFeatures();
 
@@ -24,7 +30,7 @@ public class MiningObjectiveTest extends AbstractMarsSimUnitTest {
 		var obj = new MiningObjective(l, site);
 
         var mins = obj.getMineralStats();
-        assertEquals("Minerals detected", site.getEstimatedMineralConcentrations().size(), mins.size());
+        assertEquals(site.getEstimatedMineralConcentrations().size(), mins.size(), "Minerals detected");
 
         // Select a mineral
         int targetId = (new ArrayList<>(site.getEstimatedMineralAmounts().keySet())).get(0);
@@ -38,14 +44,14 @@ public class MiningObjectiveTest extends AbstractMarsSimUnitTest {
         assertLessThan("Site reduced mass", initialMass, site.getRemainingMass());
 
         var minDetails = obj.getMineralStats().get(targetId);
-        assertEquals("Mineral extracted", amount, minDetails.getExtracted());
-        assertEquals("Mineral available", amount, minDetails.getAvailable());
+        assertEquals(amount, minDetails.getExtracted(), "Mineral extracted");
+        assertEquals(amount, minDetails.getAvailable(), "Mineral available");
 
         // Collect some
         amount /= 2D;
         obj.recordResourceCollected(targetId, amount);
-        assertEquals("Mineral available after collection", amount, minDetails.getAvailable());
-        assertEquals("Mineral collected", amount, minDetails.getCollected());
+        assertEquals(amount, minDetails.getAvailable(), "Mineral available after collection");
+        assertEquals(amount, minDetails.getCollected(), "Mineral collected");
 
     }
 }

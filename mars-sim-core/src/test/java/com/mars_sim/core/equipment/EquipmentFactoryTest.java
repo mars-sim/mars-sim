@@ -1,25 +1,31 @@
 package com.mars_sim.core.equipment;
 
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
 
-public class EquipmentFactoryTest extends AbstractMarsSimUnitTest {
+import com.mars_sim.core.test.MarsSimUnitTest;
+
+public class EquipmentFactoryTest extends MarsSimUnitTest {
+    @Test
     public void testCreateEquipment() {
         var s = buildSettlement("Eqm");
 
         for(EquipmentType et : EquipmentType.values()) {
             var e = EquipmentFactory.createEquipment(et, s);
-            assertTrue(et.name() + " created in Settlement", s.getEquipmentSet().contains(e));
-            assertEquals(et.name() + " equipment type", et, e.getEquipmentType());
+            assertTrue(s.getEquipmentSet().contains(e), et.name() + " created in Settlement");
+            assertEquals(et, e.getEquipmentType(), et.name() + " equipment type");
         }
     }
 
+    @Test
     public void testGetEquipmentMass() {
 
         for(EquipmentType et : EquipmentType.values()) {
             var m = EquipmentFactory.getEquipmentMass(et);
-            assertNotEquals(et.name() + " valid mass", EquipmentFactory.DEFAULT_MASS, m);
+            assertNotEquals(EquipmentFactory.DEFAULT_MASS, m, et.name() + " valid mass");
         }
     }
 }

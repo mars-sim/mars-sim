@@ -6,9 +6,17 @@
  */
 
 package com.mars_sim.core.vehicle.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
+import static com.mars_sim.core.test.SimulationAssertions.assertEqualLessThan;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -19,7 +27,7 @@ import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.VehicleController;
 
-public class PilotDroneTest extends AbstractMarsSimUnitTest {
+public class PilotDroneTest extends MarsSimUnitTest {
     private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 10;  // Drive 5 km
     private static final double METHANOL_AMOUNT = 30D;
     private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
@@ -59,6 +67,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
 	    return flyer;
 	}
 
+    @Test
     public void testFlyDrone() {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
@@ -77,17 +86,17 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         var task = new PilotDrone(p, v, dest, getSim().getMasterClock().getMarsTime(),
                                     0D);
     
-        assertFalse("Task created", task.isDone());
-        assertEquals(name, p, v.getOperator());
+        assertFalse(task.isDone(), "Task created");
+        assertEquals(p, v.getOperator(), name);
         
-        assertEquals("Vehicle is being mobilized", OperateVehicle.MOBILIZE, task.getPhase());
+        assertEquals(OperateVehicle.MOBILIZE, task.getPhase(), "Vehicle is being mobilized");
         
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 10);
            
         v.setPrimaryStatus(StatusType.PARKED);
         
-        assertEquals("Vehicle primary status", StatusType.PARKED, v.getPrimaryStatus());
+        assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle primary status");
         
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 50);
@@ -96,22 +105,23 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         v.setSpeed(1.1);
 
         assertGreaterThan("Vehicle speed", 0D, v.getSpeed());
-        assertEquals("Vehicle primary status", StatusType.MOVING, v.getPrimaryStatus());
+        assertEquals(StatusType.MOVING, v.getPrimaryStatus(), "Vehicle primary status");
 
-//        assertEquals("Vehicle oddmeter", Math.round(DIST), Math.round(v.getOdometerMileage() * 10.0) / 10.0);
-//        assertEquals("Vehicle at destination", dest, v.getCoordinates());
+//        assertEquals(Math.round(DIST), Math.round(v.getOdometerMileage() * 10.0) / 10.0, "Vehicle oddmeter");
+//        assertEquals(dest, v.getCoordinates(), "Vehicle at destination");
       
         // Drive the rest
         executeTaskUntilPhase(p, task, 100);
            
-//        assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
+//        assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
 
         // There is a problem in the VehicleController because it does not consume fuel or oxygen
         // Need to move the fuel logic into the VehicleController which should be rename VehicleEngine
         // which can cover electric engine or combustion engine
-        assertTrue("Task complete", task.isDone());
+        assertTrue(task.isDone(), "Task complete");
     }
 
+    @Test
     public void testDroneNoFuel() {
         var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
@@ -129,7 +139,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         var task = new PilotDrone(p, v, dest, getSim().getMasterClock().getMarsTime(),
                                     0D);
 
-        assertFalse("Task created", task.isDone());
+        assertFalse(task.isDone(), "Task created");
 
         // Execute few calls to get driver positioned and moving then remove fuel
         executeTask(p, task, 7);
@@ -148,32 +158,33 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
         // Need to find out in what situation a pilot may stop operating the drone, thus
         // causing task.getPhase() to be null from time to time
 //        if (task.getPhase() != null)
-//        	assertEquals("Vehicle end primary status", StatusType.MOVING, v.getPrimaryStatus());
+//        	assertEquals(StatusType.MOVING, v.getPrimaryStatus(), "Vehicle end primary status");
 //        else 
-//        	assertEquals("Vehicle end primary status", StatusType.PARKED, v.getPrimaryStatus());
+//        	assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
         
         // Pilot
         executeTask(p, task, 7);  
 
         // Take away the fuel
         v.retrieveAmountResource(v.getFuelTypeID(), v.getSpecificAmountResourceStored(v.getFuelTypeID()));
-        assertEquals("Fuel emptied", 0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()));
+        assertEquals(0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
       
         // Pilot
         executeTask(p, task, 8);
 
 
-//        assertTrue("Marked out of fuel", v.haveStatusType(StatusType.OUT_OF_FUEL));
+//        assertTrue(v.haveStatusType(StatusType.OUT_OF_FUEL), "Marked out of fuel");
        
         // Pilot the rest
         executeTaskUntilPhase(p, task, 10);
         
-//        assertTrue("Task complete", task.isDone());
+//        assertTrue(task.isDone(), "Task complete");
     }
     
     /**
      * Tests the thrust calculation for ascent flight condition.
      */
+    @Test
     public void testAscentThrust() {
     	
       	var s = buildSettlement("Test Settlement");
@@ -206,6 +217,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
     /**
      * Tests the thrust calculation for descent flight condition.
      */
+    @Test
     public void testDescentThrust() {
     	
       	var s = buildSettlement("Test Settlement");
@@ -246,6 +258,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
     /**
      * Tests the thrust calculation for hovering. 
      */
+    @Test
     public void testHoverThrust() {
     	var s = buildSettlement("Test Settlement");
         var v = buildDrone(s, "Test Drone");
@@ -285,6 +298,7 @@ public class PilotDroneTest extends AbstractMarsSimUnitTest {
     /**
      * Tests the thrust calculation for tilted flight condition.
      */
+    @Test
     public void testTiltedThrust() {
     	
       	var s = buildSettlement("Test Settlement");

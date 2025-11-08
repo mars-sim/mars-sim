@@ -1,44 +1,51 @@
 package com.mars_sim.core.process;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 
-public class ProcessInfoTest extends AbstractMarsSimUnitTest {
+public class ProcessInfoTest extends MarsSimUnitTest {
+    @Test
     public void testIsResourcesAvailable() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
         var processes = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1);
         var selected = RandomUtil.getRandomElement(processes);
 
-        assertFalse("No resources available", selected.isResourcesAvailable(s));
+        assertFalse(selected.isResourcesAvailable(s), "No resources available");
 
         // Added resources
         loadSettlement(s, selected);
-        assertTrue("Resources available", selected.isResourcesAvailable(s));
+        assertTrue(selected.isResourcesAvailable(s), "Resources available");
     }
 
+    @Test
     public void testIsInput() {
         var p = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1).get(0);
 
         for(var o : p.getInputList()) {
             var output = o.getName();
-            assertTrue("Process contains " + output, p.isInput(output));
+            assertTrue(p.isInput(output), "Process contains " + output);
         }
 
-        assertFalse("Process does not input", p.isInput("Not exists"));
+        assertFalse(p.isInput("Not exists"), "Process does not input");
     }
 
+    @Test
     public void testIsOutput() {
         var p = getConfig().getManufactureConfiguration().getManufactureProcessesForTechLevel(1).get(0);
 
         for(var o : p.getOutputList()) {
             var output = o.getName();
-            assertTrue("Process contains " + output, p.isOutput(output));
+            assertTrue(p.isOutput(output), "Process contains " + output);
         }
 
-        assertFalse("Process does not output", p.isOutput("Not exists"));
+        assertFalse(p.isOutput("Not exists"), "Process does not output");
     }
 
     /**

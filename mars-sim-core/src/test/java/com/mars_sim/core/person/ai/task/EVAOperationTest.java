@@ -1,7 +1,10 @@
 package com.mars_sim.core.person.ai.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.EVA;
@@ -20,7 +23,7 @@ import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.MarsTime;
 
-public class EVAOperationTest extends AbstractMarsSimUnitTest{
+public class EVAOperationTest extends MarsSimUnitTest{
 
     private static final int MAX_EVA_CALLS = 1500;
 
@@ -60,7 +63,7 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
      */
     public static EVA prepareForEva(MarsSimContext context, Person p) {
         var s = p.getAssociatedSettlement();
-        var b = context.buildEVA(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var b = context.buildEVA(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
         BuildingManager.addToActivitySpot(p, b, FunctionType.EVA);
         Equipment e = EquipmentFactory.createEquipment(EquipmentType.EVA_SUIT, s);
         e.storeAmountResource(ResourceUtil.OXYGEN_ID, EVASuit.OXYGEN_CAPACITY);
@@ -79,6 +82,7 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
      * This test does not attempt to check the solar irradiance logic just the light levels.
      * @throws CoordinatesException 
      */
+    @Test
     public void testIsSunlightAroundGlobal() throws CoordinatesException {
         var locn = CoordinatesFormat.fromString("0.0 0.0");
         
@@ -98,8 +102,8 @@ public class EVAOperationTest extends AbstractMarsSimUnitTest{
 
     private void assertLightLevel(String message, Coordinates locn, boolean low, boolean high) {
         // Always returns true
-        assertEquals(message + " none level", true, EVAOperation.isSunlightAboveLevel(locn, LightLevel.NONE));
-        assertEquals(message + " low level", low, EVAOperation.isSunlightAboveLevel(locn, LightLevel.LOW));
-        assertEquals(message + " high level", high, EVAOperation.isSunlightAboveLevel(locn, LightLevel.HIGH));
+        assertEquals(true, EVAOperation.isSunlightAboveLevel(locn, LightLevel.NONE), message + " none level");
+        assertEquals(low, EVAOperation.isSunlightAboveLevel(locn, LightLevel.LOW), message + " low level");
+        assertEquals(high, EVAOperation.isSunlightAboveLevel(locn, LightLevel.HIGH), message + " high level");
     }
 }

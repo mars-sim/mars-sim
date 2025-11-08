@@ -1,6 +1,10 @@
 package com.mars_sim.core.building.function.cooking.task;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -10,9 +14,10 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
-public class CookMealMetaTest extends AbstractMarsSimUnitTest {
+public class CookMealMetaTest extends MarsSimUnitTest {
+    @Test
     public void testMealTime() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
      
         buildKitchen(s.getBuildingManager());
 
@@ -27,16 +32,17 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
 		getSim().getMasterClock().setMarsTime(preBreakfast);
 
         var results = mt.getSettlementTasks(s);
-        assertTrue("No meals before breakfast", results.isEmpty());
+        assertTrue(results.isEmpty(), "No meals before breakfast");
 
         // Change to middle of breakfast
         setMidBreakfastTime(s);
         results = mt.getSettlementTasks(s);
-        assertEquals("Kitchens for meals", 1, results.size());
+        assertEquals(1, results.size(), "Kitchens for meals");
     }
 
+    @Test
     public void testMultiKitchen() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
      
         var b1 = buildKitchen(s.getBuildingManager());
         var b2 = buildKitchen(s.getBuildingManager());
@@ -48,14 +54,15 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
         setMidBreakfastTime(s);
 
         var results = mt.getSettlementTasks(s);
-        assertEquals("Kitchens for meals", 2, results.size());
+        assertEquals(2, results.size(), "Kitchens for meals");
         var kitchens = results.stream().map(t -> t.getFocus()).toList();
-        assertTrue("Kitchen 1 found", kitchens.contains(b1));
-        assertTrue("Kitchen 2 found", kitchens.contains(b2));
+        assertTrue(kitchens.contains(b1), "Kitchen 1 found");
+        assertTrue(kitchens.contains(b2), "Kitchen 2 found");
     }
 
+    @Test
     public void testCooks() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
      
         var b = buildKitchen(s.getBuildingManager());
         var k = b.getCooking();
@@ -67,9 +74,9 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
         setMidBreakfastTime(s);
 
         var results = mt.getSettlementTasks(s);
-        assertEquals("Kitchens for meals", 1, results.size());
+        assertEquals(1, results.size(), "Kitchens for meals");
         var task = results.get(0);
-        assertEquals("Meal task demand", k.getCookCapacity(), task.getDemand());
+        assertEquals(k.getCookCapacity(), task.getDemand(), "Meal task demand");
 
         var p1 = buildPerson("Chef", s, JobType.CHEF, b, FunctionType.COOKING);
         p1.getTaskManager().replaceTask(new CookMeal(p1, k));
@@ -80,12 +87,12 @@ public class CookMealMetaTest extends AbstractMarsSimUnitTest {
         System.out.println(p1 + " " + taskName);
         int numCooks = k.getNumCooks();
         System.out.println(p1 + " at " + p1.getBuildingLocation() + " (numCooks: " + numCooks + ")");
-        assertEquals("Meal task demand after 1 chef", k.getCookCapacity() - 1, task.getDemand());
+        assertEquals(k.getCookCapacity() - 1, task.getDemand(), "Meal task demand after 1 chef");
 
         var p2 = buildPerson("Chef", s, JobType.CHEF, b, FunctionType.COOKING);
         p2.getTaskManager().replaceTask(new CookMeal(p2, k));
         results = mt.getSettlementTasks(s);
-        assertTrue("No meals no space", results.isEmpty());
+        assertTrue(results.isEmpty(), "No meals no space");
     }
 
     private void setMidBreakfastTime(Settlement s) {

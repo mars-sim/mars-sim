@@ -2,12 +2,18 @@ package com.mars_sim.core.events;
 
 import java.util.Collection;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.events.ScheduledEventManager.ScheduledEvent;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
-public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
+public class TestScheduledEventManager extends MarsSimUnitTest  {
 
 	private static class TestHandler implements ScheduledEventHandler {
 
@@ -22,12 +28,12 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 			this.repeatDuration = repeatDuration;
 		}
 
-		@Override
+		    @BeforeEach
 		public String getEventDescription() {
 			return description;
 		}
 
-		@Override
+		    @BeforeEach
 		public int execute(MarsTime now) {
 			counter++;
 			return repeatDuration;
@@ -38,15 +44,16 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 	private MasterClock clock;
 	private ScheduledEventManager mgr;
 	
-    @Override
-    public void setUp() {
-		super.setUp();
+        @BeforeEach
+    public void setUpEventManager() {
+		
 		clock = getSim().getMasterClock();
 
 		mgr = new ScheduledEventManager(clock);
     }
     
 
+    @Test
     public void testAddingEvents() {
 		int [] durations = {100, 300, 500, 800};
 
@@ -57,19 +64,20 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 		mgr.addEvent(durations[1], new TestHandler("Handler 1", 0));
 
 		Collection<ScheduledEvent> events = mgr.getEvents();
-		assertEquals("All events queued", durations.length, events.size());
+		assertEquals(durations.length, events.size(), "All events queued");
     	
 		// Check order
 		int eventCounter = 0;
 		MarsTime base = clock.getMarsTime();
 		for(ScheduledEvent event : events) {
-			assertEquals("Event #" + eventCounter, "Handler " + eventCounter, event.getDescription());
+			assertEquals("Handler " + eventCounter, event.getDescription(), "Event #" + eventCounter);
 			MarsTime eventTime = base.addTime(durations[eventCounter]);
-			assertEquals("When Event #" + eventCounter, eventTime, event.getWhen());
+			assertEquals(eventTime, event.getWhen(), "When Event #" + eventCounter);
 			eventCounter++;
 		}
     }
 
+	@Test
 	public void testSameTimeEvents() {
 
 		// Add handler in different not time order
@@ -78,22 +86,23 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 		mgr.addEvent(100, handler);
 
 		Collection<ScheduledEvent> events = mgr.getEvents();
-		assertEquals("All events queued", 2, events.size());
+		assertEquals(2, events.size(), "All events queued");
     	
 		// Check order
 		int eventCounter = 0;
 		MarsTime eventWhen = clock.getMarsTime().addTime(100);
 		for(ScheduledEvent event : events) {
-			assertEquals("When Event #" + eventCounter, eventWhen, event.getWhen());
+			assertEquals(eventWhen, event.getWhen(), "When Event #" + eventCounter);
 			eventCounter++;
 		}
 
 		mgr.timePassing(createPulse(eventWhen, false, false));
-		assertEquals("Execution count of concurrent events", 2, handler.counter);
-		assertEquals("All events executed", 0, events.size());
+		assertEquals(2, handler.counter, "Execution count of concurrent events");
+		assertEquals(0, events.size(), "All events executed");
     }
 
 
+    @Test
     public void testOneOffEvent() {
 		int duration = 100;
 
@@ -109,16 +118,17 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 		now = now.addTime(duration/2);
 		mgr.timePassing(createPulse(now, false, false));
 		Collection<ScheduledEvent> events = mgr.getEvents();
-		assertEquals("Events still queued", 1, events.size());
+		assertEquals(1, events.size(), "Events still queued");
     	
 		// Move clock forard but  past event
 		now = now.addTime(duration);
 		mgr.timePassing(createPulse(now, false, false));
 		events = mgr.getEvents();
-		assertTrue("All event queue empty", events.isEmpty());
-		assertEquals("Handler executuon count", 1, handler.counter);
+		assertTrue(events.isEmpty(), "All event queue empty");
+		assertEquals(1, handler.counter, "Handler executuon count");
     }
 
+	@Test
 	public void testRepeatingEvent() {
 		int duration = 100;
 
@@ -130,15 +140,15 @@ public class TestScheduledEventManager extends AbstractMarsSimUnitTest  {
 		MarsTime eventTime = clock.getMarsTime().addTime(duration/2);
 		mgr.timePassing(createPulse(eventTime, false, false));
 		Collection<ScheduledEvent> events = mgr.getEvents();
-		assertEquals("Events still queued", 1, events.size());
+		assertEquals(1, events.size(), "Events still queued");
     	
 		// Move clock forward but past event
 		for(int count = 1; count < 4; count++) {
 			eventTime = eventTime.addTime(duration);
 			mgr.timePassing(createPulse(eventTime, false, false));
 			events = mgr.getEvents();
-			assertEquals("Repeat event queued", 1, events.size());
-			assertEquals("Handler executuon count", count, handler.counter);
+			assertEquals(1, events.size(), "Repeat event queued");
+			assertEquals(count, handler.counter, "Handler executuon count");
 		}
     }
 }

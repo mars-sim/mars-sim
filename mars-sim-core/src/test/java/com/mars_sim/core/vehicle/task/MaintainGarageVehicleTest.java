@@ -1,6 +1,13 @@
 package com.mars_sim.core.vehicle.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
@@ -8,14 +15,15 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.StatusType;
 
-public class MaintainGarageVehicleTest extends AbstractMarsSimUnitTest {
+public class MaintainGarageVehicleTest extends MarsSimUnitTest {
 
 
+    @Test
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
-        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var g = buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var mm = v.getMalfunctionManager();
         assertGreaterThan("Vehicle maintenance time", 0D, mm.getEffectiveTimeSinceLastMaintenance());
 
@@ -23,27 +31,27 @@ public class MaintainGarageVehicleTest extends AbstractMarsSimUnitTest {
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
 
         var task = new MaintainGarageVehicle(p, v);
-        assertFalse("Task created", task.isDone()); 
-        assertTrue("Vehicle reserved", v.isReservedForMaintenance());
-        assertTrue("Vehicle status is Maintenance", v.haveStatusType(StatusType.MAINTENANCE));
+        assertFalse(task.isDone(), "Task created"); 
+        assertTrue(v.isReservedForMaintenance(), "Vehicle reserved");
+        assertTrue(v.haveStatusType(StatusType.MAINTENANCE), "Vehicle status is Maintenance");
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
 
-        assertEquals("Maintenance time completed reset", 0D,
-                            mm.getInspectionWorkTimeCompleted());
-        assertFalse("Vehicle not reserved", v.isReservedForMaintenance());
-        assertFalse("Vehicle status out of Maintenance", v.haveStatusType(StatusType.MAINTENANCE));
-        assertEquals("Vehicle maintenance time reset", 0D, mm.getEffectiveTimeSinceLastMaintenance());
+        assertEquals(0D, mm.getInspectionWorkTimeCompleted(), "Maintenance time completed reset");
+        assertFalse(v.isReservedForMaintenance(), "Vehicle not reserved");
+        assertFalse(v.haveStatusType(StatusType.MAINTENANCE), "Vehicle status out of Maintenance");
+        assertEquals(0D, mm.getEffectiveTimeSinceLastMaintenance(), "Vehicle maintenance time reset");
     
-        assertTrue("Task completed", task.isDone()); 
+        assertTrue(task.isDone(), "Task completed"); 
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base");
-        buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         
         var mm = v.getMalfunctionManager();
 
@@ -56,11 +64,11 @@ public class MaintainGarageVehicleTest extends AbstractMarsSimUnitTest {
         var mt = new MaintainVehicleMeta();
         var tasks = mt.getSettlementTasks(s);
 
-        assertEquals("Maintenance tasks found", 1, tasks.size());
+        assertEquals(1, tasks.size(), "Maintenance tasks found");
 
         // No garages so EVA 
         var t = tasks.get(0);
-        assertFalse("Task is EVA", t.isEVA());
+        assertFalse(t.isEVA(), "Task is EVA");
 
     }
 }

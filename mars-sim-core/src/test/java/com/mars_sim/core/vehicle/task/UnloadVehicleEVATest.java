@@ -1,6 +1,14 @@
 package com.mars_sim.core.vehicle.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
+import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -10,15 +18,16 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.StatusType;
 
-public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
+public class UnloadVehicleEVATest extends MarsSimUnitTest {
     private static final int ITEM_AMOUNT = 10;
     private static final double RESOURCE_AMOUNT = 10;
 
+    @Test
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, RESOURCE_AMOUNT);
         v.storeAmountResource(ResourceUtil.FOOD_ID, RESOURCE_AMOUNT);
         v.storeItemResource(ItemResourceUtil.GARMENT_ID, ITEM_AMOUNT);
@@ -32,14 +41,14 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.MECHANICS, 10); // Skilled
         p.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.STRENGTH, 100);
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
 
         v.addSecondaryStatus(StatusType.UNLOADING);
         var task = new UnloadVehicleEVA(p, v);
-        assertFalse("Task created", task.isDone()); 
+        assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
 
         double storedO2Settlement0 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
 //        System.out.println("storedO2Settlement0: " + storedO2Settlement0);
@@ -56,8 +65,8 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         mass = v.getStoredMass();
         System.out.println("vehicle stored mass: " + mass);
         
-        assertEquals("Final stored mass", 0D, mass);
-        assertFalse("Vehicle has UNLOADING", v.haveStatusType(StatusType.UNLOADING));
+        assertEquals(0D, mass, "Final stored mass");
+        assertFalse(v.haveStatusType(StatusType.UNLOADING), "Vehicle has UNLOADING");
 
         double storedO2Settlement1 = s.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID);
         System.out.println("storedO2Settlement1: " + storedO2Settlement1); 
@@ -67,28 +76,29 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
         double storedFood = s.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID);
         System.out.println("storedFood: " + storedFood);
         
-        assertEquals("Food unloaded", RESOURCE_AMOUNT, storedFood);
+        assertEquals(RESOURCE_AMOUNT, storedFood, "Food unloaded");
         
         int storedGarment = s.getItemResourceStored(ItemResourceUtil.GARMENT_ID);
         System.out.println("storedGarment: " + storedGarment);
         
-        assertEquals("Garments unloaded", ITEM_AMOUNT, storedGarment);
+        assertEquals(ITEM_AMOUNT, storedGarment, "Garments unloaded");
 
         // Return to base
-        EVAOperationTest.executeEVAWalk(this, eva, task);
-        assertTrue("Task completed", task.isDone()); 
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
+        assertTrue(task.isDone(), "Task completed"); 
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base", true);
 
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
 
         var mt = new UnloadVehicleMeta();
 
         // Skip empty vehicle
         var tasks = mt.getSettlementTasks(s);
-        assertEquals("Mo unload tasks found", 0, tasks.size());
+        assertEquals(0, tasks.size(), "Mo unload tasks found");
 
         // Load and make reserved
         v.storeAmountResource(ResourceUtil.OXYGEN_ID, 10D);
@@ -97,14 +107,14 @@ public class UnloadVehicleEVATest extends AbstractMarsSimUnitTest {
 
         // Skip reserved vehicle
         tasks = mt.getSettlementTasks(s);
-        assertEquals("Skip vehicle with wrong state", 0, tasks.size());
+        assertEquals(0, tasks.size(), "Skip vehicle with wrong state");
 
         // Unreserved vehicle
         v.addSecondaryStatus(StatusType.UNLOADING);
         tasks = mt.getSettlementTasks(s);
-        assertEquals("Found vehicle", 1, tasks.size());
+        assertEquals(1, tasks.size(), "Found vehicle");
         // No garages so EVA 
         var t = tasks.get(0);
-        assertTrue("Task is EVA", t.isEVA());
+        assertTrue(t.isEVA(), "Task is EVA");
     }
 }

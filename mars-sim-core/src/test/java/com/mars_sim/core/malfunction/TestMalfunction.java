@@ -1,12 +1,19 @@
 package com.mars_sim.core.malfunction;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.malfunction.MalfunctionMeta.EffortSpec;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 
-public class TestMalfunction extends AbstractMarsSimUnitTest {
+public class TestMalfunction extends MarsSimUnitTest {
 
 
 	private static final String AIR_LEAK ="Air Leak";
@@ -17,9 +24,9 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
 	private MalfunctionManager mgr;
 
 	
-    @Override
-    public void setUp() {
-		super.setUp();
+        @BeforeEach
+    public void setUpMalfunction() {
+		
 
         MalfunctionConfig config = getConfig().getMalfunctionConfiguration();
         for (MalfunctionMeta m : config.getMalfunctionList()) {
@@ -28,12 +35,12 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
         	}
         }
 
-		Settlement s = buildSettlement();
+		Settlement s = buildSettlement("mock");
 
 		// Allows rover to go directly into Garage
-		buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+		buildGarage(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
-		Rover r = buildRover(s, "Test", null);
+		Rover r = buildRover(s, "Test", null, EXPLORER_ROVER);
 		mgr = r.getMalfunctionManager();
 		mgr.initScopes();
     }
@@ -42,43 +49,45 @@ public class TestMalfunction extends AbstractMarsSimUnitTest {
 		return new Malfunction(mgr, counter++, insideMeta, true);
 	}
     
+    @Test
     public void testComplete() {
     	Malfunction mal = createInsideMalfunction();
-    	assertFalse("Malfunction not completed", mal.isFixed());
+    	assertFalse(mal.isFixed(), "Malfunction not completed");
     	double expected = mal.getWorkTime(MalfunctionRepairWork.INSIDE);
     	
     	// Add partial work
     	mal.addWorkTime(MalfunctionRepairWork.INSIDE, expected/2D, "Worker1");
-    	assertFalse("Malfunction not partially completed", mal.isFixed());
-    	assertFalse("Malfunction inside work not completed", mal.isWorkDone(MalfunctionRepairWork.INSIDE));
+    	assertFalse(mal.isFixed(), "Malfunction not partially completed");
+    	assertFalse(mal.isWorkDone(MalfunctionRepairWork.INSIDE), "Malfunction inside work not completed");
 
     	mal.addWorkTime(MalfunctionRepairWork.INSIDE, (expected/2D), "Worker1");
-    	assertTrue("Malfunction completed", mal.isFixed());
-    	assertTrue("Malfunction inside work completed", mal.isWorkDone(MalfunctionRepairWork.INSIDE));
+    	assertTrue(mal.isFixed(), "Malfunction completed");
+    	assertTrue(mal.isWorkDone(MalfunctionRepairWork.INSIDE), "Malfunction inside work completed");
     }
     
     
+    @Test
     public void testSlots() {
     	Malfunction mal = createInsideMalfunction();
     	EffortSpec e = insideMeta.getRepairEffort().get(MalfunctionRepairWork.INSIDE);
     	int desiredWorkers = e.getDesiredWorkers();
-    	assertEquals("Malfunction initial slots", mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE), desiredWorkers);
+    	assertEquals(desiredWorkers, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE), "Malfunction initial slots");
 
     	// Add worker
     	for (int i = 0; i < e.getDesiredWorkers(); i++) {
         	mal.addWorkTime(MalfunctionRepairWork.INSIDE, 0.001D, "Worker" + i);
         	int expectedSlots = desiredWorkers - (i + 1);
-        	assertEquals("Available slots after worker #" + i, expectedSlots, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE));
+        	assertEquals(expectedSlots, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE), "Available slots after worker #" + i);
         	
         	// Remove others
             mal.leaveWork(MalfunctionRepairWork.INSIDE, "Worker" + i);
-            assertEquals("Available slots after removing worker #" + i,
-            			expectedSlots + 1,
-            			mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE));	
+            assertEquals(expectedSlots + 1,
+            			mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE),
+            			"Available slots after removing worker #" + i);	
 
         	// Add worker back in
         	mal.addWorkTime(MalfunctionRepairWork.INSIDE, 0.001D, "Worker" + i);
-        	assertEquals("Available slots after re-adding worker #" + i, expectedSlots, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE));
+        	assertEquals(expectedSlots, mal.numRepairerSlotsEmpty(MalfunctionRepairWork.INSIDE), "Available slots after re-adding worker #" + i);
     	}
     }
 }

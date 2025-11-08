@@ -1,6 +1,12 @@
 package com.mars_sim.core.person.ai.mission.meta;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -9,11 +15,12 @@ import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 
-public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
+public class ConstructionMissionMetaTest extends MarsSimUnitTest {
     private static final String LANDER_HAB = "Lander Hab";
 
+    @Test
     public void testProbabiltyArchitectSite() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
@@ -23,24 +30,25 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         var meta = new ConstructionMissionMeta();
 
         var score = meta.getProbability(architect);
-        assertEquals("No probability", 0D, score.getScore());
+        assertEquals(0D, score.getScore(), "No probability");
 
         var cm = s.getConstructionManager();
         var landerHab = getConfig().getBuildingConfiguration().getBuildingSpec(LANDER_HAB);
         cm.createNewBuildingSite(landerHab);
 
         score = meta.getProbability(architect);
-        assertEquals("No equipment", 0D, score.getScore());
+        assertEquals(0D, score.getScore(), "No equipment");
 
         addSitePreReqs(s);
 
         score = meta.getProbability(architect);
-        assertTrue("Architect can start", score.getScore() >= 1);
+        assertTrue(score.getScore() >= 1, "Architect can start");
     }
 
+    @Test
     public void testProbabiltySalvageSite() {
-        var s = buildSettlement();
-        var a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D, 0);
+        var s = buildSettlement("mock");
+        var a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
@@ -55,11 +63,12 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         addSitePreReqs(s);
 
         var score = meta.getProbability(architect);
-        assertTrue("Architect can start", score.getScore() >= 1);
+        assertTrue(score.getScore() >= 1, "Architect can start");
     }
 
+    @Test
     public void testProbabiltyDoctor() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var doctor = buildPerson("worker", s, JobType.DOCTOR);
         doctor.setRole(RoleType.AGRICULTURE_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
@@ -84,8 +93,9 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         }
     }
     
+    @Test
     public void testProbabiltyArchitectQueue() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
@@ -95,7 +105,7 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         var meta = new ConstructionMissionMeta();
 
         var score = meta.getProbability(architect);
-        assertEquals("No probability", 0D, score.getScore());
+        assertEquals(0D, score.getScore(), "No probability");
 
         addSitePreReqs(s);
 
@@ -104,6 +114,6 @@ public class ConstructionMissionMetaTest extends AbstractMarsSimUnitTest {
         cm.addBuildingToQueue(LANDER_HAB, null);
 
         score = meta.getProbability(architect);
-        assertTrue("Architect can start", score.getScore() >= 1);
+        assertTrue(score.getScore() >= 1, "Architect can start");
     }
 }

@@ -1,16 +1,21 @@
 package com.mars_sim.core.person.ai.task.util;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.Settlement;
 
-public class SettlementTaskManagerTest extends AbstractMarsSimUnitTest {
+public class SettlementTaskManagerTest extends MarsSimUnitTest {
     // Test settlement task that just record tinme
     @SuppressWarnings("serial")
 	private static class TestTask extends SettlementTask {
@@ -95,72 +100,76 @@ public class SettlementTaskManagerTest extends AbstractMarsSimUnitTest {
         };
     }
 
+    @Test
     public void testGetTasks() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var manager = buildManager(s, SCOPE_METATTASKS);
         Person p = buildPerson("Worker", s);
 
         // Triggers the creation of the internal task cache
         manager.getTasks(p);
         var available1 = manager.getAvailableTasks();
-        assertEquals("Number of Settlement Tasks", SCOPE_METATTASKS.size() * TASKS_PER_META, available1.size());
+        assertEquals(SCOPE_METATTASKS.size() * TASKS_PER_META, available1.size(), "Number of Settlement Tasks");
 
         // No refresh so same list
         manager.getTasks(p);
         var available2 = manager.getAvailableTasks();
-        assertEquals("Settlement Tasks same on second call", available1, available2);
+        assertEquals(available1, available2, "Settlement Tasks same on second call");
 
         // Do a refresh by simulating time passing
         manager.timePassing();
         manager.getTasks(p);
         var available3 = manager.getAvailableTasks();
-        assertFalse("Settlement Tasks change after timepassing", available1.equals(available3));
+        assertFalse(available1.equals(available3), "Settlement Tasks change after timepassing");
 
     }
 
+    @Test
     public void testGetNonWorkTasks() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var manager = buildManager(s, SCOPE_METATTASKS);
         Person p = buildPerson("OffDuty", s);
-        assertEquals("Person on leave", WorkStatus.OFF_DUTY, p.getShiftSlot().getStatus());
+        assertEquals(WorkStatus.OFF_DUTY, p.getShiftSlot().getStatus(), "Person on leave");
 
 
         // Should only be 2 set of tasks, ALL & NonWork
         var available1 = manager.getTasks(p);
-        assertEquals("Number of OffDuty Tasks", 2 * TASKS_PER_META, available1.size());
+        assertEquals(2 * TASKS_PER_META, available1.size(), "Number of OffDuty Tasks");
         List<String> scopes = available1.stream().map(TaskJob::getName).toList();
         for(int i = 0; i < TASKS_PER_META; i++) {
             String name = TaskScope.ANY_HOUR.name() + i;
-            assertTrue("Task present " + name, scopes.contains(name));
+            assertTrue(scopes.contains(name), "Task present " + name);
             name = TaskScope.NONWORK_HOUR.name() + i;
-            assertTrue("Task present " + name, scopes.contains(name));
+            assertTrue(scopes.contains(name), "Task present " + name);
         }
     }
 
+    @Test
     public void testGetWorkTasks() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
         var manager = buildManager(s, SCOPE_METATTASKS);
         Person p = buildPerson("OnDuty", s);
         p.getShiftSlot().setOnCall(true);
-        assertEquals("Person on duty", WorkStatus.ON_CALL, p.getShiftSlot().getStatus());
+        assertEquals(WorkStatus.ON_CALL, p.getShiftSlot().getStatus(), "Person on duty");
 
         // Should only be 2 set of tasks, ALL & NonWork
         var available1 = manager.getTasks(p);
-        assertEquals("Number of OffDuty Tasks", 2 * TASKS_PER_META, available1.size());
+        assertEquals(2 * TASKS_PER_META, available1.size(), "Number of OffDuty Tasks");
         List<String> scopes = available1.stream().map(TaskJob::getName).toList();
         for(int i = 0; i < TASKS_PER_META; i++) {
             String name = TaskScope.ANY_HOUR.name() + i;
-            assertTrue("Task present " + name, scopes.contains(name));
+            assertTrue(scopes.contains(name), "Task present " + name);
             name = TaskScope.WORK_HOUR.name() + i;
-            assertTrue("Task present " + name, scopes.contains(name));
+            assertTrue(scopes.contains(name), "Task present " + name);
         }
     }
 
     /**
      * Check that a Peron can reject tasks
      */
+    @Test
     public void testPersonScoring() {
-        var s = buildSettlement();
+        var s = buildSettlement("mock");
 
         // One meta rejects and one accepts
         var manager = buildManager(s, List.of(
@@ -172,7 +181,7 @@ public class SettlementTaskManagerTest extends AbstractMarsSimUnitTest {
         var selected = manager.getTasks(p);
         var available1 = manager.getAvailableTasks(); 
 
-        assertEquals("Number of Suitable Settlement Tasks", TASKS_PER_META, selected.size());
-        assertEquals("Number of Total Settlement Tasks", 2 * TASKS_PER_META, available1.size());
+        assertEquals(TASKS_PER_META, selected.size(), "Number of Suitable Settlement Tasks");
+        assertEquals(2 * TASKS_PER_META, available1.size(), "Number of Total Settlement Tasks");
     }
 }

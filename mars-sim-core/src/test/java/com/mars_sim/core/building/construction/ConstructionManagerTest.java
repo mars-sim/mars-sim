@@ -6,14 +6,21 @@
  */
 
 package com.mars_sim.core.building.construction;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 
 /**
  * Unit test for the ConstructionManager class.
  */
-public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
+public class ConstructionManagerTest extends MarsSimUnitTest {
 
     // Depends on buildings.xml
     private static final String LANDER_HAB = "Lander Hab";
@@ -26,6 +33,7 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionManager.getConstructionSites()'
      */
+    @Test
     public void testCreateNewBuildingSite() {
         var manager = buildManager();
 
@@ -36,13 +44,14 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
 
         ConstructionSite site = manager.getNextConstructionSite(1);
         assertEquals(buildSite, site);
-        assertNotNull("Has stage", site.getCurrentConstructionStage());
+        assertNotNull(site.getCurrentConstructionStage(), "Has stage");
     }
 
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionManager.getConstructionSitesNeedingMission()'
      */
+    @Test
     public void testGetConstructionSitesNeedingMission() {
         var manager = buildManager();
         manager.addBuildingToQueue(LANDER_HAB, null);
@@ -59,6 +68,7 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
      * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionManager.createNewConstructionSite()'
      */
+    @Test
     public void testNoSiteWithoutQueue() {
         var manager = buildManager();
         ConstructionSite site = manager.getNextConstructionSite(1);
@@ -68,26 +78,28 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
     /*
      * Test method queue
      */
+    @Test
     public void testAddQueue() {
         var manager = buildManager();
 
-        assertTrue("Building schedule is empty", manager.getBuildingSchedule().isEmpty());
+        assertTrue(manager.getBuildingSchedule().isEmpty(), "Building schedule is empty");
 
         manager.addBuildingToQueue(LANDER_HAB, null);
         var queue = manager.getBuildingSchedule();
-        assertEquals("Queued buildings", 1, queue.size());
+        assertEquals(1, queue.size(), "Queued buildings");
         var first = queue.get(0);
-        assertEquals("Building type on queue", LANDER_HAB, first.getBuildingType());
-        assertTrue("Build now", first.isReady());
+        assertEquals(LANDER_HAB, first.getBuildingType(), "Building type on queue");
+        assertTrue(first.isReady(), "Build now");
 
         var site = manager.getNextConstructionSite(1);
-        assertTrue("Building schedule becomes empty", manager.getBuildingSchedule().isEmpty());
-        assertEquals("Site build", LANDER_HAB, site.getBuildingName());
+        assertTrue(manager.getBuildingSchedule().isEmpty(), "Building schedule becomes empty");
+        assertEquals(LANDER_HAB, site.getBuildingName(), "Site build");
     }
 
     /*
      * Test method queue
      */
+    @Test
     public void testAddFuture() {
         var s = buildSettlement("mgr", true);
         var manager = new ConstructionManager(s);
@@ -97,10 +109,10 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
 
         manager.addBuildingToQueue(LANDER_HAB, futureTime);
         var queue = manager.getBuildingSchedule();
-        assertEquals("Queued buildings", 1, queue.size());
+        assertEquals(1, queue.size(), "Queued buildings");
         var first = queue.get(0);
-        assertEquals("Build future", futureTime, first.getStart());
-        assertFalse("Build not ready", first.isReady());
+        assertEquals(futureTime, first.getStart(), "Build future");
+        assertFalse(first.isReady(), "Build not ready");
 
         // Advance time
         var newPulse = createPulse(futureTime, false, false);
@@ -108,24 +120,25 @@ public class ConstructionManagerTest extends AbstractMarsSimUnitTest {
 
         // Schedule should be now
         queue = manager.getBuildingSchedule();
-        assertEquals("Queued buildings after puls", 1, queue.size());
+        assertEquals(1, queue.size(), "Queued buildings after puls");
         first = queue.get(0);
-        assertTrue("Build ready", first.isReady());
+        assertTrue(first.isReady(), "Build ready");
     }
 
 
+    @Test
     public void testGetStages() {
         var manager = buildManager();
         var phases = manager.getConstructionStages(LANDER_HAB);
 
-        assertEquals("Phases", 3, phases.size());
+        assertEquals(3, phases.size(), "Phases");
 
         var foundation = phases.get(0);
-        assertEquals("Surface Foundation 9x9", foundation.getName());
+        assertEquals(foundation.getName(), "Surface Foundation 9x9");
         assertEquals(Stage.FOUNDATION, foundation.getType());
 
         var frame = phases.get(1);
-        assertEquals("Round Hab Frame", frame.getName());
+        assertEquals(frame.getName(), "Round Hab Frame");
         assertEquals(Stage.FRAME, frame.getType());
 
         var building = phases.get(2);

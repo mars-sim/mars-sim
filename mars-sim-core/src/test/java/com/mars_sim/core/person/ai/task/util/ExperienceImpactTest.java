@@ -1,9 +1,17 @@
 package com.mars_sim.core.person.ai.task.util;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
+import static com.mars_sim.core.test.SimulationAssertions.assertLessThan;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 
 import java.util.Set;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
@@ -11,10 +19,11 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.structure.Settlement;
 
-public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
+public class ExperienceImpactTest extends MarsSimUnitTest {
 
+    @Test
     public void testApplyBasicSkill() {
-        Settlement s = buildSettlement();
+        Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
 
         double origStress = p.getPhysicalCondition().getStress();
@@ -50,17 +59,18 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         var newChanged2Exp = sm.getSkill(changed2.getType()).getCumulativeExperience();
         var newUnChangedExp = sm.getSkill(unchanged.getType()).getCumulativeExperience();
 
-        assertEquals("Unchanged skill",  origUnChangedExp, newUnChangedExp);
+        assertEquals(origUnChangedExp, newUnChangedExp, "Unchanged skill");
         assertGreaterThan("Changed #1 skill",  origChanged1Exp, newChanged1Exp);
         assertGreaterThan("Changed #2 skill",  origChanged2Exp, newChanged2Exp);
 
         double newStress = p.getPhysicalCondition().getStress();
-        assertEquals("Unchanged stress",  origStress, newStress);
+        assertEquals(origStress, newStress, "Unchanged stress");
 
     }
 
+    @Test
     public void testApplySingleSkill() {
-        Settlement s = buildSettlement();
+        Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
 
         double origStress = p.getPhysicalCondition().getStress();
@@ -91,16 +101,17 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         var newChanged1Exp = sm.getSkill(changed1.getType()).getCumulativeExperience();
         var newUnChangedExp = sm.getSkill(unchanged.getType()).getCumulativeExperience();
 
-        assertEquals("Unchanged skill",  origUnChangedExp, newUnChangedExp);
+        assertEquals(origUnChangedExp, newUnChangedExp, "Unchanged skill");
         assertGreaterThan("Changed #1 skill",  origChanged1Exp, newChanged1Exp);
 
         double newStress = p.getPhysicalCondition().getStress();
-        assertEquals("Unchanged stress",  origStress, newStress);
+        assertEquals(origStress, newStress, "Unchanged stress");
 
     }
 
+    @Test
     public void testApplyUnbalancedSkill() {
-        Settlement s = buildSettlement();
+        Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
 
         double origStress = p.getPhysicalCondition().getStress();
@@ -137,8 +148,9 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         assertGreaterThan("Increased stress",  origStress, newStress);
     }
 
+    @Test
     public void testEffectiveSkill() {
-        Settlement s = buildSettlement();
+        Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
         p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
@@ -157,7 +169,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
                                           false, 0,
                                           selected1.getType(), selected2.getType());
         var skill = balanced.getEffectiveSkillLevel(p);
-        assertEquals("Balanced skill", (skill1 + skill2)/2, skill);
+        assertEquals((skill1 + skill2)/2, skill, "Balanced skill");
 
         // Balanced
         Set<SkillWeight> skills = Set.of(new SkillWeight(selected1.getType(), 2),
@@ -165,11 +177,12 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         ExperienceImpact unbalanced = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                                                         false, 0, skills);
         skill = unbalanced.getEffectiveSkillLevel(p);
-        assertEquals("Unalanced skill", ((skill1*2) + skill2)/3, skill);
+        assertEquals(((skill1*2) + skill2)/3, skill, "Unalanced skill");
     }
 
+    @Test
     public void testPersonNoEffort() {
-        Settlement s = buildSettlement();
+        Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
         p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
@@ -178,15 +191,16 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, null,
                                           PhysicalEffort.NONE, 0);
-        assertEquals("No effort experience", PhysicalEffort.NONE, noEffort.getEffortRequired());
+        assertEquals(PhysicalEffort.NONE, noEffort.getEffortRequired(), "No effort experience");
         noEffort.apply(p, 10, 1, 1);
 
         var newFatigue = p.getPhysicalCondition().getFatigue();
-        assertEquals("Fatigue unchanged", origFatigue, newFatigue);
+        assertEquals(origFatigue, newFatigue, "Fatigue unchanged");
     }
     
+    @Test
     public void testPersonLowEffort() {
-        Settlement s = buildSettlement();
+        Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
         p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
@@ -195,15 +209,16 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                                           PhysicalEffort.LOW, 0);
-        assertEquals("Low effort experience", PhysicalEffort.LOW, noEffort.getEffortRequired());
+        assertEquals(PhysicalEffort.LOW, noEffort.getEffortRequired(), "Low effort experience");
         noEffort.apply(p, 10, 1, 1);
 
         var newEnergy = p.getPhysicalCondition().getEnergy();
         assertGreaterThan("Energy reduced inceased", newEnergy, origEnergy);
     }
 
+    @Test
     public void testPersonHighEffort() {
-        Settlement s = buildSettlement();
+        Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
         var cond = p.getPhysicalCondition();
         cond.setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
@@ -216,7 +231,7 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                                           PhysicalEffort.HIGH, 0);
-        assertEquals("High effort experience", PhysicalEffort.HIGH, noEffort.getEffortRequired());
+        assertEquals(PhysicalEffort.HIGH, noEffort.getEffortRequired(), "High effort experience");
 
         noEffort.apply(p, 10, 1, 1);
 
@@ -227,34 +242,34 @@ public class ExperienceImpactTest extends AbstractMarsSimUnitTest {
         assertLessThan("Muscle health decreased", origHealth, cond.getMuscleHealth());
     }
 
+    @Test
     public void testConstructors() {
         ExperienceImpact effort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                 true, 0);
-        assertEquals("Low effort experience", PhysicalEffort.LOW, effort.getEffortRequired());
+        assertEquals(PhysicalEffort.LOW, effort.getEffortRequired(), "Low effort experience");
 
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
             false, 0);
-        assertEquals("No effort experience", PhysicalEffort.NONE, noEffort.getEffortRequired());
+        assertEquals(PhysicalEffort.NONE, noEffort.getEffortRequired(), "No effort experience");
     }
 
+    @Test
     public void testEffort() {
         assertEffort(PhysicalEffort.HIGH, PhysicalEffort.LOW);
         assertEffort(PhysicalEffort.HIGH, PhysicalEffort.NONE);
         assertEffort(PhysicalEffort.LOW, PhysicalEffort.NONE);
 
-        assertFalse("Physical effort HIGH == HIGH", ExperienceImpact.isEffortHigher(PhysicalEffort.HIGH,
-                             PhysicalEffort.HIGH));
-        assertFalse("Physical effort LOW == LOW", ExperienceImpact.isEffortHigher(PhysicalEffort.LOW,
-                             PhysicalEffort.LOW));
-        assertFalse("Physical effort NONE == NONE", ExperienceImpact.isEffortHigher(PhysicalEffort.NONE,
-                             PhysicalEffort.NONE));
+        assertFalse(ExperienceImpact.isEffortHigher(PhysicalEffort.HIGH,
+                             PhysicalEffort.HIGH), "Physical effort HIGH == HIGH");
+        assertFalse(ExperienceImpact.isEffortHigher(PhysicalEffort.LOW,
+                             PhysicalEffort.LOW), "Physical effort LOW == LOW");
+        assertFalse(ExperienceImpact.isEffortHigher(PhysicalEffort.NONE,
+                             PhysicalEffort.NONE), "Physical effort NONE == NONE");
 
     }
 
     private void assertEffort(PhysicalEffort higher, PhysicalEffort lower) {
-        assertTrue("Physical effort " + higher.name() + " > " + lower.name(),
-                        ExperienceImpact.isEffortHigher(higher, lower));
-        assertFalse("Physical effort " + lower.name() + " > " + higher.name(),
-                        ExperienceImpact.isEffortHigher(lower, higher));
+        assertTrue(ExperienceImpact.isEffortHigher(higher, lower), "Physical effort " + higher.name() + " > " + lower.name());
+        assertFalse(ExperienceImpact.isEffortHigher(lower, higher), "Physical effort " + lower.name() + " > " + higher.name());
     }
 }
