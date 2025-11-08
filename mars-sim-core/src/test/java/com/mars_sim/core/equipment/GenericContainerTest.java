@@ -34,7 +34,6 @@ public class GenericContainerTest {
 	@BeforeEach
 
 	
-	@BeforeEach
 
 
 	
@@ -61,7 +60,7 @@ public class GenericContainerTest {
 		GenericContainer c = new GenericContainer("Bag", EquipmentType.BAG, false, settlement);
 	
 		Settlement as = c.getAssociatedSettlement();
-		assertEquals("Associated Settlement", as, settlement);
+		assertEquals(as, settlement, "Associated Settlement");
 	}
 	
 	/*
@@ -74,21 +73,19 @@ public class GenericContainerTest {
 		
 		int rockID = ResourceUtil.ROCK_SAMPLES_ID;
 		double bagCap = ContainerUtil.getContainerCapacity(EquipmentType.BAG);
-		assertEquals("EMpty capacity", bagCap,
-						c.getSpecificCapacity(rockID));
-		assertEquals("Remaining capacity", bagCap,
-				c.getRemainingCombinedCapacity(rockID));
+		assertEquals(bagCap, c.getSpecificCapacity(rockID, "EMpty capacity"));
+		assertEquals(bagCap, c.getRemainingCombinedCapacity(rockID, "Remaining capacity"));
 		
 		// Load oxygen
 		double quantity = bagCap/2D;
-		assertEquals("Full store", 0D, c.storeAmountResource(rockID, quantity));
-		assertEquals("Stored", quantity, c.getSpecificAmountResourceStored(rockID));
-		assertEquals("Remaining capacity after load", quantity, c.getRemainingCombinedCapacity(rockID));
+		assertEquals(0D, c.storeAmountResource(rockID, quantity, "Full store"));
+		assertEquals(quantity, c.getSpecificAmountResourceStored(rockID, "Stored"));
+		assertEquals(quantity, c.getRemainingCombinedCapacity(rockID, "Remaining capacity after load"));
 
 		// Fully overload
-		assertEquals("Overload stored excess", quantity, c.storeAmountResource(rockID, bagCap));
-		assertEquals("Stored after overload", bagCap, c.getSpecificAmountResourceStored(rockID));
-		assertEquals("Remaining capacity after overload", 0D, c.getRemainingCombinedCapacity(rockID));
+		assertEquals(quantity, c.storeAmountResource(rockID, bagCap, "Overload stored excess"));
+		assertEquals(bagCap, c.getSpecificAmountResourceStored(rockID, "Stored after overload"));
+		assertEquals(0D, c.getRemainingCombinedCapacity(rockID, "Remaining capacity after overload"));
 	}
 	
 	/*
@@ -105,14 +102,14 @@ public class GenericContainerTest {
 		// Load rock
 		double quantity = bagCap/2D;
 		c.storeAmountResource(rockID, quantity);
-		assertEquals("Stored", quantity, c.getSpecificAmountResourceStored(rockID));
-		assertEquals("Stored resource", rockID, c.getResource());
+		assertEquals(quantity, c.getSpecificAmountResourceStored(rockID, "Stored"));
+		assertEquals(rockID, c.getResource(, "Stored resource"));
 		
 		// Attempt to load 2nd resource
 		int secondResource = ResourceUtil.ICE_ID;
-		assertEquals("Stored 2nd resource", quantity, c.storeAmountResource(secondResource, quantity));
-		assertEquals("2nd resource capacity", 0D, c.getSpecificAmountResourceStored(secondResource));
-		assertEquals("2nd resource remaining capacity", 0D, c.getRemainingCombinedCapacity(secondResource));
+		assertEquals(quantity, c.storeAmountResource(secondResource, quantity, "Stored 2nd resource"));
+		assertEquals(0D, c.getSpecificAmountResourceStored(secondResource, "2nd resource capacity"));
+		assertEquals(0D, c.getRemainingCombinedCapacity(secondResource, "2nd resource remaining capacity"));
 	}
 	
 	/*
@@ -129,20 +126,20 @@ public class GenericContainerTest {
 		// Load rock
 		double quantity = bagCap/2D;
 		c.storeAmountResource(rockID, bagCap);
-		assertEquals("Stored", bagCap, c.getSpecificAmountResourceStored(rockID));
-		assertEquals("Partial Unload", 0D, c.retrieveAmountResource(rockID, quantity));
-		assertEquals("Stored after partial unload", quantity, c.getSpecificAmountResourceStored(rockID));
+		assertEquals(bagCap, c.getSpecificAmountResourceStored(rockID, "Stored"));
+		assertEquals(0D, c.retrieveAmountResource(rockID, quantity, "Partial Unload"));
+		assertEquals(quantity, c.getSpecificAmountResourceStored(rockID, "Stored after partial unload"));
 
-		assertEquals("Full Unload", 0D, c.retrieveAmountResource(rockID, quantity));
-		assertEquals("Stored after full unload", 0D, c.getSpecificAmountResourceStored(rockID));
+		assertEquals(0D, c.retrieveAmountResource(rockID, quantity, "Full Unload"));
+		assertEquals(0D, c.getSpecificAmountResourceStored(rockID, "Stored after full unload"));
 
-		assertEquals("Excessive Unload", quantity, c.retrieveAmountResource(rockID, quantity));
+		assertEquals(quantity, c.retrieveAmountResource(rockID, quantity, "Excessive Unload"));
 
 		
 		// Still fixed to original resource
 		int secondResource = ResourceUtil.ICE_ID;
-		assertEquals("1st resource after unload", bagCap, c.getRemainingCombinedCapacity(rockID));
-		assertEquals("2nd resource after unload", 0D, c.getRemainingCombinedCapacity(secondResource));
+		assertEquals(bagCap, c.getRemainingCombinedCapacity(rockID, "1st resource after unload"));
+		assertEquals(0D, c.getRemainingCombinedCapacity(secondResource, "2nd resource after unload"));
 	}
 	
 	/*
@@ -160,8 +157,8 @@ public class GenericContainerTest {
 		// Load rock
 		c.storeAmountResource(rockID, bagCap);
 		c.retrieveAmountResource(rockID, bagCap);
-		assertEquals("Capacity of prime resource after full unload", bagCap, c.getRemainingCombinedCapacity(rockID));
-		assertEquals("Capacity of secondary resource after full unload", 0D, c.getRemainingCombinedCapacity(secondResource));
+		assertEquals(bagCap, c.getRemainingCombinedCapacity(rockID, "Capacity of prime resource after full unload"));
+		assertEquals(0D, c.getRemainingCombinedCapacity(secondResource, "Capacity of secondary resource after full unload"));
 	}
 	
 	
@@ -182,8 +179,8 @@ public class GenericContainerTest {
 		c.retrieveAmountResource(rockID, bagCap);
 		
 		// Both should be back to full capacity
-		assertEquals("Capacity of prime resource after full unload", bagCap, c.getRemainingCombinedCapacity(rockID));
-		assertEquals("Capacity of secondary resource after full unload", bagCap, c.getRemainingCombinedCapacity(secondResource));
+		assertEquals(bagCap, c.getRemainingCombinedCapacity(rockID, "Capacity of prime resource after full unload"));
+		assertEquals(bagCap, c.getRemainingCombinedCapacity(secondResource, "Capacity of secondary resource after full unload"));
 	}
 
 	/*
@@ -203,8 +200,8 @@ public class GenericContainerTest {
 		// Test negatives first
 		assertPhaseNotSupported(c, failedId1);
 		
-		assertEquals("Container capacity 1", cap, c.getRemainingCombinedCapacity(allowedId1));
-		assertEquals("Container capacity 2", cap, c.getRemainingCombinedCapacity(allowedId2));
+		assertEquals(cap, c.getRemainingCombinedCapacity(allowedId1, "Container capacity 1"));
+		assertEquals(cap, c.getRemainingCombinedCapacity(allowedId2, "Container capacity 2"));
 		
 		// Check the correct resource can be stored
 		c.storeAmountResource(allowedId1, cap/2);
@@ -283,7 +280,7 @@ public class GenericContainerTest {
 		assertPhaseNotSupported(c, failedId1);
 		assertPhaseNotSupported(c, failedId2);
 
-		assertEquals("Container capacity", cap, c.getRemainingCombinedCapacity(allowedId));
+		assertEquals(cap, c.getRemainingCombinedCapacity(allowedId, "Container capacity"));
 		
 		// Check the correct resource can be stored
 		c.storeAmountResource(allowedId, cap/2);
@@ -302,7 +299,7 @@ public class GenericContainerTest {
 	private void assertPhaseNotSupported(GenericContainer c, int resourceId) {
 		double cap = ContainerUtil.getContainerCapacity(c.getEquipmentType());
 
-		assertEquals("Container no capacity", 0D, c.getRemainingCombinedCapacity(resourceId));
+		assertEquals(0D, c.getRemainingCombinedCapacity(resourceId, "Container no capacity"));
 		
 		// Load resource
 		assertThrows(IllegalArgumentException.class, () -> {

@@ -62,7 +62,6 @@ public class LoadControllerTest {
 	@BeforeEach
 
 
-	@BeforeEach
 
 
 
@@ -178,7 +177,7 @@ public class LoadControllerTest {
 		long optionalLoaded = vehicle.getEquipmentSet().stream()
 				.filter(e -> (e.getEquipmentType() == eType))
 				.count();
-		assertEquals("Optional Equipment loaded", 0, optionalLoaded);
+		assertEquals(0, optionalLoaded, "Optional Equipment loaded");
 	}
 
 
@@ -396,7 +395,7 @@ public class LoadControllerTest {
 			optionalLoaded = vehicle.getItemResourceStored(missingId);
 		}
 
-		assertEquals("Optional resource loaded", 0D, optionalLoaded);
+		assertEquals(0D, optionalLoaded, "Optional resource loaded");
 	}
 
 
@@ -430,7 +429,7 @@ public class LoadControllerTest {
 
 		LoadingController controller = vehicle.setLoading(manifest);
 		assertTrue("Vehicle has of LOADING", vehicle.haveStatusType(StatusType.LOADING));
-		assertEquals("Vehicle of the controller", vehicle, controller.getVehicle());
+		assertEquals(vehicle, controller.getVehicle(, "Vehicle of the controller"));
 
 		int loadingCount = 0;
 		boolean loaded = false;

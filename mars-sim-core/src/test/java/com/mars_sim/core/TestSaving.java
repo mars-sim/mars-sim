@@ -72,27 +72,21 @@ public class TestSaving implements SimulationListener {
 
 
         // Check simulations saved and it contains data
-        assertEquals("Simulation save status", SimulationListener.SAVE_COMPLETED, saveFeedback);
-        assertTrue("Simulation file exists", saveFile.isFile());
-        assertTrue("Save file is not empty", saveFile.length() > 0);
+        assertEquals(SimulationListener.SAVE_COMPLETED, saveFeedback, "Simulation save status");
+        assertTrue(saveFile.isFile(), "Simulation file exists");
+        assertTrue(saveFile.length() > 0, "Save file is not empty");
 
         // Reload it
         MedicalManager origMgr = sim.getMedicalManager();
         sim.loadSimulation(saveFile);
-        assertNotEquals("Changed Medical Manager", origMgr, sim.getMedicalManager());
+        assertNotEquals(origMgr, sim.getMedicalManager(), "Changed Medical Manager");
 
 
         Person laterP = sim.getUnitManager().getPersonByID(p.getIdentifier());
-        assertEquals("Has complaint", complaint, laterP.getPhysicalCondition().getMostSerious().getComplaint());
+        assertEquals(complaint, laterP.getPhysicalCondition().getMostSerious().getComplaint(), "Has complaint");
     }
 
     @AfterEach
-
-
-    @AfterEach
-
-
-
     public void tearDown() {
         // Delete the saved file
         if ((saveFile != null) && saveFile.isFile()) {

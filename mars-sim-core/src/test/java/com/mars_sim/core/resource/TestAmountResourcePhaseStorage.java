@@ -15,7 +15,6 @@ public class TestAmountResourcePhaseStorage {
     @BeforeEach
 
 	
-    @BeforeEach
 
 
 	
@@ -30,7 +29,7 @@ public class TestAmountResourcePhaseStorage {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		storage.addAmountResourcePhaseCapacity(PhaseType.GAS, 100D);
 		double amountGas = storage.getAmountResourcePhaseCapacity(PhaseType.GAS);
-		assertEquals("Amount resource phase capacity set correctly.", 100D, amountGas, 0D);
+		assertEquals(100D, amountGas, 0D, "Amount resource phase capacity set correctly.");
 	}
 	
 	@Test
@@ -39,7 +38,7 @@ public class TestAmountResourcePhaseStorage {
 	public void testInventoryAmountResourcePhaseCapacityNotSet() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		double amountGas = storage.getAmountResourcePhaseCapacity(PhaseType.GAS);
-		assertEquals("Amount resource phase capacity set correctly.", 0D, amountGas, 0D);
+		assertEquals(0D, amountGas, 0D, "Amount resource phase capacity set correctly.");
 	}
 	
 	@Test
@@ -63,7 +62,7 @@ public class TestAmountResourcePhaseStorage {
 		AmountResource hydrogen = ResourceUtil.findAmountResource(ResourceUtil.HYDROGEN_ID);
 		storage.storeAmountResourcePhase(hydrogen, 100D);
 		double amountPhaseStored = storage.getAmountResourcePhaseStored(PhaseType.GAS);
-		assertEquals("Amount resource phase stored is correct.", 100D, amountPhaseStored, 0D);
+		assertEquals(100D, amountPhaseStored, 0D, "Amount resource phase stored is correct.");
 	}
 	
 	@Test
@@ -116,7 +115,7 @@ public class TestAmountResourcePhaseStorage {
 		AmountResource hydrogen = ResourceUtil.findAmountResource(ResourceUtil.HYDROGEN_ID);
 		storage.storeAmountResourcePhase(hydrogen, 100D);
 		AmountResource resource = storage.getAmountResourcePhaseType(PhaseType.GAS);
-		assertEquals("Amount phase stored is of correct type.", hydrogen, resource);
+		assertEquals(hydrogen, resource, "Amount phase stored is of correct type.");
 	}
 	
 	@Test
@@ -138,7 +137,7 @@ public class TestAmountResourcePhaseStorage {
 		AmountResource hydrogen = ResourceUtil.findAmountResource(ResourceUtil.HYDROGEN_ID);
 		storage.storeAmountResourcePhase(hydrogen, 50D);
 		double remainingCapacity = storage.getAmountResourcePhaseRemainingCapacity(PhaseType.GAS);
-		assertEquals("Amount phase capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
+		assertEquals(50D, remainingCapacity, 0D, "Amount phase capacity remaining is correct amount.");
 	}
 	
 	@Test
@@ -147,7 +146,7 @@ public class TestAmountResourcePhaseStorage {
 	public void testInventoryAmountResourcePhaseRemainingCapacityNoCapacity() {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
 		double remainingCapacity = storage.getAmountResourcePhaseRemainingCapacity(PhaseType.GAS);
-		assertEquals("Amount phase capacity remaining is correct amount.", 0D, remainingCapacity, 0D);
+		assertEquals(0D, remainingCapacity, 0D, "Amount phase capacity remaining is correct amount.");
 	}
 	
 	@Test
@@ -160,7 +159,7 @@ public class TestAmountResourcePhaseStorage {
 		storage.storeAmountResourcePhase(hydrogen, 100D);
 		storage.retrieveAmountResourcePhase(PhaseType.GAS, 50D);
 		double remainingCapacity = storage.getAmountResourcePhaseRemainingCapacity(PhaseType.GAS);
-		assertEquals("Amount phase capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
+		assertEquals(50D, remainingCapacity, 0D, "Amount phase capacity remaining is correct amount.");
 	}
 	
 	@Test
@@ -217,6 +216,6 @@ public class TestAmountResourcePhaseStorage {
 		storage.storeAmountResourcePhase(oxygen, 10D);
 		storage.storeAmountResourcePhase(water, 20D);
 		double totalStored = storage.getTotalAmountResourcePhasesStored(false);
-		assertEquals("Amount total stored is correct.", 30D, totalStored, 0D);
+		assertEquals(30D, totalStored, 0D, "Amount total stored is correct.");
 	}
 }

@@ -41,7 +41,6 @@ public class BuildingConnectorManagerTest {
 	@BeforeEach
 
     
-	@BeforeEach
 
 
     
@@ -142,7 +141,7 @@ public class BuildingConnectorManagerTest {
 
         manager.removeAllConnectionsToBuilding(buildings.get(1));
         assertTrue("Nothing to building 1", manager.getConnectionsToBuilding(buildings.get(1)).isEmpty());
-        assertEquals("Building 2 reduced", 1, manager.getConnectionsToBuilding(buildings.get(2)).size());
+        assertEquals(1, manager.getConnectionsToBuilding(buildings.get(2, "Building 2 reduced")).size());
 
     }
 
@@ -303,7 +302,7 @@ public class BuildingConnectorManagerTest {
         var endPosn = new LocalPosition(4.5D, 0D);
         InsideBuildingPath path1 = manager.determineShortestPath(b0, startPosn, b0, endPosn);
         assertNotNull(path1);
-        assertEquals("Path1 length", 2, path1.getPathLocations().size());
+        assertEquals(2, path1.getPathLocations(, "Path1 length").size());
         assertPathValidity(path1, b0, startPosn, b0, endPosn);
 
         assertEquals(4.5D, path1.getPathLength(), SMALL_DELTA);
@@ -379,7 +378,7 @@ public class BuildingConnectorManagerTest {
         // Compare steps
         var steps = path.getPathLocations();
         var steps2 = path2.getPathLocations();
-        assertEquals("Steps path", steps, steps2);
+        assertEquals(steps, steps2, "Steps path");
 
         // Check the repeat path finding half the original time to show cachign has worked
         assertTrue("Reduced time on repeat path", secondDuration < (firstDuration/2));
@@ -420,12 +419,12 @@ public class BuildingConnectorManagerTest {
         var steps = path.getPathLocations();
 
         var startStep = (BuildingLocation)steps.get(0);
-        assertEquals("First step is start building", start, startStep.getBuilding());
-        assertEquals("First step is start position", startPosn, startStep.getPosition());
+        assertEquals(start, startStep.getBuilding(, "First step is start building"));
+        assertEquals(startPosn, startStep.getPosition(, "First step is start position"));
 
         var endStep = (BuildingLocation)steps.get(steps.size()-1);
-        assertEquals("Last step is end building", end, endStep.getBuilding());
-        assertEquals("Last step is end position", endPosn, endStep.getPosition());
+        assertEquals(end, endStep.getBuilding(, "Last step is end building"));
+        assertEquals(endPosn, endStep.getPosition(, "Last step is end position"));
 
         int i = 0;
         var currentBuilding = start;

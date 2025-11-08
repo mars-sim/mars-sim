@@ -28,7 +28,6 @@ public class TestLocalAreaUtil {
 	@BeforeEach
 
     
-	@BeforeEach
 
 
     

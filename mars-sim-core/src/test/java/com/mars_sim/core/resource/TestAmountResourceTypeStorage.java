@@ -17,7 +17,6 @@ public class TestAmountResourceTypeStorage {
     @BeforeEach
 
 
-    @BeforeEach
 
 
 
@@ -33,7 +32,7 @@ public class TestAmountResourceTypeStorage {
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
         double amountCO2 = storage.getAmountResourceTypeCapacity(carbonDioxide);
-        assertEquals("Amount resource type capacity set correctly.", 100D, amountCO2, 0D);
+        assertEquals(100D, amountCO2, 0D, "Amount resource type capacity set correctly.");
     }
 
     @Test
@@ -43,7 +42,7 @@ public class TestAmountResourceTypeStorage {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         double amountCO2 = storage.getAmountResourceTypeCapacity(carbonDioxide);
-        assertEquals("Amount resource type capacity set correctly.", 0D, amountCO2, 0D);
+        assertEquals(0D, amountCO2, 0D, "Amount resource type capacity set correctly.");
     }
 
     @Test
@@ -103,7 +102,7 @@ public class TestAmountResourceTypeStorage {
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
         storage.storeAmountResourceType(carbonDioxide, 100D);
         double amountTypeStored = storage.getAmountResourceTypeStored(carbonDioxide);
-        assertEquals("Amount resource type stored is correct.", 100D, amountTypeStored, 0D);
+        assertEquals(100D, amountTypeStored, 0D, "Amount resource type stored is correct.");
     }
 
     @Test
@@ -156,7 +155,7 @@ public class TestAmountResourceTypeStorage {
         storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
         storage.storeAmountResourceType(carbonDioxide, 50D);
         double remainingCapacity = storage.getAmountResourceTypeRemainingCapacity(carbonDioxide);
-        assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
+        assertEquals(50D, remainingCapacity, 0D, "Amount type capacity remaining is correct amount.");
     }
 
     @Test
@@ -166,7 +165,7 @@ public class TestAmountResourceTypeStorage {
         AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
         AmountResource carbonDioxide = ResourceUtil.findAmountResource(ResourceUtil.CO2_ID);
         double remainingCapacity = storage.getAmountResourceTypeRemainingCapacity(carbonDioxide);
-        assertEquals("Amount type capacity remaining is correct amount.", 0D, remainingCapacity, 0D);
+        assertEquals(0D, remainingCapacity, 0D, "Amount type capacity remaining is correct amount.");
     }
 
     @Test
@@ -179,7 +178,7 @@ public class TestAmountResourceTypeStorage {
         storage.storeAmountResourceType(carbonDioxide, 100D);
         storage.retrieveAmountResourceType(carbonDioxide, 50D);
         double remainingCapacity = storage.getAmountResourceTypeRemainingCapacity(carbonDioxide);
-        assertEquals("Amount type capacity remaining is correct amount.", 50D, remainingCapacity, 0D);
+        assertEquals(50D, remainingCapacity, 0D, "Amount type capacity remaining is correct amount.");
     }
 
     @Test
@@ -237,7 +236,7 @@ public class TestAmountResourceTypeStorage {
         storage.storeAmountResourceType(carbonDioxide, 10D);
         storage.storeAmountResourceType(oxygen, 20D);
         double totalStored = storage.getTotalAmountResourceTypesStored(false);
-        assertEquals("Amount total stored is correct.", 30D, totalStored, 0D);
+        assertEquals(30D, totalStored, 0D, "Amount total stored is correct.");
     }
 
     @Test
