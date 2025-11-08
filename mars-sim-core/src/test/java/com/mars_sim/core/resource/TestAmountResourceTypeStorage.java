@@ -251,7 +251,7 @@ public class TestAmountResourceTypeStorage {
         storage.storeAmountResourceType(carbonDioxide, 10D);
         storage.storeAmountResourceType(oxygen, 20D);
         Set<AmountResource> allResources = storage.getAllAmountResourcesStored();
-        assertTrue("All resources contains carbon dioxide.", allResources.contains(carbonDioxide));
-        assertTrue("All resources contains oxygen.", allResources.contains(oxygen));
+        assertTrue(allResources.contains(carbonDioxide), "All resources contains carbon dioxide.");
+        assertTrue(allResources.contains(oxygen), "All resources contains oxygen.");
     }
 }

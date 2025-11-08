@@ -140,8 +140,8 @@ public class BuildingConnectorManagerTest {
         assertEquals(2, connections7.size());
 
         manager.removeAllConnectionsToBuilding(buildings.get(1));
-        assertTrue("Nothing to building 1", manager.getConnectionsToBuilding(buildings.get(1)).isEmpty());
-        assertEquals(1, manager.getConnectionsToBuilding(buildings.get(2, "Building 2 reduced")).size());
+        assertTrue(manager.getConnectionsToBuilding(buildings.get(1)).isEmpty(), "Nothing to building 1");
+        assertEquals(1, manager.getConnectionsToBuilding(buildings.get(2)).size(), "Building 2 reduced");
 
     }
 
@@ -302,7 +302,7 @@ public class BuildingConnectorManagerTest {
         var endPosn = new LocalPosition(4.5D, 0D);
         InsideBuildingPath path1 = manager.determineShortestPath(b0, startPosn, b0, endPosn);
         assertNotNull(path1);
-        assertEquals(2, path1.getPathLocations(, "Path1 length").size());
+        assertEquals(2, path1.getPathLocations().size(), "Path1 length");
         assertPathValidity(path1, b0, startPosn, b0, endPosn);
 
         assertEquals(4.5D, path1.getPathLength(), SMALL_DELTA);
@@ -381,7 +381,7 @@ public class BuildingConnectorManagerTest {
         assertEquals(steps, steps2, "Steps path");
 
         // Check the repeat path finding half the original time to show cachign has worked
-        assertTrue("Reduced time on repeat path", secondDuration < (firstDuration/2));
+        assertTrue(secondDuration < (firstDuration/2), "Reduced time on repeat path");
         assertNotEquals("Cached path different", path, path2);
         assertPathValidity(path2, lHab, lHab.getPosition(), lab, lab.getPosition());
 
@@ -389,7 +389,7 @@ public class BuildingConnectorManagerTest {
         startTime = System.nanoTime();
         var reversePath = manager.determineShortestPath(lab, lab.getPosition(), lHab, lHab.getPosition());
         long reverseDuration = System.nanoTime() - startTime;
-        assertTrue("Reduced time on repeat path", reverseDuration < (firstDuration/2));
+        assertTrue(reverseDuration < (firstDuration/2), "Reduced time on repeat path");
         assertPathValidity(reversePath, lab, lab.getPosition(), lHab, lHab.getPosition());
 
         // Change start position
@@ -398,7 +398,7 @@ public class BuildingConnectorManagerTest {
         startTime = System.currentTimeMillis();
         var path3 = manager.determineShortestPath(lHab, newStart, lab, lab.getPosition());
         long thirdDuration = System.currentTimeMillis() - startTime;
-        assertTrue("Reduced time on changed path", thirdDuration < (firstDuration/2));
+        assertTrue(thirdDuration < (firstDuration/2), "Reduced time on changed path");
 
         assertNotEquals("Cached path2 different", path, path3);
         assertPathValidity(path3, lHab, newStart, lab, lab.getPosition());
@@ -419,12 +419,12 @@ public class BuildingConnectorManagerTest {
         var steps = path.getPathLocations();
 
         var startStep = (BuildingLocation)steps.get(0);
-        assertEquals(start, startStep.getBuilding(, "First step is start building"));
-        assertEquals(startPosn, startStep.getPosition(, "First step is start position"));
+        assertEquals(start, startStep.getBuilding(), "First step is start building");
+        assertEquals(startPosn, startStep.getPosition(), "First step is start position");
 
         var endStep = (BuildingLocation)steps.get(steps.size()-1);
-        assertEquals(end, endStep.getBuilding(, "Last step is end building"));
-        assertEquals(endPosn, endStep.getPosition(, "Last step is end position"));
+        assertEquals(end, endStep.getBuilding(), "Last step is end building");
+        assertEquals(endPosn, endStep.getPosition(), "Last step is end position");
 
         int i = 0;
         var currentBuilding = start;

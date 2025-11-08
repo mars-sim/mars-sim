@@ -114,8 +114,8 @@ public class LoadControllerTest {
 			controller.backgroundLoad(80);
 			loadingCount++;
 		}
-		assertTrue("Multiple loadings", (loadingCount > 1));
-		assertTrue("Loading controller complete", controller.isCompleted());
+		assertTrue((loadingCount > 1), "Multiple loadings");
+		assertTrue(controller.isCompleted(), "Loading controller complete");
 		checkVehicleResources(vehicle, requiredResourcesMap);
 	}
 
@@ -266,8 +266,8 @@ public class LoadControllerTest {
 		controller.load(person, 1D);
 
 		// Vehicle is not loaded and failed
-		assertFalse("Vehicle loaded", controller.isCompleted());
-		assertTrue("Vehicle load did not failed", controller.isFailure());
+		assertFalse(controller.isCompleted(), "Vehicle loaded");
+		assertTrue(controller.isFailure(), "Vehicle load did not failed");
 	}
 
 	/*
@@ -410,8 +410,8 @@ public class LoadControllerTest {
 		LoadingController controller = vehicle.setLoading(manifest);
 
 		// Vehicle should already be loaded
-		assertTrue("Vehicle already loaded", controller.isCompleted());
-		assertTrue("Reload completes on first attempt", controller.load(person, 1));
+		assertTrue(controller.isCompleted(), "Vehicle already loaded");
+		assertTrue(controller.load(person, 1), "Reload completes on first attempt");
 
 		return controller;
 	}
@@ -428,8 +428,8 @@ public class LoadControllerTest {
 
 
 		LoadingController controller = vehicle.setLoading(manifest);
-		assertTrue("Vehicle has of LOADING", vehicle.haveStatusType(StatusType.LOADING));
-		assertEquals(vehicle, controller.getVehicle(, "Vehicle of the controller"));
+		assertTrue(vehicle.haveStatusType(StatusType.LOADING), "Vehicle has of LOADING");
+		assertEquals(vehicle, controller.getVehicle(), "Vehicle of the controller");
 
 		int loadingCount = 0;
 		boolean loaded = false;
@@ -437,11 +437,11 @@ public class LoadControllerTest {
 			loaded  = controller.load(person, 1);
 			loadingCount++;
 		}
-		assertTrue("Multiple loadings", (loadingCount > 1));
-		assertTrue("Load operation stopped on load complete", loaded);
-		assertFalse("Loading controller successful", controller.isFailure());
-		assertTrue("Loading controller complete", controller.isCompleted());
-		assertFalse("Vehicle clear of LOADING", vehicle.haveStatusType(StatusType.LOADING));
+		assertTrue((loadingCount > 1), "Multiple loadings");
+		assertTrue(loaded, "Load operation stopped on load complete");
+		assertFalse(controller.isFailure(), "Loading controller successful");
+		assertTrue(controller.isCompleted(), "Loading controller complete");
+		assertFalse(vehicle.haveStatusType(StatusType.LOADING), "Vehicle clear of LOADING");
 
 		return controller;
 	}
@@ -460,8 +460,7 @@ public class LoadControllerTest {
 			long stored = source.getEquipmentSet().stream()
 					.filter(e -> (e.getEquipmentType() == eType))
 					.count();
-			assertEquals("Equipment in vehicle " + eType.name(),
-					item.getValue().intValue(), stored);
+			assertEquals(item.getValue().intValue(), stored, "Equipment in vehicle " + eType.name());
 		}
 	}
 
@@ -488,7 +487,7 @@ public class LoadControllerTest {
 				int stored = source.getItemResourceStored(key);
 				int expected = resource.getValue().intValue();
 				String itemName = ItemResourceUtil.findItemResourceName(key);
-				assertEquals("Vehicle item resource stored " + itemName, expected, stored);
+				assertEquals(expected, stored, "Vehicle item resource stored " + itemName);
 			}
 		}
 	}
