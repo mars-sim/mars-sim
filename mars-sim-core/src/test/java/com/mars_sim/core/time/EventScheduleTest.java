@@ -1,7 +1,7 @@
 package com.mars_sim.core.time;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -63,11 +63,11 @@ class EventScheduleTest {
         var event = cal.getFirstEvent(now, zone);
 
         // Check first event is correct time of day
-        assertEquals(message + " : time of day", (timeOfDay + zone.getMSolOffset()) % 1000, event.getMillisolInt());
+        assertEquals((timeOfDay + zone.getMSolOffset()) % 1000, event.getMillisolInt(), message + " : time of day");
 
         // Check number of full sols and time of event
         var diff = event.getTimeDiff(now);
-        assertEquals(message + " : sols to event", firstSol, (int)diff/1000);
-        assertTrue(message + " : time now or future", diff > 0);
+        assertEquals(firstSol, (int)diff/1000, message + " : sols to event");
+        assertTrue(diff > 0, message + " : time now or future");
     }
 }

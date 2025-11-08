@@ -249,15 +249,15 @@ public class BuildingConfigTest {
         var thermals = found.getSources();
         assertEquals(3, thermals.size(), "Sources");
 
-        assertEquals("Solar Heating", thermals.get(0).getType(), "Type 1");
+        assertEquals(thermals.get(0).getType(), "Solar Heating", "Type 1");
         assertEquals(5D, thermals.get(0).getCapacity(), "Capacity 1");
         
-        assertEquals("Electric Heating", thermals.get(1).getType(), "Type 1");
+        assertEquals(thermals.get(1).getType(), "Electric Heating", "Type 1");
         assertEquals(20D, thermals.get(1).getCapacity(), "Capacity 1");
 
-        assertEquals("Fuel Heating", thermals.get(2).getType(), "Type 2");
+        assertEquals(thermals.get(2).getType(), "Fuel Heating", "Type 2");
         assertEquals(20D, thermals.get(2).getCapacity(), "Capacity 2");
-        assertEquals("methane", thermals.get(2).getAttribute(SourceSpec.FUEL_TYPE), "Fuel 2");
+        assertEquals(thermals.get(2).getAttribute(SourceSpec.FUEL_TYPE), "methane", "Fuel 2");
     }
 
     /**

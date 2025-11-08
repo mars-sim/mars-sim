@@ -59,8 +59,8 @@ public class MealConfigTest extends MarsSimUnitTest {
 
         var ingredients = dish.getIngredientList();
         assertEquals(2, ingredients.size(), "Ingredients");
-        assertEquals("Strawberry", ingredients.get(0).getName(), "Ingredient 0");
-        assertEquals("Sugar", ingredients.get(1).getName(), "Ingredient 1");
+        assertEquals(ingredients.get(0).getName(), "Strawberry", "Ingredient 0");
+        assertEquals(ingredients.get(1).getName(), "Sugar", "Ingredient 1");
     }
 
     @Test

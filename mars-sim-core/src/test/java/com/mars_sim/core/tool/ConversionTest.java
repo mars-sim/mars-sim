@@ -1,7 +1,7 @@
 package com.mars_sim.core.tool;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,14 +10,14 @@ class ConversionTest {
     void testCapitalize() {
         var seed = "One two THREE";
         var changed = Conversion.capitalize(seed);
-        assertEquals("Changed", "One Two Three", changed);
+        assertEquals("One Two Three", changed);
     }
 
     @Test
     void testSplit() {
         var seed = "OneTwoThree";
         var changed = Conversion.split(seed);
-        assertEquals("Changed", "One Two Three", changed);
+        assertEquals("One Two Three", changed);
     }
 
 
@@ -25,14 +25,14 @@ class ConversionTest {
     void testTrimShort() {
         var seed = "small";
         var trimmed = Conversion.trim(seed, 10);
-        assertEquals("Trimmed", seed, trimmed);
+        assertEquals(seed, trimmed);
     }
 
     @Test
     void testTrimLong() {
         var seed = "Long text forever";
         var trimmed = Conversion.trim(seed, 10);
-        assertEquals("Trimmed length", 10, trimmed.length());
-        assertTrue("Has ending", trimmed.endsWith("..."));
+        assertEquals(10, trimmed.length());
+        assertTrue(trimmed.endsWith("..."));
     }
 }

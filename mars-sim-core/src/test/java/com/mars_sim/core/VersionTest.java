@@ -1,7 +1,7 @@
 package com.mars_sim.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,7 +23,7 @@ class VersionTest {
         // Reload
         try  (ByteArrayInputStream input = new ByteArrayInputStream(content)) {
             var reloaded = Version.fromStream(input);
-            assertEquals("Versions are the same", orig, reloaded);
+            assertEquals(orig, reloaded, "Versions are the same");
         }
     }
 
@@ -31,8 +31,8 @@ class VersionTest {
     void testDefaultVersion() {
         var build = SimulationRuntime.VERSION;
 
-        assertTrue("Default version", build.getVersionTag().length() > 0);
-        assertTrue("Default build", build.getBuild().length() > 0);
+        assertTrue(!build.getVersionTag().isEmpty(), "Default version");
+        assertTrue(!build.getBuild().isEmpty(), "Default build");
 
     }
 }

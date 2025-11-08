@@ -1,6 +1,6 @@
 package com.mars_sim.core.map.megdr;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,8 +24,8 @@ class MEGDRFactoryTest {
             short directElevation = directReader.getElevation(phi, theta);
             short arrayElevation = arrayReader.getElevation(phi, theta);
 
-            assertEquals("Array & Direct elevation", arrayElevation, directElevation);
-            assertEquals("Array & Memory elevation", arrayElevation, memoryElevation);
+            assertEquals(arrayElevation, directElevation, "Array & Direct elevation");
+            assertEquals(arrayElevation, memoryElevation, "Array & Memory elevation");
         }
     }
 }
