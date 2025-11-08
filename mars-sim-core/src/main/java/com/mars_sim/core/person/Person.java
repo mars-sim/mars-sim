@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.LifeSupportInterface;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitEventType;
@@ -42,6 +41,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.Mind;
@@ -69,7 +69,6 @@ import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.training.TrainingType;
 import com.mars_sim.core.person.health.HealthProblem;
-import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.science.ResearchStudy;
@@ -755,9 +754,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Throw unit event
 		fireUnitUpdate(UnitEventType.REVIVED_EVENT);
 		// Generate medical event
-		MedicalEvent event = new MedicalEvent(this, problem, EventType.MEDICAL_RESUSCITATED);
-		// Register event
-		Simulation.instance().getEventManager().registerNewEvent(event);
+		problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_RESUSCITATED);
+
 		// Reset declaredDead
 		declaredDead = false;
 		

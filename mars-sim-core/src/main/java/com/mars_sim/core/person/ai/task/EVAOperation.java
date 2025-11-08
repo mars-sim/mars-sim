@@ -20,17 +20,16 @@ import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.mission.MissionHistoricalEvent;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
@@ -38,7 +37,6 @@ import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
-import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.Settlement;
@@ -719,16 +717,7 @@ public abstract class EVAOperation extends Task {
 		}
 		return isEmergency;
 	}
-	
-	/**
-	 * Is the person's settlement of interest in emergency ?
-	 * 
-	 * @return
-	 */
-	private boolean isInEmergency() {
-		return isInEmergency(person);
-	}
-	
+
 	/**
 	 * Checks for accident with EVA suit.
 	 *
@@ -901,24 +890,21 @@ public abstract class EVAOperation extends Task {
 		BuildingManager.addPatientToMedicalBed(p, s);
 
 		HealthProblem problem = p.getPhysicalCondition().getMostSerious();
-		
-		HistoricalEvent rescueEvent = null;
-		
+				
 		if (problem == null) {
-			rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
+			var rescueEvent = new HistoricalEvent(HistoricalEventType.MISSION_RESCUE_PERSON,
 				p.getMission(),
 				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
 				p.getName(),
-				p
+				p, p.getAssociatedSettlement(), p.getCoordinates()
 				);
+			registerNewEvent(rescueEvent);
+
 		}
 		else {
-			rescueEvent = new MedicalEvent(p, problem, EventType.MEDICAL_RESCUE);
+			problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_RESCUE);
 		}
-
-		// Register the historical event
-		registerNewEvent(rescueEvent);
 	}
 
 	/**

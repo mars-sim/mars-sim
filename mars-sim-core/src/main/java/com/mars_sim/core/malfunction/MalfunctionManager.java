@@ -29,12 +29,13 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEvent;
+
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.health.Complaint;
@@ -96,8 +97,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 5;
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINT_TO_MAL_RATIO = 5;
-	/** The lower limit factor for malfunction. 1.000_003_351_695 will result in 1 % certainty per orbit. */	
-	private static final double MALFUNCTION_LOWER_LIMIT =  1.000_003_351_695; // 0.000_000_002; //  1.000_003_351_695;
 	/** The lower limit factor for maintenance. 1.000_033_516_95 will result in 10 % certainty per orbit. */	
 	private static final double MAINTENANCE_LOWER_LIMIT = 0; //MALFUNCTION_LOWER_LIMIT; // * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
 	/** The upper limit factor for both malfunction and maintenance. 1.000_335_221_5 will result in 100% certainty per orbit. */
@@ -673,7 +672,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @param actor
 	 */
 	private void registerAMalfunction(Malfunction malfunction, Unit actor) {
-		EventType eventType = EventType.MALFUNCTION_PARTS_FAILURE;
+		HistoricalEventType eventType = HistoricalEventType.MALFUNCTION_PARTS_FAILURE;
 
 		String whoAffected = "None";
 		String whileDoing = "N/A";
@@ -681,45 +680,44 @@ public class MalfunctionManager implements Serializable, Temporal {
 		if (actor != null) {
 
 			if (actor.getUnitType() == UnitType.PERSON) {
-				eventType = EventType.MALFUNCTION_HUMAN_FACTORS;
+				eventType = HistoricalEventType.MALFUNCTION_HUMAN_FACTORS;
 				whileDoing = ((Person)actor).getTaskDescription();
 				whoAffected = actor.getName();
 			}
 			else if (actor.getUnitType() == UnitType.ROBOT) {
-				eventType = EventType.MALFUNCTION_PROGRAMMING_ERROR;
+				eventType = HistoricalEventType.MALFUNCTION_PROGRAMMING_ERROR;
 				whileDoing = ((Robot)actor).getTaskDescription();
 				whoAffected = actor.getName();
 			}
 			else if (actor.getUnitType() == UnitType.BUILDING) {
 				if (malfunction.getMalfunctionMeta().getName().contains(MalfunctionFactory.METEORITE_IMPACT_DAMAGE)) {
-					eventType = EventType.HAZARD_ACTS_OF_GOD;
+					eventType = HistoricalEventType.HAZARD_ACTS_OF_GOD;
 					whileDoing = "";
 					whoAffected = "N/A";
 				}
 				else {
-					eventType = EventType.MALFUNCTION_PARTS_FAILURE;
+					eventType = HistoricalEventType.MALFUNCTION_PARTS_FAILURE;
 					whileDoing = "";
 					whoAffected = "N/A";
 				}
 			}
 			else if (actor.getUnitType() == UnitType.EVA_SUIT) {
-				eventType = EventType.MALFUNCTION_PARTS_FAILURE;
+				eventType = HistoricalEventType.MALFUNCTION_PARTS_FAILURE;
 				whileDoing = ""; 
 				whoAffected = ((EVASuit)actor).getContainerUnit().getName();
 			}
 			else {
-				eventType = EventType.MALFUNCTION_PARTS_FAILURE;
+				eventType = HistoricalEventType.MALFUNCTION_PARTS_FAILURE;
 				whileDoing = "";
 				whoAffected = actor.getName();
 			}
 		}
 
-		HistoricalEvent newEvent = new MalfunctionEvent(
+		HistoricalEvent newEvent = createMalfunctionEvent(
 								eventType, 
 								malfunction, 
 								whileDoing, 
-								whoAffected, 
-								(Unit) entity);
+								whoAffected);
 		
 		eventManager.registerNewEvent(newEvent);
 
@@ -738,6 +736,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 					+ (actor != null ? CAUSED_BY + whoAffected + "'." : "."));
 	}
 
+	private HistoricalEvent createMalfunctionEvent(HistoricalEventType type, Malfunction malfunction, String whileDoing,
+			String whoAffected) {
+		return new HistoricalEvent(type, malfunction, malfunction.getName(),
+									whileDoing, whoAffected, entity, entity.getAssociatedSettlement());
+	}
+	
 	/**
 	 * Time passing for tracking the wear and tear condition while the unit is being actively used.
 	 *
@@ -978,9 +982,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			String chiefRepairer = fixed.getMostProductiveRepairer();
 
-			HistoricalEvent newEvent = new MalfunctionEvent(EventType.MALFUNCTION_FIXED, fixed,
-					null, chiefRepairer, 
-					(Unit) entity);
+			HistoricalEvent newEvent = createMalfunctionEvent(HistoricalEventType.MALFUNCTION_FIXED, fixed,
+					null, chiefRepairer);
 
 			eventManager.registerNewEvent(newEvent);
 
@@ -1422,7 +1425,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	
 	public double findWorstFatigueByScope(String scope) {
 		List<MaintenanceScope> list = scopeMap.get(scope);
-		int num = list.size();
 		double worst = 0;
 		for (MaintenanceScope ms: list) {
 			double fatigue = ms.getFatigue();
