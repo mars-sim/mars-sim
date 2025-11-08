@@ -260,7 +260,7 @@ public abstract class MarsSimUnitTest {
 	 * 
 	 * @param person
 	 * @param task
-	 * @param maxSteps
+	 * @param maxCalls
 	 * @return The number of calls taken
 	 */
 	protected int executeTask(Person person, Task task, int maxCalls) {
@@ -282,7 +282,7 @@ public abstract class MarsSimUnitTest {
 	 * 
 	 * @param person
 	 * @param task
-	 * @param maxSteps
+	 * @param maxCalls
 	 * @return The number of calls taken
 	 */
 	protected int executeTaskUntilPhase(Person person, Task task, int maxCalls) {
@@ -304,7 +304,7 @@ public abstract class MarsSimUnitTest {
 	 * 
 	 * @param person
 	 * @param task
-	 * @param maxSteps
+	 * @param maxCalls
 	 * @return The number of calls taken
 	 */
 	protected int executeTaskUntilSubTask(Person person, Task task, int maxCalls) {
@@ -326,6 +326,7 @@ public abstract class MarsSimUnitTest {
      * @param missionSol Sol in the current mission
      * @param mSol MSol throughout the day
      * @param newSol Is the new Sol flag set
+     * @param newHalfSol Has half a sol just passed ?
      * @return
      */
     protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol) {
