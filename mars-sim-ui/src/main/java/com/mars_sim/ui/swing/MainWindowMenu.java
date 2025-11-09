@@ -39,7 +39,7 @@ import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
-import com.mars_sim.ui.swing.tool.time.TimeWindow;
+import com.mars_sim.ui.swing.tool.time.TimeTool;
 
 /**
  * The MainWindowMenu class is the menu for the main window.
@@ -210,7 +210,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false)));
 		newMenu.add(createToolMenuItem(SearchWindow.NAME, SearchWindow.TITLE, SearchWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false)));
-		newMenu.add(createToolMenuItem(TimeWindow.NAME, TimeWindow.TITLE, TimeWindow.ICON,
+		newMenu.add(createToolMenuItem(TimeTool.NAME, TimeTool.TITLE, TimeTool.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false)));								
 		newMenu.add(createToolMenuItem(MonitorWindow.NAME, MonitorWindow.TITLE, MonitorWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));	

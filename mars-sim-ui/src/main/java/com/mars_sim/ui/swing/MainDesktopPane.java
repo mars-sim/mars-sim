@@ -48,7 +48,8 @@ import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
-import com.mars_sim.ui.swing.astroarts.OrbitWindow;
+import com.mars_sim.ui.swing.astroarts.OrbitViewer;
+import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
@@ -62,7 +63,7 @@ import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
-import com.mars_sim.ui.swing.tool.time.TimeWindow;
+import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
@@ -303,7 +304,7 @@ public class MainDesktopPane extends JDesktopPane
 		getToolWindow(CommanderWindow.NAME, true);
 		getToolWindow(NavigatorWindow.NAME, true);
 		getToolWindow(SearchWindow.NAME, true);
-		getToolWindow(TimeWindow.NAME, true);
+		getToolWindow(TimeTool.NAME, true);
 		getToolWindow(SettlementWindow.NAME, true);
 		getToolWindow(ScienceWindow.NAME, true);
 		getToolWindow(MonitorWindow.NAME, true);
@@ -338,36 +339,50 @@ public class MainDesktopPane extends JDesktopPane
 				return w;
 		}
 
-		if (createWindow) {
-			ToolWindow w = switch(toolName) {
+		if (!createWindow) {
+			return null;
+		}
+
+		ContentPanel content = switch(toolName) {
+			case OrbitViewer.NAME -> new OrbitViewer(sim.getMasterClock());
+			case TimeTool.NAME -> new TimeTool(sim);
+			case GuideWindow.NAME -> new GuideWindow(mainWindow.getHelp());
+			case SearchWindow.NAME -> new SearchWindow(this);
+
+			default -> null;
+		};
+
+		ToolWindow w = null;
+		if (content != null) {
+			// New ContentPanel style
+			w = new ContentWindow(toolName, this, content);
+		}
+		else {
+			// Old legacy style
+			w = switch(toolName) {
 				case CommanderWindow.NAME -> new CommanderWindow(this);
 				case NavigatorWindow.NAME -> new NavigatorWindow(this);
-				case SearchWindow.NAME -> new SearchWindow(this);
-				case TimeWindow.NAME -> new TimeWindow(this);
 				case SettlementWindow.NAME -> new SettlementWindow(this);
 				case ScienceWindow.NAME -> new ScienceWindow(this);
-				case GuideWindow.NAME -> new GuideWindow(this);
 				case MonitorWindow.NAME -> new MonitorWindow(this);
 				case MissionWindow.NAME -> new MissionWindow(this);
 				case ResupplyWindow.NAME -> new ResupplyWindow(this);
-				case OrbitWindow.NAME -> new OrbitWindow(this);
 				default -> null;
 			};
-			if (w == null) {
-				logger.warning("No tool called " + toolName);
-				return null;
-			}
-
-			// Close it from the start
-			try {
-				w.setClosed(true);
-			} catch (PropertyVetoException e) {
-				logger.warning("Problem loading tool window " + e.getMessage());
-			}
-			toolWindows.add(w);
-			return w;
 		}
-		return null;
+		if (w == null) {
+			logger.warning("No tool called " + toolName);
+			return null;
+		}
+
+		// Close it from the start
+		try {
+			w.setClosed(true);
+		} catch (PropertyVetoException e) {
+			logger.warning("Problem loading tool window " + e.getMessage());
+		}
+		toolWindows.add(w);
+		return w;
 	}
 
 	/**
@@ -423,7 +438,7 @@ public class MainDesktopPane extends JDesktopPane
 				if (window.isResizable()) {
 					window.setSize(previousDetails.size());
 				}
-			} else if (toolName.equals(TimeWindow.NAME))
+			} else if (toolName.equals(TimeTool.NAME))
 				location = computeLocation(window, 0, 2);
 			else if (toolName.equals(MonitorWindow.NAME))
 				location = computeLocation(window, 1, 0);
@@ -736,7 +751,7 @@ public class MainDesktopPane extends JDesktopPane
 		else {
 			if (mode == GameMode.COMMAND) {
 				// Open the time window for the Commander Mode
-				openToolWindow(TimeWindow.NAME);
+				openToolWindow(TimeTool.NAME);
 				openToolWindow(CommanderWindow.NAME);
 			}
 

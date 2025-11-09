@@ -60,6 +60,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
+import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
@@ -1049,7 +1050,8 @@ public class MainWindow
 				Desktop.getDesktop().browse(helpURI);
 			}
 			else {
-				GuideWindow ourGuide = (GuideWindow) desktop.openToolWindow(GuideWindow.NAME);
+				ContentWindow contentWindow = (ContentWindow) desktop.openToolWindow(GuideWindow.NAME);
+				GuideWindow ourGuide = (GuideWindow) contentWindow.getContent();
 				ourGuide.displayURI(helpURI);
 			}
 		} catch (IOException e) {

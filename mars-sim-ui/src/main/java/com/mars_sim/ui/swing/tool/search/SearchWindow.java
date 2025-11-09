@@ -22,7 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
@@ -32,10 +31,10 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
  * The SearchWindow is a tool window that allows the user to search
@@ -43,7 +42,7 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
  */
 @SuppressWarnings("serial")
 public class SearchWindow
-extends ToolWindow {
+extends ContentPanel {
 
 	/** Tool name. */
 	public static final String NAME = "search";
@@ -70,15 +69,13 @@ extends ToolWindow {
 	public SearchWindow(MainDesktopPane desktop) {
 
 		// Use ToolWindow constructor
-		super(NAME, TITLE, desktop);
+		super(TITLE);
 		
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
-
 		unitManager = desktop.getSimulation().getUnitManager();
 		
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
-		setContentPane(mainPane);
+		add(mainPane);
 
 		// Create search for panel
 		JPanel searchForPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
@@ -141,9 +138,6 @@ extends ToolWindow {
 		selectedUnit = new EntityLabel(desktop);
 		bottomPanel.add(selectedUnit);
 		mainPane.add(bottomPanel, BorderLayout.SOUTH);
-
-		// Pack window
-		pack();
 	}
 
 	/**

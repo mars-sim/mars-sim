@@ -37,7 +37,7 @@ import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.astroarts.OrbitWindow;
+import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -48,7 +48,7 @@ import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.MarsCalendarDisplay;
-import com.mars_sim.ui.swing.tool.time.TimeWindow;
+import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -139,7 +139,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Add wiki button
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
 		// Add orbit viewer
-		addToolButton(OrbitWindow.NAME, "Orbit Window", OrbitWindow.ICON);
+		addToolButton(OrbitViewer.NAME, "Orbit Window", OrbitViewer.ICON);
 		// Add guide button
 		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
 		
@@ -156,7 +156,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Add Tools buttons
 		addToolButton(NavigatorWindow.NAME, NavigatorWindow.ICON);
 		addToolButton(SearchWindow.NAME, SearchWindow.ICON);
-		addToolButton(TimeWindow.NAME, TimeWindow.ICON);
+		addToolButton(TimeTool.NAME, TimeTool.ICON);
 		addToolButton(MonitorWindow.NAME, MonitorWindow.ICON);
 		addToolButton(MissionWindow.NAME, MissionWindow.ICON);
 		addToolButton(SettlementWindow.NAME, SettlementWindow.ICON);
@@ -278,7 +278,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JPanel setupCalendarPanel(MarsTime marsClock) {
 		JPanel innerPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 2));
 
-		calendarDisplay = new MarsCalendarDisplay(marsClock, parentMainWindow.getDesktop());
+		calendarDisplay = new MarsCalendarDisplay(marsClock);
 		innerPane.add(calendarDisplay);
 
 		final JPanel midPane = new JPanel(new BorderLayout(2, 2));

@@ -80,6 +80,7 @@ import com.mars_sim.core.astroarts.Astro;
 import com.mars_sim.core.astroarts.Comet;
 import com.mars_sim.core.astroarts.TimeSpan;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 
@@ -88,7 +89,7 @@ import com.mars_sim.ui.swing.StyleManager;
  * This Class creates a pictorial representation of a solar system showing the orbits of all planets plus a satellite of interest
  */
 @SuppressWarnings("serial")
-public class OrbitViewer extends JPanel
+public class OrbitViewer extends ContentPanel
 implements ActionListener {
 
 	public static final String NAME = "astro";
@@ -229,6 +230,7 @@ implements ActionListener {
 	 * Initialization.
 	 */
 	public OrbitViewer(MasterClock masterClock) {
+		super("Orbit Viewer");
 
 		this.masterClock = masterClock;
 		String[][] array = getParameterInfo();
@@ -241,8 +243,6 @@ implements ActionListener {
 	}
 
 	private void createGUI() {
-
-		setLayout(new BorderLayout());
 
 		JPanel mainPanel = new JPanel(new BorderLayout());
 
