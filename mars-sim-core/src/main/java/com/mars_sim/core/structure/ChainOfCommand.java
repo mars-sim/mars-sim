@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.authority.GovernanceRules;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
@@ -40,21 +41,13 @@ public class ChainOfCommand implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
 
-	public static final int POPULATION_WITH_COMMANDER = 4;
-	public static final int POPULATION_WITH_SUB_COMMANDER = 12;
-	public static final int POPULATION_WITH_CHIEFS = 24;
-	public static final int POPULATION_WITH_ADMINISTRATOR = 96;
-	public static final int POPULATION_WITH_DEPUTY_ADMINISTRATOR = 136;
-	public static final int POPULATION_WITH_MAYOR = 480;
-	public static final int POPULATION_WITH_PRESIDENT = 1024;
-
-
 	/** Stores the number for each role. */
 	private Map<RoleType, Integer> roleRegistry = new HashMap<>();
 	/** Store the availability of each role. */
 	private Map<RoleType, Integer> roleAvailability = new HashMap<>();
 	/** The settlement of interest. */
 	private Settlement settlement;
+	private GovernanceRules	 governanceRules;
 
 
 	/**
@@ -67,6 +60,8 @@ public class ChainOfCommand implements Serializable {
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
 		
+		this.governanceRules = new GovernanceRules(settlement.getInitialPopulation());
+
 		// Initialize roleAvailability array once only
 		initializeRoleMaps();
 	}
@@ -74,34 +69,16 @@ public class ChainOfCommand implements Serializable {
 	/**
 	 * Initializes the role maps.
 	 */
-	public void initializeRoleMaps() {
+	private void initializeRoleMaps() {
 
-		List<RoleType> roles = null;
-		int pop = settlement.getInitialPopulation();
-		
-		if (pop > POPULATION_WITH_COMMANDER) {
-			roles = new ArrayList<>(RoleUtil.getSpecialists());
-		}
-		else {
-			roles = new ArrayList<>(RoleUtil.getCrewRoles());
-		}
+		List<RoleType> roles = new ArrayList<>(governanceRules.getAssignableRoles());
 		
 		// Shuffle the role types randomize
 		Collections.shuffle(roles);
 
-		for (RoleType t : roles) {
-			if (!roleAvailability.containsKey(t)) {
-				roleAvailability.put(t, 0);
-			}
-
-			if (!roleRegistry.containsKey(t))
-				roleRegistry.put(t, 0);
-		}
-
-		for (int i=0; i < pop; i++) {
+		for (int i=0; i < settlement.getInitialPopulation(); i++) {
 			RoleType rt = roles.get(i % roles.size());
-			int num = roleAvailability.get(rt);
-			roleAvailability.put(rt, num+1);
+			roleAvailability.merge(rt, 1, Integer::sum);
 		}
 	}
 
@@ -162,15 +139,10 @@ public class ChainOfCommand implements Serializable {
 	 */
 	public void reelectLeadership(RoleType key) {
 		if (getNumFilled(key) == 0) {
-
-			int pop = settlement.getNumCitizens();
-	
-			if (pop >= POPULATION_WITH_COMMANDER) {
-				if (key.isChief()) {
-					electChief(key);
-				} else if (key.isCouncil()) {
-					electLeader(key, null);
-				}
+			if (key.isChief()) {
+				electChief(key);
+			} else if (key.isCouncil()) {
+				establishTopLeadership();
 			}
 		}
 	}
@@ -209,12 +181,13 @@ public class ChainOfCommand implements Serializable {
 
 
 	/**
-	 * Establishes the leader in a settlement.
-	 * 
-	 * @param firstRole
-	 * @param secondRole
+	 * Establishes the top leadership of a settlement.
+	 *
+	 * @param settlement the settlement.
 	 */
-	private void electLeader(RoleType firstRole, RoleType secondRole) {
+	void establishTopLeadership() {
+		RoleType firstRole = governanceRules.getLeader();
+		RoleType secondRole = governanceRules.getDeputyLeader();
 		if ((firstRole != null && !firstRole.isCouncil())
 				|| (secondRole != null && !secondRole.isCouncil())) {
 			return;
@@ -349,7 +322,6 @@ public class ChainOfCommand implements Serializable {
 				+ " accepted the role of being a Commander by the order of the Mission Control.");
 		
 		cc.setRole(RoleType.COMMANDER);
-		//cc.setCountry(commander.getCountryStr());
 		cc.setSponsor(SimulationConfig.instance().getReportingAuthorityFactory().getItem(commander.getSponsorStr()));
 	}
 
@@ -384,17 +356,7 @@ public class ChainOfCommand implements Serializable {
 				plist.add(p);
 		}
 
-		List<RoleType> roleList = null;
-				
-		int pop = settlement.getNumCitizens();
-		
-		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
-			roleList = new ArrayList<>(RoleUtil.getCrewRoles());
-		}
-		else {
-			roleList = new ArrayList<>(RoleUtil.getSpecialists());
-		}
-		
+		List<RoleType> roleList = new ArrayList<>(governanceRules.getAssignableRoles());		
 		while (!plist.isEmpty()) {
 			// Randomly reorient the order of roleList so that the
 			// roles to go in different order each time
@@ -410,36 +372,6 @@ public class ChainOfCommand implements Serializable {
 		}
 	}
 
-	/**
-	 * Establishes the top leadership of a settlement.
-	 *
-	 * @param settlement the settlement.
-	 */
-	void establishTopLeadership() {
-
-		int pop = settlement.getNumCitizens();
-	
-		if (pop >= POPULATION_WITH_MAYOR) {
-			// Elect a mayor
-			electLeader(RoleType.MAYOR, null);
-		}
-		else if (pop >= POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
-			// Elect two roles
-			electLeader(RoleType.ADMINISTRATOR, RoleType.DEPUTY_ADMINISTRATOR);
-		}
-		else if (pop >= POPULATION_WITH_ADMINISTRATOR) {
-			// Elect one role
-			electLeader(RoleType.ADMINISTRATOR, null);
-		}
-		else if (pop >= POPULATION_WITH_SUB_COMMANDER) {
-			// Elect commander and sub-commander
-			electLeader(RoleType.COMMANDER, RoleType.SUB_COMMANDER);
-		}
-		else if (pop >= POPULATION_WITH_COMMANDER) {
-			// Elect commander
-			electLeader(RoleType.COMMANDER, null);
-		}
-	}
 
 	/**
 	 * Establishes the chiefs of a settlement.
@@ -448,15 +380,13 @@ public class ChainOfCommand implements Serializable {
 	 */
 	private void establishChiefs() {
 
-		int popSize = settlement.getNumCitizens();
-
-		if (popSize >= POPULATION_WITH_CHIEFS) {
+		int maxChiefs = governanceRules.getMaxChiefs(settlement.getNumCitizens());
+		if (maxChiefs > 0) {
 			// Elect chiefs
-			int i = 0;
-			int maxChiefs = popSize - POPULATION_WITH_CHIEFS + 1;
-			for(RoleType rt : RoleType.values()) {
-				if (rt.isChief() && (i < maxChiefs)) {
+			for(RoleType rt : RoleUtil.getChiefs()) {
+				if (rt.isChief() && (maxChiefs > 0)) {
 					electChief(rt);
+					maxChiefs--;
 				}
 			}
 		}
@@ -476,109 +406,12 @@ public class ChainOfCommand implements Serializable {
 			return;
 		}
 
-		RoleType specialty = RoleUtil.getChiefSpeciality(role);
+		RoleType specialty = RoleType.getChiefSpeciality(role);
 		Person winner = null;
 		int cSkills = 0;
 		int cCombined = 0;
 
-		List<SkillType> requiredSkills = null;
-		switch(role) {
-		case CHIEF_OF_AGRICULTURE:
-			requiredSkills = List.of(
-									SkillType.BOTANY,
-									SkillType.ASTROBIOLOGY,
-									SkillType.CHEMISTRY,
-									SkillType.COOKING,
-									SkillType.TRADING
-									);
-			break;
-
-		case CHIEF_OF_COMPUTING:
-			requiredSkills = List.of(
-									SkillType.ASTRONOMY,
-									SkillType.COMPUTING,
-									SkillType.CHEMISTRY,
-									SkillType.MATHEMATICS,
-									SkillType.PHYSICS
-									);
-			break;
-
-		case CHIEF_OF_ENGINEERING:
-			requiredSkills = List.of(
-									SkillType.MATERIALS_SCIENCE,
-									SkillType.COMPUTING,
-									SkillType.PHYSICS,
-									SkillType.MECHANICS,
-									SkillType.CONSTRUCTION
-									);
-			break;
-
-		case CHIEF_OF_LOGISTIC_OPERATION:
-			requiredSkills = List.of(
-									SkillType.COMPUTING,
-									SkillType.EVA_OPERATIONS,
-									SkillType.MATHEMATICS,					
-									SkillType.METEOROLOGY,
-									SkillType.MECHANICS,
-									SkillType.PILOTING,
-									SkillType.TRADING									
-									);
-			break;
-
-		case CHIEF_OF_MISSION_PLANNING:
-			requiredSkills = List.of(
-									SkillType.AREOLOGY,
-									SkillType.COMPUTING,
-									SkillType.EVA_OPERATIONS,
-									SkillType.MATHEMATICS,
-									SkillType.MANAGEMENT,									
-									SkillType.PILOTING,									
-									SkillType.PSYCHOLOGY,
-									SkillType.TRADING									
-									);
-			break;
-
-		case CHIEF_OF_SAFETY_HEALTH_SECURITY:
-			requiredSkills = List.of(
-									SkillType.AREOLOGY,
-									SkillType.ASTROBIOLOGY,
-									SkillType.CONSTRUCTION,
-									SkillType.EVA_OPERATIONS,
-									SkillType.MEDICINE,
-									SkillType.PSYCHOLOGY,
-									SkillType.TRADING
-									);
-			break;
-
-		case CHIEF_OF_SCIENCE:
-			requiredSkills = List.of(
-									SkillType.AREOLOGY,
-									SkillType.ASTRONOMY,
-									SkillType.ASTROBIOLOGY,
-									SkillType.BOTANY,									
-									SkillType.CHEMISTRY,
-									SkillType.COMPUTING,
-									SkillType.MATERIALS_SCIENCE,
-									SkillType.MATHEMATICS,
-									SkillType.MEDICINE,
-									SkillType.PHYSICS,
-									SkillType.PSYCHOLOGY
-									);
-			break;
-
-		case CHIEF_OF_SUPPLY_RESOURCE:
-			requiredSkills = List.of(
-									SkillType.COOKING,
-									SkillType.MATHEMATICS,
-									SkillType.MANAGEMENT,
-									SkillType.MATERIALS_SCIENCE,
-									SkillType.TRADING
-									);
-			break;
-
-		default:
-			throw new IllegalStateException("Can not process Chief " + role);
-		}
+		List<SkillType> requiredSkills = RoleType.getRequiredSkills(role);
 
 		// compare their scores
 		for (Person p : people) {
@@ -624,13 +457,17 @@ public class ChainOfCommand implements Serializable {
 	 * @return List<Person>
 	 */
 	public List<Person> findPeopleWithRole(RoleType role) {
-		List<Person> people = new ArrayList<>();
-		for (Person p : settlement.getAllAssociatedPeople()) {
-			if (p.getRole().getType() == role)
-				people.add(p);
-		}
+		return settlement.getAllAssociatedPeople().stream()
+				.filter(p -> p.getRole().getType() == role)
+				.toList();
+	}
 
-		return people;
+	/**
+	 * Get the Rules of governance that controls this council
+	 * @return
+	 */
+	public GovernanceRules getGovernance() {
+		return governanceRules;
 	}
 
 	public void destroy() {
@@ -638,4 +475,5 @@ public class ChainOfCommand implements Serializable {
 		roleRegistry = null;
 		settlement = null;
 	}
+
 }
