@@ -374,8 +374,8 @@ public class Battery implements Serializable {
 			internalTemperature = UPPER_LIMIT_TEMPERATURE;
 		}
     	
-		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE) {
-    		double deltaTemperature = applyForcedAirCooling(time 
+		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE && kWhStored > 0) {
+			double deltaTemperature = applyForcedAirCooling(time 
     				* MathUtils.between(internalTemperature, INITIAL_TEMPERATURE, UPPER_LIMIT_TEMPERATURE) / UPPER_LIMIT_TEMPERATURE);
 			internalTemperature -= deltaTemperature;
     	}
@@ -409,12 +409,17 @@ public class Battery implements Serializable {
     	double amp = timeFactor * 5;
     	double powerFlow = amp * amp * rTotal;
     	double cop = 3;
-    	double powerAir = powerFlow * 0.5;
+    	double powerAir = powerFlow * 0.75;
     	double powerAct = powerAir * cop;
     	double deltaTemperature = (powerAct - powerFlow) * HEAT_TRANSFER_COEFF_COOLING * SURFACE_AREA_HEAT_DISSIPATION;
     	// May add back for debugging: logger.severe(0, "delta power=" + (powerAct - powerFlow) + "  deltaTemperature=" + deltaTemperature)
     	// It will consume energy to cool the battery
     	kWhStored -= powerAir;
+    	if (kWhStored < 0) {
+    		kWhStored = 0;
+    		ampHourStored = 0;	
+    	}
+ 
     	return deltaTemperature;
     }
     
@@ -463,12 +468,12 @@ public class Battery implements Serializable {
     	
     	internalTemperature += computeDeltaTemperature(1000 * available / HIGHEST_MAX_VOLTAGE / time / MarsTime.HOURS_PER_MILLISOL);
     	  	
-    	if ((previouskWhStored - kWhStored) / previouskWhStored / time > .1) {
+    	if ((previouskWhStored - kWhStored) / previouskWhStored > .2) {
     	    // If drawing too much energy at a time, it hurts the battery and degrade health
     	    degradeHealth();
     	}
     	
-	    cyclesDepleted += available / 2 / energyStorageCapacity;
+	    cyclesDepleted += available / 3 / energyStorageCapacity;
 
     	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
 
