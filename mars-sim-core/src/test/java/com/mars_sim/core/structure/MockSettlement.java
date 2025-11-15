@@ -33,6 +33,8 @@ public class MockSettlement extends Settlement {
 	public MockSettlement(String name, boolean needGoods, Coordinates locn, Authority owner, int initialPopulation) {
 		// Use Settlement constructor.
 		super(name, locn, initialPopulation);
+		
+		initialiseEssentials(needGoods, Collections.emptyList());
 
 		this.owner = owner;
 	}

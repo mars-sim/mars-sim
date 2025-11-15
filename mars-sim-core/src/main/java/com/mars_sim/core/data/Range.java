@@ -19,4 +19,12 @@ public record Range(double min, double max) implements Serializable {
         return RandomUtil.getRandomDouble(min, max);
     }
     
+    /**
+     * Is the given value between the min and max (inclusive)
+     * @param value
+     * @return
+     */
+    public boolean isBetween(int value) {
+        return value >= min && value <= max;
+    }
 }

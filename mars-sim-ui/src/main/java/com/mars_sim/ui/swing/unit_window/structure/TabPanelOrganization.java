@@ -8,21 +8,19 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.SwingConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -48,6 +46,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelOrganization is a tab panel showing the organizational structure of
@@ -71,7 +70,7 @@ public class TabPanelOrganization extends TabPanel {
 
 	private Map<Person, RoleType> roles = new HashMap<>();
 
-	private Map<RoleType,DefaultMutableTreeNode> roleNodes = new HashMap<>();
+	private Map<RoleType,DefaultMutableTreeNode> roleNodes = new EnumMap<>(RoleType.class);
 
 	private Map<Person, PersonListener> listeners  = new HashMap<>();
 
@@ -102,13 +101,13 @@ public class TabPanelOrganization extends TabPanel {
 		unitManager.addUnitManagerListener(UnitType.PERSON, unitManagerListener);
 
 		// Create label panel.
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		var labelPanel = new AttributePanel();
 		content.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare label
-		JLabel label = new JLabel(Msg.getString("TabPanelStructure.label"), SwingConstants.CENTER); //$NON-NLS-1$
-		StyleManager.applySubHeading(label);
-		labelPanel.add(label);
+		var gov = settlement.getChainOfCommand().getGovernance();
+		labelPanel.addTextField("Govername Model", gov.getName(), null);
+		labelPanel.addTextField("Job Approvals", Boolean.toString(gov.needJobApproval()), null);
 
 		root = new DefaultMutableTreeNode("  " + settlement.getName() + "  -  " + settlement.getUnitType().getName() + "  ");
 
@@ -126,6 +125,7 @@ public class TabPanelOrganization extends TabPanel {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(tree);
+		scrollPane.setBorder(StyleManager.createLabelBorder("Role Assignments"));
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		initNodes();
@@ -375,16 +375,12 @@ public class TabPanelOrganization extends TabPanel {
 		 * @param event the unit event.
 		 */
 		public void unitUpdate(UnitEvent event) {
-			if (event.getType() == UnitEventType.ROLE_EVENT) {
-				Unit unit = (Unit)event.getSource();
-				if (unit.getUnitType() == UnitType.PERSON) {
-					Person p = (Person) unit;
-					if (p.getAssociatedSettlement() == settlement) {
-						emptyNodes();
-						initNodes();
-						reloadTree();
-					}
-				}
+			if (event.getType() == UnitEventType.ROLE_EVENT
+					&& event.getSource() instanceof Person p
+					&& p.getAssociatedSettlement().equals(settlement)) {
+				emptyNodes();
+				initNodes();
+				reloadTree();
 			}
 		}
 	}

@@ -11,13 +11,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.authority.GovernanceFactory;
 import com.mars_sim.core.authority.GovernanceRules;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.GenderType;
@@ -30,7 +31,6 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.role.RoleUtil;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The ChainOfCommand class creates and assigns a person a role type based on
@@ -41,10 +41,35 @@ public class ChainOfCommand implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
 
+	/** A record to store the maximum and current number of a role. */
+	public class RoleCount implements Serializable {
+		private int maximum;
+		private int current;
+
+		public RoleCount(int maximum) {
+			this.maximum = maximum;
+			this.current = 0;
+		}
+
+		public int getMaximum() {
+			return maximum;
+		}
+		
+		public int getCurrent() {
+			return current;
+		}
+
+		private void changeCurrent(int delta) {
+			current = delta;
+			if (current < 0) {
+				current = 0;
+			}
+		}
+	}
+
 	/** Stores the number for each role. */
-	private Map<RoleType, Integer> roleRegistry = new HashMap<>();
-	/** Store the availability of each role. */
-	private Map<RoleType, Integer> roleAvailability = new HashMap<>();
+	private Map<RoleType, RoleCount> roleRegistry = new EnumMap<>(RoleType.class);
+
 	/** The settlement of interest. */
 	private Settlement settlement;
 	private GovernanceRules	 governanceRules;
@@ -60,7 +85,7 @@ public class ChainOfCommand implements Serializable {
 	public ChainOfCommand(Settlement settlement) {
 		this.settlement = settlement;
 		
-		this.governanceRules = new GovernanceRules(settlement.getInitialPopulation());
+		this.governanceRules = GovernanceFactory.getByPopulation(settlement.getInitialPopulation());
 
 		// Initialize roleAvailability array once only
 		initializeRoleMaps();
@@ -76,9 +101,15 @@ public class ChainOfCommand implements Serializable {
 		// Shuffle the role types randomize
 		Collections.shuffle(roles);
 
-		for (int i=0; i < settlement.getInitialPopulation(); i++) {
-			RoleType rt = roles.get(i % roles.size());
-			roleAvailability.merge(rt, 1, Integer::sum);
+		int base = settlement.getInitialPopulation() / roles.size();
+		int remainder = settlement.getInitialPopulation() % roles.size();
+		for(RoleType rt : roles) {
+			int count = base;
+			if (remainder > 0) {
+				count++;
+				remainder--;
+			}
+			roleRegistry.put(rt, new RoleCount(count));
 		}
 	}
 
@@ -89,25 +120,11 @@ public class ChainOfCommand implements Serializable {
 	 * @return
 	 */
 	public boolean isRoleAvailable(RoleType type) {
-        return roleAvailability.getOrDefault(type, 0) > roleRegistry.getOrDefault(type, 0);
-	}
-
-	/**
-	 * Gets the role availability map.
-	 *
-	 * @return
-	 */
-	public Map<RoleType, Integer> getRoleAvailability() {
-		return roleAvailability;
-	}
-
-	/**
-	 * Gets the role registry map.
-	 *
-	 * @return
-	 */
-	public Map<RoleType, Integer> getRoleRegistry() {
-		return roleRegistry;
+		var roleCount = roleRegistry.get(type);
+		if (roleCount == null) {
+			return false;
+		}
+        return roleCount.getMaximum() > roleCount.getCurrent();
 	}
 	
 	/**
@@ -116,8 +133,11 @@ public class ChainOfCommand implements Serializable {
 	 * @param key {@link RoleType}
 	 */
 	public void registerRole(RoleType key) {
-		int value = getNumFilled(key);
-		roleRegistry.put(key, value + 1);
+		var roleCount = roleRegistry.get(key);
+		if (roleCount == null) {
+			return;
+		}
+		roleCount.changeCurrent(1);
 	}
 
 	/**
@@ -126,9 +146,11 @@ public class ChainOfCommand implements Serializable {
 	 * @param key {@link RoleType}
 	 */
 	public void releaseRole(RoleType key) {
-		int value = getNumFilled(key);
-		if (value > 0)
-			roleRegistry.put(key, value - 1);
+		var roleCount = roleRegistry.get(key);
+		if (roleCount == null) {
+			return;
+		}
+		roleCount.changeCurrent(-1);
 	}
 
 	/**
@@ -153,10 +175,11 @@ public class ChainOfCommand implements Serializable {
 	 * @param key
 	 */
 	public int getNumFilled(RoleType key) {
-		int value = 0;
-		if (roleRegistry.containsKey(key))
-			value = roleRegistry.get(key);
-		return value;
+		var roles = roleRegistry.get(key);
+		if (roles == null) {
+			return 0;
+		}
+		return roles.getCurrent();
 	}
 
 	/**
@@ -166,7 +189,7 @@ public class ChainOfCommand implements Serializable {
 	 * @param p
 	 * @return
 	 */
-	private double computeCompositeScore(NaturalAttributeManager mgr, Person p) {
+	private double computeCompositeScore(NaturalAttributeManager mgr) {
 		return 2 * mgr.getAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE)
 				+ 3 * mgr.getAttribute(NaturalAttributeType.ORGANIZATION)
 				+ 3 * mgr.getAttribute(NaturalAttributeType.STRESS_RESILIENCE)
@@ -179,6 +202,7 @@ public class ChainOfCommand implements Serializable {
 				+ 1D + mgr.getAttribute(NaturalAttributeType.CONVERSATION);
 	}
 
+	private record LeadershipScore(int score, Person person) {}
 
 	/**
 	 * Establishes the top leadership of a settlement.
@@ -186,23 +210,11 @@ public class ChainOfCommand implements Serializable {
 	 * @param settlement the settlement.
 	 */
 	void establishTopLeadership() {
-		RoleType firstRole = governanceRules.getLeader();
-		RoleType secondRole = governanceRules.getDeputyLeader();
-		if ((firstRole != null && !firstRole.isCouncil())
-				|| (secondRole != null && !secondRole.isCouncil())) {
-			return;
-		}
 		
 		Collection<Person> people = settlement.getAllAssociatedPeople();
-		Person bestCandidate = null;
-		int bestLeadership = 0;
-		int bestComposite = 0;
-		
-		Person secondCandidate = null;
-		int secondLeadership = 0;
-		int secondComposite = 0;
-		
-		// Compare their leadership scores
+		List<LeadershipScore> candidates = new ArrayList<>();
+
+		// Generate leadership score for every person
 		for (Person candidate : people) {
 			if (candidate.isDeclaredDead() || RoleType.GUEST == candidate.getRole().getType()) {
 				continue;
@@ -210,76 +222,39 @@ public class ChainOfCommand implements Serializable {
 	
 			NaturalAttributeManager mgr = candidate.getNaturalAttributeManager();
 			int leadership = (int)(Math.round(.9 * mgr.getAttribute(NaturalAttributeType.LEADERSHIP)));
-			leadership = leadership + (int)(Math.round(.1 * candidate.getSkillManager().getEffectiveSkillLevel(SkillType.TRADING)));
-			int composite = (int)(Math.round(computeCompositeScore(mgr, candidate)) / 20);
+			int composite = (int)(Math.round(computeCompositeScore(mgr)) / 20);
+			int total = leadership + composite;
 
-			if (bestCandidate == null) {
-				bestCandidate = candidate;
-				bestLeadership = leadership;
-				bestComposite = composite;
-			}
-			
-			else if (leadership + composite > bestLeadership + bestComposite) {
-				if (secondRole != null) {
-					secondCandidate = bestCandidate;
-					secondLeadership = bestLeadership;
-					secondComposite = bestComposite;
-				}
-				bestCandidate = candidate;
-				bestLeadership = leadership;
-				bestComposite = composite;
-			}
-			
-			else if (composite > bestComposite) {
-				int rand = RandomUtil.getRandomInt(1);
-				// It's 50-50 that he would be considered good
-				if (rand == 1) {
-					if (secondRole != null) {
-						secondCandidate = bestCandidate;
-						secondLeadership = bestLeadership;
-						secondComposite = bestComposite;
-					}
-					bestCandidate = candidate;
-					bestLeadership = leadership;
-					bestComposite = composite;	
-				}
-			}
-			
-			else if (leadership > bestLeadership) {
-				int rand = RandomUtil.getRandomInt(1);
-				// It's 50-50 that he would be considered good
-				if (rand == 1) {
-					if (secondRole != null) {
-						secondCandidate = bestCandidate;
-						secondLeadership = bestLeadership;
-						secondComposite = bestComposite;
-					}
-					bestCandidate = candidate;
-					bestLeadership = leadership;
-					bestComposite = composite;	
-				}			
-			}
+			candidates.add(new LeadershipScore(total, candidate));
 		}
+		
+		// Sort the candidates by reverse score os best if first
+		Collections.sort(candidates, (a, b) -> Integer.compare(b.score, a.score));
 
-		if (bestCandidate != null) {
-			if (settlement.hasDesignatedCommander()) {
+		// Match up the council to the candidates
+		var councilRoles = governanceRules.getCouncilRoles();
+		int bestId = 0;
+		for(var c : councilRoles) {
+			if (bestId >= candidates.size()) {
+				break;
+			}
+			// Allocate the next bext person
+			var bestCandidate = candidates.get(bestId);
+			bestCandidate.person.setRole(c);
+
+			// If the best and a commander
+			if ((bestId == 0) && settlement.hasDesignatedCommander()) {
 				Commander commander = SimulationConfig.instance().getPersonConfig().getCommander();
-				updateCommander(bestCandidate, commander);
-				logger.config("[" + bestCandidate.getLocationTag().getLocale() + "] " + bestCandidate
-						+ " had been assigned as the commander of " + settlement + ".");
+				updateCommander(bestCandidate.person, commander);
+				logger.info(bestCandidate.person.getName()
+						+ " had been assigned as the commander of " + settlement.getName() + ".");
 
 				// Determine the initial leadership points
-				int leadershipAptitude = bestCandidate.getNaturalAttributeManager().getAttribute(NaturalAttributeType.LEADERSHIP);
+				int leadershipAptitude = bestCandidate.person.getNaturalAttributeManager().getAttribute(NaturalAttributeType.LEADERSHIP);
 				commander.setInitialLeadershipPoint(leadershipAptitude);
 			}
 
-			else {
-				bestCandidate.setRole(firstRole);
-			}
-		}
-		
-		if (secondCandidate != null) {
-			secondCandidate.setRole(secondRole);
+			bestId++;
 		}
 	}
 	
@@ -380,7 +355,7 @@ public class ChainOfCommand implements Serializable {
 	 */
 	private void establishChiefs() {
 
-		int maxChiefs = governanceRules.getMaxChiefs(settlement.getNumCitizens());
+		int maxChiefs = GovernanceRules.getMaxChiefs(settlement.getNumCitizens());
 		if (maxChiefs > 0) {
 			// Elect chiefs
 			for(RoleType rt : RoleUtil.getChiefs()) {

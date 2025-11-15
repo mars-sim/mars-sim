@@ -7,11 +7,9 @@
 package com.mars_sim.core.authority;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.role.RoleUtil;
 
 /**
  * Governance rules to control the behaviour of a Settlement council.
@@ -19,90 +17,41 @@ import com.mars_sim.core.person.ai.role.RoleUtil;
  * need approval.
  */
 public class GovernanceRules implements Serializable {
-	private static final int MAX_POP_CREW = 4; 
-	private static final int MIN_POP_CHIEFS = 24;
 
-    private static final int MAX_POP_COMMANDER = 4;
-	private static final int MAX_POP_SUB_COMMANDER = 12;
-	private static final int POPULATION_WITH_CHIEFS = 24;
-	private static final int MAX_POP_ADMINISTRATOR = 96;
-	private static final int MAX_POP_DEPUTY_ADMINISTRATOR = 136;
-	private static final int MAX_POP_MAYOR = 480;
 
     private List<RoleType> assignableRoles;
-    private RoleType leader;
-    private RoleType deputyLeader;
+    private List<RoleType> councilRoles;
 
     private List<RoleType> allRoles;
     private boolean jobApproval;
+    private String name;
 
-    public GovernanceRules(int pop) {
-        		
-        this.jobApproval = (pop > MAX_POP_COMMANDER);
-		this.allRoles = new ArrayList<>();
-
-		// Phase 1 select workers roles
-		if (pop <= MAX_POP_CREW) {
-			assignableRoles = RoleUtil.getCrewRoles();
-		}
-		else {
-			assignableRoles = RoleUtil.getSpecialists();
-		}
-		allRoles.addAll(assignableRoles);
-		if (pop >= MIN_POP_CHIEFS) {
-			allRoles.addAll(RoleUtil.getChiefs());
-		}
-
-		//Phase 2 select command roles
-		List<RoleType> commandRoles = new ArrayList<>();
-		if (pop <= MAX_POP_COMMANDER) {
-			commandRoles.add(RoleType.COMMANDER);
-		}
-
-		else if (pop <= MAX_POP_SUB_COMMANDER) {
-			commandRoles.add(RoleType.COMMANDER);
-			commandRoles.add(RoleType.SUB_COMMANDER);
-		}
-
-		else if (pop <= MAX_POP_ADMINISTRATOR) {
-			commandRoles.add(RoleType.ADMINISTRATOR);
-			commandRoles.add(RoleType.COMMANDER);
-		}
-		
-		else if (pop <= MAX_POP_DEPUTY_ADMINISTRATOR) {
-			commandRoles.add(RoleType.ADMINISTRATOR);
-			commandRoles.add(RoleType.DEPUTY_ADMINISTRATOR);
-			commandRoles.add(RoleType.COMMANDER);
-		}
-		
-		else if (pop <= MAX_POP_MAYOR) {
-			commandRoles.add(RoleType.MAYOR);
-			commandRoles.add(RoleType.ADMINISTRATOR);
-			commandRoles.add(RoleType.DEPUTY_ADMINISTRATOR);
-			commandRoles.add(RoleType.COMMANDER);
-		}
-
-		else {
-			commandRoles.add(RoleType.PRESIDENT);
-			commandRoles.add(RoleType.MAYOR);
-			commandRoles.add(RoleType.ADMINISTRATOR);
-			commandRoles.add(RoleType.DEPUTY_ADMINISTRATOR);
-			commandRoles.add(RoleType.COMMANDER);
-		}
-		
-		// Leader & deputy selection
-		allRoles.addAll(commandRoles);
-		leader = commandRoles.get(0);
-		if (commandRoles.size() > 1) {
-			deputyLeader = commandRoles.get(1);
-		}
+    GovernanceRules(String name, List<RoleType> allRoles, List<RoleType> assignableRoles, List<RoleType> councilRoles,
+			boolean jobApproval) {
+		this.assignableRoles = assignableRoles;
+		this.councilRoles = councilRoles;
+		this.allRoles = allRoles;
+		this.jobApproval = jobApproval;
+		this.name = name;
+	}
+	
+	/**
+	 * get the name of these Governance Rules
+	 * @return
+	 */
+	public String getName() {
+		return name;
 	}
 
+	/**
+	 * get all roles defined by the Governance Council
+	 * @return
+	 */
     public List<RoleType> getAllRoles() {
         return allRoles;
     }
 
-    /**
+	/**
      * get the roles that can be assigned by the Governance Council
      * @return
      */
@@ -110,12 +59,12 @@ public class GovernanceRules implements Serializable {
         return assignableRoles;
     }
 
-    public RoleType getLeader() {
-        return leader;
-    }
-
-    public RoleType getDeputyLeader() {
-        return deputyLeader;
+    /**
+     * Roles that govern the council and Settlement. Order in terms of importance
+     * @return
+     */
+    public List<RoleType> getCouncilRoles() {
+        return councilRoles;
     }
 
     /**
@@ -131,7 +80,7 @@ public class GovernanceRules implements Serializable {
      * @param popSize
      * @return
      */
-    public int getMaxChiefs(int popSize) {
-		 return Math.max(0,popSize - POPULATION_WITH_CHIEFS + 1);
+    public static int getMaxChiefs(int popSize) {
+		 return Math.max(0,popSize - GovernanceFactory.POPULATION_WITH_CHIEFS + 1);
     }
 }
