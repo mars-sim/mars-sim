@@ -62,6 +62,7 @@ public enum RoleType implements Named {
 		return this.level;
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

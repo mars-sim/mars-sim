@@ -42,7 +42,9 @@ public class ChainOfCommand implements Serializable {
 	private static final Logger logger = Logger.getLogger(ChainOfCommand.class.getName());
 
 	/** A record to store the maximum and current number of a role. */
-	public class RoleCount implements Serializable {
+	public static class RoleCount implements Serializable {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 		private int maximum;
 		private int current;
 
@@ -206,8 +208,6 @@ public class ChainOfCommand implements Serializable {
 
 	/**
 	 * Establishes the top leadership of a settlement.
-	 *
-	 * @param settlement the settlement.
 	 */
 	void establishTopLeadership() {
 		
@@ -228,7 +228,7 @@ public class ChainOfCommand implements Serializable {
 			candidates.add(new LeadershipScore(total, candidate));
 		}
 		
-		// Sort the candidates by reverse score os best if first
+		// Sort the candidates by reverse score so best is first
 		Collections.sort(candidates, (a, b) -> Integer.compare(b.score, a.score));
 
 		// Match up the council to the candidates
@@ -238,7 +238,7 @@ public class ChainOfCommand implements Serializable {
 			if (bestId >= candidates.size()) {
 				break;
 			}
-			// Allocate the next bext person
+			// Allocate the next best person
 			var bestCandidate = candidates.get(bestId);
 			bestCandidate.person.setRole(c);
 
@@ -438,8 +438,11 @@ public class ChainOfCommand implements Serializable {
 	}
 
 	/**
-	 * Get the Rules of governance that controls this council
-	 * @return
+ 	* Returns the {@link GovernanceRules} that control this council.
+	 * <p>
+	 * Use this method to access the rules and policies governing the current settlement's council.
+	 *
+	 * @return the {@code GovernanceRules} instance associated with this council
 	 */
 	public GovernanceRules getGovernance() {
 		return governanceRules;

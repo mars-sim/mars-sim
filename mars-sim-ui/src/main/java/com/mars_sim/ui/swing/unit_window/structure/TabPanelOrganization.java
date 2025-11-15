@@ -377,7 +377,7 @@ public class TabPanelOrganization extends TabPanel {
 		public void unitUpdate(UnitEvent event) {
 			if (event.getType() == UnitEventType.ROLE_EVENT
 					&& event.getSource() instanceof Person p
-					&& p.getAssociatedSettlement().equals(settlement)) {
+					&& settlement.equals(p.getAssociatedSettlement())) {
 				emptyNodes();
 				initNodes();
 				reloadTree();

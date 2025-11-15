@@ -1,5 +1,6 @@
 package com.mars_sim.core.data;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +36,7 @@ class RangeTest {
             assertTrue(range.isBetween(i));
         }
 
-        assertTrue(!range.isBetween(min-1));
-        assertTrue(!range.isBetween(max+1));
+        assertFalse(range.isBetween(min-1));
+        assertFalse(range.isBetween(max+1));
     }
 }
