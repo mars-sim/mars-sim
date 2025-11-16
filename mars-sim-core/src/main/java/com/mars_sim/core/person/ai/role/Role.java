@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
@@ -28,6 +27,9 @@ public class Role implements Serializable {
 	private RoleType roleType;
 
 	private History<RoleType> roleHistory = new History<>();
+
+    // For Role change
+    public static final String ROLE_EVENT = "role event";
 
 	public Role(Person person) {
 		this.person = person;
@@ -99,7 +101,7 @@ public class Role implements Serializable {
 			}
 
 			// Records the role change and fire unit update
-			person.fireUnitUpdate(EntityEventType.ROLE_EVENT, roleType);
+			person.fireUnitUpdate(ROLE_EVENT, roleType);
 
 			// For Council members being changed have a meeting
 			if (roleType.isCouncil() && !predecessors.isEmpty()

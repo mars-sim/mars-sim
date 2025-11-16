@@ -30,7 +30,6 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
@@ -38,6 +37,7 @@ import com.mars_sim.core.UnitManagerEventType;
 import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -375,7 +375,7 @@ public class TabPanelOrganization extends TabPanel {
 		 * @param event the unit event.
 		 */
 		public void entityUpdate(EntityEvent event) {
-			if (event.getType() == EntityEventType.ROLE_EVENT
+			if (event.getType() == Role.ROLE_EVENT
 					&& event.getSource() instanceof Person p
 					&& settlement.equals(p.getAssociatedSettlement())) {
 				emptyNodes();

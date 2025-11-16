@@ -110,7 +110,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		eventColumnMapping.put(EntityEventType.STATUS_EVENT, MODE);
 		eventColumnMapping.put(EntityEventType.BATTERY_EVENT, BATTERY);
 		eventColumnMapping.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		eventColumnMapping.put(EntityEventType.TASK_EVENT, TASK);
+		eventColumnMapping.put(TaskManager.TASK_EVENT, TASK);
 		eventColumnMapping.put(EntityEventType.TASK_NAME_EVENT, TASK);
 		eventColumnMapping.put(EntityEventType.TASK_ENDED_EVENT, TASK);
 		eventColumnMapping.put(EntityEventType.TASK_SUBTASK_EVENT, TASK);

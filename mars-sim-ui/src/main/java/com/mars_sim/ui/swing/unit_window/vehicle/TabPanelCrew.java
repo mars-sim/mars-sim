@@ -34,6 +34,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
@@ -403,7 +404,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				if (EntityEventType.NAME_EVENT.equals(type)) {
 		            fireTableCellUpdated(rowIndex, 0);
 				} 
-				else if (EntityEventType.TASK_DESCRIPTION_EVENT.equals(type) || EntityEventType.TASK_EVENT.equals(type)
+				else if (EntityEventType.TASK_DESCRIPTION_EVENT.equals(type) || TaskManager.TASK_EVENT.equals(type)
 						|| EntityEventType.TASK_ENDED_EVENT.equals(type) || EntityEventType.TASK_SUBTASK_EVENT.equals(type)
 						|| EntityEventType.TASK_NAME_EVENT.equals(type)) {
 					fireTableCellUpdated(rowIndex, 1);

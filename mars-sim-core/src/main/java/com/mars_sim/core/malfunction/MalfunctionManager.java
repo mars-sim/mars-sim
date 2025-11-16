@@ -182,6 +182,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
 	/** The map of collections of scopes. */
 	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
+
+    // For MalfunctionManager
+    public static final String MALFUNCTION_EVENT = "malfunction";
 	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
@@ -489,7 +492,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		numberMalfunctions++;
 
-		getUnit().fireUnitUpdate(EntityEventType.MALFUNCTION_EVENT, malfunction);
+		getUnit().fireUnitUpdate(MalfunctionManager.MALFUNCTION_EVENT, malfunction);
 
 		if (registerEvent) {
 			registerAMalfunction(malfunction, actor);
@@ -978,7 +981,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 					resetModifiers(0);
 			}
 
-			getUnit().fireUnitUpdate(EntityEventType.MALFUNCTION_EVENT, fixed);
+			getUnit().fireUnitUpdate(MALFUNCTION_EVENT, fixed);
 
 			String chiefRepairer = fixed.getMostProductiveRepairer();
 

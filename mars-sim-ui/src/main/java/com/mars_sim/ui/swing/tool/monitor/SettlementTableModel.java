@@ -16,6 +16,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.equipment.ResourceHolder;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -309,7 +310,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 				columnNum = POWER_LOAD;
 			} else if (EntityEventType.STORED_ENERGY_EVENT.equals(eventType)) {
 				columnNum = ENERGY_STORED;
-			} else if (EntityEventType.MALFUNCTION_EVENT.equals(eventType)) {
+			} else if (MalfunctionManager.MALFUNCTION_EVENT.equals(eventType)) {
 				columnNum = MALFUNCTION;
 			} else if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(eventType)) {
 				// Resource change

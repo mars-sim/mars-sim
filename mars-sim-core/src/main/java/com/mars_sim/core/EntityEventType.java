@@ -55,12 +55,6 @@ public class EntityEventType {
 	public static final String RADIATION_EVENT = "radiation event";
 	public static final String METEORITE_EVENT = "meteorite event";
 	
-	// For MalfunctionManager
-	public static final String MALFUNCTION_EVENT = "malfunction";
-	
-	// For TaskManager
-	public static final String TASK_EVENT = "task";
-
 	// For Task
 	public static final String TASK_NAME_EVENT = "task name";
 	public static final String TASK_DESCRIPTION_EVENT = "task description";
@@ -93,12 +87,6 @@ public class EntityEventType {
 
 	// For Cooking and PreparingDessert
 	public static final String FOOD_EVENT = "food event";
-	
-	// For Farming
-	public static final String CROP_EVENT = "crop event";
-	
-	// For Role change
-	public static final String ROLE_EVENT = "role event";
 	
 	// For work shift change
 	public static final String SHIFT_EVENT = "shift event";

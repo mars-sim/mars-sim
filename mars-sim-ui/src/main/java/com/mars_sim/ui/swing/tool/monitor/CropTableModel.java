@@ -166,7 +166,7 @@ public class CropTableModel extends UnitTableModel<Building> {
 					columnNum = GREENHOUSE_NAME; // = 1
 			}
 	
-			else if (EntityEventType.CROP_EVENT.equals(eventType)) {
+			else if (Farming.CROP_EVENT.equals(eventType)) {
 				CropCategory cat = crop.getCropSpec().getCropCategory();
 				columnNum = getCategoryNum(cat);
 			}

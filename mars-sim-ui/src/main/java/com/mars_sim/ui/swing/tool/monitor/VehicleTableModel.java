@@ -20,6 +20,7 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
@@ -369,7 +370,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			columnNum = RESERVED;
 		} else if (EntityEventType.SPEED_EVENT.equals(eventType)) {
 			columnNum = SPEED;
-		} else if (EntityEventType.MALFUNCTION_EVENT.equals(eventType)) {
+		} else if (MalfunctionManager.MALFUNCTION_EVENT.equals(eventType)) {
 			columnNum = MALFUNCTION;
 		} else if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(eventType)) {
 			int resourceId = -1;
