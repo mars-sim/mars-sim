@@ -16,7 +16,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import com.formdev.flatlaf.FlatLaf;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
@@ -116,17 +115,15 @@ public class UnitDialog {
 		 *
 		 * @param event the unit event.
 		 */
+		@Override
 		public void entityUpdate(EntityEvent event) {
-			if (event.getType() == EntityEventType.LOCAL_POSITION_EVENT) {
-				Unit unit = (Unit)event.getSource();	
-				if (unit instanceof Worker w) {
-					LocalPosition lp = w.getPosition();
-					
-					// Transform the worker's position to pixel on screen				
-					Point p = settlementMapPanel.convertToPixelPos(lp);
-					dialog.setLocation((int)p.getX(), (int)p.getY());
-				}
-			}
+			if (event.getType().equals(EntityEventType.LOCAL_POSITION_EVENT) && event.getSource() instanceof Worker w) {
+				LocalPosition lp = w.getPosition();
+				
+				// Transform the worker's position to pixel on screen				
+				Point p = settlementMapPanel.convertToPixelPos(lp);
+				dialog.setLocation((int)p.getX(), (int)p.getY());
+			}	
 		}
 	}
 	

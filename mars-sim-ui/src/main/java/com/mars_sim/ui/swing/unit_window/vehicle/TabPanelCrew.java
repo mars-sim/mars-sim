@@ -210,7 +210,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	/**
 	 * Table model for occupants.
 	 */
-	private class OccupantTableModel extends AbstractTableModel implements EntityListener, EntityModel {
+	private static class OccupantTableModel extends AbstractTableModel implements EntityListener, EntityModel {
 
 		private static final String NAME = Msg.getString("MainDetailPanel.column.name");
 		private static final String TASK = Msg.getString("MainDetailPanel.column.task");

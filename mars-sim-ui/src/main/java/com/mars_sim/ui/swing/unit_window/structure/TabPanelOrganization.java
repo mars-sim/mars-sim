@@ -374,8 +374,9 @@ public class TabPanelOrganization extends TabPanel {
 		 *
 		 * @param event the unit event.
 		 */
+		@Override
 		public void entityUpdate(EntityEvent event) {
-			if (event.getType() == Role.ROLE_EVENT
+			if (event.getType().equals(Role.ROLE_EVENT)
 					&& event.getSource() instanceof Person p
 					&& settlement.equals(p.getAssociatedSettlement())) {
 				emptyNodes();

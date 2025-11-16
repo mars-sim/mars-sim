@@ -7,6 +7,7 @@
 package com.mars_sim.core;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * An entity change event.
@@ -32,9 +33,22 @@ public class EntityEvent implements Serializable {
 	 * @param target the target object of the event.
 	 */
 	public EntityEvent(Entity source, String type, Object target) {
+		Objects.requireNonNull(source, "Source entity cannot be null.");
+		Objects.requireNonNull(type, "Event type cannot be null.");
+		
 		this.source = source;
 		this.type = type;
 		this.target = target;
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param source the entity throwing the event.
+	 * @param type the type of event.
+	 */
+	public EntityEvent(Entity source, String type) {
+		this(source, type, null);
 	}
 
 	/**

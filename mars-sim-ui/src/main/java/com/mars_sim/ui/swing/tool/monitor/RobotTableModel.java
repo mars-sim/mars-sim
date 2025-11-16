@@ -254,6 +254,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 *
 	 * @param event the unit event.
 	 */
+	@Override
 	public void entityUpdate(EntityEvent event) {
 		
 		Integer column = eventColumnMapping.get(event.getType());
