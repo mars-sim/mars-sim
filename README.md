@@ -457,7 +457,7 @@ from the Control Panel as follows :
 only tracks the official Oracle versions. If you install any openJDK's on
 your machine, JCP won't be able to recognize them.
 
-7. To track what versions of OpenJDK have been installed on your machine, you may try using 
+7. To keep track of the versions of OpenJDK have been installed on your machine, you may try using 
 [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
 ## Remote Console Connection
@@ -505,9 +505,9 @@ e.g. Include the followings :
  - Settlement Map, etc.
 
 **Specifications (please complete)**
- - OS version : [e.g. Windows 11, macOS 14.2, Ubuntu 23.10]
- - Java version : [e.g. Oracle JDK 21, AdoptOpenJDK 21, OpenJFX 21]
- - Major version and build : [e.g. 3.7.1 build 9227]
+ - OS version : [e.g. Windows 11, macOS 26.1, Ubuntu 25.10]
+ - Java version : [e.g. Oracle JDK 21, Azul Zulu 21, Amazon Corretto 21, BellSoft Liberica JDK]
+ - Major version and build : [e.g. post 3.10.0]
 
 **Additional context**
  - Add any other context about the problem here. By providing more info above when filing it, 
@@ -537,18 +537,19 @@ our [domain](https://marssim.space/) directly.
 
 
 ## Wiki
-Check out our [wikis](https://github.com/mars-sim/mars-sim/wiki) at GitHub.
+See our general [wiki](https://github.com/mars-sim/mars-sim/wiki).
+For technical detail, check out [DeepWiki](https://deepwiki.com/mars-sim/mars-sim).
+
 
 ## Official Codebase
 * https://github.com/mars-sim/mars-sim
 
 
 ## Download
-Check out the most recent release or pre-release build in GitHub 
-[Releases](https://github.com/mars-sim/mars-sim/releases) page.
+Find the past and recent [releases](https://github.com/mars-sim/mars-sim/releases).
 
-Alternatively, see all our previous and current official release versions at SourceForge
-[Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.8.0/).
+Alternatively, go to our backup SourceForge
+[Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.10.0/).
 
 > [!NOTE]
 > If you prefer, click SF's button below to automatically sense the correct OS platform to download.
