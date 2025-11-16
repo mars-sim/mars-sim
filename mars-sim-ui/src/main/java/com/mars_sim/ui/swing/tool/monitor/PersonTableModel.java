@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -97,27 +97,27 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
 		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
 
-		EVENT_COLUMN_MAPPING = new EnumMap<>(UnitEventType.class);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.NAME_EVENT, NAME);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.COORDINATE_EVENT, LOCATION);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.HUNGER_EVENT, ENERGY);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.THIRST_EVENT, ENERGY);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.STRESS_EVENT, STRESS);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.EMOTION_EVENT, EMOTION);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.JOB_EVENT, JOB);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.ROLE_EVENT, ROLE);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.SHIFT_EVENT, SHIFT);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_NAME_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_ENDED_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.ILLNESS_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.DEATH_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.BURIAL_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.REVIVED_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING = new EnumMap<>(EntityEventType.class);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.COORDINATE_EVENT, LOCATION);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.HUNGER_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.THIRST_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.FATIGUE_EVENT, FATIGUE);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.STRESS_EVENT, STRESS);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.EMOTION_EVENT, EMOTION);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.JOB_EVENT, JOB);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.ROLE_EVENT, ROLE);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.SHIFT_EVENT, SHIFT);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_NAME_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_ENDED_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.MISSION_EVENT, MISSION_COL);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.ILLNESS_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.DEATH_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.BURIAL_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.REVIVED_EVENT, HEALTH);
 	}
 
 	/** 
@@ -137,8 +137,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
-	private transient UnitListener crewListener;
-	private transient UnitListener settlementListener;
+	private transient EntityListener crewListener;
+	private transient EntityListener settlementListener;
 	private transient MissionListener missionListener;
 
 	/**
@@ -178,8 +178,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		
 		resetEntities(crew);
 		
-		crewListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+		crewListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		((Unit) vehicle).addUnitListener(crewListener);
 	}
 
@@ -236,8 +236,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 								.flatMap(Collection::stream)
 								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
+										EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			}
 			else {
 
@@ -246,8 +246,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 								.flatMap(Collection::stream)
 								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}
 		}
 		else if (isDeceasedCB) {
@@ -258,8 +258,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 								.flatMap(Collection::stream)
 								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
+										EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			}
 			else {
 
@@ -268,8 +268,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 								.flatMap(Collection::stream)
 								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}
 		}
 		else if (isBuriedCB) {
@@ -280,8 +280,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 								.flatMap(Collection::stream)
 								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
+				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
+											EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			}
 			else {
 
@@ -290,8 +290,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 								.flatMap(Collection::stream)
 								.sorted(Comparator.comparing(Person::getName))
 								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}		
 		}
 		
@@ -498,8 +498,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
+	public void entityUpdate(EntityEvent event) {
+		String eventType = event.getType();
 
 		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
 
@@ -555,9 +555,9 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 
 	/**
-	 * UnitListener inner class for watching Person move in/out of a Unit.
+	 * EntityListener inner class for watching Person move in/out of a Unit.
 	 */
-	private class PersonChangeListener implements UnitListener {
+	private class PersonChangeListener implements EntityListener {
 
 		private UnitEventType addEvent;
 		private UnitEventType removeEvent;
@@ -572,13 +572,13 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
+		public void entityUpdate(EntityEvent event) {
 			if (event.getTarget() instanceof Person p) {
-				UnitEventType eventType = event.getType();
-				if (eventType == addEvent) {
+				String eventType = event.getType();
+				if (addEvent.equals(eventType)) {
 					addEntity(p);
 				}
-				else if (eventType == removeEvent) {
+				else if (removeEvent.equals(eventType)) {
 					removeEntity(p);
 				}
 			}

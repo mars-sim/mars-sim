@@ -9,7 +9,7 @@ package com.mars_sim.core.building.utility.heating;
 import java.io.Serializable;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.environment.SurfaceFeatures;
 
@@ -76,7 +76,7 @@ public abstract class HeatSource implements Serializable {
 			double percentElectricity = 100 - percentHeat;
 			setPercentElectricity(percentElectricity);
 			
-			building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
+			building.fireUnitUpdate(EntityEventType.HEAT_MODE_EVENT);
 			return;
 		}
 		
@@ -85,7 +85,7 @@ public abstract class HeatSource implements Serializable {
 			setPercentHeat(0);
 			setPercentElectricity(0);
 			
-			building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
+			building.fireUnitUpdate(EntityEventType.HEAT_MODE_EVENT);
 			return;
 		}
 		
@@ -96,7 +96,7 @@ public abstract class HeatSource implements Serializable {
 		// Electricity percent
 		double percentElectricity = 100 - percentHeat;
 		setPercentElectricity(percentElectricity);
-		building.fireUnitUpdate(UnitEventType.HEAT_MODE_EVENT);
+		building.fireUnitUpdate(EntityEventType.HEAT_MODE_EVENT);
 	}
 	
 	/**

@@ -60,9 +60,9 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
@@ -1719,7 +1719,7 @@ public class CommanderWindow extends ToolWindow {
 	 * Inner class combo box model for settlements.
 	 */
 	public class SettlementComboBoxModel extends DefaultComboBoxModel<Settlement>
-		implements UnitListener {
+		implements EntityListener {
 
 		/**
 		 * Constructor.
@@ -1767,10 +1767,10 @@ public class CommanderWindow extends ToolWindow {
 		}
 
 		@Override
-		public void unitUpdate(UnitEvent event) {
-			// Note: Easily 100+ UnitEvent calls every second
-			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+		public void entityUpdate(EntityEvent event) {
+			// Note: Easily 100+ EntityEvent calls every second
+			String eventType = event.getType();
+			if (EntityEventType.ADD_BUILDING_EVENT.equals(eventType)) {
 				Object target = event.getTarget();
 				Building building = (Building) target; // overwrite the dummy building object made by the constructor
 				BuildingManager mgr = building.getBuildingManager();
@@ -1781,7 +1781,7 @@ public class CommanderWindow extends ToolWindow {
 				settlementBox.setSelectedItem(s);
 			}
 
-			else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+			else if (EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT.equals(eventType)) {
 				// Update the number of citizens
 				Settlement s = (Settlement) settlementBox.getSelectedItem();
 				// Set the selected settlement
@@ -1811,7 +1811,7 @@ public class CommanderWindow extends ToolWindow {
 	 * Inner class combo box model for buildings.
 	 */
 	public class BuildingComboBoxModel extends DefaultComboBoxModel<Building>
-		implements UnitListener {
+		implements EntityListener {
 
 		private Settlement settlement;
 		private List<Building> bldgs;
@@ -1835,7 +1835,7 @@ public class CommanderWindow extends ToolWindow {
 		}
 
 		public void replaceGreenhouses(Settlement newSettlement, List<Building> newBldgs) {
-			// Remove previous UnitListener and elements
+			// Remove previous EntityListener and elements
 			Iterator<Building> i = bldgs.iterator();
 			while (i.hasNext()) {
 				Building b = i.next();
@@ -1866,10 +1866,10 @@ public class CommanderWindow extends ToolWindow {
 		}
 
 		@Override
-		public void unitUpdate(UnitEvent event) {
-			// Note: Easily 100+ UnitEvent calls every second
-			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+		public void entityUpdate(EntityEvent event) {
+			// Note: Easily 100+ EntityEvent calls every second
+			String eventType = event.getType();
+			if (EntityEventType.ADD_BUILDING_EVENT.equals(eventType)) {
 				Object target = event.getTarget();
 				Building b = (Building) target; // overwrite the dummy building object made by the constructor
 				
@@ -1878,7 +1878,7 @@ public class CommanderWindow extends ToolWindow {
 					addElement(b);
 				}
 			}
-			else if (eventType == UnitEventType.REMOVE_BUILDING_EVENT) {
+			else if (EntityEventType.REMOVE_BUILDING_EVENT.equals(eventType)) {
 				Object target = event.getTarget();
 				Building b = (Building) target; // overwrite the dummy building object made by the constructor
 

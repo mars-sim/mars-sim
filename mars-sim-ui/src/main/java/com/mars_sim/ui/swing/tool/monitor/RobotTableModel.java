@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
@@ -85,7 +85,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	
 	private static final ColumnSpec[] COLUMNS;
 
-	private static final Map<UnitEventType, Integer> eventColumnMapping;
+	private static final Map<String, Integer> eventColumnMapping;
 
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -104,18 +104,18 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("RobotTableModel.column.mission"), String.class);
 		COLUMNS[TASK] = new ColumnSpec(Msg.getString("RobotTableModel.column.task"), String.class);
 
-		eventColumnMapping = new EnumMap<>(UnitEventType.class);
-		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
-		eventColumnMapping.put(UnitEventType.COORDINATE_EVENT, LOCATION);
-		eventColumnMapping.put(UnitEventType.STATUS_EVENT, MODE);
-		eventColumnMapping.put(UnitEventType.BATTERY_EVENT, BATTERY);
-		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-		eventColumnMapping.put(UnitEventType.DEATH_EVENT, HEALTH);
+		eventColumnMapping = new EnumMap<>(EntityEventType.class);
+		eventColumnMapping.put(EntityEventType.NAME_EVENT, NAME);
+		eventColumnMapping.put(EntityEventType.COORDINATE_EVENT, LOCATION);
+		eventColumnMapping.put(EntityEventType.STATUS_EVENT, MODE);
+		eventColumnMapping.put(EntityEventType.BATTERY_EVENT, BATTERY);
+		eventColumnMapping.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		eventColumnMapping.put(EntityEventType.TASK_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.TASK_NAME_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.TASK_ENDED_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.TASK_SUBTASK_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.MISSION_EVENT, MISSION_COL);
+		eventColumnMapping.put(EntityEventType.DEATH_EVENT, HEALTH);
 	}
 
 	/** inner enum with valid source types. */
@@ -131,8 +131,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
-	private UnitListener crewListener;
-	private UnitListener settlementListener;
+	private EntityListener crewListener;
+	private EntityListener settlementListener;
 	private MissionListener missionListener;
 	private boolean allAssociated;
 
@@ -153,8 +153,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		Collection<Robot> crew = CollectionUtils.sortByName(vehicle.getRobotCrew());
 		resetEntities(crew);
 		
-		crewListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+		crewListener = new RobotChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		((Unit) vehicle).addUnitListener(crewListener);
 	}
 
@@ -223,8 +223,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 						.flatMap(Collection::stream)
 						.sorted(Comparator.comparing(Robot::getName))
 						.collect(Collectors.toList());
-			settlementListener = new RobotChangeListener(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT,
-														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
+			settlementListener = new RobotChangeListener(EntityEventType.ADD_ASSOCIATED_ROBOT_EVENT,
+														EntityEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
 		}
 		else {
 			// In future, there will be a difference between robots in a settlement 
@@ -236,8 +236,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 						.flatMap(Collection::stream)
 						.sorted(Comparator.comparing(Robot::getName))
 						.collect(Collectors.toList());
-			settlementListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+			settlementListener = new RobotChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+														EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		}
 		
 		if (entities != null && !entities.isEmpty()) {	
@@ -254,7 +254,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 *
 	 * @param event the unit event.
 	 */
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		
 		Integer column = eventColumnMapping.get(event.getType());
 			
@@ -431,14 +431,14 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	}
 
 	/**
-	 * UnitListener inner class for events where a Robot joins or leaves a Unit.
+	 * EntityListener inner class for events where a Robot joins or leaves a Unit.
 	 */
-	private class RobotChangeListener implements UnitListener {
+	private class RobotChangeListener implements EntityListener {
 
-		private UnitEventType addEvent;
-		private UnitEventType removeEvent;
+		private String addEvent;
+		private String removeEvent;
 
-		public RobotChangeListener(UnitEventType addEvent, UnitEventType removeEvent) {
+		public RobotChangeListener(String addEvent, String removeEvent) {
 			this.addEvent = addEvent;
 			this.removeEvent = removeEvent;
 		}
@@ -448,13 +448,13 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
+		public void entityUpdate(EntityEvent event) {
 			if (event.getTarget() instanceof Robot r) {
-				UnitEventType eventType = event.getType();
-				if (eventType == addEvent) {
+				String eventType = event.getType();
+				if (addEvent.equals(eventType)) {
 					addEntity(r);
 				}
-				else if (eventType == removeEvent) {
+				else if (removeEvent.equals(eventType)) {
 					removeEntity(r);
 				}
 			}

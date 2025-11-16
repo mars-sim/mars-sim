@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementParameters;
 import com.mars_sim.core.tool.RandomUtil;
@@ -157,7 +157,7 @@ public class ConstructionStage implements Serializable {
         }
 
         // Fire construction event
-        site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_WORK_EVENT, this);
+        site.fireUnitUpdate(EntityEventType.ADD_CONSTRUCTION_WORK_EVENT, this);
     }
 
     /**
@@ -265,7 +265,7 @@ public class ConstructionStage implements Serializable {
 
         if (createEvent) {
             // Generate an event if at least one has been changed
-            site.fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
+            site.fireUnitUpdate(EntityEventType.ADD_CONSTRUCTION_MATERIALS_EVENT, this);
         }
 		return allLoaded;
 	}

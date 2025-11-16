@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.equipment.ResourceHolder;
@@ -289,9 +289,9 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getSource() instanceof Settlement settlement) {
-			UnitEventType eventType = event.getType();
+			String eventType = event.getType();
 			Object target = event.getTarget();
 
 			int columnNum = -1;

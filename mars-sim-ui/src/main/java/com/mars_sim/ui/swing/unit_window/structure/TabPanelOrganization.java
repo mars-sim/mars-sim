@@ -29,9 +29,9 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerEventType;
@@ -367,15 +367,15 @@ public class TabPanelOrganization extends TabPanel {
 	/**
 	 * PersonListener class listens to the change of each settler in a settlement.
 	 */
-	private class PersonListener implements UnitListener {
+	private class PersonListener implements EntityListener {
 
 		/**
 		 * Catch unit update event.
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
-			if (event.getType() == UnitEventType.ROLE_EVENT
+		public void entityUpdate(EntityEvent event) {
+			if (event.getType() == EntityEventType.ROLE_EVENT
 					&& event.getSource() instanceof Person p
 					&& settlement.equals(p.getAssociatedSettlement())) {
 				emptyNodes();

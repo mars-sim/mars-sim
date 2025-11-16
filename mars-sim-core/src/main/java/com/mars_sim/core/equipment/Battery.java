@@ -10,7 +10,7 @@ package com.mars_sim.core.equipment;
 import java.io.Serializable;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.robot.Robot;
@@ -475,7 +475,7 @@ public class Battery implements Serializable {
     	
 	    cyclesDepleted += available / 3 / energyStorageCapacity;
 
-    	unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+    	unit.fireUnitUpdate(EntityEventType.BATTERY_EVENT);
 
     	updateTerminalVoltage();
     	
@@ -556,7 +556,7 @@ public class Battery implements Serializable {
 
         updateLowPowerMode();
         
-		unit.fireUnitUpdate(UnitEventType.BATTERY_EVENT);
+		unit.fireUnitUpdate(EntityEventType.BATTERY_EVENT);
     	
 		updateTerminalVoltage();
 		
@@ -631,7 +631,7 @@ public class Battery implements Serializable {
     private void setPerformanceFactor(double newPerformance) {
         if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
             performance = newPerformance;
-			unit.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			unit.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
         }
     }
 

@@ -9,7 +9,7 @@ package com.mars_sim.core.robot.ai;
 import java.io.Serializable;
 import java.util.logging.Level;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -251,7 +251,7 @@ public class BotMind implements Serializable, Temporal {
 		if (!newJob.equals(robotJob)) {
 			robotJob = newJob;
 
-			robot.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+			robot.fireUnitUpdate(EntityEventType.JOB_EVENT, newJob);
 
 		}
 	}
@@ -304,7 +304,7 @@ public class BotMind implements Serializable, Temporal {
 				newMission.addMember(robot);
 			}
 
-			robot.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+			robot.fireUnitUpdate(EntityEventType.MISSION_EVENT, newMission);
 		}
 	}
 

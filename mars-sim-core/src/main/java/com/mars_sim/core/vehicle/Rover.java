@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.data.Range;
@@ -349,7 +349,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		if (occupants.add(person)) {
 			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
-			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, person);
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, person);
 			return true;
 		}
 		return false;
@@ -366,7 +366,7 @@ public class Rover extends GroundVehicle implements Crewable,
 			return true;
 		}
 		if (occupants.remove(person)) {
-			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, person);
+			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, person);
 			return true;
 		}
 		return false;
@@ -384,7 +384,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 		if (robotOccupants.add(robot)) {
 			robot.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
-			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, robot);
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, robot);
 			return true;
 		}
 		return false;
@@ -401,7 +401,7 @@ public class Rover extends GroundVehicle implements Crewable,
 			return true;
 		}
 		if (robotOccupants.remove(robot)) {
-			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, robot);
+			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, robot);
 			return robotOccupants.remove(robot);
 		}
 		return false;

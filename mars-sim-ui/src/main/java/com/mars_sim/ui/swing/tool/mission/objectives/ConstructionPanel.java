@@ -24,9 +24,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.building.construction.ConstructionStage.Material;
 import com.mars_sim.core.goods.Good;
@@ -46,7 +46,7 @@ import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
  * A panel for displaying construction custom mission information.
  */
 @SuppressWarnings("serial")
-public class ConstructionPanel extends JPanel implements MissionListener, ObjectivesPanel, UnitListener {
+public class ConstructionPanel extends JPanel implements MissionListener, ObjectivesPanel, EntityListener {
 
     private MaterialsTableModel materialsTableModel;
     private JScrollPane scrollPane;
@@ -125,13 +125,13 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
      * @param event the mission event.
      */
     @Override
-    public void unitUpdate(UnitEvent event) {
-        if (UnitEventType.ADD_CONSTRUCTION_WORK_EVENT == event.getType()) {
+    public void entityUpdate(EntityEvent event) {
+        if (EntityEventType.ADD_CONSTRUCTION_WORK_EVENT == event.getType()) {
             // Update the progress bar
             updateProgressBar();
 
         }
-        else if (UnitEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()
+        else if (EntityEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()
                 && materialsTableModel != null) {
             // Update remaining construction materials table.
             materialsTableModel.updateTable();

@@ -8,8 +8,8 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -114,37 +114,37 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getTarget() instanceof Good g
 			&& event.getSource() instanceof Settlement s) {
 			
-			UnitEventType eventType = event.getType();
+			String eventType = event.getType();
 			switch (eventType) {
-				case UnitEventType.VALUE_EVENT ->
+				case EntityEventType.VALUE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), VALUE_COL, VALUE_COL);
-				case UnitEventType.DEMAND_EVENT ->
+				case EntityEventType.DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), DEMAND_COL, DEMAND_COL);
-				case UnitEventType.MARKET_VALUE_EVENT ->
+				case EntityEventType.MARKET_VALUE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
-				case UnitEventType.MARKET_DEMAND_EVENT ->
+				case EntityEventType.MARKET_DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_DEMAND_COL, MARKET_DEMAND_COL);
-				case UnitEventType.PROJECTED_DEMAND_EVENT ->
+				case EntityEventType.PROJECTED_DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), PROJECTED_COL, PROJECTED_COL);
-				case UnitEventType.TRADE_DEMAND_EVENT ->
+				case EntityEventType.TRADE_DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), TRADE_COL, TRADE_COL);
-				case UnitEventType.REPAIR_DEMAND_EVENT ->
+				case EntityEventType.REPAIR_DEMAND_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), REPAIR_COL, REPAIR_COL);
-				case UnitEventType.MASS_EVENT ->
+				case EntityEventType.MASS_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MASS_COL, MASS_COL);
-				case UnitEventType.SUPPLY_EVENT ->
+				case EntityEventType.SUPPLY_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), SUPPLY_COL, SUPPLY_COL);			
-				case UnitEventType.COST_EVENT ->
+				case EntityEventType.COST_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
-				case UnitEventType.PRICE_EVENT ->
+				case EntityEventType.PRICE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), PRICE_COL, PRICE_COL);			
-				case UnitEventType.MARKET_COST_EVENT ->
+				case EntityEventType.MARKET_COST_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_COST_COL, MARKET_COST_COL);
-				case UnitEventType.MARKET_PRICE_EVENT ->
+				case EntityEventType.MARKET_PRICE_EVENT ->
 					entityValueUpdated(new CategoryKey<>(s, g), MARKET_PRICE_COL, MARKET_PRICE_COL);
 				default ->
 					entityValueUpdated(new CategoryKey<>(s, g), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);

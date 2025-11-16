@@ -14,9 +14,9 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -29,7 +29,7 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
  */
 @SuppressWarnings("serial")
 public class BacklogTableModel extends AbstractMonitorModel
-					implements UnitListener {
+					implements EntityListener {
 	// Represents a row in the table
 	private record BacklogEntry(Settlement owner, SettlementTask task) implements Serializable {}
 
@@ -82,11 +82,11 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getTarget() instanceof Settlement settlement
 				&& event.getSource() instanceof Settlement) {
-			UnitEventType eventType = event.getType();
-			if ((eventType == UnitEventType.BACKLOG_EVENT) && selectedSettlements.contains(settlement)) {
+			String eventType = event.getType();
+			if ((EntityEventType.BACKLOG_EVENT.equals(eventType)) && selectedSettlements.contains(settlement)) {
 				var newTasks = getTasks();
 	
 				// Reset the Tasks asynchronously in the Swing Dispatcher to avoid sorting clashes

@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
@@ -122,7 +122,7 @@ public class SettlementTaskManager implements Serializable {
             buildCount++;
 
             // Inform listeners
-            owner.fireUnitUpdate(UnitEventType.BACKLOG_EVENT, owner);
+            owner.fireUnitUpdate(EntityEventType.BACKLOG_EVENT, owner);
         }
         callCount++;
         return tasks;

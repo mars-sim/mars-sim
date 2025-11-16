@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
@@ -154,19 +154,19 @@ public class CropTableModel extends UnitTableModel<Building> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getTarget() instanceof Crop crop) {
 			Building building = (Building) event.getSource();
-			UnitEventType eventType = event.getType();
+			String eventType = event.getType();
 			Object target = event.getTarget();
 	
 			int columnNum = -1;
-			if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
+			if (EntityEventType.ADD_BUILDING_EVENT.equals(eventType)) {
 				if (target instanceof Farming)
 					columnNum = GREENHOUSE_NAME; // = 1
 			}
 	
-			else if (eventType == UnitEventType.CROP_EVENT) {
+			else if (EntityEventType.CROP_EVENT.equals(eventType)) {
 				CropCategory cat = crop.getCropSpec().getCropCategory();
 				columnNum = getCategoryNum(cat);
 			}

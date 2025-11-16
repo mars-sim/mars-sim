@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
@@ -489,7 +489,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		numberMalfunctions++;
 
-		getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
+		getUnit().fireUnitUpdate(EntityEventType.MALFUNCTION_EVENT, malfunction);
 
 		if (registerEvent) {
 			registerAMalfunction(malfunction, actor);
@@ -978,7 +978,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 					resetModifiers(0);
 			}
 
-			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, fixed);
+			getUnit().fireUnitUpdate(EntityEventType.MALFUNCTION_EVENT, fixed);
 
 			String chiefRepairer = fixed.getMostProductiveRepairer();
 
@@ -1292,7 +1292,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 					Person person = i2.next();
 					if (RandomUtil.lessThanRandPercent(probability)) {
 						person.getPhysicalCondition().addMedicalComplaint(complaint);
-						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+						person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 					}
 				}
 			}

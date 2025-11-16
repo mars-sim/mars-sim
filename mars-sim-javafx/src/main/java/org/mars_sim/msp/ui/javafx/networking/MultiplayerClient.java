@@ -29,9 +29,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerEventType;
@@ -79,7 +79,7 @@ import javafx.scene.control.ButtonType;
 /**
  * The MultiplayerClient class allows the computer to take on the client role.
  */
-public class MultiplayerClient implements UnitListener, HistoricalEventListener, UnitManagerListener {
+public class MultiplayerClient implements EntityListener, HistoricalEventListener, UnitManagerListener {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(MultiplayerClient.class.getName());
@@ -1133,24 +1133,24 @@ public class MultiplayerClient implements UnitListener, HistoricalEventListener,
 	}
 
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		boolean hasChanged = false;
 		Settlement settlement = null;
-		UnitEventType eventType = event.getType();
+		String eventType = event.getType();
 		Object target = event.getTarget();
 		//addUnit((Unit) event.getTarget());
-		if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT) {
+		if (EntityEventType.ADD_ASSOCIATED_PERSON_EVENT.equals(eventType)) {
 			//Person person = (Person) event.getSource();
 			//System.out.println("MultiplayerClient : unitUpdate() : ADD_ASSOCIATED_PERSON_EVENT");
 			settlement = ((Person) target).getAssociatedSettlement();
 			hasChanged = true;
-		} else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT) {
+		} else if (EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT.equals(eventType)) {
 			//Person person = (Person) event.getSource();
 			//System.out.println("MultiplayerClient : unitUpdate() : REMOVE_ASSOCIATED_PERSON_EVENT");
 			settlement = ((Person) target).getBuriedSettlement();
 			hasChanged = true;
 		}
-		if (eventType == UnitEventType.ASSOCIATED_SETTLEMENT_EVENT) {
+		if (EntityEventType.ASSOCIATED_SETTLEMENT_EVENT.equals(eventType)) {
 			//System.out.println("MultiplayerClient : unitUpdate() : ASSOCIATED_SETTLEMENT_EVENT");
 			settlement = (Settlement) target;
 			hasChanged = true;

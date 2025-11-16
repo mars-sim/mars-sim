@@ -27,9 +27,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -209,7 +209,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	/**
 	 * Table model for occupants.
 	 */
-	private class OccupantTableModel extends AbstractTableModel implements UnitListener, EntityModel {
+	private class OccupantTableModel extends AbstractTableModel implements EntityListener, EntityModel {
 
 		private static final String NAME = Msg.getString("MainDetailPanel.column.name");
 		private static final String TASK = Msg.getString("MainDetailPanel.column.task");
@@ -394,18 +394,18 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @param event the unit event.
 		 */
 		@Override
-		public void unitUpdate(UnitEvent event) {
-			UnitEventType type = event.getType();
+		public void entityUpdate(EntityEvent event) {
+			String type = event.getType();
 			Worker member = (Worker) event.getSource();
 			int rowIndex = occupantList.indexOf(member);
 
 			if (rowIndex >= 0 && rowIndex < getRowCount()) {
-				if (type == UnitEventType.NAME_EVENT) {
+				if (EntityEventType.NAME_EVENT.equals(type)) {
 		            fireTableCellUpdated(rowIndex, 0);
 				} 
-				else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
-						|| (type == UnitEventType.TASK_ENDED_EVENT) || (type == UnitEventType.TASK_SUBTASK_EVENT)
-						|| (type == UnitEventType.TASK_NAME_EVENT)) {
+				else if (EntityEventType.TASK_DESCRIPTION_EVENT.equals(type) || EntityEventType.TASK_EVENT.equals(type)
+						|| EntityEventType.TASK_ENDED_EVENT.equals(type) || EntityEventType.TASK_SUBTASK_EVENT.equals(type)
+						|| EntityEventType.TASK_NAME_EVENT.equals(type)) {
 					fireTableCellUpdated(rowIndex, 1);
 				}
 			}

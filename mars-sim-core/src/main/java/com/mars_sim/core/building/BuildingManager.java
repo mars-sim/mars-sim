@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.config.BuildingConfig;
@@ -250,7 +250,7 @@ public class BuildingManager implements Serializable {
 			// Remove the building's functions from the settlement.
 			oldBuilding.removeFunctionsFromSettlement();
 
-			settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
+			settlement.fireUnitUpdate(EntityEventType.REMOVE_BUILDING_EVENT, oldBuilding);
 		}
 	}
 
@@ -346,7 +346,7 @@ public class BuildingManager implements Serializable {
 			// Insert this new building into buildingFunctionsMap
 			refreshFunctionMapForBuilding(newBuilding);
 
-			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
+			settlement.fireUnitUpdate(EntityEventType.ADD_BUILDING_EVENT, newBuilding);
 			
 			if (createBuildingConnections) {
 				// Note: at the star of the sim, BuildingConnectorManager is still null

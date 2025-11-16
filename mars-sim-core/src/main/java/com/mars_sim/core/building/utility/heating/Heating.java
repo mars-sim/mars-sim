@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.config.BuildingConfig;
@@ -1988,7 +1988,7 @@ public class Heating implements Serializable {
 	 */
 	public void setAirHeatSink(double heat) {
 		heatSink[0] = heat;
-		building.fireUnitUpdate(UnitEventType.AIR_HEAT_SINK_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.AIR_HEAT_SINK_EVENT, building);
 	}
 
 	/**
@@ -1998,7 +1998,7 @@ public class Heating implements Serializable {
 	 */
 	public void setWaterHeatSink(double heat) {
 		heatSink[1] = heat;
-		building.fireUnitUpdate(UnitEventType.WATER_HEAT_SINK_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.WATER_HEAT_SINK_EVENT, building);
 	}
 
 	/**
@@ -2008,7 +2008,7 @@ public class Heating implements Serializable {
 	 */
 	public void setHeatRequired(double heat) {
 		reqHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.REQUIRED_HEAT_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.REQUIRED_HEAT_EVENT, building);
 	}
 
 	/**
@@ -2019,7 +2019,7 @@ public class Heating implements Serializable {
 	 */
 	public void setDeltaTemp(double heat) {
 		deltaTCache = heat;
-		building.fireUnitUpdate(UnitEventType.DELTA_T_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.DELTA_T_EVENT, building);
 	}
 
 	/**
@@ -2030,7 +2030,7 @@ public class Heating implements Serializable {
 	 */
 	public void setDevTemp(double heat) {
 		devTCache = heat;
-		building.fireUnitUpdate(UnitEventType.DEV_T_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.DEV_T_EVENT, building);
 	}
 
 	/**
@@ -2040,7 +2040,7 @@ public class Heating implements Serializable {
 	 */
 	public void setPreNetHeat(double heat) {
 		preNetHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.NET_HEAT_0_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.NET_HEAT_0_EVENT, building);
 	}
 
 	/**
@@ -2050,7 +2050,7 @@ public class Heating implements Serializable {
 	 */
 	public void setHeatGain(double heat) {
 		heatGainCache = heat;
-		building.fireUnitUpdate(UnitEventType.HEAT_GAIN_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.HEAT_GAIN_EVENT, building);
 	}
 
 	/**
@@ -2060,7 +2060,7 @@ public class Heating implements Serializable {
 	 */
 	public void setHeatLost(double heat) {
 		heatLossCache = heat;
-		building.fireUnitUpdate(UnitEventType.HEAT_LOSS_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.HEAT_LOSS_EVENT, building);
 	}
 
 	/**
@@ -2070,7 +2070,7 @@ public class Heating implements Serializable {
 	 */
 	public void setPostNetHeat(double heat) {
 		postNetHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.NET_HEAT_1_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.NET_HEAT_1_EVENT, building);
 	}
 
 	/**
@@ -2080,7 +2080,7 @@ public class Heating implements Serializable {
 	 */
 	public void setTemperature(double temp) {
 		currentTemperature = temp;
-		building.fireUnitUpdate(UnitEventType.TEMPERATURE_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.TEMPERATURE_EVENT, building);
 	}
 
 	/**
@@ -2091,7 +2091,7 @@ public class Heating implements Serializable {
 	 */
 	public void insertHeatGenerated(double heat) {
 		heatGenCache = heat;
-		building.fireUnitUpdate(UnitEventType.GENERATED_HEAT_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.GENERATED_HEAT_EVENT, building);
 	}
 
 	/**
@@ -2100,7 +2100,7 @@ public class Heating implements Serializable {
 	 */
 	public void insertExcessHeatComputation(double heat) {
 		excessHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.EXCESS_HEAT_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.EXCESS_HEAT_EVENT, building);
 	}
 
 	/**
@@ -2141,7 +2141,7 @@ public class Heating implements Serializable {
 	 */
 	public void setActiveVentHeat(double heat) {
 		activeVentHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.ACTIVE_VENT_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.ACTIVE_VENT_EVENT, building);
 	}
 
 	/**
@@ -2152,7 +2152,7 @@ public class Heating implements Serializable {
 	 */
 	public void addVentInHeat(double heat) {
 		passiveVentHeatCache += heat;
-		building.fireUnitUpdate(UnitEventType.PASSIVE_VENT_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.PASSIVE_VENT_EVENT, building);
 	}
 
 	/**
@@ -2163,7 +2163,7 @@ public class Heating implements Serializable {
 	 */
 	public void setPassiveVentHeat(double heat) {
 		passiveVentHeatCache = heat;
-		building.fireUnitUpdate(UnitEventType.PASSIVE_VENT_EVENT, building);
+		building.fireUnitUpdate(EntityEventType.PASSIVE_VENT_EVENT, building);
 	}
 
 	/**

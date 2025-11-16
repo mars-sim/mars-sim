@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.RatingLog;
@@ -235,7 +235,7 @@ public abstract class TaskManager implements Serializable {
 		if (currentTask != null) {
 			currentTask.endTask();
 			currentTask = null;
-			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, null);
+			worker.fireUnitUpdate(EntityEventType.TASK_EVENT, null);
 		}
 	}
 
@@ -583,7 +583,7 @@ public abstract class TaskManager implements Serializable {
 		currentScore = null;
 		
 		// Send out the task event
-		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		worker.fireUnitUpdate(EntityEventType.TASK_EVENT, newTask);
 	}
 	
 	/**

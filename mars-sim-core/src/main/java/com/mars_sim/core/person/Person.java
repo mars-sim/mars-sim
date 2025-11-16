@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.authority.Authority;
@@ -677,7 +677,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Set his/her buried settlement
 		buriedSettlement = getAssociatedSettlement().getIdentifier();
 		// Throw unit event.
-		fireUnitUpdate(UnitEventType.BURIAL_EVENT);
+		fireUnitUpdate(EntityEventType.BURIAL_EVENT);
 	}
 
 	/**
@@ -738,7 +738,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		research.terminateStudy();
 
 		// Throw unit event
-		fireUnitUpdate(UnitEventType.DEATH_EVENT);
+		fireUnitUpdate(EntityEventType.DEATH_EVENT);
 	}
 
 	/**
@@ -752,7 +752,7 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Set buried settlement
 		buriedSettlement = -1;
 		// Throw unit event
-		fireUnitUpdate(UnitEventType.REVIVED_EVENT);
+		fireUnitUpdate(EntityEventType.REVIVED_EVENT);
 		// Generate medical event
 		problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_RESUSCITATED);
 

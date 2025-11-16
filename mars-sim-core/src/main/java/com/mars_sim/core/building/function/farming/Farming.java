@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
@@ -174,7 +174,7 @@ public class Farming extends Function {
 				if (crop != null) {
 					cropList.add(crop);
 					cropHistory.put(crop.getIdentifier(), cropSpec.getName());
-					building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+					building.fireUnitUpdate(EntityEventType.CROP_EVENT, crop);
 					alreadyPlanted.merge(cropSpec, 1, Integer::sum);
 				}
 			}
@@ -897,7 +897,7 @@ public class Farming extends Function {
 		if (crop != null) {
 			cropList.add(crop);
 			cropHistory.put(crop.getIdentifier(), crop.getName());
-			building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+			building.fireUnitUpdate(EntityEventType.CROP_EVENT, crop);
 	
 			numCrops2Plant--;
 		}

@@ -35,8 +35,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
@@ -62,7 +63,7 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * A tab panel displaying settlement manufacturing information.
  */
 @SuppressWarnings("serial")
-public class TabPanelManufacture extends TabPanel implements UnitListener {
+public class TabPanelManufacture extends TabPanel implements EntityListener {
 	
 	private static final String MANU_ICON ="manufacture";
 	private static final String SALVAGE = "Salvage";
@@ -265,12 +266,14 @@ public class TabPanelManufacture extends TabPanel implements UnitListener {
 	 * @param e
 	 */
 	@Override
-	public void unitUpdate(UnitEvent e) {
-		switch(e.getType()) {
-			case MANU_QUEUE_ADD -> queueModel.addItem((QueuedProcess) e.getTarget());
-			case MANU_QUEUE_REMOVE -> queueModel.removeItem((QueuedProcess) e.getTarget());
-			case MANE_QUEUE_REFRESH -> queueModel.refresh();
-			default -> { /* Ignore */ }
+	public void entityUpdate(EntityEvent e) {
+		String eventType = e.getType();
+		if (EntityEventType.MANU_QUEUE_ADD.equals(eventType)) {
+			queueModel.addItem((QueuedProcess) e.getTarget());
+		} else if (EntityEventType.MANU_QUEUE_REMOVE.equals(eventType)) {
+			queueModel.removeItem((QueuedProcess) e.getTarget());
+		} else if (EntityEventType.MANE_QUEUE_REFRESH.equals(eventType)) {
+			queueModel.refresh();
 		}
 	}
 

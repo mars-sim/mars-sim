@@ -42,9 +42,9 @@ import javax.swing.text.JTextComponent;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
@@ -90,7 +90,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * The main tab panel for showing mission  details.
  */
 @SuppressWarnings("serial")
-public class MainDetailPanel extends JPanel implements MissionListener, UnitListener {
+public class MainDetailPanel extends JPanel implements MissionListener, EntityListener {
 
 	private static final int MAX_LENGTH = 48;
 	private static final int OBJ_HEIGHT = 230;
@@ -624,7 +624,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if ((((Unit)event.getSource()).getUnitType() == UnitType.VEHICLE)
 			&& event.getSource().equals(currentVehicle)) {
 				SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
@@ -747,7 +747,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	 */
 	private class VehicleInfoUpdater implements Runnable {
 
-		private UnitEvent event;
+		private EntityEvent event;
 
 		private VehicleInfoUpdater(UnitEvent event) {
 			this.event = event;
@@ -755,18 +755,18 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 
 		public void run() {
 			// Update vehicle info in UI based on event type.
-			UnitEventType type = event.getType();
+			String type = event.getType();
 			Vehicle vehicle = (Vehicle) event.getSource();
-			if (type == UnitEventType.STATUS_EVENT) {
+			if (EntityEventType.STATUS_EVENT.equals(type)) {
 				vehicleStatusLabel.setText(vehicle.printStatusTypes());
-			} else if (type == UnitEventType.SPEED_EVENT)
+			} else if (EntityEventType.SPEED_EVENT.equals(type))
 				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 
 			// Forward to any objective panels
 			for(int i = 0; i < objectivesPane.getTabCount(); i++) {
 				Component comp = objectivesPane.getComponentAt(i);
-				if (comp instanceof UnitListener ul) {
-					ul.unitUpdate(event);
+				if (comp instanceof EntityListener ul) {
+					ul.entityUpdate(event);
 				}
    			}
 		}
@@ -866,7 +866,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 	/**
 	 * Table model for mission members.
 	 */
-	private class MemberTableModel extends AbstractTableModel implements UnitListener, EntityModel {
+	private class MemberTableModel extends AbstractTableModel implements EntityListener, EntityModel {
 
 		private static final String NAME = Msg.getString("MainDetailPanel.column.name");
 		private static final String TASK = Msg.getString("MainDetailPanel.column.task");
@@ -1007,15 +1007,15 @@ public class MainDetailPanel extends JPanel implements MissionListener, UnitList
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
-			UnitEventType type = event.getType();
+		public void entityUpdate(EntityEvent event) {
+			String type = event.getType();
 			Worker member = (Worker) event.getSource();
 			int index = occupantList.indexOf(member);
-			if (type == UnitEventType.NAME_EVENT) {
+			if (EntityEventType.NAME_EVENT.equals(type)) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
-			} else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
-					|| (type == UnitEventType.TASK_ENDED_EVENT) || (type == UnitEventType.TASK_SUBTASK_EVENT)
-					|| (type == UnitEventType.TASK_NAME_EVENT)) {
+			} else if (EntityEventType.TASK_DESCRIPTION_EVENT.equals(type) || EntityEventType.TASK_EVENT.equals(type)
+					|| EntityEventType.TASK_ENDED_EVENT.equals(type) || EntityEventType.TASK_SUBTASK_EVENT.equals(type)
+					|| EntityEventType.TASK_NAME_EVENT.equals(type)) {
 				SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
 			}
 		}

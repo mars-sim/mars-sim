@@ -9,8 +9,8 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.Comparator;
 import java.util.Set;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.utility.heating.HeatMode;
@@ -366,10 +366,10 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getSource() instanceof Building building
 				&& event.getTarget() instanceof Building) {
-			UnitEventType eventType = event.getType();
+			String eventType = event.getType();
 
 			int columnIndex = switch(eventType) {
 				case POWER_MODE_EVENT -> POWER_MODE;

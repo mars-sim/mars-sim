@@ -36,9 +36,9 @@ import com.mars_sim.core.Coordinates;
 import com.mars_sim.core.Msg;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerEventType;
@@ -1384,11 +1384,11 @@ public class MainDesktopPane extends JDesktopPane
 //	}
 
 	@Override // @Override needed for Main window
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
+	public void entityUpdate(EntityEvent event) {
+		String eventType = event.getType();
 
 		Object target = event.getTarget();
-		if (eventType == UnitEventType.START_TRANSPORT_WIZARD_EVENT) {
+		if (EntityEventType.START_TRANSPORT_WIZARD_EVENT.equals(eventType)) {
 
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
@@ -1405,12 +1405,12 @@ public class MainDesktopPane extends JDesktopPane
 
 		}
 
-		else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
+		else if (EntityEventType.END_TRANSPORT_WIZARD_EVENT.equals(eventType)) {
 			isTransportingBuilding = false;
 			// disposeAnnouncementWindow();
 		}
 
-		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
+		else if (EntityEventType.START_CONSTRUCTION_WIZARD_EVENT.equals(eventType)) {
 			BuildingConstructionMission mission = (BuildingConstructionMission) target;
 
 			if (!isConstructingSite) {
@@ -1426,7 +1426,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 		}
 
-		else if (eventType == UnitEventType.END_CONSTRUCTION_WIZARD_EVENT) {
+		else if (EntityEventType.END_CONSTRUCTION_WIZARD_EVENT.equals(eventType)) {
 			isConstructingSite = false;
 		}
 

@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
@@ -24,7 +24,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  */
 @SuppressWarnings("serial")
 public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey<T>>
-            implements UnitListener {
+            implements EntityListener {
 
     private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private boolean monitorSettlement = false;

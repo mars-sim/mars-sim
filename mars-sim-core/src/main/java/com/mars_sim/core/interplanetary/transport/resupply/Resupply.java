@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.building.Building;
@@ -207,7 +207,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 			BuildingManager buildingManager = settlement.getBuildingManager();
 
-			settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, buildingManager.getABuilding());
+			settlement.fireUnitUpdate(EntityEventType.START_BUILDING_PLACEMENT_EVENT, buildingManager.getABuilding());
 
 			Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
 

@@ -15,9 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective.MineralStats;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
@@ -36,7 +36,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class MiningPanel extends JPanel
-		implements MissionListener, UnitListener {
+		implements MissionListener, EntityListener {
 
 	// Data members
 	private MineralTableModel excavationTableModel;
@@ -79,8 +79,8 @@ public class MiningPanel extends JPanel
 	}
 
 	@Override
-	public void unitUpdate(UnitEvent event) {
-		if (UnitEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
+	public void entityUpdate(EntityEvent event) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
 			excavationTableModel.updateTable();
 		}
 	}

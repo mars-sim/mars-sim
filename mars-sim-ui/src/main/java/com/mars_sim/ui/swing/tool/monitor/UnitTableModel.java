@@ -8,7 +8,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerListener;
@@ -21,7 +21,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  */
 @SuppressWarnings("serial")
 public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
-		implements UnitListener {
+		implements EntityListener {
 
 	/**
 	 * UnitManagerListener inner class.

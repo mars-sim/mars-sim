@@ -17,9 +17,9 @@ import javax.swing.JPanel;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.task.util.Worker;
 
@@ -109,15 +109,15 @@ public class UnitDialog {
 	/**
 	 * PersonListener class listens to the change of each settler in a settlement.
 	 */
-	private class WorkerListener implements UnitListener {
+	private class WorkerListener implements EntityListener {
 
 		/**
 		 * Catch unit update event.
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
-			if (event.getType() == UnitEventType.LOCAL_POSITION_EVENT) {
+		public void entityUpdate(EntityEvent event) {
+			if (event.getType() == EntityEventType.LOCAL_POSITION_EVENT) {
 				Unit unit = (Unit)event.getSource();	
 				if (unit instanceof Worker w) {
 					LocalPosition lp = w.getPosition();
