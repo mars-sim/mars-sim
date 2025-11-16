@@ -230,7 +230,7 @@ implements ActionListener {
 	 * Initialization.
 	 */
 	public OrbitViewer(MasterClock masterClock) {
-		super("Orbit Viewer");
+		super(NAME, "Orbit Viewer");
 
 		this.masterClock = masterClock;
 		String[][] array = getParameterInfo();

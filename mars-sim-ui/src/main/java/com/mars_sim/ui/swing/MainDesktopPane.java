@@ -48,12 +48,10 @@ import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
-import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
-import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.UnitTableModel;
@@ -77,7 +75,7 @@ import com.mars_sim.ui.swing.unit_window.UnitWindowListener;
  */
 @SuppressWarnings("serial")
 public class MainDesktopPane extends JDesktopPane
-		implements ClockListener, ComponentListener, UnitManagerListener {
+		implements ClockListener, ComponentListener, UIContext, UnitManagerListener {
 
 	// Properties for UIConfig settings
 	private static final String DESKTOP_PROPS = "desktop";
@@ -244,7 +242,7 @@ public class MainDesktopPane extends JDesktopPane
 	public void componentHidden(ComponentEvent e) {
 	}
 
-	public void updateToolWindow() {
+	private void updateToolWindow() {
 		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
 		for (JInternalFrame f : frames) {
 			f.updateUI();
@@ -343,27 +341,18 @@ public class MainDesktopPane extends JDesktopPane
 			return null;
 		}
 
-		ContentPanel content = switch(toolName) {
-			case OrbitViewer.NAME -> new OrbitViewer(sim.getMasterClock());
-			case TimeTool.NAME -> new TimeTool(sim);
-			case GuideWindow.NAME -> new GuideWindow(mainWindow.getHelp());
-			case SearchWindow.NAME -> new SearchWindow(this);
-
-			default -> null;
-		};
+		ContentPanel content = ToolRegistry.getTool(toolName, this);
 
 		ToolWindow w = null;
 		if (content != null) {
 			// New ContentPanel style
-			w = new ContentWindow(toolName, this, content);
+			w = new ContentWindow(this, content);
 		}
 		else {
 			// Old legacy style
 			w = switch(toolName) {
-				case CommanderWindow.NAME -> new CommanderWindow(this);
 				case NavigatorWindow.NAME -> new NavigatorWindow(this);
 				case SettlementWindow.NAME -> new SettlementWindow(this);
-				case ScienceWindow.NAME -> new ScienceWindow(this);
 				case MonitorWindow.NAME -> new MonitorWindow(this);
 				case MissionWindow.NAME -> new MissionWindow(this);
 				case ResupplyWindow.NAME -> new ResupplyWindow(this);
@@ -447,8 +436,8 @@ public class MainDesktopPane extends JDesktopPane
 
 			// Check is visible
 			Dimension currentSize = getSize();
-			location = new Point(Math.max(1, Math.min(location.x, (int)currentSize.getWidth() - 20)),
-								 Math.max(1, Math.min(location.y, (int)currentSize.getHeight() - 20)));
+			location = new Point(Math.clamp(location.x, 1,(int)currentSize.getWidth() - 20),
+								 Math.clamp(location.y, 1, (int)currentSize.getHeight() - 20));
 			window.setLocation(location);
 			window.setWasOpened(true);
 		}
@@ -498,20 +487,12 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Gets the navigator window.
-	 * 
-	 * @return
-	 */
-	public NavigatorWindow getNavWin() {
-		return ((NavigatorWindow)openToolWindow(NavigatorWindow.NAME));
-	}
-		
-	/**
 	 * Creates and opens a window for an Entity if it isn't already in existence and
 	 * open. This selects the most appropriate tool window.
 	 *
 	 * @param entity Entity to display
 	 */
+	@Override
     public void showDetails(Entity entity) {
 		if (entity instanceof Unit u) {
 			openUnitWindow(u, null);
@@ -523,7 +504,9 @@ public class MainDesktopPane extends JDesktopPane
 			((ResupplyWindow)openToolWindow(ResupplyWindow.NAME)).openTransportable(t);
 		}
 		else if (entity instanceof ScientificStudy s) {
-			((ScienceWindow)openToolWindow(ScienceWindow.NAME)).setScientificStudy(s);
+			// This is a holding code until all tools are mograted
+			ContentWindow cw = (ContentWindow) openToolWindow(ScienceWindow.NAME);
+			((ScienceWindow)cw.getContent()).setScientificStudy(s);
 		}
     }
 
@@ -766,6 +749,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * 
 	 * @return
 	 */
+	@Override
 	public Simulation getSimulation() {
 		return sim;
 	}

@@ -50,20 +50,18 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
-import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.BuildingManager;
-import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.farming.Farming;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitEvent;
 import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colony;
@@ -79,12 +77,12 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.JComboBoxMW;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.SmartScroller;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 import net.miginfocom.swing.MigLayout;
@@ -94,7 +92,7 @@ import net.miginfocom.swing.MigLayout;
  * Window for the Commander Dashboard.
  */
 @SuppressWarnings("serial")
-public class CommanderWindow extends ToolWindow {
+public class CommanderWindow extends ContentPanel {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(CommanderWindow.class.getName());
@@ -132,9 +130,7 @@ public class CommanderWindow extends ToolWindow {
 	/** Settlement Combo box */
 	private JComboBox<Settlement> settlementBox;
 	/** Settlement Combo box */
-	private JComboBox<Building> buildingBox;
-	/** Number JSpinner */
-	private JSpinner areaSpinner;
+	private JComboBox<Building> buildingBox;	
 	
 	private ListModel listModel;
 	private JList<PendingTask> list;
@@ -143,18 +139,13 @@ public class CommanderWindow extends ToolWindow {
 	private JPanel policyMainPanel;
 	private JPanel tradingPartnersPanel;
 	
-	/** Check box for overriding EVA. */
-	private JCheckBox overrideDigLocalRegolithCB;
-	/** Check box for overriding EVA. */
-	private JCheckBox overrideDigLocalIceCB;
-	
 	private JScrollPane listScrollPanel;
 
 	private JRadioButton r0;
 	private JRadioButton r1;
 	private JRadioButton r2;
 	private JRadioButton r3;
-	private JRadioButton r4;
+	
 
 	private JButton prefButton;
 	
@@ -227,8 +218,6 @@ public class CommanderWindow extends ToolWindow {
 	
 	private Map<Colony, JLabel> researchAreaLabels = new HashMap<>();
 	private Map<Colony, JLabel> developmentAreaLabels = new HashMap<>();
-
-	private Map<String, Settlement> tradingPartners;
 	
 	private List<Building> greenhouseBldgs;
 	
@@ -243,21 +232,21 @@ public class CommanderWindow extends ToolWindow {
 	
 	private UnitManager unitManager;
 
-	
+	private UIContext context;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param desktop {@link MainDesktopPane} the main desktop panel.
+	 * @param context 
 	 */
-	public CommanderWindow(MainDesktopPane desktop) {
+	public CommanderWindow(UIContext context) {
 		// Use ToolWindow constructor
-		super(NAME, TITLE, desktop);
+		super(NAME, TITLE);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
-
-		this.masterClock = desktop.getSimulation().getMasterClock();
-		unitManager = desktop.getSimulation().getUnitManager();
+		this.context = context;
+		var sim = context.getSimulation();
+		this.masterClock = sim.getMasterClock();
+		unitManager = sim.getUnitManager();
 
 		List<Settlement> settlementList = new ArrayList<>(unitManager.getSettlements());
 		Collections.sort(settlementList);
@@ -265,13 +254,13 @@ public class CommanderWindow extends ToolWindow {
 		
 		cc = settlement.getCommander();
 		
-		colonyList = new ArrayList<>(Simulation.instance().getLunarColonyManager().getColonySet());
+		colonyList = new ArrayList<>(sim.getLunarColonyManager().getColonySet());
 		Collections.sort(colonyList);
 				
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(StyleManager.newEmptyBorder());
-		setContentPane(mainPane);
+		add(mainPane);
 
 		JPanel topPane = new JPanel(new FlowLayout());
 		mainPane.add(topPane, BorderLayout.NORTH);
@@ -298,18 +287,9 @@ public class CommanderWindow extends ToolWindow {
 		createSafetyPanel();
 		createSciencePanel();
 
-		setSize(new Dimension(720, 512));
-		setMaximizable(true);
-		setResizable(false);
-
-		setVisible(true);
-	
-		Dimension desktopSize = desktop.getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
-
+		var dim = new Dimension(720, 512);
+		setPreferredSize(dim);
+		setSize(dim);
 	}
 
 	/**
@@ -407,7 +387,7 @@ public class CommanderWindow extends ToolWindow {
 			// Modify preference settlement in Mission Tab			
 			prefButton.setText("Open " + s.getName() + " Preference tab");
 			
-			update();
+			update((ClockPulse)null);
 		}
 	}
 
@@ -436,7 +416,6 @@ public class CommanderWindow extends ToolWindow {
 		String countryName = "Multi-National";
 		if (countryList.size() == 1) {
 			countryName = c.getAuthority().getCountries().get(0);
-//			countryCode = FlagString.getEmoji(countryName);
 		}
 		labelGrid.addRow("Country", countryName);
 
@@ -457,11 +436,6 @@ public class CommanderWindow extends ToolWindow {
 		JLabel areaPerPersonLabel = labelGrid.addRow("Area Per Person", Math.round(areaPerPersonCache * 10.0)/10.0 + " SM");
 		areaPerPersonLabels.put(c, areaPerPersonLabel);
 		
-		// FUTURE: will model and derive birth rate
-//		labelGrid.addRow("Birth Rate", "0.0");
-		
-		/////////////////////////////////////////////////////////////
-		
 		JPanel popPanel = new JPanel(new BorderLayout(10, 10));
 		generalPanel.add(popPanel, BorderLayout.CENTER);
 		
@@ -478,15 +452,12 @@ public class CommanderWindow extends ToolWindow {
 		JLabel popLabel = popGrid.addRow("Total Population", popRateCacheString + "");
 		popLabels.put(c, popLabel);
 		
-		///////////////////////////////////////////////////
 		// Recalculate area per person
 		areaPerPersonCache = totalAreaCache / popCache;
 		areaPerPersonCaches.put(c, areaPerPersonCache);
 		areaPerPersonLabel.setText(Math.round(areaPerPersonCache * 10.0)/10.0 + " SM");
 		areaPerPersonLabels.put(c, areaPerPersonLabel);
-		
-		/////////////////////////
-		
+				
 		int lodgingCache = c.getPopulation().getNumLodge();
 		lodgingCaches.put(c, lodgingCache);
 		double quartersRateCache = c.getPopulation().getGrowthLodge();
@@ -494,18 +465,13 @@ public class CommanderWindow extends ToolWindow {
 		String lodgeGrowthRateCacheString = lodgingCache + " (" + Math.round(quartersRateCache * 10.0)/10.0 + ")";
 		JLabel lodgingLabel = popGrid.addRow("# of lodging units", lodgeGrowthRateCacheString + "");
 		lodgingLabels.put(c, lodgingLabel);
-		
-		
-		/////////////////////////////
-		
+				
 		// Update the area per person label right away
 		areaPerPersonCache = Math.round(totalAreaCache / popCache * 10.0)/10.0;
 		areaPerPersonCaches.put(c, areaPerPersonCache);
 		areaPerPersonLabel.setText(areaPerPersonCache + " SM");
 		areaPerPersonLabels.put(c, areaPerPersonLabel);
-		
-		//////////////////////////////////////////////////////
-		
+				
 		int touristCache = c.getPopulation().getNumTourists();
 		touristCaches.put(c, touristCache);
 		double touristRateCache = c.getPopulation().getGrowthTourists();
@@ -547,10 +513,8 @@ public class CommanderWindow extends ToolWindow {
 	 * @param rNDPanel
 	 * @param name
 	 */
-	private void createRNDPanel(Colony c, JPanel rNDPanel, String name) {
-		
-		////////// Show Statistics on Research and Development //////////
-		
+	private void createRNDPanel(Colony c, JPanel rNDPanel) {
+				
 		AttributePanel rdGrid = new AttributePanel(6, 2);
 		rdGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
 		rdGrid.setBorder(BorderFactory.createTitledBorder(" Research and Development"));
@@ -650,7 +614,7 @@ public class CommanderWindow extends ToolWindow {
 	/**
 	 * Creates the finance panel.
 	 */
-	private void createFinancePanel(Colony c, JPanel financePanel, String name) {
+	private void createFinancePanel(Colony c, JPanel financePanel) {
 		
 		AttributePanel financeGrid = new AttributePanel(1, 1);
 		financeGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -719,10 +683,10 @@ public class CommanderWindow extends ToolWindow {
 			createGeneralPanel(c, generalPanel, name);
 			
 			// Make the finance panel
-			createFinancePanel(c, financePanel, name);
+			createFinancePanel(c, financePanel);
 			
 			// Make the RNDpanel
-			createRNDPanel(c, rNDPanel, name);
+			createRNDPanel(c, rNDPanel);
 		}
 	}
 	
@@ -906,7 +870,7 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	private String generateZoneAreaToolTip(Set<Zone> zoneSet) {
 		List<Zone> zonelist = new ArrayList<>(zoneSet);
-		Collections.sort(zonelist, new ZoneComparator());
+		Collections.sort(zonelist, Comparator.comparing(z -> z.getZoneType().getName()));
 		
 		StringBuilder result = new StringBuilder();
 		
@@ -919,18 +883,12 @@ public class CommanderWindow extends ToolWindow {
 		
 		return result.append(END_HTML).toString();
 	}
-
-	public class ZoneComparator implements Comparator<Zone> {
-	    @Override
-	    public int compare(Zone z1, Zone z2) {
-	        return z1.getZoneType().getName().compareTo(z2.getZoneType().getName()); 
-	    }
-	}
 	
 	/**
 	 * Creates the panel for Agriculture.
 	 */
 	private void createAgriculturePanel() {
+  JSpinner areaSpinner;
 
 		JPanel topPanel = new JPanel(new BorderLayout());
 		tabPane.add(AGRICULTURE_TAB, topPanel);
@@ -994,13 +952,6 @@ public class CommanderWindow extends ToolWindow {
 		
 	}
 
-	  
-	public int getGrowingArea() {
-		return (int)areaSpinner.getModel().getValue();
-	}
-
-	
-	
 	private void createComputingPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(COMPUTING_TAB, panel);
@@ -1008,7 +959,6 @@ public class CommanderWindow extends ToolWindow {
 		JPanel topPanel = new JPanel(new BorderLayout(20, 20));
 		panel.add(topPanel, BorderLayout.NORTH);
 	}
-	
 	
 	private void createEngineeringPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
@@ -1063,6 +1013,8 @@ public class CommanderWindow extends ToolWindow {
 	 * @return
 	 */
 	private JPanel createDiggingOverride() {
+  JCheckBox overrideDigLocalIceCB;
+  JCheckBox overrideDigLocalRegolithCB;
 		JPanel borderPanel = new JPanel(new BorderLayout(0, 0));
 		borderPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 		borderPanel.setBorder(BorderFactory.createTitledBorder(" In-Situ Resources "));
@@ -1397,7 +1349,7 @@ public class CommanderWindow extends ToolWindow {
 		prefButton.setText("Go to " + settlement.getName());
 		prefButton.addActionListener(e -> {
 			Settlement selected = (Settlement) settlementBox.getSelectedItem();
-			getDesktop().showDetails(selected);
+			context.showDetails(selected);
 			repaint();
 		});
 
@@ -1407,6 +1359,7 @@ public class CommanderWindow extends ToolWindow {
 	 * Sets up trading settlements.
 	 */
 	private void setupTradingSettlements() {
+  Map<String, Settlement> tradingPartners;
 		tradingPartnersPanel.removeAll();
 
 		tradingPartners = new HashMap<>();
@@ -1480,7 +1433,7 @@ public class CommanderWindow extends ToolWindow {
 		r1 = new JRadioButton("250 millisols");
 		r2 = new JRadioButton("333 millisols");
 		r3 = new JRadioButton("500 millisols");
-		r4 = new JRadioButton("1 sol");
+		var r4 = new JRadioButton("1 sol");
 
 		group.add(r0);
 		group.add(r1);
@@ -1494,35 +1447,15 @@ public class CommanderWindow extends ToolWindow {
 		buttonPanel.add(r3);
 		buttonPanel.add(r4);
 
-		RadioButtonActionListener actionListener = new RadioButtonActionListener();
-		r0.addActionListener(actionListener);
-		r1.addActionListener(actionListener);
-		r2.addActionListener(actionListener);
-		r3.addActionListener(actionListener);
-		r4.addActionListener(actionListener);
+		r0.addActionListener(e -> masterClock.setCommandPause(false, 1000));
+		r1.addActionListener(e -> masterClock.setCommandPause(true, 250));
+		r2.addActionListener(e -> masterClock.setCommandPause(true, 333.333));
+		r3.addActionListener(e -> masterClock.setCommandPause(true, 500));
+		r4.addActionListener(e -> masterClock.setCommandPause(true, 999.999));
 
 	}
 
-	class RadioButtonActionListener implements ActionListener {
-	    @Override
-	    public void actionPerformed(ActionEvent event) {
-	        JRadioButton button = (JRadioButton) event.getSource();
-
-	        if (button == r0) {
-	        	masterClock.setCommandPause(false, 1000);
-	        } else if (button == r1) {
-	        	masterClock.setCommandPause(true, 250);
-	        } else if (button == r2) {
-	        	masterClock.setCommandPause(true, 333.333);
-	        } else if (button == r3) {
-	        	masterClock.setCommandPause(true, 500);
-	        } else if (button == r4) {
-	        	masterClock.setCommandPause(true, 999.999);
-	        }
-	    }
-	}
-
-	public void createSafetyPanel() {
+	private void createSafetyPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(SAFETY_TAB, panel);
 
@@ -1530,7 +1463,7 @@ public class CommanderWindow extends ToolWindow {
 		panel.add(topPanel, BorderLayout.NORTH);
 	}
 
-	public void createSciencePanel() {
+	private void createSciencePanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 		tabPane.add(SCIENCE_TAB, panel);
 
@@ -1553,7 +1486,7 @@ public class CommanderWindow extends ToolWindow {
 	/**
 	 * Picks a task and delete it.
 	 */
-	public void deleteATask() {
+	private void deleteATask() {
 		PendingTask n = list.getSelectedValue();
 		if (n != null) {
 			((Person) personBox.getSelectedItem()).getMind().getTaskManager().removePendingTask(n);
@@ -1563,7 +1496,7 @@ public class CommanderWindow extends ToolWindow {
 			listUpdate();
 	}
 
-	public void listUpdate() {
+	private void listUpdate() {
 		listModel.update();
  		list.validate();
  		list.revalidate();
@@ -1573,10 +1506,6 @@ public class CommanderWindow extends ToolWindow {
  		listScrollPanel.repaint();
 	}
 
-	public boolean isNavPointsMapTabOpen() {
-        return tabPane.getSelectedIndex() == 1;
-	}
-
 	/**
 	 * Updates the window as time has changed.
 	 * 
@@ -1584,13 +1513,6 @@ public class CommanderWindow extends ToolWindow {
 	 */
 	@Override
 	public void update(ClockPulse pulse) {
-		update();
-	}
-	
-	/**
-	 * Updates the window
-	 */ 
-	public void update() {
 
 		// Update list
 		listUpdate();

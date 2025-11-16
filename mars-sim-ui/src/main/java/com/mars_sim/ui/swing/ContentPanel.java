@@ -19,7 +19,8 @@ public class ContentPanel extends JPanel{
 
     private String title;
 
-    protected ContentPanel(String title) {
+    protected ContentPanel(String name, String title) {
+        setName(name);
         this.title = title;
 
         setLayout(new BorderLayout());

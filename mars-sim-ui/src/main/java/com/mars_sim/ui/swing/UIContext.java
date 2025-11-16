@@ -1,0 +1,38 @@
+/*
+ * Mars Simulation Project
+ * UIContext.java
+ * @date 2025-11-12
+ * @author Scott Davis
+ */
+package com.mars_sim.ui.swing;
+
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.ui.swing.tool_window.ToolWindow;
+
+/** 
+ * Context interface for UI components to interact with the UI and simulation.
+ * This is a Work In Progress and will be refactor once all Tools converted to ContentPanel.
+ */
+public interface UIContext {
+
+    /**
+     * Show the details for an Entity object.
+     * @param entity
+     * @return
+     */
+    void showDetails(Entity entity);
+
+    /**
+     * Open a Tool window by name.
+     * @param name
+     * @return
+     */
+    ToolWindow openToolWindow(String name);
+
+    /**
+     * Get the Simulation monitored by this UI
+     * @return
+     */
+    Simulation getSimulation();
+}

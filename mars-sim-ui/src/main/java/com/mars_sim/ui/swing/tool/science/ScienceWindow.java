@@ -12,21 +12,20 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * Window for the science tool.
  */
 public class ScienceWindow
-extends ToolWindow {
+extends ContentPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -45,27 +44,25 @@ extends ToolWindow {
 	/**
 	 * Constructor.
 	 * 
-	 * @param desktop the main desktop panel.
+	 * @param context the main desktop panel.
 	 */
-	public ScienceWindow(MainDesktopPane desktop) {
+	public ScienceWindow(UIContext context) {
 
 		// Use ToolWindow constructor
-		super(NAME, TITLE, desktop);
-
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+		super(NAME, TITLE);
 
 		selectedStudy = null;
 
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(StyleManager.newEmptyBorder());
-		setContentPane(mainPane);
+		add(mainPane);
 
 		// Create lists panel.
 		JPanel listsPane = new JPanel(new GridLayout(2, 1, 0, 0));
 		mainPane.add(listsPane, BorderLayout.WEST);
 
-		ScientificStudyManager mgr = desktop.getSimulation().getScientificStudyManager();
+		ScientificStudyManager mgr = context.getSimulation().getScientificStudyManager();
 		
 		// Create ongoing study list panel.
 		ongoingStudyListPane = new AbstractStudyListPanel(this, "OngoingStudyListPanel") {		
@@ -86,17 +83,11 @@ extends ToolWindow {
 		listsPane.add(finishedStudyListPane);
 
 		// Create study detail panel.
-		studyDetailPane = new StudyDetailPanel(this);
+		studyDetailPane = new StudyDetailPanel(context);
 		mainPane.add(studyDetailPane, BorderLayout.CENTER);
 
 		setMinimumSize(new Dimension(800, 480));
 		setPreferredSize(new Dimension(800, 480));
-		setMaximizable(true);
-		setResizable(true);
-		setVisible(true);
-		
-		// Pack window.
-		pack();
 	}
 
 	/**

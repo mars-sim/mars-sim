@@ -161,7 +161,7 @@ public class TimeTool extends ContentPanel {
 	 */
 	public TimeTool(Simulation sim) {
 		// Use TimeWindow constructor
-		super(TITLE);
+		super(NAME, TITLE);
 	
 
 		// Initialize data members

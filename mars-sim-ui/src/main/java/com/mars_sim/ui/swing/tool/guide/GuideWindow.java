@@ -75,7 +75,7 @@ public class GuideWindow extends ContentPanel implements ActionListener, Hyperli
 	 * Constructor.
 	 */
 	public GuideWindow(HelpLibrary library) {
-		super(Msg.getString("GuideWindow.title"));
+		super(NAME,Msg.getString("GuideWindow.title"));
 
 		this.library = library;
 			

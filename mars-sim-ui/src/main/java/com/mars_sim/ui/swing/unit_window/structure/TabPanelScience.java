@@ -225,7 +225,7 @@ extends TabPanel {
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		if (selectedStudyIndex >= 0) {
 			ScientificStudy selectedStudy = studyTableModel.getStudy(selectedStudyIndex);
-			((ScienceWindow) getDesktop().openToolWindow(ScienceWindow.NAME)).setScientificStudy(selectedStudy);
+			getDesktop().showDetails(selectedStudy);
 		}
 	}
 
@@ -302,23 +302,19 @@ extends TabPanel {
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
 
-				if (columnIndex == 0) 
-					result = study.getID() + "";
-				else if (columnIndex == 1) 
-					result = study.getScience().getName();
-				else if (columnIndex == 2) 
-					result = study.getDifficultyLevel() + "";
-				else if (columnIndex == 3) {
-					result = study.getPhase().getName();
+				switch (columnIndex) {
+					case 0 -> result = study.getID() + "";
+					case 1 -> result = study.getScience().getName();
+					case 2 -> result = study.getDifficultyLevel() + "";
+					case 3 -> result = study.getPhase().getName();
+					default -> {
+								String researcherN = "";	
+								if (study.getPrimaryResearcher() != null) {
+									researcherN = study.getPrimaryResearcher().getName();
+									result = researcherN;
+								}
+							}
 				}
-				else {
-					String researcherN = "";	
-					if (study.getPrimaryResearcher() != null) {
-						researcherN = study.getPrimaryResearcher().getName();
-						result = researcherN;
-					}
-				}
-
 			}
 			return result;
 		}
@@ -387,9 +383,11 @@ extends TabPanel {
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.science"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelScience.column.achievementCredit"); //$NON-NLS-1$
-			else return null;
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("TabPanelScience.column.science");
+				case 1 -> Msg.getString("TabPanelScience.column.achievementCredit");
+				default -> null;
+			};
 		}
 
 		/**
@@ -399,7 +397,7 @@ extends TabPanel {
 		 */
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
+			Class<?> dataType = null;
 			if (columnIndex == 0) dataType = String.class;
 			else if (columnIndex == 1) dataType = Double.class;
 			return dataType;

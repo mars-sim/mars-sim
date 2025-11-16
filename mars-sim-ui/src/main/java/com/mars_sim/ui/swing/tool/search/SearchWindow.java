@@ -32,8 +32,8 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 
 /**
@@ -64,14 +64,14 @@ extends ContentPanel {
 
 	/**
 	 * Constructor.
-	 * @param desktop {@link MainDesktopPane} the desktop pane
+	 * @param context the UI context
 	 */
-	public SearchWindow(MainDesktopPane desktop) {
+	public SearchWindow(UIContext context) {
 
 		// Use ToolWindow constructor
-		super(TITLE);
+		super(NAME, TITLE);
 		
-		unitManager = desktop.getSimulation().getUnitManager();
+		unitManager = context.getSimulation().getUnitManager();
 		
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -135,7 +135,7 @@ extends ContentPanel {
 		JLabel title = new JLabel("Selection", SwingConstants.RIGHT);
         title.setFont(StyleManager.getLabelFont());
 		bottomPanel.add(title);
-		selectedUnit = new EntityLabel(desktop);
+		selectedUnit = new EntityLabel(context);
 		bottomPanel.add(selectedUnit);
 		mainPane.add(bottomPanel, BorderLayout.SOUTH);
 	}

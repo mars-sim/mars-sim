@@ -22,7 +22,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool_window.MapSelector;
 
 /**
@@ -46,7 +46,7 @@ public class EntityLabel extends JPanel {
      * @param subject the entity to display.
      * @param uiContext the UI context for launcher windows
      */
-    public EntityLabel(Entity subject, MainDesktopPane uiContext) {
+    public EntityLabel(Entity subject, UIContext uiContext) {
         this(uiContext);
         setEntity(subject);
     }
@@ -55,7 +55,7 @@ public class EntityLabel extends JPanel {
      * Constructor for creating an empty EntityLabel.
      * @param uiContext COntext for launcher windows
      */
-    public EntityLabel(MainDesktopPane uiContext) {
+    public EntityLabel(UIContext uiContext) {
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         label = new JLabel("", SwingConstants.LEFT);
