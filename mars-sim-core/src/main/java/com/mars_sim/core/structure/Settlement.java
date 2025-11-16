@@ -404,6 +404,12 @@ public class Settlement extends Unit implements Temporal,
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
 
+		// Mock use the default shifts
+		// Initialize schedule event manager
+		futureEvents = new ScheduledEventManager(masterClock);	
+		ShiftPattern shifts = settlementConfig.getShiftByPopulation(initialPopulation);
+		shiftManager = new ShiftManager(this, shifts,
+										masterClock.getMarsTime().getMillisolInt());
 	}
 	
 	/**

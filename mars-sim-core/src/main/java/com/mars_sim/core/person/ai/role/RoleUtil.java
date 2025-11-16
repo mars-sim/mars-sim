@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.person.Person;
@@ -38,8 +36,6 @@ public class RoleUtil {
 	private static List<RoleType> crewRoles;
 
 	private static List<RoleType> chiefRoles;
-
-	private static List<RoleType> councilRoles;
 	
 	private static List<RoleType> leadershipRoles;
 
@@ -60,12 +56,12 @@ public class RoleUtil {
 
 		// Cache the specialists
 		specalistRoles = Arrays.stream(RoleType.values())
-								.filter(RoleType::isSpecialist)
+								.filter(rt -> rt.getLevel() == RoleLevel.SPECIALIST)
 								.toList();
 		
 		// Cache the crew roles
 		crewRoles = Arrays.stream(RoleType.values())
-								.filter(RoleType::isCrew)
+								.filter(rt -> rt.getLevel() == RoleLevel.CREW)
 								.toList();
 		
 		// Cache the crew roles
@@ -74,15 +70,9 @@ public class RoleUtil {
 								.toList();	
 		
 		// Cache the council roles
-		councilRoles = Arrays.stream(RoleType.values())
-								.filter(RoleType::isCouncil)
+		leadershipRoles = Arrays.stream(RoleType.values())
+								.filter(RoleType::isLeadership)
 								.toList();
-		
-		// Cache the leadership roles
-		leadershipRoles = Stream.concat(chiefRoles.stream(), 
-								councilRoles.stream())
-                				.collect(Collectors.toList());
-		
 	}
 
 	public static boolean isRoleWeightsInitialized() {
@@ -107,15 +97,6 @@ public class RoleUtil {
 		return crewRoles;
 	}
 	
-	/**
-	 * Returns a list of council roles.
-	 * 
-	 * @return
-	 */
-	public static List<RoleType> getCouncil() {
-		return councilRoles;
-	}
-
 	/**
 	 * Returns a list of chief roles.
 	 * 
@@ -147,7 +128,6 @@ public class RoleUtil {
 
 		ChainOfCommand chain = p.getSettlement().getChainOfCommand();
 		
-		int pop = p.getSettlement().getInitialPopulation();
 		
 		JobType job = p.getMind().getJobType();
 		Map<RoleType, Double> weights = roleWeights.get(job);
@@ -157,16 +137,7 @@ public class RoleUtil {
 		int leastNum = 0;
 		RoleType leastFilledRole = null;
 		
-		List<RoleType> types = null;
-				
-		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
-			types = crewRoles;
-		}
-		
-		else {
-			types = specalistRoles;
-		}
-		
+		List<RoleType> types = chain.getGovernance().getAssignableRoles();		
 		for (RoleType rt: types) {
 			int num = chain.getNumFilled(rt);
 			if (leastNum >= num) {
@@ -272,113 +243,6 @@ public class RoleUtil {
 
 	}
 
-	/**
-	 * Takes a Chief role type and return the associated specialty role.
-	 * If the input role is not a Chief a null is returned.
-	 * 
-	 * @param roleType
-	 * @return
-	 */
-	public static RoleType getChiefSpeciality(RoleType roleType) {
-		RoleType candidateType = null;
-		switch (roleType) {
-	        case CHIEF_OF_AGRICULTURE:
-	            candidateType = RoleType.AGRICULTURE_SPECIALIST;
-	            break;
-
-	        case CHIEF_OF_COMPUTING:
-	        	candidateType = RoleType.COMPUTING_SPECIALIST;
-	        	break;
-
-	        case CHIEF_OF_ENGINEERING:
-	        	candidateType = RoleType.ENGINEERING_SPECIALIST;
-	        	break;
-
-	        case CHIEF_OF_LOGISTIC_OPERATION:
-	        	candidateType = RoleType.LOGISTIC_SPECIALIST;
-	        	break;
-
-	        case CHIEF_OF_MISSION_PLANNING:
-	        	candidateType = RoleType.MISSION_SPECIALIST;
-	        	break;
-
-	        case CHIEF_OF_SAFETY_HEALTH_SECURITY:
-	        	candidateType = RoleType.SAFETY_SPECIALIST;
-	        	break;
-
-	        case CHIEF_OF_SCIENCE:
-	        	candidateType = RoleType.SCIENCE_SPECIALIST;
-	        	break;
-
-	        case CHIEF_OF_SUPPLY_RESOURCE:
-	        	candidateType = RoleType.RESOURCE_SPECIALIST;
-	        	break;
-
-	        default:
-	    }
-		return candidateType;
-	}
-
-	/**
-	 * Gets a list of role suitable for a settlement of a certain size
-	 *
-	 * @return
-	 */
-	public static List<RoleType> getRoles(int pop) {
-
-		List<RoleType> roles = new ArrayList<>();
-
-		if (pop <= ChainOfCommand.POPULATION_WITH_COMMANDER) {
-			roles.add(RoleType.COMMANDER);
-			roles.addAll(crewRoles);
-		}
-
-		else if (pop <= ChainOfCommand.POPULATION_WITH_SUB_COMMANDER) {
-			roles.add(RoleType.COMMANDER);
-			roles.add(RoleType.SUB_COMMANDER);
-			roles.addAll(specalistRoles);
-		}
-
-		else if (pop <= ChainOfCommand.POPULATION_WITH_CHIEFS) {
-			for (RoleType r : RoleType.values()) {
-				if (r != RoleType.PRESIDENT
-						&& r != RoleType.MAYOR
-						&& r != RoleType.ADMINISTRATOR)
-					roles.add(r);
-			}
-		}
-
-		else if (pop <= ChainOfCommand.POPULATION_WITH_ADMINISTRATOR) {
-			for (RoleType r : RoleType.values()) {
-				if (r != RoleType.PRESIDENT
-						&& r != RoleType.MAYOR
-						&& r != RoleType.DEPUTY_ADMINISTRATOR)
-					roles.add(r);
-			}
-		}
-		
-		else if (pop <= ChainOfCommand.POPULATION_WITH_DEPUTY_ADMINISTRATOR) {
-			for (RoleType r : RoleType.values()) {
-				if (r != RoleType.PRESIDENT
-						&& r != RoleType.MAYOR)
-					roles.add(r);
-			}
-		}
-		
-		else if (pop <= ChainOfCommand.POPULATION_WITH_MAYOR) {
-			for (RoleType r : RoleType.values()) {
-				if (r != RoleType.PRESIDENT)
-					roles.add(r);
-			}
-		}
-
-		else {
-			roles.addAll(Arrays.asList(RoleType.values()));
-		}
-		
-		return roles;
-	}
-	
 	public static Map<JobType, Map<RoleType, Double>> getRoleWeights() {
 		return roleWeights;
 	}

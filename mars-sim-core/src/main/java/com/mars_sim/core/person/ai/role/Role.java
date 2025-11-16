@@ -103,7 +103,7 @@ public class Role implements Serializable {
 
 			// For Council members being changed have a meeting
 			if (roleType.isCouncil() && !predecessors.isEmpty()
-					& home.getFutureManager() != null) {
+					&& home.getFutureManager() != null) {
 				GroupActivity.createPersonActivity("Council Announcement for " + roleType.getName(),
 									GroupActivityType.ANNOUNCEMENT, home, person, 0, 
 									Simulation.instance().getMasterClock().getMarsTime());
@@ -125,7 +125,7 @@ public class Role implements Serializable {
 	 * 
 	 * @param s
 	 */
-	public void obtainNewRole() {
+	private void obtainNewRole() {
 		// Find the best role
 		RoleType roleType = RoleUtil.findBestRole(person);	
 		// Finalize setting a person's new role

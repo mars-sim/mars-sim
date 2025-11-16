@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.task;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +19,6 @@ import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.person.ai.social.RelationshipType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -144,16 +144,11 @@ public class MeetTogether extends Task {
             
             list.addAll(pool);
 
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 clearTask();
             }
             else {
-    	    	int size = list.size();
-    	        
-    	        if (size == 1)
-    	        	invitee = list.get(0); 
-    	        else
-    	        	invitee = list.get(RandomUtil.getRandomInt(0, size-1));
+    	    	invitee = RandomUtil.getRandomElement(list);
             }
 	
 	        if (invitee != null) {
@@ -249,19 +244,6 @@ public class MeetTogether extends Task {
     			// Walk to invitee building 
 				walkToActivitySpotInBuilding(inviteebuilding, FunctionType.DINING, false);
     		}
-			
-			// FUTURE: how to ask invitee to walk to a diner ?
-//	    	if (!personbuilding.hasFunction(FunctionType.DINING)) {
-//	    		Building diner = settlement.getBuildingManager()
-//						.getBuildingSet(FunctionType.DINING)
-//						.stream()
-//						.findAny().orElse(null);	 
-//			
-//				if (diner != null) {
-//					walkToActivitySpotInBuilding(diner, FunctionType.DINING, false);
-//				}
-//	    	}
-
     	}
 		
         if (getTimeCompleted() + time >= getDuration()) {
@@ -287,18 +269,17 @@ public class MeetTogether extends Task {
      * @param roleType
      * @return a set of persons
      */
-    public Set<Person> getPool(Collection<Person> ppl, RoleType roleType) {
-    	RoleType candidateType = RoleUtil.getChiefSpeciality(roleType);
+    private Set<Person> getPool(Collection<Person> ppl, RoleType roleType) {
+    	RoleType candidateType = RoleType.getChiefSpeciality(roleType);
  
-        Set<Person> pool = new UnitSet<>();
+        Set<Person> pool = new HashSet<>();
         if (candidateType != null) {
 	        for (Person p : ppl) {
-	        	if (p.getRole().getType() == candidateType) {
-	            	if (p.getBuildingLocation() != null)
-	            		// if that person is inside the settlement and within a building
-	            		pool.add(p);
-	        	}
-	        }	
+	        	if (p.getRole().getType() == candidateType && p.getBuildingLocation() != null) {
+					// if that person is inside the settlement and within a building
+					pool.add(p);
+				}
+	        }
         }
     	return pool;
     }
