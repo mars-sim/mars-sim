@@ -36,16 +36,16 @@ class ConstructionConfigTest {
     void testSteelFrameTower() {
         var selected = cConfig.getConstructionStageInfoByName("Steel Frame Tower");
 
-        assertEquals("Steel Frame Tower", selected.getName(), "Name");
+        assertEquals(selected.getName(), "Steel Frame Tower", "Name");
         assertEquals(Stage.FRAME, selected.getType(), "Type");
         assertEquals(5D, selected.getWidth(), "Width");
         assertEquals(5D, selected.getLength(), "Length");
-        assertEquals("length", selected.getAlignment(), "Alignment");
+        assertEquals(selected.getAlignment(), "length", "Alignment");
         assertEquals(0, selected.getBaseLevel(), "Base");
         assertTrue(selected.isConstructable(), "Constructable");
         assertTrue(selected.isSalvagable(), "Salvagable");
         assertEquals(2, selected.getArchitectConstructionSkill(), "Skill");
-        assertEquals("Surface Foundation 5x5", selected.getPrerequisiteStage().getName(), "PreStage");
+        assertEquals(selected.getPrerequisiteStage().getName(), "Surface Foundation 5x5", "PreStage");
 
         var resources = selected.getResources();
         assertEquals(1D, resources.get(ResourceUtil.findIDbyAmountResourceName("acetylene")), "acetylene");

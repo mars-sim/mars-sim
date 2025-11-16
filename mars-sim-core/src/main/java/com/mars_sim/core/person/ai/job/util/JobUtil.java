@@ -36,6 +36,7 @@ import com.mars_sim.core.person.ai.job.Sociologist;
 import com.mars_sim.core.person.ai.job.Technician;
 import com.mars_sim.core.person.ai.job.Tourist;
 import com.mars_sim.core.person.ai.job.Trader;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.Chefbot;
 import com.mars_sim.core.robot.ai.job.Constructionbot;
@@ -45,7 +46,6 @@ import com.mars_sim.core.robot.ai.job.Makerbot;
 import com.mars_sim.core.robot.ai.job.Medicbot;
 import com.mars_sim.core.robot.ai.job.Repairbot;
 import com.mars_sim.core.robot.ai.job.RobotJob;
-import com.mars_sim.core.structure.ChainOfCommand;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.RandomUtil;
 
@@ -375,7 +375,7 @@ public final class JobUtil {
 		}
 
 
-		if (settlement.getNumCitizens() > ChainOfCommand.POPULATION_WITH_CHIEFS) {
+		if (settlement.getChainOfCommand().getGovernance().getAllRoles().contains(RoleType.CHIEF_OF_SCIENCE)) {
 			int numWeatherman = numJobs(JobType.METEOROLOGIST, settlement);
 			if (numWeatherman == 0) {
 				assignBestCandidate(settlement, JobType.METEOROLOGIST);

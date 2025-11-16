@@ -28,7 +28,7 @@ class BuildingTest extends MarsSimUnitTest {
         assertEquals(90D, b.getFacing(), "Building facing");
         assertEquals(habSpec.getWidth(), b.getWidth(), "Building width");
         assertEquals(habSpec.getLength(), b.getLength(), "Building length");
-        assertEquals("B1", b.getName(), "Building name");
+        assertEquals(b.getName(), "B1", "Building name");
 
 
 

@@ -6,8 +6,8 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.goods.Good;
@@ -78,11 +78,11 @@ public class FoodTableModel extends CategoryTableModel<Food> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getTarget() instanceof Food f
 				&& event.getSource() instanceof Settlement s) {
-			UnitEventType eventType = event.getType();
-			if (eventType == UnitEventType.FOOD_EVENT) {
+			String eventType = event.getType();
+			if (EntityEventType.FOOD_EVENT.equals(eventType)) {
 				CategoryKey<Food> row = new CategoryKey<>(s, f);
 				// Update the whole row
 				entityValueUpdated(row, LOCAL_DEMAND_COL, PRICE_COL);

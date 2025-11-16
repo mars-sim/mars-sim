@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventType;
@@ -641,7 +641,7 @@ public class RadiationExposure implements Serializable, Temporal {
 												person.getName(), person, person.getAssociatedSettlement());
 				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
-				person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
+				person.fireUnitUpdate(EntityEventType.RADIATION_EVENT);
 
 				return true;
 			}

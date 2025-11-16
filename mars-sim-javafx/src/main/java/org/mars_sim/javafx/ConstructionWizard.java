@@ -13,7 +13,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.ai.mission.BuildingConstructionMission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.BuildingTemplate;
@@ -211,7 +211,7 @@ public class ConstructionWizard {
 //	    	mainScene.unpauseSimulation();
 	    	//mainScene.speedUpTimeRatio(previous);//.endPause(previous);
 
-	    settlement.fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, site);
+	    settlement.fireUnitUpdate(EntityEventType.END_CONSTRUCTION_WIZARD_EVENT, site);
 	}
  
 	public ConstructionSite executeCase1(BuildingConstructionMission mission) {

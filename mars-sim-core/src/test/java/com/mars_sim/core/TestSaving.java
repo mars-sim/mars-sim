@@ -1,6 +1,10 @@
 package com.mars_sim.core;
-
-import static org.junit.Assert.assertNotEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,24 +21,25 @@ import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 
-import junit.framework.TestCase;
+
 
 /**
  * Unit test suite for the saving and loading a simulation
  */
-public class TestSaving extends TestCase implements SimulationListener {
+class TestSaving implements SimulationListener {
 
     private SimulationConfig simConfig;
     private String saveFeedback;
     private File saveFile = null;
 
-    @Override
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
 		// Create new simulation instance.
         simConfig = SimulationConfig.loadConfig();
     }
 
-    public void testSaving() throws IOException {
+    @Test
+    void testSaving() throws IOException {
         Simulation sim = Simulation.instance();
         sim.createNewSimulation(64); 
 
@@ -59,22 +64,22 @@ public class TestSaving extends TestCase implements SimulationListener {
 
 
         // Check simulations saved and it contains data
-        assertEquals("Simulation save status", SimulationListener.SAVE_COMPLETED, saveFeedback);
-        assertTrue("Simulation file exists", saveFile.isFile());
-        assertTrue("Save file is not empty", saveFile.length() > 0);
+        assertEquals(SimulationListener.SAVE_COMPLETED, saveFeedback, "Simulation save status");
+        assertTrue(saveFile.isFile(), "Simulation file exists");
+        assertTrue(saveFile.length() > 0, "Save file is not empty");
 
         // Reload it
         MedicalManager origMgr = sim.getMedicalManager();
         sim.loadSimulation(saveFile);
-        assertNotEquals("Changed Medical Manager", origMgr, sim.getMedicalManager());
+        assertNotEquals(origMgr, sim.getMedicalManager(), "Changed Medical Manager");
 
 
         Person laterP = sim.getUnitManager().getPersonByID(p.getIdentifier());
-        assertEquals("Has complaint", complaint, laterP.getPhysicalCondition().getMostSerious().getComplaint());
+        assertEquals(complaint, laterP.getPhysicalCondition().getMostSerious().getComplaint(), "Has complaint");
     }
 
-    @Override
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         // Delete the saved file
         if ((saveFile != null) && saveFile.isFile()) {
            saveFile.delete();

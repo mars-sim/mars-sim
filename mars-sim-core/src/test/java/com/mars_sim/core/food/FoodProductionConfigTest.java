@@ -1,9 +1,9 @@
 package com.mars_sim.core.food;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,7 +36,7 @@ class FoodProductionConfigTest {
     @Test
     void testProcessesLoaded() {
         var manuProcesses = foodConfig.getProcessList();
-        assertTrue("Food processes defined", !manuProcesses.isEmpty());
+        assertTrue(!manuProcesses.isEmpty(), "Food processes defined");
     }
 
     @Test
@@ -46,8 +46,8 @@ class FoodProductionConfigTest {
                     Maps.uniqueIndex(foodConfig.getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get(PACKAGE_FOOD);
-        assertNotNull("Food processes defined", process);
-        assertEquals("primary inputs", PACKAGE_INPUTS, process.getInputList().size());
+        assertNotNull(process, "Food processes defined");
+        assertEquals(PACKAGE_INPUTS, process.getInputList().size(), "primary inputs");
 
         // Check the alternative are present and they have different inputs
         Set<List<ProcessItem>> alternatives = new HashSet<>();
@@ -55,12 +55,12 @@ class FoodProductionConfigTest {
 
         for(var altName : PACKAGE_ALTERNATIVES) {
             var found = processByName.get(PACKAGE_FOOD + FoodProductionConfig.RECIPE_PREFIX + altName);
-            assertNotNull(PACKAGE_FOOD + " alternative " + altName, found);
-            assertEquals(PACKAGE_FOOD + " alternative  inputs " + altName, PACKAGE_INPUTS, found.getInputList().size());
+            assertNotNull(found, PACKAGE_FOOD + " alternative " + altName);
+            assertEquals( PACKAGE_INPUTS, found.getInputList().size(), PACKAGE_FOOD + " alternative  inputs " + altName);
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", PACKAGE_ALTERNATIVES.length + 1, alternatives.size());
+        assertEquals(PACKAGE_ALTERNATIVES.length + 1, alternatives.size(), "All alternatives have different inputs");
     }
 
     @Test
@@ -70,20 +70,20 @@ class FoodProductionConfigTest {
                     Maps.uniqueIndex(foodConfig.getProcessList(),
                         FoodProductionProcessInfo::getName);
         var process = processByName.get("Process Soybean into Soy Flour");
-        assertNotNull("Food processes defined", process);
+        assertNotNull(process, "Food processes defined");
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
         expectedInputs.add(ManufactureConfigTest.createAmount("Soybean", 1D));
         expectedInputs.add(ManufactureConfigTest.createAmount("Water", 1D));
         expectedInputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
-        assertEquals("Antenna expected inputs", expectedInputs, process.getInputList());
+        assertEquals(expectedInputs, process.getInputList(), "Antenna expected inputs");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
         expectedOutputs.add(ManufactureConfigTest.createAmount("Soy Flour", 1D));
         expectedOutputs.add(ManufactureConfigTest.createPart("oven", 1D));
 
-        assertEquals("Antenna expected outputs", expectedOutputs, process.getOutputList());
+        assertEquals(expectedOutputs, process.getOutputList(), "Antenna expected outputs");
 
     }
 

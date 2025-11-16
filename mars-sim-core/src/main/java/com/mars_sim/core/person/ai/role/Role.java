@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
@@ -28,6 +27,9 @@ public class Role implements Serializable {
 	private RoleType roleType;
 
 	private History<RoleType> roleHistory = new History<>();
+
+    // For Role change
+    public static final String ROLE_EVENT = "role event";
 
 	public Role(Person person) {
 		this.person = person;
@@ -99,11 +101,11 @@ public class Role implements Serializable {
 			}
 
 			// Records the role change and fire unit update
-			person.fireUnitUpdate(UnitEventType.ROLE_EVENT, roleType);
+			person.fireUnitUpdate(ROLE_EVENT, roleType);
 
 			// For Council members being changed have a meeting
 			if (roleType.isCouncil() && !predecessors.isEmpty()
-					& home.getFutureManager() != null) {
+					&& home.getFutureManager() != null) {
 				GroupActivity.createPersonActivity("Council Announcement for " + roleType.getName(),
 									GroupActivityType.ANNOUNCEMENT, home, person, 0, 
 									Simulation.instance().getMasterClock().getMarsTime());
@@ -125,7 +127,7 @@ public class Role implements Serializable {
 	 * 
 	 * @param s
 	 */
-	public void obtainNewRole() {
+	private void obtainNewRole() {
 		// Find the best role
 		RoleType roleType = RoleUtil.findBestRole(person);	
 		// Finalize setting a person's new role

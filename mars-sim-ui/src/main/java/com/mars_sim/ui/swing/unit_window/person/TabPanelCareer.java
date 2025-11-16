@@ -37,9 +37,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.person.health.DeathInfo;
-import com.mars_sim.core.structure.ChainOfCommand;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
@@ -160,7 +158,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		// Prepare role selector
 		roleCache = person.getRole().getType();
 		var roleModel = new DefaultComboBoxModel<RoleType>();
-		roleModel.addAll(RoleUtil.getRoles(settlement.getNumCitizens()));
+		roleModel.addAll(settlement.getChainOfCommand().getGovernance().getAllRoles());
 		roleComboBox = new JComboBox<>(roleModel);
 		roleComboBox.setSelectedItem(roleCache);
 		roleComboBox.addActionListener(this);
@@ -342,14 +340,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 * @param assignments
 	 */
 	private void checkJobReassignment(AssignmentHistory assignments) {
-		int pop = settlement.getNumCitizens();
-
 		List<HistoryItem<Assignment>> jobHistory = assignments.getJobAssignmentList();
 		int last = jobHistory.size() - 1;
 
 		AssignmentType status = jobHistory.get(last).getWhat().getStatus();
 
-		if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
+		if (settlement.getChainOfCommand().getGovernance().needJobApproval()) {
 
 			if (status == AssignmentType.PENDING) {
 				statusCache = AssignmentType.PENDING;
@@ -558,13 +554,9 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		}
 
 		else if (jobCache != selectedJob) {
-			// Use getAssociatedSettlement instead of getSettlement()
-			int pop = 0;
-
-			pop = settlement.getNumCitizens();
 
 			// if the population is beyond 4
-			if (pop > ChainOfCommand.POPULATION_WITH_COMMANDER) {
+			if (settlement.getChainOfCommand().getGovernance().needJobApproval()) {
 				String s = "Job Reassignment submitted on " + MarsTimeFormat.getTruncatedDateTimeStamp(
 											masterClock.getMarsTime());
 				displayNotice(s, false);

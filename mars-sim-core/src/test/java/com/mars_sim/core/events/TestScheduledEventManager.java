@@ -70,7 +70,7 @@ public class TestScheduledEventManager extends MarsSimUnitTest  {
 		int eventCounter = 0;
 		MarsTime base = clock.getMarsTime();
 		for(ScheduledEvent event : events) {
-			assertEquals("Handler " + eventCounter, event.getDescription(), "Event #" + eventCounter);
+			assertEquals(event.getDescription(), "Handler " + eventCounter, "Event #" + eventCounter);
 			MarsTime eventTime = base.addTime(durations[eventCounter]);
 			assertEquals(eventTime, event.getWhen(), "When Event #" + eventCounter);
 			eventCounter++;

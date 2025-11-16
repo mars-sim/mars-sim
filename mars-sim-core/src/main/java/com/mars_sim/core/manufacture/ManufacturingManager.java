@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.data.RatingScore;
@@ -213,7 +213,7 @@ public class ManufacturingManager implements Serializable {
      */
     public void removeProcessFromQueue(QueuedProcess selected) {
         queue.remove(selected);
-        owner.fireUnitUpdate(UnitEventType.MANU_QUEUE_REMOVE, selected);
+        owner.fireUnitUpdate(EntityEventType.MANU_QUEUE_REMOVE, selected);
     }
 
     /**
@@ -256,7 +256,7 @@ public class ManufacturingManager implements Serializable {
         synchronized(queue) {
             queue.add(newItem);
         }   
-        owner.fireUnitUpdate(UnitEventType.MANU_QUEUE_ADD, newItem);
+        owner.fireUnitUpdate(EntityEventType.MANU_QUEUE_ADD, newItem);
     }
 
     /**
@@ -276,7 +276,7 @@ public class ManufacturingManager implements Serializable {
         }  
 
         if (!queue.isEmpty()) {
-            owner.fireUnitUpdate(UnitEventType.MANE_QUEUE_REFRESH);
+            owner.fireUnitUpdate(EntityEventType.MANE_QUEUE_REFRESH);
         }
     }
 

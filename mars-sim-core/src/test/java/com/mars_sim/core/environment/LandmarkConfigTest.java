@@ -40,8 +40,8 @@ class LandmarkConfigTest {
         assertEquals(1, results.size(), "Beagle found");
 
         var beagle = results.get(0);
-        assertEquals("Beagle 2 Lander", beagle.getName(), "Beagle name");
-        assertEquals("ESA", beagle.getOrigin(), "Beagle origin");
+        assertEquals(beagle.getName(), "Beagle 2 Lander", "Beagle name");
+        assertEquals(beagle.getOrigin(), "ESA", "Beagle origin");
         assertEquals(LandmarkType.AO, beagle.getType(), "Beagel type");
         assertEquals(center, beagle.getCoordinates(), "Beagle location");
     }

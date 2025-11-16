@@ -22,7 +22,7 @@ import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -377,7 +377,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		if (doEvent) {
 //			writeLog();
-			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
 
@@ -395,7 +395,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		if (!botModes.contains(newStatus)) {
 			botModes.add(newStatus);
 //			writeLog();
-			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
 
@@ -409,7 +409,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		if (botModes.contains(oldStatus)) {
 			botModes.remove(oldStatus);
 //			writeLog();
-			fireUnitUpdate(UnitEventType.STATUS_EVENT, oldStatus);
+			fireUnitUpdate(EntityEventType.STATUS_EVENT, oldStatus);
 		}
 	}
 	

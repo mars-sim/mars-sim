@@ -1,6 +1,12 @@
 package com.mars_sim.core.building.connection;
-
-import static org.junit.Assert.assertNotEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,9 +25,8 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
-import junit.framework.TestCase;
 
-public class BuildingConnectorManagerTest extends TestCase {
+class BuildingConnectorManagerTest {
 
 	private static final String SECTOR_BASE_1 = "Sector Base 1";
 	
@@ -29,8 +34,8 @@ public class BuildingConnectorManagerTest extends TestCase {
     
     private SimulationConfig simConfig;
     
-	@Override
-	public void setUp() {
+	@BeforeEach
+    void setUp() {
 	    // Create new simulation instance.
         simConfig = SimulationConfig.loadConfig();
         
@@ -42,7 +47,8 @@ public class BuildingConnectorManagerTest extends TestCase {
         							 sim.getWeather(), sim.getUnitManager());
 	}
     
-    public void testConstructorNoBuildingTemplates() {        
+    @Test
+    void testConstructorNoBuildingTemplates() {        
         Settlement settlement = new MockSettlement();
 
         List<BuildingTemplate> buildingTemplates = new ArrayList<>(0);
@@ -55,7 +61,8 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertEquals(0, connections.size());
     }
 
-    public void testConstructorWithBuildingTemplates() {
+    @Test
+    void testConstructorWithBuildingTemplates() {
 
         Settlement settlement = new MockSettlement();
 
@@ -120,12 +127,13 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertEquals(2, connections7.size());
 
         manager.removeAllConnectionsToBuilding(buildings.get(1));
-        assertTrue("Nothing to building 1", manager.getConnectionsToBuilding(buildings.get(1)).isEmpty());
-        assertEquals("Building 2 reduced", 1, manager.getConnectionsToBuilding(buildings.get(2)).size());
+        assertTrue(manager.getConnectionsToBuilding(buildings.get(1)).isEmpty(), "Nothing to building 1");
+        assertEquals(1, manager.getConnectionsToBuilding(buildings.get(2)).size(), "Building 2 reduced");
 
     }
 
-    public void testShortestPathAdjacent() {
+    @Test
+    void testShortestPathAdjacent() {
         
         Settlement settlement = new MockSettlement();
 
@@ -181,7 +189,8 @@ public class BuildingConnectorManagerTest extends TestCase {
 
     }
 
-     public void testShortestPathMiddleBuilding() {
+    @Test
+    void testShortestPathMiddleBuilding() {
         
         Settlement settlement = new MockSettlement();
 
@@ -256,7 +265,8 @@ public class BuildingConnectorManagerTest extends TestCase {
         assertTrue(path3.isEndOfPath());
     }
 
-    public void testShortestPathSameBuilding() {
+    @Test
+    void testShortestPathSameBuilding() {
         
         Settlement settlement = new MockSettlement();
 
@@ -273,7 +283,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         var endPosn = new LocalPosition(4.5D, 0D);
         InsideBuildingPath path1 = manager.determineShortestPath(b0, startPosn, b0, endPosn);
         assertNotNull(path1);
-        assertEquals("Path1 length", 2, path1.getPathLocations().size());
+        assertEquals(2, path1.getPathLocations().size(), "Path1 length");
         assertPathValidity(path1, b0, startPosn, b0, endPosn);
 
         assertEquals(4.5D, path1.getPathLength(), SMALL_DELTA);
@@ -294,7 +304,8 @@ public class BuildingConnectorManagerTest extends TestCase {
         return newBuilding;
     }
 
-    public void testLargeRoute() {
+    @Test
+    void testLargeRoute() {
         var largeTemplate = SECTOR_BASE_1;
         List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration()
         		.getItem(largeTemplate).getSupplies().getBuildings();
@@ -309,16 +320,17 @@ public class BuildingConnectorManagerTest extends TestCase {
         var lHab = bMgr.getBuildingByTemplateID("RHAB1"); // Residential Hab
         var lab = bMgr.getBuildingByTemplateID("LAB605"); // Laboratory
         var path = manager.determineShortestPath(lHab, lHab.getPosition(), lab, lab.getPosition());
-        assertNotNull("Found route", path);
+        assertNotNull(path, "Found route");
         assertPathValidity(path, lHab, lHab.getPosition(), lab, lab.getPosition());
 
         var core = bMgr.getBuildingByTemplateID("MCC907"); 
         path = manager.determineShortestPath(lHab, lHab.getPosition(), core, core.getPosition());
-        assertNotNull("Found route", path);
+        assertNotNull(path, "Found route");
         assertPathValidity(path, lHab, lHab.getPosition(), core, core.getPosition());
     }
 
-      public void testCachedLargeRoute() {
+      @Test
+      void testCachedLargeRoute() {
         var largeTemplate = SECTOR_BASE_1;
         List<BuildingTemplate> buildingTemplates = simConfig.getSettlementTemplateConfiguration()
         		.getItem(largeTemplate).getSupplies().getBuildings();
@@ -343,18 +355,18 @@ public class BuildingConnectorManagerTest extends TestCase {
         // Compare steps
         var steps = path.getPathLocations();
         var steps2 = path2.getPathLocations();
-        assertEquals("Steps path", steps, steps2);
+        assertEquals(steps, steps2, "Steps path");
 
-        // Check the repeat path finding half the original time to show cachign has worked
-        assertTrue("Reduced time on repeat path", secondDuration < (firstDuration/2));
-        assertNotEquals("Cached path different", path, path2);
+        // Check the repeat path finding half the original time to show caching has worked
+        assertTrue(secondDuration < (firstDuration/2), "Reduced time on repeat path");
+        assertNotEquals(path, path2, "Cached path different");
         assertPathValidity(path2, lHab, lHab.getPosition(), lab, lab.getPosition());
 
         // Try reverse path
         startTime = System.nanoTime();
         var reversePath = manager.determineShortestPath(lab, lab.getPosition(), lHab, lHab.getPosition());
         long reverseDuration = System.nanoTime() - startTime;
-        assertTrue("Reduced time on repeat path", reverseDuration < (firstDuration/2));
+        assertTrue(reverseDuration < (firstDuration/2), "Reduced time on repeat path");
         assertPathValidity(reversePath, lab, lab.getPosition(), lHab, lHab.getPosition());
 
         // Change start position
@@ -363,9 +375,9 @@ public class BuildingConnectorManagerTest extends TestCase {
         startTime = System.currentTimeMillis();
         var path3 = manager.determineShortestPath(lHab, newStart, lab, lab.getPosition());
         long thirdDuration = System.currentTimeMillis() - startTime;
-        assertTrue("Reduced time on changed path", thirdDuration < (firstDuration/2));
+        assertTrue(thirdDuration < (firstDuration/2), "Reduced time on changed path");
 
-        assertNotEquals("Cached path2 different", path, path3);
+        assertNotEquals(path, path3, "Cached path3 different");
         assertPathValidity(path3, lHab, newStart, lab, lab.getPosition());
 
     }
@@ -379,25 +391,25 @@ public class BuildingConnectorManagerTest extends TestCase {
      * @param lHab
      * @param lab
      */
-    public static void assertPathValidity(InsideBuildingPath path, Building start, LocalPosition startPosn,
+    static void assertPathValidity(InsideBuildingPath path, Building start, LocalPosition startPosn,
                                 Building end, LocalPosition endPosn) {
         var steps = path.getPathLocations();
 
         var startStep = (BuildingLocation)steps.get(0);
-        assertEquals("First step is start building", start, startStep.getBuilding());
-        assertEquals("First step is start position", startPosn, startStep.getPosition());
+        assertEquals(start, startStep.getBuilding(), "First step is start building");
+        assertEquals(startPosn, startStep.getPosition(), "First step is start position");
 
         var endStep = (BuildingLocation)steps.get(steps.size()-1);
-        assertEquals("Last step is end building", end, endStep.getBuilding());
-        assertEquals("Last step is end position", endPosn, endStep.getPosition());
+        assertEquals(end, endStep.getBuilding(), "Last step is end building");
+        assertEquals(endPosn, endStep.getPosition(), "Last step is end position");
 
         int i = 0;
         var currentBuilding = start;
         for(var step : steps) {
             switch(step) {
-                case BuildingLocation bl -> assertEquals("Step " + i + " is in buildingLocation ", currentBuilding, bl.getBuilding());
-                case Building b -> assertEquals("Step " + i + " is Building ", currentBuilding, b);
-                case Hatch h -> assertEquals("Step " + i + " is Hatch ", currentBuilding, h.getBuilding());
+                case BuildingLocation bl -> assertEquals(bl.getBuilding(), currentBuilding, "Step " + i + " is in buildingLocation ");
+                case Building b -> assertEquals(b, currentBuilding, "Step " + i + " is Building ");
+                case Hatch h -> assertEquals(h.getBuilding(), currentBuilding, "Step " + i + " is Hatch ");
                 case BuildingConnector bc -> {
                     if (bc.getBuilding1().equals(currentBuilding)) {
                         currentBuilding = bc.getBuilding2();

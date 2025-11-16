@@ -16,10 +16,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import com.formdev.flatlaf.FlatLaf;
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.task.util.Worker;
 
@@ -95,7 +94,7 @@ public class UnitDialog {
 	 * Removes the listener for a worker.
 	 */
 	public void removeListener(Worker w) {
-		w.removeUnitListener(listener);
+		w.removeEntityListener(listener);
 	}
 
 	/**
@@ -103,30 +102,28 @@ public class UnitDialog {
 	 */
 	public void addListener(Worker w) {
 		listener = new WorkerListener();
-		w.addUnitListener(listener);
+		w.addEntityListener(listener);
 	}
 	
 	/**
 	 * PersonListener class listens to the change of each settler in a settlement.
 	 */
-	private class WorkerListener implements UnitListener {
+	private class WorkerListener implements EntityListener {
 
 		/**
 		 * Catch unit update event.
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
-			if (event.getType() == UnitEventType.LOCAL_POSITION_EVENT) {
-				Unit unit = (Unit)event.getSource();	
-				if (unit instanceof Worker w) {
-					LocalPosition lp = w.getPosition();
-					
-					// Transform the worker's position to pixel on screen				
-					Point p = settlementMapPanel.convertToPixelPos(lp);
-					dialog.setLocation((int)p.getX(), (int)p.getY());
-				}
-			}
+		@Override
+		public void entityUpdate(EntityEvent event) {
+			if (event.getType().equals(EntityEventType.LOCAL_POSITION_EVENT) && event.getSource() instanceof Worker w) {
+				LocalPosition lp = w.getPosition();
+				
+				// Transform the worker's position to pixel on screen				
+				Point p = settlementMapPanel.convertToPixelPos(lp);
+				dialog.setLocation((int)p.getX(), (int)p.getY());
+			}	
 		}
 	}
 	

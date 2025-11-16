@@ -13,7 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.RatingLog;
@@ -63,6 +62,8 @@ public abstract class TaskManager implements Serializable {
 	private History<OneActivity> allActivities;
 	/** The list of pending of tasks. */
 	private List<PendingTask> pendingTasks;
+    // For TaskManager
+    public static final String TASK_EVENT = "task";
 	
 	/**
 	 * Constructor.
@@ -235,7 +236,7 @@ public abstract class TaskManager implements Serializable {
 		if (currentTask != null) {
 			currentTask.endTask();
 			currentTask = null;
-			worker.fireUnitUpdate(UnitEventType.TASK_EVENT, null);
+			worker.fireUnitUpdate(TASK_EVENT, null);
 		}
 	}
 
@@ -583,7 +584,7 @@ public abstract class TaskManager implements Serializable {
 		currentScore = null;
 		
 		// Send out the task event
-		worker.fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
+		worker.fireUnitUpdate(TASK_EVENT, newTask);
 	}
 	
 	/**

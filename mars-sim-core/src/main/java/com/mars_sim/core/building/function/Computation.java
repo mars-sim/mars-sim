@@ -9,7 +9,7 @@ package com.mars_sim.core.building.function;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
@@ -394,7 +394,7 @@ public class Computation extends Function {
 		double cu = Math.round(value * 100_000.0) / 100_000.0;
 		if (freeCU != cu) {
 			freeCU = cu;
-			building.getSettlement().fireUnitUpdate(UnitEventType.CONSUMING_COMPUTING_EVENT);
+			building.getSettlement().fireUnitUpdate(EntityEventType.CONSUMING_COMPUTING_EVENT);
 		}
 	}
 	

@@ -9,7 +9,7 @@ package com.mars_sim.core.vehicle;
 import java.util.Collection;
 import java.util.Set;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
@@ -161,7 +161,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 		if (occupants.size() == 0 && robotOccupants.size() == 0) {
 			person.setLocationStateType(LocationStateType.INSIDE_VEHICLE);
 			// Fire the unit event type
-			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, person);
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, person);
 			return true;
 		}
 		return false;
@@ -175,7 +175,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 */
 	public boolean removePerson(Person person) {
 		if (isCrewmember(person)) {
-			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, person);
+			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, person);
 			return occupants.remove(person);
 		}
 		return false;
@@ -189,7 +189,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 */
 	public boolean addRobot(Robot robot) {
 		if (occupants.size() == 0 && robotOccupants.size() == 0) {
-			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, robot);
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, robot);
 			return robotOccupants.add(robot);
 		}
 		
@@ -204,7 +204,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 	 */
 	public boolean removeRobot(Robot robot) {
 		if (isRobotCrewmember(robot)) {
-			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, robot);
+			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, robot);
 			return robotOccupants.remove(robot);
 		}
 		return false;

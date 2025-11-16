@@ -6,23 +6,29 @@
  */
 package com.mars_sim.core.person.ai.job.util;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JobTypeTest extends TestCase  {
+import org.junit.jupiter.api.Test;
 
-    public void testDoctorGroups() {
+public class JobTypeTest {
+
+    @Test
+    void testDoctorGroups() {
         testGroups(JobType.DOCTOR, true, true, true, false, false, false);
     }
 
-    public void testEngineerGroups() {
+    @Test
+    void testEngineerGroups() {
         testGroups(JobType.ENGINEER, false, false, true, false, true, true);
     }
 
-    public void testBiologistGroups() {
+    @Test
+    void testBiologistGroups() {
         testGroups(JobType.ASTROBIOLOGIST, false, true, true, true, false, false);
     }
 
-    public void testMathGroups() {
+    @Test
+    void testMathGroups() {
         testGroups(JobType.MATHEMATICIAN, false, false, true, false, false, false);
     }
 
@@ -30,11 +36,11 @@ public class JobTypeTest extends TestCase  {
                             boolean isAcademic, boolean isScientist,
                             boolean isLoader, boolean isMechanic) {
 
-        assertEquals(assignee + " is medic", isMedic, JobType.MEDICS.contains(assignee));
-        assertEquals(assignee + " is intellectuals", isIntellectual, JobType.INTELLECTUALS.contains(assignee));
-        assertEquals(assignee + " is academic", isAcademic, JobType.ACADEMICS.contains(assignee));
-        assertEquals(assignee + " is scientist", isScientist, JobType.SCIENTISTS.contains(assignee));
-        assertEquals(assignee + " is loader", isLoader, JobType.LOADERS.contains(assignee));
-        assertEquals(assignee + " is mechanics", isMechanic, JobType.MECHANICS.contains(assignee));
+        assertEquals(isMedic, JobType.MEDICS.contains(assignee), assignee + " is medic");
+        assertEquals(isIntellectual, JobType.INTELLECTUALS.contains(assignee), assignee + " is intellectuals");
+        assertEquals(isAcademic, JobType.ACADEMICS.contains(assignee), assignee + " is academic");
+        assertEquals(isScientist, JobType.SCIENTISTS.contains(assignee), assignee + " is scientist");
+        assertEquals(isLoader, JobType.LOADERS.contains(assignee), assignee + " is loader");
+        assertEquals(isMechanic, JobType.MECHANICS.contains(assignee), assignee + " is mechanics");
     }
 }

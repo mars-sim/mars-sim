@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -133,8 +133,8 @@ public class ConstructionSite extends FixedUnit {
         this.unstarted = false;
         this.activeWork = activeWork;
 
-        UnitEventType eventType = ((activeWork != null)  ? UnitEventType.START_CONSTRUCTION_SITE_EVENT
-                                        : UnitEventType.END_CONSTRUCTION_SITE_EVENT);
+        String eventType = ((activeWork != null)  ? EntityEventType.START_CONSTRUCTION_SITE_EVENT
+                                        : EntityEventType.END_CONSTRUCTION_SITE_EVENT);
         fireUnitUpdate(eventType);
     }
 
@@ -184,7 +184,7 @@ public class ConstructionSite extends FixedUnit {
         logger.info(this, "Advanced to next phase '" + nextPhase.stageInfo().getName() + "' "
                 + (isConstruction ? "construction" : "salvage"));
 
-        fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
+        fireUnitUpdate(EntityEventType.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
         return phases.isEmpty();
     }
 
@@ -215,7 +215,7 @@ public class ConstructionSite extends FixedUnit {
         manager.addBuilding(newBuilding, true);
 
         // Fire construction event.
-        fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
+        fireUnitUpdate(EntityEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 
         return newBuilding;
     }

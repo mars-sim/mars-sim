@@ -1,9 +1,10 @@
 package com.mars_sim.core.tool;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,18 +27,17 @@ class ResourceCacheTest {
             var extracted = cache.extractContent(TEST_RESOURCE, DEST_NAME);
             long origTime = extracted.lastModified();
 
-            assertNotNull("File extracted", extracted);
-            assertEquals("Name of file", DEST_NAME, extracted.getName());
+            assertNotNull(extracted);
+            assertEquals(DEST_NAME, extracted.getName(), "Name of file");
 
             // Check contents
             String extractedChecksum = Hash.MD5.getChecksumString(extracted);
             String resourceChecksum = Hash.MD5.getChecksumString(getClass().getResourceAsStream(TEST_RESOURCE));
-            assertEquals("Contents match", resourceChecksum, extractedChecksum);
+            assertEquals(resourceChecksum, extractedChecksum, "Contents match");
 
             // Extract against
             var extracted2 = cache.extractContent(TEST_RESOURCE, DEST_NAME);
-            assertEquals("Files not changed", origTime,
-                                                        extracted2.lastModified());
+            assertEquals(origTime, extracted2.lastModified(), "Files not changed");
         }
         finally {
             // Clean up
@@ -64,13 +64,12 @@ class ResourceCacheTest {
             var cache = new ResourceCache(output, true);
             var extracted = cache.extractContent(TEST_RESOURCE, DEST_NAME);
 
-            assertNotEquals("File size changed", origSize, extracted.length());
-            assertNotEquals("File reextracted over change", origTime,
-                                                        extracted.lastModified());
+            assertNotEquals(origSize, extracted.length(), "File size changed");
+            assertNotEquals(origTime, extracted.lastModified(), "File reextracted over change");
 
             // Check the present of a backup
             File backupCopy = new File(output, ResourceCache.BACKUP_DIR + "/" + DEST_NAME);
-            assertTrue("Backup file exists", backupCopy.isFile());
+            assertTrue(backupCopy.isFile(), "Backup file exists");
         }
         finally {
             // Clean up
@@ -91,8 +90,8 @@ class ResourceCacheTest {
             // Extract to file again with a new ResourceCace
             var cache2 = new ResourceCache(output, true);
             var extracted2 = cache2.extractContent(TEST_RESOURCE, DEST_NAME);
-            assertEquals("File size not changed", origSize, extracted2.length());
-            assertEquals("File unchanged", origTime, extracted2.lastModified());
+            assertEquals(origSize, extracted2.length(), "File size not changed");
+            assertEquals(origTime, extracted2.lastModified(), "File unchanged");
         }
         finally {
             // Clean up
@@ -123,8 +122,8 @@ class ResourceCacheTest {
             var extracted = cache.extractContent(TEST_RESOURCE, DEST_NAME);
 
             // Extract files should match the original as itis excluded
-            assertEquals("File size", origSize, extracted.length());
-            assertEquals("File change", origTime, extracted.lastModified());
+            assertEquals(origSize, extracted.length(), "File size");
+            assertEquals(origTime, extracted.lastModified(), "File change");
 
 
         }

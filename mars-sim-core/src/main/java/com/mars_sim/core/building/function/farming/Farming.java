@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
@@ -131,6 +130,9 @@ public class Farming extends Function {
 	/** Keep track of cleaning and inspections. */
 	private HouseKeeping houseKeeping;
 
+	// For Farming
+	public static final String CROP_EVENT = "crop event";
+
 	/**
 	 * Constructor.
 	 *
@@ -174,7 +176,7 @@ public class Farming extends Function {
 				if (crop != null) {
 					cropList.add(crop);
 					cropHistory.put(crop.getIdentifier(), cropSpec.getName());
-					building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+					building.fireUnitUpdate(Farming.CROP_EVENT, crop);
 					alreadyPlanted.merge(cropSpec, 1, Integer::sum);
 				}
 			}
@@ -897,7 +899,7 @@ public class Farming extends Function {
 		if (crop != null) {
 			cropList.add(crop);
 			cropHistory.put(crop.getIdentifier(), crop.getName());
-			building.fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
+			building.fireUnitUpdate(CROP_EVENT, crop);
 	
 			numCrops2Plant--;
 		}

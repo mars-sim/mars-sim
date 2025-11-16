@@ -11,11 +11,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.equipment.ResourceHolder;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -289,43 +290,44 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getSource() instanceof Settlement settlement) {
-			UnitEventType eventType = event.getType();
+			String eventType = event.getType();
 			Object target = event.getTarget();
 
 			int columnNum = -1;
-			switch (eventType) {
-				case NAME_EVENT: columnNum = NAME; break;
-				case INVENTORY_STORING_UNIT_EVENT:
-				case INVENTORY_RETRIEVING_UNIT_EVENT: {
-					if (target instanceof Person) columnNum = POPULATION;
-					else if (target instanceof Vehicle) columnNum = PARKED;
-				} break;
-				case CONSUMING_COMPUTING_EVENT: columnNum = COMPUTING_UNIT; break;
-				case GENERATED_POWER_EVENT: columnNum = POWER_GEN; break;
-				case REQUIRED_POWER_EVENT: columnNum = POWER_LOAD; break;
-				case STORED_ENERGY_EVENT: columnNum = ENERGY_STORED; break;		
-				case MALFUNCTION_EVENT: columnNum = MALFUNCTION; break;
-				case INVENTORY_RESOURCE_EVENT: {
-					// Resource change
-					int resourceID = -1;
-					if (target instanceof AmountResource ar) {
-						resourceID = ar.getID();
-					}
-					else if (target instanceof Integer i) {
-						// Note: most likely, the source is an integer id
-						resourceID = i;
-					}
-					else {
-						return;
-					}
-	
-					if (RESOURCE_TO_COL.containsKey(resourceID)) 
-						columnNum = RESOURCE_TO_COL.get(resourceID);
-				} break;
-	
-				default:
+			if (EntityEventType.NAME_EVENT.equals(eventType)) {
+				columnNum = NAME;
+			} else if (EntityEventType.INVENTORY_STORING_UNIT_EVENT.equals(eventType) || 
+			           EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT.equals(eventType)) {
+				if (target instanceof Person) columnNum = POPULATION;
+				else if (target instanceof Vehicle) columnNum = PARKED;
+			} else if (EntityEventType.CONSUMING_COMPUTING_EVENT.equals(eventType)) {
+				columnNum = COMPUTING_UNIT;
+			} else if (EntityEventType.GENERATED_POWER_EVENT.equals(eventType)) {
+				columnNum = POWER_GEN;
+			} else if (EntityEventType.REQUIRED_POWER_EVENT.equals(eventType)) {
+				columnNum = POWER_LOAD;
+			} else if (EntityEventType.STORED_ENERGY_EVENT.equals(eventType)) {
+				columnNum = ENERGY_STORED;
+			} else if (MalfunctionManager.MALFUNCTION_EVENT.equals(eventType)) {
+				columnNum = MALFUNCTION;
+			} else if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(eventType)) {
+				// Resource change
+				int resourceID = -1;
+				if (target instanceof AmountResource ar) {
+					resourceID = ar.getID();
+				}
+				else if (target instanceof Integer i) {
+					// Note: most likely, the source is an integer id
+					resourceID = i;
+				}
+				else {
+					return;
+				}
+
+				if (RESOURCE_TO_COL.containsKey(resourceID)) 
+					columnNum = RESOURCE_TO_COL.get(resourceID);
 			}
 	
 			if (columnNum > -1) {

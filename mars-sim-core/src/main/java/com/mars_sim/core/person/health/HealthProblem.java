@@ -8,7 +8,7 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.events.HistoricalEvent;
 
 import com.mars_sim.core.events.HistoricalEventManager;
@@ -95,7 +95,7 @@ public class HealthProblem implements Serializable {
 		state = newState;
 
 		var c = getComplaint();
-		sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, c);
+		sufferer.fireUnitUpdate(EntityEventType.ILLNESS_EVENT, c);
 		logger.fine(getSufferer(), "Problem " + c.getName() + " now " + newState);
 	}
 
