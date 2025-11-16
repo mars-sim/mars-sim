@@ -237,7 +237,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 * @param listener
 	 * @return
 	 */
-	public synchronized boolean hasUnitListener(EntityListener listener) {
+	public synchronized boolean hasEntityListener(EntityListener listener) {
 		if (listeners == null)
 			return false;
 		return listeners.contains(listener);
@@ -248,7 +248,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param newListener the listener to add.
 	 */
-	public final synchronized void addUnitListener(EntityListener newListener) {
+	public final synchronized void addEntityListener(EntityListener newListener) {
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
@@ -264,7 +264,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public final synchronized void removeUnitListener(EntityListener oldListener) {
+	public final synchronized void removeEntityListener(EntityListener oldListener) {
 		if (oldListener == null)
 			throw new IllegalArgumentException();
 

@@ -90,12 +90,12 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 		if (activate != monitorUnits) {
 			if (activate) {
 				for(Unit u : getEntities()) {
-					u.addUnitListener(this);
+					u.addEntityListener(this);
 				}
 			}
 			else {
 				for(Unit u : getEntities()) {
-					u.removeUnitListener(this);
+					u.removeEntityListener(this);
 				}
 			}
 			monitorUnits = activate;
@@ -111,7 +111,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	protected boolean addEntity(T newUnit) {
 		boolean added = super.addEntity(newUnit);
 		if (added && monitorUnits) {
-			newUnit.addUnitListener(this);
+			newUnit.addEntityListener(this);
 		}
 		return added;
 	}
@@ -124,7 +124,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	@Override
 	protected void removeEntity(T oldUnit) {
 		super.removeEntity(oldUnit);
-		oldUnit.removeUnitListener(this);
+		oldUnit.removeEntityListener(this);
 	}
 
 	/**

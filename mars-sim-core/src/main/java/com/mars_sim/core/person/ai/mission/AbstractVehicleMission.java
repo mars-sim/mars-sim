@@ -346,7 +346,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Note: may need to make everyone unboard the vehicle
 			v.setReservedForMission(false);
 			v.setMission(null);
-			v.removeUnitListener(this);
+			v.removeEntityListener(this);
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
 	}
@@ -362,7 +362,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		v.setReservedForMission(true);
-		v.addUnitListener(this);
+		v.addEntityListener(this);
 		v.setMission(this);
 		
 		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
@@ -1310,8 +1310,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Note : this is needed so that mission will re-attach itself as a vehicle
 		// listener after deserialization
 		// since listener collection is transient. - Scott
-		if (hasVehicle() && !vehicle.hasUnitListener(this)) {
-			vehicle.addUnitListener(this);
+		if (hasVehicle() && !vehicle.hasEntityListener(this)) {
+			vehicle.addEntityListener(this);
 		}
 		return true;
 	}

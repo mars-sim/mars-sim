@@ -1735,7 +1735,7 @@ public class CommanderWindow extends ToolWindow {
 			List<Settlement> settlementList = new ArrayList<>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();
 			while (i.hasNext()) {
-				i.next().addUnitListener(this);
+				i.next().addEntityListener(this);
 			}
 
 		}
@@ -1802,7 +1802,7 @@ public class CommanderWindow extends ToolWindow {
 			List<Settlement> settlementList = new ArrayList<>(settlements);
 			Iterator<Settlement> i = settlementList.iterator();
 			while (i.hasNext()) {
-				i.next().removeUnitListener(this);
+				i.next().removeEntityListener(this);
 			}
 		}
 	}
@@ -1829,7 +1829,7 @@ public class CommanderWindow extends ToolWindow {
 			Iterator<Building> i = bldgs.iterator();
 			while (i.hasNext()) {
 				Building b = i.next();
-				b.addUnitListener(this);
+				b.addEntityListener(this);
 				addElement(b);
 			}
 		}
@@ -1839,7 +1839,7 @@ public class CommanderWindow extends ToolWindow {
 			Iterator<Building> i = bldgs.iterator();
 			while (i.hasNext()) {
 				Building b = i.next();
-				b.removeUnitListener(this);
+				b.removeEntityListener(this);
 				removeElement(b);
 			}
 				
@@ -1850,7 +1850,7 @@ public class CommanderWindow extends ToolWindow {
 			Iterator<Building> ii = newBldgs.iterator();
 			while (ii.hasNext()) {
 				Building b = ii.next();
-				b.addUnitListener(this);
+				b.addEntityListener(this);
 				addElement(b);
 			}
 		}
@@ -1861,7 +1861,7 @@ public class CommanderWindow extends ToolWindow {
 		public void destroy() {
 			Iterator<Building> i = bldgs.iterator();
 			while (i.hasNext()) {
-				i.next().removeUnitListener(this);
+				i.next().removeEntityListener(this);
 			}
 		}
 
@@ -1874,7 +1874,7 @@ public class CommanderWindow extends ToolWindow {
 				Building b = (Building) target; // overwrite the dummy building object made by the constructor
 				
 				if (b.getBuildingManager().getSettlement().equals(this.settlement)) {
-					b.addUnitListener(this);
+					b.addEntityListener(this);
 					addElement(b);
 				}
 			}
@@ -1883,7 +1883,7 @@ public class CommanderWindow extends ToolWindow {
 				Building b = (Building) target; // overwrite the dummy building object made by the constructor
 
 				if (b.getBuildingManager().getSettlement().equals(this.settlement)) {
-					b.removeUnitListener(this);
+					b.removeEntityListener(this);
 					removeElement(b);
 				}
 			}

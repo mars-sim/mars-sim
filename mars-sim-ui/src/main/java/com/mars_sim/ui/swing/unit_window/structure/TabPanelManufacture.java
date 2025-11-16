@@ -227,7 +227,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 		changeProcessOptions(); // Trigger to populate 2nd drop down
 
 		// Listener for changes
-		target.addUnitListener(this);
+		target.addEntityListener(this);
 	}
 
 	/**
@@ -279,7 +279,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 
 	@Override
 	public void destroy() {
-		target.removeUnitListener(this);
+		target.removeEntityListener(this);
 		super.destroy();
 	}
 

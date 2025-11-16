@@ -180,7 +180,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		
 		crewListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
 										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-		((Unit) vehicle).addUnitListener(crewListener);
+		((Unit) vehicle).addEntityListener(crewListener);
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	public boolean setSettlementFilter(Set<Settlement> filter) {	
 
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements.forEach(s -> s.removeEntityListener(settlementListener));
 			settlementListener = null;
 		}
 
@@ -300,7 +300,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		}
 
 		// Listen to the settlements for new People
-		settlements.forEach(s -> s.addUnitListener(settlementListener));
+		settlements.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
@@ -517,7 +517,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		super.destroy();
 
 		 if (sourceType == ValidSourceType.VEHICLE_CREW) {
-			((Unit) vehicle).removeUnitListener(crewListener);
+			((Unit) vehicle).removeEntityListener(crewListener);
 			crewListener = null;
 			vehicle = null;
 		} else if (sourceType == ValidSourceType.MISSION_PEOPLE) {
@@ -525,7 +525,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			missionListener = null;
 			mission = null;
 		} else {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements.forEach(s -> s.removeEntityListener(settlementListener));
 			settlementListener = null;
 		}
 	}

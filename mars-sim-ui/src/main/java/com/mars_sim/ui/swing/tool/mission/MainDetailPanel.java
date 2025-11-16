@@ -465,11 +465,11 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 						));
 
 				if (!vehicle.equals(currentVehicle)) {
-					vehicle.addUnitListener(this);
+					vehicle.addEntityListener(this);
 					if (currentVehicle != null) {
-						currentVehicle.removeUnitListener(this);
+						currentVehicle.removeEntityListener(this);
 					}
-					vehicle.addUnitListener(this);
+					vehicle.addEntityListener(this);
 					currentVehicle = vehicle;
 				}
 			}
@@ -487,7 +487,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 						));
 				
 				if (currentVehicle != null) {
-					currentVehicle.removeUnitListener(this);
+					currentVehicle.removeEntityListener(this);
 				}
 				currentVehicle = null;
 			}
@@ -501,7 +501,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 				speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
 				distanceNextNavLabel.setText(StyleManager.DECIMAL_KM.format(0)); //$NON-NLS-1$ //$NON-NLS-2$
 				traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
-				vehicle.addUnitListener(this);
+				vehicle.addEntityListener(this);
 				currentVehicle = vehicle;
 			}
 		}
@@ -543,7 +543,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		missionCache = null;
 		
 		if (currentVehicle != null)
-			currentVehicle.removeUnitListener(this);
+			currentVehicle.removeEntityListener(this);
 		currentVehicle = null;
 
 		clearObjectives();
@@ -698,13 +698,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 				if (vehicle != null) {
 					vehicleStatusLabel.setText(vehicle.printStatusTypes());
 					speedLabel.setText(StyleManager.DECIMAL_KPH.format(vehicle.getSpeed())); //$NON-NLS-1$
-					vehicle.addUnitListener(panel);
+					vehicle.addEntityListener(panel);
 					currentVehicle = vehicle;
 				} else {
 					vehicleStatusLabel.setText("Not Applicable");
 					speedLabel.setText(StyleManager.DECIMAL_KPH.format(0)); //$NON-NLS-1$
 					if (currentVehicle != null)
-						currentVehicle.removeUnitListener(panel);
+						currentVehicle.removeEntityListener(panel);
 					currentVehicle = null;
 				}
 			}
@@ -1038,12 +1038,12 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 				// Existing members, not in the new list then remove listener
 				occupantList.stream()
 						.filter(m -> !fixedList.contains(m))
-						.forEach(mm -> mm.removeUnitListener(this));
+						.forEach(mm -> mm.removeEntityListener(this));
 
 				// New members, not in the existing list then add listener
 				newList.stream()
 						.filter(m -> !occupantList.contains(m))
-						.forEach(mm -> mm.addUnitListener(this));
+						.forEach(mm -> mm.addEntityListener(this));
 
 				// Replace the old member list with new one.
 				occupantList = newList;

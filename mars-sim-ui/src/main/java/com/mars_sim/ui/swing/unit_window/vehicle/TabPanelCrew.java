@@ -360,12 +360,12 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				// Existing members, not in the new list then remove listener
 				occupantList.stream()
 						.filter(m -> !fixedList.contains(m))
-						.forEach(mm -> mm.removeUnitListener(this));
+						.forEach(mm -> mm.removeEntityListener(this));
 
 				// New members, not in the existing list then add listener
 				newList.stream()
 						.filter(m -> !occupantList.contains(m))
-						.forEach(mm -> mm.addUnitListener(this));
+						.forEach(mm -> mm.addEntityListener(this));
 
 				// Replace the old member list with new one.
 				occupantList = newList;
@@ -379,7 +379,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * Clears all members from the table.
 		 */
 		private void clearMembers() {
-			occupantList.forEach(m -> m.removeUnitListener(this));
+			occupantList.forEach(m -> m.removeEntityListener(this));
 			occupantList.clear();
 		}
 

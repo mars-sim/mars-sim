@@ -65,18 +65,18 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, Mobil
 	public Settlement getAssociatedSettlement();
 	
 	/**
-	 * Adds a unit listener.
+	 * Adds an entity listener.
 	 *
 	 * @param newListener the listener to add.
 	 */
-	public void addUnitListener(EntityListener newListener);
+	public void addEntityListener(EntityListener newListener);
 
 	/**
-	 * Removes a unit listener.
+	 * Removes an entity listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public void removeUnitListener(EntityListener oldListener);
+	public void removeEntityListener(EntityListener oldListener);
 
 	/**
 	 * What is the Mission this Worker is performing.

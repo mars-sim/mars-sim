@@ -324,11 +324,11 @@ public class MainDesktopPane extends JDesktopPane
 //		  
 //		Iterator<Settlement> i = settlements.iterator(); 
 //		while (i.hasNext()) {
-//			i.next().removeUnitListener(this);
+//			i.next().removeEntityListener(this);
 //		} 
 //		Iterator<Settlement> j = settlements.iterator(); 
 //		while (j.hasNext()) {
-//			j.next().addUnitListener(this);
+//			j.next().addEntityListener(this);
 //		}}
 		 
 		Object unit = event.getUnit();
@@ -339,7 +339,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
 
-				settlement.addUnitListener(this);
+				settlement.addEntityListener(this);
 
 				if (mainScene != null) {
 					mainScene.changeSBox();
@@ -347,7 +347,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			} else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
 
-				settlement.removeUnitListener(this);
+				settlement.removeEntityListener(this);
 
 				if (mainScene != null) {
 					mainScene.changeSBox();
@@ -375,10 +375,10 @@ public class MainDesktopPane extends JDesktopPane
 		Settlement settlement = settlementList.get(0);
 		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
 		building = buildings.get(0);
-		// building.addUnitListener(this); // not working
+		// building.addEntityListener(this); // not working
 		Iterator<Settlement> i = settlementList.iterator();
 		while (i.hasNext()) {
-			i.next().addUnitListener(this);
+			i.next().addEntityListener(this);
 		}
 
 		// logger.config("MainDesktopPane's prepareListeners() is done");

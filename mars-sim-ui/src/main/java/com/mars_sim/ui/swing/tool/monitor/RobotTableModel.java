@@ -155,7 +155,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		
 		crewListener = new RobotChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
 										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-		((Unit) vehicle).addUnitListener(crewListener);
+		((Unit) vehicle).addEntityListener(crewListener);
 	}
 
 	/**
@@ -210,7 +210,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements.forEach(s -> s.removeEntityListener(settlementListener));
 		}
 		
 		this.settlements = filter;
@@ -244,7 +244,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			resetEntities(entities);
 		}
 		// Listen to the settlements for new robots
-		settlements.forEach(s -> s.addUnitListener(settlementListener));
+		settlements.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
@@ -393,7 +393,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		super.destroy();
 
 		if (sourceType == ValidSourceType.VEHICLE_ROBOTS) {
-			((Unit) vehicle).removeUnitListener(crewListener);
+			((Unit) vehicle).removeEntityListener(crewListener);
 			crewListener = null;
 			vehicle = null;
 		} else if (sourceType == ValidSourceType.MISSION_ROBOTS) {
@@ -401,7 +401,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			missionListener = null;
 			mission = null;
 		} else {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements.forEach(s -> s.removeEntityListener(settlementListener));
 			settlements = null;
 		}
 	}	

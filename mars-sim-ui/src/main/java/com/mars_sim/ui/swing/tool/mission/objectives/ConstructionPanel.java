@@ -107,7 +107,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         // Update remaining construction materials table.
         materialsTableModel.updateTable();
 
-        site.addUnitListener(this);    
+        site.addEntityListener(this);    
         
         updateProgressBar();
     }
@@ -271,6 +271,6 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
      */
     @Override
     public void unregister() {
-        objective.getSite().addUnitListener(this);    
+        objective.getSite().addEntityListener(this);    
     }
 }

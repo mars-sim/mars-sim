@@ -113,10 +113,10 @@ public class BacklogTableModel extends AbstractMonitorModel
     public void setMonitorEntites(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
-				selectedSettlements.forEach(s -> s.addUnitListener(this));
+				selectedSettlements.forEach(s -> s.addEntityListener(this));
 			}
 			else {
-				selectedSettlements.forEach(s -> s.removeUnitListener(this));
+				selectedSettlements.forEach(s -> s.removeEntityListener(this));
 			}
 			monitorSettlement = activate;
 		}
@@ -128,7 +128,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	@Override
 	public void destroy() {
 		// Remove as listener for all settlements.
-		selectedSettlements.forEach(s -> s.removeUnitListener(this));
+		selectedSettlements.forEach(s -> s.removeEntityListener(this));
 
 		super.destroy();
 	}
@@ -140,7 +140,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	@Override
     public boolean setSettlementFilter(Set<Settlement> filter) {
-		selectedSettlements.forEach(s -> s.removeUnitListener(this));
+		selectedSettlements.forEach(s -> s.removeEntityListener(this));
 
 		// Initialize settlements.
 		selectedSettlements = filter;	
@@ -151,7 +151,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 			
 		// Add table as listener to each settlement.
 		if (monitorSettlement) {
-			selectedSettlements.forEach(s -> s.addUnitListener(this));
+			selectedSettlements.forEach(s -> s.addEntityListener(this));
 		}
 
 		return true;

@@ -95,7 +95,7 @@ public class UnitDialog {
 	 * Removes the listener for a worker.
 	 */
 	public void removeListener(Worker w) {
-		w.removeUnitListener(listener);
+		w.removeEntityListener(listener);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class UnitDialog {
 	 */
 	public void addListener(Worker w) {
 		listener = new WorkerListener();
-		w.addUnitListener(listener);
+		w.addEntityListener(listener);
 	}
 	
 	/**

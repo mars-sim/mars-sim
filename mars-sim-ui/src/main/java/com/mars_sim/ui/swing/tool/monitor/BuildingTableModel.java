@@ -132,7 +132,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-		getEntities().forEach(s -> s.removeUnitListener(this));
+		getEntities().forEach(s -> s.removeEntityListener(this));
 
 		var newBuildings = filter.stream()
 				.flatMap(s -> s.getBuildingManager().getBuildingSet().stream())
@@ -141,7 +141,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	
 		resetEntities(newBuildings);
 
-		newBuildings.forEach(s -> s.addUnitListener(this));
+		newBuildings.forEach(s -> s.addEntityListener(this));
 
 		return true;
 	}
@@ -356,7 +356,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	
 	@Override
 	public void destroy() {
-		getEntities().forEach(s -> s.removeUnitListener(this));
+		getEntities().forEach(s -> s.removeEntityListener(this));
 		super.destroy();
 	}
 	

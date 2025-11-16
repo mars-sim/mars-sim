@@ -1109,14 +1109,14 @@ public class MultiplayerClient implements EntityListener, HistoricalEventListene
 		// Add addUnitListener()
 		Collection<Settlement> settlements = unitManager.getSettlements();
 		//List<Settlement> settlementList = new ArrayList<Settlement>(settlements);
-		//settlementList.get(0).addUnitListener(this);
+		//settlementList.get(0).addEntityListener(this);
 
 		// Iterator<Settlement> i = settlementList.iterator();
 		// while (i.hasNext()) {
-		// i.next().addUnitListener(this);
+		// i.next().addEntityListener(this);
 		// }
 		settlements.forEach(s -> {
-			s.addUnitListener(this);
+			s.addEntityListener(this);
 		} );
 	}
 
@@ -1191,11 +1191,11 @@ public class MultiplayerClient implements EntityListener, HistoricalEventListene
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
 				//System.out.println("MultiplayerClient : " + settlement.getName() + " just added");
 				sendNewInSimulation(settlement);
-				settlement.addUnitListener(this);
+				settlement.addEntityListener(this);
 			} else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
 				//System.out.println("MultiplayerClient : " + settlement.getName() + " just deleted");
 				removeOld(settlement);
-				settlement.removeUnitListener(this);
+				settlement.removeEntityListener(this);
 			}
 		}
 	}

@@ -351,7 +351,7 @@ public class TabPanelOrganization extends TabPanel {
 	 * Removes the listener for a person.
 	 */
 	private void removeListener(Person p) {
-		p.removeUnitListener(listeners.get(p));
+		p.removeEntityListener(listeners.get(p));
 
 		listeners.remove(p);
 	}
@@ -361,7 +361,7 @@ public class TabPanelOrganization extends TabPanel {
 	 */
 	private void addListener(Person p) {
 		PersonListener pl = new PersonListener();
-		p.addUnitListener(pl);
+		p.addEntityListener(pl);
 		listeners.put(p, pl);
 	}
 	/**
