@@ -7,9 +7,9 @@
 
 package com.mars_sim.core.person.ai.task.util;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitIdentifer;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
@@ -65,18 +65,18 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, Mobil
 	public Settlement getAssociatedSettlement();
 	
 	/**
-	 * Adds a unit listener.
+	 * Adds an entity listener.
 	 *
 	 * @param newListener the listener to add.
 	 */
-	public void addUnitListener(UnitListener newListener);
+	public void addEntityListener(EntityListener newListener);
 
 	/**
-	 * Removes a unit listener.
+	 * Removes an entity listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public void removeUnitListener(UnitListener oldListener);
+	public void removeEntityListener(EntityListener oldListener);
 
 	/**
 	 * What is the Mission this Worker is performing.
@@ -145,5 +145,5 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, Mobil
 	 * @param updateType the update type.
 	 * @param target     the event target object or null if none.
 	 */
-	public void fireUnitUpdate(UnitEventType updateType, Object target);
+	public void fireUnitUpdate(String updateType, Object target);
 }

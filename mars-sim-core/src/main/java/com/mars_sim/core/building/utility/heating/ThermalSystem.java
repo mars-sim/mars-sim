@@ -9,7 +9,7 @@ package com.mars_sim.core.building.utility.heating;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.BuildingManager;
@@ -185,7 +185,7 @@ implements Serializable, Temporal {
 		totalHeatReqCache = heatRequired;
 		totalPowerGenCache = powerGen;
 		
-//		settlement.fireUnitUpdate(UnitEventType.GENERATED_HEAT_EVENT);
+//		settlement.fireUnitUpdate(EntityEventType.GENERATED_HEAT_EVENT);
 	}
 
 	/**
@@ -199,7 +199,7 @@ implements Serializable, Temporal {
 
 		if (newHeatValue != heatValue) {
 			heatValue = newHeatValue;
-			settlement.fireUnitUpdate(UnitEventType.HEAT_VALUE_EVENT);
+			settlement.fireUnitUpdate(EntityEventType.HEAT_VALUE_EVENT);
 		}
 	}
 

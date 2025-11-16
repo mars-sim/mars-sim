@@ -18,7 +18,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.config.BuildingSpec;
@@ -750,7 +750,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void setPowerMode(PowerMode powerMode) {
 		if (powerModeCache != powerMode) {
 			powerModeCache = powerMode;
-			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT, this);
+			fireUnitUpdate(EntityEventType.POWER_MODE_EVENT, this);
 		}
 	}
 
@@ -1409,7 +1409,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 		
 		eventManager.registerNewEvent(hEvent);
 
-		fireUnitUpdate(UnitEventType.METEORITE_EVENT);
+		fireUnitUpdate(EntityEventType.METEORITE_EVENT);
 	}
 	
 	/**

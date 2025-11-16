@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
@@ -91,7 +91,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setPowerMode(PowerMode newPowerMode) {
 		if (powerMode != newPowerMode) {
 			powerMode = newPowerMode;
-			settlement.fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
+			settlement.fireUnitUpdate(EntityEventType.POWER_MODE_EVENT);
 		}
 	}
 
@@ -113,7 +113,7 @@ public class PowerGrid implements Serializable, Temporal {
 		double p = Math.round(newGeneratedPower*1000.0)/1000.0;
 		if (powerGenerated != p) {
 			powerGenerated = p;
-			settlement.fireUnitUpdate(UnitEventType.GENERATED_POWER_EVENT);
+			settlement.fireUnitUpdate(EntityEventType.GENERATED_POWER_EVENT);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setStoredEnergy(double newEnergyStored) {
 		if (totalEnergyStored != newEnergyStored) {
 			totalEnergyStored = newEnergyStored;
-			settlement.fireUnitUpdate(UnitEventType.STORED_ENERGY_EVENT);
+			settlement.fireUnitUpdate(EntityEventType.STORED_ENERGY_EVENT);
 		}
 	}
 
@@ -176,7 +176,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setStoredEnergyCapacity(double newCap) {
 		if (energyStorageCapacity != newCap) {
 			energyStorageCapacity = newCap;
-			settlement.fireUnitUpdate(UnitEventType.STORED_ENERGY_CAPACITY_EVENT);
+			settlement.fireUnitUpdate(EntityEventType.STORED_ENERGY_CAPACITY_EVENT);
 		}
 	} 
 
@@ -197,7 +197,7 @@ public class PowerGrid implements Serializable, Temporal {
 	private void setRequiredPower(double newRequiredPower) {
 		if (powerRequired != newRequiredPower) {
 			powerRequired = newRequiredPower;
-			settlement.fireUnitUpdate(UnitEventType.REQUIRED_POWER_EVENT);
+			settlement.fireUnitUpdate(EntityEventType.REQUIRED_POWER_EVENT);
 		}
 	}
 
@@ -1031,7 +1031,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		if (newPowerValue != powerValue) {
 			powerValue = newPowerValue;
-			settlement.fireUnitUpdate(UnitEventType.POWER_VALUE_EVENT);
+			settlement.fireUnitUpdate(EntityEventType.POWER_VALUE_EVENT);
 		}
 	}
 

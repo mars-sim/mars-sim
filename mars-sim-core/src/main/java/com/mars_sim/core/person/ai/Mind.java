@@ -8,7 +8,7 @@ package com.mars_sim.core.person.ai;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.AssignmentHistory;
@@ -355,7 +355,7 @@ public class Mind implements Serializable, Temporal {
 				jobType = newJob;
 				jh.saveJob(newJob, assignedBy, status, approvedBy);
 
-				person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
+				person.fireUnitUpdate(EntityEventType.JOB_EVENT, newJob);
 
 				// Note: the new job will be Locked in until the beginning of the next day
 				jobLock = true;
@@ -417,7 +417,7 @@ public class Mind implements Serializable, Temporal {
 				newMission.addMember(person);
 			}
 
-			person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
+			person.fireUnitUpdate(EntityEventType.MISSION_EVENT, newMission);
 		}
 	}
 

@@ -29,15 +29,15 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerEventType;
 import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -351,7 +351,7 @@ public class TabPanelOrganization extends TabPanel {
 	 * Removes the listener for a person.
 	 */
 	private void removeListener(Person p) {
-		p.removeUnitListener(listeners.get(p));
+		p.removeEntityListener(listeners.get(p));
 
 		listeners.remove(p);
 	}
@@ -361,21 +361,22 @@ public class TabPanelOrganization extends TabPanel {
 	 */
 	private void addListener(Person p) {
 		PersonListener pl = new PersonListener();
-		p.addUnitListener(pl);
+		p.addEntityListener(pl);
 		listeners.put(p, pl);
 	}
 	/**
 	 * PersonListener class listens to the change of each settler in a settlement.
 	 */
-	private class PersonListener implements UnitListener {
+	private class PersonListener implements EntityListener {
 
 		/**
 		 * Catch unit update event.
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
-			if (event.getType() == UnitEventType.ROLE_EVENT
+		@Override
+		public void entityUpdate(EntityEvent event) {
+			if (event.getType().equals(Role.ROLE_EVENT)
 					&& event.getSource() instanceof Person p
 					&& settlement.equals(p.getAssociatedSettlement())) {
 				emptyNodes();

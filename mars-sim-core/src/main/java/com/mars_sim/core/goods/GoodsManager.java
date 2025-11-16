@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
@@ -324,14 +324,14 @@ public class GoodsManager implements Serializable {
 		double localCost = g.computeAdjustedCost();
 		double localPrice = g.calculatePrice(settlement, localValue);
 
-		settlement.fireUnitUpdate(UnitEventType.COST_EVENT, g);
-		settlement.fireUnitUpdate(UnitEventType.PRICE_EVENT, g);
+		settlement.fireUnitUpdate(EntityEventType.COST_EVENT, g);
+		settlement.fireUnitUpdate(EntityEventType.PRICE_EVENT, g);
 		
 		mv.updateCost(localCost);
 		mv.updatePrice(localPrice);
 		
-		settlement.fireUnitUpdate(UnitEventType.MARKET_COST_EVENT, g);
-		settlement.fireUnitUpdate(UnitEventType.MARKET_PRICE_EVENT, g);
+		settlement.fireUnitUpdate(EntityEventType.MARKET_COST_EVENT, g);
+		settlement.fireUnitUpdate(EntityEventType.MARKET_PRICE_EVENT, g);
 	}
 	
 	/**
@@ -405,7 +405,7 @@ public class GoodsManager implements Serializable {
 		// Adjust the market demand
 		// Note: Changing data on another thread may not work well
 		double marketDemand = getMarketData(good).updateDemand(demand);
-		settlement.fireUnitUpdate(UnitEventType.MARKET_DEMAND_EVENT, good);				
+		settlement.fireUnitUpdate(EntityEventType.MARKET_DEMAND_EVENT, good);				
 		return marketDemand;
 	}
 	
@@ -420,7 +420,7 @@ public class GoodsManager implements Serializable {
 		// Adjust the market vp 
 		// Note: Changing data on another thread may not work well
 		double marketVP = getMarketData(good).updateGoodValue(vp);
-		settlement.fireUnitUpdate(UnitEventType.MARKET_VALUE_EVENT, good);				
+		settlement.fireUnitUpdate(EntityEventType.MARKET_VALUE_EVENT, good);				
 		return marketVP;
 	}
 	
@@ -723,7 +723,7 @@ public class GoodsManager implements Serializable {
 	public void setProjectedDemandScore(Good good, double newScore) {
 		double clippedValue = MathUtils.between(newScore, MIN_DEMAND, MAX_DEMAND);
 		projectedDemandCache.put(good.getID(), clippedValue);
-		settlement.fireUnitUpdate(UnitEventType.PROJECTED_DEMAND_EVENT, good);
+		settlement.fireUnitUpdate(EntityEventType.PROJECTED_DEMAND_EVENT, good);
 	}
 	
 	/**
@@ -745,7 +745,7 @@ public class GoodsManager implements Serializable {
 	public void setTradeDemandScore(Good good, double newScore) {
 		double clippedValue = MathUtils.between(newScore, 0, MAX_DEMAND);
 		tradeDemandCache.put(good.getID(), clippedValue);
-		settlement.fireUnitUpdate(UnitEventType.TRADE_DEMAND_EVENT, good);
+		settlement.fireUnitUpdate(EntityEventType.TRADE_DEMAND_EVENT, good);
 	}
 	
 	/**
@@ -757,7 +757,7 @@ public class GoodsManager implements Serializable {
 	public void setDemandScore(Good good, double newScore) {
 		double clippedValue = MathUtils.between(newScore, MIN_DEMAND, MAX_DEMAND);
 		demandCache.put(good.getID(), clippedValue);
-		settlement.fireUnitUpdate(UnitEventType.DEMAND_EVENT, good);
+		settlement.fireUnitUpdate(EntityEventType.DEMAND_EVENT, good);
 	}
 
 	/**
@@ -769,7 +769,7 @@ public class GoodsManager implements Serializable {
 	public void setGoodValue(Good good, double newValue) {
 		double clippedValue = MathUtils.between(newValue, MIN_VP, MAX_VP);
 		goodsValues.put(good.getID(), clippedValue);
-		settlement.fireUnitUpdate(UnitEventType.VALUE_EVENT, good);
+		settlement.fireUnitUpdate(EntityEventType.VALUE_EVENT, good);
 	}
 	
 	/**
@@ -780,7 +780,7 @@ public class GoodsManager implements Serializable {
 	 */
 	void setSupplyScore(Good good, double newScore) {
 		setSupplyScore(good.getID(), newScore);
-		settlement.fireUnitUpdate(UnitEventType.SUPPLY_EVENT, good);
+		settlement.fireUnitUpdate(EntityEventType.SUPPLY_EVENT, good);
 	}
 
 	/**

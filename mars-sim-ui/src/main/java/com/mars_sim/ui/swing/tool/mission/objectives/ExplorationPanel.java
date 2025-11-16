@@ -19,9 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
@@ -35,7 +35,7 @@ import com.mars_sim.ui.swing.StyleManager;
  */
 @SuppressWarnings("serial")
 public class ExplorationPanel extends JPanel 
-	implements MissionListener, UnitListener  {
+	implements MissionListener, EntityListener  {
 
 	// Data members
 	private Map<String, ExplorationSitePanel> sitePanes;
@@ -78,8 +78,8 @@ public class ExplorationPanel extends JPanel
 	}
 
 	@Override
-	public void unitUpdate(UnitEvent event) {
-		if (UnitEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
+	public void entityUpdate(EntityEvent event) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
 			updateCollectionValueLabel();
 		}
 	}

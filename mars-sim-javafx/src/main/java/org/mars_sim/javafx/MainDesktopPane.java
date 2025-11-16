@@ -36,9 +36,9 @@ import com.mars_sim.core.Coordinates;
 import com.mars_sim.core.Msg;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerEventType;
@@ -324,11 +324,11 @@ public class MainDesktopPane extends JDesktopPane
 //		  
 //		Iterator<Settlement> i = settlements.iterator(); 
 //		while (i.hasNext()) {
-//			i.next().removeUnitListener(this);
+//			i.next().removeEntityListener(this);
 //		} 
 //		Iterator<Settlement> j = settlements.iterator(); 
 //		while (j.hasNext()) {
-//			j.next().addUnitListener(this);
+//			j.next().addEntityListener(this);
 //		}}
 		 
 		Object unit = event.getUnit();
@@ -339,7 +339,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			if (eventType == UnitManagerEventType.ADD_UNIT) { // REMOVE_UNIT;
 
-				settlement.addUnitListener(this);
+				settlement.addEntityListener(this);
 
 				if (mainScene != null) {
 					mainScene.changeSBox();
@@ -347,7 +347,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			} else if (eventType == UnitManagerEventType.REMOVE_UNIT) { // REMOVE_UNIT;
 
-				settlement.removeUnitListener(this);
+				settlement.removeEntityListener(this);
 
 				if (mainScene != null) {
 					mainScene.changeSBox();
@@ -375,10 +375,10 @@ public class MainDesktopPane extends JDesktopPane
 		Settlement settlement = settlementList.get(0);
 		List<Building> buildings = settlement.getBuildingManager().getACopyOfBuildings();
 		building = buildings.get(0);
-		// building.addUnitListener(this); // not working
+		// building.addEntityListener(this); // not working
 		Iterator<Settlement> i = settlementList.iterator();
 		while (i.hasNext()) {
-			i.next().addUnitListener(this);
+			i.next().addEntityListener(this);
 		}
 
 		// logger.config("MainDesktopPane's prepareListeners() is done");
@@ -1384,11 +1384,11 @@ public class MainDesktopPane extends JDesktopPane
 //	}
 
 	@Override // @Override needed for Main window
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
+	public void entityUpdate(EntityEvent event) {
+		String eventType = event.getType();
 
 		Object target = event.getTarget();
-		if (eventType == UnitEventType.START_TRANSPORT_WIZARD_EVENT) {
+		if (EntityEventType.START_TRANSPORT_WIZARD_EVENT.equals(eventType)) {
 
 			building = (Building) target; // overwrite the dummy building object made by the constructor
 			BuildingManager mgr = building.getBuildingManager();
@@ -1405,12 +1405,12 @@ public class MainDesktopPane extends JDesktopPane
 
 		}
 
-		else if (eventType == UnitEventType.END_TRANSPORT_WIZARD_EVENT) {
+		else if (EntityEventType.END_TRANSPORT_WIZARD_EVENT.equals(eventType)) {
 			isTransportingBuilding = false;
 			// disposeAnnouncementWindow();
 		}
 
-		else if (eventType == UnitEventType.START_CONSTRUCTION_WIZARD_EVENT) {
+		else if (EntityEventType.START_CONSTRUCTION_WIZARD_EVENT.equals(eventType)) {
 			BuildingConstructionMission mission = (BuildingConstructionMission) target;
 
 			if (!isConstructingSite) {
@@ -1426,7 +1426,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 		}
 
-		else if (eventType == UnitEventType.END_CONSTRUCTION_WIZARD_EVENT) {
+		else if (EntityEventType.END_CONSTRUCTION_WIZARD_EVENT.equals(eventType)) {
 			isConstructingSite = false;
 		}
 

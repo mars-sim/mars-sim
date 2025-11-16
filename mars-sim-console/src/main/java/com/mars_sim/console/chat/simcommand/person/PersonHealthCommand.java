@@ -18,7 +18,7 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.person.Person;
@@ -191,7 +191,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 														person.getName(), person, person.getAssociatedSettlement());
 			Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
-			person.fireUnitUpdate(UnitEventType.RADIATION_EVENT);
+			person.fireUnitUpdate(EntityEventType.RADIATION_EVENT);
 		}
 
 		if (context.getBooleanInput("Will this cause death ?")) {

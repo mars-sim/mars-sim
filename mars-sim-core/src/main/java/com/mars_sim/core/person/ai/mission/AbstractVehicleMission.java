@@ -20,9 +20,9 @@ import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
@@ -67,7 +67,7 @@ import com.mars_sim.core.vehicle.task.PilotDrone;
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
  */
-public abstract class AbstractVehicleMission extends AbstractMission implements UnitListener, VehicleMission {
+public abstract class AbstractVehicleMission extends AbstractMission implements EntityListener, VehicleMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -346,7 +346,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Note: may need to make everyone unboard the vehicle
 			v.setReservedForMission(false);
 			v.setMission(null);
-			v.removeUnitListener(this);
+			v.removeEntityListener(this);
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
 	}
@@ -362,7 +362,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		v.setReservedForMission(true);
-		v.addUnitListener(this);
+		v.addEntityListener(this);
 		v.setMission(this);
 		
 		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
@@ -1310,8 +1310,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Note : this is needed so that mission will re-attach itself as a vehicle
 		// listener after deserialization
 		// since listener collection is transient. - Scott
-		if (hasVehicle() && !vehicle.hasUnitListener(this)) {
-			vehicle.addUnitListener(this);
+		if (hasVehicle() && !vehicle.hasEntityListener(this)) {
+			vehicle.addEntityListener(this);
 		}
 		return true;
 	}
@@ -1321,11 +1321,11 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 *
 	 * @param event the unit event.
 	 */
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType type = event.getType();
-		if (type == UnitEventType.COORDINATE_EVENT) {
+	public void entityUpdate(EntityEvent event) {
+		String type = event.getType();
+		if (EntityEventType.COORDINATE_EVENT.equals(type)) {
 			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
-		} else if (type == UnitEventType.NAME_EVENT) {
+		} else if (EntityEventType.NAME_EVENT.equals(type)) {
 			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
 		}
 	}

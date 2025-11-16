@@ -27,13 +27,14 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
@@ -209,7 +210,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	/**
 	 * Table model for occupants.
 	 */
-	private class OccupantTableModel extends AbstractTableModel implements UnitListener, EntityModel {
+	private static class OccupantTableModel extends AbstractTableModel implements EntityListener, EntityModel {
 
 		private static final String NAME = Msg.getString("MainDetailPanel.column.name");
 		private static final String TASK = Msg.getString("MainDetailPanel.column.task");
@@ -360,12 +361,12 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 				// Existing members, not in the new list then remove listener
 				occupantList.stream()
 						.filter(m -> !fixedList.contains(m))
-						.forEach(mm -> mm.removeUnitListener(this));
+						.forEach(mm -> mm.removeEntityListener(this));
 
 				// New members, not in the existing list then add listener
 				newList.stream()
 						.filter(m -> !occupantList.contains(m))
-						.forEach(mm -> mm.addUnitListener(this));
+						.forEach(mm -> mm.addEntityListener(this));
 
 				// Replace the old member list with new one.
 				occupantList = newList;
@@ -379,7 +380,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * Clears all members from the table.
 		 */
 		private void clearMembers() {
-			occupantList.forEach(m -> m.removeUnitListener(this));
+			occupantList.forEach(m -> m.removeEntityListener(this));
 			occupantList.clear();
 		}
 
@@ -394,18 +395,18 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @param event the unit event.
 		 */
 		@Override
-		public void unitUpdate(UnitEvent event) {
-			UnitEventType type = event.getType();
+		public void entityUpdate(EntityEvent event) {
+			String type = event.getType();
 			Worker member = (Worker) event.getSource();
 			int rowIndex = occupantList.indexOf(member);
 
 			if (rowIndex >= 0 && rowIndex < getRowCount()) {
-				if (type == UnitEventType.NAME_EVENT) {
+				if (EntityEventType.NAME_EVENT.equals(type)) {
 		            fireTableCellUpdated(rowIndex, 0);
 				} 
-				else if ((type == UnitEventType.TASK_DESCRIPTION_EVENT) || (type == UnitEventType.TASK_EVENT)
-						|| (type == UnitEventType.TASK_ENDED_EVENT) || (type == UnitEventType.TASK_SUBTASK_EVENT)
-						|| (type == UnitEventType.TASK_NAME_EVENT)) {
+				else if (EntityEventType.TASK_DESCRIPTION_EVENT.equals(type) || TaskManager.TASK_EVENT.equals(type)
+						|| EntityEventType.TASK_ENDED_EVENT.equals(type) || EntityEventType.TASK_SUBTASK_EVENT.equals(type)
+						|| EntityEventType.TASK_NAME_EVENT.equals(type)) {
 					fireTableCellUpdated(rowIndex, 1);
 				}
 			}

@@ -7,7 +7,7 @@
 package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
@@ -127,7 +127,7 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	public void setPosition(LocalPosition position) {
 		this.localPosn = position;
-		fireUnitUpdate(UnitEventType.LOCAL_POSITION_EVENT, position);
+		fireUnitUpdate(EntityEventType.LOCAL_POSITION_EVENT, position);
 	}
 
     /**
@@ -189,7 +189,7 @@ public abstract class AbstractMobileUnit extends Unit
 	public void setCoordinates(Coordinates newLocation) {
 		if (!location.equals(newLocation)) {
 			location = newLocation;
-			fireUnitUpdate(UnitEventType.COORDINATE_EVENT, newLocation);
+			fireUnitUpdate(EntityEventType.COORDINATE_EVENT, newLocation);
 		}
 	}
 

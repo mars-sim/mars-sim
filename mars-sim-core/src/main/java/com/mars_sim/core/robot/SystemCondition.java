@@ -9,7 +9,7 @@ package com.mars_sim.core.robot;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -192,7 +192,7 @@ public class SystemCondition implements Serializable {
     void setPerformanceFactor(double newPerformance) {
         if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
             performance = newPerformance;
-			robot.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			robot.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
         }
     }
 

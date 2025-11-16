@@ -8,7 +8,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitManagerEvent;
 import com.mars_sim.core.UnitManagerListener;
@@ -21,7 +21,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  */
 @SuppressWarnings("serial")
 public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
-		implements UnitListener {
+		implements EntityListener {
 
 	/**
 	 * UnitManagerListener inner class.
@@ -90,12 +90,12 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 		if (activate != monitorUnits) {
 			if (activate) {
 				for(Unit u : getEntities()) {
-					u.addUnitListener(this);
+					u.addEntityListener(this);
 				}
 			}
 			else {
 				for(Unit u : getEntities()) {
-					u.removeUnitListener(this);
+					u.removeEntityListener(this);
 				}
 			}
 			monitorUnits = activate;
@@ -111,7 +111,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	protected boolean addEntity(T newUnit) {
 		boolean added = super.addEntity(newUnit);
 		if (added && monitorUnits) {
-			newUnit.addUnitListener(this);
+			newUnit.addEntityListener(this);
 		}
 		return added;
 	}
@@ -124,7 +124,7 @@ public abstract class UnitTableModel<T extends Unit> extends EntityTableModel<T>
 	@Override
 	protected void removeEntity(T oldUnit) {
 		super.removeEntity(oldUnit);
-		oldUnit.removeUnitListener(this);
+		oldUnit.removeEntityListener(this);
 	}
 
 	/**

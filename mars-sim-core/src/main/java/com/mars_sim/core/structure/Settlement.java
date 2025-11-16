@@ -23,7 +23,7 @@ import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.air.AirComposition;
@@ -1738,7 +1738,7 @@ public class Settlement extends Unit implements Temporal,
 		
 		if (canAdd) {
 			// Fire the unit event type
-			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, p);
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, p);
 			
 			if (JobType.TOURIST == p.getMind().getJobType()) {
 				registerTouristPool(p);
@@ -1785,7 +1785,7 @@ public class Settlement extends Unit implements Temporal,
 			return true;
 		}
 		if (indoorPeople.remove(p)) {
-			fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, p);
+			fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, p);
 			return true;
 		}
 		return false;
@@ -1868,7 +1868,7 @@ public class Settlement extends Unit implements Temporal,
 			preferences.putValue(SettlementParameters.MAX_EVA, evaCapacity);
 
 			// Fire unit update
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
+			fireUnitUpdate(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
 			
 			return true;
 		}
@@ -1903,7 +1903,7 @@ public class Settlement extends Unit implements Temporal,
 			// Update the population factor
 			popFactor = Math.max(1, Math.log(Math.sqrt(numCitizens)));
 			// Fire unit update
-			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+			fireUnitUpdate(EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
 			
 			return true;
 		}
@@ -1948,7 +1948,7 @@ public class Settlement extends Unit implements Temporal,
 			// Update the numOwnedBots
 			numOwnedBots = ownedRobots.size();
 			// Fire unit update
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
+			fireUnitUpdate(EntityEventType.ADD_ASSOCIATED_ROBOT_EVENT, this);
 
 			return true;
 		}
@@ -1967,7 +1967,7 @@ public class Settlement extends Unit implements Temporal,
 			// Update the numOwnedBots
 			numOwnedBots = ownedRobots.size();
 			// Fire unit update
-			fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
+			fireUnitUpdate(EntityEventType.REMOVE_ASSOCIATED_ROBOT_EVENT, this);
 			
 			return true;
 		}
@@ -1983,7 +1983,7 @@ public class Settlement extends Unit implements Temporal,
 		if (robotsWithin.contains(r)) {
 			return true;
 		}
-		fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, r);
+		fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, r);
 
 		return robotsWithin.add(r);
 	}
@@ -2028,7 +2028,7 @@ public class Settlement extends Unit implements Temporal,
 				// Directly update the location state type
 				vehicle.setLocationStateType(LocationStateType.INSIDE_SETTLEMENT);
 			
-			fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
+			fireUnitUpdate(EntityEventType.INVENTORY_STORING_UNIT_EVENT, vehicle);
 			
 			return true;
 		}
@@ -2045,7 +2045,7 @@ public class Settlement extends Unit implements Temporal,
 		if (!vicinityParkedVehicles.contains(vehicle))
 			return true;
 		
-		fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
+		fireUnitUpdate(EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT, vehicle);
 
 		return vicinityParkedVehicles.remove(vehicle);
 	}
@@ -2141,7 +2141,7 @@ public class Settlement extends Unit implements Temporal,
 	@Override
 	public boolean addEquipment(Equipment e) {
 		boolean success = eqmInventory.addEquipment(e);
-		fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(e.getIdentifier()));
+		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(e.getIdentifier()));
 		return success;
 	}
 
@@ -2153,7 +2153,7 @@ public class Settlement extends Unit implements Temporal,
 	@Override
 	public boolean removeEquipment(Equipment e) {
 		boolean success = eqmInventory.removeEquipment(e);
-		fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(e.getIdentifier()));
+		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(e.getIdentifier()));
 		return success;
 	}
 
@@ -2166,8 +2166,8 @@ public class Settlement extends Unit implements Temporal,
 	@Override
 	public boolean addBin(Bin bin) {
 		if (eqmInventory.addBin(bin)) {
-			fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_BIN_EVENT, this);
-			fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(bin.getID()));
+			fireUnitUpdate(EntityEventType.ADD_ASSOCIATED_BIN_EVENT, this);
+			fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(bin.getID()));
 			return true;
 		}
 		return false;
@@ -2447,18 +2447,18 @@ public class Settlement extends Unit implements Temporal,
 		exposed = newExposed;
 		
 		if (exposed.isBaselineEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.BASELINE_EVENT.toString() + IMMINENT);
-			this.fireUnitUpdate(UnitEventType.BASELINE_EVENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.BASELINE_EVENT.toString() + IMMINENT);
+			this.fireUnitUpdate(EntityEventType.BASELINE_EVENT);
 		}
 
 		if (exposed.isGCREvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.GCR_EVENT.toString() + IMMINENT);
-			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.GCR_EVENT.toString() + IMMINENT);
+			this.fireUnitUpdate(EntityEventType.GCR_EVENT);
 		}
 
 		if (exposed.isSEPEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.SEP_EVENT.toString() + IMMINENT);
-			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.SEP_EVENT.toString() + IMMINENT);
+			this.fireUnitUpdate(EntityEventType.SEP_EVENT);
 		}
 	}
 
@@ -3139,7 +3139,7 @@ public class Settlement extends Unit implements Temporal,
 	@Override
 	public int storeItemResource(int resource, int quantity) {
 		int num = eqmInventory.storeItemResource(resource, quantity);
-		fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(resource));
+		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
 		return num;
 	}
 
@@ -3153,7 +3153,7 @@ public class Settlement extends Unit implements Temporal,
 	@Override
 	public int retrieveItemResource(int resource, int quantity) {
 		int num = eqmInventory.retrieveItemResource(resource, quantity);
-		fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(resource));
+		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
 		return num;
 	}
 
@@ -3178,7 +3178,7 @@ public class Settlement extends Unit implements Temporal,
 	@Override
 	public double storeAmountResource(int resource, double quantity) {
 		double amt = eqmInventory.storeAmountResource(resource, quantity);
-		fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(resource));
+		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
 		return amt;
 	}
 
@@ -3192,7 +3192,7 @@ public class Settlement extends Unit implements Temporal,
 	@Override
 	public double retrieveAmountResource(int resource, double quantity) {
 		double amt = eqmInventory.retrieveAmountResource(resource, quantity);
-		fireUnitUpdate(UnitEventType.MASS_EVENT, GoodsUtil.getGood(resource));
+		fireUnitUpdate(EntityEventType.MASS_EVENT, GoodsUtil.getGood(resource));
 		return amt;
 	}
 

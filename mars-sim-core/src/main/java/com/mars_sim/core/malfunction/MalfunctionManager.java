@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
@@ -182,6 +182,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
 	/** The map of collections of scopes. */
 	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
+
+    // For MalfunctionManager
+    public static final String MALFUNCTION_EVENT = "malfunction";
 	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
@@ -489,7 +492,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		numberMalfunctions++;
 
-		getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
+		getUnit().fireUnitUpdate(MalfunctionManager.MALFUNCTION_EVENT, malfunction);
 
 		if (registerEvent) {
 			registerAMalfunction(malfunction, actor);
@@ -978,7 +981,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 					resetModifiers(0);
 			}
 
-			getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, fixed);
+			getUnit().fireUnitUpdate(MALFUNCTION_EVENT, fixed);
 
 			String chiefRepairer = fixed.getMostProductiveRepairer();
 
@@ -1292,7 +1295,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 					Person person = i2.next();
 					if (RandomUtil.lessThanRandPercent(probability)) {
 						person.getPhysicalCondition().addMedicalComplaint(complaint);
-						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+						person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 					}
 				}
 			}
