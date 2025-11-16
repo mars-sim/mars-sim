@@ -371,46 +371,43 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 				&& event.getTarget() instanceof Building) {
 			String eventType = event.getType();
 
-			int columnIndex = switch(eventType) {
-				case POWER_MODE_EVENT -> POWER_MODE;
-				case GENERATED_POWER_EVENT -> POWER_GEN;
-				case REQUIRED_POWER_EVENT -> POWER_REQ;
-				
-				case REQUIRED_HEAT_EVENT -> HEAT_REQ;
-				case GENERATED_HEAT_EVENT -> HEAT_GEN;
-				
-//				case HEAT_MATCH_EVENT -> HEAT_MATCH;
-				case HEAT_SURPLUS_EVENT -> HEAT_SURPLUS;
-				
-				case NET_HEAT_0_EVENT -> PRE_NET_HEAT;
-				case NET_HEAT_1_EVENT -> POST_NET_HEAT;
-				
-				case TEMPERATURE_EVENT -> TEMPERATURE;
-				case DELTA_T_EVENT -> DELTA_TEMP;
-				case DEV_T_EVENT -> DEV_TEMP;
-				
-				case PASSIVE_VENT_EVENT -> PASSIVE_VENT;
-				case ACTIVE_VENT_EVENT -> ACTIVE_VENT;
-
-				case HEAT_GAIN_EVENT -> HEAT_GAIN;
-				case HEAT_LOSS_EVENT -> HEAT_LOSS;
-				
-				case AIR_HEAT_SINK_EVENT -> AIR_HEAT_SINK;
-				case WATER_HEAT_SINK_EVENT -> WATER_HEAT_SINK;
-				
-				case EXCESS_HEAT_EVENT -> EXCESS_HEAT;
-				
-				case SOLAR_HEAT_EVENT -> SOLAR;
-				case ELECTRIC_HEAT_EVENT -> ELECTRIC;
-				case NUCLEAR_HEAT_EVENT -> NUCLEAR;
-				case FUEL_HEAT_EVENT -> FUEL;
-				
-				default -> -1;
-			};
+			int columnIndex = getColumnIndexForEventType(eventType);
 
 			if (columnIndex >= 0) {
 				entityValueUpdated(building, columnIndex, columnIndex);
 			}
 		}
+	}
+	
+	/**
+	 * Maps event type strings to column indices.
+	 * 
+	 * @param eventType the event type string
+	 * @return the column index, or -1 if not mapped
+	 */
+	private int getColumnIndexForEventType(String eventType) {
+		if (EntityEventType.POWER_MODE_EVENT.equals(eventType)) return POWER_MODE;
+		if (EntityEventType.GENERATED_POWER_EVENT.equals(eventType)) return POWER_GEN;
+		if (EntityEventType.REQUIRED_POWER_EVENT.equals(eventType)) return POWER_REQ;
+		if (EntityEventType.REQUIRED_HEAT_EVENT.equals(eventType)) return HEAT_REQ;
+		if (EntityEventType.GENERATED_HEAT_EVENT.equals(eventType)) return HEAT_GEN;
+		if (EntityEventType.HEAT_SURPLUS_EVENT.equals(eventType)) return HEAT_SURPLUS;
+		if (EntityEventType.NET_HEAT_0_EVENT.equals(eventType)) return PRE_NET_HEAT;
+		if (EntityEventType.NET_HEAT_1_EVENT.equals(eventType)) return POST_NET_HEAT;
+		if (EntityEventType.TEMPERATURE_EVENT.equals(eventType)) return TEMPERATURE;
+		if (EntityEventType.DELTA_T_EVENT.equals(eventType)) return DELTA_TEMP;
+		if (EntityEventType.DEV_T_EVENT.equals(eventType)) return DEV_TEMP;
+		if (EntityEventType.PASSIVE_VENT_EVENT.equals(eventType)) return PASSIVE_VENT;
+		if (EntityEventType.ACTIVE_VENT_EVENT.equals(eventType)) return ACTIVE_VENT;
+		if (EntityEventType.HEAT_GAIN_EVENT.equals(eventType)) return HEAT_GAIN;
+		if (EntityEventType.HEAT_LOSS_EVENT.equals(eventType)) return HEAT_LOSS;
+		if (EntityEventType.AIR_HEAT_SINK_EVENT.equals(eventType)) return AIR_HEAT_SINK;
+		if (EntityEventType.WATER_HEAT_SINK_EVENT.equals(eventType)) return WATER_HEAT_SINK;
+		if (EntityEventType.EXCESS_HEAT_EVENT.equals(eventType)) return EXCESS_HEAT;
+		if (EntityEventType.SOLAR_HEAT_EVENT.equals(eventType)) return SOLAR;
+		if (EntityEventType.ELECTRIC_HEAT_EVENT.equals(eventType)) return ELECTRIC;
+		if (EntityEventType.NUCLEAR_HEAT_EVENT.equals(eventType)) return NUCLEAR;
+		if (EntityEventType.FUEL_HEAT_EVENT.equals(eventType)) return FUEL;
+		return -1;
 	}
 }

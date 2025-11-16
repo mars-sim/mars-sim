@@ -749,7 +749,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 
 		private EntityEvent event;
 
-		private VehicleInfoUpdater(UnitEvent event) {
+		private VehicleInfoUpdater(EntityEvent event) {
 			this.event = event;
 		}
 

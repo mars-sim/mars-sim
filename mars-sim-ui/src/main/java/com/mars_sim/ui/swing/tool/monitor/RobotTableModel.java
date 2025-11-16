@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +104,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("RobotTableModel.column.mission"), String.class);
 		COLUMNS[TASK] = new ColumnSpec(Msg.getString("RobotTableModel.column.task"), String.class);
 
-		eventColumnMapping = new EnumMap<>(EntityEventType.class);
+		eventColumnMapping = new HashMap<>();
 		eventColumnMapping.put(EntityEventType.NAME_EVENT, NAME);
 		eventColumnMapping.put(EntityEventType.COORDINATE_EVENT, LOCATION);
 		eventColumnMapping.put(EntityEventType.STATUS_EVENT, MODE);

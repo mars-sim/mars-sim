@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,7 +70,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
-	private static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
+	private static final Map<String, Integer> EVENT_COLUMN_MAPPING;
 
 	private static final String DEHYDRATED = "Dehydrated";
 	private static final String STARVING = "Starving";
@@ -97,7 +97,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
 		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
 
-		EVENT_COLUMN_MAPPING = new EnumMap<>(EntityEventType.class);
+		EVENT_COLUMN_MAPPING = new HashMap<>();
 		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.COORDINATE_EVENT, LOCATION);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.HUNGER_EVENT, ENERGY);
@@ -559,10 +559,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 */
 	private class PersonChangeListener implements EntityListener {
 
-		private UnitEventType addEvent;
-		private UnitEventType removeEvent;
+		private String addEvent;
+		private String removeEvent;
 
-		public PersonChangeListener(UnitEventType addEvent, UnitEventType removeEvent) {
+		public PersonChangeListener(String addEvent, String removeEvent) {
 			this.addEvent = addEvent;
 			this.removeEvent = removeEvent;
 		}
