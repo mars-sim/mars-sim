@@ -13,8 +13,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,14 +36,10 @@ import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitManagerEvent;
-import com.mars_sim.core.UnitManagerListener;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
@@ -59,7 +55,6 @@ import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
-import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
@@ -75,7 +70,7 @@ import com.mars_sim.ui.swing.unit_window.UnitWindowListener;
  */
 @SuppressWarnings("serial")
 public class MainDesktopPane extends JDesktopPane
-		implements ClockListener, ComponentListener, UIContext, UnitManagerListener {
+		implements ClockListener, UIContext {
 
 	// Properties for UIConfig settings
 	private static final String DESKTOP_PROPS = "desktop";
@@ -101,8 +96,6 @@ public class MainDesktopPane extends JDesktopPane
 	private Image baseImageIcon = ImageLoader.getImage("background");
 
 	private MainWindow mainWindow;
-	
-	private SettlementMapPanel settlementMapPanel;
 	
 	// Preload the Tool windows
 	private boolean preloadTools = true;
@@ -138,8 +131,6 @@ public class MainDesktopPane extends JDesktopPane
 		// Prepare tool windows. Needs to be thread safe as windows are used by clock pulse
 		toolWindows = new CopyOnWriteArrayList<>();
 
-		prepareListeners();
-
 		init();
 	}
 
@@ -149,7 +140,13 @@ public class MainDesktopPane extends JDesktopPane
 		// set desktop manager
 		setDesktopManager(new MainDesktopManager());
 		// Set component listener
-		addComponentListener(this);
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				MainDesktopPane.this.componentResized();
+			}
+		});
+
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
 		// Set up background
@@ -167,9 +164,6 @@ public class MainDesktopPane extends JDesktopPane
 			// Prep tool windows
 			prepareToolWindows();
 		}
-		
-		// Prep listeners
-		prepareListeners();
 
 		// Set the main window's size
 		Dimension selectedSize = mainWindow.getSelectedSize();
@@ -195,8 +189,7 @@ public class MainDesktopPane extends JDesktopPane
 	 *
 	 * @param e the component event
 	 */
-	@Override
-	public void componentResized(ComponentEvent e) {
+	private void componentResized() {
 
 		Dimension screenSize = getSize();
 
@@ -228,27 +221,6 @@ public class MainDesktopPane extends JDesktopPane
 		}
 	}
 
-	// Additional Component Listener methods implemented but not used.
-	@Override
-	public void componentMoved(ComponentEvent e) {
-		updateToolWindow();
-	}
-
-	@Override
-	public void componentShown(ComponentEvent e) {
-	}
-
-	@Override
-	public void componentHidden(ComponentEvent e) {
-	}
-
-	private void updateToolWindow() {
-		JInternalFrame[] frames = (JInternalFrame[]) this.getAllFrames();
-		for (JInternalFrame f : frames) {
-			f.updateUI();
-		}
-	}
-
 	@Override
 	public Component add(Component comp) {
 		super.add(comp);
@@ -267,23 +239,6 @@ public class MainDesktopPane extends JDesktopPane
 		int height = (desktopSize.height - jInternalFrameSize.height) / 2;
 		comp.setLocation(width, height);
 		comp.setVisible(true);
-	}
-
-	@Override
-	public void unitManagerUpdate(UnitManagerEvent event) {
-		Object unit = event.getUnit();
-		if (unit instanceof Settlement) {
-			updateToolWindow();
-		}
-	}
-
-	/**
-	 * Sets up this class with two listeners.
-	 */
-	private void prepareListeners() {
-		// Attach UnitManagerListener to desktop
-		UnitManager unitManager = sim.getUnitManager();
-		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
 	}
 
 	/**
@@ -352,7 +307,8 @@ public class MainDesktopPane extends JDesktopPane
 			// Old legacy style
 			w = switch(toolName) {
 				case NavigatorWindow.NAME -> new NavigatorWindow(this);
-				case SettlementWindow.NAME -> new SettlementWindow(this);
+				case SettlementWindow.NAME -> new SettlementWindow(this,
+										mainWindow.getConfig().getInternalWindowProps(SettlementWindow.NAME));
 				case MonitorWindow.NAME -> new MonitorWindow(this);
 				case MissionWindow.NAME -> new MissionWindow(this);
 				case ResupplyWindow.NAME -> new ResupplyWindow(this);
@@ -754,14 +710,6 @@ public class MainDesktopPane extends JDesktopPane
 		return sim;
 	}
 
-	public void setSettlementMapPanel(SettlementMapPanel panel) {
-		settlementMapPanel = panel;
-	}
-	
-	public SettlementMapPanel getSettlementMapPanel() {
-		return settlementMapPanel;
-	}
-	
 	@Override
 	public void clockPulse(ClockPulse pulse) {
 		updateWindows(pulse);
@@ -793,8 +741,6 @@ public class MainDesktopPane extends JDesktopPane
 	 * Prepares for deletion.
 	 */
 	public void destroy() {
-
-		removeComponentListener(this);
 		
 		mode = null;
 		if (unitWindows != null) {

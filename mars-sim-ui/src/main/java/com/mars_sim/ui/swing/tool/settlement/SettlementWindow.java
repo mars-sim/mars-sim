@@ -54,22 +54,17 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 	private static final String POPULATION = " Pop: ";
 	private static final String WHITESPACES_2 = " ";
-	private static final String CLOSE_PARENT = ") ";
 	private static final String BLDG_CENTER = "Building Center: ";
 	private static final String BLDG_SPOT = " Building Spot: ";
 	private static final String SETTLEMENT_MAP = " Map: ";
-	private static final String PIXEL_MAP = " Window: (";
 
 	
 	private JLabel buildingSpotLabel;
 	private JLabel buildingXYLabel;
 	private JLabel mapXYLabel;
-	private JLabel windowXYLabel;
 	private JLabel popLabel;
 	private JPanel subPanel;
 
-	/** The status bar. */
-	private JStatusBar statusBar;
 	/** Map panel. */
 	private SettlementMapPanel mapPanel;
 
@@ -78,18 +73,18 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	 *
 	 * @param desktop the main desktop panel.
 	 */
-	public SettlementWindow(MainDesktopPane desktop) {
+	public SettlementWindow(MainDesktopPane desktop, Properties uiProps) {
 		// Use ToolWindow constructor
 		super(NAME, TITLE, desktop);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		setBackground(Color.BLACK);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		setContentPane(mainPanel);
 
-		statusBar = createStatusBar();
+		var statusBar = createStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);
 
         // Create subPanel for housing the settlement map
@@ -97,9 +92,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		mainPanel.add(subPanel, BorderLayout.CENTER);
 		subPanel.setBackground(Color.BLACK);
 
-		mapPanel = new SettlementMapPanel(desktop, this, desktop.getMainWindow().getConfig().getInternalWindowProps(NAME));
-		mapPanel.createUI();
-		desktop.setSettlementMapPanel(mapPanel);
+		mapPanel = new SettlementMapPanel(desktop, this, uiProps);
 
 		// Use SpotlightLayerUI
 		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
@@ -123,31 +116,21 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
         statusBar.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 
         popLabel = new JLabel();
-//        popLabel.setPreferredSize(new Dimension(50, HEIGHT_STATUS_BAR));
         popLabel.setVerticalAlignment(SwingConstants.CENTER);
         popLabel.setHorizontalAlignment(SwingConstants.LEFT);
         popLabel.setFont(font);
           
 	    buildingXYLabel = new JLabel();
-//	    buildingXYLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
 	    buildingXYLabel.setVerticalAlignment(SwingConstants.CENTER);
 	    buildingXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
 	    buildingXYLabel.setFont(font);
   		
 	    buildingSpotLabel = new JLabel();
-//	    buildingSpotLabel.setPreferredSize(new Dimension(130, HEIGHT_STATUS_BAR));
 	    buildingSpotLabel.setVerticalAlignment(SwingConstants.CENTER);
 	    buildingSpotLabel.setHorizontalAlignment(SwingConstants.LEFT);
 	    buildingSpotLabel.setFont(font);
-	    
-	    windowXYLabel = new JLabel();
-//	    windowXYLabel.setPreferredSize(new Dimension(120, HEIGHT_STATUS_BAR));
-	    windowXYLabel.setVerticalAlignment(SwingConstants.CENTER);
-	    windowXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
-	    windowXYLabel.setFont(font);
     
 	    mapXYLabel = new JLabel();
-//	    mapXYLabel.setPreferredSize(new Dimension(110, HEIGHT_STATUS_BAR));
 	    mapXYLabel.setVerticalAlignment(SwingConstants.CENTER);
 	    mapXYLabel.setHorizontalAlignment(SwingConstants.LEFT);
 	    mapXYLabel.setFont(font);
@@ -157,7 +140,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	    statusBar.addLeftComponent(popPanel, false);
 	    
 	    JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 4));
-//	    centerPanel.setPreferredSize(new Dimension(300, HEIGHT_STATUS_BAR));
 	    centerPanel.setAlignmentY(CENTER_ALIGNMENT);
 	    centerPanel.setAlignmentX(CENTER_ALIGNMENT);
 	    
@@ -167,17 +149,9 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	    
 	    statusBar.addCenterComponent(centerPanel, false);
 
-	    JPanel winPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 3));
-	    winPanel.add(windowXYLabel);
-	    statusBar.addRightComponent(winPanel, false);
-
 	    return statusBar;
 	}
 	
-	private String format1(double x, double y) {
-		return (int)x + ", " + (int)y;
-	}
-
 	/**
 	 * Sets the label of the center position of a building.
 	 *
@@ -210,18 +184,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 			sb.append(BLDG_SPOT).append(pos.getShortFormat());
 			buildingSpotLabel.setText(sb.toString());
 		}
-	}
-	
-	
-	/**
-	 * Sets the x/y pixel label of the settlement window.
-	 *
-	 * @param point
-	 */
-	void setPixelXYCoord(double x, double y) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(PIXEL_MAP).append(format1(x, y)).append(CLOSE_PARENT);
-		windowXYLabel.setText(sb.toString());
 	}
 
 	/**
@@ -357,12 +319,9 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	public void destroy() {
 		buildingSpotLabel = null;
 		buildingXYLabel = null;
-		windowXYLabel = null;
 		mapXYLabel = null;
 		popLabel = null;
 		subPanel = null;
-		
-		statusBar = null;
 		
 		mapPanel.destroy();
 		mapPanel = null;

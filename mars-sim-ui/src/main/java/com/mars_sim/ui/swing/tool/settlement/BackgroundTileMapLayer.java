@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
@@ -52,8 +51,6 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	private Settlement currentSettlement;
 
 	private SettlementMapPanel mapPanel;
-	
-	private MasterClock masterClock;
 	
 	/** LRU cache for scaled tiles. */
 	private final Map<CacheKey, SoftReference<BufferedImage>> scaledTileCache =
@@ -96,15 +93,11 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 	 */
 	public BackgroundTileMapLayer(SettlementMapPanel mapPanel) {
 		this.mapPanel = mapPanel;
-		settlementBackgroundMap = new LinkedHashMap<>();
-		
-		masterClock = mapPanel.getDesktop().getSimulation().getMasterClock();
+		settlementBackgroundMap = new LinkedHashMap<>();		
 	}
 
 	@Override
 	public void displayLayer(Settlement settlement, MapViewPoint viewpoint) {
-
-		if (masterClock.isPaused()) return; 
 		
 		// Save original graphics transforms.
 		var g2d = viewpoint.graphics();
@@ -314,17 +307,6 @@ public class BackgroundTileMapLayer implements SettlementMapLayer {
 		String backgroundImageName = MAP_TILE_POINTER + id;
 		settlementBackgroundMap.put(settlement, backgroundImageName);
 		return backgroundImageName;
-	}
-
-	/**
-	 * Gets the background tile image icon for a settlement.
-	 *
-	 * @param settlement the settlement to display.
-	 * @return the background tile image icon or null if none found.
-	 */
-	private Image getBackgroundImage(Settlement settlement) {
-		String backgroundImageName = getBackgroundImageName(settlement);
-		return (backgroundImageName != null) ? ImageLoader.getImage(backgroundImageName) : null;
 	}
 
 	/** Clears and flushes the scaled tile cache. */
