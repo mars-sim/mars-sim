@@ -31,6 +31,11 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Unit.class.getName());
 
+	// Event type constants for Unit-specific events
+	public static final String NAME_EVENT = "name";
+	public static final String DESCRIPTION_EVENT = "description";
+	public static final String NOTES_EVENT = "notes";
+
 	public static final int MOON_UNIT_ID = -2;
 	public static final int OUTER_SPACE_UNIT_ID = -1;
 	public static final int MARS_SURFACE_UNIT_ID = 0;
@@ -190,7 +195,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		fireUnitUpdate(EntityEventType.NAME_EVENT, name);
+		fireUnitUpdate(NAME_EVENT, name);
 	}
 
 	/**
@@ -209,7 +214,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	protected void setDescription(String description) {
 		this.description = description;
-		fireUnitUpdate(EntityEventType.DESCRIPTION_EVENT, description);
+		fireUnitUpdate(DESCRIPTION_EVENT, description);
 	}
 
 	/**
@@ -228,7 +233,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	public void setNotes(String notes) {
 		this.notes = notes;
-		fireUnitUpdate(EntityEventType.NOTES_EVENT, notes);
+		fireUnitUpdate(NOTES_EVENT, notes);
 	}
 
 	/**
