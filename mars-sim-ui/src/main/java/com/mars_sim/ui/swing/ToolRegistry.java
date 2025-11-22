@@ -10,6 +10,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
@@ -46,7 +47,8 @@ public class ToolRegistry {
 										mainWindow.getConfig().getInternalWindowProps(SettlementWindow.NAME));
             case NavigatorWindow.NAME -> new NavigatorWindow(context,
                                         mainWindow.getConfig().getInternalWindowProps(NavigatorWindow.NAME));
-
+            case MonitorWindow.NAME -> new MonitorWindow(context,
+                                        mainWindow.getConfig().getInternalWindowProps(MonitorWindow.NAME));
 			default -> null;
 		};
     }

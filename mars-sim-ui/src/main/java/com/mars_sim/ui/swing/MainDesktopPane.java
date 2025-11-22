@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 
@@ -249,6 +250,11 @@ public class MainDesktopPane extends JDesktopPane
 		return mainWindow;
 	}
 
+	@Override
+	public JFrame getTopFrame() {
+		return mainWindow.getFrame();
+	}
+
 	/**
 	 * Creates tool windows.
 	 */
@@ -305,7 +311,6 @@ public class MainDesktopPane extends JDesktopPane
 		else {
 			// Old legacy style
 			w = switch(toolName) {
-				case MonitorWindow.NAME -> new MonitorWindow(this);
 				case MissionWindow.NAME -> new MissionWindow(this);
 				case ResupplyWindow.NAME -> new ResupplyWindow(this);
 				default -> null;
@@ -332,7 +337,8 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param model the new model to display
 	 */
 	public void addModel(UnitTableModel<?> model) {
-		((MonitorWindow) openToolWindow(MonitorWindow.NAME)).displayModel(model);
+		var cw = (ContentWindow) openToolWindow(MonitorWindow.NAME);
+			((MonitorWindow)cw.getContent()).displayModel(model);
 	}
 
 	/**

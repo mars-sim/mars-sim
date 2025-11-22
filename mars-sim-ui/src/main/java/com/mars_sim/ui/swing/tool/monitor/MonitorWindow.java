@@ -35,7 +35,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -53,12 +52,12 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool_window.MapSelector;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
 /**
@@ -66,7 +65,7 @@ import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
  * of which monitor a set of Units.
  */
 @SuppressWarnings("serial")
-public class MonitorWindow extends ToolWindow
+public class MonitorWindow extends ContentPanel
 			implements ConfigurableWindow, TableModelListener{
 
 	/**
@@ -171,31 +170,30 @@ public class MonitorWindow extends ToolWindow
 
 	private JLabel selectionDescription;
 
+	private UIContext context;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param desktop the desktop pane
 	 */
-	public MonitorWindow(MainDesktopPane desktop) {
+	public MonitorWindow(UIContext context, Properties uiProps) {
 		// Use TableWindow constructor
-		super(NAME, TITLE, desktop);
+		super(NAME, TITLE);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.context = context;
 
-		unitManager = desktop.getSimulation().getUnitManager();
+		unitManager = context.getSimulation().getUnitManager();
 		
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout(5, 5));
 		mainPane.setBorder(new MarsPanelBorder());
-		setContentPane(mainPane);
-
-		// Get any saved props
-		Properties savedProps = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
+		add(mainPane, BorderLayout.CENTER);
 
 		// Set up default selection
 		var choices = setupSelectionChoices();
 		Object defaultSelection = ALL;
-		String previousChoice = (savedProps != null ? savedProps.getProperty(FILTER_PROP) : null);
+		String previousChoice = (uiProps != null ? uiProps.getProperty(FILTER_PROP) : null);
 		if (previousChoice != null) {
 			for(Entity s : choices) {
 				if (s.getName().equals(previousChoice)) {
@@ -224,7 +222,7 @@ public class MonitorWindow extends ToolWindow
 		
 		// Add all the tabs
 		addAllTabs(choices,
-					(savedProps != null ? savedProps.getProperty(TAB_PROP) : null));
+					(uiProps != null ? uiProps.getProperty(TAB_PROP) : null));
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
 		setSettlementBox(true);
@@ -242,18 +240,14 @@ public class MonitorWindow extends ToolWindow
 	
 		// Add the buttons and row count label at the bottom
 		addBottomBar();	
-	
-		// May use NotificationWindow notifyBox = new NotificationWindow(desktop)
-		setResizable(true);
-		setMaximizable(true);
-		setVisible(true);
 
-		setSize(new Dimension(WIDTH, HEIGHT));	
+		var dim = new Dimension(WIDTH, HEIGHT);
+		setSize(dim);
+		setPreferredSize(dim);	
 		setMinimumSize(new Dimension(640, 256));
 		
 		// Lastly activate the default tab
 		selectNewTab(getSelectedTab());
-
 	}
 
 	/**
@@ -267,7 +261,7 @@ public class MonitorWindow extends ToolWindow
 		newTabs.add(new UnitTab(this, new PersonTableModel(), true, PEOPLE_ICON));
 		newTabs.add(new UnitTab(this, new RobotTableModel(), true, BOT_ICON));
 		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
-		newTabs.add(new UnitTab(this, new CropTableModel(getDesktop().getSimulation().getConfig()), true, CROP_ICON));
+		newTabs.add(new UnitTab(this, new CropTableModel(context.getSimulation().getConfig()), true, CROP_ICON));
 		
 		newTabs.add(new TableTab(this, new FoodTableModel(), true, false, FOOD_ICON));
 
@@ -276,10 +270,10 @@ public class MonitorWindow extends ToolWindow
 		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
 
 		// Create eventsTab instance
-		eventsTab = new EventTab(this, desktop);
+		eventsTab = new EventTab(this, context);
 		newTabs.add(eventsTab);
 		
-		newTabs.add(new MissionTab(this));
+		newTabs.add(new MissionTab(this, context.getSimulation()));
 		newTabs.add(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
 
 		for (MonitorTab m : newTabs) {
@@ -552,7 +546,7 @@ public class MonitorWindow extends ToolWindow
 	 */
 	private void createBarChart() {
 		MonitorModel model = getSelectedTab().getModel();
-		int[]columns = ColumnSelector.createBarSelector(desktop, model);
+		int[]columns = ColumnSelector.createBarSelector(context.getTopFrame(), model);
 
 		if (columns != null && columns.length > 0) {
 			MonitorTab bar = new BarChartTab(model, columns);
@@ -567,7 +561,7 @@ public class MonitorWindow extends ToolWindow
 	private void createPieChart() {
 		MonitorModel model = getSelectedTab().getModel();
 		if (model != null) {
-			int column = ColumnSelector.createPieSelector(desktop, model);
+			int column = ColumnSelector.createPieSelector(context.getTopFrame(), model);
 			if (column >= 0) {
 				MonitorTab pie = new PieChartTab(model, column);
 				addTab(pie);
@@ -719,7 +713,7 @@ public class MonitorWindow extends ToolWindow
 		if (selected != null) {
 			Coordinates place = selected.getSelectedCoordinates();
 			if (place != null) {
-				MapSelector.displayCoords(desktop, place);
+				MapSelector.displayCoords(context, place);
 			}
 		}
 	}
@@ -729,7 +723,7 @@ public class MonitorWindow extends ToolWindow
 		if (selected instanceof TableTab tt) {
 			for (Object row : tt.getSelection()) {
 				if (row instanceof Entity ent) {
-					desktop.showDetails(ent);
+					context.showDetails(ent);
 				}
 			}
 		}
@@ -738,14 +732,14 @@ public class MonitorWindow extends ToolWindow
 	private void displayProps() {
 		MonitorTab selected = getSelectedTab();
 		if (selected != null) {
-			selected.displayProps(desktop);
+			selected.displayProps(context);
 		}
 	}
 
 	private void filterCategories() {
 		EventTab events = eventsTab;
 		if (events != null) {
-			events.filterCategories(desktop);
+			events.filterCategories(context);
 		}
 	}
 

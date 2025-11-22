@@ -12,7 +12,7 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * This class represents an abstraction of a view displayed in the Monitor
@@ -39,7 +39,7 @@ public abstract class MonitorTab extends JPanel {
 	 * @param ownModel The model is owned by this tab and not shared
 	 * @param icon      Iconic representation.
 	 */
-	public MonitorTab(MonitorModel model, boolean mandatory, boolean ownModel, Icon icon) {
+	protected MonitorTab(MonitorModel model, boolean mandatory, boolean ownModel, Icon icon) {
 		this.model = model;
 		this.icon = icon;
 		this.mandatory = mandatory;
@@ -63,8 +63,9 @@ public abstract class MonitorTab extends JPanel {
 
 	/**
 	 * Displays property window controlling this view.
+	 * @param context main window of simulation.
 	 */
-	public abstract void displayProps(MainDesktopPane desktop);
+	public abstract void displayProps(UIContext context);
 
 	/**
 	 * Gets the tab count string.

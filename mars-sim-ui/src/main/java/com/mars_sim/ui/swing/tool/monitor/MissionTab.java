@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.List;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -23,9 +24,9 @@ public class MissionTab extends TableTab {
 	 * 
 	 * @throws Exception
 	 */
-	public MissionTab(final MonitorWindow window) {
+	public MissionTab(final MonitorWindow window, Simulation sim) {
 		// Use TableTab constructor
-		super(window, new MissionTableModel(window.getDesktop().getSimulation()), true, true, MissionWindow.ICON);
+		super(window, new MissionTableModel(sim), true, true, MissionWindow.ICON);
 				
 		setEntityDriven(true);
 		setNavigatable(true);

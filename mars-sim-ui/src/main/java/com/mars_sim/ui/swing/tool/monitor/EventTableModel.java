@@ -19,7 +19,6 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
@@ -79,11 +78,11 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 * @param manager   Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
 	 */
-	public EventTableModel(MainDesktopPane desktop) {
+	public EventTableModel(HistoricalEventManager manager) {
 		super(Msg.getString("EventTableModel.tabName"), "EventTableModel.numberOfEvents", COLUMNS);
 
 		// Add this model as an event listener.
-		this.eventManager = desktop.getSimulation().getEventManager();
+		this.eventManager = manager;
 		
 		// Add listener only when fully constructed
 		eventManager.addListener(this);

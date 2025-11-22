@@ -50,4 +50,7 @@ public class ContentPanel extends JPanel{
         // By default do nothing
     }
 
+    protected void setTitle(String string) {
+        this.title = string;
+    }
 }

@@ -34,7 +34,7 @@ import org.jfree.chart.util.Rotation;
 import org.jfree.data.general.AbstractDataset;
 import org.jfree.data.general.PieDataset;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * This class presents a Pie chart as a Monitor tab. The data for the Pie
@@ -54,7 +54,7 @@ class PieChartTab extends MonitorTab {
     private static final long MIN_TIME_BETWEEN_UPDATES = 1000L;
 
     /** The category name for unknown. */
-    private final static String NONECAT = "None";
+    private static final String NONECAT = "None";
 
 	public static final String ICON = "pie";
 
@@ -327,11 +327,12 @@ class PieChartTab extends MonitorTab {
      * Displays the properties dialog that allows the data displayed to be
      * configured.
      *
-     * @param desktop main window of simulation.
+     * @param context main window of simulation.
      */
-    public void displayProps(MainDesktopPane desktop) {
+    @Override
+    public void displayProps(UIContext context) {
         // Show modal column selector
-        int column = ColumnSelector.createPieSelector(desktop, getModel());
+        int column = ColumnSelector.createPieSelector(context.getTopFrame(), getModel());
         if (column >= 0) {
             setColumn(column);
         }

@@ -39,7 +39,8 @@ import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.AbstractSeriesDataset;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
+
 @SuppressWarnings("serial")
 class BarChartTab extends MonitorTab {
 
@@ -393,11 +394,12 @@ class BarChartTab extends MonitorTab {
 	 * Display the properties dialog that allows the data displayed to be
 	 * configured.
 	 *
-	 * @param desktop main window of simulation.
+	 * @param context main window of simulation.
 	 */
-	public void displayProps(MainDesktopPane desktop) {
+	@Override
+	public void displayProps(UIContext context) {
 		// Show modal column selector
-		int []columns = ColumnSelector.createBarSelector(desktop, getModel());
+		int []columns = ColumnSelector.createBarSelector(context.getTopFrame(), getModel());
 		if (columns.length > 0) {
 			barModel.setColumns(columns);
 		}

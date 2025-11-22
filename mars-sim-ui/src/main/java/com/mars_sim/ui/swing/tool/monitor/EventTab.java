@@ -6,7 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * This class represents a historical event table displayed within the Monitor
@@ -20,20 +20,19 @@ public class EventTab extends TableTab {
 	 * constructor.
 	 * 
 	 * @param window {@link MonitorWindow} the containing window
-	 * @param notifyBox  {@link NotificationWindow}
-	 * @param desktop
+	 * @param context the UI context
 	 */
-	public EventTab(final MonitorWindow window, MainDesktopPane desktop) {
+	public EventTab(final MonitorWindow window, UIContext context) {
 		// Use TableTab constructor
-		super(window, new EventTableModel(desktop), true, false,
+		super(window, new EventTableModel(context.getSimulation().getEventManager()), true, false,
 				EVENT_ICON);
 		
 		setFilterable(true);
 		setEntityDriven(true);
 	}
 
-	void filterCategories(MainDesktopPane desktop) {
-		EventFilter filter = new EventFilter((EventTableModel) getModel(), desktop);
-		filter.show();
+	void filterCategories(UIContext context) {
+		EventFilter filter = new EventFilter((EventTableModel) getModel(), context.getTopFrame());
+		filter.setVisible(true);
 	}
 }

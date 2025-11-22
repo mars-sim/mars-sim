@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing;
 
+import javax.swing.JFrame;
+
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
@@ -35,4 +37,10 @@ public interface UIContext {
      * @return
      */
     Simulation getSimulation();
+
+    /**
+     * Get the top-level JFrame for this UI. This is used to host dialogs.
+     * @return
+     */
+    JFrame getTopFrame();
 }
