@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 import javax.swing.plaf.LayerUI;
 
 import com.mars_sim.core.map.location.LocalPosition;
@@ -31,17 +30,17 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ConfigurableWindow;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.SpotlightLayerUI;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
  */
 @SuppressWarnings("serial")
-public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
+public class SettlementWindow extends ContentPanel implements ConfigurableWindow {
 
 
 	private static final int HORIZONTAL = 800;
@@ -71,18 +70,16 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 	/**
 	 * Constructor.
 	 *
-	 * @param desktop the main desktop panel.
+	 * @param context the UI context.
 	 */
-	public SettlementWindow(MainDesktopPane desktop, Properties uiProps) {
+	public SettlementWindow(UIContext context, Properties uiProps) {
 		// Use ToolWindow constructor
-		super(NAME, TITLE, desktop);
-
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		super(NAME, TITLE);
 
 		setBackground(Color.BLACK);
 		
 		JPanel mainPanel = new JPanel(new BorderLayout());
-		setContentPane(mainPanel);
+		add(mainPanel, BorderLayout.CENTER);
 
 		var statusBar = createStatusBar();
         mainPanel.add(statusBar, BorderLayout.SOUTH);
@@ -92,7 +89,7 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		mainPanel.add(subPanel, BorderLayout.CENTER);
 		subPanel.setBackground(Color.BLACK);
 
-		mapPanel = new SettlementMapPanel(desktop, this, uiProps);
+		mapPanel = new SettlementMapPanel(context, this, uiProps);
 
 		// Use SpotlightLayerUI
 		LayerUI<JPanel> layerUI = new SpotlightLayerUI(mapPanel);
@@ -102,11 +99,6 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 		setSize(new Dimension(HORIZONTAL, VERTICAL));
 		setPreferredSize(new Dimension(HORIZONTAL, VERTICAL));
 		setMinimumSize(new Dimension(HORIZONTAL / 2, VERTICAL / 2));
-		setClosable(true);
-		setResizable(true);
-		setMaximizable(true);
-
-		setVisible(true);
 	}
 
 	private JStatusBar createStatusBar() {
@@ -317,15 +309,8 @@ public class SettlementWindow extends ToolWindow implements ConfigurableWindow {
 
 	@Override
 	public void destroy() {
-		buildingSpotLabel = null;
-		buildingXYLabel = null;
-		mapXYLabel = null;
-		popLabel = null;
-		subPanel = null;
 		
 		mapPanel.destroy();
-		mapPanel = null;
-		
-		desktop = null;
+		super.destroy();
 	}
 }

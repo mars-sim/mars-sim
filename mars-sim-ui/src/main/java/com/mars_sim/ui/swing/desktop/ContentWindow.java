@@ -6,9 +6,12 @@
  */
 package com.mars_sim.ui.swing.desktop;
 
+import java.util.Properties;
+
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
@@ -16,7 +19,8 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
 /**
  * This class renders a ContentPanel into an InternalWindow that can be displayed in a DesktopPane.
  */
-public class ContentWindow extends ToolWindow {
+public class ContentWindow extends ToolWindow
+    implements ConfigurableWindow {
 
     private ContentPanel content;
 
@@ -58,5 +62,13 @@ public class ContentWindow extends ToolWindow {
     @Override
     public void destroy() {
         content.destroy();
+    }
+
+    @Override
+    public Properties getUIProps() {
+        if (content instanceof ConfigurableWindow cw) {
+            return cw.getUIProps();
+        }
+        return new Properties();
     }
 }

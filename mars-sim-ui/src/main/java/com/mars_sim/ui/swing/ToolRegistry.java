@@ -12,6 +12,7 @@ import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
+import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
 
 /**
@@ -40,7 +41,8 @@ public class ToolRegistry {
 			case SearchWindow.NAME -> new SearchWindow(context);
 			case ScienceWindow.NAME -> new ScienceWindow(context);
 			case CommanderWindow.NAME -> new CommanderWindow(context);
-
+			case SettlementWindow.NAME -> new SettlementWindow(context,
+										mainWindow.getConfig().getInternalWindowProps(SettlementWindow.NAME));
 			default -> null;
 		};
     }

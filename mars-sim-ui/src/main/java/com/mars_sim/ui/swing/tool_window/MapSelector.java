@@ -15,6 +15,7 @@ import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 
@@ -38,7 +39,7 @@ public final class MapSelector {
             marsPosn = openMobileUnit(uiContext, mu);
         }
         else if (u instanceof FixedUnit fu) {
-            SettlementWindow sw = (SettlementWindow) uiContext.openToolWindow(SettlementWindow.NAME);
+            var sw = getSettlementWindow(uiContext);
             sw.displayPosition(fu.getAssociatedSettlement(), fu.getPosition());
         }
         else if (u instanceof Settlement s) {
@@ -97,6 +98,16 @@ public final class MapSelector {
 	}	
 
 	/**
+	 * Get teh Settlement window out of the current context
+	 * @param uiContext
+	 * @return
+	 */
+	private static SettlementWindow getSettlementWindow(UIContext uiContext) {
+		var w = ((ContentWindow)uiContext.openToolWindow(SettlementWindow.NAME)).getContent();
+		return (SettlementWindow)w;
+	}
+
+	/**
 	 * Opens the Settlement map and show a Unit
 	 * 
 	 * @param u
@@ -104,7 +115,7 @@ public final class MapSelector {
 	private static void showSettlementMap(UIContext uiContext, MobileUnit u) {
 		// person just happens to step outside the settlement at its
 		// vicinity temporarily
-		SettlementWindow sw = (SettlementWindow) uiContext.openToolWindow(SettlementWindow.NAME);
+		SettlementWindow sw = getSettlementWindow(uiContext);
 		if (u instanceof Person p) {
 			sw.displayPerson(p);
 		} 

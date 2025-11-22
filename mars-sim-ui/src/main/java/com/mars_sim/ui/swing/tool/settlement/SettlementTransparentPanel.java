@@ -291,7 +291,7 @@ public class SettlementTransparentPanel extends JComponent {
         centerPanel.add(eastPane, BorderLayout.EAST);
 
         // Patch 1: listen for mapPanel displayability change to detach listeners to avoid leaks
-        if (mapPanel != null && mapPanelHierarchyListener == null) {
+        if (mapPanelHierarchyListener == null) {
             mapPanelHierarchyListener = e -> {
                 if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0 && !mapPanel.isDisplayable()) {
                     detachListeners();
@@ -316,7 +316,7 @@ public class SettlementTransparentPanel extends JComponent {
         JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0));
         roundPane.setBackground(new Color(0, 0, 0, 128));
         roundPane.setOpaque(false);
-        roundPane.setPreferredSize(new Dimension(230, 185)); // (260, 185), (293, 185);
+        roundPane.setPreferredSize(new Dimension(230, 185));
 
         JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
         taskPaneContainer.setBackground(new Color(0, 0, 0, 128));
@@ -1241,80 +1241,6 @@ public class SettlementTransparentPanel extends JComponent {
         // --- Core patch cleanup: detach installed listeners ---
         detachListeners();
 
-        // Remove the displayability listener from mapPanel if present
-        if (mapPanel != null && mapPanelHierarchyListener != null) {
-            mapPanel.removeHierarchyListener(mapPanelHierarchyListener);
-        }
         mapPanelHierarchyListener = null;
-
-        // --- Best-effort: remove action/item listeners on owned controls ---
-        if (infoButton != null) {
-            for (java.awt.event.ActionListener l : infoButton.getActionListeners()) {
-                infoButton.removeActionListener(l);
-            }
-        }
-        if (settlementListBox != null) {
-            for (java.awt.event.ItemListener l : settlementListBox.getItemListeners()) {
-                settlementListBox.removeItemListener(l);
-            }
-            for (java.awt.event.ActionListener l : settlementListBox.getActionListeners()) {
-                settlementListBox.removeActionListener(l);
-            }
-        }
-
-        // --- Clear and hide popup menu if present ---
-        if (labelsMenu != null) {
-            labelsMenu.setVisible(false);
-            labelsMenu.removeAll();
-            labelsMenu = null;
-        }
-
-        // Remove any children this component might have (defensive)
-        try {
-            removeAll();
-            revalidate();
-            repaint();
-        } catch (Throwable ignore) {
-            // best-effort cleanup; ignore if already detached
-        }
-
-        if (settlementCBModel != null) settlementCBModel.destroy();
-        settlementListBox = null;
-        settlementCBModel = null;
-
-        if (resourceCache != null) {
-            resourceCache.clear();
-            resourceCache = null;
-        }
-
-        mode = null;
-
-        emptyLabel = null;
-        bannerBar = null;
-        zoomSlider = null;
-
-        projectSunriseLabel = null;
-        projectSunsetLabel = null;
-        projectDaylightLabel = null;
-        sunriseLabel = null;
-        sunsetLabel = null;
-        zenithLabel = null;
-        maxSunLabel = null;
-        daylightLabel = null;
-        currentSunLabel = null;
-
-        infoButton = null;
-        temperatureIcon = null;
-        windIcon = null;
-        opticalIcon = null;
-
-        labelsMenu = null;
-
-        weather = null;
-        surfaceFeatures = null;
-        orbitInfo = null;
-        unitManager = null;
-
-        mapPanel = null;
     }
 }

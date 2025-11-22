@@ -17,15 +17,12 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.image.BufferedImage;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -152,6 +149,7 @@ public class SettlementMapPanel extends JPanel {
 
 	// -------- Shared cache hook for layers that rasterize scalable art --------
 	private final ScaledIconCache iconCache = new ScaledIconCache();
+	private UIContext context;
 
 	/**
 	 * Constructor 1: A panel for displaying a settlement map.
@@ -160,7 +158,8 @@ public class SettlementMapPanel extends JPanel {
 							  Properties userSettings) {
 		super();
 		this.settlementWindow = settlementWindow;
-		
+		this.context = context;
+
 		UnitManager unitManager = context.getSimulation().getUnitManager();
 
 		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
@@ -236,7 +235,7 @@ public class SettlementMapPanel extends JPanel {
 	private void initLayers(UIContext desktop) {
 
 		// Set up the dayNightMapLayer layers
-		dayNightMapLayer = new DayNightMapLayer(this);
+		dayNightMapLayer = new DayNightMapLayer(this, desktop.getSimulation().getSurfaceFeatures());
 
 		// Check the DayNightLayer at the start of the sim
 		displayOptions.remove(DisplayOption.DAYLIGHT_LAYER);
@@ -391,7 +390,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	private void setPopUp(final MouseEvent evt, int x, int y, Unit unit) {
-		menu = new PopUpUnitMenu(settlementWindow, unit);
+		menu = new PopUpUnitMenu(unit, context);
 		menu.show(evt.getComponent(), x, y);
 	}
 
@@ -1141,106 +1140,16 @@ public class SettlementMapPanel extends JPanel {
 		// Stop timers and free caches
 		iconCache.clear();
 
-		menu = null;
-		settlement = null;
-		settlementWindow = null;
 
 		// Destroy all map layers (this includes dayNightMapLayer).
 		if (mapLayers != null) {
 			mapLayers.forEach(SettlementMapLayer::destroy);
-			mapLayers.clear();
 			mapLayers = null;
-		}
-
-		if (selectedPerson != null) selectedPerson.clear();
-		if (selectedRobot != null) selectedRobot.clear();
-		if (selectedBuilding != null) selectedBuilding.clear();
-		if (selectedVehicle != null) selectedVehicle.clear();
-		selectedRobot = null;
-		selectedPerson = null;
-		selectedBuilding = null;
-		selectedVehicle = null;
-
-		// dayNightMapLayer was already destroyed via mapLayers loop; just null it out.
-		dayNightMapLayer = null;
-
-		if (showSpotLabels != null) {
-			showSpotLabels.clear();
-			showSpotLabels = null;
-		}
-
-		if (displayOptions != null) {
-			displayOptions.clear();
-			displayOptions = null;
 		}
 
 		if (settlementTransparentPanel != null) {
 			settlementTransparentPanel.destroy();
 			settlementTransparentPanel = null;
-		}
-	}
-
-	// =====================================================================
-	//                    Scaled Icon LRU Cache (Soft-ref)
-	// =====================================================================
-
-	/**
-	 * Small LRU cache for rasterized icons/images keyed by (resourceId, scale).
-	 * Uses {@link SoftReference} values so the GC can reclaim under pressure.
-	 * <p>
-	 * This is a hook for map layers (e.g., buildings, vehicles) to reuse
-	 * rasterizations at the active {@link SettlementMapPanel#getScale()} rather than
-	 * recreating the same {@link BufferedImage} repeatedly while the user drags
-	 * the zoom slider.
-	 * </p>
-	 */
-	public static final class ScaledIconCache {
-		private static final int MAX_ENTRIES = 256;
-
-		private static final class Key {
-			final String resourceId;
-			final double scale;
-
-			Key(String resourceId, double scale) {
-				this.resourceId = resourceId;
-				this.scale = scale;
-			}
-
-			@Override
-			public boolean equals(Object o) {
-				if (this == o) return true;
-				if (!(o instanceof Key)) return false;
-				Key k = (Key) o;
-				return Double.doubleToLongBits(scale) == Double.doubleToLongBits(k.scale)
-						&& resourceId.equals(k.resourceId);
-			}
-
-			@Override
-			public int hashCode() {
-				long bits = Double.doubleToLongBits(scale);
-				return 31 * resourceId.hashCode() + (int) (bits ^ (bits >>> 32));
-			}
-		}
-
-		private final LinkedHashMap<Key, SoftReference<BufferedImage>> cache =
-				new LinkedHashMap<>(64, 0.75f, true) {
-					@Override
-					protected boolean removeEldestEntry(Map.Entry<Key, SoftReference<BufferedImage>> e) {
-						return size() > MAX_ENTRIES;
-					}
-				};
-
-		public synchronized BufferedImage get(String id, double scale) {
-			SoftReference<BufferedImage> ref = cache.get(new Key(id, scale));
-			return ref != null ? ref.get() : null;
-		}
-
-		public synchronized void put(String id, double scale, BufferedImage img) {
-			cache.put(new Key(id, scale), new SoftReference<>(img));
-		}
-
-		public synchronized void clear() {
-			cache.clear();
 		}
 	}
 }

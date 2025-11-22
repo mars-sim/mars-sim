@@ -307,8 +307,6 @@ public class MainDesktopPane extends JDesktopPane
 			// Old legacy style
 			w = switch(toolName) {
 				case NavigatorWindow.NAME -> new NavigatorWindow(this);
-				case SettlementWindow.NAME -> new SettlementWindow(this,
-										mainWindow.getConfig().getInternalWindowProps(SettlementWindow.NAME));
 				case MonitorWindow.NAME -> new MonitorWindow(this);
 				case MissionWindow.NAME -> new MissionWindow(this);
 				case ResupplyWindow.NAME -> new ResupplyWindow(this);
