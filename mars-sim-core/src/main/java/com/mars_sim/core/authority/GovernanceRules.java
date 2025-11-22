@@ -87,7 +87,7 @@ public class GovernanceRules implements Serializable {
     }
 
     /**
-     * Get the number of unique reviewers for this mission plan
+     * Get the minimum number of unique reviewers for a mission plan
      * 
      * @return
      */
