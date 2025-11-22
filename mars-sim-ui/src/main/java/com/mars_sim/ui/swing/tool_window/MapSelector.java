@@ -48,9 +48,19 @@ public final class MapSelector {
 
         if (marsPosn != null) {
         	// person is on a mission on the surface of Mars 
-			((NavigatorWindow) uiContext.openToolWindow(NavigatorWindow.NAME)).updateCoordsMaps(marsPosn);
+			displayCoords(uiContext, marsPosn);
         }
     }
+
+	/**
+	 * Display coordinates on Mars Navigator
+	 * @param uiContext
+	 * @param coords
+	 */
+	public static void displayCoords(UIContext uiContext, Coordinates coords) {
+		var w = ((ContentWindow)uiContext.openToolWindow(NavigatorWindow.NAME)).getContent();
+		((NavigatorWindow) w).updateCoordsMaps(coords);
+	}
 
     /**
 	 * Opens the mobile unit in Mars Navigator or Settlement Map.

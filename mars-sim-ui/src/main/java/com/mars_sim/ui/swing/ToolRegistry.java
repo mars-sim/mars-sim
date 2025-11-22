@@ -10,6 +10,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
@@ -37,12 +38,15 @@ public class ToolRegistry {
 		return switch(toolName) {
 			case OrbitViewer.NAME -> new OrbitViewer(sim.getMasterClock());
 			case TimeTool.NAME -> new TimeTool(sim);
-			case GuideWindow.NAME -> new GuideWindow(mainWindow.getHelp());
+			case GuideWindow.NAME -> new GuideWindow(mainWindow.getHelp()); 
 			case SearchWindow.NAME -> new SearchWindow(context);
 			case ScienceWindow.NAME -> new ScienceWindow(context);
 			case CommanderWindow.NAME -> new CommanderWindow(context);
 			case SettlementWindow.NAME -> new SettlementWindow(context,
 										mainWindow.getConfig().getInternalWindowProps(SettlementWindow.NAME));
+            case NavigatorWindow.NAME -> new NavigatorWindow(context,
+                                        mainWindow.getConfig().getInternalWindowProps(NavigatorWindow.NAME));
+
 			default -> null;
 		};
     }

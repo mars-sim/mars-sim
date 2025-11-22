@@ -57,6 +57,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.tool_window.MapSelector;
 import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
@@ -179,7 +180,7 @@ public class MonitorWindow extends ToolWindow
 		// Use TableWindow constructor
 		super(NAME, TITLE, desktop);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		unitManager = desktop.getSimulation().getUnitManager();
 		
@@ -718,7 +719,7 @@ public class MonitorWindow extends ToolWindow
 		if (selected != null) {
 			Coordinates place = selected.getSelectedCoordinates();
 			if (place != null) {
-				desktop.centerMapGlobe(place);
+				MapSelector.displayCoords(desktop, place);
 			}
 		}
 	}

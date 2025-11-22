@@ -38,6 +38,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
+import com.mars_sim.ui.swing.tool_window.MapSelector;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -470,13 +471,12 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         
         // If center map button is pressed, center navigator tool
         // at destination location.
-        if (source == centerMapButton) {
-        	if (destinationLocationCache != null)
-        		desktop.centerMapGlobe(destinationLocationCache);
-        }
+        if (source.equals(centerMapButton) && destinationLocationCache != null)
+        	MapSelector.displayCoords(desktop, destinationLocationCache);
+        
 
         // If destination settlement button is pressed, open window for settlement.
-        if (source == destinationButton) 
+        if (source.equals(destinationButton)) 
         	desktop.showDetails(destinationSettlementCache);
     }
     

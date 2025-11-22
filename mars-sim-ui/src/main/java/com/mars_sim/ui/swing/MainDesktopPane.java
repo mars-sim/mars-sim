@@ -37,7 +37,6 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.time.ClockListener;
@@ -306,7 +305,6 @@ public class MainDesktopPane extends JDesktopPane
 		else {
 			// Old legacy style
 			w = switch(toolName) {
-				case NavigatorWindow.NAME -> new NavigatorWindow(this);
 				case MonitorWindow.NAME -> new MonitorWindow(this);
 				case MissionWindow.NAME -> new MissionWindow(this);
 				case ResupplyWindow.NAME -> new ResupplyWindow(this);
@@ -335,16 +333,6 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	public void addModel(UnitTableModel<?> model) {
 		((MonitorWindow) openToolWindow(MonitorWindow.NAME)).displayModel(model);
-	}
-
-	/**
-	 * Centers the map and the globe on given coordinates. Also opens the map tool
-	 * if it's closed.
-	 *
-	 * @param targetLocation the new center location
-	 */
-	public void centerMapGlobe(Coordinates targetLocation) {
-		((NavigatorWindow) openToolWindow(NavigatorWindow.NAME)).updateCoordsMaps(targetLocation);
 	}
 
 	/**
