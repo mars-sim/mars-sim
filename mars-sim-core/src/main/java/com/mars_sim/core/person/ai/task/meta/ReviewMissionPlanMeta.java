@@ -88,10 +88,9 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
         if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
 			Mission m = mp.getMission();			
-			int pop = p.getAssociatedSettlement().getNumCitizens();				
 
 			// Is this Person allowed to review this Mission
-			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p.getName(), pop)) {
+			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p)) {
 				factor = super.assessPersonSuitability(t, p);
 				if (factor.getScore() == 0D) {
 					return factor;
@@ -99,13 +98,17 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
 				// This reviewer is valid
 				RoleType roleType = p.getRole().getType();  
-				double reviewer = switch(roleType) {
-					case MISSION_SPECIALIST -> 1.5;
-					case CHIEF_OF_MISSION_PLANNING -> 3;
-					case SUB_COMMANDER -> 4.5;
-					case COMMANDER -> 6;
-					default -> 1;
-				};
+				double reviewer;
+				if (roleType.isCouncil()) {
+					reviewer = 4;
+				}
+				else {
+					reviewer = switch(roleType) {
+						case MISSION_SPECIALIST -> 1.5;
+						case CHIEF_OF_MISSION_PLANNING -> 3;
+						default -> 1;
+					};
+				}
 				factor.addModifier("reviewer", reviewer);
 			}
 		}

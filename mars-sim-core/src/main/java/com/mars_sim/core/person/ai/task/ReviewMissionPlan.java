@@ -163,12 +163,8 @@ public class ReviewMissionPlan extends Task {
 
 			// if not 100% reviewed
 			Mission m = mp.getMission();
-			String reviewedBy = person.getName();
-			
-			String requestedBy = m.getStartingPerson().getName();
-
-			if (!reviewedBy.equals(requestedBy)
-					&& mp.isReviewerValid(reviewedBy, reviewerSettlement.getNumCitizens())) {
+			if (!m.getStartingPerson().equals(person)
+					&& mp.isReviewerValid(person)) {
 				
 				// Simulate the person has just spent 90% duration for this task
 				// Now a mission score will be calculated
@@ -177,19 +173,14 @@ public class ReviewMissionPlan extends Task {
 					// 9. reviewer role weight
 					RoleType role = person.getRole().getType();
 					
-					if (role == RoleType.PRESIDENT
-							|| role == RoleType.MAYOR
-							|| role == RoleType.ADMINISTRATOR
-							|| role == RoleType.DEPUTY_ADMINISTRATOR
-							|| role == RoleType.COMMANDER
-							|| role == RoleType.SUB_COMMANDER)
+					if (role.isCouncil()) 
 						// Perform the executive review 
 						completeExecutiveReview(m, reviewerSettlement, mp);
 					else
 						// Perform the general review 
 						completeReview(m, reviewerSettlement, mp);
 						
-					logger.log(worker, Level.INFO, 0, "Done reviewing " + requestedBy
+					logger.log(worker, Level.INFO, 0, "Done reviewing " + m.getStartingPerson().getName()
 									+ "'s " + m.getName() + " mission plan.");
 					// Add experience
 					addExperience(time);
