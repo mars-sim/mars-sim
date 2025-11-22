@@ -62,10 +62,10 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 		}
 		Person leader = leaders.get(leaderNum);
 
-		// Confirmation
-		if (context.getBooleanInput("Create a " + choosen.getName() + " Mission with leader " + leader.getName())) {
-			// Create without a review
-			Mission newMission = choosen.constructInstance(leader, false);
+		int reviewChoice = CommandHelper.getOptionInput(context, List.of("Yes", "No"), "Request a review");
+		if (reviewChoice >= 0) {
+			// Create mission
+			Mission newMission = choosen.constructInstance(leader, reviewChoice == 0);
 			if (newMission.isDone()) {
 				context.println("Mission failed to start " + newMission.getMissionStatus());
 			}

@@ -108,6 +108,7 @@ public class TabPanelOrganization extends TabPanel {
 		var gov = settlement.getChainOfCommand().getGovernance();
 		labelPanel.addTextField("Govername Model", gov.getName(), null);
 		labelPanel.addTextField("Job Approvals", Boolean.toString(gov.needJobApproval()), null);
+		labelPanel.addTextField("Mission Min. Reviewers", Integer.toString(gov.getUniqueReviewers()), null);
 
 		root = new DefaultMutableTreeNode("  " + settlement.getName() + "  -  " + settlement.getUnitType().getName() + "  ");
 

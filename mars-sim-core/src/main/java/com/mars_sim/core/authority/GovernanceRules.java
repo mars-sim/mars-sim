@@ -24,6 +24,7 @@ public class GovernanceRules implements Serializable {
 
     private List<RoleType> allRoles;
     private boolean jobApproval;
+    private int uniqueReviewers;
     private String name;
 
     GovernanceRules(String name, List<RoleType> allRoles, List<RoleType> assignableRoles, List<RoleType> councilRoles,
@@ -32,6 +33,7 @@ public class GovernanceRules implements Serializable {
 		this.councilRoles = councilRoles;
 		this.allRoles = allRoles;
 		this.jobApproval = jobApproval;
+        this.uniqueReviewers = councilRoles.size(); // The number of unique reviewers is based on council roles
 		this.name = name;
 	}
 	
@@ -82,5 +84,14 @@ public class GovernanceRules implements Serializable {
      */
     public static int getMaxChiefs(int popSize) {
 		 return Math.max(0,popSize - GovernanceFactory.POPULATION_WITH_CHIEFS + 1);
+    }
+
+    /**
+     * Get the minimum number of unique reviewers for a mission plan
+     * 
+     * @return
+     */
+    public int getUniqueReviewers() {
+        return uniqueReviewers;
     }
 }
