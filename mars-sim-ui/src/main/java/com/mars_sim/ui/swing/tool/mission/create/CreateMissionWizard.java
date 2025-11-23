@@ -11,25 +11,26 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.ModalInternalFrame;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * A wizard for creating new missions.
  */
 @SuppressWarnings("serial")
 public class CreateMissionWizard
-extends ModalInternalFrame
+extends JDialog
 implements ActionListener {
 
 	// Data members
@@ -42,23 +43,22 @@ implements ActionListener {
 	
 	private MissionDataBean missionBean;
 	private TypePanel typePanel;
-	private MissionWindow missionWindow;
 	
-	private MainDesktopPane desktop;
+	private UIContext context;
 	
 	private List<WizardPanel> wizardPanels;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param missionWindow The owner frame.
+	 * @param parent The parent frame
+	 * @param context The UI context
 	 */
-	public CreateMissionWizard(MainDesktopPane desktop, MissionWindow missionWindow) {
-		// Use ModalInternalFrame constructor
-        super("Create Mission Wizard");
+	public CreateMissionWizard(UIContext context) {
+		// Use JDialog constructor
+        super(context.getTopFrame(), "Create Mission Wizard", true); // true for modal
 
-        this.missionWindow = missionWindow;
-        this.desktop = desktop;
+        this.context = context;
         
 		// Set mission data bean.
 		missionBean = new MissionDataBean();
@@ -74,7 +74,7 @@ implements ActionListener {
 		displayPanelIndex = 0;
 
 		// Create initial set of wizard panels.
-		typePanel = new TypePanel(this);
+		typePanel = new TypePanel(this, context);
 		addWizardPanel(typePanel);
 
         // Note: This panel is added so that next and final buttons are
@@ -109,21 +109,13 @@ implements ActionListener {
 		bottomButtonPane.add(cancelButton);
 
 		// Finish and display wizard.
-        setSize(new Dimension(700, 600));
+        var dim = new Dimension(700, 600);
+		setSize(dim);
+		setPreferredSize(dim);
         
-		// Set the icon
-		setIconImage();
-		
-        desktop.add(this); 
-        	
-		Dimension desktopSize = desktop.getParent().getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
-	    
-	    setModal(true);
-	    setVisible(true);
+        // Set dialog behavior
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(context.getTopFrame());
 	}
 
 	/**
@@ -164,23 +156,23 @@ implements ActionListener {
 		}
 		
 		// Note: Change members panel to use lead researcher as member.
-		addWizardPanel(new MembersPanel(this));
+		addWizardPanel(new MembersPanel(this, context));
 		
 		if (missionBean.isDeliveryMission()) {
-			addWizardPanel(new BotMembersPanel(this));
+			addWizardPanel(new BotMembersPanel(this, context));
 		}
 	
 		// Choose the remote location of the mission
 		if (missionBean.requiresFieldSite()) {
-			addWizardPanel(new FieldSitePanel(this));
+			addWizardPanel(new FieldSitePanel(this, context));
 		} 
 		
 		if (missionBean.isMiningMission() ) {
-			addWizardPanel(new MiningSitePanel(this));
+			addWizardPanel(new MiningSitePanel(this, context));
 	    } else if (missionBean.isProspectingMission()) {
-			addWizardPanel(new ProspectingSitePanel(this));
+			addWizardPanel(new ProspectingSitePanel(this, context));
 		} else if(missionBean.isExplorationMission()) {
-			addWizardPanel(new ExplorationSitesPanel(this));
+			addWizardPanel(new ExplorationSitesPanel(this, context));
 		} else if (missionBean.requiresDestinationSettlement()) {
 			addWizardPanel(new DestinationSettlementPanel(this));
 		} else if(missionBean.isRescueRendezvousMission()) {
@@ -292,17 +284,9 @@ implements ActionListener {
 	public TypePanel getTypePanel() {
 		return typePanel;
 	}
-	
-	public MissionWindow getMissionWindow() {
-		return missionWindow;
-	}
 
 	//Does the same as getMissionData, what is the difference?
 	public MissionDataBean getMissionBean() {
 		return missionBean;
-	}
-	
-	public MainDesktopPane getDesktop() {
-		return desktop;
 	}
 }

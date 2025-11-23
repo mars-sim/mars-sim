@@ -20,7 +20,7 @@ import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
 
 
@@ -40,9 +40,9 @@ public class TradePanel extends JPanel implements MissionListener{
 
 	/**
 	 * Constructor.
-	 * @param desktop 
+	 * @param context the UI context.
 	 */
-	public TradePanel(TradeObjective objective, MainDesktopPane desktop) {
+	public TradePanel(TradeObjective objective, UIContext context) {
 		// Use JPanel constructor
 		super();
 

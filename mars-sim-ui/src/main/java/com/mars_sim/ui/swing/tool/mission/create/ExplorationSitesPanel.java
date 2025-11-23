@@ -35,8 +35,8 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
@@ -70,8 +70,6 @@ class ExplorationSitesPanel extends WizardPanel {
 	private JPanel siteListPane;
 	private JButton addButton;
 
-	private MainDesktopPane desktop;
-
 	private int navSelected;
 
 	private double range;
@@ -83,11 +81,9 @@ class ExplorationSitesPanel extends WizardPanel {
 	 * 
 	 * @param wizard {@link CreateMissionWizard} the create mission wizard.
 	 */
-	ExplorationSitesPanel(CreateMissionWizard wizard) {
+	ExplorationSitesPanel(CreateMissionWizard wizard, UIContext context) {
 		// Use WizardPanel constructor.
 		super(wizard);
-
-		desktop = wizard.getDesktop();
 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -113,7 +109,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		centerPane.add(mapMainPane, BorderLayout.WEST);
 
 		// Create the map panel.
-		mapPane = new MapPanel(desktop);
+		mapPane = new MapPanel(context);
 		mapPane.setPreferredSize(new Dimension(400, 512));
 		mineralLayer = new MineralMapLayer(mapPane);
 		ellipseLayer = new EllipseLayer(Color.GREEN);

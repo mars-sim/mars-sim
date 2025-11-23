@@ -25,6 +25,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
@@ -59,7 +60,7 @@ class ProspectingSitePanel extends WizardPanel {
 	 * 
 	 * @param wizard the create mission wizard.
 	 */
-	ProspectingSitePanel(CreateMissionWizard wizard) {
+	ProspectingSitePanel(CreateMissionWizard wizard, UIContext context) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
@@ -84,12 +85,14 @@ class ProspectingSitePanel extends WizardPanel {
 		add(Box.createVerticalStrut(10));
 		
 		// Create the map panel.
-		mapPane = new MapPanel(wizard.getDesktop());
+		mapPane = new MapPanel(context);
 		mapPane.setPreferredSize(new Dimension(400, 512));
 
 		mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
-		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 1);
-		mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 2);
+		ellipseLayer = new EllipseLayer(Color.GREEN);
+		mapPane.addMapLayer(ellipseLayer, 1);
+		navLayer = new NavpointEditLayer(mapPane, false);
+		mapPane.addMapLayer(navLayer, 2);
 		
 		mapPane.addMouseListener(new NavpointMouseListener());
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
@@ -243,6 +246,7 @@ class ProspectingSitePanel extends WizardPanel {
 		 * Invoked when a mouse button has been released on a component.
 		 * @param event the mouse event.
 		 */
+		@Override
 		public void mouseReleased(MouseEvent event) {
 			navSelected = false;
 			navLayer.clearSelectedNavpoint();
@@ -260,6 +264,7 @@ class ProspectingSitePanel extends WizardPanel {
 		 * Invoked when a mouse button is pressed on a component and then dragged.
 		 * @param event the mouse event.
 		 */
+		@Override
 		public void mouseDragged(MouseEvent event) {
 			if (navSelected) {
 				// Drag navpoint flag.
@@ -290,10 +295,7 @@ class ProspectingSitePanel extends WizardPanel {
 			
 			pixelRange = convertRadiusToMapPixels(getRoverRange());
             int radius = mapPane.getCenterPoint().getDistance(position);
-			if (radius > pixelRange) 
-				return false;
-			else
-				return true;
+			return (radius <= pixelRange);
 		}
 	}
 }

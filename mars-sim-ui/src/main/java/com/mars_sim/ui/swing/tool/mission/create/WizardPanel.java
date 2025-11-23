@@ -14,8 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 
 /**
@@ -24,10 +22,7 @@ import com.mars_sim.ui.swing.StyleManager;
 @SuppressWarnings("serial")
 abstract class WizardPanel extends JPanel {
 
-	// Static members
-	private Simulation sim;
 
-	private MainDesktopPane desktop;
 	// Data members.
 	protected CreateMissionWizard wizard;
 
@@ -36,29 +31,14 @@ abstract class WizardPanel extends JPanel {
 	 * 
 	 * @param wizard the create mission wizard.
 	 */
-	public WizardPanel(CreateMissionWizard wizard) {
+	protected WizardPanel(CreateMissionWizard wizard) {
 		// Use JPanel constructor.
 		super();
 
 		// Initialize data members.
 		this.wizard = wizard;
-		this.desktop = wizard.getDesktop();
-		this.sim = desktop.getSimulation();
 	}
 
-	/**
-	 * Gets the desktop.
-	 */
-	protected MainDesktopPane getDesktop() {
-		return desktop;
-	}
-
-	/**
-	 * Gets the parent simulation.
-	 */
-	protected Simulation getSimulation() {
-		return sim;
-	}
 	
 	/**
 	 * Gets the create mission wizard.

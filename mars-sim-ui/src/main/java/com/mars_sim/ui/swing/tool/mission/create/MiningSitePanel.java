@@ -38,6 +38,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
@@ -82,10 +83,10 @@ public class MiningSitePanel extends WizardPanel {
 	 * 
 	 * @param wizard the create mission wizard.
 	 */
-	MiningSitePanel(CreateMissionWizard wizard) {
+	MiningSitePanel(CreateMissionWizard wizard, UIContext context) {
 		// Use WizardPanel constructor.
 		super(wizard);
-		surfaceFeatures = getSimulation().getSurfaceFeatures();
+		surfaceFeatures = context.getSimulation().getSurfaceFeatures();
 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -105,20 +106,23 @@ public class MiningSitePanel extends WizardPanel {
 		centerPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 350));
 		add(centerPane);
 
-		JPanel mapPanel = new JPanel(new BorderLayout(0, 0));//FlowLayout(FlowLayout.CENTER, 0, 0));
+		JPanel mapPanel = new JPanel(new BorderLayout(0, 0));
 		mapPanel.setBorder(new MarsPanelBorder());
 		centerPane.add(mapPanel, BorderLayout.WEST);
 
 		// Create the map panel.
-		mapPane = new MapPanel(wizard.getDesktop());
+		mapPane = new MapPanel(context);
 		mapPane.setPreferredSize(new Dimension(400, 512));
 
 		mineralLayer = new MineralMapLayer(mapPane);
 		
 		mapPane.addMapLayer(mineralLayer, 0);
-		mapPane.addMapLayer(unitLayer = new UnitMapLayer(mapPane), 1);
-		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 2);
-		mapPane.addMapLayer(exploredSiteLayer = new ExploredSiteMapLayer(mapPane), 3);
+		unitLayer = new UnitMapLayer(mapPane);
+		mapPane.addMapLayer(unitLayer, 1);
+		ellipseLayer = new EllipseLayer(Color.GREEN);
+		mapPane.addMapLayer(ellipseLayer, 2);
+		exploredSiteLayer = new ExploredSiteMapLayer(mapPane);
+		mapPane.addMapLayer(exploredSiteLayer, 3);
 		
 		exploredSiteLayer.displayFilter(ExploredSiteMapLayer.CLAIMED_FILTER, false);
 		exploredSiteLayer.displayFilter(ExploredSiteMapLayer.RESERVED_FILTER, false);
@@ -135,7 +139,6 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.setBorder(new MarsPanelBorder());
 		selectedSitePane.setPreferredSize(new Dimension(250, -1));
 		selectedSitePane.setLayout(new BoxLayout(selectedSitePane, BoxLayout.Y_AXIS));
-//		add(selectedSitePane, BorderLayout.EAST);
 		centerPane.add(selectedSitePane, BorderLayout.CENTER);
 
 		// Create selected site label.
@@ -307,15 +310,12 @@ public class MiningSitePanel extends WizardPanel {
 				concentrationTableModel.setValueAt(concentration, x, 1);
 			}
 
-			try {
-				if (getCenterCoords().getDistance(site.getLocation()) <= getRoverRange()) {
-					errorMessageLabel.setText(" ");
-					getWizard().setButtons(true);
-				} else {
-					errorMessageLabel.setText("Selected mining site is out of rover range.");
-					getWizard().setButtons(false);
-				}
-			} catch (Exception e) {
+			if (getCenterCoords().getDistance(site.getLocation()) <= getRoverRange()) {
+				errorMessageLabel.setText(" ");
+				getWizard().setButtons(true);
+			} else {
+				errorMessageLabel.setText("Selected mining site is out of rover range.");
+				getWizard().setButtons(false);
 			}
 		} else {
 			longitudeLabel.setText("");
@@ -416,6 +416,7 @@ public class MiningSitePanel extends WizardPanel {
 			return 2;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0)
@@ -425,6 +426,7 @@ public class MiningSitePanel extends WizardPanel {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
 				return "Mineral";
@@ -456,8 +458,7 @@ public class MiningSitePanel extends WizardPanel {
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
 
-			if ((value != null) && (value instanceof Color)) {
-				Color color = (Color) value;
+			if (value instanceof Color color) {
 				JPanel colorPanel = new JPanel();
 				colorPanel.setOpaque(true);
 				colorPanel.setBackground(color);

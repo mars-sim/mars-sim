@@ -10,6 +10,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
@@ -45,6 +46,7 @@ public class ToolRegistry {
 			case ScienceWindow.NAME -> new ScienceWindow(context);
 			case CommanderWindow.NAME -> new CommanderWindow(context);
             case ResupplyWindow.NAME -> new ResupplyWindow(context);
+            case MissionWindow.NAME -> new MissionWindow(context);
 			case SettlementWindow.NAME -> new SettlementWindow(context,
 										mainWindow.getConfig().getInternalWindowProps(SettlementWindow.NAME));
             case NavigatorWindow.NAME -> new NavigatorWindow(context,

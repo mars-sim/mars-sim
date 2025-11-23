@@ -36,6 +36,7 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * A wizard panel for selecting bots.
@@ -64,7 +65,7 @@ implements ActionListener {
 	 * 
 	 * @param wizard the create mission wizard.
 	 */
-	public BotMembersPanel(CreateMissionWizard wizard) {
+	public BotMembersPanel(CreateMissionWizard wizard, UIContext context) {
 		// Use WizardPanel constructor
 		super(wizard);
 
@@ -158,7 +159,7 @@ implements ActionListener {
 							if (selectedRows.length > 0) {
 								for (int selectedRow : selectedRows)  {
 									Robot robot = (Robot) botMembersTableModel.getUnit(selectedRow);
-									getDesktop().showDetails(robot);
+									context.showDetails(robot);
 								}
 							}
 						}
@@ -332,26 +333,23 @@ implements ActionListener {
 			if (row < units.size()) {
 				Robot robot = (Robot) getUnit(row);
 
-				try {
-					if (column == 0) 
-						result = robot.getName();
-					else if (column == 1) 
-						result = robot.getRobotType().getName();
-					else if (column == 2) {
-						Mission mission = robot.getBotMind().getMission();
-						if (mission != null) result = mission.getName();
-						else result = "None";
-					}
-					else if (column == 3) 
-						result = (int) (robot.getPerformanceRating() * 100D) + "%";
-					else if (column == 4){			
-						if (!robot.isOperable())
-							result = "Inoperable";
-						else 
-							result = "Operable";
-					}
+				if (column == 0) 
+					result = robot.getName();
+				else if (column == 1) 
+					result = robot.getRobotType().getName();
+				else if (column == 2) {
+					Mission mission = robot.getBotMind().getMission();
+					if (mission != null) result = mission.getName();
+					else result = "None";
 				}
-				catch (Exception e) {}
+				else if (column == 3) 
+					result = (int) (robot.getPerformanceRating() * 100D) + "%";
+				else if (column == 4){			
+					if (!robot.isOperable())
+						result = "Inoperable";
+					else 
+						result = "Operable";
+				}
 			}
 
 			return result;
@@ -387,8 +385,6 @@ implements ActionListener {
 			boolean result = false;
 
 			if (row < units.size()) {
-//				Robot robot = (Robot) getUnit(row);
-
 				if (column == 2) {
 //					if (robot.getBotMind().getMission() != null) 
 //						return true;

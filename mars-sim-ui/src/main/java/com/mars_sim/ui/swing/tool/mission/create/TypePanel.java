@@ -36,6 +36,7 @@ import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 
 
 /**
@@ -45,7 +46,7 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 public class TypePanel extends WizardPanel implements ItemListener {
 
 	/** The wizard panel name. */
-	private final static String NAME = "Mission Type";
+	private static final String NAME = "Mission Type";
 	
 	// Private members.
 	private JComboBoxMW<String> typeSelect;
@@ -64,13 +65,13 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	 * @param wizard {@link CreateMissionWizard} the create mission wizard.
 	 */
 	@SuppressWarnings("unchecked")
-	TypePanel(CreateMissionWizard wizard) {
+	TypePanel(CreateMissionWizard wizard, UIContext context) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
 		this.wizard = wizard;
 		
-		missionManager = getSimulation().getMissionManager();
+		missionManager = context.getSimulation().getMissionManager();
 		
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -99,7 +100,7 @@ public class TypePanel extends WizardPanel implements ItemListener {
 			types.add(missionTypes[i].getName());
 		}
 
-		typeSelect = new JComboBoxMW<String>();
+		typeSelect = new JComboBoxMW<>();
 		Iterator<String> k = types.iterator();
 		while (k.hasNext()) 
 			typeSelect.addItem(k.next());
@@ -136,9 +137,9 @@ public class TypePanel extends WizardPanel implements ItemListener {
 		descriptionPane.setMaximumSize(new Dimension(Short.MAX_VALUE, descriptionTF.getPreferredSize().height));
 
 		// Listen for changes in the text
-		addChangeListener(descriptionTF, e -> {
-			  descriptionText = descriptionTF.getText();
-		});
+		addChangeListener(descriptionTF, e ->
+			  descriptionText = descriptionTF.getText()
+		);
 		
 		// Add a vertical glue.
 		add(Box.createVerticalGlue());
@@ -164,7 +165,8 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	    Objects.requireNonNull(text);
 	    Objects.requireNonNull(changeListener);
 	    DocumentListener dl = new DocumentListener() {
-	        private int lastChange = 0, lastNotifiedChange = 0;
+	        private int lastChange = 0;
+			private int lastNotifiedChange = 0;
 
 	        @Override
 	        public void insertUpdate(DocumentEvent e) {
@@ -257,15 +259,5 @@ public class TypePanel extends WizardPanel implements ItemListener {
 	 */
 	void updatePanel() {
 		// No previous panel to this one.
-	}
-	
-	public String getDesignation() {
-		return getWizard().getMissionData().getDesignation();
-		//return descriptionField.getText();
-	}
-	
-	public String getDescription() {
-		return getWizard().getMissionData().getDescription();
-		//return descriptionField.getText();
 	}
 }

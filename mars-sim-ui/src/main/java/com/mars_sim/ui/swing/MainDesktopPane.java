@@ -302,23 +302,11 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		ContentPanel content = ToolRegistry.getTool(toolName, this);
-
-		ToolWindow w = null;
-		if (content != null) {
-			// New ContentPanel style
-			w = new ContentWindow(this, content);
-		}
-		else {
-			// Old legacy style
-			w = switch(toolName) {
-				case MissionWindow.NAME -> new MissionWindow(this);
-				default -> null;
-			};
-		}
-		if (w == null) {
+		if (content == null) {
 			logger.warning("No tool called " + toolName);
 			return null;
 		}
+		ToolWindow w = new ContentWindow(this, content);
 
 		// Close it from the start
 		try {
@@ -445,7 +433,8 @@ public class MainDesktopPane extends JDesktopPane
 			openUnitWindow(u, null);
 		}
 		else if (entity instanceof Mission m) {
-			((MissionWindow)openToolWindow(MissionWindow.NAME)).openMission(m);
+			ContentWindow cw = (ContentWindow) openToolWindow(MissionWindow.NAME);
+			((MissionWindow)cw.getContent()).openMission(m);
 		}
 		else if (entity instanceof Transportable t) {
 			ContentWindow cw = (ContentWindow) openToolWindow(ResupplyWindow.NAME);
