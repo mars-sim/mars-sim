@@ -113,14 +113,13 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 	 * @param modifyTransportItemDialog
 	 * @param newTransportItemDialog
 	 */
-	public ArrivingSettlementEditingPanel(ArrivingSettlement settlement, ResupplyWindow resupplyWindow,
+	public ArrivingSettlementEditingPanel(Simulation sim, ArrivingSettlement settlement,
 			ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {
 		super(settlement);
 		this.modifyTransportItemDialog = modifyTransportItemDialog;
 		this.newTransportItemDialog = newTransportItemDialog;
 		// Initialize data members.
 		this.settlement = settlement;
-		Simulation sim = resupplyWindow.getDesktop().getSimulation();
 		this.master = sim.getMasterClock();
 		this.transportManager = sim.getTransportManager();
 		this.unitManager = sim.getUnitManager();

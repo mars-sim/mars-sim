@@ -312,7 +312,6 @@ public class MainDesktopPane extends JDesktopPane
 			// Old legacy style
 			w = switch(toolName) {
 				case MissionWindow.NAME -> new MissionWindow(this);
-				case ResupplyWindow.NAME -> new ResupplyWindow(this);
 				default -> null;
 			};
 		}
@@ -449,7 +448,8 @@ public class MainDesktopPane extends JDesktopPane
 			((MissionWindow)openToolWindow(MissionWindow.NAME)).openMission(m);
 		}
 		else if (entity instanceof Transportable t) {
-			((ResupplyWindow)openToolWindow(ResupplyWindow.NAME)).openTransportable(t);
+			ContentWindow cw = (ContentWindow) openToolWindow(ResupplyWindow.NAME);
+			((ResupplyWindow)cw.getContent()).openTransportable(t);
 		}
 		else if (entity instanceof ScientificStudy s) {
 			// This is a holding code until all tools are mograted
