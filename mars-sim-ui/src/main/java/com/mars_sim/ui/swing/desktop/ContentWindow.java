@@ -8,26 +8,40 @@ package com.mars_sim.ui.swing.desktop;
 
 import java.util.Properties;
 
+import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.MainWindow;
 
 /**
  * This class renders a ContentPanel into an InternalWindow that can be displayed in a DesktopPane.
  */
-public class ContentWindow extends ToolWindow
+public class ContentWindow extends JInternalFrame
     implements ConfigurableWindow {
 
     private ContentPanel content;
 
+    /**
+     * Create an internal window to display the specified content panel inside a desktiop.
+     * @param desktop
+     * @param content
+     */
     public ContentWindow(MainDesktopPane desktop, ContentPanel content) {
-        super(content.getName(), content.getTitle(), desktop);
+
+		// use JInternalFrame constructor
+		super(content.getTitle(), true, // resizable
+				true, // closable
+				false, // maximizable
+				false // iconifiable
+		);
+
         this.content = content;
 
+        setFrameIcon(MainWindow.getLanderIcon());
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         setContentPane(content);
@@ -51,7 +65,6 @@ public class ContentWindow extends ToolWindow
 	 * 
 	 * @param pulse Clock step advancement
 	 */
-	@Override
 	public void update(ClockPulse pulse) {
         content.update(pulse);
     }
@@ -59,11 +72,13 @@ public class ContentWindow extends ToolWindow
     /**
      * Destroy the assocaited content panel.
      */
-    @Override
     public void destroy() {
         content.destroy();
     }
 
+    /**
+     * Gets the UI properties for this window.
+     */
     @Override
     public Properties getUIProps() {
         if (content instanceof ConfigurableWindow cw) {

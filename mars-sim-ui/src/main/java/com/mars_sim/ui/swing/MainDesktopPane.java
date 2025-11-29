@@ -57,7 +57,6 @@ import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindowFactory;
@@ -87,7 +86,7 @@ public class MainDesktopPane extends JDesktopPane
 	/** List of open or buttoned unit windows. */
 	private Collection<UnitWindow> unitWindows;
 	/** List of tool windows. */
-	private Collection<ToolWindow> toolWindows;
+	private Collection<ContentWindow> toolWindows;
 	/** ImageIcon that contains the tiled background. */
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
@@ -117,12 +116,7 @@ public class MainDesktopPane extends JDesktopPane
 		// Initialize sound player
 		if (!AudioPlayer.isAudioDisabled()) {
 			soundPlayer = new AudioPlayer(this);
-		}
-		
-		// Play the splash sound
-		String soundFilePath = SoundConstants.SND_SPLASH;
-		if (soundFilePath != null && soundFilePath.length() != 0 && soundPlayer != null) {
-			soundPlayer.playSound(soundFilePath);
+			soundPlayer.playMusic(SoundConstants.SND_SPLASH);
 		}
 		
 		// Prepare unit windows.
@@ -273,7 +267,7 @@ public class MainDesktopPane extends JDesktopPane
 	/**
 	 * Get the list of open Tool windows
 	 */
-	Collection<ToolWindow> getToolWindows() {
+	Collection<ContentWindow> getToolWindows() {
 		return toolWindows;
 	}
 
@@ -291,9 +285,9 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param createWinddow Create a window if it doesn't exist
 	 * @return the tool window
 	 */
-	private ToolWindow getToolWindow(String toolName, boolean createWindow) {
-		for (ToolWindow w : toolWindows) {
-			if (toolName.equals(w.getToolName()))
+	private ContentWindow getToolWindow(String toolName, boolean createWindow) {
+		for (var w : toolWindows) {
+			if (toolName.equals(w.getContent().getName()))
 				return w;
 		}
 
@@ -306,7 +300,7 @@ public class MainDesktopPane extends JDesktopPane
 			logger.warning("No tool called " + toolName);
 			return null;
 		}
-		ToolWindow w = new ContentWindow(this, content);
+		ContentWindow w = new ContentWindow(this, content);
 
 		// Close it from the start
 		try {
@@ -324,8 +318,8 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param model the new model to display
 	 */
 	public void addModel(UnitTableModel<?> model) {
-		var cw = (ContentWindow) openToolWindow(MonitorWindow.NAME);
-			((MonitorWindow)cw.getContent()).displayModel(model);
+		var cw = openToolWindow(MonitorWindow.NAME);
+		((MonitorWindow)cw).displayModel(model);
 	}
 
 	/**
@@ -335,7 +329,7 @@ public class MainDesktopPane extends JDesktopPane
 	 * @return true true if tool window is open
 	 */
 	public boolean isToolWindowOpen(String toolName) {
-		ToolWindow w = getToolWindow(toolName, false);
+		var w = getToolWindow(toolName, false);
 		if (w != null)
 			return !w.isClosed();
 		return false;
@@ -346,14 +340,14 @@ public class MainDesktopPane extends JDesktopPane
 	 *
 	 * @param toolName the name of the tool window
 	 */
-	public ToolWindow openToolWindow(String toolName) {
-		ToolWindow window = getToolWindow(toolName, true);
+	public ContentPanel openToolWindow(String toolName) {
+		ContentWindow window = getToolWindow(toolName, true);
 
 		if (window == null) {
 			return null;
 		}
 
-		if (window.isClosed() && !window.wasOpened()) {
+		if (window.isClosed()) {
 			UIConfig config = mainWindow.getConfig();
 			Point location = null;
 			WindowSpec previousDetails = config.getInternalWindowDetails(toolName);
@@ -374,7 +368,6 @@ public class MainDesktopPane extends JDesktopPane
 			location = new Point(Math.clamp(location.x, 1,(int)currentSize.getWidth() - 20),
 								 Math.clamp(location.y, 1, (int)currentSize.getHeight() - 20));
 			window.setLocation(location);
-			window.setWasOpened(true);
 		}
 
 		// in case of classic swing mode for MainWindow
@@ -395,13 +388,13 @@ public class MainDesktopPane extends JDesktopPane
 			// ignore if setSelected is vetoed
 		}
 
-		window.getContentPane().validate();
-		window.getContentPane().repaint();
+		// window.getContentPane().validate();
+		// window.getContentPane().repaint();
 
 		validate();
 		repaint();
 
-		return window;
+		return window.getContent();
 	}
 
 	/**
@@ -410,11 +403,11 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param toolName the name of the tool window
 	 */
 	public void closeToolWindow(String toolName) {
-		ToolWindow window = getToolWindow(toolName, false);
+		var window = getToolWindow(toolName, false);
 		if ((window != null) && !window.isClosed()) {
 			try {
 				window.setClosed(true);
-				window.dispose();
+				//window.dispose();
 			} catch (java.beans.PropertyVetoException e) {
 				// ignore
 			}
@@ -433,17 +426,17 @@ public class MainDesktopPane extends JDesktopPane
 			openUnitWindow(u, null);
 		}
 		else if (entity instanceof Mission m) {
-			ContentWindow cw = (ContentWindow) openToolWindow(MissionWindow.NAME);
-			((MissionWindow)cw.getContent()).openMission(m);
+			var cw = openToolWindow(MissionWindow.NAME);
+			((MissionWindow)cw).openMission(m);
 		}
 		else if (entity instanceof Transportable t) {
-			ContentWindow cw = (ContentWindow) openToolWindow(ResupplyWindow.NAME);
-			((ResupplyWindow)cw.getContent()).openTransportable(t);
+			var cw = openToolWindow(ResupplyWindow.NAME);
+			((ResupplyWindow)cw).openTransportable(t);
 		}
 		else if (entity instanceof ScientificStudy s) {
 			// This is a holding code until all tools are mograted
-			ContentWindow cw = (ContentWindow) openToolWindow(ScienceWindow.NAME);
-			((ScienceWindow)cw.getContent()).setScientificStudy(s);
+			var cw = openToolWindow(ScienceWindow.NAME);
+			((ScienceWindow)cw).setScientificStudy(s);
 		}
     }
 
@@ -555,7 +548,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 
 		// Update all tool windows.
-		for (ToolWindow w : toolWindows) {
+		for (var w : toolWindows) {
 			if (w.isVisible() || w.isShowing())
 				w.update(pulse);
 		}
@@ -731,7 +724,7 @@ public class MainDesktopPane extends JDesktopPane
 			unitWindows = null;
 		}
 		if (toolWindows != null) {
-			for (ToolWindow w : toolWindows) {
+			for (var w : toolWindows) {
 				w.destroy();
 			}
 			toolWindows = null;

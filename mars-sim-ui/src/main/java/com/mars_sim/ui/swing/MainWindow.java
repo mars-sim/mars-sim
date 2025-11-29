@@ -60,7 +60,6 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
-import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
@@ -94,7 +93,7 @@ public class MainWindow
 
 	private static final String SOUND = "sound";
 	private static final String MUSIC = "music";
-	private static final String _MUTE = "_mute";
+	private static final String MUTE = "_mute";
 	
 	/** The main window frame. */
 	private static JFrame frame;
@@ -105,11 +104,9 @@ public class MainWindow
 
 	// Data members
 	private boolean isIconified = false;
-//    private boolean isPanelVisible = false;
     
 	private int millisolIntCache;
-	private int initX;
-	private int initY;
+	
 	private List<Integer> volCache = new ArrayList<>();
 	
     private static final int PANEL_WIDTH = 40;
@@ -279,6 +276,8 @@ public class MainWindow
 	 * @param useDefaults
 	 */
 	private void setUpDefaultScreen(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefaults) {
+  int initY;
+  int initX;
 		
 		// Set main window frame size
 		selectedSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMainWindowDimension());
@@ -409,20 +408,6 @@ public class MainWindow
 			
 			// Move the menu bar out of the main window to the top of the screen
 			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-			
-			// Change the appearance of window title bars
-	        // 	 Possible values:
-	        //   - "system": use current macOS appearance (light or dark)
-	        //   - "NSAppearanceNameAqua": use light appearance
-	        //   - "NSAppearanceNameDarkAqua": use dark appearance
-	        // Note: Must be set on main thread and before AWT/Swing is initialized;
-	        //       Setting it on AWT thread does not work)
-//	        System.setProperty( "apple.awt.application.appearance", "system" );
-			
-//			if (SystemInfo.isMacFullWindowContentSupported) {
-//			    frame.getRootPane().putClientProperty( "apple.awt.fullWindowContent", true );
-//			    frame.getRootPane().putClientProperty( "apple.awt.transparentTitleBar", true );
-//			}
 		}
 		else {
 			frame.setIconImage(getIconImage());
@@ -518,7 +503,7 @@ public class MainWindow
 	public JPanel createSlidingLeftPanel(JPanel contentPane) {
 	
         // Create left sliding panel
-        leftSlidingPanel = new JPanel();//new BorderLayout());
+        leftSlidingPanel = new JPanel();
         setUpSize(PANEL_WIDTH, BAR_LENGTH * 2, leftSlidingPanel);
         leftSlidingPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -527,11 +512,11 @@ public class MainWindow
  	
      	// Add a floating volume bar
      	JToolBar musicBar = createSoundMusicSlider(0, volCache);
-     	leftSlidingPanel.add(musicBar);//, BorderLayout.NORTH);
+     	leftSlidingPanel.add(musicBar);
 
      	// Add a floating volume bar
      	JToolBar soundBar = createSoundMusicSlider(1, volCache);
-     	leftSlidingPanel.add(soundBar);//, BorderLayout.SOUTH);
+     	leftSlidingPanel.add(soundBar);
      	
         // Add components
         contentPane.add(leftSlidingPanel, BorderLayout.WEST);
@@ -546,13 +531,13 @@ public class MainWindow
 	 */
 	private JPanel createSpeedBar() {
 		
-		JPanel speedPanel = new JPanel(new FlowLayout());//new GridLayout(1, 3));
+		JPanel speedPanel = new JPanel(new FlowLayout());
 		speedPanel.setToolTipText("Speed Control");
 		
 		Dimension d1 = new Dimension(25, 25);
 		
 		// Add the decrease speed button
-		JButton decreaseSpeed = new JButton("-");//"\u2212");//u23EA");
+		JButton decreaseSpeed = new JButton("-");
 		decreaseSpeed.setAlignmentX(SwingConstants.CENTER);
 		decreaseSpeed.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 		decreaseSpeed.setPreferredSize(d1);
@@ -568,7 +553,7 @@ public class MainWindow
 		// Create pause switch
 		createPauseSwitch(d1);
 
-		JButton increaseSpeed = new JButton("+");//"\u002B");//\u23E9");
+		JButton increaseSpeed = new JButton("+");
 		increaseSpeed.setAlignmentX(SwingConstants.CENTER);
 		increaseSpeed.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 		increaseSpeed.setPreferredSize(d1);
@@ -650,10 +635,10 @@ public class MainWindow
      	}
 		
 		Icon icon = ImageLoader.getIconByName(type);
-		Icon musicMuteIcon = ImageLoader.getIconByName(type + _MUTE);
+		Icon musicMuteIcon = ImageLoader.getIconByName(type + MUTE);
 		JToggleButton toggleButton = new JToggleButton(icon);
 		setUpSize(PANEL_WIDTH - 5, PANEL_WIDTH - 5, toggleButton);
-		toggleButton.setAlignmentX(SwingConstants.CENTER);// Component.CENTER_ALIGNMENT);
+		toggleButton.setAlignmentX(SwingConstants.CENTER);
 		toggleButton.setToolTipText("Toggle on and off " + type + " volume");
 		toggleButton.setSelected(true);
 		toggleButton.setSelectedIcon(icon);
@@ -683,7 +668,7 @@ public class MainWindow
         slider.setPaintLabels(true);
         slider.setToolTipText(type + " volume slider");
         setUpSize(PANEL_WIDTH, BAR_LENGTH - PANEL_WIDTH - 10, slider);
-        slider.setAlignmentX(SwingConstants.CENTER);// Component.CENTER_ALIGNMENT);
+        slider.setAlignmentX(SwingConstants.CENTER);
 
         //this is for setting the value
         slider.addChangeListener(e -> {
@@ -957,7 +942,6 @@ public class MainWindow
 				return;
 			
 			int now = pulse.getMarsTime().getMillisolInt();	
-//			logger.info("now: " + now);
 			if (now != millisolIntCache && now != 1000 && now % 15 == 2) {
 
 				desktop.getSoundPlayer().loopThruBackgroundMusic();
@@ -1050,8 +1034,8 @@ public class MainWindow
 				Desktop.getDesktop().browse(helpURI);
 			}
 			else {
-				ContentWindow contentWindow = (ContentWindow) desktop.openToolWindow(GuideWindow.NAME);
-				GuideWindow ourGuide = (GuideWindow) contentWindow.getContent();
+				var contentWindow = desktop.openToolWindow(GuideWindow.NAME);
+				GuideWindow ourGuide = (GuideWindow) contentWindow;
 				ourGuide.displayURI(helpURI);
 			}
 		} catch (IOException e) {
@@ -1064,23 +1048,7 @@ public class MainWindow
 	 */
 	public void destroy() {
 		
-		masterClock.removeClockListener(this);
-		masterClock = null;
-		
-		frame = null;
-		
-		unitToolbar = null;
-		toolToolbar = null;
-		
+		masterClock.removeClockListener(this);		
 		desktop.destroy();
-		desktop = null;
-		
-		uiconfigs = null;
-
-		selectedSize = null;
-		
-		sim = null;
-		
-		memoryBar = null;
 	}
 }

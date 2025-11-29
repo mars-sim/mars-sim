@@ -15,7 +15,6 @@ import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 
@@ -58,7 +57,7 @@ public final class MapSelector {
 	 * @param coords
 	 */
 	public static void displayCoords(UIContext uiContext, Coordinates coords) {
-		var w = ((ContentWindow)uiContext.openToolWindow(NavigatorWindow.NAME)).getContent();
+		var w = uiContext.openToolWindow(NavigatorWindow.NAME);
 		((NavigatorWindow) w).updateCoordsMaps(coords);
 	}
 
@@ -113,8 +112,7 @@ public final class MapSelector {
 	 * @return
 	 */
 	private static SettlementWindow getSettlementWindow(UIContext uiContext) {
-		var w = ((ContentWindow)uiContext.openToolWindow(SettlementWindow.NAME)).getContent();
-		return (SettlementWindow)w;
+		return (SettlementWindow)uiContext.openToolWindow(SettlementWindow.NAME);
 	}
 
 	/**

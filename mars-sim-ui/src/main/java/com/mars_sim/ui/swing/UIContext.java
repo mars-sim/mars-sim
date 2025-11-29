@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /** 
  * Context interface for UI components to interact with the UI and simulation.
@@ -30,7 +29,7 @@ public interface UIContext {
      * @param name
      * @return
      */
-    ToolWindow openToolWindow(String name);
+    ContentPanel openToolWindow(String name);
 
     /**
      * Get the Simulation monitored by this UI
