@@ -303,7 +303,7 @@ public class MissionWindow extends ContentPanel implements MissionManagerListene
 	 * @param pulse The clock change
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		navpointPane.update(pulse);
 	}
 

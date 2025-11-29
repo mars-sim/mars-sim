@@ -118,7 +118,7 @@ extends ContentPanel {
 	 * @param pulse Unused clock pulse; window is time independent
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		// Update all of the panels.
 		ongoingStudyListPane.update();
 		finishedStudyListPane.update();

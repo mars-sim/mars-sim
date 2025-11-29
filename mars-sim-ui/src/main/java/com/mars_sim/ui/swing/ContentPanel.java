@@ -15,7 +15,8 @@ import com.mars_sim.core.time.ClockPulse;
 /**
  * This is a panel that displays content relavent to the Simulation.
  */
-public class ContentPanel extends JPanel {
+public class ContentPanel extends JPanel
+        implements TemporalComponent {
 
     /**
      * Prefered placement options for content panels within a window.
@@ -59,7 +60,8 @@ public class ContentPanel extends JPanel {
      * Updates content panel with clock pulse information.
      * @param pulse
      */
-    public void update(ClockPulse pulse) {
+    @Override
+    public void clockUpdate(ClockPulse pulse) {
         //  By default do nothing
     }
 

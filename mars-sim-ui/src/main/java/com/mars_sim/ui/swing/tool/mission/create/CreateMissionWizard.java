@@ -51,7 +51,6 @@ implements ActionListener {
 	/**
 	 * Constructor.
 	 * 
-	 * @param parent The parent frame
 	 * @param context The UI context
 	 */
 	public CreateMissionWizard(UIContext context) {

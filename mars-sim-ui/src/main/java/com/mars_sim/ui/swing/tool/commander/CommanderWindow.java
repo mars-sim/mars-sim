@@ -387,7 +387,7 @@ public class CommanderWindow extends ContentPanel {
 			// Modify preference settlement in Mission Tab			
 			prefButton.setText("Open " + s.getName() + " Preference tab");
 			
-			update((ClockPulse)null);
+			clockUpdate(null);
 		}
 	}
 
@@ -1512,7 +1512,7 @@ public class CommanderWindow extends ContentPanel {
 	 * @param pulse The Clock advance
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 
 		// Update list
 		listUpdate();

@@ -202,7 +202,7 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	 * @param pulse Clock pulse
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		mapPanel.update(pulse);
 		setPop(mapPanel.getSettlement().getNumCitizens());
 	}

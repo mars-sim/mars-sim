@@ -340,6 +340,7 @@ public class MainDesktopPane extends JDesktopPane
 	 *
 	 * @param toolName the name of the tool window
 	 */
+	@Override
 	public ContentPanel openToolWindow(String toolName) {
 		ContentWindow window = getToolWindow(toolName, true);
 
@@ -550,7 +551,7 @@ public class MainDesktopPane extends JDesktopPane
 		// Update all tool windows.
 		for (var w : toolWindows) {
 			if (w.isVisible() || w.isShowing())
-				w.update(pulse);
+				w.clockUpdate(pulse);
 		}
 	}
 

@@ -16,12 +16,13 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.TemporalComponent;
 
 /**
  * This class renders a ContentPanel into an InternalWindow that can be displayed in a DesktopPane.
  */
 public class ContentWindow extends JInternalFrame
-    implements ConfigurableWindow {
+    implements ConfigurableWindow, TemporalComponent {
 
     private ContentPanel content;
 
@@ -65,8 +66,9 @@ public class ContentWindow extends JInternalFrame
 	 * 
 	 * @param pulse Clock step advancement
 	 */
-	public void update(ClockPulse pulse) {
-        content.update(pulse);
+    @Override
+	public void clockUpdate(ClockPulse pulse) {
+        content.clockUpdate(pulse);
     }
 
     /**

@@ -44,7 +44,8 @@ public class MiningPanel extends JPanel
 	/**
 	 * Constructor
 	 * 
-	 * @param uiContext the UI context.
+	 * @param objective the mining objective.
+	 * @param context the UI context.
 	 */
 	public MiningPanel(MiningObjective objective, UIContext context) {
 		// Use JPanel constructor

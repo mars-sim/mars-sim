@@ -740,7 +740,7 @@ public class TimeTool extends ContentPanel {
 	}
 
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		MasterClock masterClock = pulse.getMasterClock();
 
 		// update the fast labels

@@ -251,7 +251,7 @@ public class ResupplyWindow extends ContentPanel
 	 * @param pulse Clock change
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		detailPane.update(pulse);
 	}
 

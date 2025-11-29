@@ -767,7 +767,7 @@ public class NavigatorWindow extends ContentPanel
 	 * @param pulse The clock pulse
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		if ((mapPanel != null) && mapPanel.updateDisplay()) {
 			updateMapControls();
 		}
