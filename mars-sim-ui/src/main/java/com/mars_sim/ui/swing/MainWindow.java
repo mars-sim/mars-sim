@@ -24,6 +24,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,7 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
@@ -137,6 +139,8 @@ public class MainWindow
 	private transient HelpLibrary helpLibrary;
 
 	private boolean useExternalBrowser;
+
+	private ClockListener clockHandler;
 
 	/**
 	 * Constructor 1.
@@ -392,7 +396,7 @@ public class MainWindow
 			isIconified = (state == Frame.ICONIFIED);
 			if (state == Frame.MAXIMIZED_HORIZ
 					|| state == Frame.MAXIMIZED_VERT)
-				logger.log(Level.CONFIG, "MainWindow set to maximum."); //$NON-NLS-1$
+				logger.log(Level.CONFIG, "MainWindow set to maximum."); //-NLS-1$
 			repaint();
 		});
 	
@@ -510,14 +514,16 @@ public class MainWindow
 		memoryBar.setPreferredSize(new Dimension(235, 22));
 		statusBar.addRightComponent(memoryBar, false);
 
-		// Add this class to the master clock's listener
-		masterClock.addClockListener(this, 1000L);
+		// Add this class to the master clock's listener but compress the pulses
+		// to no more than one per second
+		clockHandler = new CompressedClockListener(this, 1000L);
+		masterClock.addClockListener(clockHandler);
 	}
 	  
 	public JPanel createSlidingLeftPanel(JPanel contentPane) {
 	
         // Create left sliding panel
-        leftSlidingPanel = new JPanel();//new BorderLayout());
+        leftSlidingPanel = new JPanel();
         setUpSize(PANEL_WIDTH, BAR_LENGTH * 2, leftSlidingPanel);
         leftSlidingPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -781,7 +787,7 @@ public class MainWindow
 		File fileLocn = null;
 		if (!defaultFile) {
 			JFileChooser chooser = new JFileChooser(SimulationRuntime.getSaveDir());
-			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //$NON-NLS-1$
+			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //-NLS-1$
 			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 				fileLocn = chooser.getSelectedFile();
 			} else {
@@ -956,7 +962,6 @@ public class MainWindow
 				return;
 			
 			int now = pulse.getMarsTime().getMillisolInt();	
-//			logger.info("now: " + now);
 			if (now != millisolIntCache && now != 1000 && now % 15 == 2) {
 
 				desktop.getSoundPlayer().loopThruBackgroundMusic();
@@ -1062,7 +1067,7 @@ public class MainWindow
 	 */
 	public void destroy() {
 		
-		masterClock.removeClockListener(this);
+		masterClock.removeClockListener(clockHandler);
 		masterClock = null;
 		
 		frame = null;
