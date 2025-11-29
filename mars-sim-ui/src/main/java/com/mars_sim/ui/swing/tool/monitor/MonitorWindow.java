@@ -57,7 +57,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.tool_window.MapSelector;
+import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
 /**
@@ -179,8 +179,8 @@ public class MonitorWindow extends ContentPanel
 	 */
 	public MonitorWindow(UIContext context, Properties uiProps) {
 		// Use TableWindow constructor
-		super(NAME, TITLE);
-
+		super(NAME, TITLE, Placement.BOTTOM);
+		
 		this.context = context;
 
 		unitManager = context.getSimulation().getUnitManager();

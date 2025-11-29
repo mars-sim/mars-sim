@@ -75,7 +75,7 @@ public class GuideWindow extends ContentPanel implements ActionListener, Hyperli
 	 * Constructor.
 	 */
 	public GuideWindow(HelpLibrary library) {
-		super(NAME,Msg.getString("GuideWindow.title"));
+		super(NAME,Msg.getString("GuideWindow.title"), Placement.RIGHT);
 
 		this.library = library;
 			
@@ -220,17 +220,5 @@ public class GuideWindow extends ContentPanel implements ActionListener, Hyperli
 		homeButton.setEnabled(true);
 		backButton.setEnabled(!htmlPane.isFirst());
 		forwardButton.setEnabled(!htmlPane.isLast());
-	}
-	
-	/** 
-	 * Prepares tool window for deletion. 
-	 */
-	@Override
-	public void destroy() {
-		htmlPane = null;
-		viewPort = null;
-		homeButton = null;
-		backButton = null;
-		forwardButton = null;
 	}
 }

@@ -23,7 +23,7 @@ import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.tool_window.MapSelector;
+import com.mars_sim.ui.swing.tool.MapSelector;
 
 /**
  * A label that displays the name of an Entity and provides buttons to show details

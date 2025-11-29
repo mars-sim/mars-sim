@@ -49,7 +49,7 @@ extends ContentPanel {
 	public ScienceWindow(UIContext context) {
 
 		// Use ToolWindow constructor
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.CENTER);
 
 		selectedStudy = null;
 

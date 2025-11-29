@@ -230,7 +230,9 @@ implements ActionListener {
 	 * Initialization.
 	 */
 	public OrbitViewer(MasterClock masterClock) {
-		super(NAME, "Orbit Viewer");
+		super(NAME, "Orbit Viewer", Placement.CENTER);
+
+		 setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
 
 		this.masterClock = masterClock;
 		String[][] array = getParameterInfo();
@@ -597,7 +599,7 @@ implements ActionListener {
         gblCtrlPanel.setConstraints(choiceOrbitObject, gbcCtrlPanel);
         ctrlPanel.add(choiceOrbitObject);
         for (int i = 0; i < orbitDisplayDefault.length; i++) {
-                orbitDisplay[i] = orbitDisplayDefault[i];
+            orbitDisplay[i] = orbitDisplayDefault[i];
         }
         choiceOrbitObject.setSelectedIndex(1);
         orbitCanvas.selectOrbits(orbitDisplay);
@@ -742,15 +744,16 @@ implements ActionListener {
 		if (strName == null) {
 			strName = "Object";
 		}
-		double e, q;
-		ATime T;
+		double e;
+		double q;
+		ATime t;
 		String strParam;
 		if ((strParam = getParameter("e")) == null) {
 			throw new IllegalArgumentException("required parameter 'e' not found.");
 		}
 		e = Double.parseDouble(strParam);
 		if ((strParam = getParameter("T")) != null) {
-			T = ymdStringToAtime(strParam);
+			t = ymdStringToAtime(strParam);
 			if ((strParam = getParameter("q")) != null) {
 				q = Double.parseDouble(strParam);
 			} else if ((strParam = getParameter("a")) != null) {
@@ -788,14 +791,14 @@ implements ActionListener {
 			double M = Double.parseDouble(strParam)
 				* Math.PI / 180.0;
 			if (M < Math.PI) {
-				T = new ATime(epoch.getJd() - M / n, 0.0);
+				t = new ATime(epoch.getJd() - M / n, 0.0);
 			} else {
-				T = new ATime(epoch.getJd() + (Math.PI*2.0 - M) / n, 0.0);
+				t = new ATime(epoch.getJd() + (Math.PI*2.0 - M) / n, 0.0);
 			}
 		} else {
 			throw new IllegalArgumentException("Required parameter 'T' or 'Epoch' not found.");
 		}
-		return new Comet(strName, T.getJd(), e, q,
+		return new Comet(strName, t.getJd(), e, q,
 						 getRequiredParameter("Peri")*Math.PI/180.0,
 						 getRequiredParameter("Node")*Math.PI/180.0,
 						 getRequiredParameter("Incl")*Math.PI/180.0,
@@ -833,8 +836,10 @@ implements ActionListener {
 	/**
 	 * Destroy.
 	 */
+	@Override
 	public void destroy() {
 		orbitPlayer.stop();
+		super.destroy();
 	}
 
 	private void setButtonState(boolean playing) {

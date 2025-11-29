@@ -78,7 +78,7 @@ public class ResupplyWindow extends ContentPanel
 	 */
 	public ResupplyWindow(UIContext context)  {
 		// Use the ToolWindow constructor.
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.CENTER);
 		this.context = context;
 
 		// Create main panel.

@@ -233,7 +233,7 @@ public class NavigatorWindow extends ContentPanel
 	 */
 	public NavigatorWindow(UIContext context, Properties userSettings) {
 		// use ToolWindow constructor
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.CENTER);
 
 		Simulation sim = context.getSimulation();
 		this.unitManager = sim.getUnitManager();

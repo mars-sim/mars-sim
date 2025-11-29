@@ -74,7 +74,7 @@ public class SettlementWindow extends ContentPanel implements ConfigurableWindow
 	 */
 	public SettlementWindow(UIContext context, Properties uiProps) {
 		// Use ToolWindow constructor
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.CENTER);
 
 		setBackground(Color.BLACK);
 		

@@ -4,7 +4,7 @@
  * @date 2024-11-09
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.tool_window;
+package com.mars_sim.ui.swing.tool;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;

@@ -92,7 +92,7 @@ public class MissionWindow extends ContentPanel implements MissionManagerListene
 	public MissionWindow(UIContext context) {
 
 		// Use ToolWindow constructor
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.CENTER);
 
 		this.context = context;
 		this.missionMgr = context.getSimulation().getMissionManager();

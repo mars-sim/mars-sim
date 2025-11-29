@@ -69,7 +69,7 @@ extends ContentPanel {
 	public SearchWindow(UIContext context) {
 
 		// Use ToolWindow constructor
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.RIGHT);
 		
 		unitManager = context.getSimulation().getUnitManager();
 		
@@ -158,16 +158,6 @@ extends ContentPanel {
 		unitListModel.setNameFilter(searchForName.getText());
 	}
 
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		if (unitListModel != null) {
-			unitListModel.clear();
-			unitListModel = null;
-		}
-	
-	}
 	private static class UnitTypeRenderer extends BasicComboBoxRenderer {
         @SuppressWarnings("rawtypes")
 		@Override

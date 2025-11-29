@@ -241,7 +241,7 @@ public class CommanderWindow extends ContentPanel {
 	 */
 	public CommanderWindow(UIContext context) {
 		// Use ToolWindow constructor
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.CENTER);
 
 		this.context = context;
 		var sim = context.getSimulation();
@@ -1810,19 +1810,5 @@ public class CommanderWindow extends ContentPanel {
 				}
 			}
 		}
-	}
-	
-
-	/**
-	 * Prepares tool window for deletion.
-	 */
-	@Override
-	public void destroy() {
-		tabPane = null;
-		personBox = null;
-		listModel = null;
-		listScrollPanel = null;
-		list = null;
-		cc = null;
 	}
 }

@@ -161,7 +161,7 @@ public class TimeTool extends ContentPanel {
 	 */
 	public TimeTool(Simulation sim) {
 		// Use TimeWindow constructor
-		super(NAME, TITLE);
+		super(NAME, TITLE, Placement.RIGHT);
 	
 
 		// Initialize data members
@@ -753,33 +753,5 @@ public class TimeTool extends ContentPanel {
 			updateTimeLabels(masterClock);
 			lastUpdateTime = currentTime;
 		}
-	}
-	
-	/**
-	 * Prepares tool window for deletion.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		calendarDisplay = null;
-		cpuSpinner = null;
-		martianTimeLabel = null;
-		lonLabel = null;
-		northernSeasonLabel = null;
-		southernSeasonLabel = null;
-		uptimeLabel = null;
-		ticksPerSecLabel = null;
-		actualTRLabel = null;
-		desireTRLabel = null;
-		pulseDeviationLabel = null;
-		execTimeLabel = null;
-		sleepTimeLabel = null;
-		leadPulseLabel = null;
-		taskPulseLabel = null;
-		realTimeClockLabel = null;
-		monthLabel = null;
-		weeksolLabel = null;		
-		orbitInfo = null;
 	}
 }
