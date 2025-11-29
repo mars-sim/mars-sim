@@ -106,6 +106,35 @@ class MetricManagerTest extends MarsSimUnitTest {
         assertTrue(categories.contains(category2));
     }
     
+    /**
+     * Test listener to capture new metric notifications
+     */
+    private static class TestListener implements MetricManagerListener {
+        public Metric notifiedMetric = null;
+
+        @Override
+        public void newMetric(Metric m) {
+            this.notifiedMetric = m;
+        }
+    }
+
+    @Test
+    @DisplayName("getEntities should return empty list for category with no metrics")
+    void testNotification() {
+        TestListener listener = new TestListener();
+
+        manager.addListener(listener);
+        var added = manager.getMetric(entity1, category1, measure1);
+
+        assertEquals(added, listener.notifiedMetric);
+
+        // Reset
+        listener.notifiedMetric = null;
+        manager.removeListener(listener);
+        manager.getMetric(entity1, category1, measure2);
+        assertNull(listener.notifiedMetric);
+    }
+
     @Test
     @DisplayName("getEntities should return empty list for category with no metrics")
     void testGetEntitiesEmptyForNewCategory() {

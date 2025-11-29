@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.tool.metrics;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.List;
@@ -22,7 +23,6 @@ import javax.swing.JTabbedPane;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CompassFormat;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
@@ -30,13 +30,15 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.metrics.Metric;
 import com.mars_sim.core.metrics.MetricManager;
+import com.mars_sim.core.metrics.MetricManagerListener;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 
 /**
  * A Swing component that displays multiple JFreeChart line charts in a tabbed pane.
  * Users can add and remove chart tabs using dropdown controls for Entity, Category, and Measure.
  */
-public class MetricChartViewer extends JPanel {
+public class MetricChartViewer extends JPanel implements MetricManagerListener {
     
     // Constants
     private static final String SELECT_PROMPT = "-- Select --";
@@ -59,9 +61,12 @@ public class MetricChartViewer extends JPanel {
      */
     public MetricChartViewer(MetricManager metricManager) {
         this.metricManager = metricManager;
+
         initializeComponents();
         setupEventHandlers();
         populateInitialData();
+
+        metricManager.addListener(this);
     }
     
     /**
@@ -253,10 +258,16 @@ public class MetricChartViewer extends JPanel {
     }
     
     /**
-     * Updates the enabled state of the control buttons base don selected tab
+     * Updates the enabled state of the control buttons based on selected tab.
+     * And refresh selection
      */
     private void updateButtonState() {
-        boolean isTabSelected = tabbedPane.getSelectedIndex() >= 0;
+        int selected = tabbedPane.getSelectedIndex();
+        if (selected >= 0) {
+            refreshChartTab(tabbedPane.getSelectedComponent());
+        }
+
+        boolean isTabSelected = selected >= 0;
         removeButton.setEnabled(isTabSelected);
         addButton.setEnabled(isTabSelected);
     }
@@ -365,5 +376,39 @@ public class MetricChartViewer extends JPanel {
 
         return new JFreeChart(dataset.getTitle(), JFreeChart.DEFAULT_TITLE_FONT,
                 plot, true);
+    }
+
+    	
+	/**
+	 * Updates metric views by refreshing the visible chart
+	 * 
+	 * @param pulse Clock step advancement
+	 */
+	public void update(ClockPulse pulse) {
+        int selectedIndex = tabbedPane.getSelectedIndex();
+        if (selectedIndex >= 0) {
+            refreshChartTab(tabbedPane.getSelectedComponent());
+        }
+    }
+
+    /**
+     * Trigger a refresh of the given chart tab panel
+     * @param tabPanel
+     */
+    private void refreshChartTab(Component tabPanel) {
+        JFreeChart chart = ((ChartPanel) tabPanel).getChart();
+        XYPlot plot = chart.getXYPlot();
+        var dataset = (MetricDataset) plot.getDataset();
+        dataset.refresh();
+	}
+
+    @Override
+    public void newMetric(Metric m) {
+        if (categoryComboBox.getSelectedIndex() == 0) {
+            populateCategoryComboBox();
+        }
+        if (entityComboBox.getSelectedIndex() == 0) {
+            populateEntityComboBox();
+        }
     }
 }

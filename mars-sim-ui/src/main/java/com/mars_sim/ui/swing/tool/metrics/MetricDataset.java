@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.TableXYDataset;
@@ -22,9 +24,12 @@ import com.mars_sim.core.metrics.Metric;
  */
 class MetricDataset extends AbstractXYDataset implements TableXYDataset {
 
+    private static Logger logger = Logger.getLogger(MetricDataset.class.getName());
+
     private transient List<Metric> metrics = new ArrayList<>();
     private String title = "No Metrics";
     private List<double[]> cumulativeValues = null;
+    private List<Integer> metricSizes = new ArrayList<>();
 
     /**
      * Get the number of items for the given series
@@ -81,6 +86,14 @@ class MetricDataset extends AbstractXYDataset implements TableXYDataset {
             return false;
         }
         metrics.add(values);
+
+        // Do the cummulative values if needed
+        if (cumulativeValues != null) {
+            cumulativeValues.add(calculateCumulativeValues(values));
+            metricSizes.add(values.getSize());
+        }
+
+        // Update title and notify
         calculateTitle();
         fireDatasetChanged();
         return true;
@@ -101,22 +114,36 @@ class MetricDataset extends AbstractXYDataset implements TableXYDataset {
     public void setCumulative(boolean cumulative) {
         // Currently no-op as metrics are always cumulative
         if (cumulative) {
+            metricSizes = new ArrayList<>();
             cumulativeValues = new ArrayList<>();
-            for(int j = 0; j < metrics.size(); j++) {
-                var m = metrics.get(j);
-                var totals = new double[m.getSize()];
-                var runningTotal = 0.0;
-                for (int i = 0; i < totals.length; i++) {
-                    runningTotal += m.getDataPoint(i).getValue();
-                    totals[i] = runningTotal;
-                }
+            for(var m : metrics) {
+                var totals = calculateCumulativeValues(m);
                 cumulativeValues.add(totals);
+                metricSizes.add(m.getSize());
             }
         }
         else {
             cumulativeValues = null;
         }
+
+        logger.log(Level.INFO, "MetricDataset {0} set cumulative to {1}", new Object[]{title, cumulative});
+
         fireDatasetChanged();
+    }
+
+    /**
+     * Convert a metric into a seqeunce of cumulative values
+     * @param m
+     * @return
+     */
+    private static double[] calculateCumulativeValues(Metric m) {
+        var totals = new double[m.getSize()];
+        var runningTotal = 0.0;
+        for (int i = 0; i < totals.length; i++) {
+            runningTotal += m.getDataPoint(i).getValue();
+            totals[i] = runningTotal;
+        }
+        return totals;
     }
 
     /**
@@ -127,6 +154,9 @@ class MetricDataset extends AbstractXYDataset implements TableXYDataset {
         return title;
     }
 
+    /**
+     * Calculates the title based on the metrics present
+     */
     private void calculateTitle() {
         if (metrics.size() == 1) {
             title = metrics.get(0).getKey().getDisplay();
@@ -165,5 +195,40 @@ class MetricDataset extends AbstractXYDataset implements TableXYDataset {
     @Override
     public int getItemCount() {
         return metrics.stream().mapToInt(Metric::getSize).sum();
+    }
+
+    @Override
+    public String toString() {
+        return title;
+    }
+
+    /**
+     * Refresh the dataset to check for changes.
+     */
+    public void refresh() {
+        boolean fireChange = false;
+        List<Integer> newSizes = new ArrayList<>();
+
+        // Check if the length if each Metric has changed.
+        for(int i = 0; i < metrics.size(); i++) {
+            var m = metrics.get(i);
+            int size = m.getSize();
+            newSizes.add(size);
+            if (i >= metricSizes.size() || size != metricSizes.get(i))  {
+                fireChange = true;
+
+                // If cummulative, recalculate
+                if (cumulativeValues != null) {
+                    cumulativeValues.set(i, calculateCumulativeValues(m));
+                }
+            }
+        }
+        
+        if (fireChange) {
+            metricSizes = newSizes;
+
+            logger.log(Level.INFO,"MetricDataset {0} detected change, refreshing dataset", title);
+            fireDatasetChanged();
+        }
     }
 }

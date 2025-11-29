@@ -8,8 +8,10 @@ package com.mars_sim.core.metrics;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
@@ -22,6 +24,7 @@ import com.mars_sim.core.time.MarsTime;
  */
 public class MetricManager {
     private Map<MetricKey, Metric> metrics;
+    private Set<MetricManagerListener> listeners = null;
     
     /**
      * Creates a new MetricManager.
@@ -70,9 +73,41 @@ public class MetricManager {
      */
     public Metric getMetric(Entity asset, String category, String measure) {
         MetricKey key = new MetricKey(asset, category, measure);
-        return metrics.computeIfAbsent(key, this::createMetric);
+        var m = metrics.get(key);
+        if (m == null) {
+            m = createMetric(key);
+            metrics.put(key, m);
+
+            if (listeners != null) {
+                for (var listener : listeners) {
+                    listener.newMetric(m);
+                }
+            }
+        }
+        return m;
     }
     
+    /**
+     * Add a listener to be notified when new metrics are created.
+     * @param listener
+     */
+    public void addListener(MetricManagerListener listener) {
+        if (listeners == null) {
+            listeners = new HashSet<>();
+        }
+        listeners.add(listener);
+    }
+
+    /**
+     * Remove a previously added listener.
+     * @param listener
+     */
+    public void removeListener(MetricManagerListener listener) {
+        if (listeners != null) {
+            listeners.remove(listener);
+        }
+    }
+
     /**
      * Creates a new Metric instance based on the provided key.
      * Currently, all metrics are in-memory, but this could be extended to support other types
