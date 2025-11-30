@@ -12,21 +12,21 @@ import javax.swing.JList;
 import javax.swing.event.MouseInputAdapter;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * This class listens for double click event on a JLast. When an event triggers; a details window
  * is launched.
  */
 public class EntityListLauncher extends MouseInputAdapter {
-    private MainDesktopPane desktop;
+    private UIContext desktop;
 
     /**
      * Create a launcher that will create a UnitDetails window.
      * 
      * @param desktop
      */
-    public EntityListLauncher(MainDesktopPane desktop) {
+    public EntityListLauncher(UIContext desktop) {
         this.desktop = desktop;
     }
 
@@ -38,10 +38,8 @@ public class EntityListLauncher extends MouseInputAdapter {
     @Override
     public void mouseClicked(MouseEvent e) {
         // If double-click, open a details window
-        if (e.getClickCount() >= 2) {
-            if (e.getComponent() instanceof JList list) {
-                desktop.showDetails((Entity) list.getSelectedValue());
-            }
+        if (e.getClickCount() >= 2 && e.getComponent() instanceof JList list) {
+            desktop.showDetails((Entity) list.getSelectedValue());
         }
     }
 }

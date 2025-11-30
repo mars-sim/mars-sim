@@ -10,27 +10,23 @@ package com.mars_sim.ui.swing.tool.mission.edit;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.ModalInternalFrame;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 
 
 /**
  * The modify mission dialog for the mission tool.
  */
-public class ModifyMissionDialog extends ModalInternalFrame {
+public class ModifyMissionDialog extends JDialog {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -38,31 +34,27 @@ public class ModifyMissionDialog extends ModalInternalFrame {
 	// Private members
 	private Mission mission;
 	private EditPanel editPane;
-	protected MainDesktopPane desktop;
 	private MissionWindow missionWindow;
 	
 	/**
 	 * Constructor
-	 * @param owner the owner frame.
-	 * @param mission the mission to edit.
+	 * @param mission the mission to edit
+	 * @param context the UI context
+	 * @param missionWindow the mission window
 	 */
-	public ModifyMissionDialog(MainDesktopPane desktop, Mission mission, MissionWindow missionWindow) {
-		// Use ModalInternalFrame constructor
-        super("Modify Mission");
+	public ModifyMissionDialog(Mission mission, UIContext context, MissionWindow missionWindow) {
+		// Use JDialog constructor
+        super(context.getTopFrame(), "Modify Mission", true); // true for modal
         this.missionWindow = missionWindow;
         
 		// Initialize data members.
 		this.mission = mission;
-		this.desktop = desktop;
 		
 		// Set the layout.
 		setLayout(new BorderLayout(0, 0));
-		
-		// Set the border.
-		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
         
 		// Create the edit panel.
-        editPane = new EditPanel(mission, desktop, this);
+        editPane = new EditPanel(mission, context);
         add(editPane, BorderLayout.CENTER);
         
         // Create the button panel.
@@ -72,43 +64,24 @@ public class ModifyMissionDialog extends ModalInternalFrame {
         // Create the modify button.
         JButton modifyButton = new JButton("Execute");
         modifyButton.addActionListener(
-        		new ActionListener() {
-        			public void actionPerformed(ActionEvent e) {
-        				// Commit the mission modification and close dialog.
-        				modifyMission();
-        				dispose();
-        			}
+        		e -> {
+					// Commit the mission modification and close dialog.
+					modifyMission();
+					dispose();
 				});
         buttonPane.add(modifyButton);
         
         // Create the cancel button.
         JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(
-				new ActionListener() {
-        			public void actionPerformed(ActionEvent e) {
-        				// Close the dialog.
-        				dispose();
-        			}
-				});
+				e -> dispose());
         buttonPane.add(cancelButton);
-		
-		// Finish and display dialog.
-		//pack();
-		//setLocationRelativeTo(owner);
+	    
+        var dim = new Dimension(400, 400);
+        setSize(dim);
+		setPreferredSize(dim);
         
-		setResizable(false);
-
-        desktop.add(this);
-	    
-        setSize(new Dimension(400, 400));
-		Dimension desktopSize = desktop.getParent().getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
-	    
-	    //setModal(true);
-	    setVisible(true);
+        setLocationRelativeTo(context.getTopFrame());
 	}
 	
 	/**
@@ -163,7 +136,7 @@ public class ModifyMissionDialog extends ModalInternalFrame {
 	private void setWorkers() {
 		// Add new members.
 		for (int x = 0; x < editPane.memberListModel.size(); x++) {
-		    Worker member = (Worker) editPane.memberListModel.elementAt(x);
+		    Worker member = editPane.memberListModel.elementAt(x);
 			if (!mission.getMembers().contains(member)) {
 			    member.setMission(mission);
 			}

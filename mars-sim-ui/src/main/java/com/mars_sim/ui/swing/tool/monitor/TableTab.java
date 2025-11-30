@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +27,7 @@ import javax.swing.table.TableModel;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
@@ -49,8 +48,6 @@ public class TableTab extends MonitorTab {
 	private static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3);
 	private static final MarsTimeTableCellRenderer TIME_RENDERER = new MarsTimeTableCellRenderer();
 	private static final NumberCellRenderer CURRENCY_RENDERER = new NumberCellRenderer(2, "$");
-
-	private TableProperties propsWindow;
 
 	/** Table component. */
 	private JTable table;
@@ -114,11 +111,6 @@ public class TableTab extends MonitorTab {
 				}
 			}
 		});
-
-		// Allow ordering
-//		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-//		sorter.setSortsOnUpdates(true);
-//		table.setRowSorter(sorter);
 		
 		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
 		table.setAutoCreateRowSorter(true);
@@ -173,34 +165,13 @@ public class TableTab extends MonitorTab {
 	/**
 	 * Display property window anchored to a main desktop.
 	 *
-	 * @param desktop Main desktop owing the properties dialog.
+	 * @param context Main desktop owing the properties dialog.
 	 */
-	public void displayProps(MainDesktopPane desktop) {
-		if (propsWindow == null) {
-			propsWindow = new TableProperties(getName(), table, desktop);
-			propsWindow.show();
-		} else {
-			if (propsWindow.isClosed()) {
-				if (!propsWindow.wasOpened()) {
-					propsWindow.setWasOpened(true);
-				}
-				add(propsWindow, 0);
-				try {
-					propsWindow.setClosed(false);
-				} catch (PropertyVetoException e) {
-					// Ignore veto problems
-				}
-			}
-			propsWindow.show();
-			// bring to front if it overlaps with other propsWindows
-			try {
-				propsWindow.setSelected(true);
-			} catch (PropertyVetoException e) {
-				// ignore if setSelected is vetoed
-			}
-		}
-		propsWindow.getContentPane().validate();
-		propsWindow.getContentPane().repaint();
+	@Override
+	public void displayProps(UIContext context) {
+		var propsWindow = new TableProperties(context.getTopFrame(), getName(), table);
+		propsWindow.setVisible(true);
+		
 		validate();
 		repaint();
 

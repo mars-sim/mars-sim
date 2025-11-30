@@ -41,10 +41,10 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
@@ -72,8 +72,8 @@ import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
 import com.mars_sim.ui.swing.tool.mission.objectives.ConstructionPanel;
@@ -123,19 +123,18 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 	private Mission missionCache;
 	private Vehicle currentVehicle;
 	private MissionWindow missionWindow;
-	private MainDesktopPane desktop;
+	private UIContext context;
 
 
 	/**
 	 * Constructor.
 	 *
-	 * @param desktop the main desktop panel.
 	 */
-	public MainDetailPanel(MainDesktopPane desktop, MissionWindow missionWindow) {
+	public MainDetailPanel(UIContext context, MissionWindow missionWindow) {
 		// User JPanel constructor.
 		super();
 		// Initialize data members.
-		this.desktop = desktop;
+		this.context = context;
 		this.missionWindow = missionWindow;
 		
 		// Set the layout.
@@ -200,10 +199,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		typeTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.column.name"), "", null);
 		phaseTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.phase"), "", null);
 		designationTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.designation"), "",null);
-		settlementTextField = new EntityLabel(desktop);
+		settlementTextField = new EntityLabel(context);
 		attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.settlement"), settlementTextField);
 
-		leadTextField = new EntityLabel(desktop);
+		leadTextField = new EntityLabel(context);
 		attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.startingMember"), leadTextField);
 		statusTextField = attributePanel.addTextField(Msg.getString("MainDetailPanel.missionStatus"), "", null);
 		
@@ -225,7 +224,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		AttributePanel attributePanel = new AttributePanel(5);
 		travelLayout.add(attributePanel, BorderLayout.NORTH);
 
-		vehicleLabel = new EntityLabel(desktop);
+		vehicleLabel = new EntityLabel(context);
 		attributePanel.addLabelledItem("Vehicle", vehicleLabel);
 		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.vehicleStatus"), "", null);
 		speedLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.vehicleSpeed"), "", null);
@@ -277,7 +276,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 			memberTable.getColumnModel().getColumn(3).setPreferredWidth(20);
 			memberTable.setRowSelectionAllowed(true);
 			memberTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			EntityLauncher.attach(memberTable, desktop);
+			EntityLauncher.attach(memberTable, context);
 
 			memberScrollPane = StyleManager.createScrollBorder("Team Mambers", memberTable);
 			var dim = new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MEMBER_HEIGHT);
@@ -403,7 +402,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 	 *
 	 * @param mission
 	 */
-	public void updateMainTab(Mission mission) {
+	private void updateMainTab(Mission mission) {
 
 		if (mission == null || missionCache == null) {	
 			clearInfo();
@@ -588,13 +587,13 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 			for(MissionObjective o : mission.getObjectives()) {
 				JPanel newPanel = switch(o) {
 					case CollectResourceObjective cro -> new CollectResourcePanel(cro);
-					case FieldStudyObjectives fso -> new FieldStudyPanel(fso, desktop);
+					case FieldStudyObjectives fso -> new FieldStudyPanel(fso, context);
 					case ExplorationObjective eo -> new ExplorationPanel(eo);
-					case MiningObjective mo -> new MiningPanel(mo, desktop);
-					case TradeObjective to -> new TradePanel(to, desktop);
-					case ConstructionObjective co -> new ConstructionPanel(co, desktop);
-					case RescueVehicleObjective ro -> new RescuePanel(ro, desktop);
-					case EmergencySupplyObjective so -> new EmergencySupplyPanel(so, desktop);
+					case MiningObjective mo -> new MiningPanel(mo, context);
+					case TradeObjective to -> new TradePanel(to, context);
+					case ConstructionObjective co -> new ConstructionPanel(co, context);
+					case RescueVehicleObjective ro -> new RescuePanel(ro, context);
+					case EmergencySupplyObjective so -> new EmergencySupplyPanel(so, context);
 					default -> null;
 				};
 
@@ -983,10 +982,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		 * @param member
 		 * @return
 		 */
-		boolean isMissionMember(Worker member) {
-			if (mission != null && mission.getMembers().contains(member))
-				return true;
-			return false;
+		private boolean isMissionMember(Worker member) {
+			return (mission != null && mission.getMembers().contains(member));
 		}
 		
 		/**
@@ -995,12 +992,9 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		 * @param member
 		 * @return
 		 */
-		boolean isInAirlock(Worker member) {
-			if (member instanceof Person p		
-				&& v instanceof Rover r && r.isInAirlock(p)) {
-				return true;
-			}
-			return false;
+		private boolean isInAirlock(Worker member) {
+			return (member instanceof Person p		
+				&& v instanceof Rover r && r.isInAirlock(p));
 		}
 
 		/**

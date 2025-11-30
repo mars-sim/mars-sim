@@ -40,6 +40,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
@@ -77,7 +78,7 @@ implements MissionListener {
 	/**
 	 * Constructor.
 	 */
-	protected NavpointPanel(MissionWindow missionWindow) {
+	protected NavpointPanel(UIContext context) {
 
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -116,7 +117,7 @@ implements MissionListener {
 	    mainPane.add(splitPane, BorderLayout.CENTER);
 		
 		// Create the map panel.
-		mapPanel = new MapPanel(missionWindow.getDesktop());
+		mapPanel = new MapPanel(context);
 		mapPane.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, HEIGHT));
 
 		mapPanel.setBackground(new Color(0, 0, 0, 128));

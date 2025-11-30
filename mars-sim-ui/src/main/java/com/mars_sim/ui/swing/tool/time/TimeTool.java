@@ -1,10 +1,9 @@
 /*
  * Mars Simulation Project
- * TimeWindow.java
+ * TimeTool.java
  * @date 2025-08-05
  * @author Scott Davis
  */
-
 package com.mars_sim.ui.swing.tool.time;
 
 import java.awt.BorderLayout;
@@ -21,11 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
@@ -39,18 +36,17 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The TimeWindow is a tool window that displays the current Martian date and time and simulation parameters.
  */
-public class TimeWindow extends ToolWindow {
+public class TimeTool extends ContentPanel {
 
 	// Milliseconds between updates to date fields
 	private static final long DATE_UPDATE_PERIOD = 300L;
@@ -62,39 +58,36 @@ public class TimeWindow extends ToolWindow {
 	public static final String ICON = "time";
 	public static final String TITLE = Msg.getString("TimeWindow.title"); //$NON-NLS-1$
 
-	public static final int WIDTH = 320;
-	public static final int HEIGHT = 650;
+	private static final int WIDTH = 320;
+	private static final int HEIGHT = 650;
 	
 	// Label Strings
-	public final String X_END = " x";
-	public final String DESIRE_TR = "Desired TR";
-	public final String AVERAGE_TPS = "Average TPS";
+	private static final String X_END = " x";
+	private static final String DESIRE_TR = "Desired TR";
+	private static final String AVERAGE_TPS = "Average TPS";
 
-	public final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
-	public final String WIKI_TEXT = Msg.getString("TimeWindow.calendar.title"); //$NON-NLS-1$	
-	
-//    private final DateTimeFormatter DATE_TIME_FORMATTER = DateCommand.DATE_TIME_FORMATTER;
-	
+	private static final String WIKI_URL = Msg.getString("TimeWindow.calendar.url"); //$NON-NLS-1$
+		
 	/** the execution time label string */
-	private final String EXEC = "Execution";
+	private static final String EXEC = "Execution";
 	/** the sleep time label string */
-	private final String SLEEP_TIME = "Sleep";
+	private static final String SLEEP_TIME = "Sleep";
 	/** the lead time pulse width label string */
-	private final String LEAD_PULSE_TIME = "Lead Pulse Width";
+	private static final String LEAD_PULSE_TIME = "Lead Pulse Width";
 	/** the pulse deviation label string */
-	private final String PULSE_DEVIATION = "Pulse Deviation";
+	private static final String PULSE_DEVIATION = "Pulse Deviation";
 	/** the optimal pulse label string */
-	private final String OPTIMAL = "Optimal Pulse Width";
+	private static final String OPTIMAL = "Optimal Pulse Width";
 	/** the reference pulse label string */
-	private final String REFERENCE = "Ref Pulse Width";
+	private static final String REFERENCE = "Ref Pulse Width";
 	/** the reference pulse label string */
-	private final String TASK_PULSE_TIME = "Task Pulse Width";
+	private static final String TASK_PULSE_TIME = "Task Pulse Width";
 	/** the time ratio string */
-	private final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
+	private static final String ACTUAL_TIME_RATIO = Msg.getString("TimeWindow.actualTRHeader"); //$NON-NLS-1$
 	/** the execution time unit */
-	private final String MS = " ms";
+	private static final String MS = " ms";
 	/** the Universal Mean Time abbreviation */
-	private final String UMT = " (UMT) ";
+	private static final String UMT = " (UMT) ";
 
 
 	// Data members
@@ -103,9 +96,7 @@ public class TimeWindow extends ToolWindow {
 	
 	private int solCache;
 	
-	private String northernSeasonTip ="";
 	private String northernSeasonCache = "";
-	private String southernSeasonTip = "";
 	private String southernSeasonCache = "";
 
 	/** Martian calendar panel. */
@@ -164,21 +155,16 @@ public class TimeWindow extends ToolWindow {
 
 	
 	/**
-	 * Constructs a TimeWindow object.
+	 * Constructs a TimeTool content panel
 	 *
-	 * @param desktop the desktop pane
+	 * @param sim the simulation
 	 */
-	public TimeWindow(final MainDesktopPane desktop) {
+	public TimeTool(Simulation sim) {
 		// Use TimeWindow constructor
-		super(NAME, TITLE, desktop);
+		super(NAME, TITLE, Placement.RIGHT);
 	
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
 
-		// Set window resizable to false.
-		setResizable(true);
-		
 		// Initialize data members
-		Simulation sim = desktop.getSimulation();
 		MasterClock masterClock = sim.getMasterClock();
 		MarsTime marsTime = masterClock.getMarsTime();
 		orbitInfo = sim.getOrbitInfo();
@@ -187,10 +173,12 @@ public class TimeWindow extends ToolWindow {
 		var scrollPane = new JScrollPane();
 		scrollPane.getVerticalScrollBar().setUnitIncrement(20);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		setContentPane(scrollPane);
+
+		setLayout(new BorderLayout());
+		add(scrollPane, BorderLayout.CENTER);
 		
 		// Set up main pane
-		JPanel mainPane = new JPanel(new BorderLayout()); // new BoxLayout(this, BoxLayout.Y_AXIS));//
+		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setPreferredSize(new Dimension(WIDTH - 5, HEIGHT));
 		mainPane.setBorder(new MarsPanelBorder());
 
@@ -207,8 +195,8 @@ public class TimeWindow extends ToolWindow {
 	
 		// Create Martian time header label
 		martianTimeLabel = new JLabel();
-		martianTimeLabel.setHorizontalAlignment(JLabel.CENTER);
-		martianTimeLabel.setVerticalAlignment(JLabel.CENTER);
+		martianTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		martianTimeLabel.setVerticalAlignment(SwingConstants.CENTER);
 		martianTimeLabel.setText("");
 		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
 		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
@@ -243,9 +231,8 @@ public class TimeWindow extends ToolWindow {
 		weeksolLabel = labelPane.addTextField("Weeksol", wd, null);
 
 		// Create Martian calendar month panel
-		JPanel calendarPane = new JPanel();//new BorderLayout());
+		JPanel calendarPane = new JPanel();
 		calendarPane.setLayout(new BoxLayout(calendarPane, BoxLayout.Y_AXIS));
-//		calendarPane.setPreferredSize(new Dimension(-1, -1));
 		calendarPane.setAlignmentX(SwingConstants.CENTER);
 		calendarPane.setAlignmentY(SwingConstants.CENTER);
 		martianMonthPane.add(calendarPane, BorderLayout.CENTER);
@@ -255,8 +242,7 @@ public class TimeWindow extends ToolWindow {
 		innerCalendarPane.setAlignmentY(SwingConstants.CENTER);
 	
 		// Create Martian calendar display
-		calendarDisplay = new MarsCalendarDisplay(marsTime, desktop);
-//		calendarDisplay.setPreferredSize(new Dimension(-1, -1));
+		calendarDisplay = new MarsCalendarDisplay(marsTime);
 		innerCalendarPane.add(calendarDisplay);
 		calendarPane.add(innerCalendarPane, BorderLayout.CENTER);
 
@@ -340,9 +326,6 @@ public class TimeWindow extends ToolWindow {
 		createAdvancePanel(masterClock, paramPane);
 		
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		
-		// Pack window
-		pack();
 
 		// Update the two time labels
 		updateFastLabels(masterClock);
@@ -359,12 +342,11 @@ public class TimeWindow extends ToolWindow {
 	 * @param masterClock
 	 * @param pane
 	 */
-	public void createAdvancePanel(MasterClock masterClock, JPanel pane) {
+	private void createAdvancePanel(MasterClock masterClock, JPanel pane) {
 		JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
 		taskPaneContainer.setPreferredSize(new Dimension(WIDTH - 10, 180));
 		JXTaskPane actionPane = new JXTaskPane();
 		actionPane.setPreferredSize(new Dimension(WIDTH - 10, 180));
-//		actionPane.setBackground(getBackground());
 		actionPane.setBackground(new Color(0, 0, 0, 128));
 		actionPane.setBackground(getBackground());
 		actionPane.setOpaque(false);
@@ -379,7 +361,7 @@ public class TimeWindow extends ToolWindow {
 		float min = Math.round(value / 5 * 100.0)/100.0f;
 		float max = Math.round(5 * value * 100.0)/100.0f;
 		float step = Math.round(value / 20 * 100.0)/100.0f;
-		cpuSpinner = createSpinner(masterClock, value, min, max, step);
+		cpuSpinner = createSpinner(value, min, max, step);
 		cpuSpinner.addChangeListener(e -> {
 			float cpu = ((SpinnerNumberModel)(cpuSpinner.getModel())).getNumber().floatValue();
 			// Change the pulse load
@@ -390,9 +372,9 @@ public class TimeWindow extends ToolWindow {
 		cpuPane.add(cpuSpinner);
 		
 		JButton cpuButton = createResetButton();
-		cpuButton.addActionListener(e -> {
-             masterClock.computeOriginalCPULoad();
-         });
+		cpuButton.addActionListener(e ->
+             masterClock.computeOriginalCPULoad()
+        );
 		cpuPane.add(cpuButton);
 		
 		actionPane.add(cpuPane);
@@ -400,10 +382,10 @@ public class TimeWindow extends ToolWindow {
 		
 		// Create the ref pulse ratio spinner
 		value = Math.round(masterClock.getRefPulseRatio() * 100.0)/100.0f;
-		min = .05f; //Math.round(value / 5 * 100.0)/100.0f;
-		max = 1; //Math.min(1, Math.round(5 * value * 10.0)/10.0f);
-		step = .05f; //Math.round(value/10 * 10.0)/10.0f;
-		refPulseRatioSpinner = createSpinner(masterClock, value, min, max, step);
+		min = .05f;
+		max = 1; 
+		step = .05f; 
+		refPulseRatioSpinner = createSpinner(value, min, max, step);
 		refPulseRatioSpinner.addChangeListener(e -> {
 			float rpr = ((SpinnerNumberModel)(refPulseRatioSpinner.getModel())).getNumber().floatValue();
 			// Change the ref pulse ratio
@@ -414,19 +396,19 @@ public class TimeWindow extends ToolWindow {
 		rpRatioPane.add(refPulseRatioSpinner);
 		
 		JButton rprButton = createResetButton();
-		rprButton.addActionListener(e -> {
-             masterClock.resetRefPulseRatio();
-         });
+		rprButton.addActionListener(e -> 
+             masterClock.resetRefPulseRatio()
+         );
 		rpRatioPane.add(rprButton);
 		
 		actionPane.add(rpRatioPane);
 		
 		// Create the ref pulse damper spinner
-		value = (int)(masterClock.getRefPulseDamper());
+		value = masterClock.getRefPulseDamper();
 		min = 5;
 		max = 1000;
 		step = 5;
-		refPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
+		refPulseDamperSpinner = createSpinner(value, min, max, step);
 		refPulseDamperSpinner.addChangeListener(e -> {
 			int rpd = ((SpinnerNumberModel)(refPulseDamperSpinner.getModel())).getNumber().intValue();
 			// Change the ref pulse damper
@@ -437,9 +419,9 @@ public class TimeWindow extends ToolWindow {
 		rpDamperPane.add(refPulseDamperSpinner);
 		
 		JButton rpdButton = createResetButton();
-		rpdButton.addActionListener(e -> {
-             masterClock.resetRefPulseDamper();
-         });
+		rpdButton.addActionListener(e -> 
+             masterClock.resetRefPulseDamper()
+        );
 		rpDamperPane.add(rpdButton);
 		
 		actionPane.add(rpDamperPane);
@@ -447,10 +429,10 @@ public class TimeWindow extends ToolWindow {
 
 		// Create the task pulse ratio spinner
 		value = Math.round(masterClock.getTaskPulseRatio() * 100.0)/100.0f;
-		min = .05f; //Math.round(value / 5 * 100.0)/100.0f;
-		max = 1; //Math.min(1, Math.round(5 * value * 10.0)/10.0f);
-		step = .05f; //Math.round(value/10 * 10.0)/10.0f;
-		taskPulseRatioSpinner = createSpinner(masterClock, value, min, max, step);
+		min = .05f;
+		max = 1;
+		step = .05f;
+		taskPulseRatioSpinner = createSpinner(value, min, max, step);
 		taskPulseRatioSpinner.addChangeListener(e -> {
 			float tpr = ((SpinnerNumberModel)(taskPulseRatioSpinner.getModel())).getNumber().floatValue();
 			// Change the task pulse ratio
@@ -461,9 +443,9 @@ public class TimeWindow extends ToolWindow {
 		tpRatioPane.add(taskPulseRatioSpinner);
 		
 		JButton tprButton = createResetButton();
-		tprButton.addActionListener(e -> {
-             masterClock.resetTaskPulseRatio();
-         });
+		tprButton.addActionListener(e ->
+             masterClock.resetTaskPulseRatio()
+        );
 		tpRatioPane.add(tprButton);
 	
 		actionPane.add(tpRatioPane);
@@ -474,7 +456,7 @@ public class TimeWindow extends ToolWindow {
 		min = 5;
 		max = 1000;
 		step = 5;
-		taskPulseDamperSpinner = createSpinner(masterClock, value, min, max, step);
+		taskPulseDamperSpinner = createSpinner(value, min, max, step);
 		taskPulseDamperSpinner.addChangeListener(e -> {
 			int tpd = ((SpinnerNumberModel)(taskPulseDamperSpinner.getModel())).getNumber().intValue();
 			// Change the task pulse damper
@@ -485,9 +467,9 @@ public class TimeWindow extends ToolWindow {
 		tpDamperPane.add(taskPulseDamperSpinner);
 		
 		JButton tpdButton = createResetButton();
-		tpdButton.addActionListener(e -> {
-             masterClock.resetTaskPulseDamper();
-         });
+		tpdButton.addActionListener(e ->
+             masterClock.resetTaskPulseDamper()
+        );
 		tpDamperPane.add(tpdButton);
 	
 		actionPane.add(tpDamperPane);
@@ -534,7 +516,7 @@ public class TimeWindow extends ToolWindow {
 	 * @param max
 	 * @return
 	 */
-	private JSpinner createSpinner(MasterClock masterClock, double value, double min, double max, double step) {
+	private JSpinner createSpinner(double value, double min, double max, double step) {
 		
 		SpinnerNumberModel spinnerModel = new SpinnerNumberModel(value, min, max, step);
 
@@ -550,7 +532,7 @@ public class TimeWindow extends ToolWindow {
 		// 3. Set a default size to the text field:
 		jftf.setColumns(3);
 	
-		jftf.setHorizontalAlignment(JTextField.RIGHT);
+		jftf.setHorizontalAlignment(SwingConstants.RIGHT);
 		
 		return spinner;
 	}
@@ -660,6 +642,8 @@ public class TimeWindow extends ToolWindow {
 	 * Sets and updates the season labels.
 	 */
 	private void updateSeason() {
+  String southernSeasonTip = "";
+  String northernSeasonTip ="";
 		String northernSeason = orbitInfo.getSeason(OrbitInfo.NORTHERN_HEMISPHERE);
 		String southernSeason = orbitInfo.getSeason(OrbitInfo.SOUTHERN_HEMISPHERE);
 	
@@ -756,47 +740,18 @@ public class TimeWindow extends ToolWindow {
 	}
 
 	@Override
-	public void update(ClockPulse pulse) {
-		if (desktop.isToolWindowOpen(TimeWindow.NAME)) {
-			MasterClock masterClock = pulse.getMasterClock();
+	public void clockUpdate(ClockPulse pulse) {
+		MasterClock masterClock = pulse.getMasterClock();
 
-			// update the fast labels
-			updateFastLabels(masterClock);
+		// update the fast labels
+		updateFastLabels(masterClock);
 
-			long currentTime = System.currentTimeMillis();
-			if ((currentTime - lastUpdateTime) > DATE_UPDATE_PERIOD) {
-				// update the slow labels
-				updateDateLabels(masterClock);
-				updateTimeLabels(masterClock);
-				lastUpdateTime = currentTime;
-			}
+		long currentTime = System.currentTimeMillis();
+		if ((currentTime - lastUpdateTime) > DATE_UPDATE_PERIOD) {
+			// update the slow labels
+			updateDateLabels(masterClock);
+			updateTimeLabels(masterClock);
+			lastUpdateTime = currentTime;
 		}
-	}
-	
-	/**
-	 * Prepares tool window for deletion.
-	 */
-	public void destroy() {
-		super.destroy();
-
-		calendarDisplay = null;
-		cpuSpinner = null;
-		martianTimeLabel = null;
-		lonLabel = null;
-		northernSeasonLabel = null;
-		southernSeasonLabel = null;
-		uptimeLabel = null;
-		ticksPerSecLabel = null;
-		actualTRLabel = null;
-		desireTRLabel = null;
-		pulseDeviationLabel = null;
-		execTimeLabel = null;
-		sleepTimeLabel = null;
-		leadPulseLabel = null;
-		taskPulseLabel = null;
-		realTimeClockLabel = null;
-		monthLabel = null;
-		weeksolLabel = null;		
-		orbitInfo = null;
 	}
 }

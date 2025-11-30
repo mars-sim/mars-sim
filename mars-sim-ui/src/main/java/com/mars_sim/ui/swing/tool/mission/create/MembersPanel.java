@@ -38,6 +38,7 @@ import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 /**
  * A wizard panel for selecting settlers.
  */
@@ -68,7 +69,7 @@ implements ActionListener {
 	 * 
 	 * @param wizard the create mission wizard
 	 */
-	public MembersPanel(CreateMissionWizard wizard) {
+	public MembersPanel(CreateMissionWizard wizard, UIContext context) {
 		// Use WizardPanel constructor
 		super(wizard);
 
@@ -164,7 +165,7 @@ implements ActionListener {
 							if (selectedRows.length > 0) {
 								for (int selectedRow : selectedRows)  {
 									Person person = (Person) peopleTableModel.getUnit(selectedRow);
-									getDesktop().showDetails(person);
+									context.showDetails(person);
 								}
 							}
 						}

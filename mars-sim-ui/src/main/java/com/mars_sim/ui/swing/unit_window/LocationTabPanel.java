@@ -36,8 +36,8 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool_window.MapSelector;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 import eu.hansolo.steelseries.gauges.DisplayCircular;

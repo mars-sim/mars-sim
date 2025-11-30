@@ -121,8 +121,8 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
     private MasterClock master;
 
 	/** constructor. */
-	public ResupplyMissionEditingPanel(Resupply resupply, ResupplyWindow resupplyWindow,
-			ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {
+	public ResupplyMissionEditingPanel(Simulation sim, Resupply resupply, 
+				ModifyTransportItemDialog modifyTransportItemDialog, NewTransportItemDialog newTransportItemDialog) {
 		// User TransportItemEditingPanel constructor.
 		super(resupply);
 
@@ -130,7 +130,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		this.resupply = resupply;
 		this.newTransportItemDialog = newTransportItemDialog;
 		this.modifyTransportItemDialog = modifyTransportItemDialog;
-		this.master = resupplyWindow.getDesktop().getSimulation().getMasterClock();
+		this.master = sim.getMasterClock();
 
 		setBorder(new MarsPanelBorder());
 		setLayout(new BorderLayout(0, 0));
@@ -148,7 +148,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		destinationPane.add(destinationTitleLabel);
 
 		// Create destination combo box.
-		UnitManager unitManager = resupplyWindow.getDesktop().getSimulation().getUnitManager();
+		UnitManager unitManager = sim.getUnitManager();
 		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 		Collections.sort(settlements);
 		destinationCB = new JComboBox<>(settlements.toArray(new Settlement[0]));
@@ -304,16 +304,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		errorLabel = new JLabel("");
 		errorLabel.setForeground(Color.RED);
 		errorPane.add(errorLabel);
-
-		////////////////////////////////////////////
 		
 		JPanel immigrantsOverviewPane = new JPanel();
 		immigrantsOverviewPane.setLayout(new BoxLayout(immigrantsOverviewPane, BoxLayout.Y_AXIS));
 
 		topEditPane.add(immigrantsOverviewPane, BorderLayout.SOUTH);
-		
-		////////////////////////////////////////////
-		
+				
 		// Create immigrants panel.
 		JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 		immigrantsOverviewPane.add(immigrantsPane);
@@ -349,9 +345,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 		botsCB = new JSpinner(new SpinnerNumberModel(botsNum, 0, MAX_BOTS, 1));
 		botsCB.setValue(botsNum);
 		botsPane.add(botsCB);
-		
-		////////////////////////////////////////////
-		
+				
 		// Create bottom edit pane.
 		JPanel bottomEditPane = new JPanel(new BorderLayout(0, 0));
 		bottomEditPane.setBorder(new TitledBorder("Supplies"));

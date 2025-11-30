@@ -17,9 +17,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.EntityListLauncher;
 
 /**
@@ -30,12 +30,12 @@ import com.mars_sim.ui.swing.utils.EntityListLauncher;
  * @param <T> The unit Subclass to display.
  */
 @SuppressWarnings("serial")
-public abstract class UnitListPanel<T extends Unit> extends JPanel {
+public abstract class UnitListPanel<T extends Entity> extends JPanel {
 	private DefaultListModel<T> model;
 	private List<T> cachedData;
-	private MainDesktopPane desktop;
+	private UIContext desktop;
 
-	public UnitListPanel(MainDesktopPane desktop) {
+	protected UnitListPanel(UIContext desktop) {
 		this(desktop, null);
 	}
 	
@@ -45,7 +45,7 @@ public abstract class UnitListPanel<T extends Unit> extends JPanel {
 	 * @param desktop
 	 * @param dim Preferred size
 	 */
-	public UnitListPanel(MainDesktopPane desktop, Dimension dim) {
+	protected UnitListPanel(UIContext desktop, Dimension dim) {
 		super(new FlowLayout(FlowLayout.CENTER));
 
 		this.desktop = desktop;
