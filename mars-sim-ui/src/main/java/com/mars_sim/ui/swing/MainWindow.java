@@ -396,7 +396,7 @@ public class MainWindow
 			isIconified = (state == Frame.ICONIFIED);
 			if (state == Frame.MAXIMIZED_HORIZ
 					|| state == Frame.MAXIMIZED_VERT)
-				logger.log(Level.CONFIG, "MainWindow set to maximum."); //-NLS-1$
+				logger.log(Level.CONFIG, "MainWindow set to maximum.");
 			repaint();
 		});
 	
@@ -773,7 +773,7 @@ public class MainWindow
 		File fileLocn = null;
 		if (!defaultFile) {
 			JFileChooser chooser = new JFileChooser(SimulationRuntime.getSaveDir());
-			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim")); //-NLS-1$
+			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim"));
 			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
 				fileLocn = chooser.getSelectedFile();
 			} else {

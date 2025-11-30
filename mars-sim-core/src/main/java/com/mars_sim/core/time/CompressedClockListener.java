@@ -10,7 +10,7 @@ package com.mars_sim.core.time;
  * A ClockListener that compresses clock pulses to reduce the number of notifications
  * sent to the underlying listener. Pulses that occur within the minimum interval
  * are consolidated into a single pulse with the total elapsed time adjusted.
- * The root listener will not receive contigious pulses such that there will
+ * The root listener will not receive contiguous pulses such that there will
  * be a jump in the pulse id.
  */
 public class CompressedClockListener implements ClockListener {
@@ -21,7 +21,7 @@ public class CompressedClockListener implements ClockListener {
     private double msolsSkipped;
 
     /**
-     * Create a compressing listener that compress and consolidated pulses.
+     * Create a compressing listener that compresses and consolidates pulses.
      * @param listener Root listener to notify.
      * @param minInterval Minimum interval in milliseconds between pulses.
      */
