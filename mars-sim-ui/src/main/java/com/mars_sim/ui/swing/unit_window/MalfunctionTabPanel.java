@@ -30,9 +30,11 @@ import com.mars_sim.core.malfunction.MalfunctionRepairWork;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -43,7 +45,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * representing the malfunctions of a settlement building.
  */
 @SuppressWarnings("serial")
-public class MalfunctionTabPanel extends TabPanel {
+public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
 
 	private static final String WARN_ICON = "warn";
 	private static final int NAME = 0;
@@ -52,10 +54,7 @@ public class MalfunctionTabPanel extends TabPanel {
 	private static final int INSIDE_WORK = 3;
 	private static final int COMPLETED = 4;
 
-	private static final String NONE = " None.";
-	private static final String ONE_SPACE = " ";
 	private static final String COMMA = ", ";
-	private static final String DOT = ".";
 	private static final String BR = "<br>";
 	private static final String HTML_START = "<html>";
 	private static final String REPAIR_TIME = " Repair Time: ";
@@ -99,10 +98,7 @@ public class MalfunctionTabPanel extends TabPanel {
 		public Class<?> getColumnClass(int columnIndex) {
             int realColumn = getPropFromColumn(columnIndex);
             switch(realColumn) {
-                case NAME: 
-                case SOURCE: 
-                case EVA_WORK: 
-				case INSIDE_WORK: return String.class;
+				case NAME, SOURCE, EVA_WORK, INSIDE_WORK: return String.class;
 				case COMPLETED: return Integer.class;
                 default:
                     throw new IllegalArgumentException("Column unknown " + columnIndex);
@@ -170,17 +166,14 @@ public class MalfunctionTabPanel extends TabPanel {
         }
 
 		public void update(List<Malfunction> newMalfunctions) {
-			boolean changed = false;
 
 			if (newMalfunctions.isEmpty() && !malfunctions.isEmpty()) {
 				// No new malfunction but old in table
 				malfunctions.clear();
-				changed = true;
 			}
 			else if (malfunctions.isEmpty()) {
 				// New malfunction but none in model
 				malfunctions.addAll(newMalfunctions);
-				changed = true;
 			}
 			else {
 				// Malfunctions on both sides; need to do a Union
@@ -192,10 +185,9 @@ public class MalfunctionTabPanel extends TabPanel {
 
 				malfunctions.removeAll(rowsToDelete);
 				malfunctions.addAll(rowsToAdd);
-				changed = true;
 			}
 
-			if (changed || !malfunctions.isEmpty()) {
+			if (!malfunctions.isEmpty()) {
 				fireTableDataChanged();
 			}
 		}
@@ -220,14 +212,14 @@ public class MalfunctionTabPanel extends TabPanel {
 	 * Builds the panel that show sMalfunctions of a entity that can break.
 	 * 
 	 * @param malfunctionable the malfunctionable the panel is for.
-	 * @param desktop         The main desktop.
+	 * @param content         The main desktop.
 	 */
-	public MalfunctionTabPanel(Malfunctionable malfunctionable, MainDesktopPane desktop) {
+	public MalfunctionTabPanel(Malfunctionable malfunctionable, UIContext content) {
 		super(
 			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
-			Msg.getString("MalfunctionTabPanel.title"), 
-			desktop
+			null, 
+			content
 		);
 
 		this.malfunctionable = malfunctionable;
@@ -239,14 +231,14 @@ public class MalfunctionTabPanel extends TabPanel {
 	 * Shows a panel for a Settlement that controls number entity that can fail. Create an aggregated report.
 	 * 
 	 * @param settlement Being displayed
-	 * @param desktop Owner
+	 * @param content Owner
 	 */
-	public MalfunctionTabPanel(Settlement settlement, MainDesktopPane desktop) {
+	public MalfunctionTabPanel(Settlement settlement, UIContext content) {
 		super(
 			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
-			Msg.getString("MalfunctionTabPanel.title"), 
-			desktop
+			null, 
+			content
 		);
 		this.settlement = settlement;
 
@@ -304,10 +296,7 @@ public class MalfunctionTabPanel extends TabPanel {
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
 		sorter.setSortsOnUpdates(true);
 		mTable.setRowSorter(sorter);
-		
-		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
-//		mTable.setAutoCreateRowSorter(true);
-		
+
 		scrollPanel.setViewportView(mTable);
 
         TableColumnModel columnModel = mTable.getColumnModel();
@@ -324,7 +313,6 @@ public class MalfunctionTabPanel extends TabPanel {
         columnModel.getColumn(EVA_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(INSIDE_WORK - offset).setPreferredWidth(25);
         columnModel.getColumn(COMPLETED - offset).setPreferredWidth(50);
-//        columnModel.getColumn(COMPLETED - offset).setMaxWidth(PercentageTableCellRenderer.DEFAULT_WIDTH);
 		columnModel.getColumn(COMPLETED - offset).setCellRenderer(new PercentageTableCellRenderer(true));
         center.add(scrollPanel, BorderLayout.CENTER);
 	}
@@ -386,6 +374,12 @@ public class MalfunctionTabPanel extends TabPanel {
 //			buf.append(NONE);
 
 		return result;
+	}
+
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
+		// This is a placeholder until all the TabPanels have been migrated
+		update();
 	}
 
 	@Override

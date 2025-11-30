@@ -13,17 +13,19 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 
 
 /**
  * The NotesTabPanel is a tab panel for recording commander's notes regarding this unit
  */
 @SuppressWarnings("serial")
-public class NotesTabPanel extends TabPanel{
+public class NotesTabPanel extends TabPanel implements TemporalComponent {
 
 	private static final String NOTE_ICON = "note";
 	
@@ -41,9 +43,9 @@ public class NotesTabPanel extends TabPanel{
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public NotesTabPanel(Unit unit, MainDesktopPane desktop) {
-		super(null, ImageLoader.getIconByName(NOTE_ICON),
-				Msg.getString("NotesTabPanel.title"), unit, desktop);
+	public NotesTabPanel(Unit unit, UIContext context) {
+		super(Msg.getString("NotesTabPanel.title"), ImageLoader.getIconByName(NOTE_ICON), null,
+				 context, unit); //$NON-NLS-1$
 	}
 
 	@Override
@@ -67,6 +69,16 @@ public class NotesTabPanel extends TabPanel{
 		}
 	}
 	
+		/**
+     * Updates content panel with clock pulse information.
+     * @param pulse Pulse information,
+     */
+	@Override
+    public void clockUpdate(ClockPulse pulse) {
+		// This is a placeholder for future use until TabPabnel is changed
+		update();
+	}
+
 	/**
 	 * Updates the info on this panel.
 	 */

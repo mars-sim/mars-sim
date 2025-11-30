@@ -24,11 +24,13 @@ import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.resource.MaintenanceScope;
 import com.mars_sim.core.resource.Part;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -36,7 +38,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * The MaintenanceTabPanel is a tab panel for maintenance information.
  */
 @SuppressWarnings("serial")
-public class MaintenanceTabPanel extends TabPanelTable {
+public class MaintenanceTabPanel extends TabPanelTable implements TemporalComponent {
     private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed: ";
 	private static final String AGO = " ago";
@@ -71,14 +73,14 @@ public class MaintenanceTabPanel extends TabPanelTable {
 	 * Constructor.
 	 * 
 	 * @param malfunctionable the malfunctionable instance of the unit
-	 * @param desktop         The main desktop
+	 * @param context         The UI context
 	 */
-	public MaintenanceTabPanel(Malfunctionable malfunctionable, MainDesktopPane desktop) {
+	public MaintenanceTabPanel(Malfunctionable malfunctionable, UIContext context) {
 		super(
 			Msg.getString("MaintenanceTabPanel.title"), 
 			ImageLoader.getIconByName(SPANNER_ICON), 
-			Msg.getString("MaintenanceTabPanel.tooltip"),             
-			desktop
+			Msg.getString("MaintenanceTabPanel.tooltip"),   
+			context
 		);
 
 		// Initialize data members.
@@ -158,6 +160,12 @@ public class MaintenanceTabPanel extends TabPanelTable {
 		columnModel.getColumn(5).setPreferredWidth(35);	
 		// Add percentage format
 		columnModel.getColumn(5).setCellRenderer(new PercentageTableCellRenderer(false));
+	}
+
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
+		// This is a placeholder until all the TabPanels have been migrated
+		update();
 	}
 
 	/**
@@ -256,10 +264,12 @@ public class MaintenanceTabPanel extends TabPanelTable {
 			return parts.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 6;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
             case 0:
@@ -279,6 +289,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
             }
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
             switch(columnIndex) {
 			case 0:
@@ -294,7 +305,7 @@ public class MaintenanceTabPanel extends TabPanelTable {
 			case 5:
 				return Msg.getString("MaintenanceTabPanel.header.probability"); //$NON-NLS-1$
 			default:
-				return "unknown";
+				return "";
             }
 		}
 
@@ -313,6 +324,8 @@ public class MaintenanceTabPanel extends TabPanelTable {
 					return failure.get(row);
 				case 5:
 					return probability.get(row);
+				default:
+					return "unknown";
                 }
 			}
 			return "unknown";

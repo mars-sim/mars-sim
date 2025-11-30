@@ -4,90 +4,72 @@
  * @date 2023-06-07
  * @author Scott Davis
  */
-
 package com.mars_sim.ui.swing.unit_window.equipment;
 
-import com.mars_sim.core.equipment.EVASuit;
+import java.util.Properties;
+
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.unit_window.EntityContentPanel;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
 import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;
 import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
 import com.mars_sim.ui.swing.unit_window.SalvageTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitWindow;
 
 
 /**
  * The EquipmentWindow is the window for displaying a piece of equipment.
  */
-public class EquipmentUnitWindow extends UnitWindow {
+public class EquipmentUnitWindow extends EntityContentPanel<Equipment> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private boolean salvaged;
-
-	private Equipment equipment;
 	
     /**
      * Constructor.
      *
-     * @param desktop the main desktop panel.
+     * @param context the UI context.
      * @param equipment the equipment this window is for.
+     * @param props Any initial properties for the window.
      */
-    public EquipmentUnitWindow(MainDesktopPane desktop, Equipment equipment) {
-        // Use UnitWindow constructor
-        super(desktop, equipment, equipment.getName()
-				+ ((equipment.getAssociatedSettlement() != null) ? (" of " + equipment.getAssociatedSettlement()) : "")
-				+ ((equipment.getContainerUnit() != null) ? (" in " + equipment.getContainerUnit()) : ""),
-				true);
-        this.equipment = equipment;
+    public EquipmentUnitWindow(UIContext context, Equipment equipment, Properties props) {
+        super(equipment, context);
 
-        if (equipment instanceof EVASuit) 
-        	addTabPanel(new TabPanelGeneralEquipment(equipment, desktop));
-        
-        addTabPanel(new InventoryTabPanel(equipment, desktop));
+        addTabPanel(new TabPanelGeneralEquipment(equipment, context));
+        addTabPanel(new InventoryTabPanel(equipment, context));
+        addTabPanel(new LocationTabPanel(equipment, context));
 
-        addTabPanel(new LocationTabPanel(equipment, desktop));
-
-        if (equipment instanceof Malfunctionable) {
-            Malfunctionable m = (Malfunctionable) equipment;
-
-        	addTabPanel(new MaintenanceTabPanel(m, desktop));
-            addTabPanel(new MalfunctionTabPanel(m, desktop));
+        if (equipment instanceof Malfunctionable m) {
+        	addTabPanel(new MaintenanceTabPanel(m, context));
+            addTabPanel(new MalfunctionTabPanel(m, context));
         }
         
-		addTabPanel(new NotesTabPanel(equipment, desktop));
+		addTabPanel(new NotesTabPanel(equipment, context));
 
         salvaged = equipment.isSalvaged();
         if (salvaged)
-        	addTabPanel(new SalvageTabPanel(equipment, desktop));
+        	addTabPanel(new SalvageTabPanel(equipment, context));
 
-    	sortTabPanels();
-
-		// Add to tab panels. 
-		addTabIconPanels();
+        applyProps(props);
     }
 
-    /**
+    /** 
      * Updates this window.
      */
-	@Override
-    public void update() {
-        super.update();
-        
-		String title = equipment.getName()
-				+ ((equipment.getAssociatedSettlement() != null) ? (" of " + equipment.getAssociatedSettlement()) : "")
-				+ ((equipment.getContainerUnit() != null) ? (" in " + equipment.getContainerUnit()) : "");
-		super.setTitle(title);
-		
+    @Override
+    public void clockUpdate(ClockPulse pulse) {
+        super.clockUpdate(pulse);
+
         // Check if equipment has been salvaged.
-        if (!salvaged && equipment.isSalvaged()) {
-            addTabPanel(new SalvageTabPanel(equipment, desktop));
+        if (!salvaged && getEntity().isSalvaged()) {
+            addTabPanel(new SalvageTabPanel(getEntity(), getContext()));
             salvaged = true;
         }
     }

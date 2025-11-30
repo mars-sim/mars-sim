@@ -31,6 +31,8 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager.GameMode;
@@ -47,6 +49,7 @@ import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.sound.SoundConstants;
+import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -58,6 +61,7 @@ import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+import com.mars_sim.ui.swing.unit_window.EntityContentPanel;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindowFactory;
 import com.mars_sim.ui.swing.unit_window.UnitWindowListener;
@@ -85,8 +89,10 @@ public class MainDesktopPane extends JDesktopPane
 	public GameMode mode;
 	/** List of open or buttoned unit windows. */
 	private Collection<UnitWindow> unitWindows;
-	/** List of tool windows. */
+
+	private Collection<ContentWindow> entityWindows;
 	private Collection<ContentWindow> toolWindows;
+
 	/** ImageIcon that contains the tiled background. */
 	private ImageIcon backgroundImageIcon;
 	/** Label that contains the tiled background. */
@@ -124,6 +130,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		// Prepare tool windows. Needs to be thread safe as windows are used by clock pulse
 		toolWindows = new CopyOnWriteArrayList<>();
+		entityWindows = new CopyOnWriteArrayList<>();
 
 		init();
 	}
@@ -287,8 +294,10 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	private ContentWindow getToolWindow(String toolName, boolean createWindow) {
 		for (var w : toolWindows) {
-			if (toolName.equals(w.getContent().getName()))
+			if (toolName.equals(w.getContent().getName())) {
+				bringToFront(w);
 				return w;
+			}
 		}
 
 		if (!createWindow) {
@@ -389,9 +398,6 @@ public class MainDesktopPane extends JDesktopPane
 			// ignore if setSelected is vetoed
 		}
 
-		// window.getContentPane().validate();
-		// window.getContentPane().repaint();
-
 		validate();
 		repaint();
 
@@ -409,7 +415,7 @@ public class MainDesktopPane extends JDesktopPane
 			try {
 				window.setClosed(true);
 				//window.dispose();
-			} catch (java.beans.PropertyVetoException e) {
+			} catch (PropertyVetoException e) {
 				// ignore
 			}
 		}
@@ -424,7 +430,7 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
     public void showDetails(Entity entity) {
 		if (entity instanceof Unit u) {
-			openUnitWindow(u, null);
+			openEntityPanel(u, null);
 		}
 		else if (entity instanceof Mission m) {
 			var cw = openToolWindow(MissionWindow.NAME);
@@ -441,6 +447,18 @@ public class MainDesktopPane extends JDesktopPane
 		}
     }
 
+	private class EntityPanelListener extends InternalFrameAdapter {
+		/**
+		 * Removes unit button from toolbar when unit window is closed.
+		 *
+		 * @param e internal frame event.
+		 */
+		@Override
+		public void internalFrameClosing(InternalFrameEvent e) {
+			disposeEntityPanel((ContentWindow) e.getSource());
+		}
+	}
+	
 	/**
 	 * Opens a Unit Window for a specific Unit with a optional set of user properties.
 	 * 
@@ -448,7 +466,93 @@ public class MainDesktopPane extends JDesktopPane
 	 * @param initProps Initial properties
      * @return
 	 */
-	private UnitWindow openUnitWindow(Unit unit, WindowSpec initProps) {
+	private void openEntityPanel(Unit unit, WindowSpec initProps) {
+		// Is it already open?
+		ContentWindow existing = entityWindows.stream()
+						.filter(w -> w.getContent() instanceof EntityContentPanel<?> panel && panel.getEntity().equals(unit))
+						.findFirst().orElse(null);
+		if (existing != null) {
+			bringToFront(existing);
+			return;
+		}
+				
+		// Build a new window
+		var panel = UnitWindowFactory.getEntityPanel(unit, this, initProps);
+		if (panel != null) {
+			var cw = new ContentWindow(this, panel);
+			// Set internal frame listener
+			cw.addInternalFrameListener(new EntityPanelListener());
+
+			add(cw, 0);
+
+			positionWindow(cw, initProps);
+
+			// Add unit window to unit windows
+			entityWindows.add(cw);
+
+			// Create new unit button in tool bar if necessary
+			mainWindow.createUnitButton(unit);
+
+			cw.setVisible(true);
+
+			// Correct window becomes selected
+			bringToFront(cw);
+
+			// Play sound
+			String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+			if (soundFilePath != null && !soundFilePath.isEmpty() && soundPlayer != null) {
+				soundPlayer.playSound(soundFilePath);
+			}		
+			return;
+		}
+
+		// Fallback to old style
+		openUnitWindow(unit, initProps);
+	}
+
+	/**
+	 * Entity panel has been closed
+	 * @param source
+	 */
+	private void disposeEntityPanel(ContentWindow source) {
+		if (source.getContent() instanceof EntityContentPanel panel) {
+			Unit unit = (Unit)panel.getEntity();
+			if (unit != null) {
+				mainWindow.disposeUnitButton(unit);
+			}
+		}
+		entityWindows.remove(source);
+		source.dispose();
+	}
+
+	private void positionWindow(Component window, WindowSpec initProps) {
+		Point newPosition = null;
+		if (initProps != null) {
+			newPosition = initProps.position();
+			
+			// Make sure store position is visible
+			Dimension desktopSize = getSize();
+			if ((newPosition.getX() >= desktopSize.getWidth())
+					|| (newPosition.getY() >= desktopSize.getHeight())) {
+				newPosition = null;
+			}
+		}
+		if (newPosition == null) {
+			newPosition = getRandomLocation((JInternalFrame)window);
+		}
+		// Put window in random position on desktop.
+		window.setLocation(newPosition);
+	}
+
+	/**
+	 * Opens an old sttyle Unit Window for a specific Unit with a optional set of user properties.
+	 * This will eventually be phased out.
+	 * 
+	 * @param unit Unit to display
+	 * @param initProps Initial properties
+     * @return
+	 */
+	private void openUnitWindow(Unit unit, WindowSpec initProps) {
 
 		UnitWindow tempWindow = null;
 
@@ -472,23 +576,10 @@ public class MainDesktopPane extends JDesktopPane
 			// Set internal frame listener
 			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
 
-			Point newPosition = null;
 			if (initProps != null) {
 				tempWindow.setUIProps(initProps.props());
-				newPosition = initProps.position();
-				
-				// Make sure store position is visible
-				Dimension desktopSize = getSize();
-				if ((newPosition.getX() >= desktopSize.getWidth())
-						|| (newPosition.getY() >= desktopSize.getHeight())) {
-					newPosition = null;
-				}
 			}
-			if (newPosition == null) {
-				newPosition = getRandomLocation(tempWindow);
-			}
-			// Put window in random position on desktop.
-			tempWindow.setLocation(newPosition);
+			positionWindow(tempWindow, initProps);
 
 			// Add unit window to unit windows
 			unitWindows.add(tempWindow);
@@ -501,19 +592,25 @@ public class MainDesktopPane extends JDesktopPane
 		tempWindow.setVisible(true);
 
 		// Correct window becomes selected
+		bringToFront(tempWindow);
+
+		// Play sound
+		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+		if (soundFilePath != null && !soundFilePath.isEmpty() && soundPlayer != null) {
+			soundPlayer.playSound(soundFilePath);
+		}		
+	}
+
+	/**
+	 * Bring an internal window to the front of the desktop
+	 * @param tempWindow
+	 */
+	private static void bringToFront(JInternalFrame tempWindow) {
 		try {
 			tempWindow.setSelected(true);
 			tempWindow.moveToFront();
 		} catch (java.beans.PropertyVetoException e) {
 		}
-
-		// Play sound
-		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
-		if (soundFilePath != null && soundFilePath.length() != 0 && soundPlayer != null) {
-			soundPlayer.playSound(soundFilePath);
-		}
-		
-		return tempWindow;
 	}
 
 	/**
@@ -656,7 +753,7 @@ public class MainDesktopPane extends JDesktopPane
 					case UIConfig.UNIT:
 						Unit u = UnitWindow.getUnit(uMgr, w.props());
 						if (u != null) {
-							openUnitWindow(u, w);
+							openEntityPanel(u, w);
 						}
 					break;
 				}

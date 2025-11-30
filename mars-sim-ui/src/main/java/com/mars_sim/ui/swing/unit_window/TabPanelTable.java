@@ -21,6 +21,7 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
@@ -47,7 +48,7 @@ public abstract class TabPanelTable extends TabPanel {
 			if (modelCol < toolTips.length) {
 				retStr = toolTips[modelCol];
 			}
-			if ((retStr == null) || (retStr.length() < 1)) {
+			if ((retStr == null) || retStr.isEmpty()) {
 				retStr = super.getToolTipText(e);
 			}
 			return retStr;
@@ -57,6 +58,19 @@ public abstract class TabPanelTable extends TabPanel {
 	private String[] headerTooltips;
 	private String tableTitle;
 	private JTable table;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param tabTitle   the title to be displayed in the tab (may be null).
+	 * @param tabIcon    the icon to be displayed in the tab (may be null).
+	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
+	 * @param context    the UI context.
+	 */
+	protected TabPanelTable(String tabTitle, Icon tabIcon, String tabToolTip, UIContext context) {
+		// Use the TabPanel constructor
+		super(tabTitle, tabIcon, tabToolTip, context);
+	}
 	
 	/**
 	 * Constructor.
@@ -133,7 +147,7 @@ public abstract class TabPanelTable extends TabPanel {
 		table = new JTable(tableModel);
 		if (tableModel instanceof EntityModel) {
 			// Call up the window when clicking on a row on the table
-			EntityLauncher.attach(table, getDesktop());
+			EntityLauncher.attach(table, getContext());
 		}
 		
 		table.setRowSelectionAllowed(true);

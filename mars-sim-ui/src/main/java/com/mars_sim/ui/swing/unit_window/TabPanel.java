@@ -24,6 +24,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
@@ -49,6 +50,7 @@ public abstract class TabPanel extends JScrollPane {
 	
 	private Unit unit;
 	private MainDesktopPane desktop;
+	private UIContext context;
 	
 	/**
 	 * Constructor.
@@ -82,33 +84,74 @@ public abstract class TabPanel extends JScrollPane {
 	 * Constructor.
 	 *
 	 * @param tabTitle   the title to be displayed in the tab (may be null).
+	 * @param tabIcon    the icon to be displayed in the tab (may be null).
+	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
+	 * @param context    the UI context.
+	 */
+	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, UIContext context, Unit unit) {
+		this(tabTitle, tabIcon, tabToolTip, context);
+
+		this.unit = unit;
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param tabTitle   the title to be displayed in the tab (may be null).
+	 * @param tabIcon    the icon to be displayed in the tab (may be null).
+	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
+	 * @param context    the UI context.
+	 */
+	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, UIContext context) {
+		this(tabTitle, tabToolTip, tabIcon, tabToolTip);
+		this.context = context;
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param tabTitle   the title to be displayed in the tab (may be null).
 	 * @param description A longer descriptive title displayed at the top of the panel.
 	 * @param tabIcon    the icon to be displayed in the tab (may be null).
 	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
 	 * @param desktop    the main desktop.
 	 */
 	protected TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
+		this(tabTitle, description, tabIcon, tabToolTip);
+		this.desktop = desktop;
+		this.context = desktop;
+	}
 
+	/**
+	 * Constructor.
+	 *
+	 * @param tabTitle   the title to be displayed in the tab (may be null).
+	 * @param description A longer descriptive title displayed at the top of the panel.
+	 * @param tabIcon    the icon to be displayed in the tab (may be null).
+	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
+	 * @param desktop    the main desktop.
+	 */
+	private TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip) {
 		// Use JScrollPane constructor
 		super();
 
+		// Eventually tabTitle MUST be mandatory once all have been converted to UIContext
+		if (tabTitle == null && tabToolTip == null) {
+			throw new IllegalArgumentException("TabPanel must have either a title or a tool tip");
+		}
 		// Initialize data members
-		this.tabTitle = tabTitle;
+		this.tabTitle = (tabTitle != null) ? tabTitle : tabToolTip;
 		this.description = description;
 		this.tabIcon = tabIcon;
-		this.tabToolTip = tabToolTip;
-		this.desktop = desktop;
+		this.tabToolTip = (tabToolTip != null) ? tabToolTip : tabTitle;
 		
 		// Create the view panel
-		JPanel viewPanel = new JPanel();//new BorderLayout(0, 0));
+		JPanel viewPanel = new JPanel();
 		viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.Y_AXIS));
 		createViewport();
 		setViewportView(viewPanel);
 		createVerticalScrollBar();
 		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
-
-		// Ideally yes
-		//setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
 
 		JScrollBar vertical = getVerticalScrollBar();
 		vertical.setValue(0);
@@ -215,6 +258,15 @@ public abstract class TabPanel extends JScrollPane {
 	 */
 	public void update() {
 		// No updated required
+	}
+
+	/**
+	 * Gets the UI context.
+	 * 
+	 * @return UI context.
+	 */
+	protected UIContext getContext() {
+		return context;
 	}
 
 	/**

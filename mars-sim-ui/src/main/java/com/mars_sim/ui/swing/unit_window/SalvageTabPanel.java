@@ -24,13 +24,12 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 
 /**
@@ -44,30 +43,31 @@ public class SalvageTabPanel extends TabPanel {
     private String finishTimeString;
     private JLabel finishTimeLabel;
     private PartTableModel partTableModel;
+
+    private Salvagable salvagable;
     
     /**
      * Constructor
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public SalvageTabPanel(Unit unit, MainDesktopPane desktop) { 
+    public SalvageTabPanel(Salvagable unit, UIContext desktop) { 
         // Use the TabPanel constructor
-        super(null, ImageLoader.getIconByName(WARN_ICON), "Salvage Info", unit, desktop);
+        super("Salvage Info", ImageLoader.getIconByName(WARN_ICON), null, desktop);
+        this.salvagable = unit;
 	}
 
     @Override
     protected void buildUI(JPanel content) {
-    	
-		Unit unit = getUnit();
-        Salvagable salvageItem = (Salvagable) unit;
-        SalvageInfo salvageInfo = salvageItem.getSalvageInfo();
+
+        SalvageInfo salvageInfo = salvagable.getSalvageInfo();
 
         // Create the salvage header panel.
         JPanel salvageHeaderPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         content.add(salvageHeaderPanel);
         
         // Create the salvage header label.
-        JLabel salvageHeaderLabel = new JLabel(unit.getName() + " has been salvaged.", SwingConstants.CENTER);
+        JLabel salvageHeaderLabel = new JLabel(salvagable.getName() + " has been salvaged.", SwingConstants.CENTER);
         salvageHeaderPanel.add(salvageHeaderLabel);
         
         // Create the salvage info panel.

@@ -2,11 +2,14 @@
  * Mars Simulation Project
  * ToolRegistry.java
  * @date 2025-10-18
- * @author Scott Davis
+ * @author Barry Evans
  */
-package com.mars_sim.ui.swing;
+package com.mars_sim.ui.swing.tool;
 
 import com.mars_sim.core.Simulation;
+import com.mars_sim.ui.swing.ContentPanel;
+import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;

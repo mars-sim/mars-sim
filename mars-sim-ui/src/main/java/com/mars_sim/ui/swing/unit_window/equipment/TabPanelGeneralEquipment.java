@@ -9,17 +9,19 @@ package com.mars_sim.ui.swing.unit_window.equipment;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.equipment.EVASuit;
-import com.mars_sim.core.person.Person;
+import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
@@ -29,96 +31,66 @@ import com.mars_sim.ui.swing.utils.JHistoryPanel;
  * This tab displays general information about an equipment.
  */
 @SuppressWarnings("serial")
-public class TabPanelGeneralEquipment extends TabPanel {
+public class TabPanelGeneralEquipment extends TabPanel 
+	implements TemporalComponent {
 
 	private static final String ID_ICON = "info"; //$NON-NLS-1$
 	
 	/** The suit instance. */
-	private Unit unit;
-	
-	private JLabel registeredOwnerLabel;
-	
-	private String pOwnerCache;
+	private Equipment unit;
 	
 	private HistoryPanel historyPanel;
+
+	private EntityLabel ownerLabel;
 		
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param eqm the equipment to display.
+	 * @param context the UI context.
 	 */
-	public TabPanelGeneralEquipment(Unit unit, MainDesktopPane desktop) {
+	public TabPanelGeneralEquipment(Equipment eqm, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelGeneralEquipment.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelGeneralEquipment.title"), //-NLS-1$
 			ImageLoader.getIconByName(ID_ICON),		
-			Msg.getString("TabPanelGeneralEquipment.title"), //$NON-NLS-1$
-			desktop
+			null,
+			context
 		);
 
-		this.unit = unit;
+		this.unit = eqm;
 	}
 	
 	@Override
 	protected void buildUI(JPanel content) {
 
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(1);
+		AttributePanel infoPanel = new AttributePanel();
 		
 		content.add(infoPanel, BorderLayout.NORTH);
-
-		/**
-		 *  Do NOT delete. Will use below once description is made for each equipment
-		 *  
-		 *  JPanel labelPanel = new JPanel(new FlowLayout(10, 10, 10));
-		 *  var label = new MultilineLabel();
-		 *  labelPanel.add(label);
-		 *  String text = unit.getDescription().replace("\n", " ");
-		 *  label.setText(text);
-		 *  label.setPreferredWidthLimit(300);
-		 *  label.setLineSpacing(1.2f);
-		 *  label.setMaxLines(30);
-		 *  label.setBorder(new EmptyBorder(10, 5, 10, 5));
-		 *  label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
-		 *  content.add(labelPanel, BorderLayout.CENTER);
-		 */	
 		
-		if (unit instanceof EVASuit suit) {
-			// Prepare registered owner label
-			pOwnerCache = "";
-			Person p = suit.getRegisteredOwner();	
-			if (p != null) {
-				pOwnerCache = suit.getRegisteredOwner().getName();
-			}		
-			registeredOwnerLabel = infoPanel.addTextField(Msg.getString("TabPanelGeneralEquipment.regOwner"), //$NON-NLS-1$
-					pOwnerCache, null);
-	
+		infoPanel.addTextField("Type", unit.getEquipmentType().getName(), null);
+		infoPanel.addTextField("Mass", StyleManager.DECIMAL_KG2.format(unit.getBaseMass()), null);
+
+		ownerLabel = new EntityLabel(unit.getRegisteredOwner(), getContext());
+		infoPanel.addLabelledItem("Registered Owner", ownerLabel, null);
+		
+		if (unit instanceof EVASuit suit) {	
 			historyPanel = new HistoryPanel(suit.getHistory());
 			historyPanel.setPreferredSize(new Dimension(225, 200));
 	
-			content.add(historyPanel, BorderLayout.SOUTH);
+			content.add(historyPanel, BorderLayout.CENTER);
 		}
-
 	}
 	
 	/**
-	 * Updates the info on this panel.
-	 */
+     * Updates content panel with clock pulse information.
+     * @param pulse Pulse information,
+     */
 	@Override
-	public void update() {
-		
-		if (unit instanceof EVASuit suit) {
-			String pOwner = "";
-			Person p = suit.getRegisteredOwner();	
-			if (p != null) {
-				pOwner = suit.getRegisteredOwner().getName();
-			}
-			if (!pOwnerCache.equalsIgnoreCase(pOwner)) {
-				pOwnerCache = pOwner;
-				registeredOwnerLabel.setText(pOwner); 
-			}
-	
+    public void clockUpdate(ClockPulse pulse) {
+		ownerLabel.setEntity(unit.getRegisteredOwner());
+		if (historyPanel != null) {
 			historyPanel.refresh();
 		}
 	}
