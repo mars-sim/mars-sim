@@ -25,8 +25,8 @@ import com.mars_sim.core.person.ai.mission.MissionEventType;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -44,9 +44,10 @@ public class MiningPanel extends JPanel
 	/**
 	 * Constructor
 	 * 
-	 * @param desktop the main desktop.
+	 * @param objective the mining objective.
+	 * @param context the UI context.
 	 */
-	public MiningPanel(MiningObjective objective, MainDesktopPane desktop) {
+	public MiningPanel(MiningObjective objective, UIContext context) {
 		// Use JPanel constructor
 		super();
 
@@ -59,7 +60,7 @@ public class MiningPanel extends JPanel
 		add(detailsPane, BorderLayout.NORTH);
 
 		// Create LUV label.
-		detailsPane.addLabelledItem("Light Utility Vehicle", new EntityLabel(objective.getLUV(), desktop));
+		detailsPane.addLabelledItem("Light Utility Vehicle", new EntityLabel(objective.getLUV(), context));
 		detailsPane.addRow("Certainty",
 						StyleManager.DECIMAL1_PERC.format(objective.getSite().getAverageCertainty()));
 
@@ -80,7 +81,7 @@ public class MiningPanel extends JPanel
 
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (EntityEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			excavationTableModel.updateTable();
 		}
 	}

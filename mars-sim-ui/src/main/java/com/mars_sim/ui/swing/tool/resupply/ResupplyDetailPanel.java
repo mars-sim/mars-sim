@@ -18,8 +18,8 @@ import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
@@ -40,7 +40,7 @@ public class ResupplyDetailPanel extends JPanel {
 	private JLabel timeArrivalValueLabel;
 	private JLabel immigrantsValueLabel;
 	
-	private MainDesktopPane desktop;
+	private UIContext context;
 
 	private Resupply resupply;
 
@@ -50,12 +50,12 @@ public class ResupplyDetailPanel extends JPanel {
 	/**
 	 * Constructor.
 	 */
-	public ResupplyDetailPanel(MainDesktopPane desktop) {
+	public ResupplyDetailPanel(UIContext context) {
 
 		// Use JPanel constructor
 		super();
 
-		this.desktop = desktop;
+		this.context = context;
 	
 		// Initialize data members.
 		resupply = null;
@@ -133,7 +133,7 @@ public class ResupplyDetailPanel extends JPanel {
 		arrivalDateValueLabel.setText(resupply.getArrivalDate().getTruncatedDateTimeStamp());
 		immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
 		
-		updateTimeToArrival(desktop.getSimulation().getMasterClock().getMarsTime());
+		updateTimeToArrival(context.getSimulation().getMasterClock().getMarsTime());
 		suppliesPanel.show(resupply);
 
 		validate();

@@ -12,22 +12,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 
 
 /**
- * The EventFilter class is a internal dialog window for filtering 
+ * The EventFilter class is a dialog window for filtering 
  * historical events by category in the EventTab.
  */
 @SuppressWarnings("serial")
-public class EventFilter extends JInternalFrame
+public class EventFilter extends JDialog
 implements ActionListener {
 
 	// Data members
@@ -37,12 +38,12 @@ implements ActionListener {
 	 * Constructor.
 	 * 
 	 * @param model the event table model
-	 * @param desktop the main desktop
+	 * @param parent the parent frame
 	 */
-	public EventFilter(EventTableModel model, MainDesktopPane desktop) {
+	public EventFilter(EventTableModel model, JFrame parent) {
 
-		// Use JInternalFrame constructor.
-		super(Msg.getString("EventFilter.title"), false, true); //$NON-NLS-1$
+		// Use JDialog constructor.
+		super(parent, Msg.getString("EventFilter.title"), true); //$NON-NLS-1$
 
 		// Initialize data members.
 		this.model = model;
@@ -63,10 +64,9 @@ implements ActionListener {
 			addCategoryCheckbox(categoryPane, model, cat);
 		}
 
-		pack();
-		
-        desktop.add(this);
-	    
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(parent);
+		pack();	    
 	}
 
 	/**

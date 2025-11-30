@@ -33,7 +33,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.formdev.flatlaf.extras.components.FlatToggleButton;
@@ -55,9 +54,10 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.JCoordinateEditor;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.tool.JStatusBar;
@@ -73,7 +73,6 @@ import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.TreeCheckFactory;
 import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
 
@@ -83,7 +82,8 @@ import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
  * presents the simulation to the user.
  */
 @SuppressWarnings("serial")
-public class NavigatorWindow extends ToolWindow implements ActionListener, ConfigurableWindow {
+public class NavigatorWindow extends ContentPanel 
+		implements ActionListener, ConfigurableWindow {
 
 	// Binding from name to layer
 	private static record NamedLayer(String name, MapLayer layer) {}
@@ -229,21 +229,18 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 
 	/**
 	 * Constructor.
-	 * 
-	 * @param desktop {@link MainDesktopPane} the desktop pane
+	 * @param userSettings 
 	 */
-	public NavigatorWindow(MainDesktopPane desktop) {
+	public NavigatorWindow(UIContext context, Properties userSettings) {
 		// use ToolWindow constructor
-		super(NAME, TITLE, desktop);
+		super(NAME, TITLE, Placement.CENTER);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
-
-		Simulation sim = desktop.getSimulation();
+		Simulation sim = context.getSimulation();
 		this.unitManager = sim.getUnitManager();
 	
 		// Prepare content pane		
 		JPanel contentPane = new JPanel(new BorderLayout(0, 0));
-		setContentPane(contentPane);
+		add(contentPane, BorderLayout.CENTER);
 		
 		// Prepare whole 
 		JPanel wholePane = new JPanel(new BorderLayout(0, 0));
@@ -251,7 +248,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 								BorderFactory.createEmptyBorder(1, 1, 1, 1)));
 		contentPane.add(wholePane, BorderLayout.CENTER);
 
-		mapPanel = new MapPanel(desktop);
+		mapPanel = new MapPanel(context);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		wholePane.add(mapPanel, BorderLayout.CENTER);
 		
@@ -286,15 +283,11 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		contentPane.add(createStatusBar(), BorderLayout.SOUTH);
 
 		// Apply user choice from xml config file
-		checkSettings();
-		
-		setClosable(true);
+		checkSettings(userSettings);
 
-		setVisible(true);
-		// Pack window
-		pack();
-		setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
-
+		var dim = new Dimension(MIN_WIDTH, MIN_HEIGHT);
+		setMinimumSize(dim);
+		setPreferredSize(dim);
 	}
 
 	private JPanel createControlPanel() {
@@ -328,7 +321,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 		gpuButton.setPreferredSize(new Dimension(80, 25));
 		gpuButton.putClientProperty("JButton.buttonType", "roundRect");
 		gpuButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.gpu")); //-NLS-1$
-//		gpuButton.setSelected(IntegerMapData.isHardwareAccel());
 
 		updateGPUButton();
 		gpuButton.addActionListener(e -> updateGPUButton());
@@ -399,7 +391,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/**
 	 * Updates the state of the GPU button.
 	 */
-	public void updateGPUButton() {	
+	private void updateGPUButton() {	
 		if (IntegerMapData.isGPUAvailable()) {
 			
 			// Check if the GPU button is on or not
@@ -412,7 +404,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 			else {
 				logger.config("GPU button is OFF.");
 			}
-//			IntegerMapData.setHardwareAccel(isSelected);
 			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
 		}
 		else {
@@ -430,10 +421,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	/**
 	 * Checks for config settings.
 	 */
-	private void checkSettings() {
+	private void checkSettings(Properties userSettings) {
 		boolean layerDefined = false;
 		// Apply user choice from xml config file
-		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
 		if (userSettings != null) {
 			
 			String resolutionString = userSettings.getProperty(RESOLUTION_PROP, RESOLUTION);
@@ -625,9 +615,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * Processes the map reload command.
 	 * 
 	 * @param command
-	 * @param source
 	 */
-	private void goToMapTypeReload(String command, Object source) {
+	private void goToMapTypeReload(String command) {
 		String [] parts = command.split(MAP_SEPERATOR);
 		String newMapType = parts[2];
 		int reply = Integer.parseInt(parts[1]);
@@ -643,10 +632,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param event
 	 */
 	public void actionPerformed(ActionEvent event) {
-		Object source = event.getSource();
 		String command = event.getActionCommand();
 		if (command.startsWith(MAPTYPE_RELOAD_ACTION)) {			
-			goToMapTypeReload(command, source);
+			goToMapTypeReload(command);
 		}
 	}
 
@@ -779,7 +767,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener, Confi
 	 * @param pulse The clock pulse
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		if ((mapPanel != null) && mapPanel.updateDisplay()) {
 			updateMapControls();
 		}

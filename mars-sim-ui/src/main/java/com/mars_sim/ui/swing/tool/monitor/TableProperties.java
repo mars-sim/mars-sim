@@ -8,13 +8,15 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.WindowConstants;
@@ -22,7 +24,6 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 
@@ -31,28 +32,21 @@ import com.mars_sim.ui.swing.StyleManager;
  * The columns can be either display or hidden in the target table.
  */
 @SuppressWarnings("serial")
-class TableProperties extends JInternalFrame {
+class TableProperties extends JDialog {
 
-    // Data members
-	/** True if window is open. */
-	protected boolean opened;
-
-	/** Table to change. */
     private TableColumnModel model;
-    /** Checkboxes. */
-    private ArrayList<JCheckBox> columnButtons = new ArrayList<>();
+    private List<JCheckBox> columnButtons = new ArrayList<>();
 
     /**
      * Constructs a MonitorPropsDialog class.
+     * @param parent The parent frame
      * @param title The name of the specified model
      * @param table the table to configure
-     * @param desktop the main desktop.
      */
-    public TableProperties(String title, JTable table,
-                              MainDesktopPane desktop) {
+    public TableProperties(Frame parent, String title, JTable table) {
 
-        // Use JInternalFrame constructor
-        super(title + " Properties", false, true);
+        // Use JDialog constructor
+        super(parent, title + " Properties", true); // true for modal
 
         // Initialize data members
         this.model = table.getColumnModel();
@@ -74,7 +68,7 @@ class TableProperties extends JInternalFrame {
             JCheckBox column = new JCheckBox(name);
             column.setSelected(false);
 
-            column.addActionListener(e -> columnSelected(e));
+            column.addActionListener(this::columnSelected);
             columnButtons.add(column);
             columnPane.add(column);
         }
@@ -88,37 +82,11 @@ class TableProperties extends JInternalFrame {
         }
 
         mainPane.add(columnPane, BorderLayout.CENTER);
+        pack();   
         
-        setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        
-        pack();
-        
-        desktop.add(this);
-        
-//        // Add to its own tab pane
-//        if (desktop.getMainScene() != null)
-//        	desktop.add(this);
-//        	//desktop.getMainScene().getDesktops().get(0).add(this);
-//        else 
-//        	desktop.add(this);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(parent);        
     }
-
-
-	/**
-	 * Checks if the tool window has previously been opened.
-	 * @return true if tool window has previously been opened.
-	 */
-	public boolean wasOpened() {
-		return opened;
-	}
-
-	/**
-	 * Sets if the window has previously been opened.
-	 * @param opened true if previously opened.
-	 */
-	public void setWasOpened(boolean opened) {
-		this.opened = opened;
-	}
 
     /**
      * The user has selected a column in the dialog.

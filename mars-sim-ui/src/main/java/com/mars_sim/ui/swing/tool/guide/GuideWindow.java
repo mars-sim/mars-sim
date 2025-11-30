@@ -23,24 +23,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
-import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.JStatusBar;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The GuideWindow is a tool window that displays built-in html pages such as User Guide, Quick Tutorial, Keyboard Shortcuts, etc.
  */
 @SuppressWarnings("serial")
-public class GuideWindow extends ToolWindow implements ActionListener, HyperlinkListener {
+public class GuideWindow extends ContentPanel implements ActionListener, HyperlinkListener {
 
 	/** Tool name. */
 	public static final String NAME = "guide";
@@ -67,7 +65,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	
 	private static Icon homeIcon = ImageLoader.getIconByName(HOME_ICON);
 
-	
+	private transient HelpLibrary library;
 	private JButton homeButton = new JButton(homeIcon);
 	private JButton backButton = new JButton("<");
 	private JButton forwardButton = new JButton(">");
@@ -75,19 +73,11 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	
 	/**
 	 * Constructor.
-	 * 
-	 * @param desktop
-	 *            the desktop pane
 	 */
-	public GuideWindow(MainDesktopPane desktop) {
-		super(NAME, Msg.getString("GuideWindow.title"), desktop);
-		
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+	public GuideWindow(HelpLibrary library) {
+		super(NAME,Msg.getString("GuideWindow.title"), Placement.RIGHT);
 
-       	init();            
-	}
-
-	public void init() {
+		this.library = library;
 			
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.setSize(16, 16);
@@ -103,7 +93,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 
 		// Create the main panel
 		JPanel mainPane = new JPanel(new BorderLayout());
-		setContentPane(mainPane);
+		add(mainPane);
 
 		JPanel topPanel = new JPanel(new BorderLayout());
 		mainPane.add(topPanel, BorderLayout.NORTH);
@@ -139,17 +129,9 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		
 		updateButtons();
 	
-		setResizable(true);
-		setMaximizable(true);
-		setVisible(true);
-	
-		setSize(new Dimension(800, 600));		
-		Dimension desktopSize = desktop.getMainWindow().getFrame().getSize();
-		Dimension windowSize = getSize();
-
-		int width = (desktopSize.width - windowSize.width) / 2;
-		int height = (desktopSize.height - windowSize.height - 100) / 2;
-		setLocation(width, height);
+		var size = new Dimension(800, 600);
+		setPreferredSize(size);
+		setSize(size);		
 		
 		// Pack window.
 		// WARNING: using pack() here will shrink the window to one line tall in swing mode
@@ -163,7 +145,7 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 	 * @param name
 	 */
 	private void displayHelpByName(String name) {
-		displayURI(desktop.getMainWindow().getHelp().getPage(name)); 
+		displayURI(library.getPage(name)); 
 	}
 
     /**
@@ -238,17 +220,5 @@ public class GuideWindow extends ToolWindow implements ActionListener, Hyperlink
 		homeButton.setEnabled(true);
 		backButton.setEnabled(!htmlPane.isFirst());
 		forwardButton.setEnabled(!htmlPane.isLast());
-	}
-	
-	/** 
-	 * Prepares tool window for deletion. 
-	 */
-	@Override
-	public void destroy() {
-		htmlPane = null;
-		viewPort = null;
-		homeButton = null;
-		backButton = null;
-		forwardButton = null;
 	}
 }

@@ -16,10 +16,10 @@ import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * A panel showing a selected transport details.
- * TODO externalize strings
  */
 @SuppressWarnings("serial")
 public class TransportDetailPanel
@@ -37,7 +37,7 @@ extends JPanel {
 	/**
 	 * Constructor.
 	 */
-	public TransportDetailPanel(MainDesktopPane desktop) {
+	public TransportDetailPanel(UIContext context) {
 
 		// Use JPanel constructor.
 		super();
@@ -47,11 +47,11 @@ extends JPanel {
 		setPreferredSize(new Dimension(300, 300));
 
 		// Add resupply detail panel.
-		resupplyPanel = new ResupplyDetailPanel(desktop);
+		resupplyPanel = new ResupplyDetailPanel(context);
 		add(resupplyPanel, RESUPPLY);
 
 		// Add arriving settlement detail panel.
-		arrivingSettlementPanel = new ArrivingSettlementDetailPanel(desktop);
+		arrivingSettlementPanel = new ArrivingSettlementDetailPanel(context);
 		add(arrivingSettlementPanel, SETTLEMENT);
 
 		// Set resupply panel as initial panel displayed.

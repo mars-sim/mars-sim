@@ -35,8 +35,8 @@ import com.mars_sim.core.mission.objectives.ConstructionObjective;
 import com.mars_sim.core.person.ai.mission.MissionEvent;
 import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.ObjectivesPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -57,9 +57,9 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
     /**
      * Constructor.
      * 
-     * @param desktop the main desktop panel.
+     * @param context the UI context.
      */
-    public ConstructionPanel(ConstructionObjective objective, MainDesktopPane desktop) {
+    public ConstructionPanel(ConstructionObjective objective, UIContext context) {
         // Use MissionCustomInfoPanel constructor.
         super();
         setName(objective.getName());
@@ -74,7 +74,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
         var site = objective.getSite();
 
         String siteLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.titleLabel"); //-NLS-1$
-        infoPanel.addLabelledItem(siteLabelString, new EntityLabel(site, desktop));
+        infoPanel.addLabelledItem(siteLabelString, new EntityLabel(site, context));
 
         var stage = objective.getStage();
         String stageLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.stageLabel"); //-NLS-1$
@@ -126,12 +126,12 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
      */
     @Override
     public void entityUpdate(EntityEvent event) {
-        if (EntityEventType.ADD_CONSTRUCTION_WORK_EVENT == event.getType()) {
+        if (EntityEventType.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
             // Update the progress bar
             updateProgressBar();
 
         }
-        else if (EntityEventType.ADD_CONSTRUCTION_MATERIALS_EVENT == event.getType()
+        else if (EntityEventType.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())
                 && materialsTableModel != null) {
             // Update remaining construction materials table.
             materialsTableModel.updateTable();

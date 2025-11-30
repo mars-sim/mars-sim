@@ -17,7 +17,7 @@ import com.mars_sim.core.building.function.AstronomicalObservation;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.astroarts.OrbitWindow;
+import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
@@ -83,10 +83,10 @@ extends BuildingFunctionPanel {
 		
 		// Create the orbit viewer button.
 		JButton starMap = new JButton();
-		starMap.setIcon(ImageLoader.getIconByName(OrbitWindow.ICON));
+		starMap.setIcon(ImageLoader.getIconByName(OrbitViewer.ICON));
 		starMap.setToolTipText("Open the Orbit Viewer");
 
-		starMap.addActionListener(e -> getDesktop().openToolWindow(OrbitWindow.NAME));
+		starMap.addActionListener(e -> getDesktop().openToolWindow(OrbitViewer.NAME));
 		buttonPane.add(starMap);
 		center.add(buttonPane, BorderLayout.CENTER);
 	}

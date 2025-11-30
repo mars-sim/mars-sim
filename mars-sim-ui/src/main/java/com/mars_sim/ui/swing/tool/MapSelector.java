@@ -4,7 +4,7 @@
  * @date 2024-11-09
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.tool_window;
+package com.mars_sim.ui.swing.tool;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;
@@ -14,7 +14,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.FixedUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 
@@ -29,16 +29,16 @@ public final class MapSelector {
 
 	/**
 	 * Display the Entity on the most appropriate map window.
-	 * @param desktop
+	 * @param uiContext
 	 * @param u
 	 */
-    public static void displayOnMap(MainDesktopPane desktop, Entity u) {
+    public static void displayOnMap(UIContext uiContext, Entity u) {
         Coordinates marsPosn = null;
         if (u instanceof MobileUnit mu) {
-            marsPosn = openMobileUnit(desktop, mu);
+            marsPosn = openMobileUnit(uiContext, mu);
         }
         else if (u instanceof FixedUnit fu) {
-            SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+            var sw = getSettlementWindow(uiContext);
             sw.displayPosition(fu.getAssociatedSettlement(), fu.getPosition());
         }
         else if (u instanceof Settlement s) {
@@ -47,20 +47,29 @@ public final class MapSelector {
 
         if (marsPosn != null) {
         	// person is on a mission on the surface of Mars 
-			desktop.openToolWindow(NavigatorWindow.NAME);
-			desktop.centerMapGlobe(marsPosn);
+			displayCoords(uiContext, marsPosn);
         }
     }
+
+	/**
+	 * Display coordinates on Mars Navigator
+	 * @param uiContext
+	 * @param coords
+	 */
+	public static void displayCoords(UIContext uiContext, Coordinates coords) {
+		var w = uiContext.openToolWindow(NavigatorWindow.NAME);
+		((NavigatorWindow) w).updateCoordsMaps(coords);
+	}
 
     /**
 	 * Opens the mobile unit in Mars Navigator or Settlement Map.
 	 * 
 	 * @param u
 	 */
-	private static Coordinates openMobileUnit(MainDesktopPane desktop, MobileUnit u) {
+	private static Coordinates openMobileUnit(UIContext uiContext, MobileUnit u) {
 		
 		if (u.isInSettlement()) {
-            showSettlementMap(desktop, u);
+            showSettlementMap(uiContext, u);
 		}
 		else if (u.isInVehicle()) {
 			Vehicle vv = u.getVehicle();
@@ -70,7 +79,7 @@ public final class MapSelector {
 			} 	
 			else {
 				// still parked inside a garage or within the premise of a settlement
-                showSettlementMap(desktop, u);
+                showSettlementMap(uiContext, u);
 			}
 		}
 		else if (u.isOutside()) {
@@ -81,13 +90,13 @@ public final class MapSelector {
 			Vehicle vv = u.getVehicle();
 			if (vv == null) {
 				// if it's not in a vehicle
-                showSettlementMap(desktop, u);
+                showSettlementMap(uiContext, u);
 			}	
 			else {
 				// if it's in a vehicle			
 				if (vv.getSettlement() != null) {
 					// if the vehicle is in a settlement
-					showSettlementMap(desktop, u);
+					showSettlementMap(uiContext, u);
 				}	
 				else {
 					return u.getCoordinates();
@@ -98,14 +107,23 @@ public final class MapSelector {
 	}	
 
 	/**
+	 * Get teh Settlement window out of the current context
+	 * @param uiContext
+	 * @return
+	 */
+	private static SettlementWindow getSettlementWindow(UIContext uiContext) {
+		return (SettlementWindow)uiContext.openToolWindow(SettlementWindow.NAME);
+	}
+
+	/**
 	 * Opens the Settlement map and show a Unit
 	 * 
 	 * @param u
 	 */
-	private static void showSettlementMap(MainDesktopPane desktop, MobileUnit u) {
+	private static void showSettlementMap(UIContext uiContext, MobileUnit u) {
 		// person just happens to step outside the settlement at its
 		// vicinity temporarily
-		SettlementWindow sw = (SettlementWindow) desktop.openToolWindow(SettlementWindow.NAME);
+		SettlementWindow sw = getSettlementWindow(uiContext);
 		if (u instanceof Person p) {
 			sw.displayPerson(p);
 		} 

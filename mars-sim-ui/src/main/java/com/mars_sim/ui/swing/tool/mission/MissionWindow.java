@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -21,7 +20,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTree;
-import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -37,19 +35,18 @@ import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.ui.swing.ConfigurableWindow;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.mission.create.CreateMissionWizard;
 import com.mars_sim.ui.swing.tool.mission.edit.ModifyMissionDialog;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 
 /**
  * Window for the mission tool.
  */
 @SuppressWarnings("serial")
-public class MissionWindow extends ToolWindow implements ConfigurableWindow {
+public class MissionWindow extends ContentPanel implements MissionManagerListener {
 
 	/** Tool name. */
 	public static final String NAME = "mission";
@@ -66,8 +63,6 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	private static final int MAP_BOX_HEIGHT = MAP_HEIGHT;
 	static final int TABLE_HEIGHT = 160;
 	static final int HEIGHT = MAP_BOX_HEIGHT + TABLE_HEIGHT;
-	
-	private static final String MISSIONNAME_PROP = "selected";
 
 	// Private members
 	private MainDetailPanel mainPanel;
@@ -88,39 +83,25 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	private JTree missionTree;
 	private JButton rejectButton;
 
+	private UIContext context;
+
 	/**
 	 * Constructor.
 	 *
-	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
-	public MissionWindow(MainDesktopPane desktop) {
+	public MissionWindow(UIContext context) {
 
 		// Use ToolWindow constructor
-		super(NAME, TITLE, desktop);
+		super(NAME, TITLE, Placement.CENTER);
 
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-		this.missionMgr = desktop.getSimulation().getMissionManager();
-		this.missionMgr.addListener(new MissionManagerListener() {
-
-			@Override
-			public void addMission(Mission mission) {
-				addMissionNode(mission);
-			}
-
-			@Override
-			public void removeMission(Mission mission) {
-				removeMissionNode(mission);
-			}
-			
-		});
-
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		this.context = context;
+		this.missionMgr = context.getSimulation().getMissionManager();
+		this.missionMgr.addListener(this);
 		
 		// Create content panel.
 		JPanel mPane = new JPanel(new BorderLayout());
 		mPane.setBorder(StyleManager.newEmptyBorder());
-		setContentPane(mPane);
+		add(mPane, BorderLayout.CENTER);
 
 		// Create the left panel.
 		JPanel treePanel = new JPanel(new BorderLayout());
@@ -161,11 +142,11 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		mPane.add(tabPane, BorderLayout.CENTER);
 
 		// Create the main detail panel.
-		mainPanel = new MainDetailPanel(desktop, this);
+		mainPanel = new MainDetailPanel(context, this);
 		tabPane.add("Main", mainPanel);
 
 		// Create the navpoint panel.
-		navpointPane = new NavpointPanel(this);
+		navpointPane = new NavpointPanel(context);
 		
 		tabPane.add("Navigation", navpointPane);
 
@@ -216,20 +197,14 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		});
 		buttonPane.add(abortButton);
 
-		setSize(new Dimension(WIDTH, HEIGHT));
-		setResizable(true);
+		var dim =new Dimension(WIDTH, HEIGHT);
+		setPreferredSize(dim);
+		setSize(dim);
+	}
 
-		// Reselect previous mission
-		Properties userSettings = desktop.getMainWindow().getConfig().getInternalWindowProps(NAME);
-		String selectedMission = (userSettings != null ? userSettings.getProperty(MISSIONNAME_PROP) : null);
-		if (selectedMission != null) {
-			for(Mission m : missionMgr.getMissions()) {
-				if (m.getName().equals(selectedMission)) {
-					openMission(m);
-					break;
-				}
-			}
-		}
+	@Override
+	public void addMission(Mission mission) {
+		addMissionNode(mission);
 	}
 
 	private DefaultMutableTreeNode addMissionNode(Mission m) {
@@ -250,15 +225,15 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		return mNode;
 	}
 
-	private void removeMissionNode(Mission m) {
+	@Override
+	public void removeMission(Mission m) {
 		DefaultMutableTreeNode mNode = missionNodes.get(m);
 		if (mNode == null) {
 			return;
 		}
 		treeModel.removeNodeFromParent(mNode);
 	}
-	
-	
+
 	/**
 	 * Selects a mission for display.
 	 *
@@ -287,7 +262,8 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	 * Open wizard to create a new mission.
 	 */
 	private void createNewMission() {
-		createMissionWizard = new CreateMissionWizard(desktop, this);
+		createMissionWizard = new CreateMissionWizard(context);
+		createMissionWizard.setVisible(true);
 	}
 
 	/**
@@ -303,14 +279,14 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 		}
 	}
 
-
 	/**
 	 * Opens wizard to edit a mission.
 	 * 
 	 * @param mission the mission to edit.
 	 */
 	private void editMission(Mission mission) {
-		new ModifyMissionDialog(desktop, mission, this);
+		var diag = new ModifyMissionDialog(mission, context, this);
+		diag.setVisible(true);
 	}
 
 	public CreateMissionWizard getCreateMissionWizard() {
@@ -327,7 +303,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	 * @param pulse The clock change
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		navpointPane.update(pulse);
 	}
 
@@ -336,6 +312,7 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 	 */
 	@Override
 	public void destroy() {
+		context.getSimulation().getMissionManager().removeListener(this);
 		navpointPane.destroy();
 	}
 
@@ -352,18 +329,6 @@ public class MissionWindow extends ToolWindow implements ConfigurableWindow {
 
 		TreeNode[] path = found.getPath();
 		missionTree.setSelectionPath(new TreePath(path));
-	}
-
-	/**
-	 * Get the current status of the window in terms of User experience.
-	 */
-	@Override
-	public Properties getUIProps() {
-		Properties results = new Properties();
-		if (missionCache != null) {
-			results.setProperty(MISSIONNAME_PROP, missionCache.getName());
-		}
-		return results;
 	}
 
 	private static class MissionTreeRenderer extends DefaultTreeCellRenderer {

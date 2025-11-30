@@ -33,7 +33,7 @@ extends JPanel {
 	 * Constructor.
 	 * @param transportItem the transport item to edit.
 	 */
-	public TransportItemEditingPanel(Transportable transportItem) {
+	protected TransportItemEditingPanel(Transportable transportItem) {
 		// Use JPanel constructor
 		super();
 

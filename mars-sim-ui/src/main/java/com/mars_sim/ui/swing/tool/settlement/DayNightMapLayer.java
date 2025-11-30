@@ -25,10 +25,10 @@ public class DayNightMapLayer implements SettlementMapLayer {
 	private SettlementMapPanel mapPanel;
 	private SurfaceFeatures surfaceFeatures;
 
-    public DayNightMapLayer(SettlementMapPanel mapPanel) {
+    public DayNightMapLayer(SettlementMapPanel mapPanel, SurfaceFeatures surface) {
 		// Initialize data members.
 		this.mapPanel = mapPanel;
-		this.surfaceFeatures = mapPanel.getSettlementWindow().getDesktop().getSimulation().getSurfaceFeatures();
+		this.surfaceFeatures = surface;
     }
 
     public int getOpacity() {

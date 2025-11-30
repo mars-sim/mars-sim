@@ -17,12 +17,11 @@ import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
-import com.mars_sim.ui.swing.MainDesktopPane;
 
 
 /**
  * The Mars Calendar Display class shows the current month in a panel for the
- * {@link TimeWindow} class.
+ * {@link TimeTool} class.
  */
 @SuppressWarnings("serial")
 public class MarsCalendarDisplay extends JComponent {
@@ -75,14 +74,12 @@ public class MarsCalendarDisplay extends JComponent {
 	 * Constructs a MarsCalendarDisplay object.
 	 * 
 	 * @param marsTime Martian clock instance
-	 * @param desktop the main desktop
 	 */
-	public MarsCalendarDisplay(MarsTime marsTime, MainDesktopPane desktop) {
+	public MarsCalendarDisplay(MarsTime marsTime) {
 
 		// Set component size
 		setPreferredSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
-//		setMaximumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
-//		setMinimumSize(new Dimension(BOX_WIDTH, Y_OFFSET + BOX_LENGTH));
+
 		setAlignmentX(LEFT_ALIGNMENT);
 		setAlignmentY(CENTER_ALIGNMENT);
 		

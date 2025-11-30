@@ -9,51 +9,51 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.WindowConstants;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.ModalInternalFrame;
 
 /**
  * This window displays a list of columns from the specified model.
  * The columns displayed depends upon the final chart being rendered.
  */
 @SuppressWarnings("serial")
-public class ColumnSelector
-extends ModalInternalFrame {
+public class ColumnSelector extends JDialog {
 
-	private final static String PIE_MESSAGE = Msg.getString("ColumnSelector.singleColumn"); //$NON-NLS-1$
-	private final static String BAR_MESSAGE = Msg.getString("ColumnSelector.multipleColumns"); //$NON-NLS-1$
+	private static final String PIE_MESSAGE = Msg.getString("ColumnSelector.singleColumn"); //$NON-NLS-1$
+	private static final String BAR_MESSAGE = Msg.getString("ColumnSelector.multipleColumns"); //$NON-NLS-1$
 
 	// Data members
 	/** Check boxes. */
 	private JList<?> columnList = null;
-	private int columnMappings[] = null;
+	private int []columnMappings = null;
 	private boolean okPressed = false;
 
 	/**
 	 * Constructs the dialog with a title and columns extracted from the
 	 * specified model.
 	 * 
-	 * @param desktop MainDesktopPane the owner of the dialog.
+	 * @param parent Frame that owns this dialog.
 	 * @param model Model driving the columns.
 	 * @param bar True if it's for a Bar chart. False if it's for a Pie chart.
 	 */
-	public ColumnSelector(MainDesktopPane desktop, MonitorModel model, boolean bar) {
-		// Use ModalInternalFrame constructor
-        super(model.getName());
+	private ColumnSelector(Frame parent, MonitorModel model, boolean bar) {
+		// Use JDialog constructor
+        super(parent, model.getName(), true); // true for modal
 
 		// Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -63,7 +63,7 @@ extends ModalInternalFrame {
 		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
 
 		// Add all valid columns into the list
-		Vector<String> items = new Vector<String>();
+		Vector<String> items = new Vector<>();
 		columnMappings = new int[model.getColumnCount()-1];
 		for(int i = 1; i < model.getColumnCount(); i++) {
 			// If a valid column then add to model.
@@ -85,7 +85,7 @@ extends ModalInternalFrame {
 		// Center pane
 		JPanel centerPane = new JPanel(new BorderLayout());
 		centerPane.setBorder(BorderFactory.createRaisedBevelBorder());
-		columnList = new JList<Object>(items);
+		columnList = new JList<>(items);
 		if (bar) {
 			columnList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			centerPane.add(new JLabel(BAR_MESSAGE), BorderLayout.NORTH);
@@ -101,15 +101,11 @@ extends ModalInternalFrame {
 		JButton okButton = new JButton(Msg.getString("ColumnSelector.button.ok")); //$NON-NLS-1$
 		okButton.addActionListener(e -> {
 				okPressed = true;
-				setVisible(false);
-				//setModal(false);
+				dispose();
 		});
 		buttonPanel.add(okButton);
 		JButton cancelButton = new JButton(Msg.getString("ColumnSelector.button.cancel")); //$NON-NLS-1$
-		cancelButton.addActionListener(e -> {
-				setVisible(false);
-				//setModal(false);
-		});
+		cancelButton.addActionListener(e -> dispose());
 		buttonPanel.add(cancelButton);
 
 		// Package dialog
@@ -120,25 +116,8 @@ extends ModalInternalFrame {
 
 		setSize(300, 300);
 		setPreferredSize(new Dimension (300, 300));
-
-//		if (desktop.getMainScene() != null) {
-//			Dimension desktopSize = desktop.getSize();
-//		    Dimension size = this.getSize();
-//		    int width = (desktopSize.width - size.width) / 2;
-//		    int height = (desktopSize.height - size.height) / 4;
-//		    setLocation(width, height);
-//		}
-
-        // Add to its own tab pane
-        //if (desktop.getMainScene() != null)
-        //	desktop.add(this);
-        	//desktop.getMainScene().getDesktops().get(0).add(this);
-        //else
-        	desktop.add(this);
-
-        setModal(true);
-        moveToFront();
-	    //setVisible(true);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(parent);
 		pack();
 
 	}
@@ -146,48 +125,35 @@ extends ModalInternalFrame {
 	/**
 	 * Creates a column selector popup for use with a Bar chart.
 	 * 
-	 * @param window Parent frame.
+	 * @param parent Parent frame.
 	 * @param model Model containing columns.
 	 * @return Array of column indexes to display.
 	 */
-	public static int[] createBarSelector(MainDesktopPane desktop,
+	public static int[] createBarSelector(Frame parent,
 			MonitorModel model) {
-		ColumnSelector select = new ColumnSelector(desktop, model, true);
+		ColumnSelector select = new ColumnSelector(parent, model, true);
 		select.setVisible(true);
-		//select.setModal(true);
-		//return select.getSelectedColumns();
-		int columns[] = select.getSelectedColumns();
-		//if (columns.length > 0) {
-			return columns;
-		//}
-		//else {
-		//	return columns;
-		//}
+
+		return select.getSelectedColumns();
 	}
 
 	/**
 	 * Creates a column selector popup for a Pie chart.
 	 * 
-	 * @param window Parent frame.
+	 * @param parent Parent frame.
 	 * @param model Model containing columns.
 	 * @return Column index to use as category.
 	 */
-	public static int createPieSelector(MainDesktopPane desktop,
+	public static int createPieSelector(Frame parent,
 			MonitorModel model) {
-        //System.out.println("ColumnSelector.java : start calling createPieSelector ");
-		ColumnSelector select = new ColumnSelector(desktop, model, false);
-		//System.out.println("createPieSelector() : just done calling new ColumnSelector");
+		ColumnSelector select = new ColumnSelector(parent, model, false);
 		select.setVisible(true);
-		//System.out.println("createPieSelector() : just done calling setVisible(true)");
-		//select.setModal(true);
-		//System.out.println("createPieSelector() : just done calling setModal(true)");
+
 		int column = select.getSelectedColumn();
 		if (column >= 0) {
-			//System.out.println("createPieSelector() : columns >= 0");
 			return column;
 		}
 		else {
-			//System.out.println("createPieSelector() : columns < 0");
 			return -1;
 		}
 	}
@@ -200,9 +166,9 @@ extends ModalInternalFrame {
 	 * @return Array of TableColumn indexes of selection.
 	 */
 	public int[] getSelectedColumns() {
-		int index[] = null;
+		int []index = null;
 		if (okPressed) {
-			int selection[] = columnList.getSelectedIndices();
+			int []selection = columnList.getSelectedIndices();
 			index = new int[selection.length];
 
 			for(int i = 0; i < selection.length; i++) {
