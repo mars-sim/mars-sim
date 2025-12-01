@@ -80,6 +80,7 @@ import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.SystemDateTime;
 import com.mars_sim.core.tool.CheckSerializedSize;
@@ -679,14 +680,16 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param autosaveDefault True if default is used for autosave
 	 */
 	public void startClock(boolean autosaveDefault) {
-		masterClock.addClockListener(this, 0);
+		masterClock.addClockListener(this);
 		
 		// Add a listener to trigger the auto save
-		autoSaveHandler = new AutoSaveTrigger(this, autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
+		ClockListener autoSaver = new AutoSaveTrigger(this, autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
 		long autoSaveDuration = simulationConfig.getAutosaveInterval() * 60000L;
+
+		autoSaveHandler = new CompressedClockListener(autoSaver, autoSaveDuration);
 		logger.config("Setting up autosave to be triggered every " + autoSaveDuration + " ms (" +
 				autoSaveDuration/60.0/1000.0 + " mins).");
-		masterClock.addClockListener(autoSaveHandler, autoSaveDuration);
+		masterClock.addClockListener(autoSaveHandler);
 		masterClock.start();
 		
 		printLastSavedSol();

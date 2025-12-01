@@ -143,13 +143,9 @@ public class ClockPulse {
 		
 		// Get the actual elapsed millisols
 		double actualElapsed = msolsSkipped + elapsed;
-		// Add the skipped millisols
-		this.marsTime = marsTime.addTime(msolsSkipped);
 
 		return new ClockPulse(id, actualElapsed, marsTime, master, 
 				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
-		
-//		return fireClockPulse(actualElapsed);
 	}
 	
 	/**

@@ -38,6 +38,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.ui.swing.MainWindow;
 
 public class MarsTerminal extends SwingTextTerminal implements ClockListener {
@@ -118,8 +119,9 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		}, false);
 
 
-		// Add Mars Terminal to the clock listener
-		sim.getMasterClock().addClockListener(this, 1000);
+		// Add Mars Terminal to the clock listener.
+		// Has a long delay because only interested in pause changes
+		sim.getMasterClock().addClockListener(new CompressedClockListener(this, 60000L));
 		// Update title
 		changeTitle(false);
 
