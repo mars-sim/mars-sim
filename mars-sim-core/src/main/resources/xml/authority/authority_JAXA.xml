@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="JAXA" name="Japan Aerospace Exploration Agency" corporation="false"
+					agenda="Human Habitation" gender-ratio="0.6">
+			<country name="Japan"/>
+			<settlement-name name="New Tokyo" />
+			<settlement-name name="New Seto" />
+			<settlement-name name="Ohsumi" />
+			<settlement-name name="Kawasaki Port" />
+			<settlement-name name="Obayashi Port" />
+			<settlement-name name="Osamu" />
+			<settlement-name name="New Osake" />
+			<settlement-name name="New Okinawa" />
+			<settlement-name name="New Kyoto" />
+			<settlement-name name="New Saga" />
+			<settlement-name name="New Sapporo" />
+			<settlement-name name="New Yokohama" />
+			<settlement-name name="Sony World" />
+			<settlement-name name="Kyocera" />
+			<rover-name name="Jyu-Sokosha" />
+			<rover-name name="Ha-Go" />
+			<rover-name name="Ke-To" />
+			<rover-name name="Ke-Nu" />
+			<rover-name name="Shinhoto" />
+			<rover-name name="Ro-Go" />
+			<rover-name name="So-Ki" />
+			<rover-name name="So-Da" />
+			<rover-name name="Ku-Se" />
+			<rover-name name="Ke-Ri" />
+			<rover-name name="Ho-To" />
+			<rover-name name="Ke-Ho" />
+			<rover-name name="Chi-Ha" />
+			<rover-name name="Chi-He" />
+			<rover-name name="Chi-To" />
+			<rover-name name="Chi-Ri" />
+			<rover-name name="Shi-Ki" />
+		</authority>

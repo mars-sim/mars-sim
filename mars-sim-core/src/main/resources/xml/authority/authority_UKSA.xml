@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="UKSA" name="United Kingdom Space Agency" corporation="false"
+					agenda="Space Accessibility" gender-ratio="0.76">
+			<country name="United Kingdom"/>
+			<!-- In the United Kingdom, women make up 24% of the STEM workforce, a 
+			figure that has increased from 21% in 2016, although this still represents 
+			a significant gender gap. At the higher education level, 31% of students 
+			enrolled in core STEM subjects are women or non-binary individuals, 
+			with the highest representation found in physical sciences at 44% -->
+			<settlement-name name="New Columbia" />
+			<settlement-name name="New Victoria" />
+			<settlement-name name="Horizon" />
+			<settlement-name name="Hera" />
+			<settlement-name name="Memento" />
+			<settlement-name name="Shakespeare" />
+			<settlement-name name="Aurora" />
+			<settlement-name name="New Glasgow" /> 
+			
+			<settlement-name name="Champion" />
+			<settlement-name name="Moyra" /> 
+			<settlement-name name="Seren" />
+			<settlement-name name="Asterix" /> 
+			
+									
+			<rover-name name="Empire" />
+			<rover-name name="Hamlet" /> 
+			<rover-name name="Aite" /> 
+			
+			<rover-name name="Clyde" /> 
+			<rover-name name="Alba" />  
+			<rover-name name="Aston Martin" />
+			
+			<rover-name name="McLaren" />
+			<rover-name name="Bentley" /> 
+			<rover-name name="Rolls-Royce" />
+			
+			<rover-name name="Jaguar" /> 
+			<rover-name name="Lotus" /> 
+			<rover-name name="Vauxhall" />  
+			<rover-name name="Ariel" />
+			
+			<rover-name name="Morgan" />
+			<rover-name name="Caterham" /> 
+			<rover-name name="Noble" />
+			
+			<rover-name name="Briggs" /> 
+			<rover-name name="lister" /> 
+			<rover-name name="Ginetta" />
+			
+			<rover-name name="Arash" />
+			<rover-name name="Leyland" /> 
+			<rover-name name="Argyll" />
+			
+			<rover-name name="Horley" /> 
+			<rover-name name="Arkley" /> 
+			<rover-name name="Asquith" />
+			
+			
+		</authority>

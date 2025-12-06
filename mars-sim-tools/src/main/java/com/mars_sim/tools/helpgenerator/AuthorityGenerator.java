@@ -26,7 +26,7 @@ public class AuthorityGenerator extends TypeGenerator<Authority> {
         var factory = getConfig().getReportingAuthorityFactory();
 
         return factory.getKnownItems().stream()
-                    .filter(a -> a.isBundled())
+                    .filter(Authority::isBundled)
                     .sorted(Comparator.comparing(Authority::getName))
                     .toList();
     }

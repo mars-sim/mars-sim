@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="BO" name="Blue Origin" corporation="true"
+					agenda="Colony Construction" gender-ratio="0.5">
+			<country name="United States"/>
+			<settlement-name name="Aurora" />
+			<settlement-name name="Astro City" />
+			<settlement-name name="Amazone" />
+			<settlement-name name="Borealis" />
+			<settlement-name name="Ender" />
+			<settlement-name name="Eos" />
+			<settlement-name name="Liberty" />
+			<settlement-name name="Terminus" />
+			<settlement-name name="Nox" />
+			<settlement-name name="Hera" />
+			<settlement-name name="Chrono" />
+												
+			<rover-name name="Desert Pearl" />
+			<rover-name name="Desert Rose" />
+			<rover-name name="Deimos Tide" />
+			<rover-name name="Desert Star" />
+			<rover-name name="Drift Wood" />
+			<rover-name name="Desertfarer" />
+			<rover-name name="Dream Chaser" />
+			<rover-name name="Dune Drifter" />
+			<rover-name name="Dune Runner" />
+			<rover-name name="Niagara" />
+			<rover-name name="Blue Bird" />
+			<rover-name name="Vulture" />
+			<rover-name name="Froggie" />
+			<rover-name name="Croc" />
+			<rover-name name="Phoenix" />
+			<rover-name name="Sunrise" />
+			<rover-name name="Avatar" />		
+			<rover-name name="Solas" />
+			<rover-name name="Rebus" />
+		</authority>

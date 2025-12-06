@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="SPACEX" name="Space Exploration Technologies Corporation" corporation="true"
+					agenda="Planet Life" gender-ratio="0.5">
+			<country name="United States"/>
+			<settlement-name name="Muskville" />
+			<settlement-name name="Falcon Station" />
+			<settlement-name name="Nicolas Town" />
+			<settlement-name name="Elonia" />
+			<settlement-name name="Solarian" />
+			<settlement-name name="New Eden" />
+			<settlement-name name="Teslapolis" />		
+			<settlement-name name="IronVille" />
+			<settlement-name name="Boringburg" />
+			<settlement-name name="Hawthorne" />
+			<settlement-name name="XAE" />
+			<settlement-name name="New Vegas" />
+			<settlement-name name="Brownsville" />			
+			<rover-name name="Genesis" />
+			<rover-name name="Vega" />
+			<rover-name name="Raptor" />
+			<rover-name name="Merlin" />
+			<rover-name name="Roadster" />
+			<rover-name name="Gypsea" />
+			<rover-name name="Nomad" />
+			<rover-name name="Oasis" />
+			<rover-name name="Odyssey" />
+			<rover-name name="Osprey" />
+			<rover-name name="Drifter" />
+			<rover-name name="Princess" />
+			<rover-name name="Serenity" />
+			<rover-name name="Ironman" />
+			<rover-name name="Mariner" />			
+		</authority>

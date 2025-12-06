@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="ISRO" name="The Indian Space Research Organisation" corporation="false"
+					agenda="Areological Science" gender-ratio="0.9">
+			<country name="India"/>
+			<settlement-name name="New Bengal" />
+			<settlement-name name="New Chennai" />
+			<settlement-name name="New Punjab" />
+			<settlement-name name="Mahindra" />
+			<settlement-name name="New Mumbai" />
+			<settlement-name name="Chandrasekhar" />
+			<settlement-name name="Maangalan" />
+			<settlement-name name="BhomBhavan" />
+			<settlement-name name="Marshal" />
+			<settlement-name name="Base Sani" />
+			<settlement-name name="Basti" />
+			<rover-name name="Chandrayaan" /> <!-- 'Moon Vehicle' in Hindi and Sanskrit -->
+			<rover-name name="Tata" /> <!-- Indian for "bye" or "out of station" -->
+			<rover-name name="Maruti" /> <!-- Indian for "one born from Marut (or air)" -->
+			<rover-name name="Ashok" /> <!-- Sanskrit origion, meaning "yes" or "like" -->
+			<rover-name name="Opel" /> <!-- Indian  for "jewel" -->						
+			<rover-name name="Agni" /> <!-- Hindi for "fire" -->
+			<rover-name name="Naag" /> <!-- Hindi for "snake" -->
+			<rover-name name="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
+			<rover-name name="Mangala" /> <!--  Sanskrit for "Mars" in Jyotish astrology -->
+			<rover-name name="Rahu" /> <!-- Hindi for "Mars" (not certain) -->
+			<rover-name name="Vayu" /> <!-- Hindi for "wind" -->
+			<rover-name name="Prithvi" /> <!-- Hindi for "earth" -->
+			<rover-name name="Reth" /> <!-- Hindi for "sand" -->
+			<rover-name name="Vikram" /> <!-- a male Hindu/Sanskrit name for being valorous, wise, brave and strong as well as victorious-->
+		</authority>

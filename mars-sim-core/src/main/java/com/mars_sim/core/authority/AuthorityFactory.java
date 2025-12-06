@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -129,11 +128,11 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	
 		// Load the Reporting authorities
 		Element authoritiesNode = doc.getRootElement().getChild(AUTHORITIES_EL);
-		List<Element> authorityNodes = authoritiesNode.getChildren(AUTHORITY_EL);
-		for (Element authorityNode : authorityNodes) {
-			addItem(parseXMLAuthority(newAgendas, authorityNode, true));
-		}
-		
+		String[] predefined = authoritiesNode.getChildren(AUTHORITY_EL).stream()
+				.map(a -> a.getAttribute(CODE_ATTR).getValue())
+				.toArray(String[]::new);
+		loadDefaults(predefined);
+
 		// Assign the agendas
 		agendas = Collections.unmodifiableMap(newAgendas);
 	}
@@ -161,17 +160,17 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 		// Get Countries
 		List<String> countries = authorityNode.getChildren(COUNTRY_EL).stream()
 								.map(a -> a.getAttributeValue(NAME_ATTR))
-								.collect(Collectors.toList());
+								.toList();
 		 
 		// Get Settlement names
 		List<String> settlementNames = authorityNode.getChildren(SETTLEMENTNAME_EL).stream()
 				.map(a -> a.getAttributeValue(NAME_ATTR))
-				.collect(Collectors.toList());
+				.toList();
 
 		// Get Rover names
 		List<String> roverNames = authorityNode.getChildren(ROVERNAME_EL).stream()
 				.map(a -> a.getAttributeValue(NAME_ATTR))
-				.collect(Collectors.toList());
+				.toList();
 		
 		// Check if it's a corporation (false if it's a space agency)
 		boolean isCorporation = false;
@@ -239,7 +238,7 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	@Override
 	protected Authority parseItemXML(Document doc, boolean predefined) {
 		// User configured XML just contains the Authority node.
-		return parseXMLAuthority(agendas, doc.getRootElement(), false);
+		return parseXMLAuthority(agendas, doc.getRootElement(), predefined);
 	}
 
 	/**

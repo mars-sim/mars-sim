@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="UAESA" name="United Arab Emirates Space Agency" corporation="false"
+					agenda="Space Economy" gender-ratio="0.9">
+			<country name="United Arab Emirates"/>
+			<settlement-name name="New Salem" />
+			<settlement-name name="New Dubai" />
+			<settlement-name name="New Rashid" />
+			<settlement-name name="New Sultan" />
+			<settlement-name name="New Khalifa" />
+			<settlement-name name="New Qubaisi" />
+			<settlement-name name="New Amiri" />
+			<settlement-name name="New Maktoum" />
+			<settlement-name name="New Nahyan" />
+			<settlement-name name="New Bateen" />
+			<settlement-name name="New Ajman" />
+												
+			<rover-name name="Tunb" />
+			<rover-name name="Ruwais" />
+			<rover-name name="Masfut" />
+			<rover-name name="Manama" />
+			<rover-name name="Qidfa" />
+			<rover-name name="Kalba" />
+			<rover-name name="Baynunah" />
+			<rover-name name="Abu Musa" />
+			<rover-name name="Muzayrah" />
+			<rover-name name="Mleiha" />
+			<rover-name name="Hatta" />
+			<rover-name name="Dibba" />
+			<rover-name name="Siji" />
+			<rover-name name="Sharjah" />
+			<rover-name name="Sharm" />
+			<rover-name name="Bu Hasa" />
+			<rover-name name="Hili" />		
+			<rover-name name="Hamim" />
+			<rover-name name="Dhaid" />
+			<rover-name name="Aldar" />
+			<rover-name name="Aramex" />
+			<rover-name name="Emaar" />
+			<rover-name name="Etihad" />		
+			<rover-name name="Etisalat" />
+			<rover-name name="Jumeirah" />
+		</authority>
