@@ -6,6 +6,8 @@
  */
 package com.mars_sim.ui.swing;
 
+import java.io.Serializable;
+
 import javax.swing.JFrame;
 
 import com.mars_sim.core.Entity;
@@ -15,7 +17,7 @@ import com.mars_sim.core.Simulation;
  * Context interface for UI components to interact with the UI and simulation.
  * This is a Work In Progress and will be refactor once all Tools converted to ContentPanel.
  */
-public interface UIContext {
+public interface UIContext extends Serializable {
 
     /**
      * Show the details for an Entity object.

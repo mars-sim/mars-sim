@@ -47,6 +47,8 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.desktop.ContentWindow;
+import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
+import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
@@ -61,7 +63,6 @@ import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-import com.mars_sim.ui.swing.unit_window.EntityContentPanel;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindowFactory;
 import com.mars_sim.ui.swing.unit_window.UnitWindowListener;
@@ -477,7 +478,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 				
 		// Build a new window
-		var panel = UnitWindowFactory.getEntityPanel(unit, this, initProps);
+		var panel = EntityContentFactory.getEntityPanel(unit, this, initProps);
 		if (panel != null) {
 			var cw = new ContentWindow(this, panel);
 			// Set internal frame listener
@@ -522,7 +523,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 		}
 		entityWindows.remove(source);
-		source.dispose();
+		source.destroy();
 	}
 
 	private void positionWindow(Component window, WindowSpec initProps) {
@@ -645,9 +646,15 @@ public class MainDesktopPane extends JDesktopPane
 				u.update();
 		}
 
+		// Update all entity windows.
+		for (var w : entityWindows) {
+			if (w.isVisible())
+				w.clockUpdate(pulse);
+		}
+
 		// Update all tool windows.
 		for (var w : toolWindows) {
-			if (w.isVisible() || w.isShowing())
+			if (w.isVisible())
 				w.clockUpdate(pulse);
 		}
 	}

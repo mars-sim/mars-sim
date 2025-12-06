@@ -42,6 +42,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
@@ -51,7 +52,7 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
 @SuppressWarnings("serial")
-public class InventoryTabPanel extends TabPanel {
+public class InventoryTabPanel extends EntityTabPanel<Unit> {
 
 	private static final String INVENTORY_ICON = "inventory";
 
@@ -86,7 +87,7 @@ public class InventoryTabPanel extends TabPanel {
 		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		
         // Create resources panel
-		var unit = getUnit();
+		var unit = getEntity();
 		if (unit instanceof ResourceHolder) {
 			JScrollPane resourcesPanel = new JScrollPane();
 			resourcesPanel.setBorder(new EmptyBorder(2, 2, 2, 2));

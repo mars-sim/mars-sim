@@ -44,7 +44,7 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 	 */
 	protected BuildingFunctionPanel(String title, Icon tabIcon, Building building, MainDesktopPane desktop) {
 		// User TabPanel constructor
-		super (title, title, tabIcon, title, desktop);
+		super (title, tabIcon, title, desktop);
 
 		this.building = building;
 	}
@@ -59,17 +59,8 @@ public abstract class BuildingFunctionPanel extends TabPanel {
 	 */
 	protected BuildingFunctionPanel(String title, String description, Building building, MainDesktopPane desktop) {
 		// User TabPanel constructor
-		super(title, description, null, description, desktop);
+		super(title, null, description, desktop);
 
 		this.building = building;
-	}
-	
-	
-	/**
-	 * Updates this window.
-	 */
-	@Override
-	public void update() {
-		super.update();
 	}
 }

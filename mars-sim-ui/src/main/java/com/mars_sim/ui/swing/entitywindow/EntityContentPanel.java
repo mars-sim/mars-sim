@@ -4,7 +4,7 @@
  * @date 2025-11-30
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.unit_window;
+package com.mars_sim.ui.swing.entitywindow;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -24,6 +24,7 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.
@@ -56,11 +57,6 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         this.entity = entity;
         this.context = context;
 
-        // Temp hack until all listeners are consolidated
-        if (entity instanceof Unit u) {
-            u.addEntityListener(this);
-        }
-
         tabPane = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
         add(tabPane, BorderLayout.CENTER);
 
@@ -75,6 +71,11 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         var dim = new Dimension(WIDTH, HEIGHT);
         setMinimumSize(dim);
         setPreferredSize(dim);
+
+        // Temp hack until all listeners are consolidated
+        if (entity instanceof Unit u) {
+            u.addEntityListener(this);
+        }
     }
 
     /**
@@ -144,7 +145,9 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      */
     protected void addTabPanel(TabPanel panel) {
         tabPanels.add(panel);
-        tabPane.addTab(panel.getTabTitle(), panel.getTabIcon(), panel, panel.getTabToolTip());
+
+        // Have to ignore the title to force the icon to show correctly
+        tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
     }
 
     /**
@@ -154,7 +157,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     @Override
     public void clockUpdate(ClockPulse pulse) {
         for(var t : tabPanels) {
-            if (t instanceof TemporalComponent el)
+            if (t instanceof TemporalComponent el && t.isUIDone())
                 el.clockUpdate(pulse);
         }
     }
@@ -166,7 +169,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     @Override
     public void entityUpdate(EntityEvent event) {
         for(var t : tabPanels) {
-            if (t instanceof EntityListener el)
+            if (t instanceof EntityListener el && t.isUIDone())
                 el.entityUpdate(event);
         }
     }

@@ -36,6 +36,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -48,7 +49,7 @@ import eu.hansolo.steelseries.tools.LcdColor;
  * The LocationTabPanel is a tab panel for location information.
  */
 @SuppressWarnings("serial")
-public class LocationTabPanel extends TabPanel {
+public class LocationTabPanel extends EntityTabPanel<Unit> {
 
 	private static final String MAP_ICON = NavigatorWindow.PIN_ICON;
 
@@ -182,7 +183,7 @@ public class LocationTabPanel extends TabPanel {
 		var dataPanel = new AttributePanel();
 		content.add(dataPanel, BorderLayout.CENTER);
         addBorder(dataPanel, "Location Data");
-        var unit = getUnit();
+        var unit = getEntity();
 		if (unit instanceof MobileUnit mu) {
 			if (mu instanceof Worker) {
 				activitySpot = dataPanel.addRow("Reserved Spot", "");
@@ -271,7 +272,7 @@ public class LocationTabPanel extends TabPanel {
 	@Override
 	public void update() {
 		
-		Unit unit = getUnit();
+		Unit unit = getEntity();
 
 		updateBanner(unit);
 		
@@ -441,7 +442,7 @@ public class LocationTabPanel extends TabPanel {
 	
 	private void displayMap() {
 		if (locationCache != null) {
-			MapSelector.displayOnMap(getDesktop(), getUnit());
+			MapSelector.displayOnMap(getContext(), getEntity());
 		}
 	}
 

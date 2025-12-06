@@ -31,20 +31,19 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 
 /**
  * A tab panel with info about an item's salvage.
  */
 @SuppressWarnings("serial")
-public class SalvageTabPanel extends TabPanel {
+public class SalvageTabPanel extends EntityTabPanel<Salvagable> {
 
 	private static final String WARN_ICON = "warn";
 	
     private String finishTimeString;
     private JLabel finishTimeLabel;
     private PartTableModel partTableModel;
-
-    private Salvagable salvagable;
     
     /**
      * Constructor
@@ -53,13 +52,13 @@ public class SalvageTabPanel extends TabPanel {
      */
     public SalvageTabPanel(Salvagable unit, UIContext desktop) { 
         // Use the TabPanel constructor
-        super("Salvage Info", ImageLoader.getIconByName(WARN_ICON), null, desktop);
-        this.salvagable = unit;
+        super("Salvage Info", ImageLoader.getIconByName(WARN_ICON), null, desktop, unit);
 	}
 
     @Override
     protected void buildUI(JPanel content) {
 
+        var salvagable = getEntity();
         SalvageInfo salvageInfo = salvagable.getSalvageInfo();
 
         // Create the salvage header panel.
@@ -101,7 +100,7 @@ public class SalvageTabPanel extends TabPanel {
         // Create the settlement button.
         JButton settlementButton = new JButton(salvageInfo.getSettlement().getName());
         settlementButton.addActionListener(e -> {
-                SalvageInfo info = ((Salvagable) getUnit()).getSalvageInfo();
+                SalvageInfo info = getEntity().getSalvageInfo();
                 getDesktop().showDetails(info.getSettlement());
         });
         settlementPanel.add(settlementButton);
@@ -133,7 +132,7 @@ public class SalvageTabPanel extends TabPanel {
     @Override
     public void update() {
         // Update finish time.
-        SalvageInfo salvageInfo = ((Salvagable) getUnit()).getSalvageInfo();
+        SalvageInfo salvageInfo = getEntity().getSalvageInfo();
         MarsTime finishTime = salvageInfo.getFinishTime();
         String newFinishTimeString = "";
         if (finishTime != null) newFinishTimeString = finishTime.getDateTimeStamp();
@@ -162,8 +161,8 @@ public class SalvageTabPanel extends TabPanel {
          */
         private PartTableModel(SalvageInfo salvageInfo) {
             this.salvageInfo = salvageInfo;
-            parts = new HashMap<Integer, Integer>(salvageInfo.getPartsSalvaged());
-            keys = new ArrayList<Integer>(parts.keySet());
+            parts = new HashMap<>(salvageInfo.getPartsSalvaged());
+            keys = new ArrayList<>(parts.keySet());
             
             // Sort parts alphabetically by name.
             Collections.sort(keys);

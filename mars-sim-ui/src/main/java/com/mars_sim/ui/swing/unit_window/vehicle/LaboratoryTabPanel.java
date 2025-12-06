@@ -52,10 +52,9 @@ public class LaboratoryTabPanel extends TabPanel {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("LaboratoryTabPanel.title"),	
-			Msg.getString("LaboratoryTabPanel.title"),
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			Msg.getString("LaboratoryTabPanel.title"),
-			desktop
+			unit, desktop
 		);
 		
 		rover = unit;
@@ -92,7 +91,6 @@ public class LaboratoryTabPanel extends TabPanel {
 		
 		
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-//		listPanel.setSize(150, 80);
 		listPanel.add(specialtyTA);
 		listPanel.setBorder(StyleManager.createLabelBorder("Specialties"));
 		

@@ -36,6 +36,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
@@ -45,7 +46,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * representing the malfunctions of a settlement building.
  */
 @SuppressWarnings("serial")
-public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
+public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> implements TemporalComponent {
 
 	private static final String WARN_ICON = "warn";
 	private static final int NAME = 0;
@@ -201,9 +202,6 @@ public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
 	private boolean uiDone = false;
 	private boolean showSource;
 	
-	/** The malfunctionable building. */
-	private Malfunctionable malfunctionable;
-	
 	private MalfunctionTableModel model;
 
 	private Settlement settlement;
@@ -219,10 +217,9 @@ public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
 			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
 			null, 
-			content
+			content, malfunctionable
 		);
 
-		this.malfunctionable = malfunctionable;
 		this.showSource = false;
 		this.model = new MalfunctionTableModel(malfunctionable.getMalfunctionManager().getMalfunctions(), showSource);
 	}
@@ -238,7 +235,7 @@ public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
 			Msg.getString("MalfunctionTabPanel.title"), 
 			ImageLoader.getIconByName(WARN_ICON), 
 			null, 
-			content
+			content, null
 		);
 		this.settlement = settlement;
 
@@ -268,7 +265,8 @@ public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
 		scrollPanel.setPreferredSize(new Dimension(200, -1));
 
 		JTable mTable = new JTable(model) {
-			//Implement table cell tool tips.           
+			//Implement table cell tool tips.  
+			@Override         
 			public String getToolTipText(MouseEvent e) {
 				Point p = e.getPoint();
 				
@@ -280,8 +278,7 @@ public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
 
 				int dataColumn = model.getPropFromColumn(columnAtPoint(p));
 				switch(dataColumn) {
-					case SOURCE:
-					case NAME: return generateToolTip(model.getMalfunction(rowIndex));
+					case SOURCE, NAME: return generateToolTip(model.getMalfunction(rowIndex));
 					case EVA_WORK: return "Number of repairers active on EVA";
 					case INSIDE_WORK: return "Number of repairers active inside";
 					case COMPLETED: return "Percentage being repaired";
@@ -388,6 +385,7 @@ public class MalfunctionTabPanel extends TabPanel implements TemporalComponent {
 			initializeUI();
 		
 		List<Malfunction> newMalfunctions;
+		var malfunctionable = getEntity();
 		if (malfunctionable != null) {
 			newMalfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
 		}

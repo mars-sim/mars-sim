@@ -4,7 +4,7 @@
  * @date 2024-08-14
  * @author Manny Kung
  */
-package com.mars_sim.ui.swing.unit_window.equipment;
+package com.mars_sim.ui.swing.entitywindow.equipment;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -22,7 +22,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
@@ -31,14 +31,11 @@ import com.mars_sim.ui.swing.utils.JHistoryPanel;
  * This tab displays general information about an equipment.
  */
 @SuppressWarnings("serial")
-public class TabPanelGeneralEquipment extends TabPanel 
+class TabPanelGeneralEquipment extends EntityTabPanel<Equipment> 
 	implements TemporalComponent {
 
 	private static final String ID_ICON = "info"; //$NON-NLS-1$
-	
-	/** The suit instance. */
-	private Equipment unit;
-	
+
 	private HistoryPanel historyPanel;
 
 	private EntityLabel ownerLabel;
@@ -52,13 +49,11 @@ public class TabPanelGeneralEquipment extends TabPanel
 	public TabPanelGeneralEquipment(Equipment eqm, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelGeneralEquipment.title"), //-NLS-1$
+			Msg.getString("EntityGeneral.title"), //-NLS-1$
 			ImageLoader.getIconByName(ID_ICON),		
-			null,
-			context
+			Msg.getString("EntityGeneral.tooltip"),
+			context, eqm
 		);
-
-		this.unit = eqm;
 	}
 	
 	@Override
@@ -69,13 +64,14 @@ public class TabPanelGeneralEquipment extends TabPanel
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 		
-		infoPanel.addTextField("Type", unit.getEquipmentType().getName(), null);
-		infoPanel.addTextField("Mass", StyleManager.DECIMAL_KG2.format(unit.getBaseMass()), null);
+		var eqm = getEntity();
+		infoPanel.addTextField("Type", eqm.getEquipmentType().getName(), null);
+		infoPanel.addTextField("Mass", StyleManager.DECIMAL_KG2.format(eqm.getBaseMass()), null);
 
-		ownerLabel = new EntityLabel(unit.getRegisteredOwner(), getContext());
+		ownerLabel = new EntityLabel(eqm.getRegisteredOwner(), getContext());
 		infoPanel.addLabelledItem("Registered Owner", ownerLabel, null);
 		
-		if (unit instanceof EVASuit suit) {	
+		if (eqm instanceof EVASuit suit) {	
 			historyPanel = new HistoryPanel(suit.getHistory());
 			historyPanel.setPreferredSize(new Dimension(225, 200));
 	
@@ -89,7 +85,7 @@ public class TabPanelGeneralEquipment extends TabPanel
      */
 	@Override
     public void clockUpdate(ClockPulse pulse) {
-		ownerLabel.setEntity(unit.getRegisteredOwner());
+		ownerLabel.setEntity(getEntity().getRegisteredOwner());
 		if (historyPanel != null) {
 			historyPanel.refresh();
 		}
