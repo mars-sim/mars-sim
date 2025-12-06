@@ -16,6 +16,8 @@
 		<release>21</release>
 		
 		<sonar.java.source>21</sonar.java.source>
+		<sonar.organization>mars-sim</sonar.organization>
+
 		<fxgl.version>11.17</fxgl.version>
 		
 		<!-- These 3 have an interdepency -->
@@ -38,9 +40,7 @@
 		<commons-lang3.version>3.18.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 			
-		<jacoco.version>0.8.13</jacoco.version>
-		
-  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<jacoco.version>0.8.13</jacoco.version>		
 	</properties>
 	<profiles>
 		<profile>
