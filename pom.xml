@@ -39,7 +39,7 @@
 		<commons-lang3.version>3.18.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 			
-		<jacoco.version>0.8.13</jacoco.version>		
+		<jacoco.version>0.8.14</jacoco.version>		
 	</properties>
 	<profiles>
 		<profile>
