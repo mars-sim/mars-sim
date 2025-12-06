@@ -44,9 +44,10 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The TabPanelOrganization is a tab panel showing the organizational structure of
@@ -105,8 +106,10 @@ public class TabPanelOrganization extends TabPanel {
 		content.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare label
+		labelPanel.addLabelledItem(Msg.getString("Entity.authority"),
+					new EntityLabel(settlement.getReportingAuthority(), getDesktop()));
 		var gov = settlement.getChainOfCommand().getGovernance();
-		labelPanel.addTextField("Govername Model", gov.getName(), null);
+		labelPanel.addTextField("Governance Model", gov.getName(), null);
 		labelPanel.addTextField("Job Approvals", Boolean.toString(gov.needJobApproval()), null);
 		labelPanel.addTextField("Mission Min. Reviewers", Integer.toString(gov.getUniqueReviewers()), null);
 
@@ -126,7 +129,7 @@ public class TabPanelOrganization extends TabPanel {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(tree);
-		scrollPane.setBorder(StyleManager.createLabelBorder("Role Assignments"));
+		scrollPane.setBorder(SwingHelper.createLabelBorder("Role Assignments"));
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		initNodes();

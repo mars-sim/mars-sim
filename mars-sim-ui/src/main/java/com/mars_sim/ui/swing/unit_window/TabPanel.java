@@ -24,6 +24,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
@@ -88,27 +89,27 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param desktop    the main desktop.
 	 */
 	protected TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
-
 		// Use JScrollPane constructor
 		super();
+		this.desktop = desktop;
 
+		// Eventually tabTitle MUST be mandatory once all have been converted to UIContext
+		if (tabTitle == null && tabToolTip == null) {
+			throw new IllegalArgumentException("TabPanel must have either a title or a tool tip");
+		}
 		// Initialize data members
-		this.tabTitle = tabTitle;
+		this.tabTitle = (tabTitle != null) ? tabTitle : tabToolTip;
 		this.description = description;
 		this.tabIcon = tabIcon;
-		this.tabToolTip = tabToolTip;
-		this.desktop = desktop;
+		this.tabToolTip = (tabToolTip != null) ? tabToolTip : tabTitle;
 		
 		// Create the view panel
-		JPanel viewPanel = new JPanel();//new BorderLayout(0, 0));
+		JPanel viewPanel = new JPanel();
 		viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.Y_AXIS));
 		createViewport();
 		setViewportView(viewPanel);
 		createVerticalScrollBar();
 		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
-
-		// Ideally yes
-		//setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
 
 		JScrollBar vertical = getVerticalScrollBar();
 		vertical.setValue(0);
@@ -116,7 +117,7 @@ public abstract class TabPanel extends JScrollPane {
 		// Create top content panel
 		topContentPanel = new JPanel();
 		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
-		topContentPanel.setBorder(StyleManager.newEmptyBorder());
+		topContentPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
 		Box.createVerticalGlue();
@@ -169,7 +170,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param title The title to display
 	 */
 	protected void addBorder(JComponent panel, String title) {
-		panel.setBorder(StyleManager.createLabelBorder(title));
+		panel.setBorder(SwingHelper.createLabelBorder(title));
 	}
 	
 	/**
@@ -179,7 +180,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param title The title to display
 	 */
 	protected void addBorder(JComponent panel, String title, String tooltip) {
-		panel.setBorder(StyleManager.createLabelBorder(title));
+		panel.setBorder(SwingHelper.createLabelBorder(title));
 		panel.setToolTipText(tooltip);
 	}
 	
@@ -224,6 +225,14 @@ public abstract class TabPanel extends JScrollPane {
 	 */
 	protected MainDesktopPane getDesktop() {
 		return desktop;
+	}
+
+	/**
+	 * Update the Unit.
+	 * @param unit
+	 */
+	protected void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 
 	/**

@@ -1,0 +1,165 @@
+/*
+ * Mars Simulation Project
+ * TabPanelSettlements.java
+ * @date 2025-12-02
+ * @author Barry Evans
+ */
+package com.mars_sim.ui.swing.entitywindow.authority;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.UnitManagerEvent;
+import com.mars_sim.core.UnitManagerListener;
+import com.mars_sim.core.UnitType;
+import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.utils.EntityModel;
+
+/**
+ * This tab shows Settlements and Arriving Settlements associated with an Authority.
+ * This is displayed as a table supporting clicking to open the an entity window.
+ */
+class TabPanelSettlements extends TabPanelTable
+        implements UnitManagerListener {
+
+    private Authority authority;
+    private SettlementModel model;
+
+    public TabPanelSettlements(Authority authority, UIContext context) {
+        super(
+            "Settlements", // Tab title
+            ImageLoader.getIconByName("settlement"),          // Tab icon
+            null,          // Tab tooltip
+            context
+        );
+
+        this.authority = authority;
+    }
+
+    /**
+     * Table model showing Settlements and Arriving Settlements for the Authority.
+     */
+    private static class SettlementModel extends AbstractTableModel
+            implements EntityModel {
+        private List<Entity> settlements = new ArrayList<>();
+
+        private void addEntity(Entity e) {
+            settlements.add(e);
+        }
+
+        @Override
+        public int getRowCount() {
+            return settlements.size();
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return switch (column) {
+                case 0 -> "Name";
+                case 1 -> "Status";
+                case 2 -> "Population";
+                default -> null;
+            };
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 3; // Example: Name and Population
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            var settlement = getAssociatedEntity(rowIndex);
+            return switch (columnIndex) {
+                case 0 -> settlement.getName();
+                case 1 -> (settlement instanceof Settlement ? "Established" : "Arriving");
+                case 2 -> {
+                    if (settlement instanceof Settlement s) {
+                        yield s.getCitizens().size();
+                    }
+                    else if (settlement instanceof ArrivingSettlement a) {
+                        yield a.getPopulationNum();
+                    }
+                    else {
+                        yield 0;
+                    }
+                }
+                default -> null;
+            };
+        }
+
+        @Override
+        public Entity getAssociatedEntity(int row) {
+            return settlements.get(row);
+        }
+    }
+
+    /**
+     * Return a model of Settlements and Arriving Settlements for the Authority.
+     */
+    @Override
+    protected TableModel createModel() {
+        model = new SettlementModel();
+
+        // Load established settlements
+        var uMgr = getContext().getSimulation().getUnitManager();
+        uMgr.getSettlements().stream()
+            .filter(s -> s.getReportingAuthority().equals(authority))
+            .forEach(model::addEntity);
+
+        // Load arriving settlements
+        var tMgr = getContext().getSimulation().getTransportManager();
+        tMgr.getTransportItems().stream()
+            .filter(ArrivingSettlement.class::isInstance)
+            .map(ArrivingSettlement.class::cast)
+            .filter(a -> a.getSponsorCode().equals(authority.getName()))
+            .forEach(model::addEntity);
+
+        // Connect up listener to update the table when entities change
+        var sim = getContext().getSimulation();
+        sim.getUnitManager().addUnitManagerListener(UnitType.SETTLEMENT, this);
+        return model;
+    }
+
+    /**
+     * Clear down the listeners
+     */
+    @Override
+    public void destroy() {
+        var sim = getContext().getSimulation();
+        sim.getUnitManager().removeUnitManagerListener(UnitType.SETTLEMENT, this);
+        super.destroy();
+    }
+
+    /**
+     * New Settlement has been added
+     * @param event
+     */
+    @Override
+    public void unitManagerUpdate(UnitManagerEvent event) {
+        if (event.getUnit() instanceof Settlement s
+                    && s.getReportingAuthority().equals(authority)) {
+
+            // Remove the matching Transportable if it 
+            model.settlements.removeIf(e -> {
+                if (e instanceof ArrivingSettlement a) {
+                    return a.getName().equals(s.getName());
+                }
+                return false;
+            });
+
+            // Add in the real Settlement
+            model.addEntity(s);
+            model.fireTableDataChanged();
+        }
+    }
+}
