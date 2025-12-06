@@ -43,6 +43,8 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: SonarCloud Analysis
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ORG }}
+          SONAR_TOKEN: ${{ secrets.SONAR_LOGIN }}
+          SONAR_PROJECT: ${{ secrets.SONAR_PROJECT }}
+          SONAR_ORGANISATION: ${{ secrets.SONAR_ORGANISATION }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B -Pcoverage  verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=mars-sim_mars-sim
+        run: mvn -B -Pcoverage  verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=$SONAR_PROJECT -Dsonar.organization=$SONAR_ORGANISATION
