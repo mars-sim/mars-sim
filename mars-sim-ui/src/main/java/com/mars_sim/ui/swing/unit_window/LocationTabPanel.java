@@ -256,8 +256,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit> {
 		else if (locationStateType == LocationStateType.MARS_SURFACE && unit instanceof Vehicle) {
 			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
 		}
-		
-
 		if (vicinityUnit != null) {
 			vicinityLabel.setText(vicinityUnit.getName());
 		}

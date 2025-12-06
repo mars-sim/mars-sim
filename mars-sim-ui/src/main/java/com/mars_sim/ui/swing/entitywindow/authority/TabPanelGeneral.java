@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
- * The tab dispalys the general properties of an Authority.
+ * The tab displays the general properties of an Authority.
  */
 @SuppressWarnings("serial")
 class TabPanelGeneral extends EntityTabPanel<Authority> {

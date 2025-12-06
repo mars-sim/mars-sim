@@ -260,7 +260,7 @@ public class UIConfig {
 	}
 
 	/**
-	 * Write a Documetn to a XML file on disk.
+	 * Write a Document to a XML file on disk.
 	 * This should be shared code for all XML saving.
 	 *  
 	 * @param outputDoc

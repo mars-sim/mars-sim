@@ -70,6 +70,7 @@ public class NotesTabPanel extends EntityTabPanel<Unit> {
 			public void removeUpdate(DocumentEvent e) {
 				updateButtons(true);
 			}
+			@Override
 			public void changedUpdate(DocumentEvent e) {
 				//Plain text components do not fire these events
 			}

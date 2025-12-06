@@ -46,7 +46,7 @@ class TabPanelSettlements extends TabPanelTable
     }
 
     /**
-     * Table model showing Settlemetns and Arriving Settlements for the Authority.
+     * Table model showing Settlements and Arriving Settlements for the Authority.
      */
     private static class SettlementModel extends AbstractTableModel
             implements EntityModel {

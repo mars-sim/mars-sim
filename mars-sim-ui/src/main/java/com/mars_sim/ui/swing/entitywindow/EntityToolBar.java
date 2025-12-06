@@ -52,10 +52,6 @@ public class EntityToolBar extends JToolBar {
 
 		setBackground(CAFE_NOIR);
 		setOpaque(false);
-		
-		// Initialize data members
-		this.context = context;
-
 		setName("Unit Toolbar");
 		setFloatable(false);
 

@@ -31,8 +31,8 @@ class TabPanelObjective extends EntityTabPanel<Authority> {
 	/**
 	 * Constructor.
 	 * 
-	 * @param settlement the settlement.
-	 * @param desktop the main desktop.
+	 * @param ra the Authority to display.
+	 * @param context the UI context.
 	 */
 	public TabPanelObjective(Authority ra, UIContext context) {
 		// Use the TabPanel constructor

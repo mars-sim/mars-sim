@@ -94,9 +94,8 @@ class TabPanelGeneralEquipment extends EntityTabPanel<Equipment>
 	/**
 	 * Internal class used as model for the attribute table.
 	 */
-	private class HistoryPanel extends JHistoryPanel<UnitHolder> {
+	private static class HistoryPanel extends JHistoryPanel<UnitHolder> {
 		private static final ColumnSpec[] COLUMNS = {new ColumnSpec("Location", String.class)};
-
 
 		HistoryPanel(History<UnitHolder> source) {
 			super(source, COLUMNS);

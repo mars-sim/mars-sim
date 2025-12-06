@@ -207,7 +207,7 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 	private Settlement settlement;
 
 	/**
-	 * Builds the panel that show sMalfunctions of a entity that can break.
+	 * Builds the panel that shows Malfunctions of a entity that can break.
 	 * 
 	 * @param malfunctionable the malfunctionable the panel is for.
 	 * @param content         The main desktop.

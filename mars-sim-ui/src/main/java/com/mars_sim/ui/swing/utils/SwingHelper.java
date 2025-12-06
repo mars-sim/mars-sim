@@ -96,7 +96,7 @@ public final class SwingHelper {
 	 * 
 	 * @param title Title for the surrounding border
 	 * @param content Content for the text area
-	 * @return
+	 * @return A JTextArea containing the text area
 	 */
 	public static JTextArea createTextBlock(String title, String content) {
 		JTextArea ta = new JTextArea();

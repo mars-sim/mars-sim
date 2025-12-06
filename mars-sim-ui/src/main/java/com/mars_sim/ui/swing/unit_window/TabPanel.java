@@ -87,7 +87,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
 	 * @param desktop    the main desktop.
 	 */
-	private TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
+	protected TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
 		// Use JScrollPane constructor
 		super();
 		this.desktop = desktop;

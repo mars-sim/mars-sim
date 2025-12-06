@@ -38,7 +38,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.science.ScientificStudy;
@@ -415,7 +414,6 @@ public class MainDesktopPane extends JDesktopPane
 		if ((window != null) && !window.isClosed()) {
 			try {
 				window.setClosed(true);
-				//window.dispose();
 			} catch (PropertyVetoException e) {
 				// ignore
 			}
@@ -514,7 +512,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Entity panel has been closed
-	 * @param source
+	 * @param source Parent comntent window
 	 */
 	private void disposeEntityPanel(ContentWindow source) {
 		if (source.getContent() instanceof EntityContentPanel panel) {
@@ -527,6 +525,16 @@ public class MainDesktopPane extends JDesktopPane
 		source.destroy();
 	}
 
+	/**  
+     * Positions the given window on the desktop pane.  
+     * <p>  
+     * If {@code initProps} is provided and contains a valid position that is visible  
+     * within the desktop pane, the window is placed at that position. Otherwise,  
+     * the window is placed at a random location within the desktop pane.  
+     *  
+     * @param window    the window component to position  
+     * @param initProps the initial window properties, which may specify a preferred position  
+     */ 
 	private void positionWindow(Component window, WindowSpec initProps) {
 		Point newPosition = null;
 		if (initProps != null) {
@@ -547,7 +555,7 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Opens an old sttyle Unit Window for a specific Unit with a optional set of user properties.
+	 * Opens an old style Unit Window for a specific Unit with a optional set of user properties.
 	 * This will eventually be phased out.
 	 * 
 	 * @param unit Unit to display
@@ -605,13 +613,14 @@ public class MainDesktopPane extends JDesktopPane
 
 	/**
 	 * Bring an internal window to the front of the desktop
-	 * @param tempWindow
+	 * @param tempWindow Window to bring to front
 	 */
 	private static void bringToFront(JInternalFrame tempWindow) {
 		try {
 			tempWindow.setSelected(true);
 			tempWindow.moveToFront();
 		} catch (java.beans.PropertyVetoException e) {
+			// Window issue but can be ignored
 		}
 	}
 
@@ -763,6 +772,8 @@ public class MainDesktopPane extends JDesktopPane
 							openEntityPanel(u, w);
 						}
 					break;
+					default:
+						logger.warning("Unknown window type " + w.type() + " for window " + w.name());
 				}
  			}
 		}

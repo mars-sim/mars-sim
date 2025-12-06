@@ -278,6 +278,7 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 	/**
 	 * Prepares object for garbage collection.
 	 */
+	@Override
 	public void destroy() {	
 		if (itemTableModel != null) {
 			itemTableModel.destroy();
@@ -291,12 +292,14 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 			equipmentTableModel.destroy();
 		    equipmentTableModel = null;
 		}
+
+		super.destroy();
 	}
 	
 	/**
 	 * Internal class used as model for the resource table.
 	 */
-	private class ResourceTableModel extends AbstractTableModel implements ToolTipTableModel {
+	private static class ResourceTableModel extends AbstractTableModel implements ToolTipTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -313,16 +316,10 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
         }
 
         private void loadResources(List<Resource> kys, Map<Resource, Double> stored, Map<Resource, Double> cap) {  
-        	List<AmountResource> arItems = 
-        			holder.getAllAmountResourceStoredIDs().stream()
-					.map(ar -> ResourceUtil.findAmountResource(ar))
-					.filter(Objects::nonNull)
-					.toList();
-
-    		arItems = holder.getAllAmountResourceStoredIDs().stream()
-			.map(ResourceUtil::findAmountResource)
-			.filter(Objects::nonNull)
-			.toList();
+    		var arItems = holder.getAllAmountResourceStoredIDs().stream()
+						.map(ResourceUtil::findAmountResource)
+						.filter(Objects::nonNull)
+						.toList();
 
 			kys.addAll(arItems);
 			
@@ -444,7 +441,7 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 	/**
 	 * Internal class used as model for the item resource table.
 	 */
-	private class ItemTableModel extends AbstractTableModel implements ToolTipTableModel {
+	private static class ItemTableModel extends AbstractTableModel implements ToolTipTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -460,7 +457,7 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 
         private List<Part> getItems() {
 			return holder.getItemResourceIDs().stream()
-							.map(ir -> ItemResourceUtil.findItemResource(ir))
+							.map(ItemResourceUtil::findItemResource)
 							.filter(Objects::nonNull)
 							.toList();
 		}
@@ -617,21 +614,24 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = Double.class;
-			else if (columnIndex == 2) dataType = String.class;
-			else if (columnIndex == 3) dataType = String.class;
-			return dataType;
+			return switch(columnIndex) {
+				case 0 -> String.class;
+				case 1 -> Double.class;
+				case 2 -> String.class;
+				case 3 -> String.class;
+				default -> Object.class;
+			};
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("InventoryTabPanel.Equipment.header.type"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("InventoryTabPanel.Equipment.header.mass"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("InventoryTabPanel.Equipment.header.owner"); //$NON-NLS-1$			
-			else if (columnIndex == 3) return Msg.getString("InventoryTabPanel.Equipment.header.content"); //$NON-NLS-1$
-			else return "unknown";
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("InventoryTabPanel.Equipment.header.type");
+				case 1 -> Msg.getString("InventoryTabPanel.Equipment.header.mass");
+				case 2 -> Msg.getString("InventoryTabPanel.Equipment.header.owner");
+				case 3 -> Msg.getString("InventoryTabPanel.Equipment.header.content");
+				default -> "unknown";
+};
 		}
 
 		@Override
@@ -642,8 +642,8 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 					case 0: return e.getName();
 					case 1: return e.getMass();
 					case 2: {
-						Person owner = e.getRegisteredOwner();
-						return (owner != null ? owner.getName() : null);
+						Person o = e.getRegisteredOwner();
+						return (o != null ? o.getName() : null);
 					}
 					case 3: return getContent(e);
 					default: return null;
@@ -689,9 +689,7 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 		
 		@Override
 		public Entity getAssociatedEntity(int row) {
-			if (equipmentList != null && !equipmentList.isEmpty())
-				return equipmentList.get(row);
-			return null;
+			return getEquipment(row);
 		}
 		
     	/**

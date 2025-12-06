@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.
- * It automatically is notified of EntityEvent and will forwrd them to any TabPanels that are also EntityListeners.
+ * It automatically is notified of EntityEvent and will forward them to any TabPanels that are also EntityListeners.
  * It also forwards ClockPulse events to any TabPanels that are also TemporalComponents.
  */
 public class EntityContentPanel<T extends Entity> extends ContentPanel
