@@ -20,7 +20,6 @@ import javax.swing.border.EmptyBorder;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.svg.SVGIcon;
@@ -90,7 +89,7 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 				
 		// Base details
 		var attrPanel = new AttributePanel();
-		attrPanel.setBorder(StyleManager.createLabelBorder("Details"));
+		attrPanel.setBorder(SwingHelper.createLabelBorder("Details"));
 		mainPanel.add(attrPanel);
 
 		attrPanel.addTextField("Code", agencyShortName, null);

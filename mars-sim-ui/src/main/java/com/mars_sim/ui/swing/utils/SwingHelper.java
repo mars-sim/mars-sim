@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.utils;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.MouseInfo;
@@ -18,6 +19,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.ui.swing.StyleManager;
@@ -91,6 +94,19 @@ public final class SwingHelper {
 		}
 	}
 
+	
+    /**
+     * Creates a titled border that uses the sub title font.
+     * 
+     * @param title
+     * @return
+     */
+    public static Border createLabelBorder(String title) {
+        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
+                                                        TitledBorder.DEFAULT_POSITION,
+                                                        StyleManager.getSubTitleFont(), (Color)null);
+    }
+	
 	/*
 	 * Creates a text block.
 	 * 
@@ -106,7 +122,7 @@ public final class SwingHelper {
 		ta.setWrapStyleWord(true);
 		ta.append(content);
 	
-		var border = BorderFactory.createCompoundBorder(StyleManager.createLabelBorder(title),
+		var border = BorderFactory.createCompoundBorder(createLabelBorder(title),
 					BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		ta.setBorder(border);
 		return ta;

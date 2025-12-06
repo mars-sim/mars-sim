@@ -24,6 +24,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
@@ -116,7 +117,7 @@ public abstract class TabPanel extends JScrollPane {
 		// Create top content panel
 		topContentPanel = new JPanel();
 		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
-		topContentPanel.setBorder(StyleManager.newEmptyBorder());
+		topContentPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		viewPanel.add(topContentPanel, BorderLayout.NORTH);
 
 		Box.createVerticalGlue();
@@ -169,7 +170,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param title The title to display
 	 */
 	protected void addBorder(JComponent panel, String title) {
-		panel.setBorder(StyleManager.createLabelBorder(title));
+		panel.setBorder(SwingHelper.createLabelBorder(title));
 	}
 	
 	/**
@@ -179,7 +180,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * @param title The title to display
 	 */
 	protected void addBorder(JComponent panel, String title, String tooltip) {
-		panel.setBorder(StyleManager.createLabelBorder(title));
+		panel.setBorder(SwingHelper.createLabelBorder(title));
 		panel.setToolTipText(tooltip);
 	}
 	

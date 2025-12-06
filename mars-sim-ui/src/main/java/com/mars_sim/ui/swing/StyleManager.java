@@ -597,6 +597,14 @@ public class StyleManager {
     }
 
     /**
+     * Gets the sub title font.
+     * @return
+     */
+    public static Font getSubTitleFont() {
+        return subTitleFont;
+    }
+
+    /**
      * Creates a standardized empty border.
      */
     public static Border newEmptyBorder() {
