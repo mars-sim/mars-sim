@@ -491,24 +491,17 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Adds a clock listener. A minimum duration can be specified which throttles how many
-	 * pulses the listener receives. If the duration is set to zero then all Pulses are distributed.
-	 *
-	 * If the duration is positive then pulses will be skipped to ensure a pulse is not delivered any
-	 * quicker than the min duration. The delivered Pulse will have the full elapsed times including
-	 * the skipped Pulses.
-	 *
+	 * Adds a clock listener that is notified on every Clock pulse
 	 *
 	 * @param newListener the listener to add.
-	 * @Param minDuration The minimum duration in milliseconds between pulses.
 	 */
-	public final void addClockListener(ClockListener newListener, long minDuration) {
+	public final void addClockListener(ClockListener newListener) {
 		// Check if clockListenerTaskList already contain the newListener's task,
 		// if it doesn't, create one
 		if (clockListenerTasks == null)
 			clockListenerTasks = Collections.synchronizedSet(new HashSet<>());
 		if (!hasClockListenerTask(newListener)) {
-			clockListenerTasks.add(new ClockListenerTask(newListener, minDuration));
+			clockListenerTasks.add(new ClockListenerTask(newListener));
 		}
 	}
 
@@ -1146,55 +1139,24 @@ public class MasterClock implements Serializable {
 	 */
 	public class ClockListenerTask implements Callable<String>{
 		
-		private static final String SKIP = "skip";
 		private static final String DONE = "done";
-		
-		private double msolsSkipped = 0;
-		private long lastPulseDelivered = 0;
+
 		private ClockListener listener;
-		private long minDuration;
 
 		public ClockListener getClockListener() {
 			return listener;
 		}
 
-		private ClockListenerTask(ClockListener listener, long minDuration) {
+		private ClockListenerTask(ClockListener listener) {
 			this.listener = listener;
-			this.minDuration = minDuration;
-			this.lastPulseDelivered = System.currentTimeMillis();
 		}
 
 		@Override
 		public String call() throws Exception {
-			
-			// May add back :if (isPaused) return DONE
-				
-			try {
-				// The most important job for ClockListener is to send a clock pulse to listener
-				// gets updated.
-				ClockPulse activePulse = currentPulse;
-
-				// Handler is collapsing pulses so check the passed time
-				if (minDuration > 0) {
-					// Compare elapsed real time to the minimum
-					long timeNow = System.currentTimeMillis();
-					if ((timeNow - lastPulseDelivered) < minDuration) {
-						// Less than the minimum so record elapse and skip
-						msolsSkipped += currentPulse.getElapsed();
-						
-						return SKIP;
-					}
-
-					// Build new pulse to include skipped time
-					activePulse = currentPulse.addElapsed(msolsSkipped);
-
-					// Reset count
-					lastPulseDelivered = timeNow;
-					msolsSkipped = 0;
-				}
-
+							
+			try {		
 				// Call handler
-				listener.clockPulse(activePulse);
+				listener.clockPulse(currentPulse);
 			}
 			catch (Exception e) {
 				logger.severe( "Can't send out clock pulse: ", e);

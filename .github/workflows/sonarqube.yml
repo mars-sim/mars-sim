@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
@@ -27,25 +29,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: SonarCloud Analysis
-
         env:
-          SONAR_ORGANISATION: ${{ secrets.SONAR_ORGANISATION }}
-          # Support both secret names; prefer SONAR_TOKEN if present
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_LOGIN: ${{ secrets.SONAR_LOGIN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_ORG }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TOKEN="${SONAR_TOKEN:-$SONAR_LOGIN}"
-          if [ -z "$TOKEN" ]; then
-            echo "No Sonar token available; skipping analysis."
-            exit 0
-          fi
-          mvn --file pom.xml -B -Pcoverage \
-            -Dsonar.token="$TOKEN" \
-            -Dsonar.host.url="https://sonarcloud.io" \
-            -Dsonar.projectKey="com.mars-sim:mars-sim" \
-            -Dsonar.organization="$SONAR_ORGANISATION" \
-            -Dsonar.skip=false \
-            verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -B -Pcoverage  verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=mars-sim_mars-sim
