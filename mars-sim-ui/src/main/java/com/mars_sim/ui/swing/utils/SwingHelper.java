@@ -14,10 +14,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.net.URI;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import com.formdev.flatlaf.FlatLaf;
+import com.mars_sim.ui.swing.StyleManager;
 
 
 /**
@@ -86,5 +89,26 @@ public final class SwingHelper {
 		} catch (Exception e) {
 			// placeholder
 		}
+	}
+
+	/*
+	 * Creates a text block.
+	 * 
+	 * @param title Title for the surrounding border
+	 * @param content Content for the text area
+	 * @return
+	 */
+	public static JTextArea createTextBlock(String title, String content) {
+		JTextArea ta = new JTextArea();
+		ta.setEditable(false);
+		ta.setColumns(35);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		ta.append(content);
+	
+		var border = BorderFactory.createCompoundBorder(StyleManager.createLabelBorder(title),
+					BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		ta.setBorder(border);
+		return ta;
 	}
 }

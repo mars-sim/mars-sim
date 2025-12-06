@@ -36,6 +36,7 @@ import org.jdom2.output.XMLOutputter;
 
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.desktop.ContentWindow;
+import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 /**
@@ -236,8 +237,8 @@ public class UIConfig {
 				}
 
 				if (window1 instanceof ContentWindow tw) {
-					windowElement.setAttribute(TYPE, TOOL);
 					windowElement.setAttribute(NAME, tw.getContent().getName());
+					windowElement.setAttribute(TYPE, (tw.getContent() instanceof EntityContentPanel ? UNIT : TOOL));
 				} else if (window1 instanceof UnitWindow uw) {
 					windowElement.setAttribute(TYPE, UNIT);
 					windowElement.setAttribute(NAME, uw.getUnit().getName());
@@ -254,10 +255,19 @@ public class UIConfig {
 		for (Entry<String,Properties> entry : mainWindow.getUIProps().entrySet()) {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
 		}
+	
+		saveDocumentToXMLFile(outputDoc, new File(SimulationRuntime.getSaveDir(), FILE_NAME));
+	}
 
-		// Load the DTD scheme from the ui_settings.dtd file
-		try (OutputStream out = new FileOutputStream(new File(SimulationRuntime.getSaveDir(), FILE_NAME));
-			 OutputStream stream = new FileOutputStream(configFile)) {
+	/**
+	 * Write a Documetn to a XML file on disk.
+	 * This should be shared code for all XML saving.
+	 *  
+	 * @param outputDoc
+	 * @param targetFile
+	 */
+	private static void saveDocumentToXMLFile(Document outputDoc, File targetFile) {
+		try (OutputStream stream = new FileOutputStream(targetFile)) {
 
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());

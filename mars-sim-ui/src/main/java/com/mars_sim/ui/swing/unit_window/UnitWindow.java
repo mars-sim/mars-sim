@@ -23,7 +23,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.ConfigurableWindow;
@@ -279,25 +278,6 @@ public abstract class UnitWindow extends ModalInternalFrame
 			}
 		}
     }
-
-	/**
-	 * Finds a Unit from a previously generated UI Settings instance.
-	 * 
-	 * @see #getUIProps()
-	 * @param uMgr
-	 * @param settings
-	 * @return
-	 */
-	public static Unit getUnit(UnitManager uMgr, Properties settings) {
-		String type = settings.getProperty(UNIT_TYPE);
-		String name = settings.getProperty(UNIT_NAME);
-
-		if ((type != null) && (name != null)) {
-			UnitType uType = UnitType.valueOf(type);
-			return uMgr.getUnitByName(uType, name);
-		}
-		return null;
-	}
 	
     /**
      * Creates and returns space agency label.

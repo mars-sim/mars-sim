@@ -49,6 +49,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import com.formdev.flatlaf.util.SystemInfo;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationListener;
@@ -60,6 +61,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
+import com.mars_sim.ui.swing.entitywindow.EntityToolBar;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
@@ -113,7 +115,7 @@ public class MainWindow
     private static final int BAR_LENGTH = 200;
     
 	/** The unit tool bar. */
-	private UnitToolBar unitToolbar;
+	private EntityToolBar unitToolbar;
 	/** The tool bar. */
 	private ToolToolBar toolToolbar;
 	/** The main desktop. */
@@ -463,7 +465,7 @@ public class MainWindow
 		JPanel bottomPane = new JPanel(new BorderLayout());
 
 		// Prepare unit toolbar
-		unitToolbar = new UnitToolBar(this);
+		unitToolbar = new EntityToolBar(desktop);
 
 		unitToolbar.setBorder(new MarsPanelBorder());
 		// Remove the toolbar border, to blend into figure contents
@@ -791,8 +793,8 @@ public class MainWindow
 	 *
 	 * @param unit the unit the button is for.
 	 */
-	public void createUnitButton(Unit unit) {
-		unitToolbar.createUnitButton(unit);
+	public void createUnitButton(Entity unit) {
+		unitToolbar.createButton(unit);
 	}
 
 	/**
@@ -800,8 +802,8 @@ public class MainWindow
 	 *
 	 * @param unit the unit to dispose.
 	 */
-	public void disposeUnitButton(Unit unit) {
-		unitToolbar.disposeUnitButton(unit);
+	public void disposeUnitButton(Entity unit) {
+		unitToolbar.disposeButton(unit);
 	}
 
 	/**
@@ -843,7 +845,7 @@ public class MainWindow
 	 *
 	 * @return unit toolbar.
 	 */
-	public UnitToolBar getUnitToolBar() {
+	public EntityToolBar getUnitToolBar() {
 		return unitToolbar;
 	}
 

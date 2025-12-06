@@ -34,8 +34,8 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
 public class EntityContentPanel<T extends Entity> extends ContentPanel
     implements ConfigurableWindow, EntityListener {
 
-    private static final String UNIT_TYPE = "unittype";
-	private static final String UNIT_NAME = "unitname";
+    static final String UNIT_TYPE = "unittype";
+	static final String UNIT_NAME = "unitname";
 	private static final String SELECTED_TAB = "selected_tab";
 
     private static final int WIDTH = 550;
@@ -129,7 +129,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	public Properties getUIProps() {
 		Properties result = new Properties();
 		result.setProperty(UNIT_NAME, entity.getName());
-		result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName());
+		result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName().toUpperCase());
         var selected = getSelected();
         if (selected != null) {
 		    result.setProperty(SELECTED_TAB, selected.getTabTitle());

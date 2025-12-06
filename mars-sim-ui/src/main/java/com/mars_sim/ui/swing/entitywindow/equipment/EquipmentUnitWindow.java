@@ -39,7 +39,7 @@ public class EquipmentUnitWindow extends EntityContentPanel<Equipment> {
      * @param equipment the equipment this window is for.
      * @param props Any initial properties for the window.
      */
-    public EquipmentUnitWindow(UIContext context, Equipment equipment, Properties props) {
+    public EquipmentUnitWindow(Equipment equipment, UIContext context, Properties props) {
         super(equipment, context);
 
         addTabPanel(new TabPanelGeneralEquipment(equipment, context));

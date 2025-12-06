@@ -46,6 +46,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
@@ -105,6 +106,7 @@ public class TabPanelOrganization extends TabPanel {
 		content.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare label
+		labelPanel.addLabelledItem("Authority", new EntityLabel(settlement.getReportingAuthority(), getDesktop()));
 		var gov = settlement.getChainOfCommand().getGovernance();
 		labelPanel.addTextField("Govername Model", gov.getName(), null);
 		labelPanel.addTextField("Job Approvals", Boolean.toString(gov.needJobApproval()), null);

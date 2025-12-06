@@ -430,10 +430,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	@Override
     public void showDetails(Entity entity) {
-		if (entity instanceof Unit u) {
-			openEntityPanel(u, null);
-		}
-		else if (entity instanceof Mission m) {
+		if (entity instanceof Mission m) {
 			var cw = openToolWindow(MissionWindow.NAME);
 			((MissionWindow)cw).openMission(m);
 		}
@@ -445,6 +442,9 @@ public class MainDesktopPane extends JDesktopPane
 			// This is a holding code until all tools are mograted
 			var cw = openToolWindow(ScienceWindow.NAME);
 			((ScienceWindow)cw).setScientificStudy(s);
+		}
+		else {
+			openEntityPanel(entity, null);
 		}
     }
 
@@ -461,16 +461,16 @@ public class MainDesktopPane extends JDesktopPane
 	}
 	
 	/**
-	 * Opens a Unit Window for a specific Unit with a optional set of user properties.
+	 * Opens a Entity Window for a specific Entity with a optional set of user properties.
 	 * 
-	 * @param unit Unit to display
+	 * @param entity Entity to display
 	 * @param initProps Initial properties
      * @return
 	 */
-	private void openEntityPanel(Unit unit, WindowSpec initProps) {
+	private void openEntityPanel(Entity entity, WindowSpec initProps) {
 		// Is it already open?
 		ContentWindow existing = entityWindows.stream()
-						.filter(w -> w.getContent() instanceof EntityContentPanel<?> panel && panel.getEntity().equals(unit))
+						.filter(w -> w.getContent() instanceof EntityContentPanel<?> panel && panel.getEntity().equals(entity))
 						.findFirst().orElse(null);
 		if (existing != null) {
 			bringToFront(existing);
@@ -478,7 +478,7 @@ public class MainDesktopPane extends JDesktopPane
 		}
 				
 		// Build a new window
-		var panel = EntityContentFactory.getEntityPanel(unit, this, initProps);
+		var panel = EntityContentFactory.getEntityPanel(entity, this, initProps);
 		if (panel != null) {
 			var cw = new ContentWindow(this, panel);
 			// Set internal frame listener
@@ -492,7 +492,7 @@ public class MainDesktopPane extends JDesktopPane
 			entityWindows.add(cw);
 
 			// Create new unit button in tool bar if necessary
-			mainWindow.createUnitButton(unit);
+			mainWindow.createUnitButton(entity);
 
 			cw.setVisible(true);
 
@@ -500,15 +500,16 @@ public class MainDesktopPane extends JDesktopPane
 			bringToFront(cw);
 
 			// Play sound
-			String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
-			if (soundFilePath != null && !soundFilePath.isEmpty() && soundPlayer != null) {
-				soundPlayer.playSound(soundFilePath);
-			}		
+			// String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
+			// if (soundFilePath != null && !soundFilePath.isEmpty() && soundPlayer != null) {
+			// 	soundPlayer.playSound(soundFilePath);
+			// }		
 			return;
 		}
 
 		// Fallback to old style
-		openUnitWindow(unit, initProps);
+		if (entity instanceof Unit unit)
+			openUnitWindow(unit, initProps);
 	}
 
 	/**
@@ -517,7 +518,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	private void disposeEntityPanel(ContentWindow source) {
 		if (source.getContent() instanceof EntityContentPanel panel) {
-			Unit unit = (Unit)panel.getEntity();
+			Entity unit = panel.getEntity();
 			if (unit != null) {
 				mainWindow.disposeUnitButton(unit);
 			}
@@ -750,7 +751,6 @@ public class MainDesktopPane extends JDesktopPane
 		List<WindowSpec> startingWindows = mainWindow.getConfig().getConfiguredWindows();
 
 		if (!startingWindows.isEmpty()) {
-			UnitManager uMgr = mainWindow.getDesktop().getSimulation().getUnitManager();
 			for(WindowSpec w : startingWindows) {
 				switch(w.type()) {
 					case UIConfig.TOOL:
@@ -758,7 +758,7 @@ public class MainDesktopPane extends JDesktopPane
 					break;
 
 					case UIConfig.UNIT:
-						Unit u = UnitWindow.getUnit(uMgr, w.props());
+						var u = EntityContentFactory.getEntity(sim, w.props());
 						if (u != null) {
 							openEntityPanel(u, w);
 						}
