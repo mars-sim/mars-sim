@@ -3,7 +3,11 @@ package com.mars_sim.core.authority;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +43,7 @@ class AuthorityFactoryTest {
         "'AEB','Agencia Espacial Brasileira', 'Space Tracking', 'Brazil'",
         "'NASA','National Aeronautics and Space Administration', 'Finding Life', 'United States'"
         })
-    void tesdtAuthority(String code, String name, String agenda, String country) {
+    void testAuthority(String code, String name, String agenda, String country) {
         var authority = factory.getItem(code);
 
         assertNotNull(authority);
@@ -48,6 +52,28 @@ class AuthorityFactoryTest {
         assertEquals(agenda, authority.getMissionAgenda().getName());
         assertFalse(authority.getCountries().isEmpty(), "Authority has countries");
         assertTrue(authority.getCountries().contains(country), "Authority has country " + country);
+    }
+
+    @Test
+    void testSettlementNames() {
+        var authority = factory.getItem("NASA");
+
+        assertNotNull(authority);
+        var settlementNames = authority.getSettlementNames();
+        assertNotNull(settlementNames);
+        assertFalse(settlementNames.getPotentials().isEmpty(), "Settlement names empty");
+
+        // Use all the names
+        Set<String> usedNames = new HashSet<>();
+        for (int i = 0; i < settlementNames.getPotentials().size(); i++) {
+            String name = settlementNames.generateName(usedNames);
+            assertNotNull(name, "Generated name not null");
+            usedNames.add(name);
+        }
+        // Now all names are used, the next call should return null
+        String name = settlementNames.generateName(usedNames);
+        assertNull(name, "No more names available");
+        assertEquals(settlementNames.getPotentials().size(), usedNames.size(), "All names used");
     }
 
     @ParameterizedTest

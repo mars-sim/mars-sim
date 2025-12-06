@@ -6,15 +6,12 @@
  */
 package com.mars_sim.core.vehicle;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Static class to create Vehicles
@@ -48,7 +45,7 @@ public final class VehicleFactory {
 			case LUV:
             	vehicle = new LightUtilityVehicle(name, spec, owner);
 				break;
-			case DELIVERY_DRONE, CARGO_DRONE:
+			case PASSENGER_DRONE, DELIVERY_DRONE, CARGO_DRONE:
            		vehicle = new Drone(name, spec, owner);
 				break;
 			case EXPLORER_ROVER, TRANSPORT_ROVER, CARGO_ROVER:
@@ -73,29 +70,18 @@ public final class VehicleFactory {
 		String result = null;
 		String baseName = null;
 
-		if (type == VehicleType.LUV) {
-			baseName = "LUV";
-		}
-		else if (type == VehicleType.DELIVERY_DRONE) {
-			baseName = "D-Drone";
-		}
-		else if (type == VehicleType.CARGO_DRONE) {
-			baseName = "C-Drone";
-		}
-		else {
-			List<String> possibleNames = sponsor.getVehicleNames();
-			if (!possibleNames.isEmpty()) {
-				List<String> availableNames = new ArrayList<>(possibleNames);
-				Collection<Vehicle> vehicles = unitMgr.getVehicles();
-				List<String> usedNames = vehicles.stream()
-								.map(Vehicle::getName).toList();
-				availableNames.removeAll(usedNames);
-
-				if (!availableNames.isEmpty()) {
-					result = availableNames.get(RandomUtil.getRandomInt(availableNames.size() - 1));
+		switch (type) {
+			case VehicleType.LUV -> baseName = "LUV";
+			case VehicleType.PASSENGER_DRONE -> baseName = "P-Drone";
+			case VehicleType.DELIVERY_DRONE -> baseName = "D-Drone";
+			case VehicleType.CARGO_DRONE -> baseName = "C-Drone";
+			default -> {
+					List<String> usedName = unitMgr.getVehicles().stream()
+									.map(Vehicle::getName).toList();
+					result = sponsor.getVehicleNames().generateName(usedName);
+					baseName = type.name();
 				}
-			}
-		}
+  		}
 
 		if (result == null) {
 			int number = unitMgr.incrementTypeCount(type.name());

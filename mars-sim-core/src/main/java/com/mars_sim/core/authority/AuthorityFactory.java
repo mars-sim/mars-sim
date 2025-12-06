@@ -161,28 +161,14 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 		List<String> countries = authorityNode.getChildren(COUNTRY_EL).stream()
 								.map(a -> a.getAttributeValue(NAME_ATTR))
 								.toList();
-		 
-		// Get Settlement names
-		List<String> settlementNames = authorityNode.getChildren(SETTLEMENTNAME_EL).stream()
-				.map(a -> a.getAttributeValue(NAME_ATTR))
-				.toList();
-
-		// Get Rover names
-		List<String> roverNames = authorityNode.getChildren(ROVERNAME_EL).stream()
-				.map(a -> a.getAttributeValue(NAME_ATTR))
-				.toList();
 		
 		// Check if it's a corporation (false if it's a space agency)
-		boolean isCorporation = false;
-		
-		if (isCorporationString.equalsIgnoreCase(TRUE))
-			isCorporation = true;
+		boolean isCorporation = (TRUE.equalsIgnoreCase(isCorporationString));
 		
 		return new Authority(acronym, fullName, isCorporation, predefined, maleRatio, agenda,
-									  countries, settlementNames,
-									  roverNames);
+									  countries);
 	}
-	
+
 	/**
 	 * Scans the known Settlement and get the load Reporting Authorities. This
 	 * makes sure new units will get the same shared Reporting Authority.
@@ -205,14 +191,15 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 		Element authorityNode = new Element(AUTHORITY_EL);
 		authorityNode.setAttribute(CODE_ATTR, item.getName());
 		authorityNode.setAttribute(NAME_ATTR, item.getDescription());
+		authorityNode.setAttribute(CORPORATION_ATTR, Boolean.toString(item.isCorporation()));
 		authorityNode.setAttribute(AGENDA_EL, item.getMissionAgenda().getName());	
 		authorityNode.setAttribute(GENDER_ATTR, Double.toString(item.getGenderRatio()));
 		
 		 
 		// Get Countries
 		addList(authorityNode, COUNTRY_EL, item.getCountries());
-		addList(authorityNode, SETTLEMENTNAME_EL, item.getSettlementNames());
-		addList(authorityNode, ROVERNAME_EL, item.getVehicleNames());
+		addList(authorityNode, SETTLEMENTNAME_EL, item.getSettlementNames().getPotentials());
+		addList(authorityNode, ROVERNAME_EL, item.getVehicleNames().getPotentials());
 		
 		return new Document(authorityNode);
 	}
@@ -239,6 +226,26 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	protected Authority parseItemXML(Document doc, boolean predefined) {
 		// User configured XML just contains the Authority node.
 		return parseXMLAuthority(agendas, doc.getRootElement(), predefined);
+	}
+
+	/**
+	 * Loads the names for an Authority from the original XML file.
+	 * 
+	 * @param authority
+	 */
+	public void loadNames(Authority authority) {
+		String file = getItemFilename(authority.getName());
+		var doc = getItemFromXML(file, authority.isBundled());
+
+		// Get the name from the original XML
+		Element authorityNode = doc.getRootElement();
+		List<String> sNames = authorityNode.getChildren(SETTLEMENTNAME_EL).stream()
+				.map(a -> a.getAttributeValue(NAME_ATTR))
+				.toList();
+		List<String> vNames = authorityNode.getChildren(ROVERNAME_EL).stream()
+				.map(a -> a.getAttributeValue(NAME_ATTR))
+				.toList();	
+		authority.loadNameGenerators(sNames, vNames);
 	}
 
 	/**

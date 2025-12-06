@@ -124,19 +124,11 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 		// Load predefined
 		for (String name : predefined) {
 			// Put a null entry to load on demand later
-			knownItems.put(name, null);
+			knownItems.put(name, (T) null);
 		}
 	}
 
-	/**
-	 * Loads a configuration from external or bundled XML.
-	 * 
-	 * @param name
-	 * @return
-	 */
-	protected void loadItem(String file, boolean predefined) {
-
-		Document doc;
+	protected Document getItemFromXML(String file, boolean predefined) {
 		try (InputStream contents = getRawConfigContents(file, predefined)) {
 			if (contents == null) {
 				throw new IllegalStateException("Cannot find " + file);
@@ -157,13 +149,25 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
 				builder.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 			}
-			doc = builder.build(contents);
+			return builder.build(contents);
 		} catch (JDOMException | SAXException | IOException e) {
 			logger.log(Level.SEVERE, "Cannot build document: " + e.getMessage());
 			throw new IllegalStateException("Problem parsing " + file, e);
 		}
+	}
 
+	/**
+	 * Loads a configuration from external or bundled XML.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	protected void loadItem(String file, boolean predefined) {
+		var doc = getItemFromXML(file, predefined);
 		T result = parseItemXML(doc, predefined);
+		if (result == null) {
+			throw new IllegalStateException("Problem parsing " + file);
+		}
 		knownItems.put(result.getName(), result);
 	}
 
@@ -179,7 +183,9 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 			// Then it's a load on demand entry
 			String file = getItemFilename(name);
 			logger.fine("Loading a template on demand: '" + itemPrefix + " " + name + "'.");
-			loadItem(file, true);
+
+			// If key is present but value is null then it was predefined
+			loadItem(file, knownItems.containsKey(name));
 
 			found = knownItems.get(name);
 		}
