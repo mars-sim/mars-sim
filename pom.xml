@@ -16,7 +16,6 @@
 		<release>21</release>
 		
 		<sonar.java.source>21</sonar.java.source>
-		<sonar.organization>mars-sim</sonar.organization>
 
 		<fxgl.version>11.17</fxgl.version>
 		
