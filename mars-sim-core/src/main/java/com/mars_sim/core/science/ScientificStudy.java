@@ -19,6 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.UnitSet;
@@ -36,7 +40,7 @@ import com.mars_sim.core.tool.RandomUtil;
 /**
  * A class representing a scientific study.
  */
-public class ScientificStudy implements Entity, Temporal, Comparable<ScientificStudy> {
+public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<ScientificStudy> {
 	// POJO holding collaborators effort
 	private static final class CollaboratorStats implements Serializable {
 		private static final long serialVersionUID = 1L;
@@ -103,7 +107,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	/** A map of invited researchers.  */
 	private Map<Integer, Boolean> invitedResearchers;
 	/** A list of listeners for this scientific study. */
-	private transient List<ScientificStudyListener> listeners; 
+	private transient List<EntityListener> listeners;
 	/** Major topics covered by this research. */
 	private List<String> topics;
 
@@ -231,7 +235,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		this.phase = phase;
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.PHASE_CHANGE_EVENT);
+		fireScientificStudyUpdate(EntityEventType.PHASE_CHANGE_EVENT);
 	}
 
 	/**
@@ -299,7 +303,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			proposalWorkTime = baseProposalTime;
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.PROPOSAL_WORK_EVENT);
+		fireScientificStudyUpdate(EntityEventType.PROPOSAL_WORK_EVENT);
 	}
 
 	/**
@@ -380,7 +384,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.ADD_COLLABORATOR_EVENT, researcher);
+		fireScientificStudyUpdate(EntityEventType.ADD_COLLABORATOR_EVENT, researcher);
 	}
 
 	/**
@@ -398,7 +402,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.REMOVE_COLLABORATOR_EVENT, researcher);
+		fireScientificStudyUpdate(EntityEventType.REMOVE_COLLABORATOR_EVENT, researcher);
 	}
 
 	/**
@@ -541,7 +545,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		primaryStats.lastContribution = masterClock.getMarsTime();
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
+		fireScientificStudyUpdate(EntityEventType.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
 	}
 
 	/**
@@ -600,7 +604,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		c.lastContribution = masterClock.getMarsTime();
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_RESEARCH_WORK_EVENT, researcher);		
+		fireScientificStudyUpdate(EntityEventType.COLLABORATION_RESEARCH_WORK_EVENT, researcher);		
 	}
 
 	/**
@@ -660,7 +664,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_PAPER_WORK_EVENT);
+		fireScientificStudyUpdate(EntityEventType.PRIMARY_PAPER_WORK_EVENT);
 	}
 
 	/**
@@ -709,7 +713,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 			c.paperWorkTime  = requiredWorkTime;
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_PAPER_WORK_EVENT, researcher);
+		fireScientificStudyUpdate(EntityEventType.COLLABORATION_PAPER_WORK_EVENT, researcher);
 	}
 
 	/**
@@ -803,7 +807,7 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(ScientificStudyEvent.STUDY_COMPLETION_EVENT);
+		fireScientificStudyUpdate(EntityEventType.STUDY_COMPLETION_EVENT);
 	}
 
 	/**
@@ -934,7 +938,8 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * 
 	 * @param newListener the listener to add.
 	 */
-	public synchronized void addScientificStudyListener(ScientificStudyListener newListener) {
+	@Override
+	public synchronized void addEntityListener(EntityListener newListener) {
 		if (listeners == null)
 			listeners = new ArrayList<>();
 		if (!listeners.contains(newListener))
@@ -946,7 +951,8 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	 * 
 	 * @param oldListener the listener to remove.
 	 */
-	public synchronized void removeScientificStudyListener(ScientificStudyListener oldListener) {
+	@Override
+	public synchronized void removeEntityListener(EntityListener oldListener) {
 		if (listeners == null)
 			listeners = new ArrayList<>();
 		if (listeners.contains(oldListener))
@@ -971,9 +977,9 @@ public class ScientificStudy implements Entity, Temporal, Comparable<ScientificS
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {
 		if (listeners != null) {
 			synchronized (listeners) {
-				Iterator<ScientificStudyListener> i = listeners.iterator();
+				Iterator<EntityListener> i = listeners.iterator();
 				while (i.hasNext())
-					i.next().scientificStudyUpdate(new ScientificStudyEvent(this, researcher, updateType));
+					i.next().entityUpdate(new EntityEvent(this, updateType, researcher));
 			}
 		}
 	}

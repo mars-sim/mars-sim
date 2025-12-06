@@ -167,6 +167,17 @@ public class EntityEventType {
 	public static final String MANU_QUEUE_REMOVE = "remove from manufacturing queue";
 	public static final String MANE_QUEUE_REFRESH = "refresh manufacturing queue";
 	
+	// Events for ScientificStudy
+	public static final String STUDY_COMPLETION_EVENT = "study completion event";
+	public static final String PHASE_CHANGE_EVENT = "study phase change event";
+	public static final String PROPOSAL_WORK_EVENT = "study proposal work event";
+	public static final String ADD_COLLABORATOR_EVENT = "add study collaborator event";
+	public static final String REMOVE_COLLABORATOR_EVENT = "remove study collaborator event";
+	public static final String PRIMARY_RESEARCH_WORK_EVENT = "study primary research work event";
+	public static final String COLLABORATION_RESEARCH_WORK_EVENT = "study collaboration research work event";
+	public static final String PRIMARY_PAPER_WORK_EVENT = "study primary paper work event";
+	public static final String COLLABORATION_PAPER_WORK_EVENT = "study collaboration paper work event";
+	
 	// Private constructor to prevent instantiation
 	private EntityEventType() {
 		throw new UnsupportedOperationException("Utility class");
