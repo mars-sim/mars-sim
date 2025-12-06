@@ -18,6 +18,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -58,7 +59,7 @@ public class TabPanelGeneral extends TabPanel {
 	protected void buildUI(JPanel content) {
 
 		// Prepare attribute panel.
-		AttributePanel infoPanel = new AttributePanel(9);
+		AttributePanel infoPanel = new AttributePanel();
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 
@@ -83,6 +84,7 @@ public class TabPanelGeneral extends TabPanel {
 		String country = person.getCountry();
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
 				country, null);
+		infoPanel.addLabelledItem(Msg.getString("Entity.authority"), new EntityLabel(person.getReportingAuthority(), getDesktop()));
 
 		// Prepare weight textfield
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
@@ -95,21 +97,21 @@ public class TabPanelGeneral extends TabPanel {
 		// Prepare BMI label
 		double height = person.getHeight()/100D;
 		double heightSquared = height*height;
-		double BMI = person.getBaseMass()/heightSquared;
+		double bmi = person.getBaseMass()/heightSquared;
 		
 		// Categorize according to general weight class
 		String weightClass = "";
-		if (BMI <= 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.underweight");} //$NON-NLS-1$
-		if (BMI > 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.normal");} //$NON-NLS-1$
-		if (BMI > 24.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.overweight");} //$NON-NLS-1$
-		if (BMI > 29.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese1");} //$NON-NLS-1$
-		if (BMI > 34.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese2");} //$NON-NLS-1$
-		if (BMI > 39.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese3");} //$NON-NLS-1$
+		if (bmi <= 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.underweight");} //$NON-NLS-1$
+		if (bmi > 18.5) {weightClass = Msg.getString("TabPanelGeneral.bmi.normal");} //$NON-NLS-1$
+		if (bmi > 24.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.overweight");} //$NON-NLS-1$
+		if (bmi > 29.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese1");} //$NON-NLS-1$
+		if (bmi > 34.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese2");} //$NON-NLS-1$
+		if (bmi > 39.99) {weightClass = Msg.getString("TabPanelGeneral.bmi.obese3");} //$NON-NLS-1$
 
-		String BMItext = Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
-				Math.round(BMI*100.0)/100.0, weightClass);
+		String bmiText = Msg.getString("TabPanelGeneral.bmiValue", //$NON-NLS-1$
+				Math.round(bmi*100.0)/100.0, weightClass);
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.bmi"), //$NON-NLS-1$
-				BMItext, null); 
+				bmiText, null); 
 		
 		// Prepare loading cap label
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
@@ -129,5 +131,7 @@ public class TabPanelGeneral extends TabPanel {
 		
 		// Prepare total mass label
 		storedMassLabel.setText(StyleManager.DECIMAL_KG.format(person.getStoredMass()));
+
+		super.update();
 	}
 }
