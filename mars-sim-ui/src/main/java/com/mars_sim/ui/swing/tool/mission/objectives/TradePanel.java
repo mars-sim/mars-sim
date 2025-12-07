@@ -17,9 +17,9 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.mission.objectives.TradeObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
 
@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
  * A panel for displaying trade objectives
  */
 @SuppressWarnings("serial")
-public class TradePanel extends JPanel implements MissionListener{
+public class TradePanel extends JPanel implements EntityListener{
 	
 	// Data members.
 	private TradeObjective objective;
@@ -135,8 +135,8 @@ public class TradePanel extends JPanel implements MissionListener{
 
 
 	@Override
-	public void missionUpdate(MissionEvent e) {
-		if (e.getType() == MissionEventType.BUY_LOAD_EVENT) {
+	public void missionUpdate(EntityEvent e) {
+		if (e.getType().equals(EntityEventType.MISSION_BUY_LOAD_EVENT)) {
 			boughtGoodsTableModel.updateTable(objective.getBought());
 			sellingGoodsTableModel.updateTable(objective.getSell());
 

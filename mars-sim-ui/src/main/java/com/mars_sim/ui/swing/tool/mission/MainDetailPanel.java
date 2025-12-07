@@ -58,9 +58,9 @@ import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
@@ -91,7 +91,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * The main tab panel for showing mission  details.
  */
 @SuppressWarnings("serial")
-public class MainDetailPanel extends JPanel implements MissionListener, EntityListener {
+public class MainDetailPanel extends JPanel implements EntityListener {
 
 	private static final int MAX_LENGTH = 48;
 	private static final int OBJ_HEIGHT = 230;
@@ -377,7 +377,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 	public void setMission(Mission newMission) {
 		// Remove this as previous mission listener.
 		if (missionCache != null)
-			missionCache.removeMissionListener(this);
+			missionCache.removeEntityListener(this);
 
 		if (newMission == null) {	
 			clearInfo();
@@ -387,7 +387,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		missionCache = newMission;
 		
 		// Add this as listener for new mission.
-		newMission.addMissionListener(this);
+		newMission.addEntityListener(this);
 		
 		setCurrentMission(newMission);
 		// Update info on Main tab
@@ -507,7 +507,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		}
 
 		// Add mission listener.
-		mission.addMissionListener(this);
+		mission.addEntityListener(this);
 		missionCache = mission;
 	}
 
@@ -538,7 +538,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", "0", "0")); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		if (missionCache != null) {
-			missionCache.removeMissionListener(this);
+			missionCache.removeEntityListener(this);
 		}
 		missionCache = null;
 		
@@ -609,25 +609,21 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 	}
 
 	/**
-	 * Updates with a mission event.
-	 */
-	@Override
-	public void missionUpdate(MissionEvent e) {
-		if (e.getSource().equals(missionCache)) {
-			SwingUtilities.invokeLater(new MissionEventUpdater(e, this));
-		}
-	}
-
-	/**
-	 * Catches unit update event.
+	 * Catches entity update event.
 	 *
-	 * @param event the unit event.
+	 * @param event the entity event.
 	 */
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if ((((Unit)event.getSource()).getUnitType() == UnitType.VEHICLE)
-			&& event.getSource().equals(currentVehicle)) {
-				SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
+		// Handle mission events
+		if (event.getSource().equals(missionCache)) {
+			SwingUtilities.invokeLater(new MissionEventUpdater(event, this));
+		}
+		// Handle vehicle events
+		else if (event.getSource() instanceof Unit 
+				&& ((Unit)event.getSource()).getUnitType() == UnitType.VEHICLE
+				&& event.getSource().equals(currentVehicle)) {
+			SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
 		}
 	}
 
@@ -645,10 +641,10 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 
 	private class MissionEventUpdater implements Runnable {
 
-		private MissionEvent event;
+		private EntityEvent event;
 		private MainDetailPanel panel;
 
-		private MissionEventUpdater(MissionEvent event, MainDetailPanel panel) {
+		private MissionEventUpdater(EntityEvent event, MainDetailPanel panel) {
 			this.event = event;
 			this.panel = panel;
 		}
@@ -656,14 +652,14 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 		@Override
 		public void run() {
 			Mission mission = (Mission) event.getSource();
-			MissionEventType type = event.getType();
+			String type = event.getType();
 
 			// Update UI based on mission event type.
 			switch(type) {
-			case TYPE_EVENT, MISSION_STRING_EVENT ->
+			case EntityEventType.MISSION_TYPE_EVENT, EntityEventType.MISSION_STRING_EVENT ->
 				typeTextField.setText(mission.getName());
 		
-			case DESIGNATION_EVENT -> {
+			case EntityEventType.MISSION_DESIGNATION_EVENT -> {
 				// Implement the missing descriptionLabel
 				if (missionWindow.getCreateMissionWizard() != null) {
 					String s = mission.getFullMissionDesignation();
@@ -675,7 +671,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 				}
 			}
 			
-			case PHASE_EVENT, PHASE_DESCRIPTION_EVENT -> {
+			case EntityEventType.MISSION_PHASE_EVENT, EntityEventType.MISSION_PHASE_DESCRIPTION_EVENT -> {
 				String phaseText = mission.getPhaseDescription();
 				phaseTextField.setText(Conversion.trim(phaseText, MAX_LENGTH));
 				
@@ -683,16 +679,16 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 				logTableModel.update();
 			}
 
-			case END_MISSION_EVENT -> {
+			case EntityEventType.MISSION_END_MISSION_EVENT -> {
 				var missionStatusText = new StringBuilder();
 				missionStatusText.append( mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 				statusTextField.setText(missionStatusText.toString());
 			} 
 			
-			case ADD_MEMBER_EVENT, REMOVE_MEMBER_EVENT, MIN_MEMBERS_EVENT, CAPACITY_EVENT ->
+			case EntityEventType.MISSION_ADD_MEMBER_EVENT, EntityEventType.MISSION_REMOVE_MEMBER_EVENT, EntityEventType.MISSION_MIN_MEMBERS_EVENT, EntityEventType.MISSION_CAPACITY_EVENT ->
 				memberTableModel.updateOccupantList();
 
-			case VEHICLE_EVENT -> {
+			case EntityEventType.MISSION_VEHICLE_EVENT -> {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				vehicleLabel.setEntity(vehicle);
 				if (vehicle != null) {
@@ -709,7 +705,7 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 				}
 			}
 			
-			case DISTANCE_EVENT -> {
+			case EntityEventType.MISSION_DISTANCE_EVENT -> {
 				VehicleMission vehicleMission = (VehicleMission) mission;
 				
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;
@@ -733,8 +729,8 @@ public class MainDetailPanel extends JPanel implements MissionListener, EntityLi
 			// Forward to any objective panels
 			for (int i = 0; i < objectivesPane.getTabCount(); i++) {
 				Component comp = objectivesPane.getComponentAt(i);
-				if (comp instanceof MissionListener ul) {
-					ul.missionUpdate(event);
+				if (comp instanceof EntityListener ul) {
+					ul.entityUpdate(event);
 				}
 			}
 

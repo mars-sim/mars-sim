@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -162,7 +163,7 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	private void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
-		fireMissionUpdate(MissionEventType.DESTINATION_SETTLEMENT);
+		fireMissionUpdate(EntityEventType.MISSION_DESTINATION_SETTLEMENT);
 	}
 
 	/**

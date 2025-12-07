@@ -14,8 +14,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import com.mars_sim.core.mission.objectives.EmergencySupplyObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class EmergencySupplyPanel extends JPanel
-		implements MissionListener {
+		implements EntityListener {
 
 	// Data members.
 	private EmergencySupplyObjective supplies;
@@ -67,7 +67,7 @@ public class EmergencySupplyPanel extends JPanel
 	}
 
 	@Override
-	public void missionUpdate(MissionEvent event) {
+	public void missionUpdate(EntityEvent event) {
 		emergencySuppliesTableModel.updateTable(supplies.getSupplies());
 	}
 }

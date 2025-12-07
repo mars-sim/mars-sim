@@ -167,6 +167,33 @@ public class EntityEventType {
 	public static final String MANU_QUEUE_REMOVE = "remove from manufacturing queue";
 	public static final String MANE_QUEUE_REFRESH = "refresh manufacturing queue";
 	
+	// Mission-specific events (migrated from MissionEventType)
+	public static final String MISSION_DATE_EVENT = "date";
+	public static final String MISSION_NAME_EVENT = "name";
+	public static final String MISSION_TYPE_EVENT = "type";
+	public static final String MISSION_DESCRIPTION_EVENT = "description";
+	public static final String MISSION_STRING_EVENT = "mission string";
+	public static final String MISSION_DESIGNATION_EVENT = "designation";
+	public static final String MISSION_PHASE_EVENT = "phase";
+	public static final String MISSION_PHASE_DESCRIPTION_EVENT = "phase description";
+	public static final String MISSION_MIN_MEMBERS_EVENT = "minimum members";
+	public static final String MISSION_ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
+	public static final String MISSION_CAPACITY_EVENT = "capacity";
+	public static final String MISSION_ADD_MEMBER_EVENT = "add member";
+	public static final String MISSION_REMOVE_MEMBER_EVENT = "remove member";
+	public static final String MISSION_END_MISSION_EVENT = "end mission";
+	public static final String MISSION_SITE_EXPLORATION_EVENT = "explore site";
+	public static final String MISSION_EXCAVATE_MINERALS_EVENT = "excavate minerals";
+	public static final String MISSION_COLLECT_MINERALS_EVENT = "collect minerals";
+	public static final String MISSION_TRAVEL_STATUS_EVENT = "travel status";
+	public static final String MISSION_NAVPOINTS_EVENT = "navpoints";
+	public static final String MISSION_DISTANCE_EVENT = "distance";
+	public static final String MISSION_VEHICLE_EVENT = "vehicle";
+	public static final String MISSION_OPERATOR_EVENT = "operator";
+	public static final String MISSION_STARTING_SETTLEMENT_EVENT = "starting settlement";
+	public static final String MISSION_BUY_LOAD_EVENT = "buy load";
+	public static final String MISSION_DESTINATION_SETTLEMENT = "destination settlement";
+	
 	// Private constructor to prevent instantiation
 	private EntityEventType() {
 		throw new UnsupportedOperationException("Utility class");

@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -22,7 +22,7 @@ import com.mars_sim.core.time.MarsTime;
 /**
  * Represents the behave that a Mission exhibits.
  */
-public interface Mission extends Entity {
+public interface Mission extends MonitorableEntity {
 
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
@@ -184,20 +184,6 @@ public interface Mission extends Entity {
 	 * @return Can the member participate ?
 	 */
 	boolean performMission(Worker member);
-
-	/**
-	 * Adds a listener.
-	 *
-	 * @param newListener the listener to add.
-	 */
-	void addMissionListener(MissionListener newListener);
-
-	/** 
-	 * Removes a listener.
-	 *
-	 * @param oldListener the listener to remove.
-	 */
-	void removeMissionListener(MissionListener oldListener);
 
 	/**
 	 * Gets the list of objectives for this mission.

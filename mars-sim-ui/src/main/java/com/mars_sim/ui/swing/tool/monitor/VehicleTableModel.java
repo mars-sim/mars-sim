@@ -23,9 +23,9 @@ import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
@@ -427,7 +427,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		 * @param mission the new mission.
 		 */
 		public void addMission(Mission mission) {
-			mission.addMissionListener(missionListener);
+			mission.addEntityListener(missionListener);
 			fireTableDataChanged();
 		}
 
@@ -437,7 +437,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		 * @param mission the old mission.
 		 */
 		public void removeMission(Mission mission){
-			mission.removeMissionListener(missionListener);
+			mission.removeEntityListener(missionListener);
 			fireTableDataChanged();
 		}
 
@@ -454,19 +454,19 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	/**
 	 * MissionListener inner class.
 	 */
-	private class LocalMissionListener implements MissionListener {
+	private class LocalMissionListener implements EntityListener {
 
 		/**
 		 * Catch mission update event.
 		 * @param event the mission event.
 		 */
-		public void missionUpdate(MissionEvent event) {
+		public void missionUpdate(EntityEvent event) {
 			if (event.getSource() instanceof VehicleMission vm) {
-				MissionEventType eventType = event.getType();
+				String eventType = event.getType();
 				int columnNum = switch(eventType) {
-					case TRAVEL_STATUS_EVENT, NAVPOINTS_EVENT -> DESTINATION;
-					case DISTANCE_EVENT -> DESTDIST;
-					case VEHICLE_EVENT -> MISSION;
+					case EntityEventType.MISSION_TRAVEL_STATUS_EVENT, EntityEventType.MISSION_NAVPOINTS_EVENT -> DESTINATION;
+					case EntityEventType.MISSION_DISTANCE_EVENT -> DESTDIST;
+					case EntityEventType.MISSION_VEHICLE_EVENT -> MISSION;
 					default -> -1;
 				};
 	

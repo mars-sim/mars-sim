@@ -25,9 +25,9 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
@@ -210,7 +210,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		resetEntities(missionPeople);
 		
 		missionListener = new LocalMissionListener();
-		mission.addMissionListener(missionListener);
+		mission.addEntityListener(missionListener);
 	}
 
 	private void setupCache() {
@@ -522,7 +522,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			crewListener = null;
 			vehicle = null;
 		} else if (sourceType == ValidSourceType.MISSION_PEOPLE) {
-			mission.removeMissionListener(missionListener);
+			mission.removeEntityListener(missionListener);
 			missionListener = null;
 			mission = null;
 		} else {
@@ -534,21 +534,21 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	/**
 	 * MissionListener inner class.
 	 */
-	private class LocalMissionListener implements MissionListener {
+	private class LocalMissionListener implements EntityListener {
 		/**
 		 * Catches mission update event.
 		 *
 		 * @param event the mission event.
 		 */
-		public void missionUpdate(MissionEvent event) {
+		public void missionUpdate(EntityEvent event) {
 			Object target = event.getTarget();
 			if (target instanceof Person p) {
-				MissionEventType eventType = event.getType();
+				String eventType = event.getType();
 
-				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
+				if (eventType.equals(EntityEventType.MISSION_ADD_MEMBER_EVENT)) {
 					addEntity(p);
 				}
-				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
+				else if (eventType.equals(EntityEventType.MISSION_REMOVE_MEMBER_EVENT)) {
 					removeEntity(p);
 				}
 			}

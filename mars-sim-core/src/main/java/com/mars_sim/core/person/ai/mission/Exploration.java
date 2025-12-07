@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -269,7 +270,7 @@ public class Exploration extends EVAMission
 			}
 		}
 		
-		fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
+		fireMissionUpdate(com.mars_sim.core.EntityEventType.MISSION_SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
 		objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
 

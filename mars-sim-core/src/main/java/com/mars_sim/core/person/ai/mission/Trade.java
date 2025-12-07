@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuitUtil;
@@ -300,7 +301,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					}
 					objective.updateBought(buyLoad, profit);
 
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(EntityEventType.MISSION_BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}
@@ -317,7 +318,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				}
 				else if (getPhaseTimeElapse() > 1000D) {
 					objective.updateBought(new HashMap<>(), 0D);
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(EntityEventType.MISSION_BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}

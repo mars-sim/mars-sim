@@ -22,6 +22,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
@@ -160,8 +163,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private Set<Worker> members;
 	
 	// transient members
-	/** Mission listeners. */
-	private transient List<MissionListener> listeners;
+	/** Entity listeners. */
+	private transient List<EntityListener> listeners;
 
 	// Static members
 	protected static UnitManager unitManager;
@@ -226,12 +229,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 	
 	/**
-	 * Adds a listener.
+	 * Adds an entity listener.
 	 *
 	 * @param newListener the listener to add.
 	 */
 	@Override
-	public final void addMissionListener(MissionListener newListener) {
+	public final void addEntityListener(EntityListener newListener) {
 		if (listeners == null) {
 			listeners = new CopyOnWriteArrayList<>();
 		}
@@ -243,12 +246,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Removes a listener.
+	 * Removes an entity listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
 	@Override
-	public final void removeMissionListener(MissionListener oldListener) {
+	public final void removeEntityListener(EntityListener oldListener) {
 		if ((listeners != null) && listeners.contains(oldListener)) {
 			synchronized (listeners) {
 				listeners.remove(oldListener);
@@ -257,25 +260,25 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Fires a mission update event.
+	 * Fires an entity update event.
 	 *
 	 * @param updateType the update type.
 	 */
-	protected final void fireMissionUpdate(MissionEventType updateType) {
+	protected final void fireMissionUpdate(String updateType) {
 		fireMissionUpdate(updateType, this);
 	}
 
 	/**
-	 * Fires a mission update event.
+	 * Fires an entity update event.
 	 *
-	 * @param addMemberEvent the update type.
-	 * @param target         the event target or null if none.
+	 * @param eventType the update type.
+	 * @param target    the event target or null if none.
 	 */
-	protected final void fireMissionUpdate(MissionEventType addMemberEvent, Object target) {
+	protected final void fireMissionUpdate(String eventType, Object target) {
 		if (listeners != null) {
 			synchronized (listeners) {
-				for (MissionListener l : listeners) {
-					l.missionUpdate(new MissionEvent(this, addMemberEvent, target));
+				for (EntityListener l : listeners) {
+					l.entityUpdate(new EntityEvent(this, eventType, target));
 				}
 			}
 		}
@@ -320,7 +323,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			registerHistoricalEvent(member, HistoricalEventType.MISSION_JOINING,
 									"Adding a member");
 	
-			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
+			fireMissionUpdate(EntityEventType.MISSION_ADD_MEMBER_EVENT, member);
 
 			logger.log(member, Level.FINER, 0, "Just got added to " + missionString + ".");
 		}
@@ -380,7 +383,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	      	}	
 
 			registerHistoricalEvent(person, HistoricalEventType.MISSION_FINISH, "Removing a member");
-			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
+			fireMissionUpdate(EntityEventType.MISSION_REMOVE_MEMBER_EVENT, member);
 		}
 	}
 	
@@ -537,7 +540,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Add entry to the log
 		addMissionLog(newPhase.getName(), getStartingPerson().getName());
 
-		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
+		fireMissionUpdate(EntityEventType.MISSION_PHASE_EVENT, newPhase);
 	}
 
 	/**
@@ -604,7 +607,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final void setPhaseDescription(String description) {
 		phaseDescription = description;
-		fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, description);
+		fireMissionUpdate(EntityEventType.MISSION_PHASE_DESCRIPTION_EVENT, description);
 	}
 
 	/**
@@ -672,7 +675,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final void setMissionCapacity(int newCapacity) {
 		missionCapacity = newCapacity;
-		fireMissionUpdate(MissionEventType.CAPACITY_EVENT, newCapacity);
+		fireMissionUpdate(EntityEventType.MISSION_CAPACITY_EVENT, newCapacity);
 	}
 
 	/** 
@@ -1335,7 +1338,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final void setStartingMember(Worker member) {
 		this.startingMember = member;
-		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
+		fireMissionUpdate(EntityEventType.MISSION_STARTING_SETTLEMENT_EVENT);
 	}
 
 	/**
@@ -1363,7 +1366,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		
 		missionDesignationString = buffer.toString();
 
-		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, missionDesignationString);
+		fireMissionUpdate(EntityEventType.MISSION_DESIGNATION_EVENT, missionDesignationString);
 	}
 
 	@Override

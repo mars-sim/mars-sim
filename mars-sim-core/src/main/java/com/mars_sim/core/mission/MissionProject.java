@@ -14,12 +14,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
@@ -98,8 +98,8 @@ public abstract class MissionProject implements Mission {
     private int maxMembers;
     private Person leader;
 
-	/** Mission listeners. */
-	private transient Set<MissionListener> listeners = null;
+	/** Entity listeners. */
+	private transient Set<EntityListener> listeners = null;
     private MarsTime stepStarted;
 
     private Set<Worker> members = new UnitSet<>();
@@ -404,11 +404,11 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Add a listener to the Mission
+     * Add an entity listener to the Mission
      * @param newListener Listener
      */
     @Override
-    public void addMissionListener(MissionListener newListener) {
+    public void addEntityListener(EntityListener newListener) {
 		if (listeners == null) {
 			listeners = new HashSet<>();
 		}
@@ -418,11 +418,11 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Remove a previously registered listener
+     * Remove a previously registered entity listener
      * @param oldListener Listener to remove
      */
     @Override
-    public void removeMissionListener(MissionListener oldListener) {
+    public void removeEntityListener(EntityListener oldListener) {
 		if (listeners != null) {
 			synchronized (listeners) {
 				listeners.remove(oldListener);

@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class RescuePanel extends JPanel
-    implements MissionListener {
+    implements EntityListener {
 
     // Data members
     private RescueVehicleObjective rescueMission;
@@ -59,7 +59,7 @@ public class RescuePanel extends JPanel
     }
 
     @Override
-    public void missionUpdate(MissionEvent event) {
+    public void missionUpdate(EntityEvent event) {
         updateVehicle();
     }
     

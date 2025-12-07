@@ -30,9 +30,9 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.structure.Settlement;
@@ -56,7 +56,7 @@ import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 @SuppressWarnings("serial")
 public class NavpointPanel
 extends JPanel
-implements MissionListener {
+implements EntityListener {
 
 	private static final int HEIGHT = 430;
 	private static final double TWO_PI = Math.PI * 2D;
@@ -261,14 +261,14 @@ implements MissionListener {
 		if (isDiff) {
 			// Remove this as previous mission listener.
 			if (missionCache != null) {
-				missionCache.removeMissionListener(this);
+				missionCache.removeEntityListener(this);
 			}
 			// Update the cache
 			missionCache = newMission;
 
 			if (missionCache != null) {
 				// Add this as listener for new mission.
-				missionCache.addMissionListener(this);
+				missionCache.addEntityListener(this);
 				// Update the mission content on the Nav tab
 				updateNavTab();
 			}
@@ -327,9 +327,9 @@ implements MissionListener {
 	 * 
 	 * @param event the mission event.
 	 */
-	public void missionUpdate(MissionEvent event) {
+	public void missionUpdate(EntityEvent event) {
 		MissionEventType type = event.getType();
-		if (MissionEventType.NAVPOINTS_EVENT == type) {
+		if (EntityEventType.MISSION_NAVPOINTS_EVENT.equals(type)) {
 			// Update mission navpoints.
 			SwingUtilities.invokeLater(() -> navpointTableModel.updateNavpoints());
 		}

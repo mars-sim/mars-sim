@@ -32,8 +32,8 @@ import com.mars_sim.core.building.construction.ConstructionStage.Material;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.mission.objectives.ConstructionObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
@@ -46,7 +46,7 @@ import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
  * A panel for displaying construction custom mission information.
  */
 @SuppressWarnings("serial")
-public class ConstructionPanel extends JPanel implements MissionListener, ObjectivesPanel, EntityListener {
+public class ConstructionPanel extends JPanel implements EntityListener, ObjectivesPanel, EntityListener {
 
     private MaterialsTableModel materialsTableModel;
     private JScrollPane scrollPane;
@@ -113,7 +113,7 @@ public class ConstructionPanel extends JPanel implements MissionListener, Object
     }
 
     @Override
-    public void missionUpdate(MissionEvent event) {
+    public void missionUpdate(EntityEvent event) {
         if (materialsTableModel != null) {
             materialsTableModel.updateTable();
         }

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.goods.CommerceMission;
 import com.mars_sim.core.goods.CommerceUtil;
 import com.mars_sim.core.goods.Deal;
@@ -254,7 +255,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 					}
 					objective.updateBought(buyLoad, profit);
 
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(EntityEventType.MISSION_BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}
@@ -271,7 +272,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 				}
 				else if (getPhaseTimeElapse() > 1000D) {
 					objective.updateBought(new HashMap<>(), 0D);
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(EntityEventType.MISSION_BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}

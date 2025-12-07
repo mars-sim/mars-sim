@@ -23,9 +23,9 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
 
@@ -35,7 +35,7 @@ import com.mars_sim.ui.swing.StyleManager;
  */
 @SuppressWarnings("serial")
 public class ExplorationPanel extends JPanel 
-	implements MissionListener, EntityListener  {
+	implements EntityListener, EntityListener  {
 
 	// Data members
 	private Map<String, ExplorationSitePanel> sitePanes;
@@ -85,8 +85,8 @@ public class ExplorationPanel extends JPanel
 	}
 
 	@Override
-	public void missionUpdate(MissionEvent e) {
-		if (MissionEventType.SITE_EXPLORATION_EVENT == e.getType()) {
+	public void missionUpdate(EntityEvent e) {
+		if (EntityEventType.MISSION_SITE_EXPLORATION_EVENT.equals(e.getType())) {
 			updateSitePanel((String) e.getTarget());
 		}
 	}
