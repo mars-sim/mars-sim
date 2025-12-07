@@ -43,8 +43,8 @@ import javax.swing.text.JTextComponent;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.ai.mission.AbstractMission;
-import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
+import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
@@ -62,8 +62,8 @@ import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.ai.mission.AbstractMission;
-import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
+import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
@@ -660,10 +660,10 @@ public class MainDetailPanel extends JPanel implements EntityListener {
 
 			// Update UI based on mission event type.
 			switch(type) {
-			case AbstractMission.TYPE_EVENT, AbstractMission.STRING_EVENT ->
+			case Mission.TYPE_EVENT, Mission.STRING_EVENT ->
 				typeTextField.setText(mission.getName());
 		
-			case AbstractMission.DESIGNATION_EVENT -> {
+			case Mission.DESIGNATION_EVENT -> {
 				// Implement the missing descriptionLabel
 				if (missionWindow.getCreateMissionWizard() != null) {
 					String s = mission.getFullMissionDesignation();
@@ -675,7 +675,7 @@ public class MainDetailPanel extends JPanel implements EntityListener {
 				}
 			}
 			
-			case AbstractMission.PHASE_EVENT, AbstractMission.PHASE_DESCRIPTION_EVENT -> {
+			case Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT -> {
 				String phaseText = mission.getPhaseDescription();
 				phaseTextField.setText(Conversion.trim(phaseText, MAX_LENGTH));
 				
@@ -683,16 +683,16 @@ public class MainDetailPanel extends JPanel implements EntityListener {
 				logTableModel.update();
 			}
 
-			case AbstractMission.END_MISSION_EVENT -> {
+			case Mission.END_MISSION_EVENT -> {
 				var missionStatusText = new StringBuilder();
 				missionStatusText.append( mission.getMissionStatus().stream().map(MissionStatus::getName).collect(Collectors.joining(", ")));
 				statusTextField.setText(missionStatusText.toString());
 			} 
 			
-			case AbstractMission.ADD_MEMBER_EVENT, AbstractMission.REMOVE_MEMBER_EVENT, AbstractMission.MIN_MEMBERS_EVENT, AbstractMission.CAPACITY_EVENT ->
+			case Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT, Mission.MIN_MEMBERS_EVENT, Mission.CAPACITY_EVENT ->
 				memberTableModel.updateOccupantList();
 
-			case AbstractVehicleMission.VEHICLE_EVENT -> {
+			case VehicleMission.VEHICLE_EVENT -> {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				vehicleLabel.setEntity(vehicle);
 				if (vehicle != null) {
@@ -709,7 +709,7 @@ public class MainDetailPanel extends JPanel implements EntityListener {
 				}
 			}
 			
-			case AbstractVehicleMission.DISTANCE_EVENT -> {
+			case VehicleMission.DISTANCE_EVENT -> {
 				VehicleMission vehicleMission = (VehicleMission) mission;
 				
 				double travelledDistance = Math.round(vehicleMission.getTotalDistanceTravelled()*10.0)/10.0;

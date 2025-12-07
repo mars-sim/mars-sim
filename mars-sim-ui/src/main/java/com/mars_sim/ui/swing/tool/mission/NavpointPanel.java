@@ -32,7 +32,7 @@ import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
@@ -331,7 +331,7 @@ implements EntityListener {
 	@Override
 	public void entityUpdate(EntityEvent event) {
 		String type = event.getType();
-		if (AbstractVehicleMission.NAVPOINTS_EVENT.equals(type)) {
+		if (VehicleMission.NAVPOINTS_EVENT.equals(type)) {
 			// Update mission navpoints.
 			SwingUtilities.invokeLater(() -> navpointTableModel.updateNavpoints());
 		}

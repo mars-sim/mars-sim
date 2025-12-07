@@ -97,21 +97,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 	private static final int MAX_CAP = 8;
 
-	// Mission event types
-	public static final String DATE_EVENT = "date";
-	public static final String NAME_EVENT = "name";
-	public static final String TYPE_EVENT = "type";
-	public static final String STRING_EVENT = "mission string";
-	public static final String DESIGNATION_EVENT = "designation";
-	public static final String PHASE_EVENT = "phase";
-	public static final String PHASE_DESCRIPTION_EVENT = "phase description";
-	public static final String MIN_MEMBERS_EVENT = "minimum members";
-	public static final String CAPACITY_EVENT = "capacity";
-	public static final String ADD_MEMBER_EVENT = "add member";
-	public static final String REMOVE_MEMBER_EVENT = "remove member";
-	public static final String STARTING_SETTLEMENT_EVENT = "starting settlement";
-	public static final String END_MISSION_EVENT = "end mission";
-
 	private static final MissionPhase COMPLETED_PHASE = new MissionPhase("completed", Stage.CLOSEDOWN);
 	private static final MissionPhase ABORTED_PHASE = new MissionPhase("aborted", Stage.CLOSEDOWN);
 	protected static final MissionPhase REVIEWING = new MissionPhase("reviewing", Stage.PREPARATION);

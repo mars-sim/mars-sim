@@ -14,6 +14,12 @@ import com.mars_sim.core.vehicle.Vehicle;
 
 public interface VehicleMission extends Mission {
 
+	// Vehicle mission event types
+	String VEHICLE_EVENT = "vehicle";
+	String DISTANCE_EVENT = "distance";
+	String NAVPOINTS_EVENT = "navpoints";
+	String TRAVEL_STATUS_EVENT = "travel status";
+
     /**
      * Gets the Vehicle assigned to the Mission.
      * 

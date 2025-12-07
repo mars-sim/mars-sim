@@ -57,6 +57,10 @@ public class Mining extends EVAMission
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Mining.class.getName());
 	
+	// Mining mission event types
+	public static final String EXCAVATE_MINERALS_EVENT = "excavate minerals";
+	public static final String COLLECT_MINERALS_EVENT = "collect minerals";
+	
 	/** Mission phases */
 	private static final MissionPhase MINING_SITE = new MissionPhase("Mission.phase.miningSite");
 	private static final MissionStatus MINING_SITE_NOT_BE_DETERMINED = new MissionStatus("Mission.status.miningSite");

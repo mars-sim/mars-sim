@@ -75,12 +75,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AbstractVehicleMission.class.getName());
 	
-	// Vehicle mission event types
-	public static final String VEHICLE_EVENT = "vehicle";
-	public static final String DISTANCE_EVENT = "distance";
-	public static final String NAVPOINTS_EVENT = "navpoints";
-	public static final String TRAVEL_STATUS_EVENT = "travel status";
-	
 	/** How often are remaining resources checked. */
 	private static final int RESOURCE_CHECK_DURATION = 40;
 	/** The speed mod due to driving at night. */
