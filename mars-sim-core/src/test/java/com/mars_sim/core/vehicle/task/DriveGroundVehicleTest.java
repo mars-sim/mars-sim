@@ -100,15 +100,14 @@ class DriveGroundVehicleTest extends MarsSimUnitTest {
         v.retrieveAmountResource(v.getFuelTypeID(), v.getSpecificAmountResourceStored(v.getFuelTypeID()));
         assertEquals(0.0D, v.getSpecificAmountResourceStored(v.getFuelTypeID()), "Fuel emptied");
 
+        var b = v.getController().getBattery();
+        b.discharge();
+
         executeTask(p, task, 10);
-        
-        // With battery, rover can still be moving
-        // Need to find out in what situation a driver may stop operating the vehicle, thus
-        // causing task.getPhase() to be null from time to time
-        if (task.getPhase() != null)
-        	assertEquals(StatusType.MOVING, v.getPrimaryStatus(), "Vehicle end primary status");
-        else 
-        	assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
+
+        // Shoudl be PARKED and out of fuel
+        assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
+        assertTrue(v.haveStatusType(StatusType.OUT_OF_FUEL), "Vehicle out of fuel");
                 
         // Drive the rest
         executeTaskUntilPhase(p, task, 5000);

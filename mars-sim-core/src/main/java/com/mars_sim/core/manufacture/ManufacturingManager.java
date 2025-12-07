@@ -127,6 +127,10 @@ public class ManufacturingManager implements Serializable {
 
     }
 
+    public static final String MANU_QUEUE_REFRESH = "refresh manufacturing queue";
+    public static final String MANU_QUEUE_REMOVE = "remove from manufacturing queue";
+    public static final String MANU_QUEUE_ADD = "add to manufacturing queue";
+
     private static final int REFRESH_TIME = 10;
     private static final Integer DEFAULT_VALUE = 30;
     private static final Integer DEFAULT_LIMIT = 200;
@@ -139,10 +143,6 @@ public class ManufacturingManager implements Serializable {
     private Settlement owner;
     private int maxTechLevel = -2;
     private Set<Tooling> allTools;
-    public static final String MANE_QUEUE_REFRESH = "refresh manufacturing queue";
-    public static final String MANU_QUEUE_REMOVE = "remove from manufacturing queue";
-    // Event for Manufacturing
-    public static final String MANU_QUEUE_ADD = "add to manufacturing queue";
 
     public ManufacturingManager(Settlement owner) {
         this.owner = owner;
@@ -279,7 +279,7 @@ public class ManufacturingManager implements Serializable {
         }  
 
         if (!queue.isEmpty()) {
-            owner.fireUnitUpdate(ManufacturingManager.MANE_QUEUE_REFRESH);
+            owner.fireUnitUpdate(ManufacturingManager.MANU_QUEUE_REFRESH);
         }
     }
 

@@ -53,9 +53,7 @@ public class Battery implements Serializable {
 	private static final int CELLS_IN_SERIES_PER_MODULE = 96;
 	/** The internal resistance [in ohms] in each cell. */	
 	private static final double R_CELL = 0.583 / 1000; 
-	
-	private static final double R_LOAD = 26.818 / 1000; // Assume a constant load resistance of the motor
-	
+		
 	// The nominal voltage of the Tesla Model 3 battery pack is approximately 350 volts, 
 	// derived from a 96-cell series configuration with a nominal cell voltage of 
 	// around 3.65 volts ( 96×3.65 = 350.4 V).
@@ -65,10 +63,6 @@ public class Battery implements Serializable {
 	// Note: 104 * 4.2V = 403.8
     /** The standard voltage of this battery pack in volts. */
     public static final double HIGHEST_MAX_VOLTAGE = CELLS_IN_SERIES_PER_MODULE * NOMINAL_CELL_VOLTAGE; //403.8; //436.8; // 600
-    
-	
-	/** The percent of the terminal voltage prior to cutoff */
-//	public static final double PERCENT_TERMINAL_VOLTAGE = 66.67;
 	
     /** The standard voltage of a drone battery pack in volts. */
     public static final double DRONE_VOLTAGE = HIGHEST_MAX_VOLTAGE / 8;
@@ -76,16 +70,11 @@ public class Battery implements Serializable {
     /** The maximum current that can be safely drawn from this battery pack in Ampere. */
     // May add back: private static final double MAX_AMP_DRAW = 120
   
-	/**
-	 * The nominal capacity (Amp hours) of a lithium cell is about 250mAh at the 
-	 * discharge current of 1C.
-	 */
-//	private static final double NOMINAL_AMP_HOURS = .25;
 	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_CHARGING = 1;
 	/** The maximum continuous discharge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_DISCHARGING = 2;
-	
+
 	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .1; // [in %]
@@ -646,12 +635,10 @@ public class Battery implements Serializable {
 
 
     /**
-     * Checks if the unit is inoperable.
-     *
-     * @return true if inoperable
+     * Discharge the battery of power
      */
-    public boolean isInoperable() {
-        return !operable;
+    public void discharge() {
+        kWhStored = 0;
     }
 
     /**

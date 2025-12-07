@@ -94,7 +94,6 @@ abstract class EVAMission extends RoverMission {
 	private boolean canStartEVA() {
 		boolean result = true;
 		// Note: checking for EVA has caused too many Exploration mission to terminate EVA
-//		// May add back: if (isEnoughSunlightForEVA()) { } else {
 		MarsTime sunrise = surfaceFeatures.getOrbitInfo().getSunrise(getCurrentMissionLocation());
 		if (surfaceFeatures.inDarkPolarRegion(getCurrentMissionLocation())
 				|| (sunrise.getTimeDiff(getMarsTime()) > MAX_WAIT_SUBLIGHT)) {
@@ -212,13 +211,6 @@ abstract class EVAMission extends RoverMission {
 				activeEVA = false;
 			}
 
-			// If no one can explore the site and this is not due to it just being
-			// night time, end the exploring phase.
-//			May add back: if (activeEVA && !isEnoughSunlightForEVA()) {
-//			May add back: 	logger.info(getVehicle(), 10_000L, "Not enough sunlight during the EVA phase of the mission.")
-//			May add back: 	addMissionLog(NOT_ENOUGH_SUNLIGHT, member.getName())
-//			May add back: 	activeEVA = false
-//			May add back: }
 
 			// Anyone in the crew or a single person at the home settlement has a dangerous
 			// illness, end phase.
@@ -284,23 +276,17 @@ abstract class EVAMission extends RoverMission {
 					+ p.getLocationTag().getExtendedLocation() + ".");
 				addMissionLog("Teleportation Type 2 - " + p.getName(), worker.getName());
 				// Note: need to debug why this happens and can't remove a person as member yet
-			
-				// Use Iterator's remove() method i.remove();
-				// Call memberLeave(member) to set mission to null will cause this member to drop off the member list
 					
 				result = true;
 			}
 			
-			else if (p.isRightOutsideSettlement()) {// && p.isInSettlementVicinity()) {
+			else if (p.isRightOutsideSettlement()) {
 
 				logger.severe(p, 10_000, "Teleportation Type 3 detected. Current location: " 
 					+ p.getLocationTag().getExtendedLocation() + ".");
 				addMissionLog("Teleportation Type 3 - " + p.getName(), worker.getName());
 				result = true;
-			}
-			
-			
-//			May add back: else if (p.isInVehicle()) logger.severe(p, 20_000, "No Teleportation detected. Current location: " + p.getLocationTag().getExtendedLocation() + ".")
+			}			
 		}
 		
 		return result;

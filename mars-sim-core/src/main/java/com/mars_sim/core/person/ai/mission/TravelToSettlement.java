@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;

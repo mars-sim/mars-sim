@@ -271,7 +271,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 			queueModel.addItem((QueuedProcess) e.getTarget());
 		} else if (ManufacturingManager.MANU_QUEUE_REMOVE.equals(eventType)) {
 			queueModel.removeItem((QueuedProcess) e.getTarget());
-		} else if (ManufacturingManager.MANE_QUEUE_REFRESH.equals(eventType)) {
+		} else if (ManufacturingManager.MANU_QUEUE_REFRESH.equals(eventType)) {
 			queueModel.refresh();
 		}
 	}
