@@ -19,6 +19,7 @@ import javax.swing.SwingConstants;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
@@ -136,7 +137,7 @@ public class TradePanel extends JPanel implements EntityListener{
 
 	@Override
 	public void entityUpdate(EntityEvent e) {
-		if (e.getType().equals(EntityEventType.MISSION_BUY_LOAD_EVENT)) {
+		if (e.getType().equals(Trade.BUY_LOAD_EVENT)) {
 			boughtGoodsTableModel.updateTable(objective.getBought());
 			sellingGoodsTableModel.updateTable(objective.getSell());
 

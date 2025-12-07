@@ -75,6 +75,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(AbstractVehicleMission.class.getName());
 	
+	// Vehicle mission event types
+	public static final String VEHICLE_EVENT = "vehicle";
+	public static final String DISTANCE_EVENT = "distance";
+	public static final String NAVPOINTS_EVENT = "navpoints";
+	public static final String TRAVEL_STATUS_EVENT = "travel status";
+	
 	/** How often are remaining resources checked. */
 	private static final int RESOURCE_CHECK_DURATION = 40;
 	/** The speed mod due to driving at night. */
@@ -347,7 +353,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			v.setReservedForMission(false);
 			v.setMission(null);
 			v.removeEntityListener(this);
-			fireMissionUpdate(EntityEventType.MISSION_VEHICLE_EVENT);
+			fireMissionUpdate(VEHICLE_EVENT);
 		}
 	}
 
@@ -365,7 +371,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		v.addEntityListener(this);
 		v.setMission(this);
 		
-		fireMissionUpdate(EntityEventType.MISSION_VEHICLE_EVENT);
+		fireMissionUpdate(VEHICLE_EVENT);
 	}
 
 	/**
@@ -1324,9 +1330,9 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public void entityUpdate(EntityEvent event) {
 		String type = event.getType();
 		if (EntityEventType.COORDINATE_EVENT.equals(type)) {
-			fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);
+			fireMissionUpdate(DISTANCE_EVENT);
 		} else if (EntityEventType.NAME_EVENT.equals(type)) {
-			fireMissionUpdate(EntityEventType.MISSION_VEHICLE_EVENT);
+			fireMissionUpdate(VEHICLE_EVENT);
 		}
 	}
 
@@ -1502,7 +1508,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private final void addNavpoint(NavPoint navPoint) {
 		navPoints.add(navPoint);
-		fireMissionUpdate(EntityEventType.MISSION_NAVPOINTS_EVENT);
+		fireMissionUpdate(NAVPOINTS_EVENT);
 	}
 
 	/**
@@ -1553,7 +1559,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			navPoints.add(new NavPoint(location, nameFunc.apply(x), prev));
 			prev = location;
 		}
-		fireMissionUpdate(EntityEventType.MISSION_NAVPOINTS_EVENT);
+		fireMissionUpdate(NAVPOINTS_EVENT);
 	}
 
 	/**
@@ -1568,7 +1574,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		
 		// Note: how to compensate the shifted index upon removal of this navPoint
-		fireMissionUpdate(EntityEventType.MISSION_NAVPOINTS_EVENT);
+		fireMissionUpdate(NAVPOINTS_EVENT);
 
 	}
 
@@ -1730,7 +1736,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private void setTravelStatus(String newTravelStatus) {
 		travelStatus = newTravelStatus;
-		fireMissionUpdate(EntityEventType.MISSION_TRAVEL_STATUS_EVENT);
+		fireMissionUpdate(TRAVEL_STATUS_EVENT);
 	}
 
 	/**
@@ -1856,7 +1862,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				updateTravelDestination();
 				
 				distanceCurrentLegRemaining = 0D;
-				fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 				
 				return 0D;
 			}
@@ -1888,7 +1894,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			if (distanceCurrentLegRemaining != dist) {
 				distanceCurrentLegRemaining = dist;
-				fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 			}
 			
 			return dist;
@@ -1920,7 +1926,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				updateTravelDestination();
 				
 				distanceCurrentLegTravelled = 0D;
-				fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 				
 				return 0D;
 			}
@@ -1945,7 +1951,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			if (distanceCurrentLegTravelled != dist) {
 				distanceCurrentLegTravelled = dist;
-				fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 			}
 			
 			return dist;
@@ -1993,7 +1999,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// Record the distance
 				distanceProposed = result;
 				
-				fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);	
+				fireMissionUpdate(DISTANCE_EVENT);	
 			}
 		}
 	}
@@ -2036,7 +2042,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Record the distance
 			distanceTotalRemaining = total;
 			
-			fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);
+			fireMissionUpdate(DISTANCE_EVENT);
 		}
 		
 		return total;
@@ -2074,7 +2080,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (diff != distanceTravelled) {
 				// Update or record the distance
 				distanceTravelled = diff;
-				fireMissionUpdate(EntityEventType.MISSION_DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 				return diff;
 			}
 		}
@@ -2138,7 +2144,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private final void setStartingSettlement(Settlement startingSettlement) {
 		this.startingSettlement = startingSettlement;
-		fireMissionUpdate(EntityEventType.MISSION_STARTING_SETTLEMENT_EVENT);
+		fireMissionUpdate(STARTING_SETTLEMENT_EVENT);
 	}
 
 	/**

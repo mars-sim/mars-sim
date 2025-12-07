@@ -49,6 +49,9 @@ public class Exploration extends EVAMission
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Exploration.class.getName());
 
+	// Exploration mission event type
+	public static final String SITE_EXPLORATION_EVENT = "explore site";
+
 	/** Number of specimen containers required for the mission. */
 	public static final int REQUIRED_SPECIMEN_CONTAINERS = 8;
 	/** Amount of time to explore a site. */
@@ -270,7 +273,7 @@ public class Exploration extends EVAMission
 			}
 		}
 		
-		fireMissionUpdate(com.mars_sim.core.EntityEventType.MISSION_SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
+		fireMissionUpdate(SITE_EXPLORATION_EVENT, getCurrentNavpointDescription());
 
 		objective.updateSiteCompletion(getCurrentNavpointDescription(), completion);
 

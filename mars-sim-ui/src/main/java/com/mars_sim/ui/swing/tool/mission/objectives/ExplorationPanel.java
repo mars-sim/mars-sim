@@ -21,10 +21,12 @@ import javax.swing.SwingConstants;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
@@ -82,7 +84,7 @@ public class ExplorationPanel extends JPanel
 		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			updateCollectionValueLabel();
 		}
-		else if (EntityEventType.MISSION_SITE_EXPLORATION_EVENT.equals(event.getType())) {
+		else if (Exploration.SITE_EXPLORATION_EVENT.equals(event.getType())) {
 			updateSitePanel((String) event.getTarget());
 		}
 	}

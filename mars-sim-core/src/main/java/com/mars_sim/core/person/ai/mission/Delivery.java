@@ -255,7 +255,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 					}
 					objective.updateBought(buyLoad, profit);
 
-					fireMissionUpdate(EntityEventType.MISSION_BUY_LOAD_EVENT);
+					fireMissionUpdate(Trade.BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}
@@ -272,7 +272,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 				}
 				else if (getPhaseTimeElapse() > 1000D) {
 					objective.updateBought(new HashMap<>(), 0D);
-					fireMissionUpdate(EntityEventType.MISSION_BUY_LOAD_EVENT);
+					fireMissionUpdate(Trade.BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}

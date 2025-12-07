@@ -74,9 +74,7 @@ public class MiningPanel extends JPanel
 
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (event.getType().equals(EntityEventType.MISSION_EXCAVATE_MINERALS_EVENT)
-				|| event.getType().equals(EntityEventType.MISSION_COLLECT_MINERALS_EVENT)
-				|| EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			excavationTableModel.updateTable();
 		}
 	}

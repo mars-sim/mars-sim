@@ -21,11 +21,13 @@ import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.AbstractMission;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.AbstractMission;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -422,10 +424,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			String eventType = event.getType();
 			Unit unit = (Unit) event.getTarget();
 			if (unit instanceof Robot r) {
-				if (eventType.equals(EntityEventType.MISSION_ADD_MEMBER_EVENT)) {
+				if (eventType.equals(AbstractMission.ADD_MEMBER_EVENT)) {
 					addEntity(r);
 				}
-				else if (eventType.equals(EntityEventType.MISSION_REMOVE_MEMBER_EVENT)) {
+				else if (eventType.equals(AbstractMission.REMOVE_MEMBER_EVENT)) {
 					removeEntity(r);
 				}
 			}

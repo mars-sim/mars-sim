@@ -18,6 +18,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
@@ -25,6 +26,7 @@ import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
@@ -465,9 +467,9 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 			if (event.getSource() instanceof VehicleMission vm) {
 				String eventType = event.getType();
 				int columnNum = switch(eventType) {
-					case EntityEventType.MISSION_TRAVEL_STATUS_EVENT, EntityEventType.MISSION_NAVPOINTS_EVENT -> DESTINATION;
-					case EntityEventType.MISSION_DISTANCE_EVENT -> DESTDIST;
-					case EntityEventType.MISSION_VEHICLE_EVENT -> MISSION;
+					case AbstractVehicleMission.TRAVEL_STATUS_EVENT, AbstractVehicleMission.NAVPOINTS_EVENT -> DESTINATION;
+					case AbstractVehicleMission.DISTANCE_EVENT -> DESTDIST;
+					case AbstractVehicleMission.VEHICLE_EVENT -> MISSION;
 					default -> -1;
 				};
 	

@@ -222,7 +222,7 @@ public class ConstructionMission extends AbstractMission {
 		v.setReservedForMission(true);
 		v.setMission(this);
 		
-		fireMissionUpdate(EntityEventType.MISSION_VEHICLE_EVENT);
+		fireMissionUpdate(AbstractVehicleMission.VEHICLE_EVENT);
 	}
 	
 	/**

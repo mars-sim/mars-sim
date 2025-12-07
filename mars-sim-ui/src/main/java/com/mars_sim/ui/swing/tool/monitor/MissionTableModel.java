@@ -21,6 +21,8 @@ import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.AbstractMission;
+import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
@@ -264,13 +266,13 @@ public class MissionTableModel extends EntityTableModel<Mission>
 			List<Integer> columnsToUpdate = new ArrayList<>();
 			String eventType = event.getType();
 			int column0 = switch (eventType) {
-				case EntityEventType.MISSION_VEHICLE_EVENT -> VEHICLE;
-				case EntityEventType.MISSION_STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
-				case EntityEventType.MISSION_STRING_EVENT -> MISSION_STRING;
-				case EntityEventType.MISSION_DESIGNATION_EVENT ->DESIGNATION;
-				case EntityEventType.MISSION_ADD_MEMBER_EVENT, EntityEventType.MISSION_REMOVE_MEMBER_EVENT -> MEMBER_NUM;
-				case EntityEventType.MISSION_DATE_EVENT -> DATE_FILED;
-				case EntityEventType.MISSION_NAME_EVENT ->STARTING_MEMBER;
+				case AbstractVehicleMission.VEHICLE_EVENT -> VEHICLE;
+				case AbstractMission.STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
+				case AbstractMission.STRING_EVENT -> MISSION_STRING;
+				case AbstractMission.DESIGNATION_EVENT ->DESIGNATION;
+				case AbstractMission.ADD_MEMBER_EVENT, AbstractMission.REMOVE_MEMBER_EVENT -> MEMBER_NUM;
+				case AbstractMission.DATE_EVENT -> DATE_FILED;
+				case AbstractMission.NAME_EVENT ->STARTING_MEMBER;
 				default -> -1;
 			};
 
@@ -279,7 +281,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 
 			if (event.getSource() instanceof VehicleMission) {	
 				switch(eventType) {
-					case EntityEventType.MISSION_DISTANCE_EVENT: {
+					case AbstractVehicleMission.DISTANCE_EVENT: {
 						columnsToUpdate.add(TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(REMAINING_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE_KM);
@@ -287,11 +289,11 @@ public class MissionTableModel extends EntityTableModel<Mission>
 						columnsToUpdate.add(TOTAL_ESTIMATED_DISTANCE_KM);
 					} break;
 
-					case EntityEventType.MISSION_NAVPOINTS_EVENT:
+					case AbstractVehicleMission.NAVPOINTS_EVENT:
 						columnsToUpdate.add(NAVPOINT_NUM);
 						break;
 
-					case EntityEventType.MISSION_PHASE_EVENT, EntityEventType.MISSION_PHASE_DESCRIPTION_EVENT:
+					case AbstractMission.PHASE_EVENT, AbstractMission.PHASE_DESCRIPTION_EVENT:
 						columnsToUpdate.add(PHASE);
 						break;
 					default:

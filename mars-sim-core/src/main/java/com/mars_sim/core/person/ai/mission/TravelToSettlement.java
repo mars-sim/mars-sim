@@ -38,6 +38,9 @@ public class TravelToSettlement extends RoverMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
+	// Travel to settlement mission event type
+	public static final String DESTINATION_SETTLEMENT = "destination settlement";
+	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
 
@@ -163,7 +166,7 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	private void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
-		fireMissionUpdate(EntityEventType.MISSION_DESTINATION_SETTLEMENT);
+		fireMissionUpdate(DESTINATION_SETTLEMENT);
 	}
 
 	/**
