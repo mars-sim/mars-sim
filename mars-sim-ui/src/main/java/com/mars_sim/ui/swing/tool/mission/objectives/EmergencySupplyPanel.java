@@ -67,7 +67,7 @@ public class EmergencySupplyPanel extends JPanel
 	}
 
 	@Override
-	public void missionUpdate(EntityEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		emergencySuppliesTableModel.updateTable(supplies.getSupplies());
 	}
 }

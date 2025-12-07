@@ -135,7 +135,7 @@ public class TradePanel extends JPanel implements EntityListener{
 
 
 	@Override
-	public void missionUpdate(EntityEvent e) {
+	public void entityUpdate(EntityEvent e) {
 		if (e.getType().equals(EntityEventType.MISSION_BUY_LOAD_EVENT)) {
 			boughtGoodsTableModel.updateTable(objective.getBought());
 			sellingGoodsTableModel.updateTable(objective.getSell());

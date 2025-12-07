@@ -140,7 +140,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	private transient EntityListener crewListener;
 	private transient EntityListener settlementListener;
-	private transient MissionListener missionListener;
+	private transient EntityListener missionListener;
 
 	/**
 	 * Constructs a PersonTableModel that displays residents are all associated
@@ -538,9 +538,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		/**
 		 * Catches mission update event.
 		 *
-		 * @param event the mission event.
+		 * @param event the entity event.
 		 */
-		public void missionUpdate(EntityEvent event) {
+		@Override
+		public void entityUpdate(EntityEvent event) {
 			Object target = event.getTarget();
 			if (target instanceof Person p) {
 				String eventType = event.getType();

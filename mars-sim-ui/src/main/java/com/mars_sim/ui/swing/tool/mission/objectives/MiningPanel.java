@@ -36,7 +36,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class MiningPanel extends JPanel
-		implements EntityListener, EntityListener {
+		implements EntityListener {
 
 	// Data members
 	private MineralTableModel excavationTableModel;
@@ -73,15 +73,10 @@ public class MiningPanel extends JPanel
 
 
 	@Override
-	public void missionUpdate(EntityEvent event) {
-		if (event.getType().equals(EntityEventType.MISSION_EXCAVATE_MINERALS_EVENT)
-				|| event.getType().equals(EntityEventType.MISSION_COLLECT_MINERALS_EVENT))
-			excavationTableModel.updateTable();
-	}
-
-	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
+		if (event.getType().equals(EntityEventType.MISSION_EXCAVATE_MINERALS_EVENT)
+				|| event.getType().equals(EntityEventType.MISSION_COLLECT_MINERALS_EVENT)
+				|| EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			excavationTableModel.updateTable();
 		}
 	}

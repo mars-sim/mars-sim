@@ -253,10 +253,10 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	/**
 	 * Catches mission update event.
 	 *
-	 * @param event the mission event.
+	 * @param event the entity event.
 	 */
 	@Override
-	public void missionUpdate(EntityEvent event) {
+	public void entityUpdate(EntityEvent event) {
 
 		int index = missionCache.indexOf(event.getSource());
 

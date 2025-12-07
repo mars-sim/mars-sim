@@ -410,7 +410,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private class LocalMissionManagerListener implements MissionManagerListener {
 
 		private List<Mission> missions;
-		private MissionListener missionListener;
+		private EntityListener missionListener;
 
 		LocalMissionManagerListener() {
 			missionListener = new LocalMissionListener();
@@ -457,10 +457,11 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private class LocalMissionListener implements EntityListener {
 
 		/**
-		 * Catch mission update event.
-		 * @param event the mission event.
+		 * Catch entity update event.
+		 * @param event the entity event.
 		 */
-		public void missionUpdate(EntityEvent event) {
+		@Override
+		public void entityUpdate(EntityEvent event) {
 			if (event.getSource() instanceof VehicleMission vm) {
 				String eventType = event.getType();
 				int columnNum = switch(eventType) {

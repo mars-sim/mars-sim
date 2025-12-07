@@ -35,7 +35,7 @@ import com.mars_sim.ui.swing.StyleManager;
  */
 @SuppressWarnings("serial")
 public class ExplorationPanel extends JPanel 
-	implements EntityListener, EntityListener  {
+	implements EntityListener {
 
 	// Data members
 	private Map<String, ExplorationSitePanel> sitePanes;
@@ -79,15 +79,11 @@ public class ExplorationPanel extends JPanel
 
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (EntityEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			updateCollectionValueLabel();
 		}
-	}
-
-	@Override
-	public void missionUpdate(EntityEvent e) {
-		if (EntityEventType.MISSION_SITE_EXPLORATION_EVENT.equals(e.getType())) {
-			updateSitePanel((String) e.getTarget());
+		else if (EntityEventType.MISSION_SITE_EXPLORATION_EVENT.equals(event.getType())) {
+			updateSitePanel((String) event.getTarget());
 		}
 	}
 

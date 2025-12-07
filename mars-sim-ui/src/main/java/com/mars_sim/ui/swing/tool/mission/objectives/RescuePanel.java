@@ -59,7 +59,7 @@ public class RescuePanel extends JPanel
     }
 
     @Override
-    public void missionUpdate(EntityEvent event) {
+    public void entityUpdate(EntityEvent event) {
         updateVehicle();
     }
     

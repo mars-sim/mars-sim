@@ -133,7 +133,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 	private EntityListener crewListener;
 	private EntityListener settlementListener;
-	private MissionListener missionListener;
+	private EntityListener missionListener;
 	private boolean allAssociated;
 
 	/**
@@ -415,9 +415,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		/**
 		 * Catches mission update event.
 		 *
-		 * @param event the mission event.
+		 * @param event the entity event.
 		 */
-		public void missionUpdate(EntityEvent event) {
+		@Override
+		public void entityUpdate(EntityEvent event) {
 			String eventType = event.getType();
 			Unit unit = (Unit) event.getTarget();
 			if (unit instanceof Robot r) {

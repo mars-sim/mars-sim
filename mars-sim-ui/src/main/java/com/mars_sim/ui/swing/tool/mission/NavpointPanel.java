@@ -325,10 +325,11 @@ implements EntityListener {
 	/**
 	 * Catches mission update event.
 	 * 
-	 * @param event the mission event.
+	 * @param event the entity event.
 	 */
-	public void missionUpdate(EntityEvent event) {
-		MissionEventType type = event.getType();
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		String type = event.getType();
 		if (EntityEventType.MISSION_NAVPOINTS_EVENT.equals(type)) {
 			// Update mission navpoints.
 			SwingUtilities.invokeLater(() -> navpointTableModel.updateNavpoints());

@@ -46,7 +46,7 @@ import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
  * A panel for displaying construction custom mission information.
  */
 @SuppressWarnings("serial")
-public class ConstructionPanel extends JPanel implements EntityListener, ObjectivesPanel, EntityListener {
+public class ConstructionPanel extends JPanel implements EntityListener, ObjectivesPanel {
 
     private MaterialsTableModel materialsTableModel;
     private JScrollPane scrollPane;
@@ -112,28 +112,24 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
         updateProgressBar();
     }
 
-    @Override
-    public void missionUpdate(EntityEvent event) {
-        if (materialsTableModel != null) {
-            materialsTableModel.updateTable();
-        }
-    }
-
     /**
-     * Catches construction update event.
+     * Catches entity update event.
      * 
-     * @param event the mission event.
+     * @param event the entity event.
      */
     @Override
     public void entityUpdate(EntityEvent event) {
         if (EntityEventType.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
             // Update the progress bar
             updateProgressBar();
-
         }
         else if (EntityEventType.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())
                 && materialsTableModel != null) {
             // Update remaining construction materials table.
+            materialsTableModel.updateTable();
+        }
+        else if (materialsTableModel != null) {
+            // Handle mission update events
             materialsTableModel.updateTable();
         }
     }
