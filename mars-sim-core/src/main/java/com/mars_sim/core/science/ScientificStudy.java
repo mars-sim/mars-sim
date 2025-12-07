@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -987,9 +986,9 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {
 		if (listeners != null) {
 			synchronized (listeners) {
-				Iterator<EntityListener> i = listeners.iterator();
-				while (i.hasNext())
-					i.next().entityUpdate(new EntityEvent(this, updateType, researcher));
+				for (EntityListener listener : listeners) {
+					listener.entityUpdate(new EntityEvent(this, updateType, researcher));
+				}
 			}
 		}
 	}
