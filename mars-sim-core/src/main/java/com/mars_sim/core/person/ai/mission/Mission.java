@@ -25,19 +25,19 @@ import com.mars_sim.core.time.MarsTime;
 public interface Mission extends MonitorableEntity {
 
 	// Mission event types
-	String DATE_EVENT = "date";
-	String NAME_EVENT = "name";
-	String TYPE_EVENT = "type";
-	String STRING_EVENT = "mission string";
-	String DESIGNATION_EVENT = "designation";
-	String PHASE_EVENT = "phase";
-	String PHASE_DESCRIPTION_EVENT = "phase description";
-	String MIN_MEMBERS_EVENT = "minimum members";
-	String CAPACITY_EVENT = "capacity";
-	String ADD_MEMBER_EVENT = "add member";
-	String REMOVE_MEMBER_EVENT = "remove member";
-	String STARTING_SETTLEMENT_EVENT = "starting settlement";
-	String END_MISSION_EVENT = "end mission";
+	static final String DATE_EVENT = "date";
+	static final String NAME_EVENT = "name";
+	static final String TYPE_EVENT = "type";
+	static final String STRING_EVENT = "mission string";
+	static final String DESIGNATION_EVENT = "designation";
+	static final String PHASE_EVENT = "phase";
+	static final String PHASE_DESCRIPTION_EVENT = "phase description";
+	static final String MIN_MEMBERS_EVENT = "minimum members";
+	static final String CAPACITY_EVENT = "capacity";
+	static final String ADD_MEMBER_EVENT = "add member";
+	static final String REMOVE_MEMBER_EVENT = "remove member";
+	static final String STARTING_SETTLEMENT_EVENT = "starting settlement";
+	static final String END_MISSION_EVENT = "end mission";
 
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
