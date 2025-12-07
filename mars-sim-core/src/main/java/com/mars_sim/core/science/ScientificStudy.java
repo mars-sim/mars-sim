@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Simulation;
@@ -61,6 +60,17 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudy.class.getName());
+
+	// Scientific study event types
+	public static final String STUDY_COMPLETION_EVENT = "study completion event";
+	public static final String PHASE_CHANGE_EVENT = "study phase change event";
+	public static final String PROPOSAL_WORK_EVENT = "study proposal work event";
+	public static final String ADD_COLLABORATOR_EVENT = "add study collaborator event";
+	public static final String REMOVE_COLLABORATOR_EVENT = "remove study collaborator event";
+	public static final String PRIMARY_RESEARCH_WORK_EVENT = "study primary research work event";
+	public static final String COLLABORATION_RESEARCH_WORK_EVENT = "study collaboration research work event";
+	public static final String PRIMARY_PAPER_WORK_EVENT = "study primary paper work event";
+	public static final String COLLABORATION_PAPER_WORK_EVENT = "study collaboration paper work event";
 
 	// Data members
 	/** The assigned study number. */
@@ -235,7 +245,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		this.phase = phase;
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.PHASE_CHANGE_EVENT);
+		fireScientificStudyUpdate(PHASE_CHANGE_EVENT);
 	}
 
 	/**
@@ -303,7 +313,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 			proposalWorkTime = baseProposalTime;
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.PROPOSAL_WORK_EVENT);
+		fireScientificStudyUpdate(PROPOSAL_WORK_EVENT);
 	}
 
 	/**
@@ -384,7 +394,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.ADD_COLLABORATOR_EVENT, researcher);
+		fireScientificStudyUpdate(ADD_COLLABORATOR_EVENT, researcher);
 	}
 
 	/**
@@ -402,7 +412,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.REMOVE_COLLABORATOR_EVENT, researcher);
+		fireScientificStudyUpdate(REMOVE_COLLABORATOR_EVENT, researcher);
 	}
 
 	/**
@@ -545,7 +555,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		primaryStats.lastContribution = masterClock.getMarsTime();
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
+		fireScientificStudyUpdate(PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
 	}
 
 	/**
@@ -604,7 +614,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		c.lastContribution = masterClock.getMarsTime();
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.COLLABORATION_RESEARCH_WORK_EVENT, researcher);		
+		fireScientificStudyUpdate(COLLABORATION_RESEARCH_WORK_EVENT, researcher);		
 	}
 
 	/**
@@ -664,7 +674,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.PRIMARY_PAPER_WORK_EVENT);
+		fireScientificStudyUpdate(PRIMARY_PAPER_WORK_EVENT);
 	}
 
 	/**
@@ -713,7 +723,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 			c.paperWorkTime  = requiredWorkTime;
 
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.COLLABORATION_PAPER_WORK_EVENT, researcher);
+		fireScientificStudyUpdate(COLLABORATION_PAPER_WORK_EVENT, researcher);
 	}
 
 	/**
@@ -807,7 +817,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		}
 		
 		// Fire scientific study update event.
-		fireScientificStudyUpdate(EntityEventType.STUDY_COMPLETION_EVENT);
+		fireScientificStudyUpdate(STUDY_COMPLETION_EVENT);
 	}
 
 	/**
