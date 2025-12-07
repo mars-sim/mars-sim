@@ -15,9 +15,9 @@ import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.task.util.SettlementTask;
+import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
@@ -86,7 +86,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 		if (event.getTarget() instanceof Settlement settlement
 				&& event.getSource() instanceof Settlement) {
 			String eventType = event.getType();
-			if ((EntityEventType.BACKLOG_EVENT.equals(eventType)) && selectedSettlements.contains(settlement)) {
+			if ((SettlementTaskManager.BACKLOG_EVENT.equals(eventType)) && selectedSettlements.contains(settlement)) {
 				var newTasks = getTasks();
 	
 				// Reset the Tasks asynchronously in the Swing Dispatcher to avoid sorting clashes

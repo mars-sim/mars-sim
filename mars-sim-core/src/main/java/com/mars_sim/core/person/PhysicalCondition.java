@@ -230,6 +230,15 @@ public class PhysicalCondition implements Serializable {
 	/** Most mostSeriousProblem problem. */
 	private HealthProblem mostSeriousProblem;
 
+    public static final String STRESS_EVENT = "stress event";
+
+    public static final String THIRST_EVENT = "thirst event";
+
+    public static final String HUNGER_EVENT = "hunger event";
+
+    // For PhysicalCondition
+    public static final String FATIGUE_EVENT = "fatigue event";
+
 	private static MasterClock master;
 
 	private static EatDrinkMeta eatMealMeta = new EatDrinkMeta();
@@ -683,7 +692,7 @@ public class PhysicalCondition implements Serializable {
 		} else
 			kJoules -= xdelta * .7;
 
-		person.fireUnitUpdate(EntityEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -739,7 +748,7 @@ public class PhysicalCondition implements Serializable {
 			kJoules = personalMaxEnergy;
 		}
 		
-		person.fireUnitUpdate(EntityEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 
 	/**
@@ -788,7 +797,7 @@ public class PhysicalCondition implements Serializable {
 			ff = -100;
 
 		fatigue = ff;
-		person.fireUnitUpdate(EntityEventType.FATIGUE_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.FATIGUE_EVENT);
 	}
 	
 	/**
@@ -802,7 +811,7 @@ public class PhysicalCondition implements Serializable {
 			f = MAX_FATIGUE;
 
 		fatigue = f;	
-		person.fireUnitUpdate(EntityEventType.FATIGUE_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.FATIGUE_EVENT);
 	}
 	
 	/**
@@ -816,7 +825,7 @@ public class PhysicalCondition implements Serializable {
 			f = -50;
 		
 		fatigue = f;
-		person.fireUnitUpdate(EntityEventType.FATIGUE_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.FATIGUE_EVENT);
 	}
 	
 	/**
@@ -832,7 +841,7 @@ public class PhysicalCondition implements Serializable {
 			tt = -50;
 
 		thirst = tt;
-		person.fireUnitUpdate(EntityEventType.THIRST_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.THIRST_EVENT);
 	}
 
 	/**
@@ -848,7 +857,7 @@ public class PhysicalCondition implements Serializable {
 			t = THIRST_CEILING_UPON_DRINKING;
 		
 		thirst = t;
-		person.fireUnitUpdate(EntityEventType.THIRST_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.THIRST_EVENT);
 	}
 	
 	/**
@@ -862,7 +871,7 @@ public class PhysicalCondition implements Serializable {
 			t = MAX_THIRST;
 		
 		thirst = t;
-		person.fireUnitUpdate(EntityEventType.THIRST_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.THIRST_EVENT);
 	}
 
 	/**
@@ -878,7 +887,7 @@ public class PhysicalCondition implements Serializable {
 			h = -100;
 
 		hunger = h;
-		person.fireUnitUpdate(EntityEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 
 	/**
@@ -894,7 +903,7 @@ public class PhysicalCondition implements Serializable {
 			h = HUNGER_CEILING_UPON_EATING;
 		
 		hunger = h;
-		person.fireUnitUpdate(EntityEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -908,7 +917,7 @@ public class PhysicalCondition implements Serializable {
 			h = MAX_HUNGER;
 
 		hunger = h;
-		person.fireUnitUpdate(EntityEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -939,7 +948,7 @@ public class PhysicalCondition implements Serializable {
 			ss = 0D;
 		
 		stress = ss;
-		person.fireUnitUpdate(EntityEventType.STRESS_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 	
 	/**
@@ -961,7 +970,7 @@ public class PhysicalCondition implements Serializable {
 			ss = 0;
 		
 		stress = ss;
-		person.fireUnitUpdate(EntityEventType.STRESS_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 
 	/**
@@ -979,7 +988,7 @@ public class PhysicalCondition implements Serializable {
 			ss = 0;
 		
 		stress = ss;
-		person.fireUnitUpdate(EntityEventType.STRESS_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 	
 	/**

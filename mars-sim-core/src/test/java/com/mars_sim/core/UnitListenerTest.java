@@ -25,7 +25,7 @@ class UnitListenerTest extends MarsSimUnitTest {
         s.setName("NewName");
 
         assertNotNull(listener.lastEvent, "Event received");
-        assertEquals(Unit.NAME_EVENT, listener.lastEvent.getType(), "Event type is NAME_CHANGE");
+        assertEquals(EntityEventType.NAME_EVENT, listener.lastEvent.getType(), "Event type is NAME_CHANGE");
         assertEquals(s, listener.lastEvent.getSource(), "Event entity is settlement");
 
         s.removeEntityListener(listener);

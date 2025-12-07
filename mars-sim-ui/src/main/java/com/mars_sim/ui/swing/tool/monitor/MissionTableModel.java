@@ -13,17 +13,15 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
@@ -268,11 +266,10 @@ public class MissionTableModel extends EntityTableModel<Mission>
 			int column0 = switch (eventType) {
 				case VehicleMission.VEHICLE_EVENT -> VEHICLE;
 				case Mission.STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
-				case Mission.STRING_EVENT -> MISSION_STRING;
+				case EntityEventType.NAME_EVENT -> MISSION_STRING;
 				case Mission.DESIGNATION_EVENT ->DESIGNATION;
 				case Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT -> MEMBER_NUM;
-				case Mission.DATE_EVENT -> DATE_FILED;
-				case Mission.NAME_EVENT ->STARTING_MEMBER;
+				case Mission.PHASE_EVENT -> DATE_FILED;
 				default -> -1;
 			};
 

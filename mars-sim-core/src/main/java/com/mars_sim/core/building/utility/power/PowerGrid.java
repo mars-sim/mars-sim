@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
@@ -58,6 +57,13 @@ public class PowerGrid implements Serializable, Temporal {
 	
 	private Settlement settlement;
 	private BuildingManager manager;
+    public static final String POWER_VALUE_EVENT = "power value";
+    public static final String REQUIRED_POWER_EVENT = "required power";
+    public static final String STORED_ENERGY_CAPACITY_EVENT = "stored power capacity";
+    public static final String STORED_ENERGY_EVENT = "stored power";
+    public static final String GENERATED_POWER_EVENT = "generated power";
+    // For power grid
+    public static final String POWER_MODE_EVENT = "power mode";
 
 
 	/**
@@ -91,7 +97,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setPowerMode(PowerMode newPowerMode) {
 		if (powerMode != newPowerMode) {
 			powerMode = newPowerMode;
-			settlement.fireUnitUpdate(EntityEventType.POWER_MODE_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.POWER_MODE_EVENT);
 		}
 	}
 
@@ -113,7 +119,7 @@ public class PowerGrid implements Serializable, Temporal {
 		double p = Math.round(newGeneratedPower*1000.0)/1000.0;
 		if (powerGenerated != p) {
 			powerGenerated = p;
-			settlement.fireUnitUpdate(EntityEventType.GENERATED_POWER_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.GENERATED_POWER_EVENT);
 		}
 	}
 
@@ -155,7 +161,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setStoredEnergy(double newEnergyStored) {
 		if (totalEnergyStored != newEnergyStored) {
 			totalEnergyStored = newEnergyStored;
-			settlement.fireUnitUpdate(EntityEventType.STORED_ENERGY_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_EVENT);
 		}
 	}
 
@@ -176,7 +182,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setStoredEnergyCapacity(double newCap) {
 		if (energyStorageCapacity != newCap) {
 			energyStorageCapacity = newCap;
-			settlement.fireUnitUpdate(EntityEventType.STORED_ENERGY_CAPACITY_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_CAPACITY_EVENT);
 		}
 	} 
 
@@ -197,7 +203,7 @@ public class PowerGrid implements Serializable, Temporal {
 	private void setRequiredPower(double newRequiredPower) {
 		if (powerRequired != newRequiredPower) {
 			powerRequired = newRequiredPower;
-			settlement.fireUnitUpdate(EntityEventType.REQUIRED_POWER_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.REQUIRED_POWER_EVENT);
 		}
 	}
 
@@ -322,7 +328,6 @@ public class PowerGrid implements Serializable, Temporal {
 	private void handleExcessPower(double time, double neededPower) {
 		// Note: excess is always +ve
 		double excess = -neededPower;
-//		logger.info(settlement, 10_000, "excess: " + Math.round(excess));
 		sufficientPower = true;
 		
 		Set<Building> buildings = manager.getBuildingSet(FunctionType.POWER_GENERATION);
@@ -456,7 +461,6 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		if (excess < 0) {
 			sufficientPower = false;
-			return;
 		}
 	}
 
@@ -670,9 +674,7 @@ public class PowerGrid implements Serializable, Temporal {
 		// other means or else it's difficult to know if a settlement is producing enough power
 		// since battery only stores energy and releases it at a later date and is not
 		// considered a source of power.
-		
-		// Do NOT update the total generated power with contribution from batteries: setGeneratedPower(powerGenerated + batteryPower);
-	
+			
 		return newNeededPower;
 	}
 	
@@ -722,7 +724,6 @@ public class PowerGrid implements Serializable, Temporal {
 					power = building.getLowPowerRequired();
 				}
 				
-				/////// IF HAVING EXCESS POWER /////// 
 				// For stepping up power
 				else if (oldPowerMode == PowerMode.LOW_POWER
 					&& newPowerMode == PowerMode.FULL_POWER) {
@@ -1031,7 +1032,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		if (newPowerValue != powerValue) {
 			powerValue = newPowerValue;
-			settlement.fireUnitUpdate(EntityEventType.POWER_VALUE_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.POWER_VALUE_EVENT);
 		}
 	}
 

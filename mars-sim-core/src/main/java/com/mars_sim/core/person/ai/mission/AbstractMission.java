@@ -33,7 +33,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
-
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -277,8 +276,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected final void fireMissionUpdate(String eventType, Object target) {
 		if (listeners != null) {
 			synchronized (listeners) {
+				var event = new EntityEvent(this, eventType, target);
 				for (EntityListener l : listeners) {
-					l.entityUpdate(new EntityEvent(this, eventType, target));
+					l.entityUpdate(event);
 				}
 			}
 		}
@@ -470,7 +470,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
     public void setName(String newName) {
 		this.missionString = newName;
+		fireMissionUpdate(EntityEventType.NAME_EVENT);
     }
+
 
 	/**
 	 * Context of a mission is the Settlement of the starting member
@@ -762,7 +764,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		MissionPhase finalPhase = ABORTED_PHASE;
 		
-//		if (missionStatus.isEmpty() && !aborted) {
 		if (!aborted) {
 			missionStatus.add(MISSION_ACCOMPLISHED);
 			addMissionScore();

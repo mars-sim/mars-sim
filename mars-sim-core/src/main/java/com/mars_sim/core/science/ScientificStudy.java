@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;

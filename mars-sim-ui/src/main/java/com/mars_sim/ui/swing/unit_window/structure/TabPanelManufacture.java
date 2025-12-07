@@ -36,7 +36,6 @@ import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.ManufacturingManager;
@@ -268,11 +267,11 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 	@Override
 	public void entityUpdate(EntityEvent e) {
 		String eventType = e.getType();
-		if (EntityEventType.MANU_QUEUE_ADD.equals(eventType)) {
+		if (ManufacturingManager.MANU_QUEUE_ADD.equals(eventType)) {
 			queueModel.addItem((QueuedProcess) e.getTarget());
-		} else if (EntityEventType.MANU_QUEUE_REMOVE.equals(eventType)) {
+		} else if (ManufacturingManager.MANU_QUEUE_REMOVE.equals(eventType)) {
 			queueModel.removeItem((QueuedProcess) e.getTarget());
-		} else if (EntityEventType.MANE_QUEUE_REFRESH.equals(eventType)) {
+		} else if (ManufacturingManager.MANE_QUEUE_REFRESH.equals(eventType)) {
 			queueModel.refresh();
 		}
 	}

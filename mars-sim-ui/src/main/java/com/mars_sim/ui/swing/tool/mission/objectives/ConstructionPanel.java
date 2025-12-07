@@ -25,15 +25,13 @@ import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.building.construction.ConstructionStage.Material;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.mission.objectives.ConstructionObjective;
-import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
@@ -119,11 +117,11 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
      */
     @Override
     public void entityUpdate(EntityEvent event) {
-        if (EntityEventType.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
+        if (ConstructionSite.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
             // Update the progress bar
             updateProgressBar();
         }
-        else if (EntityEventType.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())
+        else if (ConstructionSite.ADD_CONSTRUCTION_MATERIALS_EVENT.equals(event.getType())
                 && materialsTableModel != null) {
             // Update remaining construction materials table.
             materialsTableModel.updateTable();

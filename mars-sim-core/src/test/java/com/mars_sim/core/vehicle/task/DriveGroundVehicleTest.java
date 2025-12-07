@@ -6,7 +6,6 @@
  */
 
 package com.mars_sim.core.vehicle.task;
-import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
 import static com.mars_sim.core.test.SimulationAssertions.assertEqualLessThan;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,13 +23,13 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.vehicle.StatusType;
 
-public class DriveGroundVehicleTest extends MarsSimUnitTest {
+class DriveGroundVehicleTest extends MarsSimUnitTest {
     private static final double DIST = OperateVehicle.DISTANCE_BUFFER_ARRIVING * 10;
     private static final double METHANOL_AMOUNT = 30D;
     private static final double OXYGEN_AMOUNT = METHANOL_AMOUNT * OperateVehicle.RATIO_OXIDIZER_FUEL;
     
     @Test
-    public void testDriveVehicle() {
+    void testDriveVehicle() {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
@@ -53,11 +52,6 @@ public class DriveGroundVehicleTest extends MarsSimUnitTest {
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 10);
         
-        // The following 3 tests can have unreliable results. Commented them out for now.
-//        assertEquals(OperateVehicle.MOBILIZE, task.getPhase(), "Vehicle is moving");
-//        assertGreaterThan("Vehicle speed", 0D, v.getSpeed());
-//        assertEquals(StatusType.MOVING, v.getPrimaryStatus(), "Vehicle primary status");
-        
         // Execute few calls to get driver positioned and moving
         executeTask(p, task, 20);
         
@@ -69,16 +63,13 @@ public class DriveGroundVehicleTest extends MarsSimUnitTest {
         
         // Drive the rest
         executeTaskUntilPhase(p, task, 100);
-//        executeTask(p, task, 30);
-            
-//        assertEquals(dest, v.getCoordinates(), "Vehicle at destination");
-//        assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
+
 
         assertTrue(task.isDone(), "Task complete");   
     }
 
     @Test
-    public void testDriveVehicleNoFuel() {
+    void testDriveVehicleNoFuel() {
         var s = buildSettlement("Test Settlement");
         var v = buildRover(s, "Test Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         v.storeAmountResource(v.getFuelTypeID(), METHANOL_AMOUNT);
@@ -96,16 +87,10 @@ public class DriveGroundVehicleTest extends MarsSimUnitTest {
                                     0D);
 
         assertFalse(task.isDone(), "Task created");
- 
-//        double originalBatteryPercent = v.getBatteryPercent();
-        
+         
         // Execute few calls to get driver positioned and moving then remove fuel
         executeTask(p, task, 10);
-        
-//        double nowBatteryPercent = v.getBatteryPercent();
-        
-        // Now that regen is possible for recharging the battery, the line below won't work
-//        assertEqualLessThan("Battery Percent", originalBatteryPercent, nowBatteryPercent);
+
         
         // If Battery power is used, instead of fuel
         assertEqualLessThan("Oxygen stored", OXYGEN_AMOUNT, v.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID));
@@ -124,9 +109,7 @@ public class DriveGroundVehicleTest extends MarsSimUnitTest {
         	assertEquals(StatusType.MOVING, v.getPrimaryStatus(), "Vehicle end primary status");
         else 
         	assertEquals(StatusType.PARKED, v.getPrimaryStatus(), "Vehicle end primary status");
-        
-//        assertFalse(v.haveStatusType(StatusType.OUT_OF_FUEL), "Marked out of fuel");
-        
+                
         // Drive the rest
         executeTaskUntilPhase(p, task, 5000);
         
