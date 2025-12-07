@@ -11,10 +11,10 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.core.science.ScientificStudyEvent;
-import com.mars_sim.core.science.ScientificStudyListener;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
@@ -24,7 +24,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 /**
  * A panel for displaying study field mission information.
  */
-public class FieldStudyPanel extends JPanel implements ObjectivesPanel, ScientificStudyListener {
+public class FieldStudyPanel extends JPanel implements ObjectivesPanel, EntityListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -64,11 +64,11 @@ public class FieldStudyPanel extends JPanel implements ObjectivesPanel, Scientif
 		studyResearchBar.setStringPainted(true);
 		attrPanel.addLabelledItem(Msg.getString("FieldStudyPanel.researchCompletion"), studyResearchBar);
 
-		study.addScientificStudyListener(this);
+		study.addEntityListener(this);
 	}
 
 	@Override
-	public void scientificStudyUpdate(ScientificStudyEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		studyResearchBar.setValue((int) (study.getPhaseProgress() * 100D));
 	}
 
@@ -77,6 +77,6 @@ public class FieldStudyPanel extends JPanel implements ObjectivesPanel, Scientif
 	 */
 	@Override
 	public void unregister() {
-		study.removeScientificStudyListener(this);
+		study.removeEntityListener(this);
 	}
 }
