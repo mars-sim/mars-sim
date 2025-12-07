@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
@@ -221,7 +222,7 @@ public class ConstructionMission extends AbstractMission {
 		v.setReservedForMission(true);
 		v.setMission(this);
 		
-		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+		fireMissionUpdate(AbstractVehicleMission.VEHICLE_EVENT);
 	}
 	
 	/**

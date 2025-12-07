@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -22,7 +22,22 @@ import com.mars_sim.core.time.MarsTime;
 /**
  * Represents the behave that a Mission exhibits.
  */
-public interface Mission extends Entity {
+public interface Mission extends MonitorableEntity {
+
+	// Mission event types
+	static final String DATE_EVENT = "date";
+	static final String NAME_EVENT = "name";
+	static final String TYPE_EVENT = "type";
+	static final String STRING_EVENT = "mission string";
+	static final String DESIGNATION_EVENT = "designation";
+	static final String PHASE_EVENT = "phase";
+	static final String PHASE_DESCRIPTION_EVENT = "phase description";
+	static final String MIN_MEMBERS_EVENT = "minimum members";
+	static final String CAPACITY_EVENT = "capacity";
+	static final String ADD_MEMBER_EVENT = "add member";
+	static final String REMOVE_MEMBER_EVENT = "remove member";
+	static final String STARTING_SETTLEMENT_EVENT = "starting settlement";
+	static final String END_MISSION_EVENT = "end mission";
 
 	/**
 	 * Aborts the mission via custom reasons. Will stop current phase.
@@ -184,20 +199,6 @@ public interface Mission extends Entity {
 	 * @return Can the member participate ?
 	 */
 	boolean performMission(Worker member);
-
-	/**
-	 * Adds a listener.
-	 *
-	 * @param newListener the listener to add.
-	 */
-	void addMissionListener(MissionListener newListener);
-
-	/** 
-	 * Removes a listener.
-	 *
-	 * @param oldListener the listener to remove.
-	 */
-	void removeMissionListener(MissionListener oldListener);
 
 	/**
 	 * Gets the list of objectives for this mission.

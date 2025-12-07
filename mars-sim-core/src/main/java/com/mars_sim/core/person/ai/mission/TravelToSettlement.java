@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
@@ -36,6 +37,9 @@ import com.mars_sim.core.vehicle.comparators.CrewRangeComparator;
 public class TravelToSettlement extends RoverMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	// Travel to settlement mission event type
+	public static final String DESTINATION_SETTLEMENT = "destination settlement";
 	
 	// Static members
 	public static final double BASE_MISSION_WEIGHT = 1D;
@@ -162,7 +166,7 @@ public class TravelToSettlement extends RoverMission {
 	 */
 	private void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
-		fireMissionUpdate(MissionEventType.DESTINATION_SETTLEMENT);
+		fireMissionUpdate(DESTINATION_SETTLEMENT);
 	}
 
 	/**

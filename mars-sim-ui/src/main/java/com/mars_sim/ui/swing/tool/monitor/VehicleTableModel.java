@@ -14,18 +14,16 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.Simulation;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
@@ -410,7 +408,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private class LocalMissionManagerListener implements MissionManagerListener {
 
 		private List<Mission> missions;
-		private MissionListener missionListener;
+		private EntityListener missionListener;
 
 		LocalMissionManagerListener() {
 			missionListener = new LocalMissionListener();
@@ -427,7 +425,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		 * @param mission the new mission.
 		 */
 		public void addMission(Mission mission) {
-			mission.addMissionListener(missionListener);
+			mission.addEntityListener(missionListener);
 			fireTableDataChanged();
 		}
 
@@ -437,7 +435,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		 * @param mission the old mission.
 		 */
 		public void removeMission(Mission mission){
-			mission.removeMissionListener(missionListener);
+			mission.removeEntityListener(missionListener);
 			fireTableDataChanged();
 		}
 
@@ -454,19 +452,20 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	/**
 	 * MissionListener inner class.
 	 */
-	private class LocalMissionListener implements MissionListener {
+	private class LocalMissionListener implements EntityListener {
 
 		/**
-		 * Catch mission update event.
-		 * @param event the mission event.
+		 * Catch entity update event.
+		 * @param event the entity event.
 		 */
-		public void missionUpdate(MissionEvent event) {
+		@Override
+		public void entityUpdate(EntityEvent event) {
 			if (event.getSource() instanceof VehicleMission vm) {
-				MissionEventType eventType = event.getType();
+				String eventType = event.getType();
 				int columnNum = switch(eventType) {
-					case TRAVEL_STATUS_EVENT, NAVPOINTS_EVENT -> DESTINATION;
-					case DISTANCE_EVENT -> DESTDIST;
-					case VEHICLE_EVENT -> MISSION;
+					case VehicleMission.TRAVEL_STATUS_EVENT, VehicleMission.NAVPOINTS_EVENT -> DESTINATION;
+					case VehicleMission.DISTANCE_EVENT -> DESTDIST;
+					case VehicleMission.VEHICLE_EVENT -> MISSION;
 					default -> -1;
 				};
 	

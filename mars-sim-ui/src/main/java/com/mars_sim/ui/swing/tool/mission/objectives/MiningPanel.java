@@ -20,9 +20,7 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.MiningObjective;
 import com.mars_sim.core.mission.objectives.MiningObjective.MineralStats;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
@@ -36,7 +34,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class MiningPanel extends JPanel
-		implements MissionListener, EntityListener {
+		implements EntityListener {
 
 	// Data members
 	private MineralTableModel excavationTableModel;
@@ -73,15 +71,10 @@ public class MiningPanel extends JPanel
 
 
 	@Override
-	public void missionUpdate(MissionEvent event) {
-		if (event.getType() == MissionEventType.EXCAVATE_MINERALS_EVENT
-				|| event.getType() == MissionEventType.COLLECT_MINERALS_EVENT)
-			excavationTableModel.updateTable();
-	}
-
-	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
+		if (event.getType().equals(Mining.EXCAVATE_MINERALS_EVENT)
+				|| event.getType().equals(Mining.COLLECT_MINERALS_EVENT)
+				|| EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			excavationTableModel.updateTable();
 		}
 	}

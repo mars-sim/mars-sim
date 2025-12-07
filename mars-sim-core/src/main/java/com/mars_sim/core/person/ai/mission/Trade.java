@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EVASuitUtil;
@@ -47,6 +48,9 @@ public class Trade extends RoverMission implements CommerceMission {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Trade.class.getName());
+
+	// Trade mission event type
+	public static final String BUY_LOAD_EVENT = "buy load";
 
 	/** Mission phases. */
 	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.tradeDisembarking");
@@ -300,7 +304,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					}
 					objective.updateBought(buyLoad, profit);
 
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}
@@ -317,7 +321,7 @@ public class Trade extends RoverMission implements CommerceMission {
 				}
 				else if (getPhaseTimeElapse() > 1000D) {
 					objective.updateBought(new HashMap<>(), 0D);
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}

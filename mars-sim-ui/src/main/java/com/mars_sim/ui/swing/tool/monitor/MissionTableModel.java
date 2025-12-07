@@ -19,9 +19,11 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
@@ -40,7 +42,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  */
 @SuppressWarnings("serial")
 public class MissionTableModel extends EntityTableModel<Mission>
-		implements MissionManagerListener, MissionListener {
+		implements MissionManagerListener, EntityListener {
 
 	// Column indexes
 	/** Date filed column. */
@@ -156,13 +158,13 @@ public class MissionTableModel extends EntityTableModel<Mission>
 			if (activate) {
 				for (Mission m : missionCache) {
 					if (!m.isDone()) {
-						m.addMissionListener(this);
+						m.addEntityListener(this);
 					}
 				}
 			}
 			else {
 				for (Mission m : missionCache) {
-					m.removeMissionListener(this);
+					m.removeEntityListener(this);
 				}
 			}
 			monitorMissions = activate;
@@ -204,7 +206,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 
 		if (goodToGo) {
 			synchronized(missionCache) {
-				mission.addMissionListener(this);
+				mission.addEntityListener(this);
 				
 				// Structural changes via Swing thread
 				SwingUtilities.invokeLater(() -> {
@@ -226,7 +228,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	@Override
 	public void removeMission(Mission mission) {
 		if (missionCache.contains(mission)) {
-			mission.removeMissionListener(this);
+			mission.removeEntityListener(this);
 
 			// Structural changes via Swing thread
 			SwingUtilities.invokeLater(() -> {
@@ -253,24 +255,24 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	/**
 	 * Catches mission update event.
 	 *
-	 * @param event the mission event.
+	 * @param event the entity event.
 	 */
 	@Override
-	public void missionUpdate(MissionEvent event) {
+	public void entityUpdate(EntityEvent event) {
 
 		int index = missionCache.indexOf(event.getSource());
 
 		if (index >= 0) {
 			List<Integer> columnsToUpdate = new ArrayList<>();
-			MissionEventType eventType = event.getType();
+			String eventType = event.getType();
 			int column0 = switch (eventType) {
-				case VEHICLE_EVENT -> VEHICLE;
-				case STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
-				case MISSION_STRING_EVENT -> MISSION_STRING;
-				case DESIGNATION_EVENT ->DESIGNATION;
-				case ADD_MEMBER_EVENT, REMOVE_MEMBER_EVENT -> MEMBER_NUM;
-				case DATE_EVENT -> DATE_FILED;
-				case NAME_EVENT ->STARTING_MEMBER;
+				case VehicleMission.VEHICLE_EVENT -> VEHICLE;
+				case Mission.STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
+				case Mission.STRING_EVENT -> MISSION_STRING;
+				case Mission.DESIGNATION_EVENT ->DESIGNATION;
+				case Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT -> MEMBER_NUM;
+				case Mission.DATE_EVENT -> DATE_FILED;
+				case Mission.NAME_EVENT ->STARTING_MEMBER;
 				default -> -1;
 			};
 
@@ -279,7 +281,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 
 			if (event.getSource() instanceof VehicleMission) {	
 				switch(eventType) {
-					case DISTANCE_EVENT: {
+					case VehicleMission.DISTANCE_EVENT: {
 						columnsToUpdate.add(TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(REMAINING_DISTANCE_TO_NEXT_NAVPOINT);
 						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE_KM);
@@ -287,11 +289,11 @@ public class MissionTableModel extends EntityTableModel<Mission>
 						columnsToUpdate.add(TOTAL_ESTIMATED_DISTANCE_KM);
 					} break;
 
-					case NAVPOINTS_EVENT:
+					case VehicleMission.NAVPOINTS_EVENT:
 						columnsToUpdate.add(NAVPOINT_NUM);
 						break;
 
-					case PHASE_EVENT, PHASE_DESCRIPTION_EVENT:
+					case Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT:
 						columnsToUpdate.add(PHASE);
 						break;
 					default:
