@@ -387,31 +387,22 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 		}
         
         public void update() {
+			
     		List<Resource> newResourceKeys = new ArrayList<>();
 			Map<Resource, Double> newStored = new HashMap<>();
     		Map<Resource, Double> newCapacity = new HashMap<>();
 
     		loadResources(newResourceKeys, newStored, newCapacity);
-    		
-			if (keys.size() != newResourceKeys.size()) {
-				
-				if (!keys.equals(newResourceKeys)) {
-					keys = newResourceKeys;
-	    			stored = newStored;
-	    			capacity = newCapacity;
-					fireTableDataChanged();
-				}
-				else {
-					updateData();
-				}
-			}
-			else if (!keys.equals(newResourceKeys)) {
-				keys = newResourceKeys;
-    			stored = newStored;
-    			capacity = newCapacity;
+
+    		var oldKeys = keys;
+			keys = newResourceKeys;
+			stored = newStored;
+			capacity = newCapacity;
+
+			if (!keys.equals(oldKeys)) {
 				fireTableDataChanged();
 			}
-			else {
+			else {			
 				updateData();
 			}
     	}
@@ -523,23 +514,12 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
  
 			List<Part> newList = getItems();
 			
-			if (items.size() != newList.size()) {
-				
-				if (!items.equals(newList)) {
-					items = newList;
-
-						fireTableDataChanged();
-				}
-				else {
-					updateData();
-				}
-			}
-			else if (!items.equals(newList)) {
+			if (!items.equals(newList)) {
 				items = newList;
-
-					fireTableDataChanged();
+				fireTableDataChanged();
 			}
 			else {
+				items = newList;
 				updateData();
 			}
     	}
@@ -666,23 +646,12 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 
 			List<Equipment> newList = new ArrayList<>(owner.getEquipmentSet());
 			
-			if (equipmentList.size() != newList.size()) {
-				
-				if (!equipmentList.equals(newList)) {
-						equipmentList = newList;
-
-						fireTableDataChanged();
-				}
-				else {
-					updateData();
-				}
-			}
-			else if (!equipmentList.equals(newList)) {
-					equipmentList = newList;
-
-					fireTableDataChanged();
+			if (!equipmentList.equals(newList)) {
+				equipmentList = newList;
+				fireTableDataChanged();
 			}
 			else {
+				equipmentList = newList;
 				updateData();
 			}
 		}

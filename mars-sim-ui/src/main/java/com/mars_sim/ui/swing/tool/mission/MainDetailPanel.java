@@ -43,11 +43,7 @@ import javax.swing.text.JTextComponent;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.mission.objectives.ConstructionObjective;
@@ -60,11 +56,6 @@ import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
@@ -624,9 +615,8 @@ public class MainDetailPanel extends JPanel implements EntityListener {
 			SwingUtilities.invokeLater(new MissionEventUpdater(event, this));
 		}
 		// Handle vehicle events
-		else if (event.getSource() instanceof Unit 
-				&& ((Unit)event.getSource()).getUnitType() == UnitType.VEHICLE
-				&& event.getSource().equals(currentVehicle)) {
+		else if ((event.getSource() instanceof Vehicle v)
+				&& v.equals(currentVehicle)) {
 			SwingUtilities.invokeLater(new VehicleInfoUpdater(event));
 		}
 	}
@@ -660,7 +650,7 @@ public class MainDetailPanel extends JPanel implements EntityListener {
 
 			// Update UI based on mission event type.
 			switch(type) {
-			case Mission.TYPE_EVENT, Mission.STRING_EVENT ->
+			case EntityEventType.NAME_EVENT ->
 				typeTextField.setText(mission.getName());
 		
 			case Mission.DESIGNATION_EVENT -> {

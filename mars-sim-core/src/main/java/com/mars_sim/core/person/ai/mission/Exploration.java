@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
@@ -239,7 +238,6 @@ public class Exploration extends EVAMission
 		
 		// If person can explore the site, start that task.
 		if (ExploreSite.canExploreSite(person)) {
-//			person.getMind().getTaskManager().addPendingTask(ExploreSite.SIMPLE_NAME);
 			canAssign = assignTask(person, new ExploreSite(person, currentSite, getRover(), this));
 			
 			if (canAssign) {

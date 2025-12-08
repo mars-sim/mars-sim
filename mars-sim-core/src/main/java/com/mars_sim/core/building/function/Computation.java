@@ -9,7 +9,6 @@ package com.mars_sim.core.building.function;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
 import com.mars_sim.core.building.config.FunctionSpec;
@@ -25,8 +24,6 @@ public class Computation extends Function {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	/** default logger. */
-	// May add back private static final SimLogger logger = SimLogger.getLogger(Computation.class.getName());
 	
 	// Configuration properties
 	public static final double ENTROPY_FACTOR = .001;
@@ -89,6 +86,7 @@ public class Computation extends Function {
 	
 	/** The schedule demand [in CUs] for each integer msol. */
 	private Map<Integer, Double> msolDemand;
+    public static final String CONSUMING_COMPUTING_EVENT = "consuming computing units";
 
 	/**
 	 * Constructor.
@@ -394,7 +392,7 @@ public class Computation extends Function {
 		double cu = Math.round(value * 100_000.0) / 100_000.0;
 		if (freeCU != cu) {
 			freeCU = cu;
-			building.getSettlement().fireUnitUpdate(EntityEventType.CONSUMING_COMPUTING_EVENT);
+			building.getSettlement().fireUnitUpdate(CONSUMING_COMPUTING_EVENT);
 		}
 	}
 	

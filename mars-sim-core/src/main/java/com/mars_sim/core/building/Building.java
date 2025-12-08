@@ -55,6 +55,7 @@ import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
+import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
@@ -750,7 +751,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void setPowerMode(PowerMode powerMode) {
 		if (powerModeCache != powerMode) {
 			powerModeCache = powerMode;
-			fireUnitUpdate(EntityEventType.POWER_MODE_EVENT, this);
+			fireUnitUpdate(PowerGrid.POWER_MODE_EVENT, this);
 		}
 	}
 

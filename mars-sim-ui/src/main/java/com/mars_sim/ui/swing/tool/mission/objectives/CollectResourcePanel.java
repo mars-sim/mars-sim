@@ -75,7 +75,7 @@ public class CollectResourcePanel extends JPanel implements EntityListener {
 
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (EntityEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			updateCollectionValueLabel();
 		}
 	}

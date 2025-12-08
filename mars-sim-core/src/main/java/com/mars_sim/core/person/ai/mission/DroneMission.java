@@ -326,9 +326,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 
 		else {
 			// End the phase.
-
-			// If the drone is in a garage, put the drone outside.
-//			BuildingManager.removeFromGarage(drone);
 			// Release the drone
 			releaseVehicle(drone);
 			

@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.data.RatingScore;
@@ -128,6 +127,10 @@ public class ManufacturingManager implements Serializable {
 
     }
 
+    public static final String MANU_QUEUE_REFRESH = "refresh manufacturing queue";
+    public static final String MANU_QUEUE_REMOVE = "remove from manufacturing queue";
+    public static final String MANU_QUEUE_ADD = "add to manufacturing queue";
+
     private static final int REFRESH_TIME = 10;
     private static final Integer DEFAULT_VALUE = 30;
     private static final Integer DEFAULT_LIMIT = 200;
@@ -213,7 +216,7 @@ public class ManufacturingManager implements Serializable {
      */
     public void removeProcessFromQueue(QueuedProcess selected) {
         queue.remove(selected);
-        owner.fireUnitUpdate(EntityEventType.MANU_QUEUE_REMOVE, selected);
+        owner.fireUnitUpdate(ManufacturingManager.MANU_QUEUE_REMOVE, selected);
     }
 
     /**
@@ -256,7 +259,7 @@ public class ManufacturingManager implements Serializable {
         synchronized(queue) {
             queue.add(newItem);
         }   
-        owner.fireUnitUpdate(EntityEventType.MANU_QUEUE_ADD, newItem);
+        owner.fireUnitUpdate(ManufacturingManager.MANU_QUEUE_ADD, newItem);
     }
 
     /**
@@ -276,7 +279,7 @@ public class ManufacturingManager implements Serializable {
         }  
 
         if (!queue.isEmpty()) {
-            owner.fireUnitUpdate(EntityEventType.MANE_QUEUE_REFRESH);
+            owner.fireUnitUpdate(ManufacturingManager.MANU_QUEUE_REFRESH);
         }
     }
 

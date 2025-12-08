@@ -2447,17 +2447,17 @@ public class Settlement extends Unit implements Temporal,
 		exposed = newExposed;
 		
 		if (exposed.isBaselineEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.BASELINE_EVENT.toString() + IMMINENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.BASELINE_EVENT + IMMINENT);
 			this.fireUnitUpdate(EntityEventType.BASELINE_EVENT);
 		}
 
 		if (exposed.isGCREvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.GCR_EVENT.toString() + IMMINENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.GCR_EVENT + IMMINENT);
 			this.fireUnitUpdate(EntityEventType.GCR_EVENT);
 		}
 
 		if (exposed.isSEPEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.SEP_EVENT.toString() + IMMINENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.SEP_EVENT + IMMINENT);
 			this.fireUnitUpdate(EntityEventType.SEP_EVENT);
 		}
 	}

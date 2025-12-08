@@ -15,6 +15,8 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.Computation;
+import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
@@ -302,13 +304,13 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 			           EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT.equals(eventType)) {
 				if (target instanceof Person) columnNum = POPULATION;
 				else if (target instanceof Vehicle) columnNum = PARKED;
-			} else if (EntityEventType.CONSUMING_COMPUTING_EVENT.equals(eventType)) {
+			} else if (Computation.CONSUMING_COMPUTING_EVENT.equals(eventType)) {
 				columnNum = COMPUTING_UNIT;
-			} else if (EntityEventType.GENERATED_POWER_EVENT.equals(eventType)) {
+			} else if (PowerGrid.GENERATED_POWER_EVENT.equals(eventType)) {
 				columnNum = POWER_GEN;
-			} else if (EntityEventType.REQUIRED_POWER_EVENT.equals(eventType)) {
+			} else if (PowerGrid.REQUIRED_POWER_EVENT.equals(eventType)) {
 				columnNum = POWER_LOAD;
-			} else if (EntityEventType.STORED_ENERGY_EVENT.equals(eventType)) {
+			} else if (PowerGrid.STORED_ENERGY_EVENT.equals(eventType)) {
 				columnNum = ENERGY_STORED;
 			} else if (MalfunctionManager.MALFUNCTION_EVENT.equals(eventType)) {
 				columnNum = MALFUNCTION;

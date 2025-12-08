@@ -10,13 +10,14 @@ import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.utility.heating.HeatMode;
 import com.mars_sim.core.building.utility.heating.HeatSource;
 import com.mars_sim.core.building.utility.heating.HeatSourceType;
+import com.mars_sim.core.building.utility.heating.Heating;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
+import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
@@ -386,28 +387,28 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 * @return the column index, or -1 if not mapped
 	 */
 	private int getColumnIndexForEventType(String eventType) {
-		if (EntityEventType.POWER_MODE_EVENT.equals(eventType)) return POWER_MODE;
-		if (EntityEventType.GENERATED_POWER_EVENT.equals(eventType)) return POWER_GEN;
-		if (EntityEventType.REQUIRED_POWER_EVENT.equals(eventType)) return POWER_REQ;
-		if (EntityEventType.REQUIRED_HEAT_EVENT.equals(eventType)) return HEAT_REQ;
-		if (EntityEventType.GENERATED_HEAT_EVENT.equals(eventType)) return HEAT_GEN;
-		if (EntityEventType.HEAT_SURPLUS_EVENT.equals(eventType)) return HEAT_SURPLUS;
-		if (EntityEventType.NET_HEAT_0_EVENT.equals(eventType)) return PRE_NET_HEAT;
-		if (EntityEventType.NET_HEAT_1_EVENT.equals(eventType)) return POST_NET_HEAT;
-		if (EntityEventType.TEMPERATURE_EVENT.equals(eventType)) return TEMPERATURE;
-		if (EntityEventType.DELTA_T_EVENT.equals(eventType)) return DELTA_TEMP;
-		if (EntityEventType.DEV_T_EVENT.equals(eventType)) return DEV_TEMP;
-		if (EntityEventType.PASSIVE_VENT_EVENT.equals(eventType)) return PASSIVE_VENT;
-		if (EntityEventType.ACTIVE_VENT_EVENT.equals(eventType)) return ACTIVE_VENT;
-		if (EntityEventType.HEAT_GAIN_EVENT.equals(eventType)) return HEAT_GAIN;
-		if (EntityEventType.HEAT_LOSS_EVENT.equals(eventType)) return HEAT_LOSS;
-		if (EntityEventType.AIR_HEAT_SINK_EVENT.equals(eventType)) return AIR_HEAT_SINK;
-		if (EntityEventType.WATER_HEAT_SINK_EVENT.equals(eventType)) return WATER_HEAT_SINK;
-		if (EntityEventType.EXCESS_HEAT_EVENT.equals(eventType)) return EXCESS_HEAT;
-		if (EntityEventType.SOLAR_HEAT_EVENT.equals(eventType)) return SOLAR;
-		if (EntityEventType.ELECTRIC_HEAT_EVENT.equals(eventType)) return ELECTRIC;
-		if (EntityEventType.NUCLEAR_HEAT_EVENT.equals(eventType)) return NUCLEAR;
-		if (EntityEventType.FUEL_HEAT_EVENT.equals(eventType)) return FUEL;
+		if (PowerGrid.POWER_MODE_EVENT.equals(eventType)) return POWER_MODE;
+		if (PowerGrid.GENERATED_POWER_EVENT.equals(eventType)) return POWER_GEN;
+		if (PowerGrid.REQUIRED_POWER_EVENT.equals(eventType)) return POWER_REQ;
+		if (Heating.REQUIRED_HEAT_EVENT.equals(eventType)) return HEAT_REQ;
+		if (Heating.GENERATED_HEAT_EVENT.equals(eventType)) return HEAT_GEN;
+		if (ThermalGeneration.HEAT_SURPLUS_EVENT.equals(eventType)) return HEAT_SURPLUS;
+		if (Heating.NET_HEAT_0_EVENT.equals(eventType)) return PRE_NET_HEAT;
+		if (Heating.NET_HEAT_1_EVENT.equals(eventType)) return POST_NET_HEAT;
+		if (Heating.TEMPERATURE_EVENT.equals(eventType)) return TEMPERATURE;
+		if (Heating.DELTA_T_EVENT.equals(eventType)) return DELTA_TEMP;
+		if (Heating.DEV_T_EVENT.equals(eventType)) return DEV_TEMP;
+		if (Heating.PASSIVE_VENT_EVENT.equals(eventType)) return PASSIVE_VENT;
+		if (Heating.ACTIVE_VENT_EVENT.equals(eventType)) return ACTIVE_VENT;
+		if (Heating.HEAT_GAIN_EVENT.equals(eventType)) return HEAT_GAIN;
+		if (Heating.HEAT_LOSS_EVENT.equals(eventType)) return HEAT_LOSS;
+		if (Heating.AIR_HEAT_SINK_EVENT.equals(eventType)) return AIR_HEAT_SINK;
+		if (Heating.WATER_HEAT_SINK_EVENT.equals(eventType)) return WATER_HEAT_SINK;
+		if (Heating.EXCESS_HEAT_EVENT.equals(eventType)) return EXCESS_HEAT;
+		if (ThermalGeneration.SOLAR_HEAT_EVENT.equals(eventType)) return SOLAR;
+		if (ThermalGeneration.ELECTRIC_HEAT_EVENT.equals(eventType)) return ELECTRIC;
+		if (ThermalGeneration.NUCLEAR_HEAT_EVENT.equals(eventType)) return NUCLEAR;
+		if (ThermalGeneration.FUEL_HEAT_EVENT.equals(eventType)) return FUEL;
 		return -1;
 	}
 }

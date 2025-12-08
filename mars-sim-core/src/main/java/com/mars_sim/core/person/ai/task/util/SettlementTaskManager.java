@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
@@ -79,6 +78,7 @@ public class SettlementTaskManager implements Serializable {
     private Settlement owner;
     
     private transient List<SettlementTask> tasks;
+    public static final String BACKLOG_EVENT = "backlog event";
     
     public SettlementTaskManager(Settlement owner) {
         this.owner = owner;
@@ -122,7 +122,7 @@ public class SettlementTaskManager implements Serializable {
             buildCount++;
 
             // Inform listeners
-            owner.fireUnitUpdate(EntityEventType.BACKLOG_EVENT, owner);
+            owner.fireUnitUpdate(SettlementTaskManager.BACKLOG_EVENT, owner);
         }
         callCount++;
         return tasks;
