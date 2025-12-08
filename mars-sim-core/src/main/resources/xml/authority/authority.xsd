@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <!-- Root element definition for authority -->
+    <xs:element name="authority" type="authorityType"/>
+
+    <!-- Complex type definition for authority -->
+    <xs:complexType name="authorityType">
+        <xs:sequence>
+            <!-- At least one country is required -->
+            <xs:element name="country" type="countryType" maxOccurs="unbounded"/>
+            
+            <!-- Settlement names are optional but can have multiple entries -->
+            <xs:element name="settlement-name" type="settlementNameType" minOccurs="0" maxOccurs="unbounded"/>
+            
+            <!-- Rover names are optional but can have multiple entries -->
+            <xs:element name="rover-name" type="roverNameType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        
+        <!-- Required attributes for authority -->
+        <xs:attribute name="code" type="xs:string" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="corporation" type="xs:boolean" use="required"/>
+        <xs:attribute name="agenda" type="xs:string" use="required"/>
+        <xs:attribute name="gender-ratio" type="genderRatioType" use="required"/>
+    </xs:complexType>
+
+    <!-- Complex type for country elements -->
+    <xs:complexType name="countryType">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- Complex type for settlement-name elements -->
+    <xs:complexType name="settlementNameType">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- Complex type for rover-name elements -->
+    <xs:complexType name="roverNameType">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <!-- Simple type for gender-ratio with decimal constraint -->
+    <xs:simpleType name="genderRatioType">
+        <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0.0"/>
+            <xs:maxInclusive value="1.0"/>
+            <xs:fractionDigits value="3"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.structure;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -203,24 +202,6 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Generates a unique name for the Settlement.
-	 * 
-	 * @param sponsor
-	 * @return
-	 */
-	private String generateName(Authority sponsor) {
-		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
-
-		List<String> usedNames = unitManager.getSettlements().stream()
-							.map(Entity::getName).toList();
-
-		remainingNames.removeAll(usedNames);
-		int idx = RandomUtil.getRandomInt(remainingNames.size());
-
-		return remainingNames.get(idx);
-	}
-
-	/**
 	 * Creates a settlement.
 	 * 
 	 * @param template
@@ -241,7 +222,9 @@ public final class SettlementBuilder {
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
-			name = generateName(ra);
+			List<String> usedNames = unitManager.getSettlements().stream()
+							.map(Entity::getName).toList();
+			name = ra.getSettlementNames().generateName(usedNames);
 		}
 
 		// Get settlement longitude
@@ -464,14 +447,8 @@ public final class SettlementBuilder {
 				person.setRole(RoleType.GUEST);
 			}		
 			else if (noDefaultRole) {
-				
-				if (jobType == JobType.TOURIST) {
-					person.setRole(RoleType.GUEST);
-				}
-				else {
-					RoleType choosen = RoleUtil.findBestRole(person);
-					person.setRole(choosen);
-				}
+				RoleType choosen = RoleUtil.findBestRole(person);
+				person.setRole(choosen);
 			}
 		}
 	}

@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="CSA" name="Canadian Space Agency" corporation="false"
+					agenda="Communication Network"  gender-ratio="0.5">
+			<country name="Canada"/>
+			<settlement-name name="New Quebec" />
+			<settlement-name name="New Yukon" />
+			<settlement-name name="Sherbrooke" />
+			<settlement-name name="Fredericton" />
+			<settlement-name name="Navi" />
+			<settlement-name name="SpaceRyde" />
+			<settlement-name name="Nunavut" />
+			<settlement-name name="New Saint John" />
+			<settlement-name name="New Banff" />		
+			<settlement-name name="New Jasper" />
+			<settlement-name name="New Saint Albert" />
+			<settlement-name name="New Delta" />
+			<settlement-name name="Caelestis" />
+			
+			<rover-name name="Yellowknife" />
+			<rover-name name="Halifax" />
+			<rover-name name="Kingston" />
+			<rover-name name="Waterloo" />
+			<rover-name name="Windsor" />
+			<rover-name name="Dawson" />
+			<rover-name name="Whitehorse" />	
+			<rover-name name="Ottawa" />
+			<rover-name name="Nova Scotia" />
+			<rover-name name="Notre Dame" />
+			<rover-name name="Buffalo Jump" />
+			<rover-name name="Toronto" />
+			
+		</authority>

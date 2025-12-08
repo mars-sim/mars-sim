@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="TASA" name="Taiwan Space Agency" corporation="false"
+					agenda="Space Commerce" gender-ratio="0.769">
+			<country name="Taiwan"/>
+			<!-- While women are well-represented in certain areas, overall 
+			participation remains lower than that of men. In 2021, women comprised 
+			23.1% of all researchers, a figure that reflects a slow but steady 
+			increase from 21.7% in 2012-->
+			<settlement-name name="Chung Shan" />
+			<settlement-name name="Tao Yuan" />
+			<settlement-name name="Miao Li" />
+			<settlement-name name="Lung Teh" />
+			<settlement-name name="Kokan" />
+			<settlement-name name="Kung Kuan" />
+			<settlement-name name="Chiao Tung" />
+			<settlement-name name="Hsinchu" /> 
+						
+			<rover-name name="Triton" />
+			<rover-name name="Yushan" /> 
+			<rover-name name="Tohoku" /> 
+			
+			<rover-name name="Hsiung Feng" /> 
+			<rover-name name="Malyutka" />  
+			<rover-name name="Ching Feng" />
+			
+			<rover-name name="Yun Feng" />
+			<rover-name name="Ching Kuo" /> 
+			<rover-name name="Chien Hsiang" />
+			
+			<rover-name name="Hsinchu" /> 
+			<rover-name name="Her Chee" /> 
+			<rover-name name="Hotai" />  
+			<rover-name name="Yulon" />
+			
+			<rover-name name="Luxgen" />
+			<rover-name name="Chin Chun" /> 
+			<rover-name name="Kuozui" />
+			
+			<rover-name name="San Yang" /> 
+			<rover-name name="Ta Ching" /> 
+			<rover-name name="Hotai" />
+		</authority>

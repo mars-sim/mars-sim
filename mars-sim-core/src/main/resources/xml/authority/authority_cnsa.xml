@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="CNSA" name="China National Space Administration" corporation="false"
+					agenda="Mineral Prospecting" gender-ratio="0.75">
+			<country name="China"/>
+			<settlement-name name="Tian Cheng" />
+			<settlement-name name="Xin Cheng" />
+			<settlement-name name="Huoxing Cheng" />
+			<settlement-name name="Chang-e Cheng" />
+			<settlement-name name="Xin Shenzhen" />
+			<settlement-name name="Xin Tianjin" />
+			<settlement-name name="Xin Shanghai" />
+			<settlement-name name="Xin Beijing" />
+			<settlement-name name="New Macau" />
+			<settlement-name name="Xin Chongqing" />
+			<settlement-name name="New Manchuria" />
+			<settlement-name name="Xin Xianggang" />
+			<settlement-name name="Luzhou" />
+			<settlement-name name="Huoxing Cheng" />
+			
+			<rover-name name="Shenzhou" />  <!-- Chinese for divine craft -->
+			<rover-name name="Zhanshen" />  <!-- Chinese for god of war -->
+			<rover-name name="Zidan" />    <!-- Chinese for bullet -->
+			<rover-name name="Huojian" />  <!-- Chinese for rocket -->
+			<rover-name name="Bolang" />   <!-- Chinese for wave front -->
+			<rover-name name="Lingxian" /> <!-- Chinese for leading the way -->
+			<rover-name name="GuoLu" />    <!-- Chinese for passing through -->
+			<rover-name name="Youli" />    <!-- Chinese for traveling -->
+			<rover-name name="Changtu" />   <!-- Chinese for long journey" -->
+			<rover-name name="Hangcheng" /> <!-- Chinese for voyage -->
+			<rover-name name="Youke" />     <!-- Chinese for traveler -->
+			<rover-name name="YouShan" />   <!-- Chinese for treking mountain -->
+			<rover-name name="Aoxiang" />   <!-- Chinese for soaring -->
+			<rover-name name="Piaofu" />    <!-- Chinese for hovering -->
+			<rover-name name="Gaofei" />    <!-- Chinese for flying up -->
+		</authority>

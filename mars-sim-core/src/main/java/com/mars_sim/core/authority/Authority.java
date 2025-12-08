@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.NationSpecConfig;
@@ -43,9 +44,9 @@ implements Entity, UserConfigurable {
 	
 	private List<Nation> nations = new ArrayList<>();
 
-	private List<String> settlementNames;
-
-	private List<String> vehicleNames;
+	//  Name generators are not serialized and loaded on demand to reduce memory footprint
+	private transient NameGenerator settlementNames;
+	private transient NameGenerator vehicleNames;
 
 	/**
 	 * Constructor.
@@ -57,14 +58,11 @@ implements Entity, UserConfigurable {
 	 * @param genderRatio
 	 * @param agenda
 	 * @param countries
-	 * @param names
-	 * @param vehicleNames
 	 */
 	public Authority(String acronym, String fullName, 
 			boolean isCorporation, boolean predefined, 
 			double genderRatio,
-			MissionAgenda agenda, List<String> countries,
-			List<String> names, List<String> vehicleNames) {
+			MissionAgenda agenda, List<String> countries) {
 		
 		this.fullName  = fullName;
 		this.acronym = acronym;
@@ -73,8 +71,6 @@ implements Entity, UserConfigurable {
 		this.genderRatio = genderRatio;
 		this.missionAgenda = agenda;
 		this.countries = countries;	
-		this.settlementNames = names;
-		this.vehicleNames = vehicleNames;
 
 		for (String c: countries) {
 			nations.add(NationSpecConfig.getNation(c));
@@ -206,13 +202,35 @@ implements Entity, UserConfigurable {
 	public Nation getOneNation() {
 		return nations.get(0);
 	}
+
+	/**
+	 * This is a lazy loading of the name generators to reduce memory footprint.
+	 * 
+	 * @param settlementNamesList
+	 * @param vehicleNamesList
+	 */
+	public void loadNameGenerators(List<String> settlementNamesList, List<String> vehicleNamesList) {
+		this.settlementNames = new NameGenerator(settlementNamesList);
+		this.vehicleNames = new NameGenerator(vehicleNamesList);
+	}
 	
+	/**
+	 * Get the factory on the fly
+	 * @return
+	 */
+	private static AuthorityFactory getAuthorityFactory() {
+		return SimulationConfig.instance().getReportingAuthorityFactory();
+	}
+
 	/**
 	 * Gets a list of names for the settlement for this Authority.
 	 * 
 	 * @return
 	 */
-	public List<String> getSettlementNames() {
+	public NameGenerator getSettlementNames() {
+		if (settlementNames == null) {
+			getAuthorityFactory().loadNames(this);
+		}
 		return settlementNames;
 	}
 
@@ -221,13 +239,16 @@ implements Entity, UserConfigurable {
 	 * 
 	 * @return
 	 */
-	public List<String> getVehicleNames() {
+	public NameGenerator getVehicleNames() {
+		if (vehicleNames == null) {
+			getAuthorityFactory().loadNames(this);
+		}
 		return vehicleNames;
 	}
 	
 	@Override
 	public String toString() {
-		return "ReportingAuthority [code=" + acronym + "]";
+		return "Authority [code=" + acronym + "]";
 	}
 
 	@Override

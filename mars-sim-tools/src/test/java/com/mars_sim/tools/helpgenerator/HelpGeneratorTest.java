@@ -23,7 +23,7 @@ import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotType;
 
-public class HelpGeneratorTest {
+class HelpGeneratorTest {
 
 	private static final String ALPHA_BASE_1 = "Alpha Base 1";
 	
@@ -45,7 +45,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testManifestHelp() throws IOException {
+    void testManifestHelp() throws IOException {
         var context = createGenerator();
 
         // Find a resupply manifest that has mixture of most things
@@ -68,7 +68,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testRobotHelp() throws IOException {
+    void testRobotHelp() throws IOException {
         var context = createGenerator();
         var vehicleConfig = context.getConfig().getRobotConfiguration();
 
@@ -82,7 +82,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testVehicleHelp() throws IOException {
+    void testVehicleHelp() throws IOException {
         var context = createGenerator();
         var vehicleConfig = context.getConfig().getVehicleConfiguration();
 
@@ -95,7 +95,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testResProcessHelp() throws IOException {
+    void testResProcessHelp() throws IOException {
         var context = createGenerator();
         var config = context.getConfig().getResourceProcessConfiguration();
 
@@ -110,7 +110,7 @@ public class HelpGeneratorTest {
 
 
     @Test
-    public void testCropHelp() throws IOException {
+    void testCropHelp() throws IOException {
         var context = createGenerator();
         var manConfig = context.getConfig().getCropConfiguration();
 
@@ -122,7 +122,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testMealHelp() throws IOException {
+    void testMealHelp() throws IOException {
         var context = createGenerator();
         var config = context.getConfig().getMealConfiguration();
 
@@ -135,7 +135,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testAuthorityHelp() throws IOException {
+    void testAuthorityHelp() throws IOException {
         var context = createGenerator();
         var config = context.getConfig().getReportingAuthorityFactory();
 
@@ -149,7 +149,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testMalfunctionHelp() throws IOException {
+    void testMalfunctionHelp() throws IOException {
         var context = createGenerator();
         var config = context.getConfig().getMalfunctionConfiguration();
 
@@ -163,7 +163,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testComplaintHelp() throws IOException {
+    void testComplaintHelp() throws IOException {
         var context = createGenerator();
         var manConfig = context.getConfig().getMedicalConfiguration();
 
@@ -175,7 +175,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testTreatmentHelp() throws IOException {
+    void testTreatmentHelp() throws IOException {
         var context = createGenerator();
         var manConfig = context.getConfig().getMedicalConfiguration();
 
@@ -188,7 +188,7 @@ public class HelpGeneratorTest {
 
 
     @Test
-    public void testProcessHelp() throws IOException {
+    void testProcessHelp() throws IOException {
         var context = createGenerator();
         var manConfig = context.getConfig().getManufactureConfiguration();
 
@@ -202,7 +202,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testFoodHelp() throws IOException {
+    void testFoodHelp() throws IOException {
         var context = createGenerator();
         var foodConfig = context.getConfig().getFoodProductionConfiguration();
 
@@ -216,7 +216,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testScenarioHelp() throws IOException {
+    void testScenarioHelp() throws IOException {
         var context = createGenerator();
         
         // Has both inputs and outputs
@@ -231,7 +231,7 @@ public class HelpGeneratorTest {
 
     
     @Test
-    public void testResourceHelp() throws IOException {
+    void testResourceHelp() throws IOException {
         var context = createGenerator();
         
         // Has both inputs and outputs
@@ -246,7 +246,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testSettlementHelp() throws IOException {
+    void testSettlementHelp() throws IOException {
         var context = createGenerator();
         
         // Has both inputs and outputs
@@ -330,7 +330,7 @@ public class HelpGeneratorTest {
     }
 
     @Test
-    public void testFullGeneration() throws IOException {
+    void testFullGeneration() throws IOException {
         var context = createGenerator();
 
         File output = Files.createTempDirectory("generator").toFile();

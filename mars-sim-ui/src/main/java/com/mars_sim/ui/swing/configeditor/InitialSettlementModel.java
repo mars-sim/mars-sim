@@ -22,7 +22,6 @@ import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Represents a table model of the initial settlements. This has some intelligence
@@ -231,10 +230,7 @@ class InitialSettlementModel extends AbstractTableModel {
 					String newSponsor = (String) aValue;
 					if (!info.sponsor.equals(newSponsor)) {
 						info.sponsor = newSponsor;
-						String newName = tailorSettlementNameBySponsor(info.sponsor, rowIndex);
-						if (newName != null) {
-							info.name = newName;
-						}
+						info.name = tailorSettlementNameBySponsor(info.sponsor, rowIndex);
 					}
 					break;	
 					
@@ -299,6 +295,9 @@ class InitialSettlementModel extends AbstractTableModel {
 					if (lonError != null)
 						setError(lonError);
 					break;
+
+				default:
+					break;
 				}
 			}
 
@@ -329,13 +328,11 @@ class InitialSettlementModel extends AbstractTableModel {
 		}
 
 		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = new ArrayList<>(ra.getSettlementNames());
-		candidateNames.removeAll(usedNames);
+		var name = ra.getSettlementNames().generateName(usedNames);
 
-		if (candidateNames.isEmpty())
-			return "Settlement #" + index;
-		else
-			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
+		if (name == null)
+			name = "Settlement #" + index;
+		return name;
 	}
 	
 	/**

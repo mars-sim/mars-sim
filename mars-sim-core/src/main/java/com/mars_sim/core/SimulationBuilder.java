@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
@@ -29,7 +30,6 @@ import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
-import com.mars_sim.core.tool.RandomUtil;
 
 /*
  * This class is a Factory to bootstrap a new simulation according to
@@ -352,8 +352,7 @@ public class SimulationBuilder {
 		}
 		
 		// Pick a random name
-		List<String> settlementNames = authority.getSettlementNames();		
-		String settlementName = RandomUtil.getRandomElement(settlementNames);
+		String settlementName = authority.getSettlementNames().generateName(Collections.emptyList());
 		if (location == null) {
 			// Pick a fixed location
 			location = new Coordinates(Math.PI / 2D, 0);
