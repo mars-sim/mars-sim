@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.ui.swing.UIContext;
 
 /**
@@ -27,9 +26,6 @@ public abstract class MonitorTab extends JPanel {
 	private Icon icon;
 	private boolean mandatory;
 	private boolean ownModel = true;
-	private boolean navigatable;
-	private boolean filtered;
-	private boolean hasEntity;
 
 	/**
 	 * The constructor that creates a view within a tab displaying the specified model.
@@ -101,36 +97,23 @@ public abstract class MonitorTab extends JPanel {
 		return mandatory;
 	}
 
-	protected void setNavigatable(boolean b) {
-		navigatable = b;
-	}
-
-    public boolean isNavigatable() {
-        return navigatable;
-    }
-
-	protected void setFilterable(boolean b) {
-		filtered = b;
-	}
-
+	/**
+	 * Default implementation returns false.
+	 * @return
+	 */
     public boolean isFilterable() {
-        return filtered;
-    }
-
-	protected void setEntityDriven(boolean b) {
-		hasEntity = b;
-	}
-
-    public boolean isEntityDriven() {
-        return hasEntity;
+        return false;
     }
 
 	/**
-	 * Gets the Coordinates that best represent the selected rows
-	 * 
-	 * @return Coordinates, maybe null
+	 * Show the filter dialog is available. The default implementation does nothing.
+	 * @param context
 	 */
-    public Coordinates getSelectedCoordinates() {
-        return null;
+	public void showFilters(UIContext context) {
+		// By default nothing happens
+	}
+
+    public boolean isEntityDriven() {
+        return false;
     }
 }

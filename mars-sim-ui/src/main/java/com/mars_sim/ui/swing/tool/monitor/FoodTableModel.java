@@ -21,7 +21,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * This class model how food data is organized and displayed
  * within the Monitor Window for a settlement.
  */
-public class FoodTableModel extends CategoryTableModel<Food> {
+class FoodTableModel extends CategoryTableModel<Food> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -91,7 +91,7 @@ public class FoodTableModel extends CategoryTableModel<Food> {
 	}
 
 	@Override
-	protected Object getEntityValue(CategoryKey<Food> selectedRow, int columnIndex) {
+	protected Object getItemValue(CategoryKey<Food> selectedRow, int columnIndex) {
 		Food selectedFood = selectedRow.getCategory();
 		Settlement selectedSettlement = selectedRow.getSettlement();
 

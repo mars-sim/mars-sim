@@ -29,14 +29,6 @@ interface MonitorModel extends ToolTipTableModel {
 
 
 	/**
-	 * Returns the object at the specified row indexes.
-	 * 
-	 * @param row Index of the row object.
-	 * @return Object at the specified row.
-	 */
-	public Object getObject(int row);
-
-	/**
 	 * Gets the model count string.
 	 */
 	public String getCountString();
@@ -54,7 +46,7 @@ interface MonitorModel extends ToolTipTableModel {
 	 * 
 	 * @param activate 
 	 */
-    public void setMonitorEntites(boolean activate);
+    public void setMonitorEntities(boolean activate);
 
 	/**
 	 * Gets the index of the Settlement column if defined. This is a special column that can be visible/hidden according

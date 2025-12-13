@@ -13,7 +13,6 @@ import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.Computation;
 import com.mars_sim.core.building.utility.power.PowerGrid;
@@ -31,7 +30,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * key attributes of the Settlement into Columns.
  */
 @SuppressWarnings("serial")
-public class SettlementTableModel extends UnitTableModel<Settlement> {
+public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -146,7 +145,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * simulation.
 	 */
 	public SettlementTableModel() {
-		super(UnitType.SETTLEMENT, "Settlement", "SettlementTableModel.countingSettlements",
+		super("Settlement", "SettlementTableModel.countingSettlements",
 				COLUMNS);
 
 		setupCaches();
@@ -163,7 +162,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-		resetEntities(filter);
+		resetItems(filter);
 		
 		return true;
 	}
@@ -175,7 +174,7 @@ public class SettlementTableModel extends UnitTableModel<Settlement> {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(Settlement settle, int columnIndex) {
+	protected Object getItemValue(Settlement settle, int columnIndex) {
 		Object result = null;
 
 		switch (columnIndex) {

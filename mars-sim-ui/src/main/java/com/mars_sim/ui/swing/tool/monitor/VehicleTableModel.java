@@ -41,7 +41,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * It maps key attributes of the Vehicle into Columns.
  */
 @SuppressWarnings("serial")
-public class VehicleTableModel extends UnitTableModel<Vehicle> {
+public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 
 	private static final String ON = "On";
 	private static final String OFF = "Off";
@@ -124,7 +124,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private transient LocalMissionManagerListener missionManagerListener;
 	
 	public VehicleTableModel() {
-		super(UnitType.VEHICLE,
+		super(
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
 			COLUMNS
@@ -146,7 +146,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				.sorted(Comparator.comparing(Vehicle::getName))
 				.toList();
 	
-		resetEntities(vehicles);
+		resetItems(vehicles);
 		
 		return true;
 	}
@@ -158,9 +158,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(Vehicle vehicle, int columnIndex) {
+	protected Object getItemValue(Vehicle vehicle, int columnIndex) {
 		Object result = null;
-		double value = 0.0;
 		
 		switch (columnIndex) {
 			case NAME : 
@@ -240,7 +239,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case SPEED :
-				value = vehicle.getSpeed();
+				var value = vehicle.getSpeed();
 				if (value == 0.0)
 					result = null;
 				else

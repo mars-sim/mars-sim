@@ -23,7 +23,7 @@ import com.mars_sim.core.time.MasterClock;
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
+public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparable<Unit> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -251,6 +251,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param newListener the listener to add.
 	 */
+	@Override
 	public final synchronized void addEntityListener(EntityListener newListener) {
 		if (newListener == null)
 			throw new IllegalArgumentException();
@@ -267,6 +268,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 *
 	 * @param oldListener the listener to remove.
 	 */
+	@Override
 	public final synchronized void removeEntityListener(EntityListener oldListener) {
 		if (oldListener == null)
 			throw new IllegalArgumentException();

@@ -23,7 +23,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * The row has a unique key as CategoryKey.
  */
 @SuppressWarnings("serial")
-public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey<T>>
+abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
             implements EntityListener {
 
     private Set<Settlement> selectedSettlements = Collections.emptySet();
@@ -42,7 +42,7 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
 	 * 
 	 * @param activate 
 	 */
-    public void setMonitorEntites(boolean activate) {
+    public void setMonitorEntities(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
 				selectedSettlements.forEach(s ->s.addEntityListener(this));
@@ -68,6 +68,7 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
 	 * 
 	 * @param filter Settlement
 	 */
+	@Override
     public boolean setSettlementFilter(Set<Settlement> filter) {
 		selectedSettlements.forEach(s ->s.removeEntityListener(this));
 
@@ -84,7 +85,7 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
         }
 
         // Initialize goods list.
-		resetEntities(newRows);
+		resetItems(newRows);
 			
 		// Add table as listener to each settlement.
 		if (monitorSettlement) {

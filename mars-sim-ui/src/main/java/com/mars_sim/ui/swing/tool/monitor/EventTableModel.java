@@ -6,11 +6,14 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventListener;
@@ -20,6 +23,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -27,7 +31,8 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * onto the existing Event Manager.
  */
 @SuppressWarnings("serial")
-public class EventTableModel extends EntityTableModel<HistoricalEvent> implements HistoricalEventListener{
+class EventTableModel extends CachingTableModel<HistoricalEvent>
+					implements HistoricalEventListener, EntityModel, FilteredTableModel {
 
 	// Column names
 	private static final int TIMESTAMP = 0;
@@ -110,7 +115,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 				.filter(this::isDisplayable)
 				.toList();
 	
-		resetEntities(events);		
+		resetItems(events);		
 	}
 
 	/**
@@ -119,7 +124,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 * @param activate Not used
 	 */
 	@Override
-	public void setMonitorEntites(boolean activate) {
+	public void setMonitorEntities(boolean activate) {
 		// No need of monitoring any events. As each event is generated, it won't change.
 	}
 
@@ -147,7 +152,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(HistoricalEvent event, int column) {
+	protected Object getItemValue(HistoricalEvent event, int column) {
 		Object result = null;
 
 		switch (column) {
@@ -213,44 +218,50 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 * @return Unit at specified position.
 	 */
 	@Override
-	public Object getObject(int row) {
-		return getEntity(row).getEntity();
+	public Entity getAssociatedEntity(int row) {
+		return getItem(row).getEntity();
 	}
 	/**
 	 * New event has been added.
 	 */
 	public synchronized void eventAdded(HistoricalEvent event) {
 		if (isDisplayable(event)) {
-			addEntity(event);
+			addItem(event);
 		}
 	}
 
 	/**
-	 * Sets the category type to display.
-	 * 
-	 * @param type
-	 * @param isDisplayed
+	 * Get a list of the supported filters and their active state based on the HistoricalEventCategory.
+	 * @return
+	 */	
+	@Override
+	public List<FilteredTableModel.Filter> getActiveFilters() {
+		var filters = new ArrayList<FilteredTableModel.Filter>();
+		for (HistoricalEventCategory category : HistoricalEventCategory.values()) {
+			boolean isActive = !blockedTypes.contains(category);
+			filters.add(new FilteredTableModel.Filter(category.name(), category.getName(), isActive));
+		}
+		return filters;
+	}
+
+	/**
+	 * Enable/disable display of a category of events.
+	 * @param category Name of the category
+	 * @param selected true to display, false to block
 	 */
-	public void setDisplayed(HistoricalEventCategory type, boolean isDisplayed) {
+	@Override
+	public void setFilter(String category, boolean isDisplayed) {
+		var type = HistoricalEventCategory.valueOf(category);
 		if (isDisplayed) {
 			blockedTypes.remove(type);
 		}
 		else {
 			blockedTypes.add(type);
 		}
+
 		reloadEvents();
 	}
 
-	/**
-	 * Is a category event being displayed?
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean isDisplayed(HistoricalEventCategory type) {
-		return !blockedTypes.contains(type);
-	}
-	
 	/**
 	 * Prepares the model for deletion.
 	 */

@@ -10,10 +10,10 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,9 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -48,16 +46,15 @@ import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.MapSelector;
+import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
 /**
@@ -117,6 +114,7 @@ public class MonitorWindow extends ContentPanel
 	private static final String BOT_ICON = "robot";
 	private static final String VEHICLE_ICON = "vehicle";
 	private static final String CROP_ICON = "crop";
+	private static final String EVENT_ICON = "event";
 	private static final String FOOD_ICON = "food";
 	private static final String TRADE_ICON = "trade";
 	private static final String PEOPLE_ICON = "people";
@@ -135,8 +133,6 @@ public class MonitorWindow extends ContentPanel
 	private JTabbedPane tabsSection;
 	// Note: may use JideTabbedPane instead
 	private JLabel rowCount;
-	/** The Tab showing historical events. */
-	private EventTab eventsTab;
 
 	private JButton buttonProps;
 	private JButton buttonPie;
@@ -145,18 +141,11 @@ public class MonitorWindow extends ContentPanel
 	private JButton buttonMap;
 	private JButton buttonDetails;
 	private JButton buttonFilter;
-		
-	protected JCheckBox aliveB;
-	protected JCheckBox deceasedB;
-	protected JCheckBox buriedB;
-	protected ButtonGroup group = new ButtonGroup();
 	
 	/** Selection Combo box */
 	private JComboBox<Object> selectionCombo;
 	
 	private JPanel statusPanel;
-	
-	private JPanel choosePanel;
 
 	private Set<Settlement> currentSelection;
 
@@ -221,8 +210,7 @@ public class MonitorWindow extends ContentPanel
 		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		// Add all the tabs
-		addAllTabs(choices,
-					(uiProps != null ? uiProps.getProperty(TAB_PROP) : null));
+		addAllTabs((uiProps != null ? uiProps.getProperty(TAB_PROP) : null));
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
 		setSettlementBox(true);
@@ -253,15 +241,15 @@ public class MonitorWindow extends ContentPanel
 	/**
 	 * Adds all the tabs.
 	 */
-	private void addAllTabs(List<Entity> choices, String defaultTabName) {
+	private void addAllTabs(String defaultTabName) {
 		List<MonitorTab> newTabs = new ArrayList<>();
 
 		// Add tabs into the table	
-		newTabs.add(new UnitTab(this, new SettlementTableModel(), true, COLONY_ICON));
-		newTabs.add(new UnitTab(this, new PersonTableModel(), true, PEOPLE_ICON));
-		newTabs.add(new UnitTab(this, new RobotTableModel(), true, BOT_ICON));
-		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
-		newTabs.add(new UnitTab(this, new CropTableModel(context.getSimulation().getConfig()), true, CROP_ICON));
+		newTabs.add(new TableTab(this, new SettlementTableModel(), true, true, COLONY_ICON));
+		newTabs.add(new TableTab(this, new PersonTableModel(), true, true, PEOPLE_ICON));
+		newTabs.add(new TableTab(this, new RobotTableModel(), true, true, BOT_ICON));
+		newTabs.add(new TableTab(this, new BuildingTableModel(), true, true, BUILDING_ICON));
+		newTabs.add(new TableTab(this, new CropTableModel(context.getSimulation().getConfig()), true, true, CROP_ICON));
 		
 		newTabs.add(new TableTab(this, new FoodTableModel(), true, false, FOOD_ICON));
 
@@ -269,12 +257,11 @@ public class MonitorWindow extends ContentPanel
 		
 		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
 
-		// Create eventsTab instance
-		eventsTab = new EventTab(this, context);
-		newTabs.add(eventsTab);
-		
-		newTabs.add(new MissionTab(this, context.getSimulation()));
-		newTabs.add(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
+		newTabs.add(new TableTab(this, new EventTableModel(context.getSimulation().getEventManager()), true, true,
+				EVENT_ICON));
+
+		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, MissionWindow.ICON));
+		newTabs.add(new TableTab(this, new VehicleTableModel(), true, true, VEHICLE_ICON));
 
 		for (MonitorTab m : newTabs) {
 			addTab(m);
@@ -312,15 +299,15 @@ public class MonitorWindow extends ContentPanel
 		statusPanel.add(buttonRemoveTab);
 
 		// Create buttons based on selection
-		buttonMap = new JButton(ImageLoader.getIconByName(LOCATE_ICON)); // $NON-NLS-1$
-		buttonMap.setToolTipText(Msg.getString("EntityLabel.locate")); //$NON-NLS-1$
-		buttonMap.addActionListener(e -> centerMap());
-		statusPanel.add(buttonMap);
-
 		buttonDetails = new JButton(ImageLoader.getIconByName(DETAILS_ICON)); // $NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("EntityLabel.details")); //$NON-NLS-1$
 		buttonDetails.addActionListener(e -> displayDetails());
 		statusPanel.add(buttonDetails);
+
+		buttonMap = new JButton(ImageLoader.getIconByName(LOCATE_ICON)); // $NON-NLS-1$
+		buttonMap.setToolTipText(Msg.getString("EntityLabel.locate")); //$NON-NLS-1$
+		buttonMap.addActionListener(e -> centerMap());
+		statusPanel.add(buttonMap);
 
 		buttonProps = new JButton(ImageLoader.getIconByName(COLUMN_ICON)); // $NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
@@ -333,35 +320,6 @@ public class MonitorWindow extends ContentPanel
 		statusPanel.add(buttonFilter);
 
 		statusPanel.add(new JSeparator(SwingConstants.VERTICAL));
-
-		choosePanel = new JPanel(new GridLayout(1, 3, 0, 0));			
-		choosePanel.setBorder(StyleManager.createLabelBorder("Types:"));	
-		statusPanel.add(choosePanel, BorderLayout.CENTER);
-		
-		// Displays the live citizens 
-		aliveB = new JCheckBox("Alive", true);
-		aliveB.setBorder(BorderFactory.createLoweredBevelBorder());
-		aliveB.setToolTipText("Display the live citizens in this settlement"); //$NON-NLS-1$
-		aliveB.addActionListener(e -> displayLive());
-		choosePanel.add(aliveB);
-		
-		// Displays the deceased citizens 
-		deceasedB = new JCheckBox("Deceased", false);
-		deceasedB.setBorder(BorderFactory.createLoweredBevelBorder());
-		deceasedB.setToolTipText("Display the deceased citizens in this settlement"); //$NON-NLS-1$
-		deceasedB.addActionListener(e -> displayDeceased());
-		choosePanel.add(deceasedB);
-		
-		// Displays the buried citizens 
-		buriedB = new JCheckBox("Buried", false);
-		buriedB.setBorder(BorderFactory.createLoweredBevelBorder());
-		buriedB.setToolTipText("Display the buried citizens in this settlement"); //$NON-NLS-1$
-		buriedB.addActionListener(e -> displayBuried());
-		choosePanel.add(buriedB);
-		
-		group.add(aliveB);
-		group.add(deceasedB);
-		group.add(buriedB);
 	}
 
 	/**
@@ -371,13 +329,13 @@ public class MonitorWindow extends ContentPanel
 	 *
 	 * @param model The new model to display.
 	 */
-	public void displayModel(UnitTableModel<?> model) {
+	public void displayModel(EntityMonitorModel<?> model) {
 		int index = getModelIndex(model);
 		if (index != -1)
 			tabsSection.setSelectedIndex(index);
 		else {
 			try {
-				UnitTab newTab = new UnitTab(this, model, false,"usertab");
+				var newTab = new TableTab(this, model, false, true,"usertab");
 				addTab(newTab);
 				tabsSection.setSelectedComponent(newTab);
 			} catch (Exception e) {
@@ -488,28 +446,34 @@ public class MonitorWindow extends ContentPanel
 		String newDescription = "";
 		Set<Settlement> newSelection = null;
 
-		if (item instanceof Settlement s) {
-			newSelection = Set.of(s);
-		}
-		else if (item instanceof Authority a) {
-			newSelection = authorities.get(a);
-			if (newSelection != null) {
-				newDescription = newSelection.stream()
-									.map(Settlement::getName)
-									.sorted()
-									.collect(Collectors.joining(", ", "(", ")"));
+		switch (item) {
+			case Settlement s -> {
+				newSelection = Set.of(s);
 			}
-		}
-		else if (item instanceof String str) {
-			if (!str.equals(ALL)) {
-				// Should always be ALL
+			case Authority a -> {
+				newSelection = authorities.get(a);
+				if (newSelection != null) {
+					newDescription = newSelection.stream()
+										.map(Settlement::getName)
+										.sorted()
+										.collect(Collectors.joining(", ", "(", ")"));
+				}
+			}
+			case String str -> {
+				if (!str.equals(ALL)) {
+					// Should always be ALL
+					return;
+				}
+				newSelection = new HashSet<>(unitManager.getSettlements());
+			}
+			default -> {
+				// Unknown type
 				return;
 			}
-			newSelection = new HashSet<>(unitManager.getSettlements());
 		}
 
-		// Change to the selection
-		currentSelection = newSelection;
+		// Change to the selection, must be read only as it is shared
+		currentSelection = Collections.unmodifiableSet(newSelection);
 		selectionDescription.setText(newDescription);
 	}
 
@@ -532,7 +496,7 @@ public class MonitorWindow extends ContentPanel
 	 * @param model the model to check for.
 	 * @return tab index or -1 if none.
 	 */
-	private int getModelIndex(UnitTableModel<?> model) {
+	private int getModelIndex(EntityMonitorModel<?> model) {
 		for (Component c: tabsSection.getComponents()) {
 			if ((c instanceof MonitorTab tab) && model.equals(tab.getModel())) {
 				return tabsSection.indexOfComponent(c);
@@ -612,7 +576,6 @@ public class MonitorWindow extends ContentPanel
 		super.setTitle(TITLE + " - " + title);
 		
 		boolean enableRemove = !selectedTab.isMandatory();
-		boolean enableMap = selectedTab.isNavigatable();
 		boolean enableDetails = selectedTab.isEntityDriven();
 		boolean enableFilter = selectedTab.isFilterable();
 		boolean enableSettlement = false;
@@ -633,14 +596,14 @@ public class MonitorWindow extends ContentPanel
 			// If a different tab then activate listeners
 			activiateListeners = !(activeTab.equals(selectedTab));
 			if (activiateListeners) {
-				previousModel.setMonitorEntites(false);
+				previousModel.setMonitorEntities(false);
 			}
 
 			// Stop listening for table size changes
 			previousModel.removeTableModelListener(this);
 		}
 		if (activiateListeners) {
-			tabTableModel.setMonitorEntites(true);
+			tabTableModel.setMonitorEntities(true);
 		}
 
 		// Listener for row changes
@@ -655,23 +618,10 @@ public class MonitorWindow extends ContentPanel
 		buttonRemoveTab.setEnabled(enableRemove);
 		buttonBar.setEnabled(enableBar);
 		buttonPie.setEnabled(enablePie);
-		buttonMap.setEnabled(enableMap);
+		buttonMap.setEnabled(enableDetails);
 		buttonDetails.setEnabled(enableDetails);
 		buttonFilter.setEnabled(enableFilter);
 		buttonProps.setEnabled(!enableRemove);
-		
-		if (tabTableModel instanceof PersonTableModel) {
-			choosePanel.setVisible(true);
-			aliveB.setVisible(true);
-			deceasedB.setVisible(true);
-			buriedB.setVisible(true);
-		}
-		else {
-			choosePanel.setVisible(false);
-			aliveB.setVisible(false);
-			deceasedB.setVisible(false);
-			buriedB.setVisible(false);
-		}
 	}
 
 	@Override
@@ -710,10 +660,9 @@ public class MonitorWindow extends ContentPanel
 
 	private void centerMap() {
 		MonitorTab selected = getSelectedTab();
-		if (selected != null) {
-			Coordinates place = selected.getSelectedCoordinates();
-			if (place != null) {
-				MapSelector.displayCoords(context, place);
+		if (selected instanceof TableTab tt) {
+			for (var ent : tt.getSelection()) {
+				MapSelector.displayOnMap(context, ent);
 			}
 		}
 	}
@@ -721,10 +670,8 @@ public class MonitorWindow extends ContentPanel
 	void displayDetails() {
 		MonitorTab selected = getSelectedTab();
 		if (selected instanceof TableTab tt) {
-			for (Object row : tt.getSelection()) {
-				if (row instanceof Entity ent) {
-					context.showDetails(ent);
-				}
+			for (var ent : tt.getSelection()) {
+				context.showDetails(ent);
 			}
 		}
 	}
@@ -737,9 +684,9 @@ public class MonitorWindow extends ContentPanel
 	}
 
 	private void filterCategories() {
-		EventTab events = eventsTab;
-		if (events != null) {
-			events.filterCategories(context);
+		var selected = getSelectedTab();
+		if (selected.isFilterable()) {
+			selected.showFilters(context);
 		}
 	}
 
@@ -752,58 +699,7 @@ public class MonitorWindow extends ContentPanel
 			removeTab(getSelectedTab());
 		}
 	}
-	
-	/**
-	 * Displays the live citizens.
-	 */
-	private void displayLive() {
-		boolean alive = aliveB.isSelected();
-		MonitorTab selectedTab = getSelectedTab();
-		MonitorModel tabTableModel = selectedTab.getModel();
-		if (tabTableModel instanceof PersonTableModel model) {
-			if (alive)
-				group.clearSelection();
-			aliveB.setSelected(alive);
-			model.showAlive(alive);
-			// refresh the tab
-			selectNewTab(selectedTab);
-		}
-	}
-	
-	/**
-	 * Displays the already-deceased personnel.
-	 */
-	private void displayDeceased() {
-		boolean deceased = deceasedB.isSelected();
-		MonitorTab selectedTab = getSelectedTab();
-		MonitorModel tabTableModel = selectedTab.getModel();
-		if (tabTableModel instanceof PersonTableModel model) {
-			if (deceased)
-				group.clearSelection();
-			deceasedB.setSelected(deceased);
-			model.showDeceased(deceased);
-			// refresh the tab
-			selectNewTab(selectedTab);
-		}
-	}
-		
-	/**
-	 * Displays the buried citizens.
-	 */
-	private void displayBuried() {
-		boolean buried = buriedB.isSelected();
-		MonitorTab selectedTab = getSelectedTab();
-		MonitorModel tabTableModel = selectedTab.getModel();
-		if (tabTableModel instanceof PersonTableModel model) {
-			if (buried)
-				group.clearSelection();
-			buriedB.setSelected(buried);
-			model.showBuried(buried);		
-			// refresh the tab
-			selectNewTab(selectedTab);
-		}
-	}
-	
+
 	/** 
 	 * Gets the details of which tab is selected.
 	 */
