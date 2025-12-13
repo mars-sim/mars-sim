@@ -273,6 +273,7 @@ public class SimulationBuilder {
 				String defaultName = (scenarioName != null) ? scenarioName : ScenarioConfig.PREDEFINED_SCENARIOS[0];
 				ScenarioConfig config = getScenarioConfig();
 				var bootstrap = config.getItem(defaultName);
+
 				builder.createInitialSettlements(bootstrap);
 				sim.getTransportManager().loadArrivingSettments(bootstrap,
 																simConfig.getSettlementTemplateConfiguration(),

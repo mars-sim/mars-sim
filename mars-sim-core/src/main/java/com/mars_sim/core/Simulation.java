@@ -464,8 +464,6 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Initialize MarketManager instance		
 		marketManager = new MarketManager(this);
-		// Add colonies to lunarColonyManager
-		lunarColonyManager.addInitColonies();
 		
 		// Initialize Unit
 		Rover.initializeInstances(simulationConfig);
