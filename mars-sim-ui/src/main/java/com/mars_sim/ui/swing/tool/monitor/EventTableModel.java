@@ -27,7 +27,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * onto the existing Event Manager.
  */
 @SuppressWarnings("serial")
-public class EventTableModel extends EntityTableModel<HistoricalEvent> implements HistoricalEventListener{
+class EventTableModel extends CachingTableModel<HistoricalEvent> implements HistoricalEventListener{
 
 	// Column names
 	private static final int TIMESTAMP = 0;
@@ -110,7 +110,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 				.filter(this::isDisplayable)
 				.toList();
 	
-		resetEntities(events);		
+		resetItems(events);		
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(HistoricalEvent event, int column) {
+	protected Object getItemValue(HistoricalEvent event, int column) {
 		Object result = null;
 
 		switch (column) {
@@ -214,14 +214,14 @@ public class EventTableModel extends EntityTableModel<HistoricalEvent> implement
 	 */
 	@Override
 	public Object getObject(int row) {
-		return getEntity(row).getEntity();
+		return getItem(row).getEntity();
 	}
 	/**
 	 * New event has been added.
 	 */
 	public synchronized void eventAdded(HistoricalEvent event) {
 		if (isDisplayable(event)) {
-			addEntity(event);
+			addItem(event);
 		}
 	}
 

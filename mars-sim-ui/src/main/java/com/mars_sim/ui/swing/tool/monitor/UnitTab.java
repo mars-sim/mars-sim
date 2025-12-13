@@ -24,7 +24,7 @@ extends TableTab {
 	 * @param model the table model.
 	 * @param mandatory Is this table view mandatory.
 	 */
-	public UnitTab(final MonitorWindow window, UnitTableModel<?> model, boolean mandatory, String icon) {
+	public UnitTab(final MonitorWindow window, EntityMonitorModel<?> model, boolean mandatory, String icon) {
 		// Use TableTab constructor
 		super(window, model, mandatory, false, icon);
 

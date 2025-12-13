@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 
 @SuppressWarnings("serial")
-public class TradeTableModel extends CategoryTableModel<Good> {
+class TradeTableModel extends CategoryTableModel<Good> {
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -36,13 +36,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int CAT_COL 			= GOOD_COL + 1;
 	private static final int TYPE_COL 			= CAT_COL + 1;
 	private static final int SETTLEMENT_COL 	= TYPE_COL + 1;
-			static final int FLATTEN_COL 		= SETTLEMENT_COL + 1;
+	private static final int FLATTEN_COL 		= SETTLEMENT_COL + 1;
 	private static final int PROJECTED_COL 		= FLATTEN_COL + 1;
 	private static final int TRADE_COL 			= PROJECTED_COL + 1;
 	private static final int REPAIR_COL 		= TRADE_COL + 1;
 	
 	private static final int SUPPLY_COL 		= REPAIR_COL + 1;
-			static final int QUANTITY_COL 		= SUPPLY_COL + 1;
+	private static final int QUANTITY_COL 		= SUPPLY_COL + 1;
 	private static final int MASS_COL 			= QUANTITY_COL + 1;
 	
 	private static final int DEMAND_COL 		= MASS_COL + 1;
@@ -51,15 +51,15 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int VALUE_COL 			= MARKET_DEMAND_COL + 1;
 	private static final int MARKET_VALUE_COL 	= VALUE_COL + 1;
 	
-			static final int COST_COL 			= MARKET_VALUE_COL + 1;
-			static final int MARKET_COST_COL 	= COST_COL + 1;
+	private static final int COST_COL 			= MARKET_VALUE_COL + 1;
+	private static final int MARKET_COST_COL 	= COST_COL + 1;
 			
-			static final int PRICE_COL 			= MARKET_COST_COL + 1;
-			static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
+	private static final int PRICE_COL 			= MARKET_COST_COL + 1;
+	private static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
 
 	private static final int COLUMNCOUNT = MARKET_PRICE_COL + 1;
 
-	static final int NUM_INITIAL_COLUMNS = PROJECTED_COL;
+	private static final int NUM_INITIAL_COLUMNS = PROJECTED_COL;
 	
 	static {
 		
@@ -160,7 +160,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 * @param columnIndex COlumn to get
 	 */
 	@Override
-	protected  Object getEntityValue(CategoryKey<Good> row, int columnIndex) {
+	protected  Object getItemValue(CategoryKey<Good> row, int columnIndex) {
 		Good selectedGood = row.getCategory();
 		Settlement selectedSettlement = row.getSettlement();
 

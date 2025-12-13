@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -371,7 +372,7 @@ public class MonitorWindow extends ContentPanel
 	 *
 	 * @param model The new model to display.
 	 */
-	public void displayModel(UnitTableModel<?> model) {
+	public void displayModel(EntityMonitorModel<?> model) {
 		int index = getModelIndex(model);
 		if (index != -1)
 			tabsSection.setSelectedIndex(index);
@@ -508,8 +509,8 @@ public class MonitorWindow extends ContentPanel
 			newSelection = new HashSet<>(unitManager.getSettlements());
 		}
 
-		// Change to the selection
-		currentSelection = newSelection;
+		// Change to the selection, must be read only as it is shared
+		currentSelection = Collections.unmodifiableSet(newSelection);
 		selectionDescription.setText(newDescription);
 	}
 
@@ -532,7 +533,7 @@ public class MonitorWindow extends ContentPanel
 	 * @param model the model to check for.
 	 * @return tab index or -1 if none.
 	 */
-	private int getModelIndex(UnitTableModel<?> model) {
+	private int getModelIndex(EntityMonitorModel<?> model) {
 		for (Component c: tabsSection.getComponents()) {
 			if ((c instanceof MonitorTab tab) && model.equals(tab.getModel())) {
 				return tabsSection.indexOfComponent(c);

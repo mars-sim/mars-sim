@@ -114,7 +114,7 @@ public class TableTab extends MonitorTab {
 		
 		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
 		table.setAutoCreateRowSorter(true);
-
+		table.getRowSorter().toggleSortOrder(0);   // By default sort on 1st column
 		
 		// Set single selection mode if necessary.
 		if (singleSelection)

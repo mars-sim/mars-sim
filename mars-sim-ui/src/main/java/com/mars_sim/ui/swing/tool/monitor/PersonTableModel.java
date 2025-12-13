@@ -9,13 +9,10 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
@@ -43,7 +40,7 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
  * into Columns.
  */
 @SuppressWarnings("serial")
-public class PersonTableModel extends UnitTableModel<Person> {
+public class PersonTableModel extends EntityMonitorModel<Person> {
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -145,7 +142,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 *
 	 */
 	public PersonTableModel()  {
-		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
+		super (Msg.getString("PersonTableModel.nameAllCitizens"),
 				"PersonTableModel.countingCitizens", COLUMNS);
 		setupCache();
 		
@@ -162,7 +159,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 */
 	public PersonTableModel(Crewable vehicle) {
 		
-		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
 				((Unit)vehicle).getName()), 
 				"PersonTableModel.countingPeople", //$NON-NLS-1$
 				COLUMNS);
@@ -171,10 +168,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 		sourceType = ValidSourceType.VEHICLE_CREW;
 		this.vehicle = vehicle;
-		
-		Collection<Person> crew = CollectionUtils.sortByName(vehicle.getCrew());
-		
-		resetEntities(crew);
+				
+		resetItems(vehicle.getCrew());
 		
 		crewListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
 										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
@@ -188,7 +183,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * @param mission Monitored mission Person objects.
 	 */
 	public PersonTableModel(Mission mission)  {
-		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
 				mission.getName()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
 				COLUMNS);
 		
@@ -203,8 +198,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			}
 		}
 		
-		CollectionUtils.sortByName(missionPeople);
-		resetEntities(missionPeople);
+		resetItems(missionPeople);
 		
 		missionListener = new LocalMissionListener();
 		mission.addEntityListener(missionListener);
@@ -232,8 +226,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getAllAssociatedPeople)
 								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
+								.toList();
 				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
 										EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			}
@@ -242,8 +235,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getIndoorPeople)
 								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
+								.toList();
 				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
 												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}
@@ -254,8 +246,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getDeceasedPeople)
 								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
+								.toList();
 				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
 										EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			}
@@ -264,8 +255,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getIndoorPeople)
 								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
+								.toList();
 				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
 												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}
@@ -276,8 +266,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getBuriedPeople)
 								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
+								.toList();
 				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
 											EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 			}
@@ -286,15 +275,14 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				entities = settlements.stream()
 								.map(Settlement::getIndoorPeople)
 								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
+								.toList();
 				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
 												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 			}		
 		}
 		
 		if (entities != null && !entities.isEmpty()) {		
-			resetEntities(entities);
+			resetItems(entities);
 		}
 
 		// Listen to the settlements for new People
@@ -349,7 +337,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(Person person, int columnIndex) {
+	protected Object getItemValue(Person person, int columnIndex) {
 		Object result = null;
 
 		switch (columnIndex) {
@@ -478,7 +466,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
     public String getToolTipAt(int rowIndex, int columnIndex) {
 		String result = null;
 		if (columnIndex == TASK_DESC) {
-			Person p = getEntity(rowIndex);
+			Person p = getItem(rowIndex);
 			if (p != null) {
 				// If the Person is dead, there is no Task Manager
 				var score = p.getMind().getTaskManager().getScore();
@@ -514,17 +502,21 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	public void destroy() {
 		super.destroy();
 
-		 if (sourceType == ValidSourceType.VEHICLE_CREW) {
-			((Unit) vehicle).removeEntityListener(crewListener);
-			crewListener = null;
-			vehicle = null;
-		} else if (sourceType == ValidSourceType.MISSION_PEOPLE) {
-			mission.removeEntityListener(missionListener);
-			missionListener = null;
-			mission = null;
-		} else {
-			settlements.forEach(s -> s.removeEntityListener(settlementListener));
-			settlementListener = null;
+		 switch (sourceType) {
+			case ValidSourceType.VEHICLE_CREW -> {
+					((Unit) vehicle).removeEntityListener(crewListener);
+					crewListener = null;
+					vehicle = null;
+				}
+			case ValidSourceType.MISSION_PEOPLE -> {
+					mission.removeEntityListener(missionListener);
+					missionListener = null;
+					mission = null;
+				}
+			default -> {
+					settlements.forEach(s -> s.removeEntityListener(settlementListener));
+					settlementListener = null;
+				}
 		}
 	}
 
@@ -544,10 +536,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 				String eventType = event.getType();
 
 				if (eventType.equals(Mission.ADD_MEMBER_EVENT)) {
-					addEntity(p);
+					addItem(p);
 				}
 				else if (eventType.equals(Mission.REMOVE_MEMBER_EVENT)) {
-					removeEntity(p);
+					removeItem(p);
 				}
 			}
 		}
@@ -575,10 +567,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			if (event.getTarget() instanceof Person p) {
 				String eventType = event.getType();
 				if (addEvent.equals(eventType)) {
-					addEntity(p);
+					addItem(p);
 				}
 				else if (removeEvent.equals(eventType)) {
-					removeEntity(p);
+					removeItem(p);
 				}
 			}
 		}

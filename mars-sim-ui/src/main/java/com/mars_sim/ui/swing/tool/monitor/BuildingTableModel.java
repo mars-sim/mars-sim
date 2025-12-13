@@ -6,11 +6,9 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.Comparator;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.utility.heating.HeatMode;
 import com.mars_sim.core.building.utility.heating.HeatSource;
@@ -27,7 +25,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * of the list is the Unit Manager. 
  */
 @SuppressWarnings("serial")
-public class BuildingTableModel extends UnitTableModel<Building> {
+class BuildingTableModel extends EntityMonitorModel<Building> {
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -124,7 +122,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 * @throws Exception
 	 */
 	public BuildingTableModel() {
-		super(UnitType.BUILDING, Msg.getString("BuildingTableModel.nameBuildings", ""),
+		super(Msg.getString("BuildingTableModel.nameBuildings", ""),
 				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
 				COLUMNS);	
 		
@@ -133,16 +131,12 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-		getEntities().forEach(s -> s.removeEntityListener(this));
 
 		var newBuildings = filter.stream()
 				.flatMap(s -> s.getBuildingManager().getBuildingSet().stream())
-				.sorted(Comparator.comparing(Building::getName))
 				.toList();
 	
-		resetEntities(newBuildings);
-
-		newBuildings.forEach(s -> s.addEntityListener(this));
+		resetItems(newBuildings);
 
 		return true;
 	}
@@ -154,142 +148,38 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(Building building, int columnIndex) {
-		Object result = null;
-
+	protected Object getItemValue(Building building, int columnIndex) {
 		ThermalGeneration furnace = building.getThermalGeneration();
 	
-		switch (columnIndex) {
-
-		case NAME: 
-			result = building.getName();
-			break;
-			
-		case SETTLEMENT: 
-			result = building.getSettlement().getName();
-			break;
-			
-		case TYPE: 
-			result = building.getBuildingType();
-			break;
-		
-		case CATEGORY:
-			result = building.getCategory().getName();
-			break;
-
-		case POWER_MODE:
-			if (building.getPowerMode() != null)
-				result = building.getPowerMode().getName();
-			break;
-						
-		case POWER_REQ:
-			result = building.getFullPowerRequired();
-			break;
-			
-		case POWER_GEN:
-			result = building.getGeneratedPower();
-			break;
-			
-		case DELTA_TEMP:
-			if (furnace != null)
-				result = building.getDeltaTemp();
-			break;
-
-		case DEV_TEMP:
-			if (furnace != null)
-				result = building.getDevTemp();
-			break;
-
-		case PASSIVE_VENT:
-			if (furnace != null)
-				result = building.getPassiveVentHeat();
-			break;
-			
-		case ACTIVE_VENT:
-			if (furnace != null)
-				result = building.getActiveVentHeat();
-			break;
-			
-		case HEAT_SURPLUS:
-			if (furnace != null)
-				result = building.getHeatSurplus();
-			break;
-			
-		case HEAT_GEN:
-			if (furnace != null)
-				result = building.getHeatGenerated();
-			break;
-			
-		case HEAT_REQ:
-			if (furnace != null)
-				result = building.getHeatRequired();
-			break;
-			
-		case HEAT_GAIN:
-			if (furnace != null)
-				result = building.getHeatGain();
-			break;
-			
-		case HEAT_LOSS:
-			if (furnace != null)
-				result = building.getHeatLoss();
-			break;
-			
-		case PRE_NET_HEAT:
-			if (furnace != null)
-				result = building.getPreNetHeat();
-			break;
-			
-		case POST_NET_HEAT:
-			if (furnace != null)
-				result = building.getPostNetHeat();
-			break;
-			
-		case AIR_HEAT_SINK:
-			if (furnace != null)
-				result = building.getAirHeatSink();
-			break;
-			
-		case WATER_HEAT_SINK:
-			if (furnace != null)
-				result = building.getWaterHeatSink();
-			break;
-			
-		case EXCESS_HEAT:
-			if (furnace != null)
-				result = building.getExcessHeat();
-			break;
-			
-		case TEMPERATURE:
-			if (furnace != null)
-				result = building.getCurrentTemperature();
-			break;
-			
-		case SOLAR:
-			if (furnace != null)
-				result = getHeatSourceGen(HeatSourceType.SOLAR_HEATING, furnace);
-			break;
-			
-		case ELECTRIC:
-			if (furnace != null)
-				result = getHeatSourceGen(HeatSourceType.ELECTRIC_HEATING, furnace);
-			break;
-			
-		case NUCLEAR:
-			if (furnace != null)
-				result = getHeatSourceGen(HeatSourceType.THERMAL_NUCLEAR, furnace);
-			break;
-			
-		case FUEL:
-			if (furnace != null)
-				result = getHeatSourceGen(HeatSourceType.FUEL_HEATING, furnace);
-			break;
-			
-		default:
-			break;
-		}
-
-		return result;
+		return switch (columnIndex) {
+			case NAME -> building.getName();
+			case SETTLEMENT -> building.getSettlement().getName();
+			case TYPE -> building.getBuildingType();
+			case CATEGORY -> building.getCategory().getName();
+			case POWER_MODE -> building.getPowerMode() != null ? building.getPowerMode().getName() : null;
+			case POWER_REQ -> building.getFullPowerRequired();
+			case POWER_GEN -> building.getGeneratedPower();
+			case DELTA_TEMP -> furnace != null ? building.getDeltaTemp() : null;
+			case DEV_TEMP -> furnace != null ? building.getDevTemp() : null;
+			case PASSIVE_VENT -> furnace != null ? building.getPassiveVentHeat() : null;
+			case ACTIVE_VENT -> furnace != null ? building.getActiveVentHeat() : null;
+			case HEAT_SURPLUS -> furnace != null ? building.getHeatSurplus() : null;
+			case HEAT_GEN -> furnace != null ? building.getHeatGenerated() : null;
+			case HEAT_REQ -> furnace != null ? building.getHeatRequired() : null;
+			case HEAT_GAIN -> furnace != null ? building.getHeatGain() : null;
+			case HEAT_LOSS -> furnace != null ? building.getHeatLoss() : null;
+			case PRE_NET_HEAT -> furnace != null ? building.getPreNetHeat() : null;
+			case POST_NET_HEAT -> furnace != null ? building.getPostNetHeat() : null;
+			case AIR_HEAT_SINK -> furnace != null ? building.getAirHeatSink() : null;
+			case WATER_HEAT_SINK -> furnace != null ? building.getWaterHeatSink() : null;
+			case EXCESS_HEAT -> furnace != null ? building.getExcessHeat() : null;
+			case TEMPERATURE -> furnace != null ? building.getCurrentTemperature() : null;
+			case SOLAR -> furnace != null ? getHeatSourceGen(HeatSourceType.SOLAR_HEATING, furnace) : null;
+			case ELECTRIC -> furnace != null ? getHeatSourceGen(HeatSourceType.ELECTRIC_HEATING, furnace) : null;
+			case NUCLEAR -> furnace != null ? getHeatSourceGen(HeatSourceType.THERMAL_NUCLEAR, furnace) : null;
+			case FUEL -> furnace != null ? getHeatSourceGen(HeatSourceType.FUEL_HEATING, furnace) : null;
+			default -> null;
+		};
 	}
 	
 	/**
@@ -357,7 +247,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	
 	@Override
 	public void destroy() {
-		getEntities().forEach(s -> s.removeEntityListener(this));
+		getItems().forEach(s -> s.removeEntityListener(this));
 		super.destroy();
 	}
 	
@@ -368,8 +258,7 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 */
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (event.getSource() instanceof Building building
-				&& event.getTarget() instanceof Building) {
+		if (event.getSource() instanceof Building building) {
 			String eventType = event.getType();
 
 			int columnIndex = getColumnIndexForEventType(eventType);
@@ -387,28 +276,30 @@ public class BuildingTableModel extends UnitTableModel<Building> {
 	 * @return the column index, or -1 if not mapped
 	 */
 	private int getColumnIndexForEventType(String eventType) {
-		if (PowerGrid.POWER_MODE_EVENT.equals(eventType)) return POWER_MODE;
-		if (PowerGrid.GENERATED_POWER_EVENT.equals(eventType)) return POWER_GEN;
-		if (PowerGrid.REQUIRED_POWER_EVENT.equals(eventType)) return POWER_REQ;
-		if (Heating.REQUIRED_HEAT_EVENT.equals(eventType)) return HEAT_REQ;
-		if (Heating.GENERATED_HEAT_EVENT.equals(eventType)) return HEAT_GEN;
-		if (ThermalGeneration.HEAT_SURPLUS_EVENT.equals(eventType)) return HEAT_SURPLUS;
-		if (Heating.NET_HEAT_0_EVENT.equals(eventType)) return PRE_NET_HEAT;
-		if (Heating.NET_HEAT_1_EVENT.equals(eventType)) return POST_NET_HEAT;
-		if (Heating.TEMPERATURE_EVENT.equals(eventType)) return TEMPERATURE;
-		if (Heating.DELTA_T_EVENT.equals(eventType)) return DELTA_TEMP;
-		if (Heating.DEV_T_EVENT.equals(eventType)) return DEV_TEMP;
-		if (Heating.PASSIVE_VENT_EVENT.equals(eventType)) return PASSIVE_VENT;
-		if (Heating.ACTIVE_VENT_EVENT.equals(eventType)) return ACTIVE_VENT;
-		if (Heating.HEAT_GAIN_EVENT.equals(eventType)) return HEAT_GAIN;
-		if (Heating.HEAT_LOSS_EVENT.equals(eventType)) return HEAT_LOSS;
-		if (Heating.AIR_HEAT_SINK_EVENT.equals(eventType)) return AIR_HEAT_SINK;
-		if (Heating.WATER_HEAT_SINK_EVENT.equals(eventType)) return WATER_HEAT_SINK;
-		if (Heating.EXCESS_HEAT_EVENT.equals(eventType)) return EXCESS_HEAT;
-		if (ThermalGeneration.SOLAR_HEAT_EVENT.equals(eventType)) return SOLAR;
-		if (ThermalGeneration.ELECTRIC_HEAT_EVENT.equals(eventType)) return ELECTRIC;
-		if (ThermalGeneration.NUCLEAR_HEAT_EVENT.equals(eventType)) return NUCLEAR;
-		if (ThermalGeneration.FUEL_HEAT_EVENT.equals(eventType)) return FUEL;
-		return -1;
+		return switch (eventType) {
+			case PowerGrid.POWER_MODE_EVENT -> POWER_MODE;
+			case PowerGrid.GENERATED_POWER_EVENT -> POWER_GEN;
+			case PowerGrid.REQUIRED_POWER_EVENT -> POWER_REQ;
+			case Heating.REQUIRED_HEAT_EVENT -> HEAT_REQ;
+			case Heating.GENERATED_HEAT_EVENT -> HEAT_GEN;
+			case ThermalGeneration.HEAT_SURPLUS_EVENT -> HEAT_SURPLUS;
+			case Heating.NET_HEAT_0_EVENT -> PRE_NET_HEAT;
+			case Heating.NET_HEAT_1_EVENT -> POST_NET_HEAT;
+			case Heating.TEMPERATURE_EVENT -> TEMPERATURE;
+			case Heating.DELTA_T_EVENT -> DELTA_TEMP;
+			case Heating.DEV_T_EVENT -> DEV_TEMP;
+			case Heating.PASSIVE_VENT_EVENT -> PASSIVE_VENT;
+			case Heating.ACTIVE_VENT_EVENT -> ACTIVE_VENT;
+			case Heating.HEAT_GAIN_EVENT -> HEAT_GAIN;
+			case Heating.HEAT_LOSS_EVENT -> HEAT_LOSS;
+			case Heating.AIR_HEAT_SINK_EVENT -> AIR_HEAT_SINK;
+			case Heating.WATER_HEAT_SINK_EVENT -> WATER_HEAT_SINK;
+			case Heating.EXCESS_HEAT_EVENT -> EXCESS_HEAT;
+			case ThermalGeneration.SOLAR_HEAT_EVENT -> SOLAR;
+			case ThermalGeneration.ELECTRIC_HEAT_EVENT -> ELECTRIC;
+			case ThermalGeneration.NUCLEAR_HEAT_EVENT -> NUCLEAR;
+			case ThermalGeneration.FUEL_HEAT_EVENT -> FUEL;
+			default -> -1;
+		};
 	}
 }

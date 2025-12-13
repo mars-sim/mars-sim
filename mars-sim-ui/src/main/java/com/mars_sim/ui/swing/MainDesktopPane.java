@@ -54,7 +54,7 @@ import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.monitor.UnitTableModel;
+import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.science.ScienceWindow;
@@ -326,7 +326,7 @@ public class MainDesktopPane extends JDesktopPane
 	 *
 	 * @param model the new model to display
 	 */
-	public void addModel(UnitTableModel<?> model) {
+	public void addModel(EntityMonitorModel<?> model) {
 		var cw = openToolWindow(MonitorWindow.NAME);
 		((MonitorWindow)cw).displayModel(model);
 	}

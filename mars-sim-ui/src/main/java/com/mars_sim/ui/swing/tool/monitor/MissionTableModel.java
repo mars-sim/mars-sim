@@ -6,20 +6,14 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.SwingUtilities;
-
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.GameManager;
-import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionManager;
@@ -39,59 +33,33 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * within the Monitor Window for all settlements.
  */
 @SuppressWarnings("serial")
-public class MissionTableModel extends EntityTableModel<Mission>
-		implements MissionManagerListener, EntityListener {
+class MissionTableModel extends EntityMonitorModel<Mission>
+		implements MissionManagerListener {
 
 	// Column indexes
-	/** Date filed column. */
 	private static final int DATE_FILED = 0;
-	/** Date Embarked column. */
 	private static final int DATE_EMBARKED = DATE_FILED + 1;
-	/** Date Returned column. */
 	private static final int DATE_COMPLETED = DATE_EMBARKED + 1;
-	/** Starting settlement column. */
 	private static final int STARTING_SETTLEMENT = DATE_COMPLETED + 1;
-	/** Starting member column. */
 	private static final int STARTING_MEMBER = STARTING_SETTLEMENT + 1;
-	/** Mission String column. */
 	private static final int MISSION_STRING = STARTING_MEMBER + 1;
-	/** Description column. */
 	private static final int DESIGNATION = MISSION_STRING + 1;
-	/** Phase column. */
 	private static final int PHASE = DESIGNATION + 1;
-	/** Mission vehicle column. */
 	private static final int VEHICLE = PHASE + 1;
-	/** Member number column. */
 	private static final int MEMBER_NUM = VEHICLE + 1;
-	/** Navpoint number column. */
 	private static final int NAVPOINT_NUM = MEMBER_NUM + 1;
-	/** Travelled distance to next navpoint column. */
 	private static final int TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT = NAVPOINT_NUM + 1;
-	/** Remaining distance to next navpoint column. */
 	private static final int REMAINING_DISTANCE_TO_NEXT_NAVPOINT = TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT + 1;
-	/** Remaining distance column. */
 	private static final int TOTAL_REMAINING_DISTANCE_KM = REMAINING_DISTANCE_TO_NEXT_NAVPOINT + 1;
-	/** Travelled distance column. */
 	private static final int TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM = TOTAL_REMAINING_DISTANCE_KM + 1;
-	/** Proposed route distance column. */
-	private static final int TOTAL_ESTIMATED_DISTANCE_KM = TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM + 1;
-	/** The number of Columns. */
-	
+	private static final int TOTAL_ESTIMATED_DISTANCE_KM = TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM + 1;	
 	private static final int COLUMNCOUNT = TOTAL_ESTIMATED_DISTANCE_KM + 1;
+
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
-	
-	private boolean monitorMissions = false;
-
-	private GameMode mode = GameManager.getGameMode();
-	
-	private List<Mission> missionCache;
-	
-	private Settlement commanderSettlement;
-
+		
+	private Set<Settlement> settlementSelection = Collections.emptySet();
 	private MissionManager missionManager;
-	
-	protected static UnitManager unitManager = Simulation.instance().getUnitManager();
 
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
@@ -120,101 +88,40 @@ public class MissionTableModel extends EntityTableModel<Mission>
 		super(Msg.getString("MissionTableModel.tabName"), "MissionTableModel.numberOfMissions", COLUMNS);
 
 		missionManager = sim.getMissionManager();
-		
-		updateMissionCache();
-		
+				
 		missionManager.addListener(this);
 
 		// Mark this column up so as to hide it to save space in case of a single settlement view
 		setSettlementColumn(STARTING_SETTLEMENT);
 	}
 	
-	private synchronized void updateMissionCache() {
-		if (mode == GameMode.COMMAND) {
-			commanderSettlement = unitManager.getCommanderSettlement();
-			// Must take a copy
-			missionCache = new ArrayList<>(missionManager.getMissionsForSettlement(commanderSettlement));
-		}
-		else {
-			// Must take my own copy
-			missionCache = new ArrayList<>(missionManager.getMissions());
-		}
 
-	}
-	
-	/**
-	 * Sets whether the changes to the Missions should be monitor for change. Set up the 
-	 * Mission listeners for the Mission in the table.
-	 * 
-	 * @param activate 
-	 */
-    public void setMonitorEntites(boolean activate) {
-    	
-    	updateMissionCache();
-    	
-		if (activate != monitorMissions) {
-			if (activate) {
-				for (Mission m : missionCache) {
-					if (!m.isDone()) {
-						m.addEntityListener(this);
-					}
-				}
-			}
-			else {
-				for (Mission m : missionCache) {
-					m.removeEntityListener(this);
-				}
-			}
-			monitorMissions = activate;
-		}
-	}
-    
 	/**
 	 * Sets the settlement filter.
 	 */
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
-
-		updateMissionCache();
 		
-		Collection<Mission> missions = missionCache.stream()
+		settlementSelection = filter;
+		Collection<Mission> missions = missionManager.getMissions().stream()
 				.filter(m -> filter.contains(m.getAssociatedSettlement()))
 				.toList();
 	
-		resetEntities(missions);
+		resetItems(missions);
 		
 		return true;
 	}
 
 	/**
-	 * Adds a new mission.
+	 * New mission has been added to the Mission Manager
 	 *
 	 * @param mission the new mission.
 	 */
 	@Override
 	public void addMission(Mission mission) {
-		if (missionCache.contains(mission))
-			return;
-
-		boolean goodToGo = true;
-		if (mode == GameMode.COMMAND) {
-			goodToGo = mission.getStartingPerson().getAssociatedSettlement()
-					.equals(commanderSettlement);
-		}
-
-		if (goodToGo) {
-			synchronized(missionCache) {
-				mission.addEntityListener(this);
-				
-				// Structural changes via Swing thread
-				SwingUtilities.invokeLater(() -> {
-					missionCache.add(mission);
-
-					// Inform listeners of new row
-					int index = missionCache.size() - 1;
-					fireTableRowsInserted(index, index);
-				});
-			}
+		var s = mission.getAssociatedSettlement();
+		if (settlementSelection.contains(s)) {
+			addItem(mission);
 		}
 	}
 
@@ -225,31 +132,9 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	 */
 	@Override
 	public void removeMission(Mission mission) {
-		if (missionCache.contains(mission)) {
-			mission.removeEntityListener(this);
-
-			// Structural changes via Swing thread
-			SwingUtilities.invokeLater(() -> {
-				int index = missionCache.indexOf(mission);
-				missionCache.remove(mission);
-
-				// Delete a particular row
-				fireTableRowsDeleted(index, index);
-			});
-		}
+		removeItem(mission);
 	}
 
-	/**
-	 * Returns the object at the specified row indexes.
-	 *
-	 * @param row Index of the row object.
-	 * @return Object at the specified row.
-	 */
-	@Override
-	public Object getObject(int row) {
-		return missionCache.get(row);
-	}
-	
 	/**
 	 * Catches mission update event.
 	 *
@@ -258,54 +143,34 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	@Override
 	public void entityUpdate(EntityEvent event) {
 
-		int index = missionCache.indexOf(event.getSource());
+		if (event.getSource() instanceof Mission mission) {
 
-		if (index >= 0) {
-			List<Integer> columnsToUpdate = new ArrayList<>();
+			// Get main column
 			String eventType = event.getType();
 			int column0 = switch (eventType) {
 				case VehicleMission.VEHICLE_EVENT -> VEHICLE;
+				case VehicleMission.NAVPOINTS_EVENT -> NAVPOINT_NUM;
 				case Mission.STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
 				case EntityEventType.NAME_EVENT -> MISSION_STRING;
 				case Mission.DESIGNATION_EVENT ->DESIGNATION;
 				case Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT -> MEMBER_NUM;
-				case Mission.PHASE_EVENT -> DATE_FILED;
+				case Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT -> PHASE;
 				default -> -1;
 			};
 
 			if (column0 > -1)
-				columnsToUpdate.add(column0);
+				entityValueUpdated(mission, column0, column0);
 
-			if (event.getSource() instanceof VehicleMission) {	
-				switch(eventType) {
-					case VehicleMission.DISTANCE_EVENT: {
-						columnsToUpdate.add(TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT);
-						columnsToUpdate.add(REMAINING_DISTANCE_TO_NEXT_NAVPOINT);
-						columnsToUpdate.add(TOTAL_REMAINING_DISTANCE_KM);
-						columnsToUpdate.add(TOTAL_ACTUAL_TRAVELLED_DISTANCE_KM);
-						columnsToUpdate.add(TOTAL_ESTIMATED_DISTANCE_KM);
-					} break;
-
-					case VehicleMission.NAVPOINTS_EVENT:
-						columnsToUpdate.add(NAVPOINT_NUM);
-						break;
-
-					case Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT:
-						columnsToUpdate.add(PHASE);
-						break;
-					default:
-						break;
-				}
+			// Special event that trigger multiple updates
+			if (eventType.equals(VehicleMission.DISTANCE_EVENT)) {
+				entityValueUpdated(mission,
+						TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT,
+						TOTAL_ESTIMATED_DISTANCE_KM);
 			}
-
-			if (!columnsToUpdate.isEmpty())
-				SwingUtilities.invokeLater(new MissionTableCellUpdater(index, columnsToUpdate));
+			else if (eventType.equals(Mission.PHASE_EVENT)) {
+				entityValueUpdated(mission, DATE_FILED, DATE_COMPLETED);
+			}
 		}
-	}
-
-	@Override
-	public int getRowCount() {
-		return missionCache.size();
 	}
 
 	/**
@@ -315,7 +180,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	public Object getEntityValue(Mission mission, int columnIndex) {
+	public Object getItemValue(Mission mission, int columnIndex) {
 
 		Object result = null;
 
@@ -427,35 +292,7 @@ public class MissionTableModel extends EntityTableModel<Mission>
 	 */
 	@Override
 	public void destroy() {
-		Object[] missions = missionCache.toArray();
-		for (int x = 0; x < missions.length; x++) {
-			removeMission((Mission) missions[x]);
-		}
-
 		missionManager.removeListener(this);
 		super.destroy();
-	}
-
-	/**
-	 * Inner class for updating mission table cell.
-	 */
-	private class MissionTableCellUpdater implements Runnable {
-
-		private int row;
-		private List<Integer> columns;
-
-		private MissionTableCellUpdater(int row, List<Integer>columns) {
-			this.row = row;
-			this.columns = columns;
-		}
-
-		public void run() {
-			if (row >= 0 && row < getRowCount()) {
-				for(int column : columns) {
-					if (column < getColumnCount())
-						fireTableCellUpdated(row, column);
-				}
-			}
-		}
 	}
 }

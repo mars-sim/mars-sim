@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * EntityTableModel.java
+ * CachingTableModel.java
  * @date 2025-08-27
  * @author Barry Evans
  */
@@ -19,17 +19,16 @@ import javax.swing.SwingUtilities;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 /**
- * This class provides a table model implementation that allows each row to be mapped to
- * a single simulation entity. The properties of the entity are mapped into columns
- * by the sub implementation. It provides the ability to cache specific columns in a 
- * backing store to reduce the computation effort.
- * 
+ * This class provides a table model implementation that caches values for specific columns to
+ * reduce the computational effort to calculate the value from the source item.
+ * The source value of item properties are calculated in the getEntityValue method that
+ * is implemented by subclasses.
  */
 @SuppressWarnings("serial")
-public abstract class EntityTableModel<T> extends AbstractMonitorModel {
+public abstract class CachingTableModel<T> extends AbstractMonitorModel {
 
 
-    private List<T> entities;
+    private List<T> items;
     private Map<T ,Map<Integer, Object>> rowCache;
     private Set<Integer> cachedColumns;
     private boolean fireEnabled;
@@ -41,10 +40,10 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 	 * @param countingMsgKey      Key in the Msg bundle used to display row count
 	 * @param columns        Details of the columns displayed.
 	 */
-	protected EntityTableModel(String name, String countingMsgKey, ColumnSpec[] names) {
+	protected CachingTableModel(String name, String countingMsgKey, ColumnSpec[] names) {
         super(name, countingMsgKey, names);
 
-        this.entities = new ArrayList<>();
+        this.items = new ArrayList<>();
         this.cachedColumns = new HashSet<>();
     }
  
@@ -70,23 +69,24 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Resets the entities that provide the Row data.
+     * Resets the items that provide the Row data. This will flush the cache.
      * 
-     * @param newEntities
+     * @param newItems New items to load into the table.
      */
-    protected void resetEntities(Collection<T> newEntities) {
+    protected void resetItems(Collection<T> newItems) {
 		fireEnabled = false;
 		
-		if (!entities.isEmpty()) {
+		if (!items.isEmpty()) {
 			// Take a shallow copy as going to be removing items
-			List<T> oldUnits = new ArrayList<>(entities);
+			List<T> oldUnits = new ArrayList<>(items);
 			for(T old : oldUnits) {
-				removeEntity(old);
+				removeItem(old);
 			}
 		}
 
-		for(T newUnit : newEntities) {
-			addEntity(newUnit);
+        resetCache();
+		for(T newUnit : newItems) {
+			addItem(newUnit);
 		}
 
 		
@@ -97,67 +97,72 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Adds an entity to the model. This can be overridden if special onboarding
+     * Adds an item to the model. This can be overridden if special onboarding
      * logic is need, e.g. register listeners.
      * 
-     * @param newEntity
+     * @param newItem Item to add
      * @return 
      */
-    protected boolean addEntity(T newEntity) {
-        boolean add = !entities.contains(newEntity);
+    protected boolean addItem(T newItem) {
+        boolean add = !items.contains(newItem);
         if (add) {
             if (fireEnabled) {
                 // Do async
-                SwingUtilities.invokeLater(() -> addRow(newEntity));
+                SwingUtilities.invokeLater(() -> addRow(newItem));
             }
             else {
-                addRow(newEntity);
+                addRow(newItem);
             }
         }
         return add;
     }
 
     /**
-     * Adds a row of entity.
+     * Adds a row to the actual model.
      * 
-     * @param newEntity
+     * @param newItem Item to add
      */
-    private void addRow(T newEntity) {
-        entities.add(newEntity);
+    private void addRow(T newItem) {
+        items.add(newItem);
 
         if (rowCache != null) {
             // Add the data row now
-            rowCache.put(newEntity, new HashMap<>());
+            rowCache.put(newItem, new HashMap<>());
         }
 
         if (fireEnabled) {
-            int idx = entities.indexOf(newEntity);
+            int idx = items.indexOf(newItem);
             fireTableRowsInserted(idx, idx);
         }
     }
 
     /**
-     * Removes a previously added Entity form the model.
+     * Removes a previously added item from the model.
      */
-    protected void removeEntity(T oldEntity) {
-        int idx = entities.indexOf(oldEntity);
+    protected void removeItem(T oldItem) {
+        int idx = items.indexOf(oldItem);
         if (idx < 0) {
             return;
         }
 
         if (fireEnabled) {
             // Do async
-            SwingUtilities.invokeLater(() -> removeRow(oldEntity, idx));
+            SwingUtilities.invokeLater(() -> removeRow(oldItem, idx));
         }
         else {
-            removeRow(oldEntity, idx);
+            removeRow(oldItem, idx);
         }
     }
 
-    private void removeRow(T oldEntity, int idx) {
-        entities.remove(oldEntity);
+    /**
+     * Removes a row from the model.
+     * @param oldItem
+     * @param idx
+     */
+    private void removeRow(T oldItem, int idx) {
+        items.remove(oldItem);
         if (rowCache != null) {
-            rowCache.remove(oldEntity);
+            rowCache.remove(oldItem);
         }
 
         if (fireEnabled) {
@@ -170,19 +175,19 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
      * 
      * @return
      */
-    protected List<T> getEntities() {
-        return entities;
+    protected List<T> getItems() {
+        return items;
     }
 
     /**
-	 * Gets the Entity<T> at the specified row.
+	 * Gets the item at the specified row.
 	 *
 	 * @param index Index of the row.
-	 * @return Entity matching row
+	 * @return Item matching row
 	 */
-	protected T getEntity(int index) {
+	protected T getItem(int index) {
 		try {
-            return entities.get(index);
+            return items.get(index);
         }
         catch (IndexOutOfBoundsException ioe) {
             // Entity list is refreshing
@@ -198,7 +203,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 	 */
 	@Override
 	public Object getObject(int row) {
-		return getEntity(row);
+		return getItem(row);
 	}
 
 
@@ -209,7 +214,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
 	 */
 	@Override
 	public int getRowCount() {
-		return entities.size();
+		return items.size();
 	}
 
     /**
@@ -218,11 +223,11 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
      * 
      * @param rowIndex
      * @param columnIndex
-     * @see #getEntityValue(Object, int)
+     * @see #getItemValue(Object, int)
      */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        T entity = getEntity(rowIndex);
+        T entity = getItem(rowIndex);
         if (entity == null) {
             return null;
         }
@@ -237,7 +242,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
         }
 
         // Get the value direct from the entity
-        Object result = getEntityValue(entity, columnIndex);
+        Object result = getItemValue(entity, columnIndex);
 
         // Store the result ?
         if (useCache) {
@@ -270,7 +275,7 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
      * @param lastCol
      */
 	protected void entityValueUpdated(T entity, int firstCol, int lastCol) {
-        int rowIndex = entities.indexOf(entity);
+        int rowIndex = items.indexOf(entity);
         if (rowIndex < 0) {
             return;
         }
@@ -279,10 +284,10 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
             if (cachedColumns.contains(i)) {
                 // Recalculate cached value in this Thread to avoid problem
                 // with calculating derived values in the UI Thread
-                Object newValue = getEntityValue(entity, i);
+                Object newValue = getItemValue(entity, i);
                 Object cachedValue = getCacheValue(entity, i);
                 if ((cachedValue == null) || !cachedValue.equals(newValue)) {
-                    setCacheValue(entity, i, getEntityValue(entity, i));
+                    setCacheValue(entity, i, getItemValue(entity, i));
                 }
             }
 
@@ -292,10 +297,10 @@ public abstract class EntityTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
-     * Gets the real value of this entity for a specific column. This implementation
+     * Gets the real value of this item for a specific column. This implementation
      * may involve expensive calculations.
      */
-    protected abstract Object getEntityValue(T entity, int column);
+    protected abstract Object getItemValue(T entity, int column);
 
     private class TableCellUpdater implements Runnable {
 
