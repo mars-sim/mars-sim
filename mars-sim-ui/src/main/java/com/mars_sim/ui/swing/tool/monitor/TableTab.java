@@ -210,6 +210,28 @@ public class TableTab extends MonitorTab {
 	}
 
 	/**
+	 * This tab supports filtering if the model can be filtered.
+	 */
+	@Override
+	public boolean isFilterable() {
+		return getModel() instanceof FilteredTableModel;
+	}	
+
+	/**
+	 * Show the filter dialog is available.
+	 * @param context
+	 */
+	@Override
+	public void showFilters(UIContext context) {
+		if (!isFilterable()) {
+			// Should not happen
+			return;
+		}
+		MonitorFilter filter = new MonitorFilter((FilteredTableModel) getModel(), context.getTopFrame());
+		filter.setVisible(true);
+	}
+
+	/**
 	 * Filters the settlements.
 	 * 
 	 * @param currentSelection

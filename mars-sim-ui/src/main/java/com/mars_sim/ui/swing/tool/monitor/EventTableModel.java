@@ -6,9 +6,11 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.Entity;
@@ -30,7 +32,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  */
 @SuppressWarnings("serial")
 class EventTableModel extends CachingTableModel<HistoricalEvent>
-					implements HistoricalEventListener, EntityModel {
+					implements HistoricalEventListener, EntityModel, FilteredTableModel {
 
 	// Column names
 	private static final int TIMESTAMP = 0;
@@ -122,7 +124,7 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	 * @param activate Not used
 	 */
 	@Override
-	public void setMonitorEntites(boolean activate) {
+	public void setMonitorEntities(boolean activate) {
 		// No need of monitoring any events. As each event is generated, it won't change.
 	}
 
@@ -229,31 +231,37 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	}
 
 	/**
-	 * Sets the category type to display.
-	 * 
-	 * @param type
-	 * @param isDisplayed
+	 * Get a list of the supported filters and their active state based on the HistoricalEventCategory.
+	 * @return
+	 */	
+	@Override
+	public List<FilteredTableModel.Filter> getActiveFilters() {
+		var filters = new ArrayList<FilteredTableModel.Filter>();
+		for (HistoricalEventCategory category : HistoricalEventCategory.values()) {
+			boolean isActive = !blockedTypes.contains(category);
+			filters.add(new FilteredTableModel.Filter(category.name(), category.getName(), isActive));
+		}
+		return filters;
+	}
+
+	/**
+	 * Enable/disable display of a category of events.
+	 * @param category Name of the category
+	 * @param selected true to display, false to block
 	 */
-	public void setDisplayed(HistoricalEventCategory type, boolean isDisplayed) {
+	@Override
+	public void setFilter(String category, boolean isDisplayed) {
+		var type = HistoricalEventCategory.valueOf(category);
 		if (isDisplayed) {
 			blockedTypes.remove(type);
 		}
 		else {
 			blockedTypes.add(type);
 		}
+
 		reloadEvents();
 	}
 
-	/**
-	 * Is a category event being displayed?
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean isDisplayed(HistoricalEventCategory type) {
-		return !blockedTypes.contains(type);
-	}
-	
 	/**
 	 * Prepares the model for deletion.
 	 */

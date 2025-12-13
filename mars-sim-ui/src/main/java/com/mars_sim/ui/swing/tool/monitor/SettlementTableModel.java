@@ -30,7 +30,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * key attributes of the Settlement into Columns.
  */
 @SuppressWarnings("serial")
-class SettlementTableModel extends EntityMonitorModel<Settlement> {
+public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 
 	// Column indexes
 	private static final int NAME = 0;

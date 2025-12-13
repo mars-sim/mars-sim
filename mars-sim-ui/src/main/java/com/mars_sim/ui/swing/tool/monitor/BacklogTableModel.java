@@ -111,7 +111,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * @param activate 
 	 */
 	@Override
-    public void setMonitorEntites(boolean activate) {
+    public void setMonitorEntities(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
 				selectedSettlements.forEach(s -> s.addEntityListener(this));

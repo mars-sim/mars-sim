@@ -46,7 +46,7 @@ interface MonitorModel extends ToolTipTableModel {
 	 * 
 	 * @param activate 
 	 */
-    public void setMonitorEntites(boolean activate);
+    public void setMonitorEntities(boolean activate);
 
 	/**
 	 * Gets the index of the Settlement column if defined. This is a special column that can be visible/hidden according

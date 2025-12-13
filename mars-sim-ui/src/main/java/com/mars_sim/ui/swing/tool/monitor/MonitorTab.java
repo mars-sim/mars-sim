@@ -26,7 +26,6 @@ public abstract class MonitorTab extends JPanel {
 	private Icon icon;
 	private boolean mandatory;
 	private boolean ownModel = true;
-	private boolean filtered;
 
 	/**
 	 * The constructor that creates a view within a tab displaying the specified model.
@@ -98,13 +97,21 @@ public abstract class MonitorTab extends JPanel {
 		return mandatory;
 	}
 
-	protected void setFilterable(boolean b) {
-		filtered = b;
-	}
-
+	/**
+	 * Default implementation returns false.
+	 * @return
+	 */
     public boolean isFilterable() {
-        return filtered;
+        return false;
     }
+
+	/**
+	 * Show the filter dialog is available. The default implementation does nothing.
+	 * @param context
+	 */
+	public void showFilters(UIContext context) {
+		// By default nothing happens
+	}
 
     public boolean isEntityDriven() {
         return false;

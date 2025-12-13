@@ -42,7 +42,7 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 	 * 
 	 * @param activate 
 	 */
-    public void setMonitorEntites(boolean activate) {
+    public void setMonitorEntities(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
 				selectedSettlements.forEach(s ->s.addEntityListener(this));

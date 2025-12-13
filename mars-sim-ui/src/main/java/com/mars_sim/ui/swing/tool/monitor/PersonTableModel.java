@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,7 +41,8 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
  * into Columns.
  */
 @SuppressWarnings("serial")
-public class PersonTableModel extends EntityMonitorModel<Person> {
+public class PersonTableModel extends EntityMonitorModel<Person>
+		implements FilteredTableModel {
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -69,6 +71,8 @@ public class PersonTableModel extends EntityMonitorModel<Person> {
 
 	private static final String DEHYDRATED = "Dehydrated";
 	private static final String STARVING = "Starving";
+	private static final String LIVE = "Show Alive";
+	private static final String DECEASED = "Show Deceased";
 	
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -126,7 +130,6 @@ public class PersonTableModel extends EntityMonitorModel<Person> {
 
 	private boolean isLiveCB = true;
 	private boolean isDeceasedCB = false;
-	private boolean isBuriedCB = false;
 	
 	private transient Crewable vehicle;
 	private Set<Settlement> settlements = Collections.emptySet();
@@ -159,9 +162,9 @@ public class PersonTableModel extends EntityMonitorModel<Person> {
 	 */
 	public PersonTableModel(Crewable vehicle) {
 		
-		super(Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameVehicle", //-NLS-1$
 				((Unit)vehicle).getName()), 
-				"PersonTableModel.countingPeople", //$NON-NLS-1$
+				"PersonTableModel.countingPeople", //-NLS-1$
 				COLUMNS);
 
 		setupCache();
@@ -183,8 +186,8 @@ public class PersonTableModel extends EntityMonitorModel<Person> {
 	 * @param mission Monitored mission Person objects.
 	 */
 	public PersonTableModel(Mission mission)  {
-		super(Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
-				mission.getName()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameMission", //-NLS-1$
+				mission.getName()), "PersonTableModel.countingMissionMembers", //-NLS-1$
 				COLUMNS);
 		
 		setupCache();
@@ -220,65 +223,24 @@ public class PersonTableModel extends EntityMonitorModel<Person> {
 		
 		Collection<Person> entities = null;
 		
-		if (isLiveCB) {
-			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
+		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
 
-				entities = settlements.stream()
-								.map(Settlement::getAllAssociatedPeople)
-								.flatMap(Collection::stream)
-								.toList();
-				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
-										EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			}
-			else {
-
-				entities = settlements.stream()
-								.map(Settlement::getIndoorPeople)
-								.flatMap(Collection::stream)
-								.toList();
-				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
-												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			}
+			entities = settlements.stream()
+							.map(Settlement::getAllAssociatedPeople)
+							.flatMap(Collection::stream)
+							.filter(this::isPersonDisplayable)
+							.toList();
+			settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
+									EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 		}
-		else if (isDeceasedCB) {
-			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-
-				entities = settlements.stream()
-								.map(Settlement::getDeceasedPeople)
-								.flatMap(Collection::stream)
-								.toList();
-				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
-										EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			}
-			else {
-
-				entities = settlements.stream()
-								.map(Settlement::getIndoorPeople)
-								.flatMap(Collection::stream)
-								.toList();
-				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
-												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			}
-		}
-		else if (isBuriedCB) {
-			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-	
-				entities = settlements.stream()
-								.map(Settlement::getBuriedPeople)
-								.flatMap(Collection::stream)
-								.toList();
-				settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
-											EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			}
-			else {
-
-				entities = settlements.stream()
-								.map(Settlement::getIndoorPeople)
-								.flatMap(Collection::stream)
-								.toList();
-				settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
-												EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			}		
+		else {
+			entities = settlements.stream()
+							.map(Settlement::getIndoorPeople)
+							.flatMap(Collection::stream)
+							.filter(this::isPersonDisplayable)
+							.toList();
+			settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+											EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		}
 		
 		if (entities != null && !entities.isEmpty()) {		
@@ -292,42 +254,47 @@ public class PersonTableModel extends EntityMonitorModel<Person> {
 	}
 
 	/**
-	 * Shows live citizens if selected.
-	 * 
-	 * @param isLive
+	 * Is the Person displayable based on the alive/deceased filters.
+	 * @param p
+	 * @return
 	 */
-	public void showAlive(boolean isLive) {
-		this.isLiveCB = isLive;
-		if (isLive) {
-			this.isDeceasedCB = false;
-			this.isBuriedCB = false;
+	private boolean isPersonDisplayable(Person p) {
+		if (!isLiveCB && !isDeceasedCB) {
+			return false;
 		}
+		if (p.isDeclaredDead()) {
+			return isDeceasedCB;
+		}
+		return isLiveCB;
 	}
-	
+
 	/**
-	 * Shows deceased citizens if selected.
-	 * 
-	 * @param isDeceased
-	 */
-	public void showDeceased(boolean isDeceased) {
-		this.isDeceasedCB = isDeceased;
-		if (isDeceased) {
-			this.isLiveCB = false;
-			this.isBuriedCB = false;
-		}
+	 * Get a list of the supported filters and their active state based on the alive state of Persons
+	 * @return
+	 */	
+	@Override
+	public List<FilteredTableModel.Filter> getActiveFilters() {
+		var filters = new ArrayList<FilteredTableModel.Filter>();
+		filters.add(new Filter(LIVE, LIVE, isLiveCB));
+		filters.add(new Filter(DECEASED, DECEASED, isDeceasedCB));
+
+		return filters;
 	}
-	
+
 	/**
-	 * Shows buried citizens if selected.
-	 * 
-	 * @param isBuried
+	 * Enable/disable display of a filter.
+	 * @param name Name of the filter.
+	 * @param selected true to display, false to block
 	 */
-	public void showBuried(boolean isBuried) {
-		this.isBuriedCB = isBuried;
-		if (isBuried) {
-			this.isLiveCB = false;
-			this.isDeceasedCB = false;
+	@Override
+	public void setFilter(String name, boolean isDisplayed) {
+		switch (name) {
+			case LIVE -> isLiveCB = isDisplayed;
+			case DECEASED -> isDeceasedCB = isDisplayed;
 		}
+
+		// Reload
+		setSettlementFilter(settlements);
 	}
 
 	/**

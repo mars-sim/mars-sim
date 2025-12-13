@@ -14,7 +14,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * The table model of Entities objects. It provides the ability to view and monitor Entities in the MonitorTab.
- * Any entites added will be automatically monitored for changes via the EntityListener interface.
+ * Any entities added will be automatically monitored for changes via the EntityListener interface.
  */
 @SuppressWarnings("serial")
 public abstract class EntityMonitorModel<T extends MonitorableEntity> extends CachingTableModel<T>
@@ -32,7 +32,8 @@ public abstract class EntityMonitorModel<T extends MonitorableEntity> extends Ca
 	 * 
 	 * @param activate Start watching entities or disable watching.
 	 */
-    public void setMonitorEntites(boolean activate) {
+	@Override
+    public void setMonitorEntities(boolean activate) {
 		if (activate != monitorEntities) {
 			if (activate) {
 				getItems().forEach(e -> e.addEntityListener(this));
@@ -65,8 +66,10 @@ public abstract class EntityMonitorModel<T extends MonitorableEntity> extends Ca
 	 */
 	@Override
 	protected void removeItem(T oldUnit) {
+		if (monitorEntities) {
+			oldUnit.removeEntityListener(this);
+		}
 		super.removeItem(oldUnit);
-		oldUnit.removeEntityListener(this);
 	}
 
     /**
