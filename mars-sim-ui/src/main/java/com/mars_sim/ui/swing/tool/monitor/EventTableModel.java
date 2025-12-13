@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventListener;
@@ -20,6 +21,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -27,7 +29,8 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * onto the existing Event Manager.
  */
 @SuppressWarnings("serial")
-class EventTableModel extends CachingTableModel<HistoricalEvent> implements HistoricalEventListener{
+class EventTableModel extends CachingTableModel<HistoricalEvent>
+					implements HistoricalEventListener, EntityModel {
 
 	// Column names
 	private static final int TIMESTAMP = 0;
@@ -213,7 +216,7 @@ class EventTableModel extends CachingTableModel<HistoricalEvent> implements Hist
 	 * @return Unit at specified position.
 	 */
 	@Override
-	public Object getObject(int row) {
+	public Entity getAssociatedEntity(int row) {
 		return getItem(row).getEntity();
 	}
 	/**

@@ -196,18 +196,6 @@ public abstract class CachingTableModel<T> extends AbstractMonitorModel {
 	}
 
 	/**
-	 * Gets the unit at the specified row.
-	 *
-	 * @param row Indexes of Unit to retrieve.
-	 * @return Unit at specified position.
-	 */
-	@Override
-	public Object getObject(int row) {
-		return getItem(row);
-	}
-
-
-	/**
 	 * Gets the number of rows in the model.
 	 *
 	 * @return the number of Units.

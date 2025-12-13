@@ -29,14 +29,6 @@ interface MonitorModel extends ToolTipTableModel {
 
 
 	/**
-	 * Returns the object at the specified row indexes.
-	 * 
-	 * @param row Index of the row object.
-	 * @return Object at the specified row.
-	 */
-	public Object getObject(int row);
-
-	/**
 	 * Gets the model count string.
 	 */
 	public String getCountString();

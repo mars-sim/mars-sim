@@ -6,9 +6,11 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * The table model of Entities objects. It provides the ability to view and monitor Entities in the MonitorTab.
@@ -16,7 +18,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  */
 @SuppressWarnings("serial")
 public abstract class EntityMonitorModel<T extends MonitorableEntity> extends CachingTableModel<T>
-		implements EntityListener {
+		implements EntityListener, EntityModel {
 
 	private boolean monitorEntities = false;
 	
@@ -65,6 +67,17 @@ public abstract class EntityMonitorModel<T extends MonitorableEntity> extends Ca
 	protected void removeItem(T oldUnit) {
 		super.removeItem(oldUnit);
 		oldUnit.removeEntityListener(this);
+	}
+
+    /**
+     * Gets the associated Entity at a row index.
+     * 
+     * @param row Index
+     * @return Entity associated 
+     */
+	@Override
+    public Entity getAssociatedEntity(int row) {
+		return getItem(row);
 	}
 
 	/**

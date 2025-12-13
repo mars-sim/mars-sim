@@ -49,7 +49,6 @@ import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
@@ -59,6 +58,7 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.MapSelector;
+import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
 /**
@@ -222,8 +222,7 @@ public class MonitorWindow extends ContentPanel
 		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		// Add all the tabs
-		addAllTabs(choices,
-					(uiProps != null ? uiProps.getProperty(TAB_PROP) : null));
+		addAllTabs((uiProps != null ? uiProps.getProperty(TAB_PROP) : null));
 		
 		// Hide settlement box at startup since the all settlement tab is being selected by default
 		setSettlementBox(true);
@@ -254,15 +253,15 @@ public class MonitorWindow extends ContentPanel
 	/**
 	 * Adds all the tabs.
 	 */
-	private void addAllTabs(List<Entity> choices, String defaultTabName) {
+	private void addAllTabs(String defaultTabName) {
 		List<MonitorTab> newTabs = new ArrayList<>();
 
 		// Add tabs into the table	
-		newTabs.add(new UnitTab(this, new SettlementTableModel(), true, COLONY_ICON));
-		newTabs.add(new UnitTab(this, new PersonTableModel(), true, PEOPLE_ICON));
-		newTabs.add(new UnitTab(this, new RobotTableModel(), true, BOT_ICON));
-		newTabs.add(new UnitTab(this, new BuildingTableModel(), true, BUILDING_ICON));
-		newTabs.add(new UnitTab(this, new CropTableModel(context.getSimulation().getConfig()), true, CROP_ICON));
+		newTabs.add(new TableTab(this, new SettlementTableModel(), true, true, COLONY_ICON));
+		newTabs.add(new TableTab(this, new PersonTableModel(), true, true, PEOPLE_ICON));
+		newTabs.add(new TableTab(this, new RobotTableModel(), true, true, BOT_ICON));
+		newTabs.add(new TableTab(this, new BuildingTableModel(), true, true, BUILDING_ICON));
+		newTabs.add(new TableTab(this, new CropTableModel(context.getSimulation().getConfig()), true, true, CROP_ICON));
 		
 		newTabs.add(new TableTab(this, new FoodTableModel(), true, false, FOOD_ICON));
 
@@ -274,8 +273,8 @@ public class MonitorWindow extends ContentPanel
 		eventsTab = new EventTab(this, context);
 		newTabs.add(eventsTab);
 		
-		newTabs.add(new MissionTab(this, context.getSimulation()));
-		newTabs.add(new UnitTab(this, new VehicleTableModel(), true, VEHICLE_ICON));
+		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, MissionWindow.ICON));
+		newTabs.add(new TableTab(this, new VehicleTableModel(), true, true, VEHICLE_ICON));
 
 		for (MonitorTab m : newTabs) {
 			addTab(m);
@@ -313,15 +312,15 @@ public class MonitorWindow extends ContentPanel
 		statusPanel.add(buttonRemoveTab);
 
 		// Create buttons based on selection
-		buttonMap = new JButton(ImageLoader.getIconByName(LOCATE_ICON)); // $NON-NLS-1$
-		buttonMap.setToolTipText(Msg.getString("EntityLabel.locate")); //$NON-NLS-1$
-		buttonMap.addActionListener(e -> centerMap());
-		statusPanel.add(buttonMap);
-
 		buttonDetails = new JButton(ImageLoader.getIconByName(DETAILS_ICON)); // $NON-NLS-1$
 		buttonDetails.setToolTipText(Msg.getString("EntityLabel.details")); //$NON-NLS-1$
 		buttonDetails.addActionListener(e -> displayDetails());
 		statusPanel.add(buttonDetails);
+
+		buttonMap = new JButton(ImageLoader.getIconByName(LOCATE_ICON)); // $NON-NLS-1$
+		buttonMap.setToolTipText(Msg.getString("EntityLabel.locate")); //$NON-NLS-1$
+		buttonMap.addActionListener(e -> centerMap());
+		statusPanel.add(buttonMap);
 
 		buttonProps = new JButton(ImageLoader.getIconByName(COLUMN_ICON)); // $NON-NLS-1$
 		buttonProps.setToolTipText(Msg.getString("MonitorWindow.tooltip.preferences")); //$NON-NLS-1$
@@ -378,7 +377,7 @@ public class MonitorWindow extends ContentPanel
 			tabsSection.setSelectedIndex(index);
 		else {
 			try {
-				UnitTab newTab = new UnitTab(this, model, false,"usertab");
+				var newTab = new TableTab(this, model, false, true,"usertab");
 				addTab(newTab);
 				tabsSection.setSelectedComponent(newTab);
 			} catch (Exception e) {
@@ -613,7 +612,6 @@ public class MonitorWindow extends ContentPanel
 		super.setTitle(TITLE + " - " + title);
 		
 		boolean enableRemove = !selectedTab.isMandatory();
-		boolean enableMap = selectedTab.isNavigatable();
 		boolean enableDetails = selectedTab.isEntityDriven();
 		boolean enableFilter = selectedTab.isFilterable();
 		boolean enableSettlement = false;
@@ -656,7 +654,7 @@ public class MonitorWindow extends ContentPanel
 		buttonRemoveTab.setEnabled(enableRemove);
 		buttonBar.setEnabled(enableBar);
 		buttonPie.setEnabled(enablePie);
-		buttonMap.setEnabled(enableMap);
+		buttonMap.setEnabled(enableDetails);
 		buttonDetails.setEnabled(enableDetails);
 		buttonFilter.setEnabled(enableFilter);
 		buttonProps.setEnabled(!enableRemove);
@@ -711,10 +709,9 @@ public class MonitorWindow extends ContentPanel
 
 	private void centerMap() {
 		MonitorTab selected = getSelectedTab();
-		if (selected != null) {
-			Coordinates place = selected.getSelectedCoordinates();
-			if (place != null) {
-				MapSelector.displayCoords(context, place);
+		if (selected instanceof TableTab tt) {
+			for (var ent : tt.getSelection()) {
+				MapSelector.displayOnMap(context, ent);
 			}
 		}
 	}
@@ -722,10 +719,8 @@ public class MonitorWindow extends ContentPanel
 	void displayDetails() {
 		MonitorTab selected = getSelectedTab();
 		if (selected instanceof TableTab tt) {
-			for (Object row : tt.getSelection()) {
-				if (row instanceof Entity ent) {
-					context.showDetails(ent);
-				}
+			for (var ent : tt.getSelection()) {
+				context.showDetails(ent);
 			}
 		}
 	}

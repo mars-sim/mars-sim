@@ -21,6 +21,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
 /**
@@ -29,7 +30,7 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
  */
 @SuppressWarnings("serial")
 public class BacklogTableModel extends AbstractMonitorModel
-					implements EntityListener {
+					implements EntityListener, EntityModel {
 	// Represents a row in the table
 	private record BacklogEntry(Settlement owner, SettlementTask task) implements Serializable {}
 
@@ -99,7 +100,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * Gets the Object.
 	 */
 	@Override
-	public Object getObject(int row) {
+	public Entity getAssociatedEntity(int row) {
 		return tasks.get(row).task().getFocus();
 	}
 

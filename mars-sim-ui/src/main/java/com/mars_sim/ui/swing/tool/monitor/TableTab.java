@@ -24,6 +24,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
@@ -31,6 +32,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
@@ -63,7 +65,7 @@ public class TableTab extends MonitorTab {
 	 * @param singleSelection Does this table only allow single selection?
 	 * @param icon name        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
 	 */
-	protected TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
+	public TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String iconname) {
 		super(model, mandatory, true, ImageLoader.getIconByName(iconname));
 
@@ -184,19 +186,20 @@ public class TableTab extends MonitorTab {
 	 *
 	 * @return array of row indexes.
 	 */
-	public final List<Object> getSelection() {
+	public final List<Entity> getSelection() {
+		List<Entity> selectedRows = new ArrayList<>();
 		MonitorModel target = getModel();
+		if (target instanceof EntityModel em) {
+			int [] indexes = table.getSelectedRows();
+			RowSorter<? extends TableModel> sorter = table.getRowSorter();
+			for (int index : indexes) {
+				if (sorter != null)
+					index = sorter.convertRowIndexToModel(index);
 
-		int [] indexes = table.getSelectedRows();
-		RowSorter<? extends TableModel> sorter = table.getRowSorter();
-		List<Object> selectedRows = new ArrayList<>();
-		for (int index : indexes) {
-            if (sorter != null)
-                index = sorter.convertRowIndexToModel(index);
-
-			Object selected = target.getObject(index);
-			if (selected != null)
-				selectedRows.add(selected);
+				var selected = em.getAssociatedEntity(index);
+				if (selected != null)
+					selectedRows.add(selected);
+			}
 		}
 
 		return selectedRows;
@@ -240,4 +243,12 @@ public class TableTab extends MonitorTab {
 		return accepted;
 	}
 
+	/**
+	 * Is this table is entity driven. This can be derived from the model
+	 * being an EntityModel.
+	 */
+	@Override
+	public boolean isEntityDriven() {
+        return getModel() instanceof EntityModel;
+    }
 }
