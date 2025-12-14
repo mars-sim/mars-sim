@@ -7,25 +7,25 @@
 package com.mars_sim.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.ModalInternalFrame;
 
 /**
  * A dialog for modifying transport items.
- * TODO externalize strings
  */
 @SuppressWarnings("serial")
-public class ModifyTransportItemDialog extends ModalInternalFrame {
+public class ModifyTransportItemDialog extends JDialog {
 
 	// Data members.
 	private Transportable transportItem;
@@ -33,22 +33,27 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 	private ResupplyWindow resupplyWindow;
 
 	private JButton commitButton;
+	private Simulation simulation;
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param owner the owner of this dialog.
-	 * @param title title of dialog.
-	 * @param transportItem the transport item to modify.
+	 * @param parent the parent frame
+	 * @param resupplyWindow the resupply window
+	 * @param title title of dialog
+	 * @param transportItem the transport item to modify
+	 * @param simulation the simulation instance
 	 */
-	public ModifyTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow, String title, Transportable transportItem) {// , boolean isFX) {
+	public ModifyTransportItemDialog(Frame parent, ResupplyWindow resupplyWindow, String title, 
+									Transportable transportItem, Simulation simulation) {
 
-		// Use ModalInternalFrame constructor
-        super("Modify Mission");
+		// Use JDialog constructor
+        super(parent, "Modify Mission", true); // true for modal
 
 		// Initialize data members.
 		this.transportItem = transportItem;
 		this.resupplyWindow = resupplyWindow;
+		this.simulation = simulation;
 
 		this.setSize(560, 500);
 
@@ -79,33 +84,21 @@ public class ModifyTransportItemDialog extends ModalInternalFrame {
 				// Close dialog.
 				dispose());
 		buttonPane.add(cancelButton);
-
-        // Add to its own tab pane
-		desktop.add(this);    
-
-		Dimension desktopSize = desktop.getParent().getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-
-	    setLocation(width, height);
-	    setModal(true);
-	    setVisible(true);
+		
+		// Set dialog behavior
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(parent);
 	}
 
 	public void initEditingPanel() {
 
 		// Create editing panel.
-		editingPanel = null;
-		if (transportItem instanceof ArrivingSettlement) {
-			editingPanel = new ArrivingSettlementEditingPanel((ArrivingSettlement) transportItem, resupplyWindow, this, null);
-		}
-		else if (transportItem instanceof Resupply) {
-			editingPanel = new ResupplyMissionEditingPanel((Resupply) transportItem, resupplyWindow, this, null);
-		}
-		else {
-			throw new IllegalStateException("Transport item: " + transportItem + " is not valid.");
-		}
+		editingPanel = switch (transportItem) {
+   			case ArrivingSettlement as ->
+  				new ArrivingSettlementEditingPanel(simulation, as, this, null);
+    		case Resupply r -> new ResupplyMissionEditingPanel(simulation, r, this, null);
+    		default -> throw new IllegalStateException("Transport item: " + transportItem + " is not valid.");
+  		};
 	}
 
 

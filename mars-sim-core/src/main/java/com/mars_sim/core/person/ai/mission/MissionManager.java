@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionManager.java
- * @date 2025-08-13
+ * @date 2025-10-11
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -38,8 +38,10 @@ public class MissionManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
+	private static final SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
 
+	private static final MissionStatus MISSION_PLAN_NOT_APPROVED = MissionStatus.createResourceStatus("Mission.status.notApproved");
+	
 	/** The mission identifier. */
 	private int identifier;
 	/** The mission sortie id. Note it goes back to 1 at the start of each sol. */
@@ -260,7 +262,7 @@ public class MissionManager implements Serializable {
 		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
 			if (canAcceptMission(metaMission, startingSettlement, paramMgr)) {
 				RatingScore baseProb = metaMission.getProbability(person);
-				totalProbCache += updateMissionRating(person, missionProbCache, metaMission, baseProb, paramMgr);
+				totalProbCache += updateMissionRating(missionProbCache, metaMission, baseProb, paramMgr);
 			}
 		}
 		return totalProbCache;
@@ -268,23 +270,23 @@ public class MissionManager implements Serializable {
 
 	private boolean canAcceptMission(MetaMission metaMission,
 									 Settlement settlement, ParameterManager paramMgr) {
-		int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE,
-				metaMission.getType().name(), Integer.MAX_VALUE);
+		int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE.getKey(metaMission.getType()),
+											Integer.MAX_VALUE);
 		int activeMissions = numParticularMissions(metaMission.getType(), settlement);
 		return activeMissions < maxMissions;
 	}
 
-	private double updateMissionRating(Person person, List<MissionRating> missionProbCache,
+	private double updateMissionRating(List<MissionRating> missionProbCache,
 									   MetaMission metaMission, RatingScore baseProb, ParameterManager paramMgr) {
 		double score = baseProb.getScore();
 		if (score > 0) {
 			double settlementRatio = paramMgr.getDoubleValue(
-					MissionWeightParameters.INSTANCE, metaMission.getType().name(), 1D);
+					MissionWeightParameters.INSTANCE.getKey(metaMission.getType()), 1D);
 			baseProb.addModifier("settlement.ratio", settlementRatio);
-
-			logger.info(person, metaMission.getType().getName() + " " + baseProb.getOutput());
-			missionProbCache.add(new MissionRating(metaMission, baseProb));
 		}
+
+		missionProbCache.add(new MissionRating(metaMission, baseProb));
+		
 		return score;
 	}
 
@@ -393,7 +395,7 @@ public class MissionManager implements Serializable {
 				historicalMissions.increaseDataPoint(PlanType.NOT_APPROVED.name(), 1D);
 
 				Mission m = missionPlan.getMission();
-				m.abortMission(MissionStatus.createResourceStatus("Mission Plan NOT Approved"));
+				m.abortMission(MISSION_PLAN_NOT_APPROVED);
 				removeMission(m);
 			}
 		}

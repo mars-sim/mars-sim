@@ -53,7 +53,7 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
     public RatingScore() {
         this.modifiers = new HashMap<>();
         this.bases = new HashMap<>();
-        this.score = 0;
+        this.score = 0D;
     }
 
     /**
@@ -195,7 +195,8 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
     }
 
     /**
-     * Compare bsed on the total
+     * Compares with another rating score, based on the total.
+     * 
      * @param o
      * @return
      */

@@ -1,13 +1,14 @@
 /*
  * Mars Simulation Project
  * ShiftSlot.java
- * @date 2023-09-01
+ * @date 2025-10-12
  * @author Barry Evans
  */
 package com.mars_sim.core.person.ai.shift;
 
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.time.MarsTime;
 
 /**
@@ -47,21 +48,65 @@ public class ShiftSlot implements ScheduledEventHandler {
 
     private boolean onCall = false;
     private boolean onLeave = false;
+    private boolean isGuest = false;
+    
     private Shift shift;
     private Person worker;
 
+    /**
+     * Constructor.
+     * 
+     * @param shift
+     * @param worker
+     * @param defaultOnCall true if this person starts if on-call shift and no need of joining any shift
+     */
     ShiftSlot(Shift shift, Person worker) {
         this.shift = shift;
         this.worker = worker;
-        shift.joinShift();
+
+      	if (RoleType.GUEST == worker.getRole().getType()) {         
+      		isGuest = true;
+      		onCall = true;
+      	}
+      	
+        else {
+        	shift.joinShift();
+        }
     }
 
     /**
+     * Is this a guest slot ?
+     * 
+     * @return
+     */
+    public boolean isGuest() {
+    	return isGuest;
+    }
+    
+    /**
+     * Sets this as a guest slot.
+     * 
+     * @param value
+     */
+    public void setGuest(boolean value) {
+    	if (value) {         
+      		isGuest = true;
+      		onCall = true;
+      	}
+    	else
+    		isGuest = false;
+    }
+    
+    /**
      * Updates the OnCall override flag.
      * 
+     * @param newOnCall
      * @return Previous OnCall.
      */
     public boolean setOnCall(boolean newOnCall) {
+    	if (isGuest)
+    		return onCall;
+    	
         boolean origOnCall = onCall;
         onCall = newOnCall;
         return origOnCall;
@@ -83,7 +128,7 @@ public class ShiftSlot implements ScheduledEventHandler {
      * Extracts the status of this slot in terms of active work.
      */
     public WorkStatus getStatus() {
-        if (onCall) {
+        if (onCall || isGuest) {
             return WorkStatus.ON_CALL;
         }
         else if (onLeave) {
@@ -108,6 +153,9 @@ public class ShiftSlot implements ScheduledEventHandler {
      * @param newShift
      */
     void setShift(Shift newShift) {
+     	if (isGuest)
+    		return;
+    	
         shift.leaveShift();
         shift = newShift;
         shift.joinShift();

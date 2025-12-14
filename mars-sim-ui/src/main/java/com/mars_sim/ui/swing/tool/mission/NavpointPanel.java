@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * NavpointPanel.java
- * @date 2024-08-01
+ * @date 2025-10-15
  * @author Scott Davis
  */
 
@@ -30,9 +30,10 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.structure.Settlement;
@@ -40,6 +41,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.map.MapDisplay;
 import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
@@ -55,10 +57,9 @@ import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 @SuppressWarnings("serial")
 public class NavpointPanel
 extends JPanel
-implements MissionListener {
+implements EntityListener {
 
-	private static final int WIDTH = 512;
-	private static final int HEIGHT = 512;
+	private static final int HEIGHT = 430;
 	private static final double TWO_PI = Math.PI * 2D;
 	
 	// Private members.
@@ -78,7 +79,7 @@ implements MissionListener {
 	/**
 	 * Constructor.
 	 */
-	protected NavpointPanel(MissionWindow missionWindow) {
+	protected NavpointPanel(UIContext context) {
 
 		// Set the layout.
 		setLayout(new BorderLayout());
@@ -110,15 +111,15 @@ implements MissionListener {
 		navpointTablePane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		navpointTablePane.setBorder(new MarsPanelBorder());		
 		
-		// Define splitPane to house mapDisplayPane and ..
+		// Define splitPane to house mapPane and navpointTable
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mapDisplayPane, navpointTablePane);
 	    splitPane.setOneTouchExpandable(true);
 	    splitPane.setDividerLocation(HEIGHT + 10);
 	    mainPane.add(splitPane, BorderLayout.CENTER);
 		
 		// Create the map panel.
-		mapPanel = new MapPanel(missionWindow.getDesktop());
-		mapPane.setPreferredSize(new Dimension(400, 512));
+		mapPanel = new MapPanel(context);
+		mapPane.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, HEIGHT));
 
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
@@ -141,7 +142,7 @@ implements MissionListener {
 		mapPanel.addMapLayer(trailLayer, 3);
 		mapPanel.addMapLayer(navpointLayer, 4);
   
-        mapPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));  
+        mapPanel.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, HEIGHT));  
         
         mapPane.add(mapPanel);
         
@@ -196,7 +197,8 @@ implements MissionListener {
         
         // Create the navpoint table.
         navpointTable = new JTable(navpointTableModel);
-        navpointTable.setPreferredSize(new Dimension(WIDTH, MissionWindow.TABLE_HEIGHT));  
+        navpointTable.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MissionWindow.TABLE_HEIGHT));  
+        navpointTable.setMinimumSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, MissionWindow.TABLE_HEIGHT));  
         navpointTable.setRowSelectionAllowed(true);
         navpointTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         navpointTable.getSelectionModel().addListSelectionListener(e -> {
@@ -260,14 +262,14 @@ implements MissionListener {
 		if (isDiff) {
 			// Remove this as previous mission listener.
 			if (missionCache != null) {
-				missionCache.removeMissionListener(this);
+				missionCache.removeEntityListener(this);
 			}
 			// Update the cache
 			missionCache = newMission;
 
 			if (missionCache != null) {
 				// Add this as listener for new mission.
-				missionCache.addMissionListener(this);
+				missionCache.addEntityListener(this);
 				// Update the mission content on the Nav tab
 				updateNavTab();
 			}
@@ -324,11 +326,12 @@ implements MissionListener {
 	/**
 	 * Catches mission update event.
 	 * 
-	 * @param event the mission event.
+	 * @param event the entity event.
 	 */
-	public void missionUpdate(MissionEvent event) {
-		MissionEventType type = event.getType();
-		if (MissionEventType.NAVPOINTS_EVENT == type) {
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		String type = event.getType();
+		if (VehicleMission.NAVPOINTS_EVENT.equals(type)) {
 			// Update mission navpoints.
 			SwingUtilities.invokeLater(() -> navpointTableModel.updateNavpoints());
 		}

@@ -308,12 +308,14 @@ public final class EVASuitUtil {
 	 * @param person
 	 * @param vehicle
 	 * @param settlement
+	 * @return
 	 */
-	public static void fetchEVASuitFromAny(Person person, Vehicle vehicle, Settlement settlement) {
+	public static boolean fetchEVASuitFromAny(Person person, Vehicle vehicle, Settlement settlement) {
 		EVASuit suit0 = findEVASuitFromVehicle(person, vehicle);
 		if (suit0 == null && settlement.getNumEVASuit() > 0) {
-			fetchEVASuitFromSettlement(person, vehicle, settlement);
+			return fetchEVASuitFromSettlement(person, vehicle, settlement);
 		}
+		return false;
 	}
 
 	/**

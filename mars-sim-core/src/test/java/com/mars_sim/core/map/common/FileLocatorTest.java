@@ -1,11 +1,11 @@
 package com.mars_sim.core.map.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,13 +21,13 @@ class FileLocatorTest {
         private File returnedFile;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    void setUp() throws IOException {
         tmpDir = Files.createTempDirectory("map").toFile();
         FileLocator.setBaseDir(tmpDir.getAbsolutePath());
     }
 
 	@AfterEach
-    public void tearDown() {
+    void tearDown() {
         deleteFolder(tmpDir);
     }
 
@@ -50,9 +50,9 @@ class FileLocatorTest {
         String localName = "/maps/geo_region_1200.jpg"; // This may have to change if packaging changes
         var localVersion = FileLocator.locateFile(localName);
 
-        assertTrue("Local copy created", localVersion.exists());
-        assertTrue("Local copy content", localVersion.length() > 0);
-        assertTrue("File reports as local", FileLocator.isLocallyAvailable(localName));
+        assertTrue(localVersion.exists(), "Local copy created");
+        assertTrue(localVersion.length() > 0, "Local copy content");
+        assertTrue(FileLocator.isLocallyAvailable(localName), "File reports as local");
     }
 
     @Test
@@ -60,12 +60,12 @@ class FileLocatorTest {
         String localName = REMOTE_MAP; // This may have to change if packaging changes
         var localVersion = FileLocator.locateFile(localName);
 
-        assertTrue("Local copy created", localVersion.exists());
-        assertTrue("Local copy content", localVersion.length() > 0);
-        assertTrue("File reports as local", FileLocator.isLocallyAvailable(localName));
+        assertTrue(localVersion.exists(), "Local copy created");
+        assertTrue(localVersion.length() > 0, "Local copy content");
+        assertTrue(FileLocator.isLocallyAvailable(localName), "File reports as local");
 
         localVersion.delete();
-        assertFalse("Cleanup worked", localVersion.exists());
+        assertFalse(localVersion.exists(), "Cleanup worked");
 
     }
 
@@ -73,7 +73,7 @@ class FileLocatorTest {
     void testASyncRemoteMapFile() throws InterruptedException {
         String localName = REMOTE_MAP; // This may have to change if packaging changes
         var localVersion = FileLocator.locateFileAsync(localName, f -> callback(f));
-        assertNull("File not available", localVersion);
+        assertNull(localVersion, "File not available");
         
         // Wait for file return
         int count = 100;
@@ -83,20 +83,20 @@ class FileLocatorTest {
             }
             Thread.sleep(2000);
         }
-        assertNotEquals("Async call did not timeout", 0, count);
+        assertNotEquals(0, count, "Async call did not timeout");
 
-        assertTrue("Local copy created", returnedFile.exists());
-        assertTrue("Local copy content", returnedFile.length() > 0);
-        assertTrue("File reports as local", FileLocator.isLocallyAvailable(localName));
+        assertTrue(returnedFile.exists(), "Local copy created");
+        assertTrue(returnedFile.length() > 0, "Local copy content");
+        assertTrue(FileLocator.isLocallyAvailable(localName), "File reports as local");
 
         // Call a 2nd time and should return immediately
         localVersion = FileLocator.locateFileAsync(localName, f -> callback(f));
-        assertNotNull("2nd attempt file immediately", localVersion);
-        assertEquals("Local and async file are the same", localVersion, returnedFile);
+        assertNotNull(localVersion, "2nd attempt file immediately");
+        assertEquals(localVersion, returnedFile, "Local and async file are the same");
 
         localVersion.delete();
         returnedFile = null;
-        assertFalse("Cleanup worked", localVersion.exists());
+        assertFalse(localVersion.exists(), "Cleanup worked");
 
     }
 
@@ -105,8 +105,8 @@ class FileLocatorTest {
      * @param f
      */
     private void callback(File f) {
-        assertNotNull("Callback file is present", f);
-        assertNull("Callback only once", returnedFile);
+        assertNotNull(f, "Callback file is present");
+        assertNull(returnedFile, "Callback only once");
         returnedFile = f;
     }
 
@@ -115,9 +115,9 @@ class FileLocatorTest {
         String localName = "/elevation/megt90n000eb.img"; // This may have to change if packaging changes
         var localVersion = FileLocator.locateFile(localName);
 
-        assertTrue("Local copy created", localVersion.exists());
-        assertTrue("Local copy content", localVersion.length() > 0);
-        assertTrue("File reports as local", FileLocator.isLocallyAvailable(localName));
+        assertTrue(localVersion.exists(), "Local copy created");
+        assertTrue(localVersion.length() > 0, "Local copy content");
+        assertTrue(FileLocator.isLocallyAvailable(localName), "File reports as local");
     }
 
     @Test
@@ -125,8 +125,8 @@ class FileLocatorTest {
         String localName = "/elevation/megt90n000cb.img"; // This may have to change if packaging changes
         var localVersion = FileLocator.locateFile(localName);
 
-        assertTrue("Local copy created", localVersion.exists());
-        assertTrue("Local copy content", localVersion.length() > 0);
-        assertTrue("File reports as local", FileLocator.isLocallyAvailable(localName));
+        assertTrue(localVersion.exists(), "Local copy created");
+        assertTrue(localVersion.length() > 0, "Local copy content");
+        assertTrue(FileLocator.isLocallyAvailable(localName), "File reports as local");
     }
 }

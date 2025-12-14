@@ -23,13 +23,16 @@ import com.mars_sim.core.time.MasterClock;
  * Units include people, vehicles and settlements. This class provides data
  * members and methods common to all units.
  */
-public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
+public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparable<Unit> {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Unit.class.getName());
+
+	// Event type constants for Unit-specific events
+	public static final String NOTES_EVENT = "notes";
 
 	public static final int MOON_UNIT_ID = -2;
 	public static final int OUTER_SPACE_UNIT_ID = -1;
@@ -48,8 +51,8 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	/** Commander's notes on this unit. */
 	private String notes = "";
 
-	/** Unit listeners. */
-	private transient Set<UnitListener> listeners;
+	/** Entity listeners. */
+	private transient Set<EntityListener> listeners;
 
 	protected static MasterClock masterClock;
 
@@ -190,7 +193,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	public void setName(String name) {
 		this.name = name;
-		fireUnitUpdate(UnitEventType.NAME_EVENT, name);
+		fireUnitUpdate(EntityEventType.NAME_EVENT, name);
 	}
 
 	/**
@@ -209,7 +212,7 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	protected void setDescription(String description) {
 		this.description = description;
-		fireUnitUpdate(UnitEventType.DESCRIPTION_EVENT, description);
+		fireUnitUpdate(EntityEventType.DESCRIPTION_EVENT, description);
 	}
 
 	/**
@@ -228,27 +231,28 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	 */
 	public void setNotes(String notes) {
 		this.notes = notes;
-		fireUnitUpdate(UnitEventType.NOTES_EVENT, notes);
+		fireUnitUpdate(NOTES_EVENT, notes);
 	}
 
 	/**
-	 * Checks if it has a unit listener.
+	 * Checks if it has an entity listener.
 	 * 
 	 * @param listener
 	 * @return
 	 */
-	public synchronized boolean hasUnitListener(UnitListener listener) {
+	public synchronized boolean hasEntityListener(EntityListener listener) {
 		if (listeners == null)
 			return false;
 		return listeners.contains(listener);
 	}
 
 	/**
-	 * Adds a unit listener.
+	 * Adds an entity listener.
 	 *
 	 * @param newListener the listener to add.
 	 */
-	public final synchronized void addUnitListener(UnitListener newListener) {
+	@Override
+	public final synchronized void addEntityListener(EntityListener newListener) {
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
@@ -260,11 +264,12 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Removes a unit listener.
+	 * Removes an entity listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public final synchronized void removeUnitListener(UnitListener oldListener) {
+	@Override
+	public final synchronized void removeEntityListener(EntityListener oldListener) {
 		if (oldListener == null)
 			throw new IllegalArgumentException();
 
@@ -276,30 +281,30 @@ public abstract class Unit implements UnitIdentifer, Comparable<Unit> {
 	}
 
 	/**
-	 * Fires a unit update event.
+	 * Fires an entity update event.
 	 *
 	 * @param updateType the update type.
 	 */
-	public final void fireUnitUpdate(UnitEventType updateType) {
+	public final void fireUnitUpdate(String updateType) {
 		fireUnitUpdate(updateType, null);
 	}
 
 	/**
-	 * Fires a unit update event.
+	 * Fires an entity update event.
 	 *
 	 * @param updateType the update type.
 	 * @param target     the event target object or null if none.
 	 */
-	public final void fireUnitUpdate(UnitEventType updateType, Object target) {
+	public final void fireUnitUpdate(String updateType, Object target) {
 		if (listeners == null || listeners.isEmpty()) {
 			return;
 		}
-		final UnitEvent ue = new UnitEvent(this, updateType, target);
+		final EntityEvent ue = new EntityEvent(this, updateType, target);
 		synchronized (listeners) {
-			for(UnitListener i : listeners) {
+			for(EntityListener i : listeners) {
 				try {
 					// Stop listeners breaking the update thread
-					i.unitUpdate(ue);
+					i.entityUpdate(ue);
 				}
 				catch(RuntimeException rte) {
 					logger.severe(this, "Problem executing listener " + i + " for event " + ue, rte);

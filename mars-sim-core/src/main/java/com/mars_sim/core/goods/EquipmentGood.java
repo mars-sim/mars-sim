@@ -43,13 +43,13 @@ public class EquipmentGood extends Good {
 	private static final int PROJECTED_THERMAL_BOTTLE = 1;
 	private static final double PROJECTED_WHEELBARROW = 1;
 	
-	private static final double GAS_CANISTER_DEMAND = 0.05;
+	private static final double GAS_CANISTER_DEMAND = 1.5;
 	private static final double SPECIMEN_BOX_DEMAND = 1.2;
 	private static final double LARGE_BAG_DEMAND = 1;
 	private static final double BAG_DEMAND = 1;
 	private static final double BARREL_DEMAND = 0.5;
-	private static final double THERMAL_BOTTLE_DEMAND = 0.05;
-	private static final double WHEELBARROW_DEMAND = .05;
+	private static final double THERMAL_BOTTLE_DEMAND = 1.5;
+	private static final double WHEELBARROW_DEMAND = 1.5;
 	
 	private static final double INITIAL_EQUIPMENT_DEMAND = 30;
 	private static final double INITIAL_EQUIPMENT_SUPPLY = 0;
@@ -328,7 +328,7 @@ public class EquipmentGood extends Good {
 				return Math.max(baseDemand * ratio * CollectRegolith.REQUIRED_LARGE_BAGS, 10) * LARGE_BAG_DEMAND;
 
 			case BARREL:
-				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 10) * (1 + areologistFactor) * BARREL_DEMAND;
+				return Math.max(baseDemand * ratio * CollectIce.REQUIRED_BARRELS, 10) * (0.1 + areologistFactor) * BARREL_DEMAND;
 
 			case SPECIMEN_BOX:
 				return Math.max(baseDemand * ratio * Exploration.REQUIRED_SPECIMEN_CONTAINERS, 10) * (1 + areologistFactor) * SPECIMEN_BOX_DEMAND;

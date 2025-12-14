@@ -45,33 +45,20 @@ public class MissionPlanning implements Serializable {
 	 * @param reviewer 
 	 */
 	public void scoreMissionPlan(double newScore, Person reviewer) {
-		double weight = 1D;
 		RoleType role = reviewer.getRole().getType();
 
-		switch (role) {
-			case MAYOR:
-				weight = 4D; break;
-			case ADMINISTRATOR:
-				weight = 3.5; break;
-			case DEPUTY_ADMINISTRATOR:
-				weight = 3D; break;	
-			case COMMANDER:
-					weight = 2.5; break;
-			case SUB_COMMANDER:
-			case CHIEF_OF_MISSION_PLANNING:
-				weight = 2D; break;
-			case CHIEF_OF_AGRICULTURE:
-			case CHIEF_OF_COMPUTING:
-			case CHIEF_OF_ENGINEERING:
-			case CHIEF_OF_LOGISTIC_OPERATION:
-			case CHIEF_OF_SAFETY_HEALTH_SECURITY:
-			case CHIEF_OF_SCIENCE:
-			case CHIEF_OF_SUPPLY_RESOURCE:
-			case MISSION_SPECIALIST:
-				weight = 1.5;  break;
-			default:
-				weight = 1D; break;
-		}
+		double weight = switch (role) {
+			case MAYOR -> 4D;
+			case ADMINISTRATOR -> 3.5D;
+			case DEPUTY_ADMINISTRATOR -> 3D;	
+			case COMMANDER -> 2.5D;
+			case SUB_COMMANDER, CHIEF_OF_MISSION_PLANNING -> 2D;
+			case CHIEF_OF_AGRICULTURE, CHIEF_OF_COMPUTING, CHIEF_OF_ENGINEERING,
+				CHIEF_OF_LOGISTIC_OPERATION, CHIEF_OF_SAFETY_HEALTH_SECURITY,
+				CHIEF_OF_SCIENCE, CHIEF_OF_SUPPLY_RESOURCE -> 1.5D;
+			case MISSION_SPECIALIST -> 1.5D;
+			default -> 1D;
+		};
 
 		// Update stats
 		reviewPercentComplete += weight * PERCENT_PER_SCORE;
@@ -90,54 +77,20 @@ public class MissionPlanning implements Serializable {
 	 * Note: the maximum number of reviews are limited with the size
 	 * of the settlement.
 	 * 
-	 * @param name
-	 * @param pop
+	 * @param reviewer
 	 * @return
 	 */
-	public boolean isReviewerValid(String name, int pop) {
-		if (!reviewers.contains(name)) {
+	public boolean isReviewerValid(Person reviewer) {
+		var reviewerName = reviewer.getName();
+		if (!reviewers.contains(reviewerName)) {
 			return true;
 		}
 		else {
 			// If he has reviewed this mission plan before, 
 			// he can still review it again, after other reviewers
 			// have looked at the plan
-			int num = reviewers.size();
-			if (pop >= 48) {
-                return num >= 10;
-			}
-			else if (pop >= 36) {
-                return num >= 9;
-			}
-			else if (pop >= 30) {
-                return num >= 8;
-			}
-			else if (pop >= 24) {
-                return num >= 7;
-			}
-			else if (pop >= 18) {
-                return num >= 6;
-			}
-			else if (pop >= 12) {
-                return num >= 5;
-			}
-			else if (pop >= 8) {
-                return num >= 4;
-			}			
-			else if (pop >= 6) {
-                return num >= 3;
-			}	
-			else if (pop >= 4) {
-                return num >= 2;
-			}
-			else if (pop == 3) {
-                return num >= 1;
-			}
-			else if (pop == 2) {
-                return true;
-			}
-			
-			return true;
+			var rules = reviewer.getAssociatedSettlement().getChainOfCommand().getGovernance();
+			return (reviewers.size() >= rules.getUniqueReviewers());
 		}
 	}
 	
@@ -165,7 +118,7 @@ public class MissionPlanning implements Serializable {
 		return reviewPercentComplete;
 	}
 	
-	public double getScore() {;
+	public double getScore() {
 		return score;
 	}
 	

@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.tool.mission.create;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.map.EllipseLayer;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MapUtils;
@@ -49,7 +50,7 @@ public class FieldSitePanel extends WizardPanel {
      * Constructor
      * @param wizard the create mission wizard.
      */
-    FieldSitePanel(CreateMissionWizard wizard) {
+    FieldSitePanel(CreateMissionWizard wizard, UIContext context) {
         // Use WizardPanel constructor.
         super(wizard);
         
@@ -64,12 +65,14 @@ public class FieldSitePanel extends WizardPanel {
         add(titleLabel);
         
         // Create the map panel.
-        mapPane = new MapPanel(wizard.getDesktop());
+        mapPane = new MapPanel(context);
         mapPane.setPreferredSize(new Dimension(400, 512));
 
         mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
-        mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN), 1);
-        mapPane.addMapLayer(navLayer = new NavpointEditLayer(mapPane, false), 2);
+        ellipseLayer = new EllipseLayer(Color.GREEN);
+        mapPane.addMapLayer(ellipseLayer, 1);
+        navLayer = new NavpointEditLayer(mapPane, false);
+        mapPane.addMapLayer(navLayer, 2);
         
         mapPane.addMouseListener(new NavpointMouseListener());
         mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
@@ -182,6 +185,7 @@ public class FieldSitePanel extends WizardPanel {
          * Invoked when a mouse button has been pressed on a component.
          * @param event the mouse event.
          */
+        @Override
         public void mousePressed(MouseEvent event) {
             if (navLayer.overNavIcon(event.getX(), event.getY()) == 0) {
                 // Select navpoint flag.
@@ -209,6 +213,7 @@ public class FieldSitePanel extends WizardPanel {
          * Invoked when a mouse button has been released on a component.
          * @param event the mouse event.
          */
+        @Override
         public void mouseReleased(MouseEvent event) {
             navSelected = false;
             navLayer.clearSelectedNavpoint();
@@ -226,6 +231,7 @@ public class FieldSitePanel extends WizardPanel {
          * Invoked when a mouse button is pressed on a component and then dragged.
          * @param event the mouse event.
          */
+        @Override
         public void mouseDragged(MouseEvent event) {
             if (navSelected) {
                 // Drag navpoint flag.
@@ -257,10 +263,7 @@ public class FieldSitePanel extends WizardPanel {
 			
             int radius = mapPane.getCenterPoint().getDistance(position);
             
-			if (radius > pixelRange) 
-				return false;
-			else
-				return true;
+			return (radius <= pixelRange);
         }
     }
 }

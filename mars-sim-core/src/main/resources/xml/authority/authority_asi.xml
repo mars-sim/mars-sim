@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="ASI" name="Agenzia Spaziale Italiana" corporation="false"
+					agenda="Space Collaboration" gender-ratio="0.694">
+			<!-- For engineering master's graduates in 2023, the overall percentage of 
+			women was 30.6%, with specific fields showing stark imbalances: Biomedical 
+			Engineering had 63.0% women, while fields like Electric Engineering (14.0% women), 
+			Mechanic Engineering (13.3% women), and Computer Engineering (18.1% women) 
+			had much lower female representation.-->		
+			<country name="Italy"/>
+			<settlement-name name="New Rome" />
+			<settlement-name name="Costellazione" />
+			<settlement-name name="Sole" />
+			<settlement-name name="Cosmos" />
+			<settlement-name name="Galassia" />
+			<settlement-name name="Solare" />		
+			<settlement-name name="Eclissi" />
+			<settlement-name name="Osservatorio" />	
+
+			<rover-name name="Basilio" />  
+			<rover-name name="Malindi" />  
+			<rover-name name="Matera" />    
+			<rover-name name="Bianca" />  
+			<rover-name name="Asteroide" />  
+			<rover-name name="Stella" />  
+			<rover-name name="Luna" /> 
+			<rover-name name="Cielo" /> 
+			<rover-name name="Celeste" /> 
+			<rover-name name="Stella" /> 
+			<rover-name name="Telescopio" /> 
+			<rover-name name="Buco Nero" /> 			
+			<rover-name name="Universo" /> 	
+			<rover-name name="Pianeta" /> 	
+						
+			<rover-name name="Fiat" /> 
+			<rover-name name="Ferrari" /> 
+			<rover-name name="Lamborghini" /> 
+			<rover-name name="Lancia" /> 
+			<rover-name name="Maserati" /> 			
+			<rover-name name="Abarth" /> 	
+			<rover-name name="Pagani" /> 							
+	
+			<rover-name name="Pininfarina" /> 
+			<rover-name name="Alfa Romeo" /> 
+			<rover-name name="Bizzarrini" /> 
+			<rover-name name="Casalini" /> 
+			<rover-name name="Cecomp" /> 			
+			<rover-name name="Cirelli" /> 	
+			<rover-name name="Corbellati" /> 
+																					
+		</authority>

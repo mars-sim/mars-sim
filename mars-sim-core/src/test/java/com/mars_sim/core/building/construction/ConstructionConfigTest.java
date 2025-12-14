@@ -1,48 +1,57 @@
 package com.mars_sim.core.building.construction;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class ConstructionConfigTest extends AbstractMarsSimUnitTest {
-    public void testGetConstructionStageInfoList() {
-        var cConfig = getConfig().getConstructionConfiguration();
+class ConstructionConfigTest {
 
-        var bldgs = cConfig.getConstructionStageInfoList(Stage.BUILDING);
-        assertFalse("Building stages is empty", bldgs.isEmpty());
-     
-        var found = cConfig.getConstructionStageInfoList(Stage.FOUNDATION);
-        assertFalse("Foundation stages is empty", found.isEmpty());
+    private ConstructionConfig cConfig;
 
-        var frames = cConfig.getConstructionStageInfoList(Stage.FRAME);
-        assertFalse("Frame stages is empty", frames.isEmpty());
+    @BeforeEach
+    void setUp() {
+        cConfig = SimulationConfig.loadConfig().getConstructionConfiguration();
     }
 
-    public void testSteelFrameTower() {
-        var cConfig = getConfig().getConstructionConfiguration();
+    @Test
+    void testGetConstructionStageInfoList() {
+
+        var bldgs = cConfig.getConstructionStageInfoList(Stage.BUILDING);
+        assertFalse(bldgs.isEmpty(), "Building stages is empty");
+     
+        var found = cConfig.getConstructionStageInfoList(Stage.FOUNDATION);
+        assertFalse(found.isEmpty(), "Foundation stages is empty");
+
+        var frames = cConfig.getConstructionStageInfoList(Stage.FRAME);
+        assertFalse(frames.isEmpty(), "Frame stages is empty");
+    }
+
+    @Test
+    void testSteelFrameTower() {
         var selected = cConfig.getConstructionStageInfoByName("Steel Frame Tower");
 
-        assertEquals("Name", "Steel Frame Tower", selected.getName());
-        assertEquals("Type", Stage.FRAME, selected.getType());
-        assertEquals("Width", 5D, selected.getWidth());
-        assertEquals("Length", 5D, selected.getLength());
-        assertEquals("Alignment", "length", selected.getAlignment());
-        assertEquals("Base", 0, selected.getBaseLevel());
-        assertTrue("Constructable", selected.isConstructable());
-        assertTrue("Salvagable", selected.isSalvagable());
-        assertEquals("Skill", 2, selected.getArchitectConstructionSkill());
-        assertEquals("PreStage", "Surface Foundation 5x5", selected.getPrerequisiteStage().getName());
+        assertEquals(selected.getName(), "Steel Frame Tower", "Name");
+        assertEquals(Stage.FRAME, selected.getType(), "Type");
+        assertEquals(5D, selected.getWidth(), "Width");
+        assertEquals(5D, selected.getLength(), "Length");
+        assertEquals(selected.getAlignment(), "length", "Alignment");
+        assertEquals(0, selected.getBaseLevel(), "Base");
+        assertTrue(selected.isConstructable(), "Constructable");
+        assertTrue(selected.isSalvagable(), "Salvagable");
+        assertEquals(2, selected.getArchitectConstructionSkill(), "Skill");
+        assertEquals(selected.getPrerequisiteStage().getName(), "Surface Foundation 5x5", "PreStage");
 
         var resources = selected.getResources();
-        assertEquals("acetylene", 1D,
-                    resources.get(ResourceUtil.findIDbyAmountResourceName("acetylene")));
-        assertEquals("concrete", 25D,
-                    resources.get(ResourceUtil.findIDbyAmountResourceName("concrete")));
+        assertEquals(1D, resources.get(ResourceUtil.findIDbyAmountResourceName("acetylene")), "acetylene");
+        assertEquals(25D, resources.get(ResourceUtil.findIDbyAmountResourceName("concrete")), "concrete");
         
         var parts = selected.getParts();
-        assertEquals("steel truss", 20,
-                    parts.get(ItemResourceUtil.findIDbyItemResourceName("steel truss")).intValue());
+        assertEquals(20, parts.get(ItemResourceUtil.findIDbyItemResourceName("steel truss")).intValue(), "steel truss");
     }
 }

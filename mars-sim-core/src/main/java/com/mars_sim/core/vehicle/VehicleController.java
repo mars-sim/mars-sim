@@ -428,7 +428,7 @@ import com.mars_sim.core.tool.RandomUtil;
 				 }
 				 
 				 // Calculate energy that can be delivered by battery 
-				 double energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;
+				 double energySuppliedByBattery = battery.consumeEnergy(energyByBattery / 1000, hrsTime) * 1000;
 		 
 //				 // Test to see how much can be drawn from the battery
 //				 if (VehicleType.isDrone(vehicle.getVehicleType())) {
@@ -695,7 +695,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		 if (useMargin) {
 			 if (tripDistance < 100) {
 				 // Note: use formula below to add more extra fuel for short travel distance on top of the fuel margin
-				 // in case of getting stranded due to difficult local terrain
+				 // in case of getting stranded due to difficult local terrain around the settlement
 				 factor = 3 - tripDistance / 50.0;
 			 }	
 			 factor *= Vehicle.getFuelRangeErrorMargin();

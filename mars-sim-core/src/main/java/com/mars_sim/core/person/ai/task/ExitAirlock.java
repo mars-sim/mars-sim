@@ -1304,7 +1304,7 @@ public class ExitAirlock extends Task {
 			try {
 
 				if (person.isInVehicle() 
-						&& (person.getVehicle().isInSettlementVicinity()
+						&& (person.getVehicle().isRightOutsideSettlement()
 							|| person.getVehicle().isInSettlement())) {
 					Settlement settlement = person.getVehicle().getSettlement();
 

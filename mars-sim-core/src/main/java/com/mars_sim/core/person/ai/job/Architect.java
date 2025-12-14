@@ -10,7 +10,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
@@ -19,12 +19,12 @@ import com.mars_sim.core.structure.Settlement;
  * and other structures.
  */
 public class Architect
-extends Job {
+extends JobSpec {
 
 	/** Constructor. */
 	public Architect() {
 		// Use Job constructor.
-		super(JobType.ARCHITECT, Job.buildRoleMap(5.0, 15.0, 25.0, 10.0, 10.0, 5.0, 20.0, 10.0));
+		super(JobType.ARCHITECT, JobSpec.buildRoleMap(5.0, 15.0, 25.0, 10.0, 10.0, 5.0, 20.0, 10.0));
 	}
 
 	@Override
@@ -51,9 +51,9 @@ extends Job {
 		int population = settlement.getNumCitizens();
 		
 		// Add number of buildings currently at settlement.
-		result += settlement.getBuildingManager().getNumBuildings() / 24D;
+		result += settlement.getBuildingManager().getNumBuildings() / 36D;
 		
-		result = (result + population / 24D) / 2.0;
+		result = (result + population / 30D) / 6.0;
 		
 		return result;
 	}

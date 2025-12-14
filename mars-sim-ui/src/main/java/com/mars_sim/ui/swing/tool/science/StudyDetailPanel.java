@@ -29,6 +29,8 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -46,7 +48,7 @@ extends JPanel {
 	private JLabel levelLabel;
 	private JLabel phaseLabel;
 	private JLabel nameLabel;
-	private JLabel leadResearcher;
+	private EntityLabel leadResearcher;
 
 	private ScientificStudy study;
 	private ResearchTableModel researcherModel;
@@ -56,12 +58,13 @@ extends JPanel {
 	/**
 	 * Constructor.
 	 */
-	StudyDetailPanel(ScienceWindow scienceWindow) {
+	StudyDetailPanel(UIContext context) {
 		// Use JPanel constructor.
 		super(new BorderLayout());
 
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(425, -1));
+		setPreferredSize(new Dimension(240, -1));
+		setMinimumSize(new Dimension(240, -1));
 
 		JLabel titleLabel = new JLabel(Msg.getString("StudyDetailPanel.details"), SwingConstants.CENTER); //$NON-NLS-1$
 		StyleManager.applySubHeading(titleLabel);
@@ -79,7 +82,8 @@ extends JPanel {
 		scienceFieldLabel = infoPane.addTextField(Msg.getString("StudyDetailPanel.science"), "N/A", null);
 		levelLabel = infoPane.addTextField(Msg.getString("StudyDetailPanel.level"), "N/A", null);
 		phaseLabel = infoPane.addTextField(Msg.getString("StudyDetailPanel.phase"), "N/A", null);
-		leadResearcher = infoPane.addTextField(Msg.getString("StudyDetailPanel.lead"), "N/A", null);
+		leadResearcher = new EntityLabel(null, context);
+		infoPane.addLabelledItem(Msg.getString("StudyDetailPanel.lead"), leadResearcher);
 		topics = infoPane.addTextField(Msg.getString("StudyDetailPanel.topics"), "N/A", null);
 
 		progress = new JProgressBar(0, 100);
@@ -93,7 +97,7 @@ extends JPanel {
 		// Create schedule table
 		researcherModel = new ResearchTableModel();
 		JTable table = new JTable(researcherModel);
-		EntityLauncher.attach(table,scienceWindow.getDesktop());
+		EntityLauncher.attach(table, context);
 		table.setAutoCreateRowSorter(true);
 		scrollPanel.setViewportView(table);
 
@@ -132,7 +136,7 @@ extends JPanel {
 			scienceFieldLabel.setText(study.getScience().getName());
 			levelLabel.setText(Integer.toString(study.getDifficultyLevel()));
 			phaseLabel.setText(getPhaseString(study));
-			leadResearcher.setText(study.getPrimaryResearcher().getName());
+			leadResearcher.setEntity(study.getPrimaryResearcher());
 
 			String topicsText = study.getTopic().stream().collect(Collectors.joining(","));
 			topics.setText(topicsText);

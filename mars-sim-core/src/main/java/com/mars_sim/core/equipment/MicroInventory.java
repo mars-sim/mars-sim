@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.ItemResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
@@ -339,7 +339,7 @@ public class MicroInventory implements Serializable {
 		specificAmountTotalMass += quantity;
 		
 		// Fire the unit event type
-		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
+		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
 		return excess;
 	}
 
@@ -381,7 +381,7 @@ public class MicroInventory implements Serializable {
 		// Update the stock amount total mass
 		stockAmountTotalMass += quantity;
 		// Fire the unit event type
-		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
+		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource); //ResourceUtil.findAmountResource(resource));
 		return excess;
 	}
 	
@@ -433,7 +433,7 @@ public class MicroInventory implements Serializable {
 			itemTotalMass += s.totalMass;
 
 			// Fire the unit event type
-			owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+			owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
 		}
 		else {
 			excessQ = quantity;
@@ -537,7 +537,7 @@ public class MicroInventory implements Serializable {
 		s.storedAmount = remaining;
 	
 		// Fire the unit event type
-		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return shortfall;
 	}
 
@@ -581,7 +581,7 @@ public class MicroInventory implements Serializable {
 		// Update the stock storage map with remaining
 		stockAmountStorage.put(resource, remaining);
 		// Fire the unit event type
-		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
 		
 		return shortfall;
 	}
@@ -623,7 +623,7 @@ public class MicroInventory implements Serializable {
 		s.quantity = remainingQ;
 
 		// Fire the unit event type
-		owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
+		owner.fireUnitUpdate(EntityEventType.INVENTORY_RESOURCE_EVENT, resource);
 		return shortfall;
 	}
 

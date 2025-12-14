@@ -259,41 +259,34 @@ public class ApproveMeasures extends Task {
 		switch(taskNum) {
 	
 			case ICE_RESOURCE:
-				if (newValue != 0) {
+				if (newValue != 0D) {
 					// Set the new ice probability value
-					person.getAssociatedSettlement().enforceIceProbabilityLevel();
+					person.getAssociatedSettlement().enforceIceDemandLevel();
 		
-					logger.info(worker, 30_000, "Approved a new ice probability value for the settlement.");
+					logger.info(worker, 30_000, "Approved a new ice demand probability for the settlement.");
 				}
-//				else {
-//					logger.info(worker, 30_000, "Not approving to change the ice probability.");	
-//				}
+
 				break;
 				
 			case REGOLITH_RESOURCE:
-					if (newValue != 0) {
+					if (newValue != 0D) {
 					// Set the new regolith probability value
-					person.getAssociatedSettlement().enforceRegolithProbabilityLevel();
+					person.getAssociatedSettlement().enforceRegolithDemandLevel();
 		
-					logger.info(worker, 30_000, "Approved a new regolith probability value for the settlement.");
+					logger.info(worker, 30_000, "Approved a new regolith demand probability for the settlement.");
 				}
-//				else {
-//					logger.info(worker, 30_000, "Not approving to change the regolith probability.");	
-//				}
+
 				break;
 				
 			case WATER_RATIONING:
 						
-				if (newValue != 0) {
+				if (newValue != 0D) {
 					// Set the new water rationing level
 					person.getAssociatedSettlement().getRationing().enforceNewRationingLevel();
 					
 					logger.info(worker, 30_000, "Approved a new water rationing measure for the settlement.");
 				}
-//				else {
-//					logger.info(worker, 30_000, "Not approving to change the water rationing for the settlement.");
-//				}
-				
+
 				break;
 		}
 			

@@ -1,12 +1,16 @@
 package com.mars_sim.core.person.ai;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.person.Person;
 
 
-public class SkillManagerTest  extends AbstractMarsSimUnitTest   {
+public class SkillManagerTest  extends MarsSimUnitTest   {
+    @Test
     public void testAddNewSkillNExperience() {
-        Person p = buildPerson("Skill", buildSettlement());
+        Person p = buildPerson("Skill", buildSettlement("mock"));
 
         SkillManager sm = p.getSkillManager();
 
@@ -20,13 +24,14 @@ public class SkillManagerTest  extends AbstractMarsSimUnitTest   {
 
         double expLevel = Skill.BASE * Math.pow(2D, level);
 
-        assertEquals(type.name() + " Skill level", level, b.getLevel());
-        assertEquals(type.name() + " time", 0D, b.getTime());
-        assertEquals(type.name() + " experience needed", expLevel - b.getExperience(), b.getNeededExp());
+        assertEquals(level, b.getLevel(), type.name() + " Skill level");
+        assertEquals(0D, b.getTime(), type.name() + " time");
+        assertEquals(expLevel - b.getExperience(), b.getNeededExp(), type.name() + " experience needed");
     }
 
+    @Test
     public void testAddExperience() {
-        Person p = buildPerson("Skill", buildSettlement());
+        Person p = buildPerson("Skill", buildSettlement("mock"));
 
         SkillManager sm = p.getSkillManager();
 
@@ -36,8 +41,8 @@ public class SkillManagerTest  extends AbstractMarsSimUnitTest   {
         double expNeeded = c.getNeededExp();
         sm.addExperience(SkillType.CHEMISTRY, expNeeded, 10D);
 
-        assertEquals("Next level", startLevel + 1, c.getLevel());
-        assertEquals("No experience", 0D, c.getExperience());
-        assertEquals("Experience needed", Skill.BASE * Math.pow(2D, startLevel+1), c.getNeededExp());
+        assertEquals(startLevel + 1, c.getLevel(), "Next level");
+        assertEquals(0D, c.getExperience(), "No experience");
+        assertEquals(Skill.BASE * Math.pow(2D, startLevel+1), c.getNeededExp(), "Experience needed");
     }
 }

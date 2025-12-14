@@ -1,7 +1,12 @@
 package com.mars_sim.core.building.function;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -12,21 +17,22 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
-public class ComputingJobTest extends AbstractMarsSimUnitTest {
+public class ComputingJobTest extends MarsSimUnitTest {
     private static final double DURATION = 30D;
     private static final int STEPS = 20;
 
+    @Test
     public void testCreation() {
         var s = buildSettlement("Compute");
 
         var job = new ComputingJob(s, ComputingLoadType.LOW, 1, DURATION, "Purpose");
 
-        assertTrue("Job computing unit value", job.getCUPerMSol() > 0);
-        assertTrue("Job needs computing", job.getRemainingNeed() > 0);
-        assertFalse("Job not completed", job.isCompleted());
+        assertTrue(job.getCUPerMSol() > 0, "Job computing unit value");
+        assertTrue(job.getRemainingNeed() > 0, "Job needs computing");
+        assertFalse(job.isCompleted(), "Job not completed");
 
 
-        assertEquals("Computing needed is correct", job.getCUPerMSol() * DURATION, job.getRemainingNeed());
+        assertEquals(job.getCUPerMSol() * DURATION, job.getRemainingNeed(), "Computing needed is correct");
     }
 
     private Building buildCompute(Settlement settlement) {
@@ -38,6 +44,7 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
                         FunctionType.COMPUTATION, LocalPosition.DEFAULT_POSITION, 0D, true);
 	}
 
+    @Test
     public void testCompute() {
         var s = buildSettlement("Compute City");
 
@@ -50,7 +57,7 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
         
         Building bLoc = p.getBuildingLocation();
 
-        assertEquals("Same building ", b,  bLoc);
+        assertEquals(b, bLoc, "Same building ");
         
         var clock = getSim().getMasterClock().getMarsTime();
   
@@ -77,7 +84,7 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
        
         	center = job.consumeProcessing(center, i * STEPS, clock.getMillisolInt());
   
-            assertTrue("Job found compute function #" + i, center != null);
+            assertTrue(center != null, "Job found compute function #" + i);
             executeTask(p, task, 5);       
             
             var pulse = createPulse(clock, false, false);
@@ -87,21 +94,22 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
          
             // At the first round, newNeed equals origNeed
             // Comment out below for now. Unable to get the mars clock running
-            assertTrue("Computing consumed #" + i, newNeed == remainingNeed);
+            assertTrue(newNeed == remainingNeed, "Computing consumed #" + i);
             
-            assertFalse("Computing still active #" + 1, job.isCompleted());
+            assertFalse(job.isCompleted(), "Computing still active #" + 1);
         }
 
         // Comment out below for now. Unable to get the mars clock running
-        assertTrue("Computing consumed: ", newNeed == remainingNeed);
+        assertTrue(newNeed == remainingNeed, "Computing consumed: ");
  
         // Big duration to complete
 //        job.consumeProcessing(center, (DURATION/STEPS)*3, clock.getMillisolInt());
 
         // Comment out below for now. Unable to get the mars clock running
-//        assertTrue("Job found compute function end", job.isCompleted());      
+//        assertTrue(job.isCompleted(), "Job found compute function end");      
     }
 
+    @Test
     public void testNoCompute() {
         var s = buildSettlement("Compute");
 
@@ -114,8 +122,8 @@ public class ComputingJobTest extends AbstractMarsSimUnitTest {
 
         // Run job to consume bulk of power
         Computation center = job.consumeProcessing(null, DURATION/STEPS, clock.getMillisolInt());
-        assertFalse("Job found compute function", center != null);
+        assertFalse(center != null, "Job found compute function");
         double newNeed = job.getRemainingNeed();
-        assertEquals("No computing consumed", newNeed, origNeed);
+        assertEquals(newNeed, origNeed, "No computing consumed");
     }
 }

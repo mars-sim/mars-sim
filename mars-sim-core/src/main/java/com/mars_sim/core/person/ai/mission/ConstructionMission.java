@@ -160,8 +160,7 @@ public class ConstructionMission extends AbstractMission {
 		
 		// Site prepare time
 		sitePrepTime = SITE_PREPARE_TIME;
-		if (settlement.getPreferences().getBooleanValue(SettlementParameters.INSTANCE,
-                                                        SettlementParameters.QUICK_CONST,
+		if (settlement.getPreferences().getBooleanValue(SettlementParameters.QUICK_CONST,
                                             false)) {
 			sitePrepTime *= 0.1D;
 		}
@@ -222,7 +221,7 @@ public class ConstructionMission extends AbstractMission {
 		v.setReservedForMission(true);
 		v.setMission(this);
 		
-		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+		fireMissionUpdate(AbstractVehicleMission.VEHICLE_EVENT);
 	}
 	
 	/**
@@ -343,7 +342,7 @@ public class ConstructionMission extends AbstractMission {
 		}
 		
 		// Check if site preparation time has expired
-		if (getPhaseDuration() >= sitePrepTime) {
+		if (getPhaseTimeElapse() >= sitePrepTime) {
 			setPhaseEnded(true);
 		}
 	}

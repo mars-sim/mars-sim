@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 
-
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -36,8 +35,9 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import com.mars_sim.core.SimulationRuntime;
+import com.mars_sim.ui.swing.desktop.ContentWindow;
+import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 /**
  * Static class for saving/loading user interface configuration data.
@@ -53,7 +53,7 @@ public class UIConfig {
 		 Dimension size,
 		 int order,
 		 String type,
-		 Properties props) {};
+		 Properties props) {}
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(UIConfig.class.getName());
@@ -91,7 +91,7 @@ public class UIConfig {
 	private static final String PROP_SETS = "prop-sets";
 	private static final String PROP_SET = "prop-set";
 
-	private Map<String,WindowSpec> windows = new HashMap<>();
+	private Map<String,WindowSpec> loadedSpecs = new HashMap<>();
 	private Map<String,Properties> propSets = new HashMap<>();
 
 	private Point mainWindowPosn = new Point(0,0);
@@ -101,12 +101,6 @@ public class UIConfig {
 	private Dimension marsTerminalSize = new Dimension(1024, 720);
 	
 	private boolean useDefault;
-
-	/**
-	 * Private singleton constructor.
-	 */
-	public UIConfig() {
-	}
 
 	/**
 	 * Loads and parses the XML save file.
@@ -150,7 +144,7 @@ public class UIConfig {
 						props = parseProperties(propElement);
 					}
 
-					windows.put(name, new WindowSpec(name, position, size, zOrder, type, props));
+					loadedSpecs.put(name, new WindowSpec(name, position, size, zOrder, type, props));
 				}
 
 				// Parse props sets
@@ -161,7 +155,7 @@ public class UIConfig {
 				}
 		    }
 		    catch (Exception e) {
-				logger.log(Level.SEVERE, "Cannot parse " + FILE_NAME + " : " + e.getMessage());
+				logger.log(Level.SEVERE, "Cannot parse {0} : {1}", new Object[] {FILE_NAME, e.getMessage()});
 		    }
 		}
 	}
@@ -207,24 +201,11 @@ public class UIConfig {
 		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
 
 		// Create save directory if it doesn't exist.
-		if (!configFile.getParentFile().exists()) {
-			configFile.getParentFile().mkdirs();
-			logger.config(SimulationRuntime.getSaveDir() + " created successfully");
-		}
-
-		else {
-
-			try {
-				if (Files.deleteIfExists(configFile.toPath())) {
-				    logger.config("Previous ui_settings.xml deleted.");
-				}
-				else {
-					logger.config("Can't delete ui_settings.xml since it's not found.");
-				}
-			} catch (IOException e) {
-				logger.config("Can't delete ui_settings.xml: " + e.getMessage());
-			}
-
+		configFile.getParentFile().mkdirs();
+		try {
+			Files.deleteIfExists(configFile.toPath());
+		} catch (IOException e) {
+			logger.config("Can't delete ui_settings.xml: " + e.getMessage());
 		}
 
 		Document outputDoc = new Document();
@@ -234,24 +215,15 @@ public class UIConfig {
 
 		uiElement.setAttribute(USE_DEFAULT, "false");
 
-		Element mainWindowElement = new Element(MAIN_WINDOW);
-		uiElement.addContent(mainWindowElement);
-
-		Element marsTerminalElement = new Element(MARS_TERMINAL);
-		uiElement.addContent(marsTerminalElement);
-		
-		JFrame realWindow = mainWindow.getFrame();
-		outputWindowCoords(mainWindowElement, realWindow);
-
-		JFrame realTerminal = marsTerminal.getFrame();
-		outputWindowCoords(marsTerminalElement, realTerminal);
+		outputTopLevelWindow(uiElement, MAIN_WINDOW, mainWindow.getFrame());
+		outputTopLevelWindow(uiElement, MARS_TERMINAL, marsTerminal.getFrame());
 		
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
 
 		// Add all internal windows.
 		JInternalFrame[] windows = desktop.getAllFrames();
-		for (JInternalFrame window1 : windows) {
+		for (var window1 : windows) {
 			if (window1.isVisible() || window1.isIcon()) {
 				Element windowElement = new Element(WINDOW);
 				internalWindowsElement.addContent(windowElement);
@@ -264,9 +236,9 @@ public class UIConfig {
 					outputProperties(windowElement, "props", cw.getUIProps());
 				}
 
-				if (window1 instanceof ToolWindow tw) {
-					windowElement.setAttribute(TYPE, TOOL);
-					windowElement.setAttribute(NAME, tw.getToolName());
+				if (window1 instanceof ContentWindow tw) {
+					windowElement.setAttribute(NAME, tw.getContent().getName());
+					windowElement.setAttribute(TYPE, (tw.getContent() instanceof EntityContentPanel ? UNIT : TOOL));
 				} else if (window1 instanceof UnitWindow uw) {
 					windowElement.setAttribute(TYPE, UNIT);
 					windowElement.setAttribute(NAME, uw.getUnit().getName());
@@ -283,11 +255,19 @@ public class UIConfig {
 		for (Entry<String,Properties> entry : mainWindow.getUIProps().entrySet()) {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
 		}
+	
+		saveDocumentToXMLFile(outputDoc, new File(SimulationRuntime.getSaveDir(), FILE_NAME));
+	}
 
-		// Load the DTD scheme from the ui_settings.dtd file
-		try (
-			OutputStream out = new FileOutputStream(new File(SimulationRuntime.getSaveDir(), FILE_NAME));
-			OutputStream stream = new FileOutputStream(configFile)) {
+	/**
+	 * Write a Document to a XML file on disk.
+	 * This should be shared code for all XML saving.
+	 *  
+	 * @param outputDoc
+	 * @param targetFile
+	 */
+	private static void saveDocumentToXMLFile(Document outputDoc, File targetFile) {
+		try (OutputStream stream = new FileOutputStream(targetFile)) {
 
 			XMLOutputter fmt = new XMLOutputter();
 			fmt.setFormat(Format.getPrettyFormat());
@@ -303,6 +283,12 @@ public class UIConfig {
 		}
 	}
 
+	private void outputTopLevelWindow(Element uiElement, String winName, JFrame realWindow) {
+		Element mainWindowElement = new Element(winName);
+		uiElement.addContent(mainWindowElement);
+		
+		outputWindowCoords(mainWindowElement, realWindow);
+	}
 
 	private void outputWindowCoords(Element windowElement, Component realWindow) {			
 		windowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
@@ -377,11 +363,11 @@ public class UIConfig {
 	 * @return properties maybe null.
 	 */
 	public Properties getInternalWindowProps(String windowName) {
-		WindowSpec spec = windows.get(windowName);
+		WindowSpec spec = loadedSpecs.get(windowName);
 		if (spec != null) {
 			return spec.props;
 		}
-		return null;
+		return new Properties();
 	}
 
 	/**
@@ -391,7 +377,7 @@ public class UIConfig {
 	 * @return Known details; may return null
 	 */
 	public WindowSpec getInternalWindowDetails(String windowName) {
-		return windows.get(windowName);
+		return loadedSpecs.get(windowName);
 	}
 
 	/**
@@ -420,8 +406,8 @@ public class UIConfig {
 	 * @return
 	 */
 	public List<WindowSpec> getConfiguredWindows() {
-		return windows.entrySet().stream().sorted((f1, f2) -> Integer.compare(f2.getValue().order, f1.getValue().order))
-										  .map(v -> v.getValue())
+		return loadedSpecs.entrySet().stream().sorted((f1, f2) -> Integer.compare(f2.getValue().order, f1.getValue().order))
+										  .map(Entry::getValue)
 										  .toList();
 	}
 

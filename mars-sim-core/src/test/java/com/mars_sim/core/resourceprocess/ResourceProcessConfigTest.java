@@ -1,37 +1,43 @@
 package com.mars_sim.core.resourceprocess;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.jdom2.JDOMException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class ResourceProcessConfigTest extends AbstractMarsSimUnitTest {
-    private ResourceProcessConfig getResourceProcessConfig() throws JDOMException, IOException {
-        return new ResourceProcessConfig(getConfig().parseXMLFileAsJDOMDocument(
-                    SimulationConfig.RESPROCESS_FILE, true));
-    }
+class ResourceProcessConfigTest {
     
-    public void testRGWSReactor() throws JDOMException, IOException {
-        var rConfig = getResourceProcessConfig();
+    private ResourceProcessConfig resConfig;
+
+    @BeforeEach
+    void setUp() {
+        var config = SimulationConfig.loadConfig();
+        resConfig = config.getResourceProcessConfiguration();
+    }
+
+    
+    @Test
+    void testRGWSReactor() {
+        var rConfig = resConfig;
 
         var name = "Sabatier RWGS Reactor";
         var spec = rConfig.getProcessSpec(name);
 
-        assertNotNull("Found " + name, spec);
-        assertEquals("Name", name, spec.getName());
+        assertNotNull(spec, "Found " + name);
+        assertEquals(name, spec.getName(), "Name");
 
         // Check inputs
         var inputs = spec.getInputResources();
-        assertEquals("Input resources", 2, inputs.size());
-        assertTrue("Inputs contains hydrogen", inputs.contains(ResourceUtil.HYDROGEN_ID));
-        assertTrue("Inputs contains CO2", inputs.contains(ResourceUtil.CO2_ID));
+        assertEquals(2, inputs.size(), "Input resources");
+        assertTrue(inputs.contains(ResourceUtil.HYDROGEN_ID), "Inputs contains hydrogen");
+        assertTrue(inputs.contains(ResourceUtil.CO2_ID), "Inputs contains CO2");
 
         // Check minumum
         var mins = spec.getMinimumInputs();
-        assertEquals("Minumum resources", 1, mins.size());
-        assertTrue("Minimums contains", mins.keySet().contains(ResourceUtil.HYDROGEN_ID));
+        assertEquals(1, mins.size(), "Minumum resources");
+        assertTrue(mins.keySet().contains(ResourceUtil.HYDROGEN_ID), "Minimums contains");
     }
 }

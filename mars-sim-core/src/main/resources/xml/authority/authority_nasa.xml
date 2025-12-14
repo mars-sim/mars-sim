@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="NASA" name="National Aeronautics and Space Administration" corporation="false"
+					agenda="Finding Life" gender-ratio="0.6">
+			<country name="United States"/>
+			<settlement-name name="Jamestown" />
+			<settlement-name name="Port Braun" />
+			<settlement-name name="Sagan Station" />
+			<settlement-name name="Azure Station" />
+			<settlement-name name="McKay Base" />
+			<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
+			<settlement-name name="Meyer Station" />
+			<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
+			<settlement-name name="Garvin Station" />
+			<settlement-name name="Goddard Base" />
+			<settlement-name name="Ares One" />
+			<settlement-name name="Asimov Base" />
+			<settlement-name name="Ames Town" />
+			<settlement-name name="Orion City" />
+			<settlement-name name="Pilgrim" />
+			<settlement-name name="New Boston" />
+			<settlement-name name="New Albany" />
+			<settlement-name name="JFK City" />
+			<settlement-name name="Tiberius" />
+			<settlement-name name="Camp Huygens" />				
+			<settlement-name name="Camp Kelper" />				
+			<settlement-name name="Tranquility" />
+																		
+			<rover-name name="Agartha" /> <!-- Agartha is a legendary city that is said to be located in the Earth's core -->
+			<rover-name name="Atlanta" /> <!-- The meaning of Atlanta is secure, immovable -->
+			<rover-name name="Crater Crab" />
+			<rover-name name="Desert Rat" />
+			<rover-name name="Firefly" />
+			<rover-name name="Fire Star" />
+			<rover-name name="Fremen Wanderer" />
+			<rover-name name="Liberty" />
+			<rover-name name="Loonie" />
+			<rover-name name="Jetson" />
+			<rover-name name="Marina" />
+			<rover-name name="Opportunity II" />
+			<rover-name name="Curosity II" />	
+			<rover-name name="Perseverance II" />
+			<rover-name name="Pathfinder II" />					
+			<rover-name name="Buggy" />
+			<rover-name name="Gemini" />
+			<rover-name name="Mercury" />
+			<rover-name name="Schrodinger" />
+			<rover-name name="Artemis" />
+		</authority>

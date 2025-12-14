@@ -14,17 +14,16 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
+import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
@@ -42,7 +41,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * It maps key attributes of the Vehicle into Columns.
  */
 @SuppressWarnings("serial")
-public class VehicleTableModel extends UnitTableModel<Vehicle> {
+public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 
 	private static final String ON = "On";
 	private static final String OFF = "Off";
@@ -125,7 +124,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private transient LocalMissionManagerListener missionManagerListener;
 	
 	public VehicleTableModel() {
-		super(UnitType.VEHICLE,
+		super(
 			Msg.getString("VehicleTableModel.tabName"),
 			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
 			COLUMNS
@@ -147,7 +146,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				.sorted(Comparator.comparing(Vehicle::getName))
 				.toList();
 	
-		resetEntities(vehicles);
+		resetItems(vehicles);
 		
 		return true;
 	}
@@ -159,9 +158,8 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(Vehicle vehicle, int columnIndex) {
+	protected Object getItemValue(Vehicle vehicle, int columnIndex) {
 		Object result = null;
-		double value = 0.0;
 		
 		switch (columnIndex) {
 			case NAME : 
@@ -241,7 +239,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 				break;
 
 			case SPEED :
-				value = vehicle.getSpeed();
+				var value = vehicle.getSpeed();
 				if (value == 0.0)
 					result = null;
 				else
@@ -345,42 +343,46 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		Vehicle vehicle = (Vehicle) event.getSource();
 		Object target = event.getTarget();
-		UnitEventType eventType = event.getType();
+		String eventType = event.getType();
 
 		int columnNum = -1;
-		switch(eventType) {
-			case NAME_EVENT: columnNum = NAME; break;
-			case COORDINATE_EVENT: columnNum = LOCATION; break;
-			case INVENTORY_STORING_UNIT_EVENT:
-			case INVENTORY_RETRIEVING_UNIT_EVENT:
-				if (((Unit)target).getUnitType() == UnitType.PERSON)
-					columnNum = CREW;
-				break;
-			case OPERATOR_EVENT: columnNum = DRIVER; break;
-			case STATUS_EVENT: columnNum = STATUS; break;
-			case EMERGENCY_BEACON_EVENT: columnNum = BEACON; break;
-			case RESERVED_EVENT: columnNum = RESERVED; break;
-			case SPEED_EVENT: columnNum = SPEED; break;
-			case MALFUNCTION_EVENT: columnNum = MALFUNCTION; break;
-			case INVENTORY_RESOURCE_EVENT: {
-				int resourceId = -1;
-				if (target instanceof AmountResource ar) {
-					resourceId = ar.getID();
-				}
-				else if (target instanceof Integer item) {
-					resourceId = item;
-					if (resourceId >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-						// if it's an item resource, quit
-						return;
-				}
+		if (EntityEventType.NAME_EVENT.equals(eventType)) {
+			columnNum = NAME;
+		} else if (EntityEventType.COORDINATE_EVENT.equals(eventType)) {
+			columnNum = LOCATION;
+		} else if (EntityEventType.INVENTORY_STORING_UNIT_EVENT.equals(eventType) || 
+		           EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT.equals(eventType)) {
+			if (((Unit)target).getUnitType() == UnitType.PERSON)
+				columnNum = CREW;
+		} else if (EntityEventType.OPERATOR_EVENT.equals(eventType)) {
+			columnNum = DRIVER;
+		} else if (EntityEventType.STATUS_EVENT.equals(eventType)) {
+			columnNum = STATUS;
+		} else if (EntityEventType.EMERGENCY_BEACON_EVENT.equals(eventType)) {
+			columnNum = BEACON;
+		} else if (EntityEventType.RESERVED_EVENT.equals(eventType)) {
+			columnNum = RESERVED;
+		} else if (EntityEventType.SPEED_EVENT.equals(eventType)) {
+			columnNum = SPEED;
+		} else if (MalfunctionManager.MALFUNCTION_EVENT.equals(eventType)) {
+			columnNum = MALFUNCTION;
+		} else if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(eventType)) {
+			int resourceId = -1;
+			if (target instanceof AmountResource ar) {
+				resourceId = ar.getID();
+			}
+			else if (target instanceof Integer item) {
+				resourceId = item;
+				if (resourceId >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+					// if it's an item resource, quit
+					return;
+			}
 
-				if (RESOURCE_TO_COL.containsKey(resourceId)) 
-					columnNum = RESOURCE_TO_COL.get(resourceId);
-			} break;
-			default:
+			if (RESOURCE_TO_COL.containsKey(resourceId)) 
+				columnNum = RESOURCE_TO_COL.get(resourceId);
 		}
 
 		if (columnNum > -1) {
@@ -405,7 +407,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	private class LocalMissionManagerListener implements MissionManagerListener {
 
 		private List<Mission> missions;
-		private MissionListener missionListener;
+		private EntityListener missionListener;
 
 		LocalMissionManagerListener() {
 			missionListener = new LocalMissionListener();
@@ -422,7 +424,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		 * @param mission the new mission.
 		 */
 		public void addMission(Mission mission) {
-			mission.addMissionListener(missionListener);
+			mission.addEntityListener(missionListener);
 			fireTableDataChanged();
 		}
 
@@ -432,7 +434,7 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 		 * @param mission the old mission.
 		 */
 		public void removeMission(Mission mission){
-			mission.removeMissionListener(missionListener);
+			mission.removeEntityListener(missionListener);
 			fireTableDataChanged();
 		}
 
@@ -449,19 +451,20 @@ public class VehicleTableModel extends UnitTableModel<Vehicle> {
 	/**
 	 * MissionListener inner class.
 	 */
-	private class LocalMissionListener implements MissionListener {
+	private class LocalMissionListener implements EntityListener {
 
 		/**
-		 * Catch mission update event.
-		 * @param event the mission event.
+		 * Catch entity update event.
+		 * @param event the entity event.
 		 */
-		public void missionUpdate(MissionEvent event) {
+		@Override
+		public void entityUpdate(EntityEvent event) {
 			if (event.getSource() instanceof VehicleMission vm) {
-				MissionEventType eventType = event.getType();
+				String eventType = event.getType();
 				int columnNum = switch(eventType) {
-					case TRAVEL_STATUS_EVENT, NAVPOINTS_EVENT -> DESTINATION;
-					case DISTANCE_EVENT -> DESTDIST;
-					case VEHICLE_EVENT -> MISSION;
+					case VehicleMission.TRAVEL_STATUS_EVENT, VehicleMission.NAVPOINTS_EVENT -> DESTINATION;
+					case VehicleMission.DISTANCE_EVENT -> DESTDIST;
+					case VehicleMission.VEHICLE_EVENT -> MISSION;
 					default -> -1;
 				};
 	

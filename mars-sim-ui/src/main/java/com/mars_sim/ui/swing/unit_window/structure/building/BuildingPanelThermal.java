@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelThermal.java
- * @date 2025-09-28
+ * @date 2025-10-07
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
@@ -148,8 +148,8 @@ extends BuildingFunctionPanel {
 				HeatMode heatStatus = source.getHeatMode();
 				heatStatusLabels[count] = sPanel.addRow(HEAT_STATUS, heatStatus.getName(), "The status of the heating system");
 			
-				maxHeatLabels[count] = sPanel.addRow(MAX_HEAT, "The max heating capacity this heat source");
-				heatGenLabels[count] = sPanel.addRow(HEAT_GEN, "The heat produced by this heat source");
+				maxHeatLabels[count] = sPanel.addRow(MAX_HEAT, "", "The max heating capacity this heat source");
+				heatGenLabels[count] = sPanel.addRow(HEAT_GEN, "", "The heat produced by this heat source");
 				
 				count++;
 			}
@@ -170,7 +170,7 @@ extends BuildingFunctionPanel {
 			double newProductionCache = furnace.getGeneratedHeat();
 			if (totalHeatproducedCache != newProductionCache) {
 				totalHeatproducedCache = newProductionCache;
-				totalHeatProducedLabel.setText(StyleManager.DECIMAL_KW.format(totalHeatproducedCache));
+				totalHeatProducedLabel.setText(StyleManager.DECIMAL_KW.format(newProductionCache));
 			}
 	
 			double newAirHeatSink = furnace.getHeating().getAirHeatSink();	

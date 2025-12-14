@@ -8,8 +8,8 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.equipment.BinFactory;
 import com.mars_sim.core.equipment.BinType;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
 
 
 @SuppressWarnings("serial")
-public class TradeTableModel extends CategoryTableModel<Good> {
+class TradeTableModel extends CategoryTableModel<Good> {
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -36,13 +36,13 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int CAT_COL 			= GOOD_COL + 1;
 	private static final int TYPE_COL 			= CAT_COL + 1;
 	private static final int SETTLEMENT_COL 	= TYPE_COL + 1;
-			static final int FLATTEN_COL 		= SETTLEMENT_COL + 1;
+	private static final int FLATTEN_COL 		= SETTLEMENT_COL + 1;
 	private static final int PROJECTED_COL 		= FLATTEN_COL + 1;
 	private static final int TRADE_COL 			= PROJECTED_COL + 1;
 	private static final int REPAIR_COL 		= TRADE_COL + 1;
 	
 	private static final int SUPPLY_COL 		= REPAIR_COL + 1;
-			static final int QUANTITY_COL 		= SUPPLY_COL + 1;
+	private static final int QUANTITY_COL 		= SUPPLY_COL + 1;
 	private static final int MASS_COL 			= QUANTITY_COL + 1;
 	
 	private static final int DEMAND_COL 		= MASS_COL + 1;
@@ -51,15 +51,15 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	private static final int VALUE_COL 			= MARKET_DEMAND_COL + 1;
 	private static final int MARKET_VALUE_COL 	= VALUE_COL + 1;
 	
-			static final int COST_COL 			= MARKET_VALUE_COL + 1;
-			static final int MARKET_COST_COL 	= COST_COL + 1;
+	private static final int COST_COL 			= MARKET_VALUE_COL + 1;
+	private static final int MARKET_COST_COL 	= COST_COL + 1;
 			
-			static final int PRICE_COL 			= MARKET_COST_COL + 1;
-			static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
+	private static final int PRICE_COL 			= MARKET_COST_COL + 1;
+	private static final int MARKET_PRICE_COL 	= PRICE_COL + 1;
 
 	private static final int COLUMNCOUNT = MARKET_PRICE_COL + 1;
 
-	static final int NUM_INITIAL_COLUMNS = PROJECTED_COL;
+	private static final int NUM_INITIAL_COLUMNS = PROJECTED_COL;
 	
 	static {
 		
@@ -114,40 +114,41 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 * @param event the unit event.
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		if (event.getTarget() instanceof Good g
 			&& event.getSource() instanceof Settlement s) {
 			
-			UnitEventType eventType = event.getType();
-			switch (eventType) {
-				case UnitEventType.VALUE_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), VALUE_COL, VALUE_COL);
-				case UnitEventType.DEMAND_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), DEMAND_COL, DEMAND_COL);
-				case UnitEventType.MARKET_VALUE_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), MARKET_VALUE_COL, MARKET_VALUE_COL);
-				case UnitEventType.MARKET_DEMAND_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), MARKET_DEMAND_COL, MARKET_DEMAND_COL);
-				case UnitEventType.PROJECTED_DEMAND_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), PROJECTED_COL, PROJECTED_COL);
-				case UnitEventType.TRADE_DEMAND_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), TRADE_COL, TRADE_COL);
-				case UnitEventType.REPAIR_DEMAND_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), REPAIR_COL, REPAIR_COL);
-				case UnitEventType.MASS_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), MASS_COL, MASS_COL);
-				case UnitEventType.SUPPLY_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), SUPPLY_COL, SUPPLY_COL);			
-				case UnitEventType.COST_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), COST_COL, COST_COL);
-				case UnitEventType.PRICE_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), PRICE_COL, PRICE_COL);			
-				case UnitEventType.MARKET_COST_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), MARKET_COST_COL, MARKET_COST_COL);
-				case UnitEventType.MARKET_PRICE_EVENT ->
-					entityValueUpdated(new CategoryKey<>(s, g), MARKET_PRICE_COL, MARKET_PRICE_COL);
-				default ->
-					entityValueUpdated(new CategoryKey<>(s, g), NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
+			String eventType = event.getType();
+			CategoryKey<Good> key = new CategoryKey<>(s, g);
+			
+			if (EntityEventType.VALUE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, VALUE_COL, VALUE_COL);
+			} else if (EntityEventType.DEMAND_EVENT.equals(eventType)) {
+				entityValueUpdated(key, DEMAND_COL, DEMAND_COL);
+			} else if (EntityEventType.MARKET_VALUE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MARKET_VALUE_COL, MARKET_VALUE_COL);
+			} else if (EntityEventType.MARKET_DEMAND_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MARKET_DEMAND_COL, MARKET_DEMAND_COL);
+			} else if (EntityEventType.PROJECTED_DEMAND_EVENT.equals(eventType)) {
+				entityValueUpdated(key, PROJECTED_COL, PROJECTED_COL);
+			} else if (EntityEventType.TRADE_DEMAND_EVENT.equals(eventType)) {
+				entityValueUpdated(key, TRADE_COL, TRADE_COL);
+			} else if (EntityEventType.REPAIR_DEMAND_EVENT.equals(eventType)) {
+				entityValueUpdated(key, REPAIR_COL, REPAIR_COL);
+			} else if (EntityEventType.MASS_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MASS_COL, MASS_COL);
+			} else if (EntityEventType.SUPPLY_EVENT.equals(eventType)) {
+				entityValueUpdated(key, SUPPLY_COL, SUPPLY_COL);
+			} else if (EntityEventType.COST_EVENT.equals(eventType)) {
+				entityValueUpdated(key, COST_COL, COST_COL);
+			} else if (EntityEventType.PRICE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, PRICE_COL, PRICE_COL);
+			} else if (EntityEventType.MARKET_COST_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MARKET_COST_COL, MARKET_COST_COL);
+			} else if (EntityEventType.MARKET_PRICE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MARKET_PRICE_COL, MARKET_PRICE_COL);
+			} else {
+				entityValueUpdated(key, NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 			}
 		}
 	}
@@ -159,7 +160,7 @@ public class TradeTableModel extends CategoryTableModel<Good> {
 	 * @param columnIndex COlumn to get
 	 */
 	@Override
-	protected  Object getEntityValue(CategoryKey<Good> row, int columnIndex) {
+	protected  Object getItemValue(CategoryKey<Good> row, int columnIndex) {
 		Good selectedGood = row.getCategory();
 		Settlement selectedSettlement = row.getSettlement();
 

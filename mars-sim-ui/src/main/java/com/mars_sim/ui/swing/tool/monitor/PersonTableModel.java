@@ -9,29 +9,25 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -45,7 +41,8 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
  * into Columns.
  */
 @SuppressWarnings("serial")
-public class PersonTableModel extends UnitTableModel<Person> {
+public class PersonTableModel extends EntityMonitorModel<Person>
+		implements FilteredTableModel {
 
 	// Column indexes
 	private static final int NAME = 0;
@@ -70,10 +67,12 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 
-	private static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;
+	private static final Map<String, Integer> EVENT_COLUMN_MAPPING;
 
 	private static final String DEHYDRATED = "Dehydrated";
 	private static final String STARVING = "Starving";
+	private static final String LIVE = "Show Alive";
+	private static final String DECEASED = "Show Deceased";
 	
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -97,49 +96,48 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
 		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
 
-		EVENT_COLUMN_MAPPING = new EnumMap<>(UnitEventType.class);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.NAME_EVENT, NAME);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.COORDINATE_EVENT, LOCATION);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.HUNGER_EVENT, ENERGY);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.THIRST_EVENT, ENERGY);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.STRESS_EVENT, STRESS);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.EMOTION_EVENT, EMOTION);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.JOB_EVENT, JOB);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.ROLE_EVENT, ROLE);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.SHIFT_EVENT, SHIFT);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_NAME_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.TASK_ENDED_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.ILLNESS_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.DEATH_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.BURIAL_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(UnitEventType.REVIVED_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING = new HashMap<>();
+		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.COORDINATE_EVENT, LOCATION);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.HUNGER_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.THIRST_EVENT, ENERGY);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.STRESS_EVENT, STRESS);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.EMOTION_EVENT, EMOTION);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.JOB_EVENT, JOB);
+		EVENT_COLUMN_MAPPING.put(Role.ROLE_EVENT, ROLE);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.SHIFT_EVENT, SHIFT);
+		EVENT_COLUMN_MAPPING.put(TaskManager.TASK_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_NAME_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_ENDED_EVENT, TASK_DESC);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.MISSION_EVENT, MISSION_COL);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.ILLNESS_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.DEATH_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.BURIAL_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(EntityEventType.REVIVED_EVENT, HEALTH);
 	}
 
 	/** 
 	 * Inner enum with valid source types. 
 	 */
 	private enum ValidSourceType {
-		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_INHABITANTS, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, BURIED_PEOPLE, MISSION_PEOPLE;
+		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, MISSION_PEOPLE;
 	}
 
 	private ValidSourceType sourceType;
 
 	private boolean isLiveCB = true;
 	private boolean isDeceasedCB = false;
-	private boolean isBuriedCB = false;
 	
 	private transient Crewable vehicle;
 	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
-	private transient UnitListener crewListener;
-	private transient UnitListener settlementListener;
-	private transient MissionListener missionListener;
+	private transient EntityListener crewListener;
+	private transient EntityListener settlementListener;
+	private transient EntityListener missionListener;
 
 	/**
 	 * Constructs a PersonTableModel that displays residents are all associated
@@ -147,7 +145,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 *
 	 */
 	public PersonTableModel()  {
-		super (UnitType.PERSON, Msg.getString("PersonTableModel.nameAllCitizens"),
+		super (Msg.getString("PersonTableModel.nameAllCitizens"),
 				"PersonTableModel.countingCitizens", COLUMNS);
 		setupCache();
 		
@@ -164,23 +162,21 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 */
 	public PersonTableModel(Crewable vehicle) {
 		
-		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameVehicle", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameVehicle", //-NLS-1$
 				((Unit)vehicle).getName()), 
-				"PersonTableModel.countingPeople", //$NON-NLS-1$
+				"PersonTableModel.countingPeople", //-NLS-1$
 				COLUMNS);
 
 		setupCache();
 
 		sourceType = ValidSourceType.VEHICLE_CREW;
 		this.vehicle = vehicle;
+				
+		resetItems(vehicle.getCrew());
 		
-		Collection<Person> crew = CollectionUtils.sortByName(vehicle.getCrew());
-		
-		resetEntities(crew);
-		
-		crewListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-		((Unit) vehicle).addUnitListener(crewListener);
+		crewListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+		((Unit) vehicle).addEntityListener(crewListener);
 	}
 
 	/**
@@ -190,8 +186,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * @param mission Monitored mission Person objects.
 	 */
 	public PersonTableModel(Mission mission)  {
-		super(UnitType.PERSON, Msg.getString("PersonTableModel.nameMission", //$NON-NLS-1$
-				mission.getName()), "PersonTableModel.countingMissionMembers", //$NON-NLS-1$
+		super(Msg.getString("PersonTableModel.nameMission", //-NLS-1$
+				mission.getName()), "PersonTableModel.countingMissionMembers", //-NLS-1$
 				COLUMNS);
 		
 		setupCache();
@@ -205,11 +201,10 @@ public class PersonTableModel extends UnitTableModel<Person> {
 			}
 		}
 		
-		CollectionUtils.sortByName(missionPeople);
-		resetEntities(missionPeople);
+		resetItems(missionPeople);
 		
 		missionListener = new LocalMissionListener();
-		mission.addMissionListener(missionListener);
+		mission.addEntityListener(missionListener);
 	}
 
 	private void setupCache() {
@@ -218,14 +213,9 @@ public class PersonTableModel extends UnitTableModel<Person> {
 
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {	
-		if ((sourceType != ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) &&
-			(sourceType != ValidSourceType.BURIED_PEOPLE) &&
-			(sourceType != ValidSourceType.SETTLEMENT_INHABITANTS)) {
-				return false;
-		}
 
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements.forEach(s -> s.removeEntityListener(settlementListener));
 			settlementListener = null;
 		}
 
@@ -233,139 +223,78 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		
 		Collection<Person> entities = null;
 		
-		if (isLiveCB) {
-			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
+		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
 
-				entities = settlements.stream()
-								.map(Settlement::getAllAssociatedPeople)
-								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			}
-			else {
-
-				entities = settlements.stream()
-								.map(Settlement::getIndoorPeople)
-								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			}
+			entities = settlements.stream()
+							.map(Settlement::getAllAssociatedPeople)
+							.flatMap(Collection::stream)
+							.filter(this::isPersonDisplayable)
+							.toList();
+			settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
+									EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 		}
-		else if (isDeceasedCB) {
-			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-
-				entities = settlements.stream()
-								.map(Settlement::getDeceasedPeople)
-								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-										UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-			}
-			else {
-
-				entities = settlements.stream()
-								.map(Settlement::getIndoorPeople)
-								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			}
+		else {
+			entities = settlements.stream()
+							.map(Settlement::getIndoorPeople)
+							.flatMap(Collection::stream)
+							.filter(this::isPersonDisplayable)
+							.toList();
+			settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+											EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		}
-		else if (isBuriedCB) {
-			if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-	
-				entities = settlements.stream()
-								.map(Settlement::getBuriedPeople)
-								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT,
-											UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-
-			}
-			else {
-
-				entities = settlements.stream()
-								.map(Settlement::getIndoorPeople)
-								.flatMap(Collection::stream)
-								.sorted(Comparator.comparing(Person::getName))
-								.collect(Collectors.toList());
-				settlementListener = new PersonChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-												UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-			}		
-		}
-
 		
 		if (entities != null && !entities.isEmpty()) {		
-			resetEntities(entities);
+			resetItems(entities);
 		}
 
 		// Listen to the settlements for new People
-		settlements.forEach(s -> s.addUnitListener(settlementListener));
+		settlements.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
 
 	/**
-	 * Shows live citizens if selected.
-	 * 
-	 * @param isLive
+	 * Is the Person displayable based on the alive/deceased filters.
+	 * @param p
+	 * @return
 	 */
-	public void showAlive(boolean isLive) {
-		this.isLiveCB = isLive;
-		if (isLive) {
-			this.isDeceasedCB = false;
-			this.isBuriedCB = false;
+	private boolean isPersonDisplayable(Person p) {
+		if (!isLiveCB && !isDeceasedCB) {
+			return false;
 		}
-	}
-	
-	/**
-	 * Shows deceased citizens if selected.
-	 * 
-	 * @param isDeceased
-	 */
-	public void showDeceased(boolean isDeceased) {
-		this.isDeceasedCB = isDeceased;
-		if (isDeceased) {
-			this.isLiveCB = false;
-			this.isBuriedCB = false;
+		if (p.isDeclaredDead()) {
+			return isDeceasedCB;
 		}
+		return isLiveCB;
 	}
-	
+
 	/**
-	 * Shows buried citizens if selected.
-	 * 
-	 * @param isBuried
-	 */
-	public void showBuried(boolean isBuried) {
-		this.isBuriedCB = isBuried;
-		if (isBuried) {
-			this.isLiveCB = false;
-			this.isDeceasedCB = false;
-		}
+	 * Get a list of the supported filters and their active state based on the alive state of Persons
+	 * @return
+	 */	
+	@Override
+	public List<FilteredTableModel.Filter> getActiveFilters() {
+		var filters = new ArrayList<FilteredTableModel.Filter>();
+		filters.add(new Filter(LIVE, LIVE, isLiveCB));
+		filters.add(new Filter(DECEASED, DECEASED, isDeceasedCB));
+
+		return filters;
 	}
-	
+
 	/**
-	 * Catches unit update event.
-	 *
-	 * @param event the unit event.
+	 * Enable/disable display of a filter.
+	 * @param name Name of the filter.
+	 * @param selected true to display, false to block
 	 */
 	@Override
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType eventType = event.getType();
-
-		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-
-		if (column != null && column > -1) {
-			Person unit = (Person) event.getSource();
-			entityValueUpdated(unit, column, column);
+	public void setFilter(String name, boolean isDisplayed) {
+		switch (name) {
+			case LIVE -> isLiveCB = isDisplayed;
+			case DECEASED -> isDeceasedCB = isDisplayed;
 		}
+
+		// Reload
+		setSettlementFilter(settlements);
 	}
 
 	/**
@@ -375,7 +304,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(Person person, int columnIndex) {
+	protected Object getItemValue(Person person, int columnIndex) {
 		Object result = null;
 
 		switch (columnIndex) {
@@ -494,7 +423,8 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	}
 	
 	/**
-     * Return the score breakdown if TASK_DESC column is selected
+     * Returns the score breakdown if TASK_DESC column is selected.
+     * 
      * @param rowIndex Row index of cell
      * @param columnIndex Column index of cell
      * @return Return null by default
@@ -503,7 +433,7 @@ public class PersonTableModel extends UnitTableModel<Person> {
     public String getToolTipAt(int rowIndex, int columnIndex) {
 		String result = null;
 		if (columnIndex == TASK_DESC) {
-			Person p = getEntity(rowIndex);
+			Person p = getItem(rowIndex);
 			if (p != null) {
 				// If the Person is dead, there is no Task Manager
 				var score = p.getMind().getTaskManager().getScore();
@@ -514,6 +444,23 @@ public class PersonTableModel extends UnitTableModel<Person> {
         return result;
     }
 
+	
+	/**
+	 * Catches unit update event.
+	 *
+	 * @param event the unit event.
+	 */
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		String eventType = event.getType();
+
+		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
+
+		if (column != null && column > -1) {
+			Person unit = (Person) event.getSource();
+			entityValueUpdated(unit, column, column);
+		}
+	}
 
 	/**
 	 * Prepares the model for deletion.
@@ -522,53 +469,58 @@ public class PersonTableModel extends UnitTableModel<Person> {
 	public void destroy() {
 		super.destroy();
 
-		 if (sourceType == ValidSourceType.VEHICLE_CREW) {
-			((Unit) vehicle).removeUnitListener(crewListener);
-			crewListener = null;
-			vehicle = null;
-		} else if (sourceType == ValidSourceType.MISSION_PEOPLE) {
-			mission.removeMissionListener(missionListener);
-			missionListener = null;
-			mission = null;
-		} else {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
-			settlementListener = null;
+		 switch (sourceType) {
+			case ValidSourceType.VEHICLE_CREW -> {
+					((Unit) vehicle).removeEntityListener(crewListener);
+					crewListener = null;
+					vehicle = null;
+				}
+			case ValidSourceType.MISSION_PEOPLE -> {
+					mission.removeEntityListener(missionListener);
+					missionListener = null;
+					mission = null;
+				}
+			default -> {
+					settlements.forEach(s -> s.removeEntityListener(settlementListener));
+					settlementListener = null;
+				}
 		}
 	}
 
 	/**
 	 * MissionListener inner class.
 	 */
-	private class LocalMissionListener implements MissionListener {
+	private class LocalMissionListener implements EntityListener {
 		/**
 		 * Catches mission update event.
 		 *
-		 * @param event the mission event.
+		 * @param event the entity event.
 		 */
-		public void missionUpdate(MissionEvent event) {
+		@Override
+		public void entityUpdate(EntityEvent event) {
 			Object target = event.getTarget();
 			if (target instanceof Person p) {
-				MissionEventType eventType = event.getType();
+				String eventType = event.getType();
 
-				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
-					addEntity(p);
+				if (eventType.equals(Mission.ADD_MEMBER_EVENT)) {
+					addItem(p);
 				}
-				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					removeEntity(p);
+				else if (eventType.equals(Mission.REMOVE_MEMBER_EVENT)) {
+					removeItem(p);
 				}
 			}
 		}
 	}
 
 	/**
-	 * UnitListener inner class for watching Person move in/out of a Unit.
+	 * EntityListener inner class for watching Person move in/out of a Unit.
 	 */
-	private class PersonChangeListener implements UnitListener {
+	private class PersonChangeListener implements EntityListener {
 
-		private UnitEventType addEvent;
-		private UnitEventType removeEvent;
+		private String addEvent;
+		private String removeEvent;
 
-		public PersonChangeListener(UnitEventType addEvent, UnitEventType removeEvent) {
+		public PersonChangeListener(String addEvent, String removeEvent) {
 			this.addEvent = addEvent;
 			this.removeEvent = removeEvent;
 		}
@@ -578,14 +530,14 @@ public class PersonTableModel extends UnitTableModel<Person> {
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
+		public void entityUpdate(EntityEvent event) {
 			if (event.getTarget() instanceof Person p) {
-				UnitEventType eventType = event.getType();
-				if (eventType == addEvent) {
-					addEntity(p);
+				String eventType = event.getType();
+				if (addEvent.equals(eventType)) {
+					addItem(p);
 				}
-				else if (eventType == removeEvent) {
-					removeEntity(p);
+				else if (removeEvent.equals(eventType)) {
+					removeItem(p);
 				}
 			}
 		}

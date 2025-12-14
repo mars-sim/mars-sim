@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.utils;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.MouseInfo;
@@ -14,10 +15,15 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.net.URI;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
 import com.formdev.flatlaf.FlatLaf;
+import com.mars_sim.ui.swing.StyleManager;
 
 
 /**
@@ -86,5 +92,39 @@ public final class SwingHelper {
 		} catch (Exception e) {
 			// placeholder
 		}
+	}
+
+	
+    /**
+     * Creates a titled border that uses the sub title font.
+     * 
+     * @param title
+     * @return
+     */
+    public static Border createLabelBorder(String title) {
+        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
+                                                        TitledBorder.DEFAULT_POSITION,
+                                                        StyleManager.getSubTitleFont(), (Color)null);
+    }
+	
+	/*
+	 * Creates a text block.
+	 * 
+	 * @param title Title for the surrounding border
+	 * @param content Content for the text area
+	 * @return A JTextArea containing the text area
+	 */
+	public static JTextArea createTextBlock(String title, String content) {
+		JTextArea ta = new JTextArea();
+		ta.setEditable(false);
+		ta.setColumns(35);
+		ta.setLineWrap(true);
+		ta.setWrapStyleWord(true);
+		ta.append(content);
+	
+		var border = BorderFactory.createCompoundBorder(createLabelBorder(title),
+					BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		ta.setBorder(border);
+		return ta;
 	}
 }

@@ -15,7 +15,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -24,14 +24,14 @@ import com.mars_sim.core.structure.Settlement;
  * The Botanist class represents a job for a botanist.
  */
 public class Botanist
-extends Job {
+extends JobSpec {
 	
 	/**
 	 * Constructor.
 	 */
 	public Botanist() {
 		// Use Job constructor
-		super(JobType.BOTANIST, Job.buildRoleMap(25.0, 5.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
+		super(JobType.BOTANIST, JobSpec.buildRoleMap(25.0, 5.0, 5.0, 5.0, 5.0, 20.0, 5.0, 35.0));
 	}
 
 	/**

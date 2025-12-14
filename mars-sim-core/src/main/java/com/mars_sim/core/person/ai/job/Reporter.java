@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * Reporter.java
- * @date 2021-09-27
+ * @date 2025-10-12
  * @author Manny Kung
  */
 package com.mars_sim.core.person.ai.job;
@@ -12,11 +12,11 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
-public class Reporter extends Job {
+public class Reporter extends JobSpec {
 	
 	private static final double TRADING_RANGE = 1500D;
 	private static final double SETTLEMENT_MULTIPLIER = 1D;
@@ -26,7 +26,7 @@ public class Reporter extends Job {
 	 */
 	public Reporter() {
 		// Use Job constructor.
-		super(JobType.REPORTER, Job.buildRoleMap(5.0, 0.0, 5.0, 30.0, 30.0, 20.0, 5.0, 5.0));
+		super(JobType.REPORTER, JobSpec.buildRoleMap(15.0, 10.0, 5.0, 20.0, 20.0, 10.0, 10.0, 10.0));
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class Reporter extends Job {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 
-		double result = .1;
+		double result = .2;
 
 		int population = settlement.getNumCitizens();
 		

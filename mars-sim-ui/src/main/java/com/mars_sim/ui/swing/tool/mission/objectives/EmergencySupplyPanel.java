@@ -14,10 +14,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import com.mars_sim.core.mission.objectives.EmergencySupplyObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class EmergencySupplyPanel extends JPanel
-		implements MissionListener {
+		implements EntityListener {
 
 	// Data members.
 	private EmergencySupplyObjective supplies;
@@ -37,7 +37,7 @@ public class EmergencySupplyPanel extends JPanel
 	/**
 	 * Constructor.
 	 */
-	public EmergencySupplyPanel(EmergencySupplyObjective supplies, MainDesktopPane desktop) {
+	public EmergencySupplyPanel(EmergencySupplyObjective supplies, UIContext context) {
 		// Use JPanel constructor
 		super();
 		setName(supplies.getName());
@@ -49,7 +49,7 @@ public class EmergencySupplyPanel extends JPanel
 		// Create the emergency supplies label.
 		var attrPanel = new AttributePanel();
 		attrPanel.addLabelledItem(Msg.getString("EmergencySupplyMissionCustomInfoPanel.emergencySupplies"),
-					new EntityLabel(supplies.getDestination(), desktop));
+					new EntityLabel(supplies.getDestination(), context));
 		add(attrPanel, BorderLayout.NORTH);
 
 		// Create a scroll pane for the emergency supplies table.
@@ -67,7 +67,7 @@ public class EmergencySupplyPanel extends JPanel
 	}
 
 	@Override
-	public void missionUpdate(MissionEvent event) {
+	public void entityUpdate(EntityEvent event) {
 		emergencySuppliesTableModel.updateTable(supplies.getSupplies());
 	}
 }

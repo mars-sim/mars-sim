@@ -1,6 +1,6 @@
 package com.mars_sim.core.time;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ class MarsZoneTest {
     private void assertZone(int longitude, String name, int offset) throws CoordinatesException {
         var coord = CoordinatesFormat.fromString("20.0", Integer.toString(longitude));
         var zone =  MarsZone.getMarsZone(coord);
-        assertEquals(longitude + " zone", name, zone.getId());
-        assertEquals(longitude + " offset", offset, zone.getMSolOffset());
+        assertEquals(name, zone.getId(), longitude + " zone");
+        assertEquals(offset, zone.getMSolOffset(), longitude + " offset");
     }
 }

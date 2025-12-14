@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * StudyFieldSamplesMeta.java
- * @date 2023-04-15
+ * @date 2025-10-11
  * @author Scott Davis
  */
 package com.mars_sim.core.science.task;
@@ -35,13 +35,15 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
     private static final String NAME = Msg.getString(
             "Task.description.studyFieldSamples"); //$NON-NLS-1$
     
+    private static final int BASE_SCORE = 100;
+    
     public StudyFieldSamplesMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
 		
 		setFavorite(FavoriteType.FIELD_WORK);
 		setTrait(TaskTrait.ACADEMIC);
 		setPreferredJob(JobType.AREOLOGIST, JobType.ASTROBIOLOGIST,
-						JobType.BOTANIST, JobType.CHEMIST);
+						JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.REPORTER);
 		setPreferredRole(RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
 				RoleType.CREW_SCIENTIST);
 	}
@@ -70,56 +72,75 @@ public class StudyFieldSamplesMeta extends FactoryMetaTask {
 				mostStored = Math.max(stored, mostStored);
 			}
 		}
+		
 		if (mostStored < StudyFieldSamples.SAMPLE_MASS) {
 			return EMPTY_TASKLIST;
 		}
-		double result = mostStored/10.0;
+		
+		double result = mostStored;
   
 		// Create list of possible sciences for studying field samples.
 		var jobScience = TaskUtil.getPersonJobScience(person);
 
 		// Add probability for researcher's primary study (if any).
 		ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
-		if ((primaryStudy != null) && (StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase())
-			&& !primaryStudy.isPrimaryResearchCompleted()
-			&& StudyFieldSamples.FIELD_SCIENCES.contains(primaryStudy.getScience())) {
-			Lab lab = LabTask.getLocalLab(person, primaryStudy.getScience());
-			if (lab != null) {
-				double primaryResult = 50D;
-
-				// Get lab building crowding modifier.
-				primaryResult *= LabTask.getLabCrowdingModifier(person, lab);
-				if (primaryStudy.getScience() != jobScience) {
-					primaryResult /= 2D;
+		
+		if (primaryStudy != null) {
+			boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.INVITATION_PHASE == primaryStudy.getPhase()
+					|| 	StudyStatus.RESEARCH_PHASE == primaryStudy.getPhase()
+					|| StudyStatus.PAPER_PHASE == primaryStudy.getPhase());
+				
+			if (isOngoing
+				&& !primaryStudy.isPrimaryResearchCompleted()
+				&& StudyFieldSamples.FIELD_SCIENCES.contains(primaryStudy.getScience())) {
+				Lab lab = LabTask.getLocalLab(person, primaryStudy.getScience());
+				if (lab != null) {
+					double primaryResult = BASE_SCORE;
+	
+					// Get lab building crowding modifier.
+					primaryResult *= LabTask.getLabCrowdingModifier(person, lab);
+					if (primaryStudy.getScience() == jobScience) {
+						primaryResult /= 2D;
+					}
+	
+					result += primaryResult;
 				}
-
-				result += primaryResult;
 			}
 		}
 	
 	    // Add probability for each study researcher is collaborating on.
-	    for(ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
-	        if ((StudyStatus.RESEARCH_PHASE == collabStudy.getPhase())
-	            && !collabStudy.isCollaborativeResearchCompleted(person)) {
-	            ScienceType collabScience = collabStudy.getContribution(person);
-	            if (StudyFieldSamples.FIELD_SCIENCES.contains(collabScience)) {
-					Lab lab = LabTask.getLocalLab(person, collabScience);
-					if (lab != null) {
-						double collabResult = 25D;
+	    for (ScientificStudy collabStudy : person.getResearchStudy().getCollabStudies()) {
+	    	
+			if (collabStudy != null) {
 
-						// Get lab building crowding modifier.
-						collabResult *= LabTask.getLabCrowdingModifier(person, lab);
-
-						if (collabScience != jobScience) {
-							collabResult /= 2D;
+				boolean isOngoing = (StudyStatus.PROPOSAL_PHASE == collabStudy.getPhase()
+						|| StudyStatus.INVITATION_PHASE == collabStudy.getPhase()
+						|| 	StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
+						|| StudyStatus.PAPER_PHASE == collabStudy.getPhase());
+	    	
+		        if (isOngoing
+		            && !collabStudy.isCollaborativeResearchCompleted(person)) {
+		            ScienceType collabScience = collabStudy.getContribution(person);
+		            if (StudyFieldSamples.FIELD_SCIENCES.contains(collabScience)) {
+						Lab lab = LabTask.getLocalLab(person, collabScience);
+						if (lab != null) {
+							double collabResult = BASE_SCORE / 2D;
+	
+							// Get lab building crowding modifier.
+							collabResult *= LabTask.getLabCrowdingModifier(person, lab);
+	
+							if (collabScience == jobScience) {
+								collabResult /= 2D;
+							}
+	
+							result += collabResult;
 						}
-
-						result += collabResult;
-					}
-	            }
-	        }
+		            }
+		        }
+			}
 	    }
-        
+
 		var score = new RatingScore(result);
 		score = assessPersonSuitability(score, person);
         return createTaskJobs(score);

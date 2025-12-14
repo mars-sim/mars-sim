@@ -7,10 +7,7 @@
 
 package com.mars_sim.core.manufacture;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,16 +45,16 @@ public class ManufactureConfigTest {
     @Test
     void testTooling() {
         var f = manuConfig.getTooling("furnace");
-        assertNotNull("Furnace Tooling defined", f);
-        assertEquals("Has correct name", "Furnace", f.name());
-        assertNotNull("Furnace description", f.description());
+        assertNotNull(f, "Furnace Tooling defined");
+        assertEquals(f.name(), "Furnace", "Has correct name");
+        assertNotNull(f.description(), "Furnace description");
     }
 
     @Test
     void testProcessesLoaded() {
         var conf = manuConfig;
         var manuProcesses = conf.getManufactureProcessList();
-        assertTrue("Manufacturing processes defined", !manuProcesses.isEmpty());
+        assertTrue(!manuProcesses.isEmpty(), "Manufacturing processes defined");
 
         List<ManufactureProcessInfo> previous = null;
 
@@ -65,10 +62,10 @@ public class ManufactureConfigTest {
         // 3 is highest tech level
         for(int i = 0; i <= 3; i++) {
             var p = conf.getManufactureProcessesForTechLevel(i);
-            assertFalse("Tech list level " + i, p.isEmpty());
+            assertFalse(p.isEmpty(), "Tech list level " + i);
             if (previous != null) {
-                assertTrue("Level is more than previous #" + i, p.size() > previous.size());
-                assertTrue("Level contains previous #" + i, p.containsAll(previous));
+                assertTrue(p.size() > previous.size(), "Level is more than previous #" + i);
+                assertTrue(p.containsAll(previous), "Level contains previous #" + i);
             }
 
             previous = p;
@@ -83,8 +80,8 @@ public class ManufactureConfigTest {
                     Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
                         ManufactureProcessInfo::getName);
         var fertilizerP = processByName.get(MAKE_FERTILIZERS);
-        assertNotNull("Manufacturng processes defined", fertilizerP);
-        assertEquals(MAKE_FERTILIZERS + " primary inputs", FERTILIZER_INPUTS, fertilizerP.getInputList().size());
+        assertNotNull(fertilizerP, "Manufacturng processes defined");
+        assertEquals(FERTILIZER_INPUTS, fertilizerP.getInputList().size(), MAKE_FERTILIZERS + " primary inputs");
 
         // Check the alternative are present and they have different inputs
         Set<List<ProcessItem>> alternatives = new HashSet<>();
@@ -92,12 +89,12 @@ public class ManufactureConfigTest {
 
         for(var alt : FERTILIZER_ALT_NAMES) {
             var found = processByName.get(MAKE_FERTILIZERS + ManufactureConfig.WITH_PREFIX + alt);
-            assertNotNull(MAKE_FERTILIZERS + " alternative " + alt, found);
-            assertEquals(MAKE_FERTILIZERS + " alternative " + alt + "inputs", FERTILIZER_INPUTS, found.getInputList().size());
+            assertNotNull(found, MAKE_FERTILIZERS + " alternative " + alt);
+            assertEquals(FERTILIZER_INPUTS, found.getInputList().size(), MAKE_FERTILIZERS + " alternative " + alt + "inputs");
             alternatives.add(found.getInputList());
         }
 
-        assertEquals("All alternatives have different inputs", FERTILIZER_ALT_NAMES.length + 1, alternatives.size());
+        assertEquals(FERTILIZER_ALT_NAMES.length + 1, alternatives.size(), "All alternatives have different inputs");
     }
 
     @Test
@@ -107,21 +104,21 @@ public class ManufactureConfigTest {
                     Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
                         ManufactureProcessInfo::getName);
         var process = processByName.get("Cast iron ingot");
-        assertNotNull("Manufacturng processes defined", process);
-        assertEquals("Tool", "Furnace", process.getTooling().name());
-        assertEquals("Work time", 25D, process.getWorkTimeRequired(), 0D);
-        assertEquals("Process time", 75D, process.getProcessTimeRequired(), 0D);
-        assertEquals("Skill", 2, process.getSkillLevelRequired());
-        assertEquals("Tech", 1, process.getTechLevelRequired());
+        assertNotNull(process, "Manufacturng processes defined");
+        assertEquals(process.getTooling().name(), "Furnace", "Tool");
+        assertEquals(25D, process.getWorkTimeRequired(), 0D, "Work time");
+        assertEquals(75D, process.getProcessTimeRequired(), 0D, "Process time");
+        assertEquals(2, process.getSkillLevelRequired(), "Skill");
+        assertEquals(1, process.getTechLevelRequired(), "Tech");
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
         expectedInputs.add(createAmount("iron powder", 35D));
-        assertEquals("Iron ingot expected inputs", expectedInputs, process.getInputList());
+        assertEquals(expectedInputs, process.getInputList(), "Iron ingot expected inputs");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
         expectedOutputs.add(createPart("iron ingot", 5D));
-        assertEquals("Iron ingot expected outputs", expectedOutputs, process.getOutputList());
+        assertEquals(expectedOutputs, process.getOutputList(), "Iron ingot expected outputs");
     }
 
     @Test
@@ -131,8 +128,8 @@ public class ManufactureConfigTest {
                     Maps.uniqueIndex(manuConfig.getManufactureProcessList(),
                         ManufactureProcessInfo::getName);
         var process = processByName.get(MAKE_RADIO_ANTENNA);
-        assertNotNull("Manufacturng processes defined", process);
-        assertEquals("Tool", "3D Printer", process.getTooling().name());
+        assertNotNull(process, "Manufacturng processes defined");
+        assertEquals(process.getTooling().name(), "3D Printer", "Tool");
 
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
@@ -143,11 +140,11 @@ public class ManufactureConfigTest {
         expectedInputs.add(createPart("electrical wire", 1D));
         expectedInputs.add(createPart("wire connector", 3D));
         expectedInputs.add(createPart("optical cable", 1D));
-        assertEquals("Antenna expected inputs", expectedInputs, process.getInputList());
+        assertEquals(expectedInputs, process.getInputList(), "Antenna expected inputs");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
         expectedOutputs.add(createPart("radio antenna", 5D));
-        assertEquals("Antenna expected outputs", expectedOutputs, process.getOutputList());
+        assertEquals(expectedOutputs, process.getOutputList(), "Antenna expected outputs");
     }
 
     

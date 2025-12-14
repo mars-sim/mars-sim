@@ -1,47 +1,64 @@
 package com.mars_sim.core.vehicle;
 
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class VehicleConfigTest extends AbstractMarsSimUnitTest {
-    public void testGetVehicleSpec() {
-        var vConfig = simConfig.getVehicleConfiguration();
+public class VehicleConfigTest {
+
+    private SimulationConfig config;
+
+    @BeforeEach
+    public void setUp() {
+        config = SimulationConfig.loadConfig();
+    }
+
+    @Test
+    void testGetVehicleSpec() {
+        var vConfig = config.getVehicleConfiguration();
 
         var found = vConfig.getVehicleSpec("Explorer Rover");
         
-        assertNotNull("Exploer Rover founf", found);
+        assertNotNull(found);
         
-        assertEquals("Type", VehicleType.EXPLORER_ROVER, found.getType());
-        assertTrue("Description", found.getDescription().startsWith("The Explorer Rover "));
+        assertEquals(VehicleType.EXPLORER_ROVER, found.getType());
+        assertTrue(found.getDescription().startsWith("The Explorer Rover "), "Description");
 
-        assertEquals("Model", "A", found.getModelName());
-        assertEquals("Width", 3.5D, found.getWidth());
-        assertEquals("Length", 8D, found.getLength());
-        assertEquals("Crew size", 4, found.getCrewSize());
+        assertEquals("A", found.getModelName());
+        assertEquals(3.5D, found.getWidth());
+        assertEquals(8D, found.getLength());
+        assertEquals(4, found.getCrewSize());
 
-        assertEquals("Cargo capacity", 2000D, found.getTotalCapacity());
-        assertEquals("Methanol capacity", 120D, found.getCargoCapacity(ResourceUtil.METHANOL_ID));
-        assertEquals("Oxygen capacity", 180D, found.getCargoCapacity(ResourceUtil.OXYGEN_ID));
-        assertEquals("Water capacity", 200D, found.getCargoCapacity(ResourceUtil.WATER_ID));
+        assertEquals(2000D, found.getTotalCapacity());
+        assertEquals(120D, found.getCargoCapacity(ResourceUtil.METHANOL_ID));
+        assertEquals(180D, found.getCargoCapacity(ResourceUtil.OXYGEN_ID));
+        assertEquals(200D, found.getCargoCapacity(ResourceUtil.WATER_ID));
 
-        assertEquals("Power source", PowerSourceType.FUEL_POWER, found.getPowerSourceType());
-        
-        assertEquals("Base speed", 40D, found.getBaseSpeed());
-        assertEquals("Base power", 90D, found.getBasePower());
+        assertEquals(PowerSourceType.FUEL_POWER, found.getPowerSourceType());
 
-        assertEquals("Lab level", 1, found.getLabTechLevel());
-        assertEquals("Lab Capacity", 2, found.getLabCapacity());
-        assertEquals("Lab Speciality", 2, found.getLabTechSpecialties().size());
+        assertEquals(40D, found.getBaseSpeed());
+        assertEquals(90D, found.getBasePower(), "Base power");
 
-        assertEquals("Passenger Activity Spots", 3, found.getPassengerActivitySpots().size());
+        assertEquals(1, found.getLabTechLevel(), "Lab level");
+        assertEquals(2, found.getLabCapacity(), "Lab Capacity");
+        assertEquals(2, found.getLabTechSpecialties().size(),"Lab Speciality");
+
+        assertEquals(3, found.getPassengerActivitySpots().size(), "Passenger Activity Spots");
     }
 
-    public void testGetVehicleSpecs() {
-        var vConfig = simConfig.getVehicleConfiguration();
+    @Test
+    void testGetVehicleSpecs() {
+        var vConfig = config.getVehicleConfiguration();
 
         var all = vConfig.getVehicleSpecs();
-        assertTrue("Has vehicle specs", VehicleType.values().length <= all.size());
+        assertTrue(VehicleType.values().length <= all.size());
     }
 }

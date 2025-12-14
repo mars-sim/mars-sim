@@ -1,6 +1,13 @@
 package com.mars_sim.core.vehicle.task;
+import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -8,15 +15,16 @@ import com.mars_sim.core.person.ai.task.EVAOperationTest;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 
-public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
+public class LoadVehicleEVATest extends MarsSimUnitTest {
+    @Test
     public void testCreateTask() {
         var s = buildSettlement("Vehicle base");
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
         var p = buildPerson("Mechanic", s, JobType.TECHNICIAN);
         p.getSkillManager().addNewSkill(SkillType.AREOLOGY, 10); // Skilled
-        var eva = EVAOperationTest.prepareForEva(this, p);
+        var eva = EVAOperationTest.prepareForEva(getContext(), p);
 
         // Create a loading plan and preload Settlement
         var resources = new SuppliesManifest();
@@ -27,33 +35,34 @@ public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
         v.setLoading(resources);
 
         var task = new LoadVehicleEVA(p, v);
-        assertFalse("Task created", task.isDone()); 
+        assertFalse(task.isDone(), "Task created"); 
 
         // Move onsite
-        EVAOperationTest.executeEVAWalk(this, eva, task);
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
 
         // Do maintenance and advance to return
         executeTaskUntilPhase(p, task, 1000);
         assertGreaterThan("Final stored mass", 0D, v.getStoredMass());
 
         // Return to base
-        EVAOperationTest.executeEVAWalk(this, eva, task);
-        assertTrue("Task completed", task.isDone()); 
+        EVAOperationTest.executeEVAWalk(getContext(), eva, task);
+        assertTrue(task.isDone(), "Task completed"); 
 
     }
 
+    @Test
     public void testMetaTask() {
         var s = buildSettlement("Vehicle base", true);
 
         // Load the vehicle
-        var v = buildRover(s, "rover1", new LocalPosition(10, 10));
-        buildRover(s, "rover2", new LocalPosition(10, 13));
+        var v = buildRover(s, "rover1", new LocalPosition(10, 10), EXPLORER_ROVER);
+        buildRover(s, "rover2", new LocalPosition(10, 13), EXPLORER_ROVER);
 
         var mt = new LoadVehicleMeta();
 
         // Check with no loading
         var tasks = mt.getSettlementTasks(s);
-        assertTrue("No load tasks found", tasks.isEmpty());
+        assertTrue(tasks.isEmpty(), "No load tasks found");
 
         // Set rover to be loading
         var resources = new SuppliesManifest();
@@ -61,9 +70,9 @@ public class LoadVehicleEVATest extends AbstractMarsSimUnitTest {
         v.setLoading(resources);
 
         tasks = mt.getSettlementTasks(s);
-        assertEquals("One load tasks found", 1, tasks.size());
+        assertEquals(1, tasks.size(), "One load tasks found");
         var t = tasks.get(0);
-        assertTrue("Load in eva", t.isEVA());
-        assertEquals("Correct vehicle selected", v, t.getFocus());
+        assertTrue(t.isEVA(), "Load in eva");
+        assertEquals(v, t.getFocus(), "Correct vehicle selected");
     }
 }

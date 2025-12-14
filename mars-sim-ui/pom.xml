@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>com.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>pre-3.10.0</version>
+		<version>3.11.0</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
 	<properties>
-		<flatlaf.version>3.6.1</flatlaf.version>
+		<flatlaf.version>3.6.2</flatlaf.version>
 		<jfreechart.version>1.5.6</jfreechart.version>
 		<jide-oss.version>3.7.15</jide-oss.version>
 
@@ -69,7 +69,7 @@
 		    <artifactId>jorbis</artifactId>
 		    <version>0.0.17.4</version>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.swinglabs.swingx</groupId>
 			<artifactId>swingx-all</artifactId>

@@ -1,0 +1,24 @@
+{
+	"subject": "Architecture",
+	"topics": [
+			{"topic": "Construction Materials"},
+			{"topic": "Soil Mechanics"},
+			{"topic": "Building Techniques"},
+			{"topic": "Radiation Shielding and Protection"},
+			{"topic": "Thermal Insulation"},
+			{"topic": "Structural Engineering"},
+			{"topic": "Shape-Optimized Habitat Design"},
+			{"topic": "Life Support Systems"},
+			{"topic": "Energy Efficiency"},
+			{"topic": "Sustainable Design"},
+			{"topic": "Modular Construction"},
+			{"topic": "3D Printing in Construction"},
+			{"topic": "Urban Futurism"},
+			{"topic": "Artficial Biospheres"},
+			{"topic": "Space Architecture"},
+			{"topic": "Regolith Additive Construction"},
+			{"topic": "Symmetric Parabolic and Reverse Fixed Arches"},
+			{"topic": "Functional Biomes and Resources Sustainability"},
+			{"topic": "Design Elements Addressing Spatial Monotony"}
+	]
+}

@@ -24,7 +24,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -41,26 +41,25 @@ public class PopUpUnitMenu extends JPopupMenu {
 	public static final int WIDTH_2 = UnitWindow.WIDTH - 130;
 	public static final int HEIGHT_2 = UnitWindow.HEIGHT - 70;
 
-    public PopUpUnitMenu(final SettlementWindow swindow, final Unit unit){
+    public PopUpUnitMenu(final Unit unit, UIContext context){
 		add(unit.getUnitType().getName() + " : " + unit.getName());
 		addSeparator();
-    	MainDesktopPane desktop = swindow.getDesktop();
     	
     	switch (unit) {
 			case Person p:
-        		add(buildDetailsItem(p, desktop));
+        		add(buildDetailsItem(p, context));
 				break;
         	
 			case Vehicle v: 
-				add(buildDescriptionitem(unit, desktop));
-				add(buildDetailsItem(unit, desktop));
+				add(buildDescriptionitem(unit));
+				add(buildDetailsItem(unit, context));
 				add(createItem("relocate", v, Vehicle::relocateVehicle));
 				add(createItem("maintain", v, Vehicle::maintainVehicle));
 				break;
 
         	case Building b:
-				add(buildDescriptionitem(unit, desktop));
-				add(buildDetailsItem(unit, desktop));
+				add(buildDescriptionitem(unit));
+				add(buildDetailsItem(unit, context));
 				if (b.getAssociatedSettlement().getConstructionManager().canDemolish(b)) {
 					add(createItem("demolish", b, this::triggerDemolish));
 				}
@@ -68,8 +67,8 @@ public class PopUpUnitMenu extends JPopupMenu {
 
         	// Note: for construction sites
 			case ConstructionSite cs:
-				add(buildDescriptionitem(unit, desktop));
-				add(buildDetailsItem(unit, desktop));
+				add(buildDescriptionitem(unit));
+				add(buildDetailsItem(unit, context));
 				if (cs.isProposed()) {
 					add(createItem("relocate", cs, t -> t.relocateSite()));
 					add(createItem("delete", cs,
@@ -78,7 +77,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 				break;
 
 			default:
-				add(buildDetailsItem(unit, desktop));
+				add(buildDetailsItem(unit, context));
 				break;
         }
     }
@@ -88,7 +87,7 @@ public class PopUpUnitMenu extends JPopupMenu {
      *
      * @param unit
      */
-    private JMenuItem buildDescriptionitem(final Unit unit, final MainDesktopPane desktop) {
+    private JMenuItem buildDescriptionitem(final Unit unit) {
         
 		return createItem("description", unit, t -> {
 
@@ -118,9 +117,7 @@ public class PopUpUnitMenu extends JPopupMenu {
 				}
 			}
 
-			UnitInfoPanel b = new UnitInfoPanel(desktop);
-
-			b.init(name, type, description);
+			UnitInfoPanel b = new UnitInfoPanel(name, type, description);
 			b.setOpaque(false);
 			b.setBackground(new Color(0,0,0,128));
 			
@@ -177,8 +174,8 @@ public class PopUpUnitMenu extends JPopupMenu {
      * @param unit
      * @param mainDesktopPane
      */
-    private JMenuItem buildDetailsItem(final Unit unit, final MainDesktopPane desktop) {
-		return createItem("details", unit, desktop::showDetails);
+    private JMenuItem buildDetailsItem(final Unit unit, final UIContext context) {
+		return createItem("details", unit, context::showDetails);
     }
  
 	/**

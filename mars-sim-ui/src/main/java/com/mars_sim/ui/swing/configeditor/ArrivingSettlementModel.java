@@ -21,7 +21,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * Represents a table model of the initial settlements. This has some intelligence
@@ -89,24 +88,25 @@ class ArrivingSettlementModel extends AbstractTableModel {
 
 	
 	/**
-	 * Load the default settlements in the table.
+	 * Loads the default settlements in the table.
 	 */
 	public void loadDefaultSettlements(Scenario selected) {
 		arrivalInfos.clear();
-		List<String> usedNames = new ArrayList<>();
 
 		for (ArrivingSettlement spec : selected.getArrivals()) {
 			ArrivalInfo info = toArrivalInfo(spec);
-
-			// Save this name to the list
-			usedNames.add(info.name);
-				
 			arrivalInfos.add(info);
 		}
 			
 		fireTableDataChanged();
 	}
 
+	/**
+	 * Returns the arrival info, given the spec.
+	 * 
+	 * @param spec
+	 * @return
+	 */
 	private ArrivalInfo toArrivalInfo(ArrivingSettlement spec) {
 		var info = new ArrivalInfo();
 		info.name = spec.getSettlementName();
@@ -172,6 +172,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	 * cell. If we didn't implement this method, then the last column would contain
 	 * text ("true"/"false"), rather than a check box.
 	 */
+	@Override
 	public Class<?> getColumnClass(int c) {
 		return getValueAt(0, c).getClass();
 	}
@@ -192,8 +193,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int column) {
-		Object result = Msg.getString("unknown"); //$NON-NLS-1$
-
+		String result;
 		if ((row > -1) && (row < getRowCount())) {
 			ArrivalInfo info = arrivalInfos.get(row);
 			if ((column > -1) && (column < getColumnCount())) {
@@ -222,6 +222,9 @@ class ArrivingSettlementModel extends AbstractTableModel {
 				case LON_COL:
 					result = info.longitude;
 					break;
+				default:
+					result = null;
+					break;
 				}
 			} else {
 				result = Msg.getString("SimulationConfigEditor.log.invalidColumn"); //$NON-NLS-1$
@@ -248,10 +251,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 					String newSponsor = (String) aValue;
 					if (!info.sponsor.equals(newSponsor)) {
 						info.sponsor = newSponsor;
-						String newName = tailorSettlementNameBySponsor(info.sponsor, rowIndex);
-						if (newName != null) {
-							info.name = newName;
-						}
+						info.name = tailorSettlementNameBySponsor(info.sponsor, rowIndex);
 					}
 					break;	
 					
@@ -346,13 +346,10 @@ class ArrivingSettlementModel extends AbstractTableModel {
 		}
 
 		// Gets a list of settlement names that are tailored to this country
-		List<String> candidateNames = new ArrayList<>(ra.getSettlementNames());
-		candidateNames.removeAll(usedNames);
-
-		if (candidateNames.isEmpty())
-			return "Settlement #" + index;
-		else
-			return candidateNames.get(RandomUtil.getRandomInt(candidateNames.size()-1));
+		var name = ra.getSettlementNames().generateName(usedNames);
+		if (name == null)
+			name = "Settlement #" + index;
+		return name;
 	}
 	
 

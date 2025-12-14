@@ -46,8 +46,8 @@ import com.mars_sim.core.map.MapMetaData;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 
 @SuppressWarnings("serial")
 public class MapPanel extends JPanel implements MouseWheelListener {
@@ -76,7 +76,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private Coordinates centerCoords;
 
 	private MapDisplay marsMap;
-	private MainDesktopPane desktop;
+	private UIContext desktop;
 	
 	private JSlider zoomSlider;
 	
@@ -90,18 +90,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private List<MapHotspot> hotspots = new ArrayList<>();
 
 	/**
-	 * Constructor 4.
+	 * Constructor.
 	 * 
 	 * @param desktop
 	 */
-	public MapPanel(MainDesktopPane desktop) {
+	public MapPanel(UIContext desktop) {
 		super();
 		this.desktop = desktop;
-		
-		init();
-	}
-	
-	private void init() {
 
 		setMinimumSize(new Dimension(100, 100));
 		executor = Executors.newSingleThreadExecutor();
@@ -180,8 +175,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, MAX_SLIDER, 25);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-        zoomSlider.setPreferredSize(new Dimension(60, 400));
-        zoomSlider.setSize(new Dimension(60, 400));
+        zoomSlider.setPreferredSize(new Dimension(60, 300));
+        zoomSlider.setSize(new Dimension(60, 300));
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setForeground(Color.ORANGE.darker().darker());
@@ -199,7 +194,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 		zoomSlider.setLabelTable(labelTable);
     }
-		
+
 	/**
 	 * Converts the RHO. This means convert the slider value
 	 * into a rho that is between the min & max of the MapDisplay.
@@ -590,10 +585,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
         		
 	                if (centerCoords != null) {
 	                	if (marsMap != null && marsMap.isImageDone()) {
-	                		// Update GPU Button
-//	                		getDesktop().getNavWin().updateGPUButton();
-	                		// Q: how to stop continuously calling CannedMarsMap.getMapImage() below ?
-//	                		logger.config("Calling getMapImage()");
 	                		Image mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
 	                		if (mapImage != null) {
 	                			g2d.drawImage(mapImage, 0, 0, this);  
@@ -680,7 +671,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	/**
 	 * Gets the parent desktop.
 	 */
-	public MainDesktopPane getDesktop() {
+	public UIContext getDesktop() {
 		return desktop;
 	}
 

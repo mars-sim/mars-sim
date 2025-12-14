@@ -17,7 +17,7 @@ import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -28,12 +28,13 @@ import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
+
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -303,16 +304,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			// Set description to blank
 			setDescription("");		
 			// Fires task end event
-			eventTarget.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
-			// Create ending task historical event if needed.
-			if (createEvents) {
-				registerNewEvent(
-						new TaskEvent(eventTarget, 
-						this, 
-						eventTarget, 
-						EventType.TASK_FINISH,
-						getDescription()));
-			}
+			eventTarget.fireUnitUpdate(EntityEventType.TASK_ENDED_EVENT, this);
 		}
 	}
 
@@ -389,7 +381,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 */
 	protected void setName(String name) {
 		this.name = name;
-		this.eventTarget.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
+		this.eventTarget.fireUnitUpdate(EntityEventType.TASK_NAME_EVENT, name);
 	}
 
 	/**
@@ -437,7 +429,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected void setDescriptionDone(String des) {
 		if (!description.equalsIgnoreCase(des)) {
 			description = des;
-			eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+			eventTarget.fireUnitUpdate(EntityEventType.TASK_DESCRIPTION_EVENT, des);
 		}
 	}
 		
@@ -450,7 +442,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected void setDescription(String des, boolean recordTask) {
 		if (!description.equalsIgnoreCase(des)) {
 			description = des;
-			eventTarget.fireUnitUpdate(UnitEventType.TASK_DESCRIPTION_EVENT, des);
+			eventTarget.fireUnitUpdate(EntityEventType.TASK_DESCRIPTION_EVENT, des);
 			
 			if (!des.equals("") && worker.getTaskManager().getTask() != null
 				// Record the activity
@@ -506,7 +498,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Method is called via endTask with a null phase
 		// TaskPhase should have isRecordable method to stop recording of minor phases
 		if (newPhase != null) {
-			eventTarget.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
+			eventTarget.fireUnitUpdate(EntityEventType.TASK_PHASE_EVENT, newPhase);
 		}
 		
 		// Record the activity
@@ -583,7 +575,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	private void createSubTask(Task newSubTask) {
 		subTask = newSubTask;
 		subTask.level = this.level + 1;
-		eventTarget.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
+		eventTarget.fireUnitUpdate(EntityEventType.TASK_SUBTASK_EVENT, newSubTask);
 	}
 
 	/**

@@ -389,17 +389,17 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 				} else if (ResourceUtil.isTier1Resource(resource)) { 	// water, methane, hydrogen
 					score += mrate * LOW_BIAS;
 				} else if (ResourceUtil.isConstructionResource(resource)// cement, concrete, lime, brick
-					|| ResourceUtil.isChemical(resource)				// ethylene, styrene, propylene 
 					) { 		
 						score += mrate / MID_BIAS;
-				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil, ethylene
+				} else if (ResourceUtil.isDerivedResource(resource) 	// glucose, leaves, soil 
 					|| ResourceUtil.isTier3Resource(resource)) {  		// carbon dioxide
 					score += mrate / HIGH_BIAS;
 				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water
 					|| ResourceUtil.isInSitu(resource)					// all regolith types
 					|| ResourceUtil.isWasteProduct(resource)) { 		// CO, grey water, black water, * waste
 					score += mrate / SUPER_HIGH_BIAS;
-				} if (ResourceUtil.isRawMaterial(resource)) {   			// all ores, all minerals, sand)
+				} if (ResourceUtil.isRawMaterial(resource)   			// all ores, all minerals, sand)
+					|| ResourceUtil.isChemical(resource)) {				// polyester resin, ethylene, ethylene glycol, styrene, propylene 
 					score += mrate / MEGA_HIGH_BIAS;
 				}
 				else {
@@ -442,18 +442,18 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 					score += mrate * MID_BIAS;	
 				} else if (ResourceUtil.isTier1Resource(resource) 		// methane, water
 					|| ResourceUtil.isDerivedResource(resource) 		// glucose, leaves, soil
-					|| ResourceUtil.isRawElement(resource)      		// carbon, iron powder, iron oxide
 					|| ResourceUtil.isCriticalResource(resource)		// glass
 					) {
 					score += mrate * HIGH_BIAS;
 				} else if (ResourceUtil.isTier0Resource(resource) 		// ice, brine water, hydrogen
 				    || ResourceUtil.isWasteProduct(resource)			// CO, grey/black water, compost, all waste, carbon monoxide
-				    || ResourceUtil.isChemical(resource)				// ethylene, styrene, propylene, polystyrene, polyethylene, polypropylene
+				    || ResourceUtil.isChemical(resource)				// ethylene, ethylene glycol, styrene, propylene, polystyrene, polyethylene, polypropylene
 					) { 				
 					score += mrate * SUPER_HIGH_BIAS;
-				} else if (ResourceUtil.isRawMaterial(resource)				// all ores, all minerals, sand
-						|| ResourceUtil.isTier3Resource(resource)			// co2
-						|| ResourceUtil.isInSitu(resource)					// all regolith types
+				} else if (ResourceUtil.isRawMaterial(resource)			// all ores, all minerals, sand
+					|| ResourceUtil.isTier3Resource(resource)			// co2
+					|| ResourceUtil.isRawElement(resource)      		// carbon, iron powder, iron oxide
+					|| ResourceUtil.isInSitu(resource)					// all regolith types
 						) { 				
 						score += mrate * MEGA_HIGH_BIAS;					
 				} else

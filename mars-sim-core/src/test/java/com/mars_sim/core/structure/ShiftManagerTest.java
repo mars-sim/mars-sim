@@ -5,6 +5,11 @@
  * @author Barry Evans
  */
 package com.mars_sim.core.structure;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.Shift;
@@ -26,7 +31,7 @@ import com.mars_sim.core.time.MarsTime;
 /**
  * Test the internals of the ShiftMansger
  */
-public class ShiftManagerTest extends AbstractMarsSimUnitTest {
+public class ShiftManagerTest extends MarsSimUnitTest {
 
 	private ShiftManager buildManager(Settlement owner, int [] endTimes, int [] allocations) {
         List<ShiftSpec> specs = new ArrayList<>();
@@ -47,8 +52,9 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     /**
      * Test that Shift switching between On duty & Off duty as the day progresses
      */
+    @Test
     public void testShiftDuty() {
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
         int [] endTimes = {400, 900};
         int [] allocations = {50, 50};
@@ -57,7 +63,7 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
 
         int currentShift = 0;
         int quantum = 10;
-        MarsTime now = sim.getMasterClock().getMarsTime();
+        MarsTime now = getSim().getMasterClock().getMarsTime();
         for(int t = 0; t < 100; t++) {
             now = now.addTime(quantum);
             futures.timePassing(createPulse(now, false, false));
@@ -71,10 +77,10 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
                 Shift s = shifts.get(idx);
 
                 if (idx == currentShift) {
-                    assertTrue("Shift " + s.getName() + " On duty @ " + now.getMillisolInt(), s.isOnDuty());
+                    assertTrue(s.isOnDuty(), "Shift " + s.getName() + " On duty @ " + now.getMillisolInt());
                 }
                 else {
-                    assertFalse("Shift " + s.getName() + " Off duty @ " + now.getMillisolInt(), s.isOnDuty());
+                    assertFalse(s.isOnDuty(), "Shift " + s.getName() + " Off duty @ " + now.getMillisolInt());
                 }
             }
         }
@@ -83,8 +89,9 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     /**
      * Test the allocation of workers to Shifts
      */
+	@Test
 	public void testShiftAllocation() {
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
 
         int [] endTimes = {500, 700, 1000};
         int [] allocations = {40, 40, 20};
@@ -99,10 +106,10 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
      
         // Check the reported allocations
         for(Shift s : sm.getShifts()) {
-            assertEquals("Shift reported allocation", s.getPopPercentage(), s.getSlotNumber());
+            assertEquals(s.getPopPercentage(), s.getSlotNumber(), "Shift reported allocation");
 
             int actual = actuals.get(s);
-            assertEquals("Shift actual allocation", actual, s.getSlotNumber());
+            assertEquals(actual, s.getSlotNumber(), "Shift actual allocation");
         }
     }
 
@@ -110,13 +117,14 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     /**
      * Check that the OnDuty override flag works
      */
+    @Test
     public void testShiftRotation() {
         // This test invovles PErsons so have to take the Shiftmanager belonging to teh Settlmenet
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
         ScheduledEventManager futures = settlement.getFutureManager();
         ShiftManager sm = settlement.getShiftManager();
         var leavePerctage = sm.getMaxOnLeave();
-        assertTrue("Shiftmanger has leave allowance", leavePerctage > 0);
+        assertTrue(leavePerctage > 0, "Shiftmanger has leave allowance");
 
         // Add enough people to get someone on leave
         int personCount = (100/leavePerctage) + 2;  // Add 2 to make sure no rounding problem
@@ -128,12 +136,12 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         }
 
         // Check shifts don;t change
-        MarsTime now = sim.getMasterClock().getMarsTime().addTime((sm.getRotationSols() * 1000) - 1);
+        MarsTime now = getSim().getMasterClock().getMarsTime().addTime((sm.getRotationSols() * 1000) - 1);
         futures.timePassing(createPulse(now, false, false));
         long leaveCount = origAllocation.keySet().stream()
                             .filter(s -> s.getStatus() == WorkStatus.ON_LEAVE)
                             .count();
-        assertEquals("No shift changes on normal day", 0, leaveCount);
+        assertEquals(0, leaveCount, "No shift changes on normal day");
 
         // Rotate shifts. mission sol new sol flag set
         now = now.addTime(2);
@@ -148,17 +156,17 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
             boolean changed = !ss.getShift().equals(e.getValue());
             if (changed) {
                 changedShifts++;
-                assertEquals("Person changing shift status", WorkStatus.ON_LEAVE, ss.getStatus());
+                assertEquals(WorkStatus.ON_LEAVE, ss.getStatus(), "Person changing shift status");
                 onLeave.add(ss);
             }
             else {
-                assertFalse("Person not changing shift not on leave", (WorkStatus.ON_LEAVE == ss.getStatus()));
+                assertFalse((WorkStatus.ON_LEAVE == ss.getStatus()), "Person not changing shift not on leave");
             }
         }
 
-        assertTrue("At least one is on leave", !onLeave.isEmpty());
-        assertEquals("Report changed shift and actuals", onLeave.size(), changedShifts);
-        assertEquals("On leave against target", (sm.getMaxOnLeave() * personCount)/100, onLeave.size());
+        assertTrue(!onLeave.isEmpty(), "At least one is on leave");
+        assertEquals(onLeave.size(), changedShifts, "Report changed shift and actuals");
+        assertEquals((sm.getMaxOnLeave() * personCount)/100, onLeave.size(), "On leave against target");
 
         // Check day after rotation. mission sol new sol flag set
         now = now.addTime(ShiftManager.ROTATION_LEAVE);
@@ -166,14 +174,15 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
         leaveCount = origAllocation.keySet().stream()
                             .filter(s -> s.getStatus() == WorkStatus.ON_LEAVE)
                             .count();
-        assertEquals("Worker on leave post rotation", 0, leaveCount);
+        assertEquals(0, leaveCount, "Worker on leave post rotation");
     }
 
     /**
-     * Check that the OnDuty override flag works
+     * Checks that the OnDuty override flag works.
      */
+    @Test
     public void testOnCal() {
-        Settlement settlement = buildSettlement();
+        Settlement settlement = buildSettlement("mock");
         ScheduledEventManager futures = settlement.getFutureManager();
 
         Person worker = buildPerson("OnCall Worker", settlement);
@@ -203,23 +212,24 @@ public class ShiftManagerTest extends AbstractMarsSimUnitTest {
     }
 
     /**
-     * Test the Workstatus before and after a Shift ends.
+     * Tests the Work status before and after a Shift ends.
+     * 
      * @param sm Shift manager controlling shifts
      * @param slot Slot being tested
      * @param shiftEnd Time the shift ends
      * @param scenario Scenario description
-     * @param preEnd The Workstatus befor eshift ends
-     * @param postEnd Work statu after the SHift ends
+     * @param preEnd The Workstatus before shift ends
+     * @param postEnd Work status after the SHift ends
      * 
      */
     private void testWorkStatus(ScheduledEventManager sm, ShiftSlot slot, int shiftEnd, String scenario,
                                 WorkStatus preEnd, WorkStatus postEnd) {
         // Shift on duty but on call
         sm.timePassing(createPulse(1, shiftEnd - 10, false, false));
-        assertEquals(scenario + " during shift", preEnd, slot.getStatus());
+        assertEquals(preEnd, slot.getStatus(), scenario + " during shift");
 
-        // Shift of duty bu on call
+        // Shift of duty but on call
         sm.timePassing(createPulse(1, shiftEnd, false, false));
-        assertEquals(scenario + " after shift", postEnd, slot.getStatus());
+        assertEquals(postEnd, slot.getStatus(), scenario + " after shift");
     }
 }

@@ -1,7 +1,7 @@
 package com.mars_sim.core.building.function.cooking;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -42,10 +42,10 @@ class MealTimesTest {
         int adjustedStart = (start + offset);
         int adjustedEnd = (adjustedStart + duration) % 1000;
 
-        assertTrue(name + " active", status.isMealTime((adjustedStart+1) % 1000));
-        assertFalse(name + " not active", status.isMealTime((adjustedStart-1) % 1000));
+        assertTrue(status.isMealTime((adjustedStart+1) % 1000), name + " active");
+        assertFalse(status.isMealTime((adjustedStart-1) % 1000), name + " not active");
 
-        assertTrue(name + " still active", status.isMealTime((adjustedEnd-1) % 1000));
-        assertFalse(name + " still not active", status.isMealTime((adjustedEnd+1) % 1000));
+        assertTrue(status.isMealTime((adjustedEnd-1) % 1000), name + " still active");
+        assertFalse(status.isMealTime((adjustedEnd+1) % 1000), name + " still not active");
     }
 }

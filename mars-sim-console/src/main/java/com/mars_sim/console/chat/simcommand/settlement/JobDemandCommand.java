@@ -15,7 +15,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -48,7 +48,7 @@ public class JobDemandCommand extends AbstractSettlementCommand {
 		Map<JobType, List<Person>> map = JobRosterCommand.getJobMap(settlement);
 
 		for (JobType job : JobType.values()) {
-			Job jobSpec = JobUtil.getJobSpec(job);
+			JobSpec jobSpec = JobUtil.getJobSpec(job);
 
 			String demand = "" + Math.round(jobSpec.getSettlementNeed(settlement) * 10.0) / 10.0;
 

@@ -50,7 +50,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue(person.isOutside(), "Person starts outside");
 
@@ -83,12 +83,12 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue(person.isOutside(), "Person starts outside");
 	
 		// Add a Building in the way
-		buildBuilding(settlement.getBuildingManager(), new LocalPosition(15, -5));
+		buildBuilding(settlement.getBuildingManager(), new LocalPosition(15, -5), 0D);
 		
 		LocalPosition target = new LocalPosition(20D, 0D);
 		var outsideWalk = createPathFinder(person, person.getPosition());
@@ -110,7 +110,7 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(LocalPosition.DEFAULT_POSITION);
 		assertTrue(person.isOutside(), "Person starts outside");
 
@@ -136,12 +136,12 @@ class OutsidePathFinderTest extends MarsSimUnitTest {
 	
 		// Create test person.
 		Person person = buildPerson("Outsider", settlement);
-		person.transfer(getMarsSurface());
+		person.transfer(getSurface());
 		person.setPosition(new LocalPosition(-10, -10));
 		assertTrue(person.isOutside(), "Person starts outside");
 
 		// Add a Building in the way
-		buildBuilding(settlement.getBuildingManager(), new LocalPosition(20D, -5));
+		buildBuilding(settlement.getBuildingManager(), new LocalPosition(20D, -5), 0D);
 		buildRover(settlement, "Rover", new LocalPosition(10D, -1D), EXPLORER_ROVER);
 
 		LocalPosition target = new LocalPosition(30D, 20D);

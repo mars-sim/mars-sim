@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
@@ -29,7 +30,6 @@ import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
-import com.mars_sim.core.tool.RandomUtil;
 
 /*
  * This class is a Factory to bootstrap a new simulation according to
@@ -151,7 +151,7 @@ public class SimulationBuilder {
 
 		options.add(Option.builder(CONFIG_ARG).argName("directory").hasArg()
 						.desc("Directory for configurations").get());
-		options.add(Option.builder(LOG_ARG)
+		options.add(Option.builder(LOG_ARG).argName("Log file [size K|M|G:count]").optionalArg(true)
 					.desc("Enable file logging").get());
 		options.add(Option.builder(TIMERATIO_ARG).argName("Ratio (power of 2)").hasArg()
 								.desc("Define the time ratio of the simulation").get());
@@ -188,7 +188,7 @@ public class SimulationBuilder {
 			SimulationRuntime.setDataDir(line.getOptionValue(CONFIG_ARG));
 		}
 		if (line.hasOption(LOG_ARG)) {
-			SimulationRuntime.enableFileLogging();
+			SimulationRuntime.enableFileLogging(line.getOptionValue(LOG_ARG));
 		}
 		if (line.hasOption(TIMERATIO_ARG)) {
 			setTimeRatio(Integer.parseInt(line.getOptionValue(TIMERATIO_ARG)));
@@ -352,8 +352,7 @@ public class SimulationBuilder {
 		}
 		
 		// Pick a random name
-		List<String> settlementNames = authority.getSettlementNames();		
-		String settlementName = RandomUtil.getRandomElement(settlementNames);
+		String settlementName = authority.getSettlementNames().generateName(Collections.emptyList());
 		if (location == null) {
 			// Pick a fixed location
 			location = new Coordinates(Math.PI / 2D, 0);

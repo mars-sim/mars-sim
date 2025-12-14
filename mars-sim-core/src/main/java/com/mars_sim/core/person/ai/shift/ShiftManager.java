@@ -88,6 +88,7 @@ public class ShiftManager implements Serializable {
         if (shiftDefinition.getShifts().isEmpty()) {
             throw new  IllegalArgumentException("No shift defined in " + shiftDefinition.getName());
         }
+        
         for (ShiftSpec ss : shiftDefinition.getShifts()) {
             Shift s = new Shift(ss, offset);
             shifts.add(s);
@@ -108,19 +109,19 @@ public class ShiftManager implements Serializable {
      * @param worker 
      * @return
      */
-    public ShiftSlot allocationShift(Person worker) {
+    public ShiftSlot allocationShift(Person person) {
+       	// Note: at the start of the sim, role type of a person is null 
         Shift selectedShift = findSuitableShift(null);
         if (selectedShift == null) {
             throw new IllegalStateException("No shift selected for allocation");
         }
-
-        return new ShiftSlot(selectedShift, worker);
+        return new ShiftSlot(selectedShift, person);
     }
     
     private int getTotalAllocated() {
         int totalAllocated = shifts.stream().map(Shift::getSlotNumber).reduce(0, Integer::sum);
         if (totalAllocated == 0) {
-            // If no one  is allocated just fudge it to get the allocations started
+            // If no one is allocated, just fudge it to get the allocations started
             totalAllocated = 1;
         }
         return totalAllocated;
@@ -129,15 +130,16 @@ public class ShiftManager implements Serializable {
     /**
      * Finds a suitable shift for a new allocation. Potentially exclude a Shift from the search.
      * 
+     * @param person
      * @param exclude
      * @return
      */
-    private Shift findSuitableShift(Shift exclude) {
+    private Shift findSuitableShift(Shift exclude) {  	
         int totalAllocated = getTotalAllocated();
 
         Shift selectedShift = null;
         int biggestShoftfall = Integer.MIN_VALUE;
-        for(Shift s : shifts) {
+        for (Shift s : shifts) {
             int allocatedPerc = ((s.getSlotNumber() * 100) / totalAllocated);
             int shortfall = s.getPopPercentage() - allocatedPerc;
             if (!s.equals(exclude) && shortfall > biggestShoftfall) {
@@ -168,19 +170,11 @@ public class ShiftManager implements Serializable {
         int maxOnLeave = Math.max(1, (potentials.size() * leavePercentage)/100);
         int changedCount = 0;
         while (!potentials.isEmpty() && (changedCount < maxOnLeave)) {
-            int idx = RandomUtil.getRandomInt(potentials.size()-1);
+            int idx = RandomUtil.getRandomInt(potentials.size() - 1);
             Person p = potentials.remove(idx);
-            ShiftSlot candidate = p.getShiftSlot();
-
-            // Find a new Shift but exclude the current one
-            Shift newShift = findSuitableShift(candidate.getShift());
-            if (newShift != null) {
-                candidate.setOnLeave(ROTATION_LEAVE);
-                changedCount++;
-                Shift oldShift = candidate.getShift();
-                candidate.setShift(newShift);
-                logger.info(p, "Assigning the change of shift from " + oldShift.getName() 
-                	+ " to " + newShift.getName() + ".");
+            
+            if (assignNewShift(p, ROTATION_LEAVE) != null) {
+            	changedCount++;
             }
         }
     }
@@ -189,19 +183,28 @@ public class ShiftManager implements Serializable {
 	 * Assigns a person to a new work shift.
 	 * 
 	 * @param person
+	 * @param leaveDuration
+	 * @return the new shift
 	 */
-	public void assignNewShift(Person person) {
+	public Shift assignNewShift(Person person, int leaveDuration) {
 		ShiftSlot candidate = person.getShiftSlot();
-
+	
+		if (candidate.isGuest()) {
+			// No need of getting a new shift for guests
+			return candidate.getShift();
+		}
+			
         // Find a new Shift but exclude the current one
         Shift newShift = findSuitableShift(candidate.getShift());
         if (newShift != null) {
-            candidate.setOnLeave(100);
+            candidate.setOnLeave(leaveDuration);
             Shift oldShift = candidate.getShift();
             candidate.setShift(newShift);
             logger.info(person, "Assigning the change of shift from " + oldShift.getName() 
         	+ " to " + newShift.getName() + ".");
         }
+
+        return newShift;
 	}
 	
     /**

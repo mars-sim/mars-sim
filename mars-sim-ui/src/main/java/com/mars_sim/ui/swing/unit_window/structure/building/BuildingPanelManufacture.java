@@ -159,7 +159,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 			toolDetails.forEach((name, details) -> {
 				int idx = tool.indexOf(name);
 				var newInUse = details.getInUse();
-				if (inuse.get(idx) != newInUse) {
+				if (idx >= 0 && inuse.get(idx) != newInUse) {
 					inuse.set(idx, newInUse);
 					fireTableCellUpdated(idx, 1);
 				}

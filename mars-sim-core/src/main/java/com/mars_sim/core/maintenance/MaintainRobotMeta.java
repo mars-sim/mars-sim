@@ -114,7 +114,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		RatingScore highestScore1 = new RatingScore(1D);
 		RatingScore highestScore2 = new RatingScore(1D);
 
-		RatingScore score = new RatingScore(0D);
+		RatingScore score = RatingScore.ZERO_RATING;
 		
 		for (Robot robot : getAllDownRobotCandidates(settlement)) {
 			

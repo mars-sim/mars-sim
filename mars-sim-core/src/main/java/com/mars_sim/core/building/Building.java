@@ -18,7 +18,7 @@ import java.util.logging.Level;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.config.BuildingSpec;
@@ -55,14 +55,16 @@ import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
+import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.events.HistoricalEvent;
+
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.hazard.HazardEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -71,7 +73,6 @@ import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.malfunction.task.Repair;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -731,7 +732,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		// Determine power required for each function.
 		for (Function function : getFunctions()) {
-			result += function.getPoweredDownPowerRequired();
+			result += function.getLowPowerRequired();
 		}
 
 		return result;
@@ -750,7 +751,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void setPowerMode(PowerMode powerMode) {
 		if (powerModeCache != powerMode) {
 			powerModeCache = powerMode;
-			fireUnitUpdate(UnitEventType.POWER_MODE_EVENT, this);
+			fireUnitUpdate(PowerGrid.POWER_MODE_EVENT, this);
 		}
 	}
 
@@ -1399,20 +1400,17 @@ public class Building extends FixedUnit implements Malfunctionable,
 			victimNames = "";
 			
 		// Pick the last person who witness this event in the affected building. Could be no one.
-		HistoricalEvent hEvent = new HazardEvent(
-				EventType.HAZARD_ACTS_OF_GOD,
-				this,
-				mal.getMalfunctionMeta().getName(),
-				"",
-				victimNames,
-				this);
+		HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventType.HAZARD_ACTS_OF_GOD,
+								this, mal.getMalfunctionMeta().getName(),
+					 "", victimNames,
+								this, getAssociatedSettlement());
 
 		if (eventManager == null)
 			eventManager = Simulation.instance().getEventManager();
 		
 		eventManager.registerNewEvent(hEvent);
 
-		fireUnitUpdate(UnitEventType.METEORITE_EVENT);
+		fireUnitUpdate(EntityEventType.METEORITE_EVENT);
 	}
 	
 	/**

@@ -30,6 +30,7 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
@@ -54,9 +55,8 @@ public class AuthorityEditor  {
 			content = new JPanel();
 			content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 			content.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-			//content.setBorder(BorderFactory.createTitledBorder(title));
 
-			model = new DefaultListModel<String>();
+			model = new DefaultListModel<>();
 			JList<String> list = new JList<>(model);
 			content.add(new JScrollPane(list));
 			
@@ -196,7 +196,7 @@ public class AuthorityEditor  {
 		// Add gender panel
 		Box genderPanel = Box.createHorizontalBox();
 		genderPanel.setBorder(BorderFactory.createTitledBorder("Details"));
-		genderRatio = new JSlider(JSlider.HORIZONTAL,0, 100, 50);
+		genderRatio = new JSlider(SwingConstants.HORIZONTAL,0, 100, 50);
 
 		//Turn on labels at major tick marks.
 		genderRatio.setMajorTickSpacing(50);
@@ -259,8 +259,8 @@ public class AuthorityEditor  {
 		genderRatio.setValue((int)(newDisplay.getGenderRatio() * 100));
 		agendaCB.setSelectedItem(newDisplay.getMissionAgenda().getName());
 		countries.loadItems(newDisplay.getCountries());
-		settlementNames.loadItems(newDisplay.getSettlementNames());
-		vehicleNames.loadItems(newDisplay.getVehicleNames());
+		settlementNames.loadItems(newDisplay.getSettlementNames().getPotentials());
+		vehicleNames.loadItems(newDisplay.getVehicleNames().getPotentials());
 		
 		// Load the corporation value
 		// Note: this comes as the default and cannot be changed
@@ -278,12 +278,14 @@ public class AuthorityEditor  {
 	private Authority commitChanges(String shortName, String description) {
 		String agendaName = (String) agendaCB.getSelectedItem();
 		
-		return new Authority(shortName, description, isCorporation, false,
+		var a = new Authority(shortName, description, isCorporation, false,
 				// Note: the following entries may be subject to change
 				genderRatio.getValue()/100D,
 				raFactory.getAgenda(agendaName),
-				countries.getItems(),
-				settlementNames.getItems(),
-				vehicleNames.getItems());
+				countries.getItems());
+		
+		// Have to load the names from the transient lists
+		a.loadNameGenerators(settlementNames.getItems(), vehicleNames.getItems());
+		return a;
 	}
 }

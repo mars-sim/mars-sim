@@ -8,28 +8,26 @@ package com.mars_sim.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.JComboBoxMW;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.ModalInternalFrame;
 
 
 /**
  * A dialog for creating a new transport item.
  */
 @SuppressWarnings("serial")
-public class NewTransportItemDialog extends ModalInternalFrame {
+public class NewTransportItemDialog extends JDialog {
 
-	/** default logger. */
-//	private static SimLogger logger = SimLogger.getLogger(NewTransportItemDialog.class.getName());
 
 	// Transport item types.
 	private static final String DEFAULT_MESSAGE = "Select Transport Item Type";
@@ -44,29 +42,23 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 	private TransportItemEditingPanel resupplyMissionPanel;
 	private TransportItemEditingPanel arrivingSettlementPanel;
 	private JButton createButton;
-
-	private ResupplyWindow resupplyWindow;
 	
 	/**
 	 * Constructor.
-	 * @param MainDesktopPane desktop
-	 * @param transportItem the transport item to modify.
+	 * @param parent the parent frame
+	 * @param simulation the simulation instance
 	 */
 	@SuppressWarnings("unchecked")
-	public NewTransportItemDialog(MainDesktopPane desktop, ResupplyWindow resupplyWindow) {
+	public NewTransportItemDialog(Frame parent, Simulation simulation) {
 
-		// Use ModalInternalFrame constructor
-        super("New Transport Item");
-        this.resupplyWindow = resupplyWindow;
+		// Use JDialog constructor
+        super(parent, "New Transport Item", true); // true for modal
 
 		setSize(580, 600);
 
 		 // Create main panel
 		JPanel mainPane = new JPanel(new BorderLayout());
         setContentPane(mainPane);
-
-		// Set the border.
-		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
 
 		// Create transport type panel.
 		JPanel transportTypePanel = new JPanel(new FlowLayout(10, 10, FlowLayout.CENTER));
@@ -95,11 +87,11 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		mainEditingPanel.add(emptyPanel, DEFAULT_MESSAGE);
 
 		// Create resupply mission editing panel.
-		resupplyMissionPanel = new ResupplyMissionEditingPanel(null, resupplyWindow, null, this); // resupply cannot be null !
+		resupplyMissionPanel = new ResupplyMissionEditingPanel(simulation, null, null, this); // resupply cannot be null !
 		mainEditingPanel.add(resupplyMissionPanel, RESUPPLY_MISSION);
 
 		// Create arriving settlement editing panel.
-		arrivingSettlementPanel = new ArrivingSettlementEditingPanel(null, resupplyWindow, null, this); // resupply cannot be null !
+		arrivingSettlementPanel = new ArrivingSettlementEditingPanel(simulation, null, null, this); // resupply cannot be null !
 		mainEditingPanel.add(arrivingSettlementPanel, ARRIVING_SETTLEMENT);
 
 		// Create the button pane.
@@ -119,21 +111,12 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 		cancelButton.addActionListener(e -> 
 				// Close dialog.
 				dispose()
-				//resupplyWindow.setRunning(false);
 		);
 		buttonPane.add(cancelButton);
-
-        // Add to its own tab pane
-       	desktop.add(this);
-
-		Dimension desktopSize = desktop.getParent().getSize();
-	    Dimension jInternalFrameSize = this.getSize();
-	    int width = (desktopSize.width - jInternalFrameSize.width) / 2;
-	    int height = (desktopSize.height - jInternalFrameSize.height) / 2;
-	    setLocation(width, height);
-
-	    setModal(true);
-	    setVisible(true);
+		
+		// Set dialog behavior
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(parent);
 	}
 
 	/**
@@ -173,22 +156,4 @@ public class NewTransportItemDialog extends ModalInternalFrame {
 			dispose();
 		}
 	}
-
-	/**
-	 * Prepares this window for deletion.
-	 */
-	public void destroy() {
-
-		editingPanel  = null;
-		mainEditingPanel  = null;
-		mainEditingLayout  = null;
-		emptyPanel  = null;
-		resupplyMissionPanel  = null;
-		arrivingSettlementPanel  = null;
-		createButton  = null;
-		resupplyWindow  = null;
-	}
-
-
-
 }

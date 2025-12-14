@@ -19,13 +19,15 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.Exploration;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.ExplorationObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.person.ai.mission.Exploration;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
 
@@ -35,7 +37,7 @@ import com.mars_sim.ui.swing.StyleManager;
  */
 @SuppressWarnings("serial")
 public class ExplorationPanel extends JPanel 
-	implements MissionListener, UnitListener  {
+	implements EntityListener {
 
 	// Data members
 	private Map<String, ExplorationSitePanel> sitePanes;
@@ -62,7 +64,7 @@ public class ExplorationPanel extends JPanel
 		add(horz, BorderLayout.CENTER);
 
 		resourceModel = new DefaultListModel<>();
-		horz.add(CollectResourcePanel.createList(resourceModel, "Minerals Collected"));
+		horz.add(CollectResourcePanel.createList(resourceModel, "Rocks Collected"));
 
 		sitesPane = new JPanel();
 		sitesPane.setLayout(new BoxLayout(sitesPane, BoxLayout.PAGE_AXIS));
@@ -73,20 +75,17 @@ public class ExplorationPanel extends JPanel
 
 		// Load the panels with current state
 		updateCollectionValueLabel();
+		
 		objective.getCompletion().keySet().forEach(this::updateSitePanel);
 	}
 
 	@Override
-	public void unitUpdate(UnitEvent event) {
-		if (UnitEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
+	public void entityUpdate(EntityEvent event) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			updateCollectionValueLabel();
 		}
-	}
-
-	@Override
-	public void missionUpdate(MissionEvent e) {
-		if (MissionEventType.SITE_EXPLORATION_EVENT == e.getType()) {
-			updateSitePanel((String) e.getTarget());
+		else if (Exploration.SITE_EXPLORATION_EVENT.equals(event.getType())) {
+			updateSitePanel((String) event.getTarget());
 		}
 	}
 

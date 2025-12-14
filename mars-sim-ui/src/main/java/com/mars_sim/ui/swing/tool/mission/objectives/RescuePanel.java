@@ -15,9 +15,9 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionListener;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -28,14 +28,14 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 public class RescuePanel extends JPanel
-    implements MissionListener {
+    implements EntityListener {
 
     // Data members
     private RescueVehicleObjective rescueMission;
     private JLabel vehicleStatusValueLabel;
     private JLabel malfunctionListLabel;
 
-    public RescuePanel(RescueVehicleObjective objectives, MainDesktopPane desktop) {
+    public RescuePanel(RescueVehicleObjective objectives, UIContext context) {
         // Use MissionCustomInfoPanel constructor.
         super();
 
@@ -50,7 +50,7 @@ public class RescuePanel extends JPanel
         add(attrPanel, BorderLayout.NORTH);
 
         // Create rescue vehicle button.
-        var rescueVehicleButton = new EntityLabel(objectives.getRecoverVehicle(), desktop);
+        var rescueVehicleButton = new EntityLabel(objectives.getRecoverVehicle(), context);
         attrPanel.addLabelledItem("Vehicle to Rescue", rescueVehicleButton);
 		vehicleStatusValueLabel = attrPanel.addRow("Vehicle Status", "");
         malfunctionListLabel = attrPanel.addRow("Vehicle Malfunctions", "");
@@ -59,7 +59,7 @@ public class RescuePanel extends JPanel
     }
 
     @Override
-    public void missionUpdate(MissionEvent event) {
+    public void entityUpdate(EntityEvent event) {
         updateVehicle();
     }
     

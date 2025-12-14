@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.data.RatingScore;
@@ -128,6 +127,10 @@ public class ManufacturingManager implements Serializable {
 
     }
 
+    public static final String MANU_QUEUE_REFRESH = "refresh manufacturing queue";
+    public static final String MANU_QUEUE_REMOVE = "remove from manufacturing queue";
+    public static final String MANU_QUEUE_ADD = "add to manufacturing queue";
+
     private static final int REFRESH_TIME = 10;
     private static final Integer DEFAULT_VALUE = 30;
     private static final Integer DEFAULT_LIMIT = 200;
@@ -157,9 +160,9 @@ public class ManufacturingManager implements Serializable {
 
         // Add the controlling preferences 
         var pMgr = owner.getPreferences();
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_LIMIT);
-        pMgr.putValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.MAX_QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
+        pMgr.putValue(ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
+        pMgr.putValue(ManufacturingParameters.NEW_MANU_LIMIT, DEFAULT_LIMIT);
+        pMgr.putValue(ManufacturingParameters.MAX_QUEUE_SIZE, DEFAULT_QUEUE_SIZE);
 
     }
 
@@ -213,7 +216,7 @@ public class ManufacturingManager implements Serializable {
      */
     public void removeProcessFromQueue(QueuedProcess selected) {
         queue.remove(selected);
-        owner.fireUnitUpdate(UnitEventType.MANU_QUEUE_REMOVE, selected);
+        owner.fireUnitUpdate(ManufacturingManager.MANU_QUEUE_REMOVE, selected);
     }
 
     /**
@@ -256,7 +259,7 @@ public class ManufacturingManager implements Serializable {
         synchronized(queue) {
             queue.add(newItem);
         }   
-        owner.fireUnitUpdate(UnitEventType.MANU_QUEUE_ADD, newItem);
+        owner.fireUnitUpdate(ManufacturingManager.MANU_QUEUE_ADD, newItem);
     }
 
     /**
@@ -276,7 +279,7 @@ public class ManufacturingManager implements Serializable {
         }  
 
         if (!queue.isEmpty()) {
-            owner.fireUnitUpdate(UnitEventType.MANE_QUEUE_REFRESH);
+            owner.fireUnitUpdate(ManufacturingManager.MANU_QUEUE_REFRESH);
         }
     }
 
@@ -316,8 +319,7 @@ public class ManufacturingManager implements Serializable {
      */
     private int getQueueCapacity() {
         // Add new queue items if queue is within limit
-        var maxQueue = owner.getPreferences().getIntValue(ManufacturingParameters.INSTANCE,
-                                        ManufacturingParameters.MAX_QUEUE_SIZE,
+        var maxQueue = owner.getPreferences().getIntValue(ManufacturingParameters.MAX_QUEUE_SIZE,
                                         DEFAULT_QUEUE_SIZE);
         return maxQueue - queue.size();
     }
@@ -349,12 +351,11 @@ public class ManufacturingManager implements Serializable {
     private void createManuQueueItems() {
         var pMgr = owner.getPreferences();
         int maxProcesses = Math.min(getQueueCapacity(),
-                                    pMgr.getIntValue(ManufacturingParameters.INSTANCE,
-                                                     ManufacturingParameters.NEW_MANU_LIMIT,
+                                    pMgr.getIntValue(ManufacturingParameters.NEW_MANU_LIMIT,
                                                      DEFAULT_LIMIT));
         if (maxProcesses > 0) {
 
-            var scoreThreshold = pMgr.getIntValue(ManufacturingParameters.INSTANCE, ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
+            var scoreThreshold = pMgr.getIntValue(ManufacturingParameters.NEW_MANU_VALUE, DEFAULT_VALUE);
 
             var potential = getQueuableManuProcesses()
                     .filter(i -> i.isResourcesAvailable(owner))
@@ -373,7 +374,7 @@ public class ManufacturingManager implements Serializable {
     private RatingScore getProcessValue(ProcessInfo info) {
         RatingScore value = new RatingScore();
         info.getOutputList().forEach(i -> value.addBase(i.getName(),
-                        ManufactureUtil.getManufactureProcessItemValue(i, owner, true)));  
+                        ManufactureUtil.getManufactureProcessItemGoodValuePoint(i, owner, true)));  
         
         return value;
     }

@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
@@ -23,8 +23,8 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * The row has a unique key as CategoryKey.
  */
 @SuppressWarnings("serial")
-public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey<T>>
-            implements UnitListener {
+abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
+            implements EntityListener {
 
     private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private boolean monitorSettlement = false;
@@ -34,7 +34,6 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
         super(name, countingMsgKey, names);
         this.categories = cats;
     }
-
         
 	/**
 	 * Sets whether the changes to the Entities should be monitor for change. 
@@ -43,13 +42,13 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
 	 * 
 	 * @param activate 
 	 */
-    public void setMonitorEntites(boolean activate) {
+    public void setMonitorEntities(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
-				selectedSettlements.forEach(s ->s.addUnitListener(this));
+				selectedSettlements.forEach(s ->s.addEntityListener(this));
 			}
 			else {
-				selectedSettlements.forEach(s ->s.removeUnitListener(this));
+				selectedSettlements.forEach(s ->s.removeEntityListener(this));
 			}
 			monitorSettlement = activate;
 		}
@@ -60,7 +59,7 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
 	 */
 	@Override
 	public void destroy() {
-		selectedSettlements.forEach(s ->s.removeUnitListener(this));
+		selectedSettlements.forEach(s ->s.removeEntityListener(this));
 		super.destroy();
 	}
 
@@ -69,8 +68,9 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
 	 * 
 	 * @param filter Settlement
 	 */
+	@Override
     public boolean setSettlementFilter(Set<Settlement> filter) {
-		selectedSettlements.forEach(s ->s.removeUnitListener(this));
+		selectedSettlements.forEach(s ->s.removeEntityListener(this));
 
 		// Initialize settlements.
 		selectedSettlements = filter;	
@@ -85,11 +85,11 @@ public abstract class CategoryTableModel<T> extends EntityTableModel<CategoryKey
         }
 
         // Initialize goods list.
-		resetEntities(newRows);
+		resetItems(newRows);
 			
 		// Add table as listener to each settlement.
 		if (monitorSettlement) {
-			selectedSettlements.forEach(s ->s.addUnitListener(this));
+			selectedSettlements.forEach(s ->s.addEntityListener(this));
 		}
 
 		return true;

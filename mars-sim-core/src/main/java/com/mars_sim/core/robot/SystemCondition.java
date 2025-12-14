@@ -9,10 +9,11 @@ package com.mars_sim.core.robot;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.MathUtils;
 
 /**
  * This class represents the System Condition of a robot.
@@ -58,6 +59,8 @@ public class SystemCondition implements Serializable {
     public SystemCondition(Robot newRobot, RobotSpec spec) {
         robot = newRobot;
 
+        performance = 1.0;
+        
         double energyStorageCapacity = spec.getMaxCapacity();
         
         int numModules = (int)(Math.ceil(energyStorageCapacity/ENERGY_PER_MODULE));
@@ -81,6 +84,11 @@ public class SystemCondition implements Serializable {
 		
     	battery.timePassing(pulse);
     	
+		// Degrade performance;				
+    	double aveFatigue = robot.getMalfunctionManager().findAverageWorstFatigue();
+
+		setPerformanceFactor(performance - MathUtils.between(time * aveFatigue / 5000, 0, time / 500));	
+		
     	if (!pulse.isNewHalfSol()) {
     		
     		int msol = pulse.getMarsTime().getMillisolInt();
@@ -91,18 +99,12 @@ public class SystemCondition implements Serializable {
  
     	        // Consume a minute amount of energy even if a robot does not perform any tasks
     	    	if (onPowerSave && battery.getkWhStored() > 0) {
-    	    		battery.requestEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
-    	    				pulse.getElapsed() * MarsTime.HOURS_PER_MILLISOL);
+    	    		battery.consumeEnergy(POWER_SAVE_CONSUMPTION * standbyPower, 
+    	    				time * MarsTime.HOURS_PER_MILLISOL);
     	    	}
     	    	else if (!battery.isCharging() && !robot.getTaskManager().hasTask() && battery.getkWhStored() > 0) {
-    	    		battery.requestEnergy(standbyPower, 
-    	    				pulse.getElapsed() * MarsTime.HOURS_PER_MILLISOL);	
-    			}
-    	    	
-    	    	int remainder = msol % 10;
-    			if (remainder == 1) {
-    				battery.degradeHealth();
-    				battery.updateNumCycles();
+    	    		battery.consumeEnergy(standbyPower, 
+    	    				time * MarsTime.HOURS_PER_MILLISOL);	
     			}
     		}
 		}
@@ -188,13 +190,22 @@ public class SystemCondition implements Serializable {
      * @param newPerformance new performance (between 0 and 1).
      */
     void setPerformanceFactor(double newPerformance) {
-        if (newPerformance != performance) {
+        if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
             performance = newPerformance;
-			if (robot != null)
-				robot.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			robot.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
         }
     }
 
+    /**
+     * Tunes up the performance.
+     * 
+     * @param reduction
+     */
+    public void tuneUpPerformance(double points) {
+    	double newPerformance = MathUtils.between(performance + points / 50, performance, .99);
+    	setPerformanceFactor(newPerformance);
+    }
+    
     /**
      * Gets the robot system stress level.
      * 

@@ -15,12 +15,14 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.events.HistoricalEvent;
+
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.events.ScheduledEventManager;
+import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -98,7 +100,7 @@ public class TransportManager implements Serializable, Temporal {
 	public void addNewTransportItem(Transportable transportItem) {
 		transportItems.add(transportItem);
 
-		fireEvent(transportItem, EventType.TRANSPORT_ITEM_CREATED);
+		fireEvent(TransportManager.createEvent(transportItem, HistoricalEventType.TRANSPORT_ITEM_CREATED));
 	}
 
 	/**
@@ -123,17 +125,29 @@ public class TransportManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fires an event concerning a transport item.
+	 * Create an event concerning a transport item but this is not fired yet
 	 * 
 	 * @param transportItem
 	 * @param action
 	 * @param reason
 	 */
-	public void fireEvent(Transportable transportItem, EventType action) {
-		HistoricalEvent deliverEvent = new TransportEvent(transportItem, action,
-										transportItem.getSettlementName());
-		eventManager.registerNewEvent(deliverEvent);
-		logger.info(transportItem.getSettlementName() + " - A transport item was launched on " 
+	public static HistoricalEvent createEvent(Transportable transportItem, HistoricalEventType action) {
+		return new HistoricalEvent(action, transportItem,
+						transportItem.getName(), "", "", transportItem,
+						(transportItem instanceof Resupply r ? r.getSettlement() : null),
+						transportItem.getLandingLocation()
+		);
+	}
+
+	/**
+	 * Fires a historical event.
+	 * 
+	 */
+	void fireEvent(HistoricalEvent event) {
+		eventManager.registerNewEvent(event);
+
+		var transportItem = (Transportable) event.getSource();
+		logger.info(transportItem.getSettlementName() + " - A transport item was launched on "
 				+ transportItem.getLaunchDate() + ", arriving at " + transportItem.getArrivalDate() + ".");
 	}
 

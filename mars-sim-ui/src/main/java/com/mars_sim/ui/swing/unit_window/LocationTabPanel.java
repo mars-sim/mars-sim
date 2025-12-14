@@ -33,11 +33,12 @@ import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool_window.MapSelector;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 import eu.hansolo.steelseries.gauges.DisplayCircular;
@@ -48,7 +49,7 @@ import eu.hansolo.steelseries.tools.LcdColor;
  * The LocationTabPanel is a tab panel for location information.
  */
 @SuppressWarnings("serial")
-public class LocationTabPanel extends TabPanel {
+public class LocationTabPanel extends EntityTabPanel<Unit> {
 
 	private static final String MAP_ICON = NavigatorWindow.PIN_ICON;
 
@@ -90,15 +91,15 @@ public class LocationTabPanel extends TabPanel {
 	 * Constructor.
 	 *
 	 * @param unit    the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public LocationTabPanel(Unit unit, MainDesktopPane desktop) {
+	public LocationTabPanel(Unit unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 				Msg.getString("LocationTabPanel.title"), //$NON-NLS-1$
 				ImageLoader.getIconByName(MAP_ICON), 
-				Msg.getString("LocationTabPanel.title"), //$NON-NLS-1$
-				unit, desktop);
+				null,
+				context, unit);
 	}
 
 	@Override
@@ -182,7 +183,7 @@ public class LocationTabPanel extends TabPanel {
 		var dataPanel = new AttributePanel();
 		content.add(dataPanel, BorderLayout.CENTER);
         addBorder(dataPanel, "Location Data");
-        var unit = getUnit();
+        var unit = getEntity();
 		if (unit instanceof MobileUnit mu) {
 			if (mu instanceof Worker) {
 				activitySpot = dataPanel.addRow("Reserved Spot", "");
@@ -252,13 +253,9 @@ public class LocationTabPanel extends TabPanel {
 		}
 		
 		// If this unit (including a settlement) is on Mars surface
-		else if (locationStateType == LocationStateType.MARS_SURFACE) {
-			// Check if this is a vehicle
-			if (unit instanceof Vehicle) {
-				vicinityUnit = unit.getLocationTag().findVehicleVicinity();
-			}
+		else if (locationStateType == LocationStateType.MARS_SURFACE && unit instanceof Vehicle) {
+			vicinityUnit = unit.getLocationTag().findVehicleVicinity();
 		}
-
 		if (vicinityUnit != null) {
 			vicinityLabel.setText(vicinityUnit.getName());
 		}
@@ -273,7 +270,7 @@ public class LocationTabPanel extends TabPanel {
 	@Override
 	public void update() {
 		
-		Unit unit = getUnit();
+		Unit unit = getEntity();
 
 		updateBanner(unit);
 		
@@ -443,7 +440,7 @@ public class LocationTabPanel extends TabPanel {
 	
 	private void displayMap() {
 		if (locationCache != null) {
-			MapSelector.displayOnMap(getDesktop(), getUnit());
+			MapSelector.displayOnMap(getContext(), getEntity());
 		}
 	}
 
@@ -489,19 +486,5 @@ public class LocationTabPanel extends TabPanel {
 			locationStringCache = loc;
 			bannerText.setLcdText(loc);
 		}
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		containerCache = null;
-		buildingCache = null;
-		locationCache = null;
-
-		locationStateTypeCache = null;
 	}
 }

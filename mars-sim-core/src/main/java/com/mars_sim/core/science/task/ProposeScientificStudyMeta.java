@@ -18,12 +18,12 @@ import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
-import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskJob;
 import com.mars_sim.core.person.ai.task.util.TaskUtil;
 import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.science.ScienceParameters;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
@@ -115,7 +115,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 
 		RatingScore result = new RatingScore(base);
 		result.addModifier(SCIENCE_MODIFIER, settlement.getPreferences()
-								.getDoubleValue(ScienceParameters.INSTANCE, science.name(), 1D));
+								.getDoubleValue(ScienceParameters.INSTANCE.getKey(science), 1D));
 		// Crowding modifier
 		if (person.isInSettlement()) {
 			Building b = BuildingManager.getAvailableBuilding(science, person);

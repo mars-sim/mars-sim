@@ -10,7 +10,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -18,14 +18,14 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * The Chemist class represents a job for a chemist.
  */
-public class Chemist extends Job {
+public class Chemist extends JobSpec {
 	
 	/**
 	 * Constructor.
 	 */
 	public Chemist() {
 		// Use Job constructor
-		super(JobType.CHEMIST, Job.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
+		super(JobType.CHEMIST, JobSpec.buildRoleMap(20.0, 10.0, 5.0, 5.0, 5.0, 20.0, 15.0, 30.0));
 	}
 
 	@Override

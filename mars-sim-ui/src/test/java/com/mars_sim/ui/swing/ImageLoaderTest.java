@@ -1,12 +1,15 @@
 package com.mars_sim.ui.swing;
 
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import javax.swing.Icon;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class ImageLoaderTest extends TestCase {
-    public void testAnimatedWeatherIcons() {
+class ImageLoaderTest{
+    @Test
+    void testAnimatedWeatherIcons() {
         testLoadingIcon("weather/lowWind");
         testLoadingIcon("weather/highWind");
         testLoadingIcon("weather/spinningSun");
@@ -14,6 +17,6 @@ public class ImageLoaderTest extends TestCase {
 
     private void testLoadingIcon(String logicalName) {
         Icon loaded = ImageLoader.getIconByName(logicalName);
-        assertNotNull("Image called " + logicalName, loaded);
+        assertNotNull(loaded, "Image called " + logicalName);
     }
 }

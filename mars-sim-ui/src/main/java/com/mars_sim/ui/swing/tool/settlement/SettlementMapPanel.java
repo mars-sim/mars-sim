@@ -14,19 +14,15 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.image.BufferedImage;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -35,7 +31,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Unit;
@@ -51,8 +46,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.MoreMath;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.UIConfig;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * A panel for displaying the settlement map.
@@ -77,7 +72,8 @@ public class SettlementMapPanel extends JPanel {
 	 * Run the given task on the Swing EDT (immediately if already on EDT).
 	 */
 	private static void onEdt(Runnable r) {
-		if (SwingUtilities.isEventDispatchThread()) r.run();
+		if (SwingUtilities.isEventDispatchThread()) 
+			r.run();
 		else SwingUtilities.invokeLater(r);
 	}
 
@@ -105,11 +101,6 @@ public class SettlementMapPanel extends JPanel {
 	public static final double DEFAULT_SCALE = 10D;
 	private static final double SELECTION_RANGE = 0.25; // Settlement coordinate frame, 25 cm
 
-	// Zoom bounds/quantization (helps caching + stability)
-	private static final double MIN_SCALE = 1D;
-	private static final double MAX_SCALE = 200D;
-	private static final double SCALE_QUANTUM = 0.5D; // Quantize to 0.5 px/m steps
-
 	// Data members
 	private boolean exit = true;
 
@@ -122,8 +113,6 @@ public class SettlementMapPanel extends JPanel {
 	private int xLast;
 	/** Last Y mouse drag position. */
 	private int yLast;
-
-	private MainDesktopPane desktop;
 
 	private SettlementWindow settlementWindow;
 
@@ -149,32 +138,29 @@ public class SettlementMapPanel extends JPanel {
 
 	private Set<DisplayOption> displayOptions = EnumSet.noneOf(DisplayOption.class);
 
-	// -------- Event coalescing for scale updates --------
-	private Timer zoomCoalesceTimer;
-	private volatile Double pendingScale = null; // when non-null, an update is queued
-
 	// -------- Event coalescing for simulation tick -> UI --------
 	/** Coalesces simulation-tick UI updates so we don't flood the EDT. */
 	private final AtomicBoolean uiUpdateScheduled = new AtomicBoolean(false);
 
 	// -------- Listener lifecycle management --------
 	private boolean listenersInstalled = false;
-	private MouseMotionAdapter motionListener;
-	private MouseAdapter mouseListener;
+	
+	
 
 	// -------- Shared cache hook for layers that rasterize scalable art --------
 	private final ScaledIconCache iconCache = new ScaledIconCache();
+	private UIContext context;
 
 	/**
 	 * Constructor 1: A panel for displaying a settlement map.
 	 */
-	public SettlementMapPanel(MainDesktopPane desktop, final SettlementWindow settlementWindow,
+	public SettlementMapPanel(UIContext context, final SettlementWindow settlementWindow,
 							  Properties userSettings) {
 		super();
 		this.settlementWindow = settlementWindow;
-		this.desktop = desktop;
-		
-		UnitManager unitManager = desktop.getSimulation().getUnitManager();
+		this.context = context;
+
+		UnitManager unitManager = context.getSimulation().getUnitManager();
 
 		List<Settlement> settlements = new ArrayList<>(unitManager.getSettlements());
 
@@ -206,7 +192,7 @@ public class SettlementMapPanel extends JPanel {
 		yPos = UIConfig.extractDouble(userSettings, Y_PROP, 0D);
 		rotation = UIConfig.extractDouble(userSettings, ROTATION_PROP, 0D);
 		// Always quantize stored scale
-		scale = quantizeScale(UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE));
+		scale = UIConfig.extractDouble(userSettings, SCALE_PROP, DEFAULT_SCALE);
 		for (DisplayOption op : DisplayOption.values()) {
 			if (UIConfig.extractBoolean(userSettings, op.name(), false)) {
 				displayOptions.add(op);
@@ -224,14 +210,7 @@ public class SettlementMapPanel extends JPanel {
 		selectedRobot = new HashMap<>();
 		selectedSite = new HashMap<>();
 
-		// Throttle zoom changes to avoid flood of repaints/rasterizations
-		zoomCoalesceTimer = new Timer(50, e -> applyPendingScale());
-		zoomCoalesceTimer.setRepeats(false);
-	}
-
-	void createUI() {
-
-		initLayers(desktop);
+		initLayers(context);
 
 		// Set foreground and background colors.
 		setOpaque(false);
@@ -253,10 +232,10 @@ public class SettlementMapPanel extends JPanel {
 	 *
 	 * @param desktop
 	 */
-	public void initLayers(MainDesktopPane desktop) {
+	private void initLayers(UIContext desktop) {
 
 		// Set up the dayNightMapLayer layers
-		dayNightMapLayer = new DayNightMapLayer(this);
+		dayNightMapLayer = new DayNightMapLayer(this, desktop.getSimulation().getSurfaceFeatures());
 
 		// Check the DayNightLayer at the start of the sim
 		displayOptions.remove(DisplayOption.DAYLIGHT_LAYER);
@@ -290,9 +269,10 @@ public class SettlementMapPanel extends JPanel {
 	 * Installs mouse listeners once; safe to call multiple times.
 	 */
 	public void detectMouseMovement() {
+
 		if (listenersInstalled) return;
 
-		motionListener = new MouseMotionAdapter() {
+		var motionListener = new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent evt) {
 				// Move map center based on mouse drag difference.
@@ -313,9 +293,7 @@ public class SettlementMapPanel extends JPanel {
 				}
 				// Call to determine if it should display or remove the building coordinate within a building
 				showBuildingCoord(x, y);
-				// Display the pixel coordinate of the window panel
-				// Note: the top left-most corner of window panel is (0,0)
-				settlementWindow.setPixelXYCoord(x, y);
+
 				// Display the settlement map coordinate of the hovering mouse pointer
 				settlementWindow.setMapXYCoord(convertToSettlementLocation(x, y));
 
@@ -325,7 +303,7 @@ public class SettlementMapPanel extends JPanel {
 			}
 		};
 
-		mouseListener = new MouseAdapter() {
+		var mouseListener = new MouseAdapter() {
 
 			@Override
 			public void mouseEntered(MouseEvent evt) {
@@ -372,42 +350,11 @@ public class SettlementMapPanel extends JPanel {
 		listenersInstalled = true;
 	}
 
-	private void removeInteractionListeners() {
-		if (!listenersInstalled) return;
-		if (motionListener != null) {
-			removeMouseMotionListener(motionListener);
-			motionListener = null;
-		}
-		if (mouseListener != null) {
-			removeMouseListener(mouseListener);
-			mouseListener = null;
-		}
-		listenersInstalled = false;
-	}
-
 	@Override
 	public void addNotify() {
 		super.addNotify();
 		// Ensure listeners are attached if panel is re-added to a container
 		detectMouseMovement();
-	}
-
-	@Override
-	public void removeNotify() {
-		// Ensure listeners are detached to allow GC of this panel
-		removeInteractionListeners();
-
-		// --- PATCH: Stop and detach the zoom coalescing timer to avoid stray events & leaks ---
-		if (zoomCoalesceTimer != null) {
-			zoomCoalesceTimer.stop();
-			// Clear listeners to break strong references early
-			for (ActionListener l : zoomCoalesceTimer.getActionListeners()) {
-				zoomCoalesceTimer.removeActionListener(l);
-			}
-			zoomCoalesceTimer = null;
-			pendingScale = null;
-		}
-		super.removeNotify();
 	}
 
 	/**
@@ -443,7 +390,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	private void setPopUp(final MouseEvent evt, int x, int y, Unit unit) {
-		menu = new PopUpUnitMenu(settlementWindow, unit);
+		menu = new PopUpUnitMenu(unit, context);
 		menu.show(evt.getComponent(), x, y);
 	}
 
@@ -533,46 +480,8 @@ public class SettlementMapPanel extends JPanel {
 	 * @param newScale (pixels per meter).
 	 */
 	public void setScale(double newScale) {
-		// Queue the new scale; apply after a short delay (coalescing)
-		pendingScale = newScale;
-		if (zoomCoalesceTimer != null) {
-			onEdt(() -> zoomCoalesceTimer.restart()); // ensure Swing Timer is touched on EDT
-		} else {
-			onEdt(this::applyPendingScale);
-		}
-	}
-
-	/**
-	 * Applies the pending scale (quantized and clamped) and repaints once.
-	 * Must be invoked on the EDT.
-	 */
-	private void applyPendingScale() {
-		assert SwingUtilities.isEventDispatchThread() : "applyPendingScale must run on EDT";
-
-		final double target = (pendingScale != null ? pendingScale : scale);
-		pendingScale = null;
-
-		final double q = quantizeScale(target);
-		if (Math.abs(q - this.scale) < 1e-9) {
-			// Nothing to do
-			return;
-		}
-
-		this.scale = q;
-
-		// Avoid re-entrant slider event storms: do not call setZoomValue here.
-
-		revalidate();
+		this.scale = newScale;
 		repaint();
-	}
-
-	/**
-	 * Quantize and clamp the scale to keep cache keys stable and avoid extremes.
-	 */
-	private static double quantizeScale(double s) {
-		double clamped = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
-		double steps = Math.round(clamped / SCALE_QUANTUM);
-		return steps * SCALE_QUANTUM;
 	}
 
 	/**
@@ -951,7 +860,7 @@ public class SettlementMapPanel extends JPanel {
 	/**
 	 * Selects a vehicle.
 	 *
-	 * @param settlementPosition Poition to search
+	 * @param settlementPosition Position to search
 	 * @return selectedVehicle
 	 */
 	private Vehicle selectVehicleAt(LocalPosition settlementPosition) {
@@ -1139,10 +1048,6 @@ public class SettlementMapPanel extends JPanel {
 		return dayNightMapLayer;
 	}
 
-	public MainDesktopPane getDesktop() {
-		return desktop;
-	}
-	
 	/**
 	 * Exposes the shared scaled-icon cache for layers that rasterize scalable art (e.g., SVG).
 	 * Layers may key by asset identifier + {@link #getScale()}.
@@ -1155,30 +1060,24 @@ public class SettlementMapPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		if (desktop != null && settlementWindow != null && settlementWindow.isShowing()
-				&& desktop.isToolWindowOpen(SettlementWindow.NAME)) {
-			Graphics2D g2d = (Graphics2D) g.create();
-			try {
-				g2d.setFont(sansSerif);
+		Graphics2D g2d = (Graphics2D) g.create();
+		try {
+			g2d.setFont(sansSerif);
 
-				// Set graphics rendering hints.
-				// g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-				// g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-				g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-				// g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-				g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			// Set graphics rendering hints.
+			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
-				float scaleMod = 1f;
-				if (scale > 1) scaleMod = (float) Math.sqrt(scale);
+			float scaleMod = 1f;
+			if (scale > 1) scaleMod = (float) Math.sqrt(scale);
 
-				// Display all map layers.
-				MapViewPoint viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
-				for (SettlementMapLayer layer : mapLayers) {
-					layer.displayLayer(settlement, viewpoint);
-				}
-			} finally {
-				g2d.dispose(); // ensure any child Graphics resources are freed
+			// Display all map layers.
+			MapViewPoint viewpoint = new MapViewPoint(g2d, xPos, yPos, getWidth(), getHeight(), rotation, (float) scale, scaleMod);
+			for (SettlementMapLayer layer : mapLayers) {
+				layer.displayLayer(settlement, viewpoint);
 			}
+		} finally {
+			g2d.dispose(); // ensure any child Graphics resources are freed
 		}
 	}
 
@@ -1186,6 +1085,11 @@ public class SettlementMapPanel extends JPanel {
 		return settlementTransparentPanel;
 	}
 
+	/**
+	 * Updates with the clock pulse.
+	 * 
+	 * @param pulse
+	 */
 	void update(ClockPulse pulse) {
 		// Clock pulses arrive on worker threads (MasterClock/ThreadPool). Swing must be updated on the EDT.
 		if (uiUpdateScheduled.compareAndSet(false, true)) {
@@ -1200,7 +1104,8 @@ public class SettlementMapPanel extends JPanel {
 				}
 			});
 		}
-		// repaint(); // avoid repaint flood; layers request repaints when needed
+		
+		repaint();
 	}
 
 	/**
@@ -1233,115 +1138,18 @@ public class SettlementMapPanel extends JPanel {
 	public void destroy() {
 
 		// Stop timers and free caches
-		if (zoomCoalesceTimer != null) {
-			zoomCoalesceTimer.stop();
-			zoomCoalesceTimer = null;
-		}
 		iconCache.clear();
 
-		// Remove listeners to prevent leaks
-		removeInteractionListeners();
-
-		menu = null;
-		settlement = null;
-		settlementWindow = null;
 
 		// Destroy all map layers (this includes dayNightMapLayer).
 		if (mapLayers != null) {
 			mapLayers.forEach(SettlementMapLayer::destroy);
-			mapLayers.clear();
 			mapLayers = null;
-		}
-
-		if (selectedPerson != null) selectedPerson.clear();
-		if (selectedRobot != null) selectedRobot.clear();
-		if (selectedBuilding != null) selectedBuilding.clear();
-		if (selectedVehicle != null) selectedVehicle.clear();
-		selectedRobot = null;
-		selectedPerson = null;
-		selectedBuilding = null;
-		selectedVehicle = null;
-
-		// dayNightMapLayer was already destroyed via mapLayers loop; just null it out.
-		dayNightMapLayer = null;
-
-		if (showSpotLabels != null) {
-			showSpotLabels.clear();
-			showSpotLabels = null;
-		}
-
-		if (displayOptions != null) {
-			displayOptions.clear();
-			displayOptions = null;
 		}
 
 		if (settlementTransparentPanel != null) {
 			settlementTransparentPanel.destroy();
 			settlementTransparentPanel = null;
-		}
-	}
-
-	// =====================================================================
-	//                    Scaled Icon LRU Cache (Soft-ref)
-	// =====================================================================
-
-	/**
-	 * Small LRU cache for rasterized icons/images keyed by (resourceId, scale).
-	 * Uses {@link SoftReference} values so the GC can reclaim under pressure.
-	 * <p>
-	 * This is a hook for map layers (e.g., buildings, vehicles) to reuse
-	 * rasterizations at the active {@link SettlementMapPanel#getScale()} rather than
-	 * recreating the same {@link BufferedImage} repeatedly while the user drags
-	 * the zoom slider.
-	 * </p>
-	 */
-	public static final class ScaledIconCache {
-		private static final int MAX_ENTRIES = 256;
-
-		private static final class Key {
-			final String resourceId;
-			final double scale;
-
-			Key(String resourceId, double scale) {
-				this.resourceId = resourceId;
-				this.scale = scale;
-			}
-
-			@Override
-			public boolean equals(Object o) {
-				if (this == o) return true;
-				if (!(o instanceof Key)) return false;
-				Key k = (Key) o;
-				return Double.doubleToLongBits(scale) == Double.doubleToLongBits(k.scale)
-						&& resourceId.equals(k.resourceId);
-			}
-
-			@Override
-			public int hashCode() {
-				long bits = Double.doubleToLongBits(scale);
-				return 31 * resourceId.hashCode() + (int) (bits ^ (bits >>> 32));
-			}
-		}
-
-		private final LinkedHashMap<Key, SoftReference<BufferedImage>> cache =
-				new LinkedHashMap<>(64, 0.75f, true) {
-					@Override
-					protected boolean removeEldestEntry(Map.Entry<Key, SoftReference<BufferedImage>> e) {
-						return size() > MAX_ENTRIES;
-					}
-				};
-
-		public synchronized BufferedImage get(String id, double scale) {
-			SoftReference<BufferedImage> ref = cache.get(new Key(id, scale));
-			return ref != null ? ref.get() : null;
-		}
-
-		public synchronized void put(String id, double scale, BufferedImage img) {
-			cache.put(new Key(id, scale), new SoftReference<>(img));
-		}
-
-		public synchronized void clear() {
-			cache.clear();
 		}
 	}
 }

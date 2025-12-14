@@ -6,6 +6,11 @@
  */
 
 package com.mars_sim.core.vehicle.task;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,13 +35,12 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 
-import junit.framework.TestCase;
+
 
 /**
  * Tests the loading controller operation for vehicles.
  */
-public class LoadControllerTest
-extends TestCase {
+public class LoadControllerTest {
 
 	// Extra amount to add to resource to handle double arithmetic mismatch
 	private static final double EXTRA_RESOURCE = 0.01D;
@@ -52,8 +56,8 @@ extends TestCase {
 	private Integer smallHammerID;
 	private Integer fireExtinguisherID;
 
-	@Override
-    public void setUp() {
+	@BeforeEach
+	void setUp() {
 
         SimulationConfig config = SimulationConfig.loadConfig();
         Simulation.instance().testRun();
@@ -87,7 +91,8 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testBackgroundLoading() {
+	@Test
+	void testBackgroundLoading() {
 		var requiredResourcesMap = new SuppliesManifest();
 		requiredResourcesMap.addAmount(ResourceUtil.OXYGEN_ID, 20D, true);
 		requiredResourcesMap.addAmount(ResourceUtil.METHANOL_ID, 10D, true);
@@ -100,15 +105,16 @@ extends TestCase {
 			controller.backgroundLoad(80);
 			loadingCount++;
 		}
-		assertTrue("Multiple loadings", (loadingCount > 1));
-		assertTrue("Loading controller complete", controller.isCompleted());
+		assertTrue((loadingCount > 1), "Multiple loadings");
+		assertTrue(controller.isCompleted(), "Loading controller complete");
 		checkVehicleResources(vehicle, requiredResourcesMap);
 	}
 
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadRequiredEquipment() {
+	@Test
+	void testLoadRequiredEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -120,7 +126,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadOptionalEquipment() {
+	@Test
+	void testLoadOptionalEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -134,7 +141,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadMissingOptionalEquipment() {
+	@Test
+	void testLoadMissingOptionalEquipment() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 10, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -157,7 +165,7 @@ extends TestCase {
 		long optionalLoaded = vehicle.getEquipmentSet().stream()
 				.filter(e -> (e.getEquipmentType() == eType))
 				.count();
-		assertEquals("Optional Equipment loaded", 0, optionalLoaded);
+		assertEquals(0, optionalLoaded, "Optional Equipment loaded");
 	}
 
 
@@ -165,7 +173,8 @@ extends TestCase {
 	/*
 	 * Test method loading Resource Items
 	 */
-	public void testLoadRequiredItemResources() {
+	@Test
+	 void testLoadRequiredItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
@@ -177,7 +186,8 @@ extends TestCase {
 	/*
 	 * Test method loading Resource Items
 	 */
-	public void testLoadOptionalItemResources() {
+	@Test
+	void testLoadOptionalItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
@@ -191,7 +201,8 @@ extends TestCase {
 	/*
 	 * Load with optional resource present
 	 */
-	public void testLoadMissingOptionalItemResources() {
+	@Test
+	void testLoadMissingOptionalItemResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addItem(fireExtinguisherID, 1, true);
 		manifest.addItem(smallHammerID, 2, true);
@@ -205,7 +216,8 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testLoadRequiredAmountResources() {
+	@Test
+	void testLoadRequiredAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 30D, true);
 		manifest.addAmount(ResourceUtil.WATER_ID, 10D, true);
@@ -218,7 +230,8 @@ extends TestCase {
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testLoadFailedAmountResources() {
+	@Test
+	void testLoadFailedAmountResources() {
 		var requiredResourcesMap = new SuppliesManifest();
 		// Add 2000kg food to the manifest
 		requiredResourcesMap.addAmount(ResourceUtil.FOOD_ID, 50D, true);
@@ -228,22 +241,23 @@ extends TestCase {
 		// Run the loader but do not load an resources into the settlement
 		for(int i = 0 ; i < (LoadingController.MAX_SETTLEMENT_ATTEMPTS - 1); i++) {
 			controller.load(person, 1D);
-			assertFalse("Load completed #" + i, controller.isCompleted());
-			assertFalse("Load failed #" + i, controller.isFailure());
+			assertFalse(controller.isCompleted(), "Load completed #" + i);
+			assertFalse(controller.isFailure(), "Load failed #" + i);
 		}
 
 		// Do the last load and it should fail
 		controller.load(person, 1D);
 
 		// Vehicle is not loaded and failed
-		assertFalse("Vehicle loaded", controller.isCompleted());
-		assertTrue("Vehicle load did not failed", controller.isFailure());
+		assertFalse(controller.isCompleted(), "Vehicle loaded");
+		assertTrue(controller.isFailure(), "Vehicle load did not failed");
 	}
 
 	/*
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.LoadingPhase(double)'
 	 */
-	public void testLoadOptionalAmountResources() {
+	@Test
+	void testLoadOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 20D, true);
 		manifest.addAmount(ResourceUtil.WATER_ID, 10D, true);
@@ -257,7 +271,8 @@ extends TestCase {
 	/*
 	 * Load with optional resource present
 	 */
-	public void testLoadMissingOptionalAmountResources() {
+	@Test
+	void testLoadMissingOptionalAmountResources() {
 		var manifest = new SuppliesManifest();
 		manifest.addAmount(ResourceUtil.FOOD_ID, 100D, true);
 
@@ -270,7 +285,8 @@ extends TestCase {
 	/*
 	 * Test method loading Equipment
 	 */
-	public void testLoadFull() {
+	@Test
+	void testLoadFull() {
 		var manifest = new SuppliesManifest();
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.BARREL), 5, true);
 		manifest.addEquipment(EquipmentType.getResourceID(EquipmentType.SPECIMEN_BOX), 5, true);
@@ -359,7 +375,7 @@ extends TestCase {
 			optionalLoaded = vehicle.getItemResourceStored(missingId);
 		}
 
-		assertEquals("Optional resource loaded", 0D, optionalLoaded);
+		assertEquals(0D, optionalLoaded, "Optional resource loaded");
 	}
 
 
@@ -374,8 +390,8 @@ extends TestCase {
 		LoadingController controller = vehicle.setLoading(manifest);
 
 		// Vehicle should already be loaded
-		assertTrue("Vehicle already loaded", controller.isCompleted());
-		assertTrue("Reload completes on first attempt", controller.load(person, 1));
+		assertTrue(controller.isCompleted(), "Vehicle already loaded");
+		assertTrue(controller.load(person, 1), "Reload completes on first attempt");
 
 		return controller;
 	}
@@ -392,8 +408,8 @@ extends TestCase {
 
 
 		LoadingController controller = vehicle.setLoading(manifest);
-		assertTrue("Vehicle has of LOADING", vehicle.haveStatusType(StatusType.LOADING));
-		assertEquals("Vehicle of the controller", vehicle, controller.getVehicle());
+		assertTrue(vehicle.haveStatusType(StatusType.LOADING), "Vehicle has of LOADING");
+		assertEquals(vehicle, controller.getVehicle(), "Vehicle of the controller");
 
 		int loadingCount = 0;
 		boolean loaded = false;
@@ -401,11 +417,11 @@ extends TestCase {
 			loaded  = controller.load(person, 1);
 			loadingCount++;
 		}
-		assertTrue("Multiple loadings", (loadingCount > 1));
-		assertTrue("Load operation stopped on load complete", loaded);
-		assertFalse("Loading controller successful", controller.isFailure());
-		assertTrue("Loading controller complete", controller.isCompleted());
-		assertFalse("Vehicle clear of LOADING", vehicle.haveStatusType(StatusType.LOADING));
+		assertTrue((loadingCount > 1), "Multiple loadings");
+		assertTrue(loaded, "Load operation stopped on load complete");
+		assertFalse(controller.isFailure(), "Loading controller successful");
+		assertTrue(controller.isCompleted(), "Loading controller complete");
+		assertFalse(vehicle.haveStatusType(StatusType.LOADING), "Vehicle clear of LOADING");
 
 		return controller;
 	}
@@ -424,8 +440,7 @@ extends TestCase {
 			long stored = source.getEquipmentSet().stream()
 					.filter(e -> (e.getEquipmentType() == eType))
 					.count();
-			assertEquals("Equipment in vehicle " + eType.name(),
-					item.getValue().intValue(), stored);
+			assertEquals(item.getValue().intValue(), stored, "Equipment in vehicle " + eType.name());
 		}
 	}
 
@@ -452,7 +467,7 @@ extends TestCase {
 				int stored = source.getItemResourceStored(key);
 				int expected = resource.getValue().intValue();
 				String itemName = ItemResourceUtil.findItemResourceName(key);
-				assertEquals("Vehicle item resource stored " + itemName, expected, stored);
+				assertEquals(expected, stored, "Vehicle item resource stored " + itemName);
 			}
 		}
 	}
@@ -460,7 +475,7 @@ extends TestCase {
 	private static void assertLessThan(String message, double expected, double stored) {
 		boolean test = expected <= stored;
 		if (!test) {
-			assertTrue(message + ":" + expected + " <= " + stored, test);
+			assertTrue(test, message + ":" + expected + " <= " + stored);
 		}
 	}
 

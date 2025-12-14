@@ -9,11 +9,8 @@ package com.mars_sim.ui.swing.tool.mission.edit;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,14 +20,12 @@ import java.util.Vector;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
@@ -41,9 +36,9 @@ import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.JComboBoxMW;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * The mission edit panel of a dialog.
@@ -52,16 +47,15 @@ import com.mars_sim.ui.swing.StyleManager;
 public class EditPanel extends JPanel {
 
 	/** action text. */
-	final static String ACTION_NONE = "None";
+	static final String ACTION_NONE = "None";
 	/** action text. */
-	final static String ACTION_CONTINUE = "End EVA and Continue to Next Site";
+	static final String ACTION_CONTINUE = "End EVA and Continue to Next Site";
 	/** action text. */
-	final static String ACTION_HOME = "Return to Home Settlement and End Mission";
+	static final String ACTION_HOME = "Return to Home Settlement and End Mission";
 	
 	// Data members.
 	protected Mission mission;
-	protected JInternalFrame frame;
-	protected MainDesktopPane desktop;	
+	protected UIContext context;
 	
 	protected JTextField descriptionField;
 	protected JComboBoxMW<?> actionDropDown;
@@ -75,15 +69,12 @@ public class EditPanel extends JPanel {
 	 * Constructor.
 	 * 
 	 * @param mission {@link Mission} the mission to edit.
-	 * @param parent {@link Dialog} the parent dialog.
 	 */
-	public EditPanel(Mission mission, MainDesktopPane desktop, JInternalFrame parent) {
+	public EditPanel(Mission mission, UIContext context) {
 		
 		// Data members
 		this.mission = mission;
-		this.frame = parent;
-		this.desktop = desktop;
-		
+		this.context = context;		
 		// Sets the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		
@@ -125,7 +116,7 @@ public class EditPanel extends JPanel {
 		
 		// Create the members label.
 		JLabel membersLabel = new JLabel("Members: ");
-		membersLabel.setVerticalAlignment(JLabel.TOP);
+		membersLabel.setVerticalAlignment(SwingConstants.TOP);
 		membersPane.add(membersLabel, BorderLayout.WEST);
 		
 		// Create the member list panel.
@@ -138,20 +129,14 @@ public class EditPanel extends JPanel {
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
         // Create member list model
-        memberListModel = new DefaultListModel<Worker>();
+        memberListModel = new DefaultListModel<>();
         Iterator<Worker> i = mission.getMembers().iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
         // Create member list
-        memberList = new JList<Worker>(memberListModel);
+        memberList = new JList<>(memberListModel);
         memberList.addListSelectionListener(
-        		new ListSelectionListener() {
-        			@Override
-        			public void valueChanged(ListSelectionEvent e) {
-        				// Enable remove members button if there are members in the list.
-        				removeMembersButton.setEnabled(!memberList.getSelectedValuesList().isEmpty());
-        			}
-        		}
+        		e -> removeMembersButton.setEnabled(!memberList.getSelectedValuesList().isEmpty())
         	);
         memberScrollPane.setViewportView(memberList);
         
@@ -163,24 +148,14 @@ public class EditPanel extends JPanel {
         addMembersButton = new JButton("Add Members");
         addMembersButton.setEnabled(canAddMembers());
         addMembersButton.addActionListener(
-        		new ActionListener() {
-        			public void actionPerformed(ActionEvent e) {
-        				// Open the add member dialog.
-        				addMembers();
-        			}
-        		});
+        		e -> addMembers());
         memberButtonPane.add(addMembersButton);
         
         // Create the remove members button.
         removeMembersButton = new JButton("Remove Members");
         removeMembersButton.setEnabled(false);
         removeMembersButton.addActionListener(
-        		new ActionListener() {
-        			public void actionPerformed(ActionEvent e) {
-        				// Remove selected members from the list.
-        				removeMembers();
-        			}
-        		});
+        		e -> removeMembers());
         memberButtonPane.add(removeMembersButton);
         
 	}
@@ -192,7 +167,7 @@ public class EditPanel extends JPanel {
 	 */
 	private boolean canAddMembers() {
 		boolean roomInMission = (memberListModel.size() < mission.getMissionCapacity());
-		boolean availableMembers = (getAvailableMembers().size() > 0);
+		boolean availableMembers = (!getAvailableMembers().isEmpty());
 		return (roomInMission && availableMembers);
 	}
 	
@@ -200,7 +175,7 @@ public class EditPanel extends JPanel {
 	 * Opens the add members dialog.
 	 */
 	private void addMembers() {
-		new AddMembersDialog(frame, desktop, mission, memberListModel, getAvailableMembers());
+		new AddMembersDialog(context.getTopFrame(),mission, memberListModel, getAvailableMembers());
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	
@@ -226,17 +201,9 @@ public class EditPanel extends JPanel {
 	 * @return vector of actions.
 	 */
 	private Vector<String> getActions(Mission mission) {
-		Vector<String> actions = new Vector<String>();
+		Vector<String> actions = new Vector<>();
 		actions.add(ACTION_NONE);
-		
-		// MissionPhase phase = mission.getPhase();
-		
-		// // Check if continue action can be added.
-		// if (phase.equals(CollectResourcesMission.COLLECT_RESOURCES)) {
-		// 	CollectResourcesMission collectResourcesMission = (CollectResourcesMission) mission;
-		// 	if (collectResourcesMission.getNumEVASites() > collectResourcesMission.getNumEVASitesVisited())
-		// 		actions.add(ACTION_CONTINUE);
-		// }
+
 		
 		if (mission instanceof VehicleMission vm) {
 			// Check if go home action can be added.
@@ -292,9 +259,4 @@ public class EditPanel extends JPanel {
 
 		return result;
 	}
-	
-	public JInternalFrame getParent() {
-		return frame;
-	}
-	
 }

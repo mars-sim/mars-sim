@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceWindow.java
- * @version 3.2.0 2021-06-20
+ * date 2025-10-09
  * @author Scott Davis
  */
 package com.mars_sim.ui.swing.tool.science;
@@ -12,21 +12,20 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * Window for the science tool.
  */
 public class ScienceWindow
-extends ToolWindow {
+extends ContentPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -43,29 +42,27 @@ extends ToolWindow {
 	private ScientificStudy selectedStudy;
 
 	/**
-	 * Constructor
-	 * @param desktop the main desktop panel.
+	 * Constructor.
+	 * 
+	 * @param context the main desktop panel.
 	 */
-	@SuppressWarnings("serial")
-	public ScienceWindow(MainDesktopPane desktop) {
+	public ScienceWindow(UIContext context) {
 
 		// Use ToolWindow constructor
-		super(NAME, TITLE, desktop);
-
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+		super(NAME, TITLE, Placement.CENTER);
 
 		selectedStudy = null;
 
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(StyleManager.newEmptyBorder());
-		setContentPane(mainPane);
+		add(mainPane);
 
 		// Create lists panel.
 		JPanel listsPane = new JPanel(new GridLayout(2, 1, 0, 0));
 		mainPane.add(listsPane, BorderLayout.WEST);
 
-		ScientificStudyManager mgr = desktop.getSimulation().getScientificStudyManager();
+		ScientificStudyManager mgr = context.getSimulation().getScientificStudyManager();
 		
 		// Create ongoing study list panel.
 		ongoingStudyListPane = new AbstractStudyListPanel(this, "OngoingStudyListPanel") {		
@@ -86,20 +83,16 @@ extends ToolWindow {
 		listsPane.add(finishedStudyListPane);
 
 		// Create study detail panel.
-		studyDetailPane = new StudyDetailPanel(this);
+		studyDetailPane = new StudyDetailPanel(context);
 		mainPane.add(studyDetailPane, BorderLayout.CENTER);
 
-		setMinimumSize(new Dimension(480, 480));
-		setMaximizable(true);
-		setResizable(false);
-		setVisible(true);
-		
-		// Pack window.
-		pack();
+		setMinimumSize(new Dimension(800, 480));
+		setPreferredSize(new Dimension(800, 480));
 	}
 
 	/**
 	 * Sets the scientific study to display in the science window.
+	 * 
 	 * @param study the scientific study to display.
 	 */
 	public void setScientificStudy(ScientificStudy study) {
@@ -112,6 +105,7 @@ extends ToolWindow {
 
 	/**
 	 * Gets the displayed scientific study.
+	 * 
 	 * @return study or null if none displayed.
 	 */
 	public ScientificStudy getScientificStudy() {
@@ -119,11 +113,12 @@ extends ToolWindow {
 	}
 
 	/**
-	 * Update the window.
+	 * Updates the window.
+	 * 
 	 * @param pulse Unused clock pulse; window is time independent
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		// Update all of the panels.
 		ongoingStudyListPane.update();
 		finishedStudyListPane.update();

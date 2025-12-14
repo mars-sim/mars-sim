@@ -1,27 +1,56 @@
 package com.mars_sim.core.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 
+import com.mars_sim.core.MarsSimContext;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.NaturalAttributeType;
+import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
+import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
 
 /**
- * Abstract base class to support running Unit Tests for JUnit 4 and 5.
+ * Abstract base class to support running Unit Tests for JUnit 5.
  * It uses the shared MarsSimContextImpl class to provide utility methods
  */
 public abstract class MarsSimUnitTest {
 
-    protected static final String EXPLORER_ROVER = "Explorer Rover";
+    // This test assumes certain characteristics of the Alpha Base 1 template
+    public static final String ALPHA_BASE_1 = "Alpha Base 1";
+
+    protected static final String EXPLORER_ROVER = "explorer rover";
+    protected static final String TRANSPORT_ROVER = "transport rover";
+    protected static final String CARGO_ROVER = "cargo rover";
+
+    protected static final double BUILDING_LENGTH = 9D;
+    protected static final double BUILDING_WIDTH = 9D;
+
+    protected static final double MSOLS_PER_EXECUTE = 0.1D;
 
     private MarsSimContextImpl context;
 
@@ -31,31 +60,91 @@ public abstract class MarsSimUnitTest {
         context = new MarsSimContextImpl();
     }
 
-    protected SimulationConfig getConfig() {
+    public SimulationConfig getConfig() {
         return context.getConfig();
     }
 
-    protected MarsSimContextImpl getContext() {
+    public Simulation getSim() {
+        return context.getSim();
+    }
+    
+    protected MarsSimContext getContext() {
         return context;
     }
 
-    protected MarsSurface getMarsSurface() {
+    public MarsSurface getSurface() {
         return context.getSurface();
     }
-    
-    protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos) {
-		return context.buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, 0D, true);
+
+    protected MockBuilding buildBuilding(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return buildBuilding(buildingManager, "Mock", BuildingCategory.COMMAND, pos, facing, true);
 	}
 
-    protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos) {
-		var building0 = context.buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
-									FunctionType.VEHICLE_MAINTENANCE,  pos, 0D, true);
+	protected MockBuilding buildBuilding(BuildingManager buildingManager, String type, BuildingCategory cat,
+								LocalPosition pos, double facing, boolean lifeSupport) {
+		return context.buildBuilding(buildingManager, type, cat, pos, facing, lifeSupport);
+	}
+
+    public Building buildFunction(BuildingManager buildingManager, String type, BuildingCategory cat,
+							FunctionType fType, LocalPosition pos, double facing, boolean lifesupport) {
+		return context.buildFunction(buildingManager, type, cat, fType, pos, facing, lifesupport);
+	}
+
+	protected VehicleMaintenance buildGarage(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		var building0 = buildFunction(buildingManager, "Garage", BuildingCategory.VEHICLE,
+									FunctionType.VEHICLE_MAINTENANCE,  pos, facing, true);
 	    
 	    return building0.getVehicleParking();
 	}
+	
+	public Building buildResearch(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return context.buildResearch(buildingManager, pos, facing);
+	}
 
-	protected Person buildPerson(String name, Settlement settlement) {
+	protected Building buildRecreation(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return buildFunction(buildingManager, "Lander Hab", BuildingCategory.LIVING,
+								FunctionType.RECREATION,  pos, facing, true);
+	}
+
+	public Building buildEVA(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return context.buildEVA(buildingManager, pos, facing);
+	}
+
+	protected Building buildAccommodation(BuildingManager buildingManager, LocalPosition pos, double facing) {
+		return buildFunction(buildingManager, "Residential Quarters", BuildingCategory.LIVING,
+					FunctionType.LIVING_ACCOMMODATION,  pos, facing, true);
+	}
+
+	public Person buildPerson(String name, Settlement settlement) {
 		return context.buildPerson(name, settlement);
+	}
+
+	public Person buildPerson(String name, Settlement settlement, JobType job) {
+		return context.buildPerson(name, settlement, job, null, null);
+	}
+
+	public Person buildPerson(String name, Settlement settlement, JobType job,
+					Building place, FunctionType activity) {
+		return context.buildPerson(name, settlement, job, place, activity);
+	}
+	
+	public Person buildPerson(String name, Settlement settlement, RoleType role, JobType job) {
+
+		GenderType gender = GenderType.MALE;
+		int rand = RandomUtil.getRandomInt(1);
+		if (rand == 1)
+			gender = GenderType.FEMALE;
+		
+		Person person = Person.create(name, settlement, gender)
+				.testBuild();
+		
+		person.setRole(role);
+		
+		person.setJob(job, "NASA");
+		
+		person.getNaturalAttributeManager().adjustAttribute(NaturalAttributeType.EXPERIENCE_APTITUDE, 100);
+	
+		return person;
 	}
 
     /**
@@ -69,6 +158,31 @@ public abstract class MarsSimUnitTest {
     protected Rover buildRover(Settlement settlement, String name, LocalPosition parked, String spec) {
         return context.buildRover(settlement, name, parked, spec);
     }
+
+	protected LightUtilityVehicle buildLUV(Settlement settlement, String name, LocalPosition parked) {
+	    var rover1 = new LightUtilityVehicle(name, getConfig().getVehicleConfiguration().getVehicleSpec("Light Utility Vehicle"),
+								settlement);
+		if (parked != null) {			
+			// Note: since settlement.addOwnedVehicle(this) was called in Vehicle's constructor
+	    	rover1.setParkedLocation(parked, 0D);
+		}
+	    getSim().getUnitManager().addUnit(rover1);
+	    
+	    return rover1;
+	}
+
+    protected Robot buildRobot(String name, Settlement s, RobotType type, Building place, FunctionType activity) {
+        var spec = getConfig().getRobotConfiguration().getRobotSpec(type, "Standard");
+        var robot = new Robot(name, s, spec);
+		s.addOwnedRobot(robot);  // This should not be needed as the constructor should add the Robot
+
+        getSim().getUnitManager().addUnit(robot);
+
+        if (place != null) {
+            BuildingManager.addToActivitySpot(robot, place, activity);
+        }
+        return robot;
+    }
     
     /**
      * Build a mock settlement at a default location with no goods manager
@@ -76,6 +190,170 @@ public abstract class MarsSimUnitTest {
      * @return
      */
     protected Settlement buildSettlement(String name) {
-        return context.buildSettlement(name, false,  MockSettlement.DEFAULT_COORDINATES);
+        return buildSettlement(name, false,  MockSettlement.DEFAULT_COORDINATES);
     }
+
+	/**
+	 * Builds a settlement.
+	 * Note: without BuildingManager.
+	 *  
+	 * @param name
+	 * @param initialPopulation
+	 * @return
+	 */
+	protected Settlement buildSettlement(String name, int initialPopulation) {
+		return buildSettlement(name, false, initialPopulation);
+	}
+
+	protected Settlement buildSettlement(String name, boolean needGoods) {
+		return buildSettlement(name, needGoods, MockSettlement.DEFAULT_COORDINATES);
+	}
+	
+	/**
+	 * Builds a settlement.
+	 * Note: without BuildingManager.
+	 * 
+	 * @param name
+	 * @param needGoods
+	 * @param initialPopulation
+	 * @return
+	 */
+	protected Settlement buildSettlement(String name, boolean needGoods, int initialPopulation) {
+		return buildSettlement(name, needGoods, MockSettlement.DEFAULT_COORDINATES, initialPopulation);
+	}
+
+    /**
+     * Build a mock settlement with full control
+     * @param name
+     * @param withGoodsManager
+     * @param coords
+     * @return
+     */
+    protected Settlement buildSettlement(String name, boolean withGoodsManager, Coordinates coords) {
+        return context.buildSettlement(name, withGoodsManager,  coords);
+    }
+	
+	protected Settlement buildSettlement(String name, boolean needGoods, Coordinates locn, int initialPopulation) {
+		var auth = getConfig().getReportingAuthorityFactory().getItem("NASA");
+		Settlement settlement = new MockSettlement(name, needGoods, locn, auth, initialPopulation);
+		getSim().getUnitManager().addUnit(settlement);
+
+		return settlement;
+	}
+
+	/**
+	 * Executes a Task for a duration or until it completes.
+	 * 
+	 * @param person
+	 * @param task
+	 * @param duration
+	 * @return The number of calls taken
+	 */
+	protected double executeTaskForDuration(Person person, Task task, double duration) {
+		int maxCalls = (int)(duration/MSOLS_PER_EXECUTE) + 1;
+		return executeTask(person, task, maxCalls) * MSOLS_PER_EXECUTE;
+	}
+
+	/**
+	 * Executes a Task for a number of steps or until it completes.
+	 * Note: for maven testing.
+	 * 
+	 * @param person
+	 * @param task
+	 * @param maxCalls
+	 * @return The number of calls taken
+	 */
+	protected int executeTask(Person person, Task task, int maxCalls) {
+		PersonTaskManager tm = person.getMind().getTaskManager();
+		tm.replaceTask(task);
+		
+		int callsLeft = maxCalls;
+		while ((callsLeft > 0) && !task.isDone()) {
+			tm.executeTask(MSOLS_PER_EXECUTE);
+			callsLeft--;
+		}
+		
+		return maxCalls - callsLeft;
+	}
+
+	/**
+	 * Executes a Task for a number of steps or phase changes.
+	 * Note: for maven testing.
+	 * 
+	 * @param person
+	 * @param task
+	 * @param maxCalls
+	 * @return The number of calls taken
+	 */
+	protected int executeTaskUntilPhase(Person person, Task task, int maxCalls) {
+		PersonTaskManager tm = person.getMind().getTaskManager();
+		tm.replaceTask(task);
+		
+		var phase = task.getPhase();
+		int callsLeft = maxCalls;
+		while ((callsLeft > 0) && !task.isDone() && phase.equals(task.getPhase())) {
+			tm.executeTask(MSOLS_PER_EXECUTE);
+			callsLeft--;
+		}
+		
+		return maxCalls - callsLeft;
+	}
+
+	/**
+	 * Executes a Task for a number of steps or subtask is Done.
+	 * 
+	 * @param person
+	 * @param task
+	 * @param maxCalls
+	 * @return The number of calls taken
+	 */
+	protected int executeTaskUntilSubTask(Person person, Task task, int maxCalls) {
+		PersonTaskManager tm = person.getMind().getTaskManager();
+		tm.replaceTask(task);
+		
+		int callsLeft = maxCalls;
+		while ((callsLeft > 0) && !task.isDone() && (task.getSubTask() != null) && !task.getSubTask().isDone()) {
+			tm.executeTask(MSOLS_PER_EXECUTE);
+			callsLeft--;
+		}
+		
+		return maxCalls - callsLeft;
+	}
+
+	/**
+     * Creates a Clock pulse that just contains a MarsClock at a specific time.
+     * 
+     * @param missionSol Sol in the current mission
+     * @param mSol MSol throughout the day
+     * @param newSol Is the new Sol flag set
+     * @param newHalfSol Has half a sol just passed ?
+     * @return
+     */
+    protected ClockPulse createPulse(int missionSol, int mSol, boolean newSol, boolean newHalfSol) {
+        return context.createPulse(missionSol, mSol, newSol, newHalfSol);
+	}
+
+	/**
+     * Creates a Clock pulse that just contains a MarsClock at a specific time.
+     * 
+     * @param marsTime
+     * @param newSol Is it a new sol ?
+     * @param newHalfSol Has half a sol just passed ? 
+     * @return
+     */
+	public ClockPulse createPulse(MarsTime marsTime, boolean newSol, boolean newHalfSol) {
+		return context.createPulse(marsTime, newSol, newHalfSol);
+	}
+
+	/**
+     * Creates a Clock pulse that advanced the current clock a duration
+     * 
+     * @param elapsed
+     * @param newSol Is it a new sol ?
+     * @param newHalfSol Has half a sol just passed ? 
+     * @return
+     */
+	public ClockPulse createPulse(double elapsed) {
+		return context.createPulse(elapsed);
+	}
 }

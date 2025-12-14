@@ -9,24 +9,18 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionEvent;
-import com.mars_sim.core.person.ai.mission.MissionEventType;
-import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
@@ -41,7 +35,7 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * Columns.
  */
 @SuppressWarnings("serial")
-public class RobotTableModel extends UnitTableModel<Robot> {
+public class RobotTableModel extends EntityMonitorModel<Robot> {
 
 	private static final String COUNTING_ROBOTS_KEY = "RobotTableModel.countingRobots";
 	private static final String NAME_ROBOTS_KEY = "RobotTableModel.nameRobots";
@@ -54,7 +48,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final int MODE = SETTLEMENT+1;
 	private static final int HEALTH = MODE+1;
 	private static final int BATTERY = HEALTH+1;
-	private static final int PERFORMANCE = BATTERY+1;
+	private static final int BATTERY_TEMPERATURE = BATTERY+1;
+	private static final int PERFORMANCE = BATTERY_TEMPERATURE+1;
 	private static final int TASK = PERFORMANCE+1;
 	private static final int MISSION_COL = TASK+1;
 
@@ -63,7 +58,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final String PERCENT = " % - ";
 	private static final String INOPERABLE = "Inoperable";
 	private static final String OPERABLE = "Operable";
-	private static final String NA = "N/A";
+	
 	private static final String B_LEVEL0 = Msg.getString("RobotTableModel.column.battery.level0");
 	private static final String B_LEVEL1 = Msg.getString("RobotTableModel.column.battery.level1");
 	private static final String B_LEVEL2 = Msg.getString("RobotTableModel.column.battery.level2");
@@ -73,15 +68,18 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private static final String B_LEVEL6 = Msg.getString("RobotTableModel.column.battery.level6");
 	private static final String B_LEVEL7 = Msg.getString("RobotTableModel.column.battery.level7");
 
+	private static final String P_DISABLE = Msg.getString("RobotTableModel.column.performance.disable");
 	private static final String P_LEVEL0 = Msg.getString("RobotTableModel.column.performance.level0");
 	private static final String P_LEVEL1 = Msg.getString("RobotTableModel.column.performance.level1");
 	private static final String P_LEVEL2 = Msg.getString("RobotTableModel.column.performance.level2");
 	private static final String P_LEVEL3 = Msg.getString("RobotTableModel.column.performance.level3");
 	private static final String P_LEVEL4 = Msg.getString("RobotTableModel.column.performance.level4");
+	private static final String P_LEVEL5 = Msg.getString("RobotTableModel.column.performance.level5");
+	
 	
 	private static final ColumnSpec[] COLUMNS;
 
-	private static final Map<UnitEventType, Integer> eventColumnMapping;
+	private static final Map<String, Integer> eventColumnMapping;
 
 	/**
 	 * The static initializer creates the name & type arrays.
@@ -93,24 +91,25 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("RobotTableModel.column.settlement"), String.class);
 		COLUMNS[MODE] = new ColumnSpec(Msg.getString("RobotTableModel.column.mode"), String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("RobotTableModel.column.health"), String.class);
-		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery"), String.class);
+		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.percent"), String.class);
+		COLUMNS[BATTERY_TEMPERATURE] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.temperature"), Double.class);
 		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("RobotTableModel.column.performance"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("RobotTableModel.column.location"), String.class);
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("RobotTableModel.column.mission"), String.class);
 		COLUMNS[TASK] = new ColumnSpec(Msg.getString("RobotTableModel.column.task"), String.class);
 
-		eventColumnMapping = new EnumMap<>(UnitEventType.class);
-		eventColumnMapping.put(UnitEventType.NAME_EVENT, NAME);
-		eventColumnMapping.put(UnitEventType.COORDINATE_EVENT, LOCATION);
-		eventColumnMapping.put(UnitEventType.STATUS_EVENT, MODE);
-		eventColumnMapping.put(UnitEventType.BATTERY_EVENT, BATTERY);
-		eventColumnMapping.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
-		eventColumnMapping.put(UnitEventType.TASK_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_NAME_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_ENDED_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
-		eventColumnMapping.put(UnitEventType.MISSION_EVENT, MISSION_COL);
-		eventColumnMapping.put(UnitEventType.DEATH_EVENT, HEALTH);
+		eventColumnMapping = new HashMap<>();
+		eventColumnMapping.put(EntityEventType.NAME_EVENT, NAME);
+		eventColumnMapping.put(EntityEventType.COORDINATE_EVENT, LOCATION);
+		eventColumnMapping.put(EntityEventType.STATUS_EVENT, MODE);
+		eventColumnMapping.put(EntityEventType.BATTERY_EVENT, BATTERY);
+		eventColumnMapping.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		eventColumnMapping.put(TaskManager.TASK_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.TASK_NAME_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.TASK_ENDED_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.TASK_SUBTASK_EVENT, TASK);
+		eventColumnMapping.put(EntityEventType.MISSION_EVENT, MISSION_COL);
+		eventColumnMapping.put(EntityEventType.DEATH_EVENT, HEALTH);
 	}
 
 	/** inner enum with valid source types. */
@@ -126,9 +125,9 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
-	private UnitListener crewListener;
-	private UnitListener settlementListener;
-	private MissionListener missionListener;
+	private EntityListener crewListener;
+	private EntityListener settlementListener;
+	private EntityListener missionListener;
 	private boolean allAssociated;
 
 	/**
@@ -138,19 +137,18 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param vehicle Monitored vehicle Robot objects.
 	 */
 	public RobotTableModel(Crewable vehicle)  {
-		super(UnitType.ROBOT, Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
+		super(Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
 				((Unit) vehicle).getName()), COUNTING_ROBOTS_KEY, //$NON-NLS-1$
 				COLUMNS);
 
 		sourceType = ValidSourceType.VEHICLE_ROBOTS;
 		this.vehicle = vehicle;
 		
-		Collection<Robot> crew = CollectionUtils.sortByName(vehicle.getRobotCrew());
-		resetEntities(crew);
+		resetItems(vehicle.getRobotCrew());
 		
-		crewListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-										UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-		((Unit) vehicle).addUnitListener(crewListener);
+		crewListener = new RobotChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+		((Unit) vehicle).addEntityListener(crewListener);
 	}
 
 	/**
@@ -161,7 +159,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 
 	 */
 	public RobotTableModel() {
-		super (UnitType.ROBOT, Msg.getString("RobotTableModel.nameAssociatedRobots"),
+		super (Msg.getString("RobotTableModel.nameAssociatedRobots"),
 				COUNTING_ROBOTS_KEY, COLUMNS);
 
 		this.allAssociated = true;
@@ -175,7 +173,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param mission Monitored mission Robot objects.
 	 */
 	public RobotTableModel(Mission mission)  {
-		super(UnitType.ROBOT, Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
+		super(Msg.getString(NAME_ROBOTS_KEY, //$NON-NLS-1$
 				mission.getName()), "RobotTableModel.countingWorkers", //$NON-NLS-1$
 				COLUMNS);
 
@@ -190,11 +188,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			}
 		}
 		
-		CollectionUtils.sortByName(missionRobots);
-		resetEntities(missionRobots);
+		resetItems(missionRobots);
 	
 		missionListener = new LocalMissionListener();
-		mission.addMissionListener(missionListener);
+		mission.addEntityListener(missionListener);
 	}
 
 	/**
@@ -205,7 +202,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	@Override
 	public boolean setSettlementFilter(Set<Settlement> filter) {
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
+			settlements.forEach(s -> s.removeEntityListener(settlementListener));
 		}
 		
 		this.settlements = filter;
@@ -216,29 +213,28 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 			entities = settlements.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
-						.sorted(Comparator.comparing(Robot::getName))
-						.collect(Collectors.toList());
-			settlementListener = new RobotChangeListener(UnitEventType.ADD_ASSOCIATED_ROBOT_EVENT,
-														UnitEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
+						.toList();
+			settlementListener = new RobotChangeListener(EntityEventType.ADD_ASSOCIATED_ROBOT_EVENT,
+														EntityEventType.REMOVE_ASSOCIATED_ROBOT_EVENT);
 		}
 		else {
-			// For now it makes no difference between robots in a settlement 
-			// and the robots a settlement owns since robots cannot live a settlement
+			// In future, there will be a difference between robots in a settlement 
+			// and the robots that a settlement owns.
+			// But for now, robots cannot go outside of a settlement. 
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
 			entities = settlements.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
-						.sorted(Comparator.comparing(Robot::getName))
-						.collect(Collectors.toList());
-			settlementListener = new RobotChangeListener(UnitEventType.INVENTORY_STORING_UNIT_EVENT,
-														UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
+						.toList();
+			settlementListener = new RobotChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
+														EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		}
 		
 		if (entities != null && !entities.isEmpty()) {	
-			resetEntities(entities);
+			resetItems(entities);
 		}
-		// Listen to the settlements for new People
-		settlements.forEach(s -> s.addUnitListener(settlementListener));
+		// Listen to the settlements for new robots
+		settlements.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
@@ -248,7 +244,8 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 *
 	 * @param event the unit event.
 	 */
-	public void unitUpdate(UnitEvent event) {
+	@Override
+	public void entityUpdate(EntityEvent event) {
 		
 		Integer column = eventColumnMapping.get(event.getType());
 			
@@ -264,7 +261,7 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	 * @param columnIndex Column index of the cell.
 	 */
 	@Override
-	protected Object getEntityValue(Robot robot, int columnIndex) {
+	protected Object getItemValue(Robot robot, int columnIndex) {
 		Object result = null;
 
 		switch (columnIndex) {
@@ -288,6 +285,10 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 				result = getBatteryStatus(robot.getSystemCondition().getBattery().getBatteryPercent());
 				break;
 		
+			case BATTERY_TEMPERATURE:
+				result = Math.round(robot.getSystemCondition().getBattery().getInternalTemperature() * 10.0) / 10.0;
+				break;
+				
 			case HEALTH: 
 				if (!robot.isOperable())
 					result = INOPERABLE;
@@ -351,23 +352,27 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	}
 
 	/**
-	 * Give the status of a robot's hunger level
+	 * Gives the status of a robot's performance level.
 	 *
 	 * @param hunger
 	 * @return status
 	 */
 	private static String getPerformanceStatus(double value) {
-		String status = Math.round(value * 100.0)/1.0 + PERCENT;
-		if (value > 98)
+		String status = Math.round(value * 1000.0)/10.0 + PERCENT;
+		if (value > .90)
+			status += P_LEVEL5;
+		else if (value > .80)
 			status += P_LEVEL4;
-		else if (value < 99)
+		else if (value > .65)
 			status += P_LEVEL3;
-		else if (value < 75)
+		else if (value > .40)
 			status += P_LEVEL2;
-		else if (value < 50)
+		else if (value > .15)
 			status += P_LEVEL1;
-		else if (value < 25)
+		else if (value > 0.0)
 			status += P_LEVEL0;
+		else  
+			status += P_DISABLE;
 		return status;
 	}
 
@@ -378,53 +383,58 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 	public void destroy() {
 		super.destroy();
 
-		if (sourceType == ValidSourceType.VEHICLE_ROBOTS) {
-			((Unit) vehicle).removeUnitListener(crewListener);
-			crewListener = null;
-			vehicle = null;
-		} else if (sourceType == ValidSourceType.MISSION_ROBOTS) {
-			mission.removeMissionListener(missionListener);
-			missionListener = null;
-			mission = null;
-		} else {
-			settlements.forEach(s -> s.removeUnitListener(settlementListener));
-			settlements = null;
+		switch (sourceType) {
+			case ValidSourceType.VEHICLE_ROBOTS -> {
+					((Unit) vehicle).removeEntityListener(crewListener);
+					crewListener = null;
+					vehicle = null;
+				}
+			case ValidSourceType.MISSION_ROBOTS -> {
+					mission.removeEntityListener(missionListener);
+					missionListener = null;
+					mission = null;
+				}
+			default -> {
+					settlements.forEach(s -> s.removeEntityListener(settlementListener));
+					settlements = null;
+				}
 		}
 	}	
 
 	/**
 	 * MissionListener inner class.
 	 */
-	private class LocalMissionListener implements MissionListener {
+	private class LocalMissionListener implements EntityListener {
 
 		/**
 		 * Catches mission update event.
 		 *
-		 * @param event the mission event.
+		 * @param event the entity event.
 		 */
-		public void missionUpdate(MissionEvent event) {
-			MissionEventType eventType = event.getType();
+		@Override
+		public void entityUpdate(EntityEvent event) {
+			String eventType = event.getType();
 			Unit unit = (Unit) event.getTarget();
 			if (unit instanceof Robot r) {
-				if (eventType == MissionEventType.ADD_MEMBER_EVENT) {
-					addEntity(r);
+				if (eventType.equals(Mission.ADD_MEMBER_EVENT)) {
+					addItem(r);
 				}
-				else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) {
-					removeEntity(r);
+				else if (eventType.equals(Mission.REMOVE_MEMBER_EVENT)) {
+					removeItem(r);
 				}
 			}
 		}
 	}
 
 	/**
-	 * UnitListener inner class for events where a Robot joins or leaves a Unit.
+	 * EntityListener inner class for events where a Robot joins or leaves a Unit.
 	 */
-	private class RobotChangeListener implements UnitListener {
+	private class RobotChangeListener implements EntityListener {
 
-		private UnitEventType addEvent;
-		private UnitEventType removeEvent;
+		private String addEvent;
+		private String removeEvent;
 
-		public RobotChangeListener(UnitEventType addEvent, UnitEventType removeEvent) {
+		public RobotChangeListener(String addEvent, String removeEvent) {
 			this.addEvent = addEvent;
 			this.removeEvent = removeEvent;
 		}
@@ -434,14 +444,14 @@ public class RobotTableModel extends UnitTableModel<Robot> {
 		 *
 		 * @param event the unit event.
 		 */
-		public void unitUpdate(UnitEvent event) {
+		public void entityUpdate(EntityEvent event) {
 			if (event.getTarget() instanceof Robot r) {
-				UnitEventType eventType = event.getType();
-				if (eventType == addEvent) {
-					addEntity(r);
+				String eventType = event.getType();
+				if (addEvent.equals(eventType)) {
+					addItem(r);
 				}
-				else if (eventType == removeEvent) {
-					removeEntity(r);
+				else if (removeEvent.equals(eventType)) {
+					removeItem(r);
 				}
 			}
 		}

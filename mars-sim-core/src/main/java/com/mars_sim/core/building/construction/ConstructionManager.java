@@ -13,7 +13,6 @@ import java.util.List;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.BuildingSpec;
@@ -162,7 +161,7 @@ public class ConstructionManager implements Serializable {
 		sites.add(site);
     	Simulation.instance().getUnitManager().addUnit(site);
 
-		settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, site);
+		settlement.fireUnitUpdate(ConstructionSite.START_CONSTRUCTION_SITE_EVENT, site);
 		logger.info(site, "Just created for a " + buildingType);
 		
 		return site;

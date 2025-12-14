@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.LineBreakPanel;
 
 
@@ -23,17 +22,9 @@ public final class UnitInfoPanel extends JPanel {
 
 	public static final int MARGIN_WIDTH = 2;
 	public static final int MARGIN_HEIGHT = 2;
-	
-	private MainDesktopPane desktop;
-	
-	public UnitInfoPanel(MainDesktopPane desktop) {
+		
+	public UnitInfoPanel(String unitName, String unitType, String unitDescription) {
 		super();
-		this.desktop = desktop;
-		setOpaque(false);
-		setBackground(new Color(0, 0, 0, 128));
-    }
-
-	public void init(String unitName, String unitType, String unitDescription) {
 
 		setOpaque(false);
         setBackground(new Color(51, 25, 0, 128));
@@ -43,7 +34,6 @@ public final class UnitInfoPanel extends JPanel {
 		
 		String type = "Type: ";
 		String description = "Descripion: ";
-
 		
     	List<String> list = new ArrayList<>();
     	list.add(unitName);
@@ -61,13 +51,5 @@ public final class UnitInfoPanel extends JPanel {
 		
 		setVisible(true);
 
-        // Make panel drag-able
-//	    ComponentMover mover = new ComponentMover(desktop);
-//	    mover.registerComponent(getComponents());	
 	}
-
-	public MainDesktopPane getDesktop() {
-		return desktop;
-	}
-	
 }

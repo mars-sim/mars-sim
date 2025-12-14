@@ -19,11 +19,11 @@
     <building id="201" type="Hallway" length="4.0" xloc="-100.0" yloc="-12" facing="0.0">
         <connection-list>
             <connection id="0" hatch-facing="north" />
-            <connection id="RESEAHAB" hatch-facing="south" />
+            <connection id="REHAB" hatch-facing="south" />
         </connection-list>
     </building>
       
-    <building id="RESEAHAB" type="Research Hab" xloc="-100.0" yloc="-18.5" facing="0.0">
+    <building id="REHAB" type="Research Hab" xloc="-100.0" yloc="-18.5" facing="0.0">
         <connection-list>
             <connection id="201" hatch-facing="north" />
             <connection id="203" hatch-facing="south" />         
@@ -32,7 +32,7 @@
     
     <building id="203" type="Hallway" length="4.0" xloc="-100.0" yloc="-25.0" facing="0.0">
         <connection-list>
-            <connection id="RESEAHAB" hatch-facing="north" />
+            <connection id="REHAB" hatch-facing="north" />
             <connection id="MEDHAB" hatch-facing="south" />
         </connection-list>
     </building>

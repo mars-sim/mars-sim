@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionListener;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
@@ -159,15 +159,15 @@ class MockMission implements Mission {
     }
 
     @Override
-    public void addMissionListener(MissionListener newListener) {
+    public void addEntityListener(EntityListener newListener) {
         
-        throw new UnsupportedOperationException("Unimplemented method 'addMissionListener'");
+        throw new UnsupportedOperationException("Unimplemented method 'addEntityListener'");
     }
 
     @Override
-    public void removeMissionListener(MissionListener oldListener) {
+    public void removeEntityListener(EntityListener oldListener) {
         
-        throw new UnsupportedOperationException("Unimplemented method 'removeMissionListener'");
+        throw new UnsupportedOperationException("Unimplemented method 'removeEntityListener'");
     }
 
     @Override

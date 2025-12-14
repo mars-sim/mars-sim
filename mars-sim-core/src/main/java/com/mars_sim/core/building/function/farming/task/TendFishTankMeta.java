@@ -86,7 +86,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
         RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
 			factor = super.assessPersonSuitability(t, p);
-            if (factor.getScore() == 0) {
+            if (factor.getScore() == 0D) {
                 return factor;
             }
             

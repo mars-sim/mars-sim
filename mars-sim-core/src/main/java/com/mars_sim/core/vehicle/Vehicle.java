@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
@@ -609,7 +609,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 
 		if (doEvent) {
 			writeLog();
-			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
 
@@ -627,7 +627,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		if (!statusTypes.contains(newStatus)) {
 			statusTypes.add(newStatus);
 			writeLog();
-			fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
+			fireUnitUpdate(EntityEventType.STATUS_EVENT, newStatus);
 		}
 	}
 
@@ -641,7 +641,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 		if (statusTypes.contains(oldStatus)) {
 			statusTypes.remove(oldStatus);
 			writeLog();
-			fireUnitUpdate(UnitEventType.STATUS_EVENT, oldStatus);
+			fireUnitUpdate(EntityEventType.STATUS_EVENT, oldStatus);
 		}
 	}
 
@@ -708,7 +708,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public void setReservedForMission(boolean reserved) {
 		if (isReservedMission != reserved) {
 			isReservedMission = reserved;
-			fireUnitUpdate(UnitEventType.RESERVED_EVENT);
+			fireUnitUpdate(EntityEventType.RESERVED_EVENT);
 		}
 	}
 
@@ -729,7 +729,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public void setReservedForMaintenance(boolean reserved) {
 		if (reservedForMaintenance != reserved) {
 			reservedForMaintenance = reserved;
-			fireUnitUpdate(UnitEventType.RESERVED_EVENT);
+			fireUnitUpdate(EntityEventType.RESERVED_EVENT);
 		}
 	}
 
@@ -820,7 +820,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 				setPrimaryStatus(StatusType.MOVING);
 			}
 			this.speed = speed;
-			fireUnitUpdate(UnitEventType.SPEED_EVENT);
+			fireUnitUpdate(EntityEventType.SPEED_EVENT);
 		}
 	}
 
@@ -1373,7 +1373,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	public void setOperator(Worker vehicleOperator) {
 		this.vehicleOperator = vehicleOperator;
-		fireUnitUpdate(UnitEventType.OPERATOR_EVENT, vehicleOperator);
+		fireUnitUpdate(EntityEventType.OPERATOR_EVENT, vehicleOperator);
 	}
 
 	/**
@@ -1538,18 +1538,18 @@ public abstract class Vehicle extends AbstractMobileUnit
 		exposed = newExposed;
 		
 		if (exposed.isBaselineEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.BASELINE_EVENT + IMMINENT);
-			this.fireUnitUpdate(UnitEventType.BASELINE_EVENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.BASELINE_EVENT + IMMINENT);
+			this.fireUnitUpdate(EntityEventType.BASELINE_EVENT);
 		}
 
 		if (exposed.isGCREvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.GCR_EVENT + IMMINENT);
-			this.fireUnitUpdate(UnitEventType.GCR_EVENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.GCR_EVENT + IMMINENT);
+			this.fireUnitUpdate(EntityEventType.GCR_EVENT);
 		}
 
 		if (exposed.isSEPEvent()) {
-			logger.log(this, Level.INFO, 1_000, DETECTOR + UnitEventType.SEP_EVENT + IMMINENT);
-			this.fireUnitUpdate(UnitEventType.SEP_EVENT);
+			logger.log(this, Level.INFO, 1_000, DETECTOR + EntityEventType.SEP_EVENT + IMMINENT);
+			this.fireUnitUpdate(EntityEventType.SEP_EVENT);
 		}
 	}
 	
@@ -1711,7 +1711,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public void setEmergencyBeacon(boolean state) {
 		if (emergencyBeacon != state) {
 			emergencyBeacon = state;
-			fireUnitUpdate(UnitEventType.EMERGENCY_BEACON_EVENT);
+			fireUnitUpdate(EntityEventType.EMERGENCY_BEACON_EVENT);
 		}
 	}
 
@@ -1957,7 +1957,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @throws MissionException         if problem checking vehicle is loadable.
 	 */
 	public boolean isUsableVehicle() {
-		return isVehicleReady() && isEmpty();
+		return isVehicleReady(); 
+		// Note: isEmpty() doesn't need to be true
 	}
 
 	

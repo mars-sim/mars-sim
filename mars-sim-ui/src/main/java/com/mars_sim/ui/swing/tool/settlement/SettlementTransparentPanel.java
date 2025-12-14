@@ -34,11 +34,9 @@ import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
@@ -72,8 +70,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
 
@@ -164,7 +162,6 @@ public class SettlementTransparentPanel extends JComponent {
     /** label for the daylight period. */
     private JLabel currentSunLabel;
 
-    private JButton renameBtn;
     private JButton infoButton;
     private JLabel temperatureIcon;
     private JLabel windIcon;
@@ -177,7 +174,7 @@ public class SettlementTransparentPanel extends JComponent {
     private SettlementComboBoxModel settlementCBModel;
 
     private SettlementMapPanel mapPanel;
-    private MainDesktopPane desktop;
+    private UIContext context;
 
     private Weather weather;
     private SurfaceFeatures surfaceFeatures;
@@ -190,11 +187,11 @@ public class SettlementTransparentPanel extends JComponent {
      * @param desktop
      * @param mapPanel
      */
-    public SettlementTransparentPanel(MainDesktopPane desktop, SettlementMapPanel mapPanel) {
+    public SettlementTransparentPanel(UIContext context, SettlementMapPanel mapPanel) {
         this.mapPanel = mapPanel;
-        this.desktop = desktop;
+        this.context = context;
 
-        Simulation sim = desktop.getSimulation();
+        Simulation sim = context.getSimulation();
         this.unitManager = sim.getUnitManager();
 
         this.weather = sim.getWeather();
@@ -218,7 +215,6 @@ public class SettlementTransparentPanel extends JComponent {
         };
 
         buildInfoP();
-        buildRenameBtn();
         var labelPane = buildLabelPane();
         var buttonPane = buildButtonPane();
         buildSettlementNameComboBox();
@@ -273,15 +269,15 @@ public class SettlementTransparentPanel extends JComponent {
         controlPane.setBackground(new Color(0,0,0,128));
         controlPane.setOpaque(false);
 
-        var controlCenterPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        controlCenterPane.setBackground(new Color(0,0,0,128));
-        controlCenterPane.setOpaque(false);
-        controlCenterPane.add(zoomSlider);
-        controlCenterPane.setAlignmentY(CENTER_ALIGNMENT);
+        var zoomPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        zoomPane.setBackground(new Color(0,0,0,128));
+        zoomPane.setOpaque(false);
+        zoomPane.add(zoomSlider);
+        zoomPane.setAlignmentY(CENTER_ALIGNMENT);
 
         controlPane.add(buttonPane, BorderLayout.NORTH);
         controlPane.add(labelPane, BorderLayout.SOUTH);
-        controlPane.add(controlCenterPane, BorderLayout.CENTER);
+        controlPane.add(zoomPane, BorderLayout.CENTER);
 
         var eastPane = new JPanel(new BorderLayout());
         eastPane.setBackground(new Color(0,0,0,15));
@@ -295,7 +291,7 @@ public class SettlementTransparentPanel extends JComponent {
         centerPanel.add(eastPane, BorderLayout.EAST);
 
         // Patch 1: listen for mapPanel displayability change to detach listeners to avoid leaks
-        if (mapPanel != null && mapPanelHierarchyListener == null) {
+        if (mapPanelHierarchyListener == null) {
             mapPanelHierarchyListener = e -> {
                 if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0 && !mapPanel.isDisplayable()) {
                     detachListeners();
@@ -320,7 +316,7 @@ public class SettlementTransparentPanel extends JComponent {
         JPanel roundPane = new JPanel(new GridLayout(9, 1, 0, 0));
         roundPane.setBackground(new Color(0, 0, 0, 128));
         roundPane.setOpaque(false);
-        roundPane.setPreferredSize(new Dimension(230, 185)); // (260, 185), (293, 185);
+        roundPane.setPreferredSize(new Dimension(230, 185));
 
         JXTaskPaneContainer taskPaneContainer = new JXTaskPaneContainer();
         taskPaneContainer.setBackground(new Color(0, 0, 0, 128));
@@ -416,13 +412,14 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private int getNameLength() {
         Collection<Settlement> list = unitManager.getSettlements();
-        int max = 12;
+        int min = 10;
         for (Settlement s: list) {
             int size = s.getName().length();
-            if (max < size)
-                max = size;
+            if (min < size) {
+                min = size;
+            }
         }
-        return max;
+        return min;
     }
 
     /**
@@ -432,7 +429,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         settlementCBModel = new SettlementComboBoxModel();
         settlementListBox = new JComboBox<>(settlementCBModel);
-        settlementListBox.setPreferredSize(new Dimension(getNameLength() * 12, 30));
+        settlementListBox.setPreferredSize(new Dimension(getNameLength() * 9, 30));
         settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
         settlementListBox.setRenderer(new NamedListCellRenderer());
         settlementListBox.addItemListener(event -> {
@@ -716,8 +713,8 @@ public class SettlementTransparentPanel extends JComponent {
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 1, 150, 10);
         zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 75));
-        zoomSlider.setPreferredSize(new Dimension(50, 350));
-        zoomSlider.setSize(new Dimension(50, 350));
+        zoomSlider.setPreferredSize(new Dimension(50, 400));
+        zoomSlider.setSize(new Dimension(50, 400));
 
         zoomSlider.setMajorTickSpacing(30);
         zoomSlider.setMinorTickSpacing(10);
@@ -751,13 +748,13 @@ public class SettlementTransparentPanel extends JComponent {
 
                 if (numClicks > 0) {
                     // wheel down -> zoom out
-                    if (value > min) {
+                    if (value - 1 >= min) {
                         zoomSlider.setValue(value - 1);
                     }
                 }
                 else if (numClicks < 0) {
                     // wheel up -> zoom in
-                    if (value < max) {
+                    if (value + 1 <= max) {
                         zoomSlider.setValue(value + 1);
                     }
                 }
@@ -780,7 +777,7 @@ public class SettlementTransparentPanel extends JComponent {
         zoomListener = e -> {
             int value = ((JSlider) e.getSource()).getValue();
             if (zoomDebounce == null) {
-                zoomDebounce = new javax.swing.Timer(75, ae -> convertTo(value));
+                zoomDebounce = new javax.swing.Timer(50, ae -> convertTo(value));
                 zoomDebounce.setRepeats(false);
                 zoomDebounce.start();
             }
@@ -789,7 +786,7 @@ public class SettlementTransparentPanel extends JComponent {
             }
             else {
                 zoomDebounce = null;
-                zoomDebounce = new javax.swing.Timer(75, ae -> convertTo(value));
+                zoomDebounce = new javax.swing.Timer(50, ae -> convertTo(value));
                 zoomDebounce.setRepeats(false);
                 zoomDebounce.start();
             }
@@ -818,75 +815,6 @@ public class SettlementTransparentPanel extends JComponent {
         }
     }
 
-    /**
-     * Recursively removes common listeners and clears maps on any Component tree.
-     * Safe to call with null; idempotent.
-     */
-    private static void removeAllListenersRecursively(java.awt.Component c) {
-        if (c == null) return;
-
-        // Detach AWT listeners
-        for (java.awt.event.MouseListener l : c.getMouseListeners()) c.removeMouseListener(l);
-        for (java.awt.event.MouseMotionListener l : c.getMouseMotionListeners()) c.removeMouseMotionListener(l);
-        for (java.awt.event.MouseWheelListener l : c.getMouseWheelListeners()) c.removeMouseWheelListener(l);
-        for (java.awt.event.KeyListener l : c.getKeyListeners()) c.removeKeyListener(l);
-        for (java.awt.event.FocusListener l : c.getFocusListeners()) c.removeFocusListener(l);
-        for (java.beans.PropertyChangeListener l : c.getPropertyChangeListeners()) c.removePropertyChangeListener(l);
-
-        // Detach Swing listeners and clear action/input maps per child as well
-        if (c instanceof javax.swing.JComponent jc) {
-            for (javax.swing.event.AncestorListener l : jc.getAncestorListeners()) jc.removeAncestorListener(l);
-
-            javax.swing.ActionMap am = jc.getActionMap();
-            if (am != null) am.clear();
-            for (int cond : new int[] {
-                    javax.swing.JComponent.WHEN_FOCUSED,
-                    javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
-                    javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW}) {
-                javax.swing.InputMap im = jc.getInputMap(cond);
-                if (im != null) im.clear();
-            }
-
-            jc.setTransferHandler(null);
-            jc.setToolTipText(null);
-            jc.setCursor(null);
-
-            // Best-effort detach common model listeners when possible
-            if (jc instanceof javax.swing.JSlider slider) {
-                for (javax.swing.event.ChangeListener l : slider.getChangeListeners()) {
-                    slider.removeChangeListener(l);
-                }
-            }
-            if (jc instanceof javax.swing.AbstractButton btn) {
-                for (java.awt.event.ActionListener l : btn.getActionListeners()) {
-                    btn.removeActionListener(l);
-                }
-                for (java.awt.event.ItemListener l : btn.getItemListeners()) {
-                    btn.removeItemListener(l);
-                }
-            }
-            if (jc instanceof javax.swing.JComboBox<?> combo) {
-                for (java.awt.event.ItemListener l : combo.getItemListeners()) {
-                    combo.removeItemListener(l);
-                }
-                for (java.awt.event.ActionListener l : combo.getActionListeners()) {
-                    combo.removeActionListener(l);
-                }
-            }
-            if (jc instanceof javax.swing.JTable table) {
-                for (java.beans.PropertyChangeListener l : table.getPropertyChangeListeners()) {
-                    table.removePropertyChangeListener(l);
-                }
-            }
-        }
-
-        // Recurse
-        if (c instanceof java.awt.Container container) {
-            for (java.awt.Component child : container.getComponents()) {
-                removeAllListenersRecursively(child);
-            }
-        }
-    }
 
     /**
      * Detach the listeners this panel installs, idempotently.
@@ -914,7 +842,8 @@ public class SettlementTransparentPanel extends JComponent {
     public void setZoomValue(int value) {
         if (zoomSlider != null && zoomSlider.getValue() != value) {
             if (zoomDebounce != null && zoomDebounce.isRunning()) {
-                zoomDebounce.stop(); // prevent a stale convertTo firing
+            	// Prevent a stale convertTo firing
+                zoomDebounce.stop(); 
             }
             zoomSlider.setValue(value);
         }
@@ -931,24 +860,11 @@ public class SettlementTransparentPanel extends JComponent {
         infoButton.setContentAreaFilled(false);
         infoButton.setBorderPainted(false);
         infoButton.addActionListener(e -> {
-                Settlement settlement = mapPanel.getSettlement();
+        	Settlement settlement = mapPanel.getSettlement();
                 if (settlement != null) {
-                    desktop.showDetails(settlement);
+                    context.showDetails(settlement);
                 }
             });
-    }
-
-    private void buildRenameBtn() {
-
-        Icon icon = ImageLoader.getIconByName("settlement_map/edit");
-        renameBtn = new JButton(icon);
-        renameBtn.setPreferredSize(new Dimension(32, 32));
-        renameBtn.setOpaque(false);
-        renameBtn.setBackground(new Color(0,0,0,128));
-        renameBtn.setContentAreaFilled(false);
-        renameBtn.setBorderPainted(false);
-
-        renameBtn.addActionListener(e -> openRenameDialog());
     }
 
     private JPanel buildButtonPane() {
@@ -1033,7 +949,6 @@ public class SettlementTransparentPanel extends JComponent {
             labelsMenu.show(button, 0, button.getHeight());
         });
 
-        labelPane.add(renameBtn);
         labelPane.add(infoButton);
         labelPane.add(labelsButton);
 
@@ -1117,39 +1032,6 @@ public class SettlementTransparentPanel extends JComponent {
     }
 
     /**
-     * Open dialog box to take in the new settlement name
-     */
-    private void openRenameDialog() {
-
-        String oldName = mapPanel.getSettlement().getName();
-
-        JDialog.setDefaultLookAndFeelDecorated(true);
-        String newName = askNameDialog();
-        if (!oldName.equals(newName)
-                && newName != null
-                && !newName.trim().equals("")
-                && newName.trim().length() != 0) {
-            mapPanel.getSettlement().setName(newName.trim());
-
-            desktop.closeToolWindow(SettlementWindow.NAME);
-            desktop.openToolWindow(SettlementWindow.NAME);
-
-        }
-    }
-
-    /**
-     * Ask for a new Settlement name
-     * @return pop up jDialog
-     */
-    private String askNameDialog() {
-        return JOptionPane
-            .showInputDialog(desktop,
-                    Msg.getString("SettlementWindow.JDialog.changeSettlementName.input"), //$NON-NLS-1$
-                    Msg.getString("SettlementWindow.JDialog.changeSettlementName.title"), //$NON-NLS-1$
-                    JOptionPane.QUESTION_MESSAGE);
-    }
-
-    /**
      * Inner class combo box model for settlements.
      */
     private class SettlementComboBoxModel extends DefaultComboBoxModel<Settlement>
@@ -1225,7 +1107,9 @@ public class SettlementTransparentPanel extends JComponent {
 
     /**
      * Gets the sunlight data and display it on the top left panel of the settlement map.
-     * (UI label updates are marshaled to EDT)
+     * (UI label updates are marshaled to EDT).
+     * 
+     * @param location
      */
     private void displaySunData(Coordinates location) {
         double [] time = orbitInfo.getSunTimes(mapPanel.getSettlement().getCoordinates());
@@ -1357,108 +1241,6 @@ public class SettlementTransparentPanel extends JComponent {
         // --- Core patch cleanup: detach installed listeners ---
         detachListeners();
 
-        // Remove the displayability listener from mapPanel if present
-        if (mapPanel != null && mapPanelHierarchyListener != null) {
-            mapPanel.removeHierarchyListener(mapPanelHierarchyListener);
-        }
         mapPanelHierarchyListener = null;
-
-        // --- Best-effort: remove action/item listeners on owned controls ---
-        if (renameBtn != null) {
-            for (java.awt.event.ActionListener l : renameBtn.getActionListeners()) {
-                renameBtn.removeActionListener(l);
-            }
-        }
-        if (infoButton != null) {
-            for (java.awt.event.ActionListener l : infoButton.getActionListeners()) {
-                infoButton.removeActionListener(l);
-            }
-        }
-        if (settlementListBox != null) {
-            for (java.awt.event.ItemListener l : settlementListBox.getItemListeners()) {
-                settlementListBox.removeItemListener(l);
-            }
-            for (java.awt.event.ActionListener l : settlementListBox.getActionListeners()) {
-                settlementListBox.removeActionListener(l);
-            }
-        }
-
-        // --- Clear and hide popup menu if present ---
-        if (labelsMenu != null) {
-            labelsMenu.setVisible(false);
-            labelsMenu.removeAll();
-            labelsMenu = null;
-        }
-
-        // --- Recursively detach listeners / clear maps for all owned components ---
-        removeAllListenersRecursively(this);                // harmless if not in component tree
-        removeAllListenersRecursively(zoomSlider);
-        removeAllListenersRecursively(bannerBar);
-        removeAllListenersRecursively(temperatureIcon);
-        removeAllListenersRecursively(windIcon);
-        removeAllListenersRecursively(opticalIcon);
-        removeAllListenersRecursively(renameBtn);
-        removeAllListenersRecursively(infoButton);
-        removeAllListenersRecursively(settlementListBox);
-        removeAllListenersRecursively(projectSunriseLabel);
-        removeAllListenersRecursively(projectSunsetLabel);
-        removeAllListenersRecursively(projectDaylightLabel);
-        removeAllListenersRecursively(sunriseLabel);
-        removeAllListenersRecursively(sunsetLabel);
-        removeAllListenersRecursively(zenithLabel);
-        removeAllListenersRecursively(maxSunLabel);
-        removeAllListenersRecursively(daylightLabel);
-        removeAllListenersRecursively(currentSunLabel);
-
-        // Remove any children this component might have (defensive)
-        try {
-            removeAll();
-            revalidate();
-            repaint();
-        } catch (Throwable ignore) {
-            // best-effort cleanup; ignore if already detached
-        }
-
-        if (settlementCBModel != null) settlementCBModel.destroy();
-        settlementListBox = null;
-        settlementCBModel = null;
-
-        if (resourceCache != null) {
-            resourceCache.clear();
-            resourceCache = null;
-        }
-
-        mode = null;
-
-        emptyLabel = null;
-        bannerBar = null;
-        zoomSlider = null;
-
-        projectSunriseLabel = null;
-        projectSunsetLabel = null;
-        projectDaylightLabel = null;
-        sunriseLabel = null;
-        sunsetLabel = null;
-        zenithLabel = null;
-        maxSunLabel = null;
-        daylightLabel = null;
-        currentSunLabel = null;
-
-        renameBtn = null;
-        infoButton = null;
-        temperatureIcon = null;
-        windIcon = null;
-        opticalIcon = null;
-
-        labelsMenu = null;
-
-        desktop = null;
-
-        weather = null;
-        surfaceFeatures = null;
-        orbitInfo = null;
-        unitManager = null;
-
-        mapPanel = null;
     }
 }

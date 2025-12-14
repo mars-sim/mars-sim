@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.building.Building;
@@ -30,7 +30,10 @@ import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.building.config.BuildingConfig;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.events.ScheduledEventManager;
+import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -157,7 +160,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * Generates the delivery event.
 	 */
 	@Override
-	public synchronized void performArrival(SimulationConfig sc, Simulation sim) {
+	public synchronized HistoricalEvent performArrival(SimulationConfig sc, Simulation sim) {
 		// Deliver buildings to the destination settlement.
 		logger.info(this, "Preparing for the arrival of a resupply mission.");
 
@@ -188,6 +191,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 												newArrival, settlement);
 			tm.addNewTransportItem(followOn);
 		}
+
+		return TransportManager.createEvent(this, HistoricalEventType.TRANSPORT_ITEM_ARRIVED);
 	}
 
 	/**
@@ -202,7 +207,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 			BuildingManager buildingManager = settlement.getBuildingManager();
 
-			settlement.fireUnitUpdate(UnitEventType.START_BUILDING_PLACEMENT_EVENT, buildingManager.getABuilding());
+			settlement.fireUnitUpdate(EntityEventType.START_BUILDING_PLACEMENT_EVENT, buildingManager.getABuilding());
 
 			Iterator<BuildingTemplate> buildingI = orderedBuildings.iterator();
 

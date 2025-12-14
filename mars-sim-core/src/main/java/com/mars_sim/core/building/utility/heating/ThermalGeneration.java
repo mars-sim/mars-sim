@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * ThermalGeneration.java
- * @date 2025-09-28
+ * @date 2025-10-07
  * @author Manny Kung
  */
 package com.mars_sim.core.building.utility.heating;
@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
@@ -61,6 +60,16 @@ public class ThermalGeneration extends Function {
 	private double fHeatCache;
 	private double eHeatCache;
 	private double nHeatCache;
+
+    public static final String HEAT_SURPLUS_EVENT = "heat surplus";
+
+    public static final String ELECTRIC_HEAT_EVENT = "electric heat";
+
+    public static final String SOLAR_HEAT_EVENT = "solar heat";
+
+    public static final String NUCLEAR_HEAT_EVENT = "nuclear heat";
+
+    public static final String FUEL_HEAT_EVENT = "fuel heat";
 	
 	/**
 	 * Constructor
@@ -77,38 +86,26 @@ public class ThermalGeneration extends Function {
 		if (spec instanceof GenerationSpec ss) {
 			for (SourceSpec sourceSpec : ss.getSources()) {
 				double heat = sourceSpec.getCapacity();
+				if (building.getCategory() == BuildingCategory.CONNECTION) {
+					heat = heat * building.getFloorArea() / 9;
+				}
 				HeatSource heatSource = null;
 				HeatSourceType sourceType = HeatSourceType.valueOf(sourceSpec.getType().toUpperCase().replace(" ", "_"));
 				
 				switch (sourceType) {
 				case ELECTRIC_HEATING:
 					heatSource = new ElectricHeatSource(building, heat);	
-					
-					if (building.getCategory() == BuildingCategory.CONNECTION) {
-						heat = heat * building.getFloorArea() / 4;
-					}
-					
 					electricHeatSource = heatSource;
 					break;
 
 				case SOLAR_HEATING:
 					heatSource = new SolarHeatingSource(building, heat);
-					
-					if (building.getCategory() == BuildingCategory.CONNECTION) {
-						heat = heat * building.getFloorArea() / 4;
-					}
-					
 					solarHeatSource = heatSource;
 					break;
 					
 				case FUEL_HEATING:
 					boolean toggle = Boolean.parseBoolean(sourceSpec.getAttribute(SourceSpec.TOGGLE));
 					String fuelType = sourceSpec.getAttribute(SourceSpec.FUEL_TYPE);
-					
-					if (building.getCategory() == BuildingCategory.CONNECTION) {
-						heat = heat * building.getFloorArea() / 4;
-					}
-
 					heatSource = new FuelHeatSource(building, heat, toggle, fuelType);
 					fuelHeatSource = heatSource;
 					break;
@@ -273,24 +270,24 @@ public class ThermalGeneration extends Function {
 						newHeatMode = heatMode;
 						
 						solarHeatSource.setHeatMode(newHeatMode, building);
-						building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT, building);	
+						building.fireUnitUpdate(ThermalGeneration.SOLAR_HEAT_EVENT, building);	
 						
 						// Convert all thermal nuclear heat to electricity by setting it to HEAT_OFF
 						if (nuclearHeatSource != null) {
 							nuclearHeatSource.setHeatMode(HeatMode.HEAT_OFF, building);
-							building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT, building);
+							building.fireUnitUpdate(ThermalGeneration.NUCLEAR_HEAT_EVENT, building);
 						}
 						
 						// Turn off electric heat and electric power
 						if (electricHeatSource != null) {
 							electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-							building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT, building);
+							building.fireUnitUpdate(ThermalGeneration.ELECTRIC_HEAT_EVENT, building);
 						}
 						
 						// Turn off fuel heat and fuel power
 						if (fuelHeatSource != null) {
 							fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-							building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT, building);
+							building.fireUnitUpdate(ThermalGeneration.FUEL_HEAT_EVENT, building);
 						}
 						
 						heatGen += sHeat;
@@ -316,12 +313,12 @@ public class ThermalGeneration extends Function {
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				solarHeatSource.setHeatMode(newHeatMode, building);
-				building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.SOLAR_HEAT_EVENT, building);
 			}
 			else {
 				// If the solar panel cannot generate electricity (i.e. at night)
 				solarHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-				building.fireUnitUpdate(UnitEventType.SOLAR_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.SOLAR_HEAT_EVENT, building);
 			}
 		}
 		
@@ -352,18 +349,18 @@ public class ThermalGeneration extends Function {
 
 					// Will automatically convert rest of thermal nuclear heat to electricity					
 					nuclearHeatSource.setHeatMode(newHeatMode, building);
-					building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT);
+					building.fireUnitUpdate(ThermalGeneration.NUCLEAR_HEAT_EVENT);
 					
 					// Turn off electric heat
 					if (electricHeatSource != null) {
 						electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);		
-						building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT, building);
+						building.fireUnitUpdate(ThermalGeneration.ELECTRIC_HEAT_EVENT, building);
 					}
 					
 					// Turn off fuel heat
 					if (fuelHeatSource != null) {
 						fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT, building);
+						building.fireUnitUpdate(ThermalGeneration.FUEL_HEAT_EVENT, building);
 					}
 	
 					heatGen += nHeat;
@@ -388,12 +385,12 @@ public class ThermalGeneration extends Function {
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				nuclearHeatSource.setHeatMode(newHeatMode, building);
-				building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.NUCLEAR_HEAT_EVENT, building);
 			}
 			else {
 				// If this heat source cannot generate electricity
 				nuclearHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-				building.fireUnitUpdate(UnitEventType.NUCLEAR_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.NUCLEAR_HEAT_EVENT, building);
 			}
 		}
 		
@@ -423,12 +420,12 @@ public class ThermalGeneration extends Function {
 					newHeatMode = heatMode;
 					
 					electricHeatSource.setHeatMode(newHeatMode, building);
-					building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT, building);
+					building.fireUnitUpdate(ThermalGeneration.ELECTRIC_HEAT_EVENT, building);
 					
 					// Turn off fuel heat
 					if (fuelHeatSource != null) {
 						fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-						building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT, building);
+						building.fireUnitUpdate(ThermalGeneration.FUEL_HEAT_EVENT, building);
 					}
 				
 					heatGen += eHeat;
@@ -453,12 +450,12 @@ public class ThermalGeneration extends Function {
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				electricHeatSource.setHeatMode(newHeatMode, building);
-				building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.ELECTRIC_HEAT_EVENT, building);
 			}
 			else {
 				// If this heat source cannot generate electricity
 				electricHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-				building.fireUnitUpdate(UnitEventType.ELECTRIC_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.ELECTRIC_HEAT_EVENT, building);
 			}
 		}
 		
@@ -489,7 +486,7 @@ public class ThermalGeneration extends Function {
 					newHeatMode = heatMode;
 
 					fuelHeatSource.setHeatMode(newHeatMode, building);
-					building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT, building);
+					building.fireUnitUpdate(ThermalGeneration.FUEL_HEAT_EVENT, building);
 					
 					heatGen += fHeat;
 					remainHeatReq -= fHeat;
@@ -512,11 +509,11 @@ public class ThermalGeneration extends Function {
 				// Set the new heat mode
 				newHeatMode = heatMode;
 				fuelHeatSource.setHeatMode(newHeatMode, building);
-				building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.FUEL_HEAT_EVENT, building);
 			}
 			else {
 				fuelHeatSource.setHeatMode(HeatMode.OFFLINE, building);
-				building.fireUnitUpdate(UnitEventType.FUEL_HEAT_EVENT, building);
+				building.fireUnitUpdate(ThermalGeneration.FUEL_HEAT_EVENT, building);
 			}
 		}
 
@@ -757,7 +754,7 @@ public class ThermalGeneration extends Function {
 	public void setHeatSurplus(double heat)  {
 		if (heat < 0) heat = 0D;
 		heatSurplusCache = heat;
-		building.fireUnitUpdate(UnitEventType.HEAT_SURPLUS_EVENT, building);
+		building.fireUnitUpdate(ThermalGeneration.HEAT_SURPLUS_EVENT, building);
 	}
 	
 	/**

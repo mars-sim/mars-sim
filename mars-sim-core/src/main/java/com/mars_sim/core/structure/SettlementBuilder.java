@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.structure;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -203,24 +202,6 @@ public final class SettlementBuilder {
 	}
 
 	/**
-	 * Generates a unique name for the Settlement.
-	 * 
-	 * @param sponsor
-	 * @return
-	 */
-	private String generateName(Authority sponsor) {
-		List<String> remainingNames = new ArrayList<>(sponsor.getSettlementNames());
-
-		List<String> usedNames = unitManager.getSettlements().stream()
-							.map(Entity::getName).toList();
-
-		remainingNames.removeAll(usedNames);
-		int idx = RandomUtil.getRandomInt(remainingNames.size());
-
-		return remainingNames.get(idx);
-	}
-
-	/**
 	 * Creates a settlement.
 	 * 
 	 * @param template
@@ -241,7 +222,9 @@ public final class SettlementBuilder {
 		// Get settlement name
 		String name = spec.getName();
 		if (name == null) {
-			name = generateName(ra);
+			List<String> usedNames = unitManager.getSettlements().stream()
+							.map(Entity::getName).toList();
+			name = ra.getSettlementNames().generateName(usedNames);
 		}
 
 		// Get settlement longitude
@@ -407,9 +390,9 @@ public final class SettlementBuilder {
 	 *
 	 * @param settlement Hosting settlement
 	 * @param targetPopulation Population goal
-	 * @param assignRoles Should roles be assigned to the new people?
+	 * @param noDefaultRole True if there's no default role for this person and need to look for one for him
 	 */
-	public void createPeople(Settlement settlement, int targetPopulation, boolean assignRoles) {
+	public void createPeople(Settlement settlement, int targetPopulation, boolean noDefaultRole) {
 
 		Authority sponsor = settlement.getReportingAuthority();
 		
@@ -457,8 +440,13 @@ public final class SettlementBuilder {
 			person.getPreference().initializePreference();
 			// Assign a job
 			person.getMind().getAJob(true, JobUtil.MISSION_CONTROL);
-
-			if (assignRoles) {
+		
+			JobType jobType = person.getMind().getJobType();
+			
+			if (jobType == JobType.TOURIST) {
+				person.setRole(RoleType.GUEST);
+			}		
+			else if (noDefaultRole) {
 				RoleType choosen = RoleUtil.findBestRole(person);
 				person.setRole(choosen);
 			}

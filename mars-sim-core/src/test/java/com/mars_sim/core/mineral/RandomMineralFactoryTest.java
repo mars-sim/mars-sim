@@ -1,14 +1,28 @@
 package com.mars_sim.core.mineral;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 
-public class RandomMineralFactoryTest extends AbstractMarsSimUnitTest {
-    public void testCreateLocalConcentration() throws CoordinatesException {
-        var newMap = new MineralMap(simConfig.getMineralMapConfiguration());
+class RandomMineralFactoryTest {
+
+    private SimulationConfig config;
+
+    @BeforeEach
+    void setUp() {
+        config = SimulationConfig.loadConfig();
+    }
+
+    @Test
+    void testCreateLocalConcentration() throws CoordinatesException {
+        var newMap = new MineralMap(config.getMineralMapConfiguration());
 
         var center = CoordinatesFormat.fromString("30.0 -25.0");
         RandomMineralFactory.createLocalConcentration(newMap, center);
@@ -19,19 +33,21 @@ public class RandomMineralFactoryTest extends AbstractMarsSimUnitTest {
                         .collect(Collectors.toSet());
 
         var results = newMap.getDeposits(center, 1D, types);
-        assertTrue("Combined in random map found", !results.isEmpty());
+        assertTrue(!results.isEmpty(), "Combined in random map found");
     }
 
-    public void testCreateRandomMap() {
+    @Test
+    void testCreateRandomMap() {
         var newMap = RandomMineralFactory.createRandomMap();
-        assertNotNull("New map created", newMap);
+        assertNotNull(newMap, "New map created");
     }
 
-    public void testGetTopoRegionSet() {
+    @Test
+    void testGetTopoRegionSet() {
         // Test by loadng the volcanic topo map and extract hotpsots
         var locns = RandomMineralFactory.getTopoRegionSet("TopographyVolcanic.png", 300, 150);
 
-        assertNotNull("Volcanic hotspots found", locns);
-        assertTrue("Numerous volcanic hotspots found", locns.size() > 50);
+        assertNotNull(locns, "Volcanic hotspots found");
+        assertTrue(locns.size() > 50, "Numerous volcanic hotspots found");
     }
 }

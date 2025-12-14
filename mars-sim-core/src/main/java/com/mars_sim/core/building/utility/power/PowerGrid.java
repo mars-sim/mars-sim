@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingException;
@@ -36,9 +35,7 @@ public class PowerGrid implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(PowerGrid.class.getName());
 
-//	private static final double R_LOAD = 1000D; // assume constant load resistance
-
-	private static final double ROLLING_FACTOR = 1.1D; 
+	private static final double ROLLING_FACTOR = 1.15D; 
 	
 	private static final double PERC_AVG_VOLT_DROP = 98D;
 
@@ -60,6 +57,13 @@ public class PowerGrid implements Serializable, Temporal {
 	
 	private Settlement settlement;
 	private BuildingManager manager;
+    public static final String POWER_VALUE_EVENT = "power value";
+    public static final String REQUIRED_POWER_EVENT = "required power";
+    public static final String STORED_ENERGY_CAPACITY_EVENT = "stored power capacity";
+    public static final String STORED_ENERGY_EVENT = "stored power";
+    public static final String GENERATED_POWER_EVENT = "generated power";
+    // For power grid
+    public static final String POWER_MODE_EVENT = "power mode";
 
 
 	/**
@@ -93,7 +97,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setPowerMode(PowerMode newPowerMode) {
 		if (powerMode != newPowerMode) {
 			powerMode = newPowerMode;
-			settlement.fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.POWER_MODE_EVENT);
 		}
 	}
 
@@ -115,7 +119,7 @@ public class PowerGrid implements Serializable, Temporal {
 		double p = Math.round(newGeneratedPower*1000.0)/1000.0;
 		if (powerGenerated != p) {
 			powerGenerated = p;
-			settlement.fireUnitUpdate(UnitEventType.GENERATED_POWER_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.GENERATED_POWER_EVENT);
 		}
 	}
 
@@ -157,7 +161,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setStoredEnergy(double newEnergyStored) {
 		if (totalEnergyStored != newEnergyStored) {
 			totalEnergyStored = newEnergyStored;
-			settlement.fireUnitUpdate(UnitEventType.STORED_ENERGY_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_EVENT);
 		}
 	}
 
@@ -178,7 +182,7 @@ public class PowerGrid implements Serializable, Temporal {
 	public void setStoredEnergyCapacity(double newCap) {
 		if (energyStorageCapacity != newCap) {
 			energyStorageCapacity = newCap;
-			settlement.fireUnitUpdate(UnitEventType.STORED_ENERGY_CAPACITY_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.STORED_ENERGY_CAPACITY_EVENT);
 		}
 	} 
 
@@ -199,7 +203,7 @@ public class PowerGrid implements Serializable, Temporal {
 	private void setRequiredPower(double newRequiredPower) {
 		if (powerRequired != newRequiredPower) {
 			powerRequired = newRequiredPower;
-			settlement.fireUnitUpdate(UnitEventType.REQUIRED_POWER_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.REQUIRED_POWER_EVENT);
 		}
 	}
 
@@ -247,6 +251,7 @@ public class PowerGrid implements Serializable, Temporal {
 		if (!justLoaded) {			
 			// May add back for debugging : logger.info(settlement, 0, "neededPower: " + Math.round(neededPower) + "  powerGenerated: " + Math.round(powerGen) + "  powerRequired: " + Math.round(powerReq))
 		
+			// Note: powerDiff can be +ve or -ve
 			if (powerDiff < 0) {
 				handleExcessPower(pulse.getElapsed(), powerDiff);
 			}
@@ -318,18 +323,18 @@ public class PowerGrid implements Serializable, Temporal {
 	 * Handles excess power.
 	 * 
 	 * @param time in millisols
-	 * @param neededPower
+	 * @param neededPower (Note: needPower is always -ve)
 	 */
 	private void handleExcessPower(double time, double neededPower) {
+		// Note: excess is always +ve
 		double excess = -neededPower;
-//		logger.info(settlement, 10_000, "excess: " + Math.round(excess));
 		sufficientPower = true;
 		
 		Set<Building> buildings = manager.getBuildingSet(FunctionType.POWER_GENERATION);
 
 		// 1. Switch from no power to low power in inhabitable buildings
 		// building until required power reduction is met.
-		double netPower1 = adjustPowerLevel(false, excess, buildings, 
+		double netPower1 = adjustBuildingPowerLevel(false, excess, buildings, 
 				true, PowerMode.NO_POWER, PowerMode.LOW_POWER);
 		
 		excess -= netPower1;
@@ -346,7 +351,7 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		// If power needs are still not met, turn on full power in each inhabitable
 		// building until required power reduction is met.
-		double netPower2 = adjustPowerLevel(false, neededPower, buildings, 
+		double netPower2 = adjustBuildingPowerLevel(false, excess, buildings, 
 				true, PowerMode.LOW_POWER, PowerMode.FULL_POWER);
 		
 		excess -= netPower2;
@@ -362,7 +367,7 @@ public class PowerGrid implements Serializable, Temporal {
 		//    using methane power generators to produce electricity
 		
 		// C1. Turn off methane power generators 
-		double methanePower = adjustPowerLevelFunctionType(false, excess, buildings, 
+		double methanePower = adjustPowerGenerator(false, excess, buildings, 
 				FunctionType.POWER_GENERATION, PowerSourceType.FUEL_POWER);
 		
 		excess -= methanePower;
@@ -378,7 +383,7 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		// Switch from no power to low power in each non-inhabitable
 		// building until required power reduction is met.
-		double netPower3 = adjustPowerLevel(false, excess, buildings, 
+		double netPower3 = adjustBuildingPowerLevel(false, excess, buildings, 
 				false, PowerMode.NO_POWER, PowerMode.LOW_POWER);
 		
 		excess -= netPower3;
@@ -395,7 +400,7 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		// Switch from low power to full power in each non-inhabitable
 		// building until required power reduction is met.
-		double netPower4 = adjustPowerLevel(false, neededPower, buildings, 
+		double netPower4 = adjustBuildingPowerLevel(false, excess, buildings, 
 				false, PowerMode.LOW_POWER, PowerMode.FULL_POWER);
 		
 		excess -= netPower4;
@@ -456,7 +461,6 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		if (excess < 0) {
 			sufficientPower = false;
-			return;
 		}
 	}
 
@@ -501,7 +505,7 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		// If still not having sufficient power,
 		// turn on methane generators to low power mode if available
-		double methanePower0 = adjustPowerLevelFunctionType(true, neededPower, buildings, 
+		double methanePower0 = adjustPowerGenerator(true, neededPower, buildings, 
 				FunctionType.POWER_GENERATION, PowerSourceType.FUEL_POWER);
 
 		neededPower -= methanePower0;
@@ -538,7 +542,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		// Reduce each non-inhabitable building's full power mode to low power until
 		// required power reduction is met.
-		double savedPower0 = adjustPowerLevel(true, neededPower, buildings, 
+		double savedPower0 = adjustBuildingPowerLevel(true, neededPower, buildings, 
 				false, PowerMode.FULL_POWER, PowerMode.LOW_POWER);
 		
 		neededPower -= savedPower0;
@@ -552,7 +556,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		// 7. If still not having sufficient power,
 		// turn on methane generators to full power mode if available
-		double methanePower1 = adjustPowerLevelFunctionType(true, neededPower, buildings, 
+		double methanePower1 = adjustPowerGenerator(true, neededPower, buildings, 
 				FunctionType.POWER_GENERATION, PowerSourceType.FUEL_POWER);
 
 		neededPower -= methanePower1;	
@@ -587,7 +591,7 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		// 10. If power needs are still not met, turn off the power in each
 		// non-inhabitable building until required power reduction is met.
-		double savedPower1 = adjustPowerLevel(true, neededPower, buildings, 
+		double savedPower1 = adjustBuildingPowerLevel(true, neededPower, buildings, 
 				false, PowerMode.LOW_POWER, PowerMode.NO_POWER);
 			
 		neededPower -= savedPower1;
@@ -609,7 +613,7 @@ public class PowerGrid implements Serializable, Temporal {
 		
 		// 12. If power needs are still not met, turn on the low power in each inhabitable
 		// building until required power reduction is met.
-		double savedPower2 = adjustPowerLevel(true, neededPower, buildings, 
+		double savedPower2 = adjustBuildingPowerLevel(true, neededPower, buildings, 
 				true, PowerMode.FULL_POWER, PowerMode.LOW_POWER);
 		
 		neededPower -= savedPower2;
@@ -670,9 +674,7 @@ public class PowerGrid implements Serializable, Temporal {
 		// other means or else it's difficult to know if a settlement is producing enough power
 		// since battery only stores energy and releases it at a later date and is not
 		// considered a source of power.
-		
-		// Do NOT update the total generated power with contribution from batteries: setGeneratedPower(powerGenerated + batteryPower);
-	
+			
 		return newNeededPower;
 	}
 	
@@ -680,14 +682,14 @@ public class PowerGrid implements Serializable, Temporal {
 	 * Adjust the power level in inhabitable and non-inhabitable buildings.
 	 * 
 	 * @param gridLackPower true if the power grid has insufficient power
-	 * @param powerToHandle either the excess power or the needed power
+	 * @param powerToHandle (always +ve) either the excess power or the needed power
 	 * @param buildings
 	 * @param lifeSupport
 	 * @param oldPowerMode
 	 * @param newPowerMode
 	 * @return the power that can be saved or the power that can be supplied after switching to the new power mode
 	 */
-	private double adjustPowerLevel(boolean gridLackPower, double powerToHandle, Set<Building> buildings, 
+	private double adjustBuildingPowerLevel(boolean gridLackPower, double powerToHandle, Set<Building> buildings, 
 			boolean lifeSupport, PowerMode oldPowerMode, PowerMode newPowerMode) {
 		// Make netPower always positive 
 		double netPower = 0;
@@ -722,7 +724,6 @@ public class PowerGrid implements Serializable, Temporal {
 					power = building.getLowPowerRequired();
 				}
 				
-				/////// IF HAVING EXCESS POWER /////// 
 				// For stepping up power
 				else if (oldPowerMode == PowerMode.LOW_POWER
 					&& newPowerMode == PowerMode.FULL_POWER) {
@@ -745,8 +746,6 @@ public class PowerGrid implements Serializable, Temporal {
 					// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
 					// Switch from one power mode to another
 					building.setPowerMode(newPowerMode);
-					logger.info(building, 20_000, "1. Power Mode: " + oldPowerMode.getName()
-							+ " -> " + newPowerMode.getName());
 				}
 				
 				else {
@@ -755,8 +754,6 @@ public class PowerGrid implements Serializable, Temporal {
 						netPower += power;
 						// Switch from one power mode to another
 						building.setPowerMode(newPowerMode);	
-						logger.info(building, 20_000, "2. Power Mode: " + oldPowerMode.getName()
-								+ " -> " + newPowerMode.getName());
 					}
 
 					return netPower;
@@ -777,7 +774,7 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param powerSourceType
 	 * @return
 	 */
-	private double adjustPowerLevelFunctionType(boolean stepUp, double originalPower, 
+	private double adjustPowerGenerator(boolean stepUp, double originalPower, 
 			Set<Building> buildings, FunctionType functionType,
 			PowerSourceType powerSourceType) {
 
@@ -985,7 +982,11 @@ public class PowerGrid implements Serializable, Temporal {
 					break;
 				}
 				
-				double kWhDelivered = b.getPowerStorage().getBattery().requestEnergy(remainingNeed, timeHr);
+				double kWhDelivered = b.getPowerStorage().getBattery().consumeEnergy(remainingNeed, timeHr);
+				
+//				logger.info(b.getName() + " -  kWhDelivered: " + Math.round(kWhDelivered * 1000.)/1000.0 
+//						+ "  remainingNeed: " + Math.round(remainingNeed * 1000.)/1000.0
+//						+ "  totalEnergyNeeded: " + Math.round(totalEnergyNeeded * 1000.)/1000.0);
 				
 				remainingNeed = remainingNeed - kWhDelivered;
 
@@ -1031,7 +1032,7 @@ public class PowerGrid implements Serializable, Temporal {
 
 		if (newPowerValue != powerValue) {
 			powerValue = newPowerValue;
-			settlement.fireUnitUpdate(UnitEventType.POWER_VALUE_EVENT);
+			settlement.fireUnitUpdate(PowerGrid.POWER_VALUE_EVENT);
 		}
 	}
 

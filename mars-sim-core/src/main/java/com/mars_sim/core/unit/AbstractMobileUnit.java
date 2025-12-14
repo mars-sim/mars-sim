@@ -7,7 +7,7 @@
 package com.mars_sim.core.unit;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MarsSurface;
@@ -127,7 +127,7 @@ public abstract class AbstractMobileUnit extends Unit
 	 */
 	public void setPosition(LocalPosition position) {
 		this.localPosn = position;
-		fireUnitUpdate(UnitEventType.LOCAL_POSITION_EVENT, position);
+		fireUnitUpdate(EntityEventType.LOCAL_POSITION_EVENT, position);
 	}
 
     /**
@@ -189,7 +189,7 @@ public abstract class AbstractMobileUnit extends Unit
 	public void setCoordinates(Coordinates newLocation) {
 		if (!location.equals(newLocation)) {
 			location = newLocation;
-			fireUnitUpdate(UnitEventType.COORDINATE_EVENT, newLocation);
+			fireUnitUpdate(EntityEventType.COORDINATE_EVENT, newLocation);
 		}
 	}
 
@@ -271,14 +271,14 @@ public abstract class AbstractMobileUnit extends Unit
 		return (getSettlement() != null);
 	}
 
-	/**
-	 * Is this unit in the vicinity of a settlement ?
-	 *
-	 * @return true if the unit is inside a settlement
-	 */
-	public boolean isInSettlementVicinity() {
-		return tag.isInSettlementVicinity();
-	}
+//	/**
+//	 * Is this unit in the vicinity of a settlement ?
+//	 *
+//	 * @return true if the unit is inside a settlement
+//	 */
+//	public boolean isInSettlementVicinity() {
+//		return tag.isRightOutsideSettlement();
+//	}
 
 	/**
 	 * Gets the vehicle the unit is in, null if person is not in vehicle.
@@ -336,11 +336,11 @@ public abstract class AbstractMobileUnit extends Unit
 	 * @return true if the unit is in a vehicle inside a garage
 	 */
 	public boolean isInVehicleInGarage() {
-		var cu = getContainerUnit();
 		Vehicle v = getVehicle();
 		if (v != null) {
 			return v.isInGarage();
 		}
+		var cu = getContainerUnit();
 //		if (cu instanceof Settlement s) {
 //			// still inside the garage
 //			return v.isInSettlement() && v.isInGarage();

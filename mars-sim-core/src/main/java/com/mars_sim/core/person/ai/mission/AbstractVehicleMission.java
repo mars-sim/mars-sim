@@ -20,20 +20,19 @@ import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -68,7 +67,7 @@ import com.mars_sim.core.vehicle.task.PilotDrone;
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
  */
-public abstract class AbstractVehicleMission extends AbstractMission implements UnitListener, VehicleMission {
+public abstract class AbstractVehicleMission extends AbstractMission implements EntityListener, VehicleMission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -347,8 +346,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Note: may need to make everyone unboard the vehicle
 			v.setReservedForMission(false);
 			v.setMission(null);
-			v.removeUnitListener(this);
-			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+			v.removeEntityListener(this);
+			fireMissionUpdate(VEHICLE_EVENT);
 		}
 	}
 
@@ -363,10 +362,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 
 		v.setReservedForMission(true);
-		v.addUnitListener(this);
+		v.addEntityListener(this);
 		v.setMission(this);
 		
-		fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+		fireMissionUpdate(VEHICLE_EVENT);
 	}
 
 	/**
@@ -484,15 +483,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				vehicle.setEmergencyBeacon(true);
 		
 				// Creating mission emergency beacon event.
-				HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON,
-						this,
-						reason.getName(),
-						getName(),
-						getStartingPerson().getName(),
-						vehicle
-						);
-		
-				eventManager.registerNewEvent(newEvent);
+				registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
 			}
 		}
 
@@ -1127,8 +1118,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (missingResourceId >= 0) {
 				// Create Mission Flag
 				MissionStatus status = MissionStatus.createResourceStatus(missingResourceId);
-				abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
-				addMissionLog("Non-mission member", getStartingPerson().getName());
+				abortMission(status, HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES);
+				addMissionLog(HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES.getName(), getStartingPerson().getName());
 			}
 		}
 
@@ -1141,7 +1132,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 *
 	 * @param neededResources map of amount and item resources and their Double
 	 *                        amount or Integer number.
-	 * @return The resourceId of the 1st resource that is lacking; otherwise -1
+	 * @return The resourceId of the 1st resource that is lacking; if it has enough, return -1
 	 */
 	private int hasEnoughResources(Map<Integer, Number> neededResources) {
 
@@ -1212,34 +1203,40 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		
 		if (newDestination != null) {
 			double newDistance = getCurrentMissionLocation().getDistance(newDestination.getCoordinates());
-			boolean enough = true;
+			int id = 0;
 
-			// for drone mission, Will need to alert the player differently if it runs out of fuel
-			if (vehicle instanceof GroundVehicle) {
-
-				enough = hasEnoughResources(getResourcesNeededForTrip(false, newDistance)) < 0;
+			if (vehicle instanceof GroundVehicle v) {
+				
+				id = hasEnoughResources(getResourcesNeededForTrip(false, newDistance));
 
 				// Check if enough resources to get to settlement.
-				if (enough) {
-					travelDirectToSettlement(newDestination);
-
-					logger.info(getVehicle(), "Returning to " + newDestination.getName() + ".");
-					// Creating emergency destination mission event for going to a new settlement.
-					if (!newDestination.equals(oldHome)) {
-						HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_DESTINATION,
-								this,
-								reason.getName(),
-								getName(),
-								getStartingPerson().getName(),
-								vehicle
-								);
-						eventManager.registerNewEvent(newEvent);
-					}
+				if (id == -1D) {
+					// Nothing is lacking
+					logger.info(v, "Reported no lacking of resources. Turning toward " + newDestination.getName() +
+							". New distance: " + Math.round(newDistance * 1000.0)/1000.0);
 				}
+				
 				else {
+					// Supposedly lacking in resources to go to this new destination. Turn on beacon
+					// Note: but it may suffice since the amount of resource needed is just an estimate and each person
+					//       can ration food and water			
 					requestHelp = true;
+					
+					// Question, should it starting driving toward the settlement as close as possible
+					//           or wait for rescue ?
+					
+					logger.info(v, "Possibly lacking resources. Turning toward " + newDestination.getName() +
+							". New distance: " + Math.round(newDistance * 1000.0)/1000.0);
+				}	
+				
+				travelDirectToSettlement(newDestination);
+				
+				// Creating emergency destination mission event for going to a new settlement.
+				if (!newDestination.equals(oldHome)) {
+					registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_EMERGENCY_DESTINATION, reason.getName());
 				}
 			}
+			// Note: for Drone mission, Will need to alert the player differently if it runs out of fuel
 		}
 		else {
 			requestHelp = true;
@@ -1262,16 +1259,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public void setEmergencyBeacon(Worker member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
-			// Creating mission emergency beacon event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(EventType.MISSION_EMERGENCY_BEACON_ON,
-					this,
-					reason,
-					this.getName(),
-					member.getName(),
-					vehicle
-					);
-
-			eventManager.registerNewEvent(newEvent);
+			registerHistoricalEvent(member, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason);
 			logger.info(vehicle, member.getName()
 					+ " activated emergency beacon.");
 		} else {
@@ -1322,8 +1310,8 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		// Note : this is needed so that mission will re-attach itself as a vehicle
 		// listener after deserialization
 		// since listener collection is transient. - Scott
-		if (hasVehicle() && !vehicle.hasUnitListener(this)) {
-			vehicle.addUnitListener(this);
+		if (hasVehicle() && !vehicle.hasEntityListener(this)) {
+			vehicle.addEntityListener(this);
 		}
 		return true;
 	}
@@ -1333,12 +1321,12 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 *
 	 * @param event the unit event.
 	 */
-	public void unitUpdate(UnitEvent event) {
-		UnitEventType type = event.getType();
-		if (type == UnitEventType.COORDINATE_EVENT) {
-			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
-		} else if (type == UnitEventType.NAME_EVENT) {
-			fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+	public void entityUpdate(EntityEvent event) {
+		String type = event.getType();
+		if (EntityEventType.COORDINATE_EVENT.equals(type)) {
+			fireMissionUpdate(DISTANCE_EVENT);
+		} else if (EntityEventType.NAME_EVENT.equals(type)) {
+			fireMissionUpdate(VEHICLE_EVENT);
 		}
 	}
 
@@ -1514,7 +1502,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private final void addNavpoint(NavPoint navPoint) {
 		navPoints.add(navPoint);
-		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
+		fireMissionUpdate(NAVPOINTS_EVENT);
 	}
 
 	/**
@@ -1565,7 +1553,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			navPoints.add(new NavPoint(location, nameFunc.apply(x), prev));
 			prev = location;
 		}
-		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
+		fireMissionUpdate(NAVPOINTS_EVENT);
 	}
 
 	/**
@@ -1580,7 +1568,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		
 		// Note: how to compensate the shifted index upon removal of this navPoint
-		fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
+		fireMissionUpdate(NAVPOINTS_EVENT);
 
 	}
 
@@ -1693,8 +1681,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @return the description of the current navpoint.
 	 */
 	public final String getCurrentNavpointDescription() {
-		if (travelStatus != null && AT_NAVPOINT.equals(travelStatus)
-			&& navIndex < navPoints.size()) {
+		if (navIndex < navPoints.size()) {
 			return navPoints.get(navIndex).getDescription();
 		}
 		
@@ -1743,7 +1730,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private void setTravelStatus(String newTravelStatus) {
 		travelStatus = newTravelStatus;
-		fireMissionUpdate(MissionEventType.TRAVEL_STATUS_EVENT);
+		fireMissionUpdate(TRAVEL_STATUS_EVENT);
 	}
 
 	/**
@@ -1773,32 +1760,27 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 * @param status Reason for the abort.
 	 * @param eventType Optional register an event
 	 */
-	public void abortMission(MissionStatus status, EventType eventType) {
+	public void abortMission(MissionStatus status, HistoricalEventType eventType) {
 
 		if (addMissionStatus(status)) {
 			// If the MissionFlag is not present then do it
 			
-			// If mission is still at home then leave the vehicle
-			if (getStage() == Stage.PREPARATION) {
-				releaseVehicle(vehicle);
-			}
-			else {
-				determineEmergencyDestination(status);
-			}
-
 			// Create an event if needed
 			if (eventType != null) {
-				HistoricalEvent newEvent = new MissionHistoricalEvent(eventType,
-						this,
-						status.getName(),
-						getName(),
-						getStartingPerson().getName(),
-						vehicle
-						);
-				eventManager.registerNewEvent(newEvent);
+				registerHistoricalEvent(getStartingPerson(), eventType, status.getName());
 			}
-
-			super.abortMission(status);
+			
+			// If mission is still at home then leave the vehicle
+			if (getStage() != Stage.PREPARATION) {
+				determineEmergencyDestination(status);
+			}
+			else {
+				// Already at home
+				
+				releaseVehicle(vehicle);
+			
+				super.abortMission(status);
+			}
 		}
 	}
 
@@ -1808,10 +1790,10 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected void travelDirectToSettlement(Settlement newDestination) {
 
 		// Clear remaining route and add a new one
-		// Set the new destination as the travel mission's next and final navpoint.
 		clearRemainingNavpoints();
-
+		// Set the new destination as the travel mission's next and final navpoint.
 		addNavpoint(new NavPoint(newDestination, vehicle.getCoordinates()));
+		
 		if (getPhase().equals(TRAVELLING)) {
 			// Already travelling so just change destination
 			startTravelToNextNode();
@@ -1874,7 +1856,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				updateTravelDestination();
 				
 				distanceCurrentLegRemaining = 0D;
-				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 				
 				return 0D;
 			}
@@ -1906,7 +1888,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			if (distanceCurrentLegRemaining != dist) {
 				distanceCurrentLegRemaining = dist;
-				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 			}
 			
 			return dist;
@@ -1938,7 +1920,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				updateTravelDestination();
 				
 				distanceCurrentLegTravelled = 0D;
-				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 				
 				return 0D;
 			}
@@ -1963,7 +1945,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			
 			if (distanceCurrentLegTravelled != dist) {
 				distanceCurrentLegTravelled = dist;
-				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 			}
 			
 			return dist;
@@ -2011,7 +1993,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				// Record the distance
 				distanceProposed = result;
 				
-				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);	
+				fireMissionUpdate(DISTANCE_EVENT);	
 			}
 		}
 	}
@@ -2054,7 +2036,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			// Record the distance
 			distanceTotalRemaining = total;
 			
-			fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+			fireMissionUpdate(DISTANCE_EVENT);
 		}
 		
 		return total;
@@ -2092,7 +2074,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (diff != distanceTravelled) {
 				// Update or record the distance
 				distanceTravelled = diff;
-				fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
+				fireMissionUpdate(DISTANCE_EVENT);
 				return diff;
 			}
 		}
@@ -2156,7 +2138,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private final void setStartingSettlement(Settlement startingSettlement) {
 		this.startingSettlement = startingSettlement;
-		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
+		fireMissionUpdate(STARTING_SETTLEMENT_EVENT);
 	}
 
 	/**

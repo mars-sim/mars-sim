@@ -14,9 +14,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.UnitEvent;
-import com.mars_sim.core.UnitEventType;
-import com.mars_sim.core.UnitListener;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
@@ -26,7 +26,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * A panel for displaying collect resources objectives information.
  */
 @SuppressWarnings("serial")
-public class CollectResourcePanel extends JPanel implements UnitListener {
+public class CollectResourcePanel extends JPanel implements EntityListener {
 
 	private CollectResourceObjective objective;
 
@@ -74,8 +74,8 @@ public class CollectResourcePanel extends JPanel implements UnitListener {
 
 
 	@Override
-	public void unitUpdate(UnitEvent event) {
-		if (UnitEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
+	public void entityUpdate(EntityEvent event) {
+		if (EntityEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
 			updateCollectionValueLabel();
 		}
 	}

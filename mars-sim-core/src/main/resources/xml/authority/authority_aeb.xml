@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="AEB" name="Agencia Espacial Brasileira" corporation="false"
+					agenda="Space Tracking" gender-ratio="0.74">
+		<!-- While women represent 45% of formal workers in Brazil, they account for only 26% of 
+		those employed in STEM occupations, a figure that has remained stagnant at around 2.8% 
+		of formal employees since 2015. -->
+			<country name="Brazil"/>
+			<settlement-name name="Alcantara" />
+			<settlement-name name="Antonina" />
+			<settlement-name name="Antonio Prado" />
+			<settlement-name name="Escola" />
+			<settlement-name name="Florianopolis" />
+			<settlement-name name="Morretes" />		
+			<settlement-name name="Paraty" />
+			<settlement-name name="Sao Sebastiao" />	
+
+			<rover-name name="Agrale" />  
+			<rover-name name="Lobini" />  
+			<rover-name name="Marcopolo" />    
+			<rover-name name="Neobus" />  
+			<rover-name name="Engesa" />  
+			<rover-name name="Troller" /> 
+			<rover-name name="Puma" />  
+			<rover-name name="Santa Matilde" /> 
+			<rover-name name="Gaganyaan" /> 
+			<rover-name name="Kuiper" /> 
+			<rover-name name="Modelos" /> 
+			<rover-name name="Bingo" /> 
+			<rover-name name="Energia" /> 			
+			<rover-name name="Embraer" /> 	
+			<rover-name name="Visiona" /> 	
+																		
+		</authority>

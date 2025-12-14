@@ -10,7 +10,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -18,12 +18,12 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * The Meteorologist class represents a job for a meteorologist.
  */
-public class Meteorologist extends Job {
+public class Meteorologist extends JobSpec {
 		
 	/** Constructor. */
 	public Meteorologist() {
 		// Use Job constructor
-		super(JobType.METEOROLOGIST, Job.buildRoleMap(5.0, 10.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
+		super(JobType.METEOROLOGIST, JobSpec.buildRoleMap(5.0, 10.0, 10.0, 10.0, 10.0, 15.0, 20.0, 30.0));
 	}
 
 	@Override

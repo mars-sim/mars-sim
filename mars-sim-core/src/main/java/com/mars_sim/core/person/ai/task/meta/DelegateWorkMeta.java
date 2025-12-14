@@ -45,7 +45,8 @@ public class DelegateWorkMeta extends FactoryMetaTask {
     @Override
     public List<TaskJob> getTaskJobs(Person person) {
         RoleType roleType = person.getRole().getType();
-    	if (!person.isInside()
+        
+    	if (RoleType.GUEST == roleType || !person.isInside()
             || !roleType.isLeadership()
             || !person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
             return EMPTY_TASKLIST;

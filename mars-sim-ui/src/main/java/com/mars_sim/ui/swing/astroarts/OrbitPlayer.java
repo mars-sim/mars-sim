@@ -10,16 +10,16 @@
 
 package com.mars_sim.ui.swing.astroarts;
 
-import com.mars_sim.core.astroarts.ATime;
 import com.mars_sim.core.logging.SimLogger;
 
 public class OrbitPlayer implements Runnable {
 	
 	private SimLogger logger = SimLogger.getLogger(OrbitPlayer.class.getName());
+	private static final String THREAD_NAME = "OrbitViewer";
 
-			 
 	private OrbitViewer	orbitViewer;
-	private boolean active = true;
+	private boolean active = false;
+	private Thread runner = null;
 	
 	/**
 	 * Constructor
@@ -28,18 +28,26 @@ public class OrbitPlayer implements Runnable {
 		this.orbitViewer = orbitViewer;
 	}
 	
+	public void start() {
+		active = true;
+		if (runner == null) {
+			runner = new Thread(this,  THREAD_NAME);
+			runner.start();
+		}
+	}
+
 	/**
 	 * Stop the player
 	 */
 	public void stop() {
 		active = false;
+		runner = null;
 	}
 	
 	/**
 	 * Play forever
 	 */
 	public void run() {
-		active = true;
 		
 		while (active) {
 			try {
@@ -50,9 +58,8 @@ public class OrbitPlayer implements Runnable {
 			    Thread.currentThread().interrupt();
 			    break;
 			}
-			ATime atime = orbitViewer.getAtime();
-			atime.changeDate(orbitViewer.timeStep, orbitViewer.playDirection);
-			orbitViewer.setNewDate(atime);
+
+			orbitViewer.advanceTime();
 		}
 	}
 }

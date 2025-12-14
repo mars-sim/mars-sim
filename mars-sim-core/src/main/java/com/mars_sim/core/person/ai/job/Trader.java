@@ -12,11 +12,11 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 
-public class Trader extends Job {
+public class Trader extends JobSpec {
 	
 	private static final double TRADING_RANGE = 500D;
 	private static final double SETTLEMENT_MULTIPLIER = 3D;
@@ -26,7 +26,7 @@ public class Trader extends Job {
 	 */
 	public Trader() {
 		// Use Job constructor.
-		super(JobType.TRADER, Job.buildRoleMap(5.0, 5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
+		super(JobType.TRADER, JobSpec.buildRoleMap(5.0, 5.0, 5.0, 30.0, 25.0, 25.0, 5.0, 5.0));
 	}
 
 	/**

@@ -19,8 +19,8 @@ import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
@@ -43,7 +43,7 @@ extends JPanel
 
 	private ArrivingSettlement arrivingSettlement;
 	
-	private MainDesktopPane desktop;
+	private UIContext context;
 	
 	private int solsToArrival = -1;
 	private SettlementSuppliesPanel suppliesPanel;
@@ -51,11 +51,11 @@ extends JPanel
 	/**
 	 * Constructor.
 	 */
-	public ArrivingSettlementDetailPanel(MainDesktopPane desktop) {
+	public ArrivingSettlementDetailPanel(UIContext context) {
 
 		// Use JPanel constructor.
 		super();
-		this.desktop = desktop;
+		this.context = context;
 	
 		
 		setLayout(new BorderLayout(0, 10));
@@ -101,7 +101,7 @@ extends JPanel
 				clearInfo();
 			}
 			else {
-				SettlementTemplateConfig sConfig = desktop.getSimulation().getConfig().getSettlementTemplateConfiguration();
+				SettlementTemplateConfig sConfig = context.getSimulation().getConfig().getSettlementTemplateConfiguration();
 				var template = sConfig.getItem(arrivingSettlement.getTemplate());
 				if (template != null) {
 					suppliesPanel.show(template.getSupplies());
@@ -138,7 +138,7 @@ extends JPanel
 		stateValueLabel.setText(arrivingSettlement.getTransitState().getName());
 		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateTimeStamp());
 
-		MarsTime marsTime = desktop.getSimulation().getMasterClock().getMarsTime();
+		MarsTime marsTime = context.getSimulation().getMasterClock().getMarsTime();
 		updateTimeToArrival(marsTime);
 
 		templateValueLabel.setText(arrivingSettlement.getTemplate());

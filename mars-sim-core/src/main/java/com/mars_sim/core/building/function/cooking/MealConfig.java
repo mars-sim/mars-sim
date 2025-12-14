@@ -14,6 +14,7 @@ import org.jdom2.Element;
 
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.configuration.ConfigHelper;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -22,6 +23,9 @@ import com.mars_sim.core.resource.ResourceUtil;
  * information.
  */
 public class MealConfig {
+
+	/** default logger. */
+	private static SimLogger logger = SimLogger.getLogger(MealConfig.class.getName());
 
 	private static final String WATER_CONSUMPTION_RATE = "water-consumption-rate";
 	private static final String CLEANING_AGENT_PER_SOL = "cleaning-agent-per-sol";
@@ -59,8 +63,12 @@ public class MealConfig {
 		// Generate dish list
 		dishList = new ArrayList<>();
 		dishList.addAll(parseDishList(root, DishCategory.MAIN, cropConfig));
+		int mainDish = dishList.size();
 		dishList.addAll(parseDishList(root, DishCategory.SIDE, cropConfig));
+		int sideDish = dishList.size() - mainDish;
 		dishList.addAll(parseDishList(root, DishCategory.DESSERT, cropConfig));
+		int dessert = dishList.size() - mainDish - sideDish;
+		logger.info("main dishes: " + mainDish + "  side dishes: " + sideDish + "   desserts: " + dessert);
 	}
 
 	/**

@@ -9,7 +9,6 @@ package com.mars_sim.core.building.function.farming;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingException;
@@ -181,11 +180,6 @@ public class Fishery extends Function {
 	    
 	    // The amount of water in kg
 	 	waterMass = tankSize * ((double)fish.size() / maxFish);
-	    
-	    logger.log(building, Level.CONFIG, 0, "# of fish: " + numFish + " (" +  
-	    		Math.round(getTotalFishMass() * 10.0)/10.0	
-	    		+  " kg).  # of weeds: " + numWeeds + " ("
-	    		+ Math.round(getTotalWeedMass() * 10.0)/10.0 + " kg).");
 	}
 
 	/**
@@ -444,7 +438,7 @@ public class Fishery extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getPoweredDownPowerRequired() {
+	public double getLowPowerRequired() {
 		return getCombinedPowerLoad() * .1;
 	}
 

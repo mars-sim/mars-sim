@@ -22,6 +22,9 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
@@ -31,15 +34,16 @@ import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MissionObjective;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
+import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
@@ -101,10 +105,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final MissionStatus MISSION_NOT_APPROVED = new MissionStatus("Mission.status.notApproved");
 	private static final MissionStatus MISSION_ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
 	public static final MissionStatus MISSION_ABORTED_BY_PLAYER = new MissionStatus("Mission.status.abortedByPlayer");
+	public static final MissionStatus MISSION_MEDICAL_EMERGENCY = new MissionStatus("Mission.status.medicalEmergency");
 	
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
-
-
+	
 	// Data members
 	/** The number of people that can be in the mission. */
 	private int missionCapacity;
@@ -158,12 +162,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private Set<Worker> members;
 	
 	// transient members
-	/** Mission listeners. */
-	private transient List<MissionListener> listeners;
+	/** Entity listeners. */
+	private transient List<EntityListener> listeners;
 
 	// Static members
 	protected static UnitManager unitManager;
-	protected static HistoricalEventManager eventManager;
+	private static HistoricalEventManager eventManager;
 	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
@@ -200,7 +204,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (person.isInSettlement()) {
 
 			// Created mission starting event.
-			registerHistoricalEvent(person, EventType.MISSION_START, "Mission Starting");
+			registerHistoricalEvent(person, HistoricalEventType.MISSION_START, "Mission Starting");
 
 			// Log mission starting.
 			int n = members.size();
@@ -224,12 +228,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 	
 	/**
-	 * Adds a listener.
+	 * Adds an entity listener.
 	 *
 	 * @param newListener the listener to add.
 	 */
 	@Override
-	public final void addMissionListener(MissionListener newListener) {
+	public final void addEntityListener(EntityListener newListener) {
 		if (listeners == null) {
 			listeners = new CopyOnWriteArrayList<>();
 		}
@@ -241,12 +245,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Removes a listener.
+	 * Removes an entity listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
 	@Override
-	public final void removeMissionListener(MissionListener oldListener) {
+	public final void removeEntityListener(EntityListener oldListener) {
 		if ((listeners != null) && listeners.contains(oldListener)) {
 			synchronized (listeners) {
 				listeners.remove(oldListener);
@@ -255,25 +259,26 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Fires a mission update event.
+	 * Fires an entity update event.
 	 *
 	 * @param updateType the update type.
 	 */
-	protected final void fireMissionUpdate(MissionEventType updateType) {
+	protected final void fireMissionUpdate(String updateType) {
 		fireMissionUpdate(updateType, this);
 	}
 
 	/**
-	 * Fires a mission update event.
+	 * Fires an entity update event.
 	 *
-	 * @param addMemberEvent the update type.
-	 * @param target         the event target or null if none.
+	 * @param eventType the update type.
+	 * @param target    the event target or null if none.
 	 */
-	protected final void fireMissionUpdate(MissionEventType addMemberEvent, Object target) {
+	protected final void fireMissionUpdate(String eventType, Object target) {
 		if (listeners != null) {
 			synchronized (listeners) {
-				for (MissionListener l : listeners) {
-					l.missionUpdate(new MissionEvent(this, addMemberEvent, target));
+				var event = new EntityEvent(this, eventType, target);
+				for (EntityListener l : listeners) {
+					l.entityUpdate(event);
 				}
 			}
 		}
@@ -315,10 +320,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 			members.add(member);
 
 			signUp.add(member);
-			registerHistoricalEvent(member, EventType.MISSION_JOINING,
+			registerHistoricalEvent(member, HistoricalEventType.MISSION_JOINING,
 									"Adding a member");
 	
-			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, member);
+			fireMissionUpdate(ADD_MEMBER_EVENT, member);
 
 			logger.log(member, Level.FINER, 0, "Just got added to " + missionString + ".");
 		}
@@ -331,7 +336,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param type
 	 * @param message
 	 */
-	private void registerHistoricalEvent(Worker member, EventType type, String message) {
+	protected void registerHistoricalEvent(Worker member, HistoricalEventType type, String message) {
 		Unit container = null;
 		Coordinates coordinates = null;
 		if (member.isInSettlement()) {
@@ -352,9 +357,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Creating mission joining event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(type, this,
-				message, missionString, member.getName(), 
-				container, member.getAssociatedSettlement().getName(), coordinates);
+		HistoricalEvent newEvent = new HistoricalEvent(type, this, message,
+														missionString, member.getName(), container,
+														getAssociatedSettlement(), coordinates);
 		eventManager.registerNewEvent(newEvent);
 	}
 
@@ -372,10 +377,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 			member.setMission(null);
 			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
 
-			person.getShiftSlot().setOnCall(false);
+			
+	      	if (RoleType.GUEST != person.getRole().getType()) {      
+	      		person.getShiftSlot().setOnCall(false);
+	      	}	
 
-			registerHistoricalEvent(person, EventType.MISSION_FINISH, "Removing a member");
-			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, member);
+			registerHistoricalEvent(person, HistoricalEventType.MISSION_FINISH, "Removing a member");
+			fireMissionUpdate(REMOVE_MEMBER_EVENT, member);
 		}
 	}
 	
@@ -462,7 +470,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
     public void setName(String newName) {
 		this.missionString = newName;
+		fireMissionUpdate(EntityEventType.NAME_EVENT);
     }
+
 
 	/**
 	 * Context of a mission is the Settlement of the starting member
@@ -532,7 +542,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Add entry to the log
 		addMissionLog(newPhase.getName(), getStartingPerson().getName());
 
-		fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
+		fireMissionUpdate(PHASE_EVENT, newPhase);
 	}
 
 	/**
@@ -563,7 +573,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Gets the time that the current phases started.
+	 * Gets the start time in the current phase.
 	 */
 	@Override
 	public MarsTime getPhaseStartTime() {
@@ -571,9 +581,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Gets duration of current Phase.
+	 * Gets time elapsed [in millisols] in the current phase.
 	 */
-	protected double getPhaseDuration() {
+	protected double getPhaseTimeElapse() {
 		return clock.getMarsTime().getTimeDiff(phaseStartTime);
 	}
 
@@ -599,7 +609,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final void setPhaseDescription(String description) {
 		phaseDescription = description;
-		fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, description);
+		fireMissionUpdate(PHASE_DESCRIPTION_EVENT, description);
 	}
 
 	/**
@@ -667,7 +677,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final void setMissionCapacity(int newCapacity) {
 		missionCapacity = newCapacity;
-		fireMissionUpdate(MissionEventType.CAPACITY_EVENT, newCapacity);
+		fireMissionUpdate(CAPACITY_EVENT, newCapacity);
 	}
 
 	/** 
@@ -687,6 +697,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		aborted = true;
 		logger.info(getStartingPerson(), "Aborted " + getName() 
 			+ ": " + endStatus.getName() + ".");
+		
 		endMission(endStatus);
 	}
 
@@ -753,7 +764,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		String listOfStatuses = missionStatus.stream().map(MissionStatus::getName).collect(Collectors.joining(", "));
 		MissionPhase finalPhase = ABORTED_PHASE;
 		
-//		if (missionStatus.isEmpty() && !aborted) {
 		if (!aborted) {
 			missionStatus.add(MISSION_ACCOMPLISHED);
 			addMissionScore();
@@ -800,6 +810,17 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 	
 	/**
+	 * Checks if a worker has any issues in starting a new task.
+	 *
+	 * @param worker the person to assign to the task
+	 * @param newTask   the new task to be assigned
+	 * @return true if task can be performed.
+	 */
+	public boolean assignTask(Worker worker, Task newTask) {
+		return assignTask(worker, newTask, false);
+	}
+	
+	/**
 	 * Checks if a person has any issues in starting a new task.
 	 *
 	 * @param person the person to assign to the task
@@ -820,6 +841,25 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	public boolean assignTask(Robot robot, Task newTask) {
 		return assignTask(robot, newTask, false);
+	}
+	
+	/**
+	 * Checks if a worker has any issues in starting a new task.
+	 *
+	 * @param worker the worker to assign to the task
+	 * @param newTask   the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	public boolean assignTask(Worker worker, Task newTask, boolean allowSameTask) {
+		if (worker instanceof Person person) {
+			return assignTask(person, newTask, allowSameTask);
+		}
+		else if (worker instanceof Robot robot)  {
+			return assignTask(robot, newTask, allowSameTask);
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -866,17 +906,15 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (patient != null) {
 			
 			if (this instanceof AbstractVehicleMission avm) {
-				// Abort the mission and return home
-				avm.abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()),
-							 EventType.MISSION_MEDICAL_EMERGENCY);
-				addMissionLog("Non-mission member", patient.getName());
+				// Generate historical event by calling AbstractVehicleMission's abortMission
+				avm.abortMission(MISSION_MEDICAL_EMERGENCY, HistoricalEventType.MISSION_MEDICAL_EMERGENCY);
 			}
 			else {
 				// Abort the mission and return home
-				abortMission(new MissionStatus("Mission.status.medicalEmergency", patient.getName()));
-				addMissionLog("Non-mission member", patient.getName());
+				abortMission(MISSION_MEDICAL_EMERGENCY);
 			}
-
+			
+			addMissionLog(MISSION_MEDICAL_EMERGENCY.getName(), patient.getName());
 		}
 		return patient != null;
 	}
@@ -1007,6 +1045,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 			recruitPerson(startingMember, next.candidate);
 		}
 
+		List<Person> tourists = startingMember.getAssociatedSettlement().getTouristList();
+		
+		// Add a tourist to this mission
+		// It's preferable for missions with more than 3 members to add a tourist
+		if (!tourists.isEmpty() &&  minMembers > 3 && members.size() < minMembers) {
+			tourists.get(0).setMission(this);			
+		}
+		
 		if (members.size() < minMembers) {
 			endMission(NOT_ENOUGH_MEMBERS);
 			return false;
@@ -1293,7 +1339,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected final void setStartingMember(Worker member) {
 		this.startingMember = member;
-		fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
+		fireMissionUpdate(STARTING_SETTLEMENT_EVENT);
 	}
 
 	/**
@@ -1321,7 +1367,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		
 		missionDesignationString = buffer.toString();
 
-		fireMissionUpdate(MissionEventType.DESIGNATION_EVENT, missionDesignationString);
+		fireMissionUpdate(DESIGNATION_EVENT, missionDesignationString);
 	}
 
 	@Override

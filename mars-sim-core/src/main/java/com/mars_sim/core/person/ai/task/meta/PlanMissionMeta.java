@@ -15,6 +15,7 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.PlanMission;
@@ -59,7 +60,8 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 
     public PlanMissionMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
-		setPreferredRole(RoleType.CREW_OPERATION_OFFICER, RoleType.CHIEF_OF_MISSION_PLANNING,
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER, RoleType.SCIENCE_SPECIALIST,
+				RoleType.CHIEF_OF_MISSION_PLANNING,
 				RoleType.MISSION_SPECIALIST);
 		addAllLeadershipRoles();
 	}
@@ -74,7 +76,6 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         int settlementMissions = missionManager.getMissionsForSettlement(settlement).size();
 
         int optimalMissions = settlement.getPreferences().getIntValue(
-                                                MissionLimitParameters.INSTANCE,
                                                 MissionLimitParameters.TOTAL_MISSIONS, 0);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
@@ -88,7 +89,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        if (!p.isInSettlement() || !p.getMind().canStartNewMission()) {
+        if (JobType.TOURIST == p.getMind().getJobType() || !p.isInSettlement() || !p.getMind().canStartNewMission()) {
             return RatingScore.ZERO_RATING;
         }
     		
@@ -101,7 +102,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
             return RatingScore.ZERO_RATING;
             
         var factor = super.assessPersonSuitability(t, p);
-        if (factor.getScore() == 0) {
+        if (factor.getScore() == 0D) {
             return factor;
         }
 

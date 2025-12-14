@@ -43,7 +43,7 @@ public class RestingMedicalRecovery extends MedicalAidTask {
             "Task.phase.restingInBed")); //$NON-NLS-1$
 	
     /** Maximum resting duration (millisols) */
-    private static final double RESTING_DURATION = 300D;
+    private static final double RESTING_DURATION = 750D;
 
     
     private static final ExperienceImpact IMPACT = new ExperienceImpact(10D, NaturalAttributeType.EXPERIENCE_APTITUDE,
@@ -141,8 +141,8 @@ public class RestingMedicalRecovery extends MedicalAidTask {
         if (resting.isEmpty()) {
 			logger.log(worker, Level.FINE, 0, "Ended the medical leave.");
 			
-	    	// Note: Get the doctor approve for taking this person off the work shift for a recovery
-	    	person.allocateNewShift();
+	    	// No need of calling person.allocateNewShift() since 
+			// putting this person back should be automatic when the resting duration is over
 	    	
             endTask();
         }

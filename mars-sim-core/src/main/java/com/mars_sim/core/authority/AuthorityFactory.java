@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -23,8 +22,8 @@ import com.mars_sim.core.configuration.UserConfigurableConfig;
 import com.mars_sim.core.parameter.ParameterCategory;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
-import com.mars_sim.core.person.ai.task.meta.ScienceParameters;
 import com.mars_sim.core.person.ai.task.util.TaskParameters;
+import com.mars_sim.core.science.ScienceParameters;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -106,25 +105,18 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 
 					// Backward compatible with the old naming scheme
 					String pTypeValue = preNode.getAttributeValue(TYPE_ATTR);
-					ParameterCategory pType;
-					switch(pTypeValue) {
-						case "MISSION", "MISSION_WEIGHT":
-							pType = MissionWeightParameters.INSTANCE;
-							break;
-						case "TASK", "TASK_WEIGHT":
-							pType = TaskParameters.INSTANCE;
-							break;
-						case "SCIENCE":
-							pType = ScienceParameters.INSTANCE;
-							break;
-						default:
-							throw new IllegalArgumentException("Authority " + name
-									+ " has an unsupport preference type " + pTypeValue);	
-					}
+					ParameterCategory pType = switch(pTypeValue) {
+						case "MISSION", "MISSION_WEIGHT" -> MissionWeightParameters.INSTANCE;
+						case "TASK", "TASK_WEIGHT" -> TaskParameters.INSTANCE;
+						case "SCIENCE" -> ScienceParameters.INSTANCE;
+						default -> throw new IllegalArgumentException("Authority " + name
+								+ " has an unsupport preference type " + pTypeValue);
+					};
+					
 					Serializable value = Double.parseDouble(preNode.getAttributeValue(MODIFIER_ATTR));
 					String pName = preNode.getAttributeValue(NAME_ATTR).toUpperCase();
-
-					preferences.putValue(pType, pName, value);
+					var key = pType.getKey(pName);
+					preferences.putValue(key, value);
 				}
 
 				subs.add(new MissionCapability(description, preferences));
@@ -136,11 +128,11 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	
 		// Load the Reporting authorities
 		Element authoritiesNode = doc.getRootElement().getChild(AUTHORITIES_EL);
-		List<Element> authorityNodes = authoritiesNode.getChildren(AUTHORITY_EL);
-		for (Element authorityNode : authorityNodes) {
-			addItem(parseXMLAuthority(newAgendas, authorityNode, true));
-		}
-		
+		String[] predefined = authoritiesNode.getChildren(AUTHORITY_EL).stream()
+				.map(a -> a.getAttribute(CODE_ATTR).getValue())
+				.toArray(String[]::new);
+		loadDefaults(predefined);
+
 		// Assign the agendas
 		agendas = Collections.unmodifiableMap(newAgendas);
 	}
@@ -168,29 +160,15 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 		// Get Countries
 		List<String> countries = authorityNode.getChildren(COUNTRY_EL).stream()
 								.map(a -> a.getAttributeValue(NAME_ATTR))
-								.collect(Collectors.toList());
-		 
-		// Get Settlement names
-		List<String> settlementNames = authorityNode.getChildren(SETTLEMENTNAME_EL).stream()
-				.map(a -> a.getAttributeValue(NAME_ATTR))
-				.collect(Collectors.toList());
-
-		// Get Rover names
-		List<String> roverNames = authorityNode.getChildren(ROVERNAME_EL).stream()
-				.map(a -> a.getAttributeValue(NAME_ATTR))
-				.collect(Collectors.toList());
+								.toList();
 		
 		// Check if it's a corporation (false if it's a space agency)
-		boolean isCorporation = false;
-		
-		if (isCorporationString.equalsIgnoreCase(TRUE))
-			isCorporation = true;
+		boolean isCorporation = (TRUE.equalsIgnoreCase(isCorporationString));
 		
 		return new Authority(acronym, fullName, isCorporation, predefined, maleRatio, agenda,
-									  countries, settlementNames,
-									  roverNames);
+									  countries);
 	}
-	
+
 	/**
 	 * Scans the known Settlement and get the load Reporting Authorities. This
 	 * makes sure new units will get the same shared Reporting Authority.
@@ -213,14 +191,15 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 		Element authorityNode = new Element(AUTHORITY_EL);
 		authorityNode.setAttribute(CODE_ATTR, item.getName());
 		authorityNode.setAttribute(NAME_ATTR, item.getDescription());
+		authorityNode.setAttribute(CORPORATION_ATTR, Boolean.toString(item.isCorporation()));
 		authorityNode.setAttribute(AGENDA_EL, item.getMissionAgenda().getName());	
 		authorityNode.setAttribute(GENDER_ATTR, Double.toString(item.getGenderRatio()));
 		
 		 
 		// Get Countries
 		addList(authorityNode, COUNTRY_EL, item.getCountries());
-		addList(authorityNode, SETTLEMENTNAME_EL, item.getSettlementNames());
-		addList(authorityNode, ROVERNAME_EL, item.getVehicleNames());
+		addList(authorityNode, SETTLEMENTNAME_EL, item.getSettlementNames().getPotentials());
+		addList(authorityNode, ROVERNAME_EL, item.getVehicleNames().getPotentials());
 		
 		return new Document(authorityNode);
 	}
@@ -246,7 +225,27 @@ public final class AuthorityFactory extends UserConfigurableConfig<Authority> {
 	@Override
 	protected Authority parseItemXML(Document doc, boolean predefined) {
 		// User configured XML just contains the Authority node.
-		return parseXMLAuthority(agendas, doc.getRootElement(), false);
+		return parseXMLAuthority(agendas, doc.getRootElement(), predefined);
+	}
+
+	/**
+	 * Loads the names for an Authority from the original XML file.
+	 * 
+	 * @param authority
+	 */
+	public void loadNames(Authority authority) {
+		String file = getItemFilename(authority.getName());
+		var doc = getItemFromXML(file, authority.isBundled());
+
+		// Get the name from the original XML
+		Element authorityNode = doc.getRootElement();
+		List<String> sNames = authorityNode.getChildren(SETTLEMENTNAME_EL).stream()
+				.map(a -> a.getAttributeValue(NAME_ATTR))
+				.toList();
+		List<String> vNames = authorityNode.getChildren(ROVERNAME_EL).stream()
+				.map(a -> a.getAttributeValue(NAME_ATTR))
+				.toList();	
+		authority.loadNameGenerators(sNames, vNames);
 	}
 
 	/**

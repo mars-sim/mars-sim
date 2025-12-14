@@ -15,7 +15,7 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.Job;
+import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
@@ -24,12 +24,12 @@ import com.mars_sim.core.structure.Settlement;
  * The Engineer class represents an engineer job focusing on repair and
  * maintenance of buildings and vehicles.
  */
-public class Engineer extends Job {
+public class Engineer extends JobSpec {
 	
 	/** Constructor. */
 	public Engineer() {
 		// Use Job constructor
-		super(JobType.ENGINEER, Job.buildRoleMap(5.0, 20.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0));
+		super(JobType.ENGINEER, JobSpec.buildRoleMap(5.0, 20.0, 30.0, 10.0, 10.0, 15.0, 10.0, 20.0));
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class Engineer extends Job {
 		
 		result += getBuildingScienceDemand(settlement, ScienceType.ENGINEERING, 12D);
 		
-		result = (result + population / 8D) / 2D;
+		result = (result + population / 6D) / 1.5;
 			
 		return result;
 	}

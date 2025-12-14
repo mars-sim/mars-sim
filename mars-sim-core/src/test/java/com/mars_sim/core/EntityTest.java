@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
-public class EntityTest extends MarsSimUnitTest {
+class EntityTest extends MarsSimUnitTest {
     
     @Test
     void testSettlementContext() {
@@ -18,7 +18,7 @@ public class EntityTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void personInSettlementContext() {
+    void personInSettlementContext() {
         var s = buildSettlement("Test");
         var p = buildPerson("Fred", s);
 
@@ -27,7 +27,7 @@ public class EntityTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testVehicleAtSettlementContext() {
+    void testVehicleAtSettlementContext() {
         var s = buildSettlement("Test");
         var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
@@ -37,7 +37,7 @@ public class EntityTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testPersonInVehicleContext() {
+    void testPersonInVehicleContext() {
         var s = buildSettlement("Test");
         var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var p = buildPerson("Fred", s);
@@ -50,7 +50,7 @@ public class EntityTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testPersonOnSurfaceContext() {
+    void testPersonOnSurfaceContext() {
         var s = buildSettlement("Test");
         var p = buildPerson("Fred", s);
 
@@ -61,7 +61,7 @@ public class EntityTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testVehicleOnSurfaceContext() {
+    void testVehicleOnSurfaceContext() {
         var s = buildSettlement("Test");
         var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
 
@@ -72,7 +72,7 @@ public class EntityTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testPersonInVehicleOnSurfaceContext() {
+    void testPersonInVehicleOnSurfaceContext() {
         var s = buildSettlement("Test");
         var v = buildRover(s, "Rover", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
         var p = buildPerson("Fred", s);

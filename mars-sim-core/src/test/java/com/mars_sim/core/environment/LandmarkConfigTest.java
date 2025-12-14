@@ -1,34 +1,48 @@
 package com.mars_sim.core.environment;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 
-public class LandmarkConfigTest extends AbstractMarsSimUnitTest {
-    public void testGetLandmarks() {
-        var mgr = getSim().getConfig().getLandmarkConfiguration().getLandmarks();
+class LandmarkConfigTest {
+    private LandmarkConfig lConfig;
+
+    @BeforeEach
+    void setUp() {
+        lConfig = SimulationConfig.loadConfig().getLandmarkConfiguration();
+    }
+
+    @Test
+    void testGetLandmarks() {
+        var mgr = lConfig.getLandmarks();
 
         // Check some have been loaded; center of global and full radius
         var center = new Coordinates(Math.PI/2, 0D);
         var results = mgr.getFeatures(center, Math.PI/2);
 
-        assertFalse("No landmarks found", results.isEmpty());
+        assertFalse(results.isEmpty(), "No landmarks found");
     }
 
-    public void testBeagle() throws CoordinatesException {
-        var mgr = getSim().getConfig().getLandmarkConfiguration().getLandmarks();
+    @Test
+    void testBeagle() throws CoordinatesException {
+        var mgr = lConfig.getLandmarks();
 
         // Check teh lanmark for beagle
         var center = CoordinatesFormat.fromString("10.6 90.0");
         var results = mgr.getFeatures(center, 0.01);
 
-        assertEquals("Beagle found", 1, results.size());
+        assertEquals(1, results.size(), "Beagle found");
 
         var beagle = results.get(0);
-        assertEquals("Beagle name", "Beagle 2 Lander", beagle.getName());
-        assertEquals("Beagle origin", "ESA", beagle.getOrigin());
-        assertEquals("Beagel type", LandmarkType.AO, beagle.getType());
-        assertEquals("Beagle location", center, beagle.getCoordinates());
+        assertEquals(beagle.getName(), "Beagle 2 Lander", "Beagle name");
+        assertEquals(beagle.getOrigin(), "ESA", "Beagle origin");
+        assertEquals(LandmarkType.AO, beagle.getType(), "Beagel type");
+        assertEquals(center, beagle.getCoordinates(), "Beagle location");
     }
 }

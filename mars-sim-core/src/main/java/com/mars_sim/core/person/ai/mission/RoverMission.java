@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * RoverMission.java
- * @date 2025-08-17
+ * @date 2025-10-07
  * @author Scott Davis
  */
 package com.mars_sim.core.person.ai.mission;
@@ -24,10 +24,9 @@ import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentType;
-import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.PhysicalConditionFormat;
@@ -67,18 +66,37 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(RoverMission.class.getName());
 
+	private static final String UNABLE_TO_ENTER = Msg.getString("RoverMission.log.unableToEnter"); // $NON-NLS-1$
+	
+	private static final String MEMBERSHIP_CHECKED = "Membership Checked";
+	
+	private static final String MISSION_CANCELLED = "Mission Cancelled";
+	
+	private static final String ALL_BOARDED = "All Boarded";
+	
+	private static final String BASELINE_EVA_SUIT_MET = "Baseline EVA Suit Met";
+	
+	private static final String STATUS_REPORT = "[Status Report] Left ";
+	
+	private static final MissionStatus STATUS_VEHICLE_NOT_AT_SETTLEMENT = MissionStatus.createResourceStatus("RoverMission.log.notAtSettlement");
+	
+	private static final String VEHICLE_NOT_AT_SETTLEMENT = STATUS_VEHICLE_NOT_AT_SETTLEMENT.getName();
+	
 	// Static members
 	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
+	/* How long do Worker have to complete departure */
+	private static final int DEPARTURE_DURATION = 250;
+	private static final int DEPARTURE_FINAL_PREPARATION = 15;
 	
 	/* The marginal factor for the amount of water to be brought during a mission. */
-	private static final double WATER_MARGIN = 1.5;
+	private static final double WATER_MARGIN = 1.25;
 	
 	/* The marginal factor for the amount of oxygen to be brought during a mission. */
-	private static final double OXYGEN_MARGIN = 1.25;
+	private static final double OXYGEN_MARGIN = 1.5;
 	
 	/* The marginal factor for the amount of food to be brought during a mission. */
-	private static final double FOOD_MARGIN = 1.75;
+	private static final double FOOD_MARGIN = 1.5;
 
 	/* What is the lowest fullness of an EVASuit to be usable. */
 	public static final double EVA_LOWEST_FILL = 0.5D;
@@ -86,12 +104,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	/* The factor for determining how many more EVA suits are needed for a trip. */
 	private static final double EXTRA_EVA_SUIT_FACTOR = .2;
 
-	/* How long do Worker have to complete departure */
-	private static final int DEPARTURE_DURATION = 250;
-	private static final int DEPARTURE_FINAL_PREPARATION = 15;
-
-	private static final String STATUS_REPORT = "[Status Report] Left ";
-	
 	private boolean justArrived;
 	
 	/**
@@ -230,8 +242,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 							+ p.getLocationTag().getExtendedLocation() + ".");
 					result = false;
 				}
-				else if (p.isInSettlementVicinity()
-						|| p.isRightOutsideSettlement()) {
+				else if (p.isRightOutsideSettlement()) {
 
 					logger.warning(p, 20_000L, "Case 2A: Still outside and not on " + r.getName()
 							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
@@ -263,8 +274,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 							+ p.getLocationTag().getExtendedLocation() + ".");
 					result = false;
 				}
-				else if (p.isInSettlementVicinity()
-						|| p.isRightOutsideSettlement()) {
+				else if (p.isRightOutsideSettlement()) {
 
 					logger.warning(p, 20_000L, "Case 2B: Still outside and not on " + r.getName()
 							+ " yet. Not ready for '" + getName() + "' yet. Current location: " 
@@ -323,6 +333,45 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	}
 	
 	/**
+	 * Checks if a person should be ejected.
+	 * 
+	 * @param ejectedMembers
+	 * @param rover
+	 */
+	private void checkEjected(List<Person> ejectedMembers, Rover rover) {
+		for (Worker m : getMembers()) {
+			Person p = (Person) m;
+			if (!rover.isCrewmember(p)) {
+				ejectedMembers.add(p);
+			}
+		}
+		
+		for (Person crewmember : rover.getCrew()) {
+            Worker w = (Worker)crewmember; 
+			if (!getMembers().contains(w)) {
+				ejectedMembers.add(crewmember);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Outprocesses the member.
+	 *  
+	 * @param person
+	 * @param rover
+	 * @param log
+	 */
+	private void outProcessMember(Person person, Rover rover, String log) {
+		// Remove the mission member
+		removeMember(person);
+
+		exitRover(person, rover, rover.getSettlement());
+		
+		addMissionLog(log, person.getName());
+	}
+	
+	/**
 	 * Checks membership and ejects non-members.
 	 * 
 	 * @param member
@@ -336,41 +385,17 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		// Find who has not boarded after the duration is over
 		List<Person> ejectedMembers = new ArrayList<>();
 		
-		for (Worker m : getMembers()) {
-			Person p = (Person) m;
-			if (!r.isCrewmember(p)) {
-				ejectedMembers.add(p);
-			}
-		}
-		
-		for (Person crewmember : r.getCrew()) {
-            Worker w = (Worker)crewmember; 
-			if (!getMembers().contains(w)) {
-				ejectedMembers.add(crewmember);
-			}
-		}
+		checkEjected(ejectedMembers, r);
 
 		// Eject the late arrival if enough members
 		if ((getMembers().size() - ejectedMembers.size()) >= MIN_GOING_MEMBERS) { 
-			for (Person ej : ejectedMembers) {
-				// Remove the mission membership
-				removeMember(ej);
-
-				if (r.isInGarage()) {
-					// Force the person to get off the vehicle and back to the garage
-					// Note: may need to evaluate a better way of handling this
-					ej.transfer(r.getGarage());
-					
-					assignTask(ej, new Relax(ej));
-				}
-				else {
-					// Let the person automatically leave the vehicle via walking toward a settlement airlock
-					walkToAirlock(r, ej, r.getSettlement());
-				}
+			
+			for (Person p : ejectedMembers) {
 				
-				logger.warning(ej, ej.getTaskDescription() + " in " + ej.getLocationTag().getExtendedLocation() 
+				outProcessMember(p, r, "Ejected");
+				
+				logger.warning(p, p.getTaskDescription() + " in " + p.getLocationTag().getExtendedLocation() 
 						+ ". Got ejected from " + r.getName() + " as " + getName() + " was due for departure.");
-				addMissionLog("Ejected", ej.getName());
 			}
 		}
 		
@@ -378,13 +403,37 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		if (ejectedMembers.contains(getStartingPerson())) {
 
 			Person lead = (Person)member;
+			
+			outProcessMember(lead, r, MISSION_CANCELLED);
+			
 			// If the leader is ejected, then the mission must be cancelled
 			logger.info(lead, "The mission Lead " + getStartingPerson().getName() 
 					+ "(" + lead.getTaskDescription() + " in " + lead.getLocationTag().getExtendedLocation() 
 					+ ") got ejected from " + getName() + " and mission was cancelled.");
 			
+			Set<Worker> outProcessingMembers = getMembers();
+			// Must remove the mission lead first or having ConcurrentModificationException
+			outProcessingMembers.remove(lead);
+			// Remove all other members
+			for (Worker w : outProcessingMembers) {
+				
+				outProcessMember((Person)w, r, MISSION_CANCELLED);
+
+				logger.info(w, getName() + " was cancelled since the mission lead got ejected.");
+			}
+			
+			Set<Person> outCrew = r.getCrew();
+			outCrew.remove(lead);
+			// Just in case anyone still inside the vehicle
+			for (Person p : outCrew) {
+				
+				outProcessMember(p, r, MISSION_CANCELLED);
+
+				logger.info(p, getName() + " was cancelled since the mission lead got ejected.");
+			}
+			
 			MissionStatus status = MissionStatus.createResourceStatus(MISSION_LEAD_NO_SHOW.getName());
-			abortMission(status, EventType.MISSION_NOT_ENOUGH_RESOURCES);
+			abortMission(status, HistoricalEventType.MISSION_LEAD_NO_SHOW);
 	
 			canDepart = false;
 		}
@@ -392,8 +441,15 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		else if (getMembers().size() == 1) {
 			logger.info(r, "Only one person in the mission. Cancelling " + getName() + ".");
 			
+			for (Person p : r.getCrew()) {
+				
+				outProcessMember(p, r, "Mission Cancelled - One Left");
+				
+				logger.info(p, getName() + " was cancelled. One member left.");
+			}
+			
 			MissionStatus status = MissionStatus.createResourceStatus(ONLY_ONE_MEMBER.getName());
-			abortMission(status, EventType.MISSION_ONLY_ONE_MEMBER);
+			abortMission(status, HistoricalEventType.MISSION_ONLY_ONE_MEMBER);
 
 			canDepart = false;
 		}
@@ -417,9 +473,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 
 		Settlement settlement = v.getSettlement();
 		if (settlement == null) {
-			logger.warning(member,
-					Msg.getString("RoverMission.log.notAtSettlement", getPhase().getName())); //$NON-NLS-1$
-			endMission(NO_AVAILABLE_VEHICLE);
+			logger.warning(member, VEHICLE_NOT_AT_SETTLEMENT + " at " + getPhase().getName());
+			endMission(STATUS_VEHICLE_NOT_AT_SETTLEMENT);
 			return;
 		}
 
@@ -436,33 +491,23 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 		boolean canDepart = false;
 		
-		double timeLeft = DEPARTURE_DURATION - DEPARTURE_FINAL_PREPARATION - getPhaseDuration();
+		double timeLeft = DEPARTURE_DURATION - DEPARTURE_FINAL_PREPARATION - getPhaseTimeElapse();
 		// Set the members' work shift to on-call to get ready. 
-		if (timeLeft < DEPARTURE_DURATION / 2) {
+		if (getPhaseTimeElapse()  == 0D) {
 			callMembersToMission((int)timeLeft);	
 		}
 		
-		if (getPhaseDuration() - .3 * DEPARTURE_DURATION > 0
-				&& getPhaseDuration() - DEPARTURE_DURATION < 0) {
+		// Q: When to check the whereabout of getStartingPerson() ?
+		
+		// When the time elapsed is 30% of the departure duration
+		if (getPhaseTimeElapse() - .3 * DEPARTURE_DURATION > 0
+				&& getPhaseTimeElapse() - DEPARTURE_DURATION < 0) {
 			
-			if (getStartingPerson().equals(member) && !getRover().isCrewmember((Person)member)) {
-				// Gets a random location within rover.
-				LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(v);
-				// if the mission lead is still not onboard 
-				WalkingSteps walkingSteps = new WalkingSteps(member, adjustedLoc, v);
-				boolean canWalk = Walk.canWalkAllSteps((Person)member, walkingSteps);
-				
-				if (canWalk) {
-					boolean canDo = assignTask((Person)member, new Walk(member, walkingSteps));
-					if (!canDo) {
-						logger.warning(member, 20_000, "Unable to start walking toward " + v + ".");
-					}
-				}
-
-				else { // this crew member cannot find the walking steps to enter the rover
-					logger.warning(member, 20_000, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
-							v.getName()));
-				}		
+			// Check if the person is EVA fit prior to boarding.
+			// If unfit, he may not be able to come out of the airlock
+			if (!getRover().isCrewmember((Person)member) && ((Person)member).isEVAFit()) {
+				// Need to make the member board the vehicle early
+				boardVehicle(member, v);
 			}
 			
 			// Note: this is calling isEveryoneInRover the 1st time to ascertain 
@@ -471,18 +516,19 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				canDepart = isEveryoneInRover(member);
 			}
 			if (canDepart) {
-				addMissionLog("All Boarded", getStartingPerson().getName());
+				addMissionLog(ALL_BOARDED, getStartingPerson().getName());
 				logger.info(v, 20_000, "Everyone is ready for departing " + settlement.getName() + ".");
 			}
 		}
-		else if (timeLeft < DEPARTURE_FINAL_PREPARATION) {
+		else if (timeLeft < DEPARTURE_FINAL_PREPARATION * 3) {
+			logger.info(v, 20_000, "Departure wait time approaching.");
 			canDepart = isEveryoneInRover(member);
 			
 			if (!canDepart) {
+				logger.info(v, 20_000, "Not everyone ready. Alerting all to depart " 
+						+ settlement.getName() + " for " + getName() + ".");
 				callEveryone(v);
 			}
-			
-			logger.info(v, 20_000, "Departure wait time ended. Alerting everyone for leaving " + settlement.getName() + ".");
 		}
 		
 		if (canDepart) {
@@ -490,8 +536,33 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		if (canDepart) {	
-			logger.info(v, 20_000, "Passed all tests, departing " + settlement.getName() + ".");
+			logger.info(v, 20_000, "Fulfilled all requirements, departing " + settlement.getName() + ".");
 			depart(v, settlement);		
+		}
+	}
+	
+	/**
+	 * Walks toward the vehicle and boards it. 
+	 * 
+	 * @param worker
+	 * @param vehicle
+	 */
+	private void boardVehicle(Worker worker, Vehicle vehicle) {
+		// Gets a random location within rover.
+		LocalPosition adjustedLoc = LocalAreaUtil.getRandomLocalPos(vehicle);
+		
+		WalkingSteps walkingSteps = new WalkingSteps(worker, adjustedLoc, vehicle);
+		boolean canWalk = Walk.canWalkAllSteps(worker, walkingSteps);
+		
+		if (canWalk) {
+			boolean canDo = assignTask(worker, new Walk(worker, walkingSteps));
+			if (!canDo) {
+				logger.warning(worker, 20_000, "Unable to start walking toward " + vehicle + ".");
+			}
+		}
+
+		else { // this crew member cannot find the walking steps to enter the rover
+			logger.warning(worker, 20_000, UNABLE_TO_ENTER + vehicle.getName() + ".");
 		}
 	}
 	
@@ -511,8 +582,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			canDepart = checkMembership(member, (Rover)v);
 			
 			if (canDepart) {
-				logger.info(v, 20_000, "Membership Checked.");
-				addMissionLog("Membership Checked", member.getName());
+				logger.info(v, 20_000, MEMBERSHIP_CHECKED + ".");
+				addMissionLog(MEMBERSHIP_CHECKED, member.getName());
 			}
 		}
 
@@ -522,8 +593,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			canDepart = isEveryoneInRover(member);
 			
 			if (canDepart) {
-				logger.info(v, 20_000, "All Boarded.");
-				addMissionLog("All Boarded", member.getName());
+				logger.info(v, 20_000, ALL_BOARDED + ".");
+				addMissionLog(ALL_BOARDED, member.getName());
 			}
 		}
 
@@ -533,8 +604,8 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			canDepart = meetBaselineNumEVASuits(settlement, v);
 			
 			if (canDepart) {
-				logger.info(v, 20_000, "Baseline EVA suit Met.");
-				addMissionLog("Baseline EVA suit Met", member.getName());
+				logger.info(v, 20_000, BASELINE_EVA_SUIT_MET + ".");
+				addMissionLog(BASELINE_EVA_SUIT_MET, member.getName());
 			}
 		}
 
@@ -596,22 +667,9 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		
 			if (member instanceof Person person
 				// If not aboard the rover, board the rover and be ready to depart.
-				&& !getRover().isCrewmember(person)) {
-	
-				WalkingSteps walkingSteps = new WalkingSteps(person, adjustedLoc, v);
-				boolean canWalk = Walk.canWalkAllSteps(person, walkingSteps);
-				
-				if (canWalk) {
-					boolean canDo = assignTask(person, new Walk(person, walkingSteps));
-					if (!canDo) {
-						logger.warning(person, 20_000, "Unable to start walking toward " + v + ".");
-					}
-				}
+				&& !getRover().isCrewmember(person) && ((Person)member).isEVAFit()) {
 
-				else { // this crew member cannot find the walking steps to enter the rover
-					logger.warning(member, 20_000, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
-							v.getName()));
-				}
+				boardVehicle(person, v);
 			}
 			
 			else if (member instanceof Robot robot
@@ -629,8 +687,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 
 				else {
-					logger.warning(member, 20_000, Msg.getString("RoverMission.log.unableToEnter", //$NON-NLS-1$
-							v.getName()));
+					logger.warning(member, 20_000, UNABLE_TO_ENTER + v.getName() + ".");
 				}
 			}
 		}
@@ -920,7 +977,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				if (!roverUnloaded && RandomUtil.lessThanRandPercent(50)) {
 					boolean toUnload = unloadCargo(member, rover);
 					if (toUnload) {
-						addMissionLog("Unloading resource by member", member.getName());
+						addMissionLog("Unloading by member", member.getName());
 					}
 					else {
 						if (rover.isInGarage()) {						
@@ -944,26 +1001,24 @@ public abstract class RoverMission extends AbstractVehicleMission {
 			List<Person> occupants = new ArrayList<>(crew);
 			
 			for (Person p : occupants) {
-				if (!roverUnloaded) {// && !getMembers().contains(p)) {
+				if (!roverUnloaded) {
 					// Recruit this person to help unload the cargo
 					// so that he doesn't stay inside the vehicle
 					boolean toUnload = unloadCargo(p, rover);
 					if (toUnload) {
-						addMissionLog("Unloading resource by non-member", p.getName());
-					}
-					else {
-						if (rover.isInGarage()) {
-							// Force the person to get off the vehicle and back to the garage
-							// Note: may need to evaluate a better way of handling this
-							p.transfer(rover.getGarage());
-							
-							assignTask(p, new Relax(p));
+						if (getMembers().contains(p)) {
+							addMissionLog("Unloading by member", p.getName());
 						}
 						else {
-							// Let the person automatically leave the vehicle via walking toward a settlement airlock
-							walkToAirlock(rover, p, disembarkSettlement);
+							addMissionLog("Unloading by non-member", p.getName());
 						}
 					}
+					else {
+						exitRover(p, rover, disembarkSettlement);
+					}
+				}
+				else {
+					exitRover(p, rover, disembarkSettlement);
 				}
 			}
 		}
@@ -980,6 +1035,27 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 	}
 
+	/**
+	 * Exits the rover.
+	 * 
+	 * @param person
+	 * @param rover
+	 * @param s
+	 */
+	private void exitRover(Person person, Rover rover, Settlement s) {
+		if (rover.isInGarage()) {
+			// Force the person to get off the vehicle and back to the garage
+			// Note: may need to evaluate a better way of handling this
+			person.transfer(rover.getGarage());
+
+			assignTask(person, new Relax(person));
+		}
+		else {
+			// Let the person automatically leave the vehicle via walking toward a settlement airlock
+			walkToAirlock(rover, person, s);
+		}
+	}
+	
 	/**
 	 * Gives a person the task from unloading the vehicle.
 	 *
@@ -1114,14 +1190,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		BuildingManager.addPatientToMedicalBed(p, s);
 
 		// Register the historical event
-		HistoricalEvent rescueEvent = new MissionHistoricalEvent(EventType.MISSION_RESCUE_PERSON,
-				this,
-				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
-				p.getTaskDescription(),
-				p.getName(),
-				p
-				);
-		eventManager.registerNewEvent(rescueEvent);
+		registerHistoricalEvent(p, HistoricalEventType.MISSION_RESCUE_PERSON, PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()));
 	}
 	
 	/**

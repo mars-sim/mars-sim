@@ -31,6 +31,7 @@ public class AreologyFieldStudy extends FieldStudyMission {
 	/** Amount of time to field a site. */
 	private static final double FIELD_SITE_TIME = 1000D;
 
+	
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TOURISM);
 
 	/**
@@ -41,7 +42,9 @@ public class AreologyFieldStudy extends FieldStudyMission {
 	 * @throws MissionException if problem constructing mission.
 	 */
 	public AreologyFieldStudy(Person startingPerson, boolean needsReview) {
-		super(MissionType.AREOLOGY, startingPerson, ScienceType.AREOLOGY, FIELD_SITE_TIME, needsReview);
+		
+		super(MissionType.AREOLOGY, startingPerson, 
+			  ScienceType.AREOLOGY, FIELD_SITE_TIME, needsReview);
 	}
 
 	/**
@@ -62,7 +65,7 @@ public class AreologyFieldStudy extends FieldStudyMission {
 	}
 
 	/**
-	 * Factory method to create a Task to perform the require field study
+	 * Factory method to create a Task to perform the require field study.
 	 */
 	@Override
 	protected Task createFieldStudyTask(Person person, Person leadResearcher, ScientificStudy study, Rover vehicle) {

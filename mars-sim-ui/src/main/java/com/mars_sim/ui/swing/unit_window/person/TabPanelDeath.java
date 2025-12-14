@@ -32,9 +32,9 @@ import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.tool.SpringUtilities;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool_window.MapSelector;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 

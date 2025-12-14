@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -55,6 +54,19 @@ public class ConstructionSite extends FixedUnit {
     private ConstructionStage currentStage;
 
     private List<ConstructionPhase> phases;
+
+    public static final String ADD_CONSTRUCTION_STAGE_EVENT = "add construction stage";
+
+    public static final String ADD_CONSTRUCTION_MATERIALS_EVENT = "add construction materials";
+
+    public static final String FINISH_CONSTRUCTION_BUILDING_EVENT = "finish construction";
+
+    public static final String ADD_CONSTRUCTION_WORK_EVENT = "add construction work";
+
+    public static final String END_CONSTRUCTION_SITE_EVENT = "end construction site";
+
+    // For ConstructionManager
+    public static final String START_CONSTRUCTION_SITE_EVENT = "start construction site";
     
     /**
      * Constructor.
@@ -133,8 +145,8 @@ public class ConstructionSite extends FixedUnit {
         this.unstarted = false;
         this.activeWork = activeWork;
 
-        UnitEventType eventType = ((activeWork != null)  ? UnitEventType.START_CONSTRUCTION_SITE_EVENT
-                                        : UnitEventType.END_CONSTRUCTION_SITE_EVENT);
+        String eventType = ((activeWork != null)  ? ConstructionSite.START_CONSTRUCTION_SITE_EVENT
+                                        : ConstructionSite.END_CONSTRUCTION_SITE_EVENT);
         fireUnitUpdate(eventType);
     }
 
@@ -184,7 +196,7 @@ public class ConstructionSite extends FixedUnit {
         logger.info(this, "Advanced to next phase '" + nextPhase.stageInfo().getName() + "' "
                 + (isConstruction ? "construction" : "salvage"));
 
-        fireUnitUpdate(UnitEventType.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
+        fireUnitUpdate(ConstructionSite.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
         return phases.isEmpty();
     }
 
@@ -215,7 +227,7 @@ public class ConstructionSite extends FixedUnit {
         manager.addBuilding(newBuilding, true);
 
         // Fire construction event.
-        fireUnitUpdate(UnitEventType.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
+        fireUnitUpdate(ConstructionSite.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 
         return newBuilding;
     }

@@ -8,7 +8,7 @@
 	<groupId>com.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>pre-3.10.0</version>
+	<version>3.11.0</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
@@ -16,12 +16,12 @@
 		<release>21</release>
 		
 		<sonar.java.source>21</sonar.java.source>
+
 		<fxgl.version>11.17</fxgl.version>
 		
 		<!-- These 3 have an interdepency -->
-		<junit-jupiter.version>5.13.4</junit-jupiter.version>
-        <!--junit.version>4.13.2</junit.version -->
-		<junit-launcher.version>1.13.4</junit-launcher.version>
+		<junit-jupiter.version>5.14.1</junit-jupiter.version>
+		<junit-launcher.version>1.14.1</junit-launcher.version>
 		
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -30,7 +30,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
-		<libgdx.version>1.13.5</libgdx.version>
+		<libgdx.version>1.14.0</libgdx.version>
 		<lwjgl.version>3.3.6</lwjgl.version>
 		<slf4j.version>2.0.17</slf4j.version>
 
@@ -39,9 +39,7 @@
 		<commons-lang3.version>3.18.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 			
-		<jacoco.version>0.8.13</jacoco.version>
-		
-  		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<jacoco.version>0.8.14</jacoco.version>		
 	</properties>
 	<profiles>
 		<profile>
@@ -76,6 +74,19 @@
 		  </build>
 		</profile>
 		
+		<!-- Profile for release -->
+		<profile>
+			<id>installer</id>
+			<modules>
+				<module>mars-sim-tools</module>
+				<module>mars-sim-headless</module>
+				<module>mars-sim-console</module>
+				<module>mars-sim-core</module>
+				<module>mars-sim-ui</module>
+				<module>mars-sim-installer</module>
+			</modules>
+		</profile>
+
 		<!-- Profile for JavaFX -->
 		<profile>
 			<id>javaFX</id>
@@ -98,25 +109,22 @@
 			<version>${junit-launcher.version}</version>
 			<scope>test</scope>
 		</dependency>		
-		<!-- https://stackoverflow.com/questions/41635164/is-junit5-backward-compatible-to-junit4 -->
-        <!--JUnit Jupiter Engine to depend on the JUnit5 engine and JUnit 5 API -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-		<!-- Incorporate junit-vintage to cover junit4 tests -->
-        <!--JUnit Jupiter Engine to depend on the JUnit4 engine and JUnit 4 API  -->
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>${junit-jupiter.version}</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.19.0</version>
+			<version>5.20.0</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>
@@ -175,7 +183,7 @@
 				<plugin>
 				    <groupId>org.codehaus.mojo</groupId>
 				    <artifactId>versions-maven-plugin</artifactId>
-				    <version>2.19.0</version>
+				    <version>2.19.1</version>
 				    <configuration>
 				        <generateBackupPoms>false</generateBackupPoms>
 				    </configuration>
@@ -184,7 +192,15 @@
 				<plugin>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-surefire-plugin</artifactId>
-				    <version>3.5.3</version>
+				    <version>3.5.4</version>
+				   <!-- surefire-junit-platform below is needed for maven-surefire-plugin -->
+			        <dependencies>
+				        <dependency>
+				            <groupId>org.apache.maven.surefire</groupId>
+				            <artifactId>surefire-junit-platform</artifactId>
+				            <version>3.5.4</version>
+				        </dependency>
+			        </dependencies>
 				    <configuration>
                         <argLine>-Duser.language=en -Duser.region=US</argLine>
 						<includes>
@@ -195,7 +211,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.0</version>
+					<version>3.14.1</version>
 					<configuration>
 						<release>${release}</release>
 						<compilerArgs>
@@ -245,7 +261,7 @@
 				<!-- See https://maven.apache.org/plugins/maven-dependency-plugin/usage.html -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.9.0</version>
 				<configuration>
 					<outputDirectory>
 						${project.build.directory}

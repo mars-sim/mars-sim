@@ -89,16 +89,19 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         RatingScore factor = RatingScore.ZERO_RATING;
-        
+		RoleType roleType = p.getRole().getType(); 
+	   	if (RoleType.GUEST == roleType) {
+            return factor;
+        }
+	   	
         if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			
 			factor = super.assessPersonSuitability(t, p);
-			if (factor.getScore() == 0) {
+			if (factor.getScore() == 0D) {
 				return factor;
 			}
 
-			// This reviewer is valid
-			RoleType roleType = p.getRole().getType();  
+			// This reviewer is valid 
 			double reviewer = switch(roleType) {
 				case RESOURCE_SPECIALIST -> 1.5;
 				case CHIEF_OF_SUPPLY_RESOURCE -> 2;

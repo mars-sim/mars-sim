@@ -22,28 +22,26 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.WindowConstants;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventListener;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.EventType;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool_window.ToolWindow;
+import com.mars_sim.ui.swing.UIContext;
 
 
 /**
@@ -51,7 +49,7 @@ import com.mars_sim.ui.swing.tool_window.ToolWindow;
  * Future: externalize strings
  */
 @SuppressWarnings("serial")
-public class ResupplyWindow extends ToolWindow
+public class ResupplyWindow extends ContentPanel
 			implements HistoricalEventListener  {
 
 	/** Default logger. */
@@ -65,29 +63,28 @@ public class ResupplyWindow extends ToolWindow
 	// Data members
 
 	private TransportDetailPanel detailPane;
-	private JButton modifyButton;
-	private JButton cancelButton;
 	private DefaultTreeModel treeModel;
 	private JTree delveryTree;
 	private DefaultMutableTreeNode deliveryRoot;
 	private Map<String,DefaultMutableTreeNode> settlementNodes = new HashMap<>();
 	private Map<Transportable,DefaultMutableTreeNode> deliveryNodes  = new HashMap<>();
 
+	private UIContext context;
+
 	/**
 	 * Constructor.
 	 * 
-	 * @param desktop the main desktop panel.
+	 * @param context the main desktop panel.
 	 */
-	public ResupplyWindow(MainDesktopPane desktop)  {
+	public ResupplyWindow(UIContext context)  {
 		// Use the ToolWindow constructor.
-		super(NAME, TITLE, desktop);
-
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);//.HIDE_ON_CLOSE);
+		super(NAME, TITLE, Placement.CENTER);
+		this.context = context;
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(StyleManager.newEmptyBorder());
-		setContentPane(mainPane);
+		add(mainPane, BorderLayout.CENTER);
 
 		// Create the left panel.
 		JPanel treePanel = new JPanel(new BorderLayout());
@@ -98,6 +95,48 @@ public class ResupplyWindow extends ToolWindow
 		delveryTree = new JTree(treeModel);
 		delveryTree.setExpandsSelectedPaths(true);    
 		delveryTree.setCellRenderer(new TransportableTreeRenderer());          
+
+
+		JScrollPane scroller = new JScrollPane(delveryTree);
+		scroller.setMinimumSize(new Dimension(200, HEIGHT - 10));
+		treePanel.add(scroller, BorderLayout.CENTER);
+
+		// Create detail panel.
+		detailPane = new TransportDetailPanel(context);
+
+		JSplitPane spliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, detailPane);
+		mainPane.add(spliter, BorderLayout.CENTER);
+
+		// Create button panel.
+		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		mainPane.add(buttonPane, BorderLayout.SOUTH);
+
+		// Create new button.
+		// Change button text from "New"  to "New Mission"
+		JButton newButton = new JButton("New Mission");
+		newButton.addActionListener(e ->
+			new NewTransportItemDialog(context.getTopFrame(), context.getSimulation()).setVisible(true)
+		);
+		buttonPane.add(newButton);
+
+		// Create modify button.
+		// Change button text from "Modify"  to "Modify Mission"
+		var modifyButton = new JButton("Modify Mission");
+		modifyButton.setEnabled(false);
+		modifyButton.addActionListener(e ->
+				modifyTransport()
+		);
+		buttonPane.add(modifyButton);
+
+		// Create cancel button.
+		// Change button text from "Discard"  to "Discard Mission"
+		var cancelButton = new JButton("Discard Mission");
+		cancelButton.setEnabled(false);
+		cancelButton.addActionListener(e ->
+			cancelTransportItem()
+		);
+		buttonPane.add(cancelButton);
+
 		delveryTree.addTreeSelectionListener(e -> {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) e
 						.getPath().getLastPathComponent();
@@ -113,54 +152,12 @@ public class ResupplyWindow extends ToolWindow
 				cancelButton.setEnabled(selected);
 		});
 
-		JScrollPane scroller = new JScrollPane(delveryTree);
-		scroller.setMinimumSize(new Dimension(200, HEIGHT - 10));
-		treePanel.add(scroller, BorderLayout.CENTER);
-
-		// Create detail panel.
-		detailPane = new TransportDetailPanel(desktop);
-
-		JSplitPane spliter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, detailPane);
-		mainPane.add(spliter, BorderLayout.CENTER);
-
-		// Create button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		mainPane.add(buttonPane, BorderLayout.SOUTH);
-
-		// Create new button.
-		// Change button text from "New"  to "New Mission"
-		JButton newButton = new JButton("New Mission");
-		newButton.addActionListener(e ->
-			createNewTransportItem()
-		);
-		buttonPane.add(newButton);
-
-		// Create modify button.
-		// Change button text from "Modify"  to "Modify Mission"
-		modifyButton = new JButton("Modify Mission");
-		modifyButton.setEnabled(false);
-		modifyButton.addActionListener(e ->
-				modifyTransport()
-		);
-		buttonPane.add(modifyButton);
-
-		// Create cancel button.
-		// Change button text from "Discard"  to "Discard Mission"
-		cancelButton = new JButton("Discard Mission");
-		cancelButton.setEnabled(false);
-		cancelButton.addActionListener(e ->
-			cancelTransportItem()
-		);
-		buttonPane.add(cancelButton);
-
-		setResizable(true);
-		setMaximizable(true);
-
-		setSize(new Dimension(600, 600));
-		// No need to use pack()
+		var dim = new Dimension(600, 600);
+		setPreferredSize(dim);
+		setSize(dim);
 
 		// Load it
-		Simulation sim = desktop.getSimulation();
+		var sim = context.getSimulation();
 		TransportManager manager = sim.getTransportManager();
 		for(Transportable in : manager.getTransportItems()) {
 			addTreeNode(in);
@@ -230,13 +227,13 @@ public class ResupplyWindow extends ToolWindow
 	@Override
 	public void eventAdded(HistoricalEvent he) {
 		if (HistoricalEventCategory.TRANSPORT == he.getCategory()) {
-			if (EventType.TRANSPORT_ITEM_MODIFIED == he.getType()) {
+			if (HistoricalEventType.TRANSPORT_ITEM_MODIFIED == he.getType()) {
 				Transportable selected = getSelectedNode();
 				if ((selected != null) && he.getSource().equals(selected)) {
 					detailPane.setTransportable(selected);
 				}
 			}
-			else if ((EventType.TRANSPORT_ITEM_CREATED == he.getType())
+			else if ((HistoricalEventType.TRANSPORT_ITEM_CREATED == he.getType())
 					&& (he.getSource() instanceof Transportable t)) {
 				addTreeNode(t);
 			}
@@ -254,17 +251,9 @@ public class ResupplyWindow extends ToolWindow
 	 * @param pulse Clock change
 	 */
 	@Override
-	public void update(ClockPulse pulse) {
+	public void clockUpdate(ClockPulse pulse) {
 		detailPane.update(pulse);
 	}
-
-	/**
-	 * Opens a create dialog.
-	 */
-	private void createNewTransportItem() {
-		new NewTransportItemDialog(desktop, this);
-	}
-
 
 	private Transportable getSelectedNode() {
 		// Get currently selected incoming transport item.
@@ -286,17 +275,15 @@ public class ResupplyWindow extends ToolWindow
 	private void modifyTransport() {
 		// Get currently selected incoming transport item.
 		Transportable transportItem = getSelectedNode();
-		if (transportItem instanceof Resupply resupply) {
-			// Create modify resupply mission dialog.
-			String title = "Modify Resupply Mission " + transportItem.getName();
-			new ModifyTransportItemDialog(desktop, this, title, resupply);
-
+		if (transportItem == null) {
+			logger.info("transportItem is null");
+			return;
 		}
-		else if (transportItem instanceof ArrivingSettlement settlement) {
-			// Create modify arriving settlement dialog.
-			String title = "Modify Arriving Settlement " + transportItem.getName();
-			new ModifyTransportItemDialog(desktop, this, title, settlement);
-		}
+		String title = (transportItem instanceof Resupply) ?
+				"Modify Resupply Mission " + transportItem.getName() :
+				"Modify Arriving Settlement " + transportItem.getName();
+		var dialog = new ModifyTransportItemDialog(context.getTopFrame(), this, title, transportItem, context.getSimulation());
+		dialog.setVisible(true);
 	}
 
 	
@@ -327,17 +314,11 @@ public class ResupplyWindow extends ToolWindow
 			// "No" button click, do nothing
 		} else if (response == JOptionPane.YES_OPTION) {
 			// "Yes" button clicked and go ahead with discarding this mission
-			if (transportItem != null) {
-				transportItem.cancel();
-				detailPane.setTransportable(transportItem);
-			}
+			transportItem.cancel();
+			detailPane.setTransportable(transportItem);
 		} else if (response == JOptionPane.CLOSED_OPTION) {
 			// Close the dialogbox, do nothing
 		}
-	}
-
-	public void setModifyButton(boolean value) {
-		modifyButton.setEnabled(value);
 	}
 
 	/**
@@ -345,7 +326,7 @@ public class ResupplyWindow extends ToolWindow
 	 */
 	@Override
 	public void destroy() {
-		desktop.getSimulation().getEventManager().addListener(this);
+		context.getSimulation().getEventManager().removeListener(this);
 	}
 
 	private static class TransportableTreeRenderer extends DefaultTreeCellRenderer {

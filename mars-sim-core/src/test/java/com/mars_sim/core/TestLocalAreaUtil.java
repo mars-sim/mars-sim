@@ -1,4 +1,9 @@
 package com.mars_sim.core;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 
 import java.util.Iterator;
 
@@ -10,17 +15,22 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.MockSettlement;
 import com.mars_sim.core.structure.Settlement;
 
-import junit.framework.TestCase;
+
 
 /**
  * Unit test suite for the LocalAreaUtil class.
  */
-public class TestLocalAreaUtil extends TestCase {
+public class TestLocalAreaUtil {
     
     // Comparison to indicate a small but non-zero amount.
 	private UnitManager unitManager;
     
-	@Override
+	@BeforeEach
+
+    
+
+
+    
 	public void setUp() {
 	    // Create new simulation instance.
         SimulationConfig simConfig = SimulationConfig.loadConfig();
@@ -43,7 +53,8 @@ public class TestLocalAreaUtil extends TestCase {
     /**
      * Test the locationWithinLocalBoundedObject method.
      */
-    public void testLocationWithinLocalBoundedObject() {
+    @Test
+    void testLocationWithinLocalBoundedObject() {
         
         Settlement settlement = new MockSettlement();
  
@@ -70,7 +81,8 @@ public class TestLocalAreaUtil extends TestCase {
         assertFalse(LocalAreaUtil.isPositionWithinLocalBoundedObject(new LocalPosition(0D, -5.01D), mb0));
     }
 
-    public void testRotate45Degrees() {
+    @Test
+    void testRotate45Degrees() {
             
         Settlement settlement = new MockSettlement();
  

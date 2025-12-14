@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SkillType.java
- * @date 2022-07-16
+ * @date 2025-10-12
  * @author stpa
  */
 
@@ -10,28 +10,34 @@ package com.mars_sim.core.person.ai;
 import com.mars_sim.core.tool.Msg;
 
 /**
- * The skill of a settler. A total of 21 types is available
+ * The skill of a settler. A total of 22 types is available
  */
 public enum SkillType {
 
 	
-	// Note: The following listing is organized in accordance with the subject matter affinity : 
-	// DO NOT alter the order
+	// The following listing is organized in accordance with the subject matter affinity.
+	// It's intentional to be placed in this particular order.
+	////////////////////////
+	// Warning: Please DO NOT alter the order in which each enum show up
 	TRADING, CONSTRUCTION, MECHANICS, PILOTING, EVA_OPERATIONS,
 	PROSPECTING, METEOROLOGY, AREOLOGY, ASTRONOMY, CHEMISTRY,
 	MATHEMATICS, COMPUTING, PHYSICS, MATERIALS_SCIENCE, COOKING,
 	BOTANY, ASTROBIOLOGY, MEDICINE, PSYCHOLOGY, MANAGEMENT,
 	REPORTING, ORGANISATION;
-	// Note: The above listing is organized in accordance with the subject matter affinity 
-	
+	////////////////////////
+
 	private String name;
 
-	/** hidden constructor. */
+	/** 
+	 * Hidden constructor. 
+	 */
 	private SkillType() {
         this.name = Msg.getStringOptional("SkillType", name());
 	}
 
-	/** gives the internationalized name of this skill for display in user interface. */
+	/** 
+	 * Gives the internationalized name of this skill for display in user interface. 
+	 */
 	public String getName() {
 		return this.name;
 	}

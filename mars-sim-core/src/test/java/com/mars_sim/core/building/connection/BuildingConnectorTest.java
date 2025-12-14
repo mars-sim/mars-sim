@@ -1,17 +1,24 @@
 package com.mars_sim.core.building.connection;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.MockBuilding;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.structure.MockSettlement;
 
-public class BuildingConnectorTest extends AbstractMarsSimUnitTest{
+public class BuildingConnectorTest extends MarsSimUnitTest{
     
     private static final LocalPosition BUILDING3_POSITION = new LocalPosition(0D, 7D);
     private static final LocalPosition BUILDING2_POSITION = new LocalPosition(0D, 5D);
     private static final LocalPosition BUILDING_POSITION = BUILDING2_POSITION;
 
+    @Test
     public void testNonSplitBuildingConnector() {
         
         MockSettlement settlement = new MockSettlement();
@@ -50,6 +57,7 @@ public class BuildingConnectorTest extends AbstractMarsSimUnitTest{
         assertEquals(connector, connector2);
     }
     
+    @Test
     public void testSplitBuildingConnector() {
         
         MockSettlement settlement = new MockSettlement();

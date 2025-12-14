@@ -14,7 +14,7 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * This class listens for double click event on a JTable. When an event triggers; a UnitDetail window
@@ -33,9 +33,9 @@ public class EntityLauncher extends MouseInputAdapter {
      * @param table Table to monitor for double clicks
      * @param desktop Parent desktop to handle view requests
      */
-    public static void attach(JTable table, MainDesktopPane desktop) {
+    public static void attach(JTable table, UIContext context) {
         if (table.getModel() instanceof EntityModel) {
-            table.addMouseListener(new EntityLauncher(desktop));
+            table.addMouseListener(new EntityLauncher(context));
             table.setToolTipText(TOOLTIP);
         }
         else {
@@ -43,16 +43,16 @@ public class EntityLauncher extends MouseInputAdapter {
         }
     }
 
-    private MainDesktopPane desktop;
+    private UIContext context;
 
 
     /**
      * Creates a launcher that will create a UnitDetail window.
      * 
-     * @param desktop
+     * @param context
      */
-    private EntityLauncher(MainDesktopPane desktop) {
-        this.desktop = desktop;
+    private EntityLauncher(UIContext context) {
+        this.context = context;
     }
 
     /**
@@ -72,7 +72,7 @@ public class EntityLauncher extends MouseInputAdapter {
                 r = sorter.convertRowIndexToModel(r);
             }
             EntityModel model = (EntityModel)table.getModel();
-            desktop.showDetails(model.getAssociatedEntity(r));
+            context.showDetails(model.getAssociatedEntity(r));
         }
     }
 }

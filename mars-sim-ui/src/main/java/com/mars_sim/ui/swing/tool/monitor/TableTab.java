@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,13 +24,15 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
@@ -50,8 +51,6 @@ public class TableTab extends MonitorTab {
 	private static final MarsTimeTableCellRenderer TIME_RENDERER = new MarsTimeTableCellRenderer();
 	private static final NumberCellRenderer CURRENCY_RENDERER = new NumberCellRenderer(2, "$");
 
-	private TableProperties propsWindow;
-
 	/** Table component. */
 	private JTable table;
 	private boolean widthAdjusted = false;
@@ -66,8 +65,7 @@ public class TableTab extends MonitorTab {
 	 * @param singleSelection Does this table only allow single selection?
 	 * @param icon name        Name of the icon; @see {@link ImageLoader#getIconByName(String)}
 	 */
-	@SuppressWarnings("serial")
-	protected TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
+	public TableTab(final MonitorWindow window, final MonitorModel model, boolean mandatory, boolean singleSelection,
 			String iconname) {
 		super(model, mandatory, true, ImageLoader.getIconByName(iconname));
 
@@ -115,15 +113,10 @@ public class TableTab extends MonitorTab {
 				}
 			}
 		});
-
-		// Allow ordering
-//		TableRowSorter<TableModel> sorter = new TableRowSorter<>(model);
-//		sorter.setSortsOnUpdates(true);
-//		table.setRowSorter(sorter);
 		
 		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
 		table.setAutoCreateRowSorter(true);
-
+		table.getRowSorter().toggleSortOrder(0);   // By default sort on 1st column
 		
 		// Set single selection mode if necessary.
 		if (singleSelection)
@@ -174,34 +167,13 @@ public class TableTab extends MonitorTab {
 	/**
 	 * Display property window anchored to a main desktop.
 	 *
-	 * @param desktop Main desktop owing the properties dialog.
+	 * @param context Main desktop owing the properties dialog.
 	 */
-	public void displayProps(MainDesktopPane desktop) {
-		if (propsWindow == null) {
-			propsWindow = new TableProperties(getName(), table, desktop);
-			propsWindow.show();
-		} else {
-			if (propsWindow.isClosed()) {
-				if (!propsWindow.wasOpened()) {
-					propsWindow.setWasOpened(true);
-				}
-				add(propsWindow, 0);
-				try {
-					propsWindow.setClosed(false);
-				} catch (PropertyVetoException e) {
-					// Ignore veto problems
-				}
-			}
-			propsWindow.show();
-			// bring to front if it overlaps with other propsWindows
-			try {
-				propsWindow.setSelected(true);
-			} catch (PropertyVetoException e) {
-				// ignore if setSelected is vetoed
-			}
-		}
-		propsWindow.getContentPane().validate();
-		propsWindow.getContentPane().repaint();
+	@Override
+	public void displayProps(UIContext context) {
+		var propsWindow = new TableProperties(context.getTopFrame(), getName(), table);
+		propsWindow.setVisible(true);
+		
 		validate();
 		repaint();
 
@@ -214,19 +186,20 @@ public class TableTab extends MonitorTab {
 	 *
 	 * @return array of row indexes.
 	 */
-	public final List<Object> getSelection() {
+	public final List<Entity> getSelection() {
+		List<Entity> selectedRows = new ArrayList<>();
 		MonitorModel target = getModel();
+		if (target instanceof EntityModel em) {
+			int [] indexes = table.getSelectedRows();
+			RowSorter<? extends TableModel> sorter = table.getRowSorter();
+			for (int index : indexes) {
+				if (sorter != null)
+					index = sorter.convertRowIndexToModel(index);
 
-		int [] indexes = table.getSelectedRows();
-		RowSorter<? extends TableModel> sorter = table.getRowSorter();
-		List<Object> selectedRows = new ArrayList<>();
-		for (int index : indexes) {
-            if (sorter != null)
-                index = sorter.convertRowIndexToModel(index);
-
-			Object selected = target.getObject(index);
-			if (selected != null)
-				selectedRows.add(selected);
+				var selected = em.getAssociatedEntity(index);
+				if (selected != null)
+					selectedRows.add(selected);
+			}
 		}
 
 		return selectedRows;
@@ -234,6 +207,28 @@ public class TableTab extends MonitorTab {
 
 	protected void setSettlementColumnIndex(int idx) {
 		settlementColumnId = idx;
+	}
+
+	/**
+	 * This tab supports filtering if the model can be filtered.
+	 */
+	@Override
+	public boolean isFilterable() {
+		return getModel() instanceof FilteredTableModel;
+	}	
+
+	/**
+	 * Show the filter dialog is available.
+	 * @param context
+	 */
+	@Override
+	public void showFilters(UIContext context) {
+		if (!isFilterable()) {
+			// Should not happen
+			return;
+		}
+		MonitorFilter filter = new MonitorFilter((FilteredTableModel) getModel(), context.getTopFrame());
+		filter.setVisible(true);
 	}
 
 	/**
@@ -270,4 +265,12 @@ public class TableTab extends MonitorTab {
 		return accepted;
 	}
 
+	/**
+	 * Is this table is entity driven. This can be derived from the model
+	 * being an EntityModel.
+	 */
+	@Override
+	public boolean isEntityDriven() {
+        return getModel() instanceof EntityModel;
+    }
 }

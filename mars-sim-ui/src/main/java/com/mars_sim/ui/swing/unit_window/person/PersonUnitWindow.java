@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -27,7 +26,6 @@ import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
-import com.mars_sim.ui.swing.unit_window.SponsorTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitWindow;
 
 
@@ -44,9 +42,7 @@ public class PersonUnitWindow extends UnitWindow {
 	
 	private static final String TWO_SPACES = "  ";
 	private static final String SIX_SPACES = "      ";
-	
-	private static final Font font = StyleManager.getSmallLabelFont();
-	
+		
 	/** Is person dead? */
 	private boolean deadCache = false;
 	
@@ -120,7 +116,7 @@ public class PersonUnitWindow extends UnitWindow {
 		
 		nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		nameLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-		nameLabel.setFont(font);
+		nameLabel.setFont(StyleManager.getSmallLabelFont());
 		nameLabel.setVerticalTextPosition(SwingConstants.BOTTOM);
 		nameLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
@@ -146,14 +142,14 @@ public class PersonUnitWindow extends UnitWindow {
 	 * @param label
 	 * @return
 	 */
-	public JPanel createTile(String title, String tooltip, JLabel label) {
+	private JPanel createTile(String title, String tooltip, JLabel label) {
 		JPanel tilePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		
 		JLabel iconLabel = new JLabel();
 		iconLabel.setToolTipText(tooltip);
 		setImage(title, iconLabel);
 
-		label.setFont(font);
+		label.setFont(StyleManager.getSmallLabelFont());
 		
 		tilePanel.add(iconLabel);
 		tilePanel.add(label);
@@ -203,8 +199,6 @@ public class PersonUnitWindow extends UnitWindow {
 		addTabPanel(new TabPanelSkill(person, desktop));
 
 		addTabPanel(new TabPanelSocial(person, desktop));
-
-		addTabPanel(new SponsorTabPanel(person.getReportingAuthority(), desktop));
 		
 		addFirstPanel(new TabPanelGeneral(person, desktop));
 		
@@ -243,7 +237,7 @@ public class PersonUnitWindow extends UnitWindow {
 	/*
 	 * Updates the status of the person.
 	 */
-	public void statusUpdate() {
+	private void statusUpdate() {
 
 		String townString = null;
 

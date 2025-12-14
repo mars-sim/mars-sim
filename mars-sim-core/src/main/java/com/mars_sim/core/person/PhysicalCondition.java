@@ -18,10 +18,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 import com.mars_sim.core.LifeSupportInterface;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -37,7 +38,6 @@ import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
-import com.mars_sim.core.person.health.MedicalEvent;
 import com.mars_sim.core.person.health.MedicalManager;
 import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.CuredProblem;
@@ -229,6 +229,15 @@ public class PhysicalCondition implements Serializable {
 	private HealthProblem dehydrated;
 	/** Most mostSeriousProblem problem. */
 	private HealthProblem mostSeriousProblem;
+
+    public static final String STRESS_EVENT = "stress event";
+
+    public static final String THIRST_EVENT = "thirst event";
+
+    public static final String HUNGER_EVENT = "hunger event";
+
+    // For PhysicalCondition
+    public static final String FATIGUE_EVENT = "fatigue event";
 
 	private static MasterClock master;
 
@@ -590,7 +599,7 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		if (illnessEvent) {
-			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+			person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 		}
 		
 		// Add time to all medications affecting the person.
@@ -683,7 +692,7 @@ public class PhysicalCondition implements Serializable {
 		} else
 			kJoules -= xdelta * .7;
 
-		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -739,7 +748,7 @@ public class PhysicalCondition implements Serializable {
 			kJoules = personalMaxEnergy;
 		}
 		
-		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 
 	/**
@@ -770,7 +779,7 @@ public class PhysicalCondition implements Serializable {
 			pp = 0;
 		if (performance != pp) {
 			performance = pp;
-			person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
+			person.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
 		}
 	}
 
@@ -788,7 +797,7 @@ public class PhysicalCondition implements Serializable {
 			ff = -100;
 
 		fatigue = ff;
-		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.FATIGUE_EVENT);
 	}
 	
 	/**
@@ -802,7 +811,7 @@ public class PhysicalCondition implements Serializable {
 			f = MAX_FATIGUE;
 
 		fatigue = f;	
-		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.FATIGUE_EVENT);
 	}
 	
 	/**
@@ -816,7 +825,7 @@ public class PhysicalCondition implements Serializable {
 			f = -50;
 		
 		fatigue = f;
-		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.FATIGUE_EVENT);
 	}
 	
 	/**
@@ -832,7 +841,7 @@ public class PhysicalCondition implements Serializable {
 			tt = -50;
 
 		thirst = tt;
-		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.THIRST_EVENT);
 	}
 
 	/**
@@ -848,7 +857,7 @@ public class PhysicalCondition implements Serializable {
 			t = THIRST_CEILING_UPON_DRINKING;
 		
 		thirst = t;
-		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.THIRST_EVENT);
 	}
 	
 	/**
@@ -862,7 +871,7 @@ public class PhysicalCondition implements Serializable {
 			t = MAX_THIRST;
 		
 		thirst = t;
-		person.fireUnitUpdate(UnitEventType.THIRST_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.THIRST_EVENT);
 	}
 
 	/**
@@ -878,7 +887,7 @@ public class PhysicalCondition implements Serializable {
 			h = -100;
 
 		hunger = h;
-		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 
 	/**
@@ -894,7 +903,7 @@ public class PhysicalCondition implements Serializable {
 			h = HUNGER_CEILING_UPON_EATING;
 		
 		hunger = h;
-		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -908,7 +917,7 @@ public class PhysicalCondition implements Serializable {
 			h = MAX_HUNGER;
 
 		hunger = h;
-		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -939,7 +948,7 @@ public class PhysicalCondition implements Serializable {
 			ss = 0D;
 		
 		stress = ss;
-		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 	
 	/**
@@ -961,7 +970,7 @@ public class PhysicalCondition implements Serializable {
 			ss = 0;
 		
 		stress = ss;
-		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 
 	/**
@@ -979,7 +988,7 @@ public class PhysicalCondition implements Serializable {
 			ss = 0;
 		
 		stress = ss;
-		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
+		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 	
 	/**
@@ -1005,7 +1014,7 @@ public class PhysicalCondition implements Serializable {
 			if (panic == null || !problems.contains(panic)) {
 				if (stress >= 100.0) {
 					addMedicalComplaint(medicalManager.getPanicAttack());
-					person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+					person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 				}
 				else if (stress >= STRESS_THRESHOLD) {
 					// Anything to do here ?
@@ -1038,7 +1047,7 @@ public class PhysicalCondition implements Serializable {
 			if (starved == null || !problems.contains(starved)) {
 				addMedicalComplaint(medicalManager.getStarvation());
 				isStarving = true;
-				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+				person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 				logger.log(person, Level.INFO, 20_000, "Starting starving.");
 			}
 
@@ -1094,7 +1103,7 @@ public class PhysicalCondition implements Serializable {
 			if (dehydrated == null || !problems.contains(dehydrated)) {
 				addMedicalComplaint(medicalManager.getDehydration());
 				isDehydrated = true;
-				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+				person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 			}
 		}
 
@@ -1158,7 +1167,7 @@ public class PhysicalCondition implements Serializable {
 			if (radiationPoisoned == null || !problems.contains(radiationPoisoned)) {
 				addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.RADIATION_SICKNESS));
 				isRadiationPoisoned = true;
-				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+				person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 				logger.log(person, Level.INFO, 3000, "Collapsed because of radiation poisoning.");
 			}
 
@@ -1428,7 +1437,7 @@ public class PhysicalCondition implements Serializable {
 			logger.log(person, Level.SEVERE, 20_000, s);
 
 			addMedicalComplaint(medicalManager.getComplaintByName(complaint));
-			person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+			person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 		}
 
 //		else {
@@ -1437,7 +1446,7 @@ public class PhysicalCondition implements Serializable {
 //			HealthProblem illness = getProblemByType(complaint);
 //			if (illness != null) {
 //				illness.startRecovery();
-//				person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
+//				person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 //			}
 //		}
 		return newProblem;
@@ -1543,9 +1552,7 @@ public class PhysicalCondition implements Serializable {
 		person.setDeclaredDead();
 		
 	    // Create medical event for performing an post-mortem exam
-	    MedicalEvent event = new MedicalEvent(person, problem, EventType.MEDICAL_DEATH);
-	    // Register event
-	    Task.registerNewEvent(event);
+	    problem.registerHistoricalEvent(HistoricalEventType.MEDICAL_DEATH);
 	    
 		// Add the person's death info to the postmortem exam waiting list
 		// Note: what if a person died in a settlement outside of home town ?

@@ -36,6 +36,8 @@ public class PartGood extends Good {
 	private static final String FIBERGLASS = "fiberglass";
 	private static final String SCRAP = "scrap";
 	private static final String INGOT = "ingot";
+	private static final String STEEL_INGOT = "Steel ingot";
+	private static final String IRON_INGOT = "iron ingot";
 	private static final String SHEET = "sheet";
 	private static final String TRUSS = "steel truss";
 	private static final String STEEL = "steel";
@@ -86,16 +88,16 @@ public class PartGood extends Good {
 	private static final double VEHICLE_PART_DEMAND = .4;
 	private static final int EVA_PART_DEMAND = 1;
     private static final int KITCHEN_DEMAND = 1;
-	private static final double SCRAP_METAL_DEMAND = .5;
-	private static final double INGOT_METAL_DEMAND = .25;
-	private static final double SHEET_METAL_DEMAND = .25;
+	private static final double SCRAP_METAL_DEMAND = 1;
+	private static final double INGOT_METAL_DEMAND = 1;
+	private static final double SHEET_METAL_DEMAND = 1;
 	private static final double TRUSS_DEMAND = .5;
 	private static final double STEEL_DEMAND = .5;
-	private static final double BRICK_DEMAND = .2;
+	private static final double BRICK_DEMAND = 1.0;
 	private static final double ELECTRICAL_DEMAND = 1.25;
 	private static final double INSTRUMENT_DEMAND = 1.2;
-	private static final int METALLIC_DEMAND = 1;
-	private static final double UTILITY_DEMAND = 0.5;
+	private static final int METALLIC_DEMAND = 2;
+	private static final double UTILITY_DEMAND = 1.5;
 	private static final double TOOL_DEMAND = 0.75;
 	private static final double CONSTRUCTION_DEMAND = 1.2;
 	private static final double GLASS_SHEET_DEMAND = 0.025;
@@ -106,13 +108,13 @@ public class PartGood extends Good {
 	
 	private static final double ATTACHMENT_PARTS_DEMAND = 1.5;
 	private static final double AEROGEL_TILE_DEMAND = 0.8;
-	private static final double PLASTIC_PIPE_DEMAND = 0.1;
+	private static final double PLASTIC_PIPE_DEMAND = 2.5;
 
 	private static final double FUEL_CELL_DEMAND = 3;
 	private static final double FUEL_CELL_STACK_DEMAND = 8;
 	
 	private static final int PARTS_MAINTENANCE_VALUE = 2;
-	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 100D;
+	private static final double CONSTRUCTION_SITE_REQUIRED_PART_FACTOR = 50D;
 	
 	// Cost modifiers
 	private static final double ITEM_COST = 1.1D;
@@ -218,7 +220,7 @@ public class PartGood extends Good {
 				}
 				
 				if (name.equalsIgnoreCase(BRICK)) {
-					return BRICK_DEMAND * CONSTRUCTION_DEMAND;
+					return BRICK_DEMAND;
 				}
 				
 				return CONSTRUCTION_DEMAND;
@@ -506,6 +508,12 @@ public class PartGood extends Good {
 		// May recycle the steel/AL scrap back to ingot
 		// Note: the VP of a scrap metal could be heavily influence by VP of regolith
 
+		if (name.equalsIgnoreCase(STEEL_INGOT))
+			return base * 0.35;
+		
+		if (name.equalsIgnoreCase(IRON_INGOT))
+			return base * 0.75;
+
 		if (name.contains(INGOT))
 			return base * INGOT_METAL_DEMAND;
 
@@ -651,7 +659,7 @@ public class PartGood extends Good {
 			
 			for (var item : process.getOutputList()) {
 				if (!process.getInputList().contains(item)) {
-					outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement, true);
+					outputsValue += ManufactureUtil.getManufactureProcessItemGoodValuePoint(item, settlement, true);
 				}
 			}
 

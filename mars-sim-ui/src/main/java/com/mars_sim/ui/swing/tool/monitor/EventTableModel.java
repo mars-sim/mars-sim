@@ -1,29 +1,29 @@
 /*
  * Mars Simulation Project
  * EventTableModel.java
- * @date 2022-09-24
+ * @date 2025-10-16
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventListener;
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.person.EventType;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This class provides a table model for use with the MonitorWindow that
@@ -31,7 +31,8 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
  * onto the existing Event Manager.
  */
 @SuppressWarnings("serial")
-public class EventTableModel extends AbstractMonitorModel implements HistoricalEventListener{
+class EventTableModel extends CachingTableModel<HistoricalEvent>
+					implements HistoricalEventListener, EntityModel, FilteredTableModel {
 
 	// Column names
 	private static final int TIMESTAMP = 0;
@@ -47,19 +48,14 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	private static final int COLUMNCOUNT = 9;
 
 	// Event that are too low level to display
-	private static final Set<EventType> BLOCKED_EVENTS = Set.of(
-//			EventType.MEDICAL_STARTS,
-//			EventType.MEDICAL_TREATED,
-//			EventType.MEDICAL_DEATH,
-//			EventType.MEDICAL_POSTMORTEM_EXAM,
-			EventType.MISSION_EMERGENCY_BEACON_ON,
-			EventType.MISSION_EMERGENCY_BEACON_OFF,
-			EventType.MISSION_EMERGENCY_DESTINATION,
-			EventType.MISSION_NOT_ENOUGH_RESOURCES,
-			EventType.MISSION_MEDICAL_EMERGENCY,
-			EventType.MISSION_RENDEZVOUS,
-			EventType.MISSION_RESCUE_PERSON,
-			EventType.MISSION_SALVAGE_VEHICLE);
+	private static final Set<HistoricalEventType> BLOCKED_EVENTS = Set.of(
+			HistoricalEventType.MISSION_EMERGENCY_BEACON_OFF,
+			HistoricalEventType.MISSION_EMERGENCY_DESTINATION,
+			HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES,
+			HistoricalEventType.MISSION_MEDICAL_EMERGENCY,
+			HistoricalEventType.MISSION_RENDEZVOUS,
+			HistoricalEventType.MISSION_RESCUE_PERSON,
+			HistoricalEventType.MISSION_SALVAGE_VEHICLE);
 
 	/** Names of the displayed columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -77,9 +73,9 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 		COLUMNS[COORDINATES] = new ColumnSpec(Msg.getString("EventTableModel.column.coordinates"), String.class);
 	}
 
-	private transient List<HistoricalEvent> cachedEvents = new ArrayList<>();
 	private HistoricalEventManager eventManager;
 	private Set<HistoricalEventCategory> blockedTypes = new HashSet<>();
+	private Set<Settlement> settlements = Collections.emptySet();
 
 	/**
 	 * Constructor. Create a new Event model based on the specified event manager.
@@ -87,214 +83,39 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	 * @param manager   Manager to extract events from.
 	 * @param notifyBox to present notification message to user.
 	 */
-	public EventTableModel(MainDesktopPane desktop) {
+	public EventTableModel(HistoricalEventManager manager) {
 		super(Msg.getString("EventTableModel.tabName"), "EventTableModel.numberOfEvents", COLUMNS);
 
 		// Add this model as an event listener.
-		this.eventManager = desktop.getSimulation().getEventManager();
-		
-		blockedTypes.add(HistoricalEventCategory.TASK);
-		blockedTypes.add(HistoricalEventCategory.TRANSPORT);
-
-		// Update the cached events.
-		updateCachedEvents();
+		this.eventManager = manager;
 		
 		// Add listener only when fully constructed
 		eventManager.addListener(this);
-	}
 
-	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
-		// Events do not support filtering
-		return false;
-	}
-
-	private synchronized void updateCachedEvents() {
-
-		// Clean out existing cached events for the Event Table.
-		cachedEvents = new ArrayList<>();
-
-		List<HistoricalEvent> events = new ArrayList<>(eventManager.getEvents());
-
-		for (HistoricalEvent event : events) {
-			if (isDisplayable(event)) {
-				cachedEvents.add(event);
-			}
-
-		}
-
-		// Update all table listeners.
-		SwingUtilities.invokeLater(this::fireTableDataChanged);
-
-	}
-
-	private boolean isDisplayable(HistoricalEvent event) {
-		HistoricalEventCategory category = event.getCategory();
-		EventType eventType = event.getType();
-		return !blockedTypes.contains(category) && !BLOCKED_EVENTS.contains(eventType);
-	}
-
-
-	/**
-	 * Gets the number of rows in the model.
-	 *
-	 * @return the number of Events.
-	 */
-	@Override
-	public int getRowCount() {
-		if (cachedEvents != null)
-			return cachedEvents.size();
-		else
-			return 0;
+		setSettlementColumn(SETTLEMENT);
 	}
 
 	/**
-	 * Gets the unit at the specified row.
-	 *
-	 * @param row Indexes of Unit to retrieve.
-	 * @return Unit associated with the Event as the specified position.
+	 * Sets the settlement filter.
 	 */
 	@Override
-	public Object getObject(int row) {
-		HistoricalEvent event = cachedEvents.get(row);
-		Object result = event.getSource();
-		if (!(result instanceof Entity)) {
-			result = event.getEntity();
-		}
-		return result;
+	public boolean setSettlementFilter(Set<Settlement> settlements) {
+
+		this.settlements = settlements;
+		
+		reloadEvents();
+		return true;
 	}
 
 	/**
-	 * Returns the value of a Cell.
-	 *
-	 * @param rowIndex    Row index of the cell.
-	 * @param columnIndex Column index of the cell.
+	 * Reloads the events from the event manager based on the current filters.
 	 */
-	@Override
-	public Object getValueAt(int rowIndex, int columnIndex) {
-		Object result = null;
-
-		if (rowIndex < cachedEvents.size()) {
-			HistoricalEvent event = cachedEvents.get(rowIndex);
-			if (event != null) {
-				switch (columnIndex) {
-				
-				case TIMESTAMP: {
-					result = event.getTimestamp();
-				}
-					break;
-
-				case CATEGORY: {
-					result = event.getCategory().getName();
-				}
-					break;
-
-				case TYPE: {
-					result = event.getType().getName();
-				}
-					break;
-					
-				case CAUSE: {
-					result = event.getWhatCause();
-				}
-					break;	
-
-				case WHILE: {
-					result = event.getWhileDoing();
-				}
-					break;
-
-				case WHO: {
-					result = event.getWho();
-				}
-					break;
-
-				case ENTITY: {
-					var con = event.getEntity();
-					result = (con != null ? con.getName() : null);
-				}
-					break;
-
-				case SETTLEMENT: {
-					result = event.getHomeTown();
-				}
-					break;
-					
-
-				case COORDINATES: {
-					result = event.getCoordinates();
-				}
-					break;
-					
-				default: {
-					result = null;
-				}
-					break;
+	private void reloadEvents() {
+		Collection<HistoricalEvent> events = eventManager.getEvents().stream()
+				.filter(this::isDisplayable)
+				.toList();
 	
-				}
-			} // end of if event
-		}
-
-		return result;
-	}
-
-	/**
-	 * New event has been added.
-	 */
-	public synchronized void eventAdded(HistoricalEvent event) {
-		if (isDisplayable(event)) {
-			cachedEvents.add(event);
-			fireTableRowsInserted(cachedEvents.size()-1, cachedEvents.size()-1);
-		}
-	}
-
-	/**
-	 * A consecutive sequence of events have been removed from the manager.
-	 *
-	 * @param startIndex First exclusive index of the event to be removed.
-	 * @param endIndex   Last exclusive index of the event to be removed..
-	 */
-	public void eventsRemoved(int startIndex, int endIndex) {
-		updateCachedEvents();
-	}
-
-	/**
-	 * Sets the category type to display.
-	 * 
-	 * @param type
-	 * @param isDisplayed
-	 */
-	public void setDisplayed(HistoricalEventCategory type, boolean isDisplayed) {
-		if (isDisplayed) {
-			blockedTypes.remove(type);
-		}
-		else {
-			blockedTypes.add(type);
-		}
-		updateCachedEvents();
-	}
-
-	/**
-	 * Is a category event being displayed?
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean isDisplayed(HistoricalEventCategory type) {
-		return !blockedTypes.contains(type);
-	}
-	
-	/**
-	 * Prepares the model for deletion.
-	 */
-	@Override
-	public void destroy() {
-		eventManager.removeListener(this);
-		eventManager = null;
-		cachedEvents.clear();
-		cachedEvents = null;
-
-		super.destroy();
+		resetItems(events);		
 	}
 
 	/**
@@ -303,7 +124,159 @@ public class EventTableModel extends AbstractMonitorModel implements HistoricalE
 	 * @param activate Not used
 	 */
 	@Override
-	public void setMonitorEntites(boolean activate) {
-		// Do nothing in this method
+	public void setMonitorEntities(boolean activate) {
+		// No need of monitoring any events. As each event is generated, it won't change.
+	}
+
+	/**
+	 * Is the event displayable based on the current filters:
+	 * 1) Home Town is in Settlement filter
+	 * 2) Category is not blocked by user
+	 * 3) Event Type is not blocked by system
+	 * @param event
+	 * @return
+	 */
+	private boolean isDisplayable(HistoricalEvent event) {
+		if (!settlements.contains(event.getHomeTown())) {
+			return false;
+		}
+		HistoricalEventCategory category = event.getCategory();
+		HistoricalEventType eventType = event.getType();
+		return !blockedTypes.contains(category) && !BLOCKED_EVENTS.contains(eventType);
+	}
+
+	/**
+	 * Returns the value of a Cell.
+	 *
+	 * @param event 
+	 * @param columnIndex Column index of the cell.
+	 */
+	@Override
+	protected Object getItemValue(HistoricalEvent event, int column) {
+		Object result = null;
+
+		switch (column) {
+		
+			case TIMESTAMP: {
+				result = event.getTimestamp();
+			}
+				break;
+	
+			case CATEGORY: {
+				result = event.getCategory().getName();
+			}
+				break;
+	
+			case TYPE: {
+				result = event.getType().getName();
+			}
+				break;
+				
+			case CAUSE: {
+				result = event.getWhatCause();
+			}
+				break;	
+	
+			case WHILE: {
+				result = event.getWhileDoing();
+			}
+				break;
+	
+			case WHO: {
+				result = event.getWho();
+			}
+				break;
+	
+			case ENTITY: {
+				var con = event.getEntity();
+				result = (con != null ? con.getName() : null);
+			}
+				break;
+	
+			case SETTLEMENT: {
+				var home = event.getHomeTown();
+				result = home != null ? home.getName() : null;
+			}
+				break;
+				
+	
+			case COORDINATES: {
+				result = event.getCoordinates();
+			}
+				break;
+				
+			default:
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the Entity associated to the event
+	 *
+	 * @param row Indexes of Unit to retrieve.
+	 * @return Unit at specified position.
+	 */
+	@Override
+	public Entity getAssociatedEntity(int row) {
+		return getItem(row).getEntity();
+	}
+	/**
+	 * New event has been added.
+	 */
+	public synchronized void eventAdded(HistoricalEvent event) {
+		if (isDisplayable(event)) {
+			addItem(event);
+		}
+	}
+
+	/**
+	 * Get a list of the supported filters and their active state based on the HistoricalEventCategory.
+	 * @return
+	 */	
+	@Override
+	public List<FilteredTableModel.Filter> getActiveFilters() {
+		var filters = new ArrayList<FilteredTableModel.Filter>();
+		for (HistoricalEventCategory category : HistoricalEventCategory.values()) {
+			boolean isActive = !blockedTypes.contains(category);
+			filters.add(new FilteredTableModel.Filter(category.name(), category.getName(), isActive));
+		}
+		return filters;
+	}
+
+	/**
+	 * Enable/disable display of a category of events.
+	 * @param category Name of the category
+	 * @param selected true to display, false to block
+	 */
+	@Override
+	public void setFilter(String category, boolean isDisplayed) {
+		var type = HistoricalEventCategory.valueOf(category);
+		if (isDisplayed) {
+			blockedTypes.remove(type);
+		}
+		else {
+			blockedTypes.add(type);
+		}
+
+		reloadEvents();
+	}
+
+	/**
+	 * Prepares the model for deletion.
+	 */
+	@Override
+	public void destroy() {
+		eventManager.removeListener(this);
+
+		super.destroy();
+	}
+
+	/**
+	 * Events have been removed from the system.
+	 */
+	@Override
+	public void eventsRemoved(int startIndex, int endIndex) {
+		reloadEvents();
 	}
 }

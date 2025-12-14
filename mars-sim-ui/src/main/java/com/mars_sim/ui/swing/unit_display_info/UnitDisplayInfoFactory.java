@@ -7,9 +7,13 @@
 
 package com.mars_sim.ui.swing.unit_display_info;
 
+import javax.swing.Icon;
+
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
+import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
@@ -81,4 +85,22 @@ public final class UnitDisplayInfoFactory {
 				return null;
 		}
 	}
+
+	/**
+	 * Helper method to shortcut finding a icon for a Button that best represents the entity
+	 * @param owner
+	 * @return
+	 */
+    public static Icon getButtonIcon(Entity owner) {
+        // Holding logic
+		if (owner instanceof Unit unit) {
+			UnitDisplayInfo displayInfo = getUnitDisplayInfo(unit);
+			if (displayInfo != null) {
+				return displayInfo.getButtonIcon(unit);
+			}
+		}
+
+		// Holding logic, should be based on entity type
+		return ImageLoader.getIconByName("building");
+    }
 }

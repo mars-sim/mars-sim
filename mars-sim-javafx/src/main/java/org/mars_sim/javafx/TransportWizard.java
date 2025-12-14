@@ -14,7 +14,7 @@ import com.mars_sim.core.BoundedObject;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.UnitEventType;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.structure.BuildingTemplate;
 import com.mars_sim.core.structure.Settlement;
@@ -221,7 +221,7 @@ public class TransportWizard {
 		   	logger.info("DeliverTask's run() is on " + Thread.currentThread().getName() + " Thread");
 			// it's now on pool-3-thread-1 Thread
 		   	resupply.deliverOthers();
-           	mgr.getSettlement().fireUnitUpdate(UnitEventType.END_TRANSPORT_WIZARD_EVENT);
+           	mgr.getSettlement().fireUnitUpdate(EntityEventType.END_TRANSPORT_WIZARD_EVENT);
 		}
     }
 
@@ -317,7 +317,7 @@ public class TransportWizard {
 		    } // end of while (buildingI.hasNext())
 
 	        Building building = mgr.getACopyOfBuildings().get(0);
-	        mgr.getSettlement().fireUnitUpdate(UnitEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
+	        mgr.getSettlement().fireUnitUpdate(EntityEventType.END_CONSTRUCTION_WIZARD_EVENT, building);
 
         //resupply.deliverOthers();
         // Need to get back to the original thread in Resupply.java that started the instance

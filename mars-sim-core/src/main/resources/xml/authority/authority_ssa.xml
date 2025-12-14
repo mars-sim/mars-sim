@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<authority xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="authority.xsd"
+		code="SSA" name="Saudi Space Agency" corporation="false"
+					agenda="Space Sustainability" gender-ratio="0.9">
+			<country name="Saudi Arabia"/>
+			<settlement-name name="New Makkah" />
+			<settlement-name name="New Madinah" />
+			<settlement-name name="New Dammam" />
+			<settlement-name name="New Buraydah" />
+			<settlement-name name="New Tabuk" />
+			<settlement-name name="New Khobar" />
+			<settlement-name name="New Taif" />
+			<settlement-name name="New Yanbu" />
+			<settlement-name name="New Riyadh" />
+			<settlement-name name="New Jiddah" />
+			<settlement-name name="New Dhahran" />
+												
+			<rover-name name="Al-Jami" />
+			<rover-name name="Gazal" />
+			<rover-name name="Steyr" />
+			<rover-name name="Ghazal" />
+			<rover-name name="Tabuk" />
+			<rover-name name="Sabic" />
+			<rover-name name="Turki" />
+			<rover-name name="Alawwal" />
+			<rover-name name="Almarai" />
+			<rover-name name="Bahri" />
+			<rover-name name="Quraya" />
+			<rover-name name="Flyna" />
+			<rover-name name="Jadwa" />
+			<rover-name name="Alireza" />
+			<rover-name name="Jarir" />
+			<rover-name name="Maaden" />
+			<rover-name name="Nadec" />		
+			<rover-name name="Kudu" />
+			<rover-name name="Okaz" />
+			<rover-name name="Olayan" />
+			<rover-name name="Qaym" />
+			<rover-name name="Rezayat" />		
+			<rover-name name="Saco" />
+			<rover-name name="Dussur" />
+			<rover-name name="Xenel" />
+			<rover-name name="Zamil" />
+			<rover-name name="Tasali" />		
+		</authority>

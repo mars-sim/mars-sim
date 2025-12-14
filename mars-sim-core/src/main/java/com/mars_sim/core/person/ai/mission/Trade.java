@@ -48,6 +48,9 @@ public class Trade extends RoverMission implements CommerceMission {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Trade.class.getName());
 
+	// Trade mission event type
+	public static final String BUY_LOAD_EVENT = "buy load";
+
 	/** Mission phases. */
 	private static final MissionPhase TRADE_DISEMBARKING = new MissionPhase("Mission.phase.tradeDisembarking");
 	private static final MissionPhase TRADE_NEGOTIATING = new MissionPhase("Mission.phase.tradeNegotiating");
@@ -300,7 +303,7 @@ public class Trade extends RoverMission implements CommerceMission {
 					}
 					objective.updateBought(buyLoad, profit);
 
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}
@@ -315,9 +318,9 @@ public class Trade extends RoverMission implements CommerceMission {
 						assignTask(person, negotiationTask);
 					}
 				}
-				else if (getPhaseDuration() > 1000D) {
+				else if (getPhaseTimeElapse() > 1000D) {
 					objective.updateBought(new HashMap<>(), 0D);
-					fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
+					fireMissionUpdate(BUY_LOAD_EVENT);
 					setPhaseEnded(true);
 				}
 			}

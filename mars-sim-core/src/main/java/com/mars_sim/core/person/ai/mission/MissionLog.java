@@ -21,6 +21,11 @@ public class MissionLog implements Serializable  {
 	private static final long serialVersionUID = 1L;
 
 	/**
+	 * The maximum number of log entries to compare for duplicates.
+	 */
+	static final int MAX_COMPARE = 2;
+
+	/**
      * POJO class for a log entry.
      */
     public static class MissionLogEntry implements Serializable {
@@ -58,10 +63,6 @@ public class MissionLog implements Serializable  {
     
     private boolean done = false;
     
-    private String lastEntry = "";
-    
-    private String lastEnterBy = "";
-    
     private List<MissionLogEntry> log;
     
     private MarsTime timestampEmbarked;
@@ -73,72 +74,28 @@ public class MissionLog implements Serializable  {
     }
     
     /**
-     * Compares with the previous log entry. 
-     * 
-     * @param entry
-     * @param enterBy
-     * @param i
-     */
-    private void compareLog(String entry, String enterBy, int i) {
-    	MissionLogEntry log0 = log.get(i);
-    	String entry0 = log0.getEntry();
-    	String enterBy0 = log0.getEnterBy();
-    	
-    	if (!entry0.equals(entry)
-    		|| !enterBy0.equals(enterBy)) {
-    		// Add new log entry
-    		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
-    	}
-    	
-		// if not meeting above criteria, do not add a new log entry
-    }
-    
-    /**
      * Adds an entry.
      * 
      * @param entry
 	 * @param enterBy the name of the person who logs this
      */
     public void addEntry(String entry, String enterBy) {
-    	if (lastEntry.equals(entry) && lastEnterBy.equals(enterBy)) {
-    		return;
-    	}
-    	
-    	lastEntry = entry;
-    	lastEnterBy = enterBy;
-    	
-    	int size = log.size();
-
-    	if (size == 0) {
-    		// Add new log entry
-	        log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
-    	}
-    	else if (size == 1) {
-    		// Check on log1
-    		compareLog(entry, enterBy, size - 1);
-    	}
-    	else if (size == 2) {
-    		// Check on log2
-    		compareLog(entry, enterBy, size - 1);
-    		// Check on log1
-    		compareLog(entry, enterBy, size - 2);
-    		
+		if (!log.isEmpty()) {
+			int compareSize = Math.min(log.size(), MAX_COMPARE);
+			for(int i=1; i <= compareSize; i++) {
+				MissionLogEntry log0 = log.get(log.size() - i);
+				String entry0 = log0.getEntry();
+				String enterBy0 = log0.getEnterBy();
+				
+				if (entry0.equals(entry) && enterBy0.equals(enterBy) ) {
+					// Same as one of the chosen ones, do not add
+					return;
+				}
+			}
 		}
-    	else if (size == 3) {
-    		// Compare with the last 3 log entries
-       		// Compare with the last 4 log entries
-    		for (int i=1; i < 4; i++) {
-    			// Check on log_
-        		compareLog(entry, enterBy, size - i);
-    		}
-    	}
-    	else {
-    		// Compare with the last 4 log entries
-    		for (int i=1; i < 5; i++) {
-    			// Check on log_
-        		compareLog(entry, enterBy, size - i);
-    		}
-    	}
+
+		// Add entry
+		log.add(new MissionLogEntry(clock.getMarsTime(), entry, enterBy));
     }
 
     /**

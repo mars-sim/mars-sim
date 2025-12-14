@@ -48,9 +48,9 @@ public class DigLocalRegolithMeta extends DigLocalMeta {
         	return Collections.emptyList();
         }
     	
-        double iceValue = settlement.getIceProbabilityValue();
+        double iceValue = settlement.getIceDemandCache();
         
-        double regValue = settlement.getRegolithProbabilityValue();
+        double regValue = settlement.getRegolithDemandCache();
        
         double relativeValue = 0;
         

@@ -6,11 +6,16 @@
  */
 
 package com.mars_sim.core.person;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mars_sim.core.AbstractMarsSimUnitTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EVASuitUtil;
 import com.mars_sim.core.equipment.EquipmentFactory;
@@ -22,18 +27,19 @@ import com.mars_sim.core.structure.Settlement;
 /**
  * Tests the ability of a person to load resources into an EVA suit.
  */
-public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
+public class LoadEVASuitTest extends MarsSimUnitTest {
 
 	/*
 	 * Test if a person don an EVA suit and load it with resources.
 	 */
+	@Test
 	public void testLoadingEVA() throws Exception {
-		Settlement settlement = buildSettlement();
+		Settlement settlement = buildSettlement("mock");
 		Person person = buildPerson("Loader", settlement);
 
 		double capacity = Math.round(person.getCarryingCapacity()* 10D)/10D;
 		
-		assertTrue(person + " has no carrying capacity.", capacity > 0);
+		assertTrue(capacity > 0, person + " has no carrying capacity.");
 		
 		Map<Integer, Number> requiredResourcesMap = new HashMap<>();
 		requiredResourcesMap.put(ResourceUtil.OXYGEN_ID, 1D);
@@ -52,13 +58,13 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		
 		EVASuit suitPerson = EVASuitUtil.findEVASuitWithResources(settlement, person);
 		
-		assertEquals("EVA suit name not matched.", suitSettlement.getName(), suitPerson.getName());
+		assertEquals(suitSettlement.getName(), suitPerson.getName(), "EVA suit name not matched.");
 		
 		double mass = Math.round(suitPerson.getBaseMass() * 100D)/100D;
 		
 		System.out.println(suitSettlement.getName() + " has empty mass of " + mass + " kg");
 		
-		assertEquals("EVA suit's empty mass is incorrect.", 16.18, mass);
+		assertEquals(16.18, mass, "EVA suit's empty mass is incorrect.");
 
 		// 1. Transfer the EVA suit from settlement/vehicle to person
 		suitSettlement.transfer(person);
@@ -68,8 +74,7 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		double percentageFull = suitSettlement.loadResources(personOwner);
 				
 		// 4. Loads the resources into the EVA suit
-		assertTrue("Loading resources into EVA suit but NOT fully loaded.", 
-				(percentageFull > 0.0));
+		assertTrue((percentageFull > 0.0), "Loading resources into EVA suit but NOT fully loaded.");
 		
 		for (int i: requiredResourcesMap.keySet()) {
 			double amount = (double) requiredResourcesMap.get(i);
@@ -82,14 +87,13 @@ public class LoadEVASuitTest extends AbstractMarsSimUnitTest {
 		suitPerson.transfer(settlement);
 		// 2. Get the instance of the suit
 		suitSettlement = EVASuitUtil.findEVASuitWithResources(settlement, person);
-		assertNotNull("Selected Suit from Settlement", suitSettlement);		
+		assertNotNull(suitSettlement, "Selected Suit from Settlement");		
 
 		// 3. Load resources
 		percentageFull = suitSettlement.loadResources(settlementOwner);
 		
 		
 		// 4. Loads the resources into the EVA suit
-		assertTrue("Loading resources into EVA suit but NOT fully loaded.", 
-				(percentageFull > 0.0));
+		assertTrue((percentageFull > 0.0), "Loading resources into EVA suit but NOT fully loaded.");
 	}
 }

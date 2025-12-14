@@ -264,6 +264,27 @@ public class Walk extends Task {
 		return null;
 	}
 	
+	
+	/**
+	 * Check if a worker can walk to a local destination.
+	 *
+	 * @param worker
+	 * @param walkingSteps the walking steps.
+	 * @return true if a worker can walk all the steps to the destination.
+	 */
+	public static boolean canWalkAllSteps(Worker worker, WalkingSteps walkingSteps) {
+		
+		if (worker instanceof Person person) {
+			// Check if all steps can be walked.
+			return canWalkAllSteps(person, walkingSteps);
+		}
+		else if (worker instanceof Robot robot)  {
+			return canWalkAllSteps(robot, walkingSteps);
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Check if person can walk to a local destination.
 	 *
