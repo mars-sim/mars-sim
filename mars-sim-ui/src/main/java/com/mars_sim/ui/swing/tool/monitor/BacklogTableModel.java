@@ -64,7 +64,6 @@ public class BacklogTableModel extends AbstractMonitorModel
 
 	private boolean monitorSettlement = false;
 	
-	private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private List<BacklogEntry> tasks = Collections.emptyList();
 
 	/**
@@ -87,7 +86,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 		if (event.getTarget() instanceof Settlement settlement
 				&& event.getSource() instanceof Settlement) {
 			String eventType = event.getType();
-			if ((SettlementTaskManager.BACKLOG_EVENT.equals(eventType)) && selectedSettlements.contains(settlement)) {
+			if ((SettlementTaskManager.BACKLOG_EVENT.equals(eventType)) && getSelectedSettlements().contains(settlement)) {
 				var newTasks = getTasks();
 	
 				// Reset the Tasks asynchronously in the Swing Dispatcher to avoid sorting clashes
@@ -114,10 +113,10 @@ public class BacklogTableModel extends AbstractMonitorModel
     public void setMonitorEntities(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
-				selectedSettlements.forEach(s -> s.addEntityListener(this));
+				getSelectedSettlements().forEach(s -> s.addEntityListener(this));
 			}
 			else {
-				selectedSettlements.forEach(s -> s.removeEntityListener(this));
+				getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
 			}
 			monitorSettlement = activate;
 		}
@@ -129,7 +128,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	@Override
 	public void destroy() {
 		// Remove as listener for all settlements.
-		selectedSettlements.forEach(s -> s.removeEntityListener(this));
+		getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
 
 		super.destroy();
 	}
@@ -137,14 +136,11 @@ public class BacklogTableModel extends AbstractMonitorModel
 	/**
 	 * Sets the Settlement filter.
 	 * 
-	 * @param filter Settlement
+	 * @param selectedSettlements Settlement
 	 */
 	@Override
-    public boolean setSettlementFilter(Set<Settlement> filter) {
-		selectedSettlements.forEach(s -> s.removeEntityListener(this));
-
-		// Initialize settlements.
-		selectedSettlements = filter;	
+    protected boolean applySettlementFilter(Set<Settlement> selectedSettlements) {
+		getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
 
 		// Initialize task list; backlog maybe null.
 		tasks = getTasks();
@@ -164,7 +160,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * the artificial BacklogEntry record.
 	 */
 	private List<BacklogEntry> getTasks() {
-		return selectedSettlements.stream()
+		return getSelectedSettlements().stream()
 					.flatMap(s -> s.getTaskManager().getAvailableTasks().stream()
 					.map(e -> new BacklogEntry(s, e)))
 					.toList();

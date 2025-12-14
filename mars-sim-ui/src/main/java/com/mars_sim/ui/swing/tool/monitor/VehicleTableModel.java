@@ -139,7 +139,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	 * Filters the vehicles to a settlement.
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		
 		Collection<Vehicle> vehicles = filter.stream()
 				.flatMap(s -> s.getAllAssociatedVehicles().stream())

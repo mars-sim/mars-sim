@@ -161,7 +161,7 @@ public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 	 * @param filter
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		resetItems(filter);
 		
 		return true;

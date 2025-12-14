@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
@@ -20,7 +22,8 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
 /**
  * Table model for Scientific Studies.
  */
-public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy> {
+public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
+       implements EntityManagerListener {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
@@ -58,6 +61,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy> 
 		this.mgr = mgr;
 
 		setSettlementColumn(SETTLEMENT);
+        mgr.addListener(this);
     }
 
     /**
@@ -74,7 +78,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy> 
      * Load the Sceintific Studies for the selected settlements.
      */
     @Override
-    public boolean setSettlementFilter(Set<Settlement> selectedSettlement) {
+    protected boolean applySettlementFilter(Set<Settlement> selectedSettlement) {
         List<ScientificStudy> studies = new ArrayList<>();
         for (Settlement settlement : selectedSettlement) {
             studies.addAll(mgr.getAllStudies(settlement));
@@ -102,9 +106,34 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy> 
             case LEVEL:
                 return entity.getDifficultyLevel();
             case COMPLETED:
-                return entity.getPhaseProgress();
+                return entity.getPhaseProgress() * 100D;
             default:
                 return null;
         }
+    }
+
+    @Override
+    public void entityAdded(Entity newEntity) {
+        if (newEntity instanceof ScientificStudy ss
+                && getSelectedSettlements().contains(ss.getPrimarySettlement())) {
+            addItem(ss);
+        } 
+    }
+
+    @Override
+    public void entityRemoved(Entity removedEntity) {
+        if (removedEntity instanceof ScientificStudy ss) {
+            // The Study may not be visible but remove it just in case
+            removeItem(ss);
+        }
+    }
+
+    /**
+     * Remove listener on Scientific Study Manager when destroying the model.
+     */
+    @Override
+    public void destroy() {
+        mgr.removeListener(this);
+        super.destroy();
     }
 }

@@ -6,8 +6,12 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Collections;
+import java.util.Set;
+
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
@@ -22,6 +26,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
     private String countingMsgKey;
     private ColumnSpec[] columns;
 	private int settlementColumn = -1;
+	private Set<Settlement> selected = Collections.emptySet();
 
     protected AbstractMonitorModel(String name, ColumnSpec[] columns) {
         this.name = name;
@@ -128,6 +133,44 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 			return name + "  " + getRowCount();
 		}
 		return "  " + Msg.getString(countingMsgKey, getRowCount());
+	}
+
+	/**
+	 * Apply the Settlement as a filter. Call the internal method
+	 */
+	@Override
+	public boolean setSettlementFilter(Set<Settlement> selectedSettlements) {
+		var result = applySettlementFilter(selectedSettlements);
+
+		// Do not update the state until the filter has been applied
+		this.selected = selectedSettlements;
+		return result;
+	}
+
+	/**
+	 * Get the currently selected settlements.
+	 */
+	protected Set<Settlement> getSelectedSettlements() {
+		return selected;
+	}
+
+	/**
+	 * Reapplies the current settlement filter.
+	 */
+	protected void reapplyFilter() {
+		if (selected != null) {
+			applySettlementFilter(selected);
+		}
+	}
+
+	/**
+	 * Applies the settlement filter to the model. This should be overridden by subclasses.
+	 * 
+	 * @param selectedSettlement Settlement
+	 * @return 
+	 */
+	protected boolean applySettlementFilter(Set<Settlement> selectedSettlement) {
+		return true;
 	}
 
     /**

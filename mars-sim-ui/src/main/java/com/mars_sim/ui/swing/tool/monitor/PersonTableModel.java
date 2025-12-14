@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +131,6 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	private boolean isDeceasedCB = false;
 	
 	private transient Crewable vehicle;
-	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
 	private transient EntityListener crewListener;
@@ -212,20 +210,18 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	}
 
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {	
+	protected boolean applySettlementFilter(Set<Settlement> filter) {	
 
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeEntityListener(settlementListener));
+			getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 			settlementListener = null;
 		}
-
-		this.settlements = filter;
 		
 		Collection<Person> entities = null;
 		
 		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
 
-			entities = settlements.stream()
+			entities = filter.stream()
 							.map(Settlement::getAllAssociatedPeople)
 							.flatMap(Collection::stream)
 							.filter(this::isPersonDisplayable)
@@ -234,7 +230,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 									EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 		}
 		else {
-			entities = settlements.stream()
+			entities = filter.stream()
 							.map(Settlement::getIndoorPeople)
 							.flatMap(Collection::stream)
 							.filter(this::isPersonDisplayable)
@@ -243,12 +239,10 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 											EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		}
 		
-		if (entities != null && !entities.isEmpty()) {		
-			resetItems(entities);
-		}
+		resetItems(entities);
 
 		// Listen to the settlements for new People
-		settlements.forEach(s -> s.addEntityListener(settlementListener));
+		filter.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
@@ -294,7 +288,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		}
 
 		// Reload
-		setSettlementFilter(settlements);
+		reapplyFilter();
 	}
 
 	/**
@@ -481,7 +475,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 					mission = null;
 				}
 			default -> {
-					settlements.forEach(s -> s.removeEntityListener(settlementListener));
+					getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 					settlementListener = null;
 				}
 		}
