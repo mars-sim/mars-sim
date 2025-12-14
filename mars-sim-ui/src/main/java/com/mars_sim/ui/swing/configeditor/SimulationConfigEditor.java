@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultCellEditor;
@@ -37,14 +38,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListDataListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
@@ -82,7 +84,7 @@ public class SimulationConfigEditor {
 	/**
 	 * Adapter for the UserConfigurableConfig to appear as a ComboModel
 	 */
-	private final class UserConfigurableComboModel implements ComboBoxModel<String> {
+	private final class UserConfigurableComboModel extends AbstractListModel<String> implements ComboBoxModel<String> {
 
 		private static final String BLANK = "";
 		private UserConfigurableConfig<? extends UserConfigurable> config;
@@ -115,14 +117,6 @@ public class SimulationConfigEditor {
 		@Override
 		public String getElementAt(int index) {
 			return getPossibles().get(index);
-		}
-
-		@Override
-		public void addListDataListener(ListDataListener l) {
-		}
-
-		@Override
-		public void removeListDataListener(ListDataListener l) {
 		}
 
 		@Override
@@ -181,6 +175,8 @@ public class SimulationConfigEditor {
 
 	private JTabbedPane tabPanel;
 
+	private SpinnerNumberModel coloniesModel;
+
 	/**
 	 * Constructor.
 	 * 
@@ -211,7 +207,7 @@ public class SimulationConfigEditor {
 		});
 
 		f.setSize(HORIZONTAL_SIZE, 350);
-		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //$NON-NLS-1$
+		f.setTitle(Msg.getString("SimulationConfigEditor.title")); //-NLS-1$
 
 		// Sets the dialog content panel.
 		JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
@@ -237,7 +233,7 @@ public class SimulationConfigEditor {
 
 			String commanderName = personConfig.getCommander().getFullName();
 			String sponsor = personConfig.getCommander().getSponsorStr();
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), SwingConstants.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Command Mode"), SwingConstants.CENTER); //-NLS-1$
 			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 
@@ -245,19 +241,19 @@ public class SimulationConfigEditor {
 			topPanel.add(ccPanel);
 
 			JLabel commanderLabel = new JLabel("   " + Msg.getString("SimulationConfigEditor.commanderName",
-					commanderName), SwingConstants.LEFT); //$NON-NLS-1$
+					commanderName), SwingConstants.LEFT); //-NLS-1$
 			ccPanel.add(commanderLabel);
 
 			ccPanel.add(new JLabel());
 
 			JLabel sponsorLabel = new JLabel(Msg.getString("SimulationConfigEditor.sponsorInfo",
-					sponsor)  + "                 ", SwingConstants.RIGHT); //$NON-NLS-1$
+					sponsor)  + "                 ", SwingConstants.RIGHT); //-NLS-1$
 			ccPanel.add(sponsorLabel);
 
 		}
 
 		else {
-			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), SwingConstants.CENTER); //$NON-NLS-1$
+			JLabel gameModeLabel = new JLabel(Msg.getString("SimulationConfigEditor.gameMode", "Sandbox Mode"), SwingConstants.CENTER); //-NLS-1$
 			StyleManager.applyHeading(gameModeLabel);
 			topPanel.add(gameModeLabel);
 		}
@@ -286,14 +282,14 @@ public class SimulationConfigEditor {
 		configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
 
 		// Create add settlement button.
-		JButton addButton = new JButton(ImageLoader.getIconByName("action/add")); //$NON-NLS-1$
-		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //$NON-NLS-1$
+		JButton addButton = new JButton(ImageLoader.getIconByName("action/add")); //-NLS-1$
+		addButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.add")); //-NLS-1$
 		addButton.addActionListener(e -> addNewRows());
 		configurationButtonInnerTopPanel.add(addButton);
 
 		// Create remove settlement button.
-		JButton removeButton = new JButton(ImageLoader.getIconByName("action/remove")); //$NON-NLS-1$
-		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //$NON-NLS-1$
+		JButton removeButton = new JButton(ImageLoader.getIconByName("action/remove")); //-NLS-1$
+		removeButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.remove")); //-NLS-1$
 		removeButton.addActionListener(e -> removeSelectedSettlements());
 		configurationButtonInnerTopPanel.add(removeButton);
 
@@ -302,22 +298,21 @@ public class SimulationConfigEditor {
 		f.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create error label.
-		errorLabel = new JLabel("", SwingConstants.CENTER); //$NON-NLS-1$
+		errorLabel = new JLabel("", SwingConstants.CENTER); //-NLS-1$
 		errorLabel.setForeground(Color.RED);
 		bottomPanel.add(errorLabel, BorderLayout.NORTH);
 
 		// Monitor table models for errors
 		settlementTableModel.addTableModelListener(e -> checkModelErrors());
 		arrivalTableModel.addTableModelListener(e -> checkModelErrors());
+		coloniesModel = new SpinnerNumberModel(0, 0, 10, 1);
 
 		// Create the config control
 		configControl = new UserConfigurableControl<Scenario>(f, "Scenario", scenarioConfig) {
 
 			@Override
 			protected void displayItem(Scenario newDisplay) {
-				clearError();
-				settlementTableModel.loadDefaultSettlements(newDisplay);
-				arrivalTableModel.loadDefaultSettlements(newDisplay);
+				displayScenario(newDisplay);
 			}
 
 			@Override
@@ -327,20 +322,28 @@ public class SimulationConfigEditor {
 		};
 
 		// Add an Export button
-		JButton exportButton = new JButton(ImageLoader.getIconByName("action/export")); //$NON-NLS-1$
+		JButton exportButton = new JButton(ImageLoader.getIconByName("action/export")); //-NLS-1$
 		exportButton.setToolTipText("Export");
 		exportButton.addActionListener(e -> exportScenario());
 		configControl.getPane().add(exportButton);
-		JButton importButton = new JButton(ImageLoader.getIconByName("action/import")); //$NON-NLS-1$
+		JButton importButton = new JButton(ImageLoader.getIconByName("action/import")); //-NLS-1$
 		importButton.setToolTipText("Import");
 		importButton.addActionListener(e -> importScenario());
 		configControl.getPane().add(importButton);
 		bottomPanel.add(configControl.getPane(), BorderLayout.WEST);
 
+		// Colonialize selected scenario
+		JPanel colPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		colPanel.setBorder(BorderFactory.createTitledBorder("Lunar Colonies"));
+		bottomPanel.add(colPanel, BorderLayout.CENTER);
+
+		JSpinner maxColSpinner = new JSpinner(coloniesModel);
+		colPanel.add(maxColSpinner);
+
 		// Create the bottom button panel.
-		JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		bottomButtonPanel.setBorder(BorderFactory.createTitledBorder("Simulation"));
-		bottomPanel.add(bottomButtonPanel, BorderLayout.EAST);
+		JPanel simPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		simPanel.setBorder(BorderFactory.createTitledBorder("Simulation"));
+		bottomPanel.add(simPanel, BorderLayout.EAST);
 
 		if (mode == GameMode.COMMAND) {
 			// Create the sponsor note label
@@ -370,7 +373,7 @@ public class SimulationConfigEditor {
 				}
 		});
 
-		bottomButtonPanel.add(startButton);
+		simPanel.add(startButton);
 
 		// Edit Authority button.
 		JButton authorityButton = new JButton(ImageLoader.getIconByName("sponsor")); //$NON-NLS-1$
@@ -390,13 +393,13 @@ public class SimulationConfigEditor {
         		 crewButton.setEnabled(useCrew);
         });
 
-		bottomButtonPanel.add(cb);
+		simPanel.add(cb);
 
 		configurationButtonInnerTopPanel.add(authorityButton);
 		configurationButtonInnerTopPanel.add(crewButton);
 
 		// Force a load of the default Scenario
-		configControl.setSelectedItem(ScenarioConfig.PREDEFINED_SCENARIOS[0]);
+		configControl.setSelectedItem(ScenarioConfig.DEFAULT_SCENARIO);
 
 		// Set the location of the dialog at the center of the screen.
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -678,7 +681,20 @@ public class SimulationConfigEditor {
 	private Scenario finalizeSettlementConfig(String name, String description) {
 		List<InitialSettlement> is = settlementTableModel.getSettlements();
 		List<ArrivingSettlement> arrivals = arrivalTableModel.getArrivals();
-		return new Scenario(name, description, is, arrivals, false);
+		int maxColonies = coloniesModel.getNumber().intValue();
+		return new Scenario(name, description, is, arrivals, maxColonies, false);
+	}
+
+
+	/**
+	 * A Scenario has been selected
+	 * @param newDisplay
+	 */
+	private void displayScenario(Scenario newDisplay) {
+		clearError();
+		settlementTableModel.loadDefaultSettlements(newDisplay);
+		arrivalTableModel.loadDefaultSettlements(newDisplay);
+		coloniesModel.setValue(newDisplay.getMaxColonies());
 	}
 
 	/**
