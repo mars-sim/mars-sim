@@ -270,9 +270,11 @@ public class SimulationBuilder {
 				builder.createFullSettlement(spec);
 			}
 			else {
-				String defaultName = (scenarioName != null) ? scenarioName : ScenarioConfig.PREDEFINED_SCENARIOS[0];
+				String defaultName = (scenarioName != null) ? scenarioName : ScenarioConfig.DEFAULT_SCENARIO;
 				ScenarioConfig config = getScenarioConfig();
 				var bootstrap = config.getItem(defaultName);
+
+				sim.getLunarColonyManager().setMaxColonies(bootstrap.getMaxColonies());
 
 				builder.createInitialSettlements(bootstrap);
 				sim.getTransportManager().loadArrivingSettments(bootstrap,

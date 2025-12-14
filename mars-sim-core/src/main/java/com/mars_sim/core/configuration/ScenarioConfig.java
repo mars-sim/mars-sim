@@ -56,10 +56,12 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String ARRIVING_SETTLEMENT_LIST = "arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
 	private static final String ARRIVAL_ATTR = "arrival-in-sols";
+	private static final String MAX_COLONIES_ATTR = "max-colonies";
 	
 	// Default scenario
-	public static final String[] PREDEFINED_SCENARIOS = {"Default", "Single Settlement"};
-	
+	public static final String DEFAULT_SCENARIO = "Default";
+	private static final String[] PREDEFINED_SCENARIOS = {DEFAULT_SCENARIO, "Single Settlement"};
+
 	public ScenarioConfig(SimulationConfig config) {
 		super(PREFIX);
 
@@ -217,6 +219,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		
 		saveOptionalAttribute(root, NAME_ATTR, item.getName());
 		saveOptionalAttribute(root, DESCRIPTION_ATTR, item.getDescription());
+		saveOptionalAttribute(root, MAX_COLONIES_ATTR, Integer.toString(item.getMaxColonies()));
 
 		// Add the initial settlements
 		Element initialSettlementList = new Element(INITIAL_SETTLEMENT_LIST);
@@ -264,12 +267,13 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		Element root = doc.getRootElement();
 		String name = root.getAttributeValue(NAME_ATTR);
 		String description = root.getAttributeValue(DESCRIPTION_ATTR);
+		int maxColonies = ConfigHelper.getOptionalAttributeInt(root, MAX_COLONIES_ATTR, 0);
 
 		List<Coordinates> occupiedLocations = new ArrayList<>();
 		List<InitialSettlement> is = loadInitialSettlements(root, occupiedLocations);
 		List<ArrivingSettlement> arrivals = loadArrivingSettlements(root, occupiedLocations);
 		
-		return new Scenario(name, description, is, arrivals, predefined);
+		return new Scenario(name, description, is, arrivals, maxColonies,predefined);
 	}
 	
 	/**

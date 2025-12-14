@@ -64,6 +64,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 	public void setMaxColonies(int max) {
 		// Don't exceed the number of predefined colony specs.
 		this.maxColonies = Math.min(max, colonySpecs.size());
+		logger.info("Maximum number of lunar colonies set to " + this.maxColonies);
 	}
 
 	/**
@@ -106,7 +107,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		lunarWorld.timePassing(pulse);
 		
-		if ((colonies.size() < maxColonies) && (RandomUtil.getRandomInt(100) == 1)) {
+		if ((colonies.size() < maxColonies) && (RandomUtil.getRandomInt(100) <= 5)) {
 			addColony();
 		}
 					
