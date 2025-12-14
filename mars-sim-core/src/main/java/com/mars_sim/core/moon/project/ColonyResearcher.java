@@ -16,10 +16,9 @@ import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.science.ResearchStudy;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 
-public class ColonyResearcher extends Colonist implements Temporal {
+public class ColonyResearcher extends Colonist {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -173,11 +172,5 @@ public class ColonyResearcher extends Colonist implements Temporal {
 	@Override
 	public SkillManager getSkillManager() {
 		return skillManager;
-	}
-	
-	public void destroy() {
-		mainScienceType = null;
-		skillManager = null;
-		research = null;
 	}
 }

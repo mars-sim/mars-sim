@@ -6,13 +6,11 @@
  */
 package com.mars_sim.core.moon.project;
 
-import java.io.Serializable;
-
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.science.ScienceType;
 
-public class DevelopmentProject extends LunarProject implements Serializable {
+public class DevelopmentProject extends LunarProject {
 
 	private static final long serialVersionUID = 1L;
 
