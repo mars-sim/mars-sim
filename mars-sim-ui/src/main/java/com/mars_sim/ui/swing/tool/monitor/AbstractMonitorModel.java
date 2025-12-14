@@ -23,11 +23,19 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
     private ColumnSpec[] columns;
 	private int settlementColumn = -1;
 
-    protected AbstractMonitorModel(String name, String countingMsgKey, ColumnSpec[] columns) {
+    protected AbstractMonitorModel(String name, ColumnSpec[] columns) {
         this.name = name;
-        this.countingMsgKey = countingMsgKey;
+
         this.columns = columns;
     }
+
+	/**
+	 * Allows the table model to define a custom counting message key.
+	 * @param countingMsgKey
+	 */
+	protected void setCountingMsgKey(String countingMsgKey) {
+		this.countingMsgKey = countingMsgKey;
+	}
 
 	/**
 	 * This model as a Settlement column. This is a special column that can be visible/hidden according
@@ -116,6 +124,9 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	 */
 	@Override
 	public String getCountString() {
+		if (countingMsgKey == null) {
+			return name + "  " + getRowCount();
+		}
 		return "  " + Msg.getString(countingMsgKey, getRowCount());
 	}
 

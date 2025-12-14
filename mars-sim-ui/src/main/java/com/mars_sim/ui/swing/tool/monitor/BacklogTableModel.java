@@ -72,9 +72,9 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 */
 	public BacklogTableModel() {
 		super(Msg.getString("BacklogTableModel.tabName"),
-							"BacklogTableModel.counting",
 							COLUMNS);	
-		setSettlementColumn(SETTLEMENT_COL);	
+		setSettlementColumn(SETTLEMENT_COL);
+		setCountingMsgKey("BacklogTableModel.counting");
 	}
 
 	/**

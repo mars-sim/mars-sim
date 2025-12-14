@@ -31,8 +31,9 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
     private List<T> categories;
 
     protected CategoryTableModel(String name, String countingMsgKey, ColumnSpec[] names, List<T> cats) {
-        super(name, countingMsgKey, names);
+        super(name, names);
         this.categories = cats;
+		setCountingMsgKey(countingMsgKey);
     }
         
 	/**

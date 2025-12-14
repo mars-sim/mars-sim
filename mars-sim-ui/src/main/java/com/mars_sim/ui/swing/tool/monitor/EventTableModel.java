@@ -84,7 +84,8 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	 * @param notifyBox to present notification message to user.
 	 */
 	public EventTableModel(HistoricalEventManager manager) {
-		super(Msg.getString("EventTableModel.tabName"), "EventTableModel.numberOfEvents", COLUMNS);
+		super(Msg.getString("EventTableModel.tabName"), COLUMNS);
+		setCountingMsgKey("EventTableModel.numberOfEvents");
 
 		// Add this model as an event listener.
 		this.eventManager = manager;
