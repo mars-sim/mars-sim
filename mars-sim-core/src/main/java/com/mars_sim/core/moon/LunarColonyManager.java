@@ -107,7 +107,7 @@ public class LunarColonyManager implements Serializable, Temporal {
 	public boolean timePassing(ClockPulse pulse) {
 		lunarWorld.timePassing(pulse);
 		
-		if ((colonies.size() < maxColonies) && (RandomUtil.getRandomInt(100) <= 5)) {
+		if ((colonies.size() < maxColonies) && (RandomUtil.getRandomInt(100) == 1)) {
 			addColony();
 		}
 					
