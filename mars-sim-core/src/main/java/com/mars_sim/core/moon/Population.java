@@ -309,7 +309,8 @@ public class Population implements Serializable, Temporal {
 		if (nation != null) {
 			// Go back to one's nation pool
 			nation.addColonist(c);
-			((ColonySpecialist)c).setColony(null);	
+			
+			c.setColony(null);
 		}
 		
 		// Speed up the growth rate as an engineer has just been removed
