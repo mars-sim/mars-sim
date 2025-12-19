@@ -15,6 +15,7 @@ import com.mars_sim.core.time.ClockPulse;
 /**
  * This is a panel that displays content relavent to the Simulation.
  */
+@SuppressWarnings("serial")
 public class ContentPanel extends JPanel
         implements TemporalComponent {
 

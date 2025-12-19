@@ -84,6 +84,7 @@ public class SimulationConfigEditor {
 	/**
 	 * Adapter for the UserConfigurableConfig to appear as a ComboModel
 	 */
+	 @SuppressWarnings("serial")
 	private final class UserConfigurableComboModel extends AbstractListModel<String> implements ComboBoxModel<String> {
 
 		private static final String BLANK = "";

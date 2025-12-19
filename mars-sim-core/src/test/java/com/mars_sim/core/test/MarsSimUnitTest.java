@@ -1,8 +1,5 @@
 package com.mars_sim.core.test;
 
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 
 import com.mars_sim.core.MarsSimContext;

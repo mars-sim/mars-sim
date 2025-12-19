@@ -16,11 +16,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.mission.objectives.TradeObjective;
+import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
 
