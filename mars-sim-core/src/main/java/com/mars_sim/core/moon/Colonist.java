@@ -1,15 +1,14 @@
 package com.mars_sim.core.moon;
 
-import java.io.Serializable;
-
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.PersonBuilder;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillOwner;
 import com.mars_sim.core.person.ai.SkillType;
+import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 
-public class Colonist implements Serializable, Entity, SkillOwner {
+public abstract class Colonist implements Entity, SkillOwner, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -18,9 +17,7 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 	// May add back private static final SimLogger logger = SimLogger.getLogger(Colonist.class.getName())
 	
 	private int age;
-	
-//	private double experience;
-	
+		
 	private double performance = 100;
 	
 	private String name;
@@ -30,7 +27,7 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 	/** The researcher's skill manager. */
 	private SkillManager skillManager;
 	
-	public Colonist(String name, Colony colony) {
+	protected Colonist(String name, Colony colony) {
 		this.name = name;
 		this.colony = colony;
 		this.age = RandomUtil.getRandomInt(18, 70);
@@ -39,8 +36,6 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 		skillManager = new SkillManager(this);
 		// Determine skills
 		determineSkills();
-		// Get the experience points
-//		experience = getTotalSkillExperience();
 	}
 
 	
@@ -70,8 +65,7 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 					break;
 	
 				// Mechanics skill is sought after for repairing malfunctions
-				case MATERIALS_SCIENCE:
-				case MECHANICS:
+				case MATERIALS_SCIENCE, MECHANICS:
 					skillLevel = PersonBuilder.getInitialSkillLevel(0, 45);
 					break;
 
@@ -98,15 +92,6 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 		}
 	}
 	
-//	@Override
-//	public boolean timePassing(ClockPulse pulse) {
-//		if (c instanceof ColonistResearcher r) {
-//			r.timePassing(pulse);
-//		} else if (c instanceof Specialist r) {
-//			r.timePassing(pulse);
-//		}
-//	}
-	
 	public double getTotalSkillExperience() {
 		return skillManager.getTotalSkillExperiences();
 	}
@@ -132,10 +117,6 @@ public class Colonist implements Serializable, Entity, SkillOwner {
 
 	public Colony getColony() {
 		return colony;
-	}
-
-	public void setColony(Colony object) {
-		colony = object;
 	}
 
 	@Override

@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.moon.project;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +14,9 @@ import com.mars_sim.core.moon.Colonist;
 import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 
-public class ColonySpecialist extends Colonist implements Serializable, Temporal {
+public class ColonySpecialist extends Colonist {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -31,15 +29,12 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	private double activeness = 10;
 	
 	protected ScienceType scienceType;
-	
-	private Colony colony;
-	
+		
 	/** A set of projects this specialist engages in. */
 	private Set<DevelopmentProject> projects = new HashSet<>();
 	
 	public ColonySpecialist(String name, Colony colony) {
 		super(name, colony);
-		this.colony = colony;
 		
 		scienceType = ScienceType.getRandomEngineeringSubject();
 	}
@@ -50,7 +45,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	public void createProject() {
 		numDevelopment++;
 		DevelopmentProject proj = new DevelopmentProject(this, scienceType.getName() + numDevelopment, scienceType);
-		colony.addEngineeringProject(proj);
+		getColony().addEngineeringProject(proj);
 		projects.add(proj);
 	}
 	
@@ -58,7 +53,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	 * Joins an engineering project.
 	 */
 	public void joinProject() {
-		DevelopmentProject proj = colony.getOneEngineeringProject(this);
+		DevelopmentProject proj = getColony().getOneEngineeringProject(this);
 		if (proj != null && proj.canAddParticipants()) {
 			numDevelopment++;
 			proj.addParticipant(this);
@@ -72,6 +67,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 
 		double time = pulse.getElapsed();
 				
+		var colony = getColony();
 		int numEngineers = colony.getPopulation().getNumEngineers();
 		
 		int numEngineeringProjects = colony.getNumDevelopmentProjects();
@@ -100,7 +96,6 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 		if (pulse.isNewHalfSol()) {
 			// Update the experience once every half sol
 			double experience = getTotalSkillExperience();
-//			logger.info(colony.getName() + " - " + name + " exp: " + Math.round(experience * 100.0)/100.0);
 
 			double timeValue = time / 100;
 			double expertiseValue = Math.log10(1 + experience) * activeness / (1 + num);
@@ -125,7 +120,7 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	
 
 	private double getDevelopmentArea() {
-		return colony.getDevelopmentArea();
+		return getColony().getDevelopmentArea();
 	}
 	
 	
