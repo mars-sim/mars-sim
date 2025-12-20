@@ -24,7 +24,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This is a tab panel for display a table and an optional information panel
- * on teh north of the table.
+ * on the north of the table.
  */
 @SuppressWarnings("serial")
 public abstract class EntityTableTabPanel<T extends Entity> extends EntityTabPanel<T> {

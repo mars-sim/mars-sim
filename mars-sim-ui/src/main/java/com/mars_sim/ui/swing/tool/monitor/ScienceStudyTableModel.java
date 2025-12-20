@@ -98,7 +98,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
             case NAME:
                 return entity.getName();
             case SETTLEMENT:
-                return entity.getPrimarySettlement();
+                return entity.getPrimarySettlement().getName();
             case PHASE:
                 return entity.getPhase().getName();
             case SCIENCE:

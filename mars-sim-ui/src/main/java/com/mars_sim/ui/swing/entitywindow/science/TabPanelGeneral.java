@@ -83,7 +83,7 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 	private void updateTopics() {
 		var study = getEntity();
 		
-		var topicStr = study.getTopic().stream().collect(Collectors.joining(  ","));
+		var topicStr = study.getTopic().stream().collect(Collectors.joining(","));
 		topics.setText(topicStr);
 	}
 

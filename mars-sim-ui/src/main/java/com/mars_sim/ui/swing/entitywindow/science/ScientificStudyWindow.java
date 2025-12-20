@@ -1,3 +1,9 @@
+/*
+ * Mars Simulation Project
+ * ScientificStudyWindow.java
+ * @date 2025-12-15
+ * @author Barry Evans
+ */
 package com.mars_sim.ui.swing.entitywindow.science;
 
 import java.util.Properties;
@@ -6,6 +12,9 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 
+/**
+ * This content displays the details of a Scientific Study.
+ */
 public class ScientificStudyWindow extends EntityContentPanel<ScientificStudy> {
 
     /** default serial id. */
