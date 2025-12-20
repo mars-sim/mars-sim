@@ -40,7 +40,7 @@ public class ScientificStudyManager
 
 	private MasterClock masterClock;
 
-	private transient Set<EntityManagerListener> listeners = new HashSet<>();
+	private transient Set<EntityManagerListener> listeners;
 	
 	/**
 	 * Constructor.
@@ -91,7 +91,11 @@ public class ScientificStudyManager
 
 		// Notify listeners
 		final var fixedStudy = study;
-		listeners.forEach(l -> l.entityAdded(fixedStudy));
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.forEach(l -> l.entityAdded(fixedStudy));
+			}
+		}
 
 		logger.fine(researcher, "Began writing proposal for " + study.getName());
 
@@ -101,14 +105,26 @@ public class ScientificStudyManager
 	/**
 	 * Add a listener for new scientific studies.
 	 * @param listener the listener.
-	 * @return
 	 */
 	public void addListener(EntityManagerListener listener) {
-		listeners.add(listener);
+		if (listeners == null) {
+			listeners = new HashSet<>();
+		}
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
 	}
 
+	/**
+	 * Removes a previously registered listener.
+	 * @param listener
+	 */
 	public void removeListener(EntityManagerListener listener) {
-		listeners.remove(listener);
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.remove(listener);
+			}
+		}
 	}
 
 	/**
@@ -187,6 +203,16 @@ public class ScientificStudyManager
 	public List<ScientificStudy> getAllStudies(boolean completed) {
 		synchronized (studies) {
 			return studies.stream().filter(s -> s.isCompleted() == completed).toList();
+		}
+	}
+
+	/**
+	 * Get all the studies.
+	 * @return
+	 */
+	public List<ScientificStudy> getAllStudies() {
+		synchronized (studies) {
+			return new ArrayList<>(studies);
 		}
 	}
 

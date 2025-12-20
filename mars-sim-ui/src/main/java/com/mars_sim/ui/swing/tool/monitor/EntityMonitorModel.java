@@ -36,7 +36,7 @@ public abstract class EntityMonitorModel<T extends MonitorableEntity> extends Ca
 
 	/**
 	 * Constructor 
-	 * @param name Name of the table commonly is the pural of the entity
+	 * @param name Name of the table commonly is the plural of the entity
 	 * @param columns Defines the columns in the table
 	 */
 	protected EntityMonitorModel(String name, ColumnSpec[] columns) {

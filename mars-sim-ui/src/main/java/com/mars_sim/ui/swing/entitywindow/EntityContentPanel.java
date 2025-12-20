@@ -18,6 +18,7 @@ import javax.swing.SwingConstants;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
@@ -72,8 +73,8 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         setMinimumSize(dim);
         setPreferredSize(dim);
 
-        // Temp hack until all listeners are consolidated
-        if (entity instanceof Unit u) {
+        // Some Entities are MonitorableEntities and can send events
+        if (entity instanceof MonitorableEntity u) {
             u.addEntityListener(this);
         }
     }
@@ -176,8 +177,8 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 
     @Override
     public void destroy() {
-        // Temp hack until all listeners are consolidated
-        if (entity instanceof Unit u) {
+        // Some Entities are MonitorableEntities and can send events
+        if (entity instanceof MonitorableEntity u) {
             u.removeEntityListener(this);
         }
         tabPanels.forEach(t -> t.destroy());

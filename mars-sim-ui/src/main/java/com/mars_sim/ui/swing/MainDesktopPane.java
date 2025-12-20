@@ -436,11 +436,6 @@ public class MainDesktopPane extends JDesktopPane
 			var cw = openToolWindow(ResupplyWindow.NAME);
 			((ResupplyWindow)cw).openTransportable(t);
 		}
-		else if (entity instanceof ScientificStudy s) {
-			// This is a holding code until all tools are mograted
-			var cw = openToolWindow(ScienceWindow.NAME);
-			((ScienceWindow)cw).setScientificStudy(s);
-		}
 		else {
 			openEntityPanel(entity, null);
 		}

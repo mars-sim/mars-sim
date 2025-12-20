@@ -9,7 +9,7 @@ package com.mars_sim.core;
 /**
  * Listener interface for the adding/removing of Entities. The concept of an Entity Manager
  * is not a concrete class, but any class that manages a collection of Entities may elect to
- * use this interface as ameans to communicate changes to the collection.
+ * use this interface as a means to communicate changes to the collection.
  */
 public interface EntityManagerListener {
 

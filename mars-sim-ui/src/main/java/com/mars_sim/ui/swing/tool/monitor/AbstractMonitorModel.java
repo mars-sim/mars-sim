@@ -158,16 +158,14 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	 * Reapplies the current settlement filter.
 	 */
 	protected void reapplyFilter() {
-		if (selected != null) {
-			applySettlementFilter(selected);
-		}
+		applySettlementFilter(selected);
 	}
 
 	/**
 	 * Applies the settlement filter to the model. This should be overridden by subclasses.
 	 * 
-	 * @param selectedSettlement Settlement
-	 * @return 
+	 * @param selectedSettlement Settlements to filter by.
+	 * @return true if the filter was applied.
 	 */
 	protected boolean applySettlementFilter(Set<Settlement> selectedSettlement) {
 		return true;

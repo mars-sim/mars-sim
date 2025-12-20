@@ -159,9 +159,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * 
 	 * @param centerContentPanel
 	 */
-	protected void buildUI(JPanel centerContentPanel) {
-		throw new UnsupportedOperationException("Build UI not implemented yet");
-	}
+	protected abstract void buildUI(JPanel centerContentPanel);
 
 	/**
 	 * Adds a standard titled border.

@@ -93,7 +93,7 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 		mainPanel.add(attrPanel);
 
 		attrPanel.addTextField("Code", agencyShortName, null);
-		attrPanel.addTextField("Name", ra.getDescription(), null);
+		attrPanel.addTextField(Msg.getString("Entity.name"), ra.getDescription(), null);
 		attrPanel.addTextField("Corporation", Boolean.toString(ra.isCorporation()), null);
 
 		// Country names

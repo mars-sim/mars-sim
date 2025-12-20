@@ -53,10 +53,10 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
     /**
      * Constructor.
      * 
-     * @param settlement the settlement to monitor.
+     * @param mgr the Scientific Study Manager
      */
     public ScienceStudyTableModel(ScientificStudyManager mgr) {
-		super(Msg.getString("Entity.scientificstudy.pural"),
+		super(Msg.getString("Entity.scientificstudy.plural"),
 				COLUMNS);	
 		this.mgr = mgr;
 
@@ -75,7 +75,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
     }
 
     /**
-     * Load the Sceintific Studies for the selected settlements.
+     * Load the Scientific Studies for the selected settlements.
      */
     @Override
     protected boolean applySettlementFilter(Set<Settlement> selectedSettlement) {
