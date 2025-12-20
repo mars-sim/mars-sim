@@ -55,6 +55,7 @@
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>
             <xs:attribute name="description" type="xs:string"/>
+            <xs:attribute name="max-colonies" type="xs:integer" use="optional" default="0"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>

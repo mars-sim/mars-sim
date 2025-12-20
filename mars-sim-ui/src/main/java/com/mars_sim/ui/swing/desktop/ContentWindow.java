@@ -21,6 +21,7 @@ import com.mars_sim.ui.swing.TemporalComponent;
 /**
  * This class renders a ContentPanel into an InternalWindow that can be displayed in a DesktopPane.
  */
+@SuppressWarnings("serial")
 public class ContentWindow extends JInternalFrame
     implements ConfigurableWindow, TemporalComponent {
 

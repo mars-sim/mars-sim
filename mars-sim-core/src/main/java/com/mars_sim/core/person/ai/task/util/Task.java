@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -28,9 +28,7 @@ import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
-
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.LocalBoundedObject;

@@ -15,7 +15,6 @@ import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.UIContext;
 
 /**

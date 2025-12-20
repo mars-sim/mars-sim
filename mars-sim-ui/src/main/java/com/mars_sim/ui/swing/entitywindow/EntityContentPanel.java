@@ -32,6 +32,7 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
  * It automatically is notified of EntityEvent and will forward them to any TabPanels that are also EntityListeners.
  * It also forwards ClockPulse events to any TabPanels that are also TemporalComponents.
  */
+@SuppressWarnings("serial")
 public class EntityContentPanel<T extends Entity> extends ContentPanel
     implements ConfigurableWindow, EntityListener {
 

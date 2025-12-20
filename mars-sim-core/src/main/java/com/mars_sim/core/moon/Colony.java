@@ -14,7 +14,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.moon.project.ColonyResearcher;
 import com.mars_sim.core.moon.project.ColonySpecialist;
@@ -26,8 +25,6 @@ import com.mars_sim.core.time.Temporal;
 public class Colony implements Temporal, Entity, Comparable<Colony> {
 
 	private static final long serialVersionUID = 1L;
-
-	private static final SimLogger logger = SimLogger.getLogger(Colony.class.getName());
 
 	private boolean startup = true;
 	
@@ -44,8 +41,6 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	private Coordinates location;
 
 	private LunarActivity dev;
-	private LunarActivity eco;
-	private LunarActivity ind;
 	private LunarActivity res;
 			
 	private Zone researchZone;
@@ -66,7 +61,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * @param location
 	 * @param startup Is it at the startup of the simulation
 	 */
-	public Colony(int id, String name, Authority sponsor, Coordinates location, boolean startup) {
+	public Colony(int id, String name, Authority sponsor, Coordinates location) {
 		this.id = id;
 		this.name = name;
 		this.sponsor = sponsor;
@@ -76,7 +71,7 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 
 		initActivity();
 
-		initZone(startup);
+		initZone();
 	
 		finance = new Finance(this);
 	}
@@ -96,6 +91,8 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * Initializes activities.
 	 */
 	public void initActivity() {
+  LunarActivity ind;
+  LunarActivity eco;
 		dev = new LunarActivity(LunarActivityType.DEVELOPMENT, this);
 		activities.add(dev);
 		eco = new LunarActivity(LunarActivityType.ECONOMIC, this);
@@ -111,10 +108,10 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	 * 
 	 * @param startup Is it at the startup of the simulation
 	 */
-	public void initZone(boolean startup) {
+	private void initZone() {
 		for (ZoneType type: ZoneType.values()) {
 			
-			Zone zone = new Zone(type, this, startup);
+			Zone zone = new Zone(type, this);
 			if (type == ZoneType.RESEARCH) {
 				researchZone = zone;
 			}
@@ -386,28 +383,4 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	public String getContext() {
 		return "Colony";
 	}
-
-	/**
-	 * Prepares for deletion.
-	 */
-	public void destroy() {
-		sponsor = null;
-		location = null;
-		population = null;
-		nation = null; 
-		zones.clear();
-		zones = null;
-		dev = null;
-		eco = null;
-		ind = null;
-		res = null;
-		researchZone = null;
-		developmentZone = null;
-		activities.clear();
-		activities = null;
-	}
-
 }
-
-
-

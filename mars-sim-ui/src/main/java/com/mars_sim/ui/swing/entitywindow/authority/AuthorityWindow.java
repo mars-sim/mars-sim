@@ -16,6 +16,7 @@ import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
  * The AuthorityWindow is the window for an authority entity.
  * It contains a number of tabs.
  */
+@SuppressWarnings("serial")
 public class AuthorityWindow extends EntityContentPanel<Authority> {
 
     public AuthorityWindow(Authority entity, UIContext context, Properties props) {

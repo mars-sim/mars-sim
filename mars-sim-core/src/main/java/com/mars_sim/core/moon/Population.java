@@ -217,7 +217,7 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Adds a researcher.
 	 */
-	public void addOneResearcher() {
+	private void addOneResearcher() {
 		Nation nation = colony.getNation();
 		
 		if (nation == null) {
@@ -228,6 +228,7 @@ public class Population implements Serializable, Temporal {
 			Colonist colonist = nation.getOneColonist();
 			if (colonist != null) {
 				colonists.add(colonist);
+				colonist.setColony(colony);
 			}
 			else {
 				colonists.add(new ColonyResearcher("R" 
@@ -242,7 +243,7 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Adds an engineer.
 	 */
-	public void addOneEngineer() {
+	private void addOneEngineer() {
 		Nation nation = colony.getNation();
 		
 		if (nation == null) {
@@ -253,6 +254,7 @@ public class Population implements Serializable, Temporal {
 			Colonist colonist = nation.getOneColonist();
 			if (colonist != null) {
 				colonists.add(colonist);
+				colonist.setColony(colony);
 			}
 			else {
 				colonists.add(new ColonySpecialist("E" 
@@ -267,7 +269,7 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Removes a researcher.
 	 */
-	public void removeOneResearcher() {
+	private void removeOneResearcher() {
 	
 		int rand = RandomUtil.getRandomInt(colonists.size() - 1);
 	
@@ -279,13 +281,7 @@ public class Population implements Serializable, Temporal {
 
 		Nation nation = colony.getNation();
 		
-		if (nation == null) {
-//			String countryName = colony.getAuthority().getOneCountry();
-//			logger.warning("Colony: " + colony.getName() 
-//							+ "  Sponsor: " + colony.getAuthority().getName()
-//							+ "  Country: " + countryName);
-		}
-		else {
+		if (nation != null) {
 			// Go back to one's nation pool
 			nation.addColonist(c);
 			c.setColony(null);	
@@ -298,7 +294,7 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Removes an engineer.
 	 */
-	public void removeOneEngineer() {
+	private void removeOneEngineer() {
 	
 		int rand = RandomUtil.getRandomInt(colonists.size() - 1);
 	
@@ -310,16 +306,11 @@ public class Population implements Serializable, Temporal {
 
 		Nation nation = colony.getNation();
 		
-		if (nation == null) {
-//			String countryName = colony.getAuthority().getOneCountry();
-//			logger.warning("Colony: " + colony.getName() 
-//							+ "  Sponsor: " + colony.getAuthority().getName()
-//							+ "  Country: " + countryName);
-		}
-		else {
+		if (nation != null) {
 			// Go back to one's nation pool
 			nation.addColonist(c);
-			((ColonySpecialist)c).setColony(null);	
+			
+			c.setColony(null);
 		}
 		
 		// Speed up the growth rate as an engineer has just been removed

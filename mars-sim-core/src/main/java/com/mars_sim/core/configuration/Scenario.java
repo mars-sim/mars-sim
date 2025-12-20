@@ -21,15 +21,17 @@ public class Scenario implements UserConfigurable {
 	private String name;
 	private List<InitialSettlement> settlements;
 	private List<ArrivingSettlement> arrivals;
+	private int maxColonies;
 
 	public Scenario(String name, String description, List<InitialSettlement> settlements,
-			List<ArrivingSettlement> arrivals, boolean bundled) {
+			List<ArrivingSettlement> arrivals, int maxColonies, boolean bundled) {
 		super();
 		this.name = name;
 		this.description = description;
 		this.bundled = bundled;
 		this.settlements = settlements;
 		this.arrivals = arrivals;
+		this.maxColonies = maxColonies;
 	}
 
 	@Override
@@ -62,4 +64,12 @@ public class Scenario implements UserConfigurable {
 	public List<InitialSettlement> getSettlements() {
 		return settlements;
 	}
+
+	/**
+	 * The maximum lunar colonies for this scenario.
+	 * @return
+	 */
+    public int getMaxColonies() {
+        return maxColonies;
+    }
 }

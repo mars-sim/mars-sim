@@ -141,8 +141,4 @@ public class ColonySpecialist extends Colonist implements Serializable, Temporal
 	public double getActiveness() {
 		return activeness;
 	}
-	
-	public void setColony(Colony newColony) {
-		colony = newColony;
-	}
 }
