@@ -19,7 +19,7 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
  * Eventually this will consume the TabPanel functionality.
  */
 @SuppressWarnings("serial")
-public class EntityTabPanel<T extends Entity> extends TabPanel {
+public abstract class EntityTabPanel<T extends Entity> extends TabPanel {
     private T entity;
     private UIContext context;
 

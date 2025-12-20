@@ -119,6 +119,7 @@ public class MonitorWindow extends ContentPanel
 	private static final String TRADE_ICON = "trade";
 	private static final String PEOPLE_ICON = "people";
 	private static final String BUILDING_ICON = "building"; 
+	private static final String SCIENCE_ICON = "science"; 
 	private static final String TASK_ICON = "task";
 	private static final String TRASH_ICON = "action/trash";
 	private static final String LOCATE_ICON = "action/locate";
@@ -259,6 +260,7 @@ public class MonitorWindow extends ContentPanel
 
 		newTabs.add(new TableTab(this, new EventTableModel(context.getSimulation().getEventManager()), true, true,
 				EVENT_ICON));
+		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, true, SCIENCE_ICON));
 
 		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, MissionWindow.ICON));
 		newTabs.add(new TableTab(this, new VehicleTableModel(), true, true, VEHICLE_ICON));

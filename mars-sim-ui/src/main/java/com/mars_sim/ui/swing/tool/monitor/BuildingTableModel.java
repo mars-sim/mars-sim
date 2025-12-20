@@ -130,7 +130,7 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	}
 
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 
 		var newBuildings = filter.stream()
 				.flatMap(s -> s.getBuildingManager().getBuildingSet().stream())

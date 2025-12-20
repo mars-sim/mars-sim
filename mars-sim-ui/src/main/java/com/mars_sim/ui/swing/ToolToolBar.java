@@ -44,7 +44,6 @@ import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
-import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.MarsCalendarDisplay;
@@ -160,7 +159,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(MonitorWindow.NAME, MonitorWindow.ICON);
 		addToolButton(MissionWindow.NAME, MissionWindow.ICON);
 		addToolButton(SettlementWindow.NAME, SettlementWindow.ICON);
-		addToolButton(ScienceWindow.NAME, ScienceWindow.ICON);
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 

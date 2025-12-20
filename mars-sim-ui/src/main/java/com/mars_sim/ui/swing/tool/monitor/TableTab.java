@@ -31,6 +31,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
@@ -50,6 +51,7 @@ public class TableTab extends MonitorTab {
 	private static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3);
 	private static final MarsTimeTableCellRenderer TIME_RENDERER = new MarsTimeTableCellRenderer();
 	private static final NumberCellRenderer CURRENCY_RENDERER = new NumberCellRenderer(2, "$");
+	private static final PercentageTableCellRenderer PERC_RENDERER = new PercentageTableCellRenderer(false);
 
 	/** Table component. */
 	private JTable table;
@@ -98,6 +100,8 @@ public class TableTab extends MonitorTab {
 				case ColumnSpec.STYLE_DIGIT1 -> DIGIT1_RENDERER;
 				case ColumnSpec.STYLE_DIGIT2 -> DIGIT2_RENDERER;
 				case ColumnSpec.STYLE_DIGIT3 -> DIGIT3_RENDERER;
+				case ColumnSpec.STYLE_PERCENTAGE -> PERC_RENDERER;
+
 				default -> null;
 			};
 			if (renderer != null)

@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -58,7 +57,6 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 		
-	private Set<Settlement> settlementSelection = new HashSet<>();
 	private MissionManager missionManager;
 
 	static {
@@ -100,9 +98,8 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	 * Sets the settlement filter.
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		
-		settlementSelection = filter;
 		Collection<Mission> missions = missionManager.getMissions().stream()
 				.filter(m -> filter.contains(m.getAssociatedSettlement()))
 				.toList();
@@ -120,7 +117,7 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	@Override
 	public void addMission(Mission mission) {
 		var s = mission.getAssociatedSettlement();
-		if (settlementSelection.contains(s)) {
+		if (getSelectedSettlements().contains(s)) {
 			addItem(mission);
 		}
 	}

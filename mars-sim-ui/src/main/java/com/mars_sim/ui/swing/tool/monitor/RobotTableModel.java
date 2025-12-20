@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -122,9 +121,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 
 	// List sources.
 	private Crewable vehicle;
-	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
-
 	private EntityListener crewListener;
 	private EntityListener settlementListener;
 	private EntityListener missionListener;
@@ -200,17 +197,15 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 	 * @param filter
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeEntityListener(settlementListener));
+			getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 		}
 		
-		this.settlements = filter;
-
 		List<Robot> entities;
 		if (allAssociated) {
 			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
-			entities = settlements.stream()
+			entities = filter.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
 						.toList();
@@ -222,7 +217,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 			// and the robots that a settlement owns.
 			// But for now, robots cannot go outside of a settlement. 
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
-			entities = settlements.stream()
+			entities = filter.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
 						.toList();
@@ -234,7 +229,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 			resetItems(entities);
 		}
 		// Listen to the settlements for new robots
-		settlements.forEach(s -> s.addEntityListener(settlementListener));
+		filter.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
@@ -394,10 +389,8 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 					missionListener = null;
 					mission = null;
 				}
-			default -> {
-					settlements.forEach(s -> s.removeEntityListener(settlementListener));
-					settlements = null;
-				}
+			default ->
+					getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 		}
 	}	
 
