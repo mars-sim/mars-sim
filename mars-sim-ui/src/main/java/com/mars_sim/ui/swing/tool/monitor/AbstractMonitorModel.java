@@ -6,8 +6,12 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.Collections;
+import java.util.Set;
+
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 
@@ -22,12 +26,21 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
     private String countingMsgKey;
     private ColumnSpec[] columns;
 	private int settlementColumn = -1;
+	private Set<Settlement> selected = Collections.emptySet();
 
-    protected AbstractMonitorModel(String name, String countingMsgKey, ColumnSpec[] columns) {
+    protected AbstractMonitorModel(String name, ColumnSpec[] columns) {
         this.name = name;
-        this.countingMsgKey = countingMsgKey;
+
         this.columns = columns;
     }
+
+	/**
+	 * Allows the table model to define a custom counting message key.
+	 * @param countingMsgKey
+	 */
+	protected void setCountingMsgKey(String countingMsgKey) {
+		this.countingMsgKey = countingMsgKey;
+	}
 
 	/**
 	 * This model as a Settlement column. This is a special column that can be visible/hidden according
@@ -116,7 +129,46 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	 */
 	@Override
 	public String getCountString() {
+		if (countingMsgKey == null) {
+			return name + "  " + getRowCount();
+		}
 		return "  " + Msg.getString(countingMsgKey, getRowCount());
+	}
+
+	/**
+	 * Apply the Settlement as a filter. Call the internal method
+	 */
+	@Override
+	public boolean setSettlementFilter(Set<Settlement> selectedSettlements) {
+		var result = applySettlementFilter(selectedSettlements);
+
+		// Do not update the state until the filter has been applied
+		this.selected = selectedSettlements;
+		return result;
+	}
+
+	/**
+	 * Get the currently selected settlements.
+	 */
+	protected Set<Settlement> getSelectedSettlements() {
+		return selected;
+	}
+
+	/**
+	 * Reapplies the current settlement filter.
+	 */
+	protected void reapplyFilter() {
+		applySettlementFilter(selected);
+	}
+
+	/**
+	 * Applies the settlement filter to the model. This should be overridden by subclasses.
+	 * 
+	 * @param selectedSettlement Settlements to filter by.
+	 * @return true if the filter was applied.
+	 */
+	protected boolean applySettlementFilter(Set<Settlement> selectedSettlement) {
+		return true;
 	}
 
     /**

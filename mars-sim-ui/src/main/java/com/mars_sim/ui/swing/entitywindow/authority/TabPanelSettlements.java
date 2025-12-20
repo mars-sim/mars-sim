@@ -28,6 +28,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * This tab shows Settlements and Arriving Settlements associated with an Authority.
  * This is displayed as a table supporting clicking to open the an entity window.
  */
+@SuppressWarnings("serial")
 class TabPanelSettlements extends TabPanelTable
         implements UnitManagerListener {
 
@@ -48,6 +49,7 @@ class TabPanelSettlements extends TabPanelTable
     /**
      * Table model showing Settlements and Arriving Settlements for the Authority.
      */
+    @SuppressWarnings("serial")
     private static class SettlementModel extends AbstractTableModel
             implements EntityModel {
         private List<Entity> settlements = new ArrayList<>();

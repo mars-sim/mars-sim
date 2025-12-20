@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,7 +74,6 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 
 	private HistoricalEventManager eventManager;
 	private Set<HistoricalEventCategory> blockedTypes = new HashSet<>();
-	private Set<Settlement> settlements = Collections.emptySet();
 
 	/**
 	 * Constructor. Create a new Event model based on the specified event manager.
@@ -84,7 +82,8 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	 * @param notifyBox to present notification message to user.
 	 */
 	public EventTableModel(HistoricalEventManager manager) {
-		super(Msg.getString("EventTableModel.tabName"), "EventTableModel.numberOfEvents", COLUMNS);
+		super(Msg.getString("EventTableModel.tabName"), COLUMNS);
+		setCountingMsgKey("EventTableModel.numberOfEvents");
 
 		// Add this model as an event listener.
 		this.eventManager = manager;
@@ -99,23 +98,13 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	 * Sets the settlement filter.
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> settlements) {
-
-		this.settlements = settlements;
-		
-		reloadEvents();
-		return true;
-	}
-
-	/**
-	 * Reloads the events from the event manager based on the current filters.
-	 */
-	private void reloadEvents() {
+	protected boolean applySettlementFilter(Set<Settlement> settlements) {
 		Collection<HistoricalEvent> events = eventManager.getEvents().stream()
-				.filter(this::isDisplayable)
+				.filter(e -> isDisplayable(e, settlements))
 				.toList();
 	
-		resetItems(events);		
+		resetItems(events);	
+		return true;
 	}
 
 	/**
@@ -136,8 +125,8 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	 * @param event
 	 * @return
 	 */
-	private boolean isDisplayable(HistoricalEvent event) {
-		if (!settlements.contains(event.getHomeTown())) {
+	private boolean isDisplayable(HistoricalEvent event, Set<Settlement> selectedSettlements) {
+		if (!selectedSettlements.contains(event.getHomeTown())) {
 			return false;
 		}
 		HistoricalEventCategory category = event.getCategory();
@@ -225,7 +214,7 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	 * New event has been added.
 	 */
 	public synchronized void eventAdded(HistoricalEvent event) {
-		if (isDisplayable(event)) {
+		if (isDisplayable(event, getSelectedSettlements())) {
 			addItem(event);
 		}
 	}
@@ -259,7 +248,7 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 			blockedTypes.add(type);
 		}
 
-		reloadEvents();
+		reapplyFilter();
 	}
 
 	/**
@@ -273,10 +262,10 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 	}
 
 	/**
-	 * Events have been removed from the system.
+	 * Events have been removed from the system. Just reload the table
 	 */
 	@Override
 	public void eventsRemoved(int startIndex, int endIndex) {
-		reloadEvents();
+		reapplyFilter();
 	}
 }

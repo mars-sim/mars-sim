@@ -8,8 +8,11 @@ package com.mars_sim.core.science;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Settlement;
@@ -36,6 +39,8 @@ public class ScientificStudyManager
 	private List<ScientificStudy> studies = new ArrayList<>();
 
 	private MasterClock masterClock;
+
+	private transient Set<EntityManagerListener> listeners;
 	
 	/**
 	 * Constructor.
@@ -76,6 +81,7 @@ public class ScientificStudyManager
 			}
 			else
 				id = identifier++;
+
 			String numString = missionSol + "-" + String.format("%03d", id);
 			String name = science.getCode() + "-" + researcher.getAssociatedSettlement().getSettlementCode()
 					+ "-" + numString;
@@ -83,9 +89,42 @@ public class ScientificStudyManager
 			studies.add(study);
 		}
 
+		// Notify listeners
+		final var fixedStudy = study;
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.forEach(l -> l.entityAdded(fixedStudy));
+			}
+		}
+
 		logger.fine(researcher, "Began writing proposal for " + study.getName());
 
 		return study;
+	}
+
+	/**
+	 * Add a listener for new scientific studies.
+	 * @param listener the listener.
+	 */
+	public void addListener(EntityManagerListener listener) {
+		if (listeners == null) {
+			listeners = new HashSet<>();
+		}
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
+	}
+
+	/**
+	 * Removes a previously registered listener.
+	 * @param listener
+	 */
+	public void removeListener(EntityManagerListener listener) {
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.remove(listener);
+			}
+		}
 	}
 
 	/**
@@ -164,6 +203,16 @@ public class ScientificStudyManager
 	public List<ScientificStudy> getAllStudies(boolean completed) {
 		synchronized (studies) {
 			return studies.stream().filter(s -> s.isCompleted() == completed).toList();
+		}
+	}
+
+	/**
+	 * Get all the studies.
+	 * @return
+	 */
+	public List<ScientificStudy> getAllStudies() {
+		synchronized (studies) {
+			return new ArrayList<>(studies);
 		}
 	}
 

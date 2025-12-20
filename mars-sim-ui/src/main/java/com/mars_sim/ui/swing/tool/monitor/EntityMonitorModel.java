@@ -21,9 +21,26 @@ public abstract class EntityMonitorModel<T extends MonitorableEntity> extends Ca
 		implements EntityListener, EntityModel {
 
 	private boolean monitorEntities = false;
-	
-	protected EntityMonitorModel(String name, String countingMsgKey, ColumnSpec[] names) {
-		super(name, countingMsgKey, names);
+
+	/**
+	 * Constructor define an explicit name and counting definitions.
+	 * @param name
+	 * @param countingMsgKey
+	 * @param columns Defines the columns in the table
+	 */
+	protected EntityMonitorModel(String name, String countingMsgKey, ColumnSpec[] columns) {
+		super(name, columns);
+
+		setCountingMsgKey(countingMsgKey);
+	}
+
+	/**
+	 * Constructor 
+	 * @param name Name of the table commonly is the plural of the entity
+	 * @param columns Defines the columns in the table
+	 */
+	protected EntityMonitorModel(String name, ColumnSpec[] columns) {
+		super(name, columns);
 	}
 
 	/**

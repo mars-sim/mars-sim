@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -26,13 +25,13 @@ import com.mars_sim.ui.swing.utils.ColumnSpec;
 abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
             implements EntityListener {
 
-    private Set<Settlement> selectedSettlements = Collections.emptySet();
 	private boolean monitorSettlement = false;
     private List<T> categories;
 
     protected CategoryTableModel(String name, String countingMsgKey, ColumnSpec[] names, List<T> cats) {
-        super(name, countingMsgKey, names);
+        super(name, names);
         this.categories = cats;
+		setCountingMsgKey(countingMsgKey);
     }
         
 	/**
@@ -45,10 +44,10 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
     public void setMonitorEntities(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
-				selectedSettlements.forEach(s ->s.addEntityListener(this));
+				getSelectedSettlements().forEach(s ->s.addEntityListener(this));
 			}
 			else {
-				selectedSettlements.forEach(s ->s.removeEntityListener(this));
+				getSelectedSettlements().forEach(s ->s.removeEntityListener(this));
 			}
 			monitorSettlement = activate;
 		}
@@ -59,7 +58,7 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 	 */
 	@Override
 	public void destroy() {
-		selectedSettlements.forEach(s ->s.removeEntityListener(this));
+		getSelectedSettlements().forEach(s ->s.removeEntityListener(this));
 		super.destroy();
 	}
 
@@ -69,11 +68,8 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 	 * @param filter Settlement
 	 */
 	@Override
-    public boolean setSettlementFilter(Set<Settlement> filter) {
-		selectedSettlements.forEach(s ->s.removeEntityListener(this));
-
-		// Initialize settlements.
-		selectedSettlements = filter;	
+    public boolean applySettlementFilter(Set<Settlement> filter) {
+		getSelectedSettlements().forEach(s ->s.removeEntityListener(this));
 
         // Create a new row key for each combination of Settlement and Catogory
 		Collection<CategoryKey<T>> newRows = new ArrayList<>();
@@ -89,7 +85,7 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 			
 		// Add table as listener to each settlement.
 		if (monitorSettlement) {
-			selectedSettlements.forEach(s ->s.addEntityListener(this));
+			filter.forEach(s ->s.addEntityListener(this));
 		}
 
 		return true;

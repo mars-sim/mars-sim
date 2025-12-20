@@ -37,11 +37,10 @@ public abstract class CachingTableModel<T> extends AbstractMonitorModel {
 	 * Constructor.
 	 *
      * @param name Name of the table
-	 * @param countingMsgKey      Key in the Msg bundle used to display row count
 	 * @param columns        Details of the columns displayed.
 	 */
-	protected CachingTableModel(String name, String countingMsgKey, ColumnSpec[] names) {
-        super(name, countingMsgKey, names);
+	protected CachingTableModel(String name, ColumnSpec[] names) {
+        super(name, names);
 
         this.items = new ArrayList<>();
         this.cachedColumns = new HashSet<>();
