@@ -33,19 +33,10 @@ public class EntityContentFactory {
      *
      * @param ent the entity the panel is for.
      * @param context the UI context.
-     * @param initProps any initial properties for the window.
+     * @param props any initial properties for the panel.
      * @return entity content panel; maybe null if Entity not supported.
      */
-    public static EntityContentPanel getEntityPanel(Entity ent, UIContext context, WindowSpec initProps) {
-        // Find the initial properties
-        Properties props;
-        if (initProps != null) {
-            props = initProps.props();
-        }
-        else {
-            props = new Properties();
-        }
-    
+    public static EntityContentPanel getEntityPanel(Entity ent, UIContext context, Properties props) {
         return switch (ent) {
             case Authority a -> new AuthorityWindow(a, context, props);
             case Equipment e -> new EquipmentUnitWindow(e, context, props);

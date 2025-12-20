@@ -36,7 +36,6 @@ import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
-import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
@@ -96,18 +95,18 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		add(fileMenu);
 
 		fileMenu.add(createMenuItemAction("mainMenu.save", "action/save", SAVE, null,
-									KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false)));
+									KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK, false)));
 		fileMenu.add(createMenuItemAction("mainMenu.saveAs", "action/saveAs", SAVE_AS, null,
-									KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.CTRL_DOWN_MASK, false)));
+									KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK, false)));
 		fileMenu.add(new JSeparator());
 		fileMenu.add(createMenuItemAction("mainMenu.exit", "action/exit", EXIT, null,
-									KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false)));
+									KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK, false)));
 
 		// Create tools menu
 		toolsMenu = createToolsMenu();
 		add(toolsMenu);
 		
-		add(createSettingsMenu(desktop));
+		add(createSettingsMenu());
 
 		// Add a dynamic Windows menu
 		final JMenu displayMenu = new JMenu("Windows");
@@ -218,8 +217,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false)));	
 		newMenu.add(createToolMenuItem(SettlementWindow.NAME, SettlementWindow.TITLE, SettlementWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false)));	
-		newMenu.add(createToolMenuItem(ScienceWindow.NAME, ScienceWindow.TITLE, ScienceWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false)));	
 		newMenu.add(createToolMenuItem(ResupplyWindow.NAME, ResupplyWindow.TITLE, ResupplyWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false)));	
 		newMenu.add(createToolMenuItem(CommanderWindow.NAME, CommanderWindow.TITLE, CommanderWindow.ICON,
@@ -257,7 +254,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	}
 
 
-	private JMenu createSettingsMenu(MainDesktopPane desktop) {
+	private JMenu createSettingsMenu() {
 
 		// Create settings menu
 		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
@@ -514,8 +511,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	public final void menuSelected(MenuEvent event) {
 		MainDesktopPane desktop = mainWindow.getDesktop();
 		for (Component c : toolsMenu.getComponents()) {
-			if (c instanceof JCheckBoxMenuItem) {
-				JCheckBoxMenuItem jc = (JCheckBoxMenuItem) c;
+			if (c instanceof JCheckBoxMenuItem jc) {
 				jc.setSelected(desktop.isToolWindowOpen(jc.getActionCommand()));
 			}
 		}
@@ -527,9 +523,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 	@Override
 	public void menuCanceled(MenuEvent event) {
+		// Nothing to do
 	}
 
 	@Override
 	public void menuDeselected(MenuEvent event) {
+		// Nothing to do
 	}
 }

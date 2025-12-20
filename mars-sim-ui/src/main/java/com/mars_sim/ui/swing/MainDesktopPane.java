@@ -40,7 +40,6 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
@@ -57,7 +56,6 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
-import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
@@ -265,7 +263,6 @@ public class MainDesktopPane extends JDesktopPane
 		getToolWindow(SearchWindow.NAME, true);
 		getToolWindow(TimeTool.NAME, true);
 		getToolWindow(SettlementWindow.NAME, true);
-		getToolWindow(ScienceWindow.NAME, true);
 		getToolWindow(MonitorWindow.NAME, true);
 		getToolWindow(MissionWindow.NAME, true);
 		getToolWindow(ResupplyWindow.NAME, true);
@@ -471,7 +468,8 @@ public class MainDesktopPane extends JDesktopPane
 		}
 				
 		// Build a new window
-		var panel = EntityContentFactory.getEntityPanel(entity, this, initProps);
+		var panelProps = (initProps != null) ? initProps.props() : new Properties();
+		var panel = EntityContentFactory.getEntityPanel(entity, this, panelProps);
 		if (panel != null) {
 			var cw = new ContentWindow(this, panel);
 			// Set internal frame listener
