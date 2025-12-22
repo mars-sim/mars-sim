@@ -263,7 +263,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 
 		// Notify listeners
-		fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
+		fireEntityAdded(unit);
 	}
 
 	/**
@@ -277,8 +277,8 @@ public class UnitManager implements Serializable, Temporal {
 
 		map.remove(unit.getIdentifier());
 
-		// Fire unit manager event.
-		fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
+		// Fire entity manager event.
+		fireEntityRemoved(unit);
 	}
 
 	/**
@@ -444,12 +444,11 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fires an entity manager update event.
+	 * Fires an entity added event to notify listeners.
 	 *
-	 * @param eventType the event type.
-	 * @param unit      the unit causing the event.
+	 * @param unit the unit that was added.
 	 */
-	private final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
+	private final void fireEntityAdded(Unit unit) {
 		if (listeners == null) {
 			return;
 		}
@@ -457,11 +456,26 @@ public class UnitManager implements Serializable, Temporal {
 			Set<EntityManagerListener> l = listeners.get(unit.getUnitType());
 			if (l != null) {
 				for (EntityManagerListener listener : l) {
-					if (eventType == UnitManagerEventType.ADD_UNIT) {
-						listener.entityAdded(unit);
-					} else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-						listener.entityRemoved(unit);
-					}
+					listener.entityAdded(unit);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Fires an entity removed event to notify listeners.
+	 *
+	 * @param unit the unit that was removed.
+	 */
+	private final void fireEntityRemoved(Unit unit) {
+		if (listeners == null) {
+			return;
+		}
+		synchronized (listeners) {
+			Set<EntityManagerListener> l = listeners.get(unit.getUnitType());
+			if (l != null) {
+				for (EntityManagerListener listener : l) {
+					listener.entityRemoved(unit);
 				}
 			}
 		}

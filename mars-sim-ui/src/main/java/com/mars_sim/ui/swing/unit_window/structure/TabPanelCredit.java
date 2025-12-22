@@ -196,7 +196,7 @@ public class TabPanelCredit extends TabPanelTable {
 
 		@Override
 		public void entityAdded(Entity newEntity) {
-			if (newEntity.getUnitType() == UnitType.SETTLEMENT) {
+			if (newEntity instanceof Settlement) {
 				settlements.clear();
 				Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.
 						getSettlements()).iterator();
@@ -222,7 +222,7 @@ public class TabPanelCredit extends TabPanelTable {
 		@Override
 		public void entityRemoved(Entity removedEntity) {
 			// Handle the same way as entityAdded for this use case
-			if (removedEntity.getUnitType() == UnitType.SETTLEMENT) {
+			if (removedEntity instanceof Settlement) {
 				settlements.clear();
 				Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.
 						getSettlements()).iterator();

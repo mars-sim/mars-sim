@@ -775,6 +775,6 @@ public class MonitorWindow extends ContentPanel
 	public void destroy() {
 		super.destroy();
 
-		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
+		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
 	}
 }

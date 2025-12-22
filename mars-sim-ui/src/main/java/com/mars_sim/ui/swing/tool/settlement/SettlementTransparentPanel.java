@@ -1076,7 +1076,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         @Override
         public void entityAdded(Entity newEntity) {
-            if (newEntity instanceof Settlement newSettlement && newEntity.getUnitType() == UnitType.SETTLEMENT) {
+            if (newEntity instanceof Settlement newSettlement) {
 
                 // Find the best place
                 for(int i = 0; i < getSize(); i++) {
@@ -1094,7 +1094,7 @@ public class SettlementTransparentPanel extends JComponent {
 
         @Override
         public void entityRemoved(Entity removedEntity) {
-            if (removedEntity instanceof Settlement removedSettlement && removedEntity.getUnitType() == UnitType.SETTLEMENT) {
+            if (removedEntity instanceof Settlement removedSettlement) {
                 removeElement(removedSettlement);
             }
         }

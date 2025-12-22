@@ -401,7 +401,7 @@ public class TabPanelOrganization extends TabPanel {
 		 */
 		@Override
 		public void entityAdded(Entity newEntity) {
-			if (newEntity instanceof Person person && newEntity.getUnitType() == UnitType.PERSON) {
+			if (newEntity instanceof Person person) {
 				addListener(person);
 				emptyNodes();
 				initNodes();
@@ -416,13 +416,12 @@ public class TabPanelOrganization extends TabPanel {
 		 */
 		@Override
 		public void entityRemoved(Entity removedEntity) {
-			if (removedEntity instanceof Person person && removedEntity.getUnitType() == UnitType.PERSON) {
+			if (removedEntity instanceof Person person) {
 				removeListener(person);
 				emptyNodes();
 				initNodes();
 				reloadTree();
 			}
-		}
 		}
 	}
 
@@ -432,7 +431,7 @@ public class TabPanelOrganization extends TabPanel {
 	@Override
 	public void destroy() {		
 		UnitManager unitManager = getSimulation().getUnitManager();
-		unitManager.removeUnitManagerListener(UnitType.PERSON, unitManagerListener);
+		unitManager.removeEntityManagerListener(UnitType.PERSON, entityManagerListener);
 
 		super.destroy();
 	}
