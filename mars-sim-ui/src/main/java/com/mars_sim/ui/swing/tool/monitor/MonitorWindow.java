@@ -405,7 +405,22 @@ public class MonitorWindow extends ContentPanel
 
 			@Override
 			public void entityRemoved(Entity removedEntity) {
-				// Not used in this context
+				if (removedEntity instanceof Settlement s) {
+					// Update authorities tracking
+					var ra = s.getReportingAuthority();
+					var remainingSettlements = authorities.get(ra);
+					if (remainingSettlements != null) {
+						remainingSettlements.remove(s);
+						if (remainingSettlements.isEmpty()) {
+							authorities.remove(ra);
+						}
+					}
+					// Force rebuild of the selection list
+					var choices = setupSelectionChoices();
+					Object currentSelection = selectionCombo.getSelectedItem();
+					buildSelectionCombo(choices, currentSelection);
+					updateTab();
+				}
 			}
 		};
 		unitManager.addEntityManagerListener(UnitType.SETTLEMENT, umListener);

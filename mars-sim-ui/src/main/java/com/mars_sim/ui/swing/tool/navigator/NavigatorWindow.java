@@ -550,7 +550,9 @@ public class NavigatorWindow extends ContentPanel
 
 			@Override
 			public void entityRemoved(Entity removedEntity) {
-				// Not used in this context
+				if (removedEntity instanceof Settlement s) {
+					settlementComboBox.removeItem(s);
+				}
 			}
 		};
 		

@@ -170,6 +170,11 @@ class TabPanelSettlements extends TabPanelTable
      */
     @Override
     public void entityRemoved(Entity removedEntity) {
-        // Not needed for this use case
+        if (removedEntity instanceof Settlement s
+                    && s.getReportingAuthority().equals(authority)) {
+            // Remove the settlement from the model
+            model.settlements.remove(s);
+            model.fireTableDataChanged();
+        }
     }
 }
