@@ -12,7 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Collections;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -164,7 +164,7 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 		    tempCollection = mission.getMembers();
 		}
 		else {
-		    tempCollection = new ConcurrentLinkedQueue<>();
+		    tempCollection = Collections.emptyList();
 		}
 		if (memberCache == null || !memberCache.equals(tempCollection)) {
 			memberCache = tempCollection;
@@ -214,7 +214,8 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 			case Vehicle.MISSION_EVENT -> assignMission();
 			case Mission.PHASE_EVENT, Mission.ADD_MEMBER_EVENT,
 				Mission.REMOVE_MEMBER_EVENT -> updateMission();
-			default -> { // Do nothing
+			default -> {
+						// Do nothing as other event types are not tracked
 						}
 		}
 	}

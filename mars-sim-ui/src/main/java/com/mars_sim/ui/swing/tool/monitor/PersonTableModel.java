@@ -286,7 +286,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 			case LIVE -> isLiveCB = isDisplayed;
 			case DECEASED -> isDeceasedCB = isDisplayed;
 			default -> {
-				// Do nothing
+				// Do nothing as only LIVE or DECEASED filters supported
 			}
 		}
 

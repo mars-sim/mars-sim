@@ -226,8 +226,8 @@ public class TabPanelCrew extends EntityTabPanel<Vehicle>
 		}
 
 		/**
-		 * What mission is monitored ?
-		 * @return
+		 * The mission being monitored
+		 * @return The Mission being tracked by the table. Could be null.
 		 */
 		VehicleMission getMission() {
 			return mission;
