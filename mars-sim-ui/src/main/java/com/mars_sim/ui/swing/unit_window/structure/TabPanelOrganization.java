@@ -29,12 +29,11 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitManagerEvent;
-import com.mars_sim.core.UnitManagerEventType;
-import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.Role;
@@ -75,7 +74,7 @@ public class TabPanelOrganization extends TabPanel {
 
 	private Map<Person, PersonListener> listeners  = new HashMap<>();
 
-	private LocalUnitManagerListener unitManagerListener;
+	private LocalEntityManagerListener entityManagerListener;
 
 	/**
 	 * Constructor.
@@ -98,8 +97,8 @@ public class TabPanelOrganization extends TabPanel {
 	@Override
 	protected void buildUI(JPanel content) {
 		UnitManager unitManager = getSimulation().getUnitManager();
-		unitManagerListener = new LocalUnitManagerListener();
-		unitManager.addUnitManagerListener(UnitType.PERSON, unitManagerListener);
+		entityManagerListener = new LocalEntityManagerListener();
+		unitManager.addEntityManagerListener(UnitType.PERSON, entityManagerListener);
 
 		// Create label panel.
 		var labelPanel = new AttributePanel();
@@ -391,33 +390,39 @@ public class TabPanelOrganization extends TabPanel {
 	}
 
 	/**
-	 * UnitManagerListener inner class.
+	 * EntityManagerListener inner class.
 	 */
-	private class LocalUnitManagerListener implements UnitManagerListener {
+	private class LocalEntityManagerListener implements EntityManagerListener {
 
 		/**
-		 * Catches unit manager update event.
+		 * Catches entity manager update event when entity is added.
 		 *
-		 * @param event the unit event.
+		 * @param newEntity the added entity.
 		 */
-		public void unitManagerUpdate(UnitManagerEvent event) {
-			Unit unit = event.getUnit();
-			UnitManagerEventType eventType = event.getEventType();
-			if (unit.getUnitType() == UnitType.PERSON) {
-				if (eventType == UnitManagerEventType.ADD_UNIT) {
-					addListener((Person) unit);
-					emptyNodes();
-					initNodes();
-					reloadTree();
-				}
-
-				else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
-					removeListener((Person) unit);
-					emptyNodes();
-					initNodes();
-					reloadTree();
-				}
+		@Override
+		public void entityAdded(Entity newEntity) {
+			if (newEntity instanceof Person person && newEntity.getUnitType() == UnitType.PERSON) {
+				addListener(person);
+				emptyNodes();
+				initNodes();
+				reloadTree();
 			}
+		}
+
+		/**
+		 * Catches entity manager update event when entity is removed.
+		 *
+		 * @param removedEntity the removed entity.
+		 */
+		@Override
+		public void entityRemoved(Entity removedEntity) {
+			if (removedEntity instanceof Person person && removedEntity.getUnitType() == UnitType.PERSON) {
+				removeListener(person);
+				emptyNodes();
+				initNodes();
+				reloadTree();
+			}
+		}
 		}
 	}
 

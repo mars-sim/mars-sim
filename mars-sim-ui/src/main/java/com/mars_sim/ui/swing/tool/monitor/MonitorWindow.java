@@ -37,12 +37,11 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitManagerEventType;
-import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
@@ -152,7 +151,7 @@ public class MonitorWindow extends ContentPanel
 
 	private UnitManager unitManager;
 
-	private UnitManagerListener umListener;
+	private EntityManagerListener umListener;
 
 	private MonitorTab activeTab;
 
@@ -398,12 +397,18 @@ public class MonitorWindow extends ContentPanel
 		selectionCombo.addItemListener(this::changeSelection);
 
 		// Listen for new Settlements
-		umListener = event -> {
-			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
-				addNewSettlement(event.getUnit());
+		umListener = new EntityManagerListener() {
+			@Override
+			public void entityAdded(Entity newEntity) {
+				addNewSettlement((Unit) newEntity);
+			}
+
+			@Override
+			public void entityRemoved(Entity removedEntity) {
+				// Not used in this context
 			}
 		};
-		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
+		unitManager.addEntityManagerListener(UnitType.SETTLEMENT, umListener);
 
 	}
 

@@ -70,8 +70,8 @@ public class UnitManager implements Serializable, Temporal {
 	/** The core engine's original build. */
 	private String originalBuild;
 
-	/** List of unit manager listeners. */
-	private transient EnumMap<UnitType, Set<UnitManagerListener>> listeners;
+	/** List of entity manager listeners. */
+	private transient EnumMap<UnitType, Set<EntityManagerListener>> listeners;
 
 	private transient TemporalExecutor executor;
 
@@ -410,12 +410,12 @@ public class UnitManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Adds a unit manager listener.
+	 * Adds an entity manager listener.
 	 *
 	 * @param source UnitType monitored
 	 * @param newListener the listener to add.
 	 */
-	public final void addUnitManagerListener(UnitType source, UnitManagerListener newListener) {
+	public final void addEntityManagerListener(UnitType source, EntityManagerListener newListener) {
 		if (listeners == null) {
 			listeners = new EnumMap<>(UnitType.class);
 		}
@@ -425,18 +425,18 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Removes a unit manager listener.
+	 * Removes an entity manager listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public final void removeUnitManagerListener(UnitType source, UnitManagerListener oldListener) {
+	public final void removeEntityManagerListener(UnitType source, EntityManagerListener oldListener) {
 		if (listeners == null) {
 			// Will never happen
 			return;
 		}
 
 		synchronized(listeners) {
-			Set<UnitManagerListener> l = listeners.get(source);
+			Set<EntityManagerListener> l = listeners.get(source);
 			if (l != null) {
 				l.remove(oldListener);
 			}
@@ -444,7 +444,7 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fires a unit update event.
+	 * Fires an entity manager update event.
 	 *
 	 * @param eventType the event type.
 	 * @param unit      the unit causing the event.
@@ -454,12 +454,14 @@ public class UnitManager implements Serializable, Temporal {
 			return;
 		}
 		synchronized (listeners) {
-			Set<UnitManagerListener> l = listeners.get(unit.getUnitType());
+			Set<EntityManagerListener> l = listeners.get(unit.getUnitType());
 			if (l != null) {
-				UnitManagerEvent e = new UnitManagerEvent(this, eventType, unit);
-
-				for (UnitManagerListener listener : l) {
-					listener.unitManagerUpdate(e);
+				for (EntityManagerListener listener : l) {
+					if (eventType == UnitManagerEventType.ADD_UNIT) {
+						listener.entityAdded(unit);
+					} else if (eventType == UnitManagerEventType.REMOVE_UNIT) {
+						listener.entityRemoved(unit);
+					}
 				}
 			}
 		}

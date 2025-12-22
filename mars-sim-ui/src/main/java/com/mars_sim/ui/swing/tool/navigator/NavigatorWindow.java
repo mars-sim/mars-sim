@@ -39,9 +39,9 @@ import com.formdev.flatlaf.extras.components.FlatToggleButton;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.EntityManagerListener;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitManagerEventType;
-import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.map.IntegerMapData;
@@ -217,7 +217,7 @@ public class NavigatorWindow extends ContentPanel
 
 	private transient List<NamedLayer> mapLayers = new ArrayList<>();
 		
-	private transient UnitManagerListener umListener;
+	private transient EntityManagerListener umListener;
 	
 	/** The map panel class for holding all the map layers. */
 	private MapPanel mapPanel;
@@ -542,13 +542,19 @@ public class NavigatorWindow extends ContentPanel
 		});
 		
 		// Listen for new Settlements
-		umListener = event -> {
-			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
-				settlementComboBox.addItem((Settlement) event.getUnit());
+		umListener = new EntityManagerListener() {
+			@Override
+			public void entityAdded(Entity newEntity) {
+				settlementComboBox.addItem((Settlement) newEntity);
+			}
+
+			@Override
+			public void entityRemoved(Entity removedEntity) {
+				// Not used in this context
 			}
 		};
 		
-		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
+		unitManager.addEntityManagerListener(UnitType.SETTLEMENT, umListener);
 
     	settlementPane.add(settlementComboBox);
 
@@ -809,7 +815,7 @@ public class NavigatorWindow extends ContentPanel
 		if (mapPanel != null)
 			mapPanel.destroy();
 		
-		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
+		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
 		
 	}
 }
