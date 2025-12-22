@@ -545,7 +545,9 @@ public class NavigatorWindow extends ContentPanel
 		umListener = new EntityManagerListener() {
 			@Override
 			public void entityAdded(Entity newEntity) {
-				settlementComboBox.addItem((Settlement) newEntity);
+				if (newEntity instanceof Settlement s) {
+					settlementComboBox.addItem(s);
+				}
 			}
 
 			@Override

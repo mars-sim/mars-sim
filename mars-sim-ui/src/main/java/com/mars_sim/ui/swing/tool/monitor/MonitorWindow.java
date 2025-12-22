@@ -411,9 +411,6 @@ public class MonitorWindow extends ContentPanel
 					var remainingSettlements = authorities.get(ra);
 					if (remainingSettlements != null) {
 						remainingSettlements.remove(s);
-						if (remainingSettlements.isEmpty()) {
-							authorities.remove(ra);
-						}
 					}
 					// Force rebuild of the selection list
 					var choices = setupSelectionChoices();
