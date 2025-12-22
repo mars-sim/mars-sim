@@ -356,6 +356,8 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		           EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT.equals(eventType)) {
 			if (((Unit)target).getUnitType() == UnitType.PERSON)
 				columnNum = CREW;
+		} else if (Vehicle.MISSION_EVENT.equals(eventType)) {
+			columnNum = MISSION;
 		} else if (EntityEventType.OPERATOR_EVENT.equals(eventType)) {
 			columnNum = DRIVER;
 		} else if (EntityEventType.STATUS_EVENT.equals(eventType)) {

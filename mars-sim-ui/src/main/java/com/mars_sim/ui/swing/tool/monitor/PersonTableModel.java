@@ -78,22 +78,22 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("PersonTableModel.column.name"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
-		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("PersonTableModel.column.health"), String.class);
-		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("PersonTableModel.column.energy"), String.class);
-		COLUMNS[WATER] = new ColumnSpec(Msg.getString("PersonTableModel.column.water"), String.class);
-		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("PersonTableModel.column.fatigue"), String.class);
-		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("PersonTableModel.column.stress"), String.class);
-		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("PersonTableModel.column.performance"), String.class);
-		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("PersonTableModel.column.emotion"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("Person.health"), String.class);
+		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("Person.energy"), String.class);
+		COLUMNS[WATER] = new ColumnSpec(Msg.getString("Person.water"), String.class);
+		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("Person.fatigue"), String.class);
+		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("Person.stress"), String.class);
+		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("Person.performance"), String.class);
+		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("Person.emotion"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("PersonTableModel.column.location"), String.class);
 		COLUMNS[LOCALE] = new ColumnSpec(Msg.getString("PersonTableModel.column.locale"), String.class);
-		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("PersonTableModel.column.role"), String.class);
-		COLUMNS[JOB] = new ColumnSpec(Msg.getString("PersonTableModel.column.job"), String.class);
-		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("PersonTableModel.column.shift"), String.class);
-		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
-		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
+		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("Person.role"), String.class);
+		COLUMNS[JOB] = new ColumnSpec(Msg.getString("Person.job"), String.class);
+		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("Person.shift"), String.class);
+		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
+		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("Task"), String.class);
 
 		EVENT_COLUMN_MAPPING = new HashMap<>();
 		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);
@@ -285,6 +285,9 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		switch (name) {
 			case LIVE -> isLiveCB = isDisplayed;
 			case DECEASED -> isDeceasedCB = isDisplayed;
+			default -> {
+				// Do nothing
+			}
 		}
 
 		// Reload
