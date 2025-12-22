@@ -30,21 +30,22 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -53,10 +54,8 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * The TabPanelCrew is a tab panel for a vehicle's crew information.
  */
 @SuppressWarnings("serial")
-public class TabPanelCrew extends TabPanel implements ActionListener {
-
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TabPanelCrew.class.getName());
+public class TabPanelCrew extends EntityTabPanel<Vehicle>
+		implements ActionListener, TemporalComponent {
 
 	private static final String CREW_ICON = "people"; //$NON-NLS-1$
 
@@ -66,27 +65,20 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 	private int crewNumCache = -1;
 
-	/** The mission instance. */
-	private VehicleMission mission;
-
 	/**
 	 * Constructor.
 	 * 
 	 * @param vehicle the vehicle.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelCrew(Vehicle vehicle, MainDesktopPane desktop) {
+	public TabPanelCrew(Vehicle vehicle, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelCrew.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelCrew.title"),
 			ImageLoader.getIconByName(CREW_ICON),
-			Msg.getString("TabPanelCrew.tooltip"), //$NON-NLS-1$
-			vehicle, desktop
+			Msg.getString("TabPanelCrew.tooltip"),
+			context, vehicle
 		);
-
-		if (vehicle.getMission() instanceof VehicleMission vm) {
-			mission = vm;
-		}
 	}
 
 	@Override
@@ -103,9 +95,10 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		crewNumTF = crewCountPanel.addTextField(Msg.getString("TabPanelCrew.crewNum"),
 								"",
 								 Msg.getString("TabPanelCrew.crew.tooltip"));
+		Crewable vehicle = (Crewable) getEntity();
 
 		// Create crew cap header label
-		int crewCapacityCache = ((Crewable) getUnit()).getCrewCapacity();
+		int crewCapacityCache = vehicle.getCrewCapacity();
 		crewCountPanel.addTextField(Msg.getString("TabPanelCrew.crewCapacity"),
 								Integer.toString(crewCapacityCache),
 					 			Msg.getString("TabPanelCrew.crewCapacity.tooltip"));
@@ -128,10 +121,10 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		content.add(memberScrollPane, BorderLayout.CENTER);
 
 		// Create member table model.
-		Crewable vehicle = (Crewable) getUnit();
 		memberTableModel = new OccupantTableModel(vehicle);
-		if ((mission != null) && vehicle.getName().equals(mission.getVehicle().getName()))
-			memberTableModel.setMission(mission);
+		var mission = getEntity().getMission();
+		if ((mission instanceof VehicleMission vm) && vehicle.getName().equals(vm.getVehicle().getName()))
+			memberTableModel.setMission(vm);
 
 		// Create member table.
 		memberTable = new JTable(memberTableModel);
@@ -147,31 +140,24 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		memberScrollPane.setViewportView(memberTable);
 
 		// Call it a click to display details button when user double clicks the table
-		EntityLauncher.attach(memberTable, getDesktop());
+		EntityLauncher.attach(memberTable, getContext());
 
-		update();
+		clockUpdate(null);
 	}
 
 	/**
 	 * Updates the info on this panel.
 	 */
 	@Override
-	public void update() {
-		Vehicle vehicle = (Vehicle) getUnit();
-		Crewable crewable = (Crewable) vehicle;
-		Mission newMission = vehicle.getMission();
-		if ((mission == null) || !mission.equals(newMission)) {
-			if ((newMission instanceof VehicleMission vm) && vehicle.equals(vm.getVehicle())) {
-				mission = vm;
-			}
-			else {
-				mission = null;
-			}
-
-			memberTableModel.setMission(mission);
+	public void clockUpdate(ClockPulse pulse) {
+		Mission newMission = getEntity().getMission();
+		var mission = memberTableModel.getMission();
+		if (newMission instanceof VehicleMission vm && ((mission == null) || !mission.equals(newMission))) {
+			memberTableModel.setMission(vm);
 		}
 
 		// Update crew num
+		Crewable crewable = (Crewable) getEntity();
 		if (crewNumCache != crewable.getCrewNum() ) {
 			crewNumCache = crewable.getCrewNum() ;
 			crewNumTF.setText(Integer.toString(crewNumCache));
@@ -188,13 +174,8 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent event) {
 		// If the crew monitor button was pressed, create tab in monitor tool.
-		Vehicle vehicle = (Vehicle) getUnit();
-		Crewable crewable = (Crewable) vehicle;
-		try {
-			getDesktop().addModel(new PersonTableModel(crewable));
-		} catch (Exception e) {
-			logger.severe("PersonTableModel cannot be added.");
-		}
+		Crewable crewable = (Crewable) getEntity();
+		showModel(new PersonTableModel(crewable));
 	}
 
 	@Override
@@ -243,6 +224,14 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 
 			updateOccupantList();
 		}
+
+		/**
+		 * What mission is monitored ?
+		 * @return
+		 */
+		VehicleMission getMission() {
+			return mission;
+		}	
 
 		/**
 		 * Gets the row count.
@@ -311,9 +300,7 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @return
 		 */
 		boolean isMissionMember(Worker member) {
-			if (mission != null && mission.getMembers().contains(member))
-				return true;
-			return false;
+			return (mission != null && mission.getMembers().contains(member));
 		}
 
 		/**
@@ -336,11 +323,8 @@ public class TabPanelCrew extends TabPanel implements ActionListener {
 		 * @return
 		 */
 		boolean isInAirlock(Worker member) {
-			if (member instanceof Person p		
-				&& (Vehicle)crewable instanceof Rover r && r.isInAirlock(p)) {
-				return true;
-			}
-			return false;
+			return (member instanceof Person p		
+				&& (Vehicle)crewable instanceof Rover r && r.isInAirlock(p));
 		}
 		
 		/**

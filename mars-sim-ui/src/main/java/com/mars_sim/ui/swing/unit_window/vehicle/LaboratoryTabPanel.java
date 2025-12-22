@@ -16,11 +16,13 @@ import javax.swing.JTextArea;
 
 import com.mars_sim.core.Named;
 import com.mars_sim.core.structure.Lab;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -28,13 +30,11 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The LaboratoryTabPanel is a tab panel for an explorer rover's lab information.
  */
 @SuppressWarnings("serial")
-public class LaboratoryTabPanel extends TabPanel {
+class LaboratoryTabPanel extends EntityTabPanel<Rover>
+		implements TemporalComponent {
 	
 	private static final String SCIENCE_ICON = "science"; //$NON-NLS-1$
 
-	/** The Rover instance. */
-	private Rover rover;
-	
 	/** The number of researchers label. */
 	private JLabel researchersLabel;
 
@@ -48,21 +48,18 @@ public class LaboratoryTabPanel extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public LaboratoryTabPanel(Rover unit, MainDesktopPane desktop) { 
-		// Use the TabPanel constructor
+	public LaboratoryTabPanel(Rover unit, UIContext context) { 
 		super(
 			Msg.getString("LaboratoryTabPanel.title"),	
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			Msg.getString("LaboratoryTabPanel.title"),
-			unit, desktop
-		);
-		
-		rover = unit;
+			context, unit
+		);		
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
-		Lab lab = rover.getLab();
+		Lab lab = getEntity().getLab();
 		
 		// Prepare laboratory panel
 		JPanel laboratoryPanel = new JPanel(new BorderLayout());
@@ -85,25 +82,18 @@ public class LaboratoryTabPanel extends TabPanel {
 		laboratoryPanel.add(specialtyTA, BorderLayout.SOUTH);
 	}
 
-	/**
-	 * Update this panel
-	 */
-	@Override
-	public void update() {
-		Lab lab = rover.getLab();
+    /**
+     * Update the number of persons using the lab.
+     * @param pulse Incoming pulse.
+     */
+    @Override
+    public void clockUpdate(ClockPulse pulse) {
+		Lab lab = getEntity().getLab();
 
 		// Update researchers label if necessary.
 		if (researchersCache != lab.getResearcherNum()) {
 			researchersCache = lab.getResearcherNum();
-			researchersLabel.setText("" + researchersCache);
+			researchersLabel.setText(Integer.toString(researchersCache));
 		}
-	}
-
-	@Override
-	public void destroy() {
-	    super.destroy();
-	    
-		researchersLabel = null; 
-	    rover = null;
 	}
 }

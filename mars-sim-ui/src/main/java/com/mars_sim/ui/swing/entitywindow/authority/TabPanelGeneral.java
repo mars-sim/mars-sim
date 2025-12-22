@@ -34,7 +34,6 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 	
 	private static final int EMBLEM_WIDTH = 200;
 	private static final String AGENCY_FOLDER = "agency/";
-	private static final String TAB_ICON = "info";
 	
 	/**
 	 * Constructor.
@@ -44,8 +43,8 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 	 */
 	public TabPanelGeneral(Authority ra, UIContext context) {
 		super(
-			Msg.getString("EntityGeneral.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(TAB_ICON),
+			GENERAL_TITLE,
+			ImageLoader.getIconByName(GENERAL_ICON),
 			null,
 			context, ra
 		);

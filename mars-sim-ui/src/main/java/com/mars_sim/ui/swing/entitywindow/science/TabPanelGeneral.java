@@ -25,15 +25,14 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  */
 class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityListener {
 
-    private static final String ID_ICON = "info";
 	private JProgressBar progress;
 	private JTextArea topics;
 
     TabPanelGeneral(ScientificStudy study, UIContext context) {
 		super(
-			Msg.getString("EntityGeneral.title"), //-NLS-1$
-			ImageLoader.getIconByName(ID_ICON),		
-			Msg.getString("EntityGeneral.tooltip"),
+			GENERAL_TITLE,
+			ImageLoader.getIconByName(GENERAL_ICON),		
+			GENERAL_TOOLTIP,
 			context, study
 		);
     }
@@ -58,7 +57,7 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 		
 		infoPane.addLabelledItem(Msg.getString("ScientificStudy.lead"),
 									new EntityLabel(study.getPrimaryResearcher(), getContext()));
-		infoPane.addLabelledItem(Msg.getString("Entity.settlement"),
+		infoPane.addLabelledItem(Msg.getString("Settlement.singular"),
 									new EntityLabel(study.getPrimarySettlement(), getContext()));
 
 		progress = new JProgressBar(0, 100);
