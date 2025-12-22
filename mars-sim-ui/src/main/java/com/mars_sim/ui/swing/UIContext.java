@@ -44,4 +44,9 @@ public interface UIContext extends Serializable {
      * @return
      */
     JFrame getTopFrame();
+
+    /**
+     * Exits the running simulation. Save any UI properties as needed.
+     */
+    void requestEndSimulation();
 }
