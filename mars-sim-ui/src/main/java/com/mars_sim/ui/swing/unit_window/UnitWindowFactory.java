@@ -10,12 +10,10 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.tool.construction.ConstructionSiteWindow;
 import com.mars_sim.ui.swing.unit_window.person.PersonUnitWindow;
-import com.mars_sim.ui.swing.unit_window.robot.RobotUnitWindow;
 import com.mars_sim.ui.swing.unit_window.structure.SettlementUnitWindow;
 import com.mars_sim.ui.swing.unit_window.structure.building.BuildingUnitWindow;
 
@@ -39,7 +37,6 @@ public class UnitWindowFactory {
     public static UnitWindow getUnitWindow(Unit unit, MainDesktopPane desktop) {
         return switch (unit) {
             case Person p -> new PersonUnitWindow(desktop, p);
-            case Robot r -> new RobotUnitWindow(desktop, r);
             case Settlement s -> new SettlementUnitWindow(desktop, s);
             case Building b -> new BuildingUnitWindow(desktop, b);
             case ConstructionSite cs -> new ConstructionSiteWindow(desktop, cs);

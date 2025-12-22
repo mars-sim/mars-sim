@@ -12,21 +12,20 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.person.ai.Skill;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 
 /**
  * The SkillTabPanel is a tab panel for the skills of a person or robot.
  */
 @SuppressWarnings("serial")
-public class TabPanelSkill extends TabPanelTable {
+public class TabPanelSkill extends EntityTableTabPanel<Worker> {
 
 	private static final String SKILL_ICON = "skill"; //$NON-NLS-1$
 	
@@ -35,27 +34,33 @@ public class TabPanelSkill extends TabPanelTable {
 	/**
 	 * Constructor 1.
 	 * 
-	 * @param unit the unit.
-	 * @param desktop the main desktop.
+	 * @param worker  the worker for this panel.
+	 * @param context the UI context.
 	 */
-	public TabPanelSkill(Unit unit, MainDesktopPane desktop) {
+	public TabPanelSkill(Worker worker, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(SKILL_ICON),
-			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
-			unit, desktop
+			null,
+			worker, context
 		);
 
 		// Create skill table model
-		skillTableModel = new SkillTableModel((Worker)unit);
+		skillTableModel = new SkillTableModel(worker);
 	}
 
+	/**
+	 * Create teh table model to show the skills of the worker.
+	 */
 	@Override
 	protected TableModel createModel() {
 		return skillTableModel;
 	}
 
+	/**
+	 * Customise the column details.
+	 */
 	@Override
 	protected void setColumnDetails(TableColumnModel columnModel) {
 		columnModel.getColumn(0).setPreferredWidth(110);
@@ -71,18 +76,17 @@ public class TabPanelSkill extends TabPanelTable {
 	}
 
 	/**
-	 * Updates the info on this panel.
+	 * Updates the info on this panel. This is a full refresh.
 	 */
 	@Override
-	public void update() {		
+	public void refreshUI() {		
 		skillTableModel.update();
 	}
 
 	/**
 	 * Internal class used as model for the skill table.
 	 */
-	private static class SkillTableModel
-	extends AbstractTableModel {
+	private static class SkillTableModel extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -91,7 +95,6 @@ public class TabPanelSkill extends TabPanelTable {
 		private List<Skill> skills;
 
 		private SkillTableModel(Worker unit) {
-
 	        skillManager = unit.getSkillManager();
 			skills = skillManager.getSkills();
 		}
@@ -108,32 +111,35 @@ public class TabPanelSkill extends TabPanelTable {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = null;
-			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = Integer.class;
-			else if (columnIndex == 2) dataType = Double.class;
-			else if (columnIndex == 3) dataType = Double.class;
-			return dataType;
+			return switch (columnIndex) {
+				case 0 -> String.class;
+				case 1 -> Integer.class;
+				case 2, 3 -> Double.class;
+				default -> Object.class;
+			};
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelSkill.column.skill"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelSkill.column.level"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelSkill.column.exp"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelSkill.column.time"); //$NON-NLS-1$
-			else return null;
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("TabPanelSkill.column.skill");
+				case 1 -> Msg.getString("TabPanelSkill.column.level");
+				case 2 -> Msg.getString("TabPanelSkill.column.exp");
+				case 3 -> Msg.getString("TabPanelSkill.column.time");
+				default -> null;
+			};
 		}
 
 		@Override
 		public Object getValueAt(int row, int column) {
 			Skill s = skills.get(row);
-			if (column == 0) return s.getType().getName();
-			else if (column == 1) return s.getLevel();
-			else if (column == 2) return s.getNeededExp();
-			// Convert the labor time from the unit of millisol to sol
-			else if (column == 3) return s.getTime()/1_000.0;
-			else return null;
+			return switch (column) {
+				case 0 -> s.getType().getName();
+				case 1 -> s.getLevel();
+				case 2 -> s.getNeededExp();
+				case 3 -> s.getTime()/1_000.0;
+				default -> null;
+			};
 		}
 
 		public void update() {

@@ -80,7 +80,7 @@ public class TabPanelBots extends EntityTabPanel<Vehicle>
 	}
 
 	/**
-	 * What for changes in the inventory storing unit.
+	 * Watch for changes in the inventory storing unit.
 	 */
 	@Override
 	public void entityUpdate(EntityEvent event) {

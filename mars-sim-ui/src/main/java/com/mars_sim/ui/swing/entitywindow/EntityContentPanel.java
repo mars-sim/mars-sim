@@ -68,6 +68,9 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 			if (!newTab.isUIDone()) {
 				newTab.initializeUI();
 			}
+            else {
+                newTab.refreshUI();
+            }
 		});
 
         var dim = new Dimension(WIDTH, HEIGHT);
