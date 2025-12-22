@@ -400,7 +400,7 @@ public class MonitorWindow extends ContentPanel
 		umListener = new EntityManagerListener() {
 			@Override
 			public void entityAdded(Entity newEntity) {
-				addNewSettlement((Unit) newEntity);
+				addNewSettlement(newEntity);
 			}
 
 			@Override
@@ -430,10 +430,10 @@ public class MonitorWindow extends ContentPanel
 	/**
 	 * Adds new settlement to the selection and updates the Reporting Authority.
 	 * 
-	 * @param unit
+	 * @param entity
 	 */
-	private void addNewSettlement(Unit unit) {
-		if (unit instanceof Settlement s) {
+	private void addNewSettlement(Entity entity) {
+		if (entity instanceof Settlement s) {
 			SortedComboBoxModel<Object> ms = (SortedComboBoxModel<Object>) selectionCombo.getModel();
 			ms.addElement(s);
 

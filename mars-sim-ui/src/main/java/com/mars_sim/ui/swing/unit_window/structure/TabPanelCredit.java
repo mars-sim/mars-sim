@@ -222,16 +222,9 @@ public class TabPanelCredit extends TabPanelTable {
 		@Override
 		public void entityRemoved(Entity removedEntity) {
 			// Handle the same way as entityAdded for this use case
-			if (removedEntity instanceof Settlement) {
-				settlements.clear();
-				Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.
-						getSettlements()).iterator();
-				while (i.hasNext()) {
-					Settlement settlement = i.next();
-					if (settlement != thisSettlement) {
-						settlements.add(settlement);
-					}
-				}
+			if (removedEntity instanceof Settlement s) {
+				settlements.remove(s);
+				s.getCreditManager().removeListener(this);
 
 				SwingUtilities.invokeLater(
 					new Runnable() {
