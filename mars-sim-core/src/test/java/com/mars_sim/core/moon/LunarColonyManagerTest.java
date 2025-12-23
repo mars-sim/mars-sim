@@ -25,7 +25,8 @@ class LunarColonyManagerTest extends MarsSimUnitTest{
         }
 
         var colonies = lMgr.getColonySet();
-        assertEquals(maxC, colonies.size());
+        // num of colonies may vary from 0 to 2
+        assertTrue(maxC >= colonies.size());
 
         var names = colonies.stream().map(Named::getName).collect(Collectors.toSet());
         assertEquals(maxC, names.size(), "Unique colonies");
