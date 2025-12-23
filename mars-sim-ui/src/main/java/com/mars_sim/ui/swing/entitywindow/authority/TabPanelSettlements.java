@@ -13,8 +13,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.UnitManagerEvent;
-import com.mars_sim.core.UnitManagerListener;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
@@ -30,7 +29,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  */
 @SuppressWarnings("serial")
 class TabPanelSettlements extends TabPanelTable
-        implements UnitManagerListener {
+        implements EntityManagerListener {
 
     private Authority authority;
     private SettlementModel model;
@@ -128,7 +127,7 @@ class TabPanelSettlements extends TabPanelTable
 
         // Connect up listener to update the table when entities change
         var sim = getContext().getSimulation();
-        sim.getUnitManager().addUnitManagerListener(UnitType.SETTLEMENT, this);
+        sim.getUnitManager().addEntityManagerListener(UnitType.SETTLEMENT, this);
         return model;
     }
 
@@ -138,17 +137,17 @@ class TabPanelSettlements extends TabPanelTable
     @Override
     public void destroy() {
         var sim = getContext().getSimulation();
-        sim.getUnitManager().removeUnitManagerListener(UnitType.SETTLEMENT, this);
+        sim.getUnitManager().removeEntityManagerListener(UnitType.SETTLEMENT, this);
         super.destroy();
     }
 
     /**
      * New Settlement has been added
-     * @param event
+     * @param newEntity
      */
     @Override
-    public void unitManagerUpdate(UnitManagerEvent event) {
-        if (event.getUnit() instanceof Settlement s
+    public void entityAdded(Entity newEntity) {
+        if (newEntity instanceof Settlement s
                     && s.getReportingAuthority().equals(authority)) {
 
             // Remove the matching Transportable if it 
@@ -161,6 +160,20 @@ class TabPanelSettlements extends TabPanelTable
 
             // Add in the real Settlement
             model.addEntity(s);
+            model.fireTableDataChanged();
+        }
+    }
+
+    /**
+     * Settlement has been removed
+     * @param removedEntity
+     */
+    @Override
+    public void entityRemoved(Entity removedEntity) {
+        if (removedEntity instanceof Settlement s
+                    && s.getReportingAuthority().equals(authority)) {
+            // Remove the settlement from the model
+            model.settlements.remove(s);
             model.fireTableDataChanged();
         }
     }

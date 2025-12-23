@@ -99,6 +99,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 	private static final String IMMINENT = " be imminent.";
 	private static final String DETECTOR = "The radiation detector just forecasted a ";
 
+	public static final String SALVAGE_EVENT = "Salvage";
+	public static final String MISSION_EVENT = "Mission";
+
+
 	/** The types of status types that make a vehicle unavailable for us. */
 	private static final List<StatusType> UNAVAILABLE_STATUS = Arrays.asList(
 			StatusType.MAINTENANCE,
@@ -114,6 +118,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 			StatusType.OUT_OF_OXIDIZER,	
 			StatusType.TOWING
 			);
+
 
 	/** True if vehicle is currently reserved for a mission. */
 	protected boolean isReservedMission;
@@ -1733,6 +1738,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	public void startSalvage(SalvageProcessInfo info, int settlement) {
 		salvageInfo = new SalvageInfo(this, info, settlement, masterClock.getMarsTime());
 		isSalvaged = true;
+
+		fireUnitUpdate(SALVAGE_EVENT);
 	}
 
 	/**
@@ -1913,6 +1920,7 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 */
 	public void setMission(Mission newMission) {
 		this.mission = newMission;
+		fireUnitUpdate(MISSION_EVENT);
 	}
 
 	/**

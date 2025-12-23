@@ -11,10 +11,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Collections;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -25,19 +23,20 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityListLauncher;
 
@@ -45,10 +44,8 @@ import com.mars_sim.ui.swing.utils.EntityListLauncher;
  * Tab panel displaying vehicle mission info.
  */
 @SuppressWarnings("serial")
-public class TabPanelMission
-extends TabPanel {
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TabPanelMission.class.getName());
+class TabPanelMission extends EntityTabPanel<Vehicle> 
+		implements EntityListener {
 
 	private static final String FLAG_MISSION ="mission";
 	
@@ -62,35 +59,37 @@ extends TabPanel {
 	private EntityLabel missionLabel;
 	private JLabel missionPhase;
 
+	private Mission trackedMission;
+
 	/**
 	 * Constructor.
 	 * 
 	 * @param vehicle the vehicle.
-	 * @param desktop the main desktop.
+	 * @param context the main desktop.
 	 */
-	public TabPanelMission(Vehicle vehicle, MainDesktopPane desktop) {
+	public TabPanelMission(Vehicle vehicle, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelMission.title"), //-NLS-1$
+			Msg.getString("Mission.singular"), //-NLS-1$
 			ImageLoader.getIconByName(FLAG_MISSION),
-			Msg.getString("TabPanelMission.title"), //-NLS-1$
-			vehicle, desktop
+			Msg.getString("Mission.singular"), //-NLS-1$
+			context, vehicle
 		);
 	}
 
 	@Override
 	protected void buildUI(JPanel topContentPanel) {
-  JList<Worker> memberList;
+  		JList<Worker> memberList;
 
 		// Prepare mission top panel
 		var missionTopPanel = new AttributePanel();
 		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
 		// Prepare mission panel
-		missionLabel = new EntityLabel(getDesktop());
-		missionTopPanel.addLabelledItem("Name", missionLabel);
+		missionLabel = new EntityLabel(getContext());
+		missionTopPanel.addLabelledItem(Msg.getString("Entity.name"), missionLabel);
 		
-		missionPhase = missionTopPanel.addRow(Msg.getString("TabPanelMission.missionPhase"), "");
+		missionPhase = missionTopPanel.addRow(Msg.getString("Mission.phase"), "");
 
 		// Prepare mission bottom panel
 		JPanel missionBottomPanel = new JPanel(new BorderLayout(0, 0));
@@ -98,7 +97,7 @@ extends TabPanel {
 		topContentPanel.add(missionBottomPanel, BorderLayout.CENTER);
 
 		// Prepare member label
-		JLabel memberLabel = new JLabel(Msg.getString("TabPanelMission.members"), SwingConstants.CENTER); //$NON-NLS-1$
+		JLabel memberLabel = new JLabel(Msg.getString("Mission.members"), SwingConstants.CENTER); //-NLS-1$
 		StyleManager.applySubHeading(memberLabel);
 		missionBottomPanel.add(memberLabel, BorderLayout.NORTH);
 
@@ -116,40 +115,32 @@ extends TabPanel {
 
 		// Create member list
 		memberList = new JList<>(memberListModel);
-		memberList.addMouseListener(new EntityListLauncher(getDesktop()));
+		memberList.addMouseListener(new EntityListLauncher(getContext()));
 		memberScrollPanel.setViewportView(memberList);
 
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 1, 5, 5));
 		memberListPanel.add(buttonPanel);
 
 		// Create member monitor button
-		monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); //$NON-NLS-1$
+		monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); //-NLS-1$
 		monitorButton.setMargin(new Insets(2, 2, 2, 2));
-		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //$NON-NLS-1$
+		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //-NLS-1$
 		monitorButton.addActionListener(e -> {
-				Mission m = ((Vehicle) getUnit()).getMission();
-				if (m != null) {
-					try {
-						getDesktop().addModel(new PersonTableModel(m));
-					} catch (Exception ex) {
-						logger.severe("PersonTableModel cannot be added.");
-					}
-				}
+			Mission m = getEntity().getMission();
+			if (m != null) {
+				showModel(new PersonTableModel(m));
+			}
 		});
 		buttonPanel.add(monitorButton);
 
-		update();
+		assignMission();
 	}
 
 	/**
 	 * Updates the info on this panel.
 	 */
-	@Override
-	public void update() {
-		Vehicle vehicle = (Vehicle) getUnit();
-		Mission mission = vehicle.getMission();
-
-		missionLabel.setEntity(mission);
+	private void updateMission() {
+		Mission mission = getEntity().getMission();
 
 		String newPhase = null;
 		if (mission != null) {
@@ -173,18 +164,59 @@ extends TabPanel {
 		    tempCollection = mission.getMembers();
 		}
 		else {
-		    tempCollection = new ConcurrentLinkedQueue<>();
+		    tempCollection = Collections.emptyList();
 		}
-		if (memberCache != null && !Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
+		if (memberCache == null || !memberCache.equals(tempCollection)) {
 			memberCache = tempCollection;
 			memberListModel.clear();
-			Iterator<Worker> i = memberCache.iterator();
-			while (i.hasNext()) {
-			    memberListModel.addElement(i.next());
-			}
+			memberCache.forEach(i ->  memberListModel.addElement(i));
 		}
+	}
 
-		// Update mission and monitor buttons.
+	/**
+	 * Remove listener on the mission
+	 */
+	@Override
+	public void destroy() {
+		if (trackedMission != null) {
+			trackedMission.removeEntityListener(this);
+		}
+		super.destroy();
+	}
+
+	/**
+	 * Mission assigned to a vehicle has changed.
+	 */
+	private void assignMission() {
+		var mission = getEntity().getMission();
+
+		missionLabel.setEntity(mission);
 		monitorButton.setEnabled(mission != null);
+
+		// Swap over the Mission tracked
+		if (trackedMission != null) {
+			trackedMission.removeEntityListener(this);
+		}
+		if (mission != null) {
+			mission.addEntityListener(this);
+		}
+		trackedMission = mission;
+
+		updateMission();
+	}
+
+	/**
+	 * Track changes in the associated Mission
+	 */
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		switch(event.getType()) {
+			case Vehicle.MISSION_EVENT -> assignMission();
+			case Mission.PHASE_EVENT, Mission.ADD_MEMBER_EVENT,
+				Mission.REMOVE_MEMBER_EVENT -> updateMission();
+			default -> {
+						// Do nothing as other event types are not tracked
+						}
+		}
 	}
 }

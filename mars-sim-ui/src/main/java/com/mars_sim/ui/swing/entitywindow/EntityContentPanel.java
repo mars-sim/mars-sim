@@ -131,7 +131,12 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	public Properties getUIProps() {
 		Properties result = new Properties();
 		result.setProperty(UNIT_NAME, entity.getName());
-		result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName().toUpperCase());
+        if (entity instanceof Unit u) {
+            result.setProperty(UNIT_TYPE, u.getUnitType().name());
+        }
+        else { 
+		    result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName().toUpperCase());
+        }
         var selected = getSelected();
         if (selected != null) {
 		    result.setProperty(SELECTED_TAB, selected.getTabTitle());

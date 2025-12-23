@@ -37,12 +37,11 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitManagerEventType;
-import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
@@ -152,7 +151,7 @@ public class MonitorWindow extends ContentPanel
 
 	private UnitManager unitManager;
 
-	private UnitManagerListener umListener;
+	private EntityManagerListener umListener;
 
 	private MonitorTab activeTab;
 
@@ -398,22 +397,40 @@ public class MonitorWindow extends ContentPanel
 		selectionCombo.addItemListener(this::changeSelection);
 
 		// Listen for new Settlements
-		umListener = event -> {
-			if (event.getEventType() == UnitManagerEventType.ADD_UNIT) {
-				addNewSettlement(event.getUnit());
+		umListener = new EntityManagerListener() {
+			@Override
+			public void entityAdded(Entity newEntity) {
+				addNewSettlement(newEntity);
+			}
+
+			@Override
+			public void entityRemoved(Entity removedEntity) {
+				if (removedEntity instanceof Settlement s) {
+					// Update authorities tracking
+					var ra = s.getReportingAuthority();
+					var remainingSettlements = authorities.get(ra);
+					if (remainingSettlements != null) {
+						remainingSettlements.remove(s);
+					}
+					// Force rebuild of the selection list
+					var choices = setupSelectionChoices();
+					Object currentSelection = selectionCombo.getSelectedItem();
+					buildSelectionCombo(choices, currentSelection);
+					updateTab();
+				}
 			}
 		};
-		unitManager.addUnitManagerListener(UnitType.SETTLEMENT, umListener);
+		unitManager.addEntityManagerListener(UnitType.SETTLEMENT, umListener);
 
 	}
 
 	/**
 	 * Adds new settlement to the selection and updates the Reporting Authority.
 	 * 
-	 * @param unit
+	 * @param entity
 	 */
-	private void addNewSettlement(Unit unit) {
-		if (unit instanceof Settlement s) {
+	private void addNewSettlement(Entity entity) {
+		if (entity instanceof Settlement s) {
 			SortedComboBoxModel<Object> ms = (SortedComboBoxModel<Object>) selectionCombo.getModel();
 			ms.addElement(s);
 
@@ -770,6 +787,6 @@ public class MonitorWindow extends ContentPanel
 	public void destroy() {
 		super.destroy();
 
-		unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, umListener);
+		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
 	}
 }

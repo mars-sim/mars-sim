@@ -70,8 +70,8 @@ public class UnitManager implements Serializable, Temporal {
 	/** The core engine's original build. */
 	private String originalBuild;
 
-	/** List of unit manager listeners. */
-	private transient EnumMap<UnitType, Set<UnitManagerListener>> listeners;
+	/** List of entity manager listeners. */
+	private transient EnumMap<UnitType, Set<EntityManagerListener>> listeners;
 
 	private transient TemporalExecutor executor;
 
@@ -263,7 +263,7 @@ public class UnitManager implements Serializable, Temporal {
 		}
 
 		// Notify listeners
-		fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
+		fireEntityAdded(unit);
 	}
 
 	/**
@@ -277,8 +277,8 @@ public class UnitManager implements Serializable, Temporal {
 
 		map.remove(unit.getIdentifier());
 
-		// Fire unit manager event.
-		fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
+		// Fire entity manager event.
+		fireEntityRemoved(unit);
 	}
 
 	/**
@@ -410,12 +410,12 @@ public class UnitManager implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Adds a unit manager listener.
+	 * Adds an entity manager listener.
 	 *
 	 * @param source UnitType monitored
 	 * @param newListener the listener to add.
 	 */
-	public final void addUnitManagerListener(UnitType source, UnitManagerListener newListener) {
+	public final void addEntityManagerListener(UnitType source, EntityManagerListener newListener) {
 		if (listeners == null) {
 			listeners = new EnumMap<>(UnitType.class);
 		}
@@ -425,18 +425,18 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Removes a unit manager listener.
+	 * Removes an entity manager listener.
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public final void removeUnitManagerListener(UnitType source, UnitManagerListener oldListener) {
+	public final void removeEntityManagerListener(UnitType source, EntityManagerListener oldListener) {
 		if (listeners == null) {
 			// Will never happen
 			return;
 		}
 
 		synchronized(listeners) {
-			Set<UnitManagerListener> l = listeners.get(source);
+			Set<EntityManagerListener> l = listeners.get(source);
 			if (l != null) {
 				l.remove(oldListener);
 			}
@@ -444,22 +444,38 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Fires a unit update event.
+	 * Fires an entity added event to notify listeners.
 	 *
-	 * @param eventType the event type.
-	 * @param unit      the unit causing the event.
+	 * @param unit the unit that was added.
 	 */
-	private final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
+	private final void fireEntityAdded(Unit unit) {
 		if (listeners == null) {
 			return;
 		}
 		synchronized (listeners) {
-			Set<UnitManagerListener> l = listeners.get(unit.getUnitType());
+			Set<EntityManagerListener> l = listeners.get(unit.getUnitType());
 			if (l != null) {
-				UnitManagerEvent e = new UnitManagerEvent(this, eventType, unit);
+				for (EntityManagerListener listener : l) {
+					listener.entityAdded(unit);
+				}
+			}
+		}
+	}
 
-				for (UnitManagerListener listener : l) {
-					listener.unitManagerUpdate(e);
+	/**
+	 * Fires an entity removed event to notify listeners.
+	 *
+	 * @param unit the unit that was removed.
+	 */
+	private final void fireEntityRemoved(Unit unit) {
+		if (listeners == null) {
+			return;
+		}
+		synchronized (listeners) {
+			Set<EntityManagerListener> l = listeners.get(unit.getUnitType());
+			if (l != null) {
+				for (EntityManagerListener listener : l) {
+					listener.entityRemoved(unit);
 				}
 			}
 		}

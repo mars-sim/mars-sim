@@ -14,11 +14,12 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.science.ScientificStudy;
-import com.mars_sim.ui.swing.UIConfig.WindowSpec;
+import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.authority.AuthorityWindow;
 import com.mars_sim.ui.swing.entitywindow.equipment.EquipmentUnitWindow;
 import com.mars_sim.ui.swing.entitywindow.science.ScientificStudyWindow;
+import com.mars_sim.ui.swing.unit_window.vehicle.VehicleUnitWindow;
 
 /**
  * This factory classes creates EntityContentPanel instances for various Entity types.
@@ -41,6 +42,7 @@ public class EntityContentFactory {
             case Authority a -> new AuthorityWindow(a, context, props);
             case Equipment e -> new EquipmentUnitWindow(e, context, props);
             case ScientificStudy s -> new ScientificStudyWindow(s, context, props);
+            case Vehicle v -> new VehicleUnitWindow(v, context, props);
             default -> null;
         };
     }

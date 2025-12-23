@@ -14,8 +14,11 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -27,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.ContentPanel;
@@ -39,6 +43,8 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  */
 @SuppressWarnings("serial")
 public class GuideWindow extends ContentPanel implements ActionListener, HyperlinkListener {
+
+	private static final Logger logger = Logger.getLogger(GuideWindow.class.getName());
 
 	/** Tool name. */
 	public static final String NAME = "guide";
@@ -65,19 +71,36 @@ public class GuideWindow extends ContentPanel implements ActionListener, Hyperli
 	
 	private static Icon homeIcon = ImageLoader.getIconByName(HOME_ICON);
 
-	private transient HelpLibrary library;
+	private static HelpLibrary library;
 	private JButton homeButton = new JButton(homeIcon);
 	private JButton backButton = new JButton("<");
 	private JButton forwardButton = new JButton(">");
 	private JButton wikiButton = new JButton(wikiIcon);
 	
 	/**
+	 * Gets the help library.
+	 * 
+	 */
+	public static HelpLibrary getHelp(SimulationConfig config) {
+		if (library == null) {
+			try {
+				library = HelpLibrary.createDefault(config);
+			} catch (IOException e) {
+				logger.log(Level.SEVERE, "Problem loading help library", e);
+			}
+		}
+
+		return library;
+	}
+
+	/**
 	 * Constructor.
 	 */
-	public GuideWindow(HelpLibrary library) {
+	public GuideWindow(SimulationConfig config) {
 		super(NAME,Msg.getString("GuideWindow.title"), Placement.RIGHT);
 
-		this.library = library;
+		// Preload the library
+		getHelp(config);
 			
 		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.setSize(16, 16);

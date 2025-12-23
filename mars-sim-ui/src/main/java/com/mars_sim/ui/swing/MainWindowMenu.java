@@ -39,6 +39,7 @@ import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
+import com.mars_sim.ui.swing.utils.SaveDialog;
 
 /**
  * The MainWindowMenu class is the menu for the main window.
@@ -81,7 +82,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	 * @param mainWindow
 	 *            the main window pane
 	 */
-	public MainWindowMenu(MainWindow mainWindow, MainDesktopPane desktop) {
+	public MainWindowMenu(MainWindow mainWindow) {
 
 		// Use JMenuBar constructor
 		super();
@@ -447,13 +448,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
 		switch(command) {
 			case EXIT:
-				mainWindow.exitSimulation();
+				desktop.requestEndSimulation();
 				break;
 			case SAVE:
-				mainWindow.saveSimulation(true);
+				SaveDialog.create(desktop.getTopFrame(), desktop.getSimulation(),true);
 				break;
 			case SAVE_AS:
-				mainWindow.saveSimulation(false);
+				SaveDialog.create(desktop.getTopFrame(), desktop.getSimulation(),false);
 				break;
 			case UNIT_TOOLBAR:
 				desktop.getMainWindow().getUnitToolBar().setVisible(selectedItem.isSelected());

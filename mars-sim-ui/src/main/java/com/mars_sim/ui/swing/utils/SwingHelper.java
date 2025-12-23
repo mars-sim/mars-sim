@@ -13,6 +13,7 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.io.IOException;
 import java.net.URI;
 
 import javax.swing.BorderFactory;
@@ -88,9 +89,17 @@ public final class SwingHelper {
 	 */
 	public static void openBrowser(String address) {
 		try {
-			Desktop.getDesktop().browse(new URI(address));
+			openBrowser(new URI(address));
 		} catch (Exception e) {
 			// placeholder
+		}
+	}
+
+	public static void openBrowser(URI address) {
+		try {
+			Desktop.getDesktop().browse(address);
+		} catch (IOException e) {
+			//placeholder
 		}
 	}
 

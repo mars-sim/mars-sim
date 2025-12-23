@@ -36,6 +36,7 @@ import com.mars_sim.core.tool.Msg;
 public abstract class JHistoryPanel<T> extends JPanel {
 
 	private static final int TIME_WIDTH = 100;
+	private static final String TIME_LABEL = Msg.getString("Time");
 
 	/**
      * Table model that holds the items in the history
@@ -65,7 +66,7 @@ public abstract class JHistoryPanel<T> extends JPanel {
 		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0)
-				return Msg.getString("TabPanelLog.column.time"); //$NON-NLS-1$
+				return TIME_LABEL;
 			return columns[columnIndex-1].name();
 		}
 

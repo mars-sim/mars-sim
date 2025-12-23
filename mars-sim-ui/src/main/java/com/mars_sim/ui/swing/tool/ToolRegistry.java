@@ -6,10 +6,11 @@
  */
 package com.mars_sim.ui.swing.tool;
 
+import java.util.Properties;
+
 import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -36,24 +37,20 @@ public class ToolRegistry {
      * @param context Context of the tool
      * @return
      */
-    public static ContentPanel getTool(String toolName, MainDesktopPane context) {
-        MainWindow mainWindow = context.getMainWindow();
+    public static ContentPanel getTool(String toolName, UIContext context, Properties toolProps) {
         Simulation sim = context.getSimulation();
 
 		return switch(toolName) {
 			case OrbitViewer.NAME -> new OrbitViewer(sim.getMasterClock());
 			case TimeTool.NAME -> new TimeTool(sim);
-			case GuideWindow.NAME -> new GuideWindow(mainWindow.getHelp()); 
+			case GuideWindow.NAME -> new GuideWindow(sim.getConfig()); 
 			case SearchWindow.NAME -> new SearchWindow(context);
 			case CommanderWindow.NAME -> new CommanderWindow(context);
             case ResupplyWindow.NAME -> new ResupplyWindow(context);
             case MissionWindow.NAME -> new MissionWindow(context);
-			case SettlementWindow.NAME -> new SettlementWindow(context,
-										mainWindow.getConfig().getInternalWindowProps(SettlementWindow.NAME));
-            case NavigatorWindow.NAME -> new NavigatorWindow(context,
-                                        mainWindow.getConfig().getInternalWindowProps(NavigatorWindow.NAME));
-            case MonitorWindow.NAME -> new MonitorWindow(context,
-                                        mainWindow.getConfig().getInternalWindowProps(MonitorWindow.NAME));
+			case SettlementWindow.NAME -> new SettlementWindow(context, toolProps);
+            case NavigatorWindow.NAME -> new NavigatorWindow(context, toolProps);
+            case MonitorWindow.NAME -> new MonitorWindow(context, toolProps);
 			default -> null;
 		};
     }
