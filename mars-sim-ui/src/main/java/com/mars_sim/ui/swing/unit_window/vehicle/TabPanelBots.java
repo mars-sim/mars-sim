@@ -11,16 +11,18 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Collection;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -28,59 +30,47 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * The TabPanelBots is a tab panel for a vehicle's bots crew information.
  */
 @SuppressWarnings("serial")
-public class TabPanelBots extends TabPanel {
+public class TabPanelBots extends EntityTabPanel<Vehicle>
+	implements EntityListener {
 
 	private static final String ROBOT_ICON = "robot";
 
-	private JLabel crewNumLabel;
-	private JLabel crewCapLabel;
 	private UnitListPanel<Robot> crewList;
-
-	private int crewNumCache;
-	private int crewCapacityCache;
-
-	/** The Crewable instance. */
-	private Crewable crewable;
 
 	/**
 	 * Constructor.
 	 * @param vehicle the vehicle.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelBots(Vehicle vehicle, MainDesktopPane desktop) {
+	public TabPanelBots(Vehicle vehicle, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			null,
+			Msg.getString("Robot.plural"),
 			ImageLoader.getIconByName(ROBOT_ICON),
-			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
-			vehicle, desktop
+			null,
+			context, vehicle
 		);
-
-		crewable = (Crewable) vehicle;
-
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 
 		// Create crew count panel
-		AttributePanel crewCountPanel = new AttributePanel(2);
+		AttributePanel crewCountPanel = new AttributePanel();
 		content.add(crewCountPanel, BorderLayout.NORTH);
 
-		// Create crew num label
-		crewNumCache = crewable.getRobotCrewNum();
-		crewNumLabel = crewCountPanel.addTextField(Msg.getString("TabPanelBots.crew"), Integer.toString(crewNumCache), null); //$NON-NLS-1$
+		var crewable = (Crewable)getEntity();
 
 		// Create crew capacity label
-		crewCapacityCache = crewable.getRobotCrewCapacity();
-		crewCapLabel = crewCountPanel.addTextField(Msg.getString("TabPanelBots.crewCapacity"), Integer.toString(crewCapacityCache), null); //$NON-NLS-1$
+		crewCountPanel.addTextField(Msg.getString("TabPanelBots.capacity"),
+					Integer.toString(crewable.getRobotCrewCapacity()), null);
 
 		// Create crew display panel
 		JPanel crewDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		content.add(crewDisplayPanel, BorderLayout.CENTER);
 
 		// Create crew list
-		crewList = new UnitListPanel<>(getDesktop(), new Dimension(175, 100)) {
+		crewList = new UnitListPanel<>(getContext(), new Dimension(175, 100)) {
 			@Override
 			protected Collection<Robot> getData() {
 				return crewable.getRobotCrew();
@@ -90,32 +80,12 @@ public class TabPanelBots extends TabPanel {
 	}
 
 	/**
-	 * Updates the info on this panel.
+	 * Watch for changes in the inventory storing unit.
 	 */
 	@Override
-	public void update() {
-
-		// Update crew num
-		if (crewNumCache !=  crewable.getRobotCrewNum()) {
-			crewNumCache = crewable.getRobotCrewNum();
-			crewNumLabel.setText(Msg.getString("TabPanelBots.crew", crewNumCache)); //$NON-NLS-1$
+	public void entityUpdate(EntityEvent event) {
+		if (EntityEventType.INVENTORY_STORING_UNIT_EVENT.equals(event.getType())) {
+			crewList.update();
 		}
-
-		// Update crew capacity
-		if (crewCapacityCache != crewable.getRobotCrewCapacity()) {
-			crewCapacityCache =  crewable.getRobotCrewCapacity();
-			crewCapLabel.setText(Msg.getString("TabPanelBots.crewCapacity", crewCapacityCache)); //$NON-NLS-1$
-		}
-
-		// Update crew list
-		crewList.update();
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		crewList = null;
-		crewable = null;
 	}
 }

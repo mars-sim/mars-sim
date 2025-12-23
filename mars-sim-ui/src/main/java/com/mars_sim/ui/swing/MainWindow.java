@@ -22,7 +22,6 @@ import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +35,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -52,20 +50,18 @@ import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationListener;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.tool.Msg;
-import com.mars_sim.tools.helpgenerator.HelpLibrary;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
 import com.mars_sim.ui.swing.entitywindow.EntityToolBar;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The MainWindow class is the primary UI frame for the project. It contains the
@@ -133,8 +129,6 @@ public class MainWindow
 	
 	/** The control of play or pause the simulation. */
 	private JToggleButton playPauseSwitch;
- 
-	private transient HelpLibrary helpLibrary;
 
 	private boolean useExternalBrowser;
 
@@ -458,7 +452,7 @@ public class MainWindow
 		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
 	
      	// Prepare tool toolbar
-     	toolToolbar = new ToolToolBar(this);
+     	toolToolbar = new ToolToolBar(desktop);
      	toolToolbar.requestFocusInWindow();
      	// Add toolToolbar to toolbarPane
      	toolbarPane.add(toolToolbar, BorderLayout.CENTER);
@@ -483,7 +477,7 @@ public class MainWindow
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
 
 		// Prepare menu
-		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop);
+		MainWindowMenu mainWindowMenu = new MainWindowMenu(this);
 		frame.setJMenuBar(mainWindowMenu);
 		
 		// Close the unit bar when starting up
@@ -761,36 +755,6 @@ public class MainWindow
 	public AudioPlayer getAudioPlayer() {
 		return desktop.getSoundPlayer();
 	}
-	
-	/**
-	 * Performs the process of saving a simulation.
-	 * Note: if defaultFile is false, displays a FileChooser to select the
-	 * location and new filename to save the simulation.
-	 *
-	 * @param defaultFile is the default.sim file be used
-	 */
-	public void saveSimulation(boolean defaultFile) {
-		File fileLocn = null;
-		if (!defaultFile) {
-			JFileChooser chooser = new JFileChooser(SimulationRuntime.getSaveDir());
-			chooser.setDialogTitle(Msg.getString("MainWindow.dialogSaveSim"));
-			if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
-				fileLocn = chooser.getSelectedFile();
-			} else {
-				return;
-			}
-		}
-
-		// Request the save
-		sim.requestSave(fileLocn, action -> {
-			if (SimulationListener.SAVE_COMPLETED.equals(action)) {
-				// Save the current main window ui config
-				uiconfigs.saveFile(this);
-			}
-		});
-
-		logger.log(Level.CONFIG, "Save requested");
-	}
 
 	/**
 	 * Create a new unit button in toolbar.
@@ -814,34 +778,13 @@ public class MainWindow
 	 * Exits the running simulation.
 	 */
 	public void exitSimulation() {
-		if (!masterClock.isPaused() && !sim.isSavePending()) {
-			int reply = JOptionPane.showConfirmDialog(frame,
-					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
-			if (reply == JOptionPane.YES_OPTION) {
-
-				frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-				endSimulation();
-				// Save the UI configuration.
-				uiconfigs.saveFile(this);
-				masterClock.exitProgram();
-				frame.dispose();
-				destroy();
-				System.exit(0);
-			}
-
-			else {
-				frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			}
-		}
-	}
-
-	/**
-	 * Ends the current simulation, closes the JavaFX stage of MainScene but leaves
-	 * the main menu running
-	 */
-	private void endSimulation() {
+		// Save the UI configuration.
 		sim.endSimulation();
+		uiconfigs.saveFile(this);
+		masterClock.exitProgram();
+		frame.dispose();
+		destroy();
+		System.exit(0);
 	}
 
 	/**
@@ -1010,42 +953,21 @@ public class MainWindow
 	}
 
 	/**
-	 * Gets the help library.
-	 * 
-	 * @param helpPage
-	 */
-	public HelpLibrary getHelp() {
-		if (helpLibrary == null) {
-			try {
-				helpLibrary = HelpLibrary.createDefault(sim.getConfig());
-			} catch (IOException e) {
-				logger.log(Level.SEVERE, "Problem loading help library", e);
-			}
-		}
-
-		return helpLibrary;
-	}
-
-	/**
 	 * Displays a help page.
 	 * 
 	 * @param helpPage
 	 */
 	public void showHelp(String helpPage) {
-		try {
-			var library = getHelp();
+		var library = GuideWindow.getHelp(sim.getConfig());
 
-			var  helpURI = library.getPage(helpPage);	
-			if (useExternalBrowser) {
-				Desktop.getDesktop().browse(helpURI);
-			}
-			else {
-				var contentWindow = desktop.openToolWindow(GuideWindow.NAME);
-				GuideWindow ourGuide = (GuideWindow) contentWindow;
-				ourGuide.displayURI(helpURI);
-			}
-		} catch (IOException e) {
-			logger.log(Level.WARNING, "Problem showing help page", e);
+		var  helpURI = library.getPage(helpPage);	
+		if (useExternalBrowser) {
+			SwingHelper.openBrowser(helpURI);
+		}
+		else {
+			var contentWindow = desktop.openToolWindow(GuideWindow.NAME);
+			GuideWindow ourGuide = (GuideWindow) contentWindow;
+			ourGuide.displayURI(helpURI);
 		}
     }
 

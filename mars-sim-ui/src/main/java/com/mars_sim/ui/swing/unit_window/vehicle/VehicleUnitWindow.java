@@ -7,28 +7,29 @@
 
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
+import java.util.Properties;
+
+import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
 import com.mars_sim.ui.swing.unit_window.MalfunctionTabPanel;
 import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
 import com.mars_sim.ui.swing.unit_window.SalvageTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitWindow;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
  */
 @SuppressWarnings("serial")
-public class VehicleUnitWindow extends UnitWindow {
+public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 
 	// Data members
 	private boolean salvaged;
-
-	private Vehicle vehicle;
 
 	/**
 	 * Constructor.
@@ -36,79 +37,58 @@ public class VehicleUnitWindow extends UnitWindow {
 	 * @param desktop the main desktop panel.
 	 * @param vehicle the vehicle for this window.
 	 */
-	public VehicleUnitWindow(MainDesktopPane desktop, Vehicle vehicle) {
-		// Use UnitWindow constructor
-		super(desktop, vehicle,  vehicle.getName() 
-				+ " [" + vehicle.getVehicleType().getName() + "]"
-				+ " of " + vehicle.getAssociatedSettlement()
-				+ " (" + (vehicle.getLocationStateType().getName()) + ")"
-				, true);
-		this.vehicle = vehicle;
-		
+	public VehicleUnitWindow(Vehicle vehicle, UIContext context, Properties props) {
+		super(vehicle, context);
+
+		// Add as the first panel
+		addTabPanel(new TabPanelGeneralVehicle(vehicle, context));
+
 		if (vehicle instanceof Crewable crewableVehicle) {
 			if (crewableVehicle.getCrewCapacity() > 0)
-				addTabPanel(new TabPanelCrew(vehicle, desktop));
-			else if (crewableVehicle.getRobotCrewCapacity() > 0)
-				addTabPanel(new TabPanelBots(vehicle, desktop));
+				addTabPanel(new TabPanelCrew(vehicle, context));
+			if (crewableVehicle.getRobotCrewCapacity() > 0)
+				addTabPanel(new TabPanelBots(vehicle, context));
 		}
 
-		addTabPanel(new InventoryTabPanel(vehicle, desktop));
+		addTabPanel(new InventoryTabPanel(vehicle, context));
 
-		addTabPanel(new LocationTabPanel(vehicle, desktop));
+		addTabPanel(new LocationTabPanel(vehicle, context));
 
 		if (vehicle instanceof Rover rover) {
-			addTabPanel(new TabPanelEVA(rover, desktop));		
+			addTabPanel(new TabPanelEVA(rover, context));		
 			if (rover.hasLab())
-				addTabPanel(new LaboratoryTabPanel(rover, desktop));		
+				addTabPanel(new LaboratoryTabPanel(rover, context));		
 			// Future: Add sickbay tab panel.
 		}
 
-		addTabPanel(new TabPanelLog(vehicle, desktop));
-		addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
-		addTabPanel(new MalfunctionTabPanel(vehicle, desktop));
-		addTabPanel(new NavigationTabPanel(vehicle, desktop));
-		addTabPanel(new TabPanelMission(vehicle, desktop));	
-		addTabPanel(new NotesTabPanel(vehicle, desktop));
-		addTabPanel(new TabPanelSpecs(vehicle, desktop));
+		addTabPanel(new TabPanelLog(vehicle, context));
+		addTabPanel(new MaintenanceTabPanel(vehicle, context));
+		addTabPanel(new MalfunctionTabPanel(vehicle, context));
+		addTabPanel(new NavigationTabPanel(vehicle, context));
+		addTabPanel(new TabPanelMission(vehicle, context));	
+		addTabPanel(new NotesTabPanel(vehicle, context));
+		addTabPanel(new TabPanelSpecs(vehicle, context));
 				
 		salvaged = vehicle.isSalvaged();
 		if (salvaged)
-			addTabPanel(new SalvageTabPanel(vehicle, desktop));
+			addTabPanel(new SalvageTabPanel(vehicle, context));
+		addTabPanel(new TabPanelTow(vehicle, context));
 
-		addTabPanel(new TabPanelTow(vehicle, desktop));
-		
-		sortTabPanels();
-		
-		// Add as the first panel
-		addFirstPanel(new TabPanelGeneralVehicle(vehicle, desktop));
-		
-		// Add to tab panels. 
-		addTabIconPanels();
+		applyProps(props);
 	}
 
 	/**
-	 * Updates this window.
-	 */
-	@Override
-	public void update() {
-		super.update();
-		
-		String title = vehicle.getName() 
-				+ " [" + vehicle.getVehicleType().getName() + "]"
-				+ " of " + vehicle.getAssociatedSettlement()
-				+ " (" + (vehicle.getLocationStateType().getName()) + ")";
-		super.setTitle(title);
-		
-		// Check if equipment has been salvaged.
-		if (!salvaged && vehicle.isSalvaged()) {
-			addTabPanel(new SalvageTabPanel(vehicle, desktop));
+     * Listens for the vehicle being salvaged.
+     * @param event Incoming entity event.
+     */
+    @Override
+    public void entityUpdate(EntityEvent event) {
+		super.entityUpdate(event);
+
+		// Check for salvage event
+		if (event.getType().equals(Vehicle.SALVAGE_EVENT) && !salvaged) {
+			addTabPanel(new SalvageTabPanel(getEntity(), getContext()));
 			salvaged = true;
 		}
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		vehicle = null;
 	}
 }

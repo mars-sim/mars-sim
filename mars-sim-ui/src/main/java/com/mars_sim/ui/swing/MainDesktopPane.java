@@ -31,6 +31,8 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -301,7 +303,8 @@ public class MainDesktopPane extends JDesktopPane
 			return null;
 		}
 
-		ContentPanel content = ToolRegistry.getTool(toolName, this);
+		var toolProps = mainWindow.getConfig().getInternalWindowProps(toolName);
+		ContentPanel content = ToolRegistry.getTool(toolName, this, toolProps);
 		if (content == null) {
 			logger.warning("No tool called " + toolName);
 			return null;
@@ -837,6 +840,23 @@ public class MainDesktopPane extends JDesktopPane
 				w.destroy();
 			}
 			toolWindows = null;
+		}
+	}
+
+	/**
+	 * Prompts user to exit simulation.
+	 */
+	@Override
+	public void requestEndSimulation() {
+		if (!sim.isSavePending()) {
+			int reply = JOptionPane.showConfirmDialog(getTopFrame(),
+					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
+			if (reply == JOptionPane.YES_OPTION) {
+
+				getTopFrame().setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+				mainWindow.exitSimulation();
+			}
 		}
 	}
 }

@@ -21,7 +21,6 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
-import com.mars_sim.ui.swing.unit_window.vehicle.TabPanelMission;
 
 /**
  * Tab panel displaying a list of settlement missions.<br>
