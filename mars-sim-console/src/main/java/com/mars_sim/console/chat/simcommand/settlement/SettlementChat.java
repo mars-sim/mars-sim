@@ -37,7 +37,6 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	ExploredCommand.EXPLORED,
 																	FishCommand.FISH,
 																	AlgaeCommand.ALGAE,
-																	FutureEventCommand.FUTURE,
 																	JobDemandCommand.DEMAND,
 																	JobProspectCommand.PROSPECT,
 																	JobRosterCommand.ROSTER,

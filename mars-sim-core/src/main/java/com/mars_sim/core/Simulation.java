@@ -50,6 +50,7 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.events.ScheduledEventManager;
 import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.MarketManager;
@@ -188,12 +189,15 @@ public class Simulation implements ClockListener, Serializable {
 	private TransportManager transportManager;
 	/** Manages the global market. */
 	private MarketManager marketManager;
+	private ScheduledEventManager scheduledEvents;
+
 	/** The SimulationConfig instance. */
 	private transient SimulationConfig simulationConfig;
 
 	private transient SaveType savePending = null;
 	private transient File savePendingFile = null;
 	private transient SimulationListener saveCallback = null;
+
 
 	/**
 	 * Private constructor for the Singleton Simulation. This prevents instantiation
@@ -261,7 +265,7 @@ public class Simulation implements ClockListener, Serializable {
 	public void createNewSimulation(int timeRatio) {
 		isUpdating = true;
 
-		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
+		logger.config(Msg.getString("Simulation.log.createNewSim")); //-NLS-1$
 
 		Simulation sim = instance();
 
@@ -287,11 +291,12 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Create marsClock instance
 		masterClock = new MasterClock(simulationConfig, 256);
-		
+		scheduledEvents = new ScheduledEventManager(masterClock);
+
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager(lunarWorld);
+		lunarColonyManager = new LunarColonyManager(lunarWorld, scheduledEvents);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -315,6 +320,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Create marsClock instance
 		masterClock = new MasterClock(simulationConfig, 256);
+		scheduledEvents = new ScheduledEventManager(masterClock);
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
@@ -323,7 +329,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager(lunarWorld);
+		lunarColonyManager = new LunarColonyManager(lunarWorld, scheduledEvents);
 		
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
@@ -420,12 +426,15 @@ public class Simulation implements ClockListener, Serializable {
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
 
+		// Common handler for full planet events
+		scheduledEvents = new ScheduledEventManager(masterClock);
+
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
 		// Create lunar colony manager instance
-		lunarColonyManager = new LunarColonyManager(lunarWorld);
+		lunarColonyManager = new LunarColonyManager(lunarWorld, scheduledEvents);
 		// Create orbit info
 		orbitInfo = new OrbitInfo(masterClock, simulationConfig);
 		// Create weather
@@ -1240,6 +1249,14 @@ public class Simulation implements ClockListener, Serializable {
 	}
 	
 	/**
+	 * Gets the scheduled event manager for global future events
+	 * @return
+	 */
+	public ScheduledEventManager getScheduleManager() {
+		return scheduledEvents;
+	}
+
+	/**
 	 * Gets the lunar colony manager instance.
 	 * 
 	 * @return
@@ -1395,26 +1412,23 @@ public class Simulation implements ClockListener, Serializable {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
-			// Future: Will call each nation's timePassing(pulse) once per pulse
-		
-			lunarColonyManager.timePassing(pulse);
-			
+			// Always update environment first			
 			orbitInfo.timePassing(pulse);
-			
 			weather.timePassing(pulse);
-
 			surfaceFeatures.timePassing(pulse);
 
 			if (pulse.isNewSol()) {
 				// Compute reliability daily for each part
 				malfunctionFactory.computePartReliability(pulse.getMarsTime().getMissionSol());
 			}
-		
-			unitManager.timePassing(pulse);
-			
+
+			// Update scheduled events
+			scheduledEvents.timePassing(pulse);
+
+			// Lastly cascade the pulse to the Entity managers
+			lunarColonyManager.timePassing(pulse);
+			unitManager.timePassing(pulse);			
 			marketManager.timePassing(pulse);
-			
-			transportManager.timePassing(pulse);
 			
 			// Pending save
 			if (savePending != null) {
