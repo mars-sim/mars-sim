@@ -56,7 +56,7 @@ public class PersonUnitWindow extends EntityContentPanel<Person> {
 		addTabPanel(new TabPanelGeneral(person, context));
 		addTabPanel(new TabPanelActivity(person, context));
 		addTabPanel(new TabPanelAttribute(person, context));
-		//addTabPanel(new TabPanelCareer(person, context));
+		addTabPanel(new TabPanelCareer(person, context));
 
 		// Add death tab panel if person is dead.
 		// if (person.isDeclaredDead()
@@ -71,7 +71,7 @@ public class PersonUnitWindow extends EntityContentPanel<Person> {
 		addTabPanel(new NotesTabPanel(person, context));
 		addTabPanel(new TabPanelPersonality(person, context));
 		addTabPanel(new TabPanelSchedule(person, context));
-		//addTabPanel(new TabPanelScienceStudy(person, context));
+		addTabPanel(new TabPanelScienceStudy(person, context));
 		addTabPanel(new TabPanelSkill(person, context));
 		//addTabPanel(new TabPanelSocial(person, context));		
 
