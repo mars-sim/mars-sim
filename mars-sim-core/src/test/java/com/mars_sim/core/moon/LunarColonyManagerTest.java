@@ -3,6 +3,7 @@ package com.mars_sim.core.moon;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
@@ -18,17 +19,33 @@ class LunarColonyManagerTest extends MarsSimUnitTest{
         int maxC = 2;
         lMgr.setMaxColonies(maxC);
 
-        // Keep firing pulses
-        for(int i = 0; i < (maxC * 200); i++) {
-            var p = createPulse(1);
-            lMgr.timePassing(p);
+        // Fire once pulse to trigger scheduling of creation
+        var p = createPulse(1);
+        lMgr.timePassing(p);
+        
+        // Check events scheduled
+        var futures = getSim().getScheduleManager();
+        var events = new ArrayList<>(futures.getEvents()); // Take a copy as it changes
+        assertEquals(maxC, events.size(), "Scheduled colony creation events");
+
+        // Emulate the future events firing
+        for(var e : events) {
+            var expected = e.getWhen();
+            p = createPulse(expected, false, false);
+            futures.timePassing(p);
         }
 
         var colonies = lMgr.getColonySet();
-        assertEquals(maxC, colonies.size());
+        // num of colonies may vary from 0 to 2
+        assertEquals(maxC, colonies.size(), "Number of colonies created");
 
         var names = colonies.stream().map(Named::getName).collect(Collectors.toSet());
         assertEquals(maxC, names.size(), "Unique colonies");
+
+        // Fire another pulse, should not schedule any more colonies
+        p = createPulse(1);
+        lMgr.timePassing(p);
+        assertTrue(futures.getEvents().isEmpty(), "No scheduled colony creation events");
     }
 
     @Test
@@ -37,13 +54,15 @@ class LunarColonyManagerTest extends MarsSimUnitTest{
 
         lMgr.setMaxColonies(0);
 
-        // Keep firing pulses
-        for(int i = 0; i < 2000; i++) {
-            var p = createPulse(1);
-            lMgr.timePassing(p);
-        }
+        // Fire once pulse to trigger scheduling of creation
+        var p = createPulse(1);
+        lMgr.timePassing(p);
+        
+        // Check events scheduled
+        var futures = getSim().getScheduleManager();
+        assertTrue(futures.getEvents().isEmpty(), "No scheduled colony creation events");
 
         var colonies = lMgr.getColonySet();
-        assertTrue(colonies.isEmpty());      
+        assertTrue(colonies.isEmpty());   
     }
 }

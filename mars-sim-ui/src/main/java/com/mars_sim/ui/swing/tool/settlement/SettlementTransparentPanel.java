@@ -52,9 +52,9 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitManagerEvent;
-import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.BuildingConfig;
@@ -1035,7 +1035,7 @@ public class SettlementTransparentPanel extends JComponent {
      * Inner class combo box model for settlements.
      */
     private class SettlementComboBoxModel extends DefaultComboBoxModel<Settlement>
-        implements UnitManagerListener {
+        implements EntityManagerListener {
 
         /**
          * Constructor.
@@ -1045,8 +1045,8 @@ public class SettlementTransparentPanel extends JComponent {
             super();
             // Initialize settlement list.
             updateSettlements();
-            // Add this as a unit manager listener.
-            unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
+            // Add this as an entity manager listener.
+            unitManager.addEntityManagerListener(UnitType.SETTLEMENT, this);
         }
 
         /**
@@ -1075,9 +1075,8 @@ public class SettlementTransparentPanel extends JComponent {
         }
 
         @Override
-        public void unitManagerUpdate(UnitManagerEvent event) {
-            if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
-                Settlement newSettlement = (Settlement) event.getUnit();
+        public void entityAdded(Entity newEntity) {
+            if (newEntity instanceof Settlement newSettlement) {
 
                 // Find the best place
                 for(int i = 0; i < getSize(); i++) {
@@ -1093,11 +1092,18 @@ public class SettlementTransparentPanel extends JComponent {
             }
         }
 
+        @Override
+        public void entityRemoved(Entity removedEntity) {
+            if (removedEntity instanceof Settlement removedSettlement) {
+                removeElement(removedSettlement);
+            }
+        }
+
         /**
          * Prepare class for deletion.
          */
         public void destroy() {
-            unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
+            unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, this);
         }
     }
 

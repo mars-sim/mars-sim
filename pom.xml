@@ -202,7 +202,7 @@
 				        </dependency>
 			        </dependencies>
 				    <configuration>
-                        <argLine>-Duser.language=en -Duser.region=US</argLine>
+                        <!--<argLine>-Duser.language=en -Duser.region=US</argLine>-->
 						<includes>
 							<include>%regex[.*]</include>
 						</includes>

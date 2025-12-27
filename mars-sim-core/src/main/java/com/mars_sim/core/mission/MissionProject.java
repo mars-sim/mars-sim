@@ -433,6 +433,21 @@ public abstract class MissionProject implements Mission {
     }
 
 	/**
+	 * Gets an unmodifiable set of the active listeners on this entity.
+	 * 
+	 * @return unmodifiable set of entity listeners.
+	 */
+	@Override
+	public Set<EntityListener> getEntityListeners() {
+		if (listeners == null || listeners.isEmpty()) {
+			return Collections.emptySet();
+		}
+		synchronized (listeners) {
+			return Collections.unmodifiableSet(listeners);
+		}
+	}
+
+	/**
 	 * Fires an entity update event.
 	 *
 	 * @param eventType the update type.

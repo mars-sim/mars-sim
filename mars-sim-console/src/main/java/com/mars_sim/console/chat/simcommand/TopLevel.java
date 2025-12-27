@@ -14,6 +14,7 @@ import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.command.ExpertCommand;
 import com.mars_sim.console.chat.command.HelpCommand;
 import com.mars_sim.console.chat.command.InteractiveChatCommand;
+import com.mars_sim.console.chat.simcommand.settlement.FutureEventCommand;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 
@@ -31,6 +32,7 @@ public class TopLevel extends InteractiveChatCommand {
 																	SunlightCommand.SUNLIGHT,
 																	ExpertCommand.EXPERT,
 																	EventCommand.EVENT,
+																	FutureEventCommand.FUTURE,
 																	DiagnosticsCommand.DIAGNOSTICS,
 																	
 																	// Admin commands

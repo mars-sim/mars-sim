@@ -19,11 +19,10 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitManagerEvent;
-import com.mars_sim.core.UnitManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.goods.CreditEvent;
 import com.mars_sim.core.goods.CreditListener;
@@ -91,7 +90,7 @@ public class TabPanelCredit extends TabPanelTable {
 	 * Internal class used as model for the credit table.
 	 */
 	private static class CreditTableModel extends AbstractTableModel implements CreditListener,
-						UnitManagerListener, EntityModel {
+						EntityManagerListener, EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -117,7 +116,7 @@ public class TabPanelCredit extends TabPanelTable {
 				}
 			}
 
-			unitManager.addUnitManagerListener(UnitType.SETTLEMENT, this);
+			unitManager.addEntityManagerListener(UnitType.SETTLEMENT, this);
 		}
 
 		@Override
@@ -196,9 +195,8 @@ public class TabPanelCredit extends TabPanelTable {
 		}
 
 		@Override
-		public void unitManagerUpdate(UnitManagerEvent event) {
-
-			if (event.getUnit().getUnitType() == UnitType.SETTLEMENT) {
+		public void entityAdded(Entity newEntity) {
+			if (newEntity instanceof Settlement) {
 				settlements.clear();
 				Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.
 						getSettlements()).iterator();
@@ -221,8 +219,27 @@ public class TabPanelCredit extends TabPanelTable {
 			}
 		}
 
+		@Override
+		public void entityRemoved(Entity removedEntity) {
+			// Handle the same way as entityAdded for this use case
+			if (removedEntity instanceof Settlement s) {
+				settlements.remove(s);
+				s.getCreditManager().removeListener(this);
+
+				SwingUtilities.invokeLater(
+					new Runnable() {
+						@Override
+						public void run() {
+							fireTableDataChanged();
+							// FUTURE : update only the affected row
+						}
+					}
+				);
+			}
+		}
+
 		public void destroy() {
-			unitManager.removeUnitManagerListener(UnitType.SETTLEMENT, this);
+			unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, this);
 		}
 
 		@Override

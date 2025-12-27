@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.project.ColonyResearcher;
 import com.mars_sim.core.moon.project.ColonySpecialist;
 import com.mars_sim.core.moon.project.DevelopmentProject;
@@ -24,7 +23,6 @@ public class LunarActivity implements Temporal, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final SimLogger logger = SimLogger.getLogger(LunarActivity.class.getName());
 	/** The demand factor for this activity (between -1 and 1). */
 	private double demand = RandomUtil.getRandomDouble(0, .25);
 	
