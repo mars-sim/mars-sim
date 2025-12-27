@@ -6,38 +6,24 @@
  */
 package com.mars_sim.ui.swing.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.util.Properties;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-
-import com.jidesoft.plaf.windows.TMSchema.Prop;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.shift.ShiftSlot;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
 import com.mars_sim.ui.swing.unit_window.NotesTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitWindow;
 
 
 /**
  * The PersonWindow is the window for displaying a person.
  */
 @SuppressWarnings("serial")
-public class PersonUnitWindow extends EntityContentPanel<Person> {
+public class PersonUnitWindow extends EntityContentPanel<Person> 
+{
 		
 	/** Is person dead? */
 	private TabPanelDeath tabPanelDeath;
@@ -59,13 +45,13 @@ public class PersonUnitWindow extends EntityContentPanel<Person> {
 		addTabPanel(new TabPanelCareer(person, context));
 
 		// Add death tab panel if person is dead.
-		// if (person.isDeclaredDead()
-		// 		|| person.getPhysicalCondition().isDead()) {			
-		// 	tabPanelDeath = new TabPanelDeath(person, context);
-		// 	addTabPanel(tabPanelDeath);
-		// }
+		if (person.isDeclaredDead()
+			|| person.getPhysicalCondition().isDead()) {			
+			tabPanelDeath = new TabPanelDeath(person, context);
+			addTabPanel(tabPanelDeath);
+		}
 		addTabPanel(new TabPanelFavorite(person, context));
-		//addTabPanel(new TabPanelHealth(person, context));
+		addTabPanel(new TabPanelHealth(person, context));
 		addTabPanel(new InventoryTabPanel(person, context));
 		addTabPanel(new LocationTabPanel(person, context));
 		addTabPanel(new NotesTabPanel(person, context));
@@ -73,34 +59,19 @@ public class PersonUnitWindow extends EntityContentPanel<Person> {
 		addTabPanel(new TabPanelSchedule(person, context));
 		addTabPanel(new TabPanelScienceStudy(person, context));
 		addTabPanel(new TabPanelSkill(person, context));
-		//addTabPanel(new TabPanelSocial(person, context));		
+		addTabPanel(new TabPanelSocial(person, context));		
 
 		applyProps(props);
 	}
 	
-	/**
-	 * Updates this window.
-	 */
-	// @Override
-	// public void update() {
-	// 	super.update();
-		
-	// 	String title = person.getName() 
-	// 			+ " of " + 
-	// 			((person.getAssociatedSettlement() != null) ? person.getAssociatedSettlement() : person.getBuriedSettlement())
-	// 			+ " (" + (person.getLocationStateType().getName()) + ")";
-	// 	super.setTitle(title);
-		
-	// 	if (!deadCache 
-	// 		&& (person.isDeclaredDead()
-	// 		|| person.getPhysicalCondition().isDead())) {
-	// 		deadCache = true;
-	// 		addTabPanel(new TabPanelDeath(person, desktop));
-	// 	}
-		
-	// 	if (deadCache && !person.getPhysicalCondition().isDead()) {
-	// 		deadCache = false;
-	// 		removeTabPanel(tabPanelDeath);
-	// 	}		
-	// }
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		// Trap death event to add/remove death tab panel
+		if (EntityEventType.DEATH_EVENT.equals(event.getType())
+				&& (tabPanelDeath == null)) {
+			tabPanelDeath = new TabPanelDeath(getEntity(), getContext());
+			addTabPanel(tabPanelDeath);
+		}
+		super.entityUpdate(event);
+	}
 }

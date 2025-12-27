@@ -149,7 +149,9 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 	@Override
 	public void destroy() {
 		scienceManager.removeListener(this);
-		studyTableModel.destroy();
+		if (studyTableModel != null) {
+			studyTableModel.destroy();
+		}
 		super.destroy();
 	}
 

@@ -31,16 +31,14 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 @SuppressWarnings("serial")
 public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 	
-	private static final String TAB_ICON = "info";
+	private static final String TAB_ICON = "monitor";
 	private static final String TAB_TITLE = "Listeners";
 	private static final String TAB_TOOLTIP = "Active Event Listeners";
 	private static final String LAST_REFRESH_LABEL = "Last Refresh";
 	private static final String REFRESH_BUTTON_TEXT = "Refresh";
 	
-	private JList<String> listenerList;
 	private DefaultListModel<String> listModel;
 	private JLabel lastRefreshLabel;
-	private JScrollPane scrollPane;
 	
 	/**
 	 * Constructor.
@@ -80,11 +78,11 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 		
 		// Create list model and list for displaying listeners
 		listModel = new DefaultListModel<>();
-		listenerList = new JList<>(listModel);
+		var listenerList = new JList<>(listModel);
 		
 		// Configure scrollPane with horizontal scrollbar
-		scrollPane = new JScrollPane(listenerList);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		var scrollPane = new JScrollPane(listenerList);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		// Initial population of the list
@@ -94,7 +92,8 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 	/**
 	 * Refreshes the UI by updating the listener list and the Mars time.
 	 */
-	private void refreshUI() {
+	@Override
+	public void refreshUI() {
 		// Update the Mars time
 		MarsTime now = getContext().getSimulation().getMasterClock().getMarsTime();
 		lastRefreshLabel.setText(now.getDateTimeStamp());
@@ -110,10 +109,5 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 			String listenerInfo = listener.toString();
 			listModel.addElement(listenerInfo);
 		}
-	}
-	
-	@Override
-	public void update() {
-		refreshUI();
 	}
 }
