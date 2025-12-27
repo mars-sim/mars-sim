@@ -259,6 +259,21 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
+	 * Gets an unmodifiable set of the active listeners on this entity.
+	 * 
+	 * @return unmodifiable set of entity listeners.
+	 */
+	@Override
+	public final Set<EntityListener> getListeners() {
+		if (listeners == null || listeners.isEmpty()) {
+			return Set.of();
+		}
+		synchronized (listeners) {
+			return Set.copyOf(listeners);
+		}
+	}
+
+	/**
 	 * Fires an entity update event.
 	 *
 	 * @param updateType the update type.

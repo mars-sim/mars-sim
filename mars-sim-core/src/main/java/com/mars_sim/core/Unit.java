@@ -281,6 +281,21 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	}
 
 	/**
+	 * Gets an unmodifiable set of the active listeners on this entity.
+	 * 
+	 * @return unmodifiable set of entity listeners.
+	 */
+	@Override
+	public final synchronized Set<EntityListener> getListeners() {
+		if (listeners == null) {
+			return Set.of();
+		}
+		synchronized(listeners) {
+			return Set.copyOf(listeners);
+		}
+	}
+
+	/**
 	 * Fires an entity update event.
 	 *
 	 * @param updateType the update type.

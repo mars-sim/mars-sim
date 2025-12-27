@@ -968,6 +968,19 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	}
 
 	/**
+	 * Gets an unmodifiable set of the active listeners on this entity.
+	 * 
+	 * @return unmodifiable set of entity listeners.
+	 */
+	@Override
+	public synchronized Set<EntityListener> getListeners() {
+		if (listeners == null || listeners.isEmpty()) {
+			return Set.of();
+		}
+		return Set.copyOf(listeners);
+	}
+
+	/**
 	 * Fires a scientific study update event.
 	 * 
 	 * @param type the update type.
