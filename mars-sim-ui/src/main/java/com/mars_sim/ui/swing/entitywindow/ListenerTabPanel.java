@@ -7,9 +7,11 @@
 package com.mars_sim.ui.swing.entitywindow;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -18,7 +20,6 @@ import javax.swing.JScrollPane;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -31,6 +32,11 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 	
 	private static final String TAB_ICON = "info";
+	private static final String TAB_TITLE = "Listeners";
+	private static final String TAB_TOOLTIP = "Active Event Listeners";
+	private static final String LAST_REFRESH_LABEL = "Last Refresh";
+	private static final String LISTENER_COUNT_LABEL = "Listener Count";
+	private static final String REFRESH_BUTTON_TEXT = "Refresh";
 	
 	private JList<String> listenerList;
 	private DefaultListModel<String> listModel;
@@ -45,9 +51,9 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 	 */
 	public ListenerTabPanel(MonitorableEntity entity, UIContext context) {
 		super(
-			Msg.getString("EntityListeners.title"), //$NON-NLS-1$
+			TAB_TITLE,
 			ImageLoader.getIconByName(TAB_ICON),
-			Msg.getString("EntityListeners.tooltip"), //$NON-NLS-1$
+			TAB_TOOLTIP,
 			context, entity
 		);
 	}
@@ -55,22 +61,30 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 	@Override
 	protected void buildUI(JPanel content) {
 		
-		// Create north panel for the refresh time
+		// Create north panel for the refresh time and button
 		JPanel northPanel = new JPanel(new BorderLayout());
 		content.add(northPanel, BorderLayout.NORTH);
 		
 		AttributePanel infoPanel = new AttributePanel();
 		northPanel.add(infoPanel, BorderLayout.CENTER);
 		
+		// Create panel for last refresh time and refresh button
+		JPanel refreshPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		lastRefreshLabel = new JLabel();
-		infoPanel.addLabelledItem(Msg.getString("EntityListeners.lastRefresh"), lastRefreshLabel);
+		refreshPanel.add(lastRefreshLabel);
+		
+		JButton refreshButton = new JButton(REFRESH_BUTTON_TEXT);
+		refreshButton.addActionListener(e -> refreshUI());
+		refreshPanel.add(refreshButton);
+		
+		infoPanel.addLabelledItem(LAST_REFRESH_LABEL, refreshPanel);
 		
 		// Create list model and list for displaying listeners
 		listModel = new DefaultListModel<>();
 		listenerList = new JList<>(listModel);
 		
 		scrollPane = new JScrollPane(listenerList);
-		addBorder(scrollPane, Msg.getString("EntityListeners.count") + ": 0");
+		addBorder(scrollPane, LISTENER_COUNT_LABEL + ": 0");
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		// Initial population of the list
@@ -91,16 +105,15 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 		// Clear the list model
 		listModel.clear();
 		
-		// Add each listener to the list
+		// Add each listener to the list using toString()
 		for (EntityListener listener : listeners) {
-			// Use the full class name
-			String listenerInfo = listener.getClass().getName();
+			String listenerInfo = listener.toString();
 			listModel.addElement(listenerInfo);
 		}
 		
 		// Update the border with the count
 		scrollPane.setBorder(SwingHelper.createLabelBorder(
-			Msg.getString("EntityListeners.count") + ": " + listeners.size())
+			LISTENER_COUNT_LABEL + ": " + listeners.size())
 		);
 	}
 	
