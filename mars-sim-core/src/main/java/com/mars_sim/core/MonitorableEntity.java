@@ -34,5 +34,5 @@ public interface MonitorableEntity extends Entity {
      * 
      * @return unmodifiable set of entity listeners.
      */
-    Set<EntityListener> getListeners();
+    Set<EntityListener> getEntityListeners();
 }

@@ -8,6 +8,7 @@ package com.mars_sim.core;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -286,11 +287,11 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 * @return unmodifiable set of entity listeners.
 	 */
 	@Override
-	public final synchronized Set<EntityListener> getListeners() {
+	public final synchronized Set<EntityListener> getEntityListeners() {
 		if (listeners == null) {
-			return Set.of();
+			return Collections.emptySet();
 		}
-		return Set.copyOf(listeners);
+		return Collections.unmodifiableSet(listeners);
 	}
 
 	/**

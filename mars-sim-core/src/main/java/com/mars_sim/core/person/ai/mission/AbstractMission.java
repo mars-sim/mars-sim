@@ -163,7 +163,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	
 	// transient members
 	/** Entity listeners. */
-	private transient List<EntityListener> listeners;
+	private transient Set<EntityListener> listeners;
 
 	// Static members
 	protected static UnitManager unitManager;
@@ -235,12 +235,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
 	public final void addEntityListener(EntityListener newListener) {
 		if (listeners == null) {
-			listeners = new CopyOnWriteArrayList<>();
+			listeners = new HashSet<>();
 		}
 		synchronized (listeners) {
-			if (!listeners.contains(newListener)) {
-				listeners.add(newListener);
-			}
+			listeners.add(newListener);
 		}
 	}
 
@@ -251,7 +249,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public final void removeEntityListener(EntityListener oldListener) {
-		if ((listeners != null) && listeners.contains(oldListener)) {
+		if (listeners != null) {
 			synchronized (listeners) {
 				listeners.remove(oldListener);
 			}
@@ -264,12 +262,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return unmodifiable set of entity listeners.
 	 */
 	@Override
-	public final Set<EntityListener> getListeners() {
+	public final Set<EntityListener> getEntityListeners() {
 		if (listeners == null || listeners.isEmpty()) {
-			return Set.of();
+			return Collections.emptySet();
 		}
 		synchronized (listeners) {
-			return Set.copyOf(listeners);
+			return Collections.unmodifiableSet(listeners);
 		}
 	}
 

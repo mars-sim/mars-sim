@@ -438,12 +438,12 @@ public abstract class MissionProject implements Mission {
 	 * @return unmodifiable set of entity listeners.
 	 */
 	@Override
-	public Set<EntityListener> getListeners() {
+	public Set<EntityListener> getEntityListeners() {
 		if (listeners == null || listeners.isEmpty()) {
-			return Set.of();
+			return Collections.emptySet();
 		}
 		synchronized (listeners) {
-			return Set.copyOf(listeners);
+			return Collections.unmodifiableSet(listeners);
 		}
 	}
 

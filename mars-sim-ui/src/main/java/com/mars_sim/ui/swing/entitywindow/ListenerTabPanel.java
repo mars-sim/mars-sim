@@ -86,7 +86,7 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 		lastRefreshLabel.setText(now.getDateTimeStamp());
 		
 		// Get the current listeners
-		Set<EntityListener> listeners = getEntity().getListeners();
+		Set<EntityListener> listeners = getEntity().getEntityListeners();
 		
 		// Clear the list model
 		listModel.clear();

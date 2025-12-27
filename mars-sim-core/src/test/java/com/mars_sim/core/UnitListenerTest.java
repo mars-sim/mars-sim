@@ -40,11 +40,11 @@ class UnitListenerTest extends MarsSimUnitTest {
     }
 
     @Test
-    void testGetListeners() {
+    void testGetEntityListeners() {
         var s = buildSettlement("Test");
         
         // Initially should have no listeners or be empty
-        Set<EntityListener> listeners = s.getListeners();
+        Set<EntityListener> listeners = s.getEntityListeners();
         assertNotNull(listeners, "Listeners set should not be null");
         assertTrue(listeners.isEmpty(), "Should start with no listeners");
         
@@ -56,7 +56,7 @@ class UnitListenerTest extends MarsSimUnitTest {
         };
         s.addEntityListener(listener1);
         
-        listeners = s.getListeners();
+        listeners = s.getEntityListeners();
         assertEquals(1, listeners.size(), "Should have 1 listener");
         assertTrue(listeners.contains(listener1), "Should contain the added listener");
         
@@ -68,7 +68,7 @@ class UnitListenerTest extends MarsSimUnitTest {
         };
         s.addEntityListener(listener2);
         
-        listeners = s.getListeners();
+        listeners = s.getEntityListeners();
         assertEquals(2, listeners.size(), "Should have 2 listeners");
         assertTrue(listeners.contains(listener1), "Should contain listener1");
         assertTrue(listeners.contains(listener2), "Should contain listener2");
@@ -76,7 +76,7 @@ class UnitListenerTest extends MarsSimUnitTest {
         // Remove a listener
         s.removeEntityListener(listener1);
         
-        listeners = s.getListeners();
+        listeners = s.getEntityListeners();
         assertEquals(1, listeners.size(), "Should have 1 listener after removal");
         assertTrue(listeners.contains(listener2), "Should only contain listener2");
     }
