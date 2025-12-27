@@ -15,21 +15,19 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 
 /**
  * The TabPanelAttribute is a tab panel for the natural attributes of a person.
  */
 @SuppressWarnings("serial")
-public class TabPanelAttribute extends TabPanelTable {
+public class TabPanelAttribute extends EntityTableTabPanel<Worker> {
 	
 	private static final String ATTRIBUTE_ICON = "attribute"; //$NON-NLS-1$
 	
@@ -37,38 +35,21 @@ public class TabPanelAttribute extends TabPanelTable {
 	
 	/**
 	 * Constructor 1.
-	 * @param person {@link Person} the person.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param worker {@link Worker} the worker.
+	 * @param context {@link UIContext} the UI context.
 	 */
-	public TabPanelAttribute(Person person, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
+	public TabPanelAttribute(Worker worker, UIContext context) {
 		super(
 			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(ATTRIBUTE_ICON),	
-			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
-			person,	desktop
-		);
-	}
-
-	/**
-	 * Constructor 2.
-	 * @param robot{@link Robot} the robot.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
-	 */
-	public TabPanelAttribute(Robot robot, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
-		super(
-			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(ATTRIBUTE_ICON),	
-			Msg.getString("TabPanelAttribute.tooltip"), //$NON-NLS-1$
-			robot, desktop
-		);
+			null, worker, context
+			);
 	}
 
 	@Override
 	protected TableModel createModel() {
 		// Create attribute table model
-		attributeTableModel = new AttributeTableModel((Worker) getUnit());
+		attributeTableModel = new AttributeTableModel(getEntity());
 		return attributeTableModel;
 	}
 	
@@ -86,118 +67,91 @@ public class TabPanelAttribute extends TabPanelTable {
 	}
 
 	/**
-	 * Updates the info on this panel.
+	 * Refresh the UI elements will update the attribute table.
 	 */
 	@Override
-	public void update() {
-		attributeTableModel.update();
+	public void refreshUI() {
+		// Notify the table model data has changed
+		attributeTableModel.refresh();
 	}
-
-	@Override
-	public void destroy() {
-		attributeTableModel = null;
-	}
-}
-
-/**
- * Internal class used as model for the attribute table.
- */
-@SuppressWarnings("serial")
-class AttributeTableModel extends AbstractTableModel {
-
-	private List<NaturalAttributeType> n_attributes;
-
-	private NaturalAttributeManager n_manager;
-
-	private Worker worker;
 
 	/**
-	 * hidden constructor.
-	 * @param person {@link Person}
+	 * Internal class used as model for the attribute table.
 	 */
-	AttributeTableModel(Worker unit) {
+	private static class AttributeTableModel extends AbstractTableModel {
 
-		worker = unit;
-    	n_manager = worker.getNaturalAttributeManager();
-		n_attributes = new ArrayList<>(n_manager.getAttributeMap().keySet());
+		private List<NaturalAttributeType> attributes;
+		private NaturalAttributeManager attrMgr;
 
-	}
-
-	@Override
-	public int getRowCount() {
-		return n_manager.getAttributeNum();
-	}
-
-	@Override
-	public int getColumnCount() {
-		return 2;
-	}
-
-	@Override
-	public Class<?> getColumnClass(int columnIndex) {
-		Class<?> dataType = super.getColumnClass(columnIndex);
-		if (columnIndex == 0) dataType = String.class;
-		if (columnIndex == 1) dataType = String.class;
-		return dataType;
-	}
-
-	@Override
-	public String getColumnName(int columnIndex) {
-		if (columnIndex == 0) return Msg.getString("TabPanelAttribute.column.attribute"); //$NON-NLS-1$
-		else if (columnIndex == 1) return Msg.getString("TabPanelAttribute.column.level"); //$NON-NLS-1$
-		else return null;
-	}
-
-	@Override
-	public Object getValueAt(int row, int column) {
-		if (column == 0) {
-			return n_attributes.get(row).getName();
+		/**
+		 * hidden constructor.
+		 * @param worker {@link Worker}
+		 */
+		AttributeTableModel(Worker worker) {
+			attrMgr = worker.getNaturalAttributeManager();
+			attributes = new ArrayList<>(attrMgr.getAttributeMap().keySet());
 		}
 
-		else if (column == 1) {
-			int level = n_manager.getAttribute(n_attributes.get(row));
-			return " " + level + " - " + getLevelString(level);
+		private void refresh() {
+			attributes = new ArrayList<>(attrMgr.getAttributeMap().keySet());
+			fireTableDataChanged();
 		}
 
-		else return null;
-	}
+		@Override
+		public int getRowCount() {
+			return attrMgr.getAttributeNum();
+		}
 
-	/**
-	 * Converts the numeric attribute points to a description of level
-	 * 
-	 * @param level
-	 * @return
-	 */
-	public String getLevelString(int level) {
-		String result = null;
-		if (level < 10) result = Msg.getString("TabPanelAttribute.level.0"); //$NON-NLS-1$
-		else if (level < 20) result = Msg.getString("TabPanelAttribute.level.1"); //$NON-NLS-1$
-		else if (level < 30) result = Msg.getString("TabPanelAttribute.level.2"); //$NON-NLS-1$
-		else if (level < 40) result = Msg.getString("TabPanelAttribute.level.3"); //$NON-NLS-1$
-		else if (level < 50) result = Msg.getString("TabPanelAttribute.level.4"); //$NON-NLS-1$
-		else if (level < 60) result = Msg.getString("TabPanelAttribute.level.5"); //$NON-NLS-1$
-		else if (level < 70) result = Msg.getString("TabPanelAttribute.level.6"); //$NON-NLS-1$
-		else if (level < 80) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$
-		else if (level < 90) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$		
-		else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
-		return result;
-	}
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
 
-	/**
-	 * Prepares the job history of the person
-	 * @param
-	 * @param
-	 */
-	void update() {
-//    	fireTableDataChanged();
-	}
-	
-	public void destroy() {
-		n_attributes.clear();
-		
-		n_attributes = null;
-		
-		n_manager = null;
-		worker = null;
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			return String.class;
+		}
+
+		@Override
+		public String getColumnName(int columnIndex) {
+			if (columnIndex == 0) return Msg.getString("TabPanelAttribute.column.attribute"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelAttribute.column.level"); //$NON-NLS-1$
+			else return null;
+		}
+
+		@Override
+		public Object getValueAt(int row, int column) {
+			if (column == 0) {
+				return attributes.get(row).getName();
+			}
+
+			else if (column == 1) {
+				int level = attrMgr.getAttribute(attributes.get(row));
+				return " " + level + " - " + getLevelString(level);
+			}
+
+			else return null;
+		}
+
+		/**
+		 * Converts the numeric attribute points to a description of level
+		 * 
+		 * @param level
+		 * @return
+		 */
+		public String getLevelString(int level) {
+			String result = null;
+			if (level < 10) result = Msg.getString("TabPanelAttribute.level.0"); //$NON-NLS-1$
+			else if (level < 20) result = Msg.getString("TabPanelAttribute.level.1"); //$NON-NLS-1$
+			else if (level < 30) result = Msg.getString("TabPanelAttribute.level.2"); //$NON-NLS-1$
+			else if (level < 40) result = Msg.getString("TabPanelAttribute.level.3"); //$NON-NLS-1$
+			else if (level < 50) result = Msg.getString("TabPanelAttribute.level.4"); //$NON-NLS-1$
+			else if (level < 60) result = Msg.getString("TabPanelAttribute.level.5"); //$NON-NLS-1$
+			else if (level < 70) result = Msg.getString("TabPanelAttribute.level.6"); //$NON-NLS-1$
+			else if (level < 80) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$
+			else if (level < 90) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$		
+			else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
+			return result;
+		}
 	}
 }

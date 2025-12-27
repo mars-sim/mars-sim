@@ -127,11 +127,9 @@ public class Role implements Serializable {
 	 * 
 	 * @param s
 	 */
-	private void obtainNewRole() {
-		// Find the best role
-		RoleType roleType = RoleUtil.findBestRole(person);	
+	private void obtainNewRole() {	
 		// Finalize setting a person's new role
-		changeRoleType(roleType);
+		changeRoleType(RoleUtil.findBestRole(person));
 	}
 	
 	/**

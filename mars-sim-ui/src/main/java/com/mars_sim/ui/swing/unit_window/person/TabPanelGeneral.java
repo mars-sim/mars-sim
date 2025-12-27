@@ -10,49 +10,38 @@ import java.awt.BorderLayout;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
  */
 @SuppressWarnings("serial")
-public class TabPanelGeneral extends TabPanel {
-
-	private static final String ID_ICON = "info"; //$NON-NLS-1$
+class TabPanelGeneral extends EntityTabPanel<Person> {
 	
 	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
-	
-	/** The Person instance. */
-	private Person person;
-	
-	private JLabel storedMassLabel;
-		
+			
 	/**
 	 * Constructor.
 	 * 
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelGeneral(Person unit, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
+	public TabPanelGeneral(Person unit, UIContext context) {
 		super(
-			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(ID_ICON),		
-			Msg.getString("TabPanelGeneral.title"), //$NON-NLS-1$
-			desktop
+			GENERAL_TITLE,
+			ImageLoader.getIconByName(GENERAL_ICON),		
+			GENERAL_TOOLTIP,
+			context, unit
 		);
-
-		person = unit;
 	}
 	
 	@Override
@@ -63,35 +52,32 @@ public class TabPanelGeneral extends TabPanel {
 		
 		content.add(infoPanel, BorderLayout.NORTH);
 
-		// Prepare gender textfield
-		String gender = person.getGender().getName();
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.gender"), gender, null);
-		
-		// Prepare blood type
-		String bloodType = person.getBloodType();
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.bloodType"), bloodType, null);
+		var person = getEntity();
+
+		infoPanel.addTextField(Msg.getString("Person.gender"), person.getGender().getName(), null);
+		infoPanel.addTextField(Msg.getString("Person.bloodType"), person.getBloodType(), null);
 				
 		// Prepare birthdate and age textfield
 		var birthDate = person.getBirthDate();
-
 		String birthTxt = Msg.getString(
 			TAB_BIRTH_DATE_AGE,
 			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.birthDate"), birthTxt, null);
+		infoPanel.addTextField(Msg.getString("Person.birthDate"), birthTxt, null);
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.country"), //$NON-NLS-1$
+		infoPanel.addTextField(Msg.getString("Country.singular"), //$NON-NLS-1$
 				country, null);
-		infoPanel.addLabelledItem(Msg.getString("Entity.authority"), new EntityLabel(person.getReportingAuthority(), getDesktop()));
+		infoPanel.addLabelledItem(Msg.getString("Authority.singular"),
+						new EntityLabel(person.getReportingAuthority(), getContext()));
 
 		// Prepare weight textfield
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.weight"), //$NON-NLS-1$
+		infoPanel.addTextField(Msg.getString("Person.weight"), //$NON-NLS-1$
 				  							  StyleManager.DECIMAL_KG.format(person.getBaseMass()), null);
 		
 		// Prepare height name label
-		infoPanel.addTextField(Msg.getString("TabPanelGeneral.height"), //$NON-NLS-1$
+		infoPanel.addTextField(Msg.getString("Person.height"), //$NON-NLS-1$
 					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " cm", null);
 
 		// Prepare BMI label
@@ -116,22 +102,5 @@ public class TabPanelGeneral extends TabPanel {
 		// Prepare loading cap label
 		infoPanel.addTextField(Msg.getString("TabPanelGeneral.loadCap"), //$NON-NLS-1$
 				StyleManager.DECIMAL_KG.format(person.getCarryingCapacity()), null); 
-		
-		// Prepare total mass label
-		storedMassLabel = infoPanel.addTextField(Msg.getString("TabPanelGeneral.storedMass"), //$NON-NLS-1$
-				StyleManager.DECIMAL_KG.format(person.getStoredMass()), 
-				Msg.getString("TabPanelGeneral.storedMass.tooltip"));  //$NON-NLS-2$
-	}
-	
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
-		
-		// Prepare total mass label
-		storedMassLabel.setText(StyleManager.DECIMAL_KG.format(person.getStoredMass()));
-
-		super.update();
 	}
 }

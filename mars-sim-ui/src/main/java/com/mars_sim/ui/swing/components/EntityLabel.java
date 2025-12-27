@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.FixedUnit;
@@ -32,8 +33,11 @@ import com.mars_sim.ui.swing.tool.MapSelector;
 @SuppressWarnings("serial")
 public class EntityLabel extends JPanel {
 	
-    private static final Icon DETAILS = ImageLoader.getIconByName("action/details_small");
-    private static final Icon LOCATE = ImageLoader.getIconByName("action/locate_small");
+    // Icon associated with show an Entity Details window
+    public static final Icon DETAILS = ImageLoader.getIconByName("action/details_small");
+    
+    // OIcon associated with showing an Entity in the appropriate map window
+    public static final Icon LOCATE = ImageLoader.getIconByName("action/locate_small");
 
     private JLabel label;
     private JButton detailButton;
@@ -96,7 +100,8 @@ public class EntityLabel extends JPanel {
             var entityType = Conversion.split(subject.getClass().getSimpleName());
             label.setToolTipText(entityType);
             detailButton.setVisible(true);
-            mapButton.setVisible((subject instanceof MobileUnit) || (subject instanceof FixedUnit));
+            mapButton.setVisible((subject instanceof MobileUnit) || (subject instanceof FixedUnit)
+                                || (subject instanceof Settlement));
         }
 
         this.entity = subject;

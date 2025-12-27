@@ -16,20 +16,21 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.Shift;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
-import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.OneActivity;
-import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.person.ai.task.util.TaskManager;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
@@ -38,7 +39,8 @@ import com.mars_sim.ui.swing.utils.JHistoryPanel;
  * The TabPanelSchedule is a tab panel showing the daily schedule a person.
  */
 @SuppressWarnings("serial")
-public class TabPanelSchedule extends TabPanel {
+public class TabPanelSchedule extends EntityTabPanel<Worker>
+				implements EntityListener {
 
 	private static final String SCH_ICON = "schedule";
 	private static final String NOTE = "Note : ";
@@ -55,32 +57,26 @@ public class TabPanelSchedule extends TabPanel {
 	private JLabel statusLabel;
 	
 	private ShiftSlot shiftSlot;
-	private TaskManager taskManager;
 
 	private ActivityPanel activityPanel;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit    the unit to display.
-	 * @param desktop the main desktop.
+	 * @param worker  the worker for this panel.
+	 * @param context the UI context.
 	 */
-	public TabPanelSchedule(Unit unit, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
+	public TabPanelSchedule(Worker worker, UIContext context) {
 		super(
 			null,
 			ImageLoader.getIconByName(SCH_ICON),
 			Msg.getString("TabPanelSchedule.title"), //$NON-NLS-1$
-			unit, desktop
+			context, worker
 		);
 
-		if (unit instanceof Person person) {
+		if (worker instanceof Person person) {
 			shiftSlot = person.getShiftSlot();
-			taskManager = person.getTaskManager();
 		} 
-		else if (unit instanceof Robot robot) {
-			taskManager = robot.getTaskManager();
-		}
 	}
 
 	@Override
@@ -90,7 +86,7 @@ public class TabPanelSchedule extends TabPanel {
 		JPanel northPanel = new JPanel(new BorderLayout());
 		content.add(northPanel, BorderLayout.NORTH);
 				
-		AttributePanel attrPanel = new AttributePanel(3);
+		AttributePanel attrPanel = new AttributePanel();
 		northPanel.add(attrPanel, BorderLayout.NORTH);
 		
 		// Create the shift panel.
@@ -128,12 +124,15 @@ public class TabPanelSchedule extends TabPanel {
 			shiftPane.add(shiftNoteTF);
 		}
 
-		activityPanel = new ActivityPanel(taskManager.getAllActivities());
+		activityPanel = new ActivityPanel(getEntity().getTaskManager().getAllActivities());
 		activityPanel.setPreferredSize(new Dimension(225, 100));
 
 		content.add(activityPanel, BorderLayout.CENTER);
 
-		update();
+		if (shiftSlot != null) {
+			updateShift();
+		}
+		activityPanel.refresh();
 	}
 
 	/**
@@ -211,41 +210,37 @@ public class TabPanelSchedule extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
-	@Override
-	public void update() {
-
-		if (shiftSlot != null) {
-			
-			String shift = getWorkShift(shiftSlot);
-			
-			if (!shiftCache.equalsIgnoreCase(shift)) {
-				shiftCache = shift;
-				shiftLabel.setText(shift);
-			}
-			
-			String timePeriod = getWorkPeriod(shiftSlot);
-			
-			if (!timePeriodCache.equalsIgnoreCase(timePeriod)) {
-				timePeriodCache = timePeriod;
-				timeLabel.setText(timePeriod);
-			}
-			
-			String status = Conversion.capitalize(shiftSlot.getStatus().toString());
-					
-			if (!statusCache.equalsIgnoreCase(status)) {
-				statusCache = status;
-				statusLabel.setText(status);
-			}
-					
-			String shiftDesc = getShiftNote(shiftSlot);
-			
-			if (!noteCache.equalsIgnoreCase(shiftDesc)) {
-				noteCache = shiftDesc;
-				shiftNoteTF.setText(NOTE + shiftDesc);
-			}
-		}
+	private void updateShift() {
 		
-		activityPanel.refresh();
+		String shift = getWorkShift(shiftSlot);
+		
+		if (!shiftCache.equalsIgnoreCase(shift)) {
+			shiftCache = shift;
+			shiftLabel.setText(shift);
+		}
+				
+		String shiftDesc = getShiftNote(shiftSlot);
+		if (!noteCache.equalsIgnoreCase(shiftDesc)) {
+			noteCache = shiftDesc;
+			shiftNoteTF.setText(NOTE + shiftDesc);
+		}
+		updateShiftStatus();
+	}
+
+	/**
+	 * Updates the shift status info on this panel. These details are time dependent.
+	 */
+	private void updateShiftStatus() {
+		String timePeriod = getWorkPeriod(shiftSlot);
+		if (!timePeriodCache.equalsIgnoreCase(timePeriod)) {
+			timePeriodCache = timePeriod;
+			timeLabel.setText(timePeriod);
+		}	
+		String status = shiftSlot.getStatus().getName();		
+		if (!statusCache.equalsIgnoreCase(status)) {
+			statusCache = status;
+			statusLabel.setText(status);
+		}
 	}
 
 	/**
@@ -253,9 +248,9 @@ public class TabPanelSchedule extends TabPanel {
 	 */
 	private class ActivityPanel extends JHistoryPanel<OneActivity> {
 		private static final ColumnSpec[] COLUMNS = {
-								new ColumnSpec(Msg.getString("TabPanelSchedule.column.description"), String.class),
-								new ColumnSpec(Msg.getString("TabPanelSchedule.column.phase"), String.class),
-								new ColumnSpec(Msg.getString("TabPanelSchedule.column.missionName"), String.class)
+								new ColumnSpec(Msg.getString("Entity.description"), String.class),
+								new ColumnSpec(Msg.getString("Task.phase"), String.class),
+								new ColumnSpec(Msg.getString("Mission.singular"), String.class)
 										};
 
 		ActivityPanel(History<OneActivity> source) {
@@ -271,5 +266,26 @@ public class TabPanelSchedule extends TabPanel {
 				default -> null;
 			};
 		}
+	}
+
+	/**
+	 * Listens for Shift events
+	 * @param event
+	 */
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		switch(event.getType()) {
+			case ShiftSlot.SHIFT_EVENT -> updateShift();
+			case TaskManager.TASK_EVENT, EntityEventType.TASK_ENDED_EVENT,
+						EntityEventType.MISSION_EVENT -> {
+							activityPanel.refresh();
+							if (shiftSlot != null) {
+								updateShiftStatus();
+							}
+						}
+			default -> {
+				// Only those events matter
+				}
+			}
 	}
 }

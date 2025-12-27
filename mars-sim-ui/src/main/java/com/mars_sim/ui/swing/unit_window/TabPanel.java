@@ -267,4 +267,11 @@ public abstract class TabPanel extends JScrollPane {
 		desktop = null;
 	}
 
+	/**
+	 * Refresh the UI elements of this tab. Commonly called when the tab is selected.
+	 * Can be overridden by subclasses. but should be rarely needed.
+	 */
+    public void refreshUI() {
+        // Default does nothing
+    }
 }

@@ -21,6 +21,9 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.mission.util.MissionRating;
@@ -35,21 +38,25 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * The TabPanelActivity is a tab panel for a person's current tasks and
- * activities
+ * activities. This listens for Entity events related to Task & Mission.
  */
 @SuppressWarnings("serial")
-public class TabPanelActivity extends TabPanel {
+public class TabPanelActivity extends EntityTabPanel<Worker>
+		implements EntityListener {
+
+	private static final String BEST_SCORE = "Best Score";
 
 	private static final int MAX_LABEL = 30;
 	
@@ -57,6 +64,8 @@ public class TabPanelActivity extends TabPanel {
 	
 	private static final String HTML = "<html>";
 	private static final String END_HTML = "</html>";
+	private static final String DESCRIPTION = Msg.getString("Entity.description");
+	private static final String SCORE = Msg.getString("Rating.score");
 
 	/** data cache */
 	private String missionPhaseCache = "";
@@ -66,8 +75,6 @@ public class TabPanelActivity extends TabPanel {
 	private JLabel missionScore;
 	private JLabel taskScoreTextArea;
 
-	private Worker worker;
-
 	private JTextArea taskStack;
 	
 	private TaskCacheModel taskCacheModel;
@@ -75,23 +82,24 @@ public class TabPanelActivity extends TabPanel {
 	
 	private JTextArea pendingTasks;
 
+	private Mission trackedMission;
+
 
 	/**
 	 * Constructor.
 	 *
 	 * @param unit    {@link Unit} the unit to display.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param context {@link UIContext} the UI context.
 	 */
-	public TabPanelActivity(Worker unit, MainDesktopPane desktop) {
+	public TabPanelActivity(Worker unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelActivity.title"), //-NLS-1$
 			ImageLoader.getIconByName(TASK_ICON),	
 			Msg.getString("TabPanelActivity.title"), //-NLS-1$
-			desktop
+			context, unit
 		);
 
-		this.worker = unit;
 	}
 
 	@Override
@@ -113,9 +121,10 @@ public class TabPanelActivity extends TabPanel {
 		
 		// Create a mission main panel
 		JPanel missionMainPanel = createMissionPanel();
-		topPanel.add(missionMainPanel, BorderLayout.NORTH);
+		topPanel.add(missionMainPanel, BorderLayout.SOUTH);
 
-		update();
+		updateMissionPanel();
+		updateTaskPanel();
 	}
 
 	/**
@@ -125,7 +134,7 @@ public class TabPanelActivity extends TabPanel {
 	 */
 	private JPanel createMissionPanel() {
 		JPanel missionMainPanel = new JPanel(new BorderLayout(1, 3));
-		addBorder(missionMainPanel, "Mission");
+		missionMainPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Mission.singular")));
 
 		JPanel missionSubPanel = new JPanel(new BorderLayout(1, 3));
 		missionMainPanel.add(missionSubPanel, BorderLayout.NORTH);
@@ -134,13 +143,13 @@ public class TabPanelActivity extends TabPanel {
 		AttributePanel missionAttributePanel = new AttributePanel();
 		missionSubPanel.add(missionAttributePanel, BorderLayout.NORTH);
 		missionLabel = new EntityLabel(getDesktop());
-		missionAttributePanel.addLabelledItem(Msg.getString("TabPanelActivity.missionDesc"), missionLabel);
-		missionPhase = missionAttributePanel.addRow(Msg.getString("TabPanelActivity.missionPhase"), ""); //$NON-NLS-1$
-		missionScore = missionAttributePanel.addRow("Best Score", "");
+		missionAttributePanel.addLabelledItem(Msg.getString("Entity.description"), missionLabel);
+		missionPhase = missionAttributePanel.addRow(Msg.getString("Mission.phase"), ""); //-NLS-1$
+		missionScore = missionAttributePanel.addRow(BEST_SCORE, "");
 
 		missionCacheModel = new MissionCacheModel();
 		JPanel missionCachePanel = new JPanel(new BorderLayout(1, 3));
-		addBorder(missionCachePanel, "Mission Rating");
+		missionCachePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Rating.plural")));
 		
 		JTable missionCacheTable = new JTable(missionCacheModel) {
 		    @Override
@@ -173,7 +182,7 @@ public class TabPanelActivity extends TabPanel {
 	 */
 	private JPanel createTaskPanel() {
 		JPanel taskMainPanel = new JPanel(new BorderLayout(1, 3));
-		addBorder(taskMainPanel, "Task");
+		taskMainPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Task.singular")));
 
 		JPanel taskSubPanel = new JPanel(new BorderLayout(1, 3));
 		taskMainPanel.add(taskSubPanel, BorderLayout.NORTH);
@@ -184,11 +193,11 @@ public class TabPanelActivity extends TabPanel {
 
 		AttributePanel taskScorePanel = new AttributePanel(1);
 		taskSubPanel.add(taskScorePanel, BorderLayout.CENTER);
-		taskScoreTextArea = taskScorePanel.addRow("Best Score", "");
+		taskScoreTextArea = taskScorePanel.addRow(BEST_SCORE, "");
 		
 		taskCacheModel = new TaskCacheModel();
 		JPanel taskCachePanel = new JPanel(new BorderLayout(1, 3));
-		addBorder(taskCachePanel, "Task Rating");
+		taskCachePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Rating.plural")));
 		
 		JTable taskCacheTable = new JTable(taskCacheModel) {
 		    @Override
@@ -214,12 +223,41 @@ public class TabPanelActivity extends TabPanel {
 		return taskMainPanel;
 	}
 	
+	
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		switch (event.getType()) {
+			case EntityEventType.TASK_PHASE_EVENT, EntityEventType.TASK_SUBTASK_EVENT,
+							TaskManager.TASK_EVENT, EntityEventType.TASK_ENDED_EVENT:
+				updateTaskPanel();
+				break;
+			case EntityEventType.MISSION_EVENT, Mission.PHASE_EVENT:
+				updateMissionPanel();
+				break;
+			default:
+				// Do nothing
+				break;
+		}
+	}
+
 	/**
 	 * Updates the info on this panel.
 	 */
-	@Override
-	public void update() {
+	private void updateMissionPanel() {
+		var worker = getEntity();
 		Mission mission = worker.getMission();
+
+		// Change the mission tracked
+		if ((trackedMission == null && mission != null) ||
+				(trackedMission != null && !trackedMission.equals(mission))) {
+			if (trackedMission != null) {
+				trackedMission.removeEntityListener(this);
+			}
+			trackedMission = mission;
+			if (trackedMission != null) {
+				trackedMission.addEntityListener(this);
+			}
+		}
 		
 		TaskManager taskManager = worker.getTaskManager();
 		MissionRating selected = null;
@@ -230,23 +268,35 @@ public class TabPanelActivity extends TabPanel {
 			if (selected != null) {
 				missionScore.setText(Math.round(selected.getScore().getScore() * 100.0)/100.0 + "");
 			}
-			
 			missionCacheModel.update(worker);
-		}
-
-		String newMissionPhase = "";
-
-		// Update mission text area if necessary.
-		if (mission != null) {
-			newMissionPhase = mission.getPhaseDescription();
 		}
 
 		missionLabel.setEntity(mission);
 
+		String newMissionPhase = (mission != null) ? mission.getPhaseDescription() : "";
 		if (!missionPhaseCache.equals(newMissionPhase)) {
 			missionPhaseCache = newMissionPhase;
 			missionPhase.setText(Conversion.trim(newMissionPhase, MAX_LABEL));
 		}
+	}
+
+	/**
+	 * Remove the trackign on mission when destroying the panel.
+	 */
+	@Override
+	public void destroy() {
+		if (trackedMission != null) {
+			trackedMission.removeEntityListener(this);
+		}
+		super.destroy();
+	}
+
+	/**
+	 * Updates the info on this panel.
+	 */
+	private void updateTaskPanel() {
+		var worker = getEntity();		
+		TaskManager taskManager = worker.getTaskManager();
 
 		boolean addLine = false;
 		StringBuilder prefix = new StringBuilder();
@@ -374,9 +424,9 @@ public class TabPanelActivity extends TabPanel {
 		@Override
 		public String getColumnName(int column) {
 			if (column == 0) {
-				return "Mission Description ";
+				return DESCRIPTION;
 			}
-			return "Score";
+			return SCORE;
 		}
 	}
 	
@@ -440,9 +490,9 @@ public class TabPanelActivity extends TabPanel {
 		@Override
 		public String getColumnName(int column) {
 			if (column == 0) {
-				return "Task Description";
+				return DESCRIPTION;
 			}
-			return "Score";
+			return SCORE;
 		}
 	}
 }

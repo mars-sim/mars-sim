@@ -19,6 +19,9 @@ public class ShiftSlot implements ScheduledEventHandler {
 	private static final long serialVersionUID = 1L;
 	
 	private static final String SEPARATOR = " ";
+
+    // Change of shift
+    public static final String SHIFT_EVENT = "shift_change";
 	
     /**
      * The work status of this slot.
@@ -159,6 +162,8 @@ public class ShiftSlot implements ScheduledEventHandler {
         shift.leaveShift();
         shift = newShift;
         shift.joinShift();
+
+        worker.fireUnitUpdate(SHIFT_EVENT);
     }
 
     @Override

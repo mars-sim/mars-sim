@@ -7,32 +7,28 @@
 package com.mars_sim.ui.swing.unit_window.robot;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.core.equipment.Battery;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-
-import io.github.parubok.text.multiline.MultilineLabel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This tab shows the general details of the Robot type.
  */
 @SuppressWarnings("serial")
-public class TabPanelGeneralRobot extends TabPanel {
-
-	private static final String ID_ICON = "info";
+class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListener{
 
 	private JLabel statePercent;
 	private JLabel cap;
@@ -44,23 +40,16 @@ public class TabPanelGeneralRobot extends TabPanel {
 	private JLabel degradPercent;
 	private JLabel maxCRating;
 	private JLabel cycles;
-	
-	private Robot r;
-	private SystemCondition sc;
-	private Battery battery;
-	
+		
 	/**
 	 * Constructor.
 	 */
-	public TabPanelGeneralRobot(Robot r, MainDesktopPane desktop) {
+	public TabPanelGeneralRobot(Robot r, UIContext context) {
 		super(
-			Msg.getString("BuildingPanelGeneral.title"),
-			ImageLoader.getIconByName(ID_ICON), 
-			Msg.getString("BuildingPanelGeneral.title"),
-			desktop);
-		this.r = r;
-		this.sc = r.getSystemCondition();
-		this.battery = sc.getBattery();
+			GENERAL_TITLE,
+			ImageLoader.getIconByName(GENERAL_ICON),
+			GENERAL_TOOLTIP,
+			context, r);
 	}
 
 	/**
@@ -73,25 +62,19 @@ public class TabPanelGeneralRobot extends TabPanel {
 		center.add(topPanel, BorderLayout.NORTH);
 
 		// Prepare spring layout info panel.
-		AttributePanel infoPanel = new AttributePanel(3);
+		AttributePanel infoPanel = new AttributePanel();
 		topPanel.add(infoPanel, BorderLayout.NORTH);
 
-		infoPanel.addRow("Type", r.getRobotType().getName());
-		infoPanel.addRow("Model", r.getModel());
+		var r = getEntity();
+		var settlement = new EntityLabel(r.getAssociatedSettlement(), getContext());
+		infoPanel.addLabelledItem(Msg.getString("Settlement.singular"), settlement);
+		infoPanel.addRow(Msg.getString("Robot.type"), r.getRobotType().getName());
+		infoPanel.addRow(Msg.getString("Robot.model"), r.getModel());
 		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
-		
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		addBorder(labelPanel, "Description");
-		var label = new MultilineLabel();
-		labelPanel.add(label);
-		String text = r.getDescription().replaceAll("\n", " ").replaceAll("\t", "");
-		label.setText(text);
-		label.setPreferredWidthLimit(430);
-		label.setLineSpacing(1.2f);
-		label.setMaxLines(3);
-		label.setBorder(new EmptyBorder(5, 5, 5, 5));
-		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
-		topPanel.add(labelPanel, BorderLayout.CENTER);
+
+		String text = r.getDescription().replace("\n", " ").replace("\t", "");
+		var desc = SwingHelper.createTextBlock(Msg.getString("Entity.description"), text);
+		topPanel.add(desc, BorderLayout.CENTER);
 			
 		JPanel dataPanel = new JPanel(new BorderLayout(10, 10));
 		topPanel.add(dataPanel, BorderLayout.SOUTH);
@@ -99,7 +82,9 @@ public class TabPanelGeneralRobot extends TabPanel {
         addBorder(dataPanel, "Battery Condition");
 		AttributePanel battPanel = new AttributePanel(10);
 		dataPanel.add(battPanel, BorderLayout.NORTH);
-        
+    
+		var battery = getEntity().getSystemCondition().getBattery();
+
 		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(battery.getBatteryPercent()), 
 				"The state of the battery is kWh stored / energy storage capacity * 100 percent");
 		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(battery.getkWhStored()));
@@ -109,25 +94,32 @@ public class TabPanelGeneralRobot extends TabPanel {
 		
 		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
 		tVolt = battPanel.addRow("Terminal Voltage", StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
-		health = battPanel.addRow("Health", StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
+		health = battPanel.addRow(Msg.getString("Robot.health"), StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
 		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade())
 				+ " per sol");
 		cycles = battPanel.addRow("Charge Cycles", StyleManager.DECIMAL_PLACES2.format(battery.getNumCycles()) + "");
 	}
 
+	/**
+	 * Track changes to the battery or system condition.
+	 */
 	@Override
-	public void update() {
+	public void entityUpdate(EntityEvent event) {
 	
-		statePercent.setText(StyleManager.DECIMAL_PERC.format(battery.getBatteryPercent()));
-		cap.setText(StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
-		maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));
-		kWhStored.setText(StyleManager.DECIMAL_KWH.format(battery.getkWhStored()));
-		ampHours.setText(StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
-		
-		tVolt.setText(StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
-		health.setText(StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
-		degradPercent.setText(StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade()) + " per sol");
-		maxCRating.setText(StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));
-		cycles.setText(StyleManager.DECIMAL_PLACES2.format(battery.getNumCycles()) + "");
+		if (EntityEventType.BATTERY_EVENT.equals(event.getType())) {
+			var battery = getEntity().getSystemCondition().getBattery();
+
+			statePercent.setText(StyleManager.DECIMAL_PERC.format(battery.getBatteryPercent()));
+			cap.setText(StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
+			maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));
+			kWhStored.setText(StyleManager.DECIMAL_KWH.format(battery.getkWhStored()));
+			ampHours.setText(StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
+			
+			tVolt.setText(StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
+			health.setText(StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
+			degradPercent.setText(StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade()) + " per sol");
+			maxCRating.setText(StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));
+			cycles.setText(StyleManager.DECIMAL_PLACES2.format(battery.getNumCycles()));
+		}
 	}
 }
