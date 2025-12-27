@@ -99,6 +99,11 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      * @param props Any initial properties for the window.
      */
     protected void applyProps(Properties props) {
+        // Add the listener panel if the entity is MonitorableEntity
+        if (entity instanceof MonitorableEntity m) {
+            addTabPanel(new ListenerTabPanel(m, context));
+        }
+        
         String selectedTab = props.getProperty(SELECTED_TAB);
         if (selectedTab != null) {
             for (int i = 0; i < tabPanels.size(); i++) {
