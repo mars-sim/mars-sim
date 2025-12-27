@@ -770,6 +770,7 @@ public class Simulation implements ClockListener, Serializable {
 			marketManager = (MarketManager) ois.readObject();
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
+			scheduledEvents = (ScheduledEventManager) ois.readObject();
 			
 			UnitSet.reinit(unitManager);
 
@@ -1051,6 +1052,7 @@ public class Simulation implements ClockListener, Serializable {
 			oos.writeObject(marketManager);
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);
+			oos.writeObject(scheduledEvents);
 
 			oos.flush();
 			oos.close();
