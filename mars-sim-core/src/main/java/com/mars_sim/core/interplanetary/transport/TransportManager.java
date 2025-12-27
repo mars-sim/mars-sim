@@ -24,15 +24,13 @@ import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
-import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.time.Temporal;
 
 /**
  * A manager for interplanetary transportation.
  */
-public class TransportManager implements Serializable, Temporal {
+public class TransportManager implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -60,7 +58,7 @@ public class TransportManager implements Serializable, Temporal {
 		// Initialize data
 		transportItems = new ArrayList<>();
 
-		this.futures = new ScheduledEventManager(sim.getMasterClock());
+		this.futures = sim.getScheduleManager();
 	}
 	
 	public void init(Simulation sim) {
@@ -110,18 +108,6 @@ public class TransportManager implements Serializable, Temporal {
 	 */
 	public List<Transportable> getTransportItems() {
 		return transportItems;
-	}
-
-	/**
-	 * Time passing.
-	 *
-	 * @param pulse Pulse of the simulation
-	 * @throws Exception if error.
-	 */
-	@Override
-	public boolean timePassing(ClockPulse pulse) {
-		futures.timePassing(pulse);
-		return true;
 	}
 
 	/**
