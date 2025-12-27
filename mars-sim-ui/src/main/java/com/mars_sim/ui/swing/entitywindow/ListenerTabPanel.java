@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
@@ -23,7 +24,6 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This tab panel displays the active listeners registered on a MonitorableEntity.
@@ -35,7 +35,6 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 	private static final String TAB_TITLE = "Listeners";
 	private static final String TAB_TOOLTIP = "Active Event Listeners";
 	private static final String LAST_REFRESH_LABEL = "Last Refresh";
-	private static final String LISTENER_COUNT_LABEL = "Listener Count";
 	private static final String REFRESH_BUTTON_TEXT = "Refresh";
 	
 	private JList<String> listenerList;
@@ -83,8 +82,9 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 		listModel = new DefaultListModel<>();
 		listenerList = new JList<>(listModel);
 		
+		// Configure scrollPane with horizontal scrollbar
 		scrollPane = new JScrollPane(listenerList);
-		addBorder(scrollPane, LISTENER_COUNT_LABEL + ": 0");
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		// Initial population of the list
@@ -110,11 +110,6 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 			String listenerInfo = listener.toString();
 			listModel.addElement(listenerInfo);
 		}
-		
-		// Update the border with the count
-		scrollPane.setBorder(SwingHelper.createLabelBorder(
-			LISTENER_COUNT_LABEL + ": " + listeners.size())
-		);
 	}
 	
 	@Override
