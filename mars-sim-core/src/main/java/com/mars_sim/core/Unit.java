@@ -290,9 +290,7 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 		if (listeners == null) {
 			return Set.of();
 		}
-		synchronized(listeners) {
-			return Set.copyOf(listeners);
-		}
+		return Set.copyOf(listeners);
 	}
 
 	/**
