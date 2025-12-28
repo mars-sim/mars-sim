@@ -59,7 +59,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The HealthTabPanel is a tab panel for a person's health.
  */
 @SuppressWarnings("serial")
-public class TabPanelHealth extends EntityTabPanel<Person>
+class TabPanelHealth extends EntityTabPanel<Person>
 		implements TemporalComponent {
 
 	private static final String HEALTH_ICON = "health"; //$NON-NLS-1$

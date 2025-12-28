@@ -27,7 +27,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * The TabPanelDeath is a tab panel with info about a person's death.
  */
 @SuppressWarnings("serial")
-public class TabPanelDeath extends EntityTabPanel<Person> {
+class TabPanelDeath extends EntityTabPanel<Person> {
 
 	private static final String RIP_ICON = "rip";
 

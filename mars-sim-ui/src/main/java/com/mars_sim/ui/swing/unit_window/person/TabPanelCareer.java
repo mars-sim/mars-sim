@@ -58,7 +58,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * history and current role.
  */
 @SuppressWarnings("serial")
-public class TabPanelCareer extends EntityTabPanel<Person>
+class TabPanelCareer extends EntityTabPanel<Person>
 			implements ActionListener, EntityListener {
 
 	/** default logger. */

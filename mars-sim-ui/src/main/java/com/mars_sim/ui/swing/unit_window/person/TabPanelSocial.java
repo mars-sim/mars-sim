@@ -32,7 +32,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * A tab panel displaying a person's social relationships.
  */
 @SuppressWarnings("serial")
-public class TabPanelSocial extends EntityTableTabPanel<Person>
+class TabPanelSocial extends EntityTableTabPanel<Person>
 			implements ListSelectionListener {
 
 	private static final String SOCIAL_ICON = "social";
