@@ -97,7 +97,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		studyScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
-		// Create the study table by findoing all Studies this Person is involved in.
+		// Create the study table by finding all Studies this Person is involved in.
 		studyTableModel = new StudyTableModel(person, scienceManager);
 		scienceManager.addListener(this);
 
@@ -342,7 +342,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		 */
 		private boolean update() {
 			List<ScientificStudy> newStudies = manager.getAllStudies(person);
-			boolean hasChanged = newStudies.equals(studies);
+			boolean hasChanged = !newStudies.equals(studies);
 			
 			if (hasChanged) {
 				setMonitoredStudies(newStudies);
@@ -370,7 +370,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		}
 
 		/**
-		 * Monitoired study has changed so fire a chaneg for the corresponding row.
+		 * Monitored study has changed so fire a change for the corresponding row.
 		 */
 		@Override
 		public void entityUpdate(EntityEvent event) {

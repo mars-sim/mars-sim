@@ -36,7 +36,7 @@ public class EntityLabel extends JPanel {
     // Icon associated with show an Entity Details window
     public static final Icon DETAILS = ImageLoader.getIconByName("action/details_small");
     
-    // OIcon associated with showing an Entity in the appropriate map window
+    // Icon associated with showing an Entity in the appropriate map window
     public static final Icon LOCATE = ImageLoader.getIconByName("action/locate_small");
 
     private JLabel label;
