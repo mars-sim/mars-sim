@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -20,33 +21,32 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
  * A tab panel displaying a person's scientific studies and achievements.
  */
 @SuppressWarnings("serial")
-public class TabPanelScienceStudy extends TabPanel {
+class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManagerListener {
 
 	private static final String SCIENCE_ICON = "science";
-	
-	/** The Person instance. */
-	private Person person = null;
-
-	private JTable studyTable;
 	
 	private JLabel totalAchievementLabel;
 
@@ -63,31 +63,33 @@ public class TabPanelScienceStudy extends TabPanel {
 	 * Constructor.
 	 * 
 	 * @param person  the person.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelScienceStudy(Person person, MainDesktopPane desktop) {
+	public TabPanelScienceStudy(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			null, 
+			Msg.getString("TabPanelScience.title"), 
 			ImageLoader.getIconByName(SCIENCE_ICON),
-			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
-			person, desktop
+			null,
+			context, person
 		);
 
-		this.person = person;
-		this.scienceManager = desktop.getSimulation().getScientificStudyManager();
+		this.scienceManager = context.getSimulation().getScientificStudyManager();
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
-  JTable achievementTable;
+    JTable studyTable;
+  		JTable achievementTable;
 		// Create the main panel.
 		JPanel mainPane = new JPanel(new GridLayout(2, 1, 0, 0));
 		content.add(mainPane);
 
+		var person = getEntity();
+
 		// Create the studies panel.
 		JPanel studiesPane = new JPanel(new BorderLayout());
-		studiesPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TabPanelScience.scientificStudies")));
+		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("ScientificStudy.plural"))); //$NON-NLS-1$
 		mainPane.add(studiesPane);
 
 		// Create the study scroll panel.
@@ -95,8 +97,10 @@ public class TabPanelScienceStudy extends TabPanel {
 		studyScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
-		// Create the study table.
+		// Create the study table by finding all Studies this Person is involved in.
 		studyTableModel = new StudyTableModel(person, scienceManager);
+		scienceManager.addListener(this);
+
 		studyTable = new JTable(studyTableModel);
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		studyTable.setRowSelectionAllowed(true);
@@ -105,11 +109,11 @@ public class TabPanelScienceStudy extends TabPanel {
 		studyScrollPane.setViewportView(studyTable);
 
 		studyTable.setAutoCreateRowSorter(true);
-		EntityLauncher.attach(studyTable, getDesktop());
+		EntityLauncher.attach(studyTable, getContext());
 
 		// Create the achievement panel.
 		JPanel achievementPane = new JPanel(new BorderLayout());
-		achievementPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TabPanelScience.scientificAchievement")));
+		achievementPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelScience.scientificAchievement")));
 		mainPane.add(achievementPane);
 
 		AttributePanel achievementLabelPane = new AttributePanel(3);
@@ -139,39 +143,57 @@ public class TabPanelScienceStudy extends TabPanel {
 		achievementTable.setAutoCreateRowSorter(true);
 	}
 
+	/**
+	 * Remove the listener on the scientific study manager.
+	 */
 	@Override
-	public void update() {
-		// Get selected study in table if any.
-		int selectedStudyIndex = studyTable.getSelectedRow();
-		ScientificStudy selectedStudy = null;
-		if (selectedStudyIndex >= 0)
-			selectedStudy = studyTableModel.getStudy(selectedStudyIndex);
-
-		// Update study table model.
-		studyTableModel.update();
-
-		// Reselect study in table.
-		if (selectedStudy != null) {
-			int newStudyIndex = studyTableModel.getStudyIndex(selectedStudy);
-			if (newStudyIndex >= 0)
-				studyTable.getSelectionModel().setSelectionInterval(newStudyIndex, newStudyIndex);
+	public void destroy() {
+		scienceManager.removeListener(this);
+		if (studyTableModel != null) {
+			studyTableModel.destroy();
 		}
+		super.destroy();
+	}
 
-		// Update achievement table model.
-		achievementTableModel.update();
+	/**	
+	 * Possible update due to assigned study change. The StudyTableModel is updated,
+	 * and if it changed, the achievement table model and total achievement label are also updated.
+	 */
+	private void possibleAssignedStudyChange() {
+		// Update study table model.
+		if (studyTableModel.update()) {
+			// If study table changed, also update achievement table model.
+			achievementTableModel.update();
 
-		// Update total achievement label.
-		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getResearchStudy().getTotalScientificAchievement());
-		totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
-		primaryCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedPrimaryStudies(person)));
-		collabCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedCollaborativeStudies(person)));
+
+			var person = getEntity();
+
+			// Update total achievement label.
+			String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getResearchStudy().getTotalScientificAchievement());
+			totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
+			primaryCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedPrimaryStudies(person)));
+			collabCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedCollaborativeStudies(person)));
+		}
+	}
+
+	
+	@Override
+	public void entityAdded(Entity newEntity) {
+		// New study so refresh study table
+		possibleAssignedStudyChange();
+	}
+
+	@Override
+	public void entityRemoved(Entity removedEntity) {
+		// Study removed so refresh study table
+		possibleAssignedStudyChange();
 	}
 
 	/**
 	 * Inner class for study table model.
 	 */
 	private static class StudyTableModel extends AbstractTableModel 
-		implements EntityModel {
+		implements EntityModel, EntityListener {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -194,14 +216,39 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @param person the person.
 		 */
 		private StudyTableModel(Person person, ScientificStudyManager manager)  {
-			// Use AbstractTableModel constructor.
 			super();
 
 			this.person = person;
 			this.manager = manager;
+			this.studies = Collections.emptyList();
 
 			// Get all studies the person is or has been involved in.
-			studies = manager.getAllStudies(person);
+			setMonitoredStudies(manager.getAllStudies(person));
+		}
+
+		/**
+		 * Sets the list of monitored studies.
+		 * @param newStudies Studies to monitor
+		 */
+		private void setMonitoredStudies(List<ScientificStudy> newStudies) {
+			// Remove this as listener from old studies.
+			for (ScientificStudy study : this.studies) {
+				study.removeEntityListener(this);
+			}
+			
+			this.studies = newStudies;
+
+			// Add this as listener to new studies.
+			for (ScientificStudy study : this.studies) {
+				study.addEntityListener(this);
+			}
+		}	
+
+		private void destroy() {
+			// Remove this as listener from monitored studies.
+			for (ScientificStudy study : this.studies) {
+				study.removeEntityListener(this);
+			}
 		}
 
 		/**
@@ -216,11 +263,11 @@ public class TabPanelScienceStudy extends TabPanel {
 		@Override
 		public String getColumnName(int column) {
 			return switch (column) {
-				case NAME_COL -> Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
-				case ROLE_COL -> Msg.getString("TabPanelScience.column.role"); //$NON-NLS-1$
-				case PHASE_COL -> Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
-				case RESEARCH_COL -> Msg.getString("TabPanelScience.column.researchTime"); //$NON-NLS-1$
-				case PAPER_COL -> Msg.getString("TabPanelScience.column.paperTime"); //$NON-NLS-1$
+				case NAME_COL -> Msg.getString("Entity.name");
+				case ROLE_COL -> Msg.getString("TabPanelScience.column.role");
+				case PHASE_COL -> Msg.getString("ScientificStudy.phase");
+				case RESEARCH_COL -> Msg.getString("TabPanelScience.column.researchTime");
+				case PAPER_COL -> Msg.getString("TabPanelScience.column.paperTime");
 				default -> null;
 			};
 		}
@@ -266,9 +313,9 @@ public class TabPanelScienceStudy extends TabPanel {
 					break;
 				case ROLE_COL:
 					if (person.equals(study.getPrimaryResearcher()))
-						result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
+						result = Msg.getString("ScientificStudy.lead");
 					else if (study.getCollaborativeResearchers().contains(person))
-						result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
+						result = Msg.getString("ScientificStudy.collaborator.singular"); //$NON-NLS-1$
 					break;
 				case PHASE_COL:
 					result = study.getPhase().getName();
@@ -293,11 +340,15 @@ public class TabPanelScienceStudy extends TabPanel {
 		/**
 		 * Updates the table model.
 		 */
-		private void update() {
+		private boolean update() {
 			List<ScientificStudy> newStudies = manager.getAllStudies(person);
-			if (!newStudies.equals(studies))
-				studies = newStudies;
-			fireTableDataChanged();
+			boolean hasChanged = !newStudies.equals(studies);
+			
+			if (hasChanged) {
+				setMonitoredStudies(newStudies);
+				fireTableDataChanged();
+			}
+			return hasChanged;
 		}
 
 		/**
@@ -313,22 +364,21 @@ public class TabPanelScienceStudy extends TabPanel {
 			return result;
 		}
 
-		/**
-		 * Gets the row index of a given scientific study.
-		 * 
-		 * @param study the scientific study.
-		 * @return the table row index or -1 if not in table.
-		 */
-		private int getStudyIndex(ScientificStudy study) {
-			int result = -1;
-			if ((study != null) && studies.contains(study))
-				result = studies.indexOf(study);
-			return result;
-		}
-
 		@Override
 		public Entity getAssociatedEntity(int row) {
 			return getStudy(row);
+		}
+
+		/**
+		 * Monitored study has changed so fire a change for the corresponding row.
+		 */
+		@Override
+		public void entityUpdate(EntityEvent event) {
+			// A monitored study has changed so fire table data changed.
+			if (event.getSource() instanceof ScientificStudy ss) {
+				var idx = studies.indexOf(ss);
+				fireTableRowsUpdated(idx, idx);
+			}
 		}
 	}
 
@@ -363,12 +413,11 @@ public class TabPanelScienceStudy extends TabPanel {
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
-				return Msg.getString("TabPanelScience.column.science"); //$NON-NLS-1$
-			else if (columnIndex == 1)
-				return Msg.getString("TabPanelScience.column.achievementCredit"); //$NON-NLS-1$
-			else
-				return null;
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("ScientificStudy.science");
+				case 1 -> Msg.getString("TabPanelScience.column.achievementCredit");
+				default -> null;
+			};
 		}
 
 		/**
@@ -379,12 +428,11 @@ public class TabPanelScienceStudy extends TabPanel {
 		 */
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0)
-				dataType = String.class;
-			else if (columnIndex == 1)
-				dataType = Double.class;
-			return dataType;
+			return switch (columnIndex) {
+				case 0 -> String.class;
+				case 1 -> Double.class;
+				default -> Object.class;
+			};
 		}
 
 		/**
@@ -403,6 +451,7 @@ public class TabPanelScienceStudy extends TabPanel {
 		 * @param columnIndex the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
 		 */
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Object result = null;
 			if ((rowIndex >= 0) && (rowIndex < sciences.length)) {
@@ -423,4 +472,5 @@ public class TabPanelScienceStudy extends TabPanel {
 			fireTableDataChanged();
 		}
 	}
+
 }

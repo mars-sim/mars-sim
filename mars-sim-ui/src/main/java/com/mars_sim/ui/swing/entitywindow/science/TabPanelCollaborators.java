@@ -12,6 +12,7 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
@@ -26,7 +27,7 @@ class TabPanelCollaborators extends EntityTableTabPanel<ScientificStudy>
 
     TabPanelCollaborators(ScientificStudy study, UIContext context) {
 		super(
-			"Collaborators",
+			Msg.getString("ScientificStudy.collaborator.plural"),
 			ImageLoader.getIconByName(ID_ICON),		
 			null,
 			study,
@@ -110,7 +111,7 @@ class TabPanelCollaborators extends EntityTableTabPanel<ScientificStudy>
 		@Override
 		public String getColumnName(int columnIndex) {
 			switch(columnIndex) {
-				case NAME: return "Name";
+				case NAME: return Msg.getString("Entity.name");
 				case CONTRIBUTION: return "Contribution";
 				case WORK: return "Work";
 				default: return "";

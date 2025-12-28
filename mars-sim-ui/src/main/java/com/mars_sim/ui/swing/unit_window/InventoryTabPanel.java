@@ -606,7 +606,7 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("InventoryTabPanel.Equipment.header.type");
+				case 0 -> Msg.getString("Equipment.singular");
 				case 1 -> Msg.getString("InventoryTabPanel.Equipment.header.mass");
 				case 2 -> Msg.getString("InventoryTabPanel.Equipment.header.owner");
 				case 3 -> Msg.getString("InventoryTabPanel.Equipment.header.content");

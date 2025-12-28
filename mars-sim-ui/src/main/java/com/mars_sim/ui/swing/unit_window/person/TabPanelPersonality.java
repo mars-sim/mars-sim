@@ -12,45 +12,41 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
-import com.mars_sim.core.Unit;
+
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.MBTIPersonality;
 import com.mars_sim.core.person.ai.PersonalityTraitManager;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The TabPanelPersonality is a tab panel for personality information about a person.
  */
 @SuppressWarnings("serial")
-public class TabPanelPersonality extends TabPanel {
+class TabPanelPersonality extends EntityTabPanel<Person> {
 
 	private static final String PER_ICON = "personality"; //$NON-NLS-1$
-
-	/** The Person instance. */
-	private Person person;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param person the person to display.
+	 * @param context the UI context.
 	 */
-	public TabPanelPersonality(Unit unit, MainDesktopPane desktop) {
+	public TabPanelPersonality(Person person, UIContext context) {
 		
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelPersonality.title"), //$NON-NLS-1$
 			ImageLoader.getIconByName(PER_ICON),		
 			Msg.getString("TabPanelPersonality.title"), //$NON-NLS-1$
-			unit, desktop
+			context, person
 		);
-
-		person = (Person) unit;
 	}
 	
 	@Override
@@ -64,82 +60,50 @@ public class TabPanelPersonality extends TabPanel {
 		infoPanel.add(scorePanel, BorderLayout.NORTH);
 		
 		// Create the text area for displaying the Big Five scores
-		scorePanel.add(createBigFive());
+		scorePanel.add(createBigFive(getEntity()));
 		// Create the text area for displaying the MBTI scores
-		scorePanel.add(createMBTI(person.getMind().getMBTI()));
+		scorePanel.add(createMBTI(getEntity()));
 	}
 	
+	private static record TraitScore(String traitName, int score) {}
+
 	/**
 	 * Creates the MBTI text area.
 	 * 
-	 * @param p an instance of MBTIPersonality
+	 * @param person Person for MBTI
 	 * @return
 	 */
-	private JPanel createMBTI(MBTIPersonality p) {
-		
+	private JPanel createMBTI(Person person) {
+		MBTIPersonality p = person.getMind().getMBTI();
 		int ie = p.getIntrovertExtrovertScore();
 		int ns = p.getScores().get(1);
 		int ft = p.getScores().get(2);
 		int jp = p.getScores().get(3);
 		
-		String[] types = new String[4];
-		int[] scores = new int[4];
+		TraitScore[] traits = new TraitScore[4];
 
 		// Prepare attribute panel.
-		AttributePanel attributePanel = new AttributePanel(5);
+		AttributePanel attributePanel = new AttributePanel();
 		
-		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // BorderLayout(1, 1));
+		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		listPanel.add(attributePanel, BorderLayout.CENTER);
+		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelPersonality.mbti.title")));
 		
-		addBorder(listPanel, Msg.getString("TabPanelPersonality.mbti.title"));
-		
-		if (ie < 0) {
-			types[0] = "Introvert (I)";
-			scores[0] = ie;
-		}
-		else {
-			types[0] = "Extrovert (E)";
-			scores[0] = ie;
-		}
-		
-		if (ns < 0) {
-			types[1] = "Intuitive (N)";
-			scores[1] = ns;
-		}
-		else {
-			types[1] = "Sensing (S)";
-			scores[1] = ns;
-		}
-		
-		if (ft < 0) {
-			types[2] = "Feeling (F)";
-			scores[2] = ft;
-		}
-		else {
-			types[2] = "Thinking (T)";
-			scores[2] = ft;
-		}
-		
-		if (jp < 0) {
-			types[3] = "Judging (J)";
-			scores[3] = jp;
-		}
-		else {
-			types[3] = "Perceiving (P)";
-			scores[3] = jp;
-		}
+		traits[0] = new TraitScore((ie < 0) ? "Introvert (I)" : "Extrovert (E)", ie);
+		traits[1] = new TraitScore((ns < 0) ? "Intuitive (N)" : "Sensing (S)", ns);
+		traits[2] = new TraitScore((ft < 0) ? "Feeling (F)" : "Thinking (T)", ft);
+		traits[3] = new TraitScore((jp < 0) ? "Judging (J)" : "Perceiving (P)", jp);
 		
 		String tip =  "<html>Introvert (I) / Extrovert  (E) : -50 to 0 / 0 to 50" 
 				  + "<br>Intuitive (N) / Sensing    (S) : -50 to 0 / 0 to 50"
 				  + "<br>  Feeling (F) / Thinking   (T) : -50 to 0 / 0 to 50"
 				  + "<br>  Judging (J) / Perceiving (P) : -50 to 0 / 0 to 50</html>";
 		
-		for (int i = 0; i < 4; i++) {
-			attributePanel.addTextField(types[i], Math.round(scores[i] * 10.0)/10.0 + " %", tip);
+		for (var t : traits) {
+			attributePanel.addTextField(t.traitName(), Math.round(t.score() * 10.0)/10.0 + " %", tip);
 		}
-		
 		
 		String type = p.getTypeString();
 		String descriptor = p.getDescriptor();
@@ -154,43 +118,33 @@ public class TabPanelPersonality extends TabPanel {
 	 * 
 	 * @return
 	 */
-	private JPanel createBigFive() {
+	private JPanel createBigFive(Person person) {
 		PersonalityTraitManager p = person.getMind().getTraitManager();
 		
-		String[] types = new String[5];
-		int[] scores = new int[5];
-		
+		TraitScore[] traits = new TraitScore[PersonalityTraitType.values().length];
     	for (PersonalityTraitType t : PersonalityTraitType.values()) {
-    		types[t.ordinal()] = t.getName();
-    		scores[t.ordinal()] = p.getPersonalityTrait(t);
+    		traits[t.ordinal()] = new TraitScore(t.getName(), p.getPersonalityTrait(t));
     	}
 
 		// Prepare attribute panel.
-		AttributePanel attributePanel = new AttributePanel(5);
+		AttributePanel attributePanel = new AttributePanel();
     	
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setAlignmentY(Component.CENTER_ALIGNMENT);
 		listPanel.setToolTipText(Msg.getString("TabPanelPersonality.bigFive.tip"));//$NON-NLS-1$
 		listPanel.add(attributePanel, BorderLayout.CENTER);
 		
-		addBorder(listPanel, Msg.getString("TabPanelPersonality.bigFive.title"));
+		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelPersonality.bigFive.title")));
 		
 		String tip =  "<html>          Openness : 0 to 100" 
 			  	  + "<br> Conscientiousness : 0 to 100"
 			  	  + "<br>      Extraversion : 0 to 100"
 			  	  + "<br>       Neuroticism : 0 to 100</html>";
 
-		for (int i = 0; i < 5; i++) {
-			attributePanel.addTextField(types[i], Math.round(scores[i] * 10.0)/10.0 + " %", tip);
+		for (var t : traits) {
+			attributePanel.addTextField(t.traitName(), Math.round(t.score() * 10.0)/10.0 + " %", tip);
 		}
 		
 		return listPanel;
-	}
-	
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
 	}
 }

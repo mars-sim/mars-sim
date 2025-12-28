@@ -93,7 +93,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		COLUMNS[JOB] = new ColumnSpec(Msg.getString("Person.job"), String.class);
 		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("Person.shift"), String.class);
 		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
-		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("Task"), String.class);
+		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("Task.singular"), String.class);
 
 		EVENT_COLUMN_MAPPING = new HashMap<>();
 		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);

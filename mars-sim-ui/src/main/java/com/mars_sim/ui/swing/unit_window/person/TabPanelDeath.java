@@ -8,248 +8,82 @@
 package com.mars_sim.ui.swing.unit_window.person;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Insets;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.SwingConstants;
 
-import com.mars_sim.core.environment.MarsSurface;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.health.DeathInfo;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.tool.MapSelector;
-import com.mars_sim.ui.swing.tool.SpringUtilities;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
 /**
  * The TabPanelDeath is a tab panel with info about a person's death.
  */
 @SuppressWarnings("serial")
-public class TabPanelDeath
-extends TabPanel {
+class TabPanelDeath extends EntityTabPanel<Person> {
 
 	private static final String RIP_ICON = "rip";
 
-	/** The Person instance. */
-	private Person person = null;
-	
-	private JTextField doctorRetrievingBodyTF;
-	
-	private JTextField examinerTF;
-
+	private JLabel doctorRetrievingBodyTF;	
+	private JLabel examinerTF;
 	private DeathInfo death;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param unit the unit to display
-	 * @param desktop the main desktop
+	 * @param context the overall UI context.
 	 */
-	public TabPanelDeath(Person unit, MainDesktopPane desktop) {
+	public TabPanelDeath(Person unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			null,
 			ImageLoader.getIconByName(RIP_ICON),
 			Msg.getString("TabPanelDeath.title"), //$NON-NLS-1$
-			unit, desktop
+			context, unit
 		);
-
-		person = unit;		
-
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
-			
+		var person = getEntity();
 		PhysicalCondition condition = person.getPhysicalCondition();
 		death = condition.getDeathDetails();
 
 		// Prepare death label panel
-		JPanel deathLabelPanel = new JPanel(new SpringLayout());
-		content.add(deathLabelPanel, BorderLayout.NORTH);
+		var deathLabelPanel = new AttributePanel();
+		content.add(deathLabelPanel, BorderLayout.CENTER);
 
-		// Prepare cause label
-		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause"), SwingConstants.LEFT); //$NON-NLS-1$
-		deathLabelPanel.add(causeLabel);
-
-		JPanel wrapper1 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-        var causeTF = new JTextField();
-        causeTF.setText(Conversion.capitalize0(death.getIllness().getName()));
-        causeTF.setEditable(false);
-        causeTF.setColumns(24);
-        wrapper1.add(causeTF);
-        deathLabelPanel.add(wrapper1);
-
-		// Prepare time label
-		JLabel timeLabel = new JLabel(Msg.getString("TabPanelDeath.time"), SwingConstants.LEFT); //$NON-NLS-1$
-		deathLabelPanel.add(timeLabel);
-
-		JPanel wrapper2 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-        var timeTF = new JTextField();
-        timeTF.setText(death.getTimeOfDeath().getTruncatedDateTimeStamp());
-        timeTF.setEditable(false);
-        timeTF.setColumns(24);
-        wrapper2.add(timeTF);
-        deathLabelPanel.add(wrapper2);
-
- 
-        // Prepare examiner label
- 		JLabel retrievingBodyLabel = new JLabel(Msg.getString("TabPanelDeath.retrievingBody"), SwingConstants.LEFT); //$NON-NLS-1$
- 		deathLabelPanel.add(retrievingBodyLabel);
-
- 		JPanel wrapper3a = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
- 		doctorRetrievingBodyTF = new JTextField();
- 		String text = death.getDoctorRetrievingBody();
- 		doctorRetrievingBodyTF.setText(text);
- 		doctorRetrievingBodyTF.setEditable(false);
- 		doctorRetrievingBodyTF.setColumns(24);
-        wrapper3a.add(doctorRetrievingBodyTF);
-        deathLabelPanel.add(wrapper3a);
-        
-		// Prepare examiner label
-		JLabel examinerLabel = new JLabel(Msg.getString("TabPanelDeath.examiner"), SwingConstants.LEFT); //$NON-NLS-1$
-		deathLabelPanel.add(examinerLabel);
-
-		JPanel wrapper3 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		examinerTF = new JTextField();
-		String text3 = death.getDoctorSigningCertificate();
-		examinerTF.setText(text3);
-		examinerTF.setEditable(false);
-		examinerTF.setColumns(24);
-        wrapper3.add(examinerTF);
-        deathLabelPanel.add(wrapper3);
-        
-		// Prepare malfunction label
-		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny"), SwingConstants.LEFT); //$NON-NLS-1$
-		deathLabelPanel.add(malfunctionLabel);
-
-		JPanel wrapper4 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-		var malTF = new JTextField();
-        malTF.setText(death.getMalfunction());
-        malTF.setEditable(false);
-        malTF.setColumns(24);
-        wrapper4.add(malTF);        
-        deathLabelPanel.add(wrapper4);
-
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(deathLabelPanel,
-		                                5, 2, //rows, cols
-		                                50, 5,        //initX, initY
-		                                XPAD_DEFAULT, YPAD_DEFAULT);       //xPad, yPad
-
-		// Prepare bottom content panel
-		JPanel bottomContentPanel = new JPanel(new BorderLayout(5, 5));
-		content.add(bottomContentPanel, BorderLayout.CENTER);
-
-		JPanel innerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		innerPanel.setLayout(new BoxLayout(innerPanel, BoxLayout.Y_AXIS));
-		bottomContentPanel.add(innerPanel, BorderLayout.NORTH);
-
-		// Prepare location label panel
-		JPanel locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		innerPanel.add(locationLabelPanel);
-
-		// Prepare center map button
-		final Icon centerIcon = ImageLoader.getIconByName(NavigatorWindow.ICON);
-		JButton centerMapButton = new JButton(centerIcon);
-		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
-		centerMapButton.addActionListener(e -> MapSelector.displayOnMap(getDesktop(), person));
-		centerMapButton.setToolTipText(Msg.getString("TabPanelDeath.tooltip.centerMap"));
-		locationLabelPanel.add(centerMapButton);
-
-		// Prepare location label
-		JLabel locationLabel = new JLabel("  " + Msg.getString("TabPanelDeath.placeOfDeath") + "  ", SwingConstants.CENTER); //$NON-NLS-1$
-		locationLabelPanel.add(locationLabel);
-
-		if (death.getDeathVicinity() != null) {
-			// Prepare top container button
-			JButton topContainerButton = new JButton(death.getDeathVicinity().getName());
-			topContainerButton.setHorizontalAlignment(SwingConstants.CENTER);
-			topContainerButton.addActionListener(e -> {
-					DeathInfo d = person.getPhysicalCondition().getDeathDetails();
-					if (!(d.getDeathVicinity() instanceof MarsSurface))
-						getDesktop().showDetails(d.getDeathVicinity());
-			});
-			locationLabelPanel.add(topContainerButton);
+		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.cause"), death.getIllness().getName(), null);
+		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.time"), death.getTimeOfDeath().getTruncatedDateTimeStamp(), null);
+ 		doctorRetrievingBodyTF = deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.retrievingBody"), death.getDoctorRetrievingBody(), null);
+		examinerTF = deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.examiner"), death.getDoctorSigningCertificate(), null);
+		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.malfunctionIfAny"), death.getMalfunction(), null);
+		deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.lastWord"), death.getLastWord(), null);
+	
+		var deathPlace = death.getDeathVicinity();
+		if (deathPlace != null) {
+			var deathEntity = new EntityLabel(deathPlace, getContext());
+			deathLabelPanel.addLabelledItem(Msg.getString("TabPanelDeath.placeOfDeath"), deathEntity);
 		}
 		else {
-			JPanel wrapper41 = new JPanel(new FlowLayout(0, 0, FlowLayout.LEADING));
-			JTextField tf4 = new JTextField();
-	        tf4.setText(death.getPlaceOfDeath());
-	        tf4.setEditable(false);
-	        tf4.setColumns(24);
-	        wrapper41.add(tf4);
-	        locationLabelPanel.add(wrapper41);
+			deathLabelPanel.addTextField(Msg.getString("TabPanelDeath.placeOfDeath"),
+					death.getLocationOfDeath().getFormattedString(), null);
 		}
-
-		// Prepare location panel
-		JPanel springPanel = new JPanel(new SpringLayout());
-		innerPanel.add(springPanel);
-
-		// Initialize location cache
-		Coordinates deathLocation = death.getLocationOfDeath();
-
-		JLabel label0 = new JLabel(Msg.getString("TabPanelDeath.latitude"), SwingConstants.LEFT); //$NON-NLS-1$
-		springPanel.add(label0);
-
-		// Prepare latitude label
-		JLabel latitudeLabel = new JLabel(deathLocation.getFormattedLatitudeString(), SwingConstants.LEFT); //$NON-NLS-1$
-		springPanel.add(latitudeLabel);
-
-		JLabel label1 = new JLabel(Msg.getString("TabPanelDeath.longitude"), SwingConstants.LEFT); //$NON-NLS-1$
-		springPanel.add(label1);
-
-		// Prepare longitude label
-		JLabel longitudeLabel = new JLabel(deathLocation.getFormattedLongitudeString(), SwingConstants.LEFT); //$NON-NLS-1$
-		springPanel.add(longitudeLabel);
-
-		// Prepare SpringLayout
-		SpringUtilities.makeCompactGrid(springPanel,
-		                                2, 2, //rows, cols
-		                                0, 0,        //initX, initY
-		                                10, 10);       //xPad, yPad
-
-		// Prepare empty panel
-		JPanel lastWordPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		innerPanel.add(lastWordPanel);
-
-		JLabel label2 = new JLabel(Msg.getString("TabPanelDeath.lastWord")); //$NON-NLS-1$
-		lastWordPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 15, 15));
-		lastWordPanel.add(label2);
-
-		// Prepare longitude label
-		JTextArea lastWordTA = new JTextArea(5, 25);
-		lastWordTA.append(death.getLastWord());
-		lastWordTA.setEditable(false);
-		lastWordTA.setWrapStyleWord(true);
-		lastWordTA.setLineWrap(true);
-		lastWordTA.setCaretPosition(0);
-		JScrollPane scrollPane = new JScrollPane(lastWordTA);
-		lastWordPanel.add(scrollPane);
 	}
 
 	/**
 	 * Updates the info on this panel.
 	 */
 	@Override
-	public void update() {
+	public void refreshUI() {
 		
 		if (death.getDoctorRetrievingBody() != null) {
 			String text = death.getDoctorRetrievingBody();

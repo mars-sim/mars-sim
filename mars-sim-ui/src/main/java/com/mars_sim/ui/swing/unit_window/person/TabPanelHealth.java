@@ -27,6 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -34,20 +35,23 @@ import javax.swing.table.TableColumnModel;
 import com.mars_sim.core.person.CircadianClock;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.health.BodyRegionType;
 import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.person.health.Medication;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadiationExposure.DoseHistory;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -55,8 +59,8 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The HealthTabPanel is a tab panel for a person's health.
  */
 @SuppressWarnings("serial")
-public class TabPanelHealth
-extends TabPanel {
+class TabPanelHealth extends EntityTabPanel<Person>
+		implements TemporalComponent {
 
 	private static final String HEALTH_ICON = "health"; //$NON-NLS-1$
 	
@@ -126,9 +130,6 @@ extends TabPanel {
 	private MedicationTableModel medicationTableModel;
 	private HealthLogTableModel healthLogTableModel;
 	
-	/** The Person instance. */
-	private Person person = null;
-	
 	/** The PhysicalCondition instance. */
 	private PhysicalCondition condition;
 	private CircadianClock circadianClock;
@@ -137,36 +138,20 @@ extends TabPanel {
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param person the person to display.
+	 * @param context the UI context.
 	 */
-	public TabPanelHealth(Person unit, MainDesktopPane desktop) {
+	public TabPanelHealth(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			null,
 			ImageLoader.getIconByName(HEALTH_ICON),
 			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
-			desktop
+			context, person
 		);
 
-		person = unit;
 		condition = person.getPhysicalCondition();
 		circadianClock = person.getCircadianClock();
-	}
-
-	/*
-	 * Creates a text area.
-	 * 
-	 * @param panel
-	 * @return
-	 */
-	private JTextArea createTA() {
-		JTextArea ta = new JTextArea();
-		ta.setEditable(false);
-		ta.setColumns(40);
-		ta.setLineWrap(true);
-		ta.setWrapStyleWord(true);
-		return ta;
 	}
 	
 	@Override
@@ -211,6 +196,7 @@ extends TabPanel {
 		appetiteLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.appetite"), //$NON-NLS-1$
 				DECIMAL_PLACES1.format(appetite));
 		
+		var person = getEntity();
 		performanceCache = (int)(person.getPerformanceRating() * 100);
 		performanceLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.performance"), //$NON-NLS-1$
 					DECIMAL_PERC.format(performanceCache), null);
@@ -257,7 +243,7 @@ extends TabPanel {
 		northPanel.add(bedPanel);
 	
 		// Prepare bed time ta
-		sleepTimeTA = createTA();
+		sleepTimeTA = SwingHelper.createTextBlock("Sleep times", "");
 		sleepTimeTA.setToolTipText("The 3 best times to go to bed [msol (weight)]"); 
 		
 		// Prepare panel for bed time ta .
@@ -270,9 +256,7 @@ extends TabPanel {
 		bedLocationLabel = new JLabel("Assigned : ", SwingConstants.CENTER);
 		bedLocPanel.add(bedLocationLabel);
 		bedPanel.add(bedLocPanel, BorderLayout.NORTH);
-		
-		//////////////////////////////
-	
+			
 		// Prepare middle panel
         JPanel midPanel = new JPanel(new BorderLayout());
         midPanel.setLayout(new BoxLayout(midPanel, BoxLayout.Y_AXIS));
@@ -281,9 +265,7 @@ extends TabPanel {
 		// Prepare bottom panel
 		JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
 		content.add(bottomPanel, BorderLayout.SOUTH);
-			
-		//////////////////////////////
-	
+				
 		// Prepare sleep time panel
 		JPanel sleepPanel = new JPanel(new BorderLayout(0, 0));
 		midPanel.add(sleepPanel, BorderLayout.NORTH);
@@ -320,9 +302,7 @@ extends TabPanel {
 		
 		// Add sorting
 		sleepExerciseTable.setAutoCreateRowSorter(true);
-	
-		/////////////////////////////////////////////////////////
-		
+			
 		// Prepare food panel
 		JPanel foodPanel = new JPanel(new BorderLayout(0, 0));
 		midPanel.add(foodPanel, BorderLayout.CENTER);
@@ -363,8 +343,6 @@ extends TabPanel {
 		// Add sorting
 		foodTable.setAutoCreateRowSorter(true);
 
-		/////////////////////////////////////////////////////////		
-
 		// Add radiation dose info
 		// Prepare radiation panel
 		JPanel radiationPanel = new JPanel(new BorderLayout(0, 0));
@@ -399,11 +377,10 @@ extends TabPanel {
 		// Gets the person's radiation dose limits
         doseLimits = condition.getRadiationExposure().getDoseLimits();
         
-        String[] regions = {"BFO", "Ocular", "Skin"};
         String[] limits = new String[3];
-        
-        for (int i=0; i<3; i++) {
-            limits[i] = "Dose Limit [mSv] on " + regions[i]
+        for(var r : BodyRegionType.values()) {
+			int i = r.ordinal();
+            limits[i] = "Dose Limit [mSv] on " + r.getName()
             	+ " - 30-Day: " + Math.round(doseLimits[i].getThirtyDay()*10.0)/10.0
             	+ ";  Annual: " + Math.round(doseLimits[i].getAnnual()*10.0)/10.0
             	+ ";  Career: " + Math.round(doseLimits[i].getCareer()*10.0)/10.0;
@@ -445,9 +422,7 @@ extends TabPanel {
 		
 		// Added sorting
 		radiationTable.setAutoCreateRowSorter(true);
-	
-		/////////////////////////////////////////////////////////
-		
+			
 		// Prepare attribute panel.
 		AttributePanel attributePanel = new AttributePanel(10);
 		
@@ -457,7 +432,7 @@ extends TabPanel {
 		listPanel.add(attributePanel, BorderLayout.CENTER);
 		bottomPanel.add(listPanel, BorderLayout.NORTH);
 		
-		addBorder(listPanel, Msg.getString("TabPanelHealth.healthRisks.title"));
+		listPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelHealth.healthRisks.title")));
 
 		Map<HealthRiskType, Double> riskMap = condition.getHealthRisks();
 		
@@ -473,14 +448,10 @@ extends TabPanel {
 			attributePanel.addTextField(type.getName(), pct + " %", null);
 		}
 
-		
-		//////////////////////////////
-		
+				
 		JPanel southPanel = new JPanel(new BorderLayout());
 		bottomPanel.add(southPanel, BorderLayout.CENTER);
-			
-		//////////////////////////////
-	
+				
 		// Prepare health problem panel
 		JPanel healthProblemPanel = new JPanel(new BorderLayout(0, 0));
 		southPanel.add(healthProblemPanel, BorderLayout.NORTH);
@@ -505,9 +476,6 @@ extends TabPanel {
 
 		// Add sorting
 		healthProblemTable.setAutoCreateRowSorter(true);
-	
-		
-		/////////////////////////////////////////////////////////	
 
 		
 		// Prepare medication panel.
@@ -534,9 +502,7 @@ extends TabPanel {
 	
 		// Add sorting
 		medicationTable.setAutoCreateRowSorter(true);
-		
-		//////////////////////////////
-				
+						
 		// Prepare health problem panel
 		JPanel healthLogPanel = new JPanel(new BorderLayout(0, 0));
 		southPanel.add(healthLogPanel, BorderLayout.SOUTH);
@@ -564,22 +530,26 @@ extends TabPanel {
 		healthLogTable.setAutoCreateRowSorter(true);
 				
 		// Update at least one before displaying it
-		update();
+		clockUpdate(null);
 	}
 
 	/**
 	 * Updates the sleep time.
+	 * @param  person Person being observed 
 	 * 
-	 * @return
+	 * @return Text representation of sleep time
 	 */
-	private StringBuilder updateSleepTime() {	
+	private static String updateSleepTime(Person person) {	
 		// Checks the 3 best sleep time
     	int [] bestSleepTime = person.getPreferredSleepHours();
+		int size = bestSleepTime.length;
+		if (size == 0) {
+			return "Not Known yet";
+		}
 		Arrays.sort(bestSleepTime);
 		
 		// Prepare sleep time TF
 		StringBuilder text = new StringBuilder();
-		int size = bestSleepTime.length;
 		int lastSleepTime = -1;
 		for (int i=0; i<size; i++) {
 			int sleepTime = bestSleepTime[i];
@@ -595,15 +565,18 @@ extends TabPanel {
 			}
 		}
 		
-		return text;
+		return text.toString();
 	}
 	
 
 	/**
-	 * Updates the info on this panel.
+	 * Updates the info on this panel in the clock pulse as the values displayed are affected
+	 * by many actions
 	 */
 	@Override
-	public void update() {
+	public void clockUpdate(ClockPulse pulse) {
+
+		var person = getEntity();
 
 		// Update fatigue if necessary.
 		int newF = (int)condition.getFatigue();
@@ -712,10 +685,12 @@ extends TabPanel {
 		}
 		
 		// Update sleep time TF
-		StringBuilder text = updateSleepTime();
+		var text = updateSleepTime(person);
 
-		if (!sleepTimeTA.getText().equalsIgnoreCase(text.toString()))
-			sleepTimeTA.setText("   Bed Time : " + text.toString());
+		if (!sleepTimeTA.getText().equalsIgnoreCase(text)) {
+			// TextArea can cause lock problems if updated outside the EDT
+			SwingUtilities.invokeLater(() -> sleepTimeTA.setText(text));
+		}
 
 		String bedText = "";
 		var allocatedBed = person.getBed();
@@ -1183,15 +1158,11 @@ extends TabPanel {
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) {
-			    return Msg.getString("TabPanelHealth.column.medication"); //$NON-NLS-1$
-			}
-			else if (columnIndex == 1) {
-			    return Msg.getString("TabPanelHealth.column.duration"); //$NON-NLS-1$
-			}
-			else {
-			    return null;
-			}
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("TabPanelHealth.column.medication");
+				case 1 -> Msg.getString("TabPanelHealth.column.duration");
+				default -> null;
+			};
 		}
 
 		public Object getValueAt(int row, int column) {

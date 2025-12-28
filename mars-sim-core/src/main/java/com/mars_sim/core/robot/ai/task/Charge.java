@@ -94,6 +94,9 @@ public class Charge extends Task {
 			
 			setDescription(WIRELESS_CHARGING);
 		}
+		else {
+			setDescription(REGULAR_CHARGING);
+		}
 		
 		// Initialize phase
 		setPhase(CHARGING);
@@ -211,8 +214,7 @@ public class Charge extends Task {
 					RoboticStation station = building.getRoboticStation();
 					
 					if (station != null) {
-						chargeUp(sc, station, batteryLevel, time, 
-								WIRELESS_CHARGING, RoboticStation.WIRELESS_CHARGE_RATE);	
+						chargeUp(sc, station, batteryLevel, time, RoboticStation.WIRELESS_CHARGE_RATE);	
 					}
 					
 					else {
@@ -226,8 +228,7 @@ public class Charge extends Task {
 			}
 			
 			else {
-				chargeUp(sc, occupiedStation, batteryLevel, time, 
-							REGULAR_CHARGING, RoboticStation.CHARGE_RATE);	
+				chargeUp(sc, occupiedStation, batteryLevel, time, RoboticStation.CHARGE_RATE);	
 			}
 		}
 		
@@ -261,15 +262,11 @@ public class Charge extends Task {
 	 * @param station
 	 * @param batteryLevel
 	 * @param time
-	 * @param mode
 	 * @param rate the power [in kW] available for charging 
 	 * @return
 	 */
 	private double chargeUp(SystemCondition sc, RoboticStation station, double batteryLevel, 
-			double time, String mode, double rate) {
-		
-		setDescription(mode + " at " 
-				+ Math.round(batteryLevel * 10.0)/10.0 + "%");
+			double time, double rate) {
 
 		double hrs = time * MarsTime.HOURS_PER_MILLISOL;
 		// Note: input energy kWh = rate [1kW] * hours
@@ -298,8 +295,6 @@ public class Charge extends Task {
 		setDescriptionDone(END_CHARGING);
 		
 		setDuration(0);
-		// End charging
-//			endTask();
 	}
 	
 	/**

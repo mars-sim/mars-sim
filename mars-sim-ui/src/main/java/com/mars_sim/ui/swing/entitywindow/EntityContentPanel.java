@@ -68,6 +68,9 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 			if (!newTab.isUIDone()) {
 				newTab.initializeUI();
 			}
+            else {
+                newTab.refreshUI();
+            }
 		});
 
         var dim = new Dimension(WIDTH, HEIGHT);
@@ -163,14 +166,13 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     }
 
     /**
-     * Pass the pulse on to any tabs that are also TemporalComponents.
+     * Pass the pulse on to the selected tab if it is a TemporalComponent.
      * @param pulse Incoming pulse.
      */
     @Override
     public void clockUpdate(ClockPulse pulse) {
-        for(var t : tabPanels) {
-            if (t instanceof TemporalComponent el && t.isUIDone())
-                el.clockUpdate(pulse);
+        if (getSelected() instanceof TemporalComponent tc) {
+            tc.clockUpdate(pulse);
         }
     }
 
@@ -195,5 +197,10 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         tabPanels.forEach(t -> t.destroy());
 
         super.destroy();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " : " + entity.getName();
     }
 }
