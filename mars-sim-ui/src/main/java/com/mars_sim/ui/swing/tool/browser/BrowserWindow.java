@@ -1,7 +1,15 @@
+/*
+ * Mars Simulation Project
+ * BrowserWindow.java
+ * @date 2025-12-30
+ * @author Barry Evans
+ */
 package com.mars_sim.ui.swing.tool.browser;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,16 +46,18 @@ import com.mars_sim.ui.swing.tool.MapSelector;
  */
 public class BrowserWindow extends ContentPanel implements EntityManagerListener {
     public static final String NAME = "browser";
-    public static final String ICON = "action/browser";
+    public static final String ICON = "action/entitybrowser";
 
     // This values MUST match the Entity prefix used in message.properties
     private static final String PERSON = "Person";
     private static final String BUILDING = "Building";
+    private static final String CONSTRUCTION = "ConstructionSite";
     private static final String VEHICLE = "Vehicle";
     private static final String ROBOT = "Robot";
+    private static final String MISSION = "Mission";
     private static final String SCIENTIFIC_STUDY = "ScientificStudy";
     private static final String TRANSPORT = "TransportItem";
-    private static final String[] ENTITY_TYPES = {BUILDING, PERSON, ROBOT, SCIENTIFIC_STUDY, TRANSPORT, VEHICLE};
+    private static final String[] ENTITY_TYPES = {BUILDING, CONSTRUCTION, MISSION, PERSON, ROBOT, SCIENTIFIC_STUDY, TRANSPORT, VEHICLE};
     private static final int MAX_ITEMS = 30;
 
     // Default configurations for name groupings
@@ -59,7 +69,7 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
         new NameGrouping("S-Z", "^[S-Zs-z].*")
     };
 
-    private DefaultTreeModel model;
+    private DefaultTreeModel entityModel;
     private Map<Entity,DefaultMutableTreeNode> entities;
     private JTree tree;
     private UIContext context;
@@ -79,7 +89,28 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
 		add(mainPane);
 
         entities = new HashMap<>();
+        
+        // Create the tree pane
+        var root = new DefaultMutableTreeNode(Msg.getString("Settlement.plural"));
+		entityModel = new DefaultTreeModel(root);
 
+        // Inital load with Settlements
+        unitManager.getSettlements().stream()
+            .map(this::createSettlementNode)
+            .forEach(root::add);
+        
+        buildUI(mainPane, entityModel);
+
+        // List for new Settlements
+        unitManager.addEntityManagerListener(UnitType.SETTLEMENT, this);
+
+        var dims = new Dimension(250, 400);
+        setMinimumSize(dims);
+        setPreferredSize(dims);
+    }
+
+    private void buildUI(JPanel mainPane, DefaultTreeModel model) {
+            
         // Button
         var buttonPanel = new JPanel();
         mainPane.add(buttonPanel, BorderLayout.NORTH);
@@ -91,15 +122,6 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
         locate.setEnabled(false);
         locate.addActionListener(e -> showLocation());
         buttonPanel.add(locate);
-        
-        // Create the tree pane
-        var root = new DefaultMutableTreeNode("Settlements");
-		model = new DefaultTreeModel(root);
-
-        // Inital load with Settlements
-        unitManager.getSettlements().stream()
-            .map(this::createSettlementNode)
-            .forEach(root::add);
 
         // Add the tree
         tree = new JTree(model);
@@ -118,31 +140,36 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
             locate.setEnabled(enable);
         });
 
+        // Double click to show details
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                if (selRow != -1 && e.getClickCount() == 2 && selPath != null) {
+                    Object selectedNode = selPath.getLastPathComponent();
+                    if (selectedNode instanceof EntityNode en) {
+                        context.showDetails(en.getEntity());
+                    }
+                }
+            }
+        });
+
         // Dynamically add nodes
         tree.addTreeWillExpandListener(new TreeWillExpandListener() {
             @Override
             public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
                 TreePath path = event.getPath();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-
-                // Already expanded
-                if (node.getChildCount() > 1 && !(node.getChildAt(0) instanceof PlaceholderNode)) {
-                    return;
-                }
-
-                if (node instanceof TypeNode en) {
-                    expandTypeNode(en);
-                    model.nodeStructureChanged(node);
-                }
-                else if (node instanceof EntityNode en && en.getEntity() instanceof Settlement) {
-                    expandSettlementNode(en);
-                    model.nodeStructureChanged(node);
-                }
+                expandNode(node);
             }
             
             @Override
             public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) event.getPath().getLastPathComponent();
+                if (node.equals(model.getRoot())) {
+                    return;
+                }
                 removeChildren(node);
 
                 // Must be Type expansion node so add placeholder back
@@ -150,13 +177,26 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
                 model.nodeStructureChanged(node);
             }
         });
+    }
 
-        // List for new Settlements
-        unitManager.addEntityManagerListener(UnitType.SETTLEMENT, this);
+    /**
+     * User requests expansion of the given node.
+     * @param node
+     */
+    private void expandNode(DefaultMutableTreeNode node) {
+        // Already expanded
+        if (node.getChildCount() > 1 && !(node.getChildAt(0) instanceof PlaceholderNode)) {
+            return;
+        }
 
-        var dims = new Dimension(250, 400);
-        setMinimumSize(dims);
-        setPreferredSize(dims);
+        if (node instanceof TypeNode en) {
+            expandTypeNode(en);
+            entityModel.nodeStructureChanged(node);
+        }
+        else if (node instanceof EntityNode en && en.getEntity() instanceof Settlement) {
+            expandSettlementNode(en);
+            entityModel.nodeStructureChanged(node);
+        }
     }
 
     /**
@@ -243,7 +283,9 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
             case PERSON -> settlement.getAllAssociatedPeople();
             case ROBOT -> settlement.getAllAssociatedRobots();
             case VEHICLE -> settlement.getAllAssociatedVehicles();
+            case CONSTRUCTION -> settlement.getConstructionManager().getConstructionSites();
             case BUILDING -> settlement.getBuildingManager().getBuildingSet();
+            case MISSION -> context.getSimulation().getMissionManager().getMissionsForSettlement(settlement);
             case SCIENTIFIC_STUDY -> scienceMgr.getAllStudies(settlement);
             case TRANSPORT -> transportMgr.getTransportItems().stream()
                                         .filter(ti -> ti.getSettlementName().equals(settlement.getName()))
@@ -291,9 +333,9 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
     public void entityAdded(Entity newEntity) {
         if (newEntity instanceof Settlement settlement) {   
             var settlementNode = createSettlementNode(settlement);
-            var root = (DefaultMutableTreeNode) model.getRoot();
+            var root = (DefaultMutableTreeNode) entityModel.getRoot();
             root.add(settlementNode);
-            model.nodeStructureChanged(root);
+            entityModel.nodeStructureChanged(root);
         }
     }
 
@@ -306,9 +348,9 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
         if (removedEntity instanceof Settlement settlement) {   
             var sNode = entities.remove(settlement);
             if (sNode != null) {
-                var root = (DefaultMutableTreeNode) model.getRoot();
+                var root = (DefaultMutableTreeNode) entityModel.getRoot();
                 root.remove(sNode);
-                model.nodeStructureChanged(root);
+                entityModel.nodeStructureChanged(root);
             }
         }
     }
