@@ -161,7 +161,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 		addToolButton(BrowserWindow.NAME, BrowserWindow.ICON);
 
-
 		addSeparator(new Dimension(20, 20));
 	}
   

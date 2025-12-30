@@ -41,7 +41,7 @@ import com.mars_sim.ui.swing.tool.MapSelector;
 
 /**
  * Browser window for exploring entities. It uses dynamic loading to avoid long load times and excessive memory consumption.
- * The children fo collapsed nodes are removed to free memory.
+ * The children of collapsed nodes are removed to free memory.
  * Large child lists are grouped by name ranges to avoid overwhelming the user.
  */
 public class BrowserWindow extends ContentPanel implements EntityManagerListener {
@@ -185,7 +185,7 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
      */
     private void expandNode(DefaultMutableTreeNode node) {
         // Already expanded
-        if (node.getChildCount() > 1 && !(node.getChildAt(0) instanceof PlaceholderNode)) {
+        if (node.getChildCount() > 0 && !(node.getChildAt(0) instanceof PlaceholderNode)) {
             return;
         }
 
@@ -213,18 +213,32 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
             if (child instanceof EntityNode en) {
                 entities.remove(en.getEntity());
             }
-            node.remove(i);
         }
         node.removeAllChildren();
 
     }
 
     /**
+     * Get the currently selected entity.
+     * @return
+     */
+    private EntityNode getSelectedEntity() {
+        var selection = tree.getSelectionPath();
+        if (selection == null) {
+            return null;
+        }
+        var node = selection.getLastPathComponent();
+        if (node instanceof EntityNode en) {
+            return en;
+        }
+        return null;
+    }
+
+    /**
      * Show the details for the selected entity.
      */
     private void showDetails() {
-        var selection = tree.getSelectionPath().getLastPathComponent();
-        if (selection instanceof EntityNode en) {
+        if (getSelectedEntity() instanceof EntityNode en) {
             var entity = en.getEntity();
             context.showDetails(entity);
         }
@@ -234,8 +248,7 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
      * Show the location of the selected entity on the map tool.
      */
     private void showLocation() {
-        var selection = tree.getSelectionPath().getLastPathComponent();
-        if (selection instanceof EntityNode en) {
+        if (getSelectedEntity() instanceof EntityNode en) {
             var entity = en.getEntity();
             MapSelector.displayOnMap(context, entity);
         }
@@ -303,7 +316,7 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
             return;
         }
 
-        // Convert Entiites to tree nodes
+        // Convert Entities to tree nodes
         items.stream()
             .filter(e -> nameFilter == null || e.getName().matches(nameFilter))
             .sorted(Comparator.comparing(Entity::getName))
