@@ -38,6 +38,7 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
+import com.mars_sim.ui.swing.tool.browser.BrowserWindow;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -53,7 +54,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
- * only be one instance and it is contained in the {@link MainWindow} instance.
+ * only be one instance and it is contained in the top level window.
  */
 public class ToolToolBar extends JToolBar implements ActionListener {
 
@@ -158,6 +159,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(SettlementWindow.NAME, SettlementWindow.ICON);
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
+		addToolButton(BrowserWindow.NAME, BrowserWindow.ICON);
+
 
 		addSeparator(new Dimension(20, 20));
 	}
