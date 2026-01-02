@@ -12,8 +12,8 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
-import com.mars_sim.ui.swing.tool.browser.BrowserWindow;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
+import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -42,7 +42,7 @@ public class ToolRegistry {
         Simulation sim = context.getSimulation();
 
 		return switch(toolName) {
-            case BrowserWindow.NAME -> new BrowserWindow(context);
+            case EntityBrowser.NAME -> new EntityBrowser(context);
 			case OrbitViewer.NAME -> new OrbitViewer(sim.getMasterClock());
 			case TimeTool.NAME -> new TimeTool(sim);
 			case GuideWindow.NAME -> new GuideWindow(sim.getConfig()); 

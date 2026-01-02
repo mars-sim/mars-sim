@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -22,7 +21,6 @@ import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +41,6 @@ import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import com.formdev.flatlaf.util.SystemInfo;
@@ -124,8 +121,6 @@ public class MainWindow
 	private MasterClock masterClock;
 
 	private JMemoryMeter memoryBar;
-
-	private JPanel leftSlidingPanel;
 	
 	/** The control of play or pause the simulation. */
 	private JToggleButton playPauseSwitch;
@@ -477,7 +472,7 @@ public class MainWindow
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
 
 		// Prepare menu
-		MainWindowMenu mainWindowMenu = new MainWindowMenu(this);
+		MainWindowMenu mainWindowMenu = new MainWindowMenu(desktop);
 		frame.setJMenuBar(mainWindowMenu);
 		
 		// Close the unit bar when starting up
@@ -501,6 +496,7 @@ public class MainWindow
 	}
 	  
 	public JPanel createSlidingLeftPanel(JPanel contentPane) {
+        JPanel leftSlidingPanel;
 	
         // Create left sliding panel
         leftSlidingPanel = new JPanel();
@@ -719,16 +715,6 @@ public class MainWindow
 		comp.setMaximumSize(d1);
 	}
 	
-	/**
-	 * Updates the LAF style to a new value.
-	 */
-	public void updateLAF(String newStyle) {
-		// Set up the look and feel library to be used
-		if (StyleManager.setLAF(newStyle)) {
-			SwingUtilities.updateComponentTreeUI(frame);
-		}
-	}
-
 	/**
 	 * Get the window's frame.
 	 *
