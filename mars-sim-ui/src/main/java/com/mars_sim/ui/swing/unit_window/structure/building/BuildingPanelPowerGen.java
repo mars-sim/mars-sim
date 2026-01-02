@@ -19,19 +19,23 @@ import com.mars_sim.core.building.utility.power.FuelPowerSource;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerSource;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The BuildingPanelPowerGen class is a building function panel representing 
  * the power production and use of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelPowerGen
-extends BuildingFunctionPanel {
+class BuildingPanelPowerGen extends EntityTabPanel<Building>
+	implements TemporalComponent {
 
 	private static final String POWER_ICON = "power";
 	private static final String POWER_TYPE = Msg.getString("BuildingPanelPowerGen.powersource.powerType"); //$NON-NLS-1$
@@ -65,16 +69,15 @@ extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param building the building the panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelPowerGen(Building building, MainDesktopPane desktop) {
+	public BuildingPanelPowerGen(Building building, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
-			Msg.getString("BuildingPanelPowerGen.title"),  //$NON-NLS-1$
-			ImageLoader.getIconByName(POWER_ICON),
-			building, 
-			desktop
+			Msg.getString("BuildingPanelPowerGen.title"),
+			ImageLoader.getIconByName(POWER_ICON), null,
+			context, building
 		);
 
 		// Check if the building is a power producer.
@@ -94,6 +97,7 @@ extends BuildingFunctionPanel {
 		center.add(totalsPanel, BorderLayout.NORTH);
 		
 		// Prepare power status label.
+		var building = getEntity();
 		powerModeCache = building.getPowerMode();
 		
 		powerModeLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"), //$NON-NLS-1$
@@ -111,7 +115,7 @@ extends BuildingFunctionPanel {
 			
 			int num = sources.size();
 			AttributePanel sPanel = new AttributePanel(num * 4);
-			sPanel.setBorder(StyleManager.createLabelBorder("Power Sources"));
+			sPanel.setBorder(SwingHelper.createLabelBorder("Power Sources"));
 
 			var centerPanel = new JPanel(new BorderLayout());
 			center.add(centerPanel, BorderLayout.CENTER);
@@ -136,16 +140,18 @@ extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Updates this panel.
+	 * Updates this panel on clock pulse. Power production and use values are updated
+	 * only if they have changed since the last update.
 	 */
 	@Override
-	public void update() {	
+	public void clockUpdate(ClockPulse pulse) {
+		var building = getEntity();
 
 		// Update power status if necessary.
 		PowerMode mode = building.getPowerMode();
 		if (powerModeCache != mode) {
 			powerModeCache = mode;
-			powerModeLabel.setText(mode.getName()); //$NON-NLS-1$
+			powerModeLabel.setText(mode.getName());
 		}
 
 		// Update power used if necessary.
@@ -157,7 +163,7 @@ extends BuildingFunctionPanel {
 		
 		if (totalUsedCache != totalUsed) {
 			totalUsedCache = totalUsed;
-			totalUsedLabel.setText(StyleManager.DECIMAL_KW.format(totalUsed)); //$NON-NLS-1$
+			totalUsedLabel.setText(StyleManager.DECIMAL_KW.format(totalUsed));
 		}
 		
 		// Update power production if necessary.
@@ -193,19 +199,5 @@ extends BuildingFunctionPanel {
 				count++;
 			}
 		}
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		powerModeLabel = null;
-		totalProducedLabel = null;
-
-		totalUsedLabel = null;
-		powerModeCache = null;
-		generator = null;
 	}
 }

@@ -30,6 +30,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FoodProduction;
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
@@ -39,17 +40,20 @@ import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * A building panel displaying the foodProduction building function.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
+public class BuildingPanelFoodProduction extends EntityTabPanel<Building> 
+	implements TemporalComponent {
 
 	/** default logger. */
 	private static final Logger logger = Logger.getLogger(BuildingPanelFoodProduction.class.getName());
@@ -77,15 +81,14 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param foodFactory the manufacturing building function.
-	 * @param desktop     the main desktop.
+	 * @param context     the UI context
 	 */
-	public BuildingPanelFoodProduction(FoodProduction foodFactory, MainDesktopPane desktop) {
+	public BuildingPanelFoodProduction(FoodProduction foodFactory, UIContext context) {
 		// Use BuildingFunctionPanel constructor.
 		super(
 			Msg.getString("BuildingPanelFoodProduction.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(FOOD_ICON),
-			foodFactory.getBuilding(),
-			desktop
+			ImageLoader.getIconByName(FOOD_ICON), null,
+			context, foodFactory.getBuilding()
 		);
 		
 		// Initialize data model.
@@ -173,8 +176,12 @@ public class BuildingPanelFoodProduction extends BuildingFunctionPanel {
 		interactionPanel.add(btnPanel);
 	}
 
+	/**
+	 * Updates this panel on clock pulse.
+	 * Ideally could be converted to event driven update later.
+	 */
 	@Override
-	public void update() {
+	public void clockUpdate(ClockPulse pulse) {
 
 		// Update processes and salvage processes if necessary.
 		List<FoodProductionProcess> processes = foodFactory.getProcesses();

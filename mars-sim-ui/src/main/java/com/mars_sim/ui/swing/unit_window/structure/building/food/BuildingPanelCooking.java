@@ -17,14 +17,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.DishRecipe;
 import com.mars_sim.core.building.function.cooking.PreparedDish;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.structure.building.BuildingFunctionPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
@@ -32,8 +35,8 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * the cooking and food prepation info of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelCooking
-extends BuildingFunctionPanel {
+public class BuildingPanelCooking extends EntityTabPanel<Building>
+	implements TemporalComponent {
 
 	private static final String COOKING_ICON = "cooking";
 	
@@ -55,19 +58,16 @@ extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param kitchen the cooking building this panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelCooking(Cooking kitchen, MainDesktopPane desktop) {
+	public BuildingPanelCooking(Cooking kitchen, UIContext context) {
 
-		// Use BuildingFunctionPanel constructor
 		super(
-			Msg.getString("BuildingPanelCooking.title"),  //-NLS-1$
-			ImageLoader.getIconByName(COOKING_ICON),
-			kitchen.getBuilding(), 
-			desktop
+			Msg.getString("BuildingPanelCooking.title"),
+			ImageLoader.getIconByName(COOKING_ICON), null,
+			context, kitchen.getBuilding()
 		);
 
-		// Initialize data members
 		this.kitchen = kitchen;
 	}
 	
@@ -119,11 +119,11 @@ extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Updates this panel.
+	 * Updates this panel on clock pulse.
+	 * Ideally could be converted to event driven update later.
 	 */
 	@Override
-	public void update() {
-
+	public void clockUpdate(ClockPulse pulse) {
 		int numCooks = 0;
 		numCooks = kitchen.getNumCooks();
 		// Update cook number
@@ -155,7 +155,7 @@ extends BuildingFunctionPanel {
 	/**
 	 * Internal class used as model for the cooking table.
 	 */
-	private class DishTableModel extends AbstractTableModel {
+	private static class DishTableModel extends AbstractTableModel {
 
 		private Cooking kitchen;
 

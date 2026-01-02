@@ -489,13 +489,9 @@ public class Crop implements Comparable<Crop>, Entity {
 	 * Sets the current phase to harvesting.
 	 */
 	public void setToHarvest() {
-		boolean isDone = false;
-		while (!isDone) {
+		while (currentPhase.getPhaseType() != PhaseType.HARVESTING) {
 			// Advance forward one growing phase
 			advancePhase();
-			if (currentPhase.getPhaseType() == PhaseType.HARVESTING) {
-				isDone = true;
-			}
 		}
 	}
 	

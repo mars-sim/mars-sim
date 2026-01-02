@@ -10,15 +10,12 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -34,13 +31,12 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.RowSorter;
-import javax.swing.SwingUtilities;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.farming.Crop;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.building.function.farming.CropSpec;
@@ -49,15 +45,17 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
-import com.mars_sim.ui.swing.tool.VerticalLabelUI;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 
@@ -66,7 +64,8 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * the crop farm of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelFarming extends BuildingFunctionPanel {
+class BuildingPanelFarming extends EntityTabPanel<Building> 
+	implements TemporalComponent {
 
 	/** Default logger. */
 	private static SimLogger logger = SimLogger.getLogger(BuildingPanelFarming.class.getName());
@@ -89,15 +88,8 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private static final DecimalFormat DECIMAL_W_M2 = StyleManager.DECIMAL_W_M2;
 	private static final DecimalFormat DECIMAL_KG2 = StyleManager.DECIMAL_KG2;
 	
-	// Data members	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
-	// Data cache
-	private int rowCache;
 	/** The number of farmers cache. */
 	private int farmersCache;
-	/** The number of crops cache. */
-	private int cropsCache;
 	/** The cache for the amount of solar irradiance. */
 	private double radCache;
 	/** The cache value for the work time done in this greenhouse. */
@@ -167,41 +159,39 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	private ListModel listModel;
 	/** Table model for crop info. */
 	private CropTableModel cropTableModel;
-	private JScrollPane listScrollPanel;
 
 	/** The farming building. */
 	private Farming farm;
 	private Coordinates location;
-	
-	private Crop cropCache;
 
 	private JList<String> list;
 
 	private CropConfig cropConfig;
 	private SurfaceFeatures surfaceFeatures;
 
+	private int cropsCache;
+
 
 	/**
 	 * Constructor.
 	 * @param farm {@link Farming} the farming building this panel is for.
-	 * @param desktop {@link MainDesktopPane} The main desktop.
+	 * @param context {@link UIContext} The UI context.
 	 */
-	public BuildingPanelFarming(final Farming farm, MainDesktopPane desktop) {
+	public BuildingPanelFarming(final Farming farm, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelFarming.title"), 
-			ImageLoader.getIconByName(PLANT_ICON), 
-			farm.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(PLANT_ICON), null,
+			context, farm.getBuilding()
 		);
 
 		// Initialize data members
 		this.farm = farm;
 		location = farm.getBuilding().getCoordinates();
 
-		var sim = desktop.getSimulation();
-		cropConfig = desktop.getSimulation().getConfig().getCropConfiguration();
+		var sim = context.getSimulation();
+		cropConfig = sim.getConfig().getCropConfiguration();
 	
 		surfaceFeatures = sim.getSurfaceFeatures();
 	}
@@ -353,63 +343,43 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 				return ToolTipTableModel.extractToolTip(e, this);
             }
         };
-        
 		cropTable.setAutoCreateRowSorter(true);
-	
-		cropTable.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mousePressed(MouseEvent e) {
-		    	java.awt.Point p = e.getPoint();
-                int rowIndex = cropTable.rowAtPoint(p);
-				RowSorter<? extends TableModel> sorter = cropTable.getRowSorter();
-				if (sorter != null) {
-					rowIndex = sorter.convertRowIndexToModel(rowIndex);
-				}	
-		    	
-		        if (rowIndex >= 0 && rowIndex < cropTableModel.getRowCount()) {
-		        	Crop crop = cropTableModel.getCrop(rowIndex);
-		        	rowCache = rowIndex;
-		        	cropCache = crop;
-		        	cropTable.setRowSelectionInterval(rowIndex, rowIndex);
-		        } else {
-		        	cropTable.clearSelection();
-		        	rowCache = -1;
-		        	cropCache = null;
-		        }
-		    }
-		});
-		
 		
 		// Create a popup menu for the crop table
         final JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem harvestItem = new JMenuItem("Early Harvest");
-        harvestItem.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	JMenuItem item = (JMenuItem) e.getSource();
-            	if (item == harvestItem) {
-            		SwingUtilities.invokeLater(() -> {
-                            int rowAtPoint = rowCache; 
-                            if (rowAtPoint > -1) {
-                            	cropTable.setRowSelectionInterval(rowAtPoint, rowAtPoint);
-                            	Crop crop = cropCache;
-                            	int reply = JOptionPane.showConfirmDialog(center, "Would you like to fast-track '" 
-                            			+ crop.getName() + "' for an early harvest right now ? ", "Early Harvest", JOptionPane.YES_NO_OPTION);
-                		        if (reply == JOptionPane.YES_OPTION) {
-                		        	logger.info(building, 0, "Hand picked " + crop.getName() + " for an early harvest.");
-                		        	crop.setToHarvest();
-                		        }
-                		        else {
-                		        	logger.info(building, 0, "Not choosing " + crop.getName() + " for an early harvest.");
-                		        }
-                        }
-                    });
-            	}
-            }
-        });
+        harvestItem.addActionListener(e -> {
+			int rowAtPoint = cropTable.getSelectedRow();
+			if (rowAtPoint > -1) {
+				rowAtPoint = cropTable.convertRowIndexToModel(rowAtPoint);
+				Crop crop = cropTableModel.getCrop(rowAtPoint);
+				int reply = JOptionPane.showConfirmDialog(center, "Would you like to fast-track '" 
+						+ crop.getName() + "' for an early harvest right now ? ", "Early Harvest", JOptionPane.YES_NO_OPTION);
+				if (reply == JOptionPane.YES_OPTION) {
+					logger.info(getEntity(), 0, "Hand picked " + crop.getName() + " for an early harvest.");
+					crop.setToHarvest();
+				}
+			}
+		});
         
         popupMenu.add(harvestItem); 
-        cropTable.setComponentPopupMenu(popupMenu);
+        cropTable.addMouseListener( new MouseAdapter() {
+			@Override
+            public void mouseReleased(MouseEvent e)
+            {
+                if (e.isPopupTrigger())
+                {
+                    JTable source = (JTable)e.getSource();
+                    int row = source.rowAtPoint( e.getPoint() );
+                    int column = source.columnAtPoint( e.getPoint() );
+
+                    if (!source.isRowSelected(row))
+                        source.changeSelection(row, column, false, false);
+
+                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
 		
 		TableColumnModel cropColumns = cropTable.getColumnModel();
 		cropColumns.getColumn(CropTableModel.HEALTH).setPreferredWidth(10);
@@ -424,43 +394,31 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		cropColumns.getColumn(CropTableModel.HARVEST).setPreferredWidth(65);
 	
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 		cropColumns.getColumn(CropTableModel.AREA).setCellRenderer(centerRenderer);
 		cropColumns.getColumn(CropTableModel.WORK).setCellRenderer(centerRenderer);
 		
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(JLabel.RIGHT);
+		rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
 		cropColumns.getColumn(CropTableModel.HARVEST).setCellRenderer(rightRenderer);
-		
-		cropTable.setCellSelectionEnabled(false); // need it so that the tooltip can be displayed.
 		
 		cropTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		
 		tableScrollPanel.setViewportView(cropTable);
 
 		JPanel queuePanel = new JPanel(new BorderLayout());
+		queuePanel.setBorder(SwingHelper.createLabelBorder("Crop Queue"));
 	    southPanel.add(queuePanel, BorderLayout.CENTER);
 
-	    JPanel selectPanel = new JPanel(new FlowLayout());
-	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
-
-		JPanel buttonPanel = new JPanel(new BorderLayout());
-		JButton addButton = new JButton(Msg.getString("BuildingPanelFarming.addButton")); //$NON-NLS-1$
-		addButton.setPreferredSize(new Dimension(60, 20));
-		addButton.setFont(new Font("Serif", Font.PLAIN, 9));
+		JButton addButton = new JButton(ImageLoader.getIconByName("action/add"));
 		addButton.addActionListener(s -> {
 				CropSpec cs = (CropSpec) comboBox.getSelectedItem();
 				farm.addCropListInQueue(cs.getName());
 				listModel.update();
 				repaint();
 			});
-		buttonPanel.add(addButton, BorderLayout.NORTH);
-		selectPanel.add(buttonPanel);
 
-		JButton delButton = new JButton(Msg.getString("BuildingPanelFarming.delButton")); //$NON-NLS-1$
-		delButton.setPreferredSize(new Dimension(60, 20));
-		delButton.setFont(new Font("Serif", Font.PLAIN, 9));
-
+		JButton delButton = new JButton(ImageLoader.getIconByName("action/delete"));
 		delButton.addActionListener(s -> {
 			if (!list.isSelectionEmpty()) {
 				String deletingCropType = list.getSelectedValue();
@@ -470,7 +428,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
             	repaint();
 			}
 		});
-		buttonPanel.add(delButton, BorderLayout.CENTER);
 
        	// Set up crop combo box model.
 		DefaultComboBoxModel<CropSpec> comboBoxModel = new DefaultComboBoxModel<>();
@@ -485,43 +442,31 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	    ComboboxToolTipRenderer toolTipRenderer = new ComboboxToolTipRenderer();
 	    comboBox.setRenderer(toolTipRenderer);
 		comboBox.setMaximumRowCount(10);
-	    selectPanel.add(comboBox);
 
-		JPanel queueListPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		JPanel queueButtonLabelPanel = new JPanel(new BorderLayout());
-	    JLabel queueListLabel = new JLabel("     Crop Queue     ");
-		queueListLabel.setUI(new VerticalLabelUI(false));
-	    StyleManager.applySubHeading(queueListLabel);
-		queueListLabel.setBorder(new MarsPanelBorder());
-	    queueButtonLabelPanel.add(queueListLabel, BorderLayout.NORTH);
-		queueListPanel.add(queueButtonLabelPanel);
-	    queuePanel.add(queueListPanel, BorderLayout.CENTER);
+	    JPanel selectPanel = new JPanel(new FlowLayout());
+	    queuePanel.add(selectPanel, BorderLayout.NORTH); // 1st add
+	    selectPanel.add(comboBox);
+		selectPanel.add(addButton);
+		selectPanel.add(delButton);
 
 		// Create scroll panel for population list.
-		listScrollPanel = new JScrollPane();
-		listScrollPanel.setPreferredSize(new Dimension(150, 150));
+		var listScrollPanel = new JScrollPane();
+		listScrollPanel.setPreferredSize(new Dimension(150, 100));
 
 		// Create list model
 		listModel = new ListModel();
 		// Create list
 		list = new JList<>(listModel);
 		listScrollPanel.setViewportView(list);
-		queueListPanel.add(listScrollPanel);
+		queuePanel.add(listScrollPanel, BorderLayout.CENTER);
 	}
 
 	/**
-	 * Mouse clicked event occurs.
-	 * 
-	 * @param event the mouse event
-	 */
-	
-	/**
-	 * Updates this panel.
+	 * Updates this panel on clock pulse.
+	 * Ideally could be converted to event driven update later.
 	 */
 	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
+	public void clockUpdate(ClockPulse pulse) {
 		
 		// Update farmers label if necessary.
 		int farmers = farm.getFarmerNum();
@@ -529,7 +474,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			farmersCache = farmers;
 			farmerLabel.setText(String.valueOf(farmers));
 		}
-
 		
 		// Update crops label if necessary.
 		int crops = farm.getCrops().size();
@@ -551,7 +495,6 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			radCache = rad;
 			radLabel.setText(DECIMAL_W_M2.format(rad));
 		}
-
 		
 		// Update the water usage
 		double[] water = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.WATER_ID);
@@ -566,10 +509,8 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 			waterPerSolLabel.setText(DECIMAL_KG2_SOL.format(water[1]));
 		}
 
-		
 		// Update the O2 generated
-		double[] o2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.OXYGEN_ID);
-		
+		double[] o2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.OXYGEN_ID);		
 		if (Math.abs(o2CumCache - o2[0]) > .4) {
 			o2CumCache = o2[0];
 			o2CumLabel.setText(DECIMAL_KG2.format(o2[0]));
@@ -773,7 +714,7 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 
 		private CropTableModel(Farming farm) {
 			this.farm = farm;
-			crops = farm.getCrops();
+			crops = new ArrayList<>(farm.getCrops());
 			loadIcons();
 		}
 
@@ -865,9 +806,12 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 		}
 
 		public void update() {
-			if (!crops.equals(farm.getCrops()))
-				crops = farm.getCrops();
-			fireTableDataChanged();
+			if (!crops.equals(farm.getCrops())) {
+			 	crops = new ArrayList<>(farm.getCrops());
+				fireTableDataChanged();
+			}
+
+			fireTableRowsUpdated(0, crops.size() - 1);
 		}
 
 		@Override
@@ -900,33 +844,5 @@ public class BuildingPanelFarming extends BuildingFunctionPanel {
 	        }
 	        return comp;
 	    }
-	}
-
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		radLabel = null;
-		farmerLabel = null;
-		cropsLabel = null;
-		waterPerSolLabel = null;
-		greyWaterPerSolLabel = null;
-		o2PerSolLabel = null;
-		co2PerSolLabel = null;
-		workTimeLabel = null;
-		areaUsageLabel = null;
-	
-		comboBox = null;
-		listModel = null;
-		cropTableModel = null;
-		listScrollPanel = null;
-		farm = null;
-		location = null;
-		list = null;
-		cropConfig = null;
-		surfaceFeatures = null;
 	}
 }
