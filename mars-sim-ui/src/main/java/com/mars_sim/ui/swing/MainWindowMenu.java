@@ -7,74 +7,31 @@
 
 package com.mars_sim.ui.swing;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
-import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
-import com.mars_sim.ui.swing.tool.search.SearchWindow;
-import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
-import com.mars_sim.ui.swing.tool.time.TimeTool;
-import com.mars_sim.ui.swing.utils.SaveDialog;
 
 /**
  * The MainWindowMenu class is the menu for the main window.
  */
-public class MainWindowMenu extends JMenuBar implements ActionListener, MenuListener {
+public class MainWindowMenu extends MainMenuBar {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final String EXIT = "exit";
-	private static final String SAVE = "save";
-	private static final String SAVE_AS = "saveAs";
-	private static final String OPEN_GUIDE = "guide";
-	private static final String TUTORIAL = "tutorial";
-	private static final String ABOUT = "about";
-	private static final String VERSION = "version";
-	private static final String CHANGELOG = "changelog";
-	private static final String LAF = "laf";
-	private static final String UNIT_TOOLBAR = "unitbar";
-	private static final String TOOL_TOOLBAR = "toolbar";
-	private static final String EXTERNAL_BROWSER = "browser";
-	private static final String LOOK_AND_FEEL_ICON = "action/theme";
 	private static final String BROWSER_ICON = "action/browser";
 
-	// Data members
-	/** The main window frame. */
-	private MainWindow mainWindow;
-	/** Unit Bar menu item. */
-	private JCheckBoxMenuItem showUnitBarItem;
-	/** Tool Bar menu item. */
-	private JCheckBoxMenuItem showToolBarItem;
-	/** Tool Bar menu item. */
-	private JCheckBoxMenuItem useExternalBrowser;
-
-	private JMenu toolsMenu;
 
 	/**
 	 * Constructor.
@@ -82,33 +39,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	 * @param mainWindow
 	 *            the main window pane
 	 */
-	public MainWindowMenu(MainWindow mainWindow) {
+	public MainWindowMenu(MainDesktopPane mainWindow) {
+		super(mainWindow);
+	}
 
-		// Use JMenuBar constructor
-		super();
-
-		// Initialize data members
-		this.mainWindow = mainWindow;
-
-		// Create file menu
-		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
-		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
-		add(fileMenu);
-
-		fileMenu.add(createMenuItemAction("mainMenu.save", "action/save", SAVE, null,
-									KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK, false)));
-		fileMenu.add(createMenuItemAction("mainMenu.saveAs", "action/saveAs", SAVE_AS, null,
-									KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK, false)));
-		fileMenu.add(new JSeparator());
-		fileMenu.add(createMenuItemAction("mainMenu.exit", "action/exit", EXIT, null,
-									KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK, false)));
-
-		// Create tools menu
-		toolsMenu = createToolsMenu();
-		add(toolsMenu);
+	@Override
+	protected JMenu createDisplayMenu() {
 		
-		add(createSettingsMenu());
-
 		// Add a dynamic Windows menu
 		final JMenu displayMenu = new JMenu("Windows");
         displayMenu.addMenuListener(new MenuListener() {
@@ -127,10 +64,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 				// Nothing to do
             }
         });
-		add(displayMenu);
-
-		// Create help menu
-		add(createHelpMenu());
+		
+		return displayMenu;
 	}
 
 	/**
@@ -138,18 +73,19 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	 * 
 	 * @param me
 	 */
-	protected void buildWindowsMenu(MenuEvent me) {
+	private void buildWindowsMenu(MenuEvent me) {
 		JMenu menuSource = (JMenu) me.getSource();
 
 		menuSource.removeAll();//remove previous opened window jmenuitems
+		var desktop = (MainDesktopPane)getContext();
 
-		for (var tw : mainWindow.getDesktop().getToolWindows()) {
+		for (var tw : desktop.getToolWindows()) {
 			if (!tw.isClosed()) {
-				menuSource.add(createWindowControlMenu(tw.getTitle(), tw));
+				menuSource.add(createWindowControlMenu(desktop, tw.getTitle(), tw));
 			}
 		}
-		for (var tw : mainWindow.getDesktop().getUnitWindows()) {
-			menuSource.add(createWindowControlMenu(tw.getTitle(), tw));
+		for (var tw : desktop.getUnitWindows()) {
+			menuSource.add(createWindowControlMenu(desktop, tw.getTitle(), tw));
 		}
 
 		menuSource.revalidate();
@@ -162,11 +98,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 	 * 
 	 * @return
 	 */
-	private JMenu createWindowControlMenu(String title, JInternalFrame internal) {
+	private JMenu createWindowControlMenu(MainDesktopPane desktop, String title, JInternalFrame internal) {
 		JMenu top = new JMenu(title);
 		JMenuItem center = new JMenuItem("Center");
 		center.addActionListener(e -> {
-			mainWindow.getDesktop().centerJIF(internal);
+			desktop.centerJIF(internal);
 			try {
 				internal.setSelected(true);
 			} catch (PropertyVetoException e1) {
@@ -197,338 +133,48 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 		return top;
 	}
 
-	/**
-	 * Creates the tools menu.
-	 */
-	private JMenu createToolsMenu() {
-		var newMenu = new JMenu(Msg.getString("mainMenu.tools")); //$NON-NLS-1$
-		newMenu.addMenuListener(this);
-		newMenu.setMnemonic(KeyEvent.VK_T);
-
-		// Create tool menu items
-		newMenu.add(createToolMenuItem(NavigatorWindow.NAME, NavigatorWindow.TITLE, NavigatorWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false)));
-		newMenu.add(createToolMenuItem(SearchWindow.NAME, SearchWindow.TITLE, SearchWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false)));
-		newMenu.add(createToolMenuItem(TimeTool.NAME, TimeTool.TITLE, TimeTool.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false)));								
-		newMenu.add(createToolMenuItem(MonitorWindow.NAME, MonitorWindow.TITLE, MonitorWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));	
-		newMenu.add(createToolMenuItem(MissionWindow.NAME, MissionWindow.TITLE, MissionWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false)));	
-		newMenu.add(createToolMenuItem(SettlementWindow.NAME, SettlementWindow.TITLE, SettlementWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false)));	
-		newMenu.add(createToolMenuItem(ResupplyWindow.NAME, ResupplyWindow.TITLE, ResupplyWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false)));	
-		newMenu.add(createToolMenuItem(CommanderWindow.NAME, CommanderWindow.TITLE, CommanderWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false)));	
-		return newMenu;
-	}
-
-	/**
-	 * Creates the help menu.
-	 * 
-	 * @return
-	 */
-	private JMenu createHelpMenu() {
-		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
-		helpMenu.setMnemonic(KeyEvent.VK_H); // Alt + H
-		helpMenu.addMenuListener(this);
-
-		// Create About Mars Simulation Project menu item
-		helpMenu.add(createMenuItem("mainMenu.about", "action/about", ABOUT, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, false)));
-	
-		helpMenu.add(new JSeparator());
-			
-		helpMenu.add(createMenuItem("mainMenu.changelog", "action/changelog", CHANGELOG, null,
-				KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK, false)));
-
-		helpMenu.add(createMenuItem("mainMenu.version", "action/version", VERSION, null,
-				KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK, false)));
-				
-		helpMenu.add(createMenuItem("mainMenu.tutorial", "action/tutorial", TUTORIAL, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
-		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
-		return helpMenu;
-	}
-
-
-	private JMenu createSettingsMenu() {
-
-		// Create settings menu
-		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
-		settingsMenu.setMnemonic(KeyEvent.VK_S); // Alt + S
-		settingsMenu.addMenuListener(this);
-
-		// Create Show Unit Bar menu item
-		showUnitBarItem = createCheckMenuItemAction(Msg.getString("mainMenu.unitbar"), null,
-											  UNIT_TOOLBAR, "mainMenu.tooltip.unitbar"	,
-										      KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK, false));
-		settingsMenu.add(showUnitBarItem);
-		showToolBarItem = createCheckMenuItemAction(Msg.getString("mainMenu.toolbar"), null,
-											  TOOL_TOOLBAR, "mainMenu.tooltip.toolbar"	,
-										      KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK, false));
-		settingsMenu.add(showToolBarItem);	
-		useExternalBrowser = createCheckMenuItemAction("Use Desktop Browser", BROWSER_ICON,
-					EXTERNAL_BROWSER, "mainMenu.tooltip.toolbar"	, null);
-		settingsMenu.add(useExternalBrowser);	
-		settingsMenu.add(new JSeparator());
-
-		// Create submenu for LAF
-		JMenu lafMenu = new JMenu("Look and Feel");
-		Icon lafIcon = ImageLoader.getIconByName(LOOK_AND_FEEL_ICON);
-		lafMenu.setIcon(lafIcon);
-		JMenu lightMenu = new JMenu("Light Theme");
-		JMenu darkMenu = new JMenu("Dark Theme");
-		ButtonGroup group = new ButtonGroup();
-		settingsMenu.add(lafMenu);
-		lafMenu.add(lightMenu);
-		lafMenu.add(darkMenu);
-
-		for (String i : StyleManager.getAvailableLightLAF()) {
-			JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(i);
-			if (i.equals(StyleManager.getLAF()))
-				lafItem.setSelected(true);
-			lafItem.setActionCommand(LAF);
-			lafItem.addActionListener(this);
-			lightMenu.add(lafItem);
-			group.add(lafItem);
-		}
-		for (String i : StyleManager.getAvailableDarkLAF()) {
-			JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(i);
-			if (i.equals(StyleManager.getLAF()))
-				lafItem.setSelected(true);
-			lafItem.setActionCommand(LAF);
-			lafItem.addActionListener(this);
-			darkMenu.add(lafItem);
-			group.add(lafItem);
-		}
-		for (String i : StyleManager.getAvailableSystemLAF()) {
-			JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(i);
-			if (i.equals(StyleManager.getLAF()))
-				lafItem.setSelected(true);
-			lafItem.setActionCommand(LAF);
-			lafItem.addActionListener(this);
-			lafMenu.add(lafItem);
-			group.add(lafItem);
-		}
-
-		return settingsMenu;
-	}
-
-	/**
-	 * Creates a menu item with action.
-	 * 
-	 * @param nameKey
-	 * @param iconName
-	 * @param command
-	 * @param tooltipKey
-	 * @param keyStroke
-	 * @return
-	 */
-	private JMenuItem createMenuItemAction(String nameKey, String iconName, String command, String tooltipKey, KeyStroke keyStroke) {
-		JMenuItem item = createMenuItem(nameKey);
-		actionMenuItem(item, iconName, command, tooltipKey, keyStroke);
-		return item;
-	}
-	
-	/**
-	 * Creates a menu item with action.
-	 * 
-	 * @param nameKey
-	 * @param icon
-	 * @param command
-	 * @param tooltipKey
-	 * @param keyStroke
-	 * @return
-	 */
-	private JMenuItem createMenuItem(String nameKey, String icon, String command, String tooltipKey, KeyStroke keyStroke) {
-		JMenuItem item = createMenuItem(nameKey);
-		actionMenuItem(item, icon, command, tooltipKey, keyStroke);
-		return item;
-	}
-
-	/**
-	 * Creates a menu item.
-	 * 
-	 * @param nameKey
-	 * @return
-	 */
-	private JMenuItem createMenuItem(String nameKey) {
-		return new JMenuItem(Msg.getString(nameKey)); //$NON-NLS-1$
-	}
-	
+		
 	/**
 	 * Creates a check box menu item with action.
 	 * 
 	 * @param name
 	 * @param iconName
-	 * @param command
 	 * @param tooltipKey
 	 * @param keyStroke
 	 * @return
 	 */
-	private JCheckBoxMenuItem createCheckMenuItemAction(String name, String iconName, String command, String tooltipKey,
+	private JCheckBoxMenuItem createCheckMenuItemAction(String name, String iconName, String tooltipKey,
 										KeyStroke keyStroke) {
 		JCheckBoxMenuItem item = new JCheckBoxMenuItem(name);
-		actionMenuItem(item, iconName, command, tooltipKey, keyStroke);
-		return item;
-	}
-
-	private void actionMenuItem(JMenuItem item, String iconName, String command, String tooltipKey,
-								KeyStroke keyStroke) {
 		configureMenuItem(item, iconName, tooltipKey, keyStroke);
-		item.addActionListener(this);
-		item.setActionCommand(command);
-	}
-
-	/**
-	 * Creates a menu items for the Tool window.
-	 * 
-	 * @param name
-	 * @param title
-	 * @param iconName
-	 * @param keyStroke
-	 * @return
-	 */
-	private JCheckBoxMenuItem createToolMenuItem(String name, String title, String iconName, KeyStroke keyStroke) {
-		JCheckBoxMenuItem item = new JCheckBoxMenuItem(title);
-		configureMenuItem(item, iconName, null, keyStroke);
-		item.setActionCommand(name);
-		item.addActionListener(e -> {
-			JMenuItem selectedItem = (JMenuItem) e.getSource();
-			if (selectedItem.isSelected())
-				mainWindow.getDesktop().openToolWindow(e.getActionCommand());
-			else
-				mainWindow.getDesktop().closeToolWindow(e.getActionCommand());
-		});
-
 		return item;
 	}
 
-	/**
-	 * Configures a menu item.
-	 * 
-	 * @param item
-	 * @param iconName
-	 * @param tooltipKey
-	 * @param keyStroke
-	 */
-	private void configureMenuItem(JMenuItem item, String iconName,  String tooltipKey,
-								KeyStroke keyStroke) {
-		if (iconName != null) {
-			Icon icon = ImageLoader.getIconByName(iconName);
-			item.setIcon(icon);
-		}
-		if (tooltipKey != null) {
-			item.setToolTipText(Msg.getString(tooltipKey)); //$NON-NLS-1$
-		}
-
-		item.setAccelerator(keyStroke);
-	}
-	
-	/**
-	 * Gets the Main Window.
-	 *
-	 * @return mainWindow
-	 */
-	public MainWindow getMainWindow() {
-		return mainWindow;
-	}
-
-	/** ActionListener method overriding. */
-	@Override
-	public final void actionPerformed(ActionEvent event) {
-		JMenuItem selectedItem = (JMenuItem) event.getSource();
-		MainDesktopPane desktop = mainWindow.getDesktop();
-		String command = event.getActionCommand();
-		String newGuideURL = null;
-
-		switch(command) {
-			case EXIT:
-				desktop.requestEndSimulation();
-				break;
-			case SAVE:
-				SaveDialog.create(desktop.getTopFrame(), desktop.getSimulation(),true);
-				break;
-			case SAVE_AS:
-				SaveDialog.create(desktop.getTopFrame(), desktop.getSimulation(),false);
-				break;
-			case UNIT_TOOLBAR:
-				desktop.getMainWindow().getUnitToolBar().setVisible(selectedItem.isSelected());
-				break;
-			case TOOL_TOOLBAR:
-				desktop.getMainWindow().getToolToolBar().setVisible(selectedItem.isSelected());
-				break;
-			case EXTERNAL_BROWSER:
-				desktop.getMainWindow().setExternalBrowser(selectedItem.isSelected());
-				break;
-			case ABOUT:
-				newGuideURL = Msg.getString("doc.about"); //$NON-NLS-1$
-				break;
-			case CHANGELOG:
-				newGuideURL = Msg.getString("doc.versionHistory"); //$NON-NLS-1$
-				break;
-			case VERSION:
-				checkVersion();		
-				break;
-			case OPEN_GUIDE:
-				newGuideURL = Msg.getString("doc.guide"); //$NON-NLS-1$
-				break;
-			case TUTORIAL:
-				newGuideURL = Msg.getString("doc.tutorial"); //$NON-NLS-1$
-				break;
-			case LAF: 
-				String text = selectedItem.getText();
-				mainWindow.updateLAF(text);
-				break;
-			default:
-				// Shouldn't be here
-				break;
-		}
-
-		if (newGuideURL != null) {
-			mainWindow.showHelp(newGuideURL);
-		}
-	}
-
-    /**
-     * Opens browser to check latest version.
-     */
-    private void checkVersion() {
-		var message = 
-			"Version: " + SimulationRuntime.VERSION.getVersionTag() + "\n"
-			+ "Base: " + SimulationRuntime.VERSION.getBuild() + "\n"
-			+ "Built On: " + SimulationRuntime.VERSION.getBuildTime();
-    	JOptionPane.showMessageDialog(mainWindow, message, SimulationRuntime.SHORT_TITLE, JOptionPane.INFORMATION_MESSAGE);
-    }
-    
-	/** 
-	 * MenuListener method overriding. 
-	 */
-	@Override
-	public final void menuSelected(MenuEvent event) {
-		MainDesktopPane desktop = mainWindow.getDesktop();
-		for (Component c : toolsMenu.getComponents()) {
-			if (c instanceof JCheckBoxMenuItem jc) {
-				jc.setSelected(desktop.isToolWindowOpen(jc.getActionCommand()));
-			}
-		}
-	
-		showUnitBarItem.setSelected(mainWindow.getUnitToolBar().isVisible());
-		showToolBarItem.setSelected(mainWindow.getToolToolBar().isVisible());
-		useExternalBrowser.setSelected(mainWindow.useExternalBrowser());
+	private MainWindow getMainWindow() {
+		return ((MainDesktopPane)getContext()).getMainWindow();
 	}
 
 	@Override
-	public void menuCanceled(MenuEvent event) {
-		// Nothing to do
-	}
+	protected void addWindowPreferences(JMenu settingsMenu) {
+				// Create Show Unit Bar menu item
+		var showUnitBarItem = createCheckMenuItemAction(Msg.getString("mainMenu.unitbar"), null,"mainMenu.tooltip.unitbar"	,
+										      KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_DOWN_MASK, false));
+		showUnitBarItem.addActionListener(e ->
+					getMainWindow().getUnitToolBar().setVisible(((JMenuItem)e.getSource()).isSelected()));
+		settingsMenu.add(showUnitBarItem);
+		
+		var showToolBarItem = createCheckMenuItemAction(Msg.getString("mainMenu.toolbar"), null,
+											   "mainMenu.tooltip.toolbar"	,
+										      KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK, false));
+		showToolBarItem.addActionListener(e ->
+					getMainWindow().getToolToolBar().setVisible(((JMenuItem)e.getSource()).isSelected()));
+		settingsMenu.add(showToolBarItem);
 
-	@Override
-	public void menuDeselected(MenuEvent event) {
-		// Nothing to do
+		var useExternalBrowser = createCheckMenuItemAction("Use Desktop Browser", BROWSER_ICON,
+					 "mainMenu.tooltip.toolbar"	, null);
+		useExternalBrowser.addActionListener(e ->
+					getMainWindow().setExternalBrowser(((JMenuItem)e.getSource()).isSelected()));
+		settingsMenu.add(useExternalBrowser);	
+		settingsMenu.add(new JSeparator());
 	}
 }

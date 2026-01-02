@@ -34,7 +34,6 @@ import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.MapSelector;
@@ -62,7 +61,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit> {
 	private static final Dimension GAUGE_DIM = new Dimension(180, 180);
 	private static final Dimension BANNER_DIM = new Dimension(140, 30);
 
-	private String themeCache = "";
 	private String locationStringCache = "";
 
 	private JLabel vicinityLabel;
@@ -289,47 +287,6 @@ public class LocationTabPanel extends EntityTabPanel<Unit> {
 
 		if (unit instanceof Settlement s) {
 			updateSettlementLabels(s);
-		}
-		
-		String theme = StyleManager.getLAF();
-		if (!themeCache.equals(theme)) {	
-			themeCache = theme;
-			updateBannerThemeColor(theme);
-		}
-	}
-	
-	/**
-	 * Updates the banner theme color.
-	 * 
-	 * @param gauge
-	 */
-	private void updateBannerThemeColor(String theme) {
-		if (theme.equalsIgnoreCase(StyleManager.LIGHT_BLUE)) {
-			bannerText.setGlowColor(Color.WHITE);
-			bannerText.setLcdColor(LcdColor.BLUEGRAY_LCD);			
-		}
-		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_GREEN)) {
-			bannerText.setGlowColor(Color.lightGray);
-			bannerText.setLcdColor(LcdColor.DARKGREEN_LCD);			
-		}
-		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_ORANGE)
-				|| theme.equalsIgnoreCase(StyleManager.SOLARIZED_LIGHT)) {
-			bannerText.setGlowColor(Color.ORANGE);
-			bannerText.setLcdColor(LcdColor.AMBER_LCD);			
-		}
-		else if (theme.equalsIgnoreCase(StyleManager.LIGHT_RED)) {
-			bannerText.setGlowColor(Color.LIGHT_GRAY);
-			bannerText.setLcdColor(LcdColor.REDDARKRED_LCD);			
-		}
-		else if (theme.equalsIgnoreCase(StyleManager.DARK)
-				|| theme.equalsIgnoreCase(StyleManager.HIBERBEE_DARK)
-				|| theme.equalsIgnoreCase(StyleManager.SOLARIZED_DARK)) {
-			bannerText.setGlowColor(Color.WHITE);
-			bannerText.setLcdColor(LcdColor.DARKBLUE_LCD);			
-		}
-		else if (theme.equalsIgnoreCase(StyleManager.SYSTEM)) {
-			bannerText.setGlowColor(Color.ORANGE);
-			bannerText.setLcdColor(LcdColor.BEIGE_LCD);			
 		}
 	}
 	

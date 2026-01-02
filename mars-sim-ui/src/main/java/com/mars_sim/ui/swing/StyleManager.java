@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -23,25 +24,13 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.ColorUIResource;
 
-import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.intellijthemes.FlatGradiantoDarkFuchsiaIJTheme;
-import com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTLightOwlIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialOceanicIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMonokaiProIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMoonlightIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTNightOwlIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedDarkIJTheme;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedLightIJTheme;
-
 import com.formdev.flatlaf.util.HSLColor;
 import com.mars_sim.core.tool.Msg;
 
@@ -50,8 +39,8 @@ import com.mars_sim.core.tool.Msg;
  */
 public class StyleManager {
 
-    private static final Logger logger = Logger.getLogger(StyleManager.class.getName());
 
+    private static final Logger logger = Logger.getLogger(StyleManager.class.getName());
 
     // Shared generic formatters 
     public static final DecimalFormat CURRENCY_PLACES1 = new DecimalFormat("$ #,###,##0.0");
@@ -114,50 +103,56 @@ public class StyleManager {
     
     // For solar irradiance
     public static final DecimalFormat DECIMAL_W_M2 = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.wattpermetersquared")); //-NLS-1$ // ("#,##0.0 W/m\u00b2");
+    								+ Msg.getString("unit.wattpermetersquared"));
     // For air density
     public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("unit.grampercubicmeter")); //-NLS-1$
+    								+ Msg.getString("unit.grampercubicmeter"));
     // For air pressure
     public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("pressure.unit.kPa")); //-NLS-1$
+    								+ Msg.getString("pressure.unit.kPa"));
 
-    public static final String SYSTEM = "Default System";
-    
-    public static final String LIGHT = "Flat Light";
-    public static final String LIGHT_RED = LIGHT + " - Red";
-    public static final String LIGHT_GREEN = LIGHT + " - Green";
-    public static final String LIGHT_BLUE = LIGHT + " - Blue";
-    public static final String LIGHT_ORANGE = LIGHT + " - Orange";
-    public static final String LIGHT_OWL = "Light Owl";
-    public static final String SOLARIZED_LIGHT = "Solarized Light";
-    
-    public static final String DARK = "Flat Dark";
-    public static final String HIBERBEE_DARK = "Hiberbee Dark";
-    public static final String NIGHT_OWL = "Night Owl";
-    public static final String MONOKAI_DARK = "Monokai Dark";
-    public static final String SOLARIZED_DARK = "Solarized Dark";
-    public static final String GRADIANTO_DARK_FUCHSIA = "Gradianto Dark Fuchsia";
-    public static final String MATERIAL_PALENIGHT = "Material Palenight";
-    public static final String MOONLIGHT = "Moonlight";
-    public static final String ARC_DARK = "Arc Dark";
-    
-    private static final String [] LAF_LIGHT_STYLES = {
-    		SYSTEM, LIGHT_RED, LIGHT_GREEN, LIGHT_BLUE, LIGHT_ORANGE, LIGHT_OWL, SOLARIZED_LIGHT};
-    
-    private static final String [] LAF_DARK_STYLES = {
-    		DARK, HIBERBEE_DARK, MONOKAI_DARK, NIGHT_OWL, SOLARIZED_DARK, 
-    		GRADIANTO_DARK_FUCHSIA, MATERIAL_PALENIGHT, MOONLIGHT, ARC_DARK};
-    
- // Create a new static string array that combines the elements of array1 and array2
-    public static String[] LAF_STYLES = new String[LAF_LIGHT_STYLES.length + LAF_DARK_STYLES.length];
-    
-    // Initialize the combined array
-    static {
-        System.arraycopy(LAF_LIGHT_STYLES, 0, LAF_STYLES, 0, LAF_LIGHT_STYLES.length);
-        System.arraycopy(LAF_DARK_STYLES, 0, LAF_STYLES, LAF_LIGHT_STYLES.length, LAF_DARK_STYLES.length);
-    }
-    
+    // Look and Feel styles
+    record StyleEntry(String name, String category, Color accentColour, String lafClassName) {}
+
+    private static final String SYSTEM = "Default System";
+    private static final String SYSTEM_THEME = "System Theme";
+    private static final String LIGHT_RED = "Flat Light - Red";
+    private static final String LIGHT_THEME = "Light Theme";
+    private static final String DARK_THEME = "Dark Theme";
+    private static final String FLAT_LIGHT_LAF = "com.formdev.flatlaf.FlatLightLaf";
+
+    // Hold LAF Classnames as String to avoid classloadinbg all LAF styles
+    public static final List<StyleEntry> STYLE_ENTRIES = List.of(
+        new StyleEntry(LIGHT_RED, LIGHT_THEME, Color.RED, FLAT_LIGHT_LAF),
+        new StyleEntry("Flat Light - Green", LIGHT_THEME, Color.GREEN, FLAT_LIGHT_LAF),
+        new StyleEntry("Flat Light - Blue", LIGHT_THEME, Color.BLUE, FLAT_LIGHT_LAF),
+        new StyleEntry("Flat Light - Orange", LIGHT_THEME, Color.ORANGE, FLAT_LIGHT_LAF),
+        new StyleEntry("Light Owl", LIGHT_THEME, null, 
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTLightOwlIJTheme"),
+        new StyleEntry("Solarized Light", LIGHT_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedLightIJTheme"),
+        new StyleEntry("Flat Dark", DARK_THEME, null,
+                        "com.formdev.flatlaf.FlatDarkLaf"),
+        new StyleEntry("Hiberbee Dark", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.FlatHiberbeeDarkIJTheme"),
+        new StyleEntry("Monokai Dark", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMonokaiProIJTheme"),
+        new StyleEntry("Night Owl", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTNightOwlIJTheme"),
+        new StyleEntry("Solarized Dark", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTSolarizedDarkIJTheme"),
+        new StyleEntry("Gradianto Dark Fuchsia", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.FlatGradiantoDarkFuchsiaIJTheme"),
+        new StyleEntry("Material Palenight", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMaterialOceanicIJTheme"),
+        new StyleEntry("Moonlight", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTMoonlightIJTheme"),
+        new StyleEntry("Arc Dark", DARK_THEME, null,
+                        "com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTAtomOneDarkIJTheme"),
+        new StyleEntry(SYSTEM, SYSTEM_THEME, null, UIManager.getSystemLookAndFeelClassName())
+        // Add more styles as needed
+    );
+
     // Constants for font definition
     private static final String UIMANAGER_FONT = "defaultFont";
     private static final String DEFAULT_FONT_STYLE = "defaultFont";
@@ -172,6 +167,7 @@ public class StyleManager {
     // Constraints for LaF styling
     private static final String LAF_STYLE = "Look_and_Feel";
     private static final String LAF_NAME = "name";
+    private static final String TABLE_ALTERNATE_ROW_COLOR = "Table.alternateRowColor";
 
     private static Font labelFont;
     private static Font systemFont;
@@ -182,8 +178,6 @@ public class StyleManager {
     private static Font smallLabelFont;
 
     private static Map<String,Properties> styles = new HashMap<>();
-
-    public static boolean isLightTheme;
     
     // Creates the built-in defaults.
     static {
@@ -228,34 +222,6 @@ public class StyleManager {
     }
     
     /**
-     * Gets available LAF.
-     */
-    public static String[] getAvailableLAF() {
-        return LAF_STYLES;
-    }
-    
-    /**
-     * Gets available light color LAF.
-     */
-    public static String[] getAvailableLightLAF() {
-        return LAF_LIGHT_STYLES;
-    }
-    
-    /**
-     * Gets available dark color LAF.
-     */
-    public static String[] getAvailableDarkLAF() {
-        return LAF_DARK_STYLES;
-    }
-    
-    /**
-     * Gets available system color LAF.
-     */
-    public static String[] getAvailableSystemLAF() {
-        return new String [] {SYSTEM};
-    }
-    
-    /**
      * Which LAF has been selected.
      */
     public static String getLAF() {
@@ -263,148 +229,71 @@ public class StyleManager {
     }
 
     /**
-	 * Sets the look and feel of the UI. This is fixed but need to be made variable
-	 * and moved to the UIConfig class.
+	 * Sets the look and feel of the UI.
 	 *
-	 * @param choice
+	 * @param style Name of the LAF style to apply.
+     * @return true if successful
 	 */
 	public static boolean setLAF(String style) {
         if (style == null) {
-            style = LIGHT;
+            style = LIGHT_RED;
         }
 
-        // Check for accent
-        String lafName = style;
-        Color accentColor = null;
-        int split = style.indexOf('-');
-        if (split > 0) {
-            String accentText = style.substring(split+1).trim();
-            accentColor = getColorByName(accentText);
-            lafName = style.substring(0, split).trim();
+        // Find style
+        final String finalStyle = style;
+        StyleEntry selectedStyle = STYLE_ENTRIES.stream()
+            .filter(se -> se.name().equals(finalStyle))
+            .findFirst()
+            .orElse(null);
+        if (selectedStyle == null) {
+            logger.warning( "Don't know LAF style " + style);
+            return false;
         }
 
-        String lafClass = null;
+        // Get name of LAF class
+        String lafClass = selectedStyle.lafClassName();
+
+        // What about setup method
+  
+        // Preamble settings
+        var accentColor = selectedStyle.accentColour();
+        applyAccentColor(accentColor);
+        calculateFonts();
+
+        // Apply LAF but clear any previously installed customised settings
+        UIManager.getLookAndFeelDefaults().put(TABLE_ALTERNATE_ROW_COLOR, null);
         try {
-            switch(lafName) {
-                case LIGHT: 
-                	isLightTheme = true;
-                    lafClass = FlatLightLaf.class.getName();
-                    break;
-	
-                case SOLARIZED_LIGHT:
-                	isLightTheme = true;
-                	lafClass = FlatMTSolarizedLightIJTheme.class.getName();
-                	FlatMTSolarizedLightIJTheme.setup();
-                    break;
-                    
-                case LIGHT_OWL:
-                	isLightTheme = true;
-	                lafClass = FlatMTLightOwlIJTheme.class.getName();
-	                FlatMTLightOwlIJTheme.setup();
-	                break;
-                
-                case DARK:
-                	isLightTheme = false;
-                    lafClass = FlatDarkLaf.class.getName();
-                    break;
-                    
-                case HIBERBEE_DARK:
-                	isLightTheme = false;
-                    lafClass = FlatHiberbeeDarkIJTheme.class.getName();
-                    FlatHiberbeeDarkIJTheme.setup();
-                    break;
-
-                case MONOKAI_DARK:
-                	isLightTheme = false;
-	                lafClass = FlatMTMonokaiProIJTheme.class.getName();
-	                FlatMTMonokaiProIJTheme.setup();
-	                break;
-	                
-                case NIGHT_OWL:
-                	isLightTheme = false;
-	                lafClass = FlatMTNightOwlIJTheme.class.getName();
-	                FlatMTNightOwlIJTheme.setup();
-	                break;
-	                
-                case SOLARIZED_DARK:
-                	isLightTheme = false;
-                	lafClass = FlatMTSolarizedDarkIJTheme.class.getName();
-                	FlatMTSolarizedDarkIJTheme.setup();
-                    break;
-                    
-                case GRADIANTO_DARK_FUCHSIA:
-                	isLightTheme = false;
-                	lafClass = FlatGradiantoDarkFuchsiaIJTheme.class.getName();
-                	FlatGradiantoDarkFuchsiaIJTheme.setup();
-                    break;
-                    
-                case MATERIAL_PALENIGHT: 
-                	isLightTheme = false;
-                	lafClass = FlatMTMaterialOceanicIJTheme.class.getName();
-                	FlatMTMaterialOceanicIJTheme.setup();
-                    break;
-                    
-                case MOONLIGHT: 
-                	isLightTheme = false;
-                	lafClass = FlatMTMoonlightIJTheme.class.getName();
-                	FlatMTMoonlightIJTheme.setup();
-                    break;
-                    
-                case ARC_DARK:
-                	isLightTheme = false;
-                	lafClass = FlatMTAtomOneDarkIJTheme.class.getName();
-                	FlatMTAtomOneDarkIJTheme.setup();
-                    break;
-                    
-                case SYSTEM:
-                	isLightTheme = true;
-                    lafClass = UIManager.getSystemLookAndFeelClassName();
-                    accentColor = null;   // No accent colouring for system
-                    break;
-                
-                default:
-                    logger.warning( "Don't know LAF style " + style);
-            }
-
-            if (lafClass != null) {
-                // Preamble settingfs
-                applyAccentColor(accentColor);
-                calculateFonts();
-
-                // Apply LAF but clear any previously installed customised settings
-                UIManager.getLookAndFeelDefaults().put("Table.alternateRowColor", null);
-                UIManager.setLookAndFeel(lafClass);
-                styles.get(LAF_STYLE).setProperty(LAF_NAME, style);
-
-                // Adjust colors on JTable
-                UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-                Color selBackground = (Color) defaults.get("Table.selectionBackground");
-                if (defaults.get("Table.alternateRowColor") == null) {
-                    Color tabBackground = (Color) defaults.get("Table.background");
-
-                    defaults.put("Table.alternateRowColor", getTableAlternativeColor(selBackground, tabBackground));
-                }
-
-                // Table Header is a shade off from the inactive select colour
-                if (accentColor != null) {
-                    HSLColor baseColor = new HSLColor(selBackground);
-                    Color tableHeader = baseColor.adjustShade(20F);
-                    defaults.put("TableHeader.background", new ColorUIResource(tableHeader));
-                    defaults.put("TableHeader.foreground", new ColorUIResource(Color.WHITE));
-                    // Make sure sort icon is noticable
-                    defaults.put("Table.sortIconColor", defaults.get("TableHeader.foreground"));
-                }
-                // Always use a grid on Tables
-                defaults.put("Table.showHorizontalLines", true);
-                defaults.put("Table.showVerticalLines", true);
-            }
+            UIManager.setLookAndFeel(lafClass);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException e) {
+            logger.log(Level.WARNING, "Failed to set LAF " + lafClass, e);
+            return false;
         }
-        catch (Exception e) {
-            // Many things can go wrong so catch all
-            logger.log(Level.SEVERE, "Problem setting LAF", e);
-            lafClass = null;
-        } 
-        return (lafClass != null);
+        styles.get(LAF_STYLE).setProperty(LAF_NAME, style);
+
+        // Adjust colors on JTable
+        UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+        Color selBackground = (Color) defaults.get("Table.selectionBackground");
+        if (defaults.get(TABLE_ALTERNATE_ROW_COLOR) == null) {
+            Color tabBackground = (Color) defaults.get("Table.background");
+
+            defaults.put(TABLE_ALTERNATE_ROW_COLOR, getTableAlternativeColor(selBackground, tabBackground));
+        }
+
+        // Table Header is a shade off from the inactive select colour
+        if (accentColor != null) {
+            HSLColor baseColor = new HSLColor(selBackground);
+            Color tableHeader = baseColor.adjustShade(20F);
+            defaults.put("TableHeader.background", new ColorUIResource(tableHeader));
+            defaults.put("TableHeader.foreground", new ColorUIResource(Color.WHITE));
+            // Make sure sort icon is noticable
+            defaults.put("Table.sortIconColor", defaults.get("TableHeader.foreground"));
+        }
+        // Always use a grid on Tables
+        defaults.put("Table.showHorizontalLines", true);
+        defaults.put("Table.showVerticalLines", true);
+
+        return true;
 	}
 
     /**
@@ -529,21 +418,7 @@ public class StyleManager {
      */
     private static void applyAccentColor(Color newColour) {
         // Set Accent color. Code taken from the description of the setSyetmColorGetter method
-        FlatLaf.setSystemColorGetter( name -> {
-            return name.equals( "accent" ) ? newColour : null;
-        } );
-    }
-
-    /**
-     * Looks up a color by name. Only supports the static entries in the Color class.
-     */
-    private static Color getColorByName(String name) {
-        try {
-            return (Color)Color.class.getField(name.toUpperCase()).get(null);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
-            logger.warning("Don't know Colour called style " + name);
-            return Color.RED;
-        }
+        FlatLaf.setSystemColorGetter( name -> name.equals( "accent" ) ? newColour : null);
     }
 
     /**

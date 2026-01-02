@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.docking;
 
 import java.awt.BorderLayout;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,7 +23,9 @@ import javax.swing.WindowConstants;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.ContentPanel;
+import com.mars_sim.ui.swing.MainMenuBar;
 import com.mars_sim.ui.swing.ContentPanel.Placement;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
@@ -48,8 +51,8 @@ public class DockingWindow extends JFrame
      * A blank panel used as an anchor for docking regions.
      */
     private static class Anchor extends JPanel implements Dockable {
-        public Anchor(String id) {
-            add(new JLabel("Blank " + id));
+        public Anchor() {
+            add(new JLabel());
         }
 
         @Override
@@ -75,6 +78,9 @@ public class DockingWindow extends JFrame
     private DockingWindow(Simulation sim) {
         this.sim = sim;
 
+        // Set up the look and feel library to be used
+		StyleManager.setStyles(Collections.emptyMap());
+
         // Setup the JFrame
         setTitle("Mars Simulation");
         setSize(1200, 800);
@@ -89,6 +95,8 @@ public class DockingWindow extends JFrame
         setLayout(new BorderLayout());
         add(dockingPanel, BorderLayout.CENTER);
         add(new ToolToolBar(this), BorderLayout.NORTH);
+
+        setJMenuBar(new MainMenuBar(this));
 
         // Add the blanks panels for docking anchors
         createBlank(Placement.CENTER);
@@ -143,7 +151,7 @@ public class DockingWindow extends JFrame
      * @param placement
      */
     private void createBlank(Placement placement) {
-        var anchor = new Anchor(placement.name());
+        var anchor = new Anchor();
         Docking.registerDockingAnchor(anchor);
         Docking.dock(anchor, this, getRegion(placement));
 
