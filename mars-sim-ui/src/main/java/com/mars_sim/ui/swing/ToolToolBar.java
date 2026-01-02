@@ -38,8 +38,8 @@ import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
-import com.mars_sim.ui.swing.tool.browser.BrowserWindow;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
+import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -159,7 +159,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(SettlementWindow.NAME, SettlementWindow.ICON);
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
-		addToolButton(BrowserWindow.NAME, BrowserWindow.ICON);
+		addToolButton(EntityBrowser.NAME, EntityBrowser.ICON);
 
 		addSeparator(new Dimension(20, 20));
 	}

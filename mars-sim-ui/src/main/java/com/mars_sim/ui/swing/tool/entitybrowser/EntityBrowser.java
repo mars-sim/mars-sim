@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
- * BrowserWindow.java
+ * EntityBrowser.java
  * @date 2025-12-30
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.tool.browser;
+package com.mars_sim.ui.swing.tool.entitybrowser;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -40,12 +40,12 @@ import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.MapSelector;
 
 /**
- * Browser window for exploring entities. It uses dynamic loading to avoid long load times and excessive memory consumption.
+ * The Entity Browser is for exploring entities. It uses dynamic loading to avoid long load times and excessive memory consumption.
  * The children of collapsed nodes are removed to free memory.
  * Large child lists are grouped by name ranges to avoid overwhelming the user.
  */
-public class BrowserWindow extends ContentPanel implements EntityManagerListener {
-    public static final String NAME = "browser";
+public class EntityBrowser extends ContentPanel implements EntityManagerListener {
+    public static final String NAME = "entitybrowser";
     public static final String ICON = "action/entitybrowser";
 
     // This values MUST match the Entity prefix used in message.properties
@@ -76,7 +76,7 @@ public class BrowserWindow extends ContentPanel implements EntityManagerListener
     private ScientificStudyManager scienceMgr;
     private TransportManager transportMgr;
 
-    public BrowserWindow(UIContext context) {
+    public EntityBrowser(UIContext context) {
         super(NAME, "Entity Browser", Placement.LEFT);
 
         this.context = context;

@@ -31,7 +31,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
-import com.mars_sim.ui.swing.tool.browser.BrowserWindow;
+import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 
 import io.github.andrewauclair.moderndocking.Dockable;
@@ -104,7 +104,7 @@ public class DockingWindow extends JFrame
         // Add default tools
         var emptyProps = new Properties();
         addContentPanel(new MonitorWindow(this, emptyProps));
-        addContentPanel(new BrowserWindow(this));
+        addContentPanel(new EntityBrowser(this));
     }
 
     /**
