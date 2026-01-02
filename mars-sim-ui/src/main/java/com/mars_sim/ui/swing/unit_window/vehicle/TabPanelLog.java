@@ -14,53 +14,52 @@ import java.util.stream.Collectors;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
 
 
 @SuppressWarnings("serial")
-public class TabPanelLog extends TabPanel {
+class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 
-	private static final String LOG_ICON = "log"; //$NON-NLS-1$
+	private static final String LOG_ICON = "log";
 	
 	private JLabel odometerTF;
 	private JLabel maintTF;
-	
-	/** The Vehicle instance. */
-	private Vehicle vehicle;
 
 	private LogPanel statusPanel;
 	
-	public TabPanelLog(Vehicle vehicle, MainDesktopPane desktop) {
+	public TabPanelLog(Vehicle vehicle, UIContext context) {
 		// Use TabPanel constructor.
 		super(
 			Msg.getString("TabPanelLog.title"),
 			ImageLoader.getIconByName(LOG_ICON),
 			Msg.getString("TabPanelLog.title"), //$NON-NLS-1$
-			desktop
+			context, vehicle
 		);
-		
-		this.vehicle = vehicle;
-
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
 		
+		var vehicle = getEntity();
+
         // Create spring layout dataPanel
         AttributePanel springPanel = new AttributePanel(2);
         content.add(springPanel, BorderLayout.NORTH);
 
-		odometerTF = springPanel.addTextField( Msg.getString("TabPanelLog.label.odometer"),
+		odometerTF = springPanel.addTextField(Msg.getString("Vehicle.odometer"),
 								  	StyleManager.DECIMAL_KM.format(vehicle.getOdometerMileage()), null);
 
 		maintTF = springPanel.addTextField(Msg.getString("TabPanelLog.label.maintDist"),
@@ -72,26 +71,26 @@ public class TabPanelLog extends TabPanel {
 		content.add(statusPanel, BorderLayout.CENTER);
 
 		// Update will refresh data
-		update();
+		statusPanel.refresh();
+		updateMileage();
 	}
 
-	@Override
-	public void update() {
+
+	private void updateMileage() {
+		var vehicle = getEntity();
 
 		// Update the odometer reading
 		odometerTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getOdometerMileage()));
 				
 		// Update distance last maintenance 
 		maintTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
-				
-		statusPanel.refresh();
 	}
 		
 	/**
 	 * Internal class used as model for the attribute table.
 	 */
-	private class LogPanel extends JHistoryPanel<Set<StatusType>> {
-		private static final ColumnSpec[] COLUMNS = {new ColumnSpec("Status", String.class)};
+	private static class LogPanel extends JHistoryPanel<Set<StatusType>> {
+		private static final ColumnSpec[] COLUMNS = {new ColumnSpec(Msg.getString("Vehicle.status"), String.class)};
 
 		LogPanel(History<Set<StatusType>> source) {
 			super(source, COLUMNS);
@@ -102,6 +101,19 @@ public class TabPanelLog extends TabPanel {
 			return value.stream()
 					.map(StatusType::getName)
 					.collect(Collectors.joining(", "));
+		}
+	}
+
+	/**
+	 * Monitor changes to Vehicle status or coordinates.
+	 */
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		if (EntityEventType.COORDINATE_EVENT.equals(event.getType())) {
+			updateMileage();
+		}
+		else if (EntityEventType.STATUS_EVENT.equals(event.getType())) {
+			statusPanel.refresh();
 		}
 	}
 }

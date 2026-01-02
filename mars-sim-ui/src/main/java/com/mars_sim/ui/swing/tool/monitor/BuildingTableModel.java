@@ -77,10 +77,10 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("BuildingTableModel.column.name"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
-		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.type"), String.class);
-		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("BuildingTableModel.column.category"), String.class);	
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Building.type"), String.class);
+		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("Building.category"), String.class);	
 		
 		COLUMNS[POWER_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.mode"), Object.class);		
 		COLUMNS[POWER_REQ]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.req"), Double.class);
@@ -122,15 +122,14 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	 * @throws Exception
 	 */
 	public BuildingTableModel() {
-		super(Msg.getString("BuildingTableModel.nameBuildings", ""),
-				"BuildingTableModel.countingBuilding", //$NON-NLS-1$
+		super(Msg.getString("Buildings.plural"),
 				COLUMNS);	
 		
 		setSettlementColumn(SETTLEMENT);
 	}
 
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 
 		var newBuildings = filter.stream()
 				.flatMap(s -> s.getBuildingManager().getBuildingSet().stream())

@@ -25,6 +25,9 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.logging.SimLogger;
@@ -38,17 +41,16 @@ import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.health.DeathInfo;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.components.StarRater;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
@@ -56,7 +58,8 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * history and current role.
  */
 @SuppressWarnings("serial")
-public class TabPanelCareer extends TabPanel implements ActionListener {
+class TabPanelCareer extends EntityTabPanel<Person>
+			implements ActionListener, EntityListener {
 
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(TabPanelCareer.class.getName());
@@ -66,13 +69,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private static final int RATING_DAYS = 7;
 
 	/** data cache */
-	private int solCache = 1;
 	private int solRatingSubmitted = -1;
-
-	/** Is UI constructed. */
-	private boolean firstNotification = true;
-	private boolean printLog;
-	private boolean printLog2;
 
 	private JobType jobCache;
 	private RoleType roleCache;
@@ -87,49 +84,26 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	private RoleHistoryTableModel roleHistoryTableModel;
 
 	private StarRater starRater;
-	private StarRater aveRater;
-
-	/** The Person instance. */
-	private Person person;
-	private Settlement settlement;
-
-	private MasterClock masterClock;
-
 	private JLabel changeNotice;
-
 
 	/**
 	 * Constructor.
 	 *
 	 * @param unit    {@link Unit} the unit to display.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param context {@link UIContext} the UI context.
 	 */
-	public TabPanelCareer(Person unit, MainDesktopPane desktop) {
+	public TabPanelCareer(Person unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			null,	
+			Msg.getString("TabPanelCareer.title"),	
 			ImageLoader.getIconByName(CAREER_ICON),
-			Msg.getString("TabPanelCareer.title"), //$NON-NLS-1$
-			desktop
+			null, context, unit
 		);
-
-		person = unit;
-		masterClock = getSimulation().getMasterClock();
-
-		if (person.getAssociatedSettlement() != null) {
-			settlement = person.getAssociatedSettlement();
-		}
-		else {
-			if (person.isBuried()) {
-				settlement = person.getBuriedSettlement();
-			}
-			else
-				settlement = person.getLocationTag().findSettlementVicinity();
-		}
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
+ 		StarRater aveRater;
 
 		boolean dead = false;
 		DeathInfo deathInfo = null;
@@ -138,6 +112,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		JPanel northPanel = new JPanel(new BorderLayout());
 		content.add(northPanel, BorderLayout.NORTH);
 
+		var person = getEntity();
 		Mind mind = person.getMind();
 
 		AttributePanel attrPanel = new AttributePanel(4);
@@ -152,37 +127,31 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		jobComboBox.setSelectedItem(jobCache);
 		jobComboBox.addActionListener(this);
 		jobComboBox.setRenderer(new NamedListCellRenderer());
-		jobComboBox.setToolTipText(Msg.getString("TabPanelCareer.jobType.tooltip"));
-		attrPanel.addLabelledItem(Msg.getString("TabPanelCareer.jobType"), jobComboBox);
+		attrPanel.addLabelledItem(Msg.getString("Person.job"), jobComboBox);
 
 		// Prepare role selector
 		roleCache = person.getRole().getType();
 		var roleModel = new DefaultComboBoxModel<RoleType>();
-		roleModel.addAll(settlement.getChainOfCommand().getGovernance().getAllRoles());
+		roleModel.addAll(person.getAssociatedSettlement().getChainOfCommand().getGovernance().getAllRoles());
 		roleComboBox = new JComboBox<>(roleModel);
 		roleComboBox.setSelectedItem(roleCache);
 		roleComboBox.addActionListener(this);
 		roleComboBox.setRenderer(new NamedListCellRenderer());
-		roleComboBox.setToolTipText(Msg.getString("TabPanelCareer.roleType.tooltip"));
-		attrPanel.addLabelledItem(Msg.getString("TabPanelCareer.roleType"), roleComboBox);
+		attrPanel.addLabelledItem(Msg.getString("Person.role"), roleComboBox);
 
 		// Create ratings
 		AssignmentHistory jobHistory = person.getJobHistory();
 		aveRater = new StarRater(5, calculateAveRating(jobHistory));
 		aveRater.setEnabled(false);
-		aveRater.setToolTipText(Msg.getString("TabPanelCareer.aveRater.tooltip"));
 		attrPanel.addLabelledItem("Overall Performance", aveRater);
 
 		// Create Star rating
 		starRater = new StarRater(5, 0, 0);
-		starRater.setToolTipText(Msg.getString("TabPanelCareer.starRater.tooltip"));//$NON-NLS-1$
 		starRater.addStarListener(selection -> {
 			if (starRater.isEnabled()) {
-
-				MarsTime mTime = masterClock.getMarsTime();
+				var mTime = getNow();
 				int sol = mTime.getMissionSol();
 				dateTimeRatingSubmitted = mTime.getTruncatedDateTimeStamp();
-				printLog = true;
 				displayNotice("Job Rating submitted on " + dateTimeRatingSubmitted, false);
 				starRater.setRating(selection);
 
@@ -217,7 +186,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 		} else
 			// Add checking for the status of Job Reassignment
-			checkJobReassignment(jobHistory);
+			checkJobReassignment(person, jobHistory);
 
 		// Prepare job title panel
 		JPanel historyPanel = new JPanel(new BorderLayout(0, 0));
@@ -278,7 +247,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			starRater.setSelection(0);
 			displayNotice("", false);
 		} else {
-			int solElapsed = masterClock.getMarsTime().getMissionSol();
+			int solElapsed = getNow().getMissionSol();
 
 			if (solElapsed > solRatingSubmitted + RATING_DAYS) {
 				// if 7 days have passed since the rating submitted, re-enable the star rater
@@ -287,13 +256,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				displayNotice("", false);
 				dateTimeRatingSubmitted = null;
 				solRatingSubmitted = -1;
-				printLog = true;
-				String s = "";
-				if (printLog2) {
-					s = "Job Rating open for review again.";
-					logger.info(person, s);
-					printLog2 = false;
-				}
 			} else {
 				starRater.setSelection(0);
 				starRater.setEnabled(false);
@@ -301,18 +263,14 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				if (dateTimeRatingSubmitted != null) {
 					s = "Job Rating last submitted on " + dateTimeRatingSubmitted;
 					displayNotice(s, false);
-					if (printLog) {
-						logger.info(person, s);
-						printLog = false;
-						printLog2 = true;
-					}
 				}
 			}
-
-			if (solCache != solElapsed) {
-				dateTimeRatingSubmitted = null;
-			}
 		}
+	}
+
+	private MarsTime getNow() {
+		MasterClock masterClock = getContext().getSimulation().getMasterClock();
+		return masterClock.getMarsTime();
 	}
 
 	private void displayNotice(String s, boolean error) {
@@ -339,13 +297,13 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	 * 
 	 * @param assignments
 	 */
-	private void checkJobReassignment(AssignmentHistory assignments) {
+	private void checkJobReassignment(Person person, AssignmentHistory assignments) {
 		List<HistoryItem<Assignment>> jobHistory = assignments.getJobAssignmentList();
 		int last = jobHistory.size() - 1;
 
 		AssignmentType status = jobHistory.get(last).getWhat().getStatus();
 
-		if (settlement.getChainOfCommand().getGovernance().needJobApproval()) {
+		if (person.getAssociatedSettlement().getChainOfCommand().getGovernance().needJobApproval()) {
 
 			if (status == AssignmentType.PENDING) {
 				statusCache = AssignmentType.PENDING;
@@ -353,11 +311,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				
 				String s = "Job Reassignment submitted on " + jobHistory.get(last).getWhen().getTruncatedDateTimeStamp();
 				changeNotice.setText(s);
-				
-				if (firstNotification) 
-					logger.info(person, s);
-				
-				firstNotification = false;
 			}
 
 			// Detect a change of status from pending to approved
@@ -376,7 +329,6 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 
 				} else if (status == AssignmentType.NOT_APPROVED) {
 					statusCache = AssignmentType.NOT_APPROVED;
-					logger.info(person, "Job reassignment reviewed and NOT approved.");
 
 					JobType selectedJob = jobHistory.get(last - 1).getWhat().getType();
 	
@@ -422,15 +374,35 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		changeNotice.setText("Job just changed to " + job);
 		jobCache = job;
  	}
+	
+	/**
+	 * Change of Job or Role triggers a refresh
+	 * @param event
+	 */
+	@Override
+	public void entityUpdate(EntityEvent event) {
+		if (EntityEventType.JOB_EVENT.equals(event.getType())
+			|| Role.ROLE_EVENT.equals(event.getType())) {
+
+			updateDetails();
+		}
+	}
+
+	/**
+	 * Refreshes the UI.
+	 */
+	@Override
+	public void refreshUI() {
+		updateDetails();
+	}
 
 	/**
 	 * Updates the info on this panel.
 	 */
-	@Override
-	public void update() {
-		boolean dead = false;
+	private void updateDetails() {
+		var person = getEntity();
 
-		dead = person.getPhysicalCondition().isDead();
+		var dead = person.getPhysicalCondition().isDead();
 
 		// Update job if necessary.
 		if (dead) {
@@ -450,15 +422,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			checkingJobRating(list);
 
 			// Check for the status of Job Reassignment
-			checkJobReassignment(list);
-
-			// check for the passing of each day
-			int solElapsed = masterClock.getMarsTime().getMissionSol();
-
-			// If the rating or job reassignment request is at least one day ago
-			if (solCache != solElapsed) {
-				solCache = solElapsed;
-			}
+			checkJobReassignment(person, list);
 
 			jobHistoryTableModel.update();
 			roleHistoryTableModel.update();
@@ -473,35 +437,32 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		Object source = event.getSource();
-		MainDesktopPane desktop = getDesktop();
-		
+		var person = getEntity();
+
 		if (source == roleComboBox) {
 			RoleType selectedRole = (RoleType) roleComboBox.getSelectedItem();
 			int box = -1;
 
 			if (selectedRole != roleCache) {
-				if ((selectedRole.isChief() || selectedRole.isCouncil())
-						&& (!roleCache.isChief() || !roleCache.isCouncil())) {
-					box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
+				if (isTopRole(selectedRole) && !isTopRole(roleCache)) {
+					box = JOptionPane.showConfirmDialog(getContext().getTopFrame(),
 							"Are you sure you want to promote the person's role from " 
 							 + roleCache + " to " + selectedRole.getName() + " ?");
 				}
 
-				else if ((roleCache.isChief() || roleCache.isCouncil())
-						&& (!selectedRole.isChief() || !selectedRole.isCouncil())) {
-					box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
+				else if (isTopRole(roleCache) && !isTopRole(selectedRole)) {
+					box = JOptionPane.showConfirmDialog(getContext().getTopFrame(),
 							"Are you sure you want to demote the person's role from "
 							 + roleCache + " to "  + selectedRole.getName() + " ?");
 				}
 
 				else {
-					box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
+					box = JOptionPane.showConfirmDialog(getContext().getTopFrame(),
 							"Are you sure you want to change the person's role from "
 							 + roleCache + " to " + selectedRole.getName() + " ?");
 				}
 
 				if (box == JOptionPane.YES_OPTION) {
-	
 					person.getRole().changeRoleType(selectedRole);
 					
 					logger.info(person, "Player just changed his/her role from " 
@@ -520,12 +481,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 			JobType selectedJob = (JobType)jobComboBox.getSelectedItem();
 
 			if (selectedJob != jobCache) {
-				int box = JOptionPane.showConfirmDialog(desktop.getMainWindow().getFrame(),
+				int box = JOptionPane.showConfirmDialog(getContext().getTopFrame(),
 						"Are you sure you want to change the person's job from "
 						 + jobCache + " to " + selectedJob.getName() + " ?");
 				
 				if (box == JOptionPane.YES_OPTION) {
-					considerJobChange(jobCache, selectedJob);
+					considerJobChange(person, jobCache, selectedJob);
 				}
 				else {
 					jobComboBox.setSelectedItem(jobCache.getName());
@@ -534,34 +495,37 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		}
 	}
 
+	private static boolean isTopRole(RoleType roleType) {
+		return roleType.isChief() || roleType.isCouncil();
+	}
+
 	/**
 	 * Determines if the job change request should be granted.
 	 *
-	 * @param jobStrCache
-	 * @param selectedJobStr
+	 * @param person Person in question
+	 * @param currentJob Current job
+	 * @param selectedJob Select new Job
 	 */
-	public void considerJobChange(JobType jobCache, JobType selectedJob) {
+	private void considerJobChange(Person person, JobType currentJob, JobType selectedJob) {
 
 		// if job is Politician, loads and set to the previous job and quit
-		if (jobCache == JobType.POLITICIAN) {
-			jobComboBox.setSelectedItem(jobCache);
+		if (currentJob == JobType.POLITICIAN) {
+			jobComboBox.setSelectedItem(currentJob);
 			displayNotice("Mayor cannot switch job arbitrarily!", true);
 		}
 
 		else if (selectedJob == JobType.POLITICIAN) {
-			jobComboBox.setSelectedItem(jobCache);
+			jobComboBox.setSelectedItem(currentJob);
 			displayNotice("Politician job is reserved for Mayor only.", true);
 		}
 
-		else if (jobCache != selectedJob) {
+		else if (currentJob != selectedJob) {
 
 			// if the population is beyond 4
-			if (settlement.getChainOfCommand().getGovernance().needJobApproval()) {
+			if (person.getAssociatedSettlement().getChainOfCommand().getGovernance().needJobApproval()) {
 				String s = "Job Reassignment submitted on " + MarsTimeFormat.getTruncatedDateTimeStamp(
-											masterClock.getMarsTime());
+											getNow());
 				displayNotice(s, false);
-				logger.info(person, s);
-				firstNotification = true;
 
 				AssignmentHistory jh = person.getJobHistory();
 
@@ -570,7 +534,7 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				jh.saveJob(selectedJob, JobUtil.USER, statusCache, null);
 				// Set the combobox selection back to its previous job type for the time being
 				// until the reassignment is approved
-				jobComboBox.setSelectedItem(jobCache);
+				jobComboBox.setSelectedItem(currentJob);
 				// disable the combobox so that user cannot submit job reassignment for a period
 				// of time
 				jobComboBox.setEnabled(false);
@@ -586,24 +550,12 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 				person.getMind().reassignJob(selectedJob, true, JobUtil.USER, statusCache,
 						JobUtil.USER);
 
-				jobCache = selectedJob;
-
 				// updates the jobHistoryList in jobHistoryTableModel
 				jobHistoryTableModel.update();
 			}
 		}
 		else
-			jobComboBox.setSelectedItem(jobCache);
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		jobComboBox = null;
-		roleComboBox = null;
-		jobHistoryTableModel = null;
-		starRater = null;
+			jobComboBox.setSelectedItem(currentJob);
 	}
 
 	/**
@@ -646,8 +598,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
-				case 0 -> Msg.getString("TabPanelCareer.column.time"); //$NON-NLS-1$
-				case 1 -> "Role";
+				case 0 -> Msg.getString("Time");
+				case 1 -> Msg.getString("Person.role");
 				default -> null;
 			};
 		}
@@ -713,8 +665,8 @@ public class TabPanelCareer extends TabPanel implements ActionListener {
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
-				case 0 -> Msg.getString("TabPanelCareer.column.time"); //$NON-NLS-1$
-				case 1 -> Msg.getString("TabPanelCareer.column.jobType"); //$NON-NLS-1$
+				case 0 -> Msg.getString("Time"); //$NON-NLS-1$
+				case 1 -> Msg.getString("Person.job"); //$NON-NLS-1$
 				case 2 -> Msg.getString("TabPanelCareer.column.initiated"); //$NON-NLS-1$
 				case 3 -> Msg.getString("TabPanelCareer.column.status"); //$NON-NLS-1$
 				case 4 -> Msg.getString("TabPanelCareer.column.authorized"); //$NON-NLS-1$

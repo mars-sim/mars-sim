@@ -18,6 +18,7 @@ import javax.swing.SwingConstants;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
@@ -31,6 +32,7 @@ import com.mars_sim.ui.swing.unit_window.TabPanel;
  * It automatically is notified of EntityEvent and will forward them to any TabPanels that are also EntityListeners.
  * It also forwards ClockPulse events to any TabPanels that are also TemporalComponents.
  */
+@SuppressWarnings("serial")
 public class EntityContentPanel<T extends Entity> extends ContentPanel
     implements ConfigurableWindow, EntityListener {
 
@@ -66,14 +68,17 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 			if (!newTab.isUIDone()) {
 				newTab.initializeUI();
 			}
+            else {
+                newTab.refreshUI();
+            }
 		});
 
         var dim = new Dimension(WIDTH, HEIGHT);
         setMinimumSize(dim);
         setPreferredSize(dim);
 
-        // Temp hack until all listeners are consolidated
-        if (entity instanceof Unit u) {
+        // Some Entities are MonitorableEntities and can send events
+        if (entity instanceof MonitorableEntity u) {
             u.addEntityListener(this);
         }
     }
@@ -97,6 +102,11 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      * @param props Any initial properties for the window.
      */
     protected void applyProps(Properties props) {
+        // Add the listener panel if the entity is MonitorableEntity
+        if (entity instanceof MonitorableEntity m) {
+            addTabPanel(new ListenerTabPanel(m, context));
+        }
+        
         String selectedTab = props.getProperty(SELECTED_TAB);
         if (selectedTab != null) {
             for (int i = 0; i < tabPanels.size(); i++) {
@@ -129,7 +139,12 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	public Properties getUIProps() {
 		Properties result = new Properties();
 		result.setProperty(UNIT_NAME, entity.getName());
-		result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName().toUpperCase());
+        if (entity instanceof Unit u) {
+            result.setProperty(UNIT_TYPE, u.getUnitType().name());
+        }
+        else { 
+		    result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName().toUpperCase());
+        }
         var selected = getSelected();
         if (selected != null) {
 		    result.setProperty(SELECTED_TAB, selected.getTabTitle());
@@ -151,14 +166,13 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     }
 
     /**
-     * Pass the pulse on to any tabs that are also TemporalComponents.
+     * Pass the pulse on to the selected tab if it is a TemporalComponent.
      * @param pulse Incoming pulse.
      */
     @Override
     public void clockUpdate(ClockPulse pulse) {
-        for(var t : tabPanels) {
-            if (t instanceof TemporalComponent el && t.isUIDone())
-                el.clockUpdate(pulse);
+        if (getSelected() instanceof TemporalComponent tc) {
+            tc.clockUpdate(pulse);
         }
     }
 
@@ -176,12 +190,17 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 
     @Override
     public void destroy() {
-        // Temp hack until all listeners are consolidated
-        if (entity instanceof Unit u) {
+        // Some Entities are MonitorableEntities and can send events
+        if (entity instanceof MonitorableEntity u) {
             u.removeEntityListener(this);
         }
         tabPanels.forEach(t -> t.destroy());
 
         super.destroy();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " : " + entity.getName();
     }
 }

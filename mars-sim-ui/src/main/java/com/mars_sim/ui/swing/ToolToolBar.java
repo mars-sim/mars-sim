@@ -39,21 +39,22 @@ import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
+import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
-import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.MarsCalendarDisplay;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
+import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
- * only be one instance and it is contained in the {@link MainWindow} instance.
+ * only be one instance and it is contained in the top level window.
  */
 public class ToolToolBar extends JToolBar implements ActionListener {
 
@@ -71,13 +72,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm");
 
 	private static final String SOL = "Sol:";
-	private static final String DISPLAY_HELP = "display-help";
 	private static final String MAIN_WIKI = "main-wiki";
 	
 	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //$NON-NLS-1$
 	
-	/** Main window that contains this toolbar. */
-	private MainWindow parentMainWindow;
+	private UIContext context;
 
 	private MarsCalendarDisplay calendarDisplay; 
 	
@@ -96,19 +95,17 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * 
 	 * @param parentMainWindow the main window pane
 	 */
-	public ToolToolBar(MainWindow parentMainWindow) {
+	public ToolToolBar(UIContext context) {
 
 		// Use JToolBar constructor
 		super();
 
 		// Initialize data members
-		this.parentMainWindow = parentMainWindow;
-		masterClock = parentMainWindow.getDesktop().getSimulation().getMasterClock();
+		this.context = context;
+		masterClock = context.getSimulation().getMasterClock();
 
 		// Set name
 		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
-
-//		setFloatable(true);
 
 		setRollover(true);
 		
@@ -141,7 +138,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		// Add orbit viewer
 		addToolButton(OrbitViewer.NAME, "Orbit Window", OrbitViewer.ICON);
 		// Add guide button
-		addToolButton(DISPLAY_HELP, "Help Tool", GuideWindow.guideIcon);
+		addToolButton(GuideWindow.NAME, "Help Tool", GuideWindow.guideIcon);
 		
 		addSeparator(new Dimension(20, 20));
 		
@@ -160,9 +157,9 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(MonitorWindow.NAME, MonitorWindow.ICON);
 		addToolButton(MissionWindow.NAME, MissionWindow.ICON);
 		addToolButton(SettlementWindow.NAME, SettlementWindow.ICON);
-		addToolButton(ScienceWindow.NAME, ScienceWindow.ICON);
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
+		addToolButton(EntityBrowser.NAME, EntityBrowser.ICON);
 
 		addSeparator(new Dimension(20, 20));
 	}
@@ -324,15 +321,15 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		switch(event.getActionCommand()) {
 			case SAVE:
-				parentMainWindow.saveSimulation(true);
+				SaveDialog.create(context.getTopFrame(), context.getSimulation(), true);
 				break;
 
 			case SAVEAS:
-				parentMainWindow.saveSimulation(false);
+				SaveDialog.create(context.getTopFrame(), context.getSimulation(), false);
 				break;
 
 			case EXIT:
-				parentMainWindow.exitSimulation();
+				context.requestEndSimulation();
 				break;
 			
 			case MARSCAL:
@@ -348,17 +345,13 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				JDialog popOver = SwingHelper.createPopupWindow(calendarPane, -1, -1, -75, 20);
 				popOver.setVisible(true);
 				break;
-			
-			case DISPLAY_HELP:
-				parentMainWindow.showHelp(null); // Default help page
-				break;
 				
 			case MAIN_WIKI:
 				SwingHelper.openBrowser(WIKI_URL);
 				break;
 				
 			default:
-				parentMainWindow.getDesktop().openToolWindow(event.getActionCommand());
+				context.openToolWindow(event.getActionCommand());
 				break;
 		}
 	}

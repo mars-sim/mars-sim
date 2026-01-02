@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -65,6 +66,7 @@ public abstract class MissionProject implements Mission {
         protected void stepStarted(ProjectStep activeStep) {
             log.addEntry(activeStep.getDescription());
             stepStarted = log.getLastEntry().getTime();
+            fireMissionUpdate(Mission.PHASE_EVENT, null);
         }
 
         @Override
@@ -74,12 +76,9 @@ public abstract class MissionProject implements Mission {
     }
 
     // Mission score for Worker
-    private static record Candidate(Worker worker, double score) {};
+    private static record Candidate(Worker worker, double score) {}
 
     private static final SimLogger logger = SimLogger.getLogger(MissionProject.class.getName());
-
-    // Key for the user aborted mission
-    private static final String MISSION_ABORT = "Mission.status.abortedReason";
 
 	public static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
     public static final MissionStatus LOW_SETTLEMENT_POPULATION = new MissionStatus("Mission.status.lowPopulation");
@@ -251,7 +250,6 @@ public abstract class MissionProject implements Mission {
 
 			return (!onMission && !healthProblem);
 		}
-        // TODO need Robot selector
 		return false;
 	}
 
@@ -326,6 +324,8 @@ public abstract class MissionProject implements Mission {
     public void addMember(Worker member) {
         members.add(member);
         signedUp.add(member);
+
+        fireMissionUpdate(Mission.ADD_MEMBER_EVENT, member);
     }
 
     @Override
@@ -335,6 +335,8 @@ public abstract class MissionProject implements Mission {
             if (member instanceof Person p) {
                 p.getShiftSlot().setOnCall(false);
             }
+
+            fireMissionUpdate(Mission.REMOVE_MEMBER_EVENT, member);
         }
     }
 
@@ -429,6 +431,38 @@ public abstract class MissionProject implements Mission {
 			}
 		}
     }
+
+	/**
+	 * Gets an unmodifiable set of the active listeners on this entity.
+	 * 
+	 * @return unmodifiable set of entity listeners.
+	 */
+	@Override
+	public Set<EntityListener> getEntityListeners() {
+		if (listeners == null || listeners.isEmpty()) {
+			return Collections.emptySet();
+		}
+		synchronized (listeners) {
+			return Collections.unmodifiableSet(listeners);
+		}
+	}
+
+	/**
+	 * Fires an entity update event.
+	 *
+	 * @param eventType the update type.
+	 * @param target    the event target or null if none.
+	 */
+	protected final void fireMissionUpdate(String eventType, Object target) {
+		if (listeners != null) {
+			synchronized (listeners) {
+				var event = new EntityEvent(this, eventType, target);
+				for (EntityListener l : listeners) {
+					l.entityUpdate(event);
+				}
+			}
+		}
+	}
 
     /**
      * Add an entry to the mission log

@@ -221,7 +221,7 @@ public class ConstructionMission extends AbstractMission {
 		v.setReservedForMission(true);
 		v.setMission(this);
 		
-		fireMissionUpdate(AbstractVehicleMission.VEHICLE_EVENT);
+		fireMissionUpdate(VehicleMission.VEHICLE_EVENT);
 	}
 	
 	/**
@@ -532,6 +532,6 @@ public class ConstructionMission extends AbstractMission {
 	
 	@Override
 	public Settlement getAssociatedSettlement() {
-		return objective.getSite().getAssociatedSettlement();
+		return getStartingPerson().getAssociatedSettlement();
 	}
 }

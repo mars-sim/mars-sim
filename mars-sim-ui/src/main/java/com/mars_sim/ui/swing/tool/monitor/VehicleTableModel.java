@@ -85,23 +85,23 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec("Name", String.class);
-		COLUMNS[TYPE] = new ColumnSpec("Type", String.class);
-		COLUMNS[MODEL] = new ColumnSpec("Model", String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Vehicle.type"), String.class);
+		COLUMNS[MODEL] = new ColumnSpec(Msg.getString("Vehicle.model"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec("Location", String.class);
-		COLUMNS[DESTINATION] = new ColumnSpec("Next Waypoint", String.class);
+		COLUMNS[DESTINATION] = new ColumnSpec("Destination", String.class);
 		COLUMNS[DESTDIST] = new ColumnSpec("Dist. to next [km]", Double.class);
-		COLUMNS[MISSION] = new ColumnSpec("Mission", String.class);
+		COLUMNS[MISSION] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
 		COLUMNS[CREW] = new ColumnSpec("Crew", Integer.class);
-		COLUMNS[DRIVER] = new ColumnSpec("Driver", String.class);
-		COLUMNS[STATUS] = new ColumnSpec("Status", String.class);
+		COLUMNS[DRIVER] = new ColumnSpec(Msg.getString("Vehicle.operator"), String.class);
+		COLUMNS[STATUS] = new ColumnSpec(Msg.getString("Vehicle.status"), String.class);
 		COLUMNS[BEACON] = new ColumnSpec("Beacon", String.class);
 		COLUMNS[RESERVED] = new ColumnSpec("Reserved", String.class);
-		COLUMNS[SPEED] = new ColumnSpec("Speed", Double.class);
+		COLUMNS[SPEED] = new ColumnSpec(Msg.getString("Vehicle.speed"), Double.class);
 		COLUMNS[MALFUNCTION] = new ColumnSpec("Malfunction", String.class);
 		COLUMNS[BATTERY] = new ColumnSpec("Battery", String.class);
-		COLUMNS[FUEL] = new ColumnSpec("Fuel", String.class);
+		COLUMNS[FUEL] = new ColumnSpec(Msg.getString("Vehicle.fuelType"), String.class);
 		COLUMNS[METHANE] = new ColumnSpec("Methane", Double.class);
 		COLUMNS[METHANOL] = new ColumnSpec("Methanol", Double.class);
 		COLUMNS[OXYGEN] = new ColumnSpec("Oxygen", Double.class);
@@ -125,8 +125,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	
 	public VehicleTableModel() {
 		super(
-			Msg.getString("VehicleTableModel.tabName"),
-			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
+			Msg.getString("Vehicle.plural"),
 			COLUMNS
 		);
 
@@ -139,7 +138,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	 * Filters the vehicles to a settlement.
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		
 		Collection<Vehicle> vehicles = filter.stream()
 				.flatMap(s -> s.getAllAssociatedVehicles().stream())
@@ -357,6 +356,8 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		           EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT.equals(eventType)) {
 			if (((Unit)target).getUnitType() == UnitType.PERSON)
 				columnNum = CREW;
+		} else if (Vehicle.MISSION_EVENT.equals(eventType)) {
+			columnNum = MISSION;
 		} else if (EntityEventType.OPERATOR_EVENT.equals(eventType)) {
 			columnNum = DRIVER;
 		} else if (EntityEventType.STATUS_EVENT.equals(eventType)) {

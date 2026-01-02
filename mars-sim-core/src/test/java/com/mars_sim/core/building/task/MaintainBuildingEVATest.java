@@ -1,13 +1,10 @@
 package com.mars_sim.core.building.task;
 import static com.mars_sim.core.test.SimulationAssertions.assertGreaterThan;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -17,6 +14,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EVAOperationTest;
+import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.time.MasterClock;
 
 public class MaintainBuildingEVATest extends MarsSimUnitTest {

@@ -31,6 +31,8 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -40,7 +42,6 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
@@ -57,7 +58,6 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
-import com.mars_sim.ui.swing.tool.science.ScienceWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
@@ -265,7 +265,6 @@ public class MainDesktopPane extends JDesktopPane
 		getToolWindow(SearchWindow.NAME, true);
 		getToolWindow(TimeTool.NAME, true);
 		getToolWindow(SettlementWindow.NAME, true);
-		getToolWindow(ScienceWindow.NAME, true);
 		getToolWindow(MonitorWindow.NAME, true);
 		getToolWindow(MissionWindow.NAME, true);
 		getToolWindow(ResupplyWindow.NAME, true);
@@ -304,7 +303,8 @@ public class MainDesktopPane extends JDesktopPane
 			return null;
 		}
 
-		ContentPanel content = ToolRegistry.getTool(toolName, this);
+		var toolProps = mainWindow.getConfig().getInternalWindowProps(toolName);
+		ContentPanel content = ToolRegistry.getTool(toolName, this, toolProps);
 		if (content == null) {
 			logger.warning("No tool called " + toolName);
 			return null;
@@ -436,11 +436,6 @@ public class MainDesktopPane extends JDesktopPane
 			var cw = openToolWindow(ResupplyWindow.NAME);
 			((ResupplyWindow)cw).openTransportable(t);
 		}
-		else if (entity instanceof ScientificStudy s) {
-			// This is a holding code until all tools are mograted
-			var cw = openToolWindow(ScienceWindow.NAME);
-			((ScienceWindow)cw).setScientificStudy(s);
-		}
 		else {
 			openEntityPanel(entity, null);
 		}
@@ -476,7 +471,8 @@ public class MainDesktopPane extends JDesktopPane
 		}
 				
 		// Build a new window
-		var panel = EntityContentFactory.getEntityPanel(entity, this, initProps);
+		var panelProps = (initProps != null) ? initProps.props() : new Properties();
+		var panel = EntityContentFactory.getEntityPanel(entity, this, panelProps);
 		if (panel != null) {
 			var cw = new ContentWindow(this, panel);
 			// Set internal frame listener
@@ -844,6 +840,23 @@ public class MainDesktopPane extends JDesktopPane
 				w.destroy();
 			}
 			toolWindows = null;
+		}
+	}
+
+	/**
+	 * Prompts user to exit simulation.
+	 */
+	@Override
+	public void requestEndSimulation() {
+		if (!sim.isSavePending()) {
+			int reply = JOptionPane.showConfirmDialog(getTopFrame(),
+					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
+			if (reply == JOptionPane.YES_OPTION) {
+
+				getTopFrame().setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+				mainWindow.exitSimulation();
+			}
 		}
 	}
 }

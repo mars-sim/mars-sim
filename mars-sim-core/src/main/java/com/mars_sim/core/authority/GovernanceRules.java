@@ -16,6 +16,7 @@ import com.mars_sim.core.person.ai.role.RoleType;
  * It defines the RoleTypes that can be assigned, who the leader is, and whether job assignments
  * need approval.
  */
+@SuppressWarnings("serial")
 public class GovernanceRules implements Serializable {
 
 

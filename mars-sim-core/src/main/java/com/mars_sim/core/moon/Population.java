@@ -8,12 +8,10 @@
 package com.mars_sim.core.moon;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.project.ColonyResearcher;
 import com.mars_sim.core.moon.project.ColonySpecialist;
@@ -202,13 +200,7 @@ public class Population implements Serializable, Temporal {
 			
 		}
 		
-		for (Colonist c: colonists) {
-			if (c instanceof ColonyResearcher r) {
-				r.timePassing(pulse);
-			} else if (c instanceof ColonySpecialist r) {
-				r.timePassing(pulse);
-			}
-		}
+		colonists.forEach(r -> r.timePassing(pulse));
 		
 		return false;
 	}
@@ -217,24 +209,11 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Adds a researcher.
 	 */
-	public void addOneResearcher() {
-		Nation nation = colony.getNation();
+	private void addOneResearcher() {
 		
-		if (nation == null) {
-			colonists.add(new ColonyResearcher("R" 
+		colonists.add(new ColonyResearcher("R" 
 					+ (int)numResearchers, colony));
-		}
-		else {
-			Colonist colonist = nation.getOneColonist();
-			if (colonist != null) {
-				colonists.add(colonist);
-			}
-			else {
-				colonists.add(new ColonyResearcher("R" 
-					+ (int)numResearchers, colony));
-			}
-		}
-		
+
 		// Pull back the growth rate as a researcher has just been added
 		growthRateResearchers = growthRateResearchers * .9;
 	}
@@ -242,23 +221,9 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Adds an engineer.
 	 */
-	public void addOneEngineer() {
-		Nation nation = colony.getNation();
-		
-		if (nation == null) {
-			colonists.add(new ColonySpecialist("E" 
+	private void addOneEngineer() {		
+		colonists.add(new ColonySpecialist("E" 
 					+ (int)numEngineers, colony));
-		}
-		else {
-			Colonist colonist = nation.getOneColonist();
-			if (colonist != null) {
-				colonists.add(colonist);
-			}
-			else {
-				colonists.add(new ColonySpecialist("E" 
-					+ (int)numEngineers, colony));
-			}
-		}
 		
 		// Pull back the growth rate as an engineer has just been added
 		growthRateEngineers = growthRateEngineers * .9;
@@ -267,30 +232,15 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Removes a researcher.
 	 */
-	public void removeOneResearcher() {
+	private void removeOneResearcher() {
 	
-		int rand = RandomUtil.getRandomInt(colonists.size() - 1);
-	
-		List<Colonist> list = new ArrayList<>(colonists);
-		
-		Colonist c = list.get(rand);
-		
-		colonists.remove(c);
+		var col = colonists.stream().filter(ColonyResearcher.class::isInstance).findAny();
+		if (col.isEmpty()) {
+			logger.warning("No researcher to remove!");
+			return;
+		}
+		colonists.remove(col.get());
 
-		Nation nation = colony.getNation();
-		
-		if (nation == null) {
-//			String countryName = colony.getAuthority().getOneCountry();
-//			logger.warning("Colony: " + colony.getName() 
-//							+ "  Sponsor: " + colony.getAuthority().getName()
-//							+ "  Country: " + countryName);
-		}
-		else {
-			// Go back to one's nation pool
-			nation.addColonist(c);
-			c.setColony(null);	
-		}
-		
 		// Speed up the growth rate as a researcher has just been removed
 		growthRateResearchers = growthRateResearchers * .9;		
 	}
@@ -298,29 +248,14 @@ public class Population implements Serializable, Temporal {
 	/**
 	 * Removes an engineer.
 	 */
-	public void removeOneEngineer() {
+	private void removeOneEngineer() {
 	
-		int rand = RandomUtil.getRandomInt(colonists.size() - 1);
-	
-		List<Colonist> list = new ArrayList<>(colonists);
-		
-		Colonist c = list.get(rand);
-		
-		colonists.remove(c);
-
-		Nation nation = colony.getNation();
-		
-		if (nation == null) {
-//			String countryName = colony.getAuthority().getOneCountry();
-//			logger.warning("Colony: " + colony.getName() 
-//							+ "  Sponsor: " + colony.getAuthority().getName()
-//							+ "  Country: " + countryName);
+		var col = colonists.stream().filter(ColonySpecialist.class::isInstance).findAny();
+		if (col.isEmpty()) {
+			logger.warning("No engineer to remove!");
+			return;
 		}
-		else {
-			// Go back to one's nation pool
-			nation.addColonist(c);
-			((ColonySpecialist)c).setColony(null);	
-		}
+		colonists.remove(col.get());
 		
 		// Speed up the growth rate as an engineer has just been removed
 		growthRateEngineers = growthRateEngineers * .9;		
@@ -332,13 +267,10 @@ public class Population implements Serializable, Temporal {
 	 * @return
 	 */
 	public Set<ColonyResearcher> getResearchers() {
-		Set<ColonyResearcher> set = new HashSet<>();
-		for (Colonist c: colonists) {
-			if (c instanceof ColonyResearcher r) {
-				set.add(r);
-			}
-		}
-		return set;
+		return colonists.stream()
+				.filter(ColonyResearcher.class::isInstance)
+				.map(ColonyResearcher.class::cast)
+				.collect(Collectors.toSet());
 	}
 	
 	public int getNumLodge() {

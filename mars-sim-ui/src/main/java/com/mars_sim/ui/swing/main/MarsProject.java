@@ -31,6 +31,7 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
+import com.mars_sim.ui.swing.docking.DockingWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 
 /**
@@ -44,6 +45,7 @@ public class MarsProject {
 	private static final String NOAUDIO = "noaudio";
 	private static final String DISPLAY_HELP = "help";
 	private static final String NEW = "new";
+	private static final String DOCKINGUI = "dockingui";
 	private static final String CLEANUI = "cleanui";
 	private static final String SANDBOX = "sandbox";
 	private static final String SITE_EDITOR = "site";
@@ -54,10 +56,12 @@ public class MarsProject {
 	private boolean useCleanUI = false;
 	private boolean useSiteEditor;
 	private boolean isSandbox = false;
+	private boolean useDockingUI = false;
 
 	private Simulation sim;
 
 	private String simFile;
+
 
 	/**
 	 * Constructor
@@ -113,7 +117,12 @@ public class MarsProject {
 
 			// Build main window
 			splashWindow.setStatusMessage("Starting the Main Window...");
-			new MainWindow(useCleanUI, sim);
+			if (useDockingUI) {
+				DockingWindow.create(sim);
+			}
+			else {
+				new MainWindow(useCleanUI, sim);
+			}
 
 			// Switch from Splash to main window as one
 			SwingUtilities.invokeLater(splashWindow::remove);
@@ -206,6 +215,8 @@ public class MarsProject {
 				.desc("Disable the audio").get());
 		options.addOption(Option.builder(CLEANUI)
 				.desc("Disable loading stored UI configurations").get());
+		options.addOption(Option.builder(DOCKINGUI)
+				.desc("Enable the docking UI").get());
 		options.addOption(Option.builder(SANDBOX)
 				.desc("Start in Sandbox Mode").get());
 		options.addOption(Option.builder(NEW)
@@ -231,7 +242,8 @@ public class MarsProject {
 			}
 			useNew = line.hasOption(NEW);
 			useCleanUI = line.hasOption(CLEANUI);
-			
+			useDockingUI = line.hasOption(DOCKINGUI);
+
 			if (line.hasOption(LOAD_ARG)) {
 				simFile = line.getOptionValue(LOAD_ARG);
 				if (simFile == null) {
@@ -319,30 +331,7 @@ public class MarsProject {
 		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
 		System.exit(1);
 	}
-
-
-	/**
-	 * Runs the main window.
-	 * 
-	 * @param cleanUI
-	 */
-	// private void setupMainWindow(boolean cleanUI) {
-	// 	while (true) {
-	//         try {
-	// 			TimeUnit.MILLISECONDS.sleep(1000);
-	// 			if (!sim.isUpdating()) {
-	// 				logger.config("Starting the Main Window...");
-	// 				new MainWindow(cleanUI, sim);
-	// 				break;
-	// 			}
-	//         } catch (InterruptedException e) {
-	// 			logger.log(Level.WARNING, "Trouble starting Main Window. ", e); 
-	// 			// Restore interrupted state...
-	// 		    Thread.currentThread().interrupt();
-	//         }
-	// 	}
-	// }
-
+	
 	/**
 	 * The main starting method for the application.
 	 *

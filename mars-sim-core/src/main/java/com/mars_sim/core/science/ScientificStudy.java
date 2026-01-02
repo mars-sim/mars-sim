@@ -8,6 +8,7 @@ package com.mars_sim.core.science;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -114,8 +115,8 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	private Map<Integer, CollaboratorStats> collaborators;
 	/** A map of invited researchers.  */
 	private Map<Integer, Boolean> invitedResearchers;
-	/** A list of listeners for this scientific study. */
-	private transient List<EntityListener> listeners;
+	/** A set of listeners for this scientific study. */
+	private transient Set<EntityListener> listeners;
 	/** Major topics covered by this research. */
 	private List<String> topics;
 
@@ -178,7 +179,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		primaryStats = new CollaboratorStats(science);
 		proposalWorkTime = 0D;
 		peerReviewStartTime = null;
-		listeners = new ArrayList<>();
+		listeners = new HashSet<>();
 		topics = new ArrayList<>();
 	}
 
@@ -949,9 +950,8 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	@Override
 	public synchronized void addEntityListener(EntityListener newListener) {
 		if (listeners == null)
-			listeners = new ArrayList<>();
-		if (!listeners.contains(newListener))
-			listeners.add(newListener);
+			listeners = new HashSet<>();
+		listeners.add(newListener);
 	}
 
 	/**
@@ -961,10 +961,21 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	 */
 	@Override
 	public synchronized void removeEntityListener(EntityListener oldListener) {
-		if (listeners == null)
-			listeners = new ArrayList<>();
-		if (listeners.contains(oldListener))
+		if (listeners != null)
 			listeners.remove(oldListener);
+	}
+
+	/**
+	 * Gets an unmodifiable set of the active listeners on this entity.
+	 * 
+	 * @return unmodifiable set of entity listeners.
+	 */
+	@Override
+	public synchronized Set<EntityListener> getEntityListeners() {
+		if (listeners == null || listeners.isEmpty()) {
+			return Collections.emptySet();
+		}
+		return Collections.unmodifiableSet(listeners);
 	}
 
 	/**

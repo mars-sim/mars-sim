@@ -2183,7 +2183,18 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of ERV-I -->
 
-
+	<!-- A nuclear TEC (thermionic converter) generator is a type of power system that converts heat from radioactive 
+	decay directly into electricity using thermionic emission. It consists of a hot electrode that thermionically 
+	emits electrons across a space-charge barrier to a cooler electrode, producing a useful power output.
+ 	
+ 	This process relies on the Seebeck effect, where a temperature difference between two dissimilar materials 
+ 	generates an electric current. Unlike traditional power systems that use turbines, TEC generators have no moving 
+ 	parts, making them highly reliable for long-duration missions.
+ 
+ 	They are distinct from fission reactors, which use chain reactions, as TEC generators rely on the spontaneous 
+ 	decay of radioactive isotopes like plutonium-238. While less efficient than turbine-based systems, their 
+ 	simplicity and durability make them suitable for applications such as deep space exploration. -->
+ 	
 	<building type="TOPAZ-2A Reactor" width="4.0" length="6.0" north-south-alignment="length" base-level="0"
 		wear-lifetime="3340000" maintenance-time="200" room-temperature="0" base-mass="4000">
 		<description>The TOPAZ-2A Reactor is a minor improvement of the TOPAZ-II reactor 

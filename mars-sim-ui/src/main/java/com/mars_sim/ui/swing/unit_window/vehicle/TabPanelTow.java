@@ -10,39 +10,38 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Towing;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
 @SuppressWarnings("serial")
-public class TabPanelTow extends TabPanel {
+class TabPanelTow extends EntityTabPanel<Vehicle> 
+		implements EntityListener {
 
 	private static final String TOW_ICON = "tow";
 	
 	// Data members
 	private EntityLabel towingLabel;
 	private EntityLabel towedByLabel;
-	
-	/** The Vehicle instance. */
-	private Vehicle vehicle;
 
-	public TabPanelTow(Vehicle unit, MainDesktopPane desktop) {
+	public TabPanelTow(Vehicle unit, UIContext context) {
 		// Use TabPanel constructor.
 		super(
-			null,
+			Msg.getString("TabPanelTow.title"),
 			ImageLoader.getIconByName(TOW_ICON),
-			Msg.getString("TabPanelTow.title"), //$NON-NLS-1$
-			desktop
+			Msg.getString("TabPanelTow.title"),
+			context, unit
 		);
-
-		vehicle = unit;
 	}
 
 	@Override
@@ -50,30 +49,38 @@ public class TabPanelTow extends TabPanel {
 		var mainPane = new AttributePanel();
 		content.add(mainPane, BorderLayout.NORTH);
 		
-		towingLabel = new EntityLabel(getDesktop());
+		towingLabel = new EntityLabel(getContext());
 		mainPane.addLabelledItem(Msg.getString("TabPanelTow.towing"), towingLabel);
 
-		towedByLabel = new EntityLabel(getDesktop());
+		towedByLabel = new EntityLabel(getContext());
 		mainPane.addLabelledItem(Msg.getString("TabPanelTow.towedBy"), towedByLabel);
 
 		update();
 	}
 
 	/**
-	 * Updates the info on this panel.
+	 * Listen for status changes to trigger towing updates
+	 * @param event Details of what changed
 	 */
 	@Override
-	public void update() {
+	public void entityUpdate(EntityEvent event) {
 		
-		if (vehicle instanceof Towing t) {
-			towingLabel.setEntity(t.getTowedVehicle());
-		}
-		
-		if (vehicle.haveStatusType(StatusType.TOWED)) {
-			towedByLabel.setEntity(vehicle.getTowingVehicle());
-		}
-		else {
-			towedByLabel.setEntity(null);
+		// Update towed by info
+		if (event.getType().equals(EntityEventType.STATUS_EVENT)) {
+			var vehicle = getEntity();
+			if (vehicle.haveStatusType(StatusType.TOWED)) {
+				towedByLabel.setEntity(vehicle.getTowingVehicle());
+			}
+			else {
+				towedByLabel.setEntity(null);
+			}
+
+			if (vehicle instanceof Towing t && vehicle.haveStatusType(StatusType.TOWING)) {
+				towingLabel.setEntity(t.getTowedVehicle());
+			}
+			else {
+				towingLabel.setEntity(null);
+			}
 		}
 	}
 }

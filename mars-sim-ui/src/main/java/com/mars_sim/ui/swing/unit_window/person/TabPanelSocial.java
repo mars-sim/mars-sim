@@ -24,21 +24,18 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * A tab panel displaying a person's social relationships.
  */
 @SuppressWarnings("serial")
-public class TabPanelSocial extends TabPanelTable
-implements ListSelectionListener {
+class TabPanelSocial extends EntityTableTabPanel<Person>
+			implements ListSelectionListener {
 
 	private static final String SOCIAL_ICON = "social";
-	
-	/** The Person instance. */
-	private Person person = null;
 	
 	private RelationshipTableModel relationshipTableModel;
 
@@ -47,25 +44,22 @@ implements ListSelectionListener {
 	 * Constructor.
 	 * 
 	 * @param person the person.
-	 * @param desktop the main desktop.
+	 * @param context the overall UI context.
 	 */
-	public TabPanelSocial(Person person, MainDesktopPane desktop) {
+	public TabPanelSocial(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			null,
 			ImageLoader.getIconByName(SOCIAL_ICON),
 			Msg.getString("TabPanelSocial.title"), //$NON-NLS-1$
-			person, desktop
+			person, context
 		);
-		this.person = person;
-
-		setHeaderToolTips(null);
 	}
 	
 	@Override
 	protected TableModel createModel() {
 		// Create relationship table model
-		relationshipTableModel = new RelationshipTableModel(person);
+		relationshipTableModel = new RelationshipTableModel(getEntity());
 		return relationshipTableModel;
 	}
 
@@ -95,7 +89,7 @@ implements ListSelectionListener {
 	 * Updates this panel.
 	 */
 	@Override
-	public void update() {
+	public void refreshUI() {
 		relationshipTableModel.update();
 	}
 
@@ -110,7 +104,7 @@ implements ListSelectionListener {
 	/**
 	 * Internal class used as model for the relationship table.
 	 */
-	private class RelationshipTableModel extends AbstractTableModel
+	private static class RelationshipTableModel extends AbstractTableModel
 			implements EntityModel {
 
 		private Person person;	
@@ -129,51 +123,42 @@ implements ListSelectionListener {
 			return 6;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = Object.class;
-			else if (columnIndex == 1) dataType = Object.class;
-			else if (columnIndex == 2) dataType = Object.class;
-			else if (columnIndex == 3) dataType = Object.class;
-			else if (columnIndex == 4) dataType = Object.class;
-			else if (columnIndex == 5) dataType = Object.class;
-			return dataType;
+			return switch (columnIndex) {
+				case 0, 1, 5 -> String.class;
+				case 2, 3, 4 -> Integer.class;
+				default -> Object.class;
+			};
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelSocial.column.settlement"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelSocial.column.person"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelSocial.column.respect"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelSocial.column.care"); //$NON-NLS-1$
-			else if (columnIndex == 4) return Msg.getString("TabPanelSocial.column.trust"); //$NON-NLS-1$
-			else if (columnIndex == 5) return Msg.getString("TabPanelSocial.column.relationship"); //$NON-NLS-1$
-			else return null;
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("Settlement.singular");
+				case 1 -> Msg.getString("Entity.name");
+				case 2 -> Msg.getString("TabPanelSocial.column.respect");
+				case 3 -> Msg.getString("TabPanelSocial.column.care");
+				case 4 -> Msg.getString("TabPanelSocial.column.trust");
+				case 5 -> Msg.getString("TabPanelSocial.column.relationship");
+				default -> null;
+			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			Person p = knownPeople.get(row);
-			if (column == 0) 
-				return p.getAssociatedSettlement();		
-			else if (column == 1) 
-				return p;
-			else if (column == 2) {
-				Opinion opinion = person.getRelation().getOpinion(p);
-				return " " + (int)Math.round(opinion.d0()) + " ";
-			}
-			else if (column == 3) {
-				Opinion opinion = person.getRelation().getOpinion(p);
-				return " " + (int)Math.round(opinion.d1()) + " ";
-			}
-			else if (column == 4) {
-				Opinion opinion = person.getRelation().getOpinion(p);
-				return " " + (int)Math.round(opinion.d2()) + " ";
-			}
-			else if (column == 5) {
-				Opinion opinion = person.getRelation().getOpinion(p);
-				return " " + getRelationshipString(opinion.getAverage());	
-			}
+			Opinion opinion = person.getRelation().getOpinion(p);
 
-			return null;
+			return switch (column) {
+				case 0 -> p.getAssociatedSettlement().getName();
+				case 1 -> p.getName();
+				case 2 -> (int)Math.round(opinion.d0());
+				case 3 -> (int)Math.round(opinion.d1());
+				case 4 -> (int)Math.round(opinion.d2());
+				case 5 -> getRelationshipString(opinion.getAverage());
+				default -> null;
+			};
 		}
 
 		public void update() {
@@ -188,7 +173,7 @@ implements ListSelectionListener {
 			
 		}
 
-		private String getRelationshipString(double opinion) {
+		private static String getRelationshipString(double opinion) {
 			return Conversion.capitalize(RelationshipUtil.describeRelationship(opinion));
 		}
 

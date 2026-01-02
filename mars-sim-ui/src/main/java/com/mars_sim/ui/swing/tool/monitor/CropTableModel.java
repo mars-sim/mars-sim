@@ -69,7 +69,7 @@ class CropTableModel extends EntityMonitorModel<Building> {
 	 * Filter the Greenhouses according to a Settlement
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		
 		Set<Building> buildings = filter.stream()
 				.flatMap(s -> s.getBuildingManager().getBuildingSet(FunctionType.FARMING).stream())

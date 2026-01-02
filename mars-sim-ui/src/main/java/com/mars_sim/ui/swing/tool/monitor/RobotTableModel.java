@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -86,17 +85,17 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("RobotTableModel.column.name"), String.class);
-		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("RobotTableModel.column.type"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("RobotTableModel.column.settlement"), String.class);
-		COLUMNS[MODE] = new ColumnSpec(Msg.getString("RobotTableModel.column.mode"), String.class);
-		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("RobotTableModel.column.health"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Robot.type"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[MODE] = new ColumnSpec(Msg.getString("Robot.mode"), String.class);
+		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("Robot.health"), String.class);
 		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.percent"), String.class);
 		COLUMNS[BATTERY_TEMPERATURE] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.temperature"), Double.class);
-		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("RobotTableModel.column.performance"), String.class);
+		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("Robot.performance"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("RobotTableModel.column.location"), String.class);
-		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("RobotTableModel.column.mission"), String.class);
-		COLUMNS[TASK] = new ColumnSpec(Msg.getString("RobotTableModel.column.task"), String.class);
+		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
+		COLUMNS[TASK] = new ColumnSpec(Msg.getString("Task.singular"), String.class);
 
 		eventColumnMapping = new HashMap<>();
 		eventColumnMapping.put(EntityEventType.NAME_EVENT, NAME);
@@ -122,9 +121,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 
 	// List sources.
 	private Crewable vehicle;
-	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
-
 	private EntityListener crewListener;
 	private EntityListener settlementListener;
 	private EntityListener missionListener;
@@ -200,17 +197,15 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 	 * @param filter
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeEntityListener(settlementListener));
+			getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 		}
 		
-		this.settlements = filter;
-
 		List<Robot> entities;
 		if (allAssociated) {
 			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_ROBOTS;
-			entities = settlements.stream()
+			entities = filter.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
 						.toList();
@@ -222,7 +217,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 			// and the robots that a settlement owns.
 			// But for now, robots cannot go outside of a settlement. 
 			sourceType = ValidSourceType.SETTLEMENT_ROBOTS;
-			entities = settlements.stream()
+			entities = filter.stream()
 						.map(Settlement::getAllAssociatedRobots)
 						.flatMap(Collection::stream)
 						.toList();
@@ -234,7 +229,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 			resetItems(entities);
 		}
 		// Listen to the settlements for new robots
-		settlements.forEach(s -> s.addEntityListener(settlementListener));
+		filter.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
@@ -394,10 +389,8 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 					missionListener = null;
 					mission = null;
 				}
-			default -> {
-					settlements.forEach(s -> s.removeEntityListener(settlementListener));
-					settlements = null;
-				}
+			default ->
+					getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 		}
 	}	
 

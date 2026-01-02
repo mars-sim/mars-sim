@@ -171,6 +171,12 @@ class MockMission implements Mission {
     }
 
     @Override
+    public Set<EntityListener> getEntityListeners() {
+        
+        throw new UnsupportedOperationException("Unimplemented method 'getEntityListeners'");
+    }
+
+    @Override
     public List<MissionObjective> getObjectives() {
         
         throw new UnsupportedOperationException("Unimplemented method 'getObjectives'");

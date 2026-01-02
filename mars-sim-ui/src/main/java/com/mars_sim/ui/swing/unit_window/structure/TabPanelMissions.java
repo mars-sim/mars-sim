@@ -38,7 +38,6 @@ import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
-import com.mars_sim.ui.swing.unit_window.vehicle.TabPanelMission;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**

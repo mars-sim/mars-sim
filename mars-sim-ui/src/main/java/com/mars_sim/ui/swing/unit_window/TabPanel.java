@@ -159,9 +159,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * 
 	 * @param centerContentPanel
 	 */
-	protected void buildUI(JPanel centerContentPanel) {
-		throw new UnsupportedOperationException("Build UI not implemented yet");
-	}
+	protected abstract void buildUI(JPanel centerContentPanel);
 
 	/**
 	 * Adds a standard titled border.
@@ -269,4 +267,11 @@ public abstract class TabPanel extends JScrollPane {
 		desktop = null;
 	}
 
+	/**
+	 * Refresh the UI elements of this tab. Commonly called when the tab is selected.
+	 * Can be overridden by subclasses. but should be rarely needed.
+	 */
+    public void refreshUI() {
+        // Default does nothing
+    }
 }

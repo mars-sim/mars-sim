@@ -7,8 +7,6 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -59,7 +57,6 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 		
-	private Set<Settlement> settlementSelection = new HashSet<>();
 	private MissionManager missionManager;
 
 	static {
@@ -67,13 +64,13 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 		COLUMNS[DATE_FILED] = new ColumnSpec(Msg.getString("MissionTableModel.column.filed"), MarsTime.class);
 		COLUMNS[DATE_EMBARKED] = new ColumnSpec(Msg.getString("MissionTableModel.column.embarked"), MarsTime.class);
 		COLUMNS[DATE_COMPLETED] = new ColumnSpec(Msg.getString("MissionTableModel.column.completed"), MarsTime.class);
-		COLUMNS[STARTING_SETTLEMENT] = new ColumnSpec(Msg.getString("MissionTableModel.column.startingSettlement"), String.class);
-		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("MissionTableModel.column.name"), String.class);
-		COLUMNS[MISSION_STRING] = new ColumnSpec(Msg.getString("MissionTableModel.column.missionString"), String.class);
-		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("MissionTableModel.column.designation"), String.class);
-		COLUMNS[PHASE] = new ColumnSpec(Msg.getString("MissionTableModel.column.phase"), String.class);
-		COLUMNS[VEHICLE] = new ColumnSpec(Msg.getString("MissionTableModel.column.vehicle"), String.class);
-		COLUMNS[MEMBER_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.members"), Integer.class);
+		COLUMNS[STARTING_SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("Mission.leader"), String.class);
+		COLUMNS[MISSION_STRING] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("Mission.designation"), String.class);
+		COLUMNS[PHASE] = new ColumnSpec(Msg.getString("Mission.phase"), String.class);
+		COLUMNS[VEHICLE] = new ColumnSpec(Msg.getString("Vehicle.singular"), String.class);
+		COLUMNS[MEMBER_NUM] = new ColumnSpec(Msg.getString("Mission.members"), Integer.class);
 		COLUMNS[NAVPOINT_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.navpoints"), Integer.class);
 		COLUMNS[TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.travelled"), Double.class);
 		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.remaining"), Double.class);		
@@ -86,7 +83,7 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	 * Constructor 1.
 	 */
 	public MissionTableModel(Simulation sim) {
-		super(Msg.getString("MissionTableModel.tabName"), "MissionTableModel.numberOfMissions", COLUMNS);
+		super(Msg.getString("Mission.plural"), COLUMNS);
 
 		missionManager = sim.getMissionManager();
 				
@@ -101,9 +98,8 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	 * Sets the settlement filter.
 	 */
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {
+	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		
-		settlementSelection = filter;
 		Collection<Mission> missions = missionManager.getMissions().stream()
 				.filter(m -> filter.contains(m.getAssociatedSettlement()))
 				.toList();
@@ -121,7 +117,7 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	@Override
 	public void addMission(Mission mission) {
 		var s = mission.getAssociatedSettlement();
-		if (settlementSelection.contains(s)) {
+		if (getSelectedSettlements().contains(s)) {
 			addItem(mission);
 		}
 	}

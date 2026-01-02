@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core;
 
+import java.util.Set;
+
 /**
  * An Entity that supports event listeners for monitoring changes.
  * This interface allows UI components and other observers to register
@@ -26,4 +28,11 @@ public interface MonitorableEntity extends Entity {
      * @param oldListener the listener to remove.
      */
     void removeEntityListener(EntityListener oldListener);
+    
+    /**
+     * Gets an unmodifiable set of the active listeners on this entity.
+     * 
+     * @return unmodifiable set of entity listeners.
+     */
+    Set<EntityListener> getEntityListeners();
 }

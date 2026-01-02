@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,22 +78,22 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("PersonTableModel.column.name"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec("Settlement", String.class);
-		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("PersonTableModel.column.health"), String.class);
-		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("PersonTableModel.column.energy"), String.class);
-		COLUMNS[WATER] = new ColumnSpec(Msg.getString("PersonTableModel.column.water"), String.class);
-		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("PersonTableModel.column.fatigue"), String.class);
-		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("PersonTableModel.column.stress"), String.class);
-		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("PersonTableModel.column.performance"), String.class);
-		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("PersonTableModel.column.emotion"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("Person.health"), String.class);
+		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("Person.energy"), String.class);
+		COLUMNS[WATER] = new ColumnSpec(Msg.getString("Person.water"), String.class);
+		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("Person.fatigue"), String.class);
+		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("Person.stress"), String.class);
+		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("Person.performance"), String.class);
+		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("Person.emotion"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("PersonTableModel.column.location"), String.class);
 		COLUMNS[LOCALE] = new ColumnSpec(Msg.getString("PersonTableModel.column.locale"), String.class);
-		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("PersonTableModel.column.role"), String.class);
-		COLUMNS[JOB] = new ColumnSpec(Msg.getString("PersonTableModel.column.job"), String.class);
-		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("PersonTableModel.column.shift"), String.class);
-		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("PersonTableModel.column.mission"), String.class);
-		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("PersonTableModel.column.task"), String.class);
+		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("Person.role"), String.class);
+		COLUMNS[JOB] = new ColumnSpec(Msg.getString("Person.job"), String.class);
+		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("Person.shift"), String.class);
+		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
+		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("Task.singular"), String.class);
 
 		EVENT_COLUMN_MAPPING = new HashMap<>();
 		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);
@@ -132,7 +131,6 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	private boolean isDeceasedCB = false;
 	
 	private transient Crewable vehicle;
-	private Set<Settlement> settlements = Collections.emptySet();
 	private Mission mission;
 
 	private transient EntityListener crewListener;
@@ -212,20 +210,18 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	}
 
 	@Override
-	public boolean setSettlementFilter(Set<Settlement> filter) {	
+	protected boolean applySettlementFilter(Set<Settlement> filter) {	
 
 		if (settlementListener != null) {
-			settlements.forEach(s -> s.removeEntityListener(settlementListener));
+			getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 			settlementListener = null;
 		}
-
-		this.settlements = filter;
 		
 		Collection<Person> entities = null;
 		
 		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
 
-			entities = settlements.stream()
+			entities = filter.stream()
 							.map(Settlement::getAllAssociatedPeople)
 							.flatMap(Collection::stream)
 							.filter(this::isPersonDisplayable)
@@ -234,7 +230,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 									EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
 		}
 		else {
-			entities = settlements.stream()
+			entities = filter.stream()
 							.map(Settlement::getIndoorPeople)
 							.flatMap(Collection::stream)
 							.filter(this::isPersonDisplayable)
@@ -243,12 +239,10 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 											EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
 		}
 		
-		if (entities != null && !entities.isEmpty()) {		
-			resetItems(entities);
-		}
+		resetItems(entities);
 
 		// Listen to the settlements for new People
-		settlements.forEach(s -> s.addEntityListener(settlementListener));
+		filter.forEach(s -> s.addEntityListener(settlementListener));
 
 		return true;
 	}
@@ -291,10 +285,13 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		switch (name) {
 			case LIVE -> isLiveCB = isDisplayed;
 			case DECEASED -> isDeceasedCB = isDisplayed;
+			default -> {
+				// Do nothing as only LIVE or DECEASED filters supported
+			}
 		}
 
 		// Reload
-		setSettlementFilter(settlements);
+		reapplyFilter();
 	}
 
 	/**
@@ -481,7 +478,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 					mission = null;
 				}
 			default -> {
-					settlements.forEach(s -> s.removeEntityListener(settlementListener));
+					getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
 					settlementListener = null;
 				}
 		}
