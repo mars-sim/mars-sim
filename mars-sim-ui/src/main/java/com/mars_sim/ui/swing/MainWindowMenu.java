@@ -95,8 +95,6 @@ public class MainWindowMenu extends MainMenuBar {
 
 	/**
 	 * Creates an internal window control menu.
-	 * 
-	 * @return
 	 */
 	private JMenu createWindowControlMenu(MainDesktopPane desktop, String title, JInternalFrame internal) {
 		JMenu top = new JMenu(title);

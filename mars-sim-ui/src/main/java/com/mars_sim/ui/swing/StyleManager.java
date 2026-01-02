@@ -121,7 +121,7 @@ public class StyleManager {
     private static final String DARK_THEME = "Dark Theme";
     private static final String FLAT_LIGHT_LAF = "com.formdev.flatlaf.FlatLightLaf";
 
-    // Hold LAF Classnames as String to avoid classloadinbg all LAF styles
+    // Hold LAF Classnames as String to avoid classloading all LAF styles
     public static final List<StyleEntry> STYLE_ENTRIES = List.of(
         new StyleEntry(LIGHT_RED, LIGHT_THEME, Color.RED, FLAT_LIGHT_LAF),
         new StyleEntry("Flat Light - Green", LIGHT_THEME, Color.GREEN, FLAT_LIGHT_LAF),
@@ -252,8 +252,6 @@ public class StyleManager {
 
         // Get name of LAF class
         String lafClass = selectedStyle.lafClassName();
-
-        // What about setup method
   
         // Preamble settings
         var accentColor = selectedStyle.accentColour();

@@ -42,7 +42,7 @@ class DockingAdapter extends JPanel implements Dockable {
 
     /**
      * Get the content panel inside this docking adapter
-     * @return
+     * @return the content panel
      */
     ContentPanel getContent() {
         return content;

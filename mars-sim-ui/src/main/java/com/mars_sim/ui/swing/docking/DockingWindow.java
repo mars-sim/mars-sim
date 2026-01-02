@@ -43,7 +43,7 @@ import io.github.andrewauclair.moderndocking.ext.ui.DockingUI;
 
 /**
  * The main window for the Mars Simulation UI that uses a docking approach to the window layout.
- * It implement the UIContext interface to provide access to the simulation and other UI features.
+ * It implements the UIContext interface to provide access to the simulation and other UI features.
  */
 public class DockingWindow extends JFrame 
         implements UIContext{
@@ -86,7 +86,7 @@ public class DockingWindow extends JFrame
         setSize(1200, 800);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        // INitialize Docking. Force tabs for single Dockerables
+        // Initialize Docking. Force tabs for single Dockerables
         Docking.initialize(this);
         DockingUI.initialize();
 
@@ -115,10 +115,10 @@ public class DockingWindow extends JFrame
     private void addContentPanel(ContentPanel panel) {
         var w = new DockingAdapter(panel);
 
-        // Is if there is a target for dockering already in the Placement
+        // Check if there is a target for dockering already in the Placement
         var target = anchors.get(panel.getPlacement());
         if (target != null) {
-            // Use it and place at the center relatvie to the target
+            // Use it and place at the center relative to the target
             Docking.dock(w, target, DockingRegion.CENTER);
         }
         else {
@@ -131,9 +131,9 @@ public class DockingWindow extends JFrame
     }
 
     /**
-     * Get the DockingRegion for a given Placement.
+     * Convert the Placement of a Content Panel to a DockingRegion.
      * @param placement
-     * @return
+     * @return DockingRegion
      */
     private static DockingRegion getRegion(Placement placement) {
         return switch(placement) {
