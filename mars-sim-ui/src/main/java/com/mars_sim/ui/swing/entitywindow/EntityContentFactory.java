@@ -12,6 +12,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
@@ -19,6 +20,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.authority.AuthorityWindow;
+import com.mars_sim.ui.swing.entitywindow.construction.ConstructionSiteWindow;
 import com.mars_sim.ui.swing.entitywindow.equipment.EquipmentUnitWindow;
 import com.mars_sim.ui.swing.entitywindow.science.ScientificStudyWindow;
 import com.mars_sim.ui.swing.unit_window.person.PersonUnitWindow;
@@ -44,6 +46,7 @@ public class EntityContentFactory {
     public static EntityContentPanel getEntityPanel(Entity ent, UIContext context, Properties props) {
         return switch (ent) {
             case Authority a -> new AuthorityWindow(a, context, props);
+            case ConstructionSite cs -> new ConstructionSiteWindow(cs, context, props);
             case Equipment e -> new EquipmentUnitWindow(e, context, props);
             case Person p -> new PersonUnitWindow(p, context, props);
             case Robot r -> new RobotUnitWindow(r, context, props);

@@ -14,15 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.batik.gvt.GraphicsNode;
-
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -64,16 +61,7 @@ public class BuildingPanelGeneral extends BuildingFunctionPanel {
 		center.add(topPanel, BorderLayout.NORTH);
 
 		// Add SVG Image loading for the building
-		int facing = (int)building.getFacing();
-		boolean toTurn = false;
-		if (facing == 90 || facing == 270)
-			toTurn = true;
-		GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getBuildingType().toLowerCase());
-		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 220, 110, toTurn);
-		JLabel svgLabel = new JLabel(svgIcon);
-		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		svgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-		svgPanel.add(svgLabel);
+		JPanel svgPanel = SVGMapUtil.createBuildingPanel(building.getBuildingType().toLowerCase(), 220, 110);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 		
 		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
