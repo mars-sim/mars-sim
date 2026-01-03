@@ -7,8 +7,10 @@
 package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -33,17 +35,17 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  */
 @SuppressWarnings("serial")
 class BuildingPanelThermal
-extends EntityTabPanel<Building> implements TemporalComponent{
+extends EntityTabPanel<Building> implements TemporalComponent {
 
 	private static final String HEAT_ICON = "heat";
 	
-	private static final String HEAT_TYPE = Msg.getString("BuildingPanelThermal.heatsource.heatType"); //$NON-NLS-1$
-	private static final String MAX_HEAT = Msg.getString("BuildingPanelThermal.heatsource.maxHeat"); //$NON-NLS-1$
-	private static final String HEAT_GEN = Msg.getString("BuildingPanelThermal.heatsource.heatGen"); //$NON-NLS-1$
-	private static final String HEAT_STATUS = Msg.getString("BuildingPanelThermal.heatsource.heatStatus"); //$NON-NLS-1$
+	private static final String HEAT_TYPE = Msg.getString("BuildingPanelThermal.heatsource.heatType"); //-NLS-1$
+	private static final String MAX_HEAT = Msg.getString("BuildingPanelThermal.heatsource.maxHeat"); //-NLS-1$
+	private static final String HEAT_GEN = Msg.getString("BuildingPanelThermal.heatsource.heatGen"); //-NLS-1$
+	private static final String HEAT_STATUS = Msg.getString("BuildingPanelThermal.heatsource.heatStatus"); //-NLS-1$
 	
-	private static final String TOTAL_HEAT_PRODUCED = Msg.getString("BuildingPanelThermal.totalHeatProduced"); //$NON-NLS-1$
-	private static final String TOTAL_HEAT_CAP = Msg.getString("BuildingPanelThermal.totalHeatCap"); //$NON-NLS-1$
+	private static final String TOTAL_HEAT_PRODUCED = Msg.getString("BuildingPanelThermal.totalHeatProduced"); //-NLS-1$
+	private static final String TOTAL_HEAT_CAP = Msg.getString("BuildingPanelThermal.totalHeatCap"); //-NLS-1$
 
 	/** The heat production cache. */
 	private double totalHeatproducedCache;
@@ -60,14 +62,28 @@ extends EntityTabPanel<Building> implements TemporalComponent{
 	/** The water heat sink label. */
 	private JLabel waterHeatSinkLabel;
 	
-	private List<HeatSource> sources = null;
-
-	/** The heat status label. */
-	private JLabel[] heatStatusLabels;
-	
-	private JLabel[] maxHeatLabels;
-	
-	private JLabel[] heatGenLabels;
+	/**
+	 * Collates all the details of a HeatSource into one record
+	 */
+	private record HeatSourceStatus(HeatSource source, JLabel maxHeatLabel, JLabel heatGenLabel, JLabel heatStatusLabel) {
+		void refresh(){
+			double maxPower = source.getMaxHeat();
+			maxHeatLabel.setText(StyleManager.DECIMAL_KW.format(maxPower));
+			
+			double heatGen = 0;
+			if (source instanceof FuelHeatSource fuel) {
+				if (fuel.isToggleON())
+					heatGen = fuel.measureHeat(100);
+			}
+			else {
+				heatGen = source.getCurrentHeat();
+			}
+			
+			heatGenLabel.setText(StyleManager.DECIMAL_KW.format(heatGen));
+			heatStatusLabel.setText(source.getHeatMode().getName());				
+		}
+	}
+	private List<HeatSourceStatus> sources = new ArrayList<>();
 	
 	/** The ThermalGeneration instance. */
 	private ThermalGeneration furnace;
@@ -86,7 +102,6 @@ extends EntityTabPanel<Building> implements TemporalComponent{
 		);
 
 		this.furnace = furnace;
-		this.sources = furnace.getHeatSources();
 	}
 	
 	/**
@@ -121,35 +136,39 @@ extends EntityTabPanel<Building> implements TemporalComponent{
 									  StyleManager.DECIMAL_KW.format(totalHeatCapCache), 
 									  "The total heat capacity of this building");
 			
-			int num = sources.size();
-			AttributePanel sPanel = new AttributePanel();
-			sPanel.setBorder(SwingHelper.createLabelBorder("Heat Sources"));
-
-			var centerPanel = new JPanel(new BorderLayout());
-			center.add(centerPanel, BorderLayout.CENTER);
-			centerPanel.add(sPanel, BorderLayout.NORTH);
-
-			heatStatusLabels = new JLabel[num];
-			maxHeatLabels = new JLabel[num];
-			heatGenLabels = new JLabel[num];
-			
-			int count = 0;
-			for (var source : sources) {
-
-				sPanel.addRow(HEAT_TYPE + " " + (count + 1), source.getType().getName());
-				
-				// Prepare heat status label.
-				HeatMode heatStatus = source.getHeatMode();
-				heatStatusLabels[count] = sPanel.addRow(HEAT_STATUS, heatStatus.getName(), "The status of the heating system");
-			
-				maxHeatLabels[count] = sPanel.addRow(MAX_HEAT, "", "The max heating capacity this heat source");
-				heatGenLabels[count] = sPanel.addRow(HEAT_GEN, "", "The heat produced by this heat source");
-				
-				count++;
+			// Create a vertical box for heat sources.
+			var sourcesPanel = Box.createVerticalBox();
+			for(var s : furnace.getHeatSources()) {
+				sourcesPanel.add(createSourcePanel(s));
 			}
+
+			// Add some space.
+			var spacePanel = new JPanel(new BorderLayout());
+			spacePanel.add(sourcesPanel, BorderLayout.NORTH);
+			center.add(spacePanel,  BorderLayout.CENTER);
 		}
 	}
 
+	/**
+	 * Creates a heat source panel.
+	 * 
+	 * @param source The heat source.
+	 * @return The heat source panel.
+	 */
+	private JPanel createSourcePanel(HeatSource source) {
+		int sourceId = sources.size() + 1;
+		var sPanel = new AttributePanel();
+		sPanel.setBorder(SwingHelper.createLabelBorder("Heat Source " + sourceId));
+
+		sPanel.addRow(HEAT_TYPE, source.getType().getName());
+				
+		HeatMode heatStatus = source.getHeatMode();
+		var heatStatusLabel = sPanel.addRow(HEAT_STATUS, heatStatus.getName(), "The status of the heating system");
+		var maxHeatLabel = sPanel.addRow(MAX_HEAT, "", "The max heating capacity this heat source");
+		var heatGenLabel = sPanel.addRow(HEAT_GEN, "", "The heat produced by this heat source");
+		sources.add(new HeatSourceStatus(source, maxHeatLabel, heatGenLabel, heatStatusLabel));
+		return sPanel;
+	}
 
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
@@ -180,27 +199,8 @@ extends EntityTabPanel<Building> implements TemporalComponent{
 				totalHeatProducedLabel.setText(StyleManager.DECIMAL_KW.format(totalProduced));
 			}
 			
-			int count = 0;
-			for (var source : sources) {
-
-				double maxPower = source.getMaxHeat();
-				maxHeatLabels[count].setText(StyleManager.DECIMAL_KW.format(maxPower));
-				
-				double heatGen = 0;
-				if (source instanceof FuelHeatSource fuel) {
-					if (fuel.isToggleON())
-						heatGen = fuel.measureHeat(100);
-				}
-				else {
-					heatGen = source.getCurrentHeat();
-				}
-				
-				heatGenLabels[count].setText(StyleManager.DECIMAL_KW.format(heatGen));
-				
-				heatStatusLabels[count].setText(source.getHeatMode().getName());
-				
-				count++;
-			}
+			// Update each heat source status.
+			sources.forEach(HeatSourceStatus::refresh);
 		}
 	}
 }

@@ -7,8 +7,10 @@
 package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -57,13 +59,34 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 
 	private PowerGeneration generator;
 	
-	private List<PowerSource> sources = null;
+	private record PowerSourceRecord(
+		PowerSource source,
+		JLabel maxPowerLabel,
+		JLabel loadCapLabel,
+		JLabel powerGenLabel
+	) {
+		void refresh(){
+			double maxPower = source.getMaxPower();
+			maxPowerLabel.setText(StyleManager.DECIMAL_KW.format(maxPower));
+				
+			double powerGen = 0;
+			if (source instanceof FuelPowerSource fuel) {
+				if (fuel.isToggleON())
+					powerGen = fuel.measurePower(100);
+			}
+			else {
+				powerGen = source.measurePower(100);
+			}
+				
+			powerGenLabel.setText(StyleManager.DECIMAL_KW.format(powerGen));	
+			if (source instanceof AdjustablePowerSource adj) {					
+				double loadCapacity = adj.getCurrentLoadCapacity();
+				loadCapLabel.setText(StyleManager.DECIMAL1_PERC.format(loadCapacity));
+			}
+		}
+	}	
+	private List<PowerSourceRecord> sources = new ArrayList<>();
 
-	protected JLabel[] maxPowerLabels;
-
-	private JLabel[] loadCapLabels;
-	
-	private JLabel[] powerGenLabels;
 	
 	/**
 	 * Constructor.
@@ -82,9 +105,6 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 
 		// Check if the building is a power producer.
 		generator = building.getFunction(FunctionType.POWER_GENERATION);
-		if (generator != null) {
-			sources = generator.getPowerSources();
-		}
 	}
 
 	/**
@@ -112,31 +132,39 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 			
 			totalProducedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.totalProduced"), //$NON-NLS-1$
 									  StyleManager.DECIMAL_KW.format(totalProducedCache));
-			
-			int num = sources.size();
-			AttributePanel sPanel = new AttributePanel(num * 4);
-			sPanel.setBorder(SwingHelper.createLabelBorder("Power Sources"));
 
-			var centerPanel = new JPanel(new BorderLayout());
-			center.add(centerPanel, BorderLayout.CENTER);
-			centerPanel.add(sPanel, BorderLayout.NORTH);
-
-			maxPowerLabels = new JLabel[num];
-			loadCapLabels = new JLabel[num];
-			powerGenLabels = new JLabel[num];
-			
-			int count = 0;
-			for(var powerSource : sources) {
-
-				sPanel.addRow(POWER_TYPE + " " + (count + 1), powerSource.getType().getName());
-
-				maxPowerLabels[count] = sPanel.addRow(MAX_POWER, "");
-				loadCapLabels[count] = sPanel.addRow(LOAD_CAP, "100 %");
-				powerGenLabels[count] = sPanel.addRow(POWER_GEN, "");
-				
-				count++;
+			// Create a vertical box for power sources.
+			var sourcesPanel = Box.createVerticalBox();
+			for(var s : generator.getPowerSources()) {
+				sourcesPanel.add(createSourcePanel(s));
 			}
+
+			// Add some space.
+			var spacePanel = new JPanel(new BorderLayout());
+			spacePanel.add(sourcesPanel, BorderLayout.NORTH);
+			center.add(spacePanel,  BorderLayout.CENTER);
 		}
+	}
+
+	/**
+	 * Creates a power source panel.
+	 * 
+	 * @param source The power source.
+	 * @return The power source panel.
+	 */
+	private JPanel createSourcePanel(PowerSource source) {
+		int sourceId = sources.size() + 1;
+		var sPanel = new AttributePanel();
+		sPanel.setBorder(SwingHelper.createLabelBorder("Power Source " + sourceId));
+
+		sPanel.addRow(POWER_TYPE, source.getType().getName());
+
+		var maxPowerLabel = sPanel.addRow(MAX_POWER, "");
+		var loadCapLabel = sPanel.addRow(LOAD_CAP, "100 %");
+		var powerGenLabel = sPanel.addRow(POWER_GEN, "");
+		
+		sources.add(new PowerSourceRecord(source, maxPowerLabel, loadCapLabel, powerGenLabel));
+		return sPanel;
 	}
 
 	/**
@@ -165,39 +193,16 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 			totalUsedCache = totalUsed;
 			totalUsedLabel.setText(StyleManager.DECIMAL_KW.format(totalUsed));
 		}
-		
-		// Update power production if necessary.
-		if (generator != null) {
-			double totalProduced = generator.getGeneratedPower();
-			if (totalProducedCache != totalProduced) {
-				totalProducedCache = totalProduced;
-				totalProducedLabel.setText(StyleManager.DECIMAL_KW.format(totalProduced));
-			}
-			
-			int count = 0;
-			for (var powerSource : sources) {
 
-				double maxPower = powerSource.getMaxPower();
-				maxPowerLabels[count].setText(StyleManager.DECIMAL_KW.format(maxPower));
-				
-				double powerGen = 0;
-				if (powerSource instanceof FuelPowerSource fuel) {
-					if (fuel.isToggleON())
-						powerGen = fuel.measurePower(100);
-				}
-				else {
-					powerGen = powerSource.measurePower(100);
-				}
-				
-				powerGenLabels[count].setText(StyleManager.DECIMAL_KW.format(powerGen));
-				
-				if (powerSource instanceof AdjustablePowerSource adj) {					
-					double loadCapacity = adj.getCurrentLoadCapacity();
-					loadCapLabels[count].setText(StyleManager.DECIMAL1_PERC.format(loadCapacity));
-				}
-				
-				count++;
-			}
+		if (generator == null)
+			return;
+		double totalProduced = generator.getGeneratedPower();
+		if (totalProducedCache != totalProduced) {
+			totalProducedCache = totalProduced;
+			totalProducedLabel.setText(StyleManager.DECIMAL_KW.format(totalProduced));
 		}
+			
+		// Update power production if necessary.
+		sources.forEach(PowerSourceRecord::refresh);
 	}
 }
