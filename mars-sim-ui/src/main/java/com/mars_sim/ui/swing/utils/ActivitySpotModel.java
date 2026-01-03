@@ -4,7 +4,7 @@
  * @date 2023-12-17
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.unit_window.structure.building;
+package com.mars_sim.ui.swing.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * Is a table model for a collection of activity spots. Renders the name, position and assignment.

@@ -33,8 +33,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.entitywindow.building.ResourceProcessPanel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
-import com.mars_sim.ui.swing.unit_window.structure.building.ResourceProcessPanel;
 
 /**
  * A tab panel for displaying all of the resource processes in a settlement.

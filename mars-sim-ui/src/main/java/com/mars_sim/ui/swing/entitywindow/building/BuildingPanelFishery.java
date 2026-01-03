@@ -4,7 +4,7 @@
  * @date 2023-12-07
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.unit_window.structure.building;
+package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.BorderLayout;
 

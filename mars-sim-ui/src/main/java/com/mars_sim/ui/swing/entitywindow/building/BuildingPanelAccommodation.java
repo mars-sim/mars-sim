@@ -5,7 +5,7 @@
  * @author Manny Kung
  */
 
-package com.mars_sim.ui.swing.unit_window.structure.building;
+package com.mars_sim.ui.swing.entitywindow.building;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,6 +19,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
+import com.mars_sim.ui.swing.utils.ActivitySpotModel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 

@@ -4,7 +4,7 @@
  * @date 2024-06-24
  * @author Manny Kung
  */
-package com.mars_sim.ui.swing.unit_window.structure.building;
+package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

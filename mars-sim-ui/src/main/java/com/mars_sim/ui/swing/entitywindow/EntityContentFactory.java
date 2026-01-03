@@ -21,12 +21,12 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.authority.AuthorityWindow;
+import com.mars_sim.ui.swing.entitywindow.building.BuildingUnitWindow;
 import com.mars_sim.ui.swing.entitywindow.construction.ConstructionSiteWindow;
 import com.mars_sim.ui.swing.entitywindow.equipment.EquipmentUnitWindow;
 import com.mars_sim.ui.swing.entitywindow.science.ScientificStudyWindow;
 import com.mars_sim.ui.swing.unit_window.person.PersonUnitWindow;
 import com.mars_sim.ui.swing.unit_window.robot.RobotUnitWindow;
-import com.mars_sim.ui.swing.unit_window.structure.building.BuildingUnitWindow;
 import com.mars_sim.ui.swing.unit_window.vehicle.VehicleUnitWindow;
 
 /**
