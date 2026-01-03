@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -35,34 +34,35 @@ import com.mars_sim.core.building.utility.power.PowerSource;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.building.utility.power.SolarPowerSource;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
  * This is a tab panel for a settlement's power grid information.
  */
 @SuppressWarnings("serial")
-public class TabPanelPowerGrid extends TabPanelTable {
+class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements TemporalComponent {
 
 	private static final String POWER_ICON = "power";
+
+	private static final String POWER = "P";
+	private static final String BUILDINGS_WITH_GENERATION = "BWG";
+	private static final String BUILDINGS_NO_GENERATION = "BNG";
+	private static final String ALL_BUILDINGS = "AB";
 	
 	private static final String PERCENT_PER_SOL = " % per sol";
 	private static final String SLASH = " / ";
 	private static final String OPEN_PARA = " (";
 	private static final String CLOSE_PARA = ")";
-	
-	private static final String[] TOOLTIPS = {"Power Status", "Building Name",
-			"kW Power Generated","kWh Energy Stored in Battery"};
-	
-	// Data Members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	// Data cache
 	/** The total power generated cache. */
@@ -80,18 +80,9 @@ public class TabPanelPowerGrid extends TabPanelTable {
 
 	private double percentEnergyUsage;
 
-	
-	/** The Settlement instance. */
-	private Settlement settlement;
-
 	private JLabel solarCellEfficiencyTF;
 	private JLabel percentPowerUsageLabel;
 	private JLabel percentEnergyUsageLabel;
-
-	private JRadioButton r0;
-	private JRadioButton r1;
-	private JRadioButton r2;
-	private JRadioButton r3;
 	
 	/** Table model for power info. */
 	private PowerTableModel powerTableModel;
@@ -106,23 +97,24 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	 * Constructor.
 	 * 
 	 * @param unit    the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelPowerGrid(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelPowerGrid(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			null,
-			ImageLoader.getIconByName(POWER_ICON),
 			Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
-			desktop
+			ImageLoader.getIconByName(POWER_ICON), null,
+			unit, context
 		);
-		settlement = unit;
-
-		setHeaderToolTips(TOOLTIPS);
 	}
 	
+	/**
+	 * Show the main power details.
+	 */
 	@Override
 	protected JPanel createInfoPanel() {
+		var settlement = getEntity();
+
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
 		buildings = manager.getBuildingsF1NoF2F3(
@@ -177,15 +169,19 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
 		topContentPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
-		buttonPanel.setBorder(BorderFactory.createTitledBorder("Choose Buildings"));
+		buttonPanel.setBorder(SwingHelper.createLabelBorder("Choose Buildings"));
 		buttonPanel.setToolTipText("Select the type of buildings");
 
 		ButtonGroup group0 = new ButtonGroup();
 
-		r0 = new JRadioButton("Power Bldgs", true);
-		r1 = new JRadioButton("Bldgs w/ Gen");
-		r2 = new JRadioButton("Bldgs w/o Gen");
-		r3 = new JRadioButton("All");
+		var r0 = new JRadioButton("Power Bldgs", true);
+		r0.setActionCommand(POWER);
+		var r1 = new JRadioButton("Bldgs w/ Gen");
+		r1.setActionCommand(BUILDINGS_WITH_GENERATION);
+		var r2 = new JRadioButton("Bldgs w/o Gen");
+		r2.setActionCommand(BUILDINGS_NO_GENERATION);
+		var r3 = new JRadioButton("All");
+		r3.setActionCommand(ALL_BUILDINGS);
 
 		group0.add(r0);
 		group0.add(r1);
@@ -209,7 +205,7 @@ public class TabPanelPowerGrid extends TabPanelTable {
 	@Override
 	protected TableModel createModel() {
 		// Prepare power table model.
-		powerTableModel = new PowerTableModel(settlement);
+		powerTableModel = new PowerTableModel(getEntity());
 		return powerTableModel;
 	}
 
@@ -231,25 +227,20 @@ public class TabPanelPowerGrid extends TabPanelTable {
 
 
 	class PolicyRadioActionListener implements ActionListener {
-	    @Override
+		@Override
 	    public void actionPerformed(ActionEvent event) {
-	        JRadioButton button = (JRadioButton) event.getSource();
 
-			if (button == r0) {
-				buildings = manager.getBuildingsF1NoF2F3(FunctionType.POWER_GENERATION, 
+			switch(event.getActionCommand()) {
+				case POWER -> buildings = manager.getBuildingsF1NoF2F3(FunctionType.POWER_GENERATION, 
 						FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
-			}
-			else if (button == r1) {
-				buildings = getBuildingsWithPowerGeneration();
-			}
-			else if (button == r2) {
-				buildings = manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, 
+				case BUILDINGS_WITH_GENERATION -> buildings = getBuildingsWithPowerGeneration();
+				case BUILDINGS_NO_GENERATION -> buildings = manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, 
 						FunctionType.THERMAL_GENERATION);
+				case ALL_BUILDINGS -> buildings = manager.getSortedBuildings();
+				default -> {
+					// Do nothing as not understood
+				}
 			}
-			else if (button == r3) {
-				buildings = manager.getSortedBuildings();
-			}
-
 			powerTableModel.fireTableDataChanged();
 	    }
 	}
@@ -281,13 +272,9 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		return eff;
 	}
 
-	/**
-	 * Updates the info on this panel.
-	 */
+
 	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
+	public void clockUpdate(ClockPulse pulse) {
 
 		// Update power generated TF
 		double gen = powerGrid.getGeneratedPower();
@@ -348,11 +335,9 @@ public class TabPanelPowerGrid extends TabPanelTable {
 		private Icon dotGreen;
 
 		private PowerTableModel(Settlement settlement) {
-
 			dotRed = ImageLoader.getIconByName("dot/red"); 
 			dotYellow = ImageLoader.getIconByName("dot/yellow"); 
 			dotGreen = ImageLoader.getIconByName("dot/green"); 
-
 		}
 
 		public int getRowCount() {
@@ -365,33 +350,24 @@ public class TabPanelPowerGrid extends TabPanelTable {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0)
-				dataType = Icon.class;
-			else if (columnIndex == 1)
-				dataType = Object.class;
-			else if (columnIndex == 2)
-				dataType = Double.class;
-			else if (columnIndex == 3)
-				dataType = Double.class;
-			else if (columnIndex == 4)
-				dataType = Double.class;
-			return dataType;
+			return switch (columnIndex) {
+				case 0 -> Icon.class;
+				case 1 -> String.class;
+				case 2,3,4 -> Double.class;
+				default -> null;
+			};
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
-				return Msg.getString("TabPanelPowerGrid.column.s"); //$NON-NLS-1$
-			else if (columnIndex == 1)
-				return Msg.getString("TabPanelPowerGrid.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 2)
-				return Msg.getString("TabPanelPowerGrid.column.generated"); //$NON-NLS-1$
-			else if (columnIndex == 3)
-				return Msg.getString("TabPanelPowerGrid.column.used"); //$NON-NLS-1$
-			else if (columnIndex == 4)
-				return Msg.getString("TabPanelPowerGrid.column.stored"); //$NON-NLS-1$
-			return null;
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("TabPanelPowerGrid.column.s");
+				case 1 -> Msg.getString("Building.singular");
+				case 2 -> Msg.getString("TabPanelPowerGrid.column.generated");
+				case 3 -> Msg.getString("TabPanelPowerGrid.column.used");
+				case 4 -> Msg.getString("TabPanelPowerGrid.column.stored");
+				default -> null;
+			};
 		}
 
 		@Override
@@ -400,70 +376,52 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			Building building = buildings.get(row);
 			PowerMode powerMode = building.getPowerMode();
 
-			if (column == 0) {
-				if (powerMode == PowerMode.FULL_POWER) {
-					return dotGreen;
-				} else if (powerMode == PowerMode.LOW_POWER) {
-					return dotYellow;
-				} else if (powerMode == PowerMode.NO_POWER) {
-					return dotRed;
-				} else
-					return null;
-			} 
-			
-			else if (column == 1) {
-				return buildings.get(row) + " ";
-			}
-			
-			else if (column == 2) {
-				double generated = 0D;
-				PowerGeneration pg = building.getFunction(FunctionType.POWER_GENERATION);
-				if (pg != null) {
-					try {
-						generated = pg.getGeneratedPower();
-					} catch (Exception e) {
+			switch (column) {
+				case 0 -> {
+						return switch (powerMode) {
+							case PowerMode.FULL_POWER -> dotGreen;
+							case PowerMode.LOW_POWER -> dotYellow;
+							case PowerMode.NO_POWER -> dotRed;
+							default -> null;
+						};
 					}
-				}
-				return Math.round(generated * 10.0) / 10.0;
-			} 
-			
-			else if (column == 3) {
-				double used = 0D;
-				if (powerMode == PowerMode.FULL_POWER)
-					used = building.getFullPowerRequired();
-				else if (powerMode == PowerMode.LOW_POWER)
-					used = building.getLowPowerRequired();
-				return Math.round(used * 10.0) / 10.0;
-			} 
-			
-			else {
-				PowerStorage ps = building.getPowerStorage();
-				double stored = 0D;
-				if (ps != null) {
-					stored = ps.getBattery().getCurrentStoredEnergy();
-					return Math.round(stored * 10.0) / 10.0;
-				}
-			
-				return 0D;
-			}
-				
+				case 1 -> { return buildings.get(row).getName(); }
+				case 2 -> {
+						double generated = 0D;
+						PowerGeneration pg = building.getFunction(FunctionType.POWER_GENERATION);
+						if (pg != null) {
+							try {
+								generated = pg.getGeneratedPower();
+							} catch (Exception e) {
+							}
+						}
+						return Math.round(generated * 10.0) / 10.0;
+					}
+				case 3 -> {
+						double used = 0D;
+						if (powerMode == PowerMode.FULL_POWER)
+							used = building.getFullPowerRequired();
+						else if (powerMode == PowerMode.LOW_POWER)
+							used = building.getLowPowerRequired();
+						return Math.round(used * 10.0) / 10.0;
+					}
+				default -> {
+						PowerStorage ps = building.getPowerStorage();
+						double stored = 0D;
+						if (ps != null) {
+							stored = ps.getBattery().getCurrentStoredEnergy();
+							return Math.round(stored * 10.0) / 10.0;
+						}
+					
+						return 0D;
+					}
+			}	
 		}
 
 		public void update() {
-//			// Check if building list has changed.
-//			List<Building> tempBuildings = getBuildings();
-//			if (!tempBuildings.equals(buildings)) {
-//				buildings = tempBuildings;
-//			}
-
-	    	int numRow = getRowCount();
-	    	int numCol = getColumnCount();
-	    	for (int i=0; i< numRow; i++) {	
-	    		for (int j=0; j< numCol; j++) {
-		    		if (j != 1)
-		    			fireTableCellUpdated(i, j);
-	    		}
-	    	}
+			if (buildings.isEmpty())
+				return;
+			fireTableRowsUpdated(0, buildings.size() - 1);
 		}
 
 		@Override
@@ -471,26 +429,4 @@ public class TabPanelPowerGrid extends TabPanelTable {
 			return buildings.get(row);
 		}
 	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		solarCellEfficiencyTF = null;
-
-		r0 = null;
-		r1 = null;
-		r2 = null;
-		r3 = null;
-		
-		powerTableModel = null;
-		powerGrid = null;
-		manager = null;
-		buildings = null;
-	}
 }
-
-

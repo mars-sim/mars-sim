@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.SwingConstants;
@@ -17,7 +16,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.CollectionUtils;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
@@ -26,47 +24,39 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.goods.CreditEvent;
 import com.mars_sim.core.goods.CreditListener;
-import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 @SuppressWarnings("serial")
-public class TabPanelCredit extends TabPanelTable {
+class TabPanelCredit extends EntityTableTabPanel<Settlement> {
 	
 	private static final String CREDIT_ICON = "credit";
-
-	/** The Settlement instance. */
-	private Settlement settlement;
-
 	private CreditTableModel creditTableModel;
 
 	/**
 	 * Constructor.
 	 * @param unit {@link Unit} the unit to display.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param context {@link UIContext} the UI context.
 	 */
-	public TabPanelCredit(Unit unit, MainDesktopPane desktop) {
+	public TabPanelCredit(Settlement unit, UIContext context) {
 		// Use TabPanel constructor.
 		super(
-			null,
-			ImageLoader.getIconByName(CREDIT_ICON),
-			Msg.getString("TabPanelCredit.title"), //$NON-NLS-1$
-			unit, desktop
+			Msg.getString("TabPanelCredit.title"),
+			ImageLoader.getIconByName(CREDIT_ICON), null,
+			unit, context
 		);
-
-		settlement = (Settlement) unit;
 
 	}
 
 	@Override
 	protected TableModel createModel() {
 		// Prepare credit table model.
-		creditTableModel = new CreditTableModel(settlement);
+		creditTableModel = new CreditTableModel(getEntity());
 		return creditTableModel;
 	}
 
@@ -110,9 +100,8 @@ public class TabPanelCredit extends TabPanelTable {
 			// Get collection of all other settlements.
 			settlements = new ArrayList<>();
 			for(Settlement settlement : unitManager.getSettlements()) {
-				if (settlement != thisSettlement) {
-					settlements.add(settlement);
-					settlement.getCreditManager().addListener(this);
+				if (!settlement.equals(thisSettlement)) {
+					addSettlement(settlement);
 				}
 			}
 
@@ -152,12 +141,8 @@ public class TabPanelCredit extends TabPanelTable {
 				Settlement settlement = settlements.get(row);
 				if (column == 0) return settlement.getName();
 				else {
-					double credit = 0D;
-					try {
-						credit = CreditManager.getCredit(thisSettlement, settlement);
-					}
-					catch (Exception e) {
-					}
+					int id = settlement.getIdentifier();
+					double credit = thisSettlement.getCreditManager().getCreditMap().getOrDefault(id, 0D);
 
 					if (column == 1) return Math.round(credit*100.0)/100.0;
 					else if (column == 2) {
@@ -179,8 +164,8 @@ public class TabPanelCredit extends TabPanelTable {
 		@Override
 		public void creditUpdate(CreditEvent event) {
 			if (
-				(thisSettlement == event.getSettlement1()) ||
-				(thisSettlement == event.getSettlement2())
+				thisSettlement.equals(event.getSettlement1()) ||
+				thisSettlement.equals(event.getSettlement2())
 			) {
 				SwingUtilities.invokeLater(
 					new Runnable() {
@@ -196,16 +181,9 @@ public class TabPanelCredit extends TabPanelTable {
 
 		@Override
 		public void entityAdded(Entity newEntity) {
-			if (newEntity instanceof Settlement) {
-				settlements.clear();
-				Iterator<Settlement> i = CollectionUtils.sortByName(unitManager.
-						getSettlements()).iterator();
-				while (i.hasNext()) {
-					Settlement settlement = i.next();
-					if (settlement != thisSettlement) {
-						settlements.add(settlement);
-					}
-				}
+			if (newEntity instanceof Settlement newSettlement
+					&& !settlements.contains(newSettlement)) {
+				addSettlement(newSettlement);
 
 				SwingUtilities.invokeLater(
 					new Runnable() {
@@ -219,10 +197,21 @@ public class TabPanelCredit extends TabPanelTable {
 			}
 		}
 
+		/**
+		 * Add this settlement to the list and register as listener.
+		 * @param newSettlement Settlement to add
+		 */
+		private void addSettlement(Settlement newSettlement) {
+			settlements.add(newSettlement);
+			newSettlement.getCreditManager().addListener(this);
+		}
+
 		@Override
 		public void entityRemoved(Entity removedEntity) {
 			// Handle the same way as entityAdded for this use case
-			if (removedEntity instanceof Settlement s) {
+			if (removedEntity instanceof Settlement s
+					&& settlements.contains(s)
+			) {
 				settlements.remove(s);
 				s.getCreditManager().removeListener(this);
 
@@ -240,6 +229,7 @@ public class TabPanelCredit extends TabPanelTable {
 
 		public void destroy() {
 			unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, this);
+			settlements.forEach(s -> s.getCreditManager().removeListener(this));
 		}
 
 		@Override

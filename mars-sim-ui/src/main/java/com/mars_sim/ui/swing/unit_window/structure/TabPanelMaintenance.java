@@ -17,38 +17,38 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * The TabPanelMaintenance is a tab panel for settlement's building maintenance.
  */
 @SuppressWarnings("serial")
-public class TabPanelMaintenance extends TabPanelTable {
+class TabPanelMaintenance extends EntityTableTabPanel<Settlement> implements TemporalComponent{
 
 	private static final String SPANNER_ICON = "maintenance";
 
 	private BuildingMaintModel tableModel;
-	
 		
 	/**
 	 * Constructor.
 	 * 
 	 * @param unit    the unit (currently for settlements only)
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelMaintenance(Settlement settlement, MainDesktopPane desktop) {
+	public TabPanelMaintenance(Settlement settlement, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 				Msg.getString("TabPanelMaintenance.title"),
-				ImageLoader.getIconByName(SPANNER_ICON),
-				Msg.getString("TabPanelMaintenance.title"), //$NON-NLS-1$
-				settlement, desktop
+				ImageLoader.getIconByName(SPANNER_ICON), null,
+				settlement, context
 			);
 
 		
@@ -76,17 +76,16 @@ public class TabPanelMaintenance extends TabPanelTable {
 		tc.getColumn(5).setPreferredWidth(45);
 	}
 
-	/**
-	 * Updates the tab panel.
-	 */
+
 	@Override
-	public void update() {
+	public void clockUpdate(ClockPulse pulse) {
 		tableModel.update();
 	}
 
 	private static class BuildingMaintModel extends AbstractTableModel
 			implements EntityModel {
 
+		private static final String BUILDING = Msg.getString("Building.singular");
 		List<Building> buildings;
 
 		public BuildingMaintModel(Settlement settlement) {
@@ -126,7 +125,7 @@ public class TabPanelMaintenance extends TabPanelTable {
 		public String getColumnName(int columnIndex) {
 			switch(columnIndex) {
 				case 0: 
-					return "Building";
+					return BUILDING;
 				case 1:
 					return "Health";
 				case 2:

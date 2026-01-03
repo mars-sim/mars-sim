@@ -118,9 +118,9 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 
 		lastCompletedLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.lastCompleted"), "", 
 												null);
-		inspectionWinLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.inspectionWin"), "");
+		inspectionWinLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.inspectionWin"), "", null);
 		
-		baseWorkTimeLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.baseWorkTime"), "");
+		baseWorkTimeLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.baseWorkTime"), "", null);
 		
 		currentInspection = new JProgressBar();
 		currentInspection.setStringPainted(true);		
@@ -128,7 +128,7 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 		currentInspection.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
 		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentInspection"), currentInspection);
 
-		numMaintLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.numMaint"), "",
+		numMaintLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.numMaint"), "",
 				Msg.getString("MaintenanceTabPanel.numMaint.toolTip"));
 		
 		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", null);

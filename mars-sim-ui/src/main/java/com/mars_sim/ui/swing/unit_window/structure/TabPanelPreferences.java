@@ -32,12 +32,13 @@ import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 @SuppressWarnings("serial")
-public class TabPanelPreferences extends TabPanelTable {
+class TabPanelPreferences extends EntityTableTabPanel<Settlement> {
 
 	/**
 	 * Represents a renderable version for a Parameter Key with a displayable label.
@@ -68,15 +69,13 @@ public class TabPanelPreferences extends TabPanelTable {
 	 * Constructor.
 	 * 
 	 * @param unit {@link Unit} the unit to display.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param context {@link UIContext} the main desktop.
 	 */
-	public TabPanelPreferences(Settlement unit, MainDesktopPane desktop) {
-		// Use TabPanel constructor.
+	public TabPanelPreferences(Settlement unit, UIContext context) {
 		super(
 			Msg.getString("TabPanelPreferences.title"), //-NLS-1$
-			ImageLoader.getIconByName(ICON),
-			Msg.getString("TabPanelPreferences.title"), //-NLS-1$
-			unit, desktop
+			ImageLoader.getIconByName(ICON), null,
+			unit, context
 		);
 		mgr = unit.getPreferences();
 		categories = ParameterCategories.getSettlementCategories();
@@ -91,7 +90,7 @@ public class TabPanelPreferences extends TabPanelTable {
 
 		// Create editor control
 		JPanel newPanel = new JPanel();
-		newPanel.setBorder(StyleManager.createLabelBorder("Add new Preference"));
+		newPanel.setBorder(SwingHelper.createLabelBorder("Add new Preference"));
 		topPanel.add(newPanel, BorderLayout.NORTH);
 
 		typeCombo = new JComboBox<>(categories);
