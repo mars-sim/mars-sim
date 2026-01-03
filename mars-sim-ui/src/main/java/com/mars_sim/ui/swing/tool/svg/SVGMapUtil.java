@@ -6,12 +6,16 @@
  */
 package com.mars_sim.ui.swing.tool.svg;
 
+import java.awt.FlowLayout;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.apache.batik.gvt.GraphicsNode;
 
@@ -202,4 +206,55 @@ public final class SVGMapUtil {
 
         return getSVGGraphicsNode("building_connector", connectorType, false);
     }
+
+    /**
+     * Creates a JPanel containing the vehicle SVG graphic.
+     * @param vehicleType the vehicle type.
+     * @param w Panel width
+     * @param h Panel height
+     * @return Panel containing the vehicle SVG graphic
+     */	
+    public static JPanel createVehiclePanel(String vehicleType, int w, int h) {
+		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicleType);
+        return createSVGPanel(svg, w, h);
+    }
+    /**
+     * Creates a JPanel containing the building SVG graphic.
+     * @param buildingType the building type.
+     * @param w Panel width
+     * @param h Panel height
+     * @return Panel containing the building SVG graphic
+     */
+    public static JPanel createBuildingPanel(String buildingType, int w, int h) {
+        GraphicsNode svg = SVGMapUtil.getBuildingSVG(buildingType);
+        return createSVGPanel(svg, w, h);
+    }
+    
+    /**
+     * Creaate a JPanel containing the SVG graphic node. The image to rotate to match the orientation
+     * of the panel.
+     * @param svg Image to render
+     * @param w Width of panel
+     * @param h Height of panel
+     * @return JPanel containing the SVG graphic node  
+     */
+    private static JPanel createSVGPanel(GraphicsNode svg, int w, int h) {
+		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+
+        if (svg == null) {
+            svgPanel.add(new JLabel("No Image"));
+        }
+        else {
+            // Image orientation should match requested size
+            boolean targetIsWide = w >= h;
+            boolean imageIsWide = svg.getPrimitiveBounds().getWidth() >= svg.getPrimitiveBounds().getHeight();
+            boolean rotate = targetIsWide != imageIsWide;
+
+            // Create SVG Icon and add to panel
+            SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, w, h, rotate);
+            JLabel svgLabel = new JLabel(svgIcon);
+            svgPanel.add(svgLabel);
+        }
+		return svgPanel;
+	}
 }

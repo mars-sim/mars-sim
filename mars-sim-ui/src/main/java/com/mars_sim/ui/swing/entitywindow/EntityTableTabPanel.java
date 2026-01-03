@@ -59,7 +59,7 @@ public abstract class EntityTableTabPanel<T extends Entity> extends EntityTabPan
 	 * itself.
 	 */
 	@Override
-	protected void buildUI(JPanel content) {
+	protected final void buildUI(JPanel content) {
 		
 		// Prepare  info panel.
 		JPanel infoPanel = createInfoPanel();

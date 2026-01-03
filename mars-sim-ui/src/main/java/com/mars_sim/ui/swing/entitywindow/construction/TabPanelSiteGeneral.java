@@ -4,7 +4,7 @@
  * @date 2023-06-07
  * @author Scott Davis
  */
-package com.mars_sim.ui.swing.tool.construction;
+package com.mars_sim.ui.swing.entitywindow.construction;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -18,15 +18,17 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionSite.ConstructionPhase;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
@@ -35,12 +37,8 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * The TabPanelSiteGeneral is a tab panel for general information about a construction site.
  */
 @SuppressWarnings("serial")
-public class TabPanelSiteGeneral extends TabPanel {
-
-	private static final String ID_ICON = "info"; //-NLS-1$
-	
-	/** The ConstructionSite instance. */
-	private ConstructionSite constructionSite;
+class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
+		implements EntityListener {
 
 	private EntityLabel missionLabel;
 
@@ -58,27 +56,30 @@ public class TabPanelSiteGeneral extends TabPanel {
 	 * Constructor.
 	 * 
 	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelSiteGeneral(ConstructionSite unit, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
+	public TabPanelSiteGeneral(ConstructionSite unit, UIContext context) {
 		super(
-			Msg.getString("TabPanelGeneral.title"), //-NLS-1$
-			ImageLoader.getIconByName(ID_ICON),		
-			Msg.getString("TabPanelGeneral.title"), //-NLS-1$
-			desktop
+			GENERAL_TITLE,
+			ImageLoader.getIconByName(GENERAL_ICON), GENERAL_TOOLTIP,	
+			context, unit
 		);
-
-		constructionSite = unit;
 	}
 	
 	@Override
 	protected void buildUI(JPanel content) {
+		var constructionSite = getEntity();
+
+		JPanel topPanel = new JPanel(new BorderLayout());
+		content.add(topPanel, BorderLayout.NORTH);
+
+		// Add SVG Image loading for the building
+		JPanel svgPanel = SVGMapUtil.createBuildingPanel(constructionSite.getBuildingName(), 220, 110);
+		topPanel.add(svgPanel, BorderLayout.NORTH);
 
 		// Prepare spring layout info panel.
 		AttributePanel infoPanel = new AttributePanel();
-		
-		content.add(infoPanel, BorderLayout.NORTH);
+		topPanel.add(infoPanel, BorderLayout.CENTER);
 
 		String name = constructionSite.getName();
 
@@ -88,7 +89,7 @@ public class TabPanelSiteGeneral extends TabPanel {
 		stageType = infoPanel.addTextField("Current Stage Type", "", null);
 		workType = infoPanel.addTextField("Current Work Type", "", null);
 
-		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getDesktop());
+		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getContext());
 		infoPanel.addLabelledItem("Work Mission", missionLabel);
         workLeft = infoPanel.addTextField("Stage Work", "", null);
 
@@ -106,13 +107,21 @@ public class TabPanelSiteGeneral extends TabPanel {
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		content.add(scrollPane, BorderLayout.CENTER);
 
-		update();
+		updateInfo();
 	}
 
+	
 	@Override
-	public void update() {
-		super.update();
-		
+	public void entityUpdate(EntityEvent event) {
+		updateInfo();
+	}
+
+	/**
+	 * Update the dynamic information in the panel.S
+	 */
+	private void updateInfo() {
+		var constructionSite = getEntity();
+
 		missionLabel.setEntity(constructionSite.getWorkOnSite());
 		phaseModel.update(constructionSite.getRemainingPhases());
 
@@ -136,7 +145,10 @@ public class TabPanelSiteGeneral extends TabPanel {
 		}
 	}
 
-	private class PhaseTableModel extends AbstractTableModel 
+	/**
+	 * Table model for construction phases.
+	 */
+	private static class PhaseTableModel extends AbstractTableModel 
 						implements ToolTipTableModel {
 
 		private List<ConstructionPhase> phases = Collections.emptyList();

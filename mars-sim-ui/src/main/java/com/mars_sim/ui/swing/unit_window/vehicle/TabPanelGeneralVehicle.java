@@ -14,8 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.batik.gvt.GraphicsNode;
-
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
@@ -25,7 +23,6 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -70,12 +67,8 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 
 		var vehicle = getEntity();
 
-		// Add SVG Image loading for the building
-		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
-		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 128, 64, true);
-		JLabel svgLabel = new JLabel(svgIcon);
-		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-		svgPanel.add(svgLabel);
+		// Add SVG Image loading for the vehicle
+		var svgPanel = SVGMapUtil.createVehiclePanel(vehicle.getBaseImage(), 128, 64);
 		panel.add(svgPanel, BorderLayout.NORTH);
 		
 		fuelTypeID = vehicle.getFuelTypeID();
@@ -139,8 +132,8 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
 		infoPanel.addRow("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicle.getBatteryCapacity()));	
 	}
-	
-    /**
+
+	/**
      * Update the variable Vehicle
      * @param pulse Incoming pulse.
      */
