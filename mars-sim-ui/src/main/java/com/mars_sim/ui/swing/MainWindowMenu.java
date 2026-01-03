@@ -84,7 +84,7 @@ public class MainWindowMenu extends MainMenuBar {
 				menuSource.add(createWindowControlMenu(desktop, tw.getTitle(), tw));
 			}
 		}
-		for (var tw : desktop.getUnitWindows()) {
+		for (var tw : desktop.getEntityWindows()) {
 			menuSource.add(createWindowControlMenu(desktop, tw.getTitle(), tw));
 		}
 

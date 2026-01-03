@@ -38,7 +38,7 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
-import com.mars_sim.ui.swing.unit_window.UnitWindow;
+
 /**
  * Static class for saving/loading user interface configuration data.
  */
@@ -239,9 +239,6 @@ public class UIConfig {
 				if (window1 instanceof ContentWindow tw) {
 					windowElement.setAttribute(NAME, tw.getContent().getName());
 					windowElement.setAttribute(TYPE, (tw.getContent() instanceof EntityContentPanel ? UNIT : TOOL));
-				} else if (window1 instanceof UnitWindow uw) {
-					windowElement.setAttribute(TYPE, UNIT);
-					windowElement.setAttribute(NAME, uw.getUnit().getName());
 				} else {
 					windowElement.setAttribute(TYPE, "other");
 					windowElement.setAttribute(NAME, "other");

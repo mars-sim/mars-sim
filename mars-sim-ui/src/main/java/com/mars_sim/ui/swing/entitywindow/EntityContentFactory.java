@@ -18,6 +18,7 @@ import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.authority.AuthorityWindow;
@@ -27,6 +28,7 @@ import com.mars_sim.ui.swing.entitywindow.equipment.EquipmentUnitWindow;
 import com.mars_sim.ui.swing.entitywindow.science.ScientificStudyWindow;
 import com.mars_sim.ui.swing.unit_window.person.PersonUnitWindow;
 import com.mars_sim.ui.swing.unit_window.robot.RobotUnitWindow;
+import com.mars_sim.ui.swing.unit_window.structure.SettlementUnitWindow;
 import com.mars_sim.ui.swing.unit_window.vehicle.VehicleUnitWindow;
 
 /**
@@ -54,6 +56,7 @@ public class EntityContentFactory {
             case Person p -> new PersonUnitWindow(p, context, props);
             case Robot r -> new RobotUnitWindow(r, context, props);
             case ScientificStudy s -> new ScientificStudyWindow(s, context, props);
+            case Settlement s -> new SettlementUnitWindow(s, context, props);
             case Vehicle v -> new VehicleUnitWindow(v, context, props);
             default -> null;
         };

@@ -45,7 +45,7 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 		super(
 			GENERAL_TITLE,
 			ImageLoader.getIconByName(GENERAL_ICON),
-			null,
+			GENERAL_TOOLTIP,
 			context, ra
 		);
 	}
