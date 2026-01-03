@@ -7,21 +7,19 @@
 
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.table.TableModel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.LivingAccommodation;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.EntityLauncher;
 
 
 /**
@@ -29,58 +27,48 @@ import com.mars_sim.ui.swing.utils.EntityLauncher;
  * the living accommodation details of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelAccommodation extends BuildingFunctionPanel {
+class BuildingPanelAccommodation extends EntityTableTabPanel<Building> 
+		implements TemporalComponent{
 
 	private static final String BED_ICON = "bed";
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
-	private int bedCapCache;
 	private int bedOccupiedCache;
-
-	private JLabel bedCapLabel;
 	private JLabel bedOccupiedLabel;
 
 	private LivingAccommodation living;
 
-	
+	private ActivitySpotModel bedTableModel;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param living the building this panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelAccommodation(LivingAccommodation living, MainDesktopPane desktop) {
+	public BuildingPanelAccommodation(LivingAccommodation living, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelAccommodation.title"), 
-			ImageLoader.getIconByName(BED_ICON),
-			living.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(BED_ICON), null,
+			living.getBuilding(), context
 		);
 
 		// Initialize data members
 		this.living = living;
+		setTableTitle("Beds");
 	}
 	
 	/**
-	 * Builds the UI elements.
-	 * 
-	 * @param center the panel to be built
+	 * Builds the info panel
 	 */
 	@Override
-	protected void buildUI(JPanel center) {
-  		ActivitySpotModel bedTableModel;
-
+	protected JPanel createInfoPanel() {
 		// Create label panel
-		AttributePanel labelPanel = new AttributePanel(3);
-		center.add(labelPanel, BorderLayout.NORTH);
+		AttributePanel labelPanel = new AttributePanel();
 
 		// Create bed capacity label
-		bedCapLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.beds.capacity"),
+		labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.beds.capacity"),
 									Integer.toString(living.getBedCap()), "Max number of beds available");
 
 		// Create bedOccupiedLabel
@@ -90,46 +78,28 @@ public class BuildingPanelAccommodation extends BuildingFunctionPanel {
 		// Create guest bed capacity label
 		labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.guesthouse"),
 									Boolean.toString(living.isGuestHouse()), "Max number of guest beds available");
+		return labelPanel;
+	}
 		
-		// Create scroll panel for beds
-		JScrollPane scrollPanel = new JScrollPane();
-		scrollPanel.setPreferredSize(new Dimension(160, 120));
-
-		center.add(scrollPanel, BorderLayout.CENTER);
-	    scrollPanel.getViewport().setOpaque(false);
-	    scrollPanel.setOpaque(false);
-		scrollPanel.setBorder(StyleManager.createLabelBorder("Beds"));
-
-		// Prepare medical table model
+	@Override
+	protected TableModel createModel() {
 		bedTableModel = new ActivitySpotModel(living.getActivitySpots(),
-											  getDesktop().getSimulation().getUnitManager());
+											  getContext().getSimulation().getUnitManager());
 
-		// Prepare medical table
-		JTable table = new JTable(bedTableModel);
-		table.setCellSelectionEnabled(false);
-		table.setRowSelectionAllowed(true);
-		table.setAutoCreateRowSorter(true);
-		EntityLauncher.attach(table, getDesktop());
-
-		scrollPanel.setViewportView(table);
+		return bedTableModel;
 	}
 
+	/**
+	 * Updates this panel on clock pulse but should probably be event driven instead.
+	 */
 	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
-		// Update bedCapLabel
-		if (bedCapCache != living.getBedCap()) {
-			bedCapCache = living.getBedCap();
-			bedCapLabel.setText(Integer.toString(bedCapCache));
-		}
+	public void clockUpdate(ClockPulse pulse) {
 
 		// Update bedOccupiedLabel
 		if (bedOccupiedCache != living.getNumOccupiedActivitySpots()) {
+			bedTableModel.refresh();
 			bedOccupiedCache = living.getNumOccupiedActivitySpots();
 			bedOccupiedLabel.setText(Integer.toString(bedOccupiedCache));
 		}
 	}
 }
-

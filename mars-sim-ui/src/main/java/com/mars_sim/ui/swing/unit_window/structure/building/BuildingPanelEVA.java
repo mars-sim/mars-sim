@@ -12,22 +12,25 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.Collection;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.ClassicAirlock;
 import com.mars_sim.core.building.function.EVA;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.Airlock.AirlockMode;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -38,15 +41,12 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelEVA extends BuildingFunctionPanel {
+class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalComponent {
 	
 	private static final String SUIT_ICON = "eva";
 
 	private static final String UNLOCKED = "Unlocked";
 	private static final String LOCKED = "Locked";
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	private boolean activationCache;
 	private boolean transitionCache;
@@ -92,16 +92,15 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param eva the eva function of a building this panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelEVA(EVA eva, MainDesktopPane desktop) {
+	public BuildingPanelEVA(EVA eva, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelEVA.title"), 
-			ImageLoader.getIconByName(SUIT_ICON), 
-			eva.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(SUIT_ICON), null,
+			context, eva.getBuilding()
 		);
 
 		// Initialize data members
@@ -116,11 +115,9 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel content) {
-		MainDesktopPane desktop = getDesktop();
 		
 		// Create top panel
         JPanel topPanel = new JPanel(new BorderLayout());
-//        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         content.add(topPanel, BorderLayout.CENTER);
  
 		JPanel wikiPanel = new JPanel(new FlowLayout());
@@ -205,12 +202,12 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		
 		// Create outside list panel
 		JPanel outsidePanel = new JPanel(new BorderLayout());
-		outsidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.zone4")));
+		outsidePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("BuildingPanelEVA.titledB.zone4")));
 		outsidePanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.zone4.tooltip"));
 		gridPanel.add(outsidePanel);
 
 		// Create outsideListPanel 
-		outsideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
+		outsideListPanel = new UnitListPanel<>(getContext(), new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getAwaitingOuterDoor());
@@ -220,12 +217,12 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		
 		// Create occupant panel
 		JPanel occupantPanel = new JPanel(new BorderLayout());
-		occupantPanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.zone13")));
+		occupantPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("BuildingPanelEVA.titledB.zone13")));
 		occupantPanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.zone13.tooltip"));
 		gridPanel.add(occupantPanel);
 
 		// Create occupant list panel
-		occupantListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
+		occupantListPanel = new UnitListPanel<>(getContext(), new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getAllInsideOccupants());
@@ -235,12 +232,12 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 
 		// Create outside wait panel
 		JPanel insidePanel = new JPanel(new BorderLayout());
-		insidePanel.setBorder(BorderFactory.createTitledBorder(Msg.getString("BuildingPanelEVA.titledB.zone0")));
+		insidePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("BuildingPanelEVA.titledB.zone0")));
 		insidePanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.zone0.tooltip"));
 		gridPanel.add(insidePanel);
 
 		// Create insideListPanel 
-		insideListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
+		insideListPanel = new UnitListPanel<>(getContext(), new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getAwaitingInnerDoor());
@@ -250,11 +247,11 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		
 		// Create reservation panel
 		JPanel reservationPanel = new JPanel(new BorderLayout());
-		addBorder(reservationPanel, Msg.getString("BuildingPanelEVA.titledB.reserved"));
+		reservationPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("BuildingPanelEVA.titledB.reserved")));
 		reservationPanel.setToolTipText(Msg.getString("BuildingPanelEVA.titledB.reserved.tooltip"));
 		gridPanel.add(reservationPanel);
 		
-		reservationListPanel = new UnitListPanel<>(desktop, new Dimension(100, 100)) {
+		reservationListPanel = new UnitListPanel<>(getContext(), new Dimension(100, 100)) {
 			@Override
 			protected Collection<Person> getData() {
 				return getUnitsFromIds(buildingAirlock.getReserved());
@@ -263,11 +260,10 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		reservationPanel.add(reservationListPanel);
 	}
 
+
 	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+	public void clockUpdate(ClockPulse pulse) {
+
 		// Update innerDoorLabel
 		int inner = eva.getNumAwaitingInnerDoor();
 		if (innerDoorCache != inner) {
@@ -369,33 +365,5 @@ public class BuildingPanelEVA extends BuildingFunctionPanel {
 		outsideListPanel.update();
 		insideListPanel.update();
 		reservationListPanel.update();
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		occupantListPanel = null;
-		outsideListPanel = null;
-		insideListPanel = null;
-		reservationListPanel = null;
-		
-		eva = null;
-		buildingAirlock = null;
-		
-		airlockModeCache = null;
-
-		innerDoorLabel = null;
-		outerDoorLabel = null;
-		occupiedLabel = null;
-		emptyLabel = null;
-		operatorLabel = null;
-		airlockStateLabel = null;
-		activationLabel = null;
-		transitionLabel = null;
-		cycleTimeLabel = null;
-		innerDoorStateLabel = null;
-		outerDoorStateLabel = null;
-		airlockModeLabel = null;
 	}
 }

@@ -18,27 +18,29 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.building.function.Manufacture.ToolCapacity;
 import com.mars_sim.core.manufacture.Tooling;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * A building panel displaying the manufacture building function.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelManufacture extends BuildingFunctionPanel {
+class BuildingPanelManufacture extends EntityTabPanel<Building>
+	implements TemporalComponent {
 
 	private static final String MANU_ICON = "manufacture";
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	/** The manufacture building. */
 	private Manufacture workshop;
@@ -51,15 +53,14 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param workshop the manufacturing building function.
-	 * @param desktop  the main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelManufacture(Manufacture workshop, MainDesktopPane desktop) {
+	public BuildingPanelManufacture(Manufacture workshop, UIContext context) {
 		// Use BuildingFunctionPanel constructor.
 		super(
 			Msg.getString("BuildingPanelManufacture.title"),
-			ImageLoader.getIconByName(MANU_ICON), 
-			workshop.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(MANU_ICON), null,
+			context, workshop.getBuilding() 
 		);
 
 		// Initialize data model.
@@ -84,7 +85,7 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		tscrollPanel.setPreferredSize(new Dimension(160, 130));
 
 		topPanel.add(tscrollPanel, BorderLayout.CENTER);
-		tscrollPanel.setBorder(StyleManager.createLabelBorder("Tools"));
+		tscrollPanel.setBorder(SwingHelper.createLabelBorder("Tools"));
 
 		tools = new ToolModel(workshop.getToolDetails());
 
@@ -114,28 +115,14 @@ public class BuildingPanelManufacture extends BuildingFunctionPanel {
 		processListPane.update(workshop.getProcesses());
 	}
 
-	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
 
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
 		var processes = workshop.getProcesses();
 		processListPane.update(processes);
 
 		tools.update(workshop.getToolDetails());
 
-	}
-
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		// take care to avoid null exceptions
-		workshop = null;
-		processListPane = null;
 	}
 
 	private class ToolModel extends AbstractTableModel implements ToolTipTableModel {

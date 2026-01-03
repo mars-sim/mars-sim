@@ -11,22 +11,24 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.ResourceProcessing;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 
 /**
  * The BuildingPanelResourceProcessing class is a building function panel representing
  * the resource processes of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
+class BuildingPanelResourceProcessing extends EntityTabPanel<Building>
+ implements TemporalComponent {
 
 	private static final String ICON = "resource";
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	// Data members
 	private ResourceProcessing processor;
@@ -36,16 +38,15 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param processor the resource processing building this panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelResourceProcessing(ResourceProcessing processor, MainDesktopPane desktop) {
+	public BuildingPanelResourceProcessing(ResourceProcessing processor, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelResourceProcessing.title"),
-			ImageLoader.getIconByName(ICON),
-			processor.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(ICON), null,
+			context, processor.getBuilding() 
 		);
 
 		// Initialize variables.
@@ -64,10 +65,7 @@ public class BuildingPanelResourceProcessing extends BuildingFunctionPanel {
 	}
 	
 	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
-		
+	public void clockUpdate(ClockPulse pulse) {
 		processPanel.update();
 	}
 }

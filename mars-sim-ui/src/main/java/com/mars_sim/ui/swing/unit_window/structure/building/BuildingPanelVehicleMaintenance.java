@@ -6,21 +6,28 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Flyer;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 
 /**
@@ -28,143 +35,157 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * the vehicle maintenance capabilities of the building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelVehicleMaintenance extends BuildingFunctionPanel {
+class BuildingPanelVehicleMaintenance extends EntityTableTabPanel<Building>
+     implements EntityListener {
 
 	private static final String SUV_ICON = "vehicle";
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-
 	private VehicleMaintenance garage;
 	
-	private JLabel roverNumberLabel;
-	private JLabel luvNumberLabel;
-	private JLabel flyerNumberLabel;
-	
-	private UnitListPanel<Rover> roverList;
-	private UnitListPanel<LightUtilityVehicle> luvList;
-	private UnitListPanel<Flyer> flyerList;
+	private VehicleModel model;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param garage the vehicle maintenance function
-	 * @param desktop the main desktop
+	 * @param context the UI context
 	 */
-	public BuildingPanelVehicleMaintenance(VehicleMaintenance garage, MainDesktopPane desktop) {
+	public BuildingPanelVehicleMaintenance(VehicleMaintenance garage, UIContext context) {
 
-		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelVehicleMaintenance.title"),
-			ImageLoader.getIconByName(SUV_ICON),
-			garage.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(SUV_ICON), null,
+			garage.getBuilding(), context
 		);
 
-		// Initialize data members
 		this.garage = garage;
+		setTableTitle(Msg.getString("Vehicle.plural"));
 	}
 	
+	
+	@Override
+	protected TableModel createModel() {
+		model = new VehicleModel(garage);
+		return model;
+	}
+
 	/**
-	 * Builds the UI.
+	 * Create the fixed info panel showing capabilities of Garage.
 	 */
 	@Override
-	protected void buildUI(JPanel center) {
+	protected JPanel createInfoPanel(){
 
 		// Create label panel
-		AttributePanel labelPanel = new AttributePanel(3,2);
-		center.add(labelPanel, BorderLayout.NORTH);
-		labelPanel.setOpaque(false);
-
-		// Create vehicle number label
-		roverNumberLabel = labelPanel.addTextField(Msg.getString("BuildingPanelVehicleMaintenance.numberOfRovers"),
-									Integer.toString(garage.getCurrentRoverNumber()), null);
+		AttributePanel labelPanel = new AttributePanel();
 
 		// Create rover capacity label
 		int roverCapacity = garage.getRoverCapacity();
 		labelPanel.addTextField(Msg.getString("BuildingPanelVehicleMaintenance.roverCapacity"),
 									Integer.toString(roverCapacity), null);
 
-	
-		// Create drone number label
-		luvNumberLabel = labelPanel.addTextField(Msg.getString("BuildingPanelVehicleMaintenance.numberOfLUVs"),
-									Integer.toString(garage.getCurrentUtilityVehicleNumber()), null);
-
 		// Create drone capacity label
 		int luvCapacity = garage.getUtilityVehicleCapacity();
 		labelPanel.addTextField(Msg.getString("BuildingPanelVehicleMaintenance.luvCapacity"),
 									Integer.toString(luvCapacity), null);
-		
-		// Create drone number label
-		flyerNumberLabel = labelPanel.addTextField(Msg.getString("BuildingPanelVehicleMaintenance.numberOfFlyers"),
-									Integer.toString(garage.getCurrentFlyerNumber()), null);
 
 		// Create drone capacity label
 		int droneCapacity = garage.getFlyerCapacity();
 		labelPanel.addTextField(Msg.getString("BuildingPanelVehicleMaintenance.flyerCapacity"),
-									Integer.toString(droneCapacity), null);
-		
-		// Create vehicle list panel
-		roverList = new UnitListPanel<>(getDesktop()) {
-
-			@Override
-			protected Collection<Rover> getData() {
-				return garage.getRovers();
-			}
-		};
-		
-		JPanel listPanel = new JPanel(new BorderLayout());
-		center.add(listPanel, BorderLayout.CENTER);
-		
-		JPanel vehiclePanel = new JPanel();
-		vehiclePanel.add(roverList);
-		addBorder(roverList, "Vehicles");
-		listPanel.add(vehiclePanel, BorderLayout.NORTH);
-
-		// Create luv list panel
-		luvList = new UnitListPanel<>(getDesktop()) {
-
-			@Override
-			protected Collection<LightUtilityVehicle> getData() {
-				return garage.getUtilityVehicles();
-			}
-		};
-		JPanel luvPanel = new JPanel();
-		luvPanel.add(luvList);
-		addBorder(luvList, "LUVs");
-		listPanel.add(luvPanel, BorderLayout.CENTER);
-		
-		// Create drone list panel
-		flyerList = new UnitListPanel<>(getDesktop()) {
-
-			@Override
-			protected Collection<Flyer> getData() {
-				return garage.getFlyers();
-			}
-		};
-		JPanel flyerPanel = new JPanel();
-		flyerPanel.add(flyerList);
-		addBorder(flyerList, "Flyers");
-		listPanel.add(flyerPanel, BorderLayout.SOUTH);
+									Integer.toString(droneCapacity), null);		
+		return labelPanel;
 	}
 
 	/**
-	 * Updates this panel.
+	 * When any event happens on the Building, update the lists.
 	 */
 	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
+	public void entityUpdate(EntityEvent event) {
+		model.update();
+	}
+
+	/**
+	 * Simple table model for vehicles in the garage.
+	 */
+	private static class VehicleModel  extends AbstractTableModel implements EntityModel {
+
+		private static final String NAME = Msg.getString("Entity.name");
+		private static final String TYPE = Msg.getString("Vehicle.type");
+
+		private static final long serialVersionUID = 1L;
+		private static final int NAME_COL = 0;
+		private static final int TYPE_COL = 1;
+
+		private List<Vehicle> vehicles;
+		private VehicleMaintenance garage;
 		
-		// Update the 3 lists
-		if (roverList.update()) {
-			roverNumberLabel.setText(Integer.toString(roverList.getUnitCount()));
+		public VehicleModel(VehicleMaintenance garage) {
+			this.garage = garage;
+			vehicles = loadVehicles();
 		}
-		if (luvList.update()) {
-			luvNumberLabel.setText(Integer.toString(luvList.getUnitCount()));
+
+		/**
+		 * Update if there is a change in the number fo vehicles
+		 */
+		public void update() {
+			var newVehicles = loadVehicles();
+			if (newVehicles.size() != vehicles.size()) {
+				vehicles = newVehicles;
+				fireTableDataChanged();
+			}
 		}
-		if (flyerList.update()) {
-			flyerNumberLabel.setText(Integer.toString(flyerList.getUnitCount()));
+
+		private List<Vehicle> loadVehicles() {
+			List<Vehicle> list = new ArrayList<>();
+			list.addAll(garage.getRovers());
+			list.addAll(garage.getUtilityVehicles());
+			list.addAll(garage.getFlyers());
+			return list;
+		}
+
+		@Override
+		public int getRowCount() {
+			return vehicles.size();
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			return switch(column) {
+				case NAME_COL -> NAME;
+				case TYPE_COL -> TYPE;
+				default -> "";
+			};
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			Vehicle vehicle = vehicles.get(rowIndex);
+			return switch(columnIndex) {
+				case NAME_COL -> vehicle.getName();
+				case TYPE_COL -> getType(vehicle);
+				default -> "";
+			};
+		}
+
+		private static String getType(Vehicle v) {
+			if (v instanceof Rover) {
+				return Msg.getString("Rover.singular");
+			} else if (v instanceof LightUtilityVehicle) {
+				return Msg.getString("LightUtilityVehicle.singular");
+			} else if (v instanceof Flyer) {
+				return Msg.getString("Flyer.singular");
+			} else {
+				return "Unknown";
+			}
+		}
+
+		@Override
+		public Entity getAssociatedEntity(int row) {
+			return vehicles.get(row);
 		}
 	}
 }

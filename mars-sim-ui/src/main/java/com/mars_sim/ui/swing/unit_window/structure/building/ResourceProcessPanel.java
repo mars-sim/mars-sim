@@ -30,6 +30,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcess.ProcessState;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
@@ -69,6 +70,8 @@ public class ResourceProcessPanel extends JPanel {
         private static final int INPUT_SCORE = 3;
         private static final int OUTPUT_SCORE = 4;
         private static final int SCORE = 5;
+
+        private static final String BUILDING = Msg.getString("Building.singular");
         
         private Building mainBuilding;
         
@@ -138,7 +141,7 @@ public class ResourceProcessPanel extends JPanel {
 		public String getColumnName(int columnIndex) {
             switch(columnIndex) {
                 case RUNNING_STATE: return "S";
-                case BUILDING_NAME: return "Building";
+                case BUILDING_NAME: return BUILDING;
                 case PROCESS_NAME: return "Process";
                 case INPUT_SCORE: return "In";
                 case OUTPUT_SCORE: return "Out";

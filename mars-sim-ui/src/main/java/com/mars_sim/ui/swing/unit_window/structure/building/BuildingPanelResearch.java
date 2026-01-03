@@ -7,18 +7,25 @@
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import com.mars_sim.core.Named;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Research;
 import com.mars_sim.core.science.ScienceType;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
@@ -26,15 +33,11 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * the research aspects of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelResearch extends BuildingFunctionPanel {
+class BuildingPanelResearch extends EntityTabPanel<Building> implements TemporalComponent {
 
 	private static final String SCIENCE_ICON = "science";
 
 	private static final String MILLISOLS = " millisols";
-	
-	// Data members
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	// Data cache
 	/** The number of researchers cache. */
@@ -52,16 +55,15 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param lab the research building this panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelResearch(Research lab, MainDesktopPane desktop) {
+	public BuildingPanelResearch(Research lab, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelResearch.title"), 
-			ImageLoader.getIconByName(SCIENCE_ICON), 
-			lab.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(SCIENCE_ICON), null,
+			context, lab.getBuilding()
 		);
 
 		// Initialize data members
@@ -73,6 +75,8 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
+
+		var building = getEntity();
 
 		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
 		center.add(topPanel, BorderLayout.NORTH);
@@ -109,35 +113,21 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 			
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
-		int size = specialties.length;
+		var specialText = Arrays.stream(specialties)
+							.map(Named::getName)
+							.collect(Collectors.joining(", "));
 
-		JTextArea specialtyTA = new JTextArea();
-		specialtyTA.setSize(150, 200);
-		specialtyTA.setEditable(false);
-		specialtyTA.setColumns(5);
+		JTextArea specialtyTA = SwingHelper.createTextBlock(Msg.getString("BuildingPanelResearch.namesOfSpecialties"),
+						specialText);
 
-		// For each specialty, add specialty name panel.
-		for (ScienceType specialty : specialties) {
-			specialtyTA.append(" " + specialty.getName()+ " ");
-			if (!specialty.equals(specialties[size-1]))
-				//if it's NOT the last one
-				specialtyTA.append("\n");
-		}
-
-		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		listPanel.add(specialtyTA);
-		addBorder(listPanel, Msg.getString("BuildingPanelResearch.namesOfSpecialties"));
-		topPanel.add(listPanel, BorderLayout.CENTER);
+		topPanel.add(specialtyTA, BorderLayout.CENTER);
 	}
 
-	/**
-	 * Updates this panel.
-	 */
+
 	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
-		
+	public void clockUpdate(ClockPulse pulse) {
+		var building = getEntity();
+
 		// Update researchers label if necessary.
 		if (researchersCache != lab.getResearcherNum()) {
 			researchersCache = lab.getResearcherNum();
@@ -158,14 +148,5 @@ public class BuildingPanelResearch extends BuildingFunctionPanel {
 		if (!entropyPenaltyLabel.getText().equalsIgnoreCase(entropyPenalty))
 			entropyPenaltyLabel.setText(entropyPenalty);
 		
-	}
-	
-	@Override
-	public void destroy() {
-		researchersLabel = null;
-		dailyAverageLabel = null;
-		cumulativeTotalLabel = null;
-		entropyLabel = null;
-		lab = null;
 	}
 }

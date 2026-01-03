@@ -17,14 +17,17 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Storage;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 
 
 /**
@@ -32,7 +35,7 @@ import com.mars_sim.ui.swing.unit_window.TabPanelTable;
  * the storage capacity of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelStorage extends TabPanelTable {
+class BuildingPanelStorage extends EntityTableTabPanel<Building> implements TemporalComponent {
 
 	private static final String STORE_ICON = "stock";
 
@@ -90,33 +93,22 @@ public class BuildingPanelStorage extends TabPanelTable {
 		}
 
 		public String getColumnName(int column) {
-			if (column == 0) {
-				return "Resource";
-			}
-			else if (column == 1) {
-				return "Total Stored (kg)";
-			}
-			else if (column == 2) {
-				return "Building Cap (kg)";
-			}
-			else {
-				return "Settlement Cap (kg)";
-			}
+			return switch (column) {
+				case 0 -> "Resource";
+				case 1 -> "Total Stored (kg)";
+				case 2 -> "Building Cap (kg)";
+				default -> "Settlement Cap (kg)";
+			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
-			if (column == 0) {
-				return nameList.get(row);
-			}
-			else if (column == 1) {
-				return available.get(nameList.get(row));
-			}
-			else if (column == 2) {
-				return buildingStorage.get(nameList.get(row));
-			}
-			else {
-				return settlementStorage.get(nameList.get(row));
-			}
+			return switch (column) {
+				case 0 -> nameList.get(row);
+				case 1 -> available.get(nameList.get(row));
+				case 2 -> buildingStorage.get(nameList.get(row));
+				default -> settlementStorage.get(nameList.get(row));
+			};
 		}
 		
 		private void update() {
@@ -125,9 +117,6 @@ public class BuildingPanelStorage extends TabPanelTable {
 		}
 	}
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-
 	private Storage storage;
 
 
@@ -135,16 +124,16 @@ public class BuildingPanelStorage extends TabPanelTable {
 	 * Constructor.
 	 * 
 	 * @param storage the storage building function.
-	 * @param desktop the main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelStorage(Storage storage, MainDesktopPane desktop) {
+	public BuildingPanelStorage(Storage storage, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelStorage.tabTitle"), 
 			ImageLoader.getIconByName(STORE_ICON),
 			Msg.getString("BuildingPanelStorage.tabTitle"), 
-			desktop
+			storage.getBuilding(), context
 		);
 		
 		this.storage = storage;
@@ -170,16 +159,8 @@ public class BuildingPanelStorage extends TabPanelTable {
 		return storageTableModel;
 	}
 	
-	/**
-	 * Updates this panel.
-	 */
 	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
-			
-		// Update table.
+	public void clockUpdate(ClockPulse pulse) {
 		storageTableModel.update();
-	}
-	
+	}	
 }

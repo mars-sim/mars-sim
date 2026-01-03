@@ -8,15 +8,18 @@
 package com.mars_sim.ui.swing.unit_window.structure.building;
 
 import java.awt.BorderLayout;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.utility.power.PowerStorage;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
@@ -24,14 +27,10 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * the power storage of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelPowerStorage
-extends BuildingFunctionPanel {
+class BuildingPanelPowerStorage extends EntityTabPanel<Building> implements TemporalComponent {
 
 	private static final String ENERGY_ICON = "energy";
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-	
+
 	private double capacityCache;
 	private double storedCache;
 	
@@ -44,16 +43,15 @@ extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param storage The power storage building function.
-	 * @param desktop The main desktop.
+	 * @param context The UI context.
 	 */
-	public BuildingPanelPowerStorage(PowerStorage storage, MainDesktopPane desktop) {
+	public BuildingPanelPowerStorage(PowerStorage storage, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelPowerStorage.title"), 
-			ImageLoader.getIconByName(ENERGY_ICON), 
-			storage.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(ENERGY_ICON), null,
+			context, storage.getBuilding() 
 		);
 
 		this.storage = storage;
@@ -79,12 +77,9 @@ extends BuildingFunctionPanel {
 									StyleManager.DECIMAL_KWH.format(storedCache), null);
 	}
 
-	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
-		
 
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
 		// Update capacity label if necessary.
 		double newCapacity = storage.getBattery().getEnergyStorageCapacity();
 		if (capacityCache != newCapacity) {
@@ -98,18 +93,5 @@ extends BuildingFunctionPanel {
 			storedCache = newStored;
 			storedTF.setText(StyleManager.DECIMAL_KWH.format(storedCache));
 		}    
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		// take care to avoid null exceptions
-		storedTF = null;
-		capTF = null;
-		storage = null;
 	}
 }

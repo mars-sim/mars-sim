@@ -12,12 +12,15 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.MedicalCare;
 import com.mars_sim.core.person.health.HealthProblem;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
@@ -27,12 +30,9 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * the medical info of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelMedicalCare extends TabPanelTable {
+public class BuildingPanelMedicalCare extends EntityTableTabPanel<Building> implements TemporalComponent {
 
 	private static final String MEDICAL_ICON = "medical";
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	// Data members
 	/** The medical care. */
@@ -49,16 +49,16 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 	/**
 	 * Constructor.
 	 * @param medical the medical care building this panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelMedicalCare(MedicalCare medical, MainDesktopPane desktop) {
+	public BuildingPanelMedicalCare(MedicalCare medical, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelMedicalCare.title"), 
 			ImageLoader.getIconByName(MEDICAL_ICON),
 			Msg.getString("BuildingPanelMedicalCare.title"), 
-			desktop
+			medical.getBuilding(), context
 		);
 
 		// Initialize data members
@@ -72,7 +72,7 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 	protected JPanel createInfoPanel() {
 
 		// Create label panel
-		AttributePanel labelPanel = new AttributePanel(2);
+		AttributePanel labelPanel = new AttributePanel();
 		
 		// Create sick bed label
 		labelPanel.addTextField(Msg.getString("BuildingPanelMedicalCare.numberOfsickBeds"),
@@ -92,14 +92,10 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 		return medicalTableModel;
 	}
 
-	/**
-	 * Update this panel
-	 */
+
 	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
+	public void clockUpdate(ClockPulse pulse) {
+
 		// Update physician label
 		if (physicianCache != medical.getPhysicianNum()) {
 			physicianCache = medical.getPhysicianNum();
@@ -137,26 +133,32 @@ public class BuildingPanelMedicalCare extends TabPanelTable {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = String.class;
-			return dataType;
+			return switch (columnIndex) {
+				case 0 -> String.class;
+				case 1 -> String.class;
+				default -> Object.class;
+			};
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Patient";
-			else if (columnIndex == 1) return "Condition";
-			else return "unknown";
+			return switch (columnIndex) {
+				case 0 -> "Patient";
+				case 1 -> "Condition";
+				default -> "unknown";
+			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 
 			HealthProblem problem = healthProblems.get(row);
 
-			if (column == 0) return problem.getSufferer().getName();
-			else if (column == 1) return problem.toString();
-			else return "unknown";
+			return switch (column) {
+				case 0 -> problem.getSufferer().getName();
+				case 1 -> problem.toString();
+				default -> "unknown";
+			};
 		}
 
 		public void update() {

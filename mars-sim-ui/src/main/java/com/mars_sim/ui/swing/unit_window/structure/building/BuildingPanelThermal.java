@@ -12,23 +12,28 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.utility.heating.FuelHeatSource;
 import com.mars_sim.core.building.utility.heating.HeatMode;
 import com.mars_sim.core.building.utility.heating.HeatSource;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The BuildingPanelThermal class is a building function panel representing 
  * the heat production of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelThermal
-extends BuildingFunctionPanel {
+class BuildingPanelThermal
+extends EntityTabPanel<Building> implements TemporalComponent{
 
 	private static final String HEAT_ICON = "heat";
 	
@@ -40,19 +45,12 @@ extends BuildingFunctionPanel {
 	private static final String TOTAL_HEAT_PRODUCED = Msg.getString("BuildingPanelThermal.totalHeatProduced"); //$NON-NLS-1$
 	private static final String TOTAL_HEAT_CAP = Msg.getString("BuildingPanelThermal.totalHeatCap"); //$NON-NLS-1$
 
-	/** Is UI constructed. */
-	private boolean uiDone = false;
-
-
-	// Caches
 	/** The heat production cache. */
 	private double totalHeatproducedCache;
 	/** The air heat sink cache. */
 	private double airHeatSinkCache;
 	/** The water heat sink cache. */
 	private double waterHeatSinkCache;
-	
-
 	
 	/** The total heat production label. */
 	private JLabel totalHeatProducedLabel;
@@ -77,22 +75,18 @@ extends BuildingFunctionPanel {
 	/**
 	 * Constructor.
 	 * 
-	 * @param The panel for the Heating System
-	 * @param The main desktop
+	 * @param furnace The thermal generation building function.
+	 * @param context The UI context.
 	 */
-	public BuildingPanelThermal(ThermalGeneration furnace, MainDesktopPane desktop) {
+	public BuildingPanelThermal(ThermalGeneration furnace, UIContext context) {
 		super(
 			Msg.getString("BuildingPanelThermal.title"),
-			ImageLoader.getIconByName(HEAT_ICON), 
-			furnace.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(HEAT_ICON), null,
+			context, furnace.getBuilding()
 		);
 
 		this.furnace = furnace;
-		this.building = furnace.getBuilding();
-		
 		this.sources = furnace.getHeatSources();
-
 	}
 	
 	/**
@@ -128,8 +122,8 @@ extends BuildingFunctionPanel {
 									  "The total heat capacity of this building");
 			
 			int num = sources.size();
-			AttributePanel sPanel = new AttributePanel(num * 4);
-			sPanel.setBorder(StyleManager.createLabelBorder("Heat Sources"));
+			AttributePanel sPanel = new AttributePanel();
+			sPanel.setBorder(SwingHelper.createLabelBorder("Heat Sources"));
 
 			var centerPanel = new JPanel(new BorderLayout());
 			center.add(centerPanel, BorderLayout.CENTER);
@@ -156,14 +150,9 @@ extends BuildingFunctionPanel {
 		}
 	}
 
-	/**
-	 * Updates this panel with latest Heat Mode status and amount of heat produced.
-	 */
-	@Override
-	public void update() {		
-		if (!uiDone)
-			initializeUI();
 
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
 		// Update power production if necessary.
 		if (furnace != null) {
 			
