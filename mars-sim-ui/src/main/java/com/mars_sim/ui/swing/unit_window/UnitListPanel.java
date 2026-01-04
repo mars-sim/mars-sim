@@ -54,6 +54,7 @@ public abstract class UnitListPanel<T extends Entity> extends JPanel {
 		// Create unit list
 		JList<T> list = new JList<>(this.model);
 		list.addMouseListener(new EntityListLauncher(desktop));
+		list.setToolTipText(EntityListLauncher.TOOLTIP);
 		
 		// Create scroll panel
 		JScrollPane scrollPanel = new JScrollPane();

@@ -14,6 +14,7 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 
 /**
@@ -25,7 +26,7 @@ import com.mars_sim.ui.swing.UIContext;
  */
 public class EntityLauncher extends MouseInputAdapter {
 
-    private static final String TOOLTIP = "Double click to view details.";
+    private static final String TOOLTIP = Msg.getString("Entity.doubleClick");
     private static SimLogger logger = SimLogger.getLogger(EntityLauncher.class.getName());
 
     /**
