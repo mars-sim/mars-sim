@@ -4,7 +4,7 @@
  * @date 2023-12-07
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.unit_window.structure.building;
+package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.BorderLayout;
 
@@ -12,12 +12,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.google.common.math.DoubleMath;
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
@@ -25,12 +29,10 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * the fish farm of a settlement building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelFishery extends BuildingFunctionPanel {
+class BuildingPanelFishery extends EntityTabPanel<Building>
+  				implements TemporalComponent {
 
 	private static final String FISH_ICON = "fish";
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	// Caches
 	private int numFish;
@@ -71,15 +73,14 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	/**
 	 * Constructor.
 	 * 
-	 * @param The panel for the Fishery
-	 * @param The main desktop
+	 * @param tank the fishery
+	 * @param context the UI context
 	 */
-	public BuildingPanelFishery(Fishery tank, MainDesktopPane desktop) {
+	public BuildingPanelFishery(Fishery tank, UIContext context) {
 		super(
 			Msg.getString("BuildingPanelFishery.title"), 
-			ImageLoader.getIconByName(FISH_ICON), 
-			tank.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(FISH_ICON), null,
+			context, tank.getBuilding()
 		);
 		
 		this.tank = tank;
@@ -148,13 +149,11 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 	}
 
 	/**
-	 * Updates this panel with latest values.
+	 * Updates this panel on clock pulse.
+	 * Ideally could be converted to event driven update later.
 	 */
 	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
-		
+	public void clockUpdate(ClockPulse pulse) {
 		int newNumFish = tank.getNumFish();
 		if (numFish != newNumFish) {
 			numFish = newNumFish;
@@ -227,29 +226,5 @@ public class BuildingPanelFishery extends BuildingFunctionPanel {
 			workTimeCache = workTime;
 			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
 		}
-	}
-	
-	/**
-	 * Prepares for deletion.
-	 */
-	public void destroy() {
-		super.destroy();
-		
-		waterMassLabel = null;
-		powerReqLabel = null;
-		workTimeLabel = null;
-		
-		numFishLabel = null;
-		numIdealFishLabel = null;
-		maxFishLabel = null;
-		fishMassLabel = null;
-		
-		numWeedLabel = null;
-		weedMassLabel = null;
-		weedDemandLabel = null;
-		
-		ageLabel = null;
-		fishHarvestedLabel = null;
-		tank = null;
 	}
 }

@@ -46,8 +46,8 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.building.FoodProductionPanel;
 import com.mars_sim.ui.swing.unit_window.TabPanel;
-import com.mars_sim.ui.swing.unit_window.structure.building.food.FoodProductionPanel;
 
 /**
  * TabPanelFoodProduction is a panel that displays a settlement's food

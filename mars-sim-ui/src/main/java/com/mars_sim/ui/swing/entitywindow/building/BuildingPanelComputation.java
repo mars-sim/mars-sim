@@ -4,18 +4,22 @@
  * @date 2022-07-10
  * @author Manny Kung
  */
-package com.mars_sim.ui.swing.unit_window.structure.building;
+package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Computation;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
@@ -23,15 +27,13 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * the computational capability of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelComputation extends BuildingFunctionPanel {
+class BuildingPanelComputation extends EntityTabPanel<Building> 
+		implements TemporalComponent{
 
 	private static final String COMPUTING_ICON = "computing";
 	private static final String CU = " CUs";
 	private static final String SLASH = " / ";
 	private static final String KW = " kW";
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	private JLabel powerLoadsLabel;
 	private JLabel percentUsageLabel;
@@ -42,16 +44,15 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param computation the computation building function.
-	 * @param desktop the main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelComputation(Computation computation, MainDesktopPane desktop) {
+	public BuildingPanelComputation(Computation computation, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelComputation.title"), 
-			ImageLoader.getIconByName(COMPUTING_ICON), 
-			computation.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(COMPUTING_ICON), null,
+			context, computation.getBuilding() 
 		);
 	}
 	
@@ -62,6 +63,8 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
+
+		var building = getEntity();
 
 		AttributePanel springPanel = new AttributePanel(4);
 		center.add(springPanel, BorderLayout.NORTH);
@@ -96,9 +99,8 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 	}
 	
 	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
+	public void clockUpdate(ClockPulse pulse) {
+		var building = getEntity();
 		
 		// Power Loads
 		double[] powerLoads = building.getComputation().getSeparatePowerLoadNonLoad();
@@ -126,13 +128,5 @@ public class BuildingPanelComputation extends BuildingFunctionPanel {
 		String entropy = Math.round(building.getComputation().getEntropy() * 1_000.0)/1_000.0 + "";
 		if (!entropyLabel.getText().equalsIgnoreCase(entropy))
 			entropyLabel.setText(entropy);
-	}
-	
-	@Override
-	public void destroy() {
-		powerLoadsLabel = null;
-		percentUsageLabel = null;
-		cULabel = null;
-		entropyLabel = null;
 	}
 }

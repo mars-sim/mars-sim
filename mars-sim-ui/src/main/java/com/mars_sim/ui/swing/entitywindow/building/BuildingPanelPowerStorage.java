@@ -1,0 +1,97 @@
+/*
+ * Mars Simulation Project
+ * BuildingPanelPowerStorage.java
+ * @date 2022-07-10
+ * @author Scott Davis
+ */
+
+package com.mars_sim.ui.swing.entitywindow.building;
+
+import java.awt.BorderLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.utility.power.PowerStorage;
+import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.utils.AttributePanel;
+
+/**
+ * The PowerStorageBuildingPanel class is a building function panel representing 
+ * the power storage of a settlement building.
+ */
+@SuppressWarnings("serial")
+class BuildingPanelPowerStorage extends EntityTabPanel<Building> implements TemporalComponent {
+
+	private static final String ENERGY_ICON = "energy";
+
+	private double capacityCache;
+	private double storedCache;
+	
+	private JLabel storedTF;
+	private JLabel capTF;
+
+	private PowerStorage storage;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param storage The power storage building function.
+	 * @param context The UI context.
+	 */
+	public BuildingPanelPowerStorage(PowerStorage storage, UIContext context) {
+
+		// Use BuildingFunctionPanel constructor
+		super(
+			Msg.getString("BuildingPanelPowerStorage.title"), 
+			ImageLoader.getIconByName(ENERGY_ICON), null,
+			context, storage.getBuilding() 
+		);
+
+		this.storage = storage;
+	}
+	
+	/**
+	 * Builds the UI.
+	 */
+	@Override
+	protected void buildUI(JPanel center) {
+
+		AttributePanel springPanel = new AttributePanel(2);
+		center.add(springPanel, BorderLayout.NORTH);
+		
+		// Create capacity label.
+		capacityCache = storage.getBattery().getEnergyStorageCapacity();
+		capTF = springPanel.addTextField(Msg.getString("BuildingPanelPowerStorage.cap"),
+							 StyleManager.DECIMAL_KWH.format(capacityCache), null);
+		
+		// Create stored label.
+		storedCache = storage.getBattery().getCurrentStoredEnergy();
+		storedTF = springPanel.addTextField(Msg.getString("BuildingPanelPowerStorage.stored"),
+									StyleManager.DECIMAL_KWH.format(storedCache), null);
+	}
+
+
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
+		// Update capacity label if necessary.
+		double newCapacity = storage.getBattery().getEnergyStorageCapacity();
+		if (capacityCache != newCapacity) {
+			capacityCache = newCapacity;
+			capTF.setText(StyleManager.DECIMAL_KWH.format(capacityCache));
+		}
+
+		// Update stored label if necessary.
+		double newStored = storage.getBattery().getCurrentStoredEnergy();
+		if (storedCache != newStored) {
+			storedCache = newStored;
+			storedTF.setText(StyleManager.DECIMAL_KWH.format(storedCache));
+		}    
+	}
+}

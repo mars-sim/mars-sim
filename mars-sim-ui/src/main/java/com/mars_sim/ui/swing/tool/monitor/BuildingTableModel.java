@@ -122,7 +122,7 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	 * @throws Exception
 	 */
 	public BuildingTableModel() {
-		super(Msg.getString("Buildings.plural"),
+		super(Msg.getString("Building.plural"),
 				COLUMNS);	
 		
 		setSettlementColumn(SETTLEMENT);

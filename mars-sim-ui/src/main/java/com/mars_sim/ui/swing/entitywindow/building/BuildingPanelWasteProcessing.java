@@ -4,29 +4,31 @@
  * @date 2022-07-26
  * @author Manny Kung
  */
-package com.mars_sim.ui.swing.unit_window.structure.building;
+package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
+import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.WasteProcessing;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 
 /**
  * The BuildingPanelWasteProcessing class is a building function panel representing
  * the waste processes of a building.
  */
 @SuppressWarnings("serial")
-public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
+class BuildingPanelWasteProcessing extends EntityTabPanel<Building>
+	implements TemporalComponent {
 
 	private static final String RECYCLE_ICON = "recycle";
-
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 
 	// Data members
 	private WasteProcessing processor;
@@ -36,16 +38,15 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 	 * Constructor.
 	 * 
 	 * @param processor the waste processing building this panel is for.
-	 * @param desktop The main desktop.
+	 * @param context the UI context
 	 */
-	public BuildingPanelWasteProcessing(WasteProcessing processor, MainDesktopPane desktop) {
+	public BuildingPanelWasteProcessing(WasteProcessing processor, UIContext context) {
 
 		// Use BuildingFunctionPanel constructor
 		super(
 			Msg.getString("BuildingPanelWasteProcessing.title"),
-			ImageLoader.getIconByName(RECYCLE_ICON),
-			processor.getBuilding(), 
-			desktop
+			ImageLoader.getIconByName(RECYCLE_ICON), null,
+			context, processor.getBuilding() 
 		);
 
 		// Initialize variables.
@@ -63,12 +64,8 @@ public class BuildingPanelWasteProcessing extends BuildingFunctionPanel {
 		center.add(processPanel, BorderLayout.CENTER);	
 	}
 
-	
 	@Override
-	public void update() {	
-		if (!uiDone)
-			initializeUI();
-		
+	public void clockUpdate(ClockPulse pulse) {
 		processPanel.update();
 	}
 }
