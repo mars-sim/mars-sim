@@ -7,26 +7,26 @@
 package com.mars_sim.ui.swing.entitywindow.building;
 
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Iterator;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.food.FoodProductionProcess;
 import com.mars_sim.core.food.FoodProductionProcessInfo;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
 
 /**
  * A panel showing information about a foodProduction process.
@@ -47,18 +47,15 @@ public class FoodProductionPanel extends JPanel {
 	 * @param processStringWidth the max string width to display for the process
 	 *                           name.
 	 */
-	public FoodProductionPanel(FoodProductionProcess process, boolean showBuilding, int processStringWidth) {
-		// Call JPanel constructor
+	public FoodProductionPanel(FoodProductionProcess process, boolean showBuilding, int processStringWidth,
+			UIContext context) {
 		super();
 
 		// Initialize data members.
 		this.process = process;
 
 		// Set layout
-		if (showBuilding)
-			setLayout(new GridLayout(4, 1, 0, 0));
-		else
-			setLayout(new GridLayout(3, 1, 0, 0));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		// Set border
 		setBorder(new MarsPanelBorder());
@@ -70,34 +67,22 @@ public class FoodProductionPanel extends JPanel {
 		// Prepare cancel button.
 		JButton cancelButton = new JButton(ImageLoader.getIconByName("action/cancel"));
 		cancelButton.setMargin(new Insets(0, 0, 0, 0));
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-//        		try {
-				getFoodProductionProcess().getKitchen().endFoodProductionProcess(getFoodProductionProcess(), true);
-//        		}
-//        		catch (BuildingException e) {}
-			}
-		});
+		cancelButton.addActionListener(event ->
+			getFoodProductionProcess().getKitchen().endFoodProductionProcess(getFoodProductionProcess(), true)
+		);
 		cancelButton.setToolTipText("Cancel his Food Production Process");
 		namePane.add(cancelButton);
 
 		// Prepare name label.
 		String name = process.getInfo().getName();
-		if (name.length() > 0) {
-			String firstLetter = name.substring(0, 1).toUpperCase();
-			name = " " + firstLetter + name.substring(1);
-		}
-		if (name.length() > processStringWidth)
-			name = name.substring(0, processStringWidth) + "...";
-		// 2014-11-19 Capitalized process names
-		JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
+		name = Conversion.trim(name, processStringWidth);
+		JLabel nameLabel = new JLabel(name, SwingConstants.LEFT);
 		namePane.add(nameLabel);
 
 		if (showBuilding) {
 			// Prepare building name label.
-			// 2014-11-19 Changed from getName() to getName()
-			String buildingName = process.getKitchen().getBuilding().getName();
-			JLabel buildingNameLabel = new JLabel(buildingName, SwingConstants.CENTER);
+			var building = process.getKitchen().getBuilding();
+			var buildingNameLabel = new EntityLabel(building, context);
 			add(buildingNameLabel);
 		}
 
@@ -133,7 +118,7 @@ public class FoodProductionPanel extends JPanel {
 		update();
 
 		// Add tooltip.
-		setToolTipText(getToolTipString(process.getInfo(), process.getKitchen().getBuilding()));
+		setToolTipText(getToolTipString(process.getInfo()));
 	}
 
 	/**
@@ -170,10 +155,9 @@ public class FoodProductionPanel extends JPanel {
 	 * Gets a tool tip string for a foodProduction process.
 	 * 
 	 * @param info     the foodProduction process info.
-	 * @param building the foodProduction building (or null if none).
 	 */
 	// Update tooltip formatting
-	public static String getToolTipString(FoodProductionProcessInfo info, Building building) {
+	public static String getToolTipString(FoodProductionProcessInfo info) {
 		StringBuilder result = new StringBuilder("<html>");
 
 		result.append("&emsp;&emsp;&emsp;&emsp;&nbsp;Process : ").append(info.getName())

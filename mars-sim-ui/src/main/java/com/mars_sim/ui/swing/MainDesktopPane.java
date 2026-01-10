@@ -16,7 +16,6 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +38,6 @@ import javax.swing.event.InternalFrameEvent;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.time.ClockListener;
@@ -54,17 +52,13 @@ import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
+import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
-import com.mars_sim.ui.swing.unit_window.UnitWindow;
-import com.mars_sim.ui.swing.unit_window.UnitWindowFactory;
-import com.mars_sim.ui.swing.unit_window.UnitWindowListener;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
@@ -87,8 +81,6 @@ public class MainDesktopPane extends JDesktopPane
 
 	/** The game mode of this simulation session. */
 	public GameMode mode;
-	/** List of open or buttoned unit windows. */
-	private Collection<UnitWindow> unitWindows;
 
 	private Collection<ContentWindow> entityWindows;
 	private Collection<ContentWindow> toolWindows;
@@ -124,9 +116,6 @@ public class MainDesktopPane extends JDesktopPane
 			soundPlayer = new AudioPlayer(this);
 			soundPlayer.playMusic(SoundConstants.SND_SPLASH);
 		}
-		
-		// Prepare unit windows.
-		unitWindows = new ArrayList<>();
 
 		// Prepare tool windows. Needs to be thread safe as windows are used by clock pulse
 		toolWindows = new CopyOnWriteArrayList<>();
@@ -278,10 +267,10 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Get the list of open UnitWindows
+	 * Get the list of open Entity windows
 	 */
-	Collection<UnitWindow> getUnitWindows() {
-		return unitWindows;
+	Collection<ContentWindow> getEntityWindows() {
+		return entityWindows;
 	}
 
 	/**
@@ -498,12 +487,7 @@ public class MainDesktopPane extends JDesktopPane
 			// if (soundFilePath != null && !soundFilePath.isEmpty() && soundPlayer != null) {
 			// 	soundPlayer.playSound(soundFilePath);
 			// }		
-			return;
 		}
-
-		// Fallback to old style
-		if (entity instanceof Unit unit)
-			openUnitWindow(unit, initProps);
 	}
 
 	/**
@@ -551,63 +535,6 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Opens an old style Unit Window for a specific Unit with a optional set of user properties.
-	 * This will eventually be phased out.
-	 * 
-	 * @param unit Unit to display
-	 * @param initProps Initial properties
-     * @return
-	 */
-	private void openUnitWindow(Unit unit, WindowSpec initProps) {
-
-		UnitWindow tempWindow = null;
-
-		// See if the window of this unit has already been opened
-		for (UnitWindow window : unitWindows) {
-			if (window.getUnit() == unit) {
-				tempWindow = window;
-				if (tempWindow.isClosed()) {
-					add(tempWindow, 0);
-				}
-			}
-		}
-
-		if (tempWindow == null) {
-			// Create new window for unit.
-			tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
-			
-			add(tempWindow, 0);
-			tempWindow.pack();
-
-			// Set internal frame listener
-			tempWindow.addInternalFrameListener(new UnitWindowListener(this));
-
-			if (initProps != null) {
-				tempWindow.setUIProps(initProps.props());
-			}
-			positionWindow(tempWindow, initProps);
-
-			// Add unit window to unit windows
-			unitWindows.add(tempWindow);
-
-			// Create new unit button in tool bar if necessary
-			if (mainWindow != null)
-				mainWindow.createUnitButton(unit);
-		}
-
-		tempWindow.setVisible(true);
-
-		// Correct window becomes selected
-		bringToFront(tempWindow);
-
-		// Play sound
-		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
-		if (soundFilePath != null && !soundFilePath.isEmpty() && soundPlayer != null) {
-			soundPlayer.playSound(soundFilePath);
-		}		
-	}
-
-	/**
 	 * Bring an internal window to the front of the desktop
 	 * @param tempWindow Window to bring to front
 	 */
@@ -621,36 +548,9 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Disposes a unit window and button.
-	 *
-	 * @param window the unit window to dispose.
-	 */
-	public void disposeUnitWindow(UnitWindow window) {
-
-		if (window != null) {
-			window.setVisible(false);
-
-			unitWindows.remove(window);
-			window.dispose();
-
-			// Have main window dispose of unit button
-			if (mainWindow != null)
-				mainWindow.disposeUnitButton(window.getUnit());
-
-			// Lastly destroy the window
-			window.destroy();
-		}
-	}
-
-	/**
 	 * Update the desktop and all of its windows.
 	 */
 	private void updateWindows(ClockPulse pulse) {
-		// Update all unit windows.
-		for (UnitWindow u : unitWindows) {
-			if (u.isVisible() || u.isShowing())
-				u.update();
-		}
 
 		// Update all entity windows.
 		for (var w : entityWindows) {
@@ -829,16 +729,8 @@ public class MainDesktopPane extends JDesktopPane
 	public void destroy() {
 		
 		mode = null;
-		if (unitWindows != null) {
-			for (UnitWindow u : unitWindows) {
-				u.destroy();
-			}
-			unitWindows = null;
-		}
 		if (toolWindows != null) {
-			for (var w : toolWindows) {
-				w.destroy();
-			}
+			toolWindows.forEach(w -> w.destroy());
 			toolWindows = null;
 		}
 	}

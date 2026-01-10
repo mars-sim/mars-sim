@@ -20,11 +20,13 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
@@ -32,7 +34,8 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * This is a tab panel for settlement's computing capability.
  */
 @SuppressWarnings("serial")
-public class TabPanelComputing extends TabPanelTable {
+class TabPanelComputing extends EntityTableTabPanel<Settlement> 
+				implements TemporalComponent{
 
 	// default logger.
 
@@ -46,9 +49,6 @@ public class TabPanelComputing extends TabPanelTable {
 	private JLabel cULabel;
 	private JLabel entropyLabel;
 	
-	/** The Settlement instance. */
-	private Settlement settlement;
-	
 	private BuildingManager manager;
 
 	private TableModel tableModel;
@@ -57,18 +57,16 @@ public class TabPanelComputing extends TabPanelTable {
 	 * Constructor.
 	 * 
 	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelComputing(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelComputing(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelComputing.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(COMPUTING_ICON),
-			Msg.getString("TabPanelComputing.title"), //$NON-NLS-1$
-			desktop
+			ImageLoader.getIconByName(COMPUTING_ICON), null,
+			unit, context
 		);
-		settlement = unit;
-		manager = settlement.getBuildingManager();
+		manager = unit.getBuildingManager();
 	}
 	
 	@Override
@@ -116,7 +114,7 @@ public class TabPanelComputing extends TabPanelTable {
 	 * @return Table model.
 	 */
 	protected TableModel createModel() {
-		tableModel = new TableModel(settlement);
+		tableModel = new TableModel(getEntity());
 
 		return tableModel;
 	}
@@ -145,12 +143,9 @@ public class TabPanelComputing extends TabPanelTable {
 		columns.getColumn(4).setCellRenderer(renderer);
 	}
 
-	/**
-	 * Updates the info on this panel.
-	 */
-	@Override
-	public void update() {
 
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
 		// Total Power Demand
 		double[] powerLoads = manager.getTotalCombinedLoads();
 		String twoLoads = Math.round(powerLoads[0] * 10.0)/10.0 + SLASH
@@ -187,7 +182,7 @@ public class TabPanelComputing extends TabPanelTable {
 	/**
 	 * Internal class used as model for the table.
 	 */
-	private class TableModel extends AbstractTableModel
+	private static class TableModel extends AbstractTableModel
 		implements EntityModel {
 
 		/** default serial id. */
@@ -196,77 +191,61 @@ public class TabPanelComputing extends TabPanelTable {
 		private List<Building> buildings;
 
 		private TableModel(Settlement settlement) {
-			buildings = manager.getBuildings(FunctionType.COMPUTATION);
+			buildings = settlement.getBuildingManager().getBuildings(FunctionType.COMPUTATION);
 		}
 
+		@Override
 		public int getRowCount() {
 			return buildings.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 7;
 		}
 		
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = Building.class;
-			else if (columnIndex == 1) dataType = Double.class;
-			else if (columnIndex == 2) dataType = Double.class;
-			else if (columnIndex == 3) dataType = Double.class;
-			else if (columnIndex == 4) dataType = Double.class;
-			else if (columnIndex == 5) dataType = String.class;
-			else if (columnIndex == 6) dataType = Double.class;
-			return dataType;
+			return switch (columnIndex) {
+				case 0 -> String.class;
+				case 1, 2, 3, 4, 6 -> Double.class;
+				case 5 -> String.class;
+				default -> Object.class;
+			};
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
-			else if (columnIndex == 1) return "kWe"; //$NON-NLS-1$
-			else if (columnIndex == 2) return "kWt"; //$NON-NLS-1$
-			else if (columnIndex == 3) return "Cooling"; //$NON-NLS-1$
-			else if (columnIndex == 4) return "% Util"; //$NON-NLS-1$
-			else if (columnIndex == 5) return "CUs"; //$NON-NLS-1$
-			else if (columnIndex == 6) return "Entropy"; //$NON-NLS-1$
-			else return null;
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("Building.singular");
+				case 1 -> "kWe";
+				case 2 -> "kWt";
+				case 3 -> "Cooling";
+				case 4 -> "% Util";
+				case 5 -> "CUs";
+				case 6 -> "Entropy";
+				default -> null;
+			};
 		}
 
 		@Override
 		public Object getValueAt(int row, int column) {
 
-			if (column == 0) {
-				return buildings.get(row);
-			}
-			if (column == 1) {
-				// Power load
-				return Math.round(buildings.get(row).getComputation().getCombinedPowerLoad() * 10.0)/10.0;
-			}
-			if (column == 2) {
-				// heat generated
-				return Math.round(buildings.get(row).getComputation().getInstantHeatGenerated() * 10.0)/10.0;
-			}
-			else if (column == 3) {
-				// cooling load
-				return Math.round(buildings.get(row).getComputation().getInstantCoolingLoad() * 10.0)/10.0;
-			}
-			else if (column == 4) {
-				// Usage
-				return Math.round(buildings.get(row).getComputation().getUsagePercent() * 10.0)/10.0;
-			}
-			else if (column == 5) {
-				// Peak
-				double peak = Math.round(buildings.get(row).getComputation().getPeakCU() * 100.0)/100.0;
-				// Current
-				double computingUnit = Math.round(buildings.get(row).getComputation().getCurrentCU() * 100.0)/100.0;
-				return computingUnit + SLASH + peak;
-			}
-			else if (column == 6) {
-				// Entropy
-				return Math.round(buildings.get(row).getComputation().getEntropy( )* 1_000.0)/1_000.0;
-			}
-
-			return null;
+			var b = buildings.get(row);
+			return switch (column) {
+				case 0 -> b.getName();
+				case 1 -> Math.round(b.getComputation().getCombinedPowerLoad() * 10.0)/10.0;
+				case 2 -> Math.round(b.getComputation().getInstantHeatGenerated() * 10.0)/10.0;
+				case 3 -> Math.round(b.getComputation().getInstantCoolingLoad() * 10.0)/10.0;
+				case 4 -> Math.round(b.getComputation().getUsagePercent() * 10.0)/10.0;
+				case 5 -> {
+					double peak = Math.round(b.getComputation().getPeakCU() * 100.0)/100.0;
+					double computingUnit = Math.round(b.getComputation().getCurrentCU() * 100.0)/100.0;
+					yield computingUnit + SLASH + peak;
+				}
+				case 6 -> Math.round(b.getComputation().getEntropy( )* 1_000.0)/1_000.0;
+				default -> null;
+			};
 		}
 
 		public void update() {
@@ -277,16 +256,5 @@ public class TabPanelComputing extends TabPanelTable {
 		public Entity getAssociatedEntity(int row) {
 			return buildings.get(row);
 		}
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		settlement = null;
-		manager = null;
 	}
 }

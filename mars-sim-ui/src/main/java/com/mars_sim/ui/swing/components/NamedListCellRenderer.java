@@ -22,15 +22,39 @@ import com.mars_sim.core.Named;
 public class NamedListCellRenderer extends DefaultListCellRenderer {
 
 	private String prompt;
+	private int horizontalAlignment = CENTER;
+
+	/**
+	 * Default settings
+	 */
 	public NamedListCellRenderer() {
+		this(null, CENTER);
 	}
 
     /**
      * The prompt will be displayed of the is no values selected.
-     * @param prompt
+     * @param prompt Text to display when no object to renderer
      */
 	public NamedListCellRenderer(String prompt) {
+		this(prompt, CENTER);
+	}
+
+	/**
+	 * Renderer with specified horizontal alignment
+	 * @param horizontalAlignment The horizontal alignment of text	
+	 */
+	public NamedListCellRenderer(int horizontalAlignment) {
+		this(null, horizontalAlignment);
+	}
+
+	/**
+	 * Fully defined constructor
+	 * @param prompt Text to display when no object to renderer
+	 * @param horizontalAlignment The horizontal alignment of text
+	 */
+	public NamedListCellRenderer(String prompt, int horizontalAlignment) {
 		this.prompt = prompt;
+		this.horizontalAlignment = horizontalAlignment;
 	}
 
 	@Override
@@ -38,7 +62,7 @@ public class NamedListCellRenderer extends DefaultListCellRenderer {
 			boolean cellHasFocus) {
 		Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		// Center horizontally
-		setHorizontalAlignment(CENTER); 
+		setHorizontalAlignment(horizontalAlignment); 
 		
 		if ((value == null) && (prompt != null)) {
 			setText(prompt);

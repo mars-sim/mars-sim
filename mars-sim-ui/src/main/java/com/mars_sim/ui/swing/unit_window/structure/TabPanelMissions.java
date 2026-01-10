@@ -9,36 +9,26 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.util.Collections;
-import java.util.List;
+import java.util.Collection;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * Tab panel displaying a list of settlement missions.<br>
@@ -47,11 +37,9 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  * single mission's details.
  */
 @SuppressWarnings("serial")
-public class TabPanelMissions extends TabPanel {
-	/** default logger. */
-	private static SimLogger logger = SimLogger.getLogger(TabPanelMissions.class.getName());
+class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalComponent{
 
-	private static final String FLAG_ICON = "mission";
+	private static final String MISSION_ICON = "mission";
 
 	// Data members	
 	private JLabel siteLabel;
@@ -67,38 +55,23 @@ public class TabPanelMissions extends TabPanel {
 	private JLabel unclaimedMeanLabel;
 	private JLabel unclaimedSDevLabel;
 	
-	private JList<Mission> missionList;
-	
-	private DefaultListModel<Mission> missionListModel;
-	
-	private JButton missionButton;
-	private JButton monitorButton;
+	private UnitListPanel<Mission> missionList;
 	
 	private JCheckBox overrideCheckbox;
-	
-	/** The Settlement instance. */
-	private Settlement settlement;
-
-	private List<Mission> missionsCache;
 
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param settlement {@link Settlement} the settlement this tab panel is for.
-	 * @param desktop {@link MainDesktopPane} the main desktop panel.
+	 * @param context The UI context.
 	 */
-	public TabPanelMissions(Settlement settlement, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
+	public TabPanelMissions(Settlement settlement, UIContext context) {
 		super(
-			Msg.getString("TabPanelMissions.title"),
-			ImageLoader.getIconByName(FLAG_ICON),
-			Msg.getString("TabPanelMissions.title"), //$NON-NLS-1$
-			settlement, desktop
+			Msg.getString("Mission.plural"),
+			ImageLoader.getIconByName(MISSION_ICON), null,
+			context, settlement
 		);
-
-		// Initialize data members.
-		this.settlement = settlement;
 	}
 
 	@Override
@@ -110,30 +83,30 @@ public class TabPanelMissions extends TabPanel {
 		
 		AttributePanel sitePanel = new AttributePanel(4, 1);
 		topPanel.add(sitePanel, BorderLayout.NORTH);
-		sitePanel.setBorder(BorderFactory.createTitledBorder("Nearby Sites"));
+		sitePanel.setBorder(SwingHelper.createLabelBorder("Nearby Sites"));
 		
-		siteLabel = sitePanel.addRow("Sites Found","");
-		numROIsLabel = sitePanel.addRow("Declared ROIs", "");
-		siteMeanLabel = sitePanel.addRow("Mean Distance \u03BC", ""); 
-		siteSDevLabel = sitePanel.addRow("Standard Deviation \u03C3", "");
+		siteLabel = sitePanel.addTextField("Sites Found","", null);
+		numROIsLabel = sitePanel.addTextField("Declared ROIs", "", null);
+		siteMeanLabel = sitePanel.addTextField("Mean Distance \u03BC", "", null); 
+		siteSDevLabel = sitePanel.addTextField("Standard Deviation \u03C3", "", null);
 		
 		
 		AttributePanel twoPanel = new AttributePanel(3, 1);
 		topPanel.add(twoPanel, BorderLayout.CENTER);
-		twoPanel.setBorder(BorderFactory.createTitledBorder("Claimed Sites"));
+		twoPanel.setBorder(SwingHelper.createLabelBorder("Claimed Sites"));
 		
-		claimedSiteLabel = twoPanel.addRow("Sites", "");
-		claimedMeanLabel = twoPanel.addRow("Mean Distance \u03BC", "");
-		claimedSDevLabel = twoPanel.addRow("Standard Deviation \u03C3", "");
+		claimedSiteLabel = twoPanel.addTextField("Sites", "", null);
+		claimedMeanLabel = twoPanel.addTextField("Mean Distance \u03BC", "", null);
+		claimedSDevLabel = twoPanel.addTextField("Standard Deviation \u03C3", "", null);
 		
 		
 		AttributePanel unclaimPanel = new AttributePanel(3, 1);
 		topPanel.add(unclaimPanel, BorderLayout.SOUTH);
-		unclaimPanel.setBorder(BorderFactory.createTitledBorder("Unclaimed Sites"));
+		unclaimPanel.setBorder(SwingHelper.createLabelBorder("Unclaimed Sites"));
 		
-		unclaimedSiteLabel = unclaimPanel.addRow("Sites", "");		
-		unclaimedMeanLabel = unclaimPanel.addRow("Mean Distance \u03BC", "");
-		unclaimedSDevLabel = unclaimPanel.addRow("Standard Deviation \u03C3", "");
+		unclaimedSiteLabel = unclaimPanel.addTextField("Sites", "", null);		
+		unclaimedMeanLabel = unclaimPanel.addTextField("Mean Distance \u03BC", "", null);
+		unclaimedSDevLabel = unclaimPanel.addTextField("Standard Deviation \u03C3", "", null);
 		
 		
 		// Create center panel.
@@ -143,81 +116,30 @@ public class TabPanelMissions extends TabPanel {
 		// Create mission list panel.
 		JPanel missionListPanel = new JPanel();
 		centerPanel.add(missionListPanel, BorderLayout.CENTER);
-
-		buildScrollPanel(missionListPanel);
-		buildButtonPanel(centerPanel);
-		buildBottomPanel(content);
-
-		// Add values to components
-		update();
-	}
-		
-	/**
-	 * Builds the scroll panel.
-	 * 
-	 * @param centerPanel
-	 * @param missionListPanel
-	 */
-	private void buildScrollPanel(JPanel missionListPanel) {
-
-		// Create mission scroll panel.
-		JScrollPane missionScrollPanel = new JScrollPane();
-		missionScrollPanel.setPreferredSize(new Dimension(190, 220));
-		missionListPanel.add(missionScrollPanel);
-
-		// Create mission list model.
-		missionListModel = new DefaultListModel<>();
-		missionsCache = Collections.emptyList();
+		missionListPanel.setBorder(SwingHelper.createLabelBorder("Active Missions"));
 
 		// Create mission list.
-		missionList = new JList<>(missionListModel);
-		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		missionList.addListSelectionListener(e -> {
-			boolean missionSelected = !missionList.isSelectionEmpty();
-			missionButton.setEnabled(missionSelected);
-			monitorButton.setEnabled(missionSelected);
-		});
-		missionScrollPanel.setViewportView(missionList);
+		var missionMgr = getContext().getSimulation().getMissionManager();
+		missionList = new UnitListPanel<Mission>(getContext(), new Dimension(300, 100)) {
+			@Override
+			protected Collection<Mission> getData() {
+				return missionMgr.getMissionsForSettlement(getEntity());
+			}
+		};
+		missionListPanel.add(missionList);
+
+		buildBottomPanel(content, getEntity());
+
+		// Add values to components
+		updateMissionStats();
 	}
-	
-	/**
-	 * Builds the button panel.
-	 * 
-	 * @param centerPanel
-	 */
-	private void buildButtonPanel(JPanel centerPanel) {
-		// Create button panel.
-		JPanel buttonPanel = new JPanel(new BorderLayout());
-		buttonPanel.setBorder(new EmptyBorder(5, 0, 0, 0));
-		centerPanel.add(buttonPanel, BorderLayout.EAST);
-
-		// Create inner button panel.
-		JPanel innerButtonPanel = new JPanel(new GridLayout(2, 1, 0, 2));
-		buttonPanel.add(innerButtonPanel, BorderLayout.NORTH);
-
-		// Create mission button.
-		missionButton = new JButton(ImageLoader.getIconByName(MissionWindow.ICON)); //$NON-NLS-1$
-		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		missionButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.mission")); //$NON-NLS-1$
-		missionButton.setEnabled(false);
-		missionButton.addActionListener(e -> openMissionTool());
-		innerButtonPanel.add(missionButton);
-
-		// Create monitor button.
-		monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); //$NON-NLS-1$
-		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.monitor")); //$NON-NLS-1$
-		monitorButton.setEnabled(false);
-		monitorButton.addActionListener(e -> openMonitorTool());
-		innerButtonPanel.add(monitorButton);
-	}
-	
+		
 	/**
 	 * Builds the bottom panel.
 	 * 
 	 * @param content
 	 */
-	private void buildBottomPanel(JPanel content) {
+	private void buildBottomPanel(JPanel content, Settlement settlement) {
 		// Create bottom panel.
 		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		content.add(bottomPanel, BorderLayout.SOUTH);
@@ -230,9 +152,9 @@ public class TabPanelMissions extends TabPanel {
 		bottomPanel.add(overrideCheckbox);
 	}
 
-	@Override
-	public void update() {
-		
+	private void updateMissionStats() {
+		var settlement = getEntity();
+
 		var eMgr = settlement.getExplorations();
 
 		var site = eMgr.getStatistics(ExplorationManager.SITE_STAT);
@@ -248,55 +170,16 @@ public class TabPanelMissions extends TabPanel {
 		claimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(claimed.mean()));
 		claimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(claimed.sd()));
 		
-		
 		unclaimedSiteLabel.setText(eMgr.numDeclaredROIs(false) + "");		
 		unclaimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.mean()));
 		unclaimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.sd()));
 		
-		
-		// Get all missions for the settlement.
-		List<Mission> missions = getSimulation().getMissionManager().getMissionsForSettlement(settlement);
-
 		// Update mission list if necessary.
-		if (!missions.equals(missionsCache)) {
-			Mission selectedMission = missionList.getSelectedValue();
-
-			missionsCache = missions;
-			missionListModel.clear();
-			missionsCache.forEach(m -> missionListModel.addElement(m));
-
-			if ((selectedMission != null) && missionListModel.contains(selectedMission))
-				missionList.setSelectedValue(selectedMission, true);
-		}
+		missionList.update();
 
 		// Update mission override check box if necessary.
 		if (settlement.getProcessOverride(OverrideType.MISSION) != overrideCheckbox.isSelected())
 			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.MISSION));
-	}
-
-	/**
-	 * Opens the mission tool to the selected mission in the mission list.
-	 */
-	private void openMissionTool() {
-		Mission mission = missionList.getSelectedValue();
-		if (mission != null) {
-			getDesktop().showDetails(mission);
-		}
-	}
-
-	/**
-	 * Opens the monitor tool with a mission tab for the selected mission
-	 * in the mission list.
-	 */
-	private void openMonitorTool() {
-		Mission mission = missionList.getSelectedValue();
-		if (mission != null) {
-			try {
-				getDesktop().addModel(new PersonTableModel(mission));
-			} catch (Exception e) {
-				logger.severe("PersonTableModel cannot be added.");
-			}
-		}
 	}
 
 	/**
@@ -305,22 +188,15 @@ public class TabPanelMissions extends TabPanel {
 	 * @param override the mission creation override flag.
 	 */
 	private void setMissionCreationOverride(boolean override) {
-		settlement.setProcessOverride(OverrideType.MISSION, override);
+		getEntity().setProcessOverride(OverrideType.MISSION, override);
 	}
 
 	/**
-	 * Prepares object for garbage collection.
+	 * Update the mission and sites stats. Ideally should be event driven
+	 * @param pulse
 	 */
 	@Override
-	public void destroy() {
-		super.destroy();
-		
-		settlement = null;
-		missionsCache = null;
-		missionListModel = null;
-		missionList = null;
-		missionButton = null;
-		monitorButton = null;
-		overrideCheckbox = null;
+	public void clockUpdate(ClockPulse pulse) {
+		updateMissionStats();
 	}
 }

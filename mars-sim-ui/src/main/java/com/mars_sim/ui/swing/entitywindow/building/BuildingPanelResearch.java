@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
 import com.mars_sim.core.Named;
 import com.mars_sim.core.building.Building;
@@ -117,7 +116,7 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 							.map(Named::getName)
 							.collect(Collectors.joining(", "));
 
-		JTextArea specialtyTA = SwingHelper.createTextBlock(Msg.getString("BuildingPanelResearch.namesOfSpecialties"),
+		var specialtyTA = SwingHelper.createTextBlock(Msg.getString("BuildingPanelResearch.namesOfSpecialties"),
 						specialText);
 
 		topPanel.add(specialtyTA, BorderLayout.CENTER);

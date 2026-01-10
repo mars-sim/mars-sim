@@ -50,6 +50,9 @@ public class ContentWindow extends JInternalFrame
 		desktop.add(this);
 			
 		pack();
+
+        // Force the minimum size of the window to avoid layout issues
+        setMinimumSize(content.getMinimumSize());
         setVisible(true);
     }
 

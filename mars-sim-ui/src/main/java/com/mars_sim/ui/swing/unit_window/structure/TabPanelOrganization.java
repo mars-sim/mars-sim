@@ -14,27 +14,22 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.EntityManagerListener;
-import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -42,9 +37,9 @@ import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -52,15 +47,11 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The TabPanelOrganization is a tab panel showing the organizational structure of
  * a settlement.
  * 
- * @See https://docs.oracle.com/javase/tutorial/uiswing/components/tree.html#display
  */
 @SuppressWarnings("serial")
-public class TabPanelOrganization extends TabPanel {
+class TabPanelOrganization extends EntityTabPanel<Settlement> {
 
 	private static final String ORG_ICON = "organisation";
-	
-	/** The Settlement instance. */
-	private Settlement settlement;
 
 	private JTree tree;
 	
@@ -68,51 +59,46 @@ public class TabPanelOrganization extends TabPanel {
 
 	private DefaultTreeModel defaultTreeModel;
 
-	private Map<Person, RoleType> roles = new HashMap<>();
-
 	private Map<RoleType,DefaultMutableTreeNode> roleNodes = new EnumMap<>(RoleType.class);
 
-	private Map<Person, PersonListener> listeners  = new HashMap<>();
+	// Shared listener for Role changes
+	private RoleChangeListener roleChangeListener = new RoleChangeListener();
 
-	private LocalEntityManagerListener entityManagerListener;
+	// Keep track of persons we have added listener to
+	private Set<Person> tracked = new HashSet<>();
 
 	/**
 	 * Constructor.
 	 *
 	 * @param unit    the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelOrganization(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelOrganization(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			null, 
-			ImageLoader.getIconByName(ORG_ICON),
-			Msg.getString("TabPanelStructure.title"), //$NON-NLS-1$
-			desktop);
-
-		settlement = unit;
-
+			"Organisation",
+			ImageLoader.getIconByName(ORG_ICON), null,
+			context, unit);
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
-		UnitManager unitManager = getSimulation().getUnitManager();
-		entityManagerListener = new LocalEntityManagerListener();
-		unitManager.addEntityManagerListener(UnitType.PERSON, entityManagerListener);
 
 		// Create label panel.
 		var labelPanel = new AttributePanel();
 		content.add(labelPanel, BorderLayout.NORTH);
 
+		var settlement = getEntity();
+
 		// Prepare label
 		labelPanel.addLabelledItem(Msg.getString("Authority.singular"),
-					new EntityLabel(settlement.getReportingAuthority(), getDesktop()));
+					new EntityLabel(settlement.getReportingAuthority(), getContext()));
 		var gov = settlement.getChainOfCommand().getGovernance();
 		labelPanel.addTextField("Governance Model", gov.getName(), null);
 		labelPanel.addTextField("Job Approvals", Boolean.toString(gov.needJobApproval()), null);
 		labelPanel.addTextField("Mission Min. Reviewers", Integer.toString(gov.getUniqueReviewers()), null);
 
-		root = new DefaultMutableTreeNode("  " + settlement.getName() + "  -  " + settlement.getUnitType().getName() + "  ");
+		root = new DefaultMutableTreeNode("Governance Roles");
 
 		// Will figure out how to change font in ((DefaultMutableTreeNode) root.getParent()).getUserObject().setFont(labelFont)
 		
@@ -121,8 +107,7 @@ public class TabPanelOrganization extends TabPanel {
 		tree = new JTree(defaultTreeModel);
 		// Note : will allow changing role name in future : tree.setEditable(true)
 		
-		tree.getSelectionModel().setSelectionMode
-		        (TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.setShowsRootHandles(true);
 		tree.setVisibleRowCount(8);
 
@@ -130,29 +115,17 @@ public class TabPanelOrganization extends TabPanel {
 		scrollPane.setViewportView(tree);
 		scrollPane.setBorder(SwingHelper.createLabelBorder("Role Assignments"));
 		content.add(scrollPane, BorderLayout.CENTER);
-		
-		initNodes();
+
+		setupDoubleClickOnPersonNodes();
+
+		initNodes(settlement);
 	}
 
-	/**
-	 * Tracks tree changes.
-	 *
-	 * @param e TreeSelectionEvent
-	 */
-	public void valueChanged(TreeSelectionEvent e) {
-		
-		emptyNodes();
-				
-		initNodes();
-	}
+	private void initNodes(Settlement settlement) {
 
-	protected void initNodes() {
+		constructNodes(settlement);
 
-		constructNodes();
-
-		considerRoles();
-
-		setupMouseOnNodes();
+		addPersons(settlement);
 
 		for (int i = 0; i < tree.getRowCount(); i++)
 			tree.expandRow(i);
@@ -162,7 +135,7 @@ public class TabPanelOrganization extends TabPanel {
 		return roleNodes.computeIfAbsent(roleType, rt -> new DefaultMutableTreeNode(rt.getName()));
 	}
 
-	private void constructNodes() {
+	private void constructNodes(Settlement settlement) {
 		var supported = settlement.getChainOfCommand().getGovernance().getAllRoles();
 		var command = buildCommandSubTree(supported);
 		if (command != null) {
@@ -281,20 +254,29 @@ public class TabPanelOrganization extends TabPanel {
 		return buildSubTree("Division", divisions);
 	}
 
-	private void considerRoles() {
+	/**
+	 * Remove listeners from tracked persons.
+	 */
+	@Override
+	public void destroy() {
+		tracked.forEach(p -> p.removeEntityListener(roleChangeListener));
+		tracked.clear();
+		super.destroy();
+	}
+
+	/**
+	 * Add persons to the tree under their respective role nodes.
+	 * @param settlement Settlement being scanned
+	 */
+	private void addPersons(Settlement settlement) {
 
 		Collection<Person> people = settlement.getAllAssociatedPeople();
 		
 		for (Person p : people) {
-
-			addListener(p);
-
-			roles.clear();
+			p.addEntityListener(roleChangeListener);
+			tracked.add(p);
 
 			RoleType rt = p.getRole().getType();
-
-			roles.put(p, rt);
-			
 			DefaultMutableTreeNode parent = root;
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode(p);
 			if (rt != null) {
@@ -307,7 +289,10 @@ public class TabPanelOrganization extends TabPanel {
 		}
 	}
 
-	private void setupMouseOnNodes() {
+	/**
+	 * Setup mouse listener on Person node so a double clock will show the details.
+	 */
+	private void setupDoubleClickOnPersonNodes() {
 		MouseListener ml = new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -319,19 +304,24 @@ public class TabPanelOrganization extends TabPanel {
 					// Check for node to avoid java.lang.ClassCastException:
 					// java.lang.String cannot be cast to com.mars_sim.core.person.Person
 					if (node.getUserObject() instanceof Person person) {
-						getDesktop().showDetails(person);
+						getContext().showDetails(person);
 					}
 				}
 			}
 		};
 
 		tree.addMouseListener(ml);
+		tree.setToolTipText(Msg.getString("Entity.doubleClick"));
 	}
 
 	/**
 	 * Reloads the root.
 	 */
 	private void reloadTree() {
+		// Clear out old nodes
+		emptyNodes();
+		initNodes(getEntity());
+
 		defaultTreeModel.reload(root); // notify changes to model
 		tree.expandPath(tree.getSelectionPath());
 		for (int i = 0; i < tree.getRowCount(); i++)
@@ -348,29 +338,20 @@ public class TabPanelOrganization extends TabPanel {
 
 		root.removeAllChildren();
 		roleNodes.clear();
+
+		tracked.forEach(p -> p.removeEntityListener(roleChangeListener));
 	}
 
-	/**
-	 * Removes the listener for a person.
-	 */
-	private void removeListener(Person p) {
-		p.removeEntityListener(listeners.get(p));
-
-		listeners.remove(p);
+	@Override
+	public void refreshUI() {
+		// Reload the tree to reflect any changes
+		reloadTree();
 	}
 
-	/**
-	 * Removes the listener for a person.
-	 */
-	private void addListener(Person p) {
-		PersonListener pl = new PersonListener();
-		p.addEntityListener(pl);
-		listeners.put(p, pl);
-	}
 	/**
 	 * PersonListener class listens to the change of each settler in a settlement.
 	 */
-	private class PersonListener implements EntityListener {
+	private class RoleChangeListener implements EntityListener {
 
 		/**
 		 * Catch unit update event.
@@ -381,58 +362,15 @@ public class TabPanelOrganization extends TabPanel {
 		public void entityUpdate(EntityEvent event) {
 			if (event.getType().equals(Role.ROLE_EVENT)
 					&& event.getSource() instanceof Person p
-					&& settlement.equals(p.getAssociatedSettlement())) {
-				emptyNodes();
-				initNodes();
+					&& getEntity().equals(p.getAssociatedSettlement())) {
+
 				reloadTree();
 			}
 		}
-	}
 
-	/**
-	 * EntityManagerListener inner class.
-	 */
-	private class LocalEntityManagerListener implements EntityManagerListener {
-
-		/**
-		 * Catches entity manager update event when entity is added.
-		 *
-		 * @param newEntity the added entity.
-		 */
 		@Override
-		public void entityAdded(Entity newEntity) {
-			if (newEntity instanceof Person person) {
-				addListener(person);
-				emptyNodes();
-				initNodes();
-				reloadTree();
-			}
+		public String toString() {
+			return getEntity().getName() + " OrganisationTab:RoleChangeListener";
 		}
-
-		/**
-		 * Catches entity manager update event when entity is removed.
-		 *
-		 * @param removedEntity the removed entity.
-		 */
-		@Override
-		public void entityRemoved(Entity removedEntity) {
-			if (removedEntity instanceof Person person) {
-				removeListener(person);
-				emptyNodes();
-				initNodes();
-				reloadTree();
-			}
-		}
-	}
-
-	/**
-	 * Prepares objects for garbage collection.
-	 */
-	@Override
-	public void destroy() {		
-		UnitManager unitManager = getSimulation().getUnitManager();
-		unitManager.removeEntityManagerListener(UnitType.PERSON, entityManagerListener);
-
-		super.destroy();
 	}
 }

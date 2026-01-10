@@ -7,21 +7,22 @@
 package com.mars_sim.ui.swing.utils;
 
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 
 import javax.swing.BoundedRangeModel;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.mars_sim.core.manufacture.WorkshopProcess;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
 
 /**
  * A panel showing information about a Workshop process.
@@ -38,21 +39,16 @@ class WorkshopProcessPanel extends JPanel {
 	 * @param process the manufacturing process.
 	 * @param showBuilding is the building name shown?
 	 * @param processStringWidth the max string width to display for the process name.
+	 * @param context Context of the UI
 	 */
-	public WorkshopProcessPanel(WorkshopProcess process, boolean showBuilding, int processStringWidth) {
-		// Call JPanel constructor
-		super();
+	public WorkshopProcessPanel(WorkshopProcess process, boolean showBuilding, int processStringWidth, UIContext context) {
 
 		// Initialize data members.
 		this.process = process;
 
         boolean showProcessTime = process.getInfo().getProcessTimeRequired() > 0;
 
-        int numRows = 2;
-        if (showBuilding) numRows++;
-        if (showProcessTime) numRows++;
-
-        setLayout(new GridLayout(numRows, 1, 0, 0));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Set border
         setBorder(new MarsPanelBorder());
@@ -70,14 +66,14 @@ class WorkshopProcessPanel extends JPanel {
         namePane.add(cancelButton);
 
         // Prepare name label.
-        String name = StringUtils.abbreviate(process.getInfo().getName(), processStringWidth);
+        String name = Conversion.trim(process.getInfo().getName(), processStringWidth);
         JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
         namePane.add(nameLabel);
 
         if (showBuilding) {
         	// Prepare building name label.
-        	String buildingName = process.getWorkshop().getBuilding().getName();
-        	JLabel buildingNameLabel = new JLabel(buildingName, SwingConstants.CENTER);
+        	var building = process.getWorkshop().getBuilding();
+        	var buildingNameLabel = new EntityLabel(building, context);
         	add(buildingNameLabel);
         }
 

@@ -14,19 +14,20 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 
 @SuppressWarnings("serial")
-public class TabPanelGoods extends TabPanelTable {
+class TabPanelGoods extends EntityTableTabPanel<Settlement> implements TemporalComponent{
 
 	private static final String GOOD_ICON = "trade";
 	
@@ -35,16 +36,15 @@ public class TabPanelGoods extends TabPanelTable {
 
 	/**
 	 * Constructor.
-	 * @param unit {@link Unit} the unit to display.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param unit Settlement to display
+	 * @param context UI context 
 	 */
-	public TabPanelGoods(Unit unit, MainDesktopPane desktop) {
+	public TabPanelGoods(Settlement unit, UIContext context) {
 		// Use TabPanel constructor.
 		super(
-			null,
-			ImageLoader.getIconByName(GOOD_ICON),
-			Msg.getString("TabPanelGoods.title"), //$NON-NLS-1$
-			unit, desktop
+			Msg.getString("TabPanelGoods.title"),
+			ImageLoader.getIconByName(GOOD_ICON), null,
+			unit, context
 		);
 	}
 	
@@ -53,7 +53,7 @@ public class TabPanelGoods extends TabPanelTable {
 	 */
 	@Override
 	protected TableModel createModel() {
-		goodsTableModel = new GoodsTableModel(((Settlement) getUnit()).getGoodsManager());
+		goodsTableModel = new GoodsTableModel(getEntity().getGoodsManager());
 		return goodsTableModel;
 	}
 	
@@ -79,11 +79,9 @@ public class TabPanelGoods extends TabPanelTable {
 		columnModel.getColumn(3).setCellRenderer(new NumberCellRenderer(2)); // "$ ", "\u20BF "
 	}
 
-	/**
-	 * Updates the info on this panel.
-	 */
+
 	@Override
-	public void update() {
+	public void clockUpdate(ClockPulse pulse) {
 		goodsTableModel.update();
 	}
 
@@ -114,21 +112,19 @@ public class TabPanelGoods extends TabPanelTable {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			Class<?> dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			else if (columnIndex == 1) dataType = Double.class;
-			else if (columnIndex == 2) dataType = Double.class;
-			else if (columnIndex == 3) dataType = Double.class;
-			return dataType;
+			if (columnIndex == 0) return String.class;
+			else return Double.class;
 		}
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelGoods.column.good"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("TabPanelGoods.column.demand"); //$NON-NLS-1$
-			else if (columnIndex == 2) return Msg.getString("TabPanelGoods.column.valuePoints"); //$NON-NLS-1$
-			else if (columnIndex == 3) return Msg.getString("TabPanelGoods.column.price"); //$NON-NLS-1$
-			else return null;
+			return switch (columnIndex) {
+				case 0 -> Msg.getString("TabPanelGoods.column.good");
+				case 1 -> Msg.getString("TabPanelGoods.column.demand");
+				case 2 -> Msg.getString("TabPanelGoods.column.valuePoints");
+				case 3 -> Msg.getString("TabPanelGoods.column.price");
+				default -> null;
+			};
 		}
 
 		@Override
@@ -136,18 +132,13 @@ public class TabPanelGoods extends TabPanelTable {
 			if (row < getRowCount()) {
 				Good good = (Good) goods.get(row);
 				// Capitalized good's names
-				if (column == 0) return good.getName();
-				else if (column == 1) {
-					return manager.getDemandScoreWithID(good.getID());
-				}
-				else if (column == 2) {
-					return manager.getGoodValuePoint(good.getID());
-				}
-				else if (column == 3) {
-					return manager.getPrice(good);
-				}
-				
-				else return null;
+				return switch (column) {
+					case 0 -> good.getName();
+					case 1 -> manager.getDemandScoreWithID(good.getID());
+					case 2 -> manager.getGoodValuePoint(good.getID());
+					case 3 -> manager.getPrice(good);
+					default -> null;
+					};
 			}
 			
 			return null;
@@ -156,15 +147,5 @@ public class TabPanelGoods extends TabPanelTable {
 		public void update() {
 			fireTableDataChanged();
 		}
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		goodsTableModel = null;
 	}
 }

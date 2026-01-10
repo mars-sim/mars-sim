@@ -21,7 +21,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
@@ -30,26 +29,26 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.entitywindow.building.ResourceProcessPanel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 /**
  * A tab panel for displaying all of the resource processes in a settlement.
  */
 @SuppressWarnings("serial")
-public class TabPanelResourceProcesses extends TabPanel implements ActionListener {
+class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
+		implements ActionListener, TemporalComponent {
 	
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelResourceProcesses.class.getName());
 
 	private static final String ICON = "resource";
 	private static final String[] LEVEL_NAMES = {"1", "2", "3", "4", "5"}; 
-	
-	/** The Settlement instance. */
-	private Settlement settlement;
 	
 	private JComboBox<String> levelComboBox;
 
@@ -60,24 +59,22 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param settlement The settlement to display.
+	 * @param context The UI context.
 	 */
-	public TabPanelResourceProcesses(Unit unit, MainDesktopPane desktop) {
+	public TabPanelResourceProcesses(Settlement settlement, UIContext context) {
 
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(ICON),
-			Msg.getString("TabPanelResourceProcesses.title"), //$NON-NLS-1$
-			unit, desktop
+			ImageLoader.getIconByName(ICON), null,
+			context, settlement
 		);
-
-		settlement = (Settlement) unit;
 	}
 	
 	@Override
 	protected void buildUI(JPanel content) {
+		var settlement = getEntity();
 		BuildingManager mgr = settlement.getBuildingManager();
 		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
 		for (Building building : mgr.getBuildings(FunctionType.RESOURCE_PROCESSING)) {
@@ -86,7 +83,7 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 		}
 
 		// Prepare process list panel
-		processPanel = new ResourceProcessPanel(processes, getDesktop());
+		processPanel = new ResourceProcessPanel(processes, getContext());
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
 		
@@ -139,34 +136,22 @@ public class TabPanelResourceProcesses extends TabPanel implements ActionListene
 			if (newLevel != level) {
 				level = newLevel;
 				processPanel.update();
-				logger.info(settlement, "Manually changed to level " + newLevel + " as the overall output effort in resource processing.");
+				logger.info(getEntity(), "Manually changed to level " + newLevel + " as the overall output effort in resource processing.");
 			}
 		}
 	}	
 
-	@Override
-	public void update() {
-		processPanel.update();
-	}
-	
 	/**
 	 * Sets the settlement resource process override flag.
 	 * 
 	 * @param override the resource process override flag.
 	 */
 	private void setResourceProcessOverride(boolean override) {
-		settlement.setProcessOverride(OverrideType.RESOURCE_PROCESS, override);
+		getEntity().setProcessOverride(OverrideType.RESOURCE_PROCESS, override);
 	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
+
 	@Override
-	public void destroy() {
-		super.destroy();
-		
-		settlement = null;
-		levelComboBox = null;
-		processPanel = null;
+	public void clockUpdate(ClockPulse pulse) {
+		processPanel.update();
 	}
 }

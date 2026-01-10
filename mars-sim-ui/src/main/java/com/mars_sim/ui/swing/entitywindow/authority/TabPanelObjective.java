@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.tool.Msg;
@@ -70,7 +69,7 @@ class TabPanelObjective extends EntityTabPanel<Authority> {
 				.stream()
 				.map(mc -> "- " + mc.getDescription())
 				.collect(Collectors.joining("\n"));
-		JTextArea caps = SwingHelper.createTextBlock(Msg.getString("TabPanelObjective.capability"), capText);
+		var caps = SwingHelper.createTextBlock(Msg.getString("TabPanelObjective.capability"), capText);
 		content.add(caps, BorderLayout.CENTER);
 	}
 }

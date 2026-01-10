@@ -20,14 +20,14 @@ import java.util.Set;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
@@ -62,7 +62,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 class TabPanelHealth extends EntityTabPanel<Person>
 		implements TemporalComponent {
 
-	private static final String HEALTH_ICON = "health"; //$NON-NLS-1$
+	private static final String HEALTH_ICON = "health"; //-NLS-1$
 	
 	/** Max rows to render in the Health Risks list. */
 	private static final int RISK_ROWS = 10;
@@ -75,7 +75,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	private static final DecimalFormat DECIMAL_PERC = StyleManager.DECIMAL_PERC;
 	private static final DecimalFormat DECIMAL_KJ = StyleManager.DECIMAL_KJ;
 	
-	private static final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //$NON-NLS-1$
+	private static final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //-NLS-1$
 	private static final String[] RADIATION_TOOL_TIPS = {
 		    " Exposure Interval - 30-Day, Annual, or Career", 
 		    " Standard Dose Limit [mSv] on BFO - 30-Day:  250;  Annual: 1000;  Career: 1500",
@@ -121,7 +121,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	private JLabel bodyMassDevLabel;
 	
 	private JLabel bedLocationLabel;
-	private JTextArea sleepTimeTA;
+	private DefaultListModel<String> sleepTimes;
 
 	private RadiationTableModel radiationTableModel;
 	private SleepExerciseTableModel sleepExerciseTableModel;
@@ -243,12 +243,18 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		northPanel.add(bedPanel);
 	
 		// Prepare bed time ta
-		sleepTimeTA = SwingHelper.createTextBlock("Sleep times", "");
-		sleepTimeTA.setToolTipText("The 3 best times to go to bed [msol (weight)]"); 
+		sleepTimes = new DefaultListModel<>();
+		var sleeps = new JList<>(sleepTimes);
+		sleeps.setToolTipText("The 3 best times to go to bed [msol (weight)]");
+
+		// Wrap with a panel to get border correct
+		var sleepsPanel = new JPanel(new BorderLayout());
+		sleepsPanel.setBorder(SwingHelper.createLabelBorder("Sleep times"));
+		sleepsPanel.add(sleeps, BorderLayout.CENTER);
 		
 		// Prepare panel for bed time ta .
 		JPanel bedTimePanel = new JPanel(new BorderLayout(0, 0));
-		bedTimePanel.add(sleepTimeTA, SwingConstants.CENTER);
+		bedTimePanel.add(sleepsPanel, BorderLayout.CENTER);
 		bedPanel.add(bedTimePanel, BorderLayout.CENTER);
 
 		// Prepare panel for bed location
@@ -283,10 +289,12 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		// Prepare sleep time table model
 		sleepExerciseTableModel = new SleepExerciseTableModel(circadianClock);
 		
+		var tableSize = new Dimension(225, 70);
+
 		// Create sleep time table
 		sleepExerciseTable = new JTable(sleepExerciseTableModel);
 		TableColumnModel sModel = sleepExerciseTable.getColumnModel();
-		sleepExerciseTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
+		sleepExerciseTable.setPreferredScrollableViewportSize(tableSize);
 		sModel.getColumn(0).setPreferredWidth(10);
 		sModel.getColumn(1).setPreferredWidth(70);
 		sModel.getColumn(2).setPreferredWidth(70);
@@ -321,7 +329,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		
 		// Create exercise time table
 		foodTable = new JTable(foodTableModel);
-		foodTable.setPreferredScrollableViewportSize(new Dimension(225, 90));
+		foodTable.setPreferredScrollableViewportSize(tableSize);
 		TableColumnModel fModel = foodTable.getColumnModel();
 		fModel.getColumn(0).setPreferredWidth(10);
 		fModel.getColumn(1).setPreferredWidth(50);
@@ -531,6 +539,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 				
 		// Update at least one before displaying it
 		clockUpdate(null);
+		updateSleepTime(getEntity());
 	}
 
 	/**
@@ -539,35 +548,32 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	 * 
 	 * @return Text representation of sleep time
 	 */
-	private static String updateSleepTime(Person person) {	
+	private void updateSleepTime(Person person) {	
 		// Checks the 3 best sleep time
+		sleepTimes.clear();
+
     	int [] bestSleepTime = person.getPreferredSleepHours();
 		int size = bestSleepTime.length;
 		if (size == 0) {
-			return "Not Known yet";
+			sleepTimes.addElement("Not Known yet");
 		}
 		Arrays.sort(bestSleepTime);
 		
 		// Prepare sleep time TF
-		StringBuilder text = new StringBuilder();
-		int lastSleepTime = -1;
 		for (int i=0; i<size; i++) {
 			int sleepTime = bestSleepTime[i];
-			if (lastSleepTime != sleepTime) {
-				if (i != 0) {
-					text.append(",  ");
-				}
-				text.append(sleepTime)
-				.append(" msol (w:")
-				.append(person.getSleepWeight(sleepTime))
-				.append(")");
-				lastSleepTime = sleepTime;
-			}
+			String text = sleepTime + " msol (w:" + person.getSleepWeight(sleepTime) + ")";
+			sleepTimes.addElement(text);
 		}
-		
-		return text.toString();
 	}
 	
+	/**
+	 * Update the sleep time on re-selection of the tab.
+	 */
+	@Override
+	public void refreshUI() {
+		updateSleepTime(getEntity());
+	}
 
 	/**
 	 * Updates the info on this panel in the clock pulse as the values displayed are affected
@@ -682,14 +688,6 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		if (bodyMassDev != bodyMassDev0) {
 			bodyMassDev = bodyMassDev0;
 			bodyMassDevLabel.setText(DECIMAL_PLACES1.format(bodyMassDev0));
-		}
-		
-		// Update sleep time TF
-		var text = updateSleepTime(person);
-
-		if (!sleepTimeTA.getText().equalsIgnoreCase(text)) {
-			// TextArea can cause lock problems if updated outside the EDT
-			SwingUtilities.invokeLater(() -> sleepTimeTA.setText(text));
 		}
 
 		String bedText = "";

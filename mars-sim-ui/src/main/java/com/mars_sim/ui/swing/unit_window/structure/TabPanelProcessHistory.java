@@ -14,9 +14,12 @@ import javax.swing.JPanel;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.process.CompletedProcess;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
 
@@ -24,45 +27,40 @@ import com.mars_sim.ui.swing.utils.JHistoryPanel;
  * Tab panel showing the process history of a settlement
  */
 @SuppressWarnings("serial")
-public class TabPanelProcessHistory extends TabPanel {
+class TabPanelProcessHistory extends EntityTabPanel<Settlement> implements TemporalComponent {
 	private static final String ID_ICON = "history"; //$NON-NLS-1$
 
     private HistoryPanel historyPanel;
-    private Settlement settlement;
 	
     /**
 	 * Constructor.
 	 * 
 	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelProcessHistory(Settlement settlement, MainDesktopPane desktop) {
+	public TabPanelProcessHistory(Settlement settlement, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			"Process History",
 			ImageLoader.getIconByName(ID_ICON),		
 			"History of completed processes",
-			desktop
+			context, settlement
 		);
-
-		this.settlement = settlement;
 	}
     
 	@Override
 	protected void buildUI(JPanel content) {
 
-		historyPanel = new HistoryPanel(settlement.getProcessHistory());
+		historyPanel = new HistoryPanel(getEntity().getProcessHistory());
 		historyPanel.setPreferredSize(new Dimension(225, 100));
 
 		content.add(historyPanel, BorderLayout.CENTER);
-
-		update();
 	}
 
-    @Override
-    public void update() {
-        historyPanel.refresh();
-    }
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
+		historyPanel.refresh();
+	}
 
     /**
 	 * Internal class used as model for the attribute table.
@@ -71,7 +69,7 @@ public class TabPanelProcessHistory extends TabPanel {
 		private static final ColumnSpec[] COLUMNS = {
                         new ColumnSpec("Process", String.class),
                         new ColumnSpec("Type", String.class),
-                        new ColumnSpec("Location", String.class)
+                        new ColumnSpec(Msg.getString("Entity.internalPosn"), String.class)
                     };
 
 

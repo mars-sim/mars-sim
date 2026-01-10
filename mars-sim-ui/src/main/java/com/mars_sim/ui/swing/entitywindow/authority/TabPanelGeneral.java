@@ -32,7 +32,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 class TabPanelGeneral extends EntityTabPanel<Authority> {
 	
-	private static final int EMBLEM_WIDTH = 200;
+	private static final int EMBLEM_WIDTH = 150;
 	private static final String AGENCY_FOLDER = "agency/";
 	
 	/**
@@ -45,7 +45,7 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 		super(
 			GENERAL_TITLE,
 			ImageLoader.getIconByName(GENERAL_ICON),
-			null,
+			GENERAL_TOOLTIP,
 			context, ra
 		);
 	}

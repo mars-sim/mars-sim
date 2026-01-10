@@ -41,7 +41,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	private static final String SELECTED_TAB = "selected_tab";
 
     private static final int WIDTH = 550;
-	private static final int HEIGHT = 550;
+	private static final int HEIGHT = 500;
 
     private T entity;
 	private List<TabPanel> tabPanels = new ArrayList<>();

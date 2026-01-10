@@ -21,13 +21,15 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FoodProduction;
 import com.mars_sim.core.building.function.FunctionType;
@@ -41,20 +43,21 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.JComboBoxMW;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.entitywindow.building.FoodProductionPanel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 /**
  * TabPanelFoodProduction is a panel that displays a settlement's food
  * production information.
  */
 @SuppressWarnings("serial")
-public class TabPanelFoodProduction extends TabPanel {
+class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements TemporalComponent {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(TabPanelFoodProduction.class.getName());
@@ -62,20 +65,16 @@ public class TabPanelFoodProduction extends TabPanel {
 	private static final int WORD_WIDTH = 50;
 	private static final String FOOD_ICON = "food";
 	
-	// Data members
-	/** The Settlement instance. */
-	private Settlement settlement;
-	
 	private JPanel foodProductionListPane;
 	private JScrollPane foodProductionScrollPane;
 	private List<FoodProductionProcess> processCache;
 
 	/** building selector. */
-	private JComboBoxMW<Building> buildingComboBox;
+	private JComboBox<Building> buildingComboBox;
 	/** List of available foodProduction buildings. */
 	private Vector<Building> buildingComboBoxCache;
 	/** Process selector. */
-	private JComboBoxMW<Object> processSelection;
+	private JComboBox<FoodProductionProcessInfo> processSelection;
 	/** List of available processes. */
 	private Vector<FoodProductionProcessInfo> processSelectionCache;
 
@@ -87,37 +86,30 @@ public class TabPanelFoodProduction extends TabPanel {
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit    {@link Unit} the unit to display.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param settlement The settlement to display.
+	 * @param context The UI context.
 	 */
-	public TabPanelFoodProduction(Unit unit, MainDesktopPane desktop) {
+	public TabPanelFoodProduction(Settlement settlement, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(FOOD_ICON),
-			Msg.getString("TabPanelFoodProduction.title"), //$NON-NLS-1$
-			unit, desktop
-		);
-
-		settlement = (Settlement) unit;
+			ImageLoader.getIconByName(FOOD_ICON), null,
+			context, settlement);
 	}
 	
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void buildUI(JPanel content) {
-//		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 		// Create scroll panel for foodProduction list pane.
 		foodProductionScrollPane = new JScrollPane();
 		// increase vertical mousewheel scrolling speed for this one
 		foodProductionScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		foodProductionScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		foodProductionScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		foodProductionScrollPane.setPreferredSize(new Dimension(220, 215));
 		content.add(foodProductionScrollPane, BorderLayout.CENTER);
 
 		// Prepare foodProduction outer list pane.
 		JPanel foodProductionOuterListPane = new JPanel(new BorderLayout(0, 0));
-//		foodProductionOuterListPane.setBorder(new MarsPanelBorder());
 		foodProductionScrollPane.setViewportView(foodProductionOuterListPane);
 
 		// Prepare foodProduction list pane.
@@ -125,22 +117,20 @@ public class TabPanelFoodProduction extends TabPanel {
 		foodProductionListPane.setLayout(new BoxLayout(foodProductionListPane, BoxLayout.Y_AXIS));
 		foodProductionOuterListPane.add(foodProductionListPane, BorderLayout.NORTH);
 
+		var settlement = getEntity();
 		// Create the process panels.
-		processCache = getFoodProductionProcesses();
-		Iterator<FoodProductionProcess> i = processCache.iterator();
-		while (i.hasNext())
-			foodProductionListPane.add(new FoodProductionPanel(i.next(), true, WORD_WIDTH));
+		processCache = getFoodProductionProcesses(settlement);
+		processCache.forEach(fp -> foodProductionListPane.add(new FoodProductionPanel(fp, true, WORD_WIDTH, getContext())));
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(4, 1, 0, 0));
 		content.add(interactionPanel, BorderLayout.NORTH);
 
 		// Create new building selection.
-		buildingComboBoxCache = getFoodProductionBuildings();
+		buildingComboBoxCache = getFoodProductionBuildings(settlement);
 		Collections.sort(buildingComboBoxCache);
-		buildingComboBox = new JComboBoxMW<>(buildingComboBoxCache);
-		// AddePromptComboBoxRenderer() & setSelectedIndex(-1)
-		buildingComboBox.setRenderer(new NamedListCellRenderer(" (1). Select a Building"));
+		buildingComboBox = new JComboBox<>(buildingComboBoxCache);
+		buildingComboBox.setRenderer(new NamedListCellRenderer(" (1). Select a Building", SwingConstants.LEFT));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
 		buildingComboBox.addItemListener(event -> update());
@@ -149,7 +139,7 @@ public class TabPanelFoodProduction extends TabPanel {
 		// Create new foodProduction process selection.
 		Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
-		processSelection = new JComboBoxMW(processSelectionCache);
+		processSelection = new JComboBox<>(processSelectionCache);
 		processSelection.setSelectedIndex(-1);
 		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectAvailableProcess")); //$NON-NLS-1$
@@ -165,23 +155,20 @@ public class TabPanelFoodProduction extends TabPanel {
 					if (b != null) {
 						FoodProduction foodFactory = b.getFoodProduction();
 						Object selectedItem = processSelection.getSelectedItem();
-						if (selectedItem != null) {
-							if (selectedItem instanceof FoodProductionProcessInfo sp) {
-								if (FoodProductionUtil.canProcessBeStarted(sp, foodFactory)) {
-									foodFactory.addProcess(new FoodProductionProcess(sp, foodFactory));
-									update();
-									
-									logger.log(b, Level.CONFIG, 0L, "Player starts the '" 
-											+ sp.getName() + "'.");
-									
-									buildingComboBox.setRenderer(new NamedListCellRenderer(" (1). Select a Building"));
-									buildingComboBox.setSelectedIndex(-1);
-									processSelection.setRenderer(
-											new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));
-									processSelection.setSelectedIndex(-1);
-								}
-							}
-						}
+						if (selectedItem instanceof FoodProductionProcessInfo sp
+								&& FoodProductionUtil.canProcessBeStarted(sp, foodFactory)) {
+							foodFactory.addProcess(new FoodProductionProcess(sp, foodFactory));
+							update();
+							
+							logger.log(b, Level.CONFIG, 0L, "Player starts the '" 
+									+ sp.getName() + "'.");
+							
+							buildingComboBox.setRenderer(new NamedListCellRenderer(" (1). Select a Building"));
+							buildingComboBox.setSelectedIndex(-1);
+							processSelection.setRenderer(
+									new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));
+							processSelection.setSelectedIndex(-1);
+						}	
 					}
 				} catch (Exception ex) {
 					logger.severe(Msg.getString("TabPanelFoodProduction.log.newProcessButton"), ex); //$NON-NLS-1$
@@ -193,30 +180,27 @@ public class TabPanelFoodProduction extends TabPanel {
 		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelFoodProduction.checkbox.overrideProduction")); //$NON-NLS-1$
 		overrideCheckbox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.overrideProduction")); //$NON-NLS-1$
 		overrideCheckbox.addActionListener(e -> setOverride(OverrideType.FOOD_PRODUCTION, overrideCheckbox.isSelected()));
-		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.FOOD_PRODUCTION));
+		overrideCheckbox.setSelected(getEntity().getProcessOverride(OverrideType.FOOD_PRODUCTION));
 		interactionPanel.add(overrideCheckbox);
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
-	public void update() {
-		
+	public void clockUpdate(ClockPulse pulse) {
+		var settlement = getEntity();
+
 		// Update processes if necessary.
-		List<FoodProductionProcess> processes = getFoodProductionProcesses();
+		List<FoodProductionProcess> processes = getFoodProductionProcesses(settlement);
 		if (!processCache.equals(processes)) {
 
 			// Add foodProduction panels for new processes.
-			Iterator<FoodProductionProcess> i = processes.iterator();
-			while (i.hasNext()) {
-				FoodProductionProcess process = i.next();
+			for(var process : processes) {
 				if (!processCache.contains(process))
-					foodProductionListPane.add(new FoodProductionPanel(process, true, WORD_WIDTH));
+					foodProductionListPane.add(new FoodProductionPanel(process, true, WORD_WIDTH, getContext()));
 			}
 
 			// Remove foodProduction panels for old processes.
-			Iterator<FoodProductionProcess> j = processCache.iterator();
-			while (j.hasNext()) {
-				FoodProductionProcess process = j.next();
+			for(var process : processCache) {
 				if (!processes.contains(process)) {
 					FoodProductionPanel panel = getFoodProductionPanel(process);
 					if (panel != null)
@@ -233,22 +217,20 @@ public class TabPanelFoodProduction extends TabPanel {
 		}
 
 		// Update all process panels.
-		Iterator<FoodProductionProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			FoodProductionPanel panel = getFoodProductionPanel(i.next());
+		for(var process : processes) {
+			FoodProductionPanel panel = getFoodProductionPanel(process);
 			if (panel != null)
 				panel.update();
 		}
 
 		// Update building selection list.
-		Vector<Building> newBuildings = getFoodProductionBuildings();
+		Vector<Building> newBuildings = getFoodProductionBuildings(settlement);
 		if (!newBuildings.equals(buildingComboBoxCache)) {
 			buildingComboBoxCache = newBuildings;
 			Building currentSelection = (Building) buildingComboBox.getSelectedItem();
 			buildingComboBox.removeAllItems();
-			Iterator<Building> k = buildingComboBoxCache.iterator();
-			while (k.hasNext())
-				buildingComboBox.addItem(k.next());
+			for(var b : buildingComboBoxCache)
+				buildingComboBox.addItem(b);
 
 			if (currentSelection != null) {
 				if (buildingComboBoxCache.contains(currentSelection))
@@ -289,7 +271,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * 
 	 * @return list of foodProduction processes.
 	 */
-	private List<FoodProductionProcess> getFoodProductionProcesses() {
+	private static List<FoodProductionProcess> getFoodProductionProcesses(Settlement settlement) {
 		List<FoodProductionProcess> result = new ArrayList<>();
 
 		Iterator<Building> i = settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION).iterator();
@@ -325,7 +307,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * 
 	 * @return vector of buildings.
 	 */
-	private Vector<Building> getFoodProductionBuildings() {
+	private static Vector<Building> getFoodProductionBuildings(Settlement settlement) {
 		return new Vector<>(settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION));
 	}
 
@@ -395,7 +377,7 @@ public class TabPanelFoodProduction extends TabPanel {
 	 * @param override the food production override flag.
 	 */
 	private void setOverride(OverrideType type, boolean override) {
-		settlement.setProcessOverride(OverrideType.FOOD_PRODUCTION, override);
+		getEntity().setProcessOverride(OverrideType.FOOD_PRODUCTION, override);
 	}
 
 	/**
@@ -414,8 +396,6 @@ public class TabPanelFoodProduction extends TabPanel {
 			this.prompt = prompt;
 		}
 
-		// TODO check actual combobox size before cutting off too much of the processes'
-		// names
 		@Override
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
@@ -429,7 +409,7 @@ public class TabPanelFoodProduction extends TabPanel {
 								+ Msg.getString("TabPanelFoodProduction.cutOff"); //$NON-NLS-1$
 
 					((JLabel) result).setText(processName);
-					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
+					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info));
 				}
 			}
 
@@ -438,25 +418,5 @@ public class TabPanelFoodProduction extends TabPanel {
 
 			return result;
 		}
-	}
-
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		settlement = null;
-		foodProductionListPane = null;
-		foodProductionScrollPane = null;
-		processCache = null;
-
-		buildingComboBox = null;
-		buildingComboBoxCache = null;
-		processSelection = null;
-		processSelectionCache = null;
-		newProcessButton = null;
-		overrideCheckbox = null;
 	}
 }

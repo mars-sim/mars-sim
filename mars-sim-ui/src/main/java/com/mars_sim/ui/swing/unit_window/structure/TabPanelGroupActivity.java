@@ -14,23 +14,19 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * This is a tab panel for settlement's computing capability.
  */
 @SuppressWarnings("serial")
-public class TabPanelGroupActivity extends TabPanelTable {
-
-	// default logger.
+class TabPanelGroupActivity extends EntityTableTabPanel<Settlement> {
 
 	private static final String ICON = "schedule";
-	
-	/** The Settlement instance. */
-	private Settlement settlement;
 	
 	private TableModel tableModel;
 	
@@ -38,17 +34,16 @@ public class TabPanelGroupActivity extends TabPanelTable {
 	 * Constructor.
 	 * 
 	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelGroupActivity(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelGroupActivity(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			"Group Activity",
 			ImageLoader.getIconByName(ICON),
 			"Scheduled Group Activities",
-			desktop
+			unit, context
 		);
-		settlement = unit;
 	}
 	
 	/**
@@ -59,16 +54,18 @@ public class TabPanelGroupActivity extends TabPanelTable {
 	 */
 	@Override
 	protected TableModel createModel() {
-		tableModel = new TableModel(settlement);
+		tableModel = new TableModel(getEntity());
 
 		return tableModel;
 	}
 
 	/**
-	 * Updates the info on this panel.
+	 * Updates the info on this panel when it is selected.
+	 * A slow moving data table is used so that the data is only updated
+	 * when the tab is selected.
 	 */
 	@Override
-	public void update() {
+	public void refreshUI() {
 
 		// Update  table.
 		tableModel.update();
@@ -77,19 +74,22 @@ public class TabPanelGroupActivity extends TabPanelTable {
 	/**
 	 * Internal class used as model for the table.
 	 */
-	private class TableModel extends AbstractTableModel implements EntityModel {
+	private static class TableModel extends AbstractTableModel implements EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
+		private static final String NAME = Msg.getString("Entity.name");
 
 		private List<GroupActivity> activities;
 		private MarsTime earliest = null;
+		private Settlement settlement;
 
 		private TableModel(Settlement settlement) {
 			activities = settlement.getGroupActivities(false);
 			if (!activities.isEmpty()) {
 				earliest = activities.get(0).getStartTime();
 			}
+			this.settlement = settlement;
 		}
 
 		@Override
@@ -113,7 +113,7 @@ public class TabPanelGroupActivity extends TabPanelTable {
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
-				case 0 -> "Name";
+				case 0 -> NAME;
 				case 1 -> "State";
 				case 2 -> "When";
 				case 3 -> "Where";

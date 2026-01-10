@@ -6,30 +6,36 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.PopulationStats;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
  * The TabPanelCitizen is a tab panel for information on all people
  * associated with a settlement.
  */
 @SuppressWarnings("serial")
-public class TabPanelCitizen extends TabPanel{
+class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements TemporalComponent {
 
 	private static final String CITIZEN_ICON = "people";
 	
@@ -41,39 +47,34 @@ public class TabPanelCitizen extends TabPanel{
 
 	private String genderRatioCache = "";
 	
-	private Settlement settlement;
-
 	private JLabel populationAgeLabel;
 	private JLabel populationCitizensLabel;
 	private JLabel populationCapacityLabel;
 	private JLabel populationIndoorLabel;
 	private JLabel genderRatioLabel;
 	
-	private UnitListPanel<Person> populationList;
+	private PersonModel citizenModel;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param unit    the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the main desktop.
 	 */
-	public TabPanelCitizen(Settlement unit, MainDesktopPane desktop) {
-		// Use the TabPanel constructor
+	public TabPanelCitizen(Settlement unit, UIContext context) {
 		super(
-			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(CITIZEN_ICON),
-			Msg.getString("TabPanelCitizen.title"), //$NON-NLS-1$
-			desktop
+			Msg.getString("Settlement.population"), //$NON-NLS-1$
+			ImageLoader.getIconByName(CITIZEN_ICON), null,
+			unit, context
 		);
 
-		settlement = unit;
+		setTableTitle(Msg.getString("Settlement.population"));
 	}
 
 	@Override
-	protected void buildUI(JPanel content) {
+	protected JPanel createInfoPanel() {
 		// Prepare count spring layout panel.
 		AttributePanel countPanel = new AttributePanel(5);
-		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create associate label
 		populationCitizensLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.citizen"),
@@ -92,24 +93,21 @@ public class TabPanelCitizen extends TabPanel{
 
 		populationAgeLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.age"),
 							"", null);
-		
-		populationList = new UnitListPanel<>(getDesktop(), new Dimension(175, 250)) {
-			@Override
-			protected Collection<Person> getData() {
-				return settlement.getAllAssociatedPeople();
-			}
-		};
-		addBorder(populationList, Msg.getString("TabPanelCitizen.titledBorder"));
-		content.add(populationList, BorderLayout.CENTER);
+		clockUpdate(null);
 
-		update();
+		return countPanel;
 	}
 
-	/**
-	 * Updates the info on this panel.
-	 */
 	@Override
-	public void update() {
+	protected TableModel createModel() {
+		citizenModel = new PersonModel(getEntity());
+
+		return citizenModel;
+	}
+
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
+		var settlement = getEntity();
 
 		int num0 = settlement.getNumCitizens();
 		// Update citizen num
@@ -147,16 +145,79 @@ public class TabPanelCitizen extends TabPanel{
 			populationAgeLabel.setText(StyleManager.DECIMAL_PLACES1.format(populationAgeCache));
 		}
 		
-		// Update population list
-		populationList.update();
+		// Update population table
+		if (citizenModel != null) {
+			citizenModel.update();
+		}
 	}
-	
+
 	/**
-	 * Prepare object for garbage collection.
+	 * Table model showing all Persons in a Settlement
 	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		populationList = null;
+	private static class PersonModel extends AbstractTableModel implements EntityModel {
+
+		private Settlement settlement;
+		private List<Person> citizens = Collections.emptyList();
+
+
+		private PersonModel(Settlement settlement) {
+			this.settlement = settlement;
+			update();
+		}
+
+		private void update() {
+			var newCitizens = settlement.getAllAssociatedPeople();
+			if (!newCitizens.equals(citizens)) {
+				citizens = new ArrayList<>(newCitizens);
+
+				// reload the whole table
+				fireTableDataChanged();
+			}
+			else if (!citizens.isEmpty()) {
+				fireTableRowsUpdated(0, citizens.size()-1);
+			}
+		}
+
+		@Override
+		public int getRowCount() {
+			return citizens.size();
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
+
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			if (columnIndex == 1) {
+				return Boolean.class;
+			}
+			return String.class;
+		}
+
+		@Override
+		public String getColumnName(int columnIndex) {
+			return switch(columnIndex) {
+				case 0 -> Msg.getString("Entity.name");
+				case 1 -> "Inside";
+				default -> "";
+			};
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			var c = citizens.get(rowIndex);
+			return switch(columnIndex) {
+				case 0 -> c.getName();
+				case 1 -> c.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT;
+				default -> "";
+			};
+		}
+
+		@Override
+		public Entity getAssociatedEntity(int row) {
+			return citizens.get(row);
+		}
 	}
 }

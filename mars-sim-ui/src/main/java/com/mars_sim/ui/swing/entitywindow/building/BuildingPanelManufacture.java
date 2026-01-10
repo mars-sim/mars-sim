@@ -110,7 +110,7 @@ class BuildingPanelManufacture extends EntityTabPanel<Building>
 		scrollPanel.setViewportView(processListMainPane);
 
 		// Create process list panel
-		processListPane = new ProcessListPanel(false);
+		processListPane = new ProcessListPanel(false, getContext());
 		processListMainPane.add(processListPane, BorderLayout.NORTH);
 		processListPane.update(workshop.getProcesses());
 	}

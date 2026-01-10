@@ -60,6 +60,8 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     private static final String[] ENTITY_TYPES = {BUILDING, CONSTRUCTION, MISSION, PERSON, ROBOT, SCIENTIFIC_STUDY, TRANSPORT, VEHICLE};
     private static final int MAX_ITEMS = 30;
 
+    private static final String TOOLTIP = Msg.getString("Entity.doubleClick");
+
     // Default configurations for name groupings
     private static record NameGrouping(String label, String filter) {}
     private static final NameGrouping[] NAME_GROUPINGS = {
@@ -123,8 +125,9 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         locate.addActionListener(e -> showLocation());
         buttonPanel.add(locate);
 
-        // Add the tree
+        // Add the tree with a meaningfull tooltip
         tree = new JTree(model);
+        tree.setToolTipText(TOOLTIP);
         var scrollPane = new JScrollPane(tree);
         mainPane.add(scrollPane, BorderLayout.CENTER);
 

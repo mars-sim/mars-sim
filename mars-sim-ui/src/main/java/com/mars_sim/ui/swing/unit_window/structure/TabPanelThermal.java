@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -34,9 +35,9 @@ import com.mars_sim.core.building.utility.heating.ThermalSystem;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
@@ -44,14 +45,10 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * This is a tab panel for settlement's Thermal System .
  */
 @SuppressWarnings("serial")
-public class TabPanelThermal extends TabPanelTable {
-
-	// default logger.
+class TabPanelThermal extends EntityTableTabPanel<Settlement> {
 	
 	private static final String HEAT_ICON = "heat";
-	
-	/** The Settlement instance. */
-	private Settlement settlement;
+
 	
 	/** The cache of total heat generated. */
 	private double totHeatGenCache;
@@ -107,22 +104,21 @@ public class TabPanelThermal extends TabPanelTable {
 	 * Constructor.
 	 * 
 	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the main desktop.
 	 */
-	public TabPanelThermal(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelThermal(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(HEAT_ICON),
-			Msg.getString("TabPanelThermalSystem.title"), //$NON-NLS-1$
-			desktop
+			ImageLoader.getIconByName(HEAT_ICON), null,
+			unit, context
 		);
-		settlement = unit;
 	}
 
 	
 	@Override
 	protected JPanel createInfoPanel() {
+		var settlement = getEntity();
 		manager = settlement.getBuildingManager();
 		thermalSystem = settlement.getThermalSystem();
 		buildings = manager.getBuildingsWithThermal();
@@ -211,7 +207,7 @@ public class TabPanelThermal extends TabPanelTable {
 	@Override
 	protected TableModel createModel() {
 		// Prepare thermal control table model.
-		heatTableModel = new HeatTableModel(settlement);
+		heatTableModel = new HeatTableModel();
 		return heatTableModel;
 	}
 
@@ -394,26 +390,32 @@ public class TabPanelThermal extends TabPanelTable {
 	private class HeatTableModel extends AbstractTableModel
 		implements EntityModel {
 
+		private static final Map<HeatMode, Icon> HEAT_ICONS = Map.of(
+			HeatMode.HEAT_OFF, ImageLoader.getIconByName("dot/yellow"),
+			HeatMode.ONE_EIGHTH_HEAT, ImageLoader.getIconByName("dot/green_quarter"),
+			HeatMode.QUARTER_HEAT, ImageLoader.getIconByName("dot/green_quarter"),
+			HeatMode.THREE_EIGHTH_HEAT, ImageLoader.getIconByName("dot/green_half"),
+			HeatMode.HALF_HEAT, ImageLoader.getIconByName("dot/green_half"),
+			HeatMode.FIVE_EIGHTH_HEAT, ImageLoader.getIconByName("dot/green_three_quarter"),
+			HeatMode.THREE_QUARTER_HEAT, ImageLoader.getIconByName("dot/green_three_quarter"),
+			HeatMode.SEVEN_EIGHTH_HEAT, ImageLoader.getIconByName("dot/green"),
+			HeatMode.FULL_HEAT, ImageLoader.getIconByName("dot/green"),
+			HeatMode.OFFLINE, ImageLoader.getIconByName("dot/red")
+		);
+		
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private Icon dotRed;
-		private Icon dotYellow;
-		private Icon dotGreen_full, dotGreen_half, dotGreen_quarter, dotGreen_threeQuarter;
 
-		private HeatTableModel(Settlement settlement) {
-			dotRed = ImageLoader.getIconByName("dot/red"); 
-			dotYellow = ImageLoader.getIconByName("dot/yellow"); 
-			dotGreen_full = ImageLoader.getIconByName("dot/green"); 
-			dotGreen_half = ImageLoader.getIconByName("dot/green_half"); 
-			dotGreen_quarter = ImageLoader.getIconByName("dot/green_quarter"); 
-			dotGreen_threeQuarter = ImageLoader.getIconByName("dot/green_three_quarter");
+		private HeatTableModel() {
 		}
 
+		@Override
 		public int getRowCount() {
 			return buildings.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 6;
 		}
@@ -422,7 +424,7 @@ public class TabPanelThermal extends TabPanelTable {
 		public Class<?> getColumnClass(int columnIndex) {
 			return switch(columnIndex) {
 				case 0 -> Icon.class;
-				case 1 -> Building.class;
+				case 1 -> String.class;
 				default -> Double.class;
 			};
 		}
@@ -431,7 +433,7 @@ public class TabPanelThermal extends TabPanelTable {
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
 				case 0 -> Msg.getString("TabPanelThermalSystem.column.s"); //$NON-NLS-1$
-				case 1 -> Msg.getString("TabPanelThermalSystem.column.building"); //$NON-NLS-1$
+				case 1 -> Msg.getString("Building.singular"); //$NON-NLS-1$
 				case 2 -> Msg.getString("TabPanelThermalSystem.column.temperature"); //$NON-NLS-1$
 				case 3 -> Msg.getString("TabPanelThermalSystem.column.heat.gen"); //$NON-NLS-1$
 				case 4 -> Msg.getString("TabPanelThermalSystem.column.heat.load"); //$NON-NLS-1$
@@ -440,6 +442,7 @@ public class TabPanelThermal extends TabPanelTable {
 			};
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 
 			Building building = buildings.get(row);
@@ -463,47 +466,18 @@ public class TabPanelThermal extends TabPanelTable {
 					percentReq = heatReq / heatCap * 100;
 				}
 				
-				List<HeatMode> ALL_HEAT_MODES = HeatMode.ALL_HEAT_MODES;
-				int size = ALL_HEAT_MODES.size();
-				HeatMode heatMode = null;
-				
-				for (int i=1; i<size && heatMode != null; i++) {
-					HeatMode hm = ALL_HEAT_MODES.get(i);
+				HeatMode heatMode = HeatMode.HEAT_OFF;  // Required could be negative
+				for(HeatMode hm : HeatMode.values()) {
 					double percentageHeat = hm.getPercentage();
-						
 					if (percentReq >= percentageHeat) {
 						heatMode = hm;	
 					}
 				}
-				
-				if (heatMode == HeatMode.HEAT_OFF) {
-					return dotYellow; 
-				}
-				else if (heatMode == HeatMode.ONE_EIGHTH_HEAT) {
-					return dotGreen_quarter;
-				}
-				else if (heatMode == HeatMode.QUARTER_HEAT) {
-					return dotGreen_quarter;
-				}
-				else if (heatMode == HeatMode.THREE_EIGHTH_HEAT
-						|| heatMode == HeatMode.HALF_HEAT) {
-					return dotGreen_half;
-				}
-				else if (heatMode == HeatMode.FIVE_EIGHTH_HEAT
-						|| heatMode == HeatMode.THREE_QUARTER_HEAT) {
-					return dotGreen_threeQuarter;
-				}
-				else if (heatMode == HeatMode.SEVEN_EIGHTH_HEAT
-						|| heatMode == HeatMode.FULL_HEAT) {
-					return dotGreen_full;
-				}
-				else if (heatMode == HeatMode.OFFLINE) {
-					return dotRed;
-				}
-				else return null;
+
+				return HEAT_ICONS.get(heatMode);
 			}
 			else if (column == 1)
-				return buildings.get(row);
+				return buildings.get(row).getName();
 			else if (column == 2)
 				return  Math.round(building.getCurrentTemperature() * 100.0)/100.0;
 			else if (column == 3) {
@@ -538,40 +512,16 @@ public class TabPanelThermal extends TabPanelTable {
 		}
 
 		public void update() {
+			if (buildings.isEmpty()) {
+				return;
+			}
 
-	    	int numRow = getRowCount();
-	    	int numCol = getColumnCount();
-	    	for (int i=0; i<numRow; i++) {	
-	    		for (int j=0; j<numCol; j++) {	
-		    		if (j != 1 || j != 5)
-		    			fireTableCellUpdated(i, j);
-	    		}
-	    	}
+			fireTableRowsUpdated(0, buildings.size()-1);
 		}
 
 		@Override
 		public Entity getAssociatedEntity(int row) {
 			return buildings.get(row);
 		}
-	}
-	
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		
-		checkbox = null;
-		totHeatGenLabel = null;
-		powerGenLabel = null;
-		electricEffTF = null;
-		solarEffTF = null;
-		heatTableModel = null;
-		thermalSystem = null;
-		settlement = null;
-		manager = null;
-		heatSources = null;
-		buildings = null;
 	}
 }

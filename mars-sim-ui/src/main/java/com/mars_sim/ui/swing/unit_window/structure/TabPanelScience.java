@@ -8,12 +8,10 @@ package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.util.List;
 
-import javax.swing.JButton;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -25,30 +23,32 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLauncher;
+import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A tab panel displaying a settlement's scientific studies and achievements.
  */
 @SuppressWarnings("serial")
-public class TabPanelScience
-extends TabPanel {
+class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComponent{
 
 	private static final String SCIENCE_ICON = "science";
 
-	// Data members
-	/** The Settlement instance. */
-	private Settlement settlement;
-	
-	private JButton scienceToolButton;
 	private JLabel totalAchievementLabel;
 
 	private JTable achievementTable;
@@ -61,18 +61,15 @@ extends TabPanel {
 	 * Constructor.
 	 * 
 	 * @param settlement the settlement.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelScience(Settlement settlement, MainDesktopPane desktop) {
+	public TabPanelScience(Settlement settlement, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(SCIENCE_ICON),
-			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
-			settlement, desktop
+			Msg.getString("ScientificStudy.science"), //$NON-NLS-1$
+			ImageLoader.getIconByName(SCIENCE_ICON), null,
+			context, settlement
 		);
-
-		this.settlement = settlement;
 	}
 	
 	@Override
@@ -87,17 +84,18 @@ extends TabPanel {
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
-		JLabel studiesLabel = new JLabel(Msg.getString("TabPanelScience.scientificStudies"), SwingConstants.CENTER); //$NON-NLS-1$
-		studiesPane.add(studiesLabel, BorderLayout.NORTH);
+		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("ScientificStudy.plural")));
 
 		// Create the study scroll panel.
 		JScrollPane studyScrollPane = new JScrollPane();
 		studyScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		studiesPane.add(studyScrollPane, BorderLayout.CENTER);
 
+		var settlement = getEntity();
 		// Create the study table.
-		studyTableModel = new StudyTableModel(settlement);
+		studyTableModel = new StudyTableModel(settlement, getContext());
 		studyTable = new JTable(studyTableModel);
+		EntityLauncher.attach(studyTable, getContext());
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 		renderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -117,48 +115,24 @@ extends TabPanel {
 		studyTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		studyTable.setRowSelectionAllowed(true);
 		studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		studyTable.getSelectionModel().addListSelectionListener(event -> {
-			if (event.getValueIsAdjusting() && (studyTable.getSelectedRow() >= 0)) {
-					setEnabledScienceToolButton(true);
-			}
-		});
 		studyScrollPane.setViewportView(studyTable);
 
 		// Added sorting
 		studyTable.setAutoCreateRowSorter(true);
 
-		// Create the button panel.
-		JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		studiesPane.add(buttonPane, BorderLayout.SOUTH);
-
-		// Create the science tool button.
-		scienceToolButton = new JButton(ImageLoader.getIconByName(SCIENCE_ICON));
-		scienceToolButton.setEnabled(false);
-		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
-		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.button.science")); //$NON-NLS-1$
-		scienceToolButton.addActionListener(arg0 -> displayStudyInScienceTool());
-		buttonPane.add(scienceToolButton);
-
 		// Create the achievement panel.
 		JPanel achievementPane = new JPanel(new BorderLayout());
 		mainPane.add(achievementPane);
 
-		// Create achievement label panel.
-		JPanel achievementLabelPane = new JPanel(new GridLayout(2, 1, 0, 0));
-		achievementPane.add(achievementLabelPane, BorderLayout.NORTH);
-
 		// Create the achievement label.
-		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), SwingConstants.CENTER); //$NON-NLS-1$
-		achievementLabelPane.add(achievementLabel);
+		achievementPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelScience.scientificAchievement")));
 
-		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(settlement.getTotalScientificAchievement());
-		totalAchievementLabel = new JLabel(
-			Msg.getString(
-				"TabPanelScience.totalAchievementCredit", //$NON-NLS-1$
-				totalAchievementString
-			), SwingConstants.CENTER
-		);
-		achievementLabelPane.add(totalAchievementLabel);
+		var achievementSummary = new AttributePanel();
+		achievementSummary.setBorder(BorderFactory.createEmptyBorder(2,0,2,0));
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(getEntity().getTotalScientificAchievement());
+		totalAchievementLabel = achievementSummary.addTextField(Msg.getString(
+								"TabPanelScience.totalAchievementCredit"), totalAchievementString, null);
+		achievementPane.add(achievementSummary, BorderLayout.NORTH);
 
 		// Create the achievement scroll panel.
 		JScrollPane achievementScrollPane = new JScrollPane();
@@ -184,8 +158,7 @@ extends TabPanel {
 	}
 
 	@Override
-	public void update() {		
-
+	public void clockUpdate(ClockPulse pulse) {
 		// Get selected study in table if any.
 		int selectedStudyIndex = studyTable.getSelectedRow();
 		ScientificStudy selectedStudy = null;
@@ -205,33 +178,15 @@ extends TabPanel {
 		achievementTableModel.update();
 
 		// Update total achievement label.
-		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(settlement.getTotalScientificAchievement());
-		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString)); //$NON-NLS-1$
-	}
-
-	/**
-	 * Sets if the science tool button is enabled or not.
-	 * @param enabled true if button enabled.
-	 */
-	private void setEnabledScienceToolButton(boolean enabled) {
-		scienceToolButton.setEnabled(enabled);
-	}
-
-	/**
-	 * Displays the scientific study selected in the table in the science tool.
-	 */
-	private void displayStudyInScienceTool() {
-		int selectedStudyIndex = studyTable.getSelectedRow();
-		if (selectedStudyIndex >= 0) {
-			ScientificStudy selectedStudy = studyTableModel.getStudy(selectedStudyIndex);
-			getDesktop().showDetails(selectedStudy);
-		}
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(getEntity().getTotalScientificAchievement());
+		totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
 	}
 
 	/**
 	 * Inner class for study table model.
 	 */
-	private class StudyTableModel extends AbstractTableModel {
+	private static class StudyTableModel extends AbstractTableModel
+		implements EntityModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -239,20 +194,21 @@ extends TabPanel {
 		// Data members.
 		private Settlement settlement;
 		private List<ScientificStudy> studies;
+		private ScientificStudyManager studyManager;
 
 		/**
 		 * Constructor.
 		 * 
 		 * @param settlement the settlement.
 		 */
-		private StudyTableModel(Settlement settlement) {
+		private StudyTableModel(Settlement settlement, UIContext context) {
 			// Use AbstractTableModel constructor.
 			super();
 
 			this.settlement = settlement;
-
+			this.studyManager = context.getSimulation().getScientificStudyManager();
 			// Get all studies the settlement is primary for.
-			studies = getSimulation().getScientificStudyManager().getAllStudies(settlement);
+			studies = studyManager.getAllStudies(settlement);
 		}
 
 		/**
@@ -260,31 +216,29 @@ extends TabPanel {
 		 * 
 		 * @return the number of columns in the model.
 		 */
+		@Override
 		public int getColumnCount() {
 			return 5;
 		}
 
 		@Override
 		public String getColumnName(int column) {
-			if (column == 0) 
-				return Msg.getString("TabPanelScience.column.id"); //$NON-NLS-1$
-			else if (column == 1) 
-				return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
-			else if (column == 2) 
-				return Msg.getString("TabPanelScience.column.level"); //$NON-NLS-1$
-			else if (column == 3) 
-				return Msg.getString("TabPanelScience.column.phase"); //$NON-NLS-1$
-			else if (column == 4)
-				return Msg.getString("TabPanelScience.column.researcher"); //$NON-NLS-1$
-			
-			return null;
+			return switch (column) {
+				case 0 -> Msg.getString("Entity.name");
+				case 1 -> Msg.getString("ScientificStudy.science");
+				case 2 -> Msg.getString("ScientificStudy.level");	
+				case 3 -> Msg.getString("ScientificStudy.phase");
+				case 4 -> Msg.getString("ScientificStudy.lead");
+				default -> null;
+			};
 		}
-
+		
 		/**
 		 * Returns the number of rows in the model.
 		 * 
 		 * @return the number of rows in the model.
 		 */
+		@Override
 		public int getRowCount() {
 			return studies.size();
 		}
@@ -296,13 +250,14 @@ extends TabPanel {
 		 * @param columnIndex the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
 		 */
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			String result = null;
 			if ((rowIndex >= 0) && (rowIndex < studies.size())) {
 				ScientificStudy study = studies.get(rowIndex);
 
 				switch (columnIndex) {
-					case 0 -> result = study.getID() + "";
+					case 0 -> result = study.getName();
 					case 1 -> result = study.getScience().getName();
 					case 2 -> result = study.getDifficultyLevel() + "";
 					case 3 -> result = study.getPhase().getName();
@@ -322,12 +277,17 @@ extends TabPanel {
 		 * Updates the table model.
 		 */
 		private void update() {
-			List<ScientificStudy> newStudies = getSimulation().getScientificStudyManager().getAllStudies(settlement);
-			if (!newStudies.equals(studies)) studies = newStudies;
-			fireTableDataChanged();
+			List<ScientificStudy> newStudies = studyManager.getAllStudies(settlement);
+			if (!newStudies.equals(studies)){
+				studies = newStudies;
+				fireTableDataChanged();
+			}
+			else if (!studies.isEmpty()) {
+				fireTableRowsUpdated(0, studies.size() - 1);
+			}
 		}
 
-		/**
+			/**
 		 * Gets the scientific study in the table at a given row index.
 		 * @param rowIndex the row index in the table.
 		 * @return scientific study or null if invalid index.
@@ -349,12 +309,17 @@ extends TabPanel {
 			if ((study != null) && studies.contains(study)) result = studies.indexOf(study);
 			return result;
 		}
+
+		@Override
+		public Entity getAssociatedEntity(int row) {
+			return studies.get(row);
+		}
 	}
 
 	/**
 	 * Inner class for achievement table model.
 	 */
-	private class AchievementTableModel
+	private static class AchievementTableModel
 	extends AbstractTableModel {
 
 		/** default serial id. */
@@ -366,8 +331,6 @@ extends TabPanel {
 
 		/** hidden constructor. */
 		private AchievementTableModel(Settlement settlement) {
-			// Use AbstractTableModel constructor.
-			super();
 			this.settlement = settlement;
 			sciences = ScienceType.values();
 		}
@@ -376,6 +339,7 @@ extends TabPanel {
 		 * Returns the number of columns in the model.
 		 * @return the number of columns in the model.
 		 */
+		@Override
 		public int getColumnCount() {
 			return 2;
 		}
@@ -383,7 +347,7 @@ extends TabPanel {
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("TabPanelScience.column.science");
+				case 0 -> Msg.getString("ScientificStudy.science");
 				case 1 -> Msg.getString("TabPanelScience.column.achievementCredit");
 				default -> null;
 			};
@@ -406,6 +370,7 @@ extends TabPanel {
 		 * Returns the number of rows in the model.
 		 * @return the number of rows in the model.
 		 */
+		@Override
 		public int getRowCount() {
 			return sciences.length;
 		}
@@ -416,6 +381,7 @@ extends TabPanel {
 		 * @param columnIndex the column whose value is to be queried.
 		 * @return the value Object at the specified cell.
 		 */
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Object result = null;
 			if ((rowIndex >= 0) && (rowIndex < sciences.length)) {
@@ -435,22 +401,4 @@ extends TabPanel {
 			fireTableDataChanged();
 		}
 	}
-	
-	/**
-     * Prepare object for garbage collection.
-     */
-	@Override
-    public void destroy() {
-    	scienceToolButton = null;
-    	totalAchievementLabel = null;
-
-    	achievementTable = null;
-    	studyTable = null;
-
-    	studyTableModel = null;
-    	achievementTableModel = null;
-
-		super.destroy();
-
-    }
 }

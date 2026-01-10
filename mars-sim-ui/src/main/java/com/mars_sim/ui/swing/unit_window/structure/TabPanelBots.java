@@ -15,29 +15,30 @@ import javax.swing.JPanel;
 
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This is a tab panel for robots.
  */
 @SuppressWarnings("serial")
-public class TabPanelBots extends TabPanel {
+class TabPanelBots extends EntityTabPanel<Settlement> implements TemporalComponent {
 
 	private static final String ROBOT_ICON = "robot";
 
 	private int robotNumCache;
-	private int robotCapacityCache;
 	private int robotIndoorCache;
 
 	private Settlement settlement;
 
 	private JLabel robotNumLabel;
-	private JLabel robotCapLabel;
 	private JLabel robotIndoorLabel;
 	private UnitListPanel<Robot> robotList;
 
@@ -48,13 +49,12 @@ public class TabPanelBots extends TabPanel {
 	 * @param unit    the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public TabPanelBots(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelBots(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(ROBOT_ICON),
-			Msg.getString("TabPanelBots.title"), //$NON-NLS-1$
-			desktop
+			Msg.getString("Robot.plural"), // $NON-NLS-1$
+			ImageLoader.getIconByName(ROBOT_ICON), null,
+			context, unit
 		);
 
 		settlement = unit;
@@ -78,49 +78,31 @@ public class TabPanelBots extends TabPanel {
 													Integer.toString(robotIndoorCache), null);
 
 		// Create robot capacity label
-		robotCapacityCache = settlement.getRobotCapacity();
-		robotCapLabel = countPanel.addTextField(Msg.getString("TabPanelBots.capacity"),
-													Integer.toString(robotCapacityCache), null); // $NON-NLS-1$
+		countPanel.addTextField(Msg.getString("TabPanelBots.capacity"),
+											Integer.toString(settlement.getRobotCapacity()), null); // $NON-NLS-1$
 
 		// Create spring layout robot display panel
-		robotList = new UnitListPanel<>(getDesktop(), new Dimension(175, 200)) {
+		robotList = new UnitListPanel<>(getContext(), new Dimension(175, 200)) {
 			@Override
 			protected Collection<Robot> getData() {
 				return settlement.getAllAssociatedRobots();
 			}			
 		};
-		addBorder(robotList, "Robots");
+		robotList.setBorder(SwingHelper.createLabelBorder(Msg.getString("Robot.plural")));
 		content.add(robotList, BorderLayout.CENTER);
 	}
 
-	/**
-	 * Updates the info on this panel.
-	 */
+
 	@Override
-	public void update() {
+	public void clockUpdate(ClockPulse pulse) {
 		// Update robot num
 		if (robotNumCache != settlement.getNumBots()) {
 			robotNumCache = settlement.getNumBots();
-			robotNumLabel.setText("" + robotNumCache);
-			robotIndoorLabel.setText("" + robotNumCache);
-		}
-
-		// Update robot capacity
-		if (robotCapacityCache != settlement.getRobotCapacity()) {
-			robotCapacityCache = settlement.getRobotCapacity();
-			robotCapLabel.setText("" + robotCapacityCache);
+			robotNumLabel.setText(Integer.toString(robotNumCache));
+			robotIndoorLabel.setText(Integer.toString(robotIndoorCache));
 		}
 
 		// Update robot list
 		robotList.update();
-	}
-
-	/**
-	 * Prepare object for garbage collection.
-	 */
-	@Override
-	public void destroy() {
-		super.destroy();
-		robotList = null;
 	}
 }

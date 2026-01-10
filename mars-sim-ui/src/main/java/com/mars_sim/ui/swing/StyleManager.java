@@ -108,8 +108,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.grampercubicmeter"));
     // For air pressure
-    public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("pressure.unit.kPa"));
+    public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 kPa");
 
     // Look and Feel styles
     record StyleEntry(String name, String category, Color accentColour, String lafClassName) {}

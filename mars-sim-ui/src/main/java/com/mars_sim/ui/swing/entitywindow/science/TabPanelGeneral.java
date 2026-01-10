@@ -1,12 +1,12 @@
 package com.mars_sim.ui.swing.entitywindow.science;
 
 import java.awt.BorderLayout;
-import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JTextArea;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
@@ -26,7 +26,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityListener {
 
 	private JProgressBar progress;
-	private JTextArea topics;
+	private DefaultListModel<String> topics;
 
     TabPanelGeneral(ScientificStudy study, UIContext context) {
 		super(
@@ -64,9 +64,13 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 		progress.setStringPainted(true);
 		infoPane.addLabelledItem(Msg.getString("ScientificStudy.completed"), progress);
 
-		topics = SwingHelper.createTextBlock(Msg.getString("ScientificStudy.topics"), "");
-		topics.setRows(5);
-		content.add(topics);
+		// Topics block
+		var topicsPanel = new JPanel(new BorderLayout());
+		topicsPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("ScientificStudy.topics")));
+		content.add(topicsPanel);
+		topics = new DefaultListModel<>();
+		var topicsList = new JList<>(topics);
+		topicsPanel.add(topicsList, BorderLayout.CENTER);
 
 		updateProgress();
 		updateTopics();
@@ -82,8 +86,8 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 	private void updateTopics() {
 		var study = getEntity();
 		
-		var topicStr = study.getTopic().stream().collect(Collectors.joining(","));
-		topics.setText(topicStr);
+		topics.clear();
+		study.getTopic().stream().forEach(t -> topics.addElement(t));
 	}
 
 	@Override

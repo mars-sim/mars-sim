@@ -34,24 +34,27 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.manufacture.ManufacturingManager.QueuedProcess;
 import com.mars_sim.core.manufacture.ManufacturingParameters;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.manufacture.WorkshopProcessInfo;
-import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.parameter.ParameterKey;
+import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
@@ -62,13 +65,11 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * A tab panel displaying settlement manufacturing information.
  */
 @SuppressWarnings("serial")
-public class TabPanelManufacture extends TabPanel implements EntityListener {
+class TabPanelManufacture extends EntityTabPanel<Settlement>
+		implements EntityListener, TemporalComponent {
 	
 	private static final String MANU_ICON ="manufacture";
 	private static final String SALVAGE = "Salvage";
-
-	/** The Settlement instance. */
-	private Settlement target;
 
 	private ProcessQueueModel queueModel;
 	private ProcessListPanel manufactureListPane;
@@ -87,18 +88,15 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 	 * Constructor.
 	 * 
 	 * @param unit    {@link Unit} the unit to display.
-	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 * @param context {@link UIContext} the UI context.
 	 */
-	public TabPanelManufacture(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelManufacture(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelManufacture.title"), //-NLS-1$
-			ImageLoader.getIconByName(MANU_ICON),
-			Msg.getString("TabPanelManufacture.title"), //-NLS-1$
-			unit, desktop
+			ImageLoader.getIconByName(MANU_ICON), null,
+			context, unit
 		);
-
-		target = unit;
 	}
 
 	@Override
@@ -115,7 +113,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 		manufactureScrollPane.setViewportView(manufactureOuterListPane);
 
 		// Prepare manufacture list pane.
-		manufactureListPane = new ProcessListPanel(true);
+		manufactureListPane = new ProcessListPanel(true, getContext());
 		manufactureOuterListPane.add(manufactureListPane, BorderLayout.NORTH);
 
 		// Create the process panels.
@@ -137,6 +135,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 		queuePanel.add(interactionPanel, BorderLayout.NORTH);
 
 		// Create output selection
+		var target = getEntity();
 		outputSelection = new JComboBox<>();
 		interactionPanel.add(outputSelection);
 		var outputs = target.getManuManager().getPossibleOutputs();
@@ -256,7 +255,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 	 */
 	private void queueSelectionDeleted() {
 		if (selection != null) {
-			target.getManuManager().removeProcessFromQueue(selection);
+			getEntity().getManuManager().removeProcessFromQueue(selection);
 		}
 	}	
 
@@ -274,12 +273,6 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 		} else if (ManufacturingManager.MANU_QUEUE_REFRESH.equals(eventType)) {
 			queueModel.refresh();
 		}
-	}
-
-	@Override
-	public void destroy() {
-		target.removeEntityListener(this);
-		super.destroy();
 	}
 
 	private void addParameter(AttributePanel panel, ParameterManager pMgr, ParameterKey key, int maxValue) {
@@ -302,6 +295,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 	private void changeProcessOptions() {
 		processSelection.removeAllItems();
 
+		var target = getEntity();
 		List<? extends ProcessInfo> processes = null;
 		String output = (String) outputSelection.getSelectedItem();
 		if (SALVAGE.equals(output)) {
@@ -320,15 +314,18 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 
 		Object selectedItem = processSelection.getSelectedItem();
 		if (selectedItem instanceof WorkshopProcessInfo selectedProcess) {
-			target.getManuManager().addProcessToQueue(selectedProcess);
+			getEntity().getManuManager().addProcessToQueue(selectedProcess);
 		}
 		processSelection.setSelectedIndex(-1);
 	}
 
 
+	/**
+	 * Update process status on clock update.
+	 * @param pulse
+	 */
 	@Override
-	public void update() {
-
+	public void clockUpdate(ClockPulse pulse) {
 		// Update processes if necessary.
 		manufactureListPane.update(getActiveManufacturing());
 		manufactureScrollPane.validate();
@@ -340,7 +337,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 	 * @return list of manufacture processes.
 	 */
 	private List<WorkshopProcess> getActiveManufacturing() {
-		return target.getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).stream()
+		return getEntity().getBuildingManager().getBuildingSet(FunctionType.MANUFACTURE).stream()
 								.map(b -> b.getManufacture().getProcesses())
 								.flatMap(Collection::stream)
 								.toList();
@@ -490,10 +487,7 @@ public class TabPanelManufacture extends TabPanel implements EntityListener {
 			JLabel result = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 			if (value != null) {
 				var pinfo = (ProcessInfo) value;
-				String processName = pinfo.getName();
-				if (processName.length() > PROCESS_NAME_LENGTH)
-					processName = processName.substring(0, PROCESS_NAME_LENGTH) + "...";
-
+				String processName = Conversion.trim(pinfo.getName(), PROCESS_NAME_LENGTH);
 				result.setText(processName);
 			}
 			return result;
