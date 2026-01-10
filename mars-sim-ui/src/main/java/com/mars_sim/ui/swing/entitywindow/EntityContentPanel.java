@@ -25,7 +25,6 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.
@@ -44,7 +43,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	private static final int HEIGHT = 500;
 
     private T entity;
-	private List<TabPanel> tabPanels = new ArrayList<>();
+	private List<EntityTabPanel<?>> tabPanels = new ArrayList<>();
     private UIContext context;
     private JTabbedPane tabPane;
 
@@ -64,7 +63,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 
 		// Add a listener for the tab changes
 		tabPane.addChangeListener(e -> {
-			TabPanel newTab = getSelected();
+			var newTab = getSelected();
 			if (!newTab.isUIDone()) {
 				newTab.initializeUI();
 			}
@@ -88,9 +87,9 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	 *
 	 * @return Monitor tab being displayed.
 	 */
-	private TabPanel getSelected() {
+	private EntityTabPanel<?> getSelected() {
 		// Not using SwingUtilities.updateComponentTreeUI(this)
-		TabPanel selected = null;
+		EntityTabPanel<?> selected = null;
 		int selectedIdx = tabPane.getSelectedIndex();
 		if ((selectedIdx != -1) && (selectedIdx < tabPanels.size()))
 			selected = tabPanels.get(selectedIdx);
@@ -110,7 +109,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         String selectedTab = props.getProperty(SELECTED_TAB);
         if (selectedTab != null) {
             for (int i = 0; i < tabPanels.size(); i++) {
-                TabPanel tab = tabPanels.get(i);
+                var tab = tabPanels.get(i);
                 if (tab.getTabTitle().equals(selectedTab)) {
                     tabPane.setSelectedIndex(i);
                     break;
@@ -158,7 +157,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      * create the tab.
      * @param panel
      */
-    protected void addTabPanel(TabPanel panel) {
+    protected void addTabPanel(EntityTabPanel<?> panel) {
         tabPanels.add(panel);
 
         // Have to ignore the title to force the icon to show correctly
