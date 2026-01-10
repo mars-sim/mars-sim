@@ -116,7 +116,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		JPanel pendingTaskPanel = new JPanel(new BorderLayout(1, 3));
 		pendingTasks = new JTextArea(2, 30);
 		pendingTaskPanel.add(pendingTasks, BorderLayout.CENTER);
-		addBorder(pendingTaskPanel, "Pending Task");
+		pendingTaskPanel.setBorder(SwingHelper.createLabelBorder("Pending Task"));
 		taskMainPanel.add(pendingTaskPanel, BorderLayout.SOUTH);
 		
 		// Create a mission main panel
@@ -142,7 +142,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		// Prepare attribute panel
 		AttributePanel missionAttributePanel = new AttributePanel();
 		missionSubPanel.add(missionAttributePanel, BorderLayout.NORTH);
-		missionLabel = new EntityLabel(getDesktop());
+		missionLabel = new EntityLabel(getContext());
 		missionAttributePanel.addLabelledItem(Msg.getString("Entity.description"), missionLabel);
 		missionPhase = missionAttributePanel.addRow(Msg.getString("Mission.phase"), ""); //-NLS-1$
 		missionScore = missionAttributePanel.addRow(BEST_SCORE, "");

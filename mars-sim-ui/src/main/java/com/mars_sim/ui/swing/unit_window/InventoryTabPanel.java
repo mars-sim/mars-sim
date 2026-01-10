@@ -38,8 +38,10 @@ import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.resource.Resource;
 import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
@@ -52,7 +54,7 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
 @SuppressWarnings("serial")
-public class InventoryTabPanel extends EntityTabPanel<Unit> {
+public class InventoryTabPanel extends EntityTabPanel<Unit> implements TemporalComponent{
 
 	private static final String INVENTORY_ICON = "inventory";
 
@@ -261,11 +263,11 @@ public class InventoryTabPanel extends EntityTabPanel<Unit> {
         }
     }
     
-    /**
-     * Updates the info on this panel.
-     */
+	/**
+	 * Update the table panels.
+	 */
 	@Override
-    public void update() {
+	public void clockUpdate(ClockPulse pulse) {
 		if (resourceTableModel != null)
         	resourceTableModel.update();
 		if (itemTableModel != null)

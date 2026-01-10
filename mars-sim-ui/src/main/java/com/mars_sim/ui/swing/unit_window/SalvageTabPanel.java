@@ -101,7 +101,7 @@ public class SalvageTabPanel extends EntityTabPanel<Salvagable> {
         JButton settlementButton = new JButton(salvageInfo.getSettlement().getName());
         settlementButton.addActionListener(e -> {
                 SalvageInfo info = getEntity().getSalvageInfo();
-                getDesktop().showDetails(info.getSettlement());
+                getContext().showDetails(info.getSettlement());
         });
         settlementPanel.add(settlementButton);
         
@@ -129,8 +129,12 @@ public class SalvageTabPanel extends EntityTabPanel<Salvagable> {
         partsTablePanel.setViewportView(partsTable);
     }
     
+    /**
+     * This only updates the details, on a full refresh.
+     * This means the display could be out of date but it is an uncommon scenario to be Salvaged.
+     */
     @Override
-    public void update() {
+    public void refreshUI() {
         // Update finish time.
         SalvageInfo salvageInfo = getEntity().getSalvageInfo();
         MarsTime finishTime = salvageInfo.getFinishTime();

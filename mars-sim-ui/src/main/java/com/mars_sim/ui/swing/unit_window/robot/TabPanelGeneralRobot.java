@@ -79,7 +79,7 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 		JPanel dataPanel = new JPanel(new BorderLayout(10, 10));
 		topPanel.add(dataPanel, BorderLayout.SOUTH);
 		
-        addBorder(dataPanel, "Battery Condition");
+        dataPanel.setBorder(SwingHelper.createLabelBorder("Battery Condition"));
 		AttributePanel battPanel = new AttributePanel(10);
 		dataPanel.add(battPanel, BorderLayout.NORTH);
     

@@ -91,7 +91,7 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
 
 		// Create location panel
 		AttributePanel locnPanel = new AttributePanel();
-		addBorder(locnPanel, "Location");
+		locnPanel.setBorder(SwingHelper.createLabelBorder("Location"));
 		locnPanel.addTextField("Lat", s.getLocation().getFormattedLatitudeString(), null);
 		locnPanel.addTextField("Lon", s.getLocation().getFormattedLongitudeString(), null);
 		locnPanel.addTextField("Zone", s.getTimeZone().getId(), null);
@@ -139,7 +139,7 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
         zenithAngleLabel = sunSpringPanel.addTextField(Msg.getString("TabPanelWeather.zenithAngle.label"), "", null);
         solarDeclinationLabel = sunSpringPanel.addTextField(Msg.getString("TabPanelWeather.solarDeclination.label"), "", null);
    
-        update();
+        refreshDetails();
 	}
 
     /**
@@ -147,6 +147,13 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
      */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
+		refreshDetails();
+	}
+
+	/**
+	 * Updates the info on this panel.
+	 */
+	private void refreshDetails() {
 		var locn = getEntity().getLocation();
 
 		double p = weather.getAirPressure(locn);

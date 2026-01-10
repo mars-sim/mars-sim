@@ -12,7 +12,6 @@ import java.awt.FlowLayout;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -20,25 +19,19 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.UIContext;
 
+/**
+ * This is the base class for all tab panels used in EntityContentPanels.
+ * It provides a lazy loading of the UI and only builds the UI elements when the tab
+ * is first displayed.
+ */
 @SuppressWarnings("serial")
 public abstract class TabPanel extends JScrollPane {
 
-	// Default values for any top level Spring panel holding values
-	protected static final int INITY_DEFAULT = 5;
-	protected static final int INITX_DEFAULT = 75;
-	protected static final int INITX_DEFAULT_1 = 135;
-	protected static final int YPAD_DEFAULT = 1;
-	protected static final int XPAD_DEFAULT = 5;
-
 	private boolean isUIDone = false;
 	
-	private String description;
 	private String tabTitle;
 	private String tabToolTip;
 	
@@ -47,51 +40,20 @@ public abstract class TabPanel extends JScrollPane {
 	// These can be made private once all tabs converted
 	private JPanel topContentPanel;
 	private JPanel centerContentPanel;
-	
-	private Unit unit;
-	private MainDesktopPane desktop;
-	
-	/**
-	 * Constructor.
-	 *
-	 * @param tabTitle   the title to be displayed in the tab (may be null).
-	 * @param tabIcon    the icon to be displayed in the tab (may be null).
-	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
-	 * @param unit       the unit to display.
-	 * @param desktop    the main desktop.
-	 */
-	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, Unit unit, MainDesktopPane desktop) {
-		this((tabTitle != null) ? tabTitle : tabToolTip, tabTitle, tabIcon, tabToolTip, desktop);
 
-		this.unit = unit;
-	}
-	
-	
-	/**
-	 * Constructor.
-	 *
-	 * @param tabTitle   the title to be displayed in the tab (may be null).
-	 * @param tabIcon    the icon to be displayed in the tab (may be null).
-	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
-	 * @param desktop    the main desktop.
-	 */
-	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
-		this((tabTitle != null) ? tabTitle : tabToolTip, tabTitle, tabIcon, tabToolTip, desktop);
-	}
+	private UIContext context;
 
+	
 	/**
 	 * Constructor.
 	 *
 	 * @param tabTitle   the title to be displayed in the tab (may be null).
-	 * @param description A longer descriptive title displayed at the top of the panel.
 	 * @param tabIcon    the icon to be displayed in the tab (may be null).
 	 * @param tabToolTip the tool tip to be displayed in the icon (may be null).
-	 * @param desktop    the main desktop.
+	 * @param context    the UI context.
 	 */
-	protected TabPanel(String tabTitle, String description, Icon tabIcon, String tabToolTip, MainDesktopPane desktop) {
-		// Use JScrollPane constructor
+	protected TabPanel(String tabTitle, Icon tabIcon, String tabToolTip, UIContext context) {
 		super();
-		this.desktop = desktop;
 
 		// Eventually tabTitle MUST be mandatory once all have been converted to UIContext
 		if (tabTitle == null && tabToolTip == null) {
@@ -99,10 +61,10 @@ public abstract class TabPanel extends JScrollPane {
 		}
 		// Initialize data members
 		this.tabTitle = (tabTitle != null) ? tabTitle : tabToolTip;
-		this.description = description;
 		this.tabIcon = tabIcon;
 		this.tabToolTip = (tabToolTip != null) ? tabToolTip : tabTitle;
-		
+		this.context = context;
+
 		// Create the view panel
 		JPanel viewPanel = new JPanel();
 		viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.Y_AXIS));
@@ -138,10 +100,13 @@ public abstract class TabPanel extends JScrollPane {
 		return isUIDone;
 	}
 	
+	/**
+	 * This tab panel is being displayed for the first time, so initialize the UI elements.
+	 */
 	public void initializeUI() {
 		if (!isUIDone) {
 			// Create label in top panel
-			String topLabel = (description != null ? description : getTabTitle());
+			String topLabel = getTabTitle();
 			JLabel titleLabel = new JLabel(topLabel, SwingConstants.CENTER);
 			StyleManager.applyHeading(titleLabel);
 			
@@ -156,32 +121,19 @@ public abstract class TabPanel extends JScrollPane {
 	}
 	
 	/**
+     * Get the UI context.
+     * @return
+     */
+    protected UIContext getContext() {
+        return context;
+    }
+
+	/**
 	 * Builds the UI element using the 3 components.
 	 * 
 	 * @param centerContentPanel
 	 */
 	protected abstract void buildUI(JPanel centerContentPanel);
-
-	/**
-	 * Adds a standard titled border.
-	 * 
-	 * @param panel
-	 * @param title The title to display
-	 */
-	protected void addBorder(JComponent panel, String title) {
-		panel.setBorder(SwingHelper.createLabelBorder(title));
-	}
-	
-	/**
-	 * Adds a standard titled border.
-	 * 
-	 * @param panel
-	 * @param title The title to display
-	 */
-	protected void addBorder(JComponent panel, String title, String tooltip) {
-		panel.setBorder(SwingHelper.createLabelBorder(title));
-		panel.setToolTipText(tooltip);
-	}
 	
 	/**
 	 * Gets the tab title.
@@ -209,48 +161,6 @@ public abstract class TabPanel extends JScrollPane {
 	public String getTabToolTip() {
 		return tabToolTip;
 	}
-
-	/**
-	 * Updates the info on this panel.
-	 */
-	public void update() {
-		// No updated required
-	}
-
-	/**
-	 * Gets the main desktop.
-	 * 
-	 * @return desktop.
-	 */
-	protected MainDesktopPane getDesktop() {
-		return desktop;
-	}
-
-	/**
-	 * Update the Unit.
-	 * @param unit
-	 */
-	protected void setUnit(Unit unit) {
-		this.unit = unit;
-	}
-
-	/**
-	 * Gets the unit.
-	 * 
-	 * @return unit.
-	 */
-	protected Unit getUnit() {
-		return unit;
-	}
-	
-	/**
-	 * Gets the simulation being monitored.
-	 * 
-	 * @return
-	 */
-	protected Simulation getSimulation() {
-		return desktop.getSimulation();
-	}
 	
 	@Override
 	public  String toString() {
@@ -261,11 +171,7 @@ public abstract class TabPanel extends JScrollPane {
 	 * Prepares for deletion.
 	 */
 	public void destroy() {
-		tabIcon = null;
-		topContentPanel = null;
-		centerContentPanel = null;
-		unit = null;
-		desktop = null;
+		// Do nothing BUT subclasses may override
 	}
 
 	/**

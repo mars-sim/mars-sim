@@ -226,7 +226,7 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		rtable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		rscrollPanel.setViewportView(rtable);
 
-		update();
+		updateDetails();
 	}
 
 	/**
@@ -346,7 +346,7 @@ class TabPanelCareer extends EntityTabPanel<Person>
 				starRater.setSelection(0);
 				starRater.setEnabled(true);
 
-				// updates the jobHistoryList in jobHistoryTableModel
+				// ates the jobHistoryList in jobHistoryTableModel
 				jobHistoryTableModel.update();
 
 				RoleType newRole = person.getRole().getType();

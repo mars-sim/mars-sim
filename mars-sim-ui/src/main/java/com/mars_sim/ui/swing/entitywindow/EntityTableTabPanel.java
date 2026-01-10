@@ -21,6 +21,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This is a tab panel for display a table and an optional information panel
@@ -70,7 +71,7 @@ public abstract class EntityTableTabPanel<T extends Entity> extends EntityTabPan
 		// Create scroll panel for the outer table panel.
 		var scrollPane = new JScrollPane();
 		if (tableTitle != null) {
-			addBorder(scrollPane, tableTitle);
+			scrollPane.setBorder(SwingHelper.createLabelBorder(tableTitle));
 		}
 
 		// increase vertical mousewheel scrolling speed for this one

@@ -4,7 +4,7 @@
  * @date 2022-07-11
  * @author Manny Kung
  */
-package com.mars_sim.ui.swing.entitywindow.building;
+package com.mars_sim.ui.swing.entitywindow.structure;
 
 import java.awt.FlowLayout;
 import java.awt.Insets;

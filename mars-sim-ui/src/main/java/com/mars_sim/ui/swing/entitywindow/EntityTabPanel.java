@@ -30,12 +30,10 @@ public abstract class EntityTabPanel<T extends Entity> extends TabPanel {
     protected static final String GENERAL_TOOLTIP = Msg.getString("EntityGeneral.tooltip");
 
     private T entity;
-    private UIContext context;
 
     protected EntityTabPanel(String tabTitle, Icon tabIcon, String tabToolTip, UIContext context, T entity) {
-        super(tabTitle, tabIcon, tabToolTip, null);
+        super(tabTitle, tabIcon, tabToolTip, context);
         this.entity = entity;
-        this.context = context;
     }
 
     /**
@@ -44,14 +42,6 @@ public abstract class EntityTabPanel<T extends Entity> extends TabPanel {
      */
     protected T getEntity() {
         return entity;
-    }
-    
-    /**
-     * Get the UI context.
-     * @return
-     */
-    protected UIContext getContext() {
-        return context;
     }
 
     /**

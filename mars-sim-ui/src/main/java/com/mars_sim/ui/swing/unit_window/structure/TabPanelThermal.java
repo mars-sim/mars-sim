@@ -33,9 +33,11 @@ import com.mars_sim.core.building.utility.heating.SolarHeatingSource;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.heating.ThermalSystem;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -45,7 +47,8 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * This is a tab panel for settlement's Thermal System .
  */
 @SuppressWarnings("serial")
-class TabPanelThermal extends EntityTableTabPanel<Settlement> {
+class TabPanelThermal extends EntityTableTabPanel<Settlement> 
+								implements TemporalComponent {
 	
 	private static final String HEAT_ICON = "heat";
 
@@ -302,10 +305,18 @@ class TabPanelThermal extends EntityTableTabPanel<Settlement> {
 	}
 
 	/**
-	 * Updates the info on this panel.
+	 * Refresh the dynamic parts of the panel
+	 * @param pulse
 	 */
 	@Override
-	public void update() {
+	public void clockUpdate(ClockPulse pulse) {
+		refreshDetails();
+	}
+
+	/**
+	 * Updates the info on this panel.
+	 */
+	private void refreshDetails() {
 
 		double heat = thermalSystem.getTotalHeatGen();
 		if (Math.abs(totHeatGenCache - heat) > .3) {

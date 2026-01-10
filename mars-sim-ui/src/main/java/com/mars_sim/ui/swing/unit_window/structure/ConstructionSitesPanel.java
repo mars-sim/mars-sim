@@ -40,7 +40,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * A panel displaying a list of construction sites at a settlement.
  */
 @SuppressWarnings("serial")
-public class ConstructionSitesPanel extends JPanel {
+class ConstructionSitesPanel extends JPanel {
   
 	private static final int MAX = 65;
 	
