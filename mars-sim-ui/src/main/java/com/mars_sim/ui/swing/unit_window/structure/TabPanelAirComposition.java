@@ -202,7 +202,7 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 
 		airTableModel = new AirTableModel(settlement);
 		table = new JTable(airTableModel);
-		EntityLauncher.attach(table, getDesktop());
+		EntityLauncher.attach(table, getContext());
 
 		table.setRowSelectionAllowed(true);
 		TableColumnModel tableColumnModel = table.getColumnModel();
@@ -229,8 +229,7 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 		scrollPane.setViewportView(table);
 
 		//Force an update to load
-		update();
-
+		clockUpdate(null);
 	}
 
 	private JRadioButton createSelectorButton(String selector) {

@@ -32,25 +32,17 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * The MaintenanceTabPanel is a tab panel for maintenance information.
  */
 @SuppressWarnings("serial")
-public class MaintenanceTabPanel extends TabPanelTable implements TemporalComponent {
+public class MaintenanceTabPanel extends EntityTableTabPanel<Malfunctionable> implements TemporalComponent {
     private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed: ";
 	private static final String AGO = " ago";
-
-	private static final String[] COLUMN_TOOL_TIPS = {
-		    "The Part name", 
-		    "The System Function",
-		    "The # of Parts",
-		    "The Probability that Triggers Maintenance"};
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
@@ -80,7 +72,7 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 			Msg.getString("MaintenanceTabPanel.title"), 
 			ImageLoader.getIconByName(SPANNER_ICON), 
 			Msg.getString("MaintenanceTabPanel.tooltip"),   
-			context
+			malfunctionable, context
 		);
 
 		// Initialize data members.
@@ -88,7 +80,6 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 
         tableModel = new PartTableModel(manager);
 
-		setHeaderToolTips(COLUMN_TOOL_TIPS);
 		setTableTitle(Msg.getString("MaintenanceTabPanel.tableBorder"));
 	}
 
@@ -164,18 +155,7 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
-		// This is a placeholder until all the TabPanels have been migrated
-		update();
-	}
 
-	/**
-	 * Updates this panel.
-	 */
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
 		// Update the wear condition label.
 		wearCondition.setValue((int) manager.getWearCondition());
 

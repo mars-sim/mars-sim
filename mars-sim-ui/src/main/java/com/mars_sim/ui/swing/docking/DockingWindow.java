@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.docking;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -179,6 +180,11 @@ public class DockingWindow extends JFrame
         Properties props = new Properties();
 		var panel = EntityContentFactory.getEntityPanel(entity, this, props);
 		if (panel != null) {
+            // Cheat to shrink the window size to fit content
+            var panelMin = panel.getMinimumSize();
+            var newDims = new Dimension(panelMin.width, 400);
+            panel.setMinimumSize(newDims);
+            panel.setPreferredSize(newDims);
             addContentPanel(panel);
 		}
     }

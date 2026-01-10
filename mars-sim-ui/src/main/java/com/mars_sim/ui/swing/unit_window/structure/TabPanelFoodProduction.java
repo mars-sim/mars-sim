@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 
 import javax.swing.BoxLayout;
@@ -50,7 +49,7 @@ import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.entitywindow.building.FoodProductionPanel;
+import com.mars_sim.ui.swing.entitywindow.structure.FoodProductionPanel;
 
 /**
  * TabPanelFoodProduction is a panel that displays a settlement's food
@@ -72,11 +71,11 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 	/** building selector. */
 	private JComboBox<Building> buildingComboBox;
 	/** List of available foodProduction buildings. */
-	private Vector<Building> buildingComboBoxCache;
+	private List<Building> buildingComboBoxCache;
 	/** Process selector. */
 	private JComboBox<FoodProductionProcessInfo> processSelection;
 	/** List of available processes. */
-	private Vector<FoodProductionProcessInfo> processSelectionCache;
+	private List<FoodProductionProcessInfo> processSelectionCache;
 
 	/** Process selection button. */
 	private JButton newProcessButton;
@@ -129,17 +128,19 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 		// Create new building selection.
 		buildingComboBoxCache = getFoodProductionBuildings(settlement);
 		Collections.sort(buildingComboBoxCache);
-		buildingComboBox = new JComboBox<>(buildingComboBoxCache);
+		buildingComboBox = new JComboBox<>();
+		buildingComboBoxCache.forEach(b -> buildingComboBox.addItem(b));
 		buildingComboBox.setRenderer(new NamedListCellRenderer(" (1). Select a Building", SwingConstants.LEFT));
 		buildingComboBox.setSelectedIndex(-1);
 		buildingComboBox.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectBuilding")); //$NON-NLS-1$
-		buildingComboBox.addItemListener(event -> update());
+		buildingComboBox.addItemListener(event -> refreshDetails());
 		interactionPanel.add(buildingComboBox);
 
 		// Create new foodProduction process selection.
 		Building foodFactoryBuilding = (Building) buildingComboBox.getSelectedItem();
 		processSelectionCache = getAvailableProcesses(foodFactoryBuilding);
-		processSelection = new JComboBox<>(processSelectionCache);
+		processSelection = new JComboBox<>();
+		processSelectionCache.forEach(p -> processSelection.addItem(p));
 		processSelection.setSelectedIndex(-1);
 		processSelection.setRenderer(new FoodProductionSelectionListCellRenderer(" (2). Select a Process"));
 		processSelection.setToolTipText(Msg.getString("TabPanelFoodProduction.tooltip.selectAvailableProcess")); //$NON-NLS-1$
@@ -158,7 +159,7 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 						if (selectedItem instanceof FoodProductionProcessInfo sp
 								&& FoodProductionUtil.canProcessBeStarted(sp, foodFactory)) {
 							foodFactory.addProcess(new FoodProductionProcess(sp, foodFactory));
-							update();
+							refreshDetails();
 							
 							logger.log(b, Level.CONFIG, 0L, "Player starts the '" 
 									+ sp.getName() + "'.");
@@ -184,29 +185,36 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 		interactionPanel.add(overrideCheckbox);
 	}
 
-
+	/**
+	 * Update the dynamic details of this panel.
+	 */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
+		refreshDetails();
+	}
+
+	/**
+	 * Update the details on this panel.
+	 */
+	private void refreshDetails() {
 		var settlement = getEntity();
 
 		// Update processes if necessary.
 		List<FoodProductionProcess> processes = getFoodProductionProcesses(settlement);
 		if (!processCache.equals(processes)) {
-
 			// Add foodProduction panels for new processes.
-			for(var process : processes) {
-				if (!processCache.contains(process))
-					foodProductionListPane.add(new FoodProductionPanel(process, true, WORD_WIDTH, getContext()));
-			}
+			processes.stream()
+				.filter(p -> !processCache.contains(p))
+				.forEach(p -> foodProductionListPane.add(new FoodProductionPanel(p, true, WORD_WIDTH, getContext())));
 
 			// Remove foodProduction panels for old processes.
-			for(var process : processCache) {
-				if (!processes.contains(process)) {
-					FoodProductionPanel panel = getFoodProductionPanel(process);
+			processCache.stream()
+				.filter(p -> !processes.contains(p))
+				.forEach(p -> {
+					FoodProductionPanel panel = getFoodProductionPanel(p);
 					if (panel != null)
 						foodProductionListPane.remove(panel);
-				}
-			}
+				});
 
 			foodProductionScrollPane.validate();
 
@@ -217,45 +225,38 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 		}
 
 		// Update all process panels.
-		for(var process : processes) {
+		processes.forEach(process -> {
 			FoodProductionPanel panel = getFoodProductionPanel(process);
 			if (panel != null)
 				panel.update();
-		}
+		});
 
 		// Update building selection list.
-		Vector<Building> newBuildings = getFoodProductionBuildings(settlement);
+		var newBuildings = getFoodProductionBuildings(settlement);
 		if (!newBuildings.equals(buildingComboBoxCache)) {
 			buildingComboBoxCache = newBuildings;
 			Building currentSelection = (Building) buildingComboBox.getSelectedItem();
 			buildingComboBox.removeAllItems();
-			for(var b : buildingComboBoxCache)
-				buildingComboBox.addItem(b);
+			buildingComboBoxCache.forEach(b -> buildingComboBox.addItem(b));
 
-			if (currentSelection != null) {
-				if (buildingComboBoxCache.contains(currentSelection))
-					buildingComboBox.setSelectedItem(currentSelection);
-			}
+			if (currentSelection != null && buildingComboBoxCache.contains(currentSelection))
+				buildingComboBox.setSelectedItem(currentSelection);
 		}
 
 		// Update process selection list.
 		Building selectedBuilding = (Building) buildingComboBox.getSelectedItem();
-		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses(selectedBuilding);
-		
+		var newProcesses = getAvailableProcesses(selectedBuilding);
 		if (!newProcesses.equals(processSelectionCache)) {
 
 			processSelectionCache = newProcesses;
 			Object currentSelection = processSelection.getSelectedItem();
 			processSelection.removeAllItems();
 
-			Iterator<FoodProductionProcessInfo> l = processSelectionCache.iterator();
-			while (l.hasNext())
-				processSelection.addItem(l.next());
+			processSelectionCache.forEach(p -> processSelection.addItem(p));
 
-			if (currentSelection != null) {
-				if (processSelectionCache.contains(currentSelection))
-					processSelection.setSelectedItem(currentSelection);
-			}
+			if (currentSelection != null && processSelectionCache.contains(currentSelection))
+				processSelection.setSelectedItem(currentSelection);
+			
 		}
 
 		// Update new process button.
@@ -293,11 +294,9 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 		FoodProductionPanel result = null;
 		for (int x = 0; x < foodProductionListPane.getComponentCount(); x++) {
 			Component component = foodProductionListPane.getComponent(x);
-			if (component instanceof FoodProductionPanel) {
-				FoodProductionPanel panel = (FoodProductionPanel) component;
-				if (panel.getFoodProductionProcess().equals(process))
-					result = panel;
-			}
+			if (component instanceof FoodProductionPanel panel && panel.getFoodProductionProcess().equals(process))
+				return panel;
+			
 		}
 		return result;
 	}
@@ -307,8 +306,8 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 	 * 
 	 * @return vector of buildings.
 	 */
-	private static Vector<Building> getFoodProductionBuildings(Settlement settlement) {
-		return new Vector<>(settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION));
+	private static List<Building> getFoodProductionBuildings(Settlement settlement) {
+		return new ArrayList<>(settlement.getBuildingManager().getBuildingSet(FunctionType.FOOD_PRODUCTION));
 	}
 
 	/**
@@ -317,8 +316,8 @@ class TabPanelFoodProduction extends EntityTabPanel<Settlement> implements Tempo
 	 * @param foodProductionBuilding the manufacturing building.
 	 * @return vector of processes.
 	 */
-	private Vector<FoodProductionProcessInfo> getAvailableProcesses(Building foodProductionBuilding) {
-		Vector<FoodProductionProcessInfo> result = new Vector<>();
+	private List<FoodProductionProcessInfo> getAvailableProcesses(Building foodProductionBuilding) {
+		List<FoodProductionProcessInfo> result = new ArrayList<>();
 
 		try {
 			if (foodProductionBuilding != null) {

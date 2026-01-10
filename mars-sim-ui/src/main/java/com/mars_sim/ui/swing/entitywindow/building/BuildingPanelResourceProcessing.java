@@ -19,6 +19,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.entitywindow.structure.ResourceProcessPanel;
 
 /**
  * The BuildingPanelResourceProcessing class is a building function panel representing

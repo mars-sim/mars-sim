@@ -55,7 +55,7 @@ class TabPanelTow extends EntityTabPanel<Vehicle>
 		towedByLabel = new EntityLabel(getContext());
 		mainPane.addLabelledItem(Msg.getString("TabPanelTow.towedBy"), towedByLabel);
 
-		update();
+		refreshStatus();
 	}
 
 	/**
@@ -67,20 +67,27 @@ class TabPanelTow extends EntityTabPanel<Vehicle>
 		
 		// Update towed by info
 		if (event.getType().equals(EntityEventType.STATUS_EVENT)) {
-			var vehicle = getEntity();
-			if (vehicle.haveStatusType(StatusType.TOWED)) {
-				towedByLabel.setEntity(vehicle.getTowingVehicle());
-			}
-			else {
-				towedByLabel.setEntity(null);
-			}
+			refreshStatus();
+		}
+	}
 
-			if (vehicle instanceof Towing t && vehicle.haveStatusType(StatusType.TOWING)) {
-				towingLabel.setEntity(t.getTowedVehicle());
-			}
-			else {
-				towingLabel.setEntity(null);
-			}
+	/**
+	 * Refresh the towing/towed by info
+	 */
+	private void refreshStatus() {
+		var vehicle = getEntity();
+		if (vehicle.haveStatusType(StatusType.TOWED)) {
+			towedByLabel.setEntity(vehicle.getTowingVehicle());
+		}
+		else {
+			towedByLabel.setEntity(null);
+		}
+
+		if (vehicle instanceof Towing t && vehicle.haveStatusType(StatusType.TOWING)) {
+			towingLabel.setEntity(t.getTowedVehicle());
+		}
+		else {
+			towingLabel.setEntity(null);
 		}
 	}
 }

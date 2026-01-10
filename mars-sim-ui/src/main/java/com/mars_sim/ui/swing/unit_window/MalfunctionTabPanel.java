@@ -199,7 +199,6 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 	}
 	
 	/** Is UI constructed. */
-	private boolean uiDone = false;
 	private boolean showSource;
 	
 	private MalfunctionTableModel model;
@@ -300,7 +299,7 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 
 		int offset = 0;
 		if (showSource) {
-			EntityLauncher.attach(mTable, getDesktop());
+			EntityLauncher.attach(mTable, getContext());
 			columnModel.getColumn(SOURCE).setPreferredWidth(100);
 		}
 		else {
@@ -375,15 +374,6 @@ public class MalfunctionTabPanel extends EntityTabPanel<Malfunctionable> impleme
 
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
-		// This is a placeholder until all the TabPanels have been migrated
-		update();
-	}
-
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
 		List<Malfunction> newMalfunctions;
 		var malfunctionable = getEntity();
 		if (malfunctionable != null) {

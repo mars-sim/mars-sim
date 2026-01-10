@@ -28,17 +28,20 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 import eu.hansolo.steelseries.gauges.DisplayCircular;
 import eu.hansolo.steelseries.gauges.DisplaySingle;
@@ -48,7 +51,8 @@ import eu.hansolo.steelseries.tools.LcdColor;
  * The LocationTabPanel is a tab panel for location information.
  */
 @SuppressWarnings("serial")
-public class LocationTabPanel extends EntityTabPanel<Unit> {
+public class LocationTabPanel extends EntityTabPanel<Unit> 
+	implements TemporalComponent {
 
 	private static final String MAP_ICON = NavigatorWindow.PIN_ICON;
 
@@ -180,7 +184,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit> {
 		// Create data panel
 		var dataPanel = new AttributePanel();
 		content.add(dataPanel, BorderLayout.CENTER);
-        addBorder(dataPanel, "Location Data");
+        dataPanel.setBorder(SwingHelper.createLabelBorder("Location Data"));
         var unit = getEntity();
 		if (unit instanceof MobileUnit mu) {
 			if (mu instanceof Worker) {
@@ -197,7 +201,8 @@ public class LocationTabPanel extends EntityTabPanel<Unit> {
 			areothermalLabel = dataPanel.addRow("Areothermal Score", "");
 		}
 
-		update();
+		// Simulate a clock update to populate the fields
+		clockUpdate(null);
 	}
 
 	private void addUnitValues(AttributePanel containerPanel) {
@@ -263,11 +268,12 @@ public class LocationTabPanel extends EntityTabPanel<Unit> {
 	}
 
 	/**
-	 * Updates the info on this panel.
+	 * Update the position details. 
+	 * In theory this could be event driven rather than polled.
 	 */
 	@Override
-	public void update() {
-		
+	public void clockUpdate(ClockPulse pulse) {
+
 		Unit unit = getEntity();
 
 		updateBanner(unit);

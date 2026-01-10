@@ -18,9 +18,10 @@ import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.unit_window.TabPanelTable;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
@@ -28,21 +29,18 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * This is displayed as a table supporting clicking to open the an entity window.
  */
 @SuppressWarnings("serial")
-class TabPanelSettlements extends TabPanelTable
+class TabPanelSettlements extends EntityTableTabPanel<Authority>
         implements EntityManagerListener {
 
-    private Authority authority;
     private SettlementModel model;
 
     public TabPanelSettlements(Authority authority, UIContext context) {
         super(
-            "Settlements", // Tab title
+            Msg.getString("Settlement.plural"), // Tab title
             ImageLoader.getIconByName("settlement"),          // Tab icon
             null,          // Tab tooltip
-            context
+            authority, context
         );
-
-        this.authority = authority;
     }
 
     /**
@@ -65,9 +63,9 @@ class TabPanelSettlements extends TabPanelTable
         @Override
         public String getColumnName(int column) {
             return switch (column) {
-                case 0 -> "Name";
+                case 0 -> Msg.getString(("Entity.name"));
                 case 1 -> "Status";
-                case 2 -> "Population";
+                case 2 -> Msg.getString("Settlement.population");
                 default -> null;
             };
         }
@@ -110,6 +108,7 @@ class TabPanelSettlements extends TabPanelTable
     @Override
     protected TableModel createModel() {
         model = new SettlementModel();
+        var authority = getEntity();
 
         // Load established settlements
         var uMgr = getContext().getSimulation().getUnitManager();
@@ -148,7 +147,7 @@ class TabPanelSettlements extends TabPanelTable
     @Override
     public void entityAdded(Entity newEntity) {
         if (newEntity instanceof Settlement s
-                    && s.getReportingAuthority().equals(authority)) {
+                    && s.getReportingAuthority().equals(getEntity())) {
 
             // Remove the matching Transportable if it 
             model.settlements.removeIf(e -> {
@@ -171,7 +170,7 @@ class TabPanelSettlements extends TabPanelTable
     @Override
     public void entityRemoved(Entity removedEntity) {
         if (removedEntity instanceof Settlement s
-                    && s.getReportingAuthority().equals(authority)) {
+                    && s.getReportingAuthority().equals(getEntity())) {
             // Remove the settlement from the model
             model.settlements.remove(s);
             model.fireTableDataChanged();

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +46,9 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.entitywindow.structure.FoodProductionPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A building panel displaying the foodProduction building function.
@@ -73,7 +74,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 	/** Process selector. */
 	private JComboBox<FoodProductionProcessInfo> processComboBox;
 	/** List of available processes. */
-	private Vector<FoodProductionProcessInfo> processComboBoxCache;
+	private List<FoodProductionProcessInfo> processComboBoxCache;
 
 	/** Process selection button. */
 	private JButton newProcessButton;
@@ -118,7 +119,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 		scrollPanel = new JScrollPane();
 		scrollPanel.setPreferredSize(new Dimension(170, 90));
 		center.add(scrollPanel, BorderLayout.CENTER);
-		addBorder(scrollPanel, "Preparation");
+		scrollPanel.setBorder(SwingHelper.createLabelBorder("Preparation"));
 		
 		// Create process list main panel
 		JPanel processListMainPane = new JPanel(new BorderLayout(0, 0));
@@ -139,12 +140,13 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 10, 10));
-		addBorder(interactionPanel, "Add Food");
+		interactionPanel.setBorder(SwingHelper.createLabelBorder("Add Food"));
 		center.add(interactionPanel, BorderLayout.SOUTH);
 
 		// Create new foodProduction process selection.
 		processComboBoxCache = getAvailableProcesses();
-		processComboBox = new JComboBox<>(processComboBoxCache);
+		processComboBox = new JComboBox<>();
+		processComboBoxCache.forEach(p -> processComboBox.addItem(p));
 
 		processComboBox.setRenderer(new FoodProductionSelectionListCellRenderer());
 		processComboBox.setToolTipText("Select An Available Food Production Process");
@@ -167,7 +169,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 									&& FoodProductionUtil.canProcessBeStarted(sp, getFoodFactory())) {
 						getFoodFactory()
 								.addProcess(new FoodProductionProcess(sp, getFoodFactory()));
-						update();
+						refreshDetails();
 					}
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE, "new process button", ex);
@@ -182,25 +184,28 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 	 */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
+		refreshDetails();
+	}
+
+	/**
+	 * Refresh the dynamic parts of the panel.
+	 */
+	private void refreshDetails() {
 
 		// Update processes and salvage processes if necessary.
 		List<FoodProductionProcess> processes = foodFactory.getProcesses();
 		if (!processCache.equals(processes)) {
 
 			// Add process panels for new processes.
-			Iterator<FoodProductionProcess> i = processes.iterator();
-			while (i.hasNext()) {
-				FoodProductionProcess process = i.next();
+			processes.forEach(process -> {
 				if (!processCache.contains(process))
 					processListPane.add(new FoodProductionPanel(process, false, processStringWidth, getContext()));
-			}
+			});
 
 			// Remove process panels for old processes.
-			Iterator<FoodProductionProcess> j = processCache.iterator();
-			while (j.hasNext()) {
-				FoodProductionProcess process = j.next();
-				if (!processes.contains(process)) {
-					FoodProductionPanel panel = getFoodProductionPanel(process);
+			for(var p : processCache) {
+				if (!processes.contains(p)) {
+					FoodProductionPanel panel = getFoodProductionPanel(p);
 					if (panel != null)
 						processListPane.remove(panel);
 				}
@@ -214,16 +219,14 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 		}
 
 		// Update all process panels.
-		Iterator<FoodProductionProcess> i = processes.iterator();
-		while (i.hasNext()) {
-			FoodProductionPanel panel = getFoodProductionPanel(i.next());
+		processes.forEach(p -> {
+			FoodProductionPanel panel = getFoodProductionPanel(p);
 			if (panel != null)
 				panel.update();
-
-		}
+		});
+		
 		// Update process selection list.
 		var newProcesses = getAvailableProcesses();
-
 		if (!newProcesses.equals(processComboBoxCache)) {
 
 			processComboBoxCache = newProcesses;
@@ -269,17 +272,15 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 	 * 
 	 * @return vector of processes.
 	 */
-	private Vector<FoodProductionProcessInfo> getAvailableProcesses() {
-		Vector<FoodProductionProcessInfo> result = new Vector<>();
+	private List<FoodProductionProcessInfo> getAvailableProcesses() {
+		List<FoodProductionProcessInfo> result = new ArrayList<>();
 
 		if (foodFactory.getProcesses().size() < foodFactory.getNumPrintersInUse()) {
 
 			// Determine highest materials science skill level at settlement.
 			Settlement settlement = foodFactory.getBuilding().getSettlement();
 			int highestSkillLevel = 0;
-			Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
-			while (i.hasNext()) {
-				Person tempPerson = i.next();
+			for(Person tempPerson : settlement.getAllAssociatedPeople()) {
 				SkillManager skillManager = tempPerson.getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.COOKING);
 				if (skill > highestSkillLevel) {
@@ -287,16 +288,14 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 				}
 			}
 
-			Iterator<Robot> k = settlement.getAllAssociatedRobots().iterator();
-			while (k.hasNext()) {
-				Robot r = k.next();
+			for(Robot r : settlement.getAllAssociatedRobots()) {
 				SkillManager skillManager = r.getSkillManager();
 				int skill = skillManager.getSkillLevel(SkillType.COOKING);
 				if (skill > highestSkillLevel) {
 					highestSkillLevel = skill;
 				}
 			}
-			
+
 			try {
 				Iterator<FoodProductionProcessInfo> j = Collections.unmodifiableList(FoodProductionUtil
 						.getProcessesForTechSkillLevel(foodFactory.getTechLevel(), highestSkillLevel))

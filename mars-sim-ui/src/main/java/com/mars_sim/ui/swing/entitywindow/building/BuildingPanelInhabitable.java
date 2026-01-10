@@ -24,6 +24,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This class is a building function panel representing 
@@ -83,7 +84,7 @@ public class BuildingPanelInhabitable extends EntityTabPanel<Building> implement
 			}
 		};
 		
-		addBorder(inhabitantListPanel, "Inhabitants");
+		inhabitantListPanel.setBorder(SwingHelper.createLabelBorder("Inhabitants"));
 		center.add(inhabitantListPanel, BorderLayout.NORTH);
 	}
 
