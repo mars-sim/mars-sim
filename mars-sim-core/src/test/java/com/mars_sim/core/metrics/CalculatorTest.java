@@ -20,6 +20,7 @@ import com.mars_sim.core.time.MasterClock;
 class CalculatorTest extends MarsSimUnitTest{
     
     private static final double[] VALUES = {10.0, 20.0, 30.0, 40.0, 50.0};
+    private static final MetricCategory TEMP = new MetricCategory("Temperature");
 
     private Metric metric;
     private MasterClock masterClock;
@@ -34,7 +35,7 @@ class CalculatorTest extends MarsSimUnitTest{
         startTime = masterClock.getMarsTime();
 
         Entity mockEntity = new MockEntity("E1");
-        var metricKey = new MetricKey(mockEntity, "Temperature", "Average");
+        var metricKey = new MetricKey(mockEntity, TEMP, "Average");
         metric = new MemoryMetric(metricKey);
 
         int mSol = 10;

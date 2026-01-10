@@ -168,7 +168,7 @@ class MetricDataset extends AbstractXYDataset implements TableXYDataset {
 
         for(var m : metrics) {
             entities.add(m.getKey().asset().getName());
-            categories.add(m.getKey().category());
+            categories.add(m.getKey().category().getName());
         }
 
         // See which parts we have

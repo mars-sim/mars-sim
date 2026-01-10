@@ -25,7 +25,7 @@ public class DataPoint {
      * @param when The timestamp when this data point was recorded
      * @param value The numeric value of this data point
      */
-    DataPoint(MarsTime when, double value) {
+    public DataPoint(MarsTime when, double value) {
         this.when = Objects.requireNonNull(when, "Timestamp cannot be null");
         this.value = value;
     }
@@ -60,7 +60,7 @@ public class DataPoint {
     public int hashCode() {
         return when.hashCode();
     }
-    
+
     @Override
     public String toString() {
         return String.format("DataPoint{when=%s, value=%.2f}", when, value);

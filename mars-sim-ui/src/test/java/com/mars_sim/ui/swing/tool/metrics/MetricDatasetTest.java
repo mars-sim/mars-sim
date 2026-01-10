@@ -16,6 +16,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.metrics.Metric;
+import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.metrics.MetricManager;
 import com.mars_sim.core.time.MarsTime;
 
@@ -65,6 +66,7 @@ class MetricDatasetTest {
     private static final int DELTA2 = 2;
     private static final int DATA_POINTS = 10;
     private static final double TIME_DELTA = 150D;
+    private static final MetricCategory CATEGORY = new MetricCategory("TestCategory");
 
     private Entity testEntity1;
     private Entity testEntity2;
@@ -86,8 +88,8 @@ class MetricDatasetTest {
         testEntity2 = new MockEntity("E2");
         
         // Get metrics without adding data points (to avoid simulation dependency)
-        metric1 = manager.getMetric(testEntity1, "Cat", "M1");
-        metric2 = manager.getMetric(testEntity2, "Cat", "M1");
+        metric1 = manager.getMetric(testEntity1, CATEGORY, "M1");
+        metric2 = manager.getMetric(testEntity2, CATEGORY, "M1");
         
         // Add sample data to metrics manually
         startTime = clock.getMarsTime();
@@ -105,7 +107,7 @@ class MetricDatasetTest {
     void testAddSingleMetric() {
 
         MetricDataset dataset = new MetricDataset();
-        dataset.addMetric(manager.getMetric(testEntity1, "Cat", "M1"));
+        dataset.addMetric(manager.getMetric(testEntity1, CATEGORY, "M1"));
 
         assertEquals(1, dataset.getSeriesCount(), "Dataset should have 1 series after adding 1 metric");
         assertEquals(DATA_POINTS, dataset.getItemCount(0), "First series should have 10 items");
@@ -126,7 +128,7 @@ class MetricDatasetTest {
     void testAddSingleCumulativeMetric() {
 
         MetricDataset dataset = new MetricDataset();
-        dataset.addMetric(manager.getMetric(testEntity1, "Cat", "M1"));
+        dataset.addMetric(manager.getMetric(testEntity1, CATEGORY, "M1"));
         dataset.setCumulative(true);
 
         assertEquals(1, dataset.getSeriesCount(), "Dataset should have 1 series after adding 1 metric");
@@ -148,8 +150,8 @@ class MetricDatasetTest {
     void testAddTwoMetric() {
 
         MetricDataset dataset = new MetricDataset();
-        dataset.addMetric(manager.getMetric(testEntity1, "Cat", "M1"));
-        dataset.addMetric(manager.getMetric(testEntity2, "Cat", "M1"));
+        dataset.addMetric(manager.getMetric(testEntity1, CATEGORY, "M1"));
+        dataset.addMetric(manager.getMetric(testEntity2, CATEGORY, "M1"));
 
         assertEquals(2, dataset.getSeriesCount(), "Dataset should have 2 series after adding 2 metrics");
         assertEquals(DATA_POINTS, dataset.getItemCount(0), "First series should have 10 items");

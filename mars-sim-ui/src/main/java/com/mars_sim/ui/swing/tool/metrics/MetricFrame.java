@@ -7,6 +7,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.metrics.Metric;
+import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.metrics.MetricManager;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -14,6 +15,9 @@ import com.mars_sim.core.time.MasterClock;
 public class MetricFrame extends JFrame {
     private static final int INITIAL_POINTS = 10;
     private static final double D1_STEP = 75D;
+    private static final MetricCategory FULL_CAT = new MetricCategory("Full");
+    private static final MetricCategory HALF_CAT = new MetricCategory("Half");
+    private static final MetricCategory DYN_CAT = new MetricCategory("Dynamic");
 
     private static class TestEntity implements Entity {
         private String name;
@@ -40,8 +44,12 @@ public class MetricFrame extends JFrame {
     private MetricFrame() {
         super("Mars Sim - Metric Chart Viewer");
 
-        // Add more sample data as needed
-        metricManager = loadTestData();
+                        
+        SimulationConfig.loadConfig();
+        sim = Simulation.instance();
+        sim.testRun();
+
+        metricManager = new MetricManager();
             
         // Create and add the chart viewer
         viewer = new MetricChartViewer(metricManager);
@@ -52,16 +60,9 @@ public class MetricFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    private MetricManager loadTestData() {
-                
-        SimulationConfig.loadConfig();
-        sim = Simulation.instance();
-        sim.testRun();
+    private MetricManager loadTestData(MasterClock clock) {
+        System.out.println("Loading test data into MetricManager");
 
-        var clock = sim.getMasterClock();
-
-        // Create sample MetricManager for testing
-        metricManager = new MetricManager();
         var rover1 = new TestEntity("Rover 1");
         var rover2 = new TestEntity("Rover 2");
 
@@ -69,17 +70,17 @@ public class MetricFrame extends JFrame {
         for(int step = 1; step <= INITIAL_POINTS; step++) {
             advanceTime(clock, 500D);
 
-            metricManager.addValue(rover1, "Full", "Measure", -15D * step);
-            metricManager.addValue(rover2, "Full", "Temperature", 5D * step);
-            metricManager.addValue(rover1, "Full", "Temperature", 8D * step);
+            metricManager.addValue(rover1, FULL_CAT, "Measure", -15D * step);
+            metricManager.addValue(rover2, FULL_CAT, "Temperature", 5D * step);
+            metricManager.addValue(rover1, FULL_CAT, "Temperature", 8D * step);
 
             if (step % 2 == 0) {
-                metricManager.addValue(rover1, "Half", "Pressure", 0.7D * step);
-                metricManager.addValue(rover2, "Half", "Energy", 120D * step);
+                metricManager.addValue(rover1, HALF_CAT, "Pressure", 0.7D * step);
+                metricManager.addValue(rover2, HALF_CAT, "Energy", 120D * step);
             }
 
-            metricManager.addValue(rover1, "Full", "Performance", 85D * step);
-            metricManager.addValue(rover2, "Full", "Performance", 90D * step);
+            metricManager.addValue(rover1, FULL_CAT, "Performance", 85D * step);
+            metricManager.addValue(rover2, FULL_CAT, "Performance", 90D * step);
         }
         return metricManager;
     }
@@ -107,14 +108,14 @@ public class MetricFrame extends JFrame {
                     if (count % 2 == 1) {
                         if (d1 == null) {
                             var rover3 = new TestEntity("Rover 3");
-                            d1 = metricManager.getMetric(rover3, "Dynamic", "Metric");
+                            d1 = metricManager.getMetric(rover3, DYN_CAT, "Metric");
                         }
                         advanceTime(sim.getMasterClock(), 500D);
                         d1.recordValue((INITIAL_POINTS * D1_STEP) + Math.random() * D1_STEP);
                     }
                     
                     // Simulate the UI updating
-                    viewer.update((ClockPulse)null); // Use null becaus eviewer does not read pulse currently
+                    viewer.clockUpdate((ClockPulse)null); // Use null because viewer does not read pulse currently
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -123,6 +124,10 @@ public class MetricFrame extends JFrame {
     }
 
     private void startUpdates() {
+        // Add more sample data as needed, load after vieer is created
+        // to check events
+        loadTestData(sim.getMasterClock());
+
         Thread updaterThread = new Thread(new Updater());
         updaterThread.setDaemon(true);
         updaterThread.start();

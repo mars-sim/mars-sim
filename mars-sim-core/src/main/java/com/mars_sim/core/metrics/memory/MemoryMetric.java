@@ -56,6 +56,25 @@ public class MemoryMetric extends Metric {
         if (sol > lastSol) {
             lastSol = sol;
         }
+
+        if (!series.isEmpty()) {
+            var lastPoint = series.get(series.size() - 1);
+            if (dataPoint.getWhen().equals(lastPoint.getWhen())) {
+                // Last and new data point have same time so combine
+                DataPoint replacement;
+                if (getKey().category().replaceExist()) {
+                    // Replace last value
+                    replacement = dataPoint;
+                }
+                else {
+                    // Create new point
+                    replacement = new DataPoint(lastPoint.getWhen(),
+                                        lastPoint.getValue() + dataPoint.getValue());
+                }
+                series.set(series.size() - 1, replacement);
+                return;
+            }
+        }
         series.add(dataPoint);
         size++;
     }

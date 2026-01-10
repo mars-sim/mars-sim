@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.metrics;
 
-import java.util.Collections;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,9 +22,11 @@ import com.mars_sim.core.time.MarsTime;
  * Central manager for all metrics in the system. Provides methods to store,
  * retrieve, and manage metrics data organized by entity, category, and measure.
  */
-public class MetricManager {
+public class MetricManager implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private Map<MetricKey, Metric> metrics;
-    private Set<MetricManagerListener> listeners = null;
+    private transient Set<MetricManagerListener> listeners = null;
     
     /**
      * Creates a new MetricManager.
@@ -39,7 +41,7 @@ public class MetricManager {
      * @param asset The entity to filter by, or null for all entities
      * @return List of categories choosen
      */
-    public List<String> getCategories(Entity asset) {
+    public List<MetricCategory> getCategories(Entity asset) {
         return metrics.keySet().stream()
                 .filter(key -> (asset == null) || key.asset().equals(asset))
                 .map(MetricKey::category)
@@ -51,12 +53,12 @@ public class MetricManager {
     /**
      * Returns all entities using a specific category.
      * 
-     * @param category The category to get entities for
+     * @param tempCat The category to get entities for
      * @return List of entities that use the specified category
      */
-    public List<Entity> getEntities(String category) {
+    public List<Entity> getEntities(MetricCategory tempCat) {
         return metrics.keySet().stream()
-                .filter(key -> (category == null) || key.category().equals(category))
+                .filter(key -> (tempCat == null) || key.category().equals(tempCat))
                 .map(MetricKey::asset)
                 .distinct()
                 .toList();
@@ -67,12 +69,12 @@ public class MetricManager {
      * If the metric doesn't exist, a new one is created.
      * 
      * @param asset The entity
-     * @param category The category
+     * @param tempCat The category
      * @param measure The measure
      * @return The metric for the specified parameters
      */
-    public Metric getMetric(Entity asset, String category, String measure) {
-        MetricKey key = new MetricKey(asset, category, measure);
+    public Metric getMetric(Entity asset, MetricCategory tempCat, String measure) {
+        MetricKey key = new MetricKey(asset, tempCat, measure);
         var m = metrics.get(key);
         if (m == null) {
             m = createMetric(key);
@@ -127,30 +129,21 @@ public class MetricManager {
      * @param measure The specific measure
      * @param value The value to add
      */
-    public void addValue(Entity asset, String category, String measure, double value) {
+    public void addValue(Entity asset, MetricCategory category, String measure, double value) {
         var m = getMetric(asset, category, measure);
         m.recordValue(value);
-    }
-    
-    /**
-     * Gets all metrics managed by this manager.
-     * 
-     * @return A map of all metrics keyed by their MetricKey
-     */
-    public Map<MetricKey, Metric> getAllMetrics() {
-        return Collections.unmodifiableMap(metrics);
     }
     
     /**
      * Gets all measures for a specific entity and category.
      * 
      * @param asset The entity
-     * @param category The category
+     * @param tempCat The category
      * @return List of measure names for the specified entity and category
      */
-    public List<String> getMeasures(Entity asset, String category) {
+    public List<String> getMeasures(Entity asset, MetricCategory tempCat) {
         return metrics.keySet().stream()
-                .filter(key -> key.asset().equals(asset) && key.category().equals(category))
+                .filter(key -> key.asset().equals(asset) && key.category().equals(tempCat))
                 .map(MetricKey::measure)
                 .toList();
     }

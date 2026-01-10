@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.metrics;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,7 +19,9 @@ import com.mars_sim.core.time.MarsTime;
  * Represents a metric that contains time series data organized by Sol (Martian days).
  * Implements the Visitor pattern to allow different calculators to process the data.
  */
-public abstract class Metric {
+public abstract class Metric implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private final MetricKey key;
     
     /**

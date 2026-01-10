@@ -1,6 +1,7 @@
 package com.mars_sim.core.metrics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,7 +32,8 @@ class MetricTest extends MarsSimUnitTest{
         super.init();
         Entity mockEntity = new MockEntity("E1");
 
-        metricKey = new MetricKey(mockEntity, "Temperature", "Average");
+        MetricCategory tempCategory = new MetricCategory("Temperature");
+        metricKey = new MetricKey(mockEntity, tempCategory, "Average");
 
         masterClock = getContext().getSim().getMasterClock();
         startTime = masterClock.getMarsTime();
@@ -67,6 +69,61 @@ class MetricTest extends MarsSimUnitTest{
 
         return time;
     }
+
+    @Test
+    @DisplayName("RecordVslue should replace last data point")
+    void testReplaceDataPoint() {
+        // Create key with replace behavior
+        MetricKey replaceKey = new MetricKey(
+            this.metricKey.asset(),
+            new MetricCategory("TestCategory", true),
+            this.metricKey.measure()
+        );
+
+        // When
+        Metric newMetric = createMetric(replaceKey);
+        var time1 = recordValue(newMetric, 1, 5, 10.0);
+        var time2 = recordValue(newMetric, 2, 5, 20.0);
+        var time3 = recordValue(newMetric, 2, 5, 30.0);
+
+        // Only last one recorded in Sol2
+        assertEquals(2, newMetric.getSize());
+        
+        var dp1 = newMetric.getDataPoint(0);
+        assertEquals(time1, dp1.getWhen());
+        assertEquals(10.0, dp1.getValue(), 0.001);
+
+        var dp2 = newMetric.getDataPoint(newMetric.getSize() - 1);
+        assertEquals(time3, dp2.getWhen());
+        assertEquals(time2, dp2.getWhen());
+        assertEquals(30.0, dp2.getValue(), 0.001);
+    }
+
+    @Test
+    @DisplayName("recordValue should aggregate last data point")
+    void testAggregateDataPoint() {
+        
+        assertFalse(metricKey.category().replaceExist(), 
+            "MetricCategory should be set to aggregate existing data points by default");
+
+        Metric newMetric = createMetric(metricKey);
+        var time1 = recordValue(newMetric, 1, 5, 10.0);
+        var time2 = recordValue(newMetric, 2, 5, 20.0);
+        var time3 = recordValue(newMetric, 2, 5, 30.0);
+
+        // Only last one recorded in Sol2
+        assertEquals(2, newMetric.getSize());
+        
+        var dp1 = newMetric.getDataPoint(0);
+        assertEquals(time1, dp1.getWhen());
+        assertEquals(10.0, dp1.getValue(), 0.001);
+
+        var dp2 = newMetric.getDataPoint(newMetric.getSize() - 1);
+        assertEquals(time3, dp2.getWhen());
+        assertEquals(time2, dp2.getWhen());
+        assertEquals(50.0, dp2.getValue(), 0.001);
+    }
+
     @Test
     @DisplayName("getDataPoint should retrieve correct data point")
     void testDataPoint() {

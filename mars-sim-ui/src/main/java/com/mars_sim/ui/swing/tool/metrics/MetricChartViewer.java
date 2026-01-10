@@ -10,9 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -21,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
+import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -29,24 +28,31 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.metrics.Metric;
+import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.metrics.MetricManager;
 import com.mars_sim.core.metrics.MetricManagerListener;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A Swing component that displays multiple JFreeChart line charts in a tabbed pane.
  * Users can add and remove chart tabs using dropdown controls for Entity, Category, and Measure.
  */
-public class MetricChartViewer extends JPanel implements MetricManagerListener {
+public class MetricChartViewer extends ContentPanel
+        implements MetricManagerListener {
     
     // Constants
+    public static final String NAME = "metricsviewer";
+    public static final String ICON = "metrics";
+
     private static final String SELECT_PROMPT = "-- Select --";
     
     private transient MetricManager metricManager;
     private JTabbedPane tabbedPane;
-    private JComboBox<Object> entityComboBox;
-    private JComboBox<String> categoryComboBox;
+    private JComboBox<Entity> entityComboBox;
+    private JComboBox<MetricCategory> categoryComboBox;
     private JComboBox<String> measureComboBox;
     private JButton newButton;
     private JButton removeButton;
@@ -60,6 +66,8 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
      * @param metricManager The MetricManager to use for populating dropdowns and retrieving metrics
      */
     public MetricChartViewer(MetricManager metricManager) {
+        super(NAME, "Metric Chart Viewer", Placement.CENTER);
+
         this.metricManager = metricManager;
 
         initializeComponents();
@@ -98,18 +106,19 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
     private JPanel createControlPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createTitledBorder("Chart Controls"));
+        panel.setBorder(SwingHelper.createLabelBorder("Chart Controls"));
         
         JPanel keyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
         // Add labels and dropdowns
         keyPanel.add(new JLabel("Entity:"));
         entityComboBox = new JComboBox<>();
-        entityComboBox.setRenderer(new NamedListCellRenderer());
+        entityComboBox.setRenderer(new NamedListCellRenderer(SELECT_PROMPT));
         keyPanel.add(entityComboBox);
         
         keyPanel.add(new JLabel("Category:"));
         categoryComboBox = new JComboBox<>();
+        categoryComboBox.setRenderer(new NamedListCellRenderer(SELECT_PROMPT));
         keyPanel.add(categoryComboBox);
         
         keyPanel.add(new JLabel("Measure:"));
@@ -138,7 +147,7 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
             }
         });
 
-        shapes = new JCheckBox("Show Shapes");
+        shapes = new JCheckBox("Show Points");
         shapes.addActionListener(e -> {
             int selectedIndex = tabbedPane.getSelectedIndex();
             if (selectedIndex >= 0) {
@@ -179,7 +188,7 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
         if (entityComboBox.getSelectedIndex() > 0 && categoryComboBox.getSelectedIndex() > 0) {
             var measures = metricManager.getMeasures(
                                 (Entity) entityComboBox.getSelectedItem(),
-                                (String) categoryComboBox.getSelectedItem());
+                                (MetricCategory) categoryComboBox.getSelectedItem());
         
             for (var m : measures) {
                 measureComboBox.addItem(m);
@@ -220,15 +229,15 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
     private void populateEntityComboBox() {
         var original = entityComboBox.getSelectedItem();
         entityComboBox.removeAllItems();
-        entityComboBox.addItem(SELECT_PROMPT);
+        entityComboBox.addItem(null);
         
-        String category = null;
+        MetricCategory category = null;
         if (categoryComboBox.getSelectedIndex() > 0) {
-            category = (String) categoryComboBox.getSelectedItem();
+            category = (MetricCategory) categoryComboBox.getSelectedItem();
         }
 
         // Get all unique entities from all metrics
-        List<Entity> entities = metricManager.getEntities(category);
+        var entities = metricManager.getEntities(category);
         
         for (Entity entity : entities) {
             entityComboBox.addItem(entity);
@@ -242,16 +251,16 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
     private void populateCategoryComboBox() {
         var original = categoryComboBox.getSelectedItem();
         categoryComboBox.removeAllItems();
-        categoryComboBox.addItem(SELECT_PROMPT);
+        categoryComboBox.addItem(null);
         
         // Get all unique categories from all metrics
         Entity entity = null;
         if (entityComboBox.getSelectedIndex() > 0) {
             entity = (Entity) entityComboBox.getSelectedItem();
         }
-        List<String> categories = metricManager.getCategories(entity);
         
-        for (String category : categories) {
+        var categories = metricManager.getCategories(entity);
+        for (var category : categories) {
             categoryComboBox.addItem(category);
         }
         categoryComboBox.setSelectedItem(original);
@@ -277,12 +286,11 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
      * @return
      */
     private Metric getSelectedMetric() {
-        Object entityObj = entityComboBox.getSelectedItem();
-        String category = (String) categoryComboBox.getSelectedItem();
-        String measure = (String) measureComboBox.getSelectedItem();
+        var entityObj = (Entity)entityComboBox.getSelectedItem();
+        var category = (MetricCategory) categoryComboBox.getSelectedItem();
+        var measure = (String) measureComboBox.getSelectedItem();
         
-        if (entityObj != null && category != null && measure != null &&
-            !SELECT_PROMPT.equals(entityObj) && !SELECT_PROMPT.equals(category) && !SELECT_PROMPT.equals(measure)) {
+        if (entityObj != null && category != null && !SELECT_PROMPT.equals(measure)) {
             
             Entity entity = (Entity) entityObj;
             
@@ -361,10 +369,6 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
     
     private JFreeChart createMetricChart(MetricDataset dataset) {
 
-        var renderer = new XYLineAndShapeRenderer(true,
-                shapes.isSelected());
-        renderer.setDefaultToolTipGenerator(new MetricToolTipGenerator());
-
         var timeAxis = new NumberAxis("MSol");
         timeAxis.setNumberFormatOverride(new MarsTimeFormatter());
         timeAxis.setAutoRangeIncludesZero(false);
@@ -372,19 +376,30 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
         var valueAxis = new NumberAxis("Values");
         valueAxis.setAutoRangeIncludesZero(false);  // override default
 
+        var renderer = new XYLineAndShapeRenderer(true, shapes.isSelected());
+        renderer.setDefaultToolTipGenerator(new MetricToolTipGenerator());
         XYPlot plot = new XYPlot(dataset, timeAxis, valueAxis, renderer);
 
         return new JFreeChart(dataset.getTitle(), JFreeChart.DEFAULT_TITLE_FONT,
                 plot, true);
     }
 
+    /**
+     * Remove the listener on Metric manager.
+     */
+    @Override
+    public void destroy() {
+        super.destroy();
+        metricManager.removeListener(this);
+    }
     	
 	/**
 	 * Updates metric views by refreshing the visible chart
 	 * 
 	 * @param pulse Clock step advancement
 	 */
-	public void update(ClockPulse pulse) {
+    @Override
+	public void clockUpdate(ClockPulse pulse) {
         int selectedIndex = tabbedPane.getSelectedIndex();
         if (selectedIndex >= 0) {
             refreshChartTab(tabbedPane.getSelectedComponent());
@@ -404,11 +419,7 @@ public class MetricChartViewer extends JPanel implements MetricManagerListener {
 
     @Override
     public void newMetric(Metric m) {
-        if (categoryComboBox.getSelectedIndex() == 0) {
-            populateCategoryComboBox();
-        }
-        if (entityComboBox.getSelectedIndex() == 0) {
-            populateEntityComboBox();
-        }
+        populateCategoryComboBox();
+        populateEntityComboBox();
     }
 }
