@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
 import com.mars_sim.core.Named;
 import com.mars_sim.core.structure.Lab;
@@ -33,7 +32,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 class LaboratoryTabPanel extends EntityTabPanel<Rover>
 		implements TemporalComponent {
 	
-	private static final String SCIENCE_ICON = "science"; //$NON-NLS-1$
+	private static final String SCIENCE_ICON = "science"; //-NLS-1$
 
 	/** The number of researchers label. */
 	private JLabel researchersLabel;
@@ -78,7 +77,7 @@ class LaboratoryTabPanel extends EntityTabPanel<Rover>
 
 		// Get the research specialties of the lab.
 		var txt = Arrays.stream(lab.getTechSpecialties()).map(Named::getName).collect(Collectors.joining(", "));
-		JTextArea specialtyTA = SwingHelper.createTextBlock("Specialties", txt);
+		var specialtyTA = SwingHelper.createTextBlock("Specialties", txt);
 		laboratoryPanel.add(specialtyTA, BorderLayout.SOUTH);
 	}
 

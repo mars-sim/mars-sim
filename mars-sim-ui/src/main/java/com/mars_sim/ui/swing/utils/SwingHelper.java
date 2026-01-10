@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -26,11 +27,15 @@ import javax.swing.border.TitledBorder;
 import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.ui.swing.StyleManager;
 
+import io.github.parubok.text.multiline.MultilineLabel;
+
 
 /**
  * This is a static helper class of Swing methods
  */
 public final class SwingHelper {
+
+	private static boolean USE_TEXTARAEA_FOR_TEXT_BLOCKS = false;
 
 	private SwingHelper() {
 	}
@@ -121,19 +126,51 @@ public final class SwingHelper {
 	 * 
 	 * @param title Title for the surrounding border
 	 * @param content Content for the text area
-	 * @return A JTextArea containing the text area
+	 * @return The Swing component
 	 */
-	public static JTextArea createTextBlock(String title, String content) {
-		JTextArea ta = new JTextArea();
+	public static JComponent createTextBlock(String title, String content) {
+		if (USE_TEXTARAEA_FOR_TEXT_BLOCKS) {
+			return createTextBlockArea(title, content);
+		}
+		return createTextBlockMulti(title, content);
+	}
+		
+	/*
+	 * Creates a text block using a JTextArea
+	 * 
+	 * @param title Title for the surrounding border
+	 * @param content Content for the text area
+	 */
+	private static JTextArea createTextBlockArea(String title, String content) {
+		JTextArea ta = new JTextArea(content);
 		ta.setEditable(false);
-		ta.setColumns(35);
 		ta.setLineWrap(true);
 		ta.setWrapStyleWord(true);
-		ta.append(content);
 	
 		var border = BorderFactory.createCompoundBorder(createLabelBorder(title),
 					BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		ta.setBorder(border);
 		return ta;
+	}
+
+	/*
+	 * Creates a text block using Multiline component
+	 * 
+	 * @param title Title for the surrounding border
+	 * @param content Content for the text area
+	 */
+	private static JComponent createTextBlockMulti(String title, String content) {
+
+		var label = new MultilineLabel(content);
+		label.setMaxLines(10);
+		label.setUseCurrentWidthForPreferredSize(false);
+		
+		var border = BorderFactory.createCompoundBorder(createLabelBorder(title),
+					BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		label.setBorder(border);
+
+		// Set the preferred size to force wrapping when resizing
+		label.setMinimumSize(new Dimension(50,50));
+		return label;
 	}
 }
