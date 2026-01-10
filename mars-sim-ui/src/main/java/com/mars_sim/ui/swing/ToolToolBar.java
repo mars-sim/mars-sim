@@ -41,6 +41,7 @@ import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.tool.metrics.MetricChartViewer;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
@@ -160,6 +161,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
 		addToolButton(EntityBrowser.NAME, EntityBrowser.ICON);
+		addToolButton(MetricChartViewer.NAME, MetricChartViewer.ICON);
 
 		addSeparator(new Dimension(20, 20));
 	}
@@ -215,8 +217,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void addToolButton(String toolName, String tooltip, Icon icon) {
 		JButton toolButton = new JButton(icon);
 		toolButton.setActionCommand(toolName);
-		toolButton.setPreferredSize(new Dimension(25, 25));
-		toolButton.setMaximumSize(new Dimension(25, 25));
+		toolButton.setPreferredSize(new Dimension(26, 26));
+		toolButton.setMaximumSize(new Dimension(26, 26));
 		if (tooltip == null) {
 			tooltip = Conversion.capitalize(toolName.replace("_", " "));
 		}
