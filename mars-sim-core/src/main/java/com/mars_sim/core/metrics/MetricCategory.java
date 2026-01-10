@@ -75,11 +75,6 @@ public class MetricCategory implements Comparable<MetricCategory>, Named, Serial
         if (getClass() != obj.getClass())
             return false;
         MetricCategory other = (MetricCategory) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
+        return name.equals(other.name);
     }
 }

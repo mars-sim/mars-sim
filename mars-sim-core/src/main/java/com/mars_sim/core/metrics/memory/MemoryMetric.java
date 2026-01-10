@@ -22,6 +22,8 @@ import com.mars_sim.core.metrics.MetricKey;
  * These are organized by Sol (Martian days); each one represents a series of data points for that Sol.
  */
 public class MemoryMetric extends Metric {
+    private static final long serialVersionUID = 1L;
+
     private Map<Integer,List<DataPoint>> solSeries;
     private int size = 0;
     private int firstSol = Integer.MAX_VALUE;

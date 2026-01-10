@@ -351,6 +351,9 @@ public class ResourceProcess implements ScheduledEventHandler {
 						double fullRate = getBaseFullInputRate(resource);
 						double resourceRate = fullRate * newProdLevel;
 						double required = resourceRate * accumulatedTime;
+						if (required == 0D)
+							continue;
+						
 						double stored = host.getSpecificAmountResourceStored(resource);
 						
 						// Get resource bottleneck

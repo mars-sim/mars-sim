@@ -7,6 +7,8 @@
 package com.mars_sim.core.metrics;
 
 import com.mars_sim.core.time.MarsTime;
+
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -15,7 +17,9 @@ import java.util.Objects;
  * This equality of this object is based only on the 'when'. This means two data points at the
  * same time are considered equal, even if their values differ.
  */
-public class DataPoint {
+public class DataPoint implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final MarsTime when;
     private final double value;
     

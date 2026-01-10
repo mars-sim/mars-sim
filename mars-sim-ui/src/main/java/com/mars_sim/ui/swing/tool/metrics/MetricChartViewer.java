@@ -19,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
@@ -148,6 +147,7 @@ public class MetricChartViewer extends ContentPanel
         });
 
         shapes = new JCheckBox("Show Points");
+        shapes.setSelected(true);
         shapes.addActionListener(e -> {
             int selectedIndex = tabbedPane.getSelectedIndex();
             if (selectedIndex >= 0) {

@@ -36,6 +36,19 @@ public class MetricManager implements Serializable {
     }
     
     /**
+     * Reinitializes the MetricManager after deserialization.
+     */
+    public void reinit() {
+        //There is a problem with dserializing the HashMap.The saved hashcode for the the same key
+        // is different after deserialization, so we need to rebuild the map.
+        var newMetrics = new HashMap<MetricKey, Metric>(); 
+        for (var entry : metrics.entrySet()) {
+            newMetrics.put(entry.getKey(), entry.getValue());
+        }
+        this.metrics = newMetrics;
+    }
+
+    /**
      * Returns all categories used. Can be filtered by entity.
      * 
      * @param asset The entity to filter by, or null for all entities
