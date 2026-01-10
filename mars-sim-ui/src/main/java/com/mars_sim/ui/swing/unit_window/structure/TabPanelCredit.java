@@ -129,7 +129,7 @@ class TabPanelCredit extends EntityTableTabPanel<Settlement> {
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("TabPanelCredit.column.settlement"); //$NON-NLS-1$
+			if (columnIndex == 0) return Msg.getString("Settlement.singular"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelCredit.column.credit"); //$NON-NLS-1$
 			else if (columnIndex == 2) return Msg.getString("TabPanelCredit.column.type"); //$NON-NLS-1$
 			else return null;

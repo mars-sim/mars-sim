@@ -13,7 +13,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoundedRangeModel;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,12 +24,17 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStage;
-import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A panel displaying a list of construction sites at a settlement.
@@ -42,21 +49,24 @@ public class ConstructionSitesPanel extends JPanel {
     private Map<ConstructionSite,ConstructionPanel> sitesCache;
     private JPanel sitesListPane;
     private JScrollPane sitesScrollPane;
+
+    private UIContext context;
     
     /**
      * Constructor.
      * 
      * @param manager the settlement construction manager.
      */
-    public ConstructionSitesPanel(ConstructionManager manager) {
+    public ConstructionSitesPanel(ConstructionManager manager, UIContext context) {
         // Use JPanel constructor.
         super();
         
         this.manager = manager;
+        this.context = context;
         
         setLayout(new BorderLayout());
 
-        setBorder(StyleManager.createLabelBorder("Construction Sites"));
+        setBorder(SwingHelper.createLabelBorder(Msg.getString("ConstructionSite.plural")));
         		
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();
@@ -78,13 +88,14 @@ public class ConstructionSitesPanel extends JPanel {
     }
     
     private void addSitePanel(ConstructionSite site) {
-        var newPanel = new ConstructionPanel(site);
+        var newPanel = new ConstructionPanel(site, context);
         sitesListPane.add(newPanel);
         sitesCache.put(site, newPanel);
     }
 
     private void removeSitePanel(ConstructionSite site) {
         var oldPanel = sitesCache.remove(site);
+        site.removeEntityListener(oldPanel);
         sitesListPane.remove(oldPanel);
     }
 
@@ -111,11 +122,19 @@ public class ConstructionSitesPanel extends JPanel {
         // Update all site panels.
         sitesCache.values().forEach(p -> p.update());
     }
-    
+
+    /**
+     * Destroys this panel and remove all the Site Entity listeners
+     */
+    public void destroy() {
+        sitesCache.keySet().forEach(site -> site.removeEntityListener(sitesCache.get(site)));
+        sitesCache.clear();
+    }
+
     /**
      * A panel displaying information about a particular construction site.
      */
-    private static class ConstructionPanel extends JPanel {
+    private static class ConstructionPanel extends JPanel implements EntityListener{
         
         /** default serial id. */
         private static final long serialVersionUID = 1L;
@@ -130,7 +149,7 @@ public class ConstructionSitesPanel extends JPanel {
          * 
          * @param site the construction site.
          */
-        private ConstructionPanel(ConstructionSite site) {
+        private ConstructionPanel(ConstructionSite site, UIContext context) {
             // Use JPanel constructor
             super();
             
@@ -139,13 +158,17 @@ public class ConstructionSitesPanel extends JPanel {
             
             // Set the layout.
             setLayout(new BorderLayout(5, 5));
-
-            // Set border
-            setBorder(new MarsPanelBorder());
+            setBorder(BorderFactory.createEtchedBorder());
 
             // Create the status panel.
+            var attrPanel = Box.createVerticalBox();
+            var siteLabel = new EntityLabel(site, context);
+            siteLabel.setAlignmentX(LEFT_ALIGNMENT);
+            attrPanel.add(siteLabel);
             statusLabel = new JLabel(" ", SwingConstants.LEFT);
-            add(statusLabel, BorderLayout.NORTH);
+            statusLabel.setAlignmentX(LEFT_ALIGNMENT);
+            attrPanel.add(statusLabel);
+            add(attrPanel, BorderLayout.NORTH);
             
             // Create the progress bar panel.
             JPanel progressBarPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -162,6 +185,8 @@ public class ConstructionSitesPanel extends JPanel {
             
             // Add tooltip.
             setToolTipText(getToolTipString());
+
+            site.addEntityListener(this);
         }
 
         /**
@@ -173,7 +198,7 @@ public class ConstructionSitesPanel extends JPanel {
             String statusString = site.getStatusDescription();
             
             // Make sure status label isn't too long.
-            if (statusString.length() > MAX) statusString = statusString.substring(0, MAX) + "...";
+            statusString = Conversion.trim(statusString, MAX);
             
             // Set the text in the status label.
             statusLabel.setText(statusString);
@@ -202,15 +227,15 @@ public class ConstructionSitesPanel extends JPanel {
             }
             return "";
         }
+
+        @Override
+        public void entityUpdate(EntityEvent event) {
+            update();
+        }
+
+        @Override
+        public String toString() {
+            return "ConstructionPanel for " + site.getAssociatedSettlement().getName();
+        }
     }   
-    
-	/**
-	 * Prepares object for garbage collection.
-	 */
-	public void destroy() {
-		manager = null;
-	    sitesCache = null;
-	    sitesListPane = null;
-	    sitesScrollPane = null;
-	}
 }

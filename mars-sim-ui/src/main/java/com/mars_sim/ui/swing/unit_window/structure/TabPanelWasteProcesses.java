@@ -16,7 +16,6 @@ import java.util.Map;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
@@ -24,46 +23,44 @@ import com.mars_sim.core.building.function.WasteProcessing;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.entitywindow.building.ResourceProcessPanel;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
 
 /**
  * A tab panel for displaying all of the waste processes in a settlement.
  */
 @SuppressWarnings("serial")
-public class TabPanelWasteProcesses extends TabPanel {
+class TabPanelWasteProcesses extends EntityTabPanel<Settlement>
+			implements TemporalComponent {
 	
 	private static final String RECYCLE_ICON = "recycle";
 
-	/** The Settlement instance. */
-	private Settlement settlement;
 	private ResourceProcessPanel processPanel;
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param unit the unit to display.
-	 * @param desktop the main desktop.
+	 * @param settlement The settlement to display.
+	 * @param context The UI context.
 	 */
-	public TabPanelWasteProcesses(Unit unit, MainDesktopPane desktop) {
+	public TabPanelWasteProcesses(Settlement settlement, UIContext context) {
 
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelWasteProcesses.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(RECYCLE_ICON),
-			Msg.getString("TabPanelWasteProcesses.title"), //$NON-NLS-1$
-			unit, desktop
+			ImageLoader.getIconByName(RECYCLE_ICON), null,
+			context, settlement
 		);
-
-		settlement = (Settlement) unit;
 	}
 	
 	@Override
 	protected void buildUI(JPanel content) {
-		BuildingManager mgr = settlement.getBuildingManager();
+		BuildingManager mgr = getEntity().getBuildingManager();
 		Map<Building, List<ResourceProcess>> processes = new HashMap<>();
 		for (Building building : mgr.getBuildings(FunctionType.WASTE_PROCESSING)) {
 			WasteProcessing processing = building.getWasteProcessing();
@@ -71,7 +68,7 @@ public class TabPanelWasteProcesses extends TabPanel {
 		}
 
 		// Prepare process list panel.n
-		processPanel = new ResourceProcessPanel(processes, getDesktop());
+		processPanel = new ResourceProcessPanel(processes, getContext());
 		processPanel.setPreferredSize(new Dimension(160, 120));
 		content.add(processPanel, BorderLayout.CENTER);
 
@@ -85,14 +82,8 @@ public class TabPanelWasteProcesses extends TabPanel {
 		overrideCheckbox.addActionListener(e ->
 			setWasteProcessesOverride(overrideCheckbox.isSelected())
 		);
-		overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.WASTE_PROCESSING));
+		overrideCheckbox.setSelected(getEntity().getProcessOverride(OverrideType.WASTE_PROCESSING));
 		overrideCheckboxPane.add(overrideCheckbox);
-	}
-
-
-	@Override
-	public void update() {
-		processPanel.update();
 	}
 
 	/**
@@ -100,6 +91,14 @@ public class TabPanelWasteProcesses extends TabPanel {
 	 * @param override the waste process override flag.
 	 */
 	private void setWasteProcessesOverride(boolean override) {
-		settlement.setProcessOverride(OverrideType.WASTE_PROCESSING, override);
+		getEntity().setProcessOverride(OverrideType.WASTE_PROCESSING, override);
+	}
+
+	/**
+	 * Update status of processes
+	 */
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
+		processPanel.update();
 	}
 }

@@ -32,8 +32,8 @@ import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.resourceprocess.ResourceProcess.ProcessState;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.JProcessButton;
@@ -72,9 +72,10 @@ public class ResourceProcessPanel extends JPanel {
         private static final int SCORE = 5;
 
         private static final String BUILDING = Msg.getString("Building.singular");
+        private static final String BUILDING_TOOLTIP = Msg.getString("Entity.doubleClick");
         
         private Building mainBuilding;
-        
+    
         private List<ResourceProcess> processes = new ArrayList<>();
 
         private List<Building> buildings;
@@ -222,9 +223,13 @@ public class ResourceProcessPanel extends JPanel {
             }
 
             // Only display tooltip if hovering over the 3rd column named "Process"
-            if (col == PROCESS_NAME) {
+            else if (col == PROCESS_NAME) {
                 return generateProcessTooltip(getProcess(row), getBuilding(row));
             }
+            else if (col == BUILDING_NAME && buildings != null) {
+                return BUILDING_TOOLTIP;
+            }
+
             
             return null;
         }
@@ -360,16 +365,17 @@ public class ResourceProcessPanel extends JPanel {
     /**
      * Creates a resource panel that encompasses multiple Buildings each with dedicated Resource Processes.
      * 
-     * @param processes Map.
+     * @param processes A map of Buildings and their associated Resource Processes.
+     * @param context The UI context.
      */
-    public ResourceProcessPanel(Map<Building, List<ResourceProcess>> processes, MainDesktopPane desktop) {
+    public ResourceProcessPanel(Map<Building, List<ResourceProcess>> processes, UIContext context) {
        
     	resourceProcessTableModel = new ResourceProcessTableModel(processes);
 
         JTable table = buildUI();
 
         // In the multi-building mode add a mouse listener to open Details window
-        EntityLauncher.attach(table, desktop);
+        EntityLauncher.attach(table, context);
     }
 
     private JTable buildUI() {

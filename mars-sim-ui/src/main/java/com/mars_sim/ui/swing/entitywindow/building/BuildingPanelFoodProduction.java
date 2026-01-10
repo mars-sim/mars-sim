@@ -41,6 +41,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
@@ -134,7 +135,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 		processCache = new ArrayList<>(list);
 		Iterator<FoodProductionProcess> i = processCache.iterator();
 		while (i.hasNext())
-			processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth));
+			processListPane.add(new FoodProductionPanel(i.next(), false, processStringWidth, getContext()));
 
 		// Create interaction panel.
 		JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 10, 10));
@@ -149,7 +150,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 		processComboBox.setToolTipText("Select An Available Food Production Process");
 		interactionPanel.add(processComboBox);
 
-		if (processComboBoxCache.size() > 0) 
+		if (!processComboBoxCache.isEmpty()) 
 			processComboBox.setSelectedIndex(0);
 
 		// Create new process button.
@@ -162,12 +163,11 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 		newProcessButton.addActionListener(e -> {
 				try {
 					Object selectedItem = processComboBox.getSelectedItem();
-					if (selectedItem instanceof FoodProductionProcessInfo sp) {
-						if (FoodProductionUtil.canProcessBeStarted(sp, getFoodFactory())) {
-							getFoodFactory()
-									.addProcess(new FoodProductionProcess(sp, getFoodFactory()));
-							update();
-						}
+					if (selectedItem instanceof FoodProductionProcessInfo sp
+									&& FoodProductionUtil.canProcessBeStarted(sp, getFoodFactory())) {
+						getFoodFactory()
+								.addProcess(new FoodProductionProcess(sp, getFoodFactory()));
+						update();
 					}
 				} catch (Exception ex) {
 					logger.log(Level.SEVERE, "new process button", ex);
@@ -192,7 +192,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 			while (i.hasNext()) {
 				FoodProductionProcess process = i.next();
 				if (!processCache.contains(process))
-					processListPane.add(new FoodProductionPanel(process, false, processStringWidth));
+					processListPane.add(new FoodProductionPanel(process, false, processStringWidth, getContext()));
 			}
 
 			// Remove process panels for old processes.
@@ -222,7 +222,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 
 		}
 		// Update process selection list.
-		Vector<FoodProductionProcessInfo> newProcesses = getAvailableProcesses();
+		var newProcesses = getAvailableProcesses();
 
 		if (!newProcesses.equals(processComboBoxCache)) {
 
@@ -239,7 +239,7 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 			if (currentSelection != null) {
 				if (processComboBoxCache.contains(currentSelection))
 					processComboBox.setSelectedItem(currentSelection);
-			} else if (processComboBoxCache.size() > 0)
+			} else if (!processComboBoxCache.isEmpty())
 				processComboBox.setSelectedIndex(0);
 		}
 
@@ -254,18 +254,14 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 	 * @return foodProduction panel or null if none.
 	 */
 	private FoodProductionPanel getFoodProductionPanel(FoodProductionProcess process) {
-		FoodProductionPanel result = null;
-
 		for (int x = 0; x < processListPane.getComponentCount(); x++) {
 			Component component = processListPane.getComponent(x);
-			if (component instanceof FoodProductionPanel panel) {
-				if (panel.getFoodProductionProcess().equals(process))
-					result = panel;
-
-			}
+			if (component instanceof FoodProductionPanel panel
+					&& panel.getFoodProductionProcess().equals(process))
+				return panel;
 		}
 
-		return result;
+		return null;
 	}
 
 	/**
@@ -337,16 +333,10 @@ public class BuildingPanelFoodProduction extends EntityTabPanel<Building>
 		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
 				boolean cellHasFocus) {
 			Component result = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-			if (value instanceof FoodProductionProcessInfo) {
-				FoodProductionProcessInfo info = (FoodProductionProcessInfo) value;
-				if (info != null) {
-					// Capitalize processName
-					String processName = info.getName();
-					if (processName.length() > processStringWidth)
-						processName = processName.substring(0, processStringWidth) + "...";
-					((JLabel) result).setText(processName);
-					((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info, null));
-				}
+			if (value instanceof FoodProductionProcessInfo info) {
+				String processName = Conversion.trim(info.getName(), processStringWidth);
+				((JLabel) result).setText(processName);
+				((JComponent) result).setToolTipText(FoodProductionPanel.getToolTipString(info));
 			}
 
 			return result;
