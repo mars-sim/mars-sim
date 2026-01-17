@@ -26,6 +26,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -43,11 +44,9 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	private int populationCapacityCache = -1;
 	private int populationIndoorCache = -1;
 
-	private double populationAgeCache =-1;
-
 	private String genderRatioCache = "";
 	
-	private JLabel populationAgeLabel;
+	private JDoubleLabel populationAgeLabel;
 	private JLabel populationCitizensLabel;
 	private JLabel populationCapacityLabel;
 	private JLabel populationIndoorLabel;
@@ -74,7 +73,7 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	@Override
 	protected JPanel createInfoPanel() {
 		// Prepare count spring layout panel.
-		AttributePanel countPanel = new AttributePanel(5);
+		AttributePanel countPanel = new AttributePanel();
 
 		// Create associate label
 		populationCitizensLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.citizen"),
@@ -91,8 +90,10 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 		genderRatioLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.gender"),
 		   								"", null);
 
-		populationAgeLabel = countPanel.addTextField(Msg.getString("TabPanelCitizen.age"),
-							"", null);
+		var settlement = getEntity();
+		var pop = settlement.getAllAssociatedPeople();
+		populationAgeLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, PopulationStats.getAverageAge(pop));
+		countPanel.addLabelledItem(Msg.getString("TabPanelCitizen.age"), populationAgeLabel, null);
 		clockUpdate(null);
 
 		return countPanel;
@@ -138,12 +139,8 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 			genderRatioLabel.setText(genderRatioCache);
 		}
 
-		double age = PopulationStats.getAverageAge(pop);
-		// Update capacity
-		if (populationAgeCache != age) {
-			populationAgeCache = age;
-			populationAgeLabel.setText(StyleManager.DECIMAL_PLACES1.format(populationAgeCache));
-		}
+		// Update average age
+		populationAgeLabel.setValue(PopulationStats.getAverageAge(pop));
 		
 		// Update population table
 		if (citizenModel != null) {

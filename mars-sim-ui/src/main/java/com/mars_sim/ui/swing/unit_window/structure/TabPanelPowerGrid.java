@@ -40,6 +40,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
@@ -73,14 +74,12 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 	private double energyCapacityCache;
 	/** The total power stored cache. */
 	private double energyStoredCache;
-	/** The total solar cell efficiency cache. */
-	private double solarCellEfficiencyCache;
 	
 	private double percentPowerUsage;
 
 	private double percentEnergyUsage;
 
-	private JLabel solarCellEfficiencyTF;
+	private JDoubleLabel solarCellEfficiencyTF;
 	private JLabel percentPowerUsageLabel;
 	private JLabel percentEnergyUsageLabel;
 	
@@ -153,10 +152,9 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 				Msg.getString("TabPanelPowerGrid.energyUsage.tooltip"));
 		
 		// Create solar cell eff tf
-		solarCellEfficiencyCache = getAverageEfficiency();
-		solarCellEfficiencyTF = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"),
-											 StyleManager.DECIMAL1_PERC.format(solarCellEfficiencyCache * 100D),
-											 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
+		solarCellEfficiencyTF = new JDoubleLabel(StyleManager.DECIMAL1_PERC, getAverageEfficiency() * 100D);
+		powerInfoPanel.addLabelledItem(Msg.getString("TabPanelPowerGrid.solarPowerEfficiency"), solarCellEfficiencyTF,
+									 Msg.getString("TabPanelPowerGrid.solarPowerEfficiency.tooltip"));
 
 		// Create degradation rate tf.
 		double solarPowerDegradRate = SolarPowerSource.DEGRADATION_RATE_PER_SOL;
@@ -312,11 +310,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 
 
 		// Update solar cell efficiency TF
-		double eff = getAverageEfficiency();
-		if (Math.abs(solarCellEfficiencyCache - eff) > .4) {
-			solarCellEfficiencyCache = eff;
-			solarCellEfficiencyTF.setText(StyleManager.DECIMAL1_PERC.format(eff * 100D));
-		}
+		solarCellEfficiencyTF.setValue(getAverageEfficiency() * 100D);
 		// Update power table.
 		powerTableModel.update();
 	}

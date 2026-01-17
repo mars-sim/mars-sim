@@ -11,7 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +48,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -70,10 +70,6 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	private static final String THIRTY_DAY = "30-Day";
 	private static final String ANNUAL = "Annual";
 	private static final String CAREER = "Career";
-	private static final DecimalFormat DECIMAL_MSOLS = new DecimalFormat("0 msols");
-	private static final DecimalFormat DECIMAL_PLACES1 = StyleManager.DECIMAL_PLACES1;
-	private static final DecimalFormat DECIMAL_PERC = StyleManager.DECIMAL_PERC;
-	private static final DecimalFormat DECIMAL_KJ = StyleManager.DECIMAL_KJ;
 	
 	private static final String WIKI_URL = Msg.getString("TabPanelHealth.radiation.url"); //-NLS-1$
 	private static final String[] RADIATION_TOOL_TIPS = {
@@ -82,43 +78,25 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		    " Standard Dose Limit [mSv] on Eye - 30-Day:  500;  Annual: 2000;  Career: 3000",
 		    " Standard Dose Limit [mSv] on Skin - 30-Day: 1000;  Annual: 4000;  Career: 6000"};
 
-	private int fatigueCache;
-	private int thirstCache;
-	private int hungerCache;
-	private int energyCache;
-	private int stressCache;
-	private int performanceCache;
-	private int leptinCache;
-	private int leptinTCache;
-	private int ghrelinCache;
-	private int ghrelinTCache;
-	private int maxDailyEnergy;
+	private JDoubleLabel thirstLabel;
+	private JDoubleLabel fatigueLabel;
+	private JDoubleLabel hungerLabel;
+	private JDoubleLabel energyLabel;
+	private JDoubleLabel stressLabel;
+	private JDoubleLabel performanceLabel;
 	
-	private double muscleTor;
-	private double muscleHealth;
-	private double muscleSoreness;
-	private double appetite;
-	private double bodyMassDev;
-	
-	private JLabel thirstLabel;
-	private JLabel fatigueLabel;
-	private JLabel hungerLabel;
-	private JLabel energyLabel;
-	private JLabel stressLabel;
-	private JLabel performanceLabel;
-	
-	private JLabel leptinLabel;
-	private JLabel ghrelinLabel;
-	private JLabel leptinTLabel;
-	private JLabel ghrelinTLabel;
+	private JDoubleLabel leptinLabel;
+	private JDoubleLabel ghrelinLabel;
+	private JDoubleLabel leptinTLabel;
+	private JDoubleLabel ghrelinTLabel;
 
-	private JLabel muscleTorLabel;
-	private JLabel muscleHealthLabel;
-	private JLabel muscleSorenessLabel;
+	private JDoubleLabel muscleTorLabel;
+	private JDoubleLabel muscleHealthLabel;
+	private JDoubleLabel muscleSorenessLabel;
 	
-	private JLabel appetiteLabel;
-	private JLabel maxDailyEnergyLabel;
-	private JLabel bodyMassDevLabel;
+	private JDoubleLabel appetiteLabel;
+	private JDoubleLabel maxDailyEnergyLabel;
+	private JDoubleLabel bodyMassDevLabel;
 	
 	private JLabel bedLocationLabel;
 	private DefaultListModel<String> sleepTimes;
@@ -144,9 +122,8 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	public TabPanelHealth(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			null,
-			ImageLoader.getIconByName(HEALTH_ICON),
-			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelHealth.title"),
+			ImageLoader.getIconByName(HEALTH_ICON), null,
 			context, person
 		);
 
@@ -156,13 +133,6 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	
 	@Override
 	protected void buildUI(JPanel content) {
-        DoseHistory[] doseLimits;
-        JTable radiationTable;
-        JTable medicationTable;
-        JTable healthProblemTable;
-        JTable healthLogTable;
-        JTable sleepExerciseTable;
-        JTable foodTable;
 				
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
@@ -172,70 +142,54 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		AttributePanel conditionPanel = new AttributePanel(8, 2);
 		northPanel.add(conditionPanel);
 		
-		fatigueCache = (int)condition.getFatigue();
-		fatigueLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.fatigue"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(fatigueCache), null);
+		fatigueLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getFatigue());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.fatigue"), fatigueLabel, null);
 		
-		energyCache = (int)condition.getEnergy();
-		energyLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.energy"), //$NON-NLS-1$
-										DECIMAL_KJ.format(energyCache), null);
+		energyLabel = new JDoubleLabel(StyleManager.DECIMAL_KJ, condition.getEnergy());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.energy"), energyLabel, null);
 						
-		hungerCache = (int)condition.getHunger();
-		hungerLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.hunger"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(hungerCache), null);
+		hungerLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getHunger());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.hunger"), hungerLabel, null);
 		
-		maxDailyEnergy = (int)(condition.getPersonalMaxEnergy());
-		maxDailyEnergyLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.maxDailyEnergy"), //$NON-NLS-1$
-				DECIMAL_KJ.format(maxDailyEnergy));
+		maxDailyEnergyLabel = new JDoubleLabel(StyleManager.DECIMAL_KJ, condition.getPersonalMaxEnergy());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.maxDailyEnergy"), maxDailyEnergyLabel, null);
 				
-		thirstCache = (int)condition.getThirst();
-		thirstLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.thirst"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(thirstCache), null);
+		thirstLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, condition.getThirst());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.thirst"), thirstLabel, null);
 		
-		appetite = Math.round(condition.getAppetite()*10.0)/10.0;
-		appetiteLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.appetite"), //$NON-NLS-1$
-				DECIMAL_PLACES1.format(appetite));
+		appetiteLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getAppetite(), 0.1);
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.appetite"), appetiteLabel, null);
 		
 		var person = getEntity();
-		performanceCache = (int)(person.getPerformanceRating() * 100);
-		performanceLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.performance"), //$NON-NLS-1$
-					DECIMAL_PERC.format(performanceCache), null);
+		performanceLabel = new JDoubleLabel(StyleManager.DECIMAL_PERC, person.getPerformanceRating() * 100);
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.performance"), performanceLabel, null);
 		
-		muscleHealth = Math.round(condition.getMuscleHealth()*10.0)/10.0;
-		muscleHealthLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.health"), //$NON-NLS-1$
-				DECIMAL_PLACES1.format(muscleHealth));	
+		muscleHealthLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getMuscleHealth(), 0.1);
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.muscle.health"), muscleHealthLabel, null);
 
-		stressCache = (int)condition.getStress();	
-		stressLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.stress"), //$NON-NLS-1$
-				DECIMAL_PERC.format(stressCache), null);
+		stressLabel = new JDoubleLabel(StyleManager.DECIMAL_PERC, condition.getStress());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.stress"), stressLabel, null);
 		
-		muscleTor = Math.round(condition.getMusclePainTolerance()*10.0)/10.0;
-		muscleTorLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.tolerance"), //$NON-NLS-1$
-				DECIMAL_PLACES1.format(muscleTor));	
+		muscleTorLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getMusclePainTolerance(), 0.1);
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.muscle.tolerance"), muscleTorLabel, null);
 		
-		bodyMassDev = Math.round(condition.getBodyMassDeviation()*10.0)/10.0;
-		bodyMassDevLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.bodyMassDev"), //$NON-NLS-1$
-				DECIMAL_PLACES1.format(bodyMassDev));
+		bodyMassDevLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getBodyMassDeviation(), 0.1);
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.bodyMassDev"), bodyMassDevLabel, null);
 		
-		muscleSoreness = Math.round(condition.getMuscleSoreness()*10.0)/10.0;
-		muscleSorenessLabel = conditionPanel.addRow(Msg.getString("TabPanelHealth.muscle.soreness"), //$NON-NLS-1$
-				DECIMAL_PLACES1.format(muscleSoreness));
+		muscleSorenessLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, condition.getMuscleSoreness(), 0.1);
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.muscle.soreness"), muscleSorenessLabel, null);
 	
-		leptinCache = (int)(circadianClock.getLeptin());
-		leptinLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.leptin"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(leptinCache), null);
+		leptinLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getLeptin());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.leptin"), leptinLabel, null);
 		
-		ghrelinCache = (int)(circadianClock.getGhrelin());
-		ghrelinLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.ghrelin"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(ghrelinCache), null);		
+		ghrelinLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getGhrelin());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.ghrelin"), ghrelinLabel, null);
 		
-		leptinTCache = (int)(circadianClock.getLeptinT());
-		leptinTLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.leptin.threshold"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(leptinTCache), null);	
+		leptinTLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getLeptinT());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.leptin.threshold"), leptinTLabel, null);
 		
-		ghrelinTCache = (int)(circadianClock.getGhrelinT());
-		ghrelinTLabel = conditionPanel.addTextField(Msg.getString("TabPanelHealth.ghrelin.threshold"), //$NON-NLS-1$
-										DECIMAL_MSOLS.format(ghrelinTCache), null);	
+		ghrelinTLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, circadianClock.getGhrelinT());
+		conditionPanel.addLabelledItem(Msg.getString("TabPanelHealth.ghrelin.threshold"), ghrelinTLabel, null);
 		
 		northPanel.add(Box.createVerticalStrut(7));
 		
@@ -292,7 +246,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		var tableSize = new Dimension(225, 70);
 
 		// Create sleep time table
-		sleepExerciseTable = new JTable(sleepExerciseTableModel);
+		var sleepExerciseTable = new JTable(sleepExerciseTableModel);
 		TableColumnModel sModel = sleepExerciseTable.getColumnModel();
 		sleepExerciseTable.setPreferredScrollableViewportSize(tableSize);
 		sModel.getColumn(0).setPreferredWidth(10);
@@ -328,7 +282,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		foodTableModel = new FoodTableModel(condition);
 		
 		// Create exercise time table
-		foodTable = new JTable(foodTableModel);
+		var foodTable = new JTable(foodTableModel);
 		foodTable.setPreferredScrollableViewportSize(tableSize);
 		TableColumnModel fModel = foodTable.getColumnModel();
 		fModel.getColumn(0).setPreferredWidth(10);
@@ -383,7 +337,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		radiationTableModel = new RadiationTableModel(condition);
 
 		// Gets the person's radiation dose limits
-        doseLimits = condition.getRadiationExposure().getDoseLimits();
+        var doseLimits = condition.getRadiationExposure().getDoseLimits();
         
         String[] limits = new String[3];
         for(var r : BodyRegionType.values()) {
@@ -395,7 +349,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
         }
  
 		// Create radiation table
-		radiationTable = new JTable(radiationTableModel) {
+		var radiationTable = new JTable(radiationTableModel) {
             // Implement table cell tool tips. 
 			@Override          
             public String getToolTipText(MouseEvent e) {
@@ -432,7 +386,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		radiationTable.setAutoCreateRowSorter(true);
 			
 		// Prepare attribute panel.
-		AttributePanel attributePanel = new AttributePanel(10);
+		AttributePanel attributePanel = new AttributePanel();
 		
 		JPanel listPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		listPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -477,7 +431,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		healthProblemTableModel = new HealthProblemTableModel(condition);
 
 		// Create health problem table
-		healthProblemTable = new JTable(healthProblemTableModel);
+		var healthProblemTable = new JTable(healthProblemTableModel);
 		healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		healthProblemTable.setRowSelectionAllowed(true);
 		healthProblemScrollPanel.setViewportView(healthProblemTable);
@@ -503,7 +457,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		medicationTableModel = new MedicationTableModel(condition);
 	
 		// Prepare medication table.
-		medicationTable = new JTable(medicationTableModel);
+		var medicationTable = new JTable(medicationTableModel);
 		medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
 		medicationTable.setRowSelectionAllowed(true);
 		medicationScrollPanel.setViewportView(medicationTable);
@@ -528,7 +482,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		healthLogTableModel = new HealthLogTableModel(condition);
 		
 		// Create health problem table
-		healthLogTable = new JTable(healthLogTableModel);
+		var healthLogTable = new JTable(healthLogTableModel);
 		healthLogTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
 		healthLogTable.setRowSelectionAllowed(true);
 		healthLogTable.setDefaultRenderer(MarsTime.class, new MarsTimeTableCellRenderer());
@@ -584,111 +538,23 @@ class TabPanelHealth extends EntityTabPanel<Person>
 
 		var person = getEntity();
 
-		// Update fatigue if necessary.
-		int newF = (int)condition.getFatigue();
-		if (fatigueCache != newF) {
-			fatigueCache = newF;
-			fatigueLabel.setText(DECIMAL_MSOLS.format(newF));
-		}
-
-		// Update thirst if necessary.
-		int newT = (int)condition.getThirst();
-		if (thirstCache != newT) {
-			thirstCache = newT;
-			thirstLabel.setText(DECIMAL_MSOLS.format(newT));
-		}
-		
-		// Update hunger if necessary.
-		int newH = (int)condition.getHunger();
-		if (hungerCache != newH) {
-			hungerCache = newH;
-			hungerLabel.setText(DECIMAL_MSOLS.format(newH));
-		}
-
-		// Update energy if necessary.
-		int newEnergy = (int)condition.getEnergy();
-		if (energyCache != newEnergy) {
-			energyCache = newEnergy;
-			energyLabel.setText(DECIMAL_KJ.format(energyCache));
-		}
-
-		// Update stress if necessary.
-		int newS = (int)condition.getStress();
-		if (stressCache != newS) {
-			stressCache = newS;
-			stressLabel.setText(DECIMAL_PERC.format(newS));
-		}
-
-		// Update performance cache if necessary.
-		int newP = (int)(person.getPerformanceRating() * 100);
-		if (performanceCache != newP) {
-			performanceCache = newP;
-			performanceLabel.setText(DECIMAL_PERC.format(newP));
-		}
-		
-		// Update leptin if necessary.
-		int newL = (int)(circadianClock.getLeptin());
-		if (leptinCache != newL) {
-			leptinCache = newL;
-			leptinLabel.setText(DECIMAL_MSOLS.format(newL));
-		}		
-		
-		// Update ghrelin if necessary.
-		int newG = (int)(circadianClock.getGhrelin());
-		if (ghrelinCache != newG) {
-			ghrelinCache = newG;
-			ghrelinLabel.setText(DECIMAL_MSOLS.format(newG));
-		}		
-		
-		// Update leptin threshold if necessary.
-		int newLT = (int)(circadianClock.getLeptinT());
-		if (leptinTCache != newLT) {
-			leptinTCache = newLT;
-			leptinTLabel.setText(DECIMAL_MSOLS.format(newLT));
-		}		
-		
-		// Update ghrelin threshold if necessary.
-		int newGT = (int)(circadianClock.getGhrelinT());
-		if (ghrelinTCache != newGT) {
-			ghrelinTCache = newGT;
-			ghrelinTLabel.setText(DECIMAL_MSOLS.format(newGT));
-		}
-
-		double muscleTor0 = Math.round(condition.getMusclePainTolerance()*10.0)/10.0;
-		if (muscleTor != muscleTor0) {
-			muscleTor = muscleTor0;
-			muscleTorLabel.setText(DECIMAL_PLACES1.format(muscleTor0));
-		}
-		
-		double muscleHealth0 = Math.round(condition.getMuscleHealth()*10.0)/10.0;
-		if (muscleHealth != muscleHealth0) {
-			muscleHealth = muscleHealth0;
-			muscleHealthLabel.setText(DECIMAL_PLACES1.format(muscleHealth0));
-		}
-		
-		double muscleSoreness0 = Math.round(condition.getMuscleSoreness()*10.0)/10.0;
-		if (muscleSoreness != muscleSoreness0) {
-			muscleSoreness = muscleSoreness0;
-			muscleSorenessLabel.setText(DECIMAL_PLACES1.format(muscleSoreness0));
-		}
-
-		double appetite0 = Math.round(condition.getAppetite()*10.0)/10.0;
-		if (appetite != appetite0) {
-			appetite = appetite0;
-			appetiteLabel.setText(DECIMAL_PLACES1.format(appetite0));
-		}
-		
-		int maxDailyEnergy0 = (int)(condition.getPersonalMaxEnergy());
-		if (maxDailyEnergy != maxDailyEnergy0) {
-			maxDailyEnergy = maxDailyEnergy0;
-			maxDailyEnergyLabel.setText(DECIMAL_KJ.format(maxDailyEnergy0));
-		}
-
-		double bodyMassDev0 = Math.round(condition.getBodyMassDeviation()*10.0)/10.0;
-		if (bodyMassDev != bodyMassDev0) {
-			bodyMassDev = bodyMassDev0;
-			bodyMassDevLabel.setText(DECIMAL_PLACES1.format(bodyMassDev0));
-		}
+		// Update fatigue
+		fatigueLabel.setValue(condition.getFatigue());
+		thirstLabel.setValue(condition.getThirst());
+		hungerLabel.setValue(condition.getHunger());
+		energyLabel.setValue(condition.getEnergy());
+		stressLabel.setValue(condition.getStress());
+		performanceLabel.setValue(person.getPerformanceRating() * 100);
+		leptinLabel.setValue(circadianClock.getLeptin());
+		ghrelinLabel.setValue(circadianClock.getGhrelin());
+		leptinTLabel.setValue(circadianClock.getLeptinT());
+		ghrelinTLabel.setValue(circadianClock.getGhrelinT());
+		muscleTorLabel.setValue(condition.getMusclePainTolerance());
+		muscleHealthLabel.setValue(condition.getMuscleHealth());
+		muscleSorenessLabel.setValue(condition.getMuscleSoreness());
+		appetiteLabel.setValue(condition.getAppetite());
+		maxDailyEnergyLabel.setValue(condition.getPersonalMaxEnergy());
+		bodyMassDevLabel.setValue(condition.getBodyMassDeviation());
 
 		String bedText = "";
 		var allocatedBed = person.getBed();
@@ -721,8 +587,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	/**
 	 * Internal class used as model for the radiation dose table.
 	 */
-	private static class RadiationTableModel
-	extends AbstractTableModel {
+	private static class RadiationTableModel extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;

@@ -25,6 +25,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -44,16 +45,16 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 	// Data members	
 	private JLabel siteLabel;
 	private JLabel numROIsLabel;
-	private JLabel siteMeanLabel;
-	private JLabel siteSDevLabel;
+	private JDoubleLabel siteMeanLabel;
+	private JDoubleLabel siteSDevLabel;
 	
 	private JLabel claimedSiteLabel;
-	private JLabel claimedMeanLabel;
-	private JLabel claimedSDevLabel;
+	private JDoubleLabel claimedMeanLabel;
+	private JDoubleLabel claimedSDevLabel;
 	
 	private JLabel unclaimedSiteLabel;
-	private JLabel unclaimedMeanLabel;
-	private JLabel unclaimedSDevLabel;
+	private JDoubleLabel unclaimedMeanLabel;
+	private JDoubleLabel unclaimedSDevLabel;
 	
 	private UnitListPanel<Mission> missionList;
 	
@@ -87,8 +88,10 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		
 		siteLabel = sitePanel.addTextField("Sites Found","", null);
 		numROIsLabel = sitePanel.addTextField("Declared ROIs", "", null);
-		siteMeanLabel = sitePanel.addTextField("Mean Distance \u03BC", "", null); 
-		siteSDevLabel = sitePanel.addTextField("Standard Deviation \u03C3", "", null);
+		siteMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		sitePanel.addLabelledItem("Mean Distance \u03BC", siteMeanLabel); 
+		siteSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		sitePanel.addLabelledItem("Standard Deviation \u03C3", siteSDevLabel);
 		
 		
 		AttributePanel twoPanel = new AttributePanel();
@@ -96,8 +99,10 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		twoPanel.setBorder(SwingHelper.createLabelBorder("Claimed Sites"));
 		
 		claimedSiteLabel = twoPanel.addTextField("Sites", "", null);
-		claimedMeanLabel = twoPanel.addTextField("Mean Distance \u03BC", "", null);
-		claimedSDevLabel = twoPanel.addTextField("Standard Deviation \u03C3", "", null);
+		claimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		twoPanel.addLabelledItem("Mean Distance \u03BC", claimedMeanLabel);
+		claimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		twoPanel.addLabelledItem("Standard Deviation \u03C3", claimedSDevLabel);
 		
 		
 		AttributePanel unclaimPanel = new AttributePanel();
@@ -105,8 +110,10 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		unclaimPanel.setBorder(SwingHelper.createLabelBorder("Unclaimed Sites"));
 		
 		unclaimedSiteLabel = unclaimPanel.addTextField("Sites", "", null);		
-		unclaimedMeanLabel = unclaimPanel.addTextField("Mean Distance \u03BC", "", null);
-		unclaimedSDevLabel = unclaimPanel.addTextField("Standard Deviation \u03C3", "", null);
+		unclaimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		unclaimPanel.addLabelledItem("Mean Distance \u03BC", unclaimedMeanLabel);
+		unclaimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		unclaimPanel.addLabelledItem("Standard Deviation \u03C3", unclaimedSDevLabel);
 		
 		
 		// Create center panel.
@@ -163,16 +170,16 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		
 		siteLabel.setText(Integer.toString(eMgr.getNearbyMineralLocations().size()));
 		numROIsLabel.setText(Integer.toString(eMgr.getDeclaredROIs().size()));
-		siteMeanLabel.setText(StyleManager.DECIMAL_KM.format(site.mean()));
-		siteSDevLabel.setText(StyleManager.DECIMAL_KM.format(site.sd()));
+		siteMeanLabel.setValue(site.mean());
+		siteSDevLabel.setValue(site.sd());
 		
 		claimedSiteLabel.setText(eMgr.numDeclaredROIs(true) + "");
-		claimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(claimed.mean()));
-		claimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(claimed.sd()));
+		claimedMeanLabel.setValue(claimed.mean());
+		claimedSDevLabel.setValue(claimed.sd());
 		
 		unclaimedSiteLabel.setText(eMgr.numDeclaredROIs(false) + "");		
-		unclaimedMeanLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.mean()));
-		unclaimedSDevLabel.setText(StyleManager.DECIMAL_KM.format(unclaimed.sd()));
+		unclaimedMeanLabel.setValue(unclaimed.mean());
+		unclaimedSDevLabel.setValue(unclaimed.sd());
 		
 		// Update mission list if necessary.
 		missionList.update();
