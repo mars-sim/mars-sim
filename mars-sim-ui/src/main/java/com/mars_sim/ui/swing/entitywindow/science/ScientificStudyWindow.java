@@ -30,7 +30,7 @@ public class ScientificStudyWindow extends EntityContentPanel<ScientificStudy> {
     public ScientificStudyWindow(ScientificStudy study, UIContext context, Properties props) {
         super(study, context);
 
-        addTabPanel(new TabPanelGeneral(study, context));
+        addDefaultTabPanel(new TabPanelGeneral(study, context));
         addTabPanel(new TabPanelCollaborators(study, context));
 
         applyProps(props);

@@ -35,7 +35,7 @@ public class ConstructionSiteWindow extends EntityContentPanel<ConstructionSite>
         super(constructionSite, context);
 
         // Add tab panels
-        addTabPanel(new TabPanelSiteGeneral(constructionSite, context));
+        addDefaultTabPanel(new TabPanelSiteGeneral(constructionSite, context));
         addTabPanel(new LocationTabPanel(constructionSite, context));
 
         applyProps(getUIProps());

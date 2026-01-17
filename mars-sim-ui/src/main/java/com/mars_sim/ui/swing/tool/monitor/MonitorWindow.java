@@ -40,7 +40,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
@@ -51,6 +50,7 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
@@ -207,7 +207,7 @@ public class MonitorWindow extends ContentPanel
 		applySelection(defaultSelection);
 
 		// Create tabbed pane for the table
-		tabsSection = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabsSection = new JTabbedPane(StyleManager.getTabPlacement(), JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		// Add all the tabs
 		addAllTabs((uiProps != null ? uiProps.getProperty(TAB_PROP) : null));

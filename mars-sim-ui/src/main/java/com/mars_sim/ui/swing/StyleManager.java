@@ -22,6 +22,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -109,6 +110,8 @@ public class StyleManager {
     								+ Msg.getString("unit.grampercubicmeter"));
     // For air pressure
     public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 kPa");
+
+    private static int tabPlacement = SwingConstants.LEFT;
 
     // Look and Feel styles
     record StyleEntry(String name, String category, Color accentColour, String lafClassName) {}
@@ -442,6 +445,21 @@ public class StyleManager {
         return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
                                                         TitledBorder.DEFAULT_POSITION,
                                                         subTitleFont, (Color)null);
+    }
+
+    /**
+     * Gets the tab placement for JTabbedPanes.
+     */
+    public static int getTabPlacement() {
+        return tabPlacement;
+    }
+
+    /**
+     * Sets the tab placement for JTabbedPanes.
+     * @param tabPlacement New placement.
+     */
+    public static void setTabPlacement(int tabPlacement) {
+        StyleManager.tabPlacement = tabPlacement;
     }
 
     /**

@@ -43,7 +43,7 @@ public class PersonUnitWindow extends EntityContentPanel<Person>
 		super(person, context);
 		
 		// Add tab panels	
-		addTabPanel(new TabPanelGeneral(person, context));
+		addDefaultTabPanel(new TabPanelGeneral(person, context));
 		addTabPanel(new TabPanelActivity(person, context));
 		addTabPanel(new TabPanelAttribute(person, context));
 		addTabPanel(new TabPanelCareer(person, context));

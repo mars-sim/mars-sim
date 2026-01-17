@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
@@ -24,6 +23,7 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 
@@ -47,6 +47,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	private List<EntityTabPanel<?>> tabPanels = new ArrayList<>();
     private UIContext context;
     private JTabbedPane tabPane;
+    private EntityTabPanel<?> defaultTab;
 
     /**
      * Construct a entity panel to render a single Entity. The entity type used for naming is derived
@@ -55,23 +56,13 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      * @param context Overall UI context
      */
     protected EntityContentPanel(T entity, UIContext context) {
-        this(entity, entity.getClass().getSimpleName(), context);
-    }
-
-    /**
-     * Construct a entity panel to render a single Entity.
-     * @param entity Entity to display.
-     * @param entityType The label associated with the entity type.
-     * @param context Overall UI context
-     */
-    protected EntityContentPanel(T entity, String entityType, UIContext context) {
         super(entity.getClass().getSimpleName() + ":" + entity.getName(),
-                generateTitle(entityType, entity), Placement.CENTER);
+                getEntityType(entity) + " : " + entity.getName(), Placement.CENTER);
 
         this.entity = entity;
         this.context = context;
 
-        tabPane = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+        tabPane = new JTabbedPane(StyleManager.getTabPlacement(), JTabbedPane.SCROLL_TAB_LAYOUT);
         add(tabPane, BorderLayout.CENTER);
 
 		// Add a listener for the tab changes
@@ -95,9 +86,15 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         }
     }
 
-    private static String generateTitle(String typeKey, Entity entity) {
-        String context = Msg.getString(typeKey + ".singular");
-        return context + " : " + entity.getName();
+    /**
+     * Get the entity type string for the given entity. This uses the lanugage
+     * resource bundle to get the singular form of the entity type.
+     * @param entity Entity to get the type for.
+     * @return Name of the type.
+     */
+    private static String getEntityType(Entity entity) {
+        String typeKey = entity.getClass().getSimpleName();
+        return Msg.getString(typeKey + ".singular");
     }
 
     /**
@@ -171,15 +168,46 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	}
 
     /**
+     * Add the default tab panel to the entity window. This tab is always added first
+     * and selected by default.
+     * @param panel Tab panel to add as the default.
+     */
+    protected void addDefaultTabPanel(EntityTabPanel<?> panel) {
+        defaultTab = panel;
+
+        // Default always goes to the beginning
+        addTabPanel(panel, 0);
+    }
+
+    /**
      * Add a tab panel to the entity window. This uses the icon and title of the TabPanel to
-     * create the tab.
+     * create the tab. This will be inserted after the default tab and according to alphabetical
+     * order of the tab titles.
      * @param panel
      */
     protected void addTabPanel(EntityTabPanel<?> panel) {
-        tabPanels.add(panel);
+        int position = (defaultTab != null) ? 1 : 0;
+        while (position < tabPanels.size()) {
+            var existingPanel = tabPanels.get(position);
+            if (panel.getTabTitle().compareTo(existingPanel.getTabTitle()) < 0) {
+                break;
+            }
+
+            position++;
+        }
+        addTabPanel(panel, position);
+    }
+    
+    /**
+     * Add a tab panel to the entity window at the specified position.
+     * @param panel New panel to add.
+     * @param position Position to insert the panel at.
+     */
+    private void addTabPanel(EntityTabPanel<?> panel, int position) { 
+        tabPanels.add(position, panel);
 
         // Have to ignore the title to force the icon to show correctly
-        tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
+        tabPane.insertTab( null, panel.getTabIcon(), panel, panel.getTabToolTip(), position);
     }
 
     /**

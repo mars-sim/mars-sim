@@ -32,7 +32,9 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 	public SettlementUnitWindow(Settlement settlement, UIContext context, Properties props) {
 		super(settlement, context);
 		
-		addTabPanel(new TabPanelGeneral(settlement, context));
+		addDefaultTabPanel(new TabPanelGeneral(settlement, context));
+
+		addTabPanel(new TabPanelWeather(settlement, context));
 		addTabPanel(new TabPanelAirComposition(settlement, context));
 		addTabPanel(new TabPanelBots(settlement, context));
 		addTabPanel(new TabPanelCitizen(settlement, context));
@@ -44,6 +46,7 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 		addTabPanel(new TabPanelGroupActivity(settlement, context));
 		addTabPanel(new TabPanelGoods(settlement, context));
 		addTabPanel(new InventoryTabPanel(settlement, context));
+		addTabPanel(new TabPanelScience(settlement, context));
 		addTabPanel(new LocationTabPanel(settlement, context));
 		addTabPanel(new TabPanelMaintenance(settlement, context));
 		addTabPanel(new MalfunctionTabPanel(settlement, context));
@@ -55,10 +58,8 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 		addTabPanel(new TabPanelPowerGrid(settlement, context));
 		addTabPanel(new TabPanelProcessHistory(settlement, context));
 		addTabPanel(new TabPanelResourceProcesses(settlement, context));
-		addTabPanel(new TabPanelScience(settlement, context));
 		addTabPanel(new TabPanelThermal(settlement, context));
 		addTabPanel(new TabPanelVehicles(settlement, context));
-		addTabPanel(new TabPanelWeather(settlement, context));
 		addTabPanel(new TabPanelWasteProcesses(settlement, context));
 
 		applyProps(props);

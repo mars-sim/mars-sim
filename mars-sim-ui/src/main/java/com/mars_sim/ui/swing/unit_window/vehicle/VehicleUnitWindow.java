@@ -41,7 +41,7 @@ public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 		super(vehicle, context);
 
 		// Add as the first panel
-		addTabPanel(new TabPanelGeneralVehicle(vehicle, context));
+		addDefaultTabPanel(new TabPanelGeneralVehicle(vehicle, context));
 
 		if (vehicle instanceof Crewable crewableVehicle) {
 			if (crewableVehicle.getCrewCapacity() > 0)

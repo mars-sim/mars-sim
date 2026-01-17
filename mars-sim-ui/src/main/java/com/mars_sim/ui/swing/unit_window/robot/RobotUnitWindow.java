@@ -39,7 +39,7 @@ public class RobotUnitWindow extends EntityContentPanel<Robot> {
 		super(robot, context);
 					
 		// Add tab panels
-		addTabPanel(new TabPanelGeneralRobot(robot, context));
+		addDefaultTabPanel(new TabPanelGeneralRobot(robot, context));
 
 		addTabPanel(new TabPanelActivity(robot, context));
 		addTabPanel(new TabPanelAttribute(robot, context));

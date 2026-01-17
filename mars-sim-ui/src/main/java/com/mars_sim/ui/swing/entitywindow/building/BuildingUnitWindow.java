@@ -34,7 +34,7 @@ public class BuildingUnitWindow extends EntityContentPanel<Building> {
         super(building, context);
 
         // Add tab panels
-        addTabPanel(new BuildingPanelGeneral(building, context));
+        addDefaultTabPanel(new BuildingPanelGeneral(building, context));
         addTabPanel(new MaintenanceTabPanel(building, context));
         addTabPanel(new MalfunctionTabPanel(building, context));
 		addTabPanel(new BuildingPanelPowerGen(building, context));
