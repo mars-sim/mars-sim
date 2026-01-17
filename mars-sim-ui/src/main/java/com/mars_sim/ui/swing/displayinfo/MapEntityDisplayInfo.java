@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
- * MapUnitDisplayInfo.java
+ * MapEntityDisplayInfo.java
  * @date 2025-08-21
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.unit_display_info;
+package com.mars_sim.ui.swing.displayinfo;
 
 import javax.swing.Icon;
 
@@ -17,9 +17,9 @@ import com.mars_sim.ui.swing.ImageLoader;
 
 /**
  * This holds the display info for a unit type that can be displayed on the map.
- * It extends the UnitDisplayInfo class to provide additional functionality specific to map display.
+ * It extends the EntityMapDisplayInfo class to provide additional functionality specific to map display.
  */
-public class MapUnitDisplayInfo extends UnitDisplayInfo {
+public class MapEntityDisplayInfo extends EntityDisplayInfo {
 
     private Font mapLabelFont;
     private Color mapLabelColor;
@@ -31,7 +31,7 @@ public class MapUnitDisplayInfo extends UnitDisplayInfo {
     /**
      * Constructor. Use the entityKey as the button icon.
      */
-    MapUnitDisplayInfo(String entityKey, String defaultSound,
+    MapEntityDisplayInfo(String entityKey, String defaultSound,
                     Font mapLabel, Color mapLabelColor,
                     String normalMapIcon, String blackMapIcon) {
         this(entityKey, entityKey, defaultSound,
@@ -42,7 +42,7 @@ public class MapUnitDisplayInfo extends UnitDisplayInfo {
     /**
      * Constructor. Defines all parameters.
      */
-    MapUnitDisplayInfo(String buttonIcon, String entityKey, String defaultSound,
+    MapEntityDisplayInfo(String buttonIcon, String entityKey, String defaultSound,
                     Font mapLabel, Color mapLabelColor,
                     String normalMapIcon, String blackMapIcon) {
 
