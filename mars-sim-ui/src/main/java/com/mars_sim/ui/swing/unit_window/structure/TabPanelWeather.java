@@ -24,6 +24,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -39,25 +40,15 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
 
 	private int windDirectionCache;
 	
-	private double airPressureCache;
-	private double temperatureCache;
-	private double windSpeedCache;
-	private double airDensityCache;
-	private double opticalDepthCache;
-	private double zenithAngleCache;
-	private double solarDeclinationCache;
-	private double solarIrradianceCache;
-
-	private JLabel airDensityLabel;
-	private JLabel pressureTF;
-	private JLabel solarIrradianceLabel;
-	private JLabel windSpeedLabel;
+	private JDoubleLabel airDensityLabel;
+	private JDoubleLabel pressureTF;
+	private JDoubleLabel solarIrradianceLabel;
+	private JDoubleLabel windSpeedLabel;
 	private JLabel windDirLabel;
-	private JLabel opticalDepthLabel;
-	private JLabel zenithAngleLabel;
-	private JLabel solarDeclinationLabel;
-
-	private JLabel temperatureLabel;
+	private JDoubleLabel opticalDepthLabel;
+	private JDoubleLabel zenithAngleLabel;
+	private JDoubleLabel solarDeclinationLabel;
+	private JDoubleLabel temperatureLabel;
 	
 	private Weather weather;
 	private SurfaceFeatures surfaceFeatures;
@@ -118,12 +109,20 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
         // Create spring layout panel
         AttributePanel atmSpringPanel = new AttributePanel(5);
         atmPanel.add(atmSpringPanel, BorderLayout.NORTH);
-        atmPanel.setBorder(SwingHelper.createLabelBorder("Atmospheric"));
+        var locn = getEntity().getLocation();
            
-        temperatureLabel = atmSpringPanel.addTextField("Temperature", "", null);
-        pressureTF =  atmSpringPanel.addTextField(Msg.getString("TabPanelWeather.airPressure.label"), "", null);
-        airDensityLabel = atmSpringPanel.addTextField(Msg.getString("TabPanelWeather.airDensity.label"), "", null);
-        windSpeedLabel = atmSpringPanel.addTextField(Msg.getString("TabPanelWeather.windspeed.label"), "", null);
+        temperatureLabel = new JDoubleLabel(StyleManager.DECIMAL_CELCIUS, weather.getTemperature(locn));
+        atmSpringPanel.addLabelledItem("Temperature", temperatureLabel, null);
+        
+        pressureTF = new JDoubleLabel(StyleManager.DECIMAL_KPA, weather.getAirPressure(locn));
+        atmSpringPanel.addLabelledItem(Msg.getString("TabPanelWeather.airPressure.label"), pressureTF, null);
+        
+        airDensityLabel = new JDoubleLabel(StyleManager.DECIMAL_G_M3, weather.getAirDensity(locn));
+        atmSpringPanel.addLabelledItem(Msg.getString("TabPanelWeather.airDensity.label"), airDensityLabel, null);
+        
+        windSpeedLabel = new JDoubleLabel(StyleManager.DECIMAL_M_S, weather.getWindSpeed(locn));
+        atmSpringPanel.addLabelledItem(Msg.getString("TabPanelWeather.windspeed.label"), windSpeedLabel, null);
+        
         windDirLabel = atmSpringPanel.addTextField(Msg.getString("TabPanelWeather.windDirection.label"), "", null);
         
         JPanel sunPanel = new JPanel(new BorderLayout(5, 5));
@@ -133,11 +132,18 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
         AttributePanel sunSpringPanel = new AttributePanel(4);
         sunPanel.add(sunSpringPanel, BorderLayout.NORTH);
         sunPanel.setBorder(SwingHelper.createLabelBorder("Solar"));
+                
+        solarIrradianceLabel = new JDoubleLabel(StyleManager.DECIMAL_W_M2, surfaceFeatures.getSolarIrradiance(locn));
+        sunSpringPanel.addLabelledItem(Msg.getString("TabPanelWeather.solarIrradiance.label"), solarIrradianceLabel, null);
         
-        solarIrradianceLabel = sunSpringPanel.addTextField(Msg.getString("TabPanelWeather.solarIrradiance.label"), "", null);
-        opticalDepthLabel = sunSpringPanel.addTextField(Msg.getString("TabPanelWeather.opticalDepth.label"), "", null);
-        zenithAngleLabel = sunSpringPanel.addTextField(Msg.getString("TabPanelWeather.zenithAngle.label"), "", null);
-        solarDeclinationLabel = sunSpringPanel.addTextField(Msg.getString("TabPanelWeather.solarDeclination.label"), "", null);
+        opticalDepthLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, surfaceFeatures.getOpticalDepth(locn));
+        sunSpringPanel.addLabelledItem(Msg.getString("TabPanelWeather.opticalDepth.label"), opticalDepthLabel, null);
+        
+        zenithAngleLabel = new JDoubleLabel(StyleManager.DECIMAL_DEG, orbitInfo.getSolarZenithAngle(locn) * RADIANS_TO_DEGREES);
+        sunSpringPanel.addLabelledItem(Msg.getString("TabPanelWeather.zenithAngle.label"), zenithAngleLabel, null);
+        
+        solarDeclinationLabel = new JDoubleLabel(StyleManager.DECIMAL_DEG, orbitInfo.getSolarDeclinationAngleInDeg());
+        sunSpringPanel.addLabelledItem(Msg.getString("TabPanelWeather.solarDeclination.label"), solarDeclinationLabel, null);
    
         refreshDetails();
 	}
@@ -156,58 +162,19 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
 	private void refreshDetails() {
 		var locn = getEntity().getLocation();
 
-		double p = weather.getAirPressure(locn);
-		if (airPressureCache != p) {
-			airPressureCache = p;
-			pressureTF.setText(StyleManager.DECIMAL_KPA.format(airPressureCache));
-		}
-
-		double t = weather.getTemperature(locn);
-		if (temperatureCache != t) {
-			temperatureCache = t;
-			temperatureLabel.setText(StyleManager.DECIMAL_CELCIUS.format(temperatureCache));
-		}
+		pressureTF.setValue(weather.getAirPressure(locn));
+		temperatureLabel.setValue(weather.getTemperature(locn));
+		windSpeedLabel.setValue(weather.getWindSpeed(locn));
+		airDensityLabel.setValue(weather.getAirDensity(locn));
+		opticalDepthLabel.setValue(surfaceFeatures.getOpticalDepth(locn));
+		zenithAngleLabel.setValue(orbitInfo.getSolarZenithAngle(locn) * RADIANS_TO_DEGREES);
+		solarDeclinationLabel.setValue(orbitInfo.getSolarDeclinationAngleInDeg());
+		solarIrradianceLabel.setValue(surfaceFeatures.getSolarIrradiance(locn));
 
 		int wd = weather.getWindDirection(locn);
 		if (windDirectionCache != wd) {
 			windDirectionCache = wd;
 			windDirLabel.setText(StyleManager.DECIMAL_DEG.format(windDirectionCache));
-		}
-
-		double s = weather.getWindSpeed(locn);
-		if (windSpeedCache != s) {
-			windSpeedCache = s;
-			windSpeedLabel.setText(StyleManager.DECIMAL_M_S.format(windSpeedCache));
-		}
-
-		double ad = weather.getAirDensity(locn);
-		if (airDensityCache != ad) {
-			airDensityCache = ad;
-			airDensityLabel.setText(StyleManager.DECIMAL_G_M3.format(airDensityCache));
-		}
-
-		double od = surfaceFeatures.getOpticalDepth(locn);
-		if (opticalDepthCache != od) {
-			opticalDepthCache = od;
-			opticalDepthLabel.setText(StyleManager.DECIMAL_PLACES2.format(opticalDepthCache));
-		}
-
-		double za = orbitInfo.getSolarZenithAngle(locn);
-		if (zenithAngleCache != za) {
-			zenithAngleCache = za;
-			zenithAngleLabel.setText(StyleManager.DECIMAL_DEG.format(zenithAngleCache * RADIANS_TO_DEGREES));
-		}
-
-		double sd = orbitInfo.getSolarDeclinationAngleInDeg();
-		if (solarDeclinationCache != sd) {
-			solarDeclinationCache = sd;
-			solarDeclinationLabel.setText(StyleManager.DECIMAL_DEG.format(solarDeclinationCache));
-		}
-
-		double ir = surfaceFeatures.getSolarIrradiance(locn);
-		if (solarIrradianceCache != ir) {
-			solarIrradianceCache = ir;
-			solarIrradianceLabel.setText(StyleManager.DECIMAL_W_M2.format(solarIrradianceCache));
 		}
     }
 }

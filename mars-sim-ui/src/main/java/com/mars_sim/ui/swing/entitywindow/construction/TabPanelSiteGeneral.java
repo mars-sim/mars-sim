@@ -27,6 +27,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -45,12 +46,11 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 	private PhaseTableModel phaseModel;
 	private ConstructionStage currentStage;
 
-	private double lastWorkLeft = 0D;
 	private JLabel stageName;
 	private JLabel stageType;
 	private JLabel workType;
 
-	private JLabel workLeft;
+	private JDoubleLabel workLeft;
 	
 	/**
 	 * Constructor.
@@ -91,7 +91,8 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 
 		missionLabel = new EntityLabel(constructionSite.getWorkOnSite(), getContext());
 		infoPanel.addLabelledItem("Work Mission", missionLabel);
-        workLeft = infoPanel.addTextField("Stage Work", "", null);
+        workLeft = new JDoubleLabel(StyleManager.DECIMAL_MSOL);
+		infoPanel.addLabelledItem("Stage Work", workLeft);
 
 		phaseModel = new PhaseTableModel();
 		var phaseTable = new JTable(phaseModel) {
@@ -128,10 +129,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 		ConstructionStage stage = constructionSite.getCurrentConstructionStage();
         if (stage != null) {
 			double workRemaining = stage.getRequiredWorkTime() - stage.getCompletedWorkTime();
-			if (workRemaining != lastWorkLeft) {
-				lastWorkLeft = workRemaining;
-				workLeft.setText(StyleManager.DECIMAL_MSOL.format(lastWorkLeft));
-			}
+			workLeft.setValue(workRemaining);
         }
 
 		var activeStage = constructionSite.getCurrentConstructionStage();

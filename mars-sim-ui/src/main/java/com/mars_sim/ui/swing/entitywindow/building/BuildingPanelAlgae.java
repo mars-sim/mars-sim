@@ -23,6 +23,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -35,60 +36,34 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	implements TemporalComponent {
 
 	private static final String FISH_ICON = "fish";
-	private static final String DEGREE_CELSIUS = " " + Msg.getString("temperature.sign.degreeCelsius");
 
 	// Caches
-	private double algaeMass;
-	private double idealAlgaeMass; 
-	private double maxAlgaeMass;
-	private double foodMass;
-	private double foodDemand;
-	private double powerReq;
-	private double tempCache;
 	
 	/** The amount of water in the tank */
-	private double waterMass;	
-	/** The cache value for the average water usage per sol per square meters. */
-	private double waterUsageCache;
-	/** The cache value for the average grey water produced per sol per square meters. */
-	private double greyWaterProducedCache;
-	/** The cache value for the average O2 generated per sol. */
-	private double o2Cache;
-	/** The cache value for the average CO2 consumed per sol. */
-	private double co2Cache;
-	/** The cache value for the average kg of algae harvested per sol . */
-	private double algaeHarvestCache;
-	/** The cache value for the average kg of algae produced per sol . */
-	private double algaeProducedCache;
-	/** The cache value for the work time done in this greenhouse. */
-	private double workTimeCache;
-	/** The cache for the amount of solar irradiance. */
-	private double radCache;
-	/** The cache for the ratio of algae to water. */
 	private double algaeWaterRatio;
 
-	private JLabel tempLabel;
-	private JLabel algaeMassLabel;
-	private JLabel idealAlgaeMassLabel;
-	private JLabel maxAlgaeMassLabel;
-	private JLabel algaeHarvestLabel;
-	private JLabel algaeProducedLabel;
+	private JDoubleLabel tempLabel;
+	private JDoubleLabel algaeMassLabel;
+	private JDoubleLabel idealAlgaeMassLabel;
+	private JDoubleLabel maxAlgaeMassLabel;
+	private JDoubleLabel algaeHarvestLabel;
+	private JDoubleLabel algaeProducedLabel;
 	
-	private JLabel foodMassLabel;
-	private JLabel foodDemandLabel;
+	private JDoubleLabel foodMassLabel;
+	private JDoubleLabel foodDemandLabel;
 	
-	private JLabel waterMassLabel;
+	private JDoubleLabel waterMassLabel;
 	
 	private JLabel algaeWaterRatioLabel;
 	
-	private JLabel powerReqLabel;
-	private JLabel radLabel;
+	private JDoubleLabel powerReqLabel;
+	private JDoubleLabel radLabel;
 	
-	private JLabel waterUsageLabel;
-	private JLabel greyWaterLabel;
-	private JLabel o2GenLabel;
-	private JLabel co2ConsumedLabel;
-	private JLabel workTimeLabel;
+	private JDoubleLabel waterUsageLabel;
+	private JDoubleLabel greyWaterLabel;
+	private JDoubleLabel o2GenLabel;
+	private JDoubleLabel co2ConsumedLabel;
+	private JDoubleLabel workTimeLabel;
 	
 	private AlgaeFarming pond;
 
@@ -127,82 +102,75 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.type"), 
 				"Spirulina", null);
 		
-		algaeMass = pond.getCurrentAlgae();
-		algaeMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algaeMass"),
-				StyleManager.DECIMAL_KG2.format(algaeMass), null);
+		algaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getCurrentAlgae());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algaeMass"), algaeMassLabel);
 				
-		idealAlgaeMass = pond.getIdealAlgae();
-		idealAlgaeMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.idealAlgaeMass"),
-				StyleManager.DECIMAL_KG2.format(idealAlgaeMass), null);
+		idealAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getIdealAlgae());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.idealAlgaeMass"), idealAlgaeMassLabel);
 		
-		maxAlgaeMass = pond.getMaxAlgae();
-		maxAlgaeMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.maxAlgaeMass"),
-				StyleManager.DECIMAL_KG2.format(maxAlgaeMass), null);
+		maxAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getMaxAlgae());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxAlgaeMass"), maxAlgaeMassLabel);
 
-		algaeProducedCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
-		algaeProducedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.produced"),
-									StyleManager.DECIMAL1_KG_SOL.format(algaeProducedCache),
+		var algaeProducedCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
+		algaeProducedLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, algaeProducedCache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algae.produced"), algaeProducedLabel,
 									Msg.getString("BuildingPanelAlgae.algae.produced.tooltip"));
 		
-		algaeHarvestCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
-		algaeHarvestLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.harvested"),
-									StyleManager.DECIMAL1_KG_SOL.format(algaeHarvestCache),
+		var algaeHarvestCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
+		algaeHarvestLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, algaeHarvestCache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algae.harvested"),
+									algaeHarvestLabel,
 									Msg.getString("BuildingPanelAlgae.algae.harvested.tooltip"));
 		
-		waterMass = pond.getWaterMass();
-		waterMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.waterMass"),
-				StyleManager.DECIMAL_LITER2.format(waterMass), null);
+		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_LITER2, pond.getWaterMass());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterMass"), waterMassLabel);
 		
 		algaeWaterRatio = pond.getAlgaeWaterRatio();
 		algaeWaterRatioLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algaeWaterRatio"),
 			StyleManager.DECIMAL2_G_LITER.format(algaeWaterRatio)
 				+ " (" + Math.round(AlgaeFarming.ALGAE_TO_WATER_RATIO*100000.0)/100.0 + ")", null);
 		
-		foodMass = pond.getFoodMass();	
-		foodMassLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.foodMass"),
-								 StyleManager.DECIMAL_KG2.format(foodMass), null);
+		foodMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getFoodMass());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.foodMass"), foodMassLabel);
 		
-		foodDemand = pond.getNutrientDemand();	
-		foodDemandLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.foodDemand"),
-								 StyleManager.DECIMAL_PLACES2.format(foodDemand), null);
+		var foodDemand = pond.getNutrientDemand();	
+		foodDemandLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, foodDemand);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.foodDemand"), foodDemandLabel);
+		powerReqLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, pond.getCombinedPowerLoad());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.powerReq"), powerReqLabel);
 		
-		powerReq = pond.getCombinedPowerLoad();	
-		powerReqLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.powerReq"),
-								 StyleManager.DECIMAL_KW.format(powerReq), null);
-		
-		tempCache = pond.getBuilding().getCurrentTemperature();	
-		tempLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.temp"),
-								 StyleManager.DECIMAL_PLACES1.format(tempCache) + DEGREE_CELSIUS, null);
+		var tempCache = pond.getBuilding().getCurrentTemperature();	
+		tempLabel = new JDoubleLabel(StyleManager.DECIMAL_CELCIUS, tempCache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.temp"), tempLabel);
 			
 		// Prepare solar irradiance label
-		radCache = surfaceFeatures.getSolarIrradiance(location);
-		radLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.solarIrradiance.title"),
-				StyleManager.DECIMAL_W_M2.format(radCache), "Estimated sunlight on top of the greenhouse roof");
+		var radCache = surfaceFeatures.getSolarIrradiance(location);
+		radLabel = new JDoubleLabel(StyleManager.DECIMAL_W_M2, radCache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.solarIrradiance.title"), radLabel, "Estimated sunlight on top of the greenhouse roof");
 		
-		waterUsageCache = pond.computeDailyAverage(ResourceUtil.WATER_ID);
-		waterUsageLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.waterUsage.title"),
-									StyleManager.DECIMAL1_KG_SOL.format(waterUsageCache),
-									Msg.getString("BuildingPanelAlgae.waterUsage.tooltip"));
+		var waterUsageCache = pond.computeDailyAverage(ResourceUtil.WATER_ID);
+		waterUsageLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, waterUsageCache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterUsage.title"), waterUsageLabel,
+							Msg.getString("BuildingPanelAlgae.waterUsage.tooltip"));
 
-		greyWaterProducedCache = pond.computeDailyAverage(ResourceUtil.GREY_WATER_ID);
-		greyWaterLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.greyWaterProduced.title"),
-									StyleManager.DECIMAL1_KG_SOL.format(greyWaterProducedCache),
-									Msg.getString("BuildingPanelAlgae.greyWaterProduced.tooltip"));
+		var greyWaterProducedCache = pond.computeDailyAverage(ResourceUtil.GREY_WATER_ID);
+		greyWaterLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, greyWaterProducedCache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.greyWaterProduced.title"), greyWaterLabel,
+							Msg.getString("BuildingPanelAlgae.greyWaterProduced.tooltip"));
 		
-		o2Cache = pond.computeDailyAverage(ResourceUtil.OXYGEN_ID);
-		o2GenLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.o2.title"),
-									StyleManager.DECIMAL1_KG_SOL.format(o2Cache),
-									Msg.getString("BuildingPanelAlgae.o2.tooltip"));
+		var o2Cache = pond.computeDailyAverage(ResourceUtil.OXYGEN_ID);
+		o2GenLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, o2Cache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.o2.title"), o2GenLabel,
+							Msg.getString("BuildingPanelAlgae.o2.tooltip"));
 
-		co2Cache = pond.computeDailyAverage(ResourceUtil.CO2_ID);
-		co2ConsumedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.co2.title"),
-									StyleManager.DECIMAL1_KG_SOL.format(co2Cache),
-								 	Msg.getString("BuildingPanelAlgae.co2.tooltip"));
-	
+		var co2Cache = pond.computeDailyAverage(ResourceUtil.CO2_ID);
+		co2ConsumedLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, co2Cache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.co2.title"), co2ConsumedLabel,
+							Msg.getString("BuildingPanelAlgae.co2.tooltip"));
 		// Update the cumulative work time
-		workTimeCache = pond.getCumulativeWorkTime()/1000.0;
-		workTimeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.workTime.title"),
-									StyleManager.DECIMAL3_SOLS.format(workTimeCache),
+		var workTimeCache = pond.getCumulativeWorkTime()/1000.0;
+		workTimeLabel = new JDoubleLabel(StyleManager.DECIMAL3_SOLS, workTimeCache);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.workTime.title"), workTimeLabel,
 									Msg.getString("BuildingPanelAlgae.workTime.tooltip"));
 	}
 
@@ -210,41 +178,16 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 
-		double newWaterMass = pond.getWaterMass();
-		if (DoubleMath.fuzzyEquals(waterMass, newWaterMass, 0.1)) {
-			waterMass = newWaterMass;
-			waterMassLabel.setText(StyleManager.DECIMAL_KG2.format(newWaterMass));
-		}
-		
-		double newAlgae = pond.getCurrentAlgae();
-		if (DoubleMath.fuzzyEquals(algaeMass, newAlgae, 0.1)) {
-			algaeMass = newAlgae;
-			algaeMassLabel.setText(StyleManager.DECIMAL_KG2.format(newAlgae));
-		}
-		
-		double newIdealAlgae = pond.getIdealAlgae();
-		if (DoubleMath.fuzzyEquals(idealAlgaeMass, newIdealAlgae, 0.1)) {
-			idealAlgaeMass = newIdealAlgae;
-			idealAlgaeMassLabel.setText(StyleManager.DECIMAL_KG2.format(newIdealAlgae));
-		}
-		
-		double newMaxAlgae = pond.getMaxAlgae();
-		if (DoubleMath.fuzzyEquals(maxAlgaeMass, newMaxAlgae, 0.1)) {
-			maxAlgaeMass = newMaxAlgae;
-			maxAlgaeMassLabel.setText(StyleManager.DECIMAL_KG2.format(newMaxAlgae));
-		}
+		waterMassLabel.setValue(pond.getWaterMass());
+		algaeMassLabel.setValue(pond.getCurrentAlgae());
+		idealAlgaeMassLabel.setValue(pond.getIdealAlgae());		
+		maxAlgaeMassLabel.setValue(pond.getMaxAlgae());
 
 		double newAlgaeHarvested = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
-		if (DoubleMath.fuzzyEquals(algaeHarvestCache, newAlgaeHarvested, 0.1)) {
-			algaeHarvestCache = newAlgaeHarvested;
-			algaeHarvestLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(newAlgaeHarvested));
-		}	
+		algaeHarvestLabel.setValue(newAlgaeHarvested);	
 		
 		double newAlgaeProduced = pond.computeDailyAverage(AlgaeFarming.PRODUCED_ALGAE_ID);
-		if (DoubleMath.fuzzyEquals(algaeProducedCache, newAlgaeProduced, 0.1)) {
-			algaeProducedCache = newAlgaeProduced;
-			algaeProducedLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(newAlgaeProduced));
-		}
+		algaeProducedLabel.setValue(newAlgaeProduced);
 		
 		double newAlgaeWaterRatio = pond.getAlgaeWaterRatio();
 		if (DoubleMath.fuzzyEquals(algaeWaterRatio, newAlgaeWaterRatio, 0.1)) {
@@ -253,70 +196,38 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 					+ " (" + Math.round(AlgaeFarming.ALGAE_TO_WATER_RATIO *100000.0)/100.0 + ")");
 		}
 		
-		double newFoodMass = pond.getFoodMass();
-		if (DoubleMath.fuzzyEquals(foodMass, newFoodMass, 0.1)) {
-			foodMass = newFoodMass;
-			foodMassLabel.setText(StyleManager.DECIMAL_KG2.format(newFoodMass));
-		}
+		// Update foodMassLabel
+		foodMassLabel.setValue(pond.getFoodMass());
 		
 		double newFoodDemand = pond.getNutrientDemand();
-		if (DoubleMath.fuzzyEquals(foodDemand, newFoodDemand, 0.01)) {
-			foodDemand = newFoodDemand;
-			foodDemandLabel.setText(StyleManager.DECIMAL_PLACES1.format(newFoodDemand));
-		}
+		foodDemandLabel.setValue(newFoodDemand);
 		
-		double newPowerReq = pond.getCombinedPowerLoad();	
-		if (DoubleMath.fuzzyEquals(powerReq, newPowerReq, 0.1)) {
-			powerReq = newPowerReq;
-			powerReqLabel.setText(StyleManager.DECIMAL_KW.format(newPowerReq));
-		}
-		
-		double newTemp = getEntity().getCurrentTemperature();
-		if (DoubleMath.fuzzyEquals(tempCache, newTemp, 0.1)) {
-			tempCache = newTemp;
-			tempLabel.setText(StyleManager.DECIMAL_PLACES1.format(newTemp) + DEGREE_CELSIUS);
-		}
+		// Update powerReqLabel
+		powerReqLabel.setValue(pond.getCombinedPowerLoad());
+		tempLabel.setValue(getEntity().getCurrentTemperature());
 		
 		// Update solar irradiance label
 		double rad = surfaceFeatures.getSolarIrradiance(location);
-		if (DoubleMath.fuzzyEquals(radCache, rad, 0.1)) {
-			radCache = rad;
-			radLabel.setText(StyleManager.DECIMAL_W_M2.format(rad));
-		}
+		radLabel.setValue(rad);
 		
 		// Update the average water usage
 		double newWater = pond.computeDailyAverage(ResourceUtil.WATER_ID);
-		if (DoubleMath.fuzzyEquals(waterUsageCache, newWater, 0.1)) {
-			waterUsageCache = newWater;
-			waterUsageLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(newWater));
-		}
+		waterUsageLabel.setValue(newWater);
 
 		// Update the average O2 generated
 		double newO2 = pond.computeDailyAverage(ResourceUtil.OXYGEN_ID);
-		if (DoubleMath.fuzzyEquals(o2Cache, newO2, 0.1)) {
-			o2Cache = newO2;
-			o2GenLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(newO2));
-		}
+		o2GenLabel.setValue(newO2);
 
 		// Update the average CO2 consumed
 		double newCo2 = pond.computeDailyAverage(ResourceUtil.CO2_ID);
-		if (DoubleMath.fuzzyEquals(co2Cache, newCo2, 0.1)) {
-			co2Cache = newCo2;
-			co2ConsumedLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(newCo2));
-		}
+		co2ConsumedLabel.setValue(newCo2);
 
 		// Update the average grey water usage
 		double newGreyWater = pond.computeDailyAverage(ResourceUtil.GREY_WATER_ID);
-		if (DoubleMath.fuzzyEquals(greyWaterProducedCache, newGreyWater, 0.1)) {
-			greyWaterProducedCache = newGreyWater;
-			greyWaterLabel.setText(StyleManager.DECIMAL1_KG_SOL.format(newGreyWater));
-		}
+		greyWaterLabel.setValue(newGreyWater);
 		
 		// Update the cumulative work time
 		double workTime = pond.getCumulativeWorkTime()/1000.0;
-		if (DoubleMath.fuzzyEquals(workTimeCache, workTime, 0.1)) {
-			workTimeCache = workTime;
-			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
-		}
+		workTimeLabel.setValue(workTime);
 	}
 }

@@ -39,6 +39,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
@@ -60,14 +61,14 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
     
     private JLabel statusLabel;
     private JLabel beaconLabel;
-    private JLabel speedLabel;
-    private JLabel elevationLabel;
+    private JDoubleLabel speedLabel;
+    private JDoubleLabel elevationLabel;
     private JLabel destinationCoord;
-    private JLabel remainingDistanceLabel;
+    private JDoubleLabel remainingDistanceLabel;
     private JLabel etaLabel;
     private EntityLabel pilotLabel;
     private JLabel destinationTextLabel;
-    private JLabel hoveringHeightLabel;
+    private JDoubleLabel hoveringHeightLabel;
     
     private DirectionDisplayPanel directionDisplay;
     private TerrainDisplayPanel terrainDisplay;
@@ -75,11 +76,6 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
     // Data cache
 	/** Is UI constructed. */
     private boolean beaconCache = true;
-    
-    private double hoveringHeightCache = -1;
-    private double speedCache = -1;
-    private double elevationCache = -1;
-    private double remainingDistanceCache = -1;
     
     private String destinationTextCache = "";
     private String etaCache = "";
@@ -204,16 +200,20 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
 
         destinationCoord = destinationSpringPanel.addRow("Destination Coordinates", "");
-        remainingDistanceLabel = destinationSpringPanel.addRow("Remaining Distance", "");
+        remainingDistanceLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+        destinationSpringPanel.addLabelledItem("Remaining Distance", remainingDistanceLabel);
         etaLabel = destinationSpringPanel.addRow("ETA", "");
         statusLabel = destinationSpringPanel.addRow(Msg.getString("Vehicle.status"), "");
         beaconLabel = destinationSpringPanel.addRow("Emergency Beacon", "");
-        speedLabel = destinationSpringPanel.addRow(Msg.getString("Vehicle.speed"), "");        
-        elevationLabel = destinationSpringPanel.addRow("Ground Elevation", "");
-    
+        speedLabel = new JDoubleLabel(StyleManager.DECIMAL_KPH);
+        destinationSpringPanel.addLabelledItem(Msg.getString("Vehicle.speed"), speedLabel);        
+        elevationLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+        destinationSpringPanel.addLabelledItem(Msg.getString("Vehicle.elevation"), elevationLabel);
+
         if (vehicle instanceof Drone) {
 	        // Update hovering height label.
-	        hoveringHeightLabel = destinationSpringPanel.addRow("Hovering Height", "");
+            hoveringHeightLabel = new JDoubleLabel(StyleManager.DECIMAL_M);
+            destinationSpringPanel.addLabelledItem("Hovering Height", hoveringHeightLabel);
         }
         
         // Prepare driver button and add it if vehicle has driver.
@@ -239,26 +239,11 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
         	beaconLabel.setText(beaconCache ? "On" : "Off");
         }
 
-        // Update speed label
-        if (speedCache != vehicle.getSpeed()) {
-            speedCache = vehicle.getSpeed();
-            speedLabel.setText(StyleManager.DECIMAL_KPH.format(speedCache));
-        }
-
-        // Update elevation label.
-        double currentElevation = vehicle.getElevation();
-        if (elevationCache != currentElevation) {
-            elevationCache = currentElevation;
-            elevationLabel.setText(StyleManager.DECIMAL_KM.format(elevationCache));
-        }
+        speedLabel.setValue(vehicle.getSpeed());
+        elevationLabel.setValue(vehicle.getElevation());
 
         if (vehicle instanceof Drone d) {
-	        // Update hovering height label.
-	        double currentHoveringHeight = d.getHoveringHeight();
-	        if (hoveringHeightCache != currentHoveringHeight) {
-	        	hoveringHeightCache = currentHoveringHeight;
-	        	hoveringHeightLabel.setText(StyleManager.DECIMAL_M.format(currentHoveringHeight));
-	        }
+	        hoveringHeightLabel.setValue(d.getHoveringHeight());
         }
         
         pilotLabel.setEntity(vehicle.getOperator());
@@ -313,11 +298,7 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
 
         // Update distance to destination if necessary.
         if (mission instanceof VehicleMission vm) {
-            double remaining = vm.getTotalDistanceRemaining();
-            if (remainingDistanceCache != remaining) {
-                remainingDistanceCache = remaining;
-                remainingDistanceLabel.setText(StyleManager.DECIMAL_KM.format(remainingDistanceCache));
-            }
+            remainingDistanceLabel.setValue(vm.getTotalDistanceRemaining());
 
             MarsTime newETA = vm.getLegETA();
             if (newETA != null) {
@@ -329,7 +310,6 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
             }
         }
         else {
-        	remainingDistanceCache = 0D;
         	remainingDistanceLabel.setText("");
             etaCache = "";
         	etaLabel.setText("");

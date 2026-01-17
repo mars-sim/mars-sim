@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.EntityEvent;
@@ -24,6 +23,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ColumnSpec;
@@ -35,8 +35,8 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 
 	private static final String LOG_ICON = "log";
 	
-	private JLabel odometerTF;
-	private JLabel maintTF;
+	private JDoubleLabel odometerTF;
+	private JDoubleLabel maintTF;
 
 	private LogPanel statusPanel;
 	
@@ -44,8 +44,7 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 		// Use TabPanel constructor.
 		super(
 			Msg.getString("TabPanelLog.title"),
-			ImageLoader.getIconByName(LOG_ICON),
-			Msg.getString("TabPanelLog.title"), //$NON-NLS-1$
+			ImageLoader.getIconByName(LOG_ICON), null,
 			context, vehicle
 		);
 	}
@@ -59,15 +58,13 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
         AttributePanel springPanel = new AttributePanel(2);
         content.add(springPanel, BorderLayout.NORTH);
 
-		odometerTF = springPanel.addTextField(Msg.getString("Vehicle.odometer"),
-								  	StyleManager.DECIMAL_KM.format(vehicle.getOdometerMileage()), null);
+		odometerTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getOdometerMileage());
+		springPanel.addLabelledItem(Msg.getString("Vehicle.odometer"), odometerTF);
+		maintTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getDistanceLastMaintenance());
+		springPanel.addLabelledItem(Msg.getString("TabPanelLog.label.maintDist"), maintTF);
 
-		maintTF = springPanel.addTextField(Msg.getString("TabPanelLog.label.maintDist"),
-				 					StyleManager.DECIMAL_KM.format(vehicle.getDistanceLastMaintenance()), null);	
-		
 		statusPanel = new LogPanel(vehicle.getVehicleLog());
 		statusPanel.setPreferredSize(new Dimension(225, 100));
-
 		content.add(statusPanel, BorderLayout.CENTER);
 
 		// Update will refresh data
@@ -75,15 +72,11 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 		updateMileage();
 	}
 
-
 	private void updateMileage() {
 		var vehicle = getEntity();
 
-		// Update the odometer reading
-		odometerTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getOdometerMileage()));
-				
-		// Update distance last maintenance 
-		maintTF.setText(StyleManager.DECIMAL_PLACES2.format(vehicle.getDistanceLastMaintenance()));
+		odometerTF.setValue(vehicle.getOdometerMileage());
+		maintTF.setValue(vehicle.getDistanceLastMaintenance());
 	}
 		
 	/**

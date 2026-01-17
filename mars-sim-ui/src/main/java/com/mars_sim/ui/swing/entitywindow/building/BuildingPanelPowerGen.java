@@ -27,6 +27,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -45,14 +46,9 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 	private static final String LOAD_CAP = Msg.getString("BuildingPanelPowerGen.powersource.loadCapacity"); //$NON-NLS-1$
 	private static final String POWER_GEN = Msg.getString("BuildingPanelPowerGen.powersource.powerGen"); //$NON-NLS-1$
 			
-	/** The power production cache. */
-	private double totalProducedCache;
-	/** The total power used cache. */
-	private double totalUsedCache;
-	
 	private JLabel powerModeLabel;
-	private JLabel totalUsedLabel;
-	private JLabel totalProducedLabel;
+	private JDoubleLabel totalUsedLabel;
+	private JDoubleLabel totalProducedLabel;
 	
 	/** The power status cache. */
 	private PowerMode powerModeCache;
@@ -123,15 +119,17 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 		powerModeLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerStatus"), //$NON-NLS-1$
 					powerModeCache.getName());
 		
-		totalUsedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.powerTotalUsed"), //$NON-NLS-1$
-										StyleManager.DECIMAL_KW.format(totalUsedCache));
+		totalUsedLabel = new JDoubleLabel(StyleManager.DECIMAL_KW);
+		totalsPanel.addLabelledItem(Msg.getString("BuildingPanelPowerGen.powerTotalUsed"),
+										totalUsedLabel);
 
 		// If power producer, prepare power producer label.
 		if (generator != null) {
-			totalProducedCache = generator.getGeneratedPower();
+			var totalProducedCache = generator.getGeneratedPower();
 			
-			totalProducedLabel = totalsPanel.addRow(Msg.getString("BuildingPanelPowerGen.totalProduced"), //$NON-NLS-1$
-									  StyleManager.DECIMAL_KW.format(totalProducedCache));
+			totalProducedLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, totalProducedCache);
+			totalsPanel.addLabelledItem(Msg.getString("BuildingPanelPowerGen.totalProduced"),
+										totalProducedLabel);
 
 			// Create a vertical box for power sources.
 			var sourcesPanel = Box.createVerticalBox();
@@ -188,19 +186,12 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 			totalUsed = building.getFullPowerRequired();
 		else if (powerModeCache == PowerMode.LOW_POWER) 
 			totalUsed = building.getLowPowerRequired();
-		
-		if (totalUsedCache != totalUsed) {
-			totalUsedCache = totalUsed;
-			totalUsedLabel.setText(StyleManager.DECIMAL_KW.format(totalUsed));
-		}
+		totalUsedLabel.setValue(totalUsed);
 
 		if (generator == null)
 			return;
 		double totalProduced = generator.getGeneratedPower();
-		if (totalProducedCache != totalProduced) {
-			totalProducedCache = totalProduced;
-			totalProducedLabel.setText(StyleManager.DECIMAL_KW.format(totalProduced));
-		}
+		totalProducedLabel.setValue(totalProduced);
 			
 		// Update power production if necessary.
 		sources.forEach(PowerSourceRecord::refresh);
