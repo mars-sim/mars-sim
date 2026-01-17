@@ -7,13 +7,16 @@
 
 package com.mars_sim.ui.swing.unit_display_info;
 
-import javax.swing.Icon;
-
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.core.vehicle.VehicleType;
-import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
@@ -23,7 +26,9 @@ public final class UnitDisplayInfoFactory {
 
 	// Static bean instances.
 	private static UnitDisplayInfo settlementBean = new SettlementDisplayInfoBean();
-	private static UnitDisplayInfo buildingBean = new UnitDisplayInfo("building");
+	private static UnitDisplayInfo authorityBean = new UnitDisplayInfo("Authority");
+	private static UnitDisplayInfo studyBean = new UnitDisplayInfo("ScientificStudy");
+	private static UnitDisplayInfo buildingBean = new UnitDisplayInfo("Building");
 	private static UnitDisplayInfo personBean = new PersonDisplayInfoBean();
 	private static UnitDisplayInfo robotBean = new RobotDisplayInfoBean();
 	private static UnitDisplayInfo explorerRoverBean = new VehicleDisplayInfoBean("unit/rover_explorer");
@@ -31,9 +36,8 @@ public final class UnitDisplayInfoFactory {
 	private static UnitDisplayInfo cargoRoverBean = new VehicleDisplayInfoBean("unit/rover_cargo");
 	private static UnitDisplayInfo luvBean = new VehicleDisplayInfoBean("unit/luv");
 	private static UnitDisplayInfo deliveryDroneBean = new VehicleDisplayInfoBean("unit/drone");
-	private static UnitDisplayInfo equipmentBean = new UnitDisplayInfo("unit/equipment", SoundConstants.SND_EQUIPMENT);
-	private static UnitDisplayInfo constructionBean = buildingBean;
-
+	private static UnitDisplayInfo equipmentBean = new UnitDisplayInfo("Equipment", SoundConstants.SND_EQUIPMENT);
+	private static UnitDisplayInfo constructionBean = new UnitDisplayInfo("ConsutructionSite");
 
 	/**
 	 * Private constructor
@@ -43,64 +47,29 @@ public final class UnitDisplayInfoFactory {
 	}
 
 	/**
-	 * Gets a display information about a given unit.
+	 * Gets a display information about a given entity.
 	 * 
-	 * @param unit the unit to display.
-	 * @return unit display info instance.
+	 * @param focus the entity to display.
+	 * @return display info instance.
 	 */
-	public static UnitDisplayInfo getUnitDisplayInfo(Unit unit) {
-		switch (unit.getUnitType()) {
-			case SETTLEMENT:
-				return settlementBean;
-			case PERSON:
-				return personBean;
-			case BUILDING:
-				return buildingBean;
-			case ROBOT:
-				return robotBean;
-			case VEHICLE: {
-				Vehicle vehicle = (Vehicle) unit;
-				VehicleType type = vehicle.getVehicleType();
-				switch (type) {
-					case EXPLORER_ROVER:	
-						return explorerRoverBean;
-					case TRANSPORT_ROVER:
-						return transportRoverBean;
-					case CARGO_ROVER:
-						return cargoRoverBean;
-					case LUV:
-						return luvBean;
-					case DELIVERY_DRONE, CARGO_DRONE:
-						return deliveryDroneBean;
-					default:
-						// Should never happen
-						return explorerRoverBean;
-				}
-			}
-			case EVA_SUIT, CONTAINER:
-				return equipmentBean;
-			case CONSTRUCTION:
-				return constructionBean;
-			default:
-				return null;
-		}
+	public static UnitDisplayInfo getUnitDisplayInfo(Entity focus) {
+		return switch (focus) {
+			case Authority authority -> authorityBean;
+			case ScientificStudy study -> studyBean;
+			case Settlement settlement -> settlementBean;
+			case Person person -> personBean;
+			case Building building -> buildingBean;
+			case Robot robot -> robotBean;
+			case Vehicle vehicle -> switch (vehicle.getVehicleType()) {
+				case EXPLORER_ROVER -> explorerRoverBean;
+				case TRANSPORT_ROVER -> transportRoverBean;
+				case CARGO_ROVER -> cargoRoverBean;
+				case LUV -> luvBean;
+				case PASSENGER_DRONE,DELIVERY_DRONE, CARGO_DRONE -> deliveryDroneBean;
+			};
+			case Equipment equipment -> equipmentBean;
+			case ConstructionSite constructionSite -> constructionBean;
+			default -> null;
+		};
 	}
-
-	/**
-	 * Helper method to shortcut finding a icon for a Button that best represents the entity
-	 * @param owner
-	 * @return
-	 */
-    public static Icon getButtonIcon(Entity owner) {
-        // Holding logic
-		if (owner instanceof Unit unit) {
-			UnitDisplayInfo displayInfo = getUnitDisplayInfo(unit);
-			if (displayInfo != null) {
-				return displayInfo.getButtonIcon(unit);
-			}
-		}
-
-		// Holding logic, should be based on entity type
-		return ImageLoader.getIconByName("building");
-    }
 }

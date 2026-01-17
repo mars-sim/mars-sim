@@ -10,6 +10,7 @@ package com.mars_sim.ui.swing.unit_display_info;
 import java.awt.Color;
 import java.awt.Font;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.vehicle.StatusType;
@@ -20,12 +21,12 @@ import com.mars_sim.ui.swing.sound.SoundConstants;
  * Provides display information about a vehicle.
  */
 class VehicleDisplayInfoBean extends MapUnitDisplayInfo {
-    
+    private static final Font VEHICLE_MAP_FONT = new Font("Helvetica", Font.PLAIN, 10);
     /**
      * Constructor.
      */
     VehicleDisplayInfoBean(String buttonName) {
-        super(buttonName, null, new Font("Helvetica", Font.PLAIN, 10),
+        super(buttonName, "Vehicle", null, VEHICLE_MAP_FONT,
                 Color.white, "map/vehicle", "map/vehicle_black");
     }
     
@@ -70,7 +71,7 @@ class VehicleDisplayInfoBean extends MapUnitDisplayInfo {
 	 * @see com.mars_sim.ui.standard.unit_display_info.UnitDisplayInfo#getSound(com.mars_sim.simulation.Unit)
 	 */
 	@Override
-	public String getSound(Unit unit) {
+	public String getSound(Entity unit) {
 		Vehicle rover = (Vehicle) unit;
 		StatusType primStatus = rover.getPrimaryStatus();
     	if (primStatus == StatusType.MOVING) return SoundConstants.SND_ROVER_MOVING;

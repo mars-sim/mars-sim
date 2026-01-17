@@ -7,13 +7,10 @@
 
 package com.mars_sim.ui.swing.unit_display_info;
 
-import javax.swing.Icon;
-
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
@@ -25,27 +22,7 @@ class PersonDisplayInfoBean extends UnitDisplayInfo {
 	 * Constructor.
 	 */
 	PersonDisplayInfoBean() {
-		super(null);
-	}
-
-	/**
-	 * Gets icon for unit button.
-	 * 
-	 * @return icon
-	 */
-	@Override
-	public Icon getButtonIcon(Unit unit) {
-		Icon buttonIcon = null;
-
-		if (unit instanceof Person p) {
-			if (GenderType.MALE == p.getGender()) {
-				buttonIcon = ImageLoader.getIconByName("svg/male");
-			} else {
-				buttonIcon = ImageLoader.getIconByName("svg/female");
-			}
-		}
-		
-		return buttonIcon;
+		super("Person");
 	}
 
 	/**
@@ -55,7 +32,7 @@ class PersonDisplayInfoBean extends UnitDisplayInfo {
 	 * @returns sound filepath for unit or empty string if none.
 	 */
 	@Override
-	public String getSound(Unit unit) {
+	public String getSound(Entity unit) {
 		Person person = (Person) unit;
 		String result = "";
 		boolean male = GenderType.MALE == person.getGender();

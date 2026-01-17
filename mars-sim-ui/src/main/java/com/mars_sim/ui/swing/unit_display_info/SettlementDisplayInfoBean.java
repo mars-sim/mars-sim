@@ -22,7 +22,7 @@ class SettlementDisplayInfoBean extends MapUnitDisplayInfo {
      * Constructor
      */
     SettlementDisplayInfoBean() {
-        super("settlement", SoundConstants.SND_SETTLEMENT,
+        super("Settlement", SoundConstants.SND_SETTLEMENT,
              new Font("SansSerif", Font.BOLD, 12), Color.green,
              "map/settlement", "map/settlement_black");
     }

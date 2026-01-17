@@ -7,7 +7,7 @@
 
 package com.mars_sim.ui.swing.unit_display_info;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 
@@ -20,7 +20,7 @@ class RobotDisplayInfoBean extends UnitDisplayInfo {
 	 * Constructor.
 	 */
 	RobotDisplayInfoBean() {
-		super("svg/robot");
+		super("Robot");
 	}
 
 	/**
@@ -30,7 +30,7 @@ class RobotDisplayInfoBean extends UnitDisplayInfo {
 	 * @returns sound filepath for unit or empty string if none.
 	 */
 	@Override
-	public String getSound(Unit unit) {
+	public String getSound(Entity unit) {
 		String result;
 
 		if (((Robot) unit).isOperable()) 

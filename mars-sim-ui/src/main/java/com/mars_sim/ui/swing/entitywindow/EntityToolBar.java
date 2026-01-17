@@ -70,8 +70,10 @@ public class EntityToolBar extends JToolBar {
 			return;
 		}
 
-		var tempButton = new JButton(entity.getName(),
-        				UnitDisplayInfoFactory.getButtonIcon(entity));
+		var info = UnitDisplayInfoFactory.getUnitDisplayInfo(entity);
+		var tempButton = new JButton(entity.getName(), info.getButtonIcon(entity));
+		tempButton.setToolTipText(info.getSingularLabel());
+		
 		// Prepare default unit button values
 		tempButton.setVerticalTextPosition(SwingConstants.BOTTOM);
 		tempButton.setHorizontalTextPosition(SwingConstants.CENTER);

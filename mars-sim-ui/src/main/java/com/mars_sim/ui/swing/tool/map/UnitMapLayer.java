@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.Icon;
 
@@ -22,6 +23,7 @@ import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.unit_display_info.MapUnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
 import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
@@ -137,11 +139,11 @@ public class UnitMapLayer implements FilteredMapLayer {
 							Dimension displaySize, List<MapHotspot> hotspots) {
 		
 		UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		if (i != null && i.isMapDisplayed(unit)
+		if (i instanceof MapUnitDisplayInfo mui && mui.isMapDisplayed(unit)
 			&& mapCenter != null && mapCenter.getAngle(unitPosn) < baseMap.getHalfAngle()) {
 				
 				IntPoint locn = MapUtils.getRectPosition(unitPosn, mapCenter, baseMap, displaySize);
-				var hs = displayUnit(unit, i, locn, baseMap, g);
+				var hs = displayUnit(unit, mui, locn, baseMap, g);
 				hotspots.add(hs);
 		}
 	}
@@ -155,7 +157,7 @@ public class UnitMapLayer implements FilteredMapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	private MapHotspot displayUnit(Unit unit, UnitDisplayInfo displayInfo, IntPoint location,
+	private MapHotspot displayUnit(Unit unit, MapUnitDisplayInfo displayInfo, IntPoint location,
 							MapDisplay baseMap, Graphics2D g) {
 
 

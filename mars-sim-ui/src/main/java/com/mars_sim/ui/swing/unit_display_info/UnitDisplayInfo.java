@@ -6,13 +6,10 @@
  */
 package com.mars_sim.ui.swing.unit_display_info;
 
-import java.awt.Color;
-import java.awt.Font;
-
 import javax.swing.Icon;
 
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.map.MapMetaData;
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
@@ -21,85 +18,50 @@ import com.mars_sim.ui.swing.ImageLoader;
 public class UnitDisplayInfo {
 
     private Icon buttonIcon;
+	private String buttonName;
     private String defaultSound;
+	private String singularLabel;
 	
-	UnitDisplayInfo(String buttonIconName) {
-		// Needs changing
-        if (buttonIconName != null) {
-            this.buttonIcon = ImageLoader.getIconByName(buttonIconName);
-        }
+	UnitDisplayInfo(String entityKey) {
+		this(entityKey, entityKey, null);
 	}
 
-    UnitDisplayInfo(String buttonIconName, String defaultSound) {
-		this(buttonIconName);
+	UnitDisplayInfo(String entityKey, String defaultSound) {
+		this(entityKey, entityKey, defaultSound);
+	}	
+
+    UnitDisplayInfo(String entityIcon, String entityKey, String defaultSound) {
+		this.singularLabel = Msg.getString(entityKey + ".singular");
         this.defaultSound = defaultSound;
+		this.buttonName = entityIcon.toLowerCase();
 	}
 
 	/**
-	 * Checks if unit is to be displayed on the navigator tool map.
-	 * 
-	 * @param unit the unit to display
-	 * @return true if unit is to be displayed on navigator map.
+	 * Get the name for a single unit of this type.
 	 */
-    public boolean isMapDisplayed(Unit unit) {
-        return false;
-    }
+	public String getSingularLabel() {
+		return singularLabel;
+	}
 
 	/**
-	 * Gets display icon for the map
-	 * 
-	 * @param unit the unit to display
-	 * @param type Meta data about base Map
+	 * Gets icon for Entity.
+	 * @param unit the entity to display
 	 * @return icon
 	 */
-    public Icon getMapIcon(Unit unit, MapMetaData type) {
-        return null;
-    }
-	
-	/**
-	 * Checks if the map icon should blink on and off.
-	 * 
-	 * @param unit the unit to display
-	 * @return true if blink
-	 */
-    public boolean isMapBlink(Unit unit) {
-        return false;
-    }
-
-	/**
-	 * Gets the label color for navigator map.
-	 * @param type Meta data about base Map
-	 * @return color
-	 */
-    public Color getMapLabelColor(MapMetaData type) {
-        return null;
-    }
-
-	/**
-	 * Gets the label font for navigator map.
-	 * 
-	 * @return font
-	 */
-    public Font getMapLabelFont() {
-        return null;
-    }
-
-	/**
-	 * Gets icon for unit button.
-	 * @param unit the unit to display
-	 * @return icon
-	 */
-	public Icon getButtonIcon(Unit unit) {
+	public Icon getButtonIcon(Entity unit) {
+		if (buttonIcon == null) {			
+        	buttonIcon = ImageLoader.getIconByName(buttonName);
+		}
 		return buttonIcon;
 	}
 
 	/**
-	 * Gets a sound appropriate for this unit.
+	 * Gets a sound appropriate for this entity.
 	 * 
-	 * @param unit the unit to display.
+	 * @param unit the entity to display.
 	 * @return sound filepath for unit or empty string if none.
 	 */
-    public String getSound(Unit unit) {
+    public String getSound(Entity unit) {
         return defaultSound;
     }
 }

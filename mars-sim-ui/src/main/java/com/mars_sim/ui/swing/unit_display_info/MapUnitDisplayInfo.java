@@ -29,21 +29,47 @@ public class MapUnitDisplayInfo extends UnitDisplayInfo {
 
 
     /**
-     * Constructor.
+     * Constructor. Use the entityKey as the button icon.
      */
-    public MapUnitDisplayInfo(String buttonIcon, String defaultSound,
+    MapUnitDisplayInfo(String entityKey, String defaultSound,
                     Font mapLabel, Color mapLabelColor,
                     String normalMapIcon, String blackMapIcon) {
-        super(buttonIcon, defaultSound);
+        this(entityKey, entityKey, defaultSound,
+             mapLabel, mapLabelColor,
+             normalMapIcon, blackMapIcon);
+    }
+
+    /**
+     * Constructor. Defines all parameters.
+     */
+    MapUnitDisplayInfo(String buttonIcon, String entityKey, String defaultSound,
+                    Font mapLabel, Color mapLabelColor,
+                    String normalMapIcon, String blackMapIcon) {
+
+        super(buttonIcon, entityKey, defaultSound);
         this.mapLabelFont = mapLabel;
         this.mapLabelColor = mapLabelColor;
         this.blackMapIcon = ImageLoader.getIconByName(blackMapIcon);
         this.normalMapIcon =ImageLoader.getIconByName(normalMapIcon);
     }
 
-    @Override
+    /**
+     * Checks if unit is to be displayed on the navigator tool map. This allows a level of filtering
+     * @param unit the unit to display
+     * @return Display on a map or not
+     */
     public boolean isMapDisplayed(Unit unit) {
         return true; // All units are displayed on the map
+    }
+	
+	/**
+	 * Checks if the map icon should blink on and off.
+	 * 
+	 * @param unit the unit to display
+	 * @return true if blink
+	 */
+    public boolean isMapBlink(Unit unit) {
+        return false;
     }
 
     /**
@@ -53,7 +79,6 @@ public class MapUnitDisplayInfo extends UnitDisplayInfo {
      * @param type Type of map
      * @return icon
      */
-    @Override
     public Icon getMapIcon(Unit unit, MapMetaData type) {
         return (type.isColourful() ? blackMapIcon : normalMapIcon);
     }
@@ -63,7 +88,6 @@ public class MapUnitDisplayInfo extends UnitDisplayInfo {
      * 
      * @return font
      */
-    @Override
     public Font getMapLabelFont() {
         return mapLabelFont;
     }
@@ -74,7 +98,6 @@ public class MapUnitDisplayInfo extends UnitDisplayInfo {
      * @param type Type of map
      * @return color
      */
-    @Override
     public Color getMapLabelColor(MapMetaData type) {
         return (type.isColourful() ? Color.black : mapLabelColor);
     }
