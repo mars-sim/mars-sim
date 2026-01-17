@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * JFormatLabel.java
+ * JDoubleLabel.java
  * @date 2026-01-11
  * @author Barry Evans
  */
@@ -16,7 +16,7 @@ import com.google.common.math.DoubleMath;
  * A JLabel that formats a double value according to a specified DecimalFormat.
  * The current numerical value is cached to avoid unnecessary updates to the label text.
  * The label updates its text only when the value changes, to minimize unnecessary updates.
- * The ere a @ref TOLERANCE constant to define the precision for value comparison.
+ * There is a tolerance field to define the precision for value comparison.
  */
 public class JDoubleLabel extends JLabel {
 
@@ -25,7 +25,7 @@ public class JDoubleLabel extends JLabel {
     private DecimalFormat formatter;
 
     /**
-     * Construct a JFormatLabel with the specified format.
+     * Construct a JDoubleLabel with the specified format.
      * @param format Format to use when displaying values.
      */
     public JDoubleLabel(DecimalFormat format) {
@@ -34,7 +34,7 @@ public class JDoubleLabel extends JLabel {
     }
 
     /**
-     * Construct a JFormatLabel with the specified format and initial value.
+     * Construct a JDoubleLabel with the specified format and initial value.
      * @param format Format to use when displaying values.
      * @param value Initial value to set.
      */
@@ -44,7 +44,7 @@ public class JDoubleLabel extends JLabel {
     }
 
     /**
-     * Construct a JFormatLabel with the specified format, initial integer value, and tolerance.
+     * Construct a JDoubleLabel with the specified format, initial integer value, and tolerance.
      * @param format Format for value.
      * @param value Initial value
      * @param tolerance Tolerance for fuzzy equality between current and new values.
@@ -55,7 +55,7 @@ public class JDoubleLabel extends JLabel {
     }
     /**
      * Set the tolerance for the fuzzy equality.
-     * @param tolerance
+     * @param tolerance Values within this tolerance are considered equal.
      */
     public void setTolerance(double tolerance) {
         this.tolerance = tolerance;
