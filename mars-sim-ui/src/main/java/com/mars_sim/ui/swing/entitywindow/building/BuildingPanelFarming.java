@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +50,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
@@ -83,76 +83,32 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 	private static final String PERCENT = " %";
 	private static final String PAR_REQUIRED = "<br>&nbsp;&nbsp;PAR required:&emsp;";
 	private static final String MOL_M2_DAY = " mol/m\u00b2/day";
-
-	private static final DecimalFormat DECIMAL_KG2_SOL = StyleManager.DECIMAL2_KG_SOL;
-	private static final DecimalFormat DECIMAL_W_M2 = StyleManager.DECIMAL_W_M2;
-	private static final DecimalFormat DECIMAL_KG2 = StyleManager.DECIMAL_KG2;
 	
 	/** The number of farmers cache. */
 	private int farmersCache;
-	/** The cache for the amount of solar irradiance. */
-	private double radCache;
-	/** The cache value for the work time done in this greenhouse. */
-	private double workTimeCache;
-	/** The cache value for the total growing area in this greenhouse. */
-	private double totalAreaCache;
-	/** The cache value for the remaining area in this greenhouse. */
-	private double remainingAreaCache;
-	/** The cache value for lighting (kW) in this greenhouse. */
-	private double lightingCache;
 	
-	/** The cache value for the average water usage per sol. */
-	private double waterPerSolCache;
-	/** The cache value for the average grey water usage per sol. */
-	private double greyWaterPerSolCache;
-	/** The cache value for the average O2 generated per sol. */
-	private double o2PersSolCache;
-	/** The cache value for the average CO2 consumed per sol. */
-	private double co2PerSolCache;
-	/** The cache value for the average soil generated per sol. */
-	private double soilPerSolCache;
-	/** The cache value for the average crop waste consumed per sol. */
-	private double cropWastePerSolCache;
-	/** The cache value for the average leaves consumed per sol. */
-	private double leavesPerSolCache;
-	
-	/** The cache value for the cumulative total water usage. */
-	private double waterCumCache;
-	/** The cache value for the cumulative total grey water usage. */
-	private double greyWaterCumCache;
-	/** The cache value for the cumulative total average O2 generated. */
-	private double o2CumCache;
-	/** The cache value for the cumulative total CO2 consumed. */
-	private double co2CumCache;
-	/** The cache value for the cumulative total soil consumed. */
-	private double soilCumCache;
-	/** The cache value for the cumulative total crop waste generated. */
-	private double cropWasteCumCache;
-	/** The cache value for the cumulative total leaves generated. */
-	private double leavesCumCache;
-	
-	private JLabel lightingLabel;
-	private JLabel radLabel;
+	private JDoubleLabel lightingLabel;
+	private JDoubleLabel radLabel;
 	private JLabel farmerLabel;
 	private JLabel cropsLabel;
-	private JLabel workTimeLabel;
-	private JLabel areaUsageLabel;
+	private JDoubleLabel workTimeLabel;
+	private JDoubleLabel areaUsageLabel;
 	
-	private JLabel waterPerSolLabel;
-	private JLabel greyWaterPerSolLabel;
-	private JLabel o2PerSolLabel;
-	private JLabel co2PerSolLabel;
-	private JLabel soilPerSolLabel;
-	private JLabel cropWastePerSolLabel;
-	private JLabel leavesPerSolLabel;
+	private JDoubleLabel waterPerSolLabel;
+	private JDoubleLabel greyWaterPerSolLabel;
+	private JDoubleLabel o2PerSolLabel;
+	private JDoubleLabel co2PerSolLabel;
+	private JDoubleLabel soilPerSolLabel;
+	private JDoubleLabel cropWastePerSolLabel;
+	private JDoubleLabel leavesPerSolLabel;
 	
-	private JLabel waterCumLabel;
-	private JLabel greyWaterCumLabel;
-	private JLabel o2CumLabel;
-	private JLabel co2CumLabel;
-	private JLabel soilCumLabel;
-	private JLabel cropWasteCumLabel;
-	private JLabel leavesCumLabel;
+	private JDoubleLabel waterCumLabel;
+	private JDoubleLabel greyWaterCumLabel;
+	private JDoubleLabel o2CumLabel;
+	private JDoubleLabel co2CumLabel;
+	private JDoubleLabel soilCumLabel;
+	private JDoubleLabel cropWasteCumLabel;
+	private JDoubleLabel leavesCumLabel;
 	
 	
 	private JComboBox<CropSpec> comboBox;
@@ -207,18 +163,16 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 		center.add(springPanel, BorderLayout.CENTER);
 
 		// Prepare solar irradiance label
-		radCache = surfaceFeatures.getSolarIrradiance(location);
-		radLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.solarIrradiance.title"),
-				DECIMAL_W_M2.format(radCache), "Estimated sunlight on top of the greenhouse roof");
+		radLabel = new JDoubleLabel(StyleManager.DECIMAL_W_M2, surfaceFeatures.getSolarIrradiance(location));
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.solarIrradiance.title"), radLabel, "Estimated sunlight on top of the greenhouse roof");
 
 		// Prepare farmers label
 		farmersCache = farm.getFarmerNum();
 		farmerLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numFarmers.title"),
 				                 Integer.toString(farmersCache), "# of active gardeners tending the greenhouse");
 
-		lightingCache = farm.getCombinedPowerLoad();
-		lightingLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.lighting"),
-				StyleManager.DECIMAL2_KW.format(lightingCache),
+		lightingLabel = new JDoubleLabel(StyleManager.DECIMAL2_KW, farm.getCombinedPowerLoad());
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.lighting"), lightingLabel,
 			 	Msg.getString("BuildingPanelFarming.lighting.tooltip"));
 		
 		// Prepare crops label
@@ -227,102 +181,74 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 							   Integer.toString(cropsCache), null);
 
 		// Calculate the area usage
-		remainingAreaCache = farm.getRemainingArea();
-		totalAreaCache = farm.getGrowingArea();
-		areaUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.areaUsage") ,
-				StyleManager.DECIMAL1_PERC.format((totalAreaCache-remainingAreaCache)/totalAreaCache*100.0),
-			 	Msg.getString("BuildingPanelFarming.areaUsage.tooltip"));
+		var remainingAreaCache = farm.getRemainingArea();
+		var totalAreaCache = farm.getGrowingArea();
+		areaUsageLabel = new JDoubleLabel(StyleManager.DECIMAL1_PERC, (totalAreaCache-remainingAreaCache)/totalAreaCache*100.0, 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.areaUsage") , areaUsageLabel,
+			 						Msg.getString("BuildingPanelFarming.areaUsage.tooltip"));
 		
 
 		// Compute the cumulative work time
-		workTimeCache = farm.getCumulativeWorkTime()/1000.0;
-		workTimeLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.workTime.title"),
-									StyleManager.DECIMAL3_SOLS.format(workTimeCache),
+		workTimeLabel = new JDoubleLabel(StyleManager.DECIMAL3_SOLS, farm.getCumulativeWorkTime()/1000.0, 0.001);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.workTime.title"), workTimeLabel,
 									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
 
 		double[] water = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.WATER_ID);
-
-		waterCumCache = water[0];
-		waterCumLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterCum.title"),
-									DECIMAL_KG2.format(waterCumCache),
-									Msg.getString("BuildingPanelFarming.waterCum.tooltip"));
-		waterPerSolCache = water[1];
-		waterPerSolLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.waterDailyAve.title"),
-									DECIMAL_KG2_SOL.format(waterPerSolCache),
+		waterCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, water[0]);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.waterCum.title"), waterCumLabel,
+								Msg.getString("BuildingPanelFarming.waterCum.tooltip"));
+		waterPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, water[1], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.waterDailyAve.title"), waterPerSolLabel,
 									Msg.getString("BuildingPanelFarming.waterDailyAve.tooltip"));
 		
 		double[] o2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.OXYGEN_ID);
-
-		o2CumCache = o2[0];
-		o2CumLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2Cum.title"),
-									DECIMAL_KG2.format(o2CumCache),
-									Msg.getString("BuildingPanelFarming.o2Cum.tooltip"));
-		
-		o2PersSolCache = o2[1];
-		o2PerSolLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.o2DailyAve.title"),
-									DECIMAL_KG2_SOL.format(o2PersSolCache),
-									Msg.getString("BuildingPanelFarming.o2DailyAve.tooltip"));
+		o2CumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, o2[0], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.o2Cum.title"), o2CumLabel,
+								Msg.getString("BuildingPanelFarming.o2Cum.tooltip"));
+		o2PerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, o2[1], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.o2DailyAve.title"), o2PerSolLabel,
+											Msg.getString("BuildingPanelFarming.o2DailyAve.tooltip"));
 
 		double[] greyWater = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.GREY_WATER_ID);
-
-		greyWaterCumCache = greyWater[0];
-		greyWaterCumLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterCum.title"),
-									DECIMAL_KG2.format(greyWaterCumCache),
-									Msg.getString("BuildingPanelFarming.greyWaterCum.tooltip"));
-		
-		greyWaterPerSolCache = greyWater[1];
-		greyWaterPerSolLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.greyWaterDailyAve.title"),
-									DECIMAL_KG2_SOL.format(greyWaterPerSolCache),
-									Msg.getString("BuildingPanelFarming.greyWaterDailyAve.tooltip"));
+		greyWaterCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, greyWater[0], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.greyWaterCum.title"), greyWaterCumLabel,
+								Msg.getString("BuildingPanelFarming.greyWaterCum.tooltip"));
+		greyWaterPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, greyWater[1], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.greyWaterDailyAve.title"), greyWaterPerSolLabel,
+											Msg.getString("BuildingPanelFarming.greyWaterDailyAve.tooltip"));
 
 		double[] co2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.CO2_ID);
+		co2CumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, co2[0], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.co2Cum.title"), co2CumLabel,
+								Msg.getString("BuildingPanelFarming.co2Cum.tooltip"));
+		co2PerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, co2[1], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.co2DailyAve.title"), co2PerSolLabel,
+								Msg.getString("BuildingPanelFarming.co2DailyAve.tooltip"));
 
-		co2CumCache = co2[0];
-		co2CumLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2Cum.title"),
-									DECIMAL_KG2.format(co2CumCache),
-									Msg.getString("BuildingPanelFarming.co2Cum.tooltip"));
-		
-		co2PerSolCache = co2[1];
-		co2PerSolLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.co2DailyAve.title"),
-									DECIMAL_KG2_SOL.format(co2PerSolCache),
-								 	Msg.getString("BuildingPanelFarming.co2DailyAve.tooltip"));
-		
 		double[] soil = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.SOIL_ID);
+		soilCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, soil[0], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.soilCum.title"), soilCumLabel,
+								Msg.getString("BuildingPanelFarming.soilCum.tooltip"));
+		soilPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, soil[1], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.soilDailyAve.title"), soilPerSolLabel,
+											Msg.getString("BuildingPanelFarming.soilDailyAve.tooltip"));
 
-		soilCumCache = soil[0];
-		soilCumLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.soilCum.title"),
-									DECIMAL_KG2.format(soilCumCache),
-									Msg.getString("BuildingPanelFarming.soilCum.tooltip"));
-		soilPerSolCache = soil[1];
-		soilPerSolLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.soilDailyAve.title"),
-									DECIMAL_KG2_SOL.format(soilPerSolCache),
-									Msg.getString("BuildingPanelFarming.soilDailyAve.tooltip"));
-		
 		double[] cropWaste = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.CROP_WASTE_ID);
-
-		cropWasteCumCache = cropWaste[0];
-		cropWasteCumLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.cropWasteCum.title"),
-									DECIMAL_KG2.format(cropWasteCumCache),
-									Msg.getString("BuildingPanelFarming.cropWasteCum.tooltip"));
-		
-		cropWastePerSolCache = cropWaste[1];
-		cropWastePerSolLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.cropWasteDailyAve.title"),
-									DECIMAL_KG2_SOL.format(cropWastePerSolCache),
-									Msg.getString("BuildingPanelFarming.cropWasteDailyAve.tooltip"));
+		cropWasteCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, cropWaste[0], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.cropWasteCum.title"), cropWasteCumLabel,
+								Msg.getString("BuildingPanelFarming.cropWasteCum.tooltip"));
+		cropWastePerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, cropWaste[1], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.cropWasteDailyAve.title"), cropWastePerSolLabel,
+								Msg.getString("BuildingPanelFarming.cropWasteDailyAve.tooltip"));
 
 		double[] leaves = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.LEAVES_ID);
+		leavesCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, leaves[0], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.leavesCum.title"), leavesCumLabel,
+								Msg.getString("BuildingPanelFarming.leavesCum.tooltip"));
+		leavesPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, leaves[1], 0.01);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.leavesDailyAve.title"), leavesPerSolLabel,
+											Msg.getString("BuildingPanelFarming.leavesDailyAve.tooltip"));
 
-		leavesCumCache = leaves[0];
-		leavesCumLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.leavesCum.title"),
-									DECIMAL_KG2.format(leavesCumCache),
-									Msg.getString("BuildingPanelFarming.leavesCum.tooltip"));
-		
-		leavesPerSolCache = leaves[1];
-		leavesPerSolLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.leavesDailyAve.title"),
-									DECIMAL_KG2_SOL.format(leavesPerSolCache),
-									Msg.getString("BuildingPanelFarming.leavesDailyAve.tooltip"));
-		
-		
 		JPanel southPanel = new JPanel(new BorderLayout());
 		center.add(southPanel, BorderLayout.SOUTH);
 		
@@ -483,127 +409,54 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 		}
 
 		// Update lighting label 
-		double lighting = farm.getCombinedPowerLoad();
-		if (Math.abs(lightingCache - lighting) > .04) {
-			lightingCache = lighting;
-			lightingLabel.setText(StyleManager.DECIMAL2_KW.format(lighting));
-		}
+		lightingLabel.setValue(farm.getCombinedPowerLoad());
 		
 		// Update solar irradiance label
-		double rad = Math.round(surfaceFeatures.getSolarIrradiance(location)*10.0)/10.0;
-		if (Math.abs(radCache - rad) > 1) {
-			radCache = rad;
-			radLabel.setText(DECIMAL_W_M2.format(rad));
-		}
+		radLabel.setValue(surfaceFeatures.getSolarIrradiance(location));
 		
 		// Update the water usage
 		double[] water = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.WATER_ID);
 	
-		if (Math.abs(waterCumCache - water[0]) > .4) {
-			waterCumCache = water[0];
-			waterCumLabel.setText(DECIMAL_KG2.format(water[0]));
-		}
-		
-		if (Math.abs(waterPerSolCache - water[1]) > .4) {
-			waterPerSolCache = water[1];
-			waterPerSolLabel.setText(DECIMAL_KG2_SOL.format(water[1]));
-		}
+		waterCumLabel.setValue(water[0]);
+		waterPerSolLabel.setValue(water[1]);
 
 		// Update the O2 generated
 		double[] o2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.OXYGEN_ID);		
-		if (Math.abs(o2CumCache - o2[0]) > .4) {
-			o2CumCache = o2[0];
-			o2CumLabel.setText(DECIMAL_KG2.format(o2[0]));
-		}
-		
-		if (Math.abs(o2PersSolCache - o2[1]) > .4) {
-			o2PersSolCache = o2[1];
-			o2PerSolLabel.setText(DECIMAL_KG2_SOL.format(o2[1]));
-		}
-		
+		o2CumLabel.setValue(o2[0]);
+		o2PerSolLabel.setValue(o2[1]);
 		
 		// Update the CO2 consumed
-		double[] co2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.CO2_ID);
-		
-		if (Math.abs(co2CumCache - co2[0]) > .4) {
-			co2CumCache = co2[0];
-			co2CumLabel.setText(DECIMAL_KG2.format(co2[0]));
-		}
-		
-		if (Math.abs(co2PerSolCache - co2[1]) > .4) {
-			co2PerSolCache = co2[1];
-			co2PerSolLabel.setText(DECIMAL_KG2_SOL.format(co2[1]));
-		}
-
+		double[] co2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.CO2_ID);		
+		co2CumLabel.setValue(co2[0]);
+		co2PerSolLabel.setValue(co2[1]);
 		
 		// Update the grey water usage
 		double[] greyWater = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.GREY_WATER_ID);
-		
-		if (Math.abs(greyWaterCumCache - greyWater[0]) > .4) {
-			greyWaterCumCache = greyWater[0];
-			greyWaterCumLabel.setText(DECIMAL_KG2.format(greyWater[0]));
-		}
-		
-		if (Math.abs(greyWaterPerSolCache - greyWater[1]) > .4) {
-			greyWaterPerSolCache = greyWater[1];
-			greyWaterPerSolLabel.setText(DECIMAL_KG2_SOL.format(greyWater[1]));
-		}
+		greyWaterCumLabel.setValue(greyWater[0]);
+		greyWaterPerSolLabel.setValue(greyWater[1]);
 		
 		// Update the soil generated
 		double[] soil = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.SOIL_ID);
-		
-		if (Math.abs(soilCumCache - soil[0]) > .4) {
-			soilCumCache = soil[0];
-			soilCumLabel.setText(DECIMAL_KG2.format(soil[0]));
-		}
-		
-		if (Math.abs(soilPerSolCache - soil[1]) > .4) {
-			soilPerSolCache = soil[1];
-			soilPerSolLabel.setText(DECIMAL_KG2_SOL.format(soil[1]));
-		}
+		soilCumLabel.setValue(soil[0]);
+		soilPerSolLabel.setValue(soil[1]);
 		
 		// Update the crop waste generation
 		double[] cropWaste = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.CROP_WASTE_ID);
-		
-		if (Math.abs(cropWasteCumCache - cropWaste[0]) > .4) {
-			cropWasteCumCache = cropWaste[0];
-			cropWasteCumLabel.setText(DECIMAL_KG2.format(cropWaste[0]));
-		}
-		
-		if (Math.abs(cropWastePerSolCache - cropWaste[1]) > .4) {
-			cropWastePerSolCache = cropWaste[1];
-			cropWastePerSolLabel.setText(DECIMAL_KG2_SOL.format(cropWaste[1]));
-		}
+		cropWasteCumLabel.setValue(cropWaste[0]);
+		cropWastePerSolLabel.setValue(cropWaste[1]);
 		
 		// Update the leaves generation
 		double[] leaves = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.LEAVES_ID);
-		
-		if (Math.abs(leavesCumCache - leaves[0]) > .4) {
-			leavesCumCache = leaves[0];
-			leavesCumLabel.setText(DECIMAL_KG2.format(leaves[0]));
-		}
-		
-		if (Math.abs(leavesPerSolCache - leaves[1]) > .4) {
-			leavesPerSolCache = leaves[1];
-			leavesPerSolLabel.setText(DECIMAL_KG2_SOL.format(leaves[1]));
-		}
+		leavesCumLabel.setValue(leaves[0]);
+		leavesPerSolLabel.setValue(leaves[1]);
 		
 		// Update the cumulative work time
-		double workTime = farm.getCumulativeWorkTime()/1000.0;
-		if (Math.abs(workTimeCache - workTime) > .4) {
-			workTimeCache = workTime;
-			workTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(workTime));
-		}
-		
+		workTimeLabel.setValue(farm.getCumulativeWorkTime()/1000.0);
 		
 		// Update the area usage
 		double remainingArea = farm.getRemainingArea();
 		double totalArea = farm.getGrowingArea();
-		if (Math.abs(remainingAreaCache - remainingArea) > .4 || Math.abs(totalAreaCache - totalArea) > .4) {
-			remainingAreaCache = remainingArea;
-			totalAreaCache = totalArea;
-			areaUsageLabel.setText(StyleManager.DECIMAL1_PERC.format((totalArea-remainingArea)/totalArea*100.0));
-		}
+		areaUsageLabel.setValue((totalArea-remainingArea)/totalArea*100.0);
 		
 		// Update crop table.
 		cropTableModel.update();

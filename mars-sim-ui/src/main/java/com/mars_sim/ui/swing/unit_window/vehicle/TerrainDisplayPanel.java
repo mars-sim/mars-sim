@@ -23,7 +23,7 @@ import com.mars_sim.core.vehicle.Vehicle;
  * currently traveling.
  */
 @SuppressWarnings("serial")
-public class TerrainDisplayPanel extends JPanel {
+class TerrainDisplayPanel extends JPanel {
 
 	// Data members
 	/** Is UI constructed. */

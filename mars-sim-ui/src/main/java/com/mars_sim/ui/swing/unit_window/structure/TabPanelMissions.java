@@ -81,7 +81,7 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		content.add(topPanel, BorderLayout.NORTH);
 
 		
-		AttributePanel sitePanel = new AttributePanel(4, 1);
+		AttributePanel sitePanel = new AttributePanel();
 		topPanel.add(sitePanel, BorderLayout.NORTH);
 		sitePanel.setBorder(SwingHelper.createLabelBorder("Nearby Sites"));
 		
@@ -91,7 +91,7 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		siteSDevLabel = sitePanel.addTextField("Standard Deviation \u03C3", "", null);
 		
 		
-		AttributePanel twoPanel = new AttributePanel(3, 1);
+		AttributePanel twoPanel = new AttributePanel();
 		topPanel.add(twoPanel, BorderLayout.CENTER);
 		twoPanel.setBorder(SwingHelper.createLabelBorder("Claimed Sites"));
 		
@@ -100,7 +100,7 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		claimedSDevLabel = twoPanel.addTextField("Standard Deviation \u03C3", "", null);
 		
 		
-		AttributePanel unclaimPanel = new AttributePanel(3, 1);
+		AttributePanel unclaimPanel = new AttributePanel();
 		topPanel.add(unclaimPanel, BorderLayout.SOUTH);
 		unclaimPanel.setBorder(SwingHelper.createLabelBorder("Unclaimed Sites"));
 		

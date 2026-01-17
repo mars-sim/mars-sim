@@ -96,7 +96,7 @@ public class MaintenanceTabPanel extends EntityTableTabPanel<Malfunctionable> im
 	
 		JPanel topPanel = new JPanel(new BorderLayout());
 
-		AttributePanel labelPanel = new AttributePanel(7, 1);
+		AttributePanel labelPanel = new AttributePanel();
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 		
 		Dimension barSize = new Dimension(100, 15);
@@ -126,7 +126,7 @@ public class MaintenanceTabPanel extends EntityTableTabPanel<Malfunctionable> im
 		
 		topPanel.add(new JPanel(), BorderLayout.CENTER);
 		
-		AttributePanel dataPanel = new AttributePanel(2, 1);
+		AttributePanel dataPanel = new AttributePanel();
 		topPanel.add(dataPanel, BorderLayout.SOUTH);
 	
 		malPLabel = dataPanel.addTextField(

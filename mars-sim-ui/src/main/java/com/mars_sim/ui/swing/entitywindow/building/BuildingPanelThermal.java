@@ -25,6 +25,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -46,29 +47,17 @@ extends EntityTabPanel<Building> implements TemporalComponent {
 	
 	private static final String TOTAL_HEAT_PRODUCED = Msg.getString("BuildingPanelThermal.totalHeatProduced"); //-NLS-1$
 	private static final String TOTAL_HEAT_CAP = Msg.getString("BuildingPanelThermal.totalHeatCap"); //-NLS-1$
-
-	/** The heat production cache. */
-	private double totalHeatproducedCache;
-	/** The air heat sink cache. */
-	private double airHeatSinkCache;
-	/** The water heat sink cache. */
-	private double waterHeatSinkCache;
 	
-	/** The total heat production label. */
-	private JLabel totalHeatProducedLabel;
-	
-	/** The air heat sink label. */
-	private JLabel airHeatSinkLabel;
-	/** The water heat sink label. */
-	private JLabel waterHeatSinkLabel;
+	private JDoubleLabel totalHeatProducedLabel;
+	private JDoubleLabel airHeatSinkLabel;
+	private JDoubleLabel waterHeatSinkLabel;
 	
 	/**
 	 * Collates all the details of a HeatSource into one record
 	 */
-	private record HeatSourceStatus(HeatSource source, JLabel maxHeatLabel, JLabel heatGenLabel, JLabel heatStatusLabel) {
+	private record HeatSourceStatus(HeatSource source, JDoubleLabel maxHeatLabel, JDoubleLabel heatGenLabel, JLabel heatStatusLabel) {
 		void refresh(){
-			double maxPower = source.getMaxHeat();
-			maxHeatLabel.setText(StyleManager.DECIMAL_KW.format(maxPower));
+			maxHeatLabel.setValue(source.getMaxHeat());
 			
 			double heatGen = 0;
 			if (source instanceof FuelHeatSource fuel) {
@@ -79,7 +68,7 @@ extends EntityTabPanel<Building> implements TemporalComponent {
 				heatGen = source.getCurrentHeat();
 			}
 			
-			heatGenLabel.setText(StyleManager.DECIMAL_KW.format(heatGen));
+			heatGenLabel.setValue(heatGen);
 			heatStatusLabel.setText(source.getHeatMode().getName());				
 		}
 	}
@@ -117,19 +106,20 @@ extends EntityTabPanel<Building> implements TemporalComponent {
 		// If heat producer, prepare labels.
 		if (furnace != null) {
 			
-			airHeatSinkCache = furnace.getHeating().getAirHeatSink();		
-			airHeatSinkLabel = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.airHeatSink"),
-					  StyleManager.DECIMAL_KW.format(airHeatSinkCache), "The air heat sink of this building");
+			var airHeatSinkCache = furnace.getHeating().getAirHeatSink();
+			airHeatSinkLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, airHeatSinkCache);
+			infoPanel.addLabelledItem(Msg.getString("BuildingPanelThermal.airHeatSink"), airHeatSinkLabel,
+								"The air heat sink of this building");
 	
-			waterHeatSinkCache = furnace.getHeating().getWaterHeatSink();		
-			waterHeatSinkLabel = infoPanel.addTextField(Msg.getString("BuildingPanelThermal.waterHeatSink"),
-					  StyleManager.DECIMAL_KW.format(waterHeatSinkCache), "The water heat sink of this building");
+			var waterHeatSinkCache = furnace.getHeating().getWaterHeatSink();		
+			waterHeatSinkLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, waterHeatSinkCache);
+			infoPanel.addLabelledItem(Msg.getString("BuildingPanelThermal.waterHeatSink"), waterHeatSinkLabel,
+								"The water heat sink of this building");
 
-
-			totalHeatproducedCache = furnace.getGeneratedHeat();		
-			totalHeatProducedLabel = infoPanel.addTextField(TOTAL_HEAT_PRODUCED,
-									  StyleManager.DECIMAL_KW.format(totalHeatproducedCache), 
-									  "The total heat production of this building");
+			var totalHeatproducedCache = furnace.getGeneratedHeat();		
+			totalHeatProducedLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, totalHeatproducedCache);
+			infoPanel.addLabelledItem(TOTAL_HEAT_PRODUCED, totalHeatProducedLabel,
+							 "The total heat production of this building");
 			
 			double totalHeatCapCache = furnace.getHeatGenerationCapacity();		
 			infoPanel.addTextField(TOTAL_HEAT_CAP,
@@ -163,9 +153,13 @@ extends EntityTabPanel<Building> implements TemporalComponent {
 		sPanel.addRow(HEAT_TYPE, source.getType().getName());
 				
 		HeatMode heatStatus = source.getHeatMode();
-		var heatStatusLabel = sPanel.addRow(HEAT_STATUS, heatStatus.getName(), "The status of the heating system");
-		var maxHeatLabel = sPanel.addRow(MAX_HEAT, "", "The max heating capacity this heat source");
-		var heatGenLabel = sPanel.addRow(HEAT_GEN, "", "The heat produced by this heat source");
+		var heatStatusLabel = sPanel.addTextField(HEAT_STATUS, heatStatus.getName(), "The status of the heating system");
+
+		
+		var maxHeatLabel = new JDoubleLabel(StyleManager.DECIMAL_KW);
+		sPanel.addLabelledItem(MAX_HEAT, maxHeatLabel, "The max heating capacity this heat source");
+		var heatGenLabel = new JDoubleLabel(StyleManager.DECIMAL_KW);
+		sPanel.addLabelledItem(HEAT_GEN, heatGenLabel, "The heat produced by this heat source");
 		sources.add(new HeatSourceStatus(source, maxHeatLabel, heatGenLabel, heatStatusLabel));
 		return sPanel;
 	}
@@ -176,28 +170,11 @@ extends EntityTabPanel<Building> implements TemporalComponent {
 		if (furnace != null) {
 			
 			double newProductionCache = furnace.getGeneratedHeat();
-			if (totalHeatproducedCache != newProductionCache) {
-				totalHeatproducedCache = newProductionCache;
-				totalHeatProducedLabel.setText(StyleManager.DECIMAL_KW.format(newProductionCache));
-			}
+			totalHeatProducedLabel.setValue(newProductionCache);
 	
-			double newAirHeatSink = furnace.getHeating().getAirHeatSink();	
-			if (airHeatSinkCache != newAirHeatSink) {
-				airHeatSinkCache = newAirHeatSink;
-				airHeatSinkLabel.setText(StyleManager.DECIMAL_KW.format(newAirHeatSink));
-			}
-			
-			double newWaterHeatSink = furnace.getHeating().getWaterHeatSink();	
-			if (waterHeatSinkCache != newWaterHeatSink) {
-				waterHeatSinkCache = newWaterHeatSink;
-				waterHeatSinkLabel.setText(StyleManager.DECIMAL_KW.format(newWaterHeatSink));
-			}
-
-			double totalProduced = furnace.getGeneratedHeat();
-			if (totalHeatproducedCache != totalProduced) {
-				totalHeatproducedCache = totalProduced;
-				totalHeatProducedLabel.setText(StyleManager.DECIMAL_KW.format(totalProduced));
-			}
+			airHeatSinkLabel.setValue(furnace.getHeating().getAirHeatSink());			
+			waterHeatSinkLabel.setValue(furnace.getHeating().getWaterHeatSink());
+			totalHeatProducedLabel.setValue(furnace.getGeneratedHeat());
 			
 			// Update each heat source status.
 			sources.forEach(HeatSourceStatus::refresh);

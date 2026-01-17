@@ -170,7 +170,8 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      */
     @Override
     public void clockUpdate(ClockPulse pulse) {
-        if (getSelected() instanceof TemporalComponent tc) {
+        var selected = getSelected();
+        if (selected instanceof TemporalComponent tc && selected.isUIDone()) {
             tc.clockUpdate(pulse);
         }
     }

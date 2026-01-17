@@ -30,6 +30,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
@@ -56,8 +57,6 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 	private int occupiedCache;
 	private int emptyCache;
 	
-	private double cycleTimeCache;
-
 	private String operatorCache = "";
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
@@ -75,7 +74,7 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 	private JLabel airlockStateLabel;
 	private JLabel activationLabel;
 	private JLabel transitionLabel;
-	private JLabel cycleTimeLabel;
+	private JDoubleLabel cycleTimeLabel;
 	private JLabel innerDoorStateLabel;
 	private JLabel outerDoorStateLabel;
 	private JLabel airlockModeLabel;
@@ -183,8 +182,8 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 				Conversion.capitalize0(Boolean.toString(buildingAirlock.isTransitioning())));
 
 		// Create cycleTimeLabel
-		cycleTimeLabel = westGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.cycleTime"),
-					StyleManager.DECIMAL_PLACES1.format(buildingAirlock.getRemainingCycleTime()));
+		cycleTimeLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, buildingAirlock.getRemainingCycleTime());
+		westGrid.addLabelledItem(Msg.getString("BuildingPanelEVA.airlock.cycleTime"), cycleTimeLabel);
 
 		// Create OperatorLabel
 		operatorLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.operator"),
@@ -300,11 +299,7 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 		}
 		
 		// Update cycleTimeLabel
-		double time = buildingAirlock.getRemainingCycleTime();
-		if (cycleTimeCache != time) {
-			cycleTimeCache = time;
-			cycleTimeLabel.setText(StyleManager.DECIMAL_PLACES1.format(cycleTimeCache));
-		}
+		cycleTimeLabel.setValue(buildingAirlock.getRemainingCycleTime());
 
 		String innerDoorState = "";
 		if (buildingAirlock.isInnerDoorLocked())
