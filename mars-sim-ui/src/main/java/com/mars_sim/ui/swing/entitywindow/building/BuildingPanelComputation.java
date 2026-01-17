@@ -19,6 +19,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -36,7 +37,7 @@ class BuildingPanelComputation extends EntityTabPanel<Building>
 	private static final String KW = " kW";
 	
 	private JLabel powerLoadsLabel;
-	private JLabel percentUsageLabel;
+	private JDoubleLabel percentUsageLabel;
 	private JLabel cULabel;
 	private JLabel entropyLabel;
 	
@@ -79,10 +80,9 @@ class BuildingPanelComputation extends EntityTabPanel<Building>
 
 		// CU Loads
 		double usage = building.getComputation().getUsagePercent();
-		percentUsageLabel = springPanel.addTextField(Msg.getString("BuildingPanelComputation.usage"),
-					 			StyleManager.DECIMAL1_PERC.format(usage), Msg.getString("BuildingPanelComputation.usage.tooltip"));
-
-		// Peak CUs
+		percentUsageLabel = new JDoubleLabel(StyleManager.DECIMAL1_PERC, usage);
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelComputation.usage"), percentUsageLabel,
+					 		Msg.getString("BuildingPanelComputation.usage.tooltip"));
 		double peak = Math.round(building.getComputation().getPeakCU() * 10.0)/10.0;
 		// Current CUs
 		double computingUnit = Math.round(building.getComputation().getCurrentCU() * 10.0)/10.0;
@@ -112,7 +112,7 @@ class BuildingPanelComputation extends EntityTabPanel<Building>
 		
 		// CU Loads
 		double usage = building.getComputation().getUsagePercent();
-		percentUsageLabel.setText(StyleManager.DECIMAL1_PERC.format(usage));
+		percentUsageLabel.setValue(usage);
 		
 		// Peak CUs
 		double peak = Math.round(building.getComputation().getPeakCU()* 10.0)/10.0;

@@ -67,7 +67,7 @@ public class DateDialog extends JDialog {
 
 		currentPanel.setBorder(StyleManager.createLabelBorder("Current Date"));	
 
-		AttributePanel attrPanel = new AttributePanel(3, 1);
+		AttributePanel attrPanel = new AttributePanel();
 		currentPanel.add(attrPanel, BorderLayout.NORTH);
 		
 		// Controls

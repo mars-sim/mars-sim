@@ -68,7 +68,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 	public TabPanelScienceStudy(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelScience.title"), 
+			Msg.getString("ScientificStudy.singular"), 
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			null,
 			context, person

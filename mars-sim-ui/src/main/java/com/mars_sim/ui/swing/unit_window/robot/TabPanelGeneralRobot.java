@@ -8,7 +8,6 @@ package com.mars_sim.ui.swing.unit_window.robot;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.EntityEvent;
@@ -20,6 +19,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -30,16 +30,16 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListener{
 
-	private JLabel statePercent;
-	private JLabel cap;
-	private JLabel ampHours;
-	private JLabel maxCapNameplate;
-	private JLabel kWhStored;
-	private JLabel tVolt;
-	private JLabel health;
-	private JLabel degradPercent;
-	private JLabel maxCRating;
-	private JLabel cycles;
+	private JDoubleLabel statePercent;
+	private JDoubleLabel cap;
+	private JDoubleLabel ampHours;
+	private JDoubleLabel maxCapNameplate;
+	private JDoubleLabel kWhStored;
+	private JDoubleLabel tVolt;
+	private JDoubleLabel health;
+	private JDoubleLabel degradPercent;
+	private JDoubleLabel maxCRating;
+	private JDoubleLabel cycles;
 		
 	/**
 	 * Constructor.
@@ -85,19 +85,28 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
     
 		var battery = getEntity().getSystemCondition().getBattery();
 
-		statePercent = battPanel.addRow("Battery Level", StyleManager.DECIMAL2_PERC.format(battery.getBatteryPercent()), 
+		statePercent = new JDoubleLabel(StyleManager.DECIMAL2_PERC, battery.getBatteryPercent());
+		battPanel.addLabelledItem("Battery Level", statePercent, 
 				"The state of the battery is kWh stored / energy storage capacity * 100 percent");
-		kWhStored = battPanel.addRow("kWh Stored", StyleManager.DECIMAL_KWH.format(battery.getkWhStored()));
-		cap = battPanel.addRow("Energy Storage Capacity", StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
-		maxCapNameplate = battPanel.addRow("Nameplate Capacity", StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));	
-		maxCRating = battPanel.addRow("Max C-Rating Discharging", StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));		
+		kWhStored = new JDoubleLabel(StyleManager.DECIMAL_KWH, battery.getkWhStored());
+		battPanel.addLabelledItem("kWh Stored", kWhStored);
+		cap =  new JDoubleLabel(StyleManager.DECIMAL_KWH, battery.getEnergyStorageCapacity());
+		battPanel.addLabelledItem("Energy Storage Capacity", cap);
+		maxCapNameplate = new JDoubleLabel(StyleManager.DECIMAL_KWH, battery.getMaxCapNameplate());
+		battPanel.addLabelledItem("Nameplate Capacity", maxCapNameplate);
+		maxCRating = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, battery.getMaxCRating());
+		battPanel.addLabelledItem("Max C-Rating Discharging", maxCRating);
 		
-		ampHours = battPanel.addRow("Amp Hour", StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
-		tVolt = battPanel.addRow("Terminal Voltage", StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
-		health = battPanel.addRow(Msg.getString("Robot.health"), StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
-		degradPercent = battPanel.addRow("Degradation", StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade())
-				+ " per sol");
-		cycles = battPanel.addRow("Charge Cycles", StyleManager.DECIMAL_PLACES2.format(battery.getNumCycles()) + "");
+		ampHours = new JDoubleLabel(StyleManager.DECIMAL_AH, battery.getAmpHourStored());
+		battPanel.addLabelledItem("Amp Hours Stored", ampHours);
+		tVolt = new JDoubleLabel(StyleManager.DECIMAL_V, battery.getTerminalVoltage());
+		battPanel.addLabelledItem("Terminal Voltage", tVolt);
+		health = new JDoubleLabel(StyleManager.DECIMAL2_PERC, battery.getHealth() * 100);
+		battPanel.addLabelledItem(Msg.getString("Robot.health"), health);
+		degradPercent = new JDoubleLabel(StyleManager.DECIMAL2_PERC, battery.getPercentDegrade());
+		battPanel.addLabelledItem("Degradation", degradPercent);
+		cycles = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, battery.getNumCycles());
+		battPanel.addLabelledItem("Charge Cycles", cycles);
 	}
 
 	/**
@@ -109,17 +118,17 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 		if (EntityEventType.BATTERY_EVENT.equals(event.getType())) {
 			var battery = getEntity().getSystemCondition().getBattery();
 
-			statePercent.setText(StyleManager.DECIMAL_PERC.format(battery.getBatteryPercent()));
-			cap.setText(StyleManager.DECIMAL_KWH.format(battery.getEnergyStorageCapacity()));
-			maxCapNameplate.setText(StyleManager.DECIMAL_KWH.format(battery.getMaxCapNameplate()));
-			kWhStored.setText(StyleManager.DECIMAL_KWH.format(battery.getkWhStored()));
-			ampHours.setText(StyleManager.DECIMAL_AH.format(battery.getAmpHourStored()));
+			statePercent.setValue(battery.getBatteryPercent());
+			cap.setValue(battery.getEnergyStorageCapacity());
+			maxCapNameplate.setValue(battery.getMaxCapNameplate());
+			kWhStored.setValue(battery.getkWhStored());
+			ampHours.setValue(battery.getAmpHourStored());
 			
-			tVolt.setText(StyleManager.DECIMAL_V.format(battery.getTerminalVoltage()));
-			health.setText(StyleManager.DECIMAL2_PERC.format(battery.getHealth() * 100));
-			degradPercent.setText(StyleManager.DECIMAL2_PERC.format(battery.getPercentDegrade()) + " per sol");
-			maxCRating.setText(StyleManager.DECIMAL_PLACES1.format(battery.getMaxCRating()));
-			cycles.setText(StyleManager.DECIMAL_PLACES2.format(battery.getNumCycles()));
+			tVolt.setValue(battery.getTerminalVoltage());
+			health.setValue(battery.getHealth() * 100);
+			degradPercent.setValue(battery.getPercentDegrade());
+			maxCRating.setValue(battery.getMaxCRating());
+			cycles.setValue(battery.getNumCycles());
 		}
 	}
 }

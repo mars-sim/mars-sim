@@ -20,8 +20,10 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -36,17 +38,15 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 
 	private static final String SCIENCE_ICON = "science";
 
-	private static final String MILLISOLS = " millisols";
-
 	// Data cache
 	/** The number of researchers cache. */
 	private int researchersCache;
 
 	private JLabel researchersLabel;
-	private JLabel dailyAverageLabel;
-	private JLabel cumulativeTotalLabel;
-	private JLabel entropyLabel;
-	private JLabel entropyPenaltyLabel;
+	private JDoubleLabel dailyAverageLabel;
+	private JDoubleLabel cumulativeTotalLabel;
+	private JDoubleLabel entropyLabel;
+	private JDoubleLabel entropyPenaltyLabel;
 	
 	/** The research building function. */
 	private Research lab;
@@ -94,21 +94,22 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 					 					Integer.toString(lab.getLaboratorySize()), null);
 
 		double[] tally = lab.getTotCumulativeDailyAverage();
-		dailyAverageLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.dailyAverage"),
-				Double.toString(Math.round(tally[1] * 10.0)/10.0) + MILLISOLS, null);
+		dailyAverageLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, tally[1]);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelResearch.dailyAverage"), dailyAverageLabel);
 		
-		cumulativeTotalLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.cumulativeTotal"),
-				Double.toString(Math.round(tally[0] * 10.0)/10.0) + MILLISOLS, null);
+		cumulativeTotalLabel = new JDoubleLabel(StyleManager.DECIMAL_MSOL, tally[0]);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelResearch.cumulativeTotal"), cumulativeTotalLabel);
 		
 		// Entropy
-		double entropy = building.getResearch().getEntropy();
-		entropyLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.entropy"),
-	 			Math.round(entropy * 1_000.0)/1_000.0 + "", Msg.getString("BuildingPanelResearch.entropy.tooltip"));
+		entropyLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES3, building.getResearch().getEntropy());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelResearch.entropy"),
+	 			      entropyLabel, Msg.getString("BuildingPanelResearch.entropy.tooltip"));
 
 		// Entropy
 		double entropyPenalty = building.getResearch().getEntropyPenalty();
-		entropyPenaltyLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.entropyPenalty"),
-			 			Math.round(entropyPenalty * 1_000.0)/1_000.0 + "", Msg.getString("BuildingPanelResearch.entropyPenalty.tooltip"));
+		entropyPenaltyLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES3, entropyPenalty);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelResearch.entropyPenalty"),
+			 			      entropyPenaltyLabel, Msg.getString("BuildingPanelResearch.entropyPenalty.tooltip"));
 			
 		// Get the research specialties of the building.
 		ScienceType[] specialties = lab.getTechSpecialties();
@@ -134,18 +135,9 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 		}
 		
 		double[] tally = lab.getTotCumulativeDailyAverage();
-		dailyAverageLabel.setText(Double.toString(Math.round(tally[1] * 10.0)/10.0) + MILLISOLS);
-		cumulativeTotalLabel.setText(Double.toString(Math.round(tally[0] * 10.0)/10.0) + MILLISOLS);
-		
-		// Update entropy
-		String entropy = Math.round(building.getResearch().getEntropy() * 1_000.0)/1_000.0 + "";
-		if (!entropyLabel.getText().equalsIgnoreCase(entropy))
-			entropyLabel.setText(entropy);
-		
-		// Update entropy Penalty
-		String entropyPenalty = Math.round(building.getResearch().getEntropyPenalty() * 1_000.0)/1_000.0 + "";
-		if (!entropyPenaltyLabel.getText().equalsIgnoreCase(entropyPenalty))
-			entropyPenaltyLabel.setText(entropyPenalty);
-		
+		dailyAverageLabel.setValue(tally[1]);
+		cumulativeTotalLabel.setValue(tally[0]);
+		entropyLabel.setValue(building.getResearch().getEntropy());
+		entropyPenaltyLabel.setValue(building.getResearch().getEntropyPenalty());
 	}
 }

@@ -40,6 +40,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -68,24 +69,17 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 
 	private int numBuildingsCache;
 	
-	private double o2Cache;
-	private double cO2Cache;
-	private double n2Cache;
-	private double h2OCache;
-	private double arCache;
-	private double averageTemperatureCache;
-
 	private String indoorPressureCache;
 	
 	private Set<Building> buildingsCache;
 
-	private JLabel o2Label;
-	private JLabel cO2Label;
-	private JLabel n2Label;
-	private JLabel h2OLabel;
-	private JLabel arLabel;
+	private JDoubleLabel o2Label;
+	private JDoubleLabel cO2Label;
+	private JDoubleLabel n2Label;
+	private JDoubleLabel h2OLabel;
+	private JDoubleLabel arLabel;
 	private JLabel indoorPressureLabel;
-	private JLabel averageTemperatureLabel;
+	private JDoubleLabel averageTemperatureLabel;
 
 	private JTable table ;
 
@@ -106,8 +100,8 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 
 	/**
 	 * Constructor.
-		* @param unit the unit to display.
-		* @param desktop the main desktop.
+	 * @param unit the unit to display.
+	 * @param context the main desktop.
 	 */
 	public TabPanelAirComposition(Settlement unit, UIContext context) {
 
@@ -133,26 +127,29 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 		content.add(topContentPanel, BorderLayout.NORTH);
 		
 		// Prepare the top panel using spring layout.
-		AttributePanel topPanel = new AttributePanel(2);
+		AttributePanel topPanel = new AttributePanel();
 		topContentPanel.add(topPanel);
 
-		averageTemperatureCache = settlement.getTemperature();
-		averageTemperatureLabel = topPanel.addTextField(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"),
-							StyleManager.DECIMAL_CELCIUS.format(averageTemperatureCache), null); //$NON-NLS-1$
-
+		averageTemperatureLabel = new JDoubleLabel(StyleManager.DECIMAL_CELCIUS, settlement.getTemperature());
+		topPanel.addLabelledItem(Msg.getString("TabPanelAirComposition.label.averageTemperature.title"), averageTemperatureLabel, null);
 		indoorPressureCache = StyleManager.DECIMAL_KPA.format(settlement.getAirPressure());
 		indoorPressureLabel = topPanel.addTextField(Msg.getString("TabPanelAirComposition.label.indoorPressure.title"),
-							indoorPressureCache, null); //$NON-NLS-1$
-		
+							indoorPressureCache, null);
+									
 		// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
 		AttributePanel gasPanel = new AttributePanel(2, 3);
 		gasPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelAirComposition.label")));
 		topContentPanel.add(gasPanel); 
-		cO2Label = gasPanel.addTextField(CO2, StyleManager.DECIMAL2_PERC.format(cO2Cache), null);
-		arLabel = gasPanel.addTextField(AR, StyleManager.DECIMAL2_PERC.format(arCache), null);
-		n2Label = gasPanel.addTextField(N2, StyleManager.DECIMAL2_PERC.format(n2Cache), null);
-		o2Label = gasPanel.addTextField(O2, StyleManager.DECIMAL2_PERC.format(o2Cache), null);
-		h2OLabel = gasPanel.addTextField(H2O, StyleManager.DECIMAL2_PERC.format(h2OCache), null);
+		cO2Label = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.CO2_ID));
+		gasPanel.addLabelledItem(CO2, cO2Label, null);
+		arLabel = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.ARGON_ID));
+		gasPanel.addLabelledItem(AR, arLabel, null);
+		n2Label = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.NITROGEN_ID));
+		gasPanel.addLabelledItem(N2, n2Label, null);
+		o2Label = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.OXYGEN_ID));
+		gasPanel.addLabelledItem(O2, o2Label, null);
+		h2OLabel = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.WATER_ID));
+		gasPanel.addLabelledItem(H2O, h2OLabel, null);
 		gasPanel.addTextField(null, null, null); // Add a blank to balance it out
 
 		// Create override check box panel.
@@ -294,42 +291,17 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 		else {
 			var settlement = getEntity();
 
-			double cO2 = getOverallComposition(ResourceUtil.CO2_ID);
-			if (cO2Cache != cO2) {
-				cO2Cache = cO2;
-				cO2Label.setText(StyleManager.DECIMAL2_PERC.format(cO2Cache));
-			}
-
-			double ar = getOverallComposition(ResourceUtil.ARGON_ID);
-			if (arCache != ar) {
-				arCache = ar;
-				arLabel.setText(StyleManager.DECIMAL2_PERC.format(ar));
-			}
-
-			double n2 =  getOverallComposition(ResourceUtil.NITROGEN_ID);
-			if (n2Cache != n2) {
-				n2Cache = n2;
-				n2Label.setText(StyleManager.DECIMAL2_PERC.format(n2));
-			}
-
-			double o2 = getOverallComposition(ResourceUtil.OXYGEN_ID);
-			if (o2Cache != o2) {
-				o2Cache = o2;
-				o2Label.setText(StyleManager.DECIMAL2_PERC.format(o2Cache));
-			}
-
-			double h2O = getOverallComposition(ResourceUtil.WATER_ID);
-			if (h2OCache != h2O) {
-				h2OCache = h2O;
-				h2OLabel.setText(StyleManager.DECIMAL2_PERC.format(h2O));
-			}
+			// Update gas composition values
+			cO2Label.setValue(getOverallComposition(ResourceUtil.CO2_ID));
+			arLabel.setValue(getOverallComposition(ResourceUtil.ARGON_ID));
+			n2Label.setValue(getOverallComposition(ResourceUtil.NITROGEN_ID));
+			o2Label.setValue(getOverallComposition(ResourceUtil.OXYGEN_ID));
+			h2OLabel.setValue(getOverallComposition(ResourceUtil.WATER_ID));
 			
-			double averageTemperature = settlement.getTemperature();
-			if (averageTemperatureCache != averageTemperature) {
-				averageTemperatureCache = averageTemperature;
-				averageTemperatureLabel.setText(StyleManager.DECIMAL_CELCIUS.format(averageTemperatureCache));
-			}
+			// Update average temperature
+			averageTemperatureLabel.setValue(settlement.getTemperature());
 		
+			// Update indoor pressure (complex formatting based on button selection)
 			String indoorPressure = StyleManager.DECIMAL_KPA.format(settlement.getAirPressure());
 			
 			if (kPa_btn.isSelected()) {
@@ -348,7 +320,7 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 				indoorPressure =  DECIMAL_PSI.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.PSI_PER_ATM);
 			}
 			
-			if (!indoorPressureCache.equals(indoorPressure)) {
+			if (!indoorPressure.equals(indoorPressureCache)) {
 				indoorPressureCache = indoorPressure;
 				indoorPressureLabel.setText(indoorPressureCache);
 			}

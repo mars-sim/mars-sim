@@ -12,7 +12,6 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -34,6 +33,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -49,7 +49,7 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 
 	private static final String SCIENCE_ICON = "science";
 
-	private JLabel totalAchievementLabel;
+	private JDoubleLabel totalAchievementLabel;
 
 	private JTable achievementTable;
 	private JTable studyTable;
@@ -129,9 +129,9 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 
 		var achievementSummary = new AttributePanel();
 		achievementSummary.setBorder(BorderFactory.createEmptyBorder(2,0,2,0));
-		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(getEntity().getTotalScientificAchievement());
-		totalAchievementLabel = achievementSummary.addTextField(Msg.getString(
-								"TabPanelScience.totalAchievementCredit"), totalAchievementString, null);
+		totalAchievementLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, getEntity().getTotalScientificAchievement(), 0.1D);
+		achievementSummary.addLabelledItem(Msg.getString(
+								"TabPanelScience.totalAchievementCredit"), totalAchievementLabel);
 		achievementPane.add(achievementSummary, BorderLayout.NORTH);
 
 		// Create the achievement scroll panel.
@@ -178,8 +178,7 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 		achievementTableModel.update();
 
 		// Update total achievement label.
-		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(getEntity().getTotalScientificAchievement());
-		totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
+		totalAchievementLabel.setValue(getEntity().getTotalScientificAchievement());
 	}
 
 	/**
