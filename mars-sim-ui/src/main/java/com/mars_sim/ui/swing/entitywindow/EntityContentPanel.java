@@ -21,6 +21,7 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.TemporalComponent;
@@ -48,12 +49,24 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     private JTabbedPane tabPane;
 
     /**
-     * Construct a entity panel to render a single Entity.
+     * Construct a entity panel to render a single Entity. The entity type used for naming is derived
+     * from the name of the entity Class.
      * @param entity Entity to display.
      * @param context Overall UI context
      */
     protected EntityContentPanel(T entity, UIContext context) {
-        super(entity.getClass().getSimpleName() + ":" + entity.getName(), entity.getName(), Placement.CENTER);
+        this(entity, entity.getClass().getSimpleName(), context);
+    }
+
+    /**
+     * Construct a entity panel to render a single Entity.
+     * @param entity Entity to display.
+     * @param entityType The label associated with the entity type.
+     * @param context Overall UI context
+     */
+    protected EntityContentPanel(T entity, String entityType, UIContext context) {
+        super(entity.getClass().getSimpleName() + ":" + entity.getName(),
+                generateTitle(entityType, entity), Placement.CENTER);
 
         this.entity = entity;
         this.context = context;
@@ -80,6 +93,11 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         if (entity instanceof MonitorableEntity u) {
             u.addEntityListener(this);
         }
+    }
+
+    private static String generateTitle(String typeKey, Entity entity) {
+        String context = Msg.getString(typeKey + ".singular");
+        return context + " : " + entity.getName();
     }
 
     /**
@@ -187,6 +205,10 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         }
     }
 
+    /**
+     * Prepare to destroy the panel and its resources. This will remove any listeners
+     * from the entity and destroy all tab panels.
+     */
     @Override
     public void destroy() {
         // Some Entities are MonitorableEntities and can send events

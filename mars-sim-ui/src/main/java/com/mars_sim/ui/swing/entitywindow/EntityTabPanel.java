@@ -9,12 +9,11 @@ package com.mars_sim.ui.swing.entitywindow;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -33,7 +32,7 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
  * first displayed.
  */
 @SuppressWarnings("serial")
-public abstract class EntityTabPanel<T extends Entity> extends JScrollPane {
+public abstract class EntityTabPanel<T extends Entity> extends JPanel {
 
     // Name of the icon to use for the general tab
     protected static final String GENERAL_ICON = "info";
@@ -73,27 +72,24 @@ public abstract class EntityTabPanel<T extends Entity> extends JScrollPane {
 		this.tabToolTip = (tabToolTip != null) ? tabToolTip : tabTitle;
 		this.context = context;
 
-		// Create the view panel
-		JPanel viewPanel = new JPanel();
-		viewPanel.setLayout(new BoxLayout(viewPanel, BoxLayout.Y_AXIS));
-		createViewport();
-		setViewportView(viewPanel);
-		createVerticalScrollBar();
-		setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_AS_NEEDED);
-		setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-		
-		// Create top content panel
-		topContentPanel = new JPanel();
-		topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
-		topContentPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
-		viewPanel.add(topContentPanel, BorderLayout.NORTH);
+		setLayout(new BorderLayout());
 
-		Box.createVerticalGlue();
-		
+		// Create top content panel
+		topContentPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
+		add(topContentPanel, BorderLayout.NORTH);
+				
 		// Create center content panel
 		centerContentPanel = new JPanel(new BorderLayout(0, 10));
-		centerContentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		viewPanel.add(centerContentPanel, BorderLayout.CENTER);
+		centerContentPanel.setBorder(new EmptyBorder(2, 2, 4, 2));
+
+		// Create the view panel
+		JScrollPane viewPanel = new JScrollPane();
+		viewPanel.createVerticalScrollBar();
+		viewPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		viewPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		viewPanel.setViewportView(centerContentPanel);
+		add(viewPanel, BorderLayout.CENTER);
 	}
 
     /**
@@ -132,10 +128,8 @@ public abstract class EntityTabPanel<T extends Entity> extends JScrollPane {
 			String topLabel = getTabTitle();
 			JLabel titleLabel = new JLabel(topLabel, SwingConstants.CENTER);
 			StyleManager.applyHeading(titleLabel);
-			
-			JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			labelPanel.add(titleLabel);
-			topContentPanel.add(labelPanel);
+
+			topContentPanel.add(titleLabel);
 			
 			buildUI(centerContentPanel);
 			

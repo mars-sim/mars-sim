@@ -127,10 +127,10 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 		content.add(wikiPanel, BorderLayout.NORTH);
 		
-		AttributePanel westGrid = new AttributePanel(6, 1, 2, 2);
+		AttributePanel westGrid = new AttributePanel(6, 1);
 		topPanel.add(westGrid, BorderLayout.CENTER);
         
-		AttributePanel eastGrid = new AttributePanel(6, 1, 2, 2);
+		AttributePanel eastGrid = new AttributePanel(6, 1);
 		topPanel.add(eastGrid, BorderLayout.EAST);	
 		
 		if (eva.getAirlock().isInnerDoorLocked())

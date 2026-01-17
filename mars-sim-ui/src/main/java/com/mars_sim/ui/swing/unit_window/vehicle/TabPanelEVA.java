@@ -130,10 +130,10 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 		wikiButton.addActionListener(e -> SwingHelper.openBrowser(WIKI_URL));
 		panel.add(wikiPanel, BorderLayout.NORTH);
 
-		AttributePanel westGrid = new AttributePanel(6, 1, 2, 2);
+		AttributePanel westGrid = new AttributePanel(6, 1);
 		topPanel.add(westGrid);
         
-		AttributePanel eastGrid = new AttributePanel(6, 1, 2, 2);
+		AttributePanel eastGrid = new AttributePanel(6, 1);
 		topPanel.add(eastGrid);		
 		
 		if (vehicleAirlock.isInnerDoorLocked())
