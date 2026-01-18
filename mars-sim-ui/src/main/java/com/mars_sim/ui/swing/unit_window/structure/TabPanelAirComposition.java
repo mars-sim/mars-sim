@@ -54,7 +54,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 class TabPanelAirComposition extends EntityTabPanel<Settlement> implements TemporalComponent {
 
-	private static final String BLDG = Msg.getString("Building.singular"); //$NON-NLS-1$
+	private static final String BLDG = Msg.getString("building.singular"); //$NON-NLS-1$
 	private static final String TOTAL = Msg.getString("TabPanelAirComposition.column.total"); //$NON-NLS-1$
 	private static final String O2 = Msg.getString("TabPanelAirComposition.o2"); //$NON-NLS-1$
 	private static final String H2O = Msg.getString("TabPanelAirComposition.h2o"); //$NON-NLS-1$

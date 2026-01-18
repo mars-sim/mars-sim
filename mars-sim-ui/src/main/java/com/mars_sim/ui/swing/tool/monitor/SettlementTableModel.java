@@ -146,7 +146,7 @@ public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 	 * simulation.
 	 */
 	public SettlementTableModel() {
-		super(Msg.getString("Settlement.plural"), COLUMNS);
+		super(Msg.getString("settlement.plural"), COLUMNS);
 
 		setupCaches();
 	}

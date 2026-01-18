@@ -26,7 +26,7 @@ import com.mars_sim.ui.swing.UIContext;
  */
 public class EntityLauncher extends MouseInputAdapter {
 
-    private static final String TOOLTIP = Msg.getString("Entity.doubleClick");
+    private static final String TOOLTIP = Msg.getString("entity.doubleClick");
     private static SimLogger logger = SimLogger.getLogger(EntityLauncher.class.getName());
 
     /**

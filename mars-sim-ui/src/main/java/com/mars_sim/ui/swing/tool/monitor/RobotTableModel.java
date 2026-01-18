@@ -87,15 +87,15 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Robot.type"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
 		COLUMNS[MODE] = new ColumnSpec(Msg.getString("Robot.mode"), String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("Robot.health"), String.class);
 		COLUMNS[BATTERY] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.percent"), String.class);
 		COLUMNS[BATTERY_TEMPERATURE] = new ColumnSpec(Msg.getString("RobotTableModel.column.battery.temperature"), Double.class);
 		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("Robot.performance"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("RobotTableModel.column.location"), String.class);
-		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
-		COLUMNS[TASK] = new ColumnSpec(Msg.getString("Task.singular"), String.class);
+		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("mission.singular"), String.class);
+		COLUMNS[TASK] = new ColumnSpec(Msg.getString("task.singular"), String.class);
 
 		eventColumnMapping = new HashMap<>();
 		eventColumnMapping.put(EntityEventType.NAME_EVENT, NAME);

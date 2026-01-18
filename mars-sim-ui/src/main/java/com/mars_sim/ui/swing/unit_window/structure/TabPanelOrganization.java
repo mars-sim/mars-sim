@@ -91,7 +91,7 @@ class TabPanelOrganization extends EntityTabPanel<Settlement> {
 		var settlement = getEntity();
 
 		// Prepare label
-		labelPanel.addLabelledItem(Msg.getString("Authority.singular"),
+		labelPanel.addLabelledItem(Msg.getString("authority.singular"),
 					new EntityLabel(settlement.getReportingAuthority(), getContext()));
 		var gov = settlement.getChainOfCommand().getGovernance();
 		labelPanel.addTextField("Governance Model", gov.getName(), null);

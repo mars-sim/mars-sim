@@ -26,7 +26,7 @@ class VehicleDisplayInfoBean extends MapEntityDisplayInfo {
      * Constructor.
      */
     VehicleDisplayInfoBean(String buttonName) {
-        super(buttonName, "Vehicle", null, VEHICLE_MAP_FONT,
+        super(buttonName, "vehicle", null, VEHICLE_MAP_FONT,
                 Color.white, "map/vehicle", "map/vehicle_black");
     }
     

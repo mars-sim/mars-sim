@@ -68,7 +68,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 	public TabPanelScienceStudy(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("ScientificStudy.singular"), 
+			Msg.getString("scientificStudy.singular"), 
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			null,
 			context, person
@@ -89,7 +89,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 
 		// Create the studies panel.
 		JPanel studiesPane = new JPanel(new BorderLayout());
-		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("ScientificStudy.plural"))); //$NON-NLS-1$
+		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificStudy.plural"))); //$NON-NLS-1$
 		mainPane.add(studiesPane);
 
 		// Create the study scroll panel.
@@ -263,7 +263,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		@Override
 		public String getColumnName(int column) {
 			return switch (column) {
-				case NAME_COL -> Msg.getString("Entity.name");
+				case NAME_COL -> Msg.getString("entity.name");
 				case ROLE_COL -> Msg.getString("TabPanelScience.column.role");
 				case PHASE_COL -> Msg.getString("ScientificStudy.phase");
 				case RESEARCH_COL -> Msg.getString("TabPanelScience.column.researchTime");
@@ -315,7 +315,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 					if (person.equals(study.getPrimaryResearcher()))
 						result = Msg.getString("ScientificStudy.lead");
 					else if (study.getCollaborativeResearchers().contains(person))
-						result = Msg.getString("ScientificStudy.collaborator.singular"); //$NON-NLS-1$
+						result = Msg.getString("scientificStudy.collaborator.singular"); //$NON-NLS-1$
 					break;
 				case PHASE_COL:
 					result = study.getPhase().getName();

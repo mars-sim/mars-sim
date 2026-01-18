@@ -41,7 +41,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
         COLUMNS = new ColumnSpec[COMPLETED + 1];
 
         COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
-        COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+        COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
         COLUMNS[PHASE] = new ColumnSpec(Msg.getString("ScientificStudy.phase"), String.class);
         COLUMNS[SCIENCE] = new ColumnSpec(Msg.getString("ScientificStudy.science"), String.class);
         COLUMNS[LEVEL] = new ColumnSpec(Msg.getString("ScientificStudy.level"), Integer.class);
@@ -56,7 +56,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
      * @param mgr the Scientific Study Manager
      */
     public ScienceStudyTableModel(ScientificStudyManager mgr) {
-		super(Msg.getString("ScientificStudy.plural"),
+		super(Msg.getString("scientificStudy.plural"),
 				COLUMNS);	
 		this.mgr = mgr;
 

@@ -93,7 +93,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         entities = new HashMap<>();
         
         // Create the tree pane
-        var root = new DefaultMutableTreeNode(Msg.getString("Settlement.plural"));
+        var root = new DefaultMutableTreeNode(Msg.getString("settlement.plural"));
 		entityModel = new DefaultTreeModel(root);
 
         // Inital load with Settlements

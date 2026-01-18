@@ -135,8 +135,8 @@ class TabPanelSocial extends EntityTableTabPanel<Person>
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("Settlement.singular");
-				case 1 -> Msg.getString("Entity.name");
+				case 0 -> Msg.getString("settlement.singular");
+				case 1 -> Msg.getString("entity.name");
 				case 2 -> Msg.getString("TabPanelSocial.column.respect");
 				case 3 -> Msg.getString("TabPanelSocial.column.care");
 				case 4 -> Msg.getString("TabPanelSocial.column.trust");

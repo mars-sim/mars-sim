@@ -55,15 +55,15 @@ class BuildingPanelGeneral extends EntityTabPanel<Building> {
 		JPanel svgPanel = SVGMapUtil.createBuildingPanel(building.getBuildingType().toLowerCase(), 220, 110);
 		topPanel.add(svgPanel, BorderLayout.NORTH);
 
-		var labelPanel = SwingHelper.createTextBlock(Msg.getString("Entity.description"), building.getDescription());
+		var labelPanel = SwingHelper.createTextBlock(Msg.getString("entity.description"), building.getDescription());
 		topPanel.add(labelPanel, BorderLayout.CENTER);
 		
 		// Prepare spring layout info panel.
 		AttributePanel infoPanel = new AttributePanel();
 		topPanel.add(infoPanel, BorderLayout.SOUTH);
 
-		infoPanel.addRow(Msg.getString("Building.type"), building.getBuildingType());
-		infoPanel.addRow(Msg.getString("Building.category"), building.getCategory().getName());
+		infoPanel.addRow(Msg.getString("building.type"), building.getBuildingType());
+		infoPanel.addRow(Msg.getString("building.category"), building.getCategory().getName());
 		infoPanel.addRow(Msg.getString("Building.construction"), building.getConstruction().name());
 
 		// Prepare dimension label

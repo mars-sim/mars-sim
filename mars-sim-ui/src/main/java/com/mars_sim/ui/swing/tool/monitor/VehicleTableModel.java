@@ -88,11 +88,11 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Vehicle.type"), String.class);
 		COLUMNS[MODEL] = new ColumnSpec(Msg.getString("Vehicle.model"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec("Location", String.class);
 		COLUMNS[DESTINATION] = new ColumnSpec("Destination", String.class);
 		COLUMNS[DESTDIST] = new ColumnSpec("Dist. to next [km]", Double.class);
-		COLUMNS[MISSION] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
+		COLUMNS[MISSION] = new ColumnSpec(Msg.getString("mission.singular"), String.class);
 		COLUMNS[CREW] = new ColumnSpec("Crew", Integer.class);
 		COLUMNS[DRIVER] = new ColumnSpec(Msg.getString("Vehicle.operator"), String.class);
 		COLUMNS[STATUS] = new ColumnSpec(Msg.getString("Vehicle.status"), String.class);
@@ -125,7 +125,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	
 	public VehicleTableModel() {
 		super(
-			Msg.getString("Vehicle.plural"),
+			Msg.getString("vehicle.plural"),
 			COLUMNS
 		);
 

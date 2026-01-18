@@ -353,7 +353,7 @@ class TabPanelThermal extends EntityTableTabPanel<Settlement>
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
 				case 0 -> Msg.getString("TabPanelThermalSystem.column.s"); //$NON-NLS-1$
-				case 1 -> Msg.getString("Building.singular"); //$NON-NLS-1$
+				case 1 -> Msg.getString("building.singular"); //$NON-NLS-1$
 				case 2 -> Msg.getString("TabPanelThermalSystem.column.temperature"); //$NON-NLS-1$
 				case 3 -> Msg.getString("TabPanelThermalSystem.column.heat.gen"); //$NON-NLS-1$
 				case 4 -> Msg.getString("TabPanelThermalSystem.column.heat.load"); //$NON-NLS-1$

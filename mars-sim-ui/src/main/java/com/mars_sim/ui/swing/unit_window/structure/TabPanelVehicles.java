@@ -43,7 +43,7 @@ class TabPanelVehicles extends EntityTabPanel<Settlement>
 	public TabPanelVehicles(Settlement unit, UIContext context) { 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("Vehicle.plural"), //$NON-NLS-1$
+			Msg.getString("vehicle.plural"), //$NON-NLS-1$
 			ImageLoader.getIconByName(SUV_ICON), null,
 			context, unit
 		);

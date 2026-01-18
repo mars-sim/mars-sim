@@ -23,8 +23,8 @@ import com.mars_sim.core.tool.Msg;
  */
 public class ActivitySpotModel extends AbstractTableModel implements EntityModel {
 
-    private static final String NAME = Msg.getString("Entity.name");
-    private static final String POSITION = Msg.getString("Entity.internalPosn");
+    private static final String NAME = Msg.getString("entity.name");
+    private static final String POSITION = Msg.getString("entity.internalPosn");
 
     private static final long serialVersionUID = 1L;
 	private static final int NAME_COL = 0;

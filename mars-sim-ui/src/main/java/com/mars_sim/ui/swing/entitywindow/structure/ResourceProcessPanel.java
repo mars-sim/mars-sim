@@ -71,7 +71,7 @@ public class ResourceProcessPanel extends JPanel {
         private static final int OUTPUT_SCORE = 4;
         private static final int SCORE = 5;
 
-        private static final String BUILDING = Msg.getString("Building.singular");
+        private static final String BUILDING = Msg.getString("building.singular");
         private static final String BUILDING_TOOLTIP = Msg.getString("Entity.doubleClick");
         
         private Building mainBuilding;

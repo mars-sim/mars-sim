@@ -67,13 +67,13 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 
 		var r = getEntity();
 		var settlement = new EntityLabel(r.getAssociatedSettlement(), getContext());
-		infoPanel.addLabelledItem(Msg.getString("Settlement.singular"), settlement);
+		infoPanel.addLabelledItem(Msg.getString("settlement.singular"), settlement);
 		infoPanel.addRow(Msg.getString("Robot.type"), r.getRobotType().getName());
 		infoPanel.addRow(Msg.getString("Robot.model"), r.getModel());
 		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
 
 		String text = r.getDescription().replace("\n", " ").replace("\t", "");
-		var desc = SwingHelper.createTextBlock(Msg.getString("Entity.description"), text);
+		var desc = SwingHelper.createTextBlock(Msg.getString("entity.description"), text);
 		topPanel.add(desc, BorderLayout.CENTER);
 			
 		JPanel dataPanel = new JPanel(new BorderLayout(10, 10));

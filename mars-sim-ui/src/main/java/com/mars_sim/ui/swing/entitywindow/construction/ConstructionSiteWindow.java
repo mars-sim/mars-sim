@@ -36,7 +36,7 @@ public class ConstructionSiteWindow extends EntityContentPanel<ConstructionSite>
         super(constructionSite, context);
 
         setHeading(constructionSite.getAssociatedSettlement(), "building", 
-				Msg.getString("Building.singular"), constructionSite.getBuildingName());
+				Msg.getString("building.singular"), constructionSite.getBuildingName());
 
         // Add tab panels
         addDefaultTabPanel(new TabPanelSiteGeneral(constructionSite, context));

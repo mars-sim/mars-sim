@@ -45,7 +45,7 @@ public class TabPanelBots extends EntityTabPanel<Vehicle>
 	public TabPanelBots(Vehicle vehicle, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("Robot.plural"),
+			Msg.getString("robot.plural"),
 			ImageLoader.getIconByName(ROBOT_ICON),
 			null,
 			context, vehicle
