@@ -40,7 +40,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
     static {
         COLUMNS = new ColumnSpec[COMPLETED + 1];
 
-        COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+        COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
         COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
         COLUMNS[PHASE] = new ColumnSpec(Msg.getString("scientificstudy.phase"), String.class);
         COLUMNS[SCIENCE] = new ColumnSpec(Msg.getString("scientificstudy.science"), String.class);

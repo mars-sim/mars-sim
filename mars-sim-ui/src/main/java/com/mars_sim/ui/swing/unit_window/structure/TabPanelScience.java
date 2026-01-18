@@ -223,7 +223,7 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 		@Override
 		public String getColumnName(int column) {
 			return switch (column) {
-				case 0 -> Msg.getString("Entity.name");
+				case 0 -> Msg.getString("entity.name");
 				case 1 -> Msg.getString("scientificstudy.science");
 				case 2 -> Msg.getString("scientificstudy.level");	
 				case 3 -> Msg.getString("scientificstudy.phase");

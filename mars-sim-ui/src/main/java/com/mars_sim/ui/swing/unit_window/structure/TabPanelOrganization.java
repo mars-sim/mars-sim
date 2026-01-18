@@ -311,7 +311,7 @@ class TabPanelOrganization extends EntityTabPanel<Settlement> {
 		};
 
 		tree.addMouseListener(ml);
-		tree.setToolTipText(Msg.getString("Entity.doubleClick"));
+		tree.setToolTipText(Msg.getString("entity.doubleClick"));
 	}
 
 	/**

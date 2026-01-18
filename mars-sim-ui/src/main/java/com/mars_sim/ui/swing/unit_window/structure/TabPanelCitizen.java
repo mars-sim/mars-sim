@@ -196,7 +196,7 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
-				case 0 -> Msg.getString("Entity.name");
+				case 0 -> Msg.getString("entity.name");
 				case 1 -> "Inside";
 				default -> "";
 			};

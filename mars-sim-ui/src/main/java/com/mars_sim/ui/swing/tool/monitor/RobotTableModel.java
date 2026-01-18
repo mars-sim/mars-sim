@@ -85,7 +85,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("robot.type"), String.class);
 		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
 		COLUMNS[MODE] = new ColumnSpec(Msg.getString("robot.mode"), String.class);

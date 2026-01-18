@@ -64,12 +64,12 @@ class BuildingPanelGeneral extends EntityTabPanel<Building> {
 
 		infoPanel.addRow(Msg.getString("building.type"), building.getBuildingType());
 		infoPanel.addRow(Msg.getString("building.category"), building.getCategory().getName());
-		infoPanel.addRow(Msg.getString("Building.construction"), building.getConstruction().name());
+		infoPanel.addRow(Msg.getString("building.construction"), building.getConstruction().name());
 
 		// Prepare dimension label
-		infoPanel.addRow(Msg.getString("Entity.internalPosn"), building.getPosition().getShortFormat(), 
+		infoPanel.addRow(Msg.getString("entity.internalPosn"), building.getPosition().getShortFormat(), 
 				"The center x and y coordinates of this building, according to the Settlement Map");
-		infoPanel.addRow(Msg.getString("Entity.dimension"), building.getLength() + " m x " + building.getWidth() 
+		infoPanel.addRow(Msg.getString("entity.dimension"), building.getLength() + " m x " + building.getWidth() 
 			+ " m x 2.5 m", "Length x Width x Height");
 		infoPanel.addRow("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
 				"The floor area in square meters");

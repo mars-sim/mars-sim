@@ -78,7 +78,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
 		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
 		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("Person.health"), String.class);
 		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("Person.energy"), String.class);

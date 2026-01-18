@@ -38,7 +38,7 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> {
         var infoPanel = new AttributePanel();
         contentPanel.add(infoPanel, BorderLayout.NORTH);
 
-        infoPanel.addTextField(Msg.getString("Entity.name"), settlement.getName(), null);
+        infoPanel.addTextField(Msg.getString("entity.name"), settlement.getName(), null);
         infoPanel.addLabelledItem(Msg.getString("authority.singular"), 
                     new EntityLabel(settlement.getReportingAuthority(), getContext()));
         infoPanel.addTextField(Msg.getString("settlement.template"), settlement.getTemplate(), null);

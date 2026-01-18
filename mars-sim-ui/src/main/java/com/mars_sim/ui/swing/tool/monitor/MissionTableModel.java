@@ -65,12 +65,12 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 		COLUMNS[DATE_EMBARKED] = new ColumnSpec(Msg.getString("MissionTableModel.column.embarked"), MarsTime.class);
 		COLUMNS[DATE_COMPLETED] = new ColumnSpec(Msg.getString("MissionTableModel.column.completed"), MarsTime.class);
 		COLUMNS[STARTING_SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
-		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("Mission.leader"), String.class);
-		COLUMNS[MISSION_STRING] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
-		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("Mission.designation"), String.class);
-		COLUMNS[PHASE] = new ColumnSpec(Msg.getString("Mission.phase"), String.class);
+		COLUMNS[STARTING_MEMBER] = new ColumnSpec(Msg.getString("mission.leader"), String.class);
+		COLUMNS[MISSION_STRING] = new ColumnSpec(Msg.getString("entity.name"), String.class);
+		COLUMNS[DESIGNATION] = new ColumnSpec(Msg.getString("mission.designation"), String.class);
+		COLUMNS[PHASE] = new ColumnSpec(Msg.getString("mission.phase"), String.class);
 		COLUMNS[VEHICLE] = new ColumnSpec(Msg.getString("vehicle.singular"), String.class);
-		COLUMNS[MEMBER_NUM] = new ColumnSpec(Msg.getString("Mission.members"), Integer.class);
+		COLUMNS[MEMBER_NUM] = new ColumnSpec(Msg.getString("mission.members"), Integer.class);
 		COLUMNS[NAVPOINT_NUM] = new ColumnSpec(Msg.getString("MissionTableModel.column.navpoints"), Integer.class);
 		COLUMNS[TRAVELLED_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.travelled"), Double.class);
 		COLUMNS[REMAINING_DISTANCE_TO_NEXT_NAVPOINT] = new ColumnSpec(Msg.getString("MissionTableModel.column.leg.remaining"), Double.class);		

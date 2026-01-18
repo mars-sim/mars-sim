@@ -76,7 +76,7 @@ public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COL_TO_RESOURCE = new int[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
 		COLUMNS[POPULATION] = new ColumnSpec("Pop", Integer.class);
 		COLUMNS[PARKED] = new ColumnSpec("Parked Veh", Integer.class);
 		COLUMNS[MISSION] = new ColumnSpec("Mission Veh", Integer.class);

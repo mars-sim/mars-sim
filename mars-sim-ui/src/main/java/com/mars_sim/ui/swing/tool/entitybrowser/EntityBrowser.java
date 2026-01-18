@@ -60,7 +60,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     private static final String[] ENTITY_TYPES = {BUILDING, CONSTRUCTION, MISSION, PERSON, ROBOT, SCIENTIFIC_STUDY, TRANSPORT, VEHICLE};
     private static final int MAX_ITEMS = 30;
 
-    private static final String TOOLTIP = Msg.getString("Entity.doubleClick");
+    private static final String TOOLTIP = Msg.getString("entity.doubleClick");
 
     // Default configurations for name groupings
     private static record NameGrouping(String label, String filter) {}

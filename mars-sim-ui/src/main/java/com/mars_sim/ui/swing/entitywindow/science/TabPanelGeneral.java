@@ -50,7 +50,7 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 		AttributePanel infoPane = new AttributePanel();
 		
 		content.add(infoPane);
-		infoPane.addTextField(Msg.getString("Entity.name"), study.getName(), null);
+		infoPane.addTextField(Msg.getString("entity.name"), study.getName(), null);
 		infoPane.addTextField(Msg.getString("scientificstudy.science"), study.getScience().getName(), null);
 		infoPane.addTextField(Msg.getString("scientificstudy.level"), Integer.toString(study.getDifficultyLevel()), null);
 		infoPane.addTextField(Msg.getString("scientificstudy.phase"), study.getPhase().getName(), null);

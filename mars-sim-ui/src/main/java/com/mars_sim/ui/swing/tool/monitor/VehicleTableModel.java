@@ -85,7 +85,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
 		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Vehicle.type"), String.class);
 		COLUMNS[MODEL] = new ColumnSpec(Msg.getString("Vehicle.model"), String.class);
 		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
