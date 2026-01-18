@@ -105,7 +105,7 @@ public class Msg {
 	 * generated key if no translation is found.
 	 */
 	public static String getStringOptional(String category, String key) {
-		var fullKey = category + "." + key.toLowerCase(); //$NON-NLS-1$
+		var fullKey = category.toLowerCase() + "." + key.toLowerCase(); //$NON-NLS-1$
 		try {
 			return RESOURCE_BUNDLE.getString(fullKey);
 		} catch (MissingResourceException e) {
