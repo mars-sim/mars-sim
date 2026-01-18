@@ -8,12 +8,13 @@
 package com.mars_sim.console.chat.simcommand.unit;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.ConversationRole;
 import com.mars_sim.console.chat.simcommand.CommandHelper;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -47,7 +48,7 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 		List<String> names = new ArrayList<>();
 		
 		// Find possible malfunctions
-		MalfunctionConfig mc = SimulationConfig.instance().getMalfunctionConfiguration();
+		MalfunctionConfig mc = context.getSim().getConfig().getMalfunctionConfiguration();
 		for (MalfunctionMeta m : mc.getMalfunctionList()) {
 			if (m.isMatched(malfunctionManager.getScopes())) {
 				relatedMalfunctions.add(m);
@@ -102,6 +103,7 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 			else if (source instanceof Settlement settlement) {
 				// Offer the user a list of buildings		
 				List <Building> buildings = new ArrayList<>(settlement.getBuildingManager().getBuildingSet());
+				Collections.sort(buildings, Comparator.comparing(Building::getName));
 				owner = pickSelection(context, "building in " + settlement.getName(), buildings);
 			}
 			else {
@@ -122,14 +124,18 @@ public class MalfunctionCreateCommand extends AbstractUnitCommand {
 	 */
 	private static Malfunctionable pickSelection(Conversation context, String optionDesc,
 												 List<? extends Malfunctionable> options) {
-		List <String> names = new ArrayList<>();
-		for (Malfunctionable o : options) {
-			names.add(o.getName());
-		} 
+		List <String> names = options.stream()
+				.map(Malfunctionable::getName)
+				.toList();	
+
 		int selected = CommandHelper.getOptionInput(context, names, "Select a " + optionDesc);
 		Malfunctionable owner = null;
 		if (selected >= 0) {
 			owner = options.get(selected);
+			if (owner == null) {
+				context.println("No selection made.");
+				return null;
+			}
 			context.println("Selected " + owner.getName());
 		}
 

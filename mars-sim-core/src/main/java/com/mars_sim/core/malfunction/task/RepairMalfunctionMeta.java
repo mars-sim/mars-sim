@@ -33,7 +33,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * Meta task for the RepairMalfunction task. It acts in 2 roles:
@@ -186,29 +185,26 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 		
         // Add probability for all malfunctionable entities in person's local.
         for (Malfunctionable entity : source) {
-//			if (entity instanceof Robot) {
-//				// Note: robot's malfunction is not currently modeled
-//				// vehicle malfunctions are handled by other meta tasks
-//				continue;
-//			}
+			if (entity instanceof Robot) {
+				// Note: robot's malfunction is not currently modeled
+				// vehicle malfunctions are handled by other meta tasks
+				continue;
+			}
 
-			if (entity instanceof Vehicle) {
-			
-				MalfunctionManager manager = entity.getMalfunctionManager();
-				
-				if (manager.hasMalfunction()) {
-					// Create repair tasks for all active malfunctions
-					for(Malfunction mal : manager.getMalfunctions()) {
-						SettlementTask task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.INSIDE);
-						if (task != null) {
-							tasks.add(task);
-						}
-	
-						// Pick any EVA repair activities
-						task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.EVA);
-						if (task != null) {
-							tasks.add(task);
-						}
+			// Get the malfunction manager
+			MalfunctionManager manager = entity.getMalfunctionManager();
+			if (manager.hasMalfunction()) {
+				// Create repair tasks for all active malfunctions
+				for(Malfunction mal : manager.getMalfunctions()) {
+					SettlementTask task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.INSIDE);
+					if (task != null) {
+						tasks.add(task);
+					}
+
+					// Pick any EVA repair activities
+					task = createRepairTask(partStore, entity, mal, MalfunctionRepairWork.EVA);
+					if (task != null) {
+						tasks.add(task);
 					}
 				}
 			}
