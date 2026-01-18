@@ -65,7 +65,7 @@ class TabPanelSettlements extends EntityTableTabPanel<Authority>
             return switch (column) {
                 case 0 -> Msg.getString(("Entity.name"));
                 case 1 -> "Status";
-                case 2 -> Msg.getString("Settlement.population");
+                case 2 -> Msg.getString("settlement.population");
                 default -> null;
             };
         }

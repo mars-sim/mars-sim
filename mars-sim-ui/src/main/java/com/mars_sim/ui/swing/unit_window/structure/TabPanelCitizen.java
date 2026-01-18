@@ -62,12 +62,12 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	 */
 	public TabPanelCitizen(Settlement unit, UIContext context) {
 		super(
-			Msg.getString("Settlement.population"), //$NON-NLS-1$
+			Msg.getString("settlement.population"), //$NON-NLS-1$
 			ImageLoader.getIconByName(CITIZEN_ICON), null,
 			unit, context
 		);
 
-		setTableTitle(Msg.getString("Settlement.population"));
+		setTableTitle(Msg.getString("settlement.population"));
 	}
 
 	@Override

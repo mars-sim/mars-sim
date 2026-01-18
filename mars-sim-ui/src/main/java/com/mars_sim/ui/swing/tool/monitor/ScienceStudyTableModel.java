@@ -42,10 +42,10 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
 
         COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
         COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
-        COLUMNS[PHASE] = new ColumnSpec(Msg.getString("ScientificStudy.phase"), String.class);
-        COLUMNS[SCIENCE] = new ColumnSpec(Msg.getString("ScientificStudy.science"), String.class);
-        COLUMNS[LEVEL] = new ColumnSpec(Msg.getString("ScientificStudy.level"), Integer.class);
-        COLUMNS[COMPLETED] = new ColumnSpec(Msg.getString("ScientificStudy.completed"), Double.class, ColumnSpec.STYLE_PERCENTAGE);
+        COLUMNS[PHASE] = new ColumnSpec(Msg.getString("scientificstudy.phase"), String.class);
+        COLUMNS[SCIENCE] = new ColumnSpec(Msg.getString("scientificstudy.science"), String.class);
+        COLUMNS[LEVEL] = new ColumnSpec(Msg.getString("scientificstudy.level"), Integer.class);
+        COLUMNS[COMPLETED] = new ColumnSpec(Msg.getString("scientificstudy.completed"), Double.class, ColumnSpec.STYLE_PERCENTAGE);
     }
 
     private ScientificStudyManager mgr;

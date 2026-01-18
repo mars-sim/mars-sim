@@ -35,7 +35,7 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 		
 		// Parent Authority and the template
 		setHeading(settlement.getReportingAuthority(), "template", 
-				Msg.getString("Settlement.template"),
+				Msg.getString("settlement.template"),
 				settlement.getTemplate());
 
 		addDefaultTabPanel(new TabPanelGeneral(settlement, context));

@@ -40,7 +40,7 @@ public class RobotUnitWindow extends EntityContentPanel<Robot> {
 		super(robot, context);
 					
 		setHeading(robot.getAssociatedSettlement(), "specs", 
-				Msg.getString("Robot.type"), robot.getRobotType().getName());
+				Msg.getString("robot.type"), robot.getRobotType().getName());
 
 		// Add tab panels
 		addDefaultTabPanel(new TabPanelGeneralRobot(robot, context));

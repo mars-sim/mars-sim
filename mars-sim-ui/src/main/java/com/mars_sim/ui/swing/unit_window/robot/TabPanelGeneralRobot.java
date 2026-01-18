@@ -68,8 +68,8 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 		var r = getEntity();
 		var settlement = new EntityLabel(r.getAssociatedSettlement(), getContext());
 		infoPanel.addLabelledItem(Msg.getString("settlement.singular"), settlement);
-		infoPanel.addRow(Msg.getString("Robot.type"), r.getRobotType().getName());
-		infoPanel.addRow(Msg.getString("Robot.model"), r.getModel());
+		infoPanel.addRow(Msg.getString("robot.type"), r.getRobotType().getName());
+		infoPanel.addRow(Msg.getString("robot.model"), r.getModel());
 		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
 
 		String text = r.getDescription().replace("\n", " ").replace("\t", "");
@@ -102,7 +102,7 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 		tVolt = new JDoubleLabel(StyleManager.DECIMAL_V, battery.getTerminalVoltage());
 		battPanel.addLabelledItem("Terminal Voltage", tVolt);
 		health = new JDoubleLabel(StyleManager.DECIMAL2_PERC, battery.getHealth() * 100);
-		battPanel.addLabelledItem(Msg.getString("Robot.health"), health);
+		battPanel.addLabelledItem(Msg.getString("robot.health"), health);
 		degradPercent = new JDoubleLabel(StyleManager.DECIMAL2_PERC, battery.getPercentDegrade());
 		battPanel.addLabelledItem("Degradation", degradPercent);
 		cycles = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, battery.getNumCycles());

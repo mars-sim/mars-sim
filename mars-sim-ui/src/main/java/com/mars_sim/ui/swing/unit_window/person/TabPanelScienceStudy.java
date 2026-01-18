@@ -265,7 +265,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 			return switch (column) {
 				case NAME_COL -> Msg.getString("entity.name");
 				case ROLE_COL -> Msg.getString("TabPanelScience.column.role");
-				case PHASE_COL -> Msg.getString("ScientificStudy.phase");
+				case PHASE_COL -> Msg.getString("scientificstudy.phase");
 				case RESEARCH_COL -> Msg.getString("TabPanelScience.column.researchTime");
 				case PAPER_COL -> Msg.getString("TabPanelScience.column.paperTime");
 				default -> null;
@@ -313,7 +313,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 					break;
 				case ROLE_COL:
 					if (person.equals(study.getPrimaryResearcher()))
-						result = Msg.getString("ScientificStudy.lead");
+						result = Msg.getString("scientificstudy.lead");
 					else if (study.getCollaborativeResearchers().contains(person))
 						result = Msg.getString("scientificStudy.collaborator.singular"); //$NON-NLS-1$
 					break;
@@ -414,7 +414,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("ScientificStudy.science");
+				case 0 -> Msg.getString("scientificstudy.science");
 				case 1 -> Msg.getString("TabPanelScience.column.achievementCredit");
 				default -> null;
 			};
