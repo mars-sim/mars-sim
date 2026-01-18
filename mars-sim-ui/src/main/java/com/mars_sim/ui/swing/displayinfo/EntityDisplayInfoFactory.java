@@ -36,7 +36,7 @@ public final class EntityDisplayInfoFactory {
 	private static EntityDisplayInfo luvBean = new VehicleDisplayInfoBean("unit/luv");
 	private static EntityDisplayInfo deliveryDroneBean = new VehicleDisplayInfoBean("unit/drone");
 	private static EntityDisplayInfo equipmentBean = new EntityDisplayInfo("Equipment", SoundConstants.SND_EQUIPMENT);
-	private static EntityDisplayInfo constructionBean = new EntityDisplayInfo("ConsutructionSite");
+	private static EntityDisplayInfo constructionBean = new EntityDisplayInfo("ConstructionSite");
 
 	/**
 	 * Private constructor
