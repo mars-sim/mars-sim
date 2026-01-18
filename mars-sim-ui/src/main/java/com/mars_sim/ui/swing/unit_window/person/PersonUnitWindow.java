@@ -11,6 +11,7 @@ import java.util.Properties;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelActivity;
@@ -41,7 +42,11 @@ public class PersonUnitWindow extends EntityContentPanel<Person>
 	public PersonUnitWindow(Person person, UIContext context, Properties props) {
 				
 		super(person, context);
-		
+		var role = person.getRole();
+		setHeading(person.getAssociatedSettlement(), "career", 
+				Msg.getString("Person.role"),
+				(role != null) ? role.getType().getName() : null);
+
 		// Add tab panels	
 		addDefaultTabPanel(new TabPanelGeneral(person, context));
 		addTabPanel(new TabPanelActivity(person, context));

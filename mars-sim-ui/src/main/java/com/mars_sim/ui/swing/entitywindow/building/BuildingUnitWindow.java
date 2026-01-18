@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Function;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.unit_window.MaintenanceTabPanel;
@@ -32,6 +33,9 @@ public class BuildingUnitWindow extends EntityContentPanel<Building> {
      */
     public BuildingUnitWindow(Building building, UIContext context, Properties props) {
         super(building, context);
+
+		setHeading(building.getAssociatedSettlement(), "specs", 
+				Msg.getString("Building.type"), building.getBuildingType());
 
         // Add tab panels
         addDefaultTabPanel(new BuildingPanelGeneral(building, context));

@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.util.Properties;
 
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.unit_window.InventoryTabPanel;
@@ -32,6 +33,11 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 	public SettlementUnitWindow(Settlement settlement, UIContext context, Properties props) {
 		super(settlement, context);
 		
+		// Parent Authority and the template
+		setHeading(settlement.getReportingAuthority(), "template", 
+				Msg.getString("Settlement.template"),
+				settlement.getTemplate());
+
 		addDefaultTabPanel(new TabPanelGeneral(settlement, context));
 
 		addTabPanel(new TabPanelWeather(settlement, context));
