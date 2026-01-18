@@ -27,6 +27,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
@@ -42,15 +43,12 @@ public class BuildingPanelCooking extends EntityTabPanel<Building>
 	
 	// Domain members
 	private Cooking kitchen;
-	private JLabel numCooksLabel;
-	private JLabel numMealsTodayLabel;
+	private JIntegerLabel numCooksLabel;
+	private JIntegerLabel numMealsTodayLabel;
 	private JLabel mealGradeLabel;
 
 	// Cache
-	private int numCooksCache;
 	private String gradeCache = "";
-	
-	private int numMealsTodayCache;
 
 	private DishTableModel dishTableModel;
 
@@ -78,19 +76,16 @@ public class BuildingPanelCooking extends EntityTabPanel<Building>
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare cook number label
-		numCooksCache = kitchen.getNumCooks();
-		numCooksLabel = labelPanel.addTextField( Msg.getString("BuildingPanelCooking.numberOfCooks"), 
-									Integer.toString(numCooksCache), null); //-NLS-1$
+		numCooksLabel = new JIntegerLabel(kitchen.getNumCooks());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelCooking.numberOfCooks"), numCooksLabel, null); //-NLS-1$
 
 		// Prepare cook capacity label
 		labelPanel.addTextField( Msg.getString("BuildingPanelCooking.cookCapacity"), 
-									Integer.toString(kitchen.getCookCapacity()), null);
+							Integer.toString(kitchen.getCookCapacity()), null);
 
 		// Prepare # of today cooked meal label
-		numMealsTodayCache = kitchen.getTotalNumberOfCookedMealsToday();
-		numMealsTodayLabel = labelPanel.addTextField(Msg.getString("BuildingPanelCooking.mealsToday"),
-									Integer.toString(numMealsTodayCache), null); //-NLS-1$
-
+		numMealsTodayLabel = new JIntegerLabel(kitchen.getTotalNumberOfCookedMealsToday());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelCooking.mealsToday"), numMealsTodayLabel, null); //-NLS-1$
 		// Prepare meal grade label
 		String grade = DishRecipe.qualityToString(kitchen.getBestMealQuality());
 		mealGradeLabel = labelPanel.addTextField(Msg.getString("BuildingPanelCooking.bestQualityOfMeals"),
@@ -124,22 +119,11 @@ public class BuildingPanelCooking extends EntityTabPanel<Building>
 	 */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
-		int numCooks = 0;
-		numCooks = kitchen.getNumCooks();
 		// Update cook number
-		if (numCooksCache != numCooks) {
-			numCooksCache = numCooks;
-			numCooksLabel.setText(Integer.toString(numCooks));
-		}
+		numCooksLabel.setValue(kitchen.getNumCooks());
 
-
-		int numMealsToday = 0;
-		numMealsToday = kitchen.getTotalNumberOfCookedMealsToday();
 		// Update # of meals cooked today
-		if (numMealsTodayCache != numMealsToday) {
-			numMealsTodayCache = numMealsToday;
-			numMealsTodayLabel.setText(Integer.toString(numMealsToday));
-		}
+		numMealsTodayLabel.setValue(kitchen.getTotalNumberOfCookedMealsToday());
 
 		double mealQuality = kitchen.getBestMealQuality();
 		String grade = DishRecipe.qualityToString(mealQuality);

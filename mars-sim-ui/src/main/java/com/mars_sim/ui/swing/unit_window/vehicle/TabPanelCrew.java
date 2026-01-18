@@ -17,7 +17,6 @@ import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -43,6 +42,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
@@ -61,9 +61,7 @@ public class TabPanelCrew extends EntityTabPanel<Vehicle>
 
 	private OccupantTableModel memberTableModel;
 
-	private JLabel crewNumTF;
-
-	private int crewNumCache = -1;
+	private JIntegerLabel crewNumTF;
 
 	/**
 	 * Constructor.
@@ -91,11 +89,11 @@ public class TabPanelCrew extends EntityTabPanel<Vehicle>
 		AttributePanel crewCountPanel = new AttributePanel(2);
 		northPanel.add(crewCountPanel, BorderLayout.CENTER);
 
-		// Create crew num header label
-		crewNumTF = crewCountPanel.addTextField(Msg.getString("TabPanelCrew.crewNum"),
-								"",
-								 Msg.getString("TabPanelCrew.crew.tooltip"));
 		Crewable vehicle = (Crewable) getEntity();
+
+		// Create crew num header label
+		crewNumTF = new JIntegerLabel(vehicle.getCrewNum());
+		crewCountPanel.addLabelledItem(Msg.getString("TabPanelCrew.crewNum"), crewNumTF, Msg.getString("TabPanelCrew.crew.tooltip"));
 
 		// Create crew cap header label
 		int crewCapacityCache = vehicle.getCrewCapacity();
@@ -158,10 +156,7 @@ public class TabPanelCrew extends EntityTabPanel<Vehicle>
 
 		// Update crew num
 		Crewable crewable = (Crewable) getEntity();
-		if (crewNumCache != crewable.getCrewNum() ) {
-			crewNumCache = crewable.getCrewNum() ;
-			crewNumTF.setText(Integer.toString(crewNumCache));
-		}
+		crewNumTF.setValue(crewable.getCrewNum());
 
 		// Update crew table
 		memberTableModel.updateOccupantList();

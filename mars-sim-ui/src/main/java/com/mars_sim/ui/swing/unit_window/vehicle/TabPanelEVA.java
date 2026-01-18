@@ -27,8 +27,7 @@ import com.mars_sim.core.vehicle.VehicleAirlock;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
-import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.UIContext;import com.mars_sim.ui.swing.components.JIntegerLabel;import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -51,11 +50,6 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 	private boolean activationCache;
 	private boolean transitionCache;
 	
-	private int innerDoorCache;
-	private int outerDoorCache;
-	private int occupiedCache;
-	private int emptyCache;
-	
 	private double cycleTimeCache;
 	
 	private String operatorCache = "";
@@ -65,10 +59,10 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 
 	private AirlockMode airlockModeCache;
 	
-	private JLabel innerDoorLabel;
-	private JLabel outerDoorLabel;
-	private JLabel occupiedLabel;
-	private JLabel emptyLabel;
+	private JIntegerLabel innerDoorLabel;
+	private JIntegerLabel outerDoorLabel;
+	private JIntegerLabel occupiedLabel;
+	private JIntegerLabel emptyLabel;
 	private JLabel operatorLabel;
 	private JLabel airlockStateLabel;
 	private JLabel activationLabel;
@@ -146,8 +140,8 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 										   innerDoorStateCache);
 
 		// Create innerDoorLabel
-		innerDoorLabel = westGrid.addRow(Msg.getString("TabPanelEVA.innerDoor.number"),
-						Integer.toString(vehicleAirlock.getNumAwaitingInnerDoor()));
+		innerDoorLabel = new JIntegerLabel(vehicleAirlock.getNumAwaitingInnerDoor());
+		westGrid.addLabelledItem(Msg.getString("TabPanelEVA.innerDoor.number"), innerDoorLabel, null);
 
 		if (vehicleAirlock.isOuterDoorLocked())
 			outerDoorStateCache = LOCKED;
@@ -159,25 +153,23 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 										   outerDoorStateCache);
 
 		// Create outerDoorLabel
-		outerDoorLabel = westGrid.addRow(Msg.getString("TabPanelEVA.outerDoor.number"),
-									Integer.toString(vehicleAirlock.getNumAwaitingOuterDoor()));
-		
+		outerDoorLabel = new JIntegerLabel(vehicleAirlock.getNumAwaitingOuterDoor());
+		westGrid.addLabelledItem(Msg.getString("TabPanelEVA.outerDoor.number"), outerDoorLabel, null);
 		// Create airlockModeLabel
 		airlockModeLabel = eastGrid.addRow(Msg.getString("TabPanelEVA.airlock.mode"),
 											vehicleAirlock.getAirlockMode().getName());
 
 		// Create occupiedLabel
-		occupiedLabel = westGrid.addRow(Msg.getString("TabPanelEVA.occupied"),
-											Integer.toString(vehicleAirlock.getNumInChamber()));
+		occupiedLabel = new JIntegerLabel(vehicleAirlock.getNumInChamber());
+		westGrid.addLabelledItem(Msg.getString("TabPanelEVA.occupied"), occupiedLabel, null);
 
 		// Create airlockStateLabel
 		airlockStateLabel = eastGrid.addRow(Msg.getString("TabPanelEVA.airlock.state"),
-											vehicleAirlock.getState().toString());
+									vehicleAirlock.getState().toString());
 
 		// Create emptyLabel
-		emptyLabel = westGrid.addRow(Msg.getString("TabPanelEVA.empty"),
-											Integer.toString(vehicleAirlock.getNumEmptied()));
-
+		emptyLabel = new JIntegerLabel(vehicleAirlock.getNumEmptied());
+		westGrid.addLabelledItem(Msg.getString("TabPanelEVA.empty"), emptyLabel, null);
 		// Create transitionLabel
 		transitionLabel = eastGrid.addRow(Msg.getString("TabPanelEVA.airlock.transition"),
 				Conversion.capitalize0(Boolean.toString(vehicleAirlock.isTransitioning())));
@@ -259,32 +251,16 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 	public void clockUpdate(ClockPulse pulse) {
 
 		// Update innerDoorLabel
-		int inner = vehicleAirlock.getNumAwaitingInnerDoor();
-		if (innerDoorCache != inner) {
-			innerDoorCache = inner;
-			innerDoorLabel.setText(Integer.toString(inner));
-		}
+		innerDoorLabel.setValue(vehicleAirlock.getNumAwaitingInnerDoor());
 
 		// Update outerDoorLabel
-		int outer = vehicleAirlock.getNumAwaitingOuterDoor();
-		if (outerDoorCache != outer) {
-			outerDoorCache = outer;
-			outerDoorLabel.setText(Integer.toString(outer));
-		}
+		outerDoorLabel.setValue(vehicleAirlock.getNumAwaitingOuterDoor());
 
 		// Update occupiedLabel
-		int numChamber = vehicleAirlock.getNumInChamber();
-		if (occupiedCache != numChamber) {
-			occupiedCache = numChamber;
-			occupiedLabel.setText(Integer.toString(numChamber));
-		}
+		occupiedLabel.setValue(vehicleAirlock.getNumInChamber());
 
 		// Update emptyLabel
-		int emptyNumChamber = vehicleAirlock.getNumEmptied();
-		if (emptyCache != emptyNumChamber) {
-			emptyCache = emptyNumChamber;
-			emptyLabel.setText(Integer.toString(emptyNumChamber));
-		}
+		emptyLabel.setValue(vehicleAirlock.getNumEmptied());
 
 		// Update operatorLabel
 		String name = vehicleAirlock.getOperatorName();

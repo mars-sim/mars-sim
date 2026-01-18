@@ -7,7 +7,6 @@
 
 package com.mars_sim.ui.swing.entitywindow.building;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.table.TableModel;
 
@@ -18,10 +17,10 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.ActivitySpotModel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-
 
 /**
  * The BuildingPanelLiving class is a building function panel representing
@@ -33,8 +32,7 @@ class BuildingPanelAccommodation extends EntityTableTabPanel<Building>
 
 	private static final String BED_ICON = "bed";
 	
-	private int bedOccupiedCache;
-	private JLabel bedOccupiedLabel;
+	private JIntegerLabel bedOccupiedLabel;
 
 	private LivingAccommodation living;
 
@@ -66,16 +64,15 @@ class BuildingPanelAccommodation extends EntityTableTabPanel<Building>
 	@Override
 	protected JPanel createInfoPanel() {
 		// Create label panel
-		AttributePanel labelPanel = new AttributePanel();
+		var labelPanel = new AttributePanel();
 
 		// Create bed capacity label
 		labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.beds.capacity"),
 									Integer.toString(living.getBedCap()), "Max number of beds available");
 
 		// Create bedOccupiedLabel
-		bedOccupiedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.beds.assigned"),
-									Integer.toString(living.getNumOccupiedActivitySpots()), "Number of beds already occupied");
-
+		bedOccupiedLabel = new JIntegerLabel(living.getNumOccupiedActivitySpots());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAccommodation.beds.assigned"), bedOccupiedLabel, "Number of beds already occupied");
 		// Create guest bed capacity label
 		labelPanel.addTextField(Msg.getString("BuildingPanelAccommodation.guesthouse"),
 									Boolean.toString(living.isGuestHouse()), "Max number of guest beds available");
@@ -97,10 +94,7 @@ class BuildingPanelAccommodation extends EntityTableTabPanel<Building>
 	public void clockUpdate(ClockPulse pulse) {
 
 		// Update bedOccupiedLabel
-		if (bedOccupiedCache != living.getNumOccupiedActivitySpots()) {
-			bedTableModel.refresh();
-			bedOccupiedCache = living.getNumOccupiedActivitySpots();
-			bedOccupiedLabel.setText(Integer.toString(bedOccupiedCache));
-		}
+		bedOccupiedLabel.setValue(living.getNumOccupiedActivitySpots());
+		bedTableModel.refresh();
 	}
 }

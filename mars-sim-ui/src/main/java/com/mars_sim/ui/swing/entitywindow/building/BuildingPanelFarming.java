@@ -22,7 +22,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -51,6 +50,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
@@ -84,13 +84,10 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 	private static final String PAR_REQUIRED = "<br>&nbsp;&nbsp;PAR required:&emsp;";
 	private static final String MOL_M2_DAY = " mol/m\u00b2/day";
 	
-	/** The number of farmers cache. */
-	private int farmersCache;
-	
 	private JDoubleLabel lightingLabel;
 	private JDoubleLabel radLabel;
-	private JLabel farmerLabel;
-	private JLabel cropsLabel;
+	private JIntegerLabel farmerLabel;
+	private JIntegerLabel cropsLabel;
 	private JDoubleLabel workTimeLabel;
 	private JDoubleLabel areaUsageLabel;
 	
@@ -123,9 +120,8 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 	private JList<String> list;
 
 	private CropConfig cropConfig;
-	private SurfaceFeatures surfaceFeatures;
 
-	private int cropsCache;
+	private SurfaceFeatures surfaceFeatures;
 
 
 	/**
@@ -167,19 +163,15 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.solarIrradiance.title"), radLabel, "Estimated sunlight on top of the greenhouse roof");
 
 		// Prepare farmers label
-		farmersCache = farm.getFarmerNum();
-		farmerLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numFarmers.title"),
-				                 Integer.toString(farmersCache), "# of active gardeners tending the greenhouse");
-
+		farmerLabel = new JIntegerLabel(farm.getFarmerNum());
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.numFarmers.title"), farmerLabel, "# of active gardeners tending the greenhouse");
 		lightingLabel = new JDoubleLabel(StyleManager.DECIMAL2_KW, farm.getCombinedPowerLoad());
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.lighting"), lightingLabel,
 			 	Msg.getString("BuildingPanelFarming.lighting.tooltip"));
 		
 		// Prepare crops label
-		cropsCache = farm.getCrops().size();
-		cropsLabel = springPanel.addTextField(Msg.getString("BuildingPanelFarming.numCrops.title"),
-							   Integer.toString(cropsCache), null);
-
+		cropsLabel = new JIntegerLabel(farm.getCrops().size());
+		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.numCrops.title"), cropsLabel, null);
 		// Calculate the area usage
 		var remainingAreaCache = farm.getRemainingArea();
 		var totalAreaCache = farm.getGrowingArea();
@@ -395,18 +387,10 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 	public void clockUpdate(ClockPulse pulse) {
 		
 		// Update farmers label if necessary.
-		int farmers = farm.getFarmerNum();
-		if (farmersCache != farmers) {
-			farmersCache = farmers;
-			farmerLabel.setText(String.valueOf(farmers));
-		}
+		farmerLabel.setValue(farm.getFarmerNum());
 		
 		// Update crops label if necessary.
-		int crops = farm.getCrops().size();
-		if (cropsCache != crops) {
-			cropsCache = crops;
-			cropsLabel.setText(String.valueOf(crops));
-		}
+		cropsLabel.setValue(farm.getCrops().size());
 
 		// Update lighting label 
 		lightingLabel.setValue(farm.getCombinedPowerLoad());
