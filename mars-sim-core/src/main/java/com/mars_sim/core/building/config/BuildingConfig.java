@@ -220,7 +220,7 @@ public class BuildingConfig {
 			case COOKING -> "Cook";
 			case EVA -> "Room";
 			case DINING -> "Dine";
-			case LIVING_ACCOMMODATION -> "Bed";
+			case LIVING_ACCOMMODATION -> "Bunk";
 			case MANAGEMENT -> "Mgt";
 			case MANUFACTURE -> "Slot";
 			case MEDICAL_CARE -> "Bay";

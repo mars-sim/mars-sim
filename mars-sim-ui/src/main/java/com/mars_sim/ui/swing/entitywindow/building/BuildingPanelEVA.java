@@ -31,6 +31,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
@@ -52,24 +53,19 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 	private boolean activationCache;
 	private boolean transitionCache;
 	
-	private int innerDoorCache;
-	private int outerDoorCache;
-	private int occupiedCache;
-	private int emptyCache;
-	
 	private String operatorCache = "";
 	private String airlockStateCache = "";
 	private String innerDoorStateCache = "";
 	private String outerDoorStateCache = "";
 	
-	private final String WIKI_URL = "https://github.com/mars-sim/mars-sim/wiki/Airlock";
+	private static final String WIKI_URL = "https://github.com/mars-sim/mars-sim/wiki/Airlock";
 	
 	private AirlockMode airlockModeCache;
 
-	private JLabel innerDoorLabel;
-	private JLabel outerDoorLabel;
-	private JLabel occupiedLabel;
-	private JLabel emptyLabel;
+	private JIntegerLabel innerDoorLabel;
+	private JIntegerLabel outerDoorLabel;
+	private JIntegerLabel occupiedLabel;
+	private JIntegerLabel emptyLabel;
 	private JLabel operatorLabel;
 	private JLabel airlockStateLabel;
 	private JLabel activationLabel;
@@ -138,13 +134,12 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 			innerDoorStateCache = UNLOCKED;
 		}
 		// Create innerDoorStateLabel
-		innerDoorStateLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.innerDoor.state"),
-										   innerDoorStateCache);
+		innerDoorStateLabel = eastGrid.addTextField( Msg.getString("BuildingPanelEVA.innerDoor.state"),
+										   innerDoorStateCache, null);
 
 		// Create innerDoorLabel
-		innerDoorLabel = westGrid.addRow(Msg.getString("BuildingPanelEVA.innerDoor.number"),
-									  Integer.toString(eva.getNumAwaitingInnerDoor()));
-
+		innerDoorLabel = new JIntegerLabel(eva.getNumAwaitingInnerDoor());
+		westGrid.addLabelledItem(Msg.getString("BuildingPanelEVA.innerDoor.number"), innerDoorLabel, null);
 
 		if (eva.getAirlock().isOuterDoorLocked())
 			outerDoorStateCache = LOCKED;
@@ -152,46 +147,43 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 			outerDoorStateCache = UNLOCKED;
 		}
 		// Create outerDoorStateLabel
-		outerDoorStateLabel = eastGrid.addRow(Msg.getString("BuildingPanelEVA.outerDoor.state"),
-										   outerDoorStateCache);
+		outerDoorStateLabel = eastGrid.addTextField(Msg.getString("BuildingPanelEVA.outerDoor.state"),
+										   outerDoorStateCache, null);
 	
 		// Create outerDoorLabel
-		outerDoorLabel = westGrid.addRow(Msg.getString("BuildingPanelEVA.outerDoor.number"),
-									  Integer.toString(eva.getNumAwaitingOuterDoor()));
-
+		outerDoorLabel = new JIntegerLabel(eva.getNumAwaitingOuterDoor());
+		westGrid.addLabelledItem(Msg.getString("BuildingPanelEVA.outerDoor.number"), outerDoorLabel, null);
 		// Create airlockModeLabel
 		airlockModeCache = buildingAirlock.getAirlockMode();
 		
-		airlockModeLabel = eastGrid.addRow(Msg.getString("BuildingPanelEVA.airlock.mode"),
-				airlockModeCache.getName());
+		airlockModeLabel = eastGrid.addTextField(Msg.getString("BuildingPanelEVA.airlock.mode"),
+				airlockModeCache.getName(), null);
 
 		// Create occupiedLabel
-		occupiedLabel = westGrid.addRow(Msg.getString("BuildingPanelEVA.occupied"),
-									 Integer.toString(eva.getNumInChamber()));
-
+		occupiedLabel = new JIntegerLabel(eva.getNumInChamber());
+		westGrid.addLabelledItem(Msg.getString("BuildingPanelEVA.occupied"), occupiedLabel, null);
 		// Create airlockStateLabel
-		airlockStateLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.state"),
-								buildingAirlock.getState().toString());
+		airlockStateLabel = eastGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.state"),
+								buildingAirlock.getState().toString(), null);
 
 		// Create emptyLabel
-		emptyLabel = westGrid.addRow( Msg.getString("BuildingPanelEVA.empty"),
-								  Integer.toString(eva.getNumEmptied()));
-		
+		emptyLabel = new JIntegerLabel(eva.getNumEmptied());
+		westGrid.addLabelledItem(Msg.getString("BuildingPanelEVA.empty"), emptyLabel, null);
 		// Create transitionLabel
-		transitionLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.transition"),
-				Conversion.capitalize0(Boolean.toString(buildingAirlock.isTransitioning())));
+		transitionLabel = eastGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.transition"),
+				Conversion.capitalize0(Boolean.toString(buildingAirlock.isTransitioning())), null);
 
 		// Create cycleTimeLabel
 		cycleTimeLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES1, buildingAirlock.getRemainingCycleTime());
 		westGrid.addLabelledItem(Msg.getString("BuildingPanelEVA.airlock.cycleTime"), cycleTimeLabel);
 
 		// Create OperatorLabel
-		operatorLabel = eastGrid.addRow( Msg.getString("BuildingPanelEVA.operator"),
-									 eva.getOperatorName());
+		operatorLabel = eastGrid.addTextField( Msg.getString("BuildingPanelEVA.operator"),
+									 eva.getOperatorName(), null);
 
 		// Create activationLabel
-		activationLabel = westGrid.addRow( Msg.getString("BuildingPanelEVA.airlock.activation"),
-				Conversion.capitalize0(Boolean.toString(buildingAirlock.isActivated())));
+		activationLabel = westGrid.addTextField( Msg.getString("BuildingPanelEVA.airlock.activation"),
+				Conversion.capitalize0(Boolean.toString(buildingAirlock.isActivated())), null);
 		
 		// Create gridPanel
 		JPanel gridPanel = new JPanel(new GridLayout(2, 2));
@@ -264,32 +256,16 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 	public void clockUpdate(ClockPulse pulse) {
 
 		// Update innerDoorLabel
-		int inner = eva.getNumAwaitingInnerDoor();
-		if (innerDoorCache != inner) {
-			innerDoorCache = inner;
-			innerDoorLabel.setText(Integer.toString(inner));
-		}
+		innerDoorLabel.setValue(eva.getNumAwaitingInnerDoor());
 
 		// Update outerDoorLabel
-		int outer = eva.getNumAwaitingOuterDoor();
-		if (outerDoorCache != outer) {
-			outerDoorCache = outer;
-			outerDoorLabel.setText(Integer.toString(outer));
-		}
+		outerDoorLabel.setValue(eva.getNumAwaitingOuterDoor());
 
 		// Update occupiedLabel
-		int numChamber = eva.getNumInChamber();
-		if (occupiedCache != numChamber) {
-			occupiedCache = numChamber;
-			occupiedLabel.setText(Integer.toString(numChamber));
-		}
+		occupiedLabel.setValue(eva.getNumInChamber());
 
 		// Update emptyLabel
-		int emptyNumChamber = eva.getNumEmptied();
-		if (emptyCache != emptyNumChamber) {
-			emptyCache = emptyNumChamber;
-			emptyLabel.setText(Integer.toString(emptyNumChamber));
-		}
+		emptyLabel.setValue(eva.getNumEmptied());
 
 		// Update operatorLabel
 		String name = eva.getOperatorName();
