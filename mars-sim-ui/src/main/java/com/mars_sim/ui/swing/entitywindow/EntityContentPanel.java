@@ -8,10 +8,15 @@ package com.mars_sim.ui.swing.entitywindow;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import com.mars_sim.core.Entity;
@@ -20,12 +25,15 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
+import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.
@@ -87,14 +95,13 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     }
 
     /**
-     * Get the entity type string for the given entity. This uses the lanugage
-     * resource bundle to get the singular form of the entity type.
+     * Get the entity type string for the given entity.
+     * This can be used as a key in the Msg class and also a key to the associated icon.
      * @param entity Entity to get the type for.
      * @return Name of the type.
      */
     private static String getEntityType(Entity entity) {
-        String typeKey = entity.getClass().getSimpleName();
-        return Msg.getString(typeKey + ".singular");
+        return EntityDisplayInfoFactory.getDisplayInfo(entity).getSingularLabel();
     }
 
     /**
@@ -111,6 +118,37 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 		return selected;
 	}
 
+    /**
+     * Set the heading panel for the entity window. This will create a panel
+     * with the parent entity on the left and the category on the right.
+     * @param parent Parent entity to display on the left.
+     * @param categoryIcon Icon name for the category on the right.
+     * @param categoryName Name of the category on the right.
+     * @param categoryValue Value of the category on the right.
+     */
+    protected void setHeading(Entity parent, String categoryIcon, String categoryName, String categoryValue) {
+        var infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        infoPanel.setBorder(new MarsPanelBorder());
+        add(infoPanel, BorderLayout.NORTH);
+
+        // Left hand label is based on the type of the parent entity
+        var displayinfo = EntityDisplayInfoFactory.getDisplayInfo(parent);
+        infoPanel.add(createLabelValue(displayinfo.getButtonIcon(parent), displayinfo.getSingularLabel(),
+                    new EntityLabel(parent, getContext())));
+
+        // Right hand label is based on the category
+        var categoryIconImage = ImageLoader.getIconByName(categoryIcon);
+        infoPanel.add(createLabelValue(categoryIconImage, categoryName, new JLabel(categoryValue)));
+    }
+
+    private static JPanel createLabelValue(Icon icon, String label, JComponent value) {
+        var panel = new JPanel();
+        var left = new JLabel(icon);
+        left.setToolTipText(label);
+        panel.add(left);
+        panel.add(value);
+        return panel;
+    }
     /**
      * Apply the initial UI Properties to the entity window
      * @param props Any initial properties for the window.

@@ -10,6 +10,7 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 import java.util.Properties;
 
 import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
@@ -39,6 +40,9 @@ public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 	 */
 	public VehicleUnitWindow(Vehicle vehicle, UIContext context, Properties props) {
 		super(vehicle, context);
+
+		setHeading(vehicle.getAssociatedSettlement(), "specs", 
+				Msg.getString("Vehicle.type"), vehicle.getSpecName());
 
 		// Add as the first panel
 		addDefaultTabPanel(new TabPanelGeneralVehicle(vehicle, context));

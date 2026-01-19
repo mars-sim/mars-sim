@@ -10,6 +10,7 @@ package com.mars_sim.ui.swing.entitywindow.construction;
 import java.util.Properties;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.unit_window.LocationTabPanel;
@@ -33,6 +34,9 @@ public class ConstructionSiteWindow extends EntityContentPanel<ConstructionSite>
     public ConstructionSiteWindow(ConstructionSite constructionSite, UIContext context, Properties props) {
         // Use UnitWindow constructor
         super(constructionSite, context);
+
+        setHeading(constructionSite.getAssociatedSettlement(), "building", 
+				Msg.getString("Building.singular"), constructionSite.getBuildingName());
 
         // Add tab panels
         addDefaultTabPanel(new TabPanelSiteGeneral(constructionSite, context));

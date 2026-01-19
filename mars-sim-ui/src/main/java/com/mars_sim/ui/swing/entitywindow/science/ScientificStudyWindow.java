@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.entitywindow.science;
 import java.util.Properties;
 
 import com.mars_sim.core.science.ScientificStudy;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 
@@ -29,6 +30,9 @@ public class ScientificStudyWindow extends EntityContentPanel<ScientificStudy> {
      */
     public ScientificStudyWindow(ScientificStudy study, UIContext context, Properties props) {
         super(study, context);
+
+        setHeading(study.getPrimarySettlement(), "science", 
+				Msg.getString("ScientificStudy.science"), study.getScience().getName());
 
         addDefaultTabPanel(new TabPanelGeneral(study, context));
         addTabPanel(new TabPanelCollaborators(study, context));

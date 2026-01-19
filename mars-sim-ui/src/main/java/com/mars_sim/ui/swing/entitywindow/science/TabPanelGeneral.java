@@ -57,8 +57,6 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 		
 		infoPane.addLabelledItem(Msg.getString("ScientificStudy.lead"),
 									new EntityLabel(study.getPrimaryResearcher(), getContext()));
-		infoPane.addLabelledItem(Msg.getString("Settlement.singular"),
-									new EntityLabel(study.getPrimarySettlement(), getContext()));
 
 		progress = new JProgressBar(0, 100);
 		progress.setStringPainted(true);
