@@ -249,7 +249,7 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 	private class ActivityPanel extends JHistoryPanel<OneActivity> {
 		private static final ColumnSpec[] COLUMNS = {
 								new ColumnSpec(Msg.getString("entity.description"), String.class),
-								new ColumnSpec(Msg.getString("Task.phase"), String.class),
+								new ColumnSpec(Msg.getString("task.phase"), String.class),
 								new ColumnSpec(Msg.getString("mission.singular"), String.class)
 										};
 

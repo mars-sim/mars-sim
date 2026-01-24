@@ -68,7 +68,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 	public TabPanelScienceStudy(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("scientificStudy.singular"), 
+			Msg.getString("scientificstudy.science"), 
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			null,
 			context, person
@@ -89,7 +89,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 
 		// Create the studies panel.
 		JPanel studiesPane = new JPanel(new BorderLayout());
-		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificStudy.plural"))); //$NON-NLS-1$
+		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificstudy.plural"))); //$NON-NLS-1$
 		mainPane.add(studiesPane);
 
 		// Create the study scroll panel.
@@ -123,7 +123,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 						"", null);
 		primaryCompletedLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.numPrimary"), //$NON-NLS-1$
 						"", null);
-		collabCompletedLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.numCollab"), //$NON-NLS-1$
+		collabCompletedLabel = achievementLabelPane.addTextField(Msg.getString("scientificstudy.collaborator.plural"), //$NON-NLS-1$
 						"", null);
 
 		// Create the achievement scroll panel.

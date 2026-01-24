@@ -49,14 +49,14 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     public static final String ICON = "action/entitybrowser";
 
     // This values MUST match the Entity prefix used in message.properties
-    private static final String PERSON = "Person";
-    private static final String BUILDING = "Building";
-    private static final String CONSTRUCTION = "ConstructionSite";
-    private static final String VEHICLE = "Vehicle";
-    private static final String ROBOT = "Robot";
-    private static final String MISSION = "Mission";
-    private static final String SCIENTIFIC_STUDY = "ScientificStudy";
-    private static final String TRANSPORT = "TransportItem";
+    private static final String PERSON = "person";
+    private static final String BUILDING = "building";
+    private static final String CONSTRUCTION = "constructionsite";
+    private static final String VEHICLE = "vehicle";
+    private static final String ROBOT = "robot";
+    private static final String MISSION = "mission";
+    private static final String SCIENTIFIC_STUDY = "scientificstudy";
+    private static final String TRANSPORT = "transportitem";
     private static final String[] ENTITY_TYPES = {BUILDING, CONSTRUCTION, MISSION, PERSON, ROBOT, SCIENTIFIC_STUDY, TRANSPORT, VEHICLE};
     private static final int MAX_ITEMS = 30;
 
