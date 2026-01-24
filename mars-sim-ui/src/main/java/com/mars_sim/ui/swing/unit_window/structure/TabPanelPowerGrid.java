@@ -356,7 +356,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
 				case 0 -> Msg.getString("TabPanelPowerGrid.column.s");
-				case 1 -> Msg.getString("Building.singular");
+				case 1 -> Msg.getString("building.singular");
 				case 2 -> Msg.getString("TabPanelPowerGrid.column.generated");
 				case 3 -> Msg.getString("TabPanelPowerGrid.column.used");
 				case 4 -> Msg.getString("TabPanelPowerGrid.column.stored");

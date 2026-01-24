@@ -13,7 +13,6 @@ import java.util.Set;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.building.function.FunctionType;
-import com.mars_sim.core.building.function.SystemType;
 import com.mars_sim.core.map.location.BoundedObject;
 
 /**
@@ -105,7 +104,7 @@ public class BuildingSpec {
 		}
 		
 		// Add 'building' as a scope name
-		systemScopes.add(SystemType.BUILDING.getName());
+		systemScopes.add("building");
 		// Add the building type as a scope name
 		systemScopes.add(buildingType);
 

@@ -127,7 +127,7 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		jobComboBox.setSelectedItem(jobCache);
 		jobComboBox.addActionListener(this);
 		jobComboBox.setRenderer(new NamedListCellRenderer());
-		attrPanel.addLabelledItem(Msg.getString("Person.job"), jobComboBox);
+		attrPanel.addLabelledItem(Msg.getString("person.job"), jobComboBox);
 
 		// Prepare role selector
 		roleCache = person.getRole().getType();
@@ -137,7 +137,7 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		roleComboBox.setSelectedItem(roleCache);
 		roleComboBox.addActionListener(this);
 		roleComboBox.setRenderer(new NamedListCellRenderer());
-		attrPanel.addLabelledItem(Msg.getString("Person.role"), roleComboBox);
+		attrPanel.addLabelledItem(Msg.getString("person.role"), roleComboBox);
 
 		// Create ratings
 		AssignmentHistory jobHistory = person.getJobHistory();
@@ -599,7 +599,7 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
 				case 0 -> Msg.getString("Time");
-				case 1 -> Msg.getString("Person.role");
+				case 1 -> Msg.getString("person.role");
 				default -> null;
 			};
 		}
@@ -666,7 +666,7 @@ class TabPanelCareer extends EntityTabPanel<Person>
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
 				case 0 -> Msg.getString("Time"); //$NON-NLS-1$
-				case 1 -> Msg.getString("Person.job"); //$NON-NLS-1$
+				case 1 -> Msg.getString("person.job"); //$NON-NLS-1$
 				case 2 -> Msg.getString("TabPanelCareer.column.initiated"); //$NON-NLS-1$
 				case 3 -> Msg.getString("TabPanelCareer.column.status"); //$NON-NLS-1$
 				case 4 -> Msg.getString("TabPanelCareer.column.authorized"); //$NON-NLS-1$

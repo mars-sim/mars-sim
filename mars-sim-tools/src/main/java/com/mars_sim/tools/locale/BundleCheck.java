@@ -155,7 +155,7 @@ public class BundleCheck {
      * @param enumClass the enum class to process
      */
     private <T extends Enum<T>>  void loadEnum(Set<String> results, Class<T> enumClass) {
-        String mainKey = enumClass.getSimpleName() + ".";
+        String mainKey = enumClass.getSimpleName().toLowerCase() + ".";
         for(var v : enumClass.getEnumConstants()) {
             results.add(mainKey + v.name().toLowerCase());
         }

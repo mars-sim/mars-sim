@@ -59,7 +59,7 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
         content.add(springPanel, BorderLayout.NORTH);
 
 		odometerTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getOdometerMileage());
-		springPanel.addLabelledItem(Msg.getString("Vehicle.odometer"), odometerTF);
+		springPanel.addLabelledItem(Msg.getString("vehicle.odometer"), odometerTF);
 		maintTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getDistanceLastMaintenance());
 		springPanel.addLabelledItem(Msg.getString("TabPanelLog.label.maintDist"), maintTF);
 
@@ -83,7 +83,7 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 	 * Internal class used as model for the attribute table.
 	 */
 	private static class LogPanel extends JHistoryPanel<Set<StatusType>> {
-		private static final ColumnSpec[] COLUMNS = {new ColumnSpec(Msg.getString("Vehicle.status"), String.class)};
+		private static final ColumnSpec[] COLUMNS = {new ColumnSpec(Msg.getString("vehicle.status"), String.class)};
 
 		LogPanel(History<Set<StatusType>> source) {
 			super(source, COLUMNS);

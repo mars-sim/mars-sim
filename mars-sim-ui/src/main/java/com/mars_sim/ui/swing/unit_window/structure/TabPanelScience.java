@@ -66,7 +66,7 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 	public TabPanelScience(Settlement settlement, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("ScientificStudy.science"), //$NON-NLS-1$
+			Msg.getString("scientificstudy.science"), //$NON-NLS-1$
 			ImageLoader.getIconByName(SCIENCE_ICON), null,
 			context, settlement
 		);
@@ -84,7 +84,7 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
-		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("ScientificStudy.plural")));
+		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificStudy.plural")));
 
 		// Create the study scroll panel.
 		JScrollPane studyScrollPane = new JScrollPane();
@@ -223,11 +223,11 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 		@Override
 		public String getColumnName(int column) {
 			return switch (column) {
-				case 0 -> Msg.getString("Entity.name");
-				case 1 -> Msg.getString("ScientificStudy.science");
-				case 2 -> Msg.getString("ScientificStudy.level");	
-				case 3 -> Msg.getString("ScientificStudy.phase");
-				case 4 -> Msg.getString("ScientificStudy.lead");
+				case 0 -> Msg.getString("entity.name");
+				case 1 -> Msg.getString("scientificstudy.science");
+				case 2 -> Msg.getString("scientificstudy.level");	
+				case 3 -> Msg.getString("scientificstudy.phase");
+				case 4 -> Msg.getString("scientificstudy.lead");
 				default -> null;
 			};
 		}
@@ -346,7 +346,7 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("ScientificStudy.science");
+				case 0 -> Msg.getString("scientificstudy.science");
 				case 1 -> Msg.getString("TabPanelScience.column.achievementCredit");
 				default -> null;
 			};

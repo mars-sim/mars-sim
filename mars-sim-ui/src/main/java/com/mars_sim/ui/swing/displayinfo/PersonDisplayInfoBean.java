@@ -22,7 +22,7 @@ class PersonDisplayInfoBean extends EntityDisplayInfo {
 	 * Constructor.
 	 */
 	PersonDisplayInfoBean() {
-		super("Person");
+		super("person");
 	}
 
 	/**

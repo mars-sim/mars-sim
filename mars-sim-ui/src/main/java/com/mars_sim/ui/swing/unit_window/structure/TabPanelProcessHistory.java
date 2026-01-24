@@ -69,7 +69,7 @@ class TabPanelProcessHistory extends EntityTabPanel<Settlement> implements Tempo
 		private static final ColumnSpec[] COLUMNS = {
                         new ColumnSpec("Process", String.class),
                         new ColumnSpec("Type", String.class),
-                        new ColumnSpec(Msg.getString("Entity.internalPosn"), String.class)
+                        new ColumnSpec(Msg.getString("entity.internalPosn"), String.class)
                     };
 
 

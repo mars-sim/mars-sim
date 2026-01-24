@@ -32,7 +32,7 @@ public class ScientificStudyWindow extends EntityContentPanel<ScientificStudy> {
         super(study, context);
 
         setHeading(study.getPrimarySettlement(), "science", 
-				Msg.getString("ScientificStudy.science"), study.getScience().getName());
+				Msg.getString("scientificstudy.science"), study.getScience().getName());
 
         addDefaultTabPanel(new TabPanelGeneral(study, context));
         addTabPanel(new TabPanelCollaborators(study, context));

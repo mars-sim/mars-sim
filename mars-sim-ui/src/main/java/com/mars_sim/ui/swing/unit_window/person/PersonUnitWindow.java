@@ -44,7 +44,7 @@ public class PersonUnitWindow extends EntityContentPanel<Person>
 		super(person, context);
 		var role = person.getRole();
 		setHeading(person.getAssociatedSettlement(), "career", 
-				Msg.getString("Person.role"),
+				Msg.getString("person.role"),
 				(role != null) ? role.getType().getName() : null);
 
 		// Add tab panels	

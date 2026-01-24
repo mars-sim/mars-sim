@@ -86,7 +86,7 @@ public class RescueSalvageVehicle extends RoverMission {
 			var vehicleTarget = findBeaconVehicle(getStartingSettlement(), getVehicle().getRange());
 
 			if (vehicleTarget != null) {
-				setName(Msg.getString("Mission.description.rescueSalvageVehicle.rescue", // $NON-NLS-1$
+				setName(Msg.getString("mission.description.rescueSalvageVehicle.rescue", // $NON-NLS-1$
 						vehicleTarget.getName()));
 						
 				// Add navpoints for target vehicle and back home again.

@@ -85,7 +85,7 @@ class TabPanelMaintenance extends EntityTableTabPanel<Settlement> implements Tem
 	private static class BuildingMaintModel extends AbstractTableModel
 			implements EntityModel {
 
-		private static final String BUILDING = Msg.getString("Building.singular");
+		private static final String BUILDING = Msg.getString("building.singular");
 		List<Building> buildings;
 
 		public BuildingMaintModel(Settlement settlement) {

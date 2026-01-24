@@ -11,16 +11,13 @@ import com.mars_sim.core.tool.Msg;
 
 public enum BodyRegionType {
 
-	BFO		(Msg.getString("BodyRegionType.BFO")), //$NON-NLS-1$
-	OCULAR	(Msg.getString("BodyRegionType.ocular")), //$NON-NLS-1$
-	SKIN	(Msg.getString("BodyRegionType.skin")), //$NON-NLS-1$
-	;
+	BFO,OCULAR,SKIN;
 
 	private String name;
 
 	/** hidden constructor. */
-	private BodyRegionType(String name) {
-		this.name = name;
+	private BodyRegionType() {
+		this.name = Msg.getStringOptional("bodyregiontype", name());
 	}
 
 	public final String getName() {

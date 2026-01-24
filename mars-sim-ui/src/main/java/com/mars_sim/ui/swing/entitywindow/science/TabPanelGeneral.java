@@ -50,21 +50,21 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 		AttributePanel infoPane = new AttributePanel();
 		
 		content.add(infoPane);
-		infoPane.addTextField(Msg.getString("Entity.name"), study.getName(), null);
-		infoPane.addTextField(Msg.getString("ScientificStudy.science"), study.getScience().getName(), null);
-		infoPane.addTextField(Msg.getString("ScientificStudy.level"), Integer.toString(study.getDifficultyLevel()), null);
-		infoPane.addTextField(Msg.getString("ScientificStudy.phase"), study.getPhase().getName(), null);
+		infoPane.addTextField(Msg.getString("entity.name"), study.getName(), null);
+		infoPane.addTextField(Msg.getString("scientificstudy.science"), study.getScience().getName(), null);
+		infoPane.addTextField(Msg.getString("scientificstudy.level"), Integer.toString(study.getDifficultyLevel()), null);
+		infoPane.addTextField(Msg.getString("scientificstudy.phase"), study.getPhase().getName(), null);
 		
-		infoPane.addLabelledItem(Msg.getString("ScientificStudy.lead"),
+		infoPane.addLabelledItem(Msg.getString("scientificstudy.lead"),
 									new EntityLabel(study.getPrimaryResearcher(), getContext()));
 
 		progress = new JProgressBar(0, 100);
 		progress.setStringPainted(true);
-		infoPane.addLabelledItem(Msg.getString("ScientificStudy.completed"), progress);
+		infoPane.addLabelledItem(Msg.getString("scientificstudy.completed"), progress);
 
 		// Topics block
 		var topicsPanel = new JPanel(new BorderLayout());
-		topicsPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("ScientificStudy.topics")));
+		topicsPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificstudy.topics")));
 		content.add(topicsPanel);
 		topics = new DefaultListModel<>();
 		var topicsList = new JList<>(topics);

@@ -32,7 +32,7 @@ public enum MissionType implements Named {
 
 	/** hidden constructor. */
 	private MissionType() {
-		this.name = Msg.getString("MissionType." + name().toLowerCase());
+		this.name = Msg.getStringOptional("missiontype", name());
 	}
 
 	/** gives the internationalized name of this skill for display in user interface. */

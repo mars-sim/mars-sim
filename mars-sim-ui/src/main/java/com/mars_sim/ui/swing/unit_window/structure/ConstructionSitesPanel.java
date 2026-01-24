@@ -66,7 +66,7 @@ class ConstructionSitesPanel extends JPanel {
         
         setLayout(new BorderLayout());
 
-        setBorder(SwingHelper.createLabelBorder(Msg.getString("ConstructionSite.plural")));
+        setBorder(SwingHelper.createLabelBorder(Msg.getString("constructionSite.plural")));
         		
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();

@@ -59,7 +59,7 @@ class BuildingPanelVehicleMaintenance extends EntityTableTabPanel<Building>
 		);
 
 		this.garage = garage;
-		setTableTitle(Msg.getString("Vehicle.plural"));
+		setTableTitle(Msg.getString("vehicle.plural"));
 	}
 	
 	
@@ -108,8 +108,8 @@ class BuildingPanelVehicleMaintenance extends EntityTableTabPanel<Building>
 	 */
 	private static class VehicleModel  extends AbstractTableModel implements EntityModel {
 
-		private static final String NAME = Msg.getString("Entity.name");
-		private static final String TYPE = Msg.getString("Vehicle.type");
+		private static final String NAME = Msg.getString("entity.name");
+		private static final String TYPE = Msg.getString("vehicle.type");
 
 		private static final long serialVersionUID = 1L;
 		private static final int NAME_COL = 0;
@@ -173,11 +173,11 @@ class BuildingPanelVehicleMaintenance extends EntityTableTabPanel<Building>
 
 		private static String getType(Vehicle v) {
 			if (v instanceof Rover) {
-				return Msg.getString("Rover.singular");
+				return Msg.getString("rover.singular");
 			} else if (v instanceof LightUtilityVehicle) {
-				return Msg.getString("LightUtilityVehicle.singular");
+				return Msg.getString("lightUtilityVehicle.singular");
 			} else if (v instanceof Flyer) {
-				return Msg.getString("Flyer.singular");
+				return Msg.getString("flyer.singular");
 			} else {
 				return "Unknown";
 			}

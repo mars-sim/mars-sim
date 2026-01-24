@@ -377,7 +377,7 @@ public class SimulationConfigEditor {
 		simPanel.add(startButton);
 
 		// Edit Authority button.
-		JButton authorityButton = new JButton(ImageLoader.getIconByName("sponsor")); //$NON-NLS-1$
+		JButton authorityButton = new JButton(ImageLoader.getIconByName("authority")); //$NON-NLS-1$
 		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
 		authorityButton.addActionListener(e -> editAuthorities());
 

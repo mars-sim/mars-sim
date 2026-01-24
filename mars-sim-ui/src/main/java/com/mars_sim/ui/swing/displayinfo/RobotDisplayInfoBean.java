@@ -20,7 +20,7 @@ class RobotDisplayInfoBean extends EntityDisplayInfo {
 	 * Constructor.
 	 */
 	RobotDisplayInfoBean() {
-		super("Robot");
+		super("robot");
 	}
 
 	/**

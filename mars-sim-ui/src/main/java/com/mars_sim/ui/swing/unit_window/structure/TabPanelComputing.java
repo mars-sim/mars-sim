@@ -217,7 +217,7 @@ class TabPanelComputing extends EntityTableTabPanel<Settlement>
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("Building.singular");
+				case 0 -> Msg.getString("building.singular");
 				case 1 -> "kWe";
 				case 2 -> "kWt";
 				case 3 -> "Cooling";

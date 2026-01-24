@@ -203,12 +203,12 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
         remainingDistanceLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
         destinationSpringPanel.addLabelledItem("Remaining Distance", remainingDistanceLabel);
         etaLabel = destinationSpringPanel.addRow("ETA", "");
-        statusLabel = destinationSpringPanel.addRow(Msg.getString("Vehicle.status"), "");
+        statusLabel = destinationSpringPanel.addRow(Msg.getString("vehicle.status"), "");
         beaconLabel = destinationSpringPanel.addRow("Emergency Beacon", "");
         speedLabel = new JDoubleLabel(StyleManager.DECIMAL_KPH);
-        destinationSpringPanel.addLabelledItem(Msg.getString("Vehicle.speed"), speedLabel);        
+        destinationSpringPanel.addLabelledItem(Msg.getString("vehicle.speed"), speedLabel);        
         elevationLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
-        destinationSpringPanel.addLabelledItem(Msg.getString("Vehicle.elevation"), elevationLabel);
+        destinationSpringPanel.addLabelledItem(Msg.getString("vehicle.elevation"), elevationLabel);
 
         if (vehicle instanceof Drone) {
 	        // Update hovering height label.
@@ -218,7 +218,7 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
         
         // Prepare driver button and add it if vehicle has driver.
         pilotLabel = new EntityLabel(getContext());
-        destinationSpringPanel.addLabelledItem(Msg.getString("Vehicle.operator"), pilotLabel);
+        destinationSpringPanel.addLabelledItem(Msg.getString("vehicle.operator"), pilotLabel);
 
         updateDisplay();
     }

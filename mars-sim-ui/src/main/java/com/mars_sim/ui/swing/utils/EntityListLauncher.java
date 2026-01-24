@@ -20,7 +20,7 @@ import com.mars_sim.ui.swing.UIContext;
  * is launched.
  */
 public class EntityListLauncher extends MouseInputAdapter {
-    public static final String TOOLTIP = Msg.getString("Entity.doubleClick");
+    public static final String TOOLTIP = Msg.getString("entity.doubleClick");
     private UIContext desktop;
 
     /**

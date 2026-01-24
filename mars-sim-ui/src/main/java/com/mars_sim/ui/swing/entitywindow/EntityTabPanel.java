@@ -181,7 +181,7 @@ public abstract class EntityTabPanel<T extends Entity> extends JPanel {
 	
 	@Override
 	public  String toString() {
-		return tabTitle;
+		return entity.getName() + " : tab " + tabTitle;
 	}
 	
 	/**

@@ -68,7 +68,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 	public TabPanelScienceStudy(Person person, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("ScientificStudy.singular"), 
+			Msg.getString("scientificstudy.science"), 
 			ImageLoader.getIconByName(SCIENCE_ICON),
 			null,
 			context, person
@@ -89,7 +89,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 
 		// Create the studies panel.
 		JPanel studiesPane = new JPanel(new BorderLayout());
-		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("ScientificStudy.plural"))); //$NON-NLS-1$
+		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificstudy.plural"))); //$NON-NLS-1$
 		mainPane.add(studiesPane);
 
 		// Create the study scroll panel.
@@ -123,7 +123,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 						"", null);
 		primaryCompletedLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.numPrimary"), //$NON-NLS-1$
 						"", null);
-		collabCompletedLabel = achievementLabelPane.addTextField(Msg.getString("TabPanelScience.numCollab"), //$NON-NLS-1$
+		collabCompletedLabel = achievementLabelPane.addTextField(Msg.getString("scientificstudy.collaborator.plural"), //$NON-NLS-1$
 						"", null);
 
 		// Create the achievement scroll panel.
@@ -263,9 +263,9 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		@Override
 		public String getColumnName(int column) {
 			return switch (column) {
-				case NAME_COL -> Msg.getString("Entity.name");
+				case NAME_COL -> Msg.getString("entity.name");
 				case ROLE_COL -> Msg.getString("TabPanelScience.column.role");
-				case PHASE_COL -> Msg.getString("ScientificStudy.phase");
+				case PHASE_COL -> Msg.getString("scientificstudy.phase");
 				case RESEARCH_COL -> Msg.getString("TabPanelScience.column.researchTime");
 				case PAPER_COL -> Msg.getString("TabPanelScience.column.paperTime");
 				default -> null;
@@ -313,9 +313,9 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 					break;
 				case ROLE_COL:
 					if (person.equals(study.getPrimaryResearcher()))
-						result = Msg.getString("ScientificStudy.lead");
+						result = Msg.getString("scientificstudy.lead");
 					else if (study.getCollaborativeResearchers().contains(person))
-						result = Msg.getString("ScientificStudy.collaborator.singular"); //$NON-NLS-1$
+						result = Msg.getString("scientificStudy.collaborator.singular"); //$NON-NLS-1$
 					break;
 				case PHASE_COL:
 					result = study.getPhase().getName();
@@ -414,7 +414,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("ScientificStudy.science");
+				case 0 -> Msg.getString("scientificstudy.science");
 				case 1 -> Msg.getString("TabPanelScience.column.achievementCredit");
 				default -> null;
 			};

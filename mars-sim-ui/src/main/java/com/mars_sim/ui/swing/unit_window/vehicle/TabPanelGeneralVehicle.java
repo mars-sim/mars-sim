@@ -77,7 +77,7 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		}	
 		
 		String text = vehicle.getDescription().replace("\n", " ").replace("\t", "");
-		var label = SwingHelper.createTextBlock(Msg.getString("Entity.description"), text);
+		var label = SwingHelper.createTextBlock(Msg.getString("entity.description"), text);
 		panel.add(label, BorderLayout.CENTER);
 		
 		// Prepare attribute panel.
@@ -85,9 +85,9 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 		
 		panel.add(infoPanel, BorderLayout.SOUTH);
 		
-		infoPanel.addTextField(Msg.getString("Entity.name"), vehicle.getName(), null);
-		infoPanel.addTextField(Msg.getString("Vehicle.type"), vehicle.getSpecName(), null);
-		infoPanel.addTextField(Msg.getString("Vehicle.model"), vehicle.getModelName(), null);
+		infoPanel.addTextField(Msg.getString("entity.name"), vehicle.getName(), null);
+		infoPanel.addTextField(Msg.getString("vehicle.type"), vehicle.getSpecName(), null);
+		infoPanel.addTextField(Msg.getString("vehicle.model"), vehicle.getModelName(), null);
 		
 		// FUTURE: 
 		// add date of commission
@@ -104,7 +104,7 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 
 		fuelCap = vehicle.getFuelCapacity();
 		
-		infoPanel.addTextField(Msg.getString("Vehicle.fuelType"), fuelTypeStr, null);
+		infoPanel.addTextField(Msg.getString("vehicle.fuelType"), fuelTypeStr, null);
 		
 		double fuel = vehicle.getSpecificAmountResourceStored(fuelTypeID);
 		

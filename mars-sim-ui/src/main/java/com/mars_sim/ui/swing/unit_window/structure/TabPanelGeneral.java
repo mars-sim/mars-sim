@@ -38,10 +38,10 @@ class TabPanelGeneral extends EntityTabPanel<Settlement> {
         var infoPanel = new AttributePanel();
         contentPanel.add(infoPanel, BorderLayout.NORTH);
 
-        infoPanel.addTextField(Msg.getString("Entity.name"), settlement.getName(), null);
-        infoPanel.addLabelledItem(Msg.getString("Authority.singular"), 
+        infoPanel.addTextField(Msg.getString("entity.name"), settlement.getName(), null);
+        infoPanel.addLabelledItem(Msg.getString("authority.singular"), 
                     new EntityLabel(settlement.getReportingAuthority(), getContext()));
-        infoPanel.addTextField(Msg.getString("Settlement.template"), settlement.getTemplate(), null);
-        infoPanel.addTextField(Msg.getString("Settlement.population"), String.valueOf(settlement.getNumCitizens()), null);
+        infoPanel.addTextField(Msg.getString("settlement.template"), settlement.getTemplate(), null);
+        infoPanel.addTextField(Msg.getString("settlement.population"), String.valueOf(settlement.getNumCitizens()), null);
     }
 }

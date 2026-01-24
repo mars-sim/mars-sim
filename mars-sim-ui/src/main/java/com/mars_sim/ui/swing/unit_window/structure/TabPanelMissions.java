@@ -69,7 +69,7 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 	 */
 	public TabPanelMissions(Settlement settlement, UIContext context) {
 		super(
-			Msg.getString("Mission.plural"),
+			Msg.getString("mission.plural"),
 			ImageLoader.getIconByName(MISSION_ICON), null,
 			context, settlement
 		);

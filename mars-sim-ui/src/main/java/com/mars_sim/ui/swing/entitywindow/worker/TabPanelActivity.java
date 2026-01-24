@@ -64,8 +64,8 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 	
 	private static final String HTML = "<html>";
 	private static final String END_HTML = "</html>";
-	private static final String DESCRIPTION = Msg.getString("Entity.description");
-	private static final String SCORE = Msg.getString("Rating.score");
+	private static final String DESCRIPTION = Msg.getString("entity.description");
+	private static final String SCORE = Msg.getString("rating.score");
 
 	/** data cache */
 	private String missionPhaseCache = "";
@@ -134,7 +134,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 	 */
 	private JPanel createMissionPanel() {
 		JPanel missionMainPanel = new JPanel(new BorderLayout(1, 3));
-		missionMainPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Mission.singular")));
+		missionMainPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("mission.singular")));
 
 		JPanel missionSubPanel = new JPanel(new BorderLayout(1, 3));
 		missionMainPanel.add(missionSubPanel, BorderLayout.NORTH);
@@ -143,13 +143,13 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		AttributePanel missionAttributePanel = new AttributePanel();
 		missionSubPanel.add(missionAttributePanel, BorderLayout.NORTH);
 		missionLabel = new EntityLabel(getContext());
-		missionAttributePanel.addLabelledItem(Msg.getString("Entity.description"), missionLabel);
-		missionPhase = missionAttributePanel.addRow(Msg.getString("Mission.phase"), ""); //-NLS-1$
+		missionAttributePanel.addLabelledItem(Msg.getString("entity.description"), missionLabel);
+		missionPhase = missionAttributePanel.addRow(Msg.getString("mission.phase"), ""); //-NLS-1$
 		missionScore = missionAttributePanel.addRow(BEST_SCORE, "");
 
 		missionCacheModel = new MissionCacheModel();
 		JPanel missionCachePanel = new JPanel(new BorderLayout(1, 3));
-		missionCachePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Rating.plural")));
+		missionCachePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("rating.plural")));
 		
 		JTable missionCacheTable = new JTable(missionCacheModel) {
 		    @Override
@@ -182,7 +182,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 	 */
 	private JPanel createTaskPanel() {
 		JPanel taskMainPanel = new JPanel(new BorderLayout(1, 3));
-		taskMainPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Task.singular")));
+		taskMainPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("task.singular")));
 
 		JPanel taskSubPanel = new JPanel(new BorderLayout(1, 3));
 		taskMainPanel.add(taskSubPanel, BorderLayout.NORTH);
@@ -197,7 +197,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		
 		taskCacheModel = new TaskCacheModel();
 		JPanel taskCachePanel = new JPanel(new BorderLayout(1, 3));
-		taskCachePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("Rating.plural")));
+		taskCachePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("rating.plural")));
 		
 		JTable taskCacheTable = new JTable(taskCacheModel) {
 		    @Override

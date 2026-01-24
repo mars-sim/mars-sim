@@ -18,7 +18,8 @@ public final class MissionPhase implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private static final String MSG_KEY_PREFIX = "Mission.phase.";
+	private static final String MSG_KEY_PREFIX = "mission.phase.";
+	private static final String MSG_KEY_OLDPREFIX = "Mission.phase.";
 
 	// The phase name.
 	private String name;
@@ -43,7 +44,10 @@ public final class MissionPhase implements Serializable {
 	 */
 	public MissionPhase(String key, Stage stage) {
 		// Hack for the transition phase
-		if (!key.startsWith(MSG_KEY_PREFIX)) {
+		if (key.startsWith(MSG_KEY_OLDPREFIX)) {
+			key = MSG_KEY_PREFIX + key.substring(MSG_KEY_OLDPREFIX.length());
+		}
+		else if (!key.startsWith(MSG_KEY_PREFIX)) {
 			key = MSG_KEY_PREFIX + key;
 		}
 

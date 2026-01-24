@@ -42,7 +42,7 @@ public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 		super(vehicle, context);
 
 		setHeading(vehicle.getAssociatedSettlement(), "specs", 
-				Msg.getString("Vehicle.type"), vehicle.getSpecName());
+				Msg.getString("vehicle.type"), vehicle.getSpecName());
 
 		// Add as the first panel
 		addDefaultTabPanel(new TabPanelGeneralVehicle(vehicle, context));

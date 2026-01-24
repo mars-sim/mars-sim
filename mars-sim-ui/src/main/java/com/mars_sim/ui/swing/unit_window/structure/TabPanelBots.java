@@ -52,7 +52,7 @@ class TabPanelBots extends EntityTabPanel<Settlement> implements TemporalCompone
 	public TabPanelBots(Settlement unit, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("Robot.plural"), // $NON-NLS-1$
+			Msg.getString("robot.plural"), // $NON-NLS-1$
 			ImageLoader.getIconByName(ROBOT_ICON), null,
 			context, unit
 		);
@@ -88,7 +88,7 @@ class TabPanelBots extends EntityTabPanel<Settlement> implements TemporalCompone
 				return settlement.getAllAssociatedRobots();
 			}			
 		};
-		robotList.setBorder(SwingHelper.createLabelBorder(Msg.getString("Robot.plural")));
+		robotList.setBorder(SwingHelper.createLabelBorder(Msg.getString("robot.plural")));
 		content.add(robotList, BorderLayout.CENTER);
 	}
 

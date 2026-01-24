@@ -27,7 +27,7 @@ class TabPanelCollaborators extends EntityTableTabPanel<ScientificStudy>
 
     TabPanelCollaborators(ScientificStudy study, UIContext context) {
 		super(
-			Msg.getString("ScientificStudy.collaborator.plural"),
+			Msg.getString("scientificStudy.collaborator.plural"),
 			ImageLoader.getIconByName(ID_ICON),		
 			null,
 			study,
@@ -111,7 +111,7 @@ class TabPanelCollaborators extends EntityTableTabPanel<ScientificStudy>
 		@Override
 		public String getColumnName(int columnIndex) {
 			switch(columnIndex) {
-				case NAME: return Msg.getString("Entity.name");
+				case NAME: return Msg.getString("entity.name");
 				case CONTRIBUTION: return "Contribution";
 				case WORK: return "Work";
 				default: return "";

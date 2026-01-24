@@ -62,12 +62,12 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	 */
 	public TabPanelCitizen(Settlement unit, UIContext context) {
 		super(
-			Msg.getString("Settlement.population"), //$NON-NLS-1$
+			Msg.getString("settlement.population"), //$NON-NLS-1$
 			ImageLoader.getIconByName(CITIZEN_ICON), null,
 			unit, context
 		);
 
-		setTableTitle(Msg.getString("Settlement.population"));
+		setTableTitle(Msg.getString("settlement.population"));
 	}
 
 	@Override
@@ -196,7 +196,7 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch(columnIndex) {
-				case 0 -> Msg.getString("Entity.name");
+				case 0 -> Msg.getString("entity.name");
 				case 1 -> "Inside";
 				default -> "";
 			};

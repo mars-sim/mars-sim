@@ -54,8 +54,8 @@ class TabPanelGeneral extends EntityTabPanel<Person> {
 
 		var person = getEntity();
 
-		infoPanel.addTextField(Msg.getString("Person.gender"), person.getGender().getName(), null);
-		infoPanel.addTextField(Msg.getString("Person.bloodType"), person.getBloodType(), null);
+		infoPanel.addTextField(Msg.getString("person.gender"), person.getGender().getName(), null);
+		infoPanel.addTextField(Msg.getString("person.bloodType"), person.getBloodType(), null);
 				
 		// Prepare birthdate and age textfield
 		var birthDate = person.getBirthDate();
@@ -63,21 +63,21 @@ class TabPanelGeneral extends EntityTabPanel<Person> {
 			TAB_BIRTH_DATE_AGE,
 			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
 			Integer.toString(person.getAge())); //$NON-NLS-1$
-		infoPanel.addTextField(Msg.getString("Person.birthDate"), birthTxt, null);
+		infoPanel.addTextField(Msg.getString("person.birthDate"), birthTxt, null);
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();
-		infoPanel.addTextField(Msg.getString("Country.singular"), //$NON-NLS-1$
+		infoPanel.addTextField(Msg.getString("country.singular"), //$NON-NLS-1$
 				country, null);
-		infoPanel.addLabelledItem(Msg.getString("Authority.singular"),
+		infoPanel.addLabelledItem(Msg.getString("authority.singular"),
 						new EntityLabel(person.getReportingAuthority(), getContext()));
 
 		// Prepare weight textfield
-		infoPanel.addTextField(Msg.getString("Person.weight"), //$NON-NLS-1$
+		infoPanel.addTextField(Msg.getString("person.weight"), //$NON-NLS-1$
 				  							  StyleManager.DECIMAL_KG.format(person.getBaseMass()), null);
 		
 		// Prepare height name label
-		infoPanel.addTextField(Msg.getString("Person.height"), //$NON-NLS-1$
+		infoPanel.addTextField(Msg.getString("person.height"), //$NON-NLS-1$
 					 StyleManager.DECIMAL_PLACES1.format(person.getHeight()) + " cm", null);
 
 		// Prepare BMI label

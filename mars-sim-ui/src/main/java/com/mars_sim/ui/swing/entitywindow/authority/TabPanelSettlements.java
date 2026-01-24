@@ -36,7 +36,7 @@ class TabPanelSettlements extends EntityTableTabPanel<Authority>
 
     public TabPanelSettlements(Authority authority, UIContext context) {
         super(
-            Msg.getString("Settlement.plural"), // Tab title
+            Msg.getString("settlement.plural"), // Tab title
             ImageLoader.getIconByName("settlement"),          // Tab icon
             null,          // Tab tooltip
             authority, context
@@ -65,7 +65,7 @@ class TabPanelSettlements extends EntityTableTabPanel<Authority>
             return switch (column) {
                 case 0 -> Msg.getString(("Entity.name"));
                 case 1 -> "Status";
-                case 2 -> Msg.getString("Settlement.population");
+                case 2 -> Msg.getString("settlement.population");
                 default -> null;
             };
         }

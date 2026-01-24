@@ -77,10 +77,10 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
-		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Building.type"), String.class);
-		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("Building.category"), String.class);	
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("building.type"), String.class);
+		COLUMNS[CATEGORY] = new ColumnSpec(Msg.getString("building.category"), String.class);	
 		
 		COLUMNS[POWER_MODE] = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.mode"), Object.class);		
 		COLUMNS[POWER_REQ]  = new ColumnSpec(Msg.getString("BuildingTableModel.column.power.req"), Double.class);
@@ -122,7 +122,7 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	 * @throws Exception
 	 */
 	public BuildingTableModel() {
-		super(Msg.getString("Building.plural"),
+		super(Msg.getString("building.plural"),
 				COLUMNS);	
 		
 		setSettlementColumn(SETTLEMENT);

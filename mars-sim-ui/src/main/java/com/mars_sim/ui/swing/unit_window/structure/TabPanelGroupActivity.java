@@ -78,7 +78,7 @@ class TabPanelGroupActivity extends EntityTableTabPanel<Settlement> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		private static final String NAME = Msg.getString("Entity.name");
+		private static final String NAME = Msg.getString("entity.name");
 
 		private List<GroupActivity> activities;
 		private MarsTime earliest = null;

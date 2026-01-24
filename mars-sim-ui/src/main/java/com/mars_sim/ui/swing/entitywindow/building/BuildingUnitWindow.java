@@ -35,7 +35,7 @@ public class BuildingUnitWindow extends EntityContentPanel<Building> {
         super(building, context);
 
 		setHeading(building.getAssociatedSettlement(), "specs", 
-				Msg.getString("Building.type"), building.getBuildingType());
+				Msg.getString("building.type"), building.getBuildingType());
 
         // Add tab panels
         addDefaultTabPanel(new BuildingPanelGeneral(building, context));
