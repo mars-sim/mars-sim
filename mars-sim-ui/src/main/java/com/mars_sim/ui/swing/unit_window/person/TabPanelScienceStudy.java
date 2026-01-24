@@ -315,7 +315,7 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 					if (person.equals(study.getPrimaryResearcher()))
 						result = Msg.getString("scientificstudy.lead");
 					else if (study.getCollaborativeResearchers().contains(person))
-						result = Msg.getString("scientificStudy.collaborator.singular"); //$NON-NLS-1$
+						result = Msg.getString("scientificstudy.collaborator.singular"); //$NON-NLS-1$
 					break;
 				case PHASE_COL:
 					result = study.getPhase().getName();

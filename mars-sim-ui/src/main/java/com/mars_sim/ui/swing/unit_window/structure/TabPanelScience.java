@@ -84,7 +84,7 @@ class TabPanelScience extends EntityTabPanel<Settlement> implements TemporalComp
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
-		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificStudy.plural")));
+		studiesPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificstudy.plural")));
 
 		// Create the study scroll panel.
 		JScrollPane studyScrollPane = new JScrollPane();

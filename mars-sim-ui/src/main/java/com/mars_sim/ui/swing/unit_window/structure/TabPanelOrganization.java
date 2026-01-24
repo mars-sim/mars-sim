@@ -38,7 +38,6 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -91,8 +90,6 @@ class TabPanelOrganization extends EntityTabPanel<Settlement> {
 		var settlement = getEntity();
 
 		// Prepare label
-		labelPanel.addLabelledItem(Msg.getString("authority.singular"),
-					new EntityLabel(settlement.getReportingAuthority(), getContext()));
 		var gov = settlement.getChainOfCommand().getGovernance();
 		labelPanel.addTextField("Governance Model", gov.getName(), null);
 		labelPanel.addTextField("Job Approvals", Boolean.toString(gov.needJobApproval()), null);

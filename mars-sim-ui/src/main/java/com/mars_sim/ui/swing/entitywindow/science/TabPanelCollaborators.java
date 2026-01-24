@@ -27,7 +27,7 @@ class TabPanelCollaborators extends EntityTableTabPanel<ScientificStudy>
 
     TabPanelCollaborators(ScientificStudy study, UIContext context) {
 		super(
-			Msg.getString("scientificStudy.collaborator.plural"),
+			Msg.getString("scientificstudy.collaborator.plural"),
 			ImageLoader.getIconByName(ID_ICON),		
 			null,
 			study,

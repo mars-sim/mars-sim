@@ -175,7 +175,7 @@ class BuildingPanelVehicleMaintenance extends EntityTableTabPanel<Building>
 			if (v instanceof Rover) {
 				return Msg.getString("rover.singular");
 			} else if (v instanceof LightUtilityVehicle) {
-				return Msg.getString("lightUtilityVehicle.singular");
+				return Msg.getString("lightutilityvehicle.singular");
 			} else if (v instanceof Flyer) {
 				return Msg.getString("flyer.singular");
 			} else {

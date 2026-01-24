@@ -150,7 +150,7 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 		gasPanel.addLabelledItem(O2, o2Label, null);
 		h2OLabel = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.WATER_ID));
 		gasPanel.addLabelledItem(H2O, h2OLabel, null);
-		gasPanel.addTextField(null, null, null); // Add a blank to balance it out
+		gasPanel.addBlankField();
 
 		// Create override check box panel.
 		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
