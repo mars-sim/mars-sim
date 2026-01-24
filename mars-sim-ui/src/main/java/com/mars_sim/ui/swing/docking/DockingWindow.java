@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.Entity;
@@ -34,6 +35,7 @@ import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
+import com.mars_sim.ui.swing.utils.AttributePanel;
 
 import io.github.andrewauclair.moderndocking.Dockable;
 import io.github.andrewauclair.moderndocking.DockableStyle;
@@ -81,6 +83,10 @@ public class DockingWindow extends JFrame
 
         // Set up the look and feel library to be used
 		StyleManager.setStyles(Collections.emptyMap());
+        StyleManager.setTabPlacement(SwingConstants.TOP);
+
+        // Enable dynamic layout for Docking windows as they are more flexible
+        AttributePanel.setUseDynamicLayout(true);
 
         // Setup the JFrame
         setTitle("Mars Simulation");
