@@ -56,7 +56,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
      * @param mgr the Scientific Study Manager
      */
     public ScienceStudyTableModel(ScientificStudyManager mgr) {
-		super(Msg.getString("scientificStudy.plural"),
+		super(Msg.getString("scientificstudy.plural"),
 				COLUMNS);	
 		this.mgr = mgr;
 
