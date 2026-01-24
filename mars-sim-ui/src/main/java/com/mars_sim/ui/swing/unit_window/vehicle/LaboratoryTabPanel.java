@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.Named;
@@ -21,6 +20,7 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -35,11 +35,7 @@ class LaboratoryTabPanel extends EntityTabPanel<Rover>
 	private static final String SCIENCE_ICON = "science"; //-NLS-1$
 
 	/** The number of researchers label. */
-	private JLabel researchersLabel;
-
-	// Data cache
-	/** The number of researchers cache. */
-	private int researchersCache;
+	private JIntegerLabel researchersLabel;
 
 	/**
 	 * Constructor.
@@ -69,8 +65,8 @@ class LaboratoryTabPanel extends EntityTabPanel<Rover>
 		laboratoryPanel.add(springPanel, BorderLayout.CENTER);
 		
 		// Prepare researcher number label
-		researchersCache = lab.getResearcherNum();
-		researchersLabel = springPanel.addTextField("Number of Researchers", Integer.toString(researchersCache), null);
+		researchersLabel = new JIntegerLabel(lab.getResearcherNum());
+		springPanel.addLabelledItem("Number of Researchers", researchersLabel, null);
 
 		// Prepare researcher capacityLabel
 		springPanel.addTextField("Researcher Capacity", Integer.toString(lab.getLaboratorySize()), null);
@@ -90,9 +86,6 @@ class LaboratoryTabPanel extends EntityTabPanel<Rover>
 		Lab lab = getEntity().getLab();
 
 		// Update researchers label if necessary.
-		if (researchersCache != lab.getResearcherNum()) {
-			researchersCache = lab.getResearcherNum();
-			researchersLabel.setText(Integer.toString(researchersCache));
-		}
+		researchersLabel.setValue(lab.getResearcherNum());
 	}
 }

@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.Named;
@@ -24,6 +23,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -38,11 +38,7 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 
 	private static final String SCIENCE_ICON = "science";
 
-	// Data cache
-	/** The number of researchers cache. */
-	private int researchersCache;
-
-	private JLabel researchersLabel;
+	private JIntegerLabel researchersLabel;
 	private JDoubleLabel dailyAverageLabel;
 	private JDoubleLabel cumulativeTotalLabel;
 	private JDoubleLabel entropyLabel;
@@ -85,10 +81,8 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 	
 		// Prepare researcher number label
-		researchersCache = lab.getResearcherNum();
-		researchersLabel = labelPanel.addTextField(Msg.getString("BuildingPanelResearch.numberOfResearchers"),
-										Integer.toString(researchersCache), null);
-
+		researchersLabel = new JIntegerLabel(lab.getResearcherNum());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelResearch.numberOfResearchers"), researchersLabel, null);
 		// Prepare researcher capacityLabel
 		labelPanel.addTextField(Msg.getString("BuildingPanelResearch.researcherCapacity"),
 					 					Integer.toString(lab.getLaboratorySize()), null);
@@ -129,10 +123,7 @@ class BuildingPanelResearch extends EntityTabPanel<Building> implements Temporal
 		var building = getEntity();
 
 		// Update researchers label if necessary.
-		if (researchersCache != lab.getResearcherNum()) {
-			researchersCache = lab.getResearcherNum();
-			researchersLabel.setText(Integer.toString(researchersCache));
-		}
+		researchersLabel.setValue(lab.getResearcherNum());
 		
 		double[] tally = lab.getTotCumulativeDailyAverage();
 		dailyAverageLabel.setValue(tally[1]);
