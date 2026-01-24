@@ -18,7 +18,6 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
@@ -66,8 +65,6 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 		topPanel.add(infoPanel, BorderLayout.NORTH);
 
 		var r = getEntity();
-		var settlement = new EntityLabel(r.getAssociatedSettlement(), getContext());
-		infoPanel.addLabelledItem(Msg.getString("settlement.singular"), settlement);
 		infoPanel.addRow(Msg.getString("robot.type"), r.getRobotType().getName());
 		infoPanel.addRow(Msg.getString("robot.model"), r.getModel());
 		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");

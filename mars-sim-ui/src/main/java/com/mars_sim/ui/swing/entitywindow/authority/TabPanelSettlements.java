@@ -63,7 +63,7 @@ class TabPanelSettlements extends EntityTableTabPanel<Authority>
         @Override
         public String getColumnName(int column) {
             return switch (column) {
-                case 0 -> Msg.getString(("Entity.name"));
+                case 0 -> Msg.getString(("entity.name"));
                 case 1 -> "Status";
                 case 2 -> Msg.getString("settlement.population");
                 default -> null;
