@@ -16,15 +16,18 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 import com.mars_sim.ui.swing.entitywindow.authority.AuthorityWindow;
 import com.mars_sim.ui.swing.entitywindow.building.BuildingUnitWindow;
 import com.mars_sim.ui.swing.entitywindow.construction.ConstructionSiteWindow;
 import com.mars_sim.ui.swing.entitywindow.equipment.EquipmentUnitWindow;
+import com.mars_sim.ui.swing.entitywindow.mission.MissionWindow;
 import com.mars_sim.ui.swing.entitywindow.science.ScientificStudyWindow;
 import com.mars_sim.ui.swing.unit_window.person.PersonUnitWindow;
 import com.mars_sim.ui.swing.unit_window.robot.RobotUnitWindow;
@@ -53,6 +56,7 @@ public class EntityContentFactory {
             case Building b -> new BuildingUnitWindow(b, context, props);
             case ConstructionSite cs -> new ConstructionSiteWindow(cs, context, props);
             case Equipment e -> new EquipmentUnitWindow(e, context, props);
+            case Mission m -> new MissionWindow(m, context, props);
             case Person p -> new PersonUnitWindow(p, context, props);
             case Robot r -> new RobotUnitWindow(r, context, props);
             case ScientificStudy s -> new ScientificStudyWindow(s, context, props);
@@ -79,19 +83,36 @@ public class EntityContentFactory {
             return null;
         }
 
-        if ("AUTHORITY".equals(type)) {
+        if (EntityDisplayInfoFactory.AUTHORITY_TYPE.equals(type)) {
             return sim.getConfig().getReportingAuthorityFactory().getItem(name);
         }
-        else if ("SCIENTIFICSTUDY".equals(type)) {
+        else if (EntityDisplayInfoFactory.STUDY_TYPE.equals(type)) {
             // Find the study matching the given name
             return sim.getScientificStudyManager().getAllStudies().stream()
                 .filter(study -> study.getName().equals(name))
                 .findFirst()
                 .orElse(null);
         }
+        else if (EntityDisplayInfoFactory.MISSION_TYPE.equals(type)) {
+            // Find the mission matching the given name
+            return sim.getMissionManager().getMissions().stream()
+                .filter(mission -> mission.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+        }
+         else if (EntityDisplayInfoFactory.EQUIPMENT_TYPE.equals(type)) {
+            // Find the equipment matching the given name
+            return sim.getUnitManager().getUnitByName(UnitType.CONTAINER, name);
+        }
 
         // Default to UnitManager lookup
-		UnitType uType = UnitType.valueOf(type);
-		return sim.getUnitManager().getUnitByName(uType, name);
+        try {
+            UnitType uType = UnitType.valueOf(type);
+            return sim.getUnitManager().getUnitByName(uType, name);
+        }
+        catch (RuntimeException ex) {
+            // Unknown unit type
+            return null;
+        }
 	}
 }

@@ -39,7 +39,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.interplanetary.transport.Transportable;
-import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
@@ -417,11 +416,7 @@ public class MainDesktopPane extends JDesktopPane
 	 */
 	@Override
     public void showDetails(Entity entity) {
-		if (entity instanceof Mission m) {
-			var cw = openToolWindow(MissionWindow.NAME);
-			((MissionWindow)cw).openMission(m);
-		}
-		else if (entity instanceof Transportable t) {
+		if (entity instanceof Transportable t) {
 			var cw = openToolWindow(ResupplyWindow.NAME);
 			((ResupplyWindow)cw).openTransportable(t);
 		}

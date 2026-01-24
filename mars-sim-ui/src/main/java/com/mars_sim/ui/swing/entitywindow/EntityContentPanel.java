@@ -23,7 +23,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
@@ -191,12 +190,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	public Properties getUIProps() {
 		Properties result = new Properties();
 		result.setProperty(UNIT_NAME, entity.getName());
-        if (entity instanceof Unit u) {
-            result.setProperty(UNIT_TYPE, u.getUnitType().name());
-        }
-        else { 
-		    result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName().toUpperCase());
-        }
+        result.setProperty(UNIT_TYPE, EntityDisplayInfoFactory.getDisplayInfo(entity).getEntityKey());
         var selected = getSelected();
         if (selected != null) {
 		    result.setProperty(SELECTED_TAB, selected.getTabTitle());
