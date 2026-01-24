@@ -6,8 +6,6 @@
  */
 package com.mars_sim.ui.swing.utils;
 
-import java.awt.GridLayout;
-
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,18 +20,46 @@ import com.mars_sim.ui.swing.StyleManager;
 @SuppressWarnings("serial")
 public class AttributePanel extends JPanel {
 
-	private static final int DEFAULT_GAP = 2;
+	interface AttributePanelLayout {
+		// Adds a labelled item to the panel.
+		void addLabelledItem(JLabel titleLabel, JComponent content);
 
-	private GridLayout autoLayout = null;
+		// Adds a blank cell to the panel.
+		void addBlankCell();
+	}
+
+	private AttributePanelLayout attributeLayout;
+	private static boolean useDyanmic = false;
+
+	/**
+	 * Sets whether to use dynamic layout or fixed layout for all AttributePanels.
+	 * @param dynamic True to use dynamic layout; false for fixed layout.
+	 */
+	public static void setUseDynamicLayout(boolean dynamic) {
+		useDyanmic = dynamic;
+	}
 
 	/**
 	 * Creates an Attribute panel that has a single column with fixed number of rows.
 	 * 
-	 * @param rows Number of rows
+	 * @param rows Number of rows; this is now redunandant
 	 */
     public AttributePanel(int rows) {
-        this(rows, 1);
+        this();
     }
+
+	/**
+	 * Creates an Attribute panel that has a single column with a variable number pf rows.
+	 */
+	public AttributePanel() {
+		super();
+		buildLayout(1);
+	}
+
+	private void buildLayout(int cols) {
+		attributeLayout = (useDyanmic ? new DynamicAttributeLayout(this, cols) :
+										new FixedAttributeLayout(this, cols));
+	}
 
 	/**
 	 * Creates an Attribute panel that has a fixed number of rows and columns.
@@ -42,20 +68,9 @@ public class AttributePanel extends JPanel {
 	 * @param cols Number of cols
 	 */
     public AttributePanel(int rows, int cols) {
-        super(new GridLayout(rows, 2*cols, DEFAULT_GAP, DEFAULT_GAP));
+        super();
+		buildLayout(cols);
     }
-
-    public AttributePanel(int rows, int cols, int hgap, int vgap) {
-        super(new GridLayout(rows, 2*cols, hgap, vgap));
-    }
-	
-	/**
-	 * Creates an Attribute panel that has a single column with a variable number pf rows.
-	 */
-	public AttributePanel() {
-		autoLayout = new GridLayout(1, 2, DEFAULT_GAP, DEFAULT_GAP);
-		setLayout(autoLayout);
-	}
 
 	/**
 	 * Adds a text field and label to a Panel. The layout should be Spring layout.
@@ -106,29 +121,31 @@ public class AttributePanel extends JPanel {
 	public void addLabelledItem(String titleLabel, JComponent content) {
 		addLabelledItem(titleLabel, content, null);
 	}
-	
+
 	/**
-	 * Adds a labelled content to the TabPanel. This ensures the styling is common.
+	 * Adds a labelled content to the Panel. This ensures the styling is common.
 	 * 
 	 * @param titleLabel Label to add
 	 * @param content Content showing the value
-	 * @param tooltip
+	 * @param tooltip Optional tooltip
 	 */
 	public void addLabelledItem(String titleLabel, JComponent content, String tooltip) {
-        if ((titleLabel != null) && !titleLabel.endsWith(": ")) {
-            titleLabel = titleLabel + " :";
-        }
-        JLabel title = new JLabel(titleLabel, SwingConstants.RIGHT);
-        if (tooltip != null && !tooltip.equals(""))
-        	title.setToolTipText(tooltip);
-        title.setFont(StyleManager.getLabelFont());
-		add(title);
-		add(content);
+		var fullTitle = (titleLabel != null ? titleLabel + ": " : "");
+		JLabel title = new JLabel(fullTitle, SwingConstants.RIGHT);
+		title.setFont(StyleManager.getLabelFont());
 
-		// Set the layout as a grid based on the number of rows added
-		if (autoLayout != null) {
-			int rows = getComponentCount()/2;
-			autoLayout.setRows(rows);
+		if (tooltip != null) {
+			title.setToolTipText(tooltip);
+			content.setToolTipText(tooltip);
 		}
+		attributeLayout.addLabelledItem(title, content);
+	}
+
+	/**
+	 * Add a blank field to the panel to keep the layout correct.
+	 * This may not have any action depending upon the layout used.
+	 */
+	public void addBlankField() {
+		attributeLayout.addBlankCell();
 	}
 }
