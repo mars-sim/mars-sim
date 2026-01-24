@@ -20,6 +20,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -173,4 +174,22 @@ public final class SwingHelper {
 		label.setMinimumSize(new Dimension(50,50));
 		return label;
 	}
+
+	
+    /**
+     * Creates a scroll pane with border and title
+     * 
+     * @param title Title for the border
+     * @param content Content to be shown in scroller
+	 * @param dim Preferred size; can be null
+     */
+    public static JScrollPane createScrollBorder(String title, JComponent content, Dimension dim) {
+		JScrollPane listScroller = new JScrollPane(content);
+		listScroller.setBorder(createLabelBorder(title));
+		if (dim != null) {
+			listScroller.setPreferredSize(dim);
+			listScroller.setMinimumSize(dim);
+		}
+        return listScroller;
+    }
 }

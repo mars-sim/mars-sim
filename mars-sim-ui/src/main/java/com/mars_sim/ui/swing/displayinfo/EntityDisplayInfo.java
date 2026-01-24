@@ -21,6 +21,7 @@ public class EntityDisplayInfo {
 	private String buttonName;
     private String defaultSound;
 	private String singularLabel;
+	private String entityKey;
 	
 	EntityDisplayInfo(String entityKey) {
 		this(entityKey, entityKey, null);
@@ -31,11 +32,20 @@ public class EntityDisplayInfo {
 	}	
 
     EntityDisplayInfo(String entityIcon, String entityKey, String defaultSound) {
+		this.entityKey = entityKey;
 		this.singularLabel = Msg.getString(entityKey + ".singular");
         this.defaultSound = defaultSound;
 		this.buttonName = entityIcon.toLowerCase();
 	}
 
+	/**
+	 * Gets the entity key that is used for message bundle, icons and Entity lookup.
+	 * @return The generic entity used.
+	 */
+	public String getEntityKey() {
+		return entityKey;
+	}
+	
 	/**
 	 * Get the name for a single entity of this type.
 	 */
