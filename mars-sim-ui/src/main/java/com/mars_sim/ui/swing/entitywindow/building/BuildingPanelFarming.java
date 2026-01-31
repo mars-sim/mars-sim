@@ -333,7 +333,6 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 				CropSpec cs = (CropSpec) comboBox.getSelectedItem();
 				farm.addCropListInQueue(cs.getName());
 				listModel.update();
-				repaint();
 			});
 
 		JButton delButton = new JButton(ImageLoader.getIconByName("action/delete"));
@@ -343,7 +342,6 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 				int deletingCropIndex = list.getSelectedIndex();
             	farm.deleteACropFromQueue(deletingCropIndex, deletingCropType);
 				listModel.update();
-            	repaint();
 			}
 		});
 

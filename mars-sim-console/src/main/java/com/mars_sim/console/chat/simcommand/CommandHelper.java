@@ -315,9 +315,9 @@ public class CommandHelper {
 			planMsg.append(' ');
 			planMsg.append(String.format(PERC_FORMAT, mp.getPercentComplete()));
 
-			String activeReview = mp.getActiveReviewer();
+			var activeReview = mp.getActiveReviewer();
 			if (activeReview != null) {
-				planMsg.append(" (").append(activeReview).append(')');
+				planMsg.append(" (").append(activeReview.getName()).append(')');
 			}
 
 			response.appendLabeledString("Plan Status", planMsg.toString());

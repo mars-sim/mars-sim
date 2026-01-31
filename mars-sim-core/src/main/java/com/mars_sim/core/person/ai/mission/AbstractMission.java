@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -276,7 +275,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 *
 	 * @param updateType the update type.
 	 */
-	protected final void fireMissionUpdate(String updateType) {
+	protected void fireMissionUpdate(String updateType) {
 		fireMissionUpdate(updateType, this);
 	}
 
@@ -286,7 +285,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param eventType the update type.
 	 * @param target    the event target or null if none.
 	 */
-	protected final void fireMissionUpdate(String eventType, Object target) {
+	@Override
+	public void fireMissionUpdate(String eventType, Object target) {
 		if (listeners != null) {
 			synchronized (listeners) {
 				var event = new EntityEvent(this, eventType, target);
@@ -820,6 +820,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 			}	
 			members.clear();
 		}
+
+		fireMissionUpdate(END_MISSION_EVENT);
 	}
 	
 	/**
@@ -1320,7 +1322,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void startReview() {
 		setPhase(REVIEWING, null);
-		plan = new MissionPlanning(this, getMarsTime().getMissionSol());
+		plan = new MissionPlanning(this, getMarsTime().getMissionSol(), getAssociatedSettlement().getMinimumPassingScore());
 	}
 	/**
 	 * Returns the mission plan.

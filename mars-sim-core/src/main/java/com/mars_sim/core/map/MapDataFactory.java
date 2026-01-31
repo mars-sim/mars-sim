@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -100,16 +101,17 @@ import com.mars_sim.core.map.megdr.MEGDRFactory;
  	/**
  	 * Loads a single image files to represent a resolution within a map stack
  	 * 
- 	 * @param mapType the map type
- 	 * @param res
- 	 * @param imagefile
+ 	 * @param mapMetaData the map type defining the map family
+ 	 * @param res The resolution level
+ 	 * @param imagefile Name of the image file for this resolution
+ 	 * @param callback Callback when the map data is loaded async
  	 * @return the map data
  	 */
- 	static MapData loadMapData(MapMetaData mapMetaData, int res, String imagefile) {
+ 	static MapData loadMapData(MapMetaData mapMetaData, int res, String imagefile, Consumer<MapData> callback) {
 
 		try {
 			// Obtain a new MapData instance
-			var mapData = new IntegerMapData(mapMetaData, res, imagefile);		
+			var mapData = new IntegerMapData(mapMetaData, res, imagefile, callback);		
 			
 			logger.log(Level.CONFIG, "Loading map type '" + mapMetaData.getId() 
 					+ "'. Res level: " + res 

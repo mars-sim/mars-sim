@@ -20,8 +20,14 @@ public class MissionPlanning implements Serializable {
 	
 	private static final double PERCENT_PER_SCORE = 10D;
 
+	// Event type when the plan reviewer is changed
+	public static final String PLAN_REVIEWER_EVENT = "PlanReviewerEvent";
+
+	// Event type when the plan state is changed
+	public static final String PLAN_STATE_EVENT = "PlanStateEvent";
+
 	private int requestedSol;
-	private double reviewPercentComplete; // 0% to 100%
+	private int reviewPercentComplete; // 0% to 100%
 	private double score; // 0 to 1000 points
 	private double passingScore = 0;
 
@@ -30,11 +36,12 @@ public class MissionPlanning implements Serializable {
 	private Mission mission;
 	
 	private List<String> reviewers;
-	private String activeReviewer = null;
+	private Person activeReviewer = null;
 	
-	public MissionPlanning(Mission mission, int requestedOn) {
+	public MissionPlanning(Mission mission, int requestedOn, double passingScore) {
 		this.requestedSol = requestedOn;
 		this.mission = mission;
+		this.passingScore = passingScore;
 		reviewers = new ArrayList<>();
 	}
 	
@@ -70,6 +77,8 @@ public class MissionPlanning implements Serializable {
 		if (!reviewers.contains(reviewerName)) {
 			reviewers.add(reviewerName);
 		}
+
+		mission.fireMissionUpdate(PLAN_STATE_EVENT, reviewer);
 	}
 
 	/**
@@ -96,10 +105,7 @@ public class MissionPlanning implements Serializable {
 	
 	public void setStatus(PlanType status) {
 		this.status = status;
-	}
-
-	public void setPassingScore(double score) {
-		passingScore = score;
+		mission.fireMissionUpdate(PLAN_STATE_EVENT, status);
 	}
 	
 	public Mission getMission() {
@@ -114,7 +120,11 @@ public class MissionPlanning implements Serializable {
 		return requestedSol;
 	}
 	
-	public double getPercentComplete() {
+	/**
+	 * Percentage of the review completed.
+	 * @return Value between 0 and 100.
+	 */
+	public int getPercentComplete() {
 		return reviewPercentComplete;
 	}
 	
@@ -126,16 +136,26 @@ public class MissionPlanning implements Serializable {
 		return passingScore;
 	}
 
-	public String getActiveReviewer() {
+	/**
+	 * Gets the active reviewer. Assigned via a Task
+	 * @return Could be null if no review is in progress.
+	 */
+	public Person getActiveReviewer() {
 		return activeReviewer;
 	}
 
+	/**
+	 * Sets the active reviewer
+	 * @param reviewer Can be null if no reviewer is active.
+	 */
 	public void setActiveReviewer(Person reviewer) {
 		if (reviewer != null) {
-			activeReviewer = reviewer.getName();
+			activeReviewer = reviewer;
 		}
 		else {
 			activeReviewer = null;
 		}
+
+		mission.fireMissionUpdate(PLAN_REVIEWER_EVENT, reviewer);
 	}
 }

@@ -182,4 +182,9 @@ class MockMission implements Mission {
         throw new UnsupportedOperationException("Unimplemented method 'getObjectives'");
     }
 
+    @Override
+    public void fireMissionUpdate(String eventType, Object target) {
+        throw new UnsupportedOperationException("Unimplemented method 'fireMissionUpdate'");
+    }
+
 }

@@ -396,21 +396,13 @@ public class NavigatorWindow extends ContentPanel
 			
 			// Check if the GPU button is on or not
 			boolean isSelected = gpuButton.isSelected();
-			String gpuStateStr1 = " off";
-			if (isSelected) {
-				gpuStateStr1 = " on";
-				logger.config("GPU button is ON.");
-			}
-			else {
-				logger.config("GPU button is OFF.");
-			}
-			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
+			IntegerMapData.setUseGPU(isSelected);
+			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + (isSelected ? " On" : " Off")); //-NLS-1$
 		}
 		else {
 			// Gray out the GPU button since it's NOT supported
 			gpuButton.setEnabled(false);
 			gpuButton.setText("No GPU");
-			logger.config("GPU not available for rendering maps.");
 		}
 		
 		gpuButton.validate();
@@ -778,9 +770,8 @@ public class NavigatorWindow extends ContentPanel
 	 */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
-		if ((mapPanel != null) && mapPanel.updateDisplay()) {
-			updateMapControls();
-		}
+		if (mapPanel != null)
+			mapPanel.updateDisplay();
 	}
 	
 	@Override

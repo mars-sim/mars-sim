@@ -23,8 +23,6 @@ import com.mars_sim.core.map.location.Coordinates;
 public class CannedMarsMap implements MapDisplay {
 
 	// Data members
-	private boolean mapImageDone = false;
-
 	private Image mapImage = null;
 	
 	private MapData mapData;
@@ -66,17 +64,6 @@ public class CannedMarsMap implements MapDisplay {
 		this.lastRHO = rho;
 		this.lastCenter = newCenter;
 		this.lastSize = d;
-		mapImageDone = true;
-	}
-	
-	/**
-	 * Checks if a requested map is complete.
-	 * 
-	 * @return true if requested map is complete
-	 */
-	@Override
-	public boolean isImageDone() {
-		return mapImageDone;
 	}
 
 	/**
@@ -86,7 +73,8 @@ public class CannedMarsMap implements MapDisplay {
 	 */
 	@Override
 	public Image getMapImage(Coordinates center, double rho, Dimension size) {
-		if (!lastCenter.equals(center) || (lastRHO != rho) || !lastSize.equals(size)) {
+		if (!center.equals(lastCenter) || (lastRHO != rho) || !size.equals(lastSize)
+				|| (mapImage == null)) {
 			// Redraw map
 			drawMap(center, rho, size);
 		}

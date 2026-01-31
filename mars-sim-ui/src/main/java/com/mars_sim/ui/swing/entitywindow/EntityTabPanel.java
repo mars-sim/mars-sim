@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -32,7 +33,7 @@ import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
  * first displayed.
  */
 @SuppressWarnings("serial")
-public abstract class EntityTabPanel<T extends Entity> extends JPanel {
+public abstract class EntityTabPanel<T extends Entity>  {
 
     // Name of the icon to use for the general tab
     protected static final String GENERAL_ICON = "info";
@@ -43,8 +44,9 @@ public abstract class EntityTabPanel<T extends Entity> extends JPanel {
 	
 	private String tabTitle;
 	private String tabToolTip;
-	private transient Icon tabIcon;
+	private Icon tabIcon;
 	
+	private JPanel mainPanel;
 	private JPanel topContentPanel;
 	private JPanel centerContentPanel;
 
@@ -72,12 +74,12 @@ public abstract class EntityTabPanel<T extends Entity> extends JPanel {
 		this.tabToolTip = (tabToolTip != null) ? tabToolTip : tabTitle;
 		this.context = context;
 
-		setLayout(new BorderLayout());
+		mainPanel = new JPanel(new BorderLayout());
 
 		// Create top content panel
 		topContentPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
-		add(topContentPanel, BorderLayout.NORTH);
+		mainPanel.add(topContentPanel, BorderLayout.NORTH);
 				
 		// Create center content panel
 		centerContentPanel = new JPanel(new BorderLayout(0, 10));
@@ -89,7 +91,7 @@ public abstract class EntityTabPanel<T extends Entity> extends JPanel {
 		viewPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		viewPanel.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		viewPanel.setViewportView(centerContentPanel);
-		add(viewPanel, BorderLayout.CENTER);
+		mainPanel.add(viewPanel, BorderLayout.CENTER);
 	}
 
     /**
@@ -198,4 +200,12 @@ public abstract class EntityTabPanel<T extends Entity> extends JPanel {
     public void refreshUI() {
         // Default does nothing
     }
+
+	/**
+	 * Get the main visual component for this tab.
+	 * @return Component that is the main visual for this tab.
+	 */
+	JComponent getVisual() {
+		return mainPanel;
+	}
 }

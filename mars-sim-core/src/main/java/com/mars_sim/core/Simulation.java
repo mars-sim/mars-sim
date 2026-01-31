@@ -659,6 +659,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Mission related class
 		AbstractMission.initializeInstances(sim, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
+		MissionStep.initializeInstances(masterClock, unitManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 		

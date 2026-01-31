@@ -20,7 +20,7 @@ import com.google.common.math.DoubleMath;
  */
 public class JDoubleLabel extends JLabel {
 
-    private double tolerance = 0.0001;
+    private double tolerance = 0.001D;
     private double currentValue = Integer.MIN_VALUE;
     private DecimalFormat formatter;
 

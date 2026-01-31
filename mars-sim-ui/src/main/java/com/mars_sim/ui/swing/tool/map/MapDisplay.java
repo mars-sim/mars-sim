@@ -34,13 +34,6 @@ public interface MapDisplay {
 	public void drawMap(Coordinates newCenter, double rho, Dimension d);
 
 	/**
-	 * Checks if a requested map is complete.
-	 * 
-	 * @return true if requested map is complete
-	 */
-	public boolean isImageDone();
-
-	/**
 	 * Gets an image for this details.
 	 * 
 	 * @param newCenter 	The new center location
