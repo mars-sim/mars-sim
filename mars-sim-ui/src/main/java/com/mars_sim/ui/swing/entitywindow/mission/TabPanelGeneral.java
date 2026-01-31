@@ -41,7 +41,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
- * The tab displays the general properties of an Authority.
+ * The tab displays the general properties of a Mission.
  */
 @SuppressWarnings("serial")
 class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener {
@@ -312,6 +312,7 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 		 * @param column the table column.
 		 * @return the value.
 		 */
+		@Override
 		public Object getValueAt(int row, int column) {
 				
 			if (row < entries.size()) {

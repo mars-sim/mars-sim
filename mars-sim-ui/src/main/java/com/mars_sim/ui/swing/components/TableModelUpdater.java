@@ -31,6 +31,7 @@ public final class TableModelUpdater  implements Runnable {
         entireData = true;
     }
 
+    @Override
     public void run() {
         if (entireData) {
             model.fireTableDataChanged();

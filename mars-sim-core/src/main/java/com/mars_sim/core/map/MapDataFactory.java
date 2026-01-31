@@ -101,7 +101,7 @@ import com.mars_sim.core.map.megdr.MEGDRFactory;
  	/**
  	 * Loads a single image files to represent a resolution within a map stack
  	 * 
- 	 * @param mapType the map type defining the map family
+ 	 * @param mapMetaData the map type defining the map family
  	 * @param res The resolution level
  	 * @param imagefile Name of the image file for this resolution
  	 * @param callback Callback when the map data is loaded async

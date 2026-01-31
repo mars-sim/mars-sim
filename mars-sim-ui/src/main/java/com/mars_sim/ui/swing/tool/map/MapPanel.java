@@ -435,10 +435,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * 
 	 * @return Map displayed was changed
 	 */
-	public boolean updateDisplay() {
+	public void updateDisplay() {
 		updateDisplay(getRho());
-
-		return false;
 	}
 
 	/**

@@ -301,6 +301,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		 *
 		 * @param event the unit event.
 		 */
+		@Override
 		public void entityUpdate(EntityEvent event) {
 			String type = event.getType();
 			Worker member = (Worker) event.getSource();
