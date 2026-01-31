@@ -68,7 +68,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	// Data members
 	private boolean mouseDragging;
 	private boolean mapError;
-	private boolean wait;
 
 	private String mapErrorMessage;
 	
@@ -80,8 +79,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private JSlider zoomSlider;
 	
 	private List<MapLayer> mapLayers;
-
-	private MapData loadingMapData;
 
 	private JLabel mapDetails;
 	private JLabel statusLabel;
@@ -101,7 +98,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = Executors.newSingleThreadExecutor();
 		
 		mapError = false;
-		wait = false;
 		mapLayers = new CopyOnWriteArrayList<>();
 		centerCoords = new Coordinates(HALF_PI, 0D);
 	
@@ -349,18 +345,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return Display was updated immediately
 	 */
 	public boolean loadMap(String newMapString, int res) {
-		if (loadingMapData != null) {
-			logger.warning("Map already loading in the background");
-			return false;
-		}
-
 		var mapmeta = MapDataFactory.getMapMetaData(newMapString);
 		if (mapmeta == null) {
 			logger.severe("No map meta with id " + newMapString);
 			return false;
 		}
 
-		var newMapData = mapmeta.getData(res);
+		var newMapData = mapmeta.getData(res, this::loadCompleted);
 		if (newMapData.getStatus() == MapState.LOADED) {
 			// It is ready
 			createMapDisplay(newMapData);
@@ -368,9 +359,25 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 
 		// Wait for this map to load
-		loadingMapData = newMapData;
 		setStatusLabel("Loading " + mapmeta.getDescription() + " level:" + res);
 		return false;
+	}
+
+	/**
+	 * Callback when an async map data load is completed.
+	 * @param md MapData loaded
+	 */
+	private void loadCompleted(MapData md) {
+		var state = md.getStatus();
+		if (state == MapState.LOADED) {
+			// Background map is done so display it
+			createMapDisplay(md);
+			setStatusLabel(null);
+		}
+		else if (state == MapState.FAILED) {
+			logger.warning("Background loading failed");
+			setStatusLabel("Failed to load map data for " + md.getMetaData().getDescription());
+		}
 	}
 
 	private void createMapDisplay(MapData newMapData) {
@@ -419,7 +426,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 			
 		if (recreateMap) {
-			wait = true;
 			updateDisplay(rho);
 		}
 	}
@@ -430,25 +436,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return Map displayed was changed
 	 */
 	public boolean updateDisplay() {
-		boolean changed = false;
-		if (loadingMapData != null) {
-			var state = loadingMapData.getStatus();
-			if (state == MapState.LOADED) {
-				// Background map is done so display it
-				createMapDisplay(loadingMapData);
-				loadingMapData = null;
-				changed = true;
-				setStatusLabel(null);
-			}
-			else if (state == MapState.FAILED) {
-				logger.warning("Background loading failed");
-				loadingMapData = null;
-				setStatusLabel(null);
-			}
-		}
 		updateDisplay(getRho());
 
-		return changed;
+		return false;
 	}
 
 	/**
@@ -507,7 +497,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					marsMap.drawMap(centerCoords, rho, sz);
 				}
 				
-				wait = false;
 				repaint();
 				
 			} catch (Exception e) {
@@ -522,67 +511,65 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (isShowing()) {
+		Graphics2D g2d = (Graphics2D) g.create();
+		
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        	Graphics2D g2d = (Graphics2D) g.create();
-	        
-        	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		if (marsMap == null) {
+			// First paint with no user defined map
+			loadMap(MapDataFactory.DEFAULT_MAP_TYPE, 0);
+			logger.warning("MarsMap is null, loading requested.");
+		}
 
-			if (marsMap == null) {
-				// First paint with no user defined map
-				loadMap(MapDataFactory.DEFAULT_MAP_TYPE, 0);
+		if (mapError) {
+			// Draw error message
+			if (mapErrorMessage == null)
+				mapErrorMessage = "Null Map";
+			drawCenteredMessage(mapErrorMessage, g2d);
+		}
+		else {
+			// Paint black background
+			g2d.setColor(Color.BLACK);
+
+			var size = getSize();
+			
+			g2d.fillRect(0, 0, (int)size.getWidth(), (int)size.getHeight());
+		
+			if ((centerCoords != null) && marsMap != null) {
+				double activeRho = calculateRHO();
+				Image mapImage = marsMap.getMapImage(centerCoords, activeRho, size);
+				if (mapImage != null) {
+					g2d.drawImage(mapImage, 0, 0, this);  
+					mapImage.flush();
+				}
+				else {
+					logger.warning("MapImage is null");
+				}
+
+				// Reset the hotspots
+				hotspots = new ArrayList<>();
+
+				// Display the layers and record any hotspots
+				for (var i : mapLayers) {
+					hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d, size));
+				}
+			
+				g2d.setBackground(Color.BLACK);
 			}
-	        if (wait) {
-	        	String message = "Generating Map";
-	        	drawCenteredMessage(message, g2d);
-	        }
-	        else {
-	        	if (mapError) {
-	                // Draw error message
-	                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
-	                drawCenteredMessage(mapErrorMessage, g2d);
-	            }
-	        	else {
-	        		
-	        		// Clear the background with white
-	        		// Not working: g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT)
-	        		// Paint black background
-	        		g2d.setColor(Color.BLACK);
+			else {
+				drawCenteredMessage("Loading Map Data", g2d);
 
-					var size = getSize();
-	                
-	        		g2d.fillRect(0, 0, (int)size.getWidth(), (int)size.getHeight());
-        		
-	                if (centerCoords != null) {
-	                	if (marsMap != null && marsMap.isImageDone()) {
-	                		Image mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
-	                		if (mapImage != null) {
-	                			g2d.drawImage(mapImage, 0, 0, this);  
-	                			
-	                			mapImage.flush();
-	                		}
-	                	}
-	                	else
-	                		return;
+				logger.warning("Paint skipped " + 
+						((centerCoords == null) ? "centerCoords is null. " : "") +
+						((marsMap == null) ? "marsMap is null. " : "")
+						);
+			}
+		}
 	
-	                	// Reset the hotspots
-	                	hotspots = new ArrayList<>();
-
-						// Display the layers and record any hotspots
-	                	for (var i : mapLayers) {
-	                		hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d, size));
-						}
-              		
-		        		g2d.setBackground(Color.BLACK);
-	                }
-	        	}
-	        }
-	
-	        g2d.dispose();
-        }
+	    g2d.dispose();
     }
 
 	/**
