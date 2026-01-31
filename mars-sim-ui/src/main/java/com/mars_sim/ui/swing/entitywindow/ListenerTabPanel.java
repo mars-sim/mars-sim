@@ -31,7 +31,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 @SuppressWarnings("serial")
 public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 	
-	private static final String TAB_ICON = "monitor";
+	private static final String TAB_ICON = "listener";
 	private static final String TAB_TITLE = "Listeners";
 	private static final String TAB_TOOLTIP = "Active Event Listeners";
 	private static final String LAST_REFRESH_LABEL = "Last Refresh";

@@ -47,7 +47,7 @@ class TabPanelObjectives extends EntityTabPanel<Mission>
     public TabPanelObjectives(Mission mission, UIContext context) {
 		super(
 			"Objectives",
-			ImageLoader.getIconByName("sponsor"),
+			ImageLoader.getIconByName("objective"),
 			null,
 			context, mission
 		);

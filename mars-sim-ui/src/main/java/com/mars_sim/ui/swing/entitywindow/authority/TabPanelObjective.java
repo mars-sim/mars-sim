@@ -25,7 +25,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 class TabPanelObjective extends EntityTabPanel<Authority> {
 	
-	private static final String TAB_ICON = "sponsor";
+	private static final String TAB_ICON = "objective";
 	
 	/**
 	 * Constructor.
