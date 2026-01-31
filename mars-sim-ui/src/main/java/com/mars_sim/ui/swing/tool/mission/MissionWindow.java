@@ -274,7 +274,7 @@ public class MissionWindow extends ContentPanel implements MissionManagerListene
 		MissionPlanning plan = mission.getPlan();
 		if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
 			missionMgr.approveMissionPlan(plan, (approved ?
-								PlanType.APPROVED : PlanType.NOT_APPROVED), 0);
+								PlanType.APPROVED : PlanType.NOT_APPROVED));
 			selectMission(mission); // Force a full refresh
 		}
 	}

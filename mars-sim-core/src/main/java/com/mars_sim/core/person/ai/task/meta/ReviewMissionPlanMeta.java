@@ -55,10 +55,10 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
     private static final String NAME = Msg.getString(
             "Task.description.reviewMissionPlan"); //$NON-NLS-1$
         
-    private static final double BASE_SCORE = 1.0;
-	private static final double MAX_SCORE = 750.0;
+    private static final double BASE_SCORE = 200.0;  // Initial score
+	private static final double MAX_SCORE = 750.0; // Max score once max age is reached
 	private static final int MAX_AGE = 7;
-	private static final double SOL_SCORE = (MAX_SCORE - BASE_SCORE) / MAX_AGE;
+	private static final double SOL_DELAY_MODIFIER = ((MAX_SCORE - BASE_SCORE)/BASE_SCORE) / MAX_AGE;
 
 	private static MissionManager missionManager;
     
@@ -135,12 +135,12 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 				// if the job assignment submitted date is > 1 sol
 				int sol = getMarsTime().getMissionSol();
 				int solRequest = mp.getMissionSol();
-				int diff = sol - solRequest;
+				int planAge = (sol - solRequest);
 
 				// If no one else is able to offer the review after x days, 
 				// do allow the review to go through even if the reviewer is not valid
-				diff = Math.min(diff, MAX_AGE); // Limit the age of a review
-				score.addModifier("review.age", 1 + (diff * SOL_SCORE));
+				planAge = Math.min(planAge, MAX_AGE); // Limit the age of a review
+				score.addModifier("review.age", 1 + (planAge * SOL_DELAY_MODIFIER));
 
 				tasks.add(new ReviewMissionPlanJob(this, mp, score));
 			}

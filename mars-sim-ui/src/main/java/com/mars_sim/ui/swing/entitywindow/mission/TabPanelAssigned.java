@@ -131,7 +131,10 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 	 */
     @Override
     public void destroy() {
-        memberTableModel.destroy();
+		if (memberTableModel != null) {
+        	memberTableModel.destroy();
+		}
+
 		if (v != null) {
 			v.removeEntityListener(this);
 		}

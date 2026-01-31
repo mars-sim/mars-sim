@@ -85,9 +85,11 @@ class TabPanelObjectives extends EntityTabPanel<Mission>
     @Override
     public void destroy() {
         // Release objectives
-        for(var c : tabPanel.getComponents()) {
-            if (c instanceof ObjectivesPanel odp) {
-                odp.unregister();
+        if (tabPanel != null) {
+            for(var c : tabPanel.getComponents()) {
+                if (c instanceof ObjectivesPanel odp) {
+                    odp.unregister();
+                }
             }
         }
 

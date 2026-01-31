@@ -8,25 +8,34 @@ package com.mars_sim.ui.swing.entitywindow.mission;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.person.ai.mission.AbstractMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLog;
+import com.mars_sim.core.person.ai.mission.MissionPlanning;
+import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -42,6 +51,12 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 	private JLabel designationTextField;
 	private JLabel statusTextField;
 	private LogTableModel logTableModel;
+	private JDoubleLabel planScore;
+	private JLabel planStatus;
+	private JProgressBar planPerc;
+	private JButton approveButton;
+	private JButton rejectButton;
+	private EntityLabel planReviewer;
 
 	/**
 	 * Constructor.
@@ -61,22 +76,111 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 	@Override
 	protected void buildUI(JPanel content) {
 
+		var mission = getEntity();
+
+		var detailsPane = initDetailsPane(mission);
+		var logPane = initLogPane(mission);
+
+		// Is there a mission planning
+		if (mission.getPlan() != null) {
+			var planPane = initPlanPane(mission.getPlan());
+
+			// 3 panel so use a top pane to hold attributes and plan
+			var topPane = new JPanel(new BorderLayout());
+			topPane.add(detailsPane, BorderLayout.NORTH);
+			topPane.add(planPane, BorderLayout.SOUTH);
+
+			content.add(topPane, BorderLayout.NORTH);
+		}
+		else {
+			// Just 2 panels: attributes at top, log at center.
+			content.add(detailsPane, BorderLayout.NORTH);
+		}
+		content.add(logPane, BorderLayout.CENTER);
+		
+		updateFields(mission);
+	}
+
+	private JPanel initDetailsPane(Mission mission) {
+		var pane = new JPanel(new BorderLayout());
+		pane.setBorder(SwingHelper.createLabelBorder("Details"));
+
 		// Prepare attribute panel.
 		AttributePanel attributePanel = new AttributePanel();
-		attributePanel.setBorder(SwingHelper.createLabelBorder("Details"));
-		content.add(attributePanel, BorderLayout.NORTH);
 		
-		var mission = getEntity();
 		phaseTextField = attributePanel.addTextField(Msg.getString("mission.phase"), "", null);
 		designationTextField = attributePanel.addTextField(Msg.getString("mission.designation"), "",null);
 
 		var context = getContext();
 		attributePanel.addLabelledItem(Msg.getString("mission.leader"), new EntityLabel(mission.getStartingPerson(), context));
 		statusTextField = attributePanel.addTextField(Msg.getString("mission.status"), "", null);
+		pane.add(attributePanel, BorderLayout.CENTER);
 
-		content.add(initLogPane(mission), BorderLayout.CENTER);
+		// Approval buttons
+		var buttonPane = new JPanel(new BorderLayout());
+		pane.add(buttonPane, BorderLayout.EAST);
+		buttonPane.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 2));
+		var abortButton = new JButton(ImageLoader.getIconByName("action/cancel"));
+		abortButton.setToolTipText("Abort mission");
+		abortButton.addActionListener(e -> abortMission());
+		buttonPane.add(abortButton, BorderLayout.NORTH);
+
+		return pane;
+	}
+
+	private void abortMission() {
+		var m = getEntity();
+		m.abortMission(AbstractMission.MISSION_ABORTED_BY_PLAYER);
+		updateFields(m);
+	}
+
+	private JPanel initPlanPane(MissionPlanning plan) {
+		var pane = new JPanel(new BorderLayout());
+		pane.setBorder(SwingHelper.createLabelBorder("Planning"));
+		var planDetails = new AttributePanel();
+		pane.add(planDetails, BorderLayout.CENTER);
+
+		planStatus = planDetails.addTextField("Status", null, null); 
+		planPerc = new JProgressBar(0, 100);
+		planPerc.setStringPainted(true);
+		planDetails.addLabelledItem("%age Complete", planPerc);
+		planReviewer = new EntityLabel(getContext());
+		planDetails.addLabelledItem("Reviewer", planReviewer);
+		planScore = new JDoubleLabel(StyleManager.DECIMAL_PLACES1);
+		planDetails.addLabelledItem("Score", planScore);
+		planDetails.addLabelledItem("Passing Score", new JDoubleLabel(StyleManager.DECIMAL_PLACES1,
+										plan.getPassingScore()));
 		
-		updateFields(mission);
+		// Approval buttons
+		var buttonPane = new JPanel(new GridLayout(2, 1));
+		var outerPane = new JPanel(new BorderLayout());
+		outerPane.add(buttonPane, BorderLayout.NORTH);
+		pane.add(outerPane, BorderLayout.EAST);
+		buttonPane.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 2));
+		approveButton = new JButton(ImageLoader.getIconByName("action/approve"));
+		approveButton.setToolTipText("Approve mission");
+		approveButton.addActionListener(e -> reviewMission(true));
+		buttonPane.add(approveButton);
+		rejectButton = new JButton(ImageLoader.getIconByName("action/cancel"));
+		rejectButton.setToolTipText("Reject mission");
+		rejectButton.addActionListener(e -> reviewMission(false));
+		buttonPane.add(rejectButton);
+
+		updatePlanFields();
+
+		return pane;
+	}
+
+	private void updatePlanFields() {
+		var plan = getEntity().getPlan();
+		planPerc.setValue(plan.getPercentComplete());
+		planScore.setValue(plan.getScore());
+		planStatus.setText(plan.getStatus().getName());
+		planReviewer.setEntity(plan.getActiveReviewer());
+
+		var active = plan.getStatus() != PlanType.APPROVED && plan.getStatus() != PlanType.NOT_APPROVED;
+		approveButton.setEnabled(active);
+		rejectButton.setEnabled(active);
 	}
 
 	/**
@@ -117,11 +221,27 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 	@Override
 	public void entityUpdate(EntityEvent event) {
 		if (event.getSource() instanceof Mission m && m.equals(getEntity())) {
-			updateFields(m);
+			switch (event.getType()) {
+				case MissionPlanning.PLAN_REVIEWER_EVENT,
+						MissionPlanning.PLAN_STATE_EVENT -> updatePlanFields();
+				default -> updateFields(m);
+			}
 		}
 	}
 
-		
+	/**
+	 * Approve a mission being review
+	 * @param approved true to approve, false to not approve
+	 */
+	private void reviewMission(boolean approved) {
+		var mission = getEntity();
+		MissionPlanning plan = mission.getPlan();
+		if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
+			getContext().getSimulation().getMissionManager().approveMissionPlan(plan, (approved ?
+								PlanType.APPROVED : PlanType.NOT_APPROVED));
+			updateFields(mission); // Force a full refresh
+		}
+	}
 	/**
 	 * Adapter for the mission log
 	 */

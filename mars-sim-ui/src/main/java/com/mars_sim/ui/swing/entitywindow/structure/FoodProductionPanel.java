@@ -65,7 +65,7 @@ public class FoodProductionPanel extends JPanel {
 		add(namePane);
 
 		// Prepare cancel button.
-		JButton cancelButton = new JButton(ImageLoader.getIconByName("action/cancel"));
+		JButton cancelButton = new JButton(ImageLoader.getIconByName("action/cancel_small"));
 		cancelButton.setMargin(new Insets(0, 0, 0, 0));
 		cancelButton.addActionListener(event ->
 			getFoodProductionProcess().getKitchen().endFoodProductionProcess(getFoodProductionProcess(), true)
