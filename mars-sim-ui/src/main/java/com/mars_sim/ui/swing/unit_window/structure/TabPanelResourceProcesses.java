@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -93,7 +94,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		
 		// Create override check box panel.
 		JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		overrideCheckboxPane.setAlignmentY(BOTTOM_ALIGNMENT);
+		overrideCheckboxPane.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		topPanel.add(overrideCheckboxPane);
 	
 		// Create override check box.
@@ -108,7 +109,7 @@ class TabPanelResourceProcesses extends EntityTabPanel<Settlement>
 		
 		// Create level panel.
 		JPanel levelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		levelPanel.setAlignmentY(TOP_ALIGNMENT);
+		levelPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 		topPanel.add(levelPanel);
 		
 		JLabel levelLabel = new JLabel("Output Effort :");

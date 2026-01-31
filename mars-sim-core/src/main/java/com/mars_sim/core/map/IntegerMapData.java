@@ -49,7 +49,7 @@ import com.mars_sim.core.map.location.Coordinates;
  	private static final double TWO_PI = Math.PI * 2;
  	
  	// The factor to apply for calculate the min & max rho
-  	private static final double MAX_RHO_MULTIPLER = 5;
+  	private static final double MAX_RHO_MULTIPLER = 10;
   	private static final double MIN_RHO_MULTIPLER = 0.9;
   	
  	private static final double HALF_PI = Math.PI / 2D;

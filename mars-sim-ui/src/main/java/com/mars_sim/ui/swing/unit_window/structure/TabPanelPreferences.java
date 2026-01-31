@@ -157,8 +157,9 @@ class TabPanelPreferences extends EntityTableTabPanel<Settlement> {
 		if (idx >= 0) {
 			idx = t.getRowSorter().convertRowIndexToModel(idx);
  			RenderableKey selection = tableModel.getValue(idx);
-			int input = JOptionPane.showConfirmDialog(this, 
-                "Delete Preference " + selection.key.getCategory().getName() + ":" + selection.spec.displayName(), "Delete Preference", 
+			int input = JOptionPane.showConfirmDialog(getContext().getTopFrame(),
+                	"Delete Preference " + selection.key.getCategory().getName() + ":" + selection.spec.displayName(),
+				"Delete Preference", 
                 JOptionPane.OK_CANCEL_OPTION);
 			if (input == 0) {
 				tableModel.removeEntry(selection);

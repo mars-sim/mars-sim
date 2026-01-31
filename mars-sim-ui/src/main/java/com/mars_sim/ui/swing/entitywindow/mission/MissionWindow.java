@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.entitywindow.mission;
 import java.util.Properties;
 
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
@@ -29,6 +30,10 @@ public class MissionWindow extends EntityContentPanel<Mission> {
         addDefaultTabPanel(new TabPanelGeneral(entity, context));
         addTabPanel(new TabPanelObjectives(entity, context));
         addTabPanel(new TabPanelAssigned(entity, context));
+
+        if (entity instanceof VehicleMission vm) {
+            addTabPanel(new TabPanelNavigation(vm, context));
+        }
         
         applyProps(props);
     }

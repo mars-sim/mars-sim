@@ -32,7 +32,7 @@ public class OpenCL {
 	// Static members.
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
-	private static final String OPENCL_FOLDER = "/opencl";
+	private static final String OPENCL_FOLDER = "/opencl/";
 	  
 	private static Map<String, CLProgram> programs;
 	private static Map<CLProgram, Map<String, CLKernel>> kernels;
@@ -84,7 +84,11 @@ public class OpenCL {
    */
   public static CLProgram getProgram(String programName) {
     programs.computeIfAbsent(programName, k -> {
-      try {InputStream stream = ClassLoader.getSystemResourceAsStream(OPENCL_FOLDER + programName);
+      var progFile = OPENCL_FOLDER + programName;
+      try {InputStream stream = OpenCL.class.getResourceAsStream(progFile);
+        if (stream == null) {
+          throw new IllegalStateException("Could not find opencl program file: " + progFile);
+        }
         return context.createProgram(stream).build();
       } catch (IOException e) {
         throw new IllegalStateException("Problem loading opencl program file", e);

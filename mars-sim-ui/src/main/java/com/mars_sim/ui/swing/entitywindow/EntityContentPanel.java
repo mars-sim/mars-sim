@@ -239,7 +239,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         tabPanels.add(position, panel);
 
         // Have to ignore the title to force the icon to show correctly
-        tabPane.insertTab( null, panel.getTabIcon(), panel, panel.getTabToolTip(), position);
+        tabPane.insertTab( null, panel.getTabIcon(), panel.getVisual(), panel.getTabToolTip(), position);
     }
 
     /**

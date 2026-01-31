@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -82,7 +81,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private List<MapLayer> mapLayers;
 
-	private MapData backgroundMapData;
+	private MapData loadingMapData;
 
 	private JLabel mapDetails;
 	private JLabel statusLabel;
@@ -111,15 +110,11 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		addMouseWheelListener(this);
 		
 		setLayout(new BorderLayout(10, 20));
-		
-		JPanel zoomPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 40));
-       	add(zoomPane, BorderLayout.EAST);
-       	
-	    zoomPane.setBackground(new Color(0, 0, 0, 128));
-	    zoomPane.setOpaque(false);
-	    zoomPane.setAlignmentX(RIGHT_ALIGNMENT);
-	    zoomPane.setAlignmentY(CENTER_ALIGNMENT);
-       	zoomPane.add(zoomSlider);
+
+		zoomSlider.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 10));
+		zoomSlider.setAlignmentX(RIGHT_ALIGNMENT);
+		zoomSlider.setAlignmentY(CENTER_ALIGNMENT);
+		add(zoomSlider, BorderLayout.EAST);
 
 		// Build the status panel
 		statusLabel = new JLabel("");
@@ -151,36 +146,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
 	private void buildZoomSlider() {
-
-//		UIDefaults sliderDefaults = new UIDefaults();
-
-//        sliderDefaults.put("Slider.thumbWidth", 15);
-//        sliderDefaults.put("Slider.thumbHeight", 15);
-//        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
-//		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		    g.setStroke(new BasicStroke(2f));
-//		    g.setColor(Color.BLACK);
-//		    g.fillOval(1, 1, w-1, h-1);
-//		    g.setColor(Color.WHITE);
-//		    g.drawOval(1, 1, w-1, h-1);
-//		});
-//        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
-//		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		    g.setStroke(new BasicStroke(2f));
-//		    g.setColor(Color.BLACK);
-//		    g.fillRoundRect(0, 6, w, 6, 6, 6);
-//		    g.setColor(Color.WHITE);
-//		    g.drawRoundRect(0, 6, w, 6, 6, 6);
-//		});
+		var color = Color.WHITE;
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, MAX_SLIDER, 25);
-        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-        zoomSlider.setPreferredSize(new Dimension(60, 300));
-        zoomSlider.setSize(new Dimension(60, 300));
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
-		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-		zoomSlider.setBackground(new Color(0, 0, 0, 128));
+		zoomSlider.setForeground(color);
 		zoomSlider.setOpaque(false);
 		
 		zoomSlider.setVisible(true);
@@ -190,7 +161,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 		Dictionary<Integer, JLabel> labelTable = new Hashtable<>();	
 		for (int i = 1; i <= SLIDER_LABELS; i++) {
-			labelTable.put(i * (MAX_SLIDER/SLIDER_LABELS), new JLabel(Integer.toString(i)));
+			var tick = new JLabel(Integer.toString(i));
+			tick.setForeground(color);
+			labelTable.put(i * (MAX_SLIDER/SLIDER_LABELS), tick);
 		}
 		zoomSlider.setLabelTable(labelTable);
     }
@@ -376,7 +349,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return Display was updated immediately
 	 */
 	public boolean loadMap(String newMapString, int res) {
-		if (backgroundMapData != null) {
+		if (loadingMapData != null) {
 			logger.warning("Map already loading in the background");
 			return false;
 		}
@@ -395,7 +368,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 
 		// Wait for this map to load
-		backgroundMapData = newMapData;
+		loadingMapData = newMapData;
 		setStatusLabel("Loading " + mapmeta.getDescription() + " level:" + res);
 		return false;
 	}
@@ -458,18 +431,18 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 */
 	public boolean updateDisplay() {
 		boolean changed = false;
-		if (backgroundMapData != null) {
-			var state = backgroundMapData.getStatus();
+		if (loadingMapData != null) {
+			var state = loadingMapData.getStatus();
 			if (state == MapState.LOADED) {
 				// Background map is done so display it
-				createMapDisplay(backgroundMapData);
-				backgroundMapData = null;
+				createMapDisplay(loadingMapData);
+				loadingMapData = null;
 				changed = true;
 				setStatusLabel(null);
 			}
 			else if (state == MapState.FAILED) {
 				logger.warning("Background loading failed");
-				backgroundMapData = null;
+				loadingMapData = null;
 				setStatusLabel(null);
 			}
 		}
