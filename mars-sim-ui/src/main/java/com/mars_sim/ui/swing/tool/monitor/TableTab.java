@@ -26,13 +26,9 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
-import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpecHelper;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
@@ -43,15 +39,6 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  */
 @SuppressWarnings("serial")
 public class TableTab extends MonitorTab {
-
-	// Common shared renderers
-	private static final NumberCellRenderer DIGIT0_RENDERER = new NumberCellRenderer(0);
-	private static final NumberCellRenderer DIGIT1_RENDERER = new NumberCellRenderer(1);
-	private static final NumberCellRenderer DIGIT2_RENDERER = new NumberCellRenderer(2);
-	private static final NumberCellRenderer DIGIT3_RENDERER = new NumberCellRenderer(3);
-	private static final MarsTimeTableCellRenderer TIME_RENDERER = new MarsTimeTableCellRenderer();
-	private static final NumberCellRenderer CURRENCY_RENDERER = new NumberCellRenderer(2, "$");
-	private static final PercentageTableCellRenderer PERC_RENDERER = new PercentageTableCellRenderer(false);
 
 	/** Table component. */
 	private JTable table;
@@ -80,33 +67,8 @@ public class TableTab extends MonitorTab {
             }
 		};
 
-		// Set default renderers
-		this.table.setDefaultRenderer(Integer.class, DIGIT0_RENDERER);
-		this.table.setDefaultRenderer(Double.class, DIGIT1_RENDERER);
-		this.table.setDefaultRenderer(Number.class, DIGIT2_RENDERER);
-		this.table.setDefaultRenderer(MarsTime.class, TIME_RENDERER);
-
-		// Check for special styles
-		var colModel = table.getColumnModel();
-		for(int colId = 0; colId < model.getColumnCount(); colId++) {
-			var col = colModel.getColumn(colId);
-
-			// Use the model index to handle the table hiding or reordering columns
-			var style = model.getColumnStyle(col.getModelIndex());
-
-			TableCellRenderer renderer = switch(style) {
-				case ColumnSpec.STYLE_CURRENCY -> CURRENCY_RENDERER;
-				case ColumnSpec.STYLE_INTEGER -> DIGIT0_RENDERER;
-				case ColumnSpec.STYLE_DIGIT1 -> DIGIT1_RENDERER;
-				case ColumnSpec.STYLE_DIGIT2 -> DIGIT2_RENDERER;
-				case ColumnSpec.STYLE_DIGIT3 -> DIGIT3_RENDERER;
-				case ColumnSpec.STYLE_PERCENTAGE -> PERC_RENDERER;
-
-				default -> null;
-			};
-			if (renderer != null)
-				col.setCellRenderer(renderer);
-		}
+		// Apply renderers as the model is an EnhancedTableModel.
+		ColumnSpecHelper.applyRenderers(table);
 
 		// call it a click to display details button when user double clicks the table
 		table.addMouseListener(new MouseAdapter() {

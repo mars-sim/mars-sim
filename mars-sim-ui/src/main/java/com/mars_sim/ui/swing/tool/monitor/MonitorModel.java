@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import java.util.Set;
 
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
+import com.mars_sim.ui.swing.components.EnhancedTableModel;
 
 /**
  * This defines a table model for use in the Monitor tool.
@@ -17,7 +17,7 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * Simulation. This interface defines simple extra method that provide a richer
  * interface for the Monitor window to be based upon.
  */
-interface MonitorModel extends ToolTipTableModel {
+interface MonitorModel extends EnhancedTableModel {
 
 	/**
 	 * Gets the name of this model. The name will be a description helping
@@ -60,12 +60,4 @@ interface MonitorModel extends ToolTipTableModel {
 	 * Prepares the model for deletion.
 	 */
 	public void destroy();
-
-	/**
-	 * Get any defined style for this value.
-	 * @param modelIndex the index of the column.
-	 * @return see ColumnSpec for the style.
-	 */
-    public int getColumnStyle(int modelIndex);
-
 }
