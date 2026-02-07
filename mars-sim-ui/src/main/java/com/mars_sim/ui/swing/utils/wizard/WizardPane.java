@@ -4,9 +4,10 @@
  * @date 2026-02-01
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.utils.wizard;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
@@ -23,6 +25,7 @@ import com.mars_sim.ui.swing.UIContext;
  * A generic wizard pane implementation that holds a central state class and follows a
  * sequence of WizardSteps.
  * The subclass must implement the factory pattern to create WizardSteps and a method to finish the wizard.
+ * @param <T> The wizard state type.
  */
 public abstract class WizardPane<T> extends JFrame {
 
@@ -33,6 +36,7 @@ public abstract class WizardPane<T> extends JFrame {
     private WizardStep<T> currentStep;
     private JPanel content;
     private JLabel stepTitleLabel;
+    private JLabel instructionLabel;
     private JButton backButton;
     private JButton nextButton;
     private JButton finishButton;
@@ -68,7 +72,9 @@ public abstract class WizardPane<T> extends JFrame {
         setContentPane(mainPane);
 
         stepTitleLabel = new JLabel();
-        StyleManager.applyHeading(stepTitleLabel);
+        StyleManager.applySubHeading(stepTitleLabel);
+        stepTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		stepTitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPane.add(stepTitleLabel, BorderLayout.NORTH);
 
         var buttonPanel = new JPanel();
@@ -89,6 +95,12 @@ public abstract class WizardPane<T> extends JFrame {
 
         content = new JPanel(new BorderLayout());
         content.setBorder(new MarsPanelBorder());
+
+        instructionLabel = new JLabel();
+        instructionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        instructionLabel.setFont(StyleManager.getLabelFont());
+        content.add(instructionLabel, BorderLayout.NORTH);
+        
         mainPane.add(content, BorderLayout.CENTER);
     }
 
@@ -126,7 +138,7 @@ public abstract class WizardPane<T> extends JFrame {
         currentStep.clearState(status);
 
         // Implementation for going to the previous step
-        var previousStep = previousSteps.remove(steps.size() - 1);
+        var previousStep = previousSteps.remove(previousSteps.size() - 1);
         setCurrentStep(previousStep);
     }
 
@@ -177,11 +189,14 @@ public abstract class WizardPane<T> extends JFrame {
         }
         var title = currentStep.getTitle() + " (" + idx + " out of " + max + ")";
         stepTitleLabel.setText(title);
+
+        var instructions = currentStep.getInstructions();
+        instructionLabel.setText(instructions);
         updateButtonState();
 
         // Update content panel with current step's UI
-        if (content.getComponentCount() > 0) {
-            content.remove(0);
+        if (content.getComponentCount() > 1) {
+            content.remove(1);
         }
         content.add(currentStep, BorderLayout.CENTER);
         content.revalidate();

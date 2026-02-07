@@ -4,11 +4,13 @@
  * @date 2026-02-01
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.utils.wizard;
 
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
+
+import com.mars_sim.core.tool.Msg;
 
 /**
  * A generic wizard step implementation that holds a title and references the parent wizard.
@@ -18,14 +20,19 @@ import javax.swing.JPanel;
 public abstract class WizardStep<T> extends JPanel{
 
     private String title;
+    private String instructions;
     private boolean mandatoryDone = false;
     private WizardPane<T> wizard;
     private String id;
 
-    protected WizardStep(String id, String title, WizardPane<T> parent) {
+    protected WizardStep(String id, WizardPane<T> parent) {
         this.id = id;
-        this.title = title;
         this.wizard = parent;
+
+        // Get the title and instructions from the message bundle based on the class name and ID
+        var category = parent.getClass().getSimpleName().toLowerCase();
+        this.title = Msg.getStringOptional(category, id);
+        this.instructions = Msg.getStringWithFallback(category +  "." + id.toLowerCase() + ".instruction", "");
 
         setLayout(new BorderLayout());
     }
@@ -46,6 +53,14 @@ public abstract class WizardStep<T> extends JPanel{
      */
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * Get the instructions for this step, displayed under the title. This may be null if no instructions are needed.
+     * @return The instructions, or null
+     */
+    public String getInstructions() {
+        return instructions;
     }
 
     /**

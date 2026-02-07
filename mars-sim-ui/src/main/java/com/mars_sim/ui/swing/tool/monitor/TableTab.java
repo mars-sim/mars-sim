@@ -68,7 +68,7 @@ public class TableTab extends MonitorTab {
 		};
 
 		// Apply renderers as the model is an EnhancedTableModel.
-		ColumnSpecHelper.applyRenderers(table);
+		ColumnSpecHelper.applyRenderers(table, model);
 
 		// call it a click to display details button when user double clicks the table
 		table.addMouseListener(new MouseAdapter() {
