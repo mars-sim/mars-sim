@@ -77,7 +77,6 @@ public class MissionDataBean {
 	private Collection<Worker> mixedMembers = new HashSet<>();
 	private Collection<Worker> botMembers = new HashSet<>();
     private List<GroundVehicle> constructionVehicles;
-    private Map<Good, Integer> emergencyGoods;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
 	
@@ -125,7 +124,7 @@ public class MissionDataBean {
 				}
 			case MissionType.EMERGENCY_SUPPLY ->
 					mission = new EmergencySupply(mixedMembers, destinationSettlement,
-							emergencyGoods, rover);
+							sellGoods, rover);
 			case MissionType.EXPLORATION -> {
 					List<Coordinates> collectionSites = new ArrayList<>(explorationSites.length);
 					collectionSites.addAll(Arrays.asList(explorationSites));
@@ -275,7 +274,7 @@ public class MissionDataBean {
 	 * 
 	 * @param drone the drone.
 	 */
-    protected void setDrone(Drone drone) {
+    public void setDrone(Drone drone) {
 		this.drone = drone;
 	}
     
@@ -305,7 +304,7 @@ public class MissionDataBean {
 	 * 
 	 * @param members the members.
 	 */
-    protected void setBotMembers(Collection<Worker> mm) {
+    public void setBotMembers(Collection<Worker> mm) {
     	this.botMembers = mm;
 	}
     
@@ -323,7 +322,7 @@ public class MissionDataBean {
 	 * 
 	 * @return destination settlement.
 	 */
-    protected Settlement getDestinationSettlement() {
+    public Settlement getDestinationSettlement() {
 		return destinationSettlement;
 	}
 
@@ -394,7 +393,7 @@ public class MissionDataBean {
 	 * 
 	 * @param sellGoods map of goods and integer amounts.
 	 */
-    protected void setSellGoods(Map<Good, Integer> sellGoods) {
+    public void setSellGoods(Map<Good, Integer> sellGoods) {
 		this.sellGoods = sellGoods;
 	}
 
@@ -412,7 +411,7 @@ public class MissionDataBean {
 	 * 
 	 * @param buyGoods map of goods and integer amounts.
 	 */
-	protected void setBuyGoods(Map<Good, Integer> buyGoods) {
+	public void setBuyGoods(Map<Good, Integer> buyGoods) {
 		this.buyGoods = buyGoods;
 	}
 
@@ -566,7 +565,7 @@ public class MissionDataBean {
      * @return map of resources and amounts (kg).
      */
     protected Map<Good, Integer> getEmergencyGoods() {
-        return emergencyGoods;
+        return sellGoods;
     }
 
     /**
@@ -575,7 +574,7 @@ public class MissionDataBean {
      * @param emergencyGoods map of resources and amounts (kg).
      */
     protected void setEmergencyGoods(Map<Good, Integer> emergencyGoods) {
-        this.emergencyGoods = emergencyGoods;
+        this.sellGoods = emergencyGoods;
     }
 
 	protected boolean isScientificMission() {

@@ -59,7 +59,12 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 			case StartingSettlementPanel.ID ->new StartingSettlementPanel(this, state);
 			case RoverPanel.ID -> new RoverPanel(this, state);
 			case ConstructionPanel.ID -> new ConstructionPanel(this, state);
-			case ProspectingSitePanel.NAME -> new ProspectingSitePanel(this, state, getContext());
+			case TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SUPPLY_ID, TradeGoodsPanel.SELL_ID ->
+								new TradeGoodsPanel(stepID, this, state);
+			case MembersPanel.ID -> new MembersPanel(this, state);
+			case BotsPanel.ID -> new BotsPanel(this, state);
+			case DronePanel.ID -> new DronePanel(this, state);
+			//case ProspectingSitePanel.NAME -> new ProspectingSitePanel(this, state, getContext());
 			case DestinationSettlementPanel.ID -> new DestinationSettlementPanel(this, state);
 			case LightUtilityVehiclePanel.ID -> new LightUtilityVehiclePanel(this, state);
 			default ->
@@ -72,13 +77,22 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	 */
 	private static final Map<MissionType, List<String>> missionSteps = Map.of(
 			MissionType.CONSTRUCTION, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, ConstructionPanel.ID, LightUtilityVehiclePanel.ID, ConstructionPanel.ID),
+				TypePanel.ID, StartingSettlementPanel.ID, ConstructionPanel.ID, MembersPanel.ID, LightUtilityVehiclePanel.ID),
 			// MissionType.COLLECT_ICE, List.of(
 			// 	TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, ProspectingSitePanel.NAME),
 			// MissionType.COLLECT_REGOLITH, List.of(
 			// 	TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, ProspectingSitePanel.NAME),
 			MissionType.TRAVEL_TO_SETTLEMENT, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, ConstructionPanel.ID, DestinationSettlementPanel.ID)	
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, DestinationSettlementPanel.ID),
+			MissionType.EMERGENCY_SUPPLY, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, DestinationSettlementPanel.ID,
+				TradeGoodsPanel.SUPPLY_ID),
+			MissionType.TRADE, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, DestinationSettlementPanel.ID,
+				TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID),	
+			MissionType.DELIVERY, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, DronePanel.ID, MembersPanel.ID, BotsPanel.ID,DestinationSettlementPanel.ID,
+				TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID)
 		);		
 
 	/**
