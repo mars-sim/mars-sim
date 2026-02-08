@@ -210,9 +210,6 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 			I item = model.getItem(rowModel);
 			if (model.isFailureCell(item, column))
 				l.setBackground(Color.RED);
-			else {
-				l.setBackground(null); 
-			}
 
 			return l;
 		}

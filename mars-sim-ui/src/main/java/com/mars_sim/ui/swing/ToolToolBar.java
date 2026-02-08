@@ -35,13 +35,13 @@ import javax.swing.border.SoftBevelBorder;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.mission.MissionWindow;
+import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
@@ -151,15 +151,16 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void prepareToolButtons() {
 
 		// Add Tools buttons
-		addToolButton(NavigatorWindow.NAME, NavigatorWindow.ICON);
-		addToolButton(SearchWindow.NAME, SearchWindow.ICON);
-		addToolButton(TimeTool.NAME, TimeTool.ICON);
-		addToolButton(MonitorWindow.NAME, MonitorWindow.ICON);
-		addToolButton(MissionWindow.NAME, MissionWindow.ICON);
-		addToolButton(SettlementWindow.NAME, SettlementWindow.ICON);
-		addToolButton(ResupplyWindow.NAME, ResupplyWindow.ICON);
-		addToolButton(CommanderWindow.NAME, CommanderWindow.ICON);
-		addToolButton(EntityBrowser.NAME, EntityBrowser.ICON);
+		addToolButton(NavigatorWindow.NAME, null, NavigatorWindow.ICON);
+		addToolButton(SearchWindow.NAME, null, SearchWindow.ICON);
+		addToolButton(TimeTool.NAME, null, TimeTool.ICON);
+		addToolButton(MonitorWindow.NAME, null, MonitorWindow.ICON);
+		addToolButton(MissionWindow.NAME, null, MissionWindow.ICON);
+		addToolButton(SettlementWindow.NAME, null, SettlementWindow.ICON);
+		addToolButton(ResupplyWindow.NAME, null, ResupplyWindow.ICON);
+		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON);
+		addToolButton(EntityBrowser.NAME, null, EntityBrowser.ICON);
+		addToolButton("MissionWizard", "Create a new Mission", MissionWindow.ICON);
 
 		addSeparator(new Dimension(20, 20));
 	}
@@ -188,16 +189,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * Adds a tool bar button.
 	 * 
 	 * @param toolName
-	 * @param iconKey
-	 */
-	private void addToolButton(String toolName, String iconKey) {
-		addToolButton(toolName, null, ImageLoader.getIconByName(iconKey));
-	}
-	
-	/**
-	 * Adds a tool bar button.
-	 * 
-	 * @param toolName
 	 * @param tooltip
 	 * @param iconKey
 	 */
@@ -217,9 +208,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		toolButton.setActionCommand(toolName);
 		toolButton.setPreferredSize(new Dimension(25, 25));
 		toolButton.setMaximumSize(new Dimension(25, 25));
-		if (tooltip == null) {
-			tooltip = Conversion.capitalize(toolName.replace("_", " "));
-		}
 		toolButton.setToolTipText(tooltip);
 		toolButton.addActionListener(this);
 		add(toolButton);
@@ -348,6 +336,10 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				
 			case MAIN_WIKI:
 				SwingHelper.openBrowser(WIKI_URL);
+				break;
+				
+			case "MissionWizard":
+				MissionCreate.create(context);
 				break;
 				
 			default:

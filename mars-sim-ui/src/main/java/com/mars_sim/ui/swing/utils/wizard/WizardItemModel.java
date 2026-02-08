@@ -87,14 +87,14 @@ public abstract class WizardItemModel<T> extends AbstractTableModel
 	}
 
 	/**
-	 * Returns the style of the column at columnIndex.
+	 * Returns the spec of the column at columnIndex.
 	 * 
 	 * @param modelIndex the column index.
-	 * @return column style.
+	 * @return column spec.
 	 */
 	@Override
-	public int getColumnStyle(int modelIndex) {
-		return columns.get(modelIndex).style();
+	public ColumnSpec getColumnSpec(int modelIndex) {
+		return columns.get(modelIndex);
 	}
 
 	/**

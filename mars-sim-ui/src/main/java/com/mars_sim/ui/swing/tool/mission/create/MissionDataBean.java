@@ -46,7 +46,7 @@ import com.mars_sim.core.vehicle.Rover;
 /**
  * Mission data holder bean.
  */
-class MissionDataBean {
+public class MissionDataBean {
 
     private MissionType missionType;
 	private String type = "";
@@ -63,8 +63,7 @@ class MissionDataBean {
 	private LightUtilityVehicle luv;
 	
 	private Coordinates fieldSite;
-	private Coordinates iceCollectionSite;
-	private Coordinates regolithCollectionSite;
+	private Coordinates prospectingSite;
 	
 	private Coordinates[] explorationSites;
 	
@@ -87,7 +86,7 @@ class MissionDataBean {
 	/**
 	 * Creates a mission from the mission data.
 	 */
-    protected void createMission() {
+    public void createMission() {
     	// Note: how to resolve the situation when rover is no longer available ?
     	
 	    Mission mission = null;
@@ -106,12 +105,12 @@ class MissionDataBean {
 							constructionVehicles);
 			case MissionType.COLLECT_ICE -> {
 					List<Coordinates> collectionSites = new ArrayList<>(1);
-					collectionSites.add(iceCollectionSite);
+					collectionSites.add(prospectingSite);
 					mission = new CollectIce(mixedMembers, collectionSites, rover);
 				}
 			case MissionType.COLLECT_REGOLITH -> {
 					List<Coordinates> collectionSites = new ArrayList<>(1);
-					collectionSites.add(regolithCollectionSite);
+					collectionSites.add(prospectingSite);
 					mission = new CollectRegolith(mixedMembers, collectionSites, rover);
 				}
 			case MissionType.DELIVERY -> {
@@ -186,7 +185,7 @@ class MissionDataBean {
 	 * Gets the mission type enum.
 	 * @return missionType enum.
 	 */
-    protected MissionType getMissionType() {
+    public MissionType getMissionType() {
 		return missionType;
 	}
 
@@ -222,7 +221,7 @@ class MissionDataBean {
 	 * 
 	 * @param description the mission description.
 	 */
-    protected void setDescription(String description) {
+    public void setDescription(String description) {
 		this.description = description;
 	}
 
@@ -231,7 +230,7 @@ class MissionDataBean {
 	 * 
 	 * @return settlement.
 	 */
-    protected Settlement getStartingSettlement() {
+    public Settlement getStartingSettlement() {
 		return startingSettlement;
 	}
 
@@ -240,7 +239,7 @@ class MissionDataBean {
 	 * 
 	 * @param startingSettlement starting settlement.
 	 */
-    protected void setStartingSettlement(Settlement startingSettlement) {
+    public void setStartingSettlement(Settlement startingSettlement) {
 		this.startingSettlement = startingSettlement;
 	}
 
@@ -249,7 +248,7 @@ class MissionDataBean {
 	 * 
 	 * @return rover.
 	 */
-    protected Rover getRover() {
+    public Rover getRover() {
 		return rover;
 	}
 
@@ -258,7 +257,7 @@ class MissionDataBean {
 	 * 
 	 * @param rover the rover.
 	 */
-    protected void setRover(Rover rover) {
+    public void setRover(Rover rover) {
 		this.rover = rover;
 	}
 
@@ -267,7 +266,7 @@ class MissionDataBean {
 	 * 
 	 * @return drone.
 	 */
-    protected Drone getDrone() {
+    public Drone getDrone() {
 		return drone;
 	}
 
@@ -315,7 +314,7 @@ class MissionDataBean {
 	 * 
 	 * @param members the members.
 	 */
-    protected void setMixedMembers(Collection<Worker> mm) {
+    public void setMixedMembers(Collection<Worker> mm) {
     	this.mixedMembers = mm;
 	}
     
@@ -333,7 +332,7 @@ class MissionDataBean {
 	 * 
 	 * @param destinationSettlement the destination settlement.
 	 */
-    protected void setDestinationSettlement(Settlement destinationSettlement) {
+    public void setDestinationSettlement(Settlement destinationSettlement) {
 		this.destinationSettlement = destinationSettlement;
 	}
 
@@ -356,40 +355,12 @@ class MissionDataBean {
 	}
 
 	/**
-	 * Gets the ice collection site.
-	 * 
-	 * @return ice collection site.
+	 * Set the prospecting site for a collection Mission.
+	 * @param navpoint the prospecting site coordinates.
 	 */
-    protected Coordinates getIceCollectionSite() {
-		return iceCollectionSite;
-	}
-
-	/**
-	 * Sets the ice collection site.
-	 * 
-	 * @param iceCollectionSite the ice collection site.
-	 */
-    protected void setIceCollectionSite(Coordinates iceCollectionSite) {
-		this.iceCollectionSite = iceCollectionSite;
-	}
-
-	/**
-	 * Gets the regolith collection site.
-	 * 
-	 * @return regolith collection site.
-	 */
-    protected Coordinates getRegolithCollectionSite() {
-		return regolithCollectionSite;
-	}
-
-	/**
-	 * Sets the regolith collection site.
-	 * 
-	 * @param regolithCollectionSite the regolith collection site.
-	 */
-    protected void setRegolithCollectionSite(Coordinates regolithCollectionSite) {
-		this.regolithCollectionSite = regolithCollectionSite;
-	}
+    public void setProspectingSite(Coordinates navpoint) {
+        this.prospectingSite = navpoint;
+    }
 
 	/**
 	 * Gets the exploration sites.
@@ -459,7 +430,7 @@ class MissionDataBean {
 	 * 
 	 * @param luv the light utility vehicle
 	 */
-	protected void setLUV(LightUtilityVehicle luv) {
+	public void setLUV(LightUtilityVehicle luv) {
 		this.luv = luv;
 	}
 
@@ -513,7 +484,7 @@ class MissionDataBean {
      * 
      * @param constructionSite the construction site.
      */
-    protected void setConstructionSite(ConstructionSite constructionSite) {
+    public void setConstructionSite(ConstructionSite constructionSite) {
         this.constructionSite = constructionSite;
     }
 
@@ -672,5 +643,4 @@ class MissionDataBean {
 	protected boolean isRescueRendezvousMission() {
 		return missionType == MissionType.RESCUE_SALVAGE_VEHICLE;
 	}
-
 }

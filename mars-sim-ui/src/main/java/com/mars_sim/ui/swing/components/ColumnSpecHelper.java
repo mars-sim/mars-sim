@@ -52,8 +52,8 @@ public final class ColumnSpecHelper {
         TableCellRenderer renderer = null;
 
         // Use the enhanced model index to handle the table hiding or reordering columns
-        var style = enhancedModel.getColumnStyle(col.getModelIndex());
-        renderer = switch (style) {
+        var spec = enhancedModel.getColumnSpec(col.getModelIndex());
+        renderer = switch (spec.style()) {
             case ColumnSpec.STYLE_CURRENCY -> new NumberCellRenderer(2, "$");
             case ColumnSpec.STYLE_INTEGER -> new NumberCellRenderer(0);
             case ColumnSpec.STYLE_DIGIT1 -> new NumberCellRenderer(1);

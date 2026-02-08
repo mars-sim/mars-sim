@@ -19,5 +19,5 @@ public interface EnhancedTableModel extends ToolTipTableModel {
 	 * @param modelIndex the index of the column.
 	 * @return see ColumnSpec for the style.
 	 */
-    public int getColumnStyle(int modelIndex);
+    public ColumnSpec getColumnSpec(int modelIndex);
 }
