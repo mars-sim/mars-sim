@@ -58,7 +58,12 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	 */
 	@Override
 	protected void finish(MissionDataBean state) {
-		state.createMission();
+		var mission = state.createMission();
+
+		// Open the mission details dialog for the created mission
+		if (mission != null) {
+			getContext().showDetails(mission);
+		}
 	}
 	
 	/**

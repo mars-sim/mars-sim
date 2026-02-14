@@ -85,8 +85,9 @@ public class MissionDataBean {
     
 	/**
 	 * Creates a mission from the mission data.
+	 * @return the created mission.
 	 */
-    public void createMission() {
+    public Mission createMission() {
     	// Note: how to resolve the situation when rover is no longer available ?
     	
 	    Mission mission = null;
@@ -144,6 +145,8 @@ public class MissionDataBean {
 		}
 
 	    missionManager.addMission(mission);
+
+		return mission;
 	}
  
 	/**

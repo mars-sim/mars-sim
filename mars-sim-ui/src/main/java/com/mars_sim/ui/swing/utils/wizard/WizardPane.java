@@ -140,6 +140,7 @@ public abstract class WizardPane<T> {
     private void previousActioned() {
         // Clear anything set by the current step
         currentStep.clearState(status);
+        currentStep.release();
 
         // Implementation for going to the previous step
         var previousStep = previousSteps.remove(previousSteps.size() - 1);
@@ -161,6 +162,14 @@ public abstract class WizardPane<T> {
     private void complete() {
         if (dialog != null) {
             dialog.dispose();
+        }
+
+        // Release the steps
+        if (currentStep != null) {
+            currentStep.release();
+        }
+        for (var step : previousSteps) {
+            step.release();
         }
     }
 

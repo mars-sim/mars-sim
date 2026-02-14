@@ -115,4 +115,12 @@ public abstract class WizardStep<T> extends JPanel{
     public boolean isMandatoryDone() {
         return mandatoryDone;
     }
+
+    /**
+     * The Step is no longer needed by the wizard and it's relesaed. This implementation does nothing but
+     * subclasses may override.
+     */
+    void release() {
+        // Default implementation does nothing, but subclasses may override to release resources
+    }
 }

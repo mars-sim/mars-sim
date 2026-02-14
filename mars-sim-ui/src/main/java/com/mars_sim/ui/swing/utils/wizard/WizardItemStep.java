@@ -210,6 +210,20 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		}
 	}
 
+	/**
+	 * This step is released by the wizard as no longer being required. This releases the model resources.
+	 */
+	@Override
+	void release() {
+		super.release();
+		model.release();
+	}
+
+	/**
+	 * Clear the state when the step is cleared. This clears the selected rows in the table.
+	 * @param state the wizard state.
+	 * 
+	 */
 	@Override
 	public void clearState(S state) {
 		minTable.clearSelection();

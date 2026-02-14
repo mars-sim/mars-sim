@@ -12,6 +12,9 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.EnhancedTableModel;
 
@@ -22,7 +25,7 @@ import com.mars_sim.ui.swing.components.EnhancedTableModel;
  */
 @SuppressWarnings("serial")
 public abstract class WizardItemModel<T> extends AbstractTableModel 
-	implements EnhancedTableModel{
+	implements EnhancedTableModel, EntityListener {
 
 	// Data members.
 	private List<T> items;
@@ -43,6 +46,37 @@ public abstract class WizardItemModel<T> extends AbstractTableModel
 	 */
 	protected void setItems(List<T> items) {
 		this.items.addAll(items);
+
+		// Add listener to each item so we can update the table when they change
+		for (T item : items) {
+			if (item instanceof MonitorableEntity me) {
+				me.addEntityListener(this);
+			}
+		}
+	}
+
+	/**
+	 * Release resources by removing listeners from items.
+	 */
+	void release() {
+		for (T item : items) {
+			if (item instanceof MonitorableEntity me) {
+				me.removeEntityListener(this);
+			}
+		}
+	}
+	
+	/**
+	 * Catches entity update event and updates the table row for the changed entity.
+	 * @param entity the entity event.
+	 */
+	@Override
+	public void entityUpdate(EntityEvent entity) {
+		// Find the row for the changed entity and update it
+		var idx = items.indexOf(entity.getSource());
+		if (idx != -1) {
+			fireTableRowsUpdated(idx, idx);
+		}
 	}
 
 	/**
