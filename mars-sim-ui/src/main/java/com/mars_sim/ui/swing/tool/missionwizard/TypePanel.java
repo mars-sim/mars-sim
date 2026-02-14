@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
@@ -62,9 +64,9 @@ class TypePanel extends WizardStep<MissionDataBean> implements ItemListener {
 		// Create the mission types.
 		typeSelect = new JComboBox<>();
 		typeSelect.setRenderer(new NamedListCellRenderer());
-		for(var v : MissionCreate.availableTypes()) {
-			typeSelect.addItem(v);
-		}
+		MissionCreate.availableTypes().stream()
+				.sorted(Comparator.comparing(Named::getName))
+				.forEach(typeSelect::addItem);
 		typeSelect.setSelectedIndex(-1);
 		typeSelect.addItemListener(this);
 

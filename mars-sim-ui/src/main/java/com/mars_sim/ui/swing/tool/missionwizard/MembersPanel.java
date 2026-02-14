@@ -107,8 +107,8 @@ class MembersPanel extends WizardItemStep<MissionDataBean, Person>
 		 * Failure is if the Person is already assigned to a mission.
 		 */
 		@Override
-		protected boolean isFailureCell(Person item, int column) {
-			return (column == 3 && item.getMind().getMission() != null);
+		protected String isFailureCell(Person item, int column) {
+			return ((column == 3 && item.getMind().getMission() != null) ? MissionCreate.ALREADY_ON_MISSION : null);
 		}
 
 		/**

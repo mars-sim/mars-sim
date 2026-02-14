@@ -89,14 +89,16 @@ class LightUtilityVehiclePanel extends WizardItemStep<MissionDataBean,LightUtili
 		}
 
 		@Override
-		protected boolean isFailureCell(LightUtilityVehicle vehicle, int column) {
-			boolean result = false;
+		protected String isFailureCell(LightUtilityVehicle vehicle, int column) {
+			String result = null;
 
 			if (column == 1) {
-				result = (vehicle.getPrimaryStatus() != StatusType.PARKED) && (vehicle.getPrimaryStatus() != StatusType.GARAGED);
+				result = ((vehicle.getPrimaryStatus() != StatusType.PARKED)
+							&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
+						? MissionCreate.VEHICLE_WRONG_STATUS : null;
 			}
 			else if (column == 2) {
-				result = vehicle.getMission() != null;
+				result = (vehicle.getMission() != null) ? MissionCreate.ALREADY_ON_MISSION: null;
 			}
 
 			return result;

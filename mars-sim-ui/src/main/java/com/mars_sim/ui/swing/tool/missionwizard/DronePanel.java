@@ -118,22 +118,23 @@ class DronePanel extends WizardItemStep<MissionDataBean, Drone> {
 		 * Check for failure cells.
 		 */
 		@Override
-		protected boolean isFailureCell(Drone vehicle, int column) {
-			boolean result = false;
+		protected String isFailureCell(Drone vehicle, int column) {
+			String result = null;
+
 			if (column == 5) {
-				return vehicle.isReserved();
+				return (vehicle.isReserved() ? "Reserved" : null);
 			} else if (column == 4) {
 				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) 
 						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
-					return true;
+					return MissionCreate.VEHICLE_WRONG_STATUS;
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
 				if (MissionType.RESCUE_SALVAGE_VEHICLE == state.getMissionType()) {
-                    result = !vehicle.haveStatusType(StatusType.MAINTENANCE);
+                    result = !vehicle.haveStatusType(StatusType.MAINTENANCE) ? "Vehicle is undergoing maintenance" : null;
 					}
 			} else if (column == 6) {
 				Mission mission = vehicle.getMission();
-				return (mission != null);
+				return (mission != null) ? MissionCreate.ALREADY_ON_MISSION : null;
 			}
 
 			return result;

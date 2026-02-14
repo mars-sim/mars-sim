@@ -11,26 +11,34 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import com.mars_sim.ui.swing.components.ColumnSpecHelper;
+import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 
 /**
  * A wizard step for selecting an item from a table.
  * The potential items are provided by a {@link WizardItemModel}.
+ * This panel will automatically create a table to display the items and handle selection and validation of the selection.
+ * Optionally it can also show an info panel.
+ * 
  * @param <S> The wizard state type.
  * @param <I> The type of item to select.
  */
@@ -40,10 +48,10 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 
 	// Data members.
 	private WizardItemModel<I> model;
-	private JLabel errorMessageLabel;
-	private JTable itemTable;
+	private JTable minTable;
 	private JLabel selectionLabel;
 	private int minSelection;
+	private int maxSelection;
 
 	/**
 	 * Constructor with a single selection
@@ -67,6 +75,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		super(id, parent);
 		this.model = model;
 		this.minSelection = minSelection;
+		this.maxSelection = maxSelection;
 
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -81,24 +90,43 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		JScrollPane tableScrollPane = new JScrollPane();
 		settlementPane.add(tableScrollPane, BorderLayout.CENTER);
 
-		// Create the item table.
-		itemTable = new JTable(model);
-		itemTable.setRowSelectionAllowed(true);
-		itemTable.setSelectionMode((minSelection == 1 ? ListSelectionModel.SINGLE_SELECTION
+		// Create the item table and support tooltips.
+		minTable = new JTable(model) {
+			@Override
+			public String getToolTipText(MouseEvent e) {
+				return ToolTipTableModel.extractToolTip(e, this);
+			}
+		};
+
+		// COnfigure row selection
+		boolean single = minSelection == 1;
+		minTable.setRowSelectionAllowed(true);
+		minTable.setSelectionMode((single ? ListSelectionModel.SINGLE_SELECTION
 								: ListSelectionModel.MULTIPLE_INTERVAL_SELECTION));
-		itemTable.getSelectionModel().addListSelectionListener(
-				e -> {
-					var selectedCount = getValidedSelection().size();
-					setMandatoryDone(selectedCount >= minSelection && selectedCount <= maxSelection);
-					setSelectionLabel(selectedCount);
-				}
+		minTable.getSelectionModel().addListSelectionListener(
+				e -> selectionChanged(getValidedSelection())
 			);		
-		itemTable.setPreferredScrollableViewportSize(itemTable.getPreferredSize());
-		tableScrollPane.setViewportView(itemTable);
+		
+		// Singhle selection also add double click
+		if (single) {
+			minTable.addMouseListener(new java.awt.event.MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2) {
+						var selectedCount = getValidedSelection().size();
+						if (selectedCount == 1) {
+							advanceStep();
+						}
+					}
+				}
+			});
+		}	
+		minTable.setPreferredScrollableViewportSize(minTable.getPreferredSize());
+		tableScrollPane.setViewportView(minTable);
 
 		// Add the failure cell renderer. This uses the ColumnSpecHelper to gget the base renderer
 		// and then add a proxy renderer to annotate failed cells.
-		var colModel = 	itemTable.getColumnModel();
+		var colModel = 	minTable.getColumnModel();
 	    for(int colId = 0; colId < colModel.getColumnCount(); colId++) {
             var col = colModel.getColumn(colId);
             var renderer = ColumnSpecHelper.createBestRenderer(model, col);    
@@ -111,22 +139,43 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
         }
 
 		// Footer
-		var footer = new JPanel();
 		selectionLabel = new JLabel();
-		selectionLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		selectionLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		setSelectionLabel(0);
-		footer.add(selectionLabel);
-		errorMessageLabel = new JLabel(" ");
-		errorMessageLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		footer.add(errorMessageLabel);
-		add(footer);
+		add(selectionLabel);
 
+		var info = buildInfoPanel();
+		if (info != null) {
+			add(Box.createVerticalStrut(5));
+			add(info);
+		}
 		// Add a vertical glue.
 		add(Box.createVerticalGlue());
 	}
+	
+	/**
+	 * Build an optional info panel to display below the selection.
+	 * This can be used to provide additional information about the selection or instructions.
+	 * @return Default return null
+	 */
+	protected JComponent buildInfoPanel() {
+		return null;
+	}
+
+	/**
+	 * Called when the selection is changed. This updates the mandatory done status and the selection label.
+	 * I can be overridden by subclasses to provide additional behaviour on selection change.
+	 * @param selectedItems Current selected items in the table.
+	 */
+	protected void selectionChanged(List<I> selectedItems) {
+		var selectedCount = selectedItems.size();
+		setMandatoryDone(selectedCount >= minSelection && selectedCount <= maxSelection);
+		setSelectionLabel(selectedCount);
+	}
 
 	private void setSelectionLabel(int selected) {
-		selectionLabel.setText("Selected " + selected + " out of " + minSelection);
+		selectionLabel.setText("Selected " + selected + ", minimum " + minSelection
+				+ (maxSelection != Integer.MAX_VALUE ? ", maximum " + maxSelection : ""));
 	}
 
 	/**
@@ -135,9 +184,9 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 */
 	private List<I> getValidedSelection() {
 		var selectedUnits = new ArrayList<I>();
-		var idx = itemTable.getSelectedRows();
+		var idx = minTable.getSelectedRows();
 		for (var i : idx) {
-			var rowModel = itemTable.convertRowIndexToModel(i);
+			var rowModel = minTable.convertRowIndexToModel(i);
 			if (!model.isFailureItem(rowModel)) {
 				selectedUnits.add(model.getItem(rowModel));
 			}
@@ -151,7 +200,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 */
 	@Override
 	public void updateState(S state) {
-		var idx = itemTable.getSelectedRows();
+		var idx = minTable.getSelectedRows();
 		if (idx.length == 0)
 			return;
 
@@ -163,8 +212,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 
 	@Override
 	public void clearState(S state) {
-		itemTable.clearSelection();
-		errorMessageLabel.setText(" ");
+		minTable.clearSelection();
 		super.clearState(state);
 	}
 
@@ -179,6 +227,8 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 * This decorates a base renderer with a Reb backgound if it is in error.
 	 */
 	private static class FailureCellDecorator<I> implements TableCellRenderer {
+
+		private static final Border RED_BORDER = BorderFactory.createLineBorder(Color.RED, 2);
 
 		// Private data members.
 		private WizardItemModel<I> model;
@@ -208,8 +258,10 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 			// If failure cell, mark background red.
 			int rowModel = table.convertRowIndexToModel(row);
 			I item = model.getItem(rowModel);
-			if (model.isFailureCell(item, column))
-				l.setBackground(Color.RED);
+			if (model.isFailureCell(item, column) != null)
+				l.setBorder(RED_BORDER);
+			else
+				l.setBorder(null);
 
 			return l;
 		}

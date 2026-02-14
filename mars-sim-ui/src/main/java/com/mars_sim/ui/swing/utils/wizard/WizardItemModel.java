@@ -99,16 +99,28 @@ public abstract class WizardItemModel<T> extends AbstractTableModel
 
 	/**
 	 * Returns the tooltip for the cell at row and column.
+	 * This invokes getToolTipAt for the item in the row and column.
 	 * 
 	 * @param row the row index.
 	 * @param col the column index.
 	 * @return Default is no tooltip
 	 */
 	@Override
-	public String getToolTipAt(int row, int col) {
-		return null;
+	public final String getToolTipAt(int row, int col) {
+		T target = getItem(row);
+		return getToolTipAt(target, col);
 	}
 	
+	/**
+	 * Is there a tooltip to display for this Item and column
+	 * @param item Item under the mouse
+	 * @param col Column number
+	 * @return Tooltip text to display
+	 */
+	protected String getToolTipAt(T item, int col) {
+		return isFailureCell(item, col);
+	}
+
 	/**
 	 * Gets the unit at a row index.
 	 * 
@@ -122,6 +134,12 @@ public abstract class WizardItemModel<T> extends AbstractTableModel
 		return null;
 	}
 
+	/**
+	 * Delegates to getItemValue to get the value for the cell at columnIndex and rowIndex.
+	 * @param rowIndex the row index.
+	 * @param columnIndex the column index.
+	 * @return the cell value.
+	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = "unknown";
@@ -139,9 +157,9 @@ public abstract class WizardItemModel<T> extends AbstractTableModel
 	 * 
 	 * @param item the table row.
 	 * @param column the table column.
-	 * @return true if cell is a failure cell.
+	 * @return the failure reason if cell is a failure cell, null or empty string otherwise.
 	 */
-	protected abstract boolean isFailureCell(T item, int column);
+	protected abstract String isFailureCell(T item, int column);
 
 	/**
 	 * Gets the value for the cell at columnIndex and rowIndex.
@@ -158,11 +176,15 @@ public abstract class WizardItemModel<T> extends AbstractTableModel
 	 * @return true if row has failure cell.
 	 */
 	boolean isFailureItem(int row) {
-		boolean result = false;
 		T item = items.get(row);
 		for (int x = 0; x < getColumnCount(); x++) {
-			if (isFailureCell(item, x)) result = true;
+			String failure = isFailureCell(item, x);
+
+			// Stop on first failure
+			if (failure != null) {
+				return true;
+			}
 		}
-		return result;
+		return false;
 	}
 }

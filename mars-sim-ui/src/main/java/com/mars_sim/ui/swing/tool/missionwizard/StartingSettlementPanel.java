@@ -106,7 +106,7 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 			}
 			default -> cols = BASE_COLS;
 		}
-		return new SettlementTableModel(state, cols, eType, eMin);
+		return new SettlementTableModel(cols, eType, eMin);
 	}
 
 	/**
@@ -114,18 +114,17 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 	 */
 	private static class SettlementTableModel extends WizardItemModel<Settlement> {
 
+		private static final String NONE_AVAILABLE = "None available";
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		private MissionDataBean state;
 		private EquipmentType containerType;
 		private int containerMin;
 
 		/**
 		 * Constructor.
 		 */
-		private SettlementTableModel(MissionDataBean state, List<ColumnSpec> columns, EquipmentType containerType, int containerMin) {
+		private SettlementTableModel(List<ColumnSpec> columns, EquipmentType containerType, int containerMin) {
 			super(columns);
-			this.state = state;
 			this.containerType = containerType;
 			this.containerMin = containerMin;
 
@@ -167,24 +166,29 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 		 * Check for failure cells.
 		 */
 		@Override
-		protected boolean isFailureCell(Settlement settlement, int column) {
+		protected String isFailureCell(Settlement settlement, int column) {
 			var spec = getColumnSpec(column);
 			return switch(spec.id()) {
-				case 1 -> settlement.getIndoorPeopleCount() == 0;
-				case 2 -> settlement.findNumParkedRovers() == 0;
-				case 3 -> settlement.getSpecificAmountResourceStored(ResourceUtil.OXYGEN_ID) < 100D;
-				case 4 -> settlement.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < 100D;
-				case 5 -> settlement.getSpecificAmountResourceStored(ResourceUtil.FOOD_ID) < 100D;
-				case 6 -> settlement.getSpecificAmountResourceStored(ResourceUtil.METHANE_ID) <	 100D;
-				case 7 -> settlement.getSpecificAmountResourceStored(ResourceUtil.METHANOL_ID) < 100D;
-				case 8 -> settlement.getNumEVASuit() == 0;
-				case 9 -> settlement.findNumContainersOfType(containerType) < containerMin;
-				case 10 -> settlement.findNumVehiclesOfType(VehicleType.LUV) == 0;
-				case 11 -> settlement.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID) == 0;
-				case 12 -> settlement.getItemResourceStored(ItemResourceUtil.BACKHOE_ID) == 0;
-				case 13 -> settlement.getConstructionManager().getConstructionSites().isEmpty();
-				default -> false;
+				case 1 -> settlement.getIndoorPeopleCount() == 0 ? "No indoor people" : null;
+				case 2 -> settlement.findNumParkedRovers() == 0 ? "No parked rovers" : null;
+				case 3 -> checkResources(settlement, ResourceUtil.OXYGEN_ID, 100D);
+				case 4 -> checkResources(settlement, ResourceUtil.WATER_ID, 100D);
+				case 5 -> checkResources(settlement, ResourceUtil.FOOD_ID, 100D);
+				case 6 -> checkResources(settlement, ResourceUtil.METHANE_ID, 100D);
+				case 7 -> checkResources(settlement, ResourceUtil.METHANOL_ID, 100D);
+				case 8 -> settlement.getNumEVASuit() == 0 ? NONE_AVAILABLE: null;
+				case 9 -> settlement.findNumContainersOfType(containerType) < containerMin
+										? "Insufficient containers : " + containerMin : null;
+				case 10 -> settlement.findNumVehiclesOfType(VehicleType.LUV) == 0 ? NONE_AVAILABLE : null;
+				case 11 -> settlement.getItemResourceStored(ItemResourceUtil.PNEUMATIC_DRILL_ID) == 0 ? NONE_AVAILABLE : null;
+				case 12 -> settlement.getItemResourceStored(ItemResourceUtil.BACKHOE_ID) == 0 ? NONE_AVAILABLE : null;
+				case 13 -> settlement.getConstructionManager().getConstructionSites().isEmpty() ? NONE_AVAILABLE : null;
+				default -> null;
 			};
+		}
+
+		private final static String checkResources(Settlement settlement, int resId, double min) {
+			return settlement.getSpecificAmountResourceStored(resId) < min ? "Less than minimum: " + min : null;
 		}
 	}
 }

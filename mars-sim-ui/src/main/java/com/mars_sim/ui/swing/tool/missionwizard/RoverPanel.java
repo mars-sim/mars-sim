@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.StatusType;
@@ -77,14 +76,11 @@ class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
 				new ColumnSpec("Has Sickbay", Boolean.class)
 		);
 				
-		private MissionDataBean state;
-
 		/**
 		 * Constructor
 		 */
 		private VehicleTableModel(MissionDataBean state) {
 			super(COLUMNS);
-			this.state = state;
 		
 			var startingSettlement = state.getStartingSettlement();
 			var r = startingSettlement.getParkedGaragedVehicles().stream()
@@ -128,27 +124,14 @@ class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
 		 * Check for failure cells.
 		 */
 		@Override
-		protected boolean isFailureCell(Rover vehicle, int column) {
-			boolean result = false;
-			if (column == 5) {
-				if (vehicle.isReserved())
-					result = true;
-			} else if (column == 4) {
-				if ((vehicle.getPrimaryStatus() != StatusType.PARKED) 
-						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED))
-					result = true;
-
-				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
-				if (MissionType.RESCUE_SALVAGE_VEHICLE == state.getMissionType()) {
-                    result = !vehicle.haveStatusType(StatusType.MAINTENANCE);
-					}
-			} else if (column == 6) {
-				Mission mission = vehicle.getMission();
-				if (mission != null)
-					result = true;
-			}
-
-			return result;
+		protected String isFailureCell(Rover vehicle, int column) {
+			return switch(column) {
+				case 5 -> vehicle.isReserved() ? "Reserved" : null;
+				case 4 -> (vehicle.getPrimaryStatus() != StatusType.PARKED) 
+						&& (vehicle.getPrimaryStatus() != StatusType.GARAGED) ? MissionCreate.VEHICLE_WRONG_STATUS : null;
+				case 6 -> vehicle.getMission() != null ? MissionCreate.ALREADY_ON_MISSION : null;
+				default -> null;
+			};
 		}
 	}
 }

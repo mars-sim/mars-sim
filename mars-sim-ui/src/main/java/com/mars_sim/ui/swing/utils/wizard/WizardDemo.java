@@ -35,8 +35,8 @@ public class WizardDemo extends WizardPane<Properties> {
                         }
 
                         @Override
-                        protected boolean isFailureCell(String item, int column) {
-                            return ((column == 1) && item.length() > TARGET_SIZE);
+                        protected String isFailureCell(String item, int column) {
+                            return ((column == 1) && item.length() > TARGET_SIZE) ? "Length exceeds target" : null;
                         }
 
                         @Override
@@ -69,6 +69,7 @@ public class WizardDemo extends WizardPane<Properties> {
         protected TestWizardStep(WizardPane<Properties> wizard, int stepNumber, Properties status) {
             super(PREFIX + stepNumber, wizard);
             this.stepNumber = stepNumber;
+            setInstructions("Change spinner to advance");
 
             var panel = new AttributePanel();
             add(panel, BorderLayout.CENTER);
@@ -135,8 +136,9 @@ public class WizardDemo extends WizardPane<Properties> {
         UIContext context = null;
         Properties status = new Properties();
         var wizard = new WizardDemo(context, status);
-        wizard.setSize(600, 400);
-        wizard.setVisible(true);
-    }
 
+        var dialog = wizard.showInDialog(null);
+        dialog.setSize(600, 400);
+        dialog.setVisible(true);
+    }
 }

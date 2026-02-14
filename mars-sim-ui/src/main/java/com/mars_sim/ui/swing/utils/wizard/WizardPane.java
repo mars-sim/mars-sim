@@ -8,10 +8,13 @@ package com.mars_sim.ui.swing.utils.wizard;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,7 +30,7 @@ import com.mars_sim.ui.swing.UIContext;
  * The subclass must implement the factory pattern to create WizardSteps and a method to finish the wizard.
  * @param <T> The wizard state type.
  */
-public abstract class WizardPane<T> extends JFrame {
+public abstract class WizardPane<T> {
 
     private T status;
     private UIContext context;
@@ -40,10 +43,12 @@ public abstract class WizardPane<T> extends JFrame {
     private JButton backButton;
     private JButton nextButton;
     private JButton finishButton;
-    
+    private String title;
+    private JPanel mainPane;
+    private JDialog dialog;
 
     protected WizardPane(String title, UIContext context, T state, String initialStep) {
-        super(title);
+        this.title = title;
         this.status = state;
         this.context = context;
 
@@ -68,8 +73,7 @@ public abstract class WizardPane<T> extends JFrame {
     protected abstract WizardStep<T> createStep(String initialStep, T state);
 
     private void buildUI() {
-        var mainPane = new JPanel(new BorderLayout());
-        setContentPane(mainPane);
+        mainPane = new JPanel(new BorderLayout());
 
         stepTitleLabel = new JLabel();
         StyleManager.applySubHeading(stepTitleLabel);
@@ -81,7 +85,7 @@ public abstract class WizardPane<T> extends JFrame {
         mainPane.add(buttonPanel, BorderLayout.SOUTH);
 
         var cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(e -> dispose());
+        cancelButton.addActionListener(e -> cancel());
         buttonPanel.add(cancelButton);
         backButton = new JButton("Back");
         backButton.addActionListener(e -> previousActioned());  
@@ -142,14 +146,48 @@ public abstract class WizardPane<T> extends JFrame {
         setCurrentStep(previousStep);
     }
 
-    
     /**
      * Finish the wizard via user action
      */
     private void finishedActioned() {
         currentStep.updateState(status);
         finish(status);
-        dispose();
+        complete();
+    }
+
+    /**
+     * Wizard is cmplete so tidy up.
+     */
+    private void complete() {
+        if (dialog != null) {
+            dialog.dispose();
+        }
+    }
+
+    /**
+     * User has triggered the cancel action. Dispose of the wizard without saving any state.
+     * This can be overrideen.
+     */
+    protected void cancel() {
+        complete();
+    }
+
+    /**
+     * Show the wizard in a standalone frame.
+     * @param parent
+     * @return
+     */
+    protected JDialog showInDialog(JFrame parent) {
+        dialog = new JDialog(parent, title);
+        dialog.setContentPane(mainPane);
+       	dialog.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				cancel();
+			}
+		});
+
+        return dialog;
     }
 
     /**
@@ -187,8 +225,8 @@ public abstract class WizardPane<T> extends JFrame {
             max = Integer.toString(steps.size());
 
         }
-        var title = currentStep.getTitle() + " (" + idx + " out of " + max + ")";
-        stepTitleLabel.setText(title);
+        var stepTitle = currentStep.getTitle() + " (" + idx + " out of " + max + ")";
+        stepTitleLabel.setText(stepTitle);
 
         var instructions = currentStep.getInstructions();
         instructionLabel.setText(instructions);
@@ -215,4 +253,21 @@ public abstract class WizardPane<T> extends JFrame {
      * @param state Final end state
      */
     protected abstract void finish(T state);
+
+    
+    /**
+     * This will advance the wizard emulating the user activating the next button.
+     * If only finish is active; then that is done.
+     */
+    void advanceStep() {
+        if (nextButton.isEnabled()) {
+            nextActioned();
+        }
+        else if (finishButton.isEnabled()) {
+            finishedActioned();
+        }
+        else {
+            throw new IllegalStateException("Cannot advance step, mandatory not done");
+        }
+    }
 }

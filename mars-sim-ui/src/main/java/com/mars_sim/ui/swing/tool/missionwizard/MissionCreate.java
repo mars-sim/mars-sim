@@ -22,12 +22,24 @@ import com.mars_sim.ui.swing.utils.wizard.WizardStep;
  */
 @SuppressWarnings("serial")
 public class MissionCreate extends WizardPane<MissionDataBean> {
-	
+	// Error messages
+	static final String VEHICLE_OUT_OF_RANGE = "Out of range";		
+	static final String ALREADY_ON_MISSION = "Already on Mission";
+    static final String VEHICLE_WRONG_STATUS = "Not parked or garaged";
+
+	/**
+	 * Create a show a new mission wizard dialog.
+	 * @param context UI context for the wizard.
+	 * @return
+	 */
 	public static MissionCreate create(UIContext context) {
 		var state = new MissionDataBean();
 		var wizard = new MissionCreate(context, state);
-		wizard.setVisible(true);
-		wizard.setSize(600, 400);
+		
+		var frame = wizard.showInDialog(context.getTopFrame());
+		frame.setSize(600, 400);
+		frame.setLocationRelativeTo(context.getTopFrame());
+		frame.setVisible(true);
 
 		return wizard;
 	}
@@ -55,45 +67,54 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	@Override
 	protected WizardStep<MissionDataBean> createStep(String stepID, MissionDataBean state) {
 		return switch(stepID) {
-			case TypePanel.ID ->new TypePanel(this);
-			case StartingSettlementPanel.ID ->new StartingSettlementPanel(this, state);
-			case RoverPanel.ID -> new RoverPanel(this, state);
+			case BotsPanel.ID -> new BotsPanel(this, state);
 			case ConstructionPanel.ID -> new ConstructionPanel(this, state);
+			case DestinationSettlementPanel.ID -> new DestinationSettlementPanel(this, state);
+			case DronePanel.ID -> new DronePanel(this, state);
+			case LightUtilityVehiclePanel.ID -> new LightUtilityVehiclePanel(this, state);
+			case MembersPanel.ID -> new MembersPanel(this, state);
+			case MineSitePanel.ID -> new MineSitePanel(this, state);
+			//case ProspectingSitePanel.NAME -> new ProspectingSitePanel(this, state, getContext());
+			case RescueVehiclePanel.ID -> new RescueVehiclePanel(this, state);
+			case RoverPanel.ID -> new RoverPanel(this, state);
+			case StartingSettlementPanel.ID ->new StartingSettlementPanel(this, state);
 			case TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SUPPLY_ID, TradeGoodsPanel.SELL_ID ->
 								new TradeGoodsPanel(stepID, this, state);
-			case MembersPanel.ID -> new MembersPanel(this, state);
-			case BotsPanel.ID -> new BotsPanel(this, state);
-			case DronePanel.ID -> new DronePanel(this, state);
-			//case ProspectingSitePanel.NAME -> new ProspectingSitePanel(this, state, getContext());
-			case DestinationSettlementPanel.ID -> new DestinationSettlementPanel(this, state);
-			case LightUtilityVehiclePanel.ID -> new LightUtilityVehiclePanel(this, state);
+			case TypePanel.ID ->new TypePanel(this);
 			default ->
 				throw new IllegalArgumentException("Unknown step ID: " + stepID);
 		};
 	}
 
 	/**
-	 * The predefiend step sequences for Mission types.
+	 * The predefined step sequences for Mission types.
 	 */
 	private static final Map<MissionType, List<String>> missionSteps = Map.of(
-			MissionType.CONSTRUCTION, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, ConstructionPanel.ID, MembersPanel.ID, LightUtilityVehiclePanel.ID),
+		MissionType.CONSTRUCTION, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, ConstructionPanel.ID, MembersPanel.ID,
+				LightUtilityVehiclePanel.ID),
+		MissionType.DELIVERY, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, DronePanel.ID, MembersPanel.ID, BotsPanel.ID,
+				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID),
+		MissionType.EMERGENCY_SUPPLY, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
+				DestinationSettlementPanel.ID, TradeGoodsPanel.SUPPLY_ID),
+		MissionType.MINING, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
+				LightUtilityVehiclePanel.ID, MineSitePanel.ID),
+		MissionType.RESCUE_SALVAGE_VEHICLE, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, RescueVehiclePanel.ID),
 			// MissionType.COLLECT_ICE, List.of(
 			// 	TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, ProspectingSitePanel.NAME),
 			// MissionType.COLLECT_REGOLITH, List.of(
 			// 	TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, ProspectingSitePanel.NAME),
-			MissionType.TRAVEL_TO_SETTLEMENT, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, DestinationSettlementPanel.ID),
-			MissionType.EMERGENCY_SUPPLY, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, DestinationSettlementPanel.ID,
-				TradeGoodsPanel.SUPPLY_ID),
-			MissionType.TRADE, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, DestinationSettlementPanel.ID,
-				TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID),	
-			MissionType.DELIVERY, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, DronePanel.ID, MembersPanel.ID, BotsPanel.ID,DestinationSettlementPanel.ID,
-				TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID)
-		);		
+		MissionType.TRADE, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
+				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID),
+		MissionType.TRAVEL_TO_SETTLEMENT, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
+				DestinationSettlementPanel.ID)
+		);
 
 	/**
 	 * This returns the step sequence for the given mission type.

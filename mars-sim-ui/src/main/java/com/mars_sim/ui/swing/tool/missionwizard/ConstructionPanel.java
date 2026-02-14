@@ -82,10 +82,10 @@ class ConstructionPanel extends WizardItemStep<MissionDataBean, ConstructionSite
 		 * Failure is if the Person is already assigned to a mission.
 		 */
 		@Override
-		protected boolean isFailureCell(ConstructionSite item, int column) {
+		protected String isFailureCell(ConstructionSite item, int column) {
 			return switch (column) {
-				case 3 -> item.getWorkOnSite() != null;
-				default -> false;
+				case 3 -> item.getWorkOnSite() != null ? MissionCreate.ALREADY_ON_MISSION : null;
+				default -> null;
 			};
 		}
 

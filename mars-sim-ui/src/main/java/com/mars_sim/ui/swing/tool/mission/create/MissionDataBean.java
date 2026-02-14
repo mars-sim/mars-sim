@@ -42,6 +42,7 @@ import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.GroundVehicle;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * Mission data holder bean.
@@ -59,7 +60,7 @@ public class MissionDataBean {
     
 	private Drone drone;
 	private Rover rover;
-	private Rover rescueRover;
+	private Vehicle rescueVehicle;
 	private LightUtilityVehicle luv;
 	
 	private Coordinates fieldSite;
@@ -133,7 +134,7 @@ public class MissionDataBean {
 			case MissionType.MINING ->
 					mission = new Mining(mixedMembers, miningSite, rover, luv);
 			case MissionType.RESCUE_SALVAGE_VEHICLE ->
-					mission = new RescueSalvageVehicle(mixedMembers, rescueRover, rover);
+					mission = new RescueSalvageVehicle(mixedMembers, rescueVehicle, rover);
 			case MissionType.TRADE ->
 					mission = new Trade(mixedMembers, destinationSettlement, rover,
 							sellGoods, buyGoods);
@@ -336,21 +337,12 @@ public class MissionDataBean {
 	}
 
 	/**
-	 * Gets the rescue rover.
+	 * Sets the rescue vehicle.
 	 * 
-	 * @return the rescue rover.
+	 * @param vehicle the target of the rescue
 	 */
-    protected Rover getRescueRover() {
-		return rescueRover;
-	}
-
-	/**
-	 * Sets the rescue rover.
-	 * 
-	 * @param rescueRover the rescue rover.
-	 */
-    protected void setRescueRover(Rover rescueRover) {
-		this.rescueRover = rescueRover;
+    public void setRescueVehicle(Vehicle vehicle) {
+		this.rescueVehicle = vehicle;
 	}
 
 	/**
@@ -447,7 +439,7 @@ public class MissionDataBean {
 	 * 
 	 * @param miningSite the mining site.
 	 */
-	protected void setMiningSite(MineralSite miningSite) {
+	public void setMiningSite(MineralSite miningSite) {
 		this.miningSite = miningSite;
 	}
 

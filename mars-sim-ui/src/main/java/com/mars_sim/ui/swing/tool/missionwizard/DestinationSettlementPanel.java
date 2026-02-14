@@ -99,9 +99,7 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
     	
 
 		@Override
-		protected boolean isFailureCell(Settlement settlement, int column) {
-    		boolean result = false;
-    		
+		protected String isFailureCell(Settlement settlement, int column) {    		
     		if (column == 1) {
 				Settlement startingSettlement = state.getStartingSettlement();
 				double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
@@ -110,10 +108,10 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
 					v = state.getDrone();
 				}
 				double vRange = v.getRange();
-				result = (vRange < distance);
+				return (vRange < distance) ? MissionCreate.VEHICLE_OUT_OF_RANGE : null;
 			}
     		
-    		return result;
+    		return null;
     	}
     }
 }

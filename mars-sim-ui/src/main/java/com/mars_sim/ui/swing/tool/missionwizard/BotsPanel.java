@@ -89,8 +89,8 @@ class BotsPanel extends WizardItemStep<MissionDataBean, Robot>
 		 * Failure is if the Person is already assigned to a mission.
 		 */
 		@Override
-		protected boolean isFailureCell(Robot item, int column) {
-			return (column == 3 && item.getBotMind().getMission() != null);
+		protected String isFailureCell(Robot item, int column) {
+			return (column == 3 && item.getBotMind().getMission() != null) ? MissionCreate.ALREADY_ON_MISSION : null;
 		}
 
 		/**

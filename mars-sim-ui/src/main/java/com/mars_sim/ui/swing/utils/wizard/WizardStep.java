@@ -37,6 +37,16 @@ public abstract class WizardStep<T> extends JPanel{
         setLayout(new BorderLayout());
     }
 
+    
+	/**
+	 * Define an instruction to display under the title. This will override any automatically generated instruction
+	 * based on the id.
+	 * @param instructions Notes for user.
+	 */
+	protected void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+
     public abstract void updateState(T state);
 
     /**
@@ -49,9 +59,21 @@ public abstract class WizardStep<T> extends JPanel{
     }
 
     /**
+     * This will advance the step emulating the user activating the next button.
+     * If only finish is active; then that is done.
+     * @return True if the step was advanced, false if mandatory is missing
+     */
+    protected boolean advanceStep() {
+        if (mandatoryDone) {
+            wizard.advanceStep();
+        }
+        return mandatoryDone;
+    }   
+
+    /**
      * Get the title of this step displayed
      */
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
