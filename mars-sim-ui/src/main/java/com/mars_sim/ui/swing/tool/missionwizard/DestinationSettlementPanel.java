@@ -38,7 +38,7 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
 	}
 
 	/**
-	 * Update the satet with the selected destination.
+	 * Update the state with the selected destination.
 	 */
 	@Override
 	protected void updateState(MissionDataBean state, List<Settlement> selectedItems) {
