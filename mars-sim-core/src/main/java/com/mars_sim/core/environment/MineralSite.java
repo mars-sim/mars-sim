@@ -69,12 +69,12 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 *                                       estimated concentrations (0% -100%)
 	 */
 	MineralSite(String name, Coordinates location, int estimationImprovement,
-					Map<String, Double> estimatedMineralConcentrations) {
+					Map<Integer, Double> estimatedMineralConcentrations) {
 		this.name = name;
 		this.location = location;
 		this.minerals = new HashMap<>();
 		for(var m : estimatedMineralConcentrations.entrySet()) {
-			this.minerals.put(ResourceUtil.findIDbyAmountResourceName(m.getKey()), 
+			this.minerals.put(m.getKey(), 
 								new MineralDetails(m.getValue(),
 								RandomUtil.getRandomDouble(1, 45)));
 		}

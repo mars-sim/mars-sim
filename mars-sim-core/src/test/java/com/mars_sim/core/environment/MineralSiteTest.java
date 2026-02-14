@@ -17,8 +17,8 @@ import com.mars_sim.core.resource.ResourceUtil;
 
 class MineralSiteTest {
 
-    private static final String MAGNETITE = "magnetite";
-    private static final String HEMATITE = "hematite";
+    private static final int MAGNETITE = ResourceUtil.MAGNETITE_ID;
+    private static final int HEMATITE = ResourceUtil.HEMATITE_ID;
 
 
     @BeforeEach
@@ -27,7 +27,7 @@ class MineralSiteTest {
     }
 
     private MineralSite createMineralSite() {
-        Map<String, Double> minerals = new HashMap<>();
+        Map<Integer, Double> minerals = new HashMap<>();
         minerals.put(HEMATITE, 10D);
         minerals.put(MAGNETITE, 5D);
         return new MineralSite("Site-1", new Coordinates(0.5, 1.0), 2, minerals);
@@ -50,13 +50,12 @@ class MineralSiteTest {
     void testUpdateMineralEstimate() {
         MineralSite site = createMineralSite();
 
-        int hematiteId = ResourceUtil.findIDbyAmountResourceName(HEMATITE);
-        MineralSite.MineralDetails original = site.getMinerals().get(hematiteId);
+        MineralSite.MineralDetails original = site.getMinerals().get(HEMATITE);
         assertNotNull(original);
 
-        site.updateMineralEstimate(hematiteId, 20D);
+        site.updateMineralEstimate(HEMATITE, 20D);
 
-        MineralSite.MineralDetails updated = site.getMinerals().get(hematiteId);
+        MineralSite.MineralDetails updated = site.getMinerals().get(HEMATITE);
         assertNotNull(updated);
         assertEquals(20D, updated.concentration(), 0.0001);
         assertEquals(original.certainty(), updated.certainty(), 0.0001);
@@ -66,12 +65,11 @@ class MineralSiteTest {
     void testEstimatedMineralAmounts() {
         MineralSite site = createMineralSite();
 
-        int hematiteId = ResourceUtil.findIDbyAmountResourceName(HEMATITE);
         double remainingMass = site.getRemainingMass();
-        double expected = remainingMass * site.getMinerals().get(hematiteId).concentration() / 100D;
+        double expected = remainingMass * site.getMinerals().get(HEMATITE).concentration() / 100D;
 
         Map<Integer, Double> amounts = site.getEstimatedMineralAmounts();
-        assertEquals(expected, amounts.get(hematiteId), 0.0001);
+        assertEquals(expected, amounts.get(HEMATITE), 0.0001);
     }
 
     @Test

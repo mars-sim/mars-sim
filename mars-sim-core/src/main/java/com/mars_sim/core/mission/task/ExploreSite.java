@@ -296,8 +296,7 @@ public class ExploreSite extends EVAOperation {
 
 		for (var minId : minerals.keySet()) {
 			var mineralDetails = minerals.get(minId);
-			var mineralType = ResourceUtil.findAmountResourceName(minId);
-			double conc = mineralMap.getMineralConcentration(mineralType, site.getLocation());	
+			double conc = mineralMap.getMineralConcentration(minId, site.getLocation());	
 			double estimate = mineralDetails.concentration();		
 			double diff = Math.abs(conc - estimate);
 			

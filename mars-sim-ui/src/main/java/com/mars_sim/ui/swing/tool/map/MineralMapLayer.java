@@ -10,17 +10,20 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.mineral.MineralDeposit;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.mineral.MineralType;
+import com.mars_sim.core.resource.ResourceUtil;
 
 /**
  * A map layer showing mineral concentrations.
@@ -43,7 +46,7 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 		@Override
 		public String getTooltipText() {
 			var body = conc.getConcentrations().entrySet().stream()
-					.map(e -> e.getKey() + " : " + e.getValue() + "%")
+					.map(e -> ResourceUtil.findAmountResourceName(e.getKey()) + " : " + e.getValue() + "%")
 					.collect(Collectors.joining("<br>>"));
 
 			return "<html>" + body + "</html>";
@@ -52,10 +55,11 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 
 	private static final int CIRCLE_RADIUS = 4;
 	private static final int CIRCLE_DIAMETER = (2 * CIRCLE_RADIUS);
+	private static Map<String, Integer> mineralNames;
 	
 	private MineralMap mineralMap;
-	private Map<String, Color> mineralColorMap;
-	private Set<String> mineralsDisplaySet = new HashSet<>();
+	private Map<Integer, Color> mineralColorMap;
+	private Set<Integer> mineralsDisplaySet = new HashSet<>();
 	private Component displayComponent;
 
 	
@@ -77,11 +81,11 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	 * @param mineralConcentrations
 	 * @return
 	 */
-	private int concentrationToColour(Map<String, Integer> mineralConcentrations) {
+	private int concentrationToColour(Map<Integer, Integer> mineralConcentrations) {
 		int colorRGB = 0;
 
 		for(var entry : mineralConcentrations.entrySet()) {
-			String mineralType = entry.getKey();
+			int mineralType = entry.getKey();
 			
 			if (mineralsDisplaySet.contains(mineralType)) {
 				Color baseColor = mineralColorMap.get(mineralType);
@@ -99,25 +103,14 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	 * 
 	 * @return map of names and colors.
 	 */
-	public Map<String, Color> getMineralColors() {
+	public Map<Integer, Color> getMineralColors() {
 		
 		if (mineralColorMap == null) {
 			mineralColorMap = mineralMap.getTypes().stream()
-				.collect(Collectors.toMap(MineralType::getName,
+				.collect(Collectors.toMap(MineralType::getResourceId,
 								m -> Color.decode(m.getColour())));
 		}
 		return mineralColorMap;
-	}
-
-
-	/**
-	 * Checks if a mineral type is displayed on the map.
-	 * 
-	 * @param mineralType the mineral type to display.
-	 * @return true if displayed.
-	 */
-	public boolean isMineralDisplayed(String mineralType) {
-		return mineralsDisplaySet.contains(mineralType);
 	}
 
 	/**
@@ -128,12 +121,28 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	 */
 	@Override
 	public void displayFilter(String mineralType, boolean displayed) {
+		int minId = getMineralId(mineralType);
 		if (displayed) {
-			mineralsDisplaySet.add(mineralType);	
+			mineralsDisplaySet.add(minId);	
 		}
 		else {
-			mineralsDisplaySet.remove(mineralType);
+			mineralsDisplaySet.remove(minId);
 		}
+	}
+
+	/**
+	 * Create a quick lookup for mineral name to resource id.
+	 * @param mineralType Name of the mineral
+	 * @return Resource Id
+	 */
+	private static int getMineralId(String mineralType) {
+		if (mineralNames == null) {
+			mineralNames = new HashMap<>();
+			
+			var types = SimulationConfig.instance().getMineralMapConfiguration().getMineralTypes();
+			types.forEach(m -> mineralNames.put(m.getName(), m.getResourceId()));
+		}
+		return mineralNames.get(mineralType);
 	}
 
 	/**
@@ -179,7 +188,8 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	public List<MapFilter> getFilterDetails() {
 		List<MapFilter> results = new ArrayList<>();
 		for(var e : getMineralColors().entrySet()) {
-			results.add(new MapFilter(e.getKey(), e.getKey(),
+			String name = ResourceUtil.findAmountResourceName(e.getKey());
+			results.add(new MapFilter(name, name,
 								ColorLegendFactory.getLegend(e.getValue(), displayComponent)));
 		}
 		return results;
@@ -187,6 +197,6 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 
 	@Override
 	public boolean isFilterActive(String filterName) {
-		return mineralsDisplaySet.contains(filterName);
+		return mineralsDisplaySet.contains(getMineralId(filterName));
 	}
 }

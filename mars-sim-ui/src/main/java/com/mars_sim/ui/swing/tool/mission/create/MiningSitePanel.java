@@ -404,7 +404,7 @@ public class MiningSitePanel extends WizardPanel {
 		private List<String> mineralNames = null;
 
 		private MineralTableModel() {
-			mineralColors = mineralLayer.getMineralColors();
+			//mineralColors = mineralLayer.getMineralColors();
 			mineralNames = new ArrayList<>(mineralColors.keySet());
 		}
 
@@ -436,6 +436,7 @@ public class MiningSitePanel extends WizardPanel {
 				return null;
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
 				String mineralName = mineralNames.get(row);
