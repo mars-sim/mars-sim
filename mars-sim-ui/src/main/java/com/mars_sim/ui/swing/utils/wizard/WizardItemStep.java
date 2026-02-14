@@ -98,7 +98,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 			}
 		};
 
-		// COnfigure row selection
+		// Configure row selection
 		boolean single = minSelection == 1;
 		minTable.setRowSelectionAllowed(true);
 		minTable.setSelectionMode((single ? ListSelectionModel.SINGLE_SELECTION
@@ -107,7 +107,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 				e -> selectionChanged(getValidedSelection())
 			);		
 		
-		// Singhle selection also add double click
+		// Single selection also add double click
 		if (single) {
 			minTable.addMouseListener(new java.awt.event.MouseAdapter() {
 				@Override
@@ -238,7 +238,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	protected abstract void updateState(S state, List<I> selectedItems);
 
 	/**
-	 * This decorates a base renderer with a Reb backgound if it is in error.
+	 * This decorates the base renderer if it is in error.
 	 */
 	private static class FailureCellDecorator<I> implements TableCellRenderer {
 

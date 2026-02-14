@@ -130,7 +130,7 @@ class DronePanel extends WizardItemStep<MissionDataBean, Drone> {
 
 				// Allow rescue/salvage mission to use vehicle undergoing maintenance.
 				if (MissionType.RESCUE_SALVAGE_VEHICLE == state.getMissionType()) {
-                    result = !vehicle.haveStatusType(StatusType.MAINTENANCE) ? "Vehicle is undergoing maintenance" : null;
+                    result = vehicle.haveStatusType(StatusType.MAINTENANCE) ? "Vehicle is undergoing maintenance" : null;
 					}
 			} else if (column == 6) {
 				Mission mission = vehicle.getMission();

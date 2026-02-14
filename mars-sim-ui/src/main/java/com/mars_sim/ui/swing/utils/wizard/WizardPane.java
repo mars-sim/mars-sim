@@ -157,7 +157,7 @@ public abstract class WizardPane<T> {
     }
 
     /**
-     * Wizard is cmplete so tidy up.
+     * Wizard is complete so tidy up.
      */
     private void complete() {
         if (dialog != null) {
@@ -175,7 +175,7 @@ public abstract class WizardPane<T> {
 
     /**
      * User has triggered the cancel action. Dispose of the wizard without saving any state.
-     * This can be overrideen.
+     * This can be overridden.
      */
     protected void cancel() {
         complete();
@@ -251,7 +251,7 @@ public abstract class WizardPane<T> {
     }
 
     /**
-     * Define the seqeunce of steps to follow
+     * Define the sequence of steps to follow
      */
     public void setStepSequence(List<String> steps) {
         this.steps = new ArrayList<>(steps);

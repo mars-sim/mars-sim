@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * MissionWizard.java
- * @date 2026=02-01
+ * @date 2026-02-01
  * @author Scott Davis
  */
 
@@ -132,7 +132,7 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 
 	/**
 	 * Get the available mission types that can be created.
-	 * @return Mission types supproted by wizard.
+	 * @return Mission types supported by the wizard.
 	 */
     static Set<MissionType> availableTypes() {
         return missionSteps.keySet();

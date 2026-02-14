@@ -65,7 +65,7 @@ public final class ColumnSpecHelper {
 
         // No style renderer defined, so use return type
         if (renderer == null) {
-            // Switch wouldbe nice but desnpt work with Class<?> types
+            // Switch would be nice but does not work with Class<?> types
             Class<?> colClass = enhancedModel.getColumnClass(col.getModelIndex());
             if (Integer.class.isAssignableFrom(colClass)) {
                 renderer = new NumberCellRenderer(0);

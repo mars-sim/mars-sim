@@ -189,7 +189,7 @@ class TradeGoodsPanel extends WizardStep<MissionDataBean> {
 			}
 		}
 		catch (ParseException c) {
-			// Shoudn't happen since we disallow invalid input in the text field.
+			// Should not happen since we disallow invalid input in the text field.
 		}
 	}
 	
