@@ -533,11 +533,11 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		
 		MineralSite result = null;
 				
-		Map<String, Double> initialMineralEstimations = new HashMap<>();		
+		Map<Integer, Double> initialMineralEstimations = new HashMap<>();		
 		double totalConc = 0;
 		
 		for (var m : mineralMap.getAllMineralConcentrations(location).entrySet()) {
-			var mineralType = m.getKey();
+			var mineralId = m.getKey();
 			double initialEst = m.getValue();
 
 			if (initialEst <= 0) {
@@ -558,7 +558,7 @@ public class SurfaceFeatures implements Serializable, Temporal {
 				newEst = MINERAL_ESTIMATION_MAX;
 			}
 			
-			initialMineralEstimations.put(mineralType, newEst);
+			initialMineralEstimations.put(mineralId, newEst);
 			
 			totalConc += newEst;
 		}

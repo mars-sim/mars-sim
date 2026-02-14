@@ -8,6 +8,7 @@
 package com.mars_sim.ui.swing.tool.missionwizard;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -18,6 +19,7 @@ import javax.swing.table.AbstractTableModel;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
@@ -102,17 +104,22 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 	 */
 	private static class MineralModel extends AbstractTableModel {
 
+		private record MineralId(String name, int id) {}
+
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 		private MineralSite site;
-		private List<String> minerals = Collections.emptyList();
+		private List<MineralId> minerals = Collections.emptyList();
 	
 		private void update(MineralSite newSite) {
 			if (newSite == null) {
 				minerals = Collections.emptyList();
 			}
 			else {
-				minerals = newSite.getEstimatedMineralConcentrations().keySet().stream().sorted().toList();
+				minerals = newSite.getMinerals().keySet().stream()
+						.map(m ->  new MineralId(ResourceUtil.findAmountResourceName(m), m))
+						.sorted(Comparator.comparing(MineralId::name))
+						.toList();
 			}
 
 			site = newSite;
@@ -133,9 +140,9 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			var mineral = minerals.get(rowIndex);
 			return switch(columnIndex) {
-				case 0 -> mineral;
-				case 1 -> site.getEstimatedMineralConcentrations().get(mineral);
-				case 2 -> site.getDegreeCertainty(mineral);
+				case 0 -> mineral.name;
+				case 1 -> site.getMinerals().get(mineral.id).concentration();
+				case 2 -> site.getMinerals().get(mineral.id).certainty();
 				default -> null;
 			};
 		}

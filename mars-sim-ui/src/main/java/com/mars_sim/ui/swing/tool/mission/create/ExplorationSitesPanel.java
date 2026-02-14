@@ -731,7 +731,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		private List<String> mineralNames = null;
 
 		private MineralTableModel() {
-			mineralColors = mineralLayer.getMineralColors();
+			//mineralColors = mineralLayer.getMineralColors();
 			mineralNames = new ArrayList<>(mineralColors.keySet());
 		}
 

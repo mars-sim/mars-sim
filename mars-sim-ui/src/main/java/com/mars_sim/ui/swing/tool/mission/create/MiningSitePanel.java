@@ -303,10 +303,10 @@ public class MiningSitePanel extends WizardPanel {
 			latitudeLabel.setText("   Latitude : " + site.getLocation().getFormattedLatitudeString());
 
 			// Update mineral concentrations table.
-			java.util.Map<String, Double> estimatedConcentrations = site.getEstimatedMineralConcentrations();
+			var estimatedMinerals = site.getMinerals();
 			for (int x = 0; x < concentrationTableModel.getRowCount(); x++) {
 				String mineralType = (String) concentrationTableModel.getValueAt(x, 0);
-				Double concentration = estimatedConcentrations.get(mineralType);
+				Double concentration = estimatedMinerals.get(mineralType).concentration();
 				concentrationTableModel.setValueAt(concentration, x, 1);
 			}
 
@@ -404,7 +404,7 @@ public class MiningSitePanel extends WizardPanel {
 		private List<String> mineralNames = null;
 
 		private MineralTableModel() {
-			mineralColors = mineralLayer.getMineralColors();
+			//mineralColors = mineralLayer.getMineralColors();
 			mineralNames = new ArrayList<>(mineralColors.keySet());
 		}
 
@@ -436,6 +436,7 @@ public class MiningSitePanel extends WizardPanel {
 				return null;
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
 				String mineralName = mineralNames.get(row);
