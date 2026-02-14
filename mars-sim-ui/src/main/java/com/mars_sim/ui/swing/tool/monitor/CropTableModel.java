@@ -21,7 +21,7 @@ import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 
 /**
  * The CropTableModel keeps track of the quantity of the growing crops in each greenhouse by categories.

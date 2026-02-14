@@ -41,7 +41,6 @@ implements ActionListener {
 	private JButton finalButton;
 	
 	private MissionDataBean missionBean;
-	private TypePanel typePanel;
 	
 	private UIContext context;
 	
@@ -72,12 +71,12 @@ implements ActionListener {
 		displayPanelIndex = 0;
 
 		// Create initial set of wizard panels.
-		typePanel = new TypePanel(this, context);
-		addWizardPanel(typePanel);
+		// typePanel = new TypePanel(this, context);
+		// addWizardPanel(typePanel);
 
         // Note: This panel is added so that next and final buttons are
         // enabled/disabled properly initially.
-        addWizardPanel(new StartingSettlementPanel(this));
+        //addWizardPanel(new StartingSettlementPanel(this));
 
 		// Create bottom button panel.
 		JPanel bottomButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -136,7 +135,7 @@ implements ActionListener {
 
 		// Add mission type appropriate final panels.
 		if (missionBean.isRemoteMission()) {
-			addWizardPanel(new StartingSettlementPanel(this));
+			//(new StartingSettlementPanel(this));
 		}
 		else {
 			addWizardPanel(new ConstructionSettlementPanel(this));
@@ -149,12 +148,12 @@ implements ActionListener {
 		if (missionBean.isRemoteMission()) {
 			if (missionBean.isDeliveryMission())
 				addWizardPanel(new FlyerPanel(this));
-			else
-				addWizardPanel(new VehiclePanel(this));
+			// else
+			// 	addWizardPanel(new VehiclePanel(this));
 		}
 		
 		// Note: Change members panel to use lead researcher as member.
-		addWizardPanel(new MembersPanel(this, context));
+		//addWizardPanel(new MembersPanel(this, context));
 		
 		if (missionBean.isDeliveryMission()) {
 			addWizardPanel(new BotMembersPanel(this, context));
@@ -167,12 +166,12 @@ implements ActionListener {
 		
 		if (missionBean.isMiningMission() ) {
 			addWizardPanel(new MiningSitePanel(this, context));
-	    } else if (missionBean.isProspectingMission()) {
-			addWizardPanel(new ProspectingSitePanel(this, context));
+	    // } else if (missionBean.isProspectingMission()) {
+		// 	addWizardPanel(new ProspectingSitePanel(this, context));
 		} else if(missionBean.isExplorationMission()) {
 			addWizardPanel(new ExplorationSitesPanel(this, context));
-		} else if (missionBean.requiresDestinationSettlement()) {
-			addWizardPanel(new DestinationSettlementPanel(this));
+		// } else if (missionBean.requiresDestinationSettlement()) {
+		// 	addWizardPanel(new DestinationSettlementPanel(this));
 		} else if(missionBean.isRescueRendezvousMission()) {
 			addWizardPanel(new RendezvousVehiclePanel(this));
 		}
@@ -278,11 +277,6 @@ implements ActionListener {
 		}
 	}
 	
-	
-	public TypePanel getTypePanel() {
-		return typePanel;
-	}
-
 	//Does the same as getMissionData, what is the difference?
 	public MissionDataBean getMissionBean() {
 		return missionBean;

@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**

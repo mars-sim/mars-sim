@@ -127,7 +127,7 @@ class RendezvousVehiclePanel extends WizardPanel {
 	boolean commitChanges(boolean isTesting) {
 		int selectedIndex = vehicleTable.getSelectedRow();
 		Rover selectedVehicle = (Rover) vehicleTableModel.getUnit(selectedIndex);
-		getWizard().getMissionData().setRescueRover(selectedVehicle);
+		getWizard().getMissionData().setRescueVehicle(selectedVehicle);
 		return true;
 	}
 

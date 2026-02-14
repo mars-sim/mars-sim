@@ -13,7 +13,7 @@ import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 
 /**
  * Default implementation of the MonitorModel
@@ -107,11 +107,11 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
 	 * @return see ColumnSpec for the style.
 	 */
 	@Override
-    public int getColumnStyle(int columnIndex) {
+    public ColumnSpec getColumnSpec(int columnIndex) {
 		if ((columnIndex >= 0) && (columnIndex < columns.length)) {
-			return columns[columnIndex].style();
+			return columns[columnIndex];
 		}
-		return ColumnSpec.STYLE_DEFAULT;
+		return null;
 	}
 
 	/**

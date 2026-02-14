@@ -139,11 +139,8 @@ class ProspectingSitePanel extends WizardPanel {
 	boolean commitChanges(boolean isTesting) {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = mapPane.getCoordsOfPoint(getCenterCoords(), navpointPixel);
-		MissionType type = getWizard().getMissionData().getMissionType();
-		if (MissionType.COLLECT_ICE == type) 
-			getWizard().getMissionData().setIceCollectionSite(navpoint);
-		else if (MissionType.COLLECT_REGOLITH == type) 
-			getWizard().getMissionData().setRegolithCollectionSite(navpoint);
+		getWizard().getMissionData().setProspectingSite(navpoint);
+
 		return true;
 	}
 
