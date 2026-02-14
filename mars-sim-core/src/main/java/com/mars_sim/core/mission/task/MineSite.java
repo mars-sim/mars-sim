@@ -204,11 +204,12 @@ public class MineSite extends EVAOperation {
 		var site = objectives.getSite();
 		Map<String, Integer> minerals = surfaceFeatures.getMineralMap()
 				.getAllMineralConcentrations(site.getLocation());
+		var siteMinerals = site.getMinerals();
 		for(var e : minerals.entrySet()) {
 
 			double mineralConcentration = e.getValue();
 			double reserve = site.getRemainingMass();
-			double certainty = site.getDegreeCertainty(e.getKey());
+			double certainty = siteMinerals.get(ResourceUtil.findIDbyAmountResourceName(e.getKey())).certainty();
 			double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
 
 			double amountExcavated = variance * reserve * extractionRate * mineralConcentration;

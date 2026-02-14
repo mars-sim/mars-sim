@@ -6,7 +6,6 @@
  */
 package com.mars_sim.core.mission.task;
 
-import java.util.Map;
 import java.util.logging.Level;
 
 import com.mars_sim.core.environment.MineralSite;
@@ -181,8 +180,7 @@ public class ExploreSite extends EVAOperation {
 			collectRocks(time * skill);
 		}
 		else {
-			boolean isOver50 = site.isCertaintyAverageOver(50);
-			if (!isOver50) {
+			if (site.getAverageCertainty() < 50) {
 				site.improveCertainty(skill);	
 			}
 			else {
@@ -294,16 +292,16 @@ public class ExploreSite extends EVAOperation {
 
 		int imp = site.getNumEstimationImprovement();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
-		Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
+		var minerals = site.getMinerals();
 
-		for (var entry : estimatedMineralConcentrations.entrySet()) {
-			var mineralType = entry.getKey();
-			double conc = mineralMap.getMineralConcentration(mineralType, site.getLocation());			
-			double estimate = entry.getValue();
+		for (var minId : minerals.keySet()) {
+			var mineralDetails = minerals.get(minId);
+			var mineralType = ResourceUtil.findAmountResourceName(minId);
+			double conc = mineralMap.getMineralConcentration(mineralType, site.getLocation());	
+			double estimate = mineralDetails.concentration();		
 			double diff = Math.abs(conc - estimate);
 			
-			double certainty = site.getDegreeCertainty(mineralType);
-			double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
+			double variance = .5 + RandomUtil.getRandomDouble(.5 * mineralDetails.certainty()) / 100;
 			
 			// Note that rand can 'overshoot' the target
 			double rand = RandomUtil.getRandomDouble(1D * skill * imp / 50 * variance);
@@ -313,8 +311,7 @@ public class ExploreSite extends EVAOperation {
 				estimate += rand;
 			else if (estimate > conc)
 				estimate -= rand;
-
-			estimatedMineralConcentrations.put(mineralType, estimate);
+			site.updateMineralEstimate(minId, estimate);
 		}
 		
 		// Add to site mineral concentration estimation improvement number.

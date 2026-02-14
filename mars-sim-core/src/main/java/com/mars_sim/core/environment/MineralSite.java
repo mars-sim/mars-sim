@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.authority.Authority;
@@ -43,6 +42,10 @@ public class MineralSite implements Serializable, SurfacePOI {
 
 	private static final double MINING_THRESHOLD = 100D;
 	
+	// Details of a mineral concentration and certainty
+	public record MineralDetails(double concentration, double certainty) 
+		implements Serializable{}
+
 	// Private members.
 	private String name;
 	private boolean explored;
@@ -54,12 +57,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 	private Authority owner;
 	private Coordinates location;
 	
-	private Map<String, Double> estimatedMineralConcentrations;
-	
-	/**
-	 * A map for the degree of certainty in estimating mineral concentration
-	 */
-	private Map<String, Double> degreeCertainty = new HashMap<>();
+	private Map<Integer, MineralDetails> minerals = new HashMap<>();
 
 	/**
 	 * Constructor.
@@ -74,15 +72,21 @@ public class MineralSite implements Serializable, SurfacePOI {
 					Map<String, Double> estimatedMineralConcentrations) {
 		this.name = name;
 		this.location = location;
-		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
+		this.minerals = new HashMap<>();
+		for(var m : estimatedMineralConcentrations.entrySet()) {
+			this.minerals.put(ResourceUtil.findIDbyAmountResourceName(m.getKey()), 
+								new MineralDetails(m.getValue(),
+								RandomUtil.getRandomDouble(1, 45)));
+		}
+
 		explored = false;
 		reserved = false;
 		this.numEstimationImprovement = estimationImprovement;
 		
 		// Future: Need to find better algorithm to estimate the reserve amount of each mineral 
 		double reserve = 0;
-		for (var concentration: estimatedMineralConcentrations.values()) {
-			reserve += AVERAGE_RESERVE_MASS * concentration * RandomUtil.getRandomDouble(.5, 5);
+		for (var c: minerals.values()) {
+			reserve += AVERAGE_RESERVE_MASS * c.concentration * RandomUtil.getRandomDouble(.5, 5);
 		}
 
 		totalMass = reserve;
@@ -93,6 +97,10 @@ public class MineralSite implements Serializable, SurfacePOI {
 			+  estimatedMineralConcentrations);
 	}
 
+	/**
+	 * Is the site empty of minerals
+	 * @return
+	 */
 	public boolean isEmpty() {
 		return remainingMass == 0.0;
 	}
@@ -145,8 +153,20 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 * @return a map of all mineral types and their estimated concentrations (0%
 	 *         -100%)
 	 */
-	public Map<String, Double> getEstimatedMineralConcentrations() {
-		return estimatedMineralConcentrations;
+	public Map<Integer, MineralDetails> getMinerals() {
+		return minerals;
+	}
+
+	/**
+	 * Updates the estimated concentration of a mineral at the site.
+	 * @param minId Mineral identifier
+	 * @param estimate New concentration estimate (0% - 100%)
+	 */
+	public void updateMineralEstimate(Integer minId, double estimate) {
+		var existing = minerals.get(minId);
+
+		// Should never be empty existing but fallback in place
+		minerals.put(minId, new MineralDetails(estimate, existing != null ? existing.certainty() : 33));
 	}
 
 	/**
@@ -154,9 +174,9 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 * @return
 	 */
 	public Map<Integer,Double> getEstimatedMineralAmounts() {
-		return estimatedMineralConcentrations.entrySet().stream()
-				.collect(Collectors.toMap(e -> ResourceUtil.findIDbyAmountResourceName(e.getKey()),
-									v -> (remainingMass * v.getValue())/100D));
+		return minerals.entrySet().stream()
+				.collect(Collectors.toMap(e -> e.getKey(),
+									v -> (remainingMass * v.getValue().concentration())/100D));
 	}
 	/**
 	 * Gets the number of times the mineral concentration estimation has been
@@ -175,30 +195,24 @@ public class MineralSite implements Serializable, SurfacePOI {
 	 */
 	public void improveCertainty(double skill) {
 			
-		List<String> minerals = new ArrayList<>(estimatedMineralConcentrations.keySet());
+		List<Integer> ids = new ArrayList<>(minerals.keySet());
 		
-		Collections.shuffle(minerals);
+		Collections.shuffle(ids);
 				
-		for (var aMineral : minerals) {			
-			double conc = estimatedMineralConcentrations.get(aMineral);
+		for (var aMineral : ids) {			
+			var m = minerals.get(aMineral);
 			
-			if (conc > 0) {
+			if (m.concentration() > 0) {
 				double newCertainty = 0;
-				if (degreeCertainty.containsKey(aMineral)) {
-					// Existing mineral certainty so increase it	
-					double certainty = degreeCertainty.get(aMineral);
-					if (certainty < 100) {
-						// Improvement is skill based
-						double rand = RandomUtil.getRandomDouble(.97, 1.03);
-						newCertainty = rand * certainty * (1.03 + skill / 100);
-						if (newCertainty > 100) {
-							newCertainty = 100;
-						}
-					}
-				}
-				else {
+				// Existing mineral certainty so increase it	
+				double certainty = m.certainty;
+				if (certainty < 100) {
 					// Improvement is skill based
-					newCertainty = RandomUtil.getRandomDouble(1, 5) * (1 + skill);
+					double rand = RandomUtil.getRandomDouble(.97, 1.03);
+					newCertainty = rand * certainty * (1.03 + skill / 100);
+					if (newCertainty > 100) {
+						newCertainty = 100;
+					}
 				}
 
 				// Make a change
@@ -207,23 +221,13 @@ public class MineralSite implements Serializable, SurfacePOI {
 								+ " Degree of estimation certainty improved on " 
 								+ aMineral + ": " + Math.round(newCertainty * 10.0)/10.0 + " %");
 			
-					degreeCertainty.put(aMineral, newCertainty);
+					minerals.put(aMineral, new MineralDetails(m.concentration(), newCertainty));
 					return;
 				}
 			}
 		}
 	}
-	
-	/**
-	 * Returns the degree of certainty of a mineral.
-	 * 
-	 * @param mineral
-	 * @return
-	 */
-	public double getDegreeCertainty(String mineral) {
-		return degreeCertainty.getOrDefault(mineral, 0D);
-	}
-	
+
 	/**
 	 * Gets the average degree of certainty of all minerals.
 	 * 
@@ -232,9 +236,9 @@ public class MineralSite implements Serializable, SurfacePOI {
 	public double getAverageCertainty() {
 		double sum = 0;
 		int numMinerals = 0;
-		for (double percent : degreeCertainty.values()) {
-			if (percent > 0) {
-				sum += percent;
+		for (var details : minerals.values()) {
+			if (details.certainty() > 0) {
+				sum += details.certainty();
 				numMinerals++;
 			}
 		}
@@ -242,32 +246,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 			return sum / numMinerals;
 		return 0;
 	}
-	
-	/**
-	 * Checks if the average certainty is above a certain percentage.
-	 * 
-	 * @return
-	 */
-	public boolean isCertaintyAverageOver(int percent) {
-		if (!degreeCertainty.isEmpty()) {
-			double sum = 0;
-			double numMinerals = 0;
-			for (Entry<String, Double> i : degreeCertainty.entrySet()) {
-				numMinerals ++;
-				double certainty = i.getValue();
-				sum += certainty;
-			}
-			
-			double average = 0; 
-			if (numMinerals > 0)
-				average = sum / numMinerals;
-			if (average > percent) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
+
 	/**
 	 * Increments the estimation improvement.
 	 * 
