@@ -13,13 +13,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -86,7 +86,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 		// Future: Need to find better algorithm to estimate the reserve amount of each mineral 
 		double reserve = 0;
 		for (var c: minerals.values()) {
-			reserve += AVERAGE_RESERVE_MASS * c.concentration * RandomUtil.getRandomDouble(.5, 5);
+			reserve += AVERAGE_RESERVE_MASS * c.concentration() * RandomUtil.getRandomDouble(.5, 5);
 		}
 
 		totalMass = reserve;
@@ -170,12 +170,12 @@ public class MineralSite implements Serializable, SurfacePOI {
 	}
 
 	/**
-	 * Get teh estimated amount of each mineral at the site based on the Mass and mineral concentration
-	 * @return
+	 * Get the estimated amount of each mineral at the site based on the Mass and mineral concentration
+	 * @return Map from resource id to estimated amount in kg
 	 */
 	public Map<Integer,Double> getEstimatedMineralAmounts() {
 		return minerals.entrySet().stream()
-				.collect(Collectors.toMap(e -> e.getKey(),
+				.collect(Collectors.toMap(Entry::getKey,
 									v -> (remainingMass * v.getValue().concentration())/100D));
 	}
 	/**
@@ -191,7 +191,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 	/**
 	 * Improves the certainty of mineral concentration estimation.
 	 * 
-	 * @param skill
+	 * @param skill Skill of worker improving the certainty.
 	 */
 	public void improveCertainty(double skill) {
 			
@@ -205,7 +205,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 			if (m.concentration() > 0) {
 				double newCertainty = 0;
 				// Existing mineral certainty so increase it	
-				double certainty = m.certainty;
+				double certainty = m.certainty();
 				if (certainty < 100) {
 					// Improvement is skill based
 					double rand = RandomUtil.getRandomDouble(.97, 1.03);
@@ -229,9 +229,9 @@ public class MineralSite implements Serializable, SurfacePOI {
 	}
 
 	/**
-	 * Gets the average degree of certainty of all minerals.
+	 * Gets the average degree of certainty of all minerals that have a non-zero certainty.
 	 * 
-	 * @return
+	 * @return average certainty (0% - 100%)
 	 */
 	public double getAverageCertainty() {
 		double sum = 0;
