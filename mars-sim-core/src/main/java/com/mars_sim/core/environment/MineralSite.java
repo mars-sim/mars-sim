@@ -44,6 +44,7 @@ public class MineralSite implements Serializable, SurfacePOI {
 	private static final double MINING_THRESHOLD = 100D;
 	
 	// Private members.
+	private String name;
 	private boolean explored;
 	private boolean reserved;
 	private int numEstimationImprovement;
@@ -63,13 +64,15 @@ public class MineralSite implements Serializable, SurfacePOI {
 	/**
 	 * Constructor.
 	 *
+	 * @param name							the name of the site
 	 * @param location                       the location coordinates.
 	 * @param estimationImprovement			 The number times the estimates have been improved
 	 * @param estimatedMineralConcentrations a map of all mineral types and their
 	 *                                       estimated concentrations (0% -100%)
 	 */
-	MineralSite(Coordinates location, int estimationImprovement,
+	MineralSite(String name, Coordinates location, int estimationImprovement,
 					Map<String, Double> estimatedMineralConcentrations) {
+		this.name = name;
 		this.location = location;
 		this.estimatedMineralConcentrations = estimatedMineralConcentrations;
 		explored = false;
@@ -94,6 +97,14 @@ public class MineralSite implements Serializable, SurfacePOI {
 		return remainingMass == 0.0;
 	}
 	
+	/**
+	 * Get the name of the site.
+	 * @return
+	 */
+	public String getName() {
+		return name;
+	}
+
 	/**
 	 * Compute the remaining mass after excavation.
 	 * 

@@ -157,7 +157,7 @@ public class Mining extends EVAMission
 		setEVAEquipment(EquipmentType.LARGE_BAG, newContainerNum);
 
 		// Add mining site nav point.
-		addNavpoint(miningSite.getLocation(), "a mining site");
+		addNavpoint(miningSite.getLocation(), miningSite.getName());
 		
 		// Add home settlement
 		Settlement s = getStartingSettlement();

@@ -564,8 +564,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 		}
 
 		if (totalConc > 0) {
-						
-			result = new MineralSite(location, skill, initialMineralEstimations);
+				
+			String name = "Site-" + (regionOfInterestLocations.size() + 1);
+			result = new MineralSite(name, location, skill, initialMineralEstimations);
 			
 			regionOfInterestLocations.add(result);
 		}
