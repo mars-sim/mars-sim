@@ -22,7 +22,7 @@ public class MineralDeposit implements Serializable, SurfacePOI {
 	private static final long serialVersionUID = 1L;
 	
 	private Coordinates location;
-	private Map<String,Integer> concentration;
+	private Map<Integer,Integer> concentration;
 
 	MineralDeposit(Coordinates location) {
 		this.location = location;
@@ -40,52 +40,44 @@ public class MineralDeposit implements Serializable, SurfacePOI {
 	/**
 	 * Adjust the concentration of a mineral. If it exits then take the average of the old and new.
 	 * THis provides a balanced movement.
-	 * @param mineral
-	 * @param newConc
+	 * @param mineralId Resource id of the mineral
+	 * @param newConc New concentration to adjust to
 	 */
-	void adjustMineral(String mineral, int newConc) {
-		concentration.merge(mineral, newConc, (o,n) -> ((o + n)/2));
+	void adjustMineral(int mineralId, int newConc) {
+		concentration.merge(mineralId, newConc, (o,n) -> ((o + n)/2));
 	}
 
 	/**
 	 * Add to the concentration of a mineral. If it exits then take the sum of the old and new.
-	 * @param mineral
-	 * @param newConc
+	 * @param mineralId Resource id of the mineral
+	 * @param newConc New concentration to add
 	 */
-	void addMineral(String mineral, int newConc) {
-		var existing = concentration.get(mineral);
+	void addMineral(int mineralId, int newConc) {
+		var existing = concentration.get(mineralId);
 		if (existing != null) {
 			newConc += existing.intValue();
 			if (newConc > 100) {
 				newConc = 100;
 			}
 		}
-		concentration.put(mineral, newConc);
+		concentration.put(mineralId, newConc);
 	}
 
 
 	/**
 	 * Get the the concentration of a single mineral at this location
-	 * @param displayed
+	 * @param mineralId Resource id of the mineral
 	 * @return
 	 */
-	public int getConcentration(String displayed) {
-		return concentration.getOrDefault(displayed, 0);
+	public int getConcentration(int mineralId) {
+		return concentration.getOrDefault(mineralId, 0);
 	}
 
 	/**
 	 * Get the concentrations at this location
 	 * @return
 	 */
-    public Map<String, Integer> getConcentrations() {
+    public Map<Integer, Integer> getConcentrations() {
         return concentration;
     }
-
-	/**
-	 * Does this have any minerals at this point
-	 * @return
-	 */
-    public boolean isEmpty() {
-        return concentration.isEmpty();
-    }	
 }

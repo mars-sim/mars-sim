@@ -26,7 +26,7 @@ class MineralMapTest {
         var minerals = config.getMineralTypes();
         var type1 = minerals.get(0);
         var type2 = minerals.get(1);
-        Set<String> all = Set.of(type1.getName(), type2.getName());
+        Set<Integer> all = Set.of(type1.getResourceId(), type2.getResourceId());
 
         MineralMap newMap = new MineralMap(config);
 
@@ -39,8 +39,8 @@ class MineralMapTest {
         assertEquals(1, results.size(), "All Concentrations");
 
         var found = results.get(0);
-        assertEquals(10, found.getConcentration(type1.getName()), "Type1 Concentrations");
-        assertEquals(20, found.getConcentration(type2.getName()), "Type2 Concentrations");
+        assertEquals(10, found.getConcentration(type1.getResourceId()), "Type1 Concentrations");
+        assertEquals(20, found.getConcentration(type2.getResourceId()), "Type2 Concentrations");
     }
 
     @Test
@@ -48,7 +48,7 @@ class MineralMapTest {
         var minerals = config.getMineralTypes();
         var type1 = minerals.get(0);
         var type2 = minerals.get(1);
-        Set<String> all = Set.of(type1.getName(), type2.getName());
+        Set<Integer> all = Set.of(type1.getResourceId(), type2.getResourceId());
 
         MineralMap newMap = new MineralMap(config);
 
@@ -60,14 +60,14 @@ class MineralMapTest {
         var results = newMap.getDeposits(center, 1D, all);
         assertEquals(2, results.size(), "All Concentrations");
 
-        all = Set.of(type1.getName());
+        all = Set.of(type1.getResourceId());
         results = newMap.getDeposits(center, 1D, all);
         assertEquals(1, results.size(), "Filtered 1 Concentrations");
-        assertEquals(10, results.get(0).getConcentration(type1.getName()), "Filtered Type1 Concentrations");
+        assertEquals(10, results.get(0).getConcentration(type1.getResourceId()), "Filtered Type1 Concentrations");
 
-        all = Set.of(type2.getName());
+        all = Set.of(type2.getResourceId());
         results = newMap.getDeposits(center, 1D, all);
         assertEquals(1, results.size(), "Filtered 2 Concentrations");
-        assertEquals(20, results.get(0).getConcentration(type2.getName()), "Filtered Type2 Concentrations");
+        assertEquals(20, results.get(0).getConcentration(type2.getResourceId()), "Filtered Type2 Concentrations");
     }
 }

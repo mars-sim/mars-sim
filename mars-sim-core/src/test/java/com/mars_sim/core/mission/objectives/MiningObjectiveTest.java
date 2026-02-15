@@ -30,7 +30,7 @@ public class MiningObjectiveTest extends MarsSimUnitTest {
 		var obj = new MiningObjective(l, site);
 
         var mins = obj.getMineralStats();
-        assertEquals(site.getEstimatedMineralConcentrations().size(), mins.size(), "Minerals detected");
+        assertEquals(site.getMinerals().size(), mins.size(), "Minerals detected");
 
         // Select a mineral
         int targetId = (new ArrayList<>(site.getEstimatedMineralAmounts().keySet())).get(0);

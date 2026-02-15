@@ -111,17 +111,16 @@ public class MineralMap implements Serializable {
 			found = new MineralDeposit(locn);
 			allMinerals.addFeature(found);
 		}
-		found.adjustMineral(mineral.getName(), conc);
+		found.adjustMineral(mineral.getResourceId(), conc);
 	}
 
 	/**
 	 * Gets all of the mineral concentrations at a given location.
 	 * 
 	 * @param location  the coordinate
-	 * @param rho		the map scale
 	 * @return map of mineral types and percentage concentration (0 to 100.0)
 	 */
-	public Map<String, Integer> getAllMineralConcentrations(Coordinates location) {
+	public Map<Integer, Integer> getAllMineralConcentrations(Coordinates location) {
 		var found = allMinerals.getFeature(location);
 		if (found != null) {
 			return found.getConcentrations();
@@ -134,17 +133,17 @@ public class MineralMap implements Serializable {
 	 * @note Called by SurfaceFeatures's addExploredLocation()
 	 * and ExploreSite's improveSiteEstimates()
 	 * 
-	 * @param string the mineral type (see MineralMap.java)
+	 * @param mineralId the mineral type (see MineralMap.java)
 	 * @param location   the coordinate location.
 	 * @return percentage concentration (0 to 100.0)
 	 */
-	public double getMineralConcentration(String string, Coordinates location) {
+	public double getMineralConcentration(int mineralId, Coordinates location) {
 		
 		var details = allMinerals.getFeature(location);
 		if (details == null) {
 			return 0;
 		}
-		return details.getConcentration(string);
+		return details.getConcentration(mineralId);
 	}
 	
 	/**
@@ -243,7 +242,7 @@ public class MineralMap implements Serializable {
 	 * @return
 	 */
     public List<MineralDeposit> getDeposits(Coordinates center, double arcAngle,
-								Set<String> minerals) {
+								Set<Integer> minerals) {
         return allMinerals.getFeatures(center, arcAngle).stream()
 					.filter(f -> isPresent(f, minerals))
 					.toList();
@@ -255,7 +254,7 @@ public class MineralMap implements Serializable {
 	 * @param minerals
 	 * @return
 	 */
-	private static boolean isPresent(MineralDeposit f, Set<String> minerals) {
+	private static boolean isPresent(MineralDeposit f, Set<Integer> minerals) {
 		return f.getConcentrations().keySet().stream()
 				.anyMatch(minerals::contains);
 	}

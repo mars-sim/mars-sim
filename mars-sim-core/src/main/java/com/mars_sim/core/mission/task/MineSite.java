@@ -6,8 +6,6 @@
  */
 package com.mars_sim.core.mission.task;
 
-import java.util.Map;
-
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
@@ -19,7 +17,6 @@ import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
@@ -202,19 +199,18 @@ public class MineSite extends EVAOperation {
 			extractionRate += (.2D * skill);
 
 		var site = objectives.getSite();
-		Map<String, Integer> minerals = surfaceFeatures.getMineralMap()
+		var minerals = surfaceFeatures.getMineralMap()
 				.getAllMineralConcentrations(site.getLocation());
+		var siteMinerals = site.getMinerals();
 		for(var e : minerals.entrySet()) {
 
+			int mineralId = e.getKey();
 			double mineralConcentration = e.getValue();
 			double reserve = site.getRemainingMass();
-			double certainty = site.getDegreeCertainty(e.getKey());
+			double certainty = siteMinerals.get(mineralId).certainty();
 			double variance = .5 + RandomUtil.getRandomDouble(.5 * certainty) / 100;
 
 			double amountExcavated = variance * reserve * extractionRate * mineralConcentration;
-
-			int mineralId = ResourceUtil.findIDbyAmountResourceName(e.getKey());
-
 			objectives.extractedMineral(mineralId, amountExcavated);
 		}
 	}

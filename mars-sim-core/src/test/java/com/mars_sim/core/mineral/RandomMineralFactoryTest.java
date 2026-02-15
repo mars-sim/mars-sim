@@ -29,7 +29,7 @@ class RandomMineralFactoryTest {
 
         // Search all types
         var types = newMap.getTypes().stream()
-                        .map(MineralType::getName)
+                        .map(MineralType::getResourceId)
                         .collect(Collectors.toSet());
 
         var results = newMap.getDeposits(center, 1D, types);
