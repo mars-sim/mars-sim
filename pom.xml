@@ -13,8 +13,9 @@
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
-		<release>21</release>
-		
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>		
 		<sonar.java.source>21</sonar.java.source>
 
 		<fxgl.version>11.17</fxgl.version>
@@ -173,101 +174,4 @@
 		<module>mars-sim-ui</module>
     	<module>mars-sim-dist</module>
 	</modules>
-  
-	<!-- ************************************************************************************************* -->
-	<!-- * Build Section * -->
-	<!-- ************************************************************************************************* -->
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-				    <groupId>org.codehaus.mojo</groupId>
-				    <artifactId>versions-maven-plugin</artifactId>
-				    <version>2.20.1</version>
-				    <configuration>
-				        <generateBackupPoms>false</generateBackupPoms>
-				    </configuration>
-				</plugin>
-				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-plugin -->
-				<plugin>
-				    <groupId>org.apache.maven.plugins</groupId>
-				    <artifactId>maven-surefire-plugin</artifactId>
-				    <version>3.5.4</version>
-				   <!-- surefire-junit-platform below is needed for maven-surefire-plugin -->
-			        <dependencies>
-				        <dependency>
-				            <groupId>org.apache.maven.surefire</groupId>
-				            <artifactId>surefire-junit-platform</artifactId>
-				            <version>3.5.4</version>
-				        </dependency>
-			        </dependencies>
-				    <configuration>
-                        <!--<argLine>-Duser.language=en -Duser.region=US</argLine>-->
-						<includes>
-							<include>%regex[.*]</include>
-						</includes>
-				    </configuration>
-				</plugin>				
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.1</version>
-					<configuration>
-						<release>${release}</release>
-						<compilerArgs>
-			            	<arg>-Xlint:unchecked</arg>
-			            	<arg>-Xlint:deprecation</arg>
-			            	<arg>-Xlint:removal</arg>
-						</compilerArgs>
-						<showWarnings>false</showWarnings>
-                        <showDeprecation>false</showDeprecation>
-						<verbose>false</verbose>
-					</configuration>
-					<!-- see https://www.baeldung.com/kotlin-maven-java-project -->
-					<!-- see https://kotlinlang.org/docs/reference/using-maven.html -->
-	       			<executions>
-		                <!-- Replacing default-compile as it is treated specially by maven -->
-		                <execution>
-		                    <id>default-compile</id>
-		                    <phase>none</phase>
-		                </execution>
-		                <!-- Replacing default-testCompile as it is treated specially by maven -->
-		                <execution>
-		                    <id>default-testCompile</id>
-		                    <phase>none</phase>
-		                </execution>
-		                <execution>
-		                    <id>java-compile</id>
-		                    <phase>compile</phase>
-		                    <goals> <goal>compile</goal> </goals>
-		                </execution>
-		                <execution>
-		                    <id>java-test-compile</id>
-		                    <phase>test-compile</phase>
-		                    <goals> <goal>testCompile</goal> </goals>
-		                </execution>
-	            	</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-	<!-- ************************************************************************************************* -->
-	<!-- * Reporting Section * -->
-	<!-- ************************************************************************************************* -->
-	<reporting>
-		<plugins>
-			<plugin>
-				<!-- https://maven.apache.org/plugins/maven-dependency-plugin/examples/copying-project-dependencies.html -->
-				<!-- See https://maven.apache.org/plugins/maven-dependency-plugin/usage.html -->
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.9.0</version>
-				<configuration>
-					<outputDirectory>
-						${project.build.directory}
-					</outputDirectory>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>
