@@ -115,10 +115,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		ellipseLayer = new EllipseLayer(Color.GREEN);
 		navLayer = new NavpointEditLayer(mapPane, true);
 		
-		mapPane.addMapLayer(mineralLayer, 0);
-		mapPane.addMapLayer(new UnitMapLayer(mapPane), 1);
-		mapPane.addMapLayer(ellipseLayer, 2);
-		mapPane.addMapLayer(navLayer, 3);
+		mapPane.addMapLayer(mineralLayer);
+		mapPane.addMapLayer(new UnitMapLayer(mapPane));
+		mapPane.addMapLayer(ellipseLayer);
+		mapPane.addMapLayer(navLayer);
 		
 		mapPane.setBorder(new MarsPanelBorder());
 		mapPane.addMouseListener(new NavpointMouseListener());

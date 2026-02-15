@@ -107,27 +107,25 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 		mapPanel.addMouseListener(mouseListener);
 		mapPanel.addMouseMotionListener(mouseListener);
 		
-		int layerIdx = 1;
-
 		// Mineral layer only if mining or exploration mission
 		if (mission instanceof Mining || mission instanceof Exploration) {
 		    var mineralLayer = new MineralMapLayer(mapPanel);
-		    mapPanel.addMapLayer(mineralLayer, layerIdx++);
+		    mapPanel.addMapLayer(mineralLayer);
 		}					
 
 		// Always add unit layer
-		mapPanel.addMapLayer(new UnitMapLayer(mapPanel), layerIdx++);
+		mapPanel.addMapLayer(new UnitMapLayer(mapPanel));
 
 		// Vehicle trail layer for the target vehicle
 		var trailLayer = new VehicleTrailMapLayer(mapPanel);
 		trailLayer.setSingleVehicle(vehicle);
-		mapPanel.addMapLayer(trailLayer, layerIdx++);
+		mapPanel.addMapLayer(trailLayer);
 
 		// Lastly add navpoint layer
 		navpointLayer = new NavpointMapLayer(mapPanel);
 		navpointLayer.setSingleMission(mission);
 		navpointLayer.setSelectedNavpoint(null);
-		mapPanel.addMapLayer(navpointLayer, layerIdx);
+		mapPanel.addMapLayer(navpointLayer);
 
 		var mapPane = new JPanel(new BorderLayout());
 		mapPane.setBorder(SwingHelper.createLabelBorder("Route"));

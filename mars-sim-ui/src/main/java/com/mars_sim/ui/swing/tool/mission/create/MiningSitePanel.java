@@ -116,13 +116,13 @@ public class MiningSitePanel extends WizardPanel {
 
 		mineralLayer = new MineralMapLayer(mapPane);
 		
-		mapPane.addMapLayer(mineralLayer, 0);
+		mapPane.addMapLayer(mineralLayer);
 		unitLayer = new UnitMapLayer(mapPane);
-		mapPane.addMapLayer(unitLayer, 1);
+		mapPane.addMapLayer(unitLayer);
 		ellipseLayer = new EllipseLayer(Color.GREEN);
-		mapPane.addMapLayer(ellipseLayer, 2);
+		mapPane.addMapLayer(ellipseLayer);
 		exploredSiteLayer = new ExploredSiteMapLayer(mapPane);
-		mapPane.addMapLayer(exploredSiteLayer, 3);
+		mapPane.addMapLayer(exploredSiteLayer);
 		
 		exploredSiteLayer.displayFilter(ExploredSiteMapLayer.CLAIMED_FILTER, false);
 		exploredSiteLayer.displayFilter(ExploredSiteMapLayer.RESERVED_FILTER, false);

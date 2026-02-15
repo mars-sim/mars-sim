@@ -135,10 +135,10 @@ implements EntityListener {
 		navpointLayer = new NavpointMapLayer(mapPanel);
         mineralLayer = new MineralMapLayer(mapPanel);
         
-        mapPanel.addMapLayer(mineralLayer, 1);
-		mapPanel.addMapLayer(new UnitMapLayer(mapPanel), 2);
-		mapPanel.addMapLayer(trailLayer, 3);
-		mapPanel.addMapLayer(navpointLayer, 4);
+		mapPanel.addMapLayer(mineralLayer);
+		mapPanel.addMapLayer(new UnitMapLayer(mapPanel));
+		mapPanel.addMapLayer(trailLayer);
+		mapPanel.addMapLayer(navpointLayer);
   
         mapPanel.setPreferredSize(new Dimension(MissionWindow.WIDTH - MissionWindow.LEFT_PANEL_WIDTH, HEIGHT));  
         
@@ -293,12 +293,8 @@ implements EntityListener {
 		navpointLayer.setSelectedNavpoint(null);
 		navpointTableModel.updateNavpoints();
 		
-		if ((missionCache instanceof Exploration) || (missionCache instanceof Mining)) {
-			if (!mapPanel.hasMapLayer(mineralLayer)) mapPanel.addMapLayer(mineralLayer, 1);
-		}
-		else {
-			if (mapPanel.hasMapLayer(mineralLayer)) mapPanel.removeMapLayer(mineralLayer);
-		}	
+		mapPanel.setVisibleMapLayer(mineralLayer,
+					(missionCache instanceof Exploration) || (missionCache instanceof Mining));
 	}
 	
 	/**
@@ -316,8 +312,6 @@ implements EntityListener {
 		navpointLayer.setSingleMission(null);
 		navpointLayer.setSelectedNavpoint(null);
 		navpointTableModel.updateNavpoints();
-        if (mapPanel.hasMapLayer(mineralLayer)) 
-        	mapPanel.removeMapLayer(mineralLayer);
 		mapPanel.showMap(null);
 	}
 	

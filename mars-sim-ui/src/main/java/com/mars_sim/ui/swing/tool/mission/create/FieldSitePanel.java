@@ -68,11 +68,11 @@ public class FieldSitePanel extends WizardPanel {
         mapPane = new MapPanel(context);
         mapPane.setPreferredSize(new Dimension(400, 512));
 
-        mapPane.addMapLayer(new UnitMapLayer(mapPane), 0);
+        mapPane.addMapLayer(new UnitMapLayer(mapPane));
         ellipseLayer = new EllipseLayer(Color.GREEN);
-        mapPane.addMapLayer(ellipseLayer, 1);
+        mapPane.addMapLayer(ellipseLayer);
         navLayer = new NavpointEditLayer(mapPane, false);
-        mapPane.addMapLayer(navLayer, 2);
+        mapPane.addMapLayer(navLayer);
         
         mapPane.addMouseListener(new NavpointMouseListener());
         mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
