@@ -139,7 +139,7 @@ class ProspectingSitePanel extends WizardPanel {
 	boolean commitChanges(boolean isTesting) {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = mapPane.getCoordsOfPoint(getCenterCoords(), navpointPixel);
-		getWizard().getMissionData().setProspectingSite(navpoint);
+		//getWizard().getMissionData().setProspectingSite(navpoint);
 
 		return true;
 	}

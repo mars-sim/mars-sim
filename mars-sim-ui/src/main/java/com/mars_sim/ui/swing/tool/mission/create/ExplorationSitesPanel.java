@@ -224,7 +224,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	@Override
 	boolean commitChanges(boolean isTesting) {
-		getWizard().getMissionData().setExplorationSites(getSites());
+		//getWizard().getMissionData().set(getSites());
 		return true;
 	}
 

@@ -6,8 +6,6 @@
  */
 package com.mars_sim.ui.swing.tool.mission.create;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -64,9 +62,8 @@ public class MissionDataBean {
 	private LightUtilityVehicle luv;
 	
 	private Coordinates fieldSite;
-	private Coordinates prospectingSite;
 	
-	private Coordinates[] explorationSites;
+	private List<Coordinates> routePoints;
 	
 	private MineralSite miningSite;
     
@@ -104,16 +101,10 @@ public class MissionDataBean {
 			case MissionType.CONSTRUCTION ->
 					mission = new ConstructionMission(mixedMembers, constructionSettlement, constructionSite,
 							constructionVehicles);
-			case MissionType.COLLECT_ICE -> {
-					List<Coordinates> collectionSites = new ArrayList<>(1);
-					collectionSites.add(prospectingSite);
-					mission = new CollectIce(mixedMembers, collectionSites, rover);
-				}
-			case MissionType.COLLECT_REGOLITH -> {
-					List<Coordinates> collectionSites = new ArrayList<>(1);
-					collectionSites.add(prospectingSite);
-					mission = new CollectRegolith(mixedMembers, collectionSites, rover);
-				}
+			case MissionType.COLLECT_ICE ->
+					mission = new CollectIce(mixedMembers, routePoints, rover);
+			case MissionType.COLLECT_REGOLITH ->
+					mission = new CollectRegolith(mixedMembers, routePoints, rover);
 			case MissionType.DELIVERY -> {
 					Person startingMember = null;
 					for (Worker mm: mixedMembers) {
@@ -127,11 +118,8 @@ public class MissionDataBean {
 			case MissionType.EMERGENCY_SUPPLY ->
 					mission = new EmergencySupply(mixedMembers, destinationSettlement,
 							sellGoods, rover);
-			case MissionType.EXPLORATION -> {
-					List<Coordinates> collectionSites = new ArrayList<>(explorationSites.length);
-					collectionSites.addAll(Arrays.asList(explorationSites));
-					mission = new Exploration(mixedMembers, collectionSites, rover);
-				}
+			case MissionType.EXPLORATION ->
+					mission = new Exploration(mixedMembers, routePoints, rover);
 			case MissionType.MINING ->
 					mission = new Mining(mixedMembers, miningSite, rover, luv);
 			case MissionType.RESCUE_SALVAGE_VEHICLE ->
@@ -349,29 +337,12 @@ public class MissionDataBean {
 	}
 
 	/**
-	 * Set the prospecting site for a collection Mission.
-	 * @param navpoint the prospecting site coordinates.
-	 */
-    public void setProspectingSite(Coordinates navpoint) {
-        this.prospectingSite = navpoint;
-    }
-
-	/**
-	 * Gets the exploration sites.
+	 * Sets the points on a route.
 	 * 
-	 * @return exploration sites.
+	 * @param points the route points.
 	 */
-    protected Coordinates[] getExplorationSites() {
-		return explorationSites;
-	}
-
-	/**
-	 * Sets the exploration sites.
-	 * 
-	 * @param explorationSites the exploration sites.
-	 */
-    protected void setExplorationSites(Coordinates[] explorationSites) {
-		this.explorationSites = explorationSites;
+    public void setRoutePoints(List<Coordinates> points) {
+		this.routePoints = points;
 	}
 
 	/**

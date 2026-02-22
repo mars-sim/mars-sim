@@ -79,9 +79,9 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 			case LightUtilityVehiclePanel.ID -> new LightUtilityVehiclePanel(this, state);
 			case MembersPanel.ID -> new MembersPanel(this, state);
 			case MineSitePanel.ID -> new MineSitePanel(this, state);
-			//case ProspectingSitePanel.NAME -> new ProspectingSitePanel(this, state, getContext());
 			case RescueVehiclePanel.ID -> new RescueVehiclePanel(this, state);
 			case RoverPanel.ID -> new RoverPanel(this, state);
+			case RoutePanel.ID -> new RoutePanel(this, state);
 			case StartingSettlementPanel.ID ->new StartingSettlementPanel(this, state);
 			case TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SUPPLY_ID, TradeGoodsPanel.SELL_ID ->
 								new TradeGoodsPanel(stepID, this, state);
@@ -94,6 +94,10 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	/**
 	 * The predefined step sequences for Mission types.
 	 */
+	private static final List<String> EXPLORATION_STEPS = List.of(
+			TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
+			RoutePanel.ID);
+
 	private static final Map<MissionType, List<String>> missionSteps = Map.of(
 		MissionType.CONSTRUCTION, List.of(
 				TypePanel.ID, StartingSettlementPanel.ID, ConstructionPanel.ID, MembersPanel.ID,
@@ -109,10 +113,8 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 				LightUtilityVehiclePanel.ID, MineSitePanel.ID),
 		MissionType.RESCUE_SALVAGE_VEHICLE, List.of(
 				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, RescueVehiclePanel.ID),
-			// MissionType.COLLECT_ICE, List.of(
-			// 	TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, ProspectingSitePanel.NAME),
-			// MissionType.COLLECT_REGOLITH, List.of(
-			// 	TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, ProspectingSitePanel.NAME),
+		MissionType.COLLECT_ICE, EXPLORATION_STEPS,
+		MissionType.COLLECT_REGOLITH, EXPLORATION_STEPS,
 		MissionType.TRADE, List.of(
 				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
 				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID),
