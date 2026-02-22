@@ -656,14 +656,12 @@ public class MainDetailPanel extends JPanel implements EntityListener {
 		
 			case Mission.DESIGNATION_EVENT -> {
 				// Implement the missing descriptionLabel
-				if (missionWindow.getCreateMissionWizard() != null) {
 					String s = mission.getFullMissionDesignation();
 					if (s == null || s.equals("")) {
 						s = "[TBA]";
 					}
 
 					designationTextField.setText(Conversion.capitalize(s));
-				}
 			}
 			
 			case Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT -> {

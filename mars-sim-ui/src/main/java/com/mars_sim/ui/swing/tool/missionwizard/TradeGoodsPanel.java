@@ -32,7 +32,6 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodCategory;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 
 /**

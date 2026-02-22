@@ -120,7 +120,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		columnModel.getColumn(0).setPreferredWidth(60);
 		columnModel.getColumn(1).setPreferredWidth(90);
 		columnModel.getColumn(2).setPreferredWidth(20);
-		if (v != null) {
+		if (columnModel.getColumnCount() > 3) {
 			columnModel.getColumn(3).setPreferredWidth(20);
 			columnModel.getColumn(4).setPreferredWidth(20);			
 		}

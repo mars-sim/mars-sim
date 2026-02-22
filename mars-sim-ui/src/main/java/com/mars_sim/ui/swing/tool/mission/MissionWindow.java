@@ -39,7 +39,6 @@ import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.tool.mission.create.CreateMissionWizard;
 import com.mars_sim.ui.swing.tool.mission.edit.ModifyMissionDialog;
 
 /**
@@ -69,8 +68,6 @@ public class MissionWindow extends ContentPanel implements MissionManagerListene
 	private Mission missionCache;
 
 	private NavpointPanel navpointPane;
-
-	private CreateMissionWizard createMissionWizard;
 
 	private MissionManager missionMgr;
 	private DefaultTreeModel treeModel;
@@ -159,10 +156,6 @@ public class MissionWindow extends ContentPanel implements MissionManagerListene
 
 		// Create the create mission button.
 		JButton createButton = new JButton("Create");
-		createButton.addActionListener(e -> 
-				// Create new mission.
-				createNewMission()
-		);
 		buttonPane.add(createButton);
 
 		// Create the edit mission button.
@@ -259,14 +252,6 @@ public class MissionWindow extends ContentPanel implements MissionManagerListene
 	}
 
 	/**
-	 * Open wizard to create a new mission.
-	 */
-	private void createNewMission() {
-		createMissionWizard = new CreateMissionWizard(context);
-		createMissionWizard.setVisible(true);
-	}
-
-	/**
 	 * Approve a mission being review
 	 * @param mission the mission to review
 	 */
@@ -288,11 +273,6 @@ public class MissionWindow extends ContentPanel implements MissionManagerListene
 		var diag = new ModifyMissionDialog(mission, context, this);
 		diag.setVisible(true);
 	}
-
-	public CreateMissionWizard getCreateMissionWizard() {
-		return createMissionWizard;
-	}
-
 	public Mission getMission() {
 		return missionCache;
 	}

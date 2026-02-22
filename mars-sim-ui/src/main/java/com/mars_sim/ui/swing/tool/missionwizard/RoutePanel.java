@@ -26,7 +26,6 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.JCoordinateEditor;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 
