@@ -26,15 +26,15 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.tool.mission.ObjectivesPanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.CollectResourcePanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.ConstructionPanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.EmergencySupplyPanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.ExplorationPanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.FieldStudyPanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.MiningPanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.RescuePanel;
-import com.mars_sim.ui.swing.tool.mission.objectives.TradePanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.CollectResourcePanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.ConstructionPanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.EmergencySupplyPanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.ExplorationPanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.FieldStudyPanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.MiningPanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.ObjectivesPanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.RescuePanel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.TradePanel;
 
 /** 
  * The TabPanelObjectives is the tab panel for mission objectives.

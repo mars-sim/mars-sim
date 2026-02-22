@@ -4,7 +4,7 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package com.mars_sim.ui.swing.tool.mission.objectives;
+package com.mars_sim.ui.swing.entitywindow.mission.objectives;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -21,7 +21,6 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.TradeObjective;
 import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
 
 
 /**

@@ -4,7 +4,7 @@
  * @date 2025-06-22
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.tool.mission;
+package com.mars_sim.ui.swing.entitywindow.mission.objectives;
 
 /**
  * The is an Objective Panel that has extra connection/registeration

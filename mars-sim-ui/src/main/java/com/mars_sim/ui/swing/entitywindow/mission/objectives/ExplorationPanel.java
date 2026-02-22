@@ -4,7 +4,7 @@
  * @date 2024-07-18
  * @author Scott Davis
  */
-package com.mars_sim.ui.swing.tool.mission.objectives;
+package com.mars_sim.ui.swing.entitywindow.mission.objectives;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

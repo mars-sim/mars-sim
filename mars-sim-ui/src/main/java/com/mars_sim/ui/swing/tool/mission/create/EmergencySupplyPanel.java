@@ -39,7 +39,7 @@ import com.mars_sim.core.resource.PhaseType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.tool.mission.GoodsTableModel;
+import com.mars_sim.ui.swing.entitywindow.mission.objectives.GoodsTableModel;
 
 /**
  * A wizard panel for getting emergency supplies information.
