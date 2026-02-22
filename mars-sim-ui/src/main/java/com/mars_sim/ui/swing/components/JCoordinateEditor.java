@@ -51,11 +51,11 @@ public class JCoordinateEditor extends JPanel {
     public void setCoordinates(Coordinates locn) {
         var latValue = locn.getLatitudeDouble(); 
         latCBDir.setSelectedItem(latValue < 0 ? SOUTH : NORTH);
-        latModel.setValue(Math.abs((int)latValue));
+        latModel.setValue(Math.abs(latValue));
 
         var lonValue = locn.getLongitudeDouble();
-        lonCBDir.setSelectedItem(latValue < 0 ? WEST : EAST);
-        lonModel.setValue(Math.abs((int)lonValue));
+        lonCBDir.setSelectedItem(lonValue < 0 ? WEST : EAST);
+        lonModel.setValue(Math.abs(lonValue));
     }
 
     /**
@@ -63,8 +63,8 @@ public class JCoordinateEditor extends JPanel {
      * @return
      */
     public Coordinates getCoordinates() {
-        var latStr = Integer.toString((Integer)latModel.getNumber()) + ' ' + (String)latCBDir.getSelectedItem();
-        var lonStr = Integer.toString((Integer)lonModel.getNumber()) + ' ' + (String)lonCBDir.getSelectedItem();
+        var latStr = Double.toString((Double)latModel.getNumber()) + ' ' + (String)latCBDir.getSelectedItem();
+        var lonStr = Double.toString((Double)lonModel.getNumber()) + ' ' + (String)lonCBDir.getSelectedItem();
 
         return new Coordinates(latStr, lonStr);
     }
@@ -75,8 +75,9 @@ public class JCoordinateEditor extends JPanel {
         JLabel latLabel = new JLabel("Lat :", SwingConstants.RIGHT);
 		latPanel.add(latLabel);
 
-        latModel = new SpinnerNumberModel(0, 0, 90, 1); 
+        latModel = new SpinnerNumberModel(0D, 0D, 90D, 0.001); 
 		var latCB = new JSpinner(latModel);
+        latCB.setEditor(new JSpinner.NumberEditor(latCB, "#0.000"));
 		latPanel.add(latCB);
 
         var dim = new Dimension(60, 25);
@@ -94,8 +95,9 @@ public class JCoordinateEditor extends JPanel {
 		lonPanel.add(longLabel);
 
 		// Switch to using ComboBoxMW for longitude
-        lonModel = new SpinnerNumberModel(0, 0, 180, 1); 
+        lonModel = new SpinnerNumberModel(0D, 0D, 180D, 0.001); 
 		var lonCB = new JSpinner(lonModel);
+        lonCB.setEditor(new JSpinner.NumberEditor(lonCB, "#0.000"));
 		lonPanel.add(lonCB);
 
 		String[] longStrings = {EAST, WEST};

@@ -148,7 +148,7 @@ public class NavigatorWindow extends ContentPanel
 
 		@Override
 		public boolean isSelected() {
-			return mapPanel.hasMapLayer(layer);
+			return mapPanel.isLayerVisible(layer);
 		}
 
 		@Override
@@ -176,6 +176,7 @@ public class NavigatorWindow extends ContentPanel
 	private static final String MINERAL_LAYER = "minerals";
 	private static final String DAYLIGHT_LAYER = "daylightTracking";
 	private static final String EXPLORED_LAYER = "exploredSites";
+	private static final String UNIT_LAYER = "unit";
 
 	private static final String MAPTYPE_PROP = "mapType";
 	private static final String RESOLUTION_PROP = "resolution";
@@ -269,11 +270,14 @@ public class NavigatorWindow extends ContentPanel
 		// Create map layers.
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer("unit", new UnitMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer(UNIT_LAYER, new UnitMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("navPoints", new NavpointMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("vehicleTrails", new VehicleTrailMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("landmarks", new LandmarkMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(EXPLORED_LAYER, new ExploredSiteMapLayer(mapPanel)));
+
+		// Add layer to map
+		mapLayers.forEach(l -> mapPanel.addMapLayer(l.layer));
 
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
@@ -439,16 +443,13 @@ public class NavigatorWindow extends ContentPanel
 				}
 			}
 		}
-		
+
+		// Add default map layers
 		if (!layerDefined) {
-			// Add default map layers
-			for (var l : mapLayers) {
-				String layerName = l.name();
-				if (!layerName.equals(DAYLIGHT_LAYER) && !layerName.equals(MINERAL_LAYER)
-					&& !layerName.equals(EXPLORED_LAYER)) {
-					setMapLayer(true, layerName);
-				}
-			}
+			mapLayers.forEach(l -> setMapLayer(false, l.name()));
+
+			// Add units
+			setMapLayer(true, UNIT_LAYER);
 		}
 	}
 	
@@ -691,7 +692,6 @@ public class NavigatorWindow extends ContentPanel
 	 * @param layerName Name of the map layer to change
 	 */
 	private void setMapLayer(boolean setMap, String layerName) {
-		int idx = 0;
 		NamedLayer selected = null;
 		for(var nl : mapLayers) {
 			if (nl.name().equals(layerName)) {
@@ -702,11 +702,8 @@ public class NavigatorWindow extends ContentPanel
 		if (selected == null) {
 			logger.warning("No layer called " + layerName);
 		}
-		else if (setMap) {
-			mapPanel.addMapLayer(selected.layer, idx);
-		}
 		else {
-			mapPanel.removeMapLayer(selected.layer);
+			mapPanel.setVisibleMapLayer(selected.layer, setMap);
 		}
 	}
 
@@ -789,7 +786,7 @@ public class NavigatorWindow extends ContentPanel
 		for (var e : mapLayers) {
 			// Record the choice of layers
 			results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + LAYER_VISIBLE,
-							Boolean.toString(mapPanel.hasMapLayer(e.layer())));
+							Boolean.toString(mapPanel.isLayerVisible(e.layer())));
 			if (e.layer() instanceof FilteredMapLayer fl) {
 				for(var f : fl.getFilterDetails()) {
 					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f.name(),

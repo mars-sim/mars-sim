@@ -50,7 +50,6 @@ import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
@@ -254,7 +253,6 @@ public class MainDesktopPane extends JDesktopPane
 		getToolWindow(TimeTool.NAME, true);
 		getToolWindow(SettlementWindow.NAME, true);
 		getToolWindow(MonitorWindow.NAME, true);
-		getToolWindow(MissionWindow.NAME, true);
 		getToolWindow(ResupplyWindow.NAME, true);
 	}
 

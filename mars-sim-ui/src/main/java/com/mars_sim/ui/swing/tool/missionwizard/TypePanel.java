@@ -24,7 +24,6 @@ import javax.swing.JTextField;
 import com.mars_sim.core.Named;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 

@@ -13,8 +13,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 
 /**
@@ -53,7 +52,7 @@ class LightUtilityVehiclePanel extends WizardItemStep<MissionDataBean,LightUtili
 	/**
 	 * A table model for vehicles.
 	 */
-	private static class VehicleTableModel extends WizardItemModel<LightUtilityVehicle> {
+	private static class VehicleTableModel extends AbstractWizardItemModel<LightUtilityVehicle> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;

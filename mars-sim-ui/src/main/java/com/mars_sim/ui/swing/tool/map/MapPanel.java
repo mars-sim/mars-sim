@@ -60,6 +60,19 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private static final boolean SHOW_MAP_DETAILS = false; // Enable for map details in header
 
+	/**
+	 * Control for the MapLayer to handle the visibility of the layer and the layer itself.
+	 */
+	private static class LayerControl {
+		MapLayer layer;
+		boolean visible;
+		
+		public LayerControl(MapLayer layer) {
+			this.layer = layer;
+			this.visible = true;
+		}
+	}
+	
 	private int dragx;
 	private int dragy;
 
@@ -78,7 +91,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private JSlider zoomSlider;
 	
-	private List<MapLayer> mapLayers;
+	private List<LayerControl> mapLayers;
 
 	private JLabel mapDetails;
 	private JLabel statusLabel;
@@ -275,33 +288,34 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * Adds a new map layer.
 	 * 
 	 * @param newLayer the new map layer.
-	 * @param index    the index order of the map layer.
 	 */
-	public void addMapLayer(MapLayer newLayer, int index) {
-		if (newLayer != null) {
-			if (!mapLayers.contains(newLayer)) {
-				if (index < mapLayers.size()) {
-					mapLayers.add(index, newLayer);
-				} else {
-					mapLayers.add(newLayer);
-				}
-			}
-		} else
+	public void addMapLayer(MapLayer newLayer) {
+		if (newLayer == null) {
 			throw new IllegalArgumentException("newLayer is null");
+		}
+
+		if (mapLayers.stream().filter(ml -> ml.layer.equals(newLayer)).findFirst().isEmpty()) {
+			mapLayers.add(new LayerControl(newLayer));
+		}
 	}
 
 	/**
-	 * Removes a map layer.
+	 * Change visibility of a map layer.
 	 * 
-	 * @param oldLayer the old map layer.
+	 * @param layer the map layer.
+	 * @param visible  the visibility of the map layer.
 	 */
-	public void removeMapLayer(MapLayer oldLayer) {
-		if (oldLayer != null) {
-			if (mapLayers.contains(oldLayer)) {
-				mapLayers.remove(oldLayer);
-			}
-		} else
-			throw new IllegalArgumentException("oldLayer is null");
+	public void setVisibleMapLayer(MapLayer layer, boolean visible) {
+		if (layer == null) {
+			throw new IllegalArgumentException("layer is null");
+		}
+		var found = mapLayers.stream().filter(ml -> ml.layer.equals(layer)).findFirst().orElse(null);
+		if (found != null) {
+			found.visible = visible;
+		}
+		else {
+			logger.warning("Can't find layer for visibility: " + layer.getClass().getSimpleName());
+		}
 	}
 
 	/**
@@ -310,8 +324,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @param layer the map layer.
 	 * @return true if map has the map layer.
 	 */
-	public boolean hasMapLayer(MapLayer layer) {
-		return mapLayers.contains(layer);
+	public boolean isLayerVisible(MapLayer layer) {
+		return mapLayers.stream().filter(ml -> ml.layer.equals(layer)).findFirst().map(ml -> ml.visible).orElse(false);
 	}
 	   
 	/**
@@ -402,6 +416,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	}
 
+	/**
+	 * Show the map centred at newCenter, regenerating if necessary.
+	 * @param newCenter
+	 */
 	public void showMap(Coordinates newCenter) {
 		showMap(newCenter, getRho());
 	}
@@ -552,7 +570,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 				// Display the layers and record any hotspots
 				for (var i : mapLayers) {
-					hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d, size));
+					if (i.visible) {
+						hotspots.addAll(i.layer.displayLayer(centerCoords, marsMap, g2d, size));
+					}
 				}
 			
 				g2d.setBackground(Color.BLACK);
@@ -680,7 +700,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
-		// Remove clock listener.
 		mapLayers = null;
 		if (executor != null) {
 			// Stop anything running

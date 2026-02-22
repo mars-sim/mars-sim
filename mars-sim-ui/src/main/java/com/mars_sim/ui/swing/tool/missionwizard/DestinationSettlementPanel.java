@@ -15,8 +15,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 
 /**
@@ -57,7 +56,7 @@ class DestinationSettlementPanel extends WizardItemStep<MissionDataBean,Settleme
 	/**
 	 * A table model for settlements.
 	 */
-    private static class SettlementTableModel extends WizardItemModel<Settlement> {
+    private static class SettlementTableModel extends AbstractWizardItemModel<Settlement> {
     	
     	/** default serial id. */
     	private static final long serialVersionUID = 1L;

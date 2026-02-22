@@ -23,9 +23,8 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 
@@ -161,7 +160,7 @@ class MineSitePanel extends WizardItemStep<MissionDataBean, MineralSite> {
 	/**
 	 * A table model for mining site.
 	 */
-	private static class SiteTableModel extends WizardItemModel<MineralSite> {
+	private static class SiteTableModel extends AbstractWizardItemModel<MineralSite> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;

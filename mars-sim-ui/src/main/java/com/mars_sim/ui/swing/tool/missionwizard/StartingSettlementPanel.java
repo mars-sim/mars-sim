@@ -21,8 +21,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 
@@ -112,7 +111,7 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 	/**
 	 * A table model for settlements.
 	 */
-	private static class SettlementTableModel extends WizardItemModel<Settlement> {
+	private static class SettlementTableModel extends AbstractWizardItemModel<Settlement> {
 
 		private static final String NONE_AVAILABLE = "None available";
 		/** default serial id. */
@@ -166,7 +165,7 @@ class StartingSettlementPanel extends WizardItemStep<MissionDataBean, Settlement
 		 * Check for failure cells.
 		 */
 		@Override
-		protected String isFailureCell(Settlement settlement, int column) {
+		public String isFailureCell(Settlement settlement, int column) {
 			var spec = getColumnSpec(column);
 			return switch(spec.id()) {
 				case 1 -> settlement.getIndoorPeopleCount() == 0 ? "No indoor people" : null;

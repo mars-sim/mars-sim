@@ -4,7 +4,7 @@
  * @date 2023-07-24
  * @author Scott Davis
  */
-package com.mars_sim.ui.swing.tool.mission.objectives;
+package com.mars_sim.ui.swing.entitywindow.mission.objectives;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -36,7 +36,6 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.tool.mission.ObjectivesPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
 

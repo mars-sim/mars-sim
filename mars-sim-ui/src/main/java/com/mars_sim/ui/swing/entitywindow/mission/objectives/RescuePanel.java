@@ -4,7 +4,7 @@
  * @date 2025=08-22
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.tool.mission.objectives;
+package com.mars_sim.ui.swing.entitywindow.mission.objectives;
 
 import java.awt.BorderLayout;
 import java.util.List;

@@ -29,7 +29,7 @@ public class WizardDemo extends WizardPane<Properties> {
         );
         protected TestItemStep(WizardPane<Properties> wizard) {
             super(TABLE, wizard,
-                    new WizardItemModel<String>(COLUMNS) {
+                    new AbstractWizardItemModel<String>(COLUMNS) {
                         {
                             setItems(ANIMALS);
                         }

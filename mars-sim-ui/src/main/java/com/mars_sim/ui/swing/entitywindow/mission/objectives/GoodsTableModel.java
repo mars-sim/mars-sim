@@ -4,7 +4,7 @@
  * @date 21-07-22
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.tool.mission;
+package com.mars_sim.ui.swing.entitywindow.mission.objectives;
 
 import java.util.ArrayList;
 import java.util.HashMap;

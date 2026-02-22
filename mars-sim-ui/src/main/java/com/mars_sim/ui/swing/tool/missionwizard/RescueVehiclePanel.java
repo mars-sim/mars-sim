@@ -17,8 +17,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 
@@ -61,7 +60,7 @@ class RescueVehiclePanel extends WizardItemStep<MissionDataBean, Vehicle> {
 	/**
 	 * A table model for vehicles.
 	 */
-	private static class VehicleTableModel extends WizardItemModel<Vehicle> {
+	private static class VehicleTableModel extends AbstractWizardItemModel<Vehicle> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;

@@ -6,17 +6,14 @@
  */
 package com.mars_sim.ui.swing.tool.missionwizard;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 
 /**
@@ -45,10 +42,7 @@ class BotsPanel extends WizardItemStep<MissionDataBean, Robot>
 	 */
 	@Override
 	protected void updateState(MissionDataBean state, List<Robot> selection) {
-		List<Worker> selectedWorkers = new ArrayList<>();
-		selection.forEach(selectedWorkers::add);
-				
-		state.setBotMembers(selectedWorkers);
+		state.setBotMembers(selection);
 	}
 
 	/**
@@ -63,7 +57,7 @@ class BotsPanel extends WizardItemStep<MissionDataBean, Robot>
 	/**
 	 * Table model for people.
 	 */
-	private static class RobotTableModel extends WizardItemModel<Robot> {
+	private static class RobotTableModel extends AbstractWizardItemModel<Robot> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
