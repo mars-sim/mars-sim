@@ -7,6 +7,7 @@
 
 package com.mars_sim.ui.swing.tool.missionwizard;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,10 +23,43 @@ import com.mars_sim.ui.swing.utils.wizard.WizardStep;
  */
 @SuppressWarnings("serial")
 public class MissionCreate extends WizardPane<MissionDataBean> {
-	// Error messages
+	// Share error messages
 	static final String VEHICLE_OUT_OF_RANGE = "Out of range";		
 	static final String ALREADY_ON_MISSION = "Already on Mission";
     static final String VEHICLE_WRONG_STATUS = "Not parked or garaged";
+
+	/**
+	 * The predefined step sequences for Mission types.
+	 */
+	private static final List<String> EXPLORATION_STEPS = List.of(TypePanel.ID, StartingSettlementPanel.ID,
+								RoverPanel.ID, RoutePanel.ID,  MembersPanel.ID);
+	private static final List<String> SCIENCE_STEPS = List.of(TypePanel.ID, StartingSettlementPanel.ID,
+								SciencePanel.ID, RoverPanel.ID, RoutePanel.ID, MembersPanel.ID);
+
+	// Too many to use Map.of method.
+	private static final Map<MissionType, List<String>> MISSION_STEPS = new HashMap<>();
+	static {
+		MISSION_STEPS.put(MissionType.AREOLOGY, SCIENCE_STEPS);
+		MISSION_STEPS.put(MissionType.BIOLOGY, SCIENCE_STEPS);
+		MISSION_STEPS.put(MissionType.COLLECT_ICE, EXPLORATION_STEPS);
+		MISSION_STEPS.put(MissionType.COLLECT_REGOLITH, EXPLORATION_STEPS);
+		MISSION_STEPS.put(MissionType.CONSTRUCTION, List.of(TypePanel.ID, StartingSettlementPanel.ID,
+				ConstructionPanel.ID, LightUtilityVehiclePanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.DELIVERY, List.of(TypePanel.ID, StartingSettlementPanel.ID, DronePanel.ID,
+				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID,
+				BotsPanel.ID));
+		MISSION_STEPS.put(MissionType.EMERGENCY_SUPPLY, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID,
+				DestinationSettlementPanel.ID, TradeGoodsPanel.SUPPLY_ID, MembersPanel.ID));	
+		MISSION_STEPS.put(MissionType.METEOROLOGY, SCIENCE_STEPS);
+		MISSION_STEPS.put(MissionType.MINING, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MineSitePanel.ID,
+				LightUtilityVehiclePanel.ID,  MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.RESCUE_SALVAGE_VEHICLE, List.of(
+				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, RescueVehiclePanel.ID, MembersPanel.ID));
+		MISSION_STEPS.put(MissionType.TRADE, List.of(TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID,
+				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID));		
+		MISSION_STEPS.put(MissionType.TRAVEL_TO_SETTLEMENT, List.of(TypePanel.ID, StartingSettlementPanel.ID,
+				RoverPanel.ID, DestinationSettlementPanel.ID, MembersPanel.ID));
+		};
 
 	/**
 	 * Create a show a new mission wizard dialog.
@@ -83,6 +117,7 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 			case RoverPanel.ID -> new RoverPanel(this, state);
 			case RoutePanel.ID -> new RoutePanel(this, state);
 			case StartingSettlementPanel.ID ->new StartingSettlementPanel(this, state);
+			case SciencePanel.ID -> new SciencePanel(this, state);
 			case TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SUPPLY_ID, TradeGoodsPanel.SELL_ID ->
 								new TradeGoodsPanel(stepID, this, state);
 			case TypePanel.ID ->new TypePanel(this);
@@ -92,44 +127,12 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	}
 
 	/**
-	 * The predefined step sequences for Mission types.
-	 */
-	private static final List<String> EXPLORATION_STEPS = List.of(
-			TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
-			RoutePanel.ID);
-
-	private static final Map<MissionType, List<String>> missionSteps = Map.of(
-		MissionType.CONSTRUCTION, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, ConstructionPanel.ID, MembersPanel.ID,
-				LightUtilityVehiclePanel.ID),
-		MissionType.DELIVERY, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, DronePanel.ID, MembersPanel.ID, BotsPanel.ID,
-				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID),
-		MissionType.EMERGENCY_SUPPLY, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
-				DestinationSettlementPanel.ID, TradeGoodsPanel.SUPPLY_ID),
-		MissionType.MINING, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
-				LightUtilityVehiclePanel.ID, MineSitePanel.ID),
-		MissionType.RESCUE_SALVAGE_VEHICLE, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID, RescueVehiclePanel.ID),
-		MissionType.COLLECT_ICE, EXPLORATION_STEPS,
-		MissionType.COLLECT_REGOLITH, EXPLORATION_STEPS,
-		MissionType.TRADE, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
-				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID),
-		MissionType.TRAVEL_TO_SETTLEMENT, List.of(
-				TypePanel.ID, StartingSettlementPanel.ID, RoverPanel.ID, MembersPanel.ID,
-				DestinationSettlementPanel.ID)
-		);
-
-	/**
 	 * This returns the step sequence for the given mission type.
 	 * @param type Mission type to create
 	 * @return List of the step IDs in order.
 	 */
 	static List<String> getSteps(MissionType type) {
-		return missionSteps.getOrDefault(type, null);
+		return MISSION_STEPS.getOrDefault(type, null);
 	}
 
 	/**
@@ -137,6 +140,6 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 	 * @return Mission types supported by the wizard.
 	 */
     static Set<MissionType> availableTypes() {
-        return missionSteps.keySet();
+        return MISSION_STEPS.keySet();
     }
 }

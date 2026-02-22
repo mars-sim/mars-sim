@@ -15,8 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.Box;
@@ -278,7 +280,7 @@ implements ActionListener {
 	 */
 	@Override
 	boolean commitChanges(boolean isTesting) {
-		Collection<Worker> members = new ConcurrentLinkedQueue<>();
+		List<Worker> members = new ArrayList<>();
 		int size = membersTableModel.getRowCount();
 
 		for (int x = 0; x < size; x++) {

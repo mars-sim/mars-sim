@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.equipment.EquipmentType;
@@ -56,15 +56,13 @@ public class MeteorologyFieldStudy extends FieldStudyMission {
 	 * Constructor with explicit information.
 	 * 
 	 * @param members            the mission members.
-	 * @param leadResearcher     the lead researcher
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 */
-	public MeteorologyFieldStudy(Collection<Worker> members, Person leadResearcher,
-			ScientificStudy study, Rover rover, Coordinates fieldSite) {
+	public MeteorologyFieldStudy(List<Worker> members, ScientificStudy study, Rover rover, Coordinates fieldSite) {
 
-		super(MissionType.METEOROLOGY, leadResearcher, rover,
+		super(MissionType.METEOROLOGY, rover,
 				  study, FIELD_SITE_TIME, members, fieldSite);
 
 		setEVAEquipment(EquipmentType.SPECIMEN_BOX,

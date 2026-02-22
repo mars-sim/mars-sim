@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.mission.create;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -72,7 +73,7 @@ public class MissionDataBean {
     private Person leadResearcher;
     private ScientificStudy study;
     
-	private Collection<Worker> mixedMembers = new HashSet<>();
+	private List<Worker> mixedMembers = new ArrayList<>();
 	private Collection<Worker> botMembers = new HashSet<>();
     private List<GroundVehicle> constructionVehicles;
 	private Map<Good, Integer> sellGoods;
@@ -90,14 +91,14 @@ public class MissionDataBean {
 	    Mission mission = null;
 	    switch (missionType) {
 			case MissionType.AREOLOGY ->
-					mission = new AreologyFieldStudy(mixedMembers, leadResearcher, study,
-							rover, fieldSite);
+					mission = new AreologyFieldStudy(mixedMembers, study,
+							rover, routePoints.get(0));
 			case MissionType.BIOLOGY ->
-					mission = new BiologyFieldStudy(mixedMembers, leadResearcher, study,
-							rover, fieldSite);
+					mission = new BiologyFieldStudy(mixedMembers, study,
+							rover, routePoints.get(0));
 			case MissionType.METEOROLOGY ->
-					mission = new MeteorologyFieldStudy(mixedMembers, leadResearcher, study,
-							rover, fieldSite);
+					mission = new MeteorologyFieldStudy(mixedMembers, study,
+							rover, routePoints.get(0));
 			case MissionType.CONSTRUCTION ->
 					mission = new ConstructionMission(mixedMembers, constructionSettlement, constructionSite,
 							constructionVehicles);
@@ -305,7 +306,7 @@ public class MissionDataBean {
 	 * 
 	 * @param members the members.
 	 */
-    public void setMixedMembers(Collection<Worker> mm) {
+    public void setMixedMembers(List<Worker> mm) {
     	this.mixedMembers = mm;
 	}
     
@@ -521,7 +522,7 @@ public class MissionDataBean {
      * 
      * @param study the scientific study.
      */
-    protected void setScientificStudy(ScientificStudy study) {
+    public void setScientificStudy(ScientificStudy study) {
         this.study = study;
     }
 
