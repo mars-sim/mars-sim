@@ -81,8 +81,11 @@ class MissionDataBean {
 	 */
     public Mission createMission() {
     	// Note: how to resolve the situation when rover is no longer available ?
-    	List<Worker> mixedMembers = new ArrayList<>(this.personMembers);
-		mixedMembers.addAll(botMembers);
+    	List<Worker> mixedMembers = new ArrayList<>();
+		if (personMembers != null)
+			mixedMembers.addAll(personMembers);
+		if (botMembers != null)
+			mixedMembers.addAll(botMembers);
 
 	    Mission mission = null;
 	    switch (missionType) {
@@ -102,16 +105,9 @@ class MissionDataBean {
 					mission = new CollectIce(mixedMembers, routePoints, rover);
 			case MissionType.COLLECT_REGOLITH ->
 					mission = new CollectRegolith(mixedMembers, routePoints, rover);
-			case MissionType.DELIVERY -> {
-					Person startingMember = null;
-					for (Worker mm: mixedMembers) {
-						if (mm instanceof Person p)
-							startingMember = p;
-					}
-				
-					mission = new Delivery(startingMember, mixedMembers, destinationSettlement, drone,
+			case MissionType.DELIVERY ->
+					mission = new Delivery(mixedMembers, destinationSettlement, drone,
 							sellGoods, buyGoods);
-				}
 			case MissionType.EMERGENCY_SUPPLY ->
 					mission = new EmergencySupply(mixedMembers, destinationSettlement,
 							sellGoods, rover);

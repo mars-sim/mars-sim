@@ -252,7 +252,7 @@ class RoutePanel extends WizardStep<MissionDataBean> {
         legTableModel.removeLeg(selectedRow);
         
         // Recalculate distances for remaining legs
-        recalculateDistances();
+        legTableModel.recalculateDistances(startingPoint);
         
         updateMandatoryState();
     }
@@ -262,40 +262,6 @@ class RoutePanel extends WizardStep<MissionDataBean> {
      */
     private void updateRemoveButton() {
         removeButton.setEnabled(legTable.getSelectedRow() >= 0);
-    }
-    
-    /**
-     * Recalculates all distances after a leg removal.
-     */
-    private void recalculateDistances() {
-        double totalDistance = 0.0;
-        var currentRoute = legTableModel.getAllLegs();
-        
-        for (int i = 0; i < currentRoute.size(); i++) {
-            RoutePoint currentLeg = currentRoute.get(i);
-            double legDistance;
-            
-            if (i == 0) {
-                legDistance = currentLeg.getCoordinates().getDistance(startingPoint);
-            } else {
-                RoutePoint previousLeg = currentRoute.get(i - 1);
-                legDistance = previousLeg.getCoordinates()
-                    .getDistance(currentLeg.getCoordinates());
-            }
-            
-            totalDistance += legDistance;
-            
-            // Create updated leg
-            RoutePoint updatedLeg = new RoutePoint("# " + (i + 1),
-                currentLeg.getCoordinates(), 
-                legDistance, 
-                totalDistance
-            );
-            currentRoute.set(i, updatedLeg);
-        }
-        
-        // Refresh table display
-        legTableModel.fireTableDataChanged();
     }
     
     /**

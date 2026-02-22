@@ -55,7 +55,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	private JLabel selectionLabel;
 	private int minSelection;
 	private int maxSelection;
-	private List<Integer> orderedSelction = new ArrayList<>();
+	private List<Integer> orderedSelection = new ArrayList<>();
 
 	/**
 	 * Constructor with a single selection
@@ -178,7 +178,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 
 			// Check existing selectinos are still selected
 			List<Integer> newSelection = new ArrayList<>();
-			for (var sel : orderedSelction) {
+			for (var sel : orderedSelection) {
 				if (tableSelection.contains(sel)) {
 					newSelection.add(sel);
 					tableSelection.remove(sel);
@@ -187,7 +187,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 
 			// Append remaining new selections
 			newSelection.addAll(tableSelection);
-			orderedSelction = newSelection;
+			orderedSelection = newSelection;
 			selectionChanged(getValidedSelection());
 
 			// Force a repaint; don't fire a data changed a it breaks the selection model
@@ -228,7 +228,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 */
 	private List<I> getValidedSelection() {
 		var selectedUnits = new ArrayList<I>();
-		for (var rowModel : orderedSelction) {
+		for (var rowModel : orderedSelection) {
 			if (!model.isFailureItem(rowModel)) {
 				selectedUnits.add(model.getItem(rowModel));
 			}
@@ -242,7 +242,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 */
 	@Override
 	public void updateState(S state) {
-		if (orderedSelction.isEmpty())
+		if (orderedSelection.isEmpty())
 			return;
 
 		var selectedItems = getValidedSelection();
@@ -334,7 +334,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			if (columnIndex == 0) {
-				var selectedIdx = orderedSelction.indexOf(rowIndex);
+				var selectedIdx = orderedSelection.indexOf(rowIndex);
 				return selectedIdx >= 0 ? selectedIdx + 1 : null;
 			} else {
 				return model.getValueAt(rowIndex, columnIndex - 1);

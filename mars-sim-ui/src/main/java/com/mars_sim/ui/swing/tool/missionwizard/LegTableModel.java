@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.mars_sim.core.map.location.Coordinates;
+
 /**
  * Table model for displaying route legs in a route definition panel.
  * Shows coordinates, leg distance, and total distance for each waypoint.
@@ -139,6 +141,40 @@ public class LegTableModel extends AbstractTableModel {
      * @return list of route legs
      */
     public List<RoutePoint> getAllLegs() {
-        return new ArrayList<>(legs);
+        return legs;
+    }
+
+    /**
+     * Recalculates leg distances and total distances based on the current list of legs and a starting point.
+     * @param startingPoint Initial starting coordinates for the first leg.
+     */
+    public void recalculateDistances(Coordinates startingPoint) {
+        double totalDistance = 0.0;
+        
+        for (int i = 0; i < legs.size(); i++) {
+            RoutePoint currentLeg = legs.get(i);
+            double legDistance;
+            
+            if (i == 0) {
+                legDistance = currentLeg.getCoordinates().getDistance(startingPoint);
+            } else {
+                RoutePoint previousLeg = legs.get(i - 1);
+                legDistance = previousLeg.getCoordinates()
+                    .getDistance(currentLeg.getCoordinates());
+            }
+            
+            totalDistance += legDistance;
+            
+            // Create updated leg
+            RoutePoint updatedLeg = new RoutePoint(currentLeg.getName(),
+                currentLeg.getCoordinates(), 
+                legDistance, 
+                totalDistance
+            );
+            legs.set(i, updatedLeg);
+        }
+        
+        // Refresh table display
+        fireTableDataChanged();
     }
 }
