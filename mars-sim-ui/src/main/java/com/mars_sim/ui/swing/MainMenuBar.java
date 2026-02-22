@@ -28,7 +28,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager.StyleEntry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
+import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
@@ -122,9 +122,15 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		newMenu.add(createToolMenuItem(TimeTool.NAME, TimeTool.TITLE, TimeTool.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false)));								
 		newMenu.add(createToolMenuItem(MonitorWindow.NAME, MonitorWindow.TITLE, MonitorWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));	
-		newMenu.add(createToolMenuItem(MissionWindow.NAME, MissionWindow.TITLE, MissionWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false)));	
+										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));
+
+		// Mission wizard is not a tool								 
+		var item = new JMenuItem(MissionCreate.TITLE);
+		configureMenuItem(item, MissionCreate.ICON, null,
+							KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
+		item.addActionListener(e -> MissionCreate.create(context));	
+		newMenu.add(item);
+
 		newMenu.add(createToolMenuItem(SettlementWindow.NAME, SettlementWindow.TITLE, SettlementWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false)));	
 		newMenu.add(createToolMenuItem(ResupplyWindow.NAME, ResupplyWindow.TITLE, ResupplyWindow.ICON,

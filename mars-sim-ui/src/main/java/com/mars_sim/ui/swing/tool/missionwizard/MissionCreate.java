@@ -23,6 +23,11 @@ import com.mars_sim.ui.swing.utils.wizard.WizardStep;
  */
 @SuppressWarnings("serial")
 public class MissionCreate extends WizardPane<MissionDataBean> {
+	/** Tool name. */
+	public static final String NAME = "createmission";
+	public static final String ICON = "mission";
+	public static final String TITLE = "Create a new Mission";
+
 	// Share error messages
 	static final String VEHICLE_OUT_OF_RANGE = "Out of range";		
 	static final String ALREADY_ON_MISSION = "Already on Mission";

@@ -154,7 +154,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(SearchWindow.NAME, null, SearchWindow.ICON);
 		addToolButton(TimeTool.NAME, null, TimeTool.ICON);
 		addToolButton(MonitorWindow.NAME, null, MonitorWindow.ICON);
-		addToolButton("MissionWizard", "Create a new Mission", "mission");
+		addToolButton(MissionCreate.NAME, MissionCreate.TITLE, MissionCreate.ICON);
 		addToolButton(SettlementWindow.NAME, null, SettlementWindow.ICON);
 		addToolButton(ResupplyWindow.NAME, null, ResupplyWindow.ICON);
 		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON);
@@ -336,7 +336,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				SwingHelper.openBrowser(WIKI_URL);
 				break;
 				
-			case "MissionWizard":
+			case MissionCreate.NAME:
 				MissionCreate.create(context);
 				break;
 				

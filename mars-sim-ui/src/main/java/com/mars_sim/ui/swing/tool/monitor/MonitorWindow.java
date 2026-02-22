@@ -53,7 +53,6 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.MapSelector;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 
 /**
@@ -261,7 +260,7 @@ public class MonitorWindow extends ContentPanel
 				EVENT_ICON));
 		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, true, SCIENCE_ICON));
 
-		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, MissionWindow.ICON));
+		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, "mission"));
 		newTabs.add(new TableTab(this, new VehicleTableModel(), true, true, VEHICLE_ICON));
 
 		for (MonitorTab m : newTabs) {
