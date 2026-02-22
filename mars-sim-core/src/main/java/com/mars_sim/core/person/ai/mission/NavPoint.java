@@ -9,12 +9,13 @@ package com.mars_sim.core.person.ai.mission;
 import java.io.Serializable;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.structure.Settlement;
 
 /**
  * A navigation point for travel missions.
  */
-public class NavPoint implements Serializable {
+public class NavPoint implements Serializable, SurfacePOI {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -68,7 +69,8 @@ public class NavPoint implements Serializable {
 	 * 
 	 * @return the coordinate location.
 	 */
-	public Coordinates getLocation() {
+	@Override
+	public Coordinates getCoordinates() {
 		return location;
 	}
 
@@ -94,7 +96,16 @@ public class NavPoint implements Serializable {
         actualTravelled += dist;
     }
     
-    
+	/**
+	 * Gets the name of the navpoint. This is the same as the description.
+	 * 
+	 * @return the name of the navpoint.
+	 */
+    @Override
+	public String getName() {
+		return getDescription();
+	}
+
 	/**
 	 * Gets the description of the navpoint.
 	 * 

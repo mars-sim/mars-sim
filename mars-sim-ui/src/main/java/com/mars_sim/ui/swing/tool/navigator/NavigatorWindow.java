@@ -69,7 +69,7 @@ import com.mars_sim.ui.swing.tool.map.MapLayer;
 import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
-import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
+import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
@@ -271,7 +271,7 @@ public class NavigatorWindow extends ContentPanel
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(UNIT_LAYER, new UnitMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer("navPoints", new NavpointMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("navPoints", new MissionMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("vehicleTrails", new VehicleTrailMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("landmarks", new LandmarkMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(EXPLORED_LAYER, new ExploredSiteMapLayer(mapPanel)));

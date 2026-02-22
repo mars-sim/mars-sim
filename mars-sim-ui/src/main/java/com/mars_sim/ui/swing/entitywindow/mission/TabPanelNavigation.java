@@ -37,7 +37,7 @@ import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
-import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
+import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -55,7 +55,7 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 	
 	private NavpointTableModel navpointTableModel;
 
-	private NavpointMapLayer navpointLayer;
+	private MissionMapLayer navpointLayer;
 
 	/**
 	 * Constructor.
@@ -122,7 +122,7 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 		mapPanel.addMapLayer(trailLayer);
 
 		// Lastly add navpoint layer
-		navpointLayer = new NavpointMapLayer(mapPanel);
+		navpointLayer = new MissionMapLayer(mapPanel);
 		navpointLayer.setSingleMission(mission);
 		navpointLayer.setSelectedNavpoint(null);
 		mapPanel.addMapLayer(navpointLayer);
