@@ -7,6 +7,7 @@
 
 package com.mars_sim.ui.swing.tool.missionwizard;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 								SciencePanel.ID, RoverPanel.ID, RoutePanel.ID, MembersPanel.ID);
 
 	// Too many to use Map.of method.
-	private static final Map<MissionType, List<String>> MISSION_STEPS = new HashMap<>();
+	private static final Map<MissionType, List<String>> MISSION_STEPS = new EnumMap<>(MissionType.class);
 	static {
 		MISSION_STEPS.put(MissionType.AREOLOGY, SCIENCE_STEPS);
 		MISSION_STEPS.put(MissionType.BIOLOGY, SCIENCE_STEPS);
@@ -63,7 +64,7 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 				DestinationSettlementPanel.ID, TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SELL_ID, MembersPanel.ID));		
 		MISSION_STEPS.put(MissionType.TRAVEL_TO_SETTLEMENT, List.of(TypePanel.ID, StartingSettlementPanel.ID,
 				RoverPanel.ID, DestinationSettlementPanel.ID, MembersPanel.ID));
-		};
+		}
 
 	/**
 	 * Create a show a new mission wizard dialog.

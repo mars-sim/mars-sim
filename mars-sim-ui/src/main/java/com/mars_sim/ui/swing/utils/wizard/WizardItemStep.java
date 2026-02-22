@@ -47,8 +47,7 @@ import com.mars_sim.ui.swing.utils.ToolTipTableModel;
  * @param <I> The type of item to select.
  */
 @SuppressWarnings("serial")
-public
-abstract class WizardItemStep<S,I> extends WizardStep<S> {
+public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 
 	// Data members.
 	private WizardItemModel<I> model;
@@ -314,7 +313,7 @@ abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 * This is a proxy model that adds a selection column.
 	 */
 	private class SelectionColumnModel<T> extends AbstractTableModel implements WizardItemModel<T> {
-		private final static ColumnSpec SELECTION_COL = new ColumnSpec("#", Integer.class);
+		private static final ColumnSpec SELECTION_COL = new ColumnSpec("#", Integer.class);
 		private WizardItemModel<T> model;
 
 		private SelectionColumnModel(WizardItemModel<T> model) {

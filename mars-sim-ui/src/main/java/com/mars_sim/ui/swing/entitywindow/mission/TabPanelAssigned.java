@@ -200,6 +200,10 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 				v = vm.getVehicle();
 				updateOccupantList();
 			}
+			else {
+				// No one in vehicle to show members
+				occupantList = new ArrayList<>(mission.getMembers());
+			}
 		}
 		
 		/**

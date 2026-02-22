@@ -29,7 +29,7 @@ class SciencePanel extends WizardItemStep<MissionDataBean,ScientificStudy> {
     public static final String ID = "science";
 
     public SciencePanel(MissionCreate wizard, MissionDataBean state) {
-        super("science", wizard, new StudyTableModel(state), 1, 1);
+        super(ID, wizard, new StudyTableModel(state), 1, 1);
     }
 
     /**

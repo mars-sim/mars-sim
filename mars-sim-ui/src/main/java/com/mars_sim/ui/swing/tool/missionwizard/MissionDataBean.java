@@ -27,7 +27,6 @@ import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.MeteorologyFieldStudy;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RescueSalvageVehicle;
 import com.mars_sim.core.person.ai.mission.Trade;
@@ -72,9 +71,7 @@ class MissionDataBean {
     private List<GroundVehicle> constructionVehicles;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
-	
-    private static MissionManager missionManager = Simulation.instance().getMissionManager();
-    
+	    
 	/**
 	 * Creates a mission from the mission data.
 	 * @return the created mission.
@@ -125,6 +122,7 @@ class MissionDataBean {
 			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
 		}
 
+		var missionManager = Simulation.instance().getMissionManager();
 	    missionManager.addMission(mission);
 
 		return mission;

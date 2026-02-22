@@ -7,12 +7,12 @@
 package com.mars_sim.ui.swing.tool.missionwizard;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -138,19 +138,18 @@ class RoutePanel extends WizardStep<MissionDataBean> {
         addButton = new JButton("Add");
         addButton.setEnabled(false);
         addButton.addActionListener(e -> handleAdd());
-        addButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel.add(addButton);
         
         // Create Remove button
         removeButton = new JButton("Remove");
         removeButton.setEnabled(false);
         removeButton.addActionListener(e -> handleRemove());
-        removeButton.setAlignmentX(JComponent.CENTER_ALIGNMENT);
+        removeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel.add(removeButton);
         buttonPanel.add(Box.createVerticalGlue());
         
         selectionPane.add(buttonPanel);
-        //selectionPane.add(Box.createVerticalGlue());
         
         return selectionPane;
     }
