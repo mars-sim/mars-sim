@@ -19,7 +19,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 /**
  * A wizard panel for selecting settlers.
@@ -79,7 +79,7 @@ class MembersPanel extends WizardItemStep<MissionDataBean, Person>
 	/**
 	 * Table model for people.
 	 */
-	private static class PeopleTableModel extends WizardItemModel<Person> {
+	private static class PeopleTableModel extends AbstractWizardItemModel<Person> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;

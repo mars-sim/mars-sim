@@ -17,7 +17,7 @@ import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 
 /**
@@ -53,7 +53,7 @@ class SciencePanel extends WizardItemStep<MissionDataBean,ScientificStudy> {
     /**
 	 * A table model for scientific studies.
 	 */
-	private static class StudyTableModel extends WizardItemModel<ScientificStudy> {
+	private static class StudyTableModel extends AbstractWizardItemModel<ScientificStudy> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -76,7 +76,7 @@ class SciencePanel extends WizardItemStep<MissionDataBean,ScientificStudy> {
 
             // Hide suitable studies for the starting settlement, and sort by name.
             var studies = manager.getAllStudies(state.getStartingSettlement()).stream()
-                //.filter(s -> s.getScience() == studyScience)
+                .filter(s -> s.getScience() == studyScience)
                 .sorted(Comparator.comparing(ScientificStudy::getName))
                 .toList();
             setItems(studies);

@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -56,6 +57,7 @@ public class NumberCellRenderer extends DefaultTableCellRenderer {
 
 		// Set the horizontal alignment to right.
 		setHorizontalAlignment(SwingConstants.RIGHT);
+		setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 	}
 
 

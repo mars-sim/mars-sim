@@ -14,7 +14,7 @@ import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 /**
  * A wizard panel for selecting settlers.
@@ -56,7 +56,7 @@ class ConstructionPanel extends WizardItemStep<MissionDataBean, ConstructionSite
 	/**
 	 * Table model for sites.
 	 */
-	private static class SiteTableModel extends WizardItemModel<ConstructionSite> {
+	private static class SiteTableModel extends AbstractWizardItemModel<ConstructionSite> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;

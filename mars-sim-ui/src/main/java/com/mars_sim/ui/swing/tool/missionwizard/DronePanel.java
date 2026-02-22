@@ -17,7 +17,7 @@ import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.tool.mission.create.MissionDataBean;
-import com.mars_sim.ui.swing.utils.wizard.WizardItemModel;
+import com.mars_sim.ui.swing.utils.wizard.AbstractWizardItemModel;
 import com.mars_sim.ui.swing.utils.wizard.WizardItemStep;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 
@@ -59,7 +59,7 @@ class DronePanel extends WizardItemStep<MissionDataBean, Drone> {
 	/**
 	 * A table model for vehicles.
 	 */
-	private static class DroneTableModel extends WizardItemModel<Drone> {
+	private static class DroneTableModel extends AbstractWizardItemModel<Drone> {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
