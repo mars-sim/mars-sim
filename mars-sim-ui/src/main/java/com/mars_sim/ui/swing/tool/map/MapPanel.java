@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -17,8 +16,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
@@ -28,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,13 +71,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 	}
 	
-	private int dragx;
-	private int dragy;
-
 	private transient ExecutorService executor;
 
 	// Data members
-	private boolean mouseDragging;
 	private boolean mapError;
 
 	private String mapErrorMessage;
@@ -97,6 +91,10 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	private JLabel statusLabel;
 
 	private List<MapHotspot> hotspots = new ArrayList<>();
+
+	// Local callbacks to mouse actions
+	private Consumer<Coordinates> mouseMover;
+	private Consumer<Coordinates> mouseClicker;
 
 	/**
 	 * Constructor.
@@ -137,6 +135,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			mapDetails.setOpaque(true);
 			add(mapDetails, BorderLayout.NORTH);
 		}
+
+		var mouseListener = new MapMouseListener(this);
+		addMouseListener(mouseListener);
+		addMouseMotionListener(mouseListener);
+
+		addMouseWheelListener(this);
 	}
 
 	/**
@@ -218,72 +222,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public int getMapResolution() {
 		return marsMap.getResolution();
 	}
-	
-	/*
-	 * Sets up the mouse dragging capability.
-	 */
-	public void setMouseDragger() {
 
-		// Detect the mouse scroll
-		addMouseWheelListener(this);
-		
-		// Note: need navWin prior to calling addMouseMotionListener()
-		addMouseMotionListener(new MouseAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				int x = e.getX();
-				int y = e.getY();
-				int dx = dragx - x;
-				int dy = dragy - y;
-
-				if ((dx != 0 || dy != 0) 
-					 && x > 0 && x < getWidth() 
-					 && y > 0 && y < getHeight()) {
-					
-					mouseDragging = true;
-					
-					// Update the centerCoords while dragging
-					centerCoords = centerCoords.convertRectIntToSpherical(dx, dy, marsMap.getRho());
-					// Do we really want to update the map while dragging ? 
-					// Yes. It's needed to provide smooth viewing of the surface map
-					marsMap.drawMap(centerCoords, getRho(), getSize());
-				
-					repaint();
-				}
-
-				dragx = x;
-				dragy = y;
-
-			}
-		});
-
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				dragx = e.getX();
-				dragy = e.getY();
-
-				mouseDragging = true;
-				
-				setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				dragx = 0;
-				dragy = 0;
-				
-				mouseDragging = false;
-
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			}
-		});
-	}
-
-	public boolean isChanging() {
-		return mouseDragging;
-	}
-	
 	/**
 	 * Adds a new map layer.
 	 * 
@@ -407,15 +346,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		return centerCoords;
 	}
 	
-	/**
-	 * Get the center point in the panel
-	 * @return
-	 */
-	public IntPoint getCenterPoint() {
-		return new IntPoint(getWidth()/2, getHeight()/2);
-
-	}
-
 	/**
 	 * Show the map centred at newCenter, regenerating if necessary.
 	 * @param newCenter
@@ -619,34 +549,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
 	/**
-	 * Gets the true surface lat and lon coordinates of the mouse pointer.
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-    public Coordinates getMouseCoordinates(int x, int y) {
-		double xx = x - getWidth() / 2.0;
-		double yy = y - getHeight() / 2.0;
-		// Based on the current centerCoords
-		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
-    }
-
-	
-	/**
-	 * Gets the Coordinates of a point on the Map from a center.
-	 * 
-	 * @param center
-	 * @param displayPos
-	 * @return
-	 */
-    public Coordinates getCoordsOfPoint(Coordinates center, IntPoint displayPos) {
-		return center.convertRectIntToSpherical(displayPos.getiX() - getWidth()/2, 
-										displayPos.getiY() - getHeight()/2,
-										marsMap.getRho());
-    }
-
-	/**
 	 * Gets the parent desktop.
 	 */
 	public UIContext getDesktop() {
@@ -676,8 +578,66 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			repaint();
 		}
 	}
+
+	/**
+	 * Sets the mouse move listener. This is used to track the mouse movement as it crosses hotspots on the map such as a
+	 * @param mouseMoveListener The listener to notify.
+	 */
+	public void setMouseMoveListener(Consumer<Coordinates> mouseMoveListener) {
+		mouseMover = mouseMoveListener;
+	}
+
+	/**
+	 * Notify the map panel that the mouse has moved to a new position.
+	 * This is used to track the mouse movement as it crosses hotspots on the map such as a
+	 * @param mousePos Mouse position
+	 */
+	void notifyMouseMoved(IntPoint mousePos) {
+		if (mouseMover != null) {
+			mouseMover.accept(convertMouseToCoordinates(mousePos));
+		}
+    }
+
+	/**
+	 * Notify the map panel that the mouse has been clicked at a position in terms of the Coordinates.
+	 * @param dx Change in X
+	 * @param dy Change in Y
+	 */
+	void dragPosition(int dx, int dy) {
+		// Update the centerCoords while dragging
+		centerCoords = centerCoords.convertRectIntToSpherical(dx, dy, marsMap.getRho());
+		// Do we really want to update the map while dragging ? 
+		// Yes. It's needed to provide smooth viewing of the surface map
+		marsMap.drawMap(centerCoords, getRho(), getSize());
 	
-    
+		repaint();
+	}
+
+	/**
+	 * Notify the map panel that the mouse has been clicked at a position in terms of the Coordinates.
+	 * @param mouseClickListener Listener to notify.
+	 */
+	public void setMouseClickListener(Consumer<Coordinates> mouseClickListener) {
+		this.mouseClicker = mouseClickListener;
+	}
+
+	/**
+	 * Notify the map panel that the mouse has been clicked at a position in terms of the Coordinates.
+	 * @param mousePos Screen position of the mouse click.
+	 */
+	void notifyMouseClicked(IntPoint mousePos) {
+		if (mouseClicker != null) {
+			mouseClicker.accept(convertMouseToCoordinates(mousePos));
+		}
+	}
+
+	private Coordinates convertMouseToCoordinates(IntPoint mousePos) {
+		double xx = mousePos.getX() - getWidth() / 2.0;
+		double yy = mousePos.getY() - getHeight() / 2.0;
+		// Based on the current centerCoords
+		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
+	}
+
     /**
      * Gets the scale of the Mars surface map.
      * 
@@ -710,4 +670,5 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = null;
 		marsMap = null;
 	}
+
 }

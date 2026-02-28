@@ -16,12 +16,14 @@ import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import com.mars_sim.core.map.location.IntPoint;
+
 /**
  * This is a listener to mouse event on a MapPanel. It changes the cursor when hovered over a 
  * surface unit or a landmark.
  * If clicked the appropriate detailed window is shown.
  */
-public class MapMouseListener extends MouseAdapter {
+class MapMouseListener extends MouseAdapter {
 	
 	private static final int TOOLTIP_DELAY = 750;
 	private static final Cursor DEFAULT = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -32,6 +34,9 @@ public class MapMouseListener extends MouseAdapter {
 	private String pendingTipText;
 	private Popup tipWindow;
 	private Timer popupTimer;
+	private int dragX;
+	private int dragY;
+	private boolean dragging = false;
 
 	/*
 	 * Create a mouse listener on a map panel that will respond to movement and click events.
@@ -49,7 +54,7 @@ public class MapMouseListener extends MouseAdapter {
     @Override
     public void mouseClicked(MouseEvent event) {
         if (SwingUtilities.isRightMouseButton(event) && event.getClickCount() == 1) {
-            var hs = findHotspot(event.getX(), event.getY());
+            var hs = findHotspot(new IntPoint(event.getX(), event.getY()));
 			if (hs != null) {
 				updateCursor(CROSSHAIR);
 				hs.clicked();
@@ -57,24 +62,62 @@ public class MapMouseListener extends MouseAdapter {
 			else
 				updateCursor(DEFAULT);
         }
+		else {
+			// Notify map panel
+			mapPanel.notifyMouseClicked(new IntPoint(event.getX(), event.getY()));
+		}
     }
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		dragging = false;
+		mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
 
 	/**
 	 * Find the hotspot that matches the mouse position
-	 * @param x
-	 * @param y
+	 * @param mouse Mouse position on screen
 	 * @return
 	 */
-    private MapHotspot findHotspot(int x, int y) {
+    private MapHotspot findHotspot(IntPoint mouse) {
 		var hotspots = mapPanel.getHotspots();
 		for(var h : hotspots) {
-			if (h.isWithin(x, y)) {
+			if (h.isWithin(mouse)) {
 				return h;
 			}
 		}
 
 		return null;
  	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if (!dragging) {
+			dragging = true;
+			dragX = e.getX();
+			dragY = e.getY();
+			mapPanel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+
+			return;
+		}
+
+		int x = e.getX();
+		int y = e.getY();
+		if (x < 0 || y < 0 || x > mapPanel.getWidth() || y > mapPanel.getHeight()) {
+			// If the mouse is outside the panel, stop dragging
+			dragging = false;
+			mapPanel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			return;
+		}
+
+		int dx = dragX - e.getX();
+		int dy = dragY - e.getY();
+
+		mapPanel.dragPosition(dx, dy);
+
+		dragX = e.getX();
+		dragY = e.getY();
+	}
 
 	/**
 	 * Track the mouse movement as it cross hotspots and render tooltips.
@@ -92,8 +135,12 @@ public class MapMouseListener extends MouseAdapter {
 			popupTimer.stop();
 		}
 
-		// Fin the hotspot underthe cursor
-		var hs = findHotspot(event.getX(), event.getY());
+		// Called any listeners
+		var mousePos = new IntPoint(event.getX(), event.getY());
+		mapPanel.notifyMouseMoved(mousePos);
+
+		// Find the hotspot underthe cursor
+		var hs = findHotspot(mousePos);
 		if (hs != null) {
 			updateCursor(CROSSHAIR);
 			hotspotPoint = event.getPoint();

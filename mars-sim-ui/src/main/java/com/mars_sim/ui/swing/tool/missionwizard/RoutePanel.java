@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +30,8 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.JCoordinateEditor;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.RoutePath;
 import com.mars_sim.ui.swing.tool.map.RoutePathLayer;
@@ -90,11 +87,7 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 
         var mapPanel = initMapPane(state, context);
         add(mapPanel);
-        
-        // Create the entry pane (for input)
-        JPanel entryPane = createEntryPane(state);
-        add(entryPane);
-        
+
         // Create the selection pane (displays selected coordinate)
         JPanel selectionPane = createSelectionPane();
         add(selectionPane);
@@ -110,13 +103,6 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 		mapPanel = new MapPanel(context);
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
-
-		// Set up mouse control
-		mapPanel.setMouseDragger();
-
-		var mouseListener = new MapMouseListener(mapPanel);
-		mapPanel.addMouseListener(mouseListener);
-		mapPanel.addMouseMotionListener(mouseListener);
 					
 		// Always add unit layer
 		mapPanel.addMapLayer(new UnitMapLayer(mapPanel));
@@ -124,6 +110,7 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 		// Lastly add navpoint layer
 		navpointLayer = new RoutePathLayer(mapPanel);
 		mapPanel.addMapLayer(navpointLayer);
+        mapPanel.setMouseClickListener(c -> setPointSelection(c));
 
         // Add a single route path that is a proxy to the leg model
         routePath = new RoutePathAdapter(state.getStartingSettlement().getCoordinates(), legTableModel);
@@ -136,36 +123,10 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 		mapPane.setPreferredSize(dims);
 		mapPane.setMinimumSize(dims);
 		mapPane.add(mapPanel, BorderLayout.CENTER);
+
        	return mapPane;	
 	}
-    /**
-     * Creates the entry pane with coordinate editor and accept button.
-     * 
-     * @return the entry pane
-     */
-    private JPanel createEntryPane(MissionDataBean state) {
-        JPanel entryPane = new JPanel();
-        entryPane.setLayout(new BoxLayout(entryPane, BoxLayout.Y_AXIS));
-        entryPane.setBorder(new TitledBorder("Entry Pane"));
-        
-        // Create the coordinate editor
-        var coordinateEditor = new JCoordinateEditor(false);
-        coordinateEditor.setCoordinates(state.getStartingSettlement().getCoordinates());
-        entryPane.add(coordinateEditor);
-        
-        // Create the Accept button
-        JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        var acceptButton = new JButton("Accept");
-        acceptButton.addActionListener(e -> setPointSelection(coordinateEditor.getCoordinates()));
-
-        buttonPane.add(acceptButton);
-        
-        entryPane.add(buttonPane);
-        entryPane.setMaximumSize(new java.awt.Dimension(Integer.MAX_VALUE, 150));
-        
-        return entryPane;
-    }
-    
+  
     /**
      * Creates the selection pane showing the currently selected coordinate.
      * 
@@ -354,6 +315,15 @@ class RoutePanel extends WizardStep<MissionDataBean> {
     public void clearState(MissionDataBean state) {
         legTableModel.clear();
         super.clearState(state);
+    }
+
+    /**
+     * Relese any listeners from the route panel.
+     */
+    @Override
+    protected void release() {
+        mapPanel.destroy();
+        super.release();
     }
 
     /**

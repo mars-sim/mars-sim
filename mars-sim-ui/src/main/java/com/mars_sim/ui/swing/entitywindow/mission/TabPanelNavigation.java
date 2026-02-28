@@ -34,7 +34,6 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
@@ -99,13 +98,6 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 		mapPanel = new MapPanel(getContext());
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
-
-		// Set up mouse control
-		mapPanel.setMouseDragger();
-
-		var mouseListener = new MapMouseListener(mapPanel);
-		mapPanel.addMouseListener(mouseListener);
-		mapPanel.addMouseMotionListener(mouseListener);
 		
 		// Mineral layer only if mining or exploration mission
 		if (mission instanceof Mining || mission instanceof Exploration) {
