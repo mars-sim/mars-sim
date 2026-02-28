@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * NavpointMapLayer.java
+ * RoutePathLayer.java
  * @date 2023-04-29
  * @author Scott Davis
  */
@@ -16,6 +16,7 @@ import java.awt.Polygon;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.Icon;
 
@@ -26,11 +27,12 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.ui.swing.ImageLoader;
 
 /**
- * The NavpointMapLayer is a graphics layer to display mission navpoints.
+ * This is a graphics layer to display a route across a map in terms of a number of SurfacePOIs
+ * grouped together into a RoutePath.
  */
 public class RoutePathLayer implements MapLayer {
 	/**
-	 * This is a hotspot for a navigtion point on the route.
+	 * This is a hotspot for a navigation point on the route.
 	 */
 	private class NavpointHotspot extends MapHotspot {
 
@@ -74,7 +76,7 @@ public class RoutePathLayer implements MapLayer {
 	private Icon navpointIconSelected;
 	
 	private SurfacePOI selectedNavpoint;
-	private List<RoutePath> paths = new ArrayList<>();
+	private List<RoutePath> paths = new CopyOnWriteArrayList<>();
 
 	/**
 	 * Constructor
@@ -199,7 +201,6 @@ public class RoutePathLayer implements MapLayer {
 			g.drawLine(startLocn.getX(), startLocn.getY(), endLocn.getX(), endLocn.getY());
 
 			// Draw arrows
-			double l = endLocn.getDistance(startLocn);
 			double angle = startLocn.getRadians(endLocn);
 
 			IntPoint arrowLocation = new IntPoint(

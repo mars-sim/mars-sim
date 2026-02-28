@@ -250,23 +250,8 @@ public class NavigatorWindow extends ContentPanel
 		mapPanel = new MapPanel(context);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		wholePane.add(mapPanel, BorderLayout.CENTER);
-
 		mapPanel.setMouseMoveListener(c -> updateStatusBar(c));
-		
-		// mapPanel.setMouseDragger();
 
-		// // Create a mouse listener to show hotspots and update status bar
-		// var mapListner = new MapMouseListener(mapPanel) {
-		//     @Override
-    	// 	public void mouseMoved(MouseEvent event) {
-		// 		var coord = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-		// 		updateStatusBar(coord);
-		// 		super.mouseMoved(event);
-		// 	}
-		// };
-		// mapPanel.addMouseListener(mapListner);
-		// mapPanel.addMouseMotionListener(mapListner);
-		
 		// Create map layers.
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));

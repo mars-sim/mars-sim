@@ -85,8 +85,8 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        var mapPanel = initMapPane(state, context);
-        add(mapPanel);
+        var mapPane = initMapPane(state, context);
+        add(mapPane);
 
         // Create the selection pane (displays selected coordinate)
         JPanel selectionPane = createSelectionPane();
@@ -318,7 +318,7 @@ class RoutePanel extends WizardStep<MissionDataBean> {
     }
 
     /**
-     * Relese any listeners from the route panel.
+     * Release any listeners from the route panel.
      */
     @Override
     protected void release() {

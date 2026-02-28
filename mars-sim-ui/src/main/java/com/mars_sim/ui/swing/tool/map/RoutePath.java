@@ -29,7 +29,7 @@ public interface RoutePath {
 
     /**
      * List of navpoints on the route path.
-     * @return Listy could be zero elements.
+     * @return List could be zero elements.
      */
     List<? extends SurfacePOI> getNavpoints();
 }

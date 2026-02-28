@@ -139,7 +139,7 @@ class MapMouseListener extends MouseAdapter {
 		var mousePos = new IntPoint(event.getX(), event.getY());
 		mapPanel.notifyMouseMoved(mousePos);
 
-		// Find the hotspot underthe cursor
+		// Find the hotspot under the cursor
 		var hs = findHotspot(mousePos);
 		if (hs != null) {
 			updateCursor(CROSSHAIR);

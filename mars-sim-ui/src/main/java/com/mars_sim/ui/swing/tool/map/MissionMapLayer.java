@@ -19,7 +19,7 @@ import com.mars_sim.core.person.ai.mission.VehicleMission;
 
 /** 
  * The MissionMapLayer is a map layer to display mission navpoints.
- * It extends NavpointMapLayer to reuse the navpoint display code, but it gets the navpoints from the mission manager
+ * It extends RoutePathLayer to reuse the path display code, but it gets the navpoints from the mission manager
  * or single selected Mission.
  */
 public class MissionMapLayer extends RoutePathLayer implements EntityListener, MissionManagerListener{
@@ -53,6 +53,11 @@ public class MissionMapLayer extends RoutePathLayer implements EntityListener, M
     private static final String MISSION_PREFIX = "Mission :";
     private MissionManager missionManager;
 
+    /**
+     * Display all active Missions on a layer, and listen for new missions to add to the display.
+     * Completed missions will be removed automatically.
+     * @param parent Map panel for display
+     */
     public MissionMapLayer(MapPanel parent) {
         super(parent);
 
@@ -66,6 +71,11 @@ public class MissionMapLayer extends RoutePathLayer implements EntityListener, M
         }
     }
 
+    /**
+     * Display the route of a single mission on a layer.
+     * @param parent Map panel for display
+     * @param singleMission Mission to display.
+     */
     public MissionMapLayer(MapPanel parent, Mission singleMission) {
         super(parent);
 

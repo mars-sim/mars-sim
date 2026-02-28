@@ -113,8 +113,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		centerCoords = new Coordinates(HALF_PI, 0D);
 	
 		buildZoomSlider();
-
-		addMouseWheelListener(this);
 		
 		setLayout(new BorderLayout(10, 20));
 
@@ -580,7 +578,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
 	/**
-	 * Sets the mouse move listener. This is used to track the mouse movement as it crosses hotspots on the map such as a
+	 * Sets the mouse move listener. This is used to track the mouse movement in terms of the Coordinate frame.
 	 * @param mouseMoveListener The listener to notify.
 	 */
 	public void setMouseMoveListener(Consumer<Coordinates> mouseMoveListener) {
@@ -589,7 +587,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	/**
 	 * Notify the map panel that the mouse has moved to a new position.
-	 * This is used to track the mouse movement as it crosses hotspots on the map such as a
+	 * This is used to track the mouse movement in terms of the Coordinate frame.
 	 * @param mousePos Mouse position
 	 */
 	void notifyMouseMoved(IntPoint mousePos) {
