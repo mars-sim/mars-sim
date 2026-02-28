@@ -153,13 +153,13 @@ public abstract class WizardPane<T> {
     private void finishedActioned() {
         currentStep.updateState(status);
         finish(status);
-        complete();
+        cleanup();
     }
 
     /**
      * Wizard is complete so tidy up.
      */
-    private void complete() {
+    private void cleanup() {
         if (dialog != null) {
             dialog.dispose();
         }
@@ -168,9 +168,7 @@ public abstract class WizardPane<T> {
         if (currentStep != null) {
             currentStep.release();
         }
-        for (var step : previousSteps) {
-            step.release();
-        }
+        previousSteps.forEach(s -> s.release());
     }
 
     /**
@@ -178,7 +176,7 @@ public abstract class WizardPane<T> {
      * This can be overridden.
      */
     protected void cancel() {
-        complete();
+        cleanup();
     }
 
     /**

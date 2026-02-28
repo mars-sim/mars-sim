@@ -700,7 +700,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
+		mapLayers.forEach(ml -> ml.layer.release());
 		mapLayers = null;
+		
 		if (executor != null) {
 			// Stop anything running
 			executor.shutdownNow();

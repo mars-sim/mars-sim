@@ -122,8 +122,7 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 		mapPanel.addMapLayer(trailLayer);
 
 		// Lastly add navpoint layer
-		navpointLayer = new MissionMapLayer(mapPanel);
-		navpointLayer.setSingleMission(mission);
+		navpointLayer = new MissionMapLayer(mapPanel, mission);
 		navpointLayer.setSelectedNavpoint(null);
 		mapPanel.addMapLayer(navpointLayer);
 

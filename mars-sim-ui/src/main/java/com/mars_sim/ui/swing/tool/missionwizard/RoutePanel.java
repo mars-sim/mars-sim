@@ -7,26 +7,40 @@
 package com.mars_sim.ui.swing.tool.missionwizard;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.JCoordinateEditor;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.tool.map.MapMouseListener;
+import com.mars_sim.ui.swing.tool.map.MapPanel;
+import com.mars_sim.ui.swing.tool.map.RoutePath;
+import com.mars_sim.ui.swing.tool.map.RoutePathLayer;
+import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 
 /**
@@ -49,8 +63,9 @@ class RoutePanel extends WizardStep<MissionDataBean> {
     private LegTableModel legTableModel;
     private int maxLeg;
     
-    private Coordinates startingPoint;
-    private Coordinates selectedCoordinate;
+    private MapPanel mapPanel;
+    private RoutePathLayer navpointLayer;
+    private RoutePathAdapter routePath;
     
     /**
      * Constructor.
@@ -58,10 +73,9 @@ class RoutePanel extends WizardStep<MissionDataBean> {
      * @param wizard the create mission wizard
      * @param state the mission data bean
      */
-    public RoutePanel(MissionCreate wizard, MissionDataBean state) {
+    public RoutePanel(MissionCreate wizard, MissionDataBean state, UIContext context) {
         super(ID, wizard);
 
-        this.startingPoint = state.getStartingSettlement().getLocation();
         this.maxLeg = 10;
         var mType = state.getMissionType();
         if (mType == MissionType.AREOLOGY || mType == MissionType.BIOLOGY
@@ -69,10 +83,16 @@ class RoutePanel extends WizardStep<MissionDataBean> {
             this.maxLeg = 1;
         }
 
+        // Create the model to hold the new route
+        legTableModel = new LegTableModel();
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        var mapPanel = initMapPane(state, context);
+        add(mapPanel);
         
         // Create the entry pane (for input)
-        JPanel entryPane = createEntryPane();
+        JPanel entryPane = createEntryPane(state);
         add(entryPane);
         
         // Create the selection pane (displays selected coordinate)
@@ -84,19 +104,53 @@ class RoutePanel extends WizardStep<MissionDataBean> {
         add(tablePane);
     }
     
+    
+	private JComponent initMapPane(MissionDataBean state, UIContext context) {
+		// Create the map panel.
+		mapPanel = new MapPanel(context);
+		mapPanel.setBackground(new Color(0, 0, 0, 128));
+		mapPanel.setOpaque(false);
+
+		// Set up mouse control
+		mapPanel.setMouseDragger();
+
+		var mouseListener = new MapMouseListener(mapPanel);
+		mapPanel.addMouseListener(mouseListener);
+		mapPanel.addMouseMotionListener(mouseListener);
+					
+		// Always add unit layer
+		mapPanel.addMapLayer(new UnitMapLayer(mapPanel));
+
+		// Lastly add navpoint layer
+		navpointLayer = new RoutePathLayer(mapPanel);
+		mapPanel.addMapLayer(navpointLayer);
+
+        // Add a single route path that is a proxy to the leg model
+        routePath = new RoutePathAdapter(state.getStartingSettlement().getCoordinates(), legTableModel);
+        navpointLayer.addPath(routePath);
+
+		var mapPane = new JPanel(new BorderLayout());
+		mapPane.setBorder(SwingHelper.createLabelBorder("Route"));
+        
+		var dims = new Dimension(10, 200);
+		mapPane.setPreferredSize(dims);
+		mapPane.setMinimumSize(dims);
+		mapPane.add(mapPanel, BorderLayout.CENTER);
+       	return mapPane;	
+	}
     /**
      * Creates the entry pane with coordinate editor and accept button.
      * 
      * @return the entry pane
      */
-    private JPanel createEntryPane() {
+    private JPanel createEntryPane(MissionDataBean state) {
         JPanel entryPane = new JPanel();
         entryPane.setLayout(new BoxLayout(entryPane, BoxLayout.Y_AXIS));
         entryPane.setBorder(new TitledBorder("Entry Pane"));
         
         // Create the coordinate editor
         var coordinateEditor = new JCoordinateEditor(false);
-        coordinateEditor.setCoordinates(startingPoint);
+        coordinateEditor.setCoordinates(state.getStartingSettlement().getCoordinates());
         entryPane.add(coordinateEditor);
         
         // Create the Accept button
@@ -164,10 +218,9 @@ class RoutePanel extends WizardStep<MissionDataBean> {
         tablePane.setBorder(new TitledBorder("Path Table"));
         
         // Create the table model and table
-        legTableModel = new LegTableModel();
         legTable = new JTable(legTableModel);
-        legTable.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        legTable.getSelectionModel().addListSelectionListener(e -> updateRemoveButton());
+        legTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        legTable.getSelectionModel().addListSelectionListener(e -> legSelectionChanged());
         
         // Configure table renderers for better appearance
         var distanceRenderer = new NumberCellRenderer(3);
@@ -175,10 +228,11 @@ class RoutePanel extends WizardStep<MissionDataBean> {
         legTable.getColumnModel().getColumn(2).setCellRenderer(distanceRenderer);
         legTable.getColumnModel().getColumn(3).setCellRenderer(distanceRenderer);
         
-        // Create scroll pane for table
+        // Create scroll pane for table with a fixed size
         JScrollPane scrollPane = new JScrollPane(legTable);
         tablePane.add(scrollPane, BorderLayout.CENTER);
-        
+        var dims = new Dimension(1024, 200);
+		scrollPane.setMaximumSize(dims);
         return tablePane;
     }
     
@@ -187,16 +241,30 @@ class RoutePanel extends WizardStep<MissionDataBean> {
      * @param newPoint the coordinate to set
      */
     private void setPointSelection(Coordinates newPoint) {
-        selectedCoordinate = newPoint;
-        selectedCoordinateLabel.setText(selectedCoordinate.getFormattedString());
-
-        var lastPoint = startingPoint;
-        var points = legTableModel.getAllLegs();
-        if (!points.isEmpty()) {
-            RoutePoint lastLeg = points.get(points.size() - 1);
-            lastPoint = lastLeg.getCoordinates();
+        double legDistance;
+        double totalDistance;
+        var currentRoute = legTableModel.getAllLegs();
+        if (currentRoute.isEmpty()) {
+            // First point - no leg distance
+            legDistance = newPoint.getDistance(routePath.getStart());
+            totalDistance = legDistance;
+        } else {
+            // Calculate distance from last point
+            RoutePoint lastLeg = currentRoute.get(currentRoute.size() - 1);
+            legDistance = lastLeg.getCoordinates().getDistance(newPoint);
+            totalDistance = lastLeg.getTotalDistance() + legDistance;
         }
-        distanceLabel.setValue(selectedCoordinate.getDistance(lastPoint));
+        
+        // Create and add the route leg
+        RoutePoint newLeg = new RoutePoint("#" + (currentRoute.size() + 1), newPoint,
+                                    legDistance, totalDistance);
+        routePath.setPending(newLeg);
+        navpointLayer.setSelectedNavpoint(newLeg);
+        mapPanel.repaint();
+
+        selectedCoordinateLabel.setText(newPoint.getFormattedString());
+        distanceLabel.setValue(newLeg.getLegDistance());
+
         addButton.setEnabled(legTableModel.getRowCount() < maxLeg);
     }
     
@@ -205,36 +273,17 @@ class RoutePanel extends WizardStep<MissionDataBean> {
      * Adds the selected coordinate to the route table and calculates distances.
      */
     private void handleAdd() {
-        if (selectedCoordinate == null) {
-            return;
-        }
-        
-        double legDistance;
-        double totalDistance;
-        var currentRoute = legTableModel.getAllLegs();
-        
-        if (currentRoute.isEmpty()) {
-            // First point - no leg distance
-            legDistance = selectedCoordinate.getDistance(startingPoint);
-            totalDistance = legDistance;
-        } else {
-            // Calculate distance from last point
-            RoutePoint lastLeg = currentRoute.get(currentRoute.size() - 1);
-            legDistance = lastLeg.getCoordinates().getDistance(selectedCoordinate);
-            totalDistance = lastLeg.getTotalDistance() + legDistance;
-        }
-        
-        // Create and add the route leg
-        RoutePoint newLeg = new RoutePoint("#" + (currentRoute.size() + 1), selectedCoordinate,
-                                    legDistance, totalDistance);
+        // Move the pending point into the model
+        var newLeg = routePath.getPending();
+        routePath.setPending(null);                  
         legTableModel.addLeg(newLeg);
         
         // Clear the selection and update state
-        selectedCoordinate = null;
         selectedCoordinateLabel.setText("None");
         addButton.setEnabled(false);
         
-        updateMandatoryState();
+        navpointLayer.setSelectedNavpoint(null);
+        updateDisplay();
     }
     
     /**
@@ -251,24 +300,40 @@ class RoutePanel extends WizardStep<MissionDataBean> {
         legTableModel.removeLeg(selectedRow);
         
         // Recalculate distances for remaining legs
-        legTableModel.recalculateDistances(startingPoint);
+        legTableModel.recalculateDistances(routePath.getStart());
         
-        updateMandatoryState();
+        updateDisplay();
     }
     
     /**
      * Updates the enabled state of the Remove button based on table selection.
      */
-    private void updateRemoveButton() {
+    private void legSelectionChanged() {
         removeButton.setEnabled(legTable.getSelectedRow() >= 0);
+
+        SurfacePOI selected = null;
+        int selectedRow = legTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            selected = legTableModel.getAllLegs().get(selectedRow);
+        }
+        else {
+            // If no row is selected, show the pending point if it exists
+            selected = routePath.getPending();
+        }
+        
+        // Remove from local route list
+        navpointLayer.setSelectedNavpoint(selected);
+        mapPanel.repaint();
     }
     
     /**
      * Updates the mandatory state and enables/disables the next button.
      */
-    private void updateMandatoryState() {
+    private void updateDisplay() {
         boolean hasRoute = !legTableModel.getAllLegs().isEmpty();
         setMandatoryDone(hasRoute);
+
+        mapPanel.repaint();
     }
     
     /**
@@ -288,7 +353,49 @@ class RoutePanel extends WizardStep<MissionDataBean> {
     @Override
     public void clearState(MissionDataBean state) {
         legTableModel.clear();
-
         super.clearState(state);
+    }
+
+    /**
+     * This adapters the internal state to a RoutePath so it can be rendered
+     */
+    private static class RoutePathAdapter implements RoutePath {
+        private final Coordinates startingPoint;
+        private final LegTableModel legTableModel;
+        private RoutePoint pendingNavPoint;
+
+        public RoutePathAdapter(Coordinates startingPoint, LegTableModel legTableModel) {
+            this.startingPoint = startingPoint;
+            this.legTableModel = legTableModel;
+        }
+
+        public RoutePoint getPending() {
+            return pendingNavPoint;
+        }
+
+        public void setPending(RoutePoint pending) {
+            this.pendingNavPoint = pending;
+        }
+
+        @Override
+        public String getContext() {
+            return "New Mission Route";
+        }
+
+        @Override
+        public Coordinates getStart() {
+            return startingPoint;
+        }
+
+        @Override
+        public List<? extends SurfacePOI> getNavpoints() {
+            if (pendingNavPoint != null) {
+                // Create a temporary list with the pending navpoint added
+                var tempList = new ArrayList<>(legTableModel.getAllLegs());
+                tempList.add(pendingNavPoint);
+                return tempList;
+            }
+            return legTableModel.getAllLegs();
+        }
     }
 }

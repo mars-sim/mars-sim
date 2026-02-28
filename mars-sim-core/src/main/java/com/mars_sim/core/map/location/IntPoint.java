@@ -62,4 +62,18 @@ public final class IntPoint implements Serializable {
 		return (int) Math.round(Math.sqrt(Math.pow(getX() - 1.0 * position.getX(), 2D) +
 			        Math.pow(getY() - 1.0 * position.getY(), 2D)));
 	}
+
+	/**
+	 * Gets the angle in radians between this point and another point.
+	 * @param location
+	 * @return Radions of the angle.
+	 */
+	public double getRadians(IntPoint location) {
+		return Math.atan2(location.getY() - y, location.getX() - x);
+	}
+	
+	@Override
+	public String toString() {
+		return "IntPoint [" + x + ", " + y + "]";
+	}
 }
