@@ -65,8 +65,8 @@ class RoverPanel extends WizardItemStep<MissionDataBean, Rover> {
 		private static final List<ColumnSpec> COLUMNS = List.of(
 				new ColumnSpec(Msg.getString("entity.name"), String.class),
 				new ColumnSpec(Msg.getString("vehicle.type"), String.class),
-				new ColumnSpec(Msg.getString("vehicle.range"), Double.class, ColumnSpec.STYLE_DIGIT1),
-				new ColumnSpec("Capacity", Double.class, ColumnSpec.STYLE_DIGIT1),
+				new ColumnSpec(Msg.getString("vehicle.range"), Double.class, ColumnSpec.STYLE_INTEGER),
+				new ColumnSpec("Capacity", Double.class, ColumnSpec.STYLE_INTEGER),
 				new ColumnSpec(Msg.getString("vehicle.status"), String.class),
 				new ColumnSpec("Reserved", Boolean.class),
 				new ColumnSpec(Msg.getString("mission.singular"), String.class),

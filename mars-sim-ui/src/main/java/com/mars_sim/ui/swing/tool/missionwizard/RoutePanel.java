@@ -59,10 +59,13 @@ class RoutePanel extends WizardStep<MissionDataBean> {
     private JTable legTable;
     private LegTableModel legTableModel;
     private int maxLeg;
+    private double range;
     
     private MapPanel mapPanel;
     private RoutePathLayer navpointLayer;
     private RoutePathAdapter routePath;
+    private JDoubleLabel returnDistance;
+    private JLabel remainingRange;
     
     /**
      * Constructor.
@@ -73,6 +76,7 @@ class RoutePanel extends WizardStep<MissionDataBean> {
     public RoutePanel(MissionCreate wizard, MissionDataBean state, UIContext context) {
         super(ID, wizard);
 
+        this.range = state.getRover().getEstimatedRange();
         this.maxLeg = 10;
         var mType = state.getMissionType();
         if (mType == MissionType.AREOLOGY || mType == MissionType.BIOLOGY
@@ -143,7 +147,11 @@ class RoutePanel extends WizardStep<MissionDataBean> {
         selectedCoordinateLabel = details.addTextField("Selected Point", "None", null);
         distanceLabel = new JDoubleLabel(StyleManager.DECIMAL3_KM);
         details.addLabelledItem("Leg Distance (km)", distanceLabel);
+
+        returnDistance = new JDoubleLabel(StyleManager.DECIMAL3_KM);
+        details.addLabelledItem("Return Home (km)", returnDistance);
         
+        remainingRange = details.addTextField("Remaining Range (km)", null, null);
         
         // Create button panel
         JPanel buttonPanel = new JPanel();
@@ -225,6 +233,12 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 
         selectedCoordinateLabel.setText(newPoint.getFormattedString());
         distanceLabel.setValue(newLeg.getLegDistance());
+
+        var returningKM = newPoint.getDistance(routePath.getStart());
+        returnDistance.setValue(returningKM);
+        var remainingKM = range - (totalDistance + returningKM);
+        String txt = String.format("%.1f out of %.1f", remainingKM, range);
+        remainingRange.setText(txt);
 
         addButton.setEnabled(legTableModel.getRowCount() < maxLeg);
     }
