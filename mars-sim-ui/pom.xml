@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.mars-sim</groupId>
-			<artifactId>mars-sim-headless</artifactId>
+			<artifactId>mars-sim-console</artifactId>
 			<version>${project.version}</version>
 		</dependency>	
 		<dependency>

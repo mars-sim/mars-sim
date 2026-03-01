@@ -17,8 +17,6 @@
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>		
 		<sonar.java.source>21</sonar.java.source>
-
-		<fxgl.version>11.17</fxgl.version>
 		
 		<!-- These 3 have an interdepency -->
 		<junit-jupiter.version>5.14.1</junit-jupiter.version>
@@ -31,7 +29,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
-		<libgdx.version>1.14.0</libgdx.version>
 		<lwjgl.version>3.3.6</lwjgl.version>
 		<slf4j.version>2.0.17</slf4j.version>
 
@@ -85,21 +82,6 @@
 				<module>mars-sim-core</module>
 				<module>mars-sim-ui</module>
 				<module>mars-sim-installer</module>
-			</modules>
-		</profile>
-
-		<!-- Profile for JavaFX -->
-		<profile>
-			<id>javaFX</id>
-			<modules>
-				<module>mars-sim-tools</module>
-				<module>mars-sim-headless</module>
-				<module>mars-sim-console</module>
-				<module>mars-sim-core</module>
-				<module>mars-sim-ui</module>
-				<module>mars-sim-dist</module>
-				<module>mars-sim-fxgl</module>
-				<module>mars-sim-libgdx</module>
 			</modules>
 		</profile>
 	</profiles>
