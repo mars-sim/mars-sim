@@ -25,4 +25,10 @@ public interface SurfacePOI {
      * @return
      */
     Coordinates getCoordinates();
+
+    /**
+     * Name of the feature
+     * @return This may return null if the feature is unnamed.
+     */
+    String getName();
 }

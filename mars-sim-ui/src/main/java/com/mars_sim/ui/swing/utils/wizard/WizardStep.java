@@ -120,7 +120,7 @@ public abstract class WizardStep<T> extends JPanel{
      * The Step is no longer needed by the wizard and it's released. This implementation does nothing but
      * subclasses may override.
      */
-    void release() {
+    protected void release() {
         // Default implementation does nothing, but subclasses may override to release resources
     }
 }

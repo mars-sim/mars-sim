@@ -7,12 +7,14 @@
 package com.mars_sim.ui.swing.tool.missionwizard;
 
 import com.mars_sim.core.map.location.Coordinates;
+import com.mars_sim.core.map.location.SurfacePOI;
 
 /**
  * Represents a single point in a proposed route, containing coordinates,
  * leg distance, and cumulative total distance.
+ * It implements SurfacePOI so it can be displayed as a point of interest on the map.
  */
-public class RoutePoint {
+public class RoutePoint implements SurfacePOI {
     
     private final String name;
     private final Coordinates coordinates;
@@ -39,6 +41,7 @@ public class RoutePoint {
      * 
      * @return the coordinates
      */
+    @Override
     public Coordinates getCoordinates() {
         return coordinates;
     }
@@ -47,6 +50,7 @@ public class RoutePoint {
      * Gets the name or label for this route point.
      * @return the name of this route point
      */
+    @Override
     public String getName() {
         return name;
     }
