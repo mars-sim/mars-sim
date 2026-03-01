@@ -62,7 +62,7 @@ class MapMouseListener extends MouseAdapter {
 			else
 				updateCursor(DEFAULT);
         }
-		else {
+        else if (SwingUtilities.isLeftMouseButton(event) && event.getClickCount() == 1) {  
 			// Notify map panel
 			mapPanel.notifyMouseClicked(new IntPoint(event.getX(), event.getY()));
 		}

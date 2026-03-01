@@ -1,8 +1,8 @@
 /*
  * Mars Simulation Project
  * RoutePathLayer.java
- * @date 2023-04-29
- * @author Scott Davis
+ * @date 2026-02-16
+ * @author Barry Evans
  */
 package com.mars_sim.ui.swing.tool.map;
 

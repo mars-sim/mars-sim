@@ -597,7 +597,7 @@ public class MapPanel extends JPanel implements MouseWheelListener {
     }
 
 	/**
-	 * Notify the map panel that the mouse has been clicked at a position in terms of the Coordinates.
+	 * Notify the map panel that the mouse has been dragged to a new position.
 	 * @param dx Change in X
 	 * @param dy Change in Y
 	 */
