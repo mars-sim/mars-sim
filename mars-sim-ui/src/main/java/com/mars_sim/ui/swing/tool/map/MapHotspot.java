@@ -26,15 +26,11 @@ public abstract class MapHotspot {
     /**
      * Is the position on the Map within this hotspot?.
      * Checks the point is within the radius of the hotspot center
-     * @param x
-     * @param y
+     * @param target Point to check
      * @return
      */
-    public boolean isWithin(int x, int y) {
-        int xDiff = center.getiX() - x;
-        int yDiff = center.getiY() - y;
-        double dist = Math.sqrt((double)(xDiff * xDiff) + (yDiff * yDiff));
-        return dist <= radius;
+    public boolean isWithin(IntPoint target) {
+        return center.getDistance(target) <= radius;
     }
 
     /**

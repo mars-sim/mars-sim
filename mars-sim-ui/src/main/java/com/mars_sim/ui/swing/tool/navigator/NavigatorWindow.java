@@ -13,7 +13,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,10 +65,9 @@ import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer.MapFilter;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
 import com.mars_sim.ui.swing.tool.map.MapLayer;
-import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
-import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
+import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
@@ -252,26 +250,13 @@ public class NavigatorWindow extends ContentPanel
 		mapPanel = new MapPanel(context);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		wholePane.add(mapPanel, BorderLayout.CENTER);
-		
-		mapPanel.setMouseDragger();
+		mapPanel.setMouseMoveListener(c -> updateStatusBar(c));
 
-		// Create a mouse listener to show hotspots and update status bar
-		var mapListner = new MapMouseListener(mapPanel) {
-		    @Override
-    		public void mouseMoved(MouseEvent event) {
-				var coord = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-				updateStatusBar(coord);
-				super.mouseMoved(event);
-			}
-		};
-		mapPanel.addMouseListener(mapListner);
-		mapPanel.addMouseMotionListener(mapListner);
-		
 		// Create map layers.
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(UNIT_LAYER, new UnitMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer("navPoints", new NavpointMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("navPoints", new MissionMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("vehicleTrails", new VehicleTrailMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("landmarks", new LandmarkMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(EXPLORED_LAYER, new ExploredSiteMapLayer(mapPanel)));

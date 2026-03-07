@@ -38,6 +38,15 @@ public class MineralDeposit implements Serializable, SurfacePOI {
 	}
 
 	/**
+	 * Mineral deposits are unnamed, so this returns null.
+	 * @return null	
+	 */
+	@Override
+	public String getName() {
+		return null;
+	}
+
+	/**
 	 * Adjust the concentration of a mineral. If it exits then take the average of the old and new.
 	 * THis provides a balanced movement.
 	 * @param mineralId Resource id of the mineral
