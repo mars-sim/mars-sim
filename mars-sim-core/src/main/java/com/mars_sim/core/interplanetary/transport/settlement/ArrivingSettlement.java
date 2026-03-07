@@ -17,7 +17,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementBuilder;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A new arriving settlement from Earth.
@@ -35,30 +34,29 @@ public class ArrivingSettlement extends Transportable {
 	private String template;
 	
 	private String sponsorCode;
-
-	private int arrivalSols;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param name            the name of the arriving settlement.
 	 * @param template        the design template for the settlement.
-	 * @param sponsor 
-	 * @param arrivalSols     the arrival in terms of Sols in the future.
+	 * @param sponsorCode     the sponsor code for the settlement.
+	 * @param arrivalDate     the arrival date of the settlement.
 	 * @param landingLocation the landing location.
 	 * @param populationNum   the population of new immigrants arriving with the
 	 *                        settlement.
 	 * @param numOfRobots     the number of new robots.
 	 */
 	public ArrivingSettlement(String name, String template, String sponsorCode,
-			int arrivalSols, Coordinates landingLocation,
+			MarsTime arrivalDate, Coordinates landingLocation,
 			int populationNum, int numOfRobots) {
 		super(name, landingLocation);
 		this.template = template;
 		this.sponsorCode = sponsorCode;
-		this.arrivalSols = arrivalSols;
 		this.populationNum = populationNum;
 		this.numOfRobots = numOfRobots;
+
+		setArrivalDate(arrivalDate);
 	}
 
 	/**
@@ -124,14 +122,6 @@ public class ArrivingSettlement extends Transportable {
 		this.sponsorCode = sponsor;
 	}
 
-	/**
-	 * The original arrival delay
-	 * @return
-	 */
-	public int getArrivalSols() {
-		return arrivalSols;
-	}
-
 
 	/**
 	 * Gets the population of the arriving settlement.
@@ -195,18 +185,7 @@ public class ArrivingSettlement extends Transportable {
 						this.getName(), "", "", this, s);
 	}
 
-	/**
-	 * Schedule the launch for a future date.
-	 */
-	public void scheduleLaunch() {
-		// Determine the arrival date
-		MarsTime proposedArrival = tm.getMarsTime().addTime(
-					(arrivalSols - 1) * 1000D
-					+ 100 
-					+ RandomUtil.getRandomDouble(890));
-		setArrivalDate(proposedArrival);
-	}
-	
+
 	
 	@Override
 	public void reinit(UnitManager um) {

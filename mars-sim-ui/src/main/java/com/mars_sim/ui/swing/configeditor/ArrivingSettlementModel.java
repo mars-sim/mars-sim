@@ -15,8 +15,8 @@ import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
+import com.mars_sim.core.configuration.FutureSettlement;
 import com.mars_sim.core.configuration.Scenario;
-import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
@@ -93,8 +93,8 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	public void loadDefaultSettlements(Scenario selected) {
 		arrivalInfos.clear();
 
-		for (ArrivingSettlement spec : selected.getArrivals()) {
-			ArrivalInfo info = toArrivalInfo(spec);
+		for (var spec : selected.getArrivals()) {
+			var info = toArrivalInfo(spec);
 			arrivalInfos.add(info);
 		}
 			
@@ -107,15 +107,15 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	 * @param spec
 	 * @return
 	 */
-	private ArrivalInfo toArrivalInfo(ArrivingSettlement spec) {
+	private ArrivalInfo toArrivalInfo(FutureSettlement spec) {
 		var info = new ArrivalInfo();
-		info.name = spec.getSettlementName();
-		info.sponsor = spec.getSponsorCode();
-		info.arrivalSols = Integer.toString(spec.getArrivalSols());
-		info.template = spec.getTemplate();
-		info.population = Integer.toString(spec.getPopulationNum());
-		info.numOfRobots = Integer.toString(spec.getNumOfRobots());
-		Coordinates location = spec.getLandingLocation();
+		info.name = spec.name();
+		info.sponsor = spec.sponsorCode();
+		info.arrivalSols = Integer.toString(spec.arrivalSols());
+		info.template = spec.template();
+		info.population = Integer.toString(spec.populationNum());
+		info.numOfRobots = Integer.toString(spec.numOfRobots());
+		Coordinates location = spec.landingLocation();
 		if (location != null) {
 			info.latitude = location.getFormattedLatitudeString();
 			info.longitude = location.getFormattedLongitudeString();
@@ -128,9 +128,9 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	 * Get the rows as Arriving Settlements
 	 * @return
 	 */
-	public List<ArrivingSettlement> getArrivals() {
+	public List<FutureSettlement> getArrivals() {
 
-		List<ArrivingSettlement> arrivals = new ArrayList<>();
+		List<FutureSettlement> arrivals = new ArrayList<>();
 
 		// Add configuration settlements from table data.
 		for (ArrivalInfo info : arrivalInfos) {
@@ -148,7 +148,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	
 				location = new Coordinates(latitude, longitude);
 			}
-			arrivals.add(new ArrivingSettlement(info.name, info.template, info.sponsor,
+			arrivals.add(new FutureSettlement(info.name, info.template, info.sponsor,
 					arrivalSols, location ,
 					numOfPeople, numOfRobots));
 
@@ -464,7 +464,7 @@ class ArrivingSettlementModel extends AbstractTableModel {
 	 * @param location
 	 */
 	public void addPartialArrival(String sponsor, String template, Coordinates location) {
-		ArrivingSettlement newRow = new ArrivingSettlement(tailorSettlementNameBySponsor(sponsor, 
+		var newRow = new FutureSettlement(tailorSettlementNameBySponsor(sponsor, 
 											arrivalInfos.size()),
 					template, sponsor, 1, location,
 					ConfigModelHelper.determineNewSettlementPopulation(template, settlementTemplateConfig),
