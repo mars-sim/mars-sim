@@ -61,7 +61,7 @@ public abstract class WizardPane<T> {
      * Get the UI context
      * @return Context for other controls.
      */
-    protected UIContext getContext() {
+    public UIContext getContext() {
         return context;
     }
 

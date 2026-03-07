@@ -626,7 +626,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
 		else if (arrivalDate != null) {
 			String name = "Template " + missionNum++;
-			Resupply newResupply = new Resupply(name, arrivalDate, destination);
+			Resupply newResupply = new Resupply(name, arrivalDate, destination, null);
 			modifyResupplyMission(newResupply, arrivalDate);
 			Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
 			return true;

@@ -30,6 +30,7 @@ import javax.swing.tree.TreePath;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.interplanetary.transport.TransitState;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.science.ScientificStudyManager;
@@ -326,6 +327,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
                         if (settlement == null) {
                             yield transportMgr.getTransportItems().stream()
                                                 .filter(it -> it instanceof ArrivingSettlement)
+                                                .filter(as -> as.getTransitState() != TransitState.ARRIVED)
                                                 .toList();
                         }
                         else {

@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.mineral.MineralDeposit;
@@ -71,9 +70,15 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	public MineralMapLayer(MapPanel map) {
 		super("Mineral");
 		this.displayComponent = map;
-		mineralMap = map.getDesktop().getSimulation().getSurfaceFeatures().getMineralMap();
+		var sim = map.getDesktop().getSimulation();
+		mineralMap = sim.getSurfaceFeatures().getMineralMap();
 	
 		mineralColorMap = getMineralColors();
+
+		// preload mineral names
+		mineralNames = new HashMap<>();
+		var types = sim.getConfig().getMineralMapConfiguration().getMineralTypes();
+		types.forEach(m -> mineralNames.put(m.getName(), m.getResourceId()));
 	}
 	
 	/**
@@ -131,17 +136,18 @@ public class MineralMapLayer extends SurfaceFeatureLayer<MineralDeposit>
 	}
 
 	/**
+	 * Display all mineral types on the map.
+	 */
+	public void displayAll() {
+		mineralsDisplaySet.addAll(mineralNames.values());
+	}
+
+	/**
 	 * Create a quick lookup for mineral name to resource id.
 	 * @param mineralType Name of the mineral
 	 * @return Resource Id
 	 */
 	private static int getMineralId(String mineralType) {
-		if (mineralNames == null) {
-			mineralNames = new HashMap<>();
-			
-			var types = SimulationConfig.instance().getMineralMapConfiguration().getMineralTypes();
-			types.forEach(m -> mineralNames.put(m.getName(), m.getResourceId()));
-		}
 		return mineralNames.get(mineralType);
 	}
 

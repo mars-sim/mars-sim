@@ -43,11 +43,11 @@ import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.MarsCalendarDisplay;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
+import com.mars_sim.ui.swing.tool.transportable.TransportableWizard;
 import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -156,7 +156,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(MonitorWindow.NAME, null, MonitorWindow.ICON);
 		addToolButton(MissionCreate.NAME, MissionCreate.TITLE, MissionCreate.ICON);
 		addToolButton(SettlementWindow.NAME, null, SettlementWindow.ICON);
-		addToolButton(ResupplyWindow.NAME, null, ResupplyWindow.ICON);
+		addToolButton(TransportableWizard.NAME, null, TransportableWizard.ICON);
 		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON);
 		addToolButton(EntityBrowser.NAME, null, EntityBrowser.ICON);
 
@@ -338,6 +338,10 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 				
 			case MissionCreate.NAME:
 				MissionCreate.create(context);
+				break;
+				
+			case TransportableWizard.NAME:
+				TransportableWizard.create(context);
 				break;
 				
 			default:
