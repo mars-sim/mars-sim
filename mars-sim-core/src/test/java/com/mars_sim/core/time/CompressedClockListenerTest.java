@@ -1,6 +1,7 @@
 package com.mars_sim.core.time;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +51,7 @@ class CompressedClockListenerTest {
         }
 
         var elapsed = listener.pulseArrived - startTime;
-        assertEquals(true, elapsed >= MIN_DURATION, "Elapsed time should be at least the minimum duration");
+        assertTrue(elapsed >= MIN_DURATION, "Elapsed time should be at least the minimum duration");
         assertEquals(id, listener.pulseId);
         assertEquals(id * PULSE_ELAPSED, listener.totalElapsed, 0.01D);
     }

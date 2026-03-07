@@ -89,7 +89,10 @@ public class SurfacePOILayer implements MapLayer {
 		List<MapHotspot> results = new ArrayList<>();
 
 		if (selectedNavpoint != null) {
-			results.add(displayNavpoint(selectedNavpoint, mapCenter, baseMap, g, d));
+			var hotspot = displayNavpoint(selectedNavpoint, mapCenter, baseMap, g, d);  
+            if (hotspot != null) {  
+                results.add(hotspot);  
+            }  
 		}
 	
 		return results;

@@ -53,9 +53,10 @@ class ResupplyManifestStep extends WizardStep<TransportState> {
 
 	private void manifestSelection() {
 		ResupplyManifest manifest = (ResupplyManifest) manifestCB.getSelectedItem();
-		supplies.show(manifest.getSupplies());
-
-		setMandatoryDone(true);
+		if (manifest != null) {
+			supplies.show(manifest.getSupplies());
+			setMandatoryDone(true);
+		}
 	}
 
 	@Override
