@@ -8,7 +8,6 @@
 package com.mars_sim.ui.swing.tool.missionwizard;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +75,7 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 		var wizard = new MissionCreate(context, state);
 		
 		var frame = wizard.showInDialog(context.getTopFrame());
-		frame.setSize(600, 400);
+		frame.setSize(600, 600);
 		frame.setLocationRelativeTo(context.getTopFrame());
 		frame.setVisible(true);
 
@@ -120,7 +119,7 @@ public class MissionCreate extends WizardPane<MissionDataBean> {
 			case MineSitePanel.ID -> new MineSitePanel(this, state);
 			case RescueVehiclePanel.ID -> new RescueVehiclePanel(this, state);
 			case RoverPanel.ID -> new RoverPanel(this, state);
-			case RoutePanel.ID -> new RoutePanel(this, state);
+			case RoutePanel.ID -> new RoutePanel(this, state, getContext());
 			case StartingSettlementPanel.ID ->new StartingSettlementPanel(this, state);
 			case SciencePanel.ID -> new SciencePanel(this, state);
 			case TradeGoodsPanel.BUY_ID, TradeGoodsPanel.SUPPLY_ID, TradeGoodsPanel.SELL_ID ->

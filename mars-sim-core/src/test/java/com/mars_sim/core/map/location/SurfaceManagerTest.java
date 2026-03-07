@@ -19,6 +19,11 @@ class SurfaceManagerTest {
         public Coordinates getCoordinates() {
             return location;
         }
+
+        @Override
+        public String getName() {
+            return null;
+        }
     }
 
     

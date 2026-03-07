@@ -34,10 +34,9 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
-import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
+import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -55,7 +54,7 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 	
 	private NavpointTableModel navpointTableModel;
 
-	private NavpointMapLayer navpointLayer;
+	private MissionMapLayer navpointLayer;
 
 	/**
 	 * Constructor.
@@ -99,13 +98,6 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 		mapPanel = new MapPanel(getContext());
 		mapPanel.setBackground(new Color(0, 0, 0, 128));
 		mapPanel.setOpaque(false);
-
-		// Set up mouse control
-		mapPanel.setMouseDragger();
-
-		var mouseListener = new MapMouseListener(mapPanel);
-		mapPanel.addMouseListener(mouseListener);
-		mapPanel.addMouseMotionListener(mouseListener);
 		
 		// Mineral layer only if mining or exploration mission
 		if (mission instanceof Mining || mission instanceof Exploration) {
@@ -122,8 +114,7 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 		mapPanel.addMapLayer(trailLayer);
 
 		// Lastly add navpoint layer
-		navpointLayer = new NavpointMapLayer(mapPanel);
-		navpointLayer.setSingleMission(mission);
+		navpointLayer = new MissionMapLayer(mapPanel, mission);
 		navpointLayer.setSelectedNavpoint(null);
 		mapPanel.addMapLayer(navpointLayer);
 

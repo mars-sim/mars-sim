@@ -254,7 +254,7 @@ public abstract class WizardItemStep<S,I> extends WizardStep<S> {
 	 * This step is released by the wizard as no longer being required. This releases the model resources.
 	 */
 	@Override
-	void release() {
+	protected void release() {
 		super.release();
 		model.release();
 	}
