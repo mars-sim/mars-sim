@@ -31,6 +31,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
+import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -56,7 +57,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     private static final String ROBOT = "robot";
     private static final String MISSION = "mission";
     private static final String SCIENTIFIC_STUDY = "scientificstudy";
-    private static final String TRANSPORT = "transportitem";
+    private static final String TRANSPORT = "transportable";
     private static final String[] ENTITY_TYPES = {BUILDING, CONSTRUCTION, MISSION, PERSON, ROBOT, SCIENTIFIC_STUDY, TRANSPORT, VEHICLE};
     private static final int MAX_ITEMS = 30;
 
@@ -77,6 +78,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     private UIContext context;
     private ScientificStudyManager scienceMgr;
     private TransportManager transportMgr;
+    private DefaultMutableTreeNode globalNode;
 
     public EntityBrowser(UIContext context) {
         super(NAME, "Entity Browser", Placement.LEFT);
@@ -101,6 +103,11 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             .map(this::createSettlementNode)
             .forEach(root::add);
         
+        // Create a node to represent global entities that are not associated with a settlement.
+        globalNode = new DefaultMutableTreeNode("Global");
+        globalNode.add(new PlaceholderNode());
+        root.add(globalNode);
+
         buildUI(mainPane, entityModel);
 
         // List for new Settlements
@@ -200,6 +207,10 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             expandSettlementNode(en);
             entityModel.nodeStructureChanged(node);
         }
+        else if (node.equals(globalNode)) {
+            expandGlobalNode(node);
+            entityModel.nodeStructureChanged(node);
+        }
     }
 
     /**
@@ -283,6 +294,14 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         }
     }
 
+    
+    private void expandGlobalNode(DefaultMutableTreeNode node) {
+        // Remove placeholder
+        removePlaceholder(node);
+
+        node.add(createTopTypeNode(TRANSPORT, null));
+    }
+
     /**
      * User requests expansion of the given type node. This will get the appropriate Entities from the Settlement
      * and either add them directly below or create sub-nodes if there are too many.
@@ -303,9 +322,18 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             case BUILDING -> settlement.getBuildingManager().getBuildingSet();
             case MISSION -> context.getSimulation().getMissionManager().getMissionsForSettlement(settlement);
             case SCIENTIFIC_STUDY -> scienceMgr.getAllStudies(settlement);
-            case TRANSPORT -> transportMgr.getTransportItems().stream()
-                                        .filter(ti -> ti.getSettlementName().equals(settlement.getName()))
-                                        .toList();
+            case TRANSPORT -> {
+                        if (settlement == null) {
+                            yield transportMgr.getTransportItems().stream()
+                                                .filter(it -> it instanceof ArrivingSettlement)
+                                                .toList();
+                        }
+                        else {
+                            yield transportMgr.getTransportItems().stream()
+                                                .filter(ti -> ti.getSettlementName().equals(settlement.getName()))
+                                                .toList();
+                        }
+                    }
             default -> Collections.emptyList();
         };
             

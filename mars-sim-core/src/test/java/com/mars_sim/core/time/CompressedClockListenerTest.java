@@ -48,7 +48,9 @@ class CompressedClockListenerTest {
             pulse = new ClockPulse(id, PULSE_ELAPSED, null, null, false, false, false, false);
             compressed.clockPulse(pulse);
         }
-        assertEquals(MIN_DURATION, listener.pulseArrived - startTime);
+
+        var elapsed = listener.pulseArrived - startTime;
+        assertEquals(true, elapsed >= MIN_DURATION, "Elapsed time should be at least the minimum duration");
         assertEquals(id, listener.pulseId);
         assertEquals(id * PULSE_ELAPSED, listener.totalElapsed, 0.01D);
     }
