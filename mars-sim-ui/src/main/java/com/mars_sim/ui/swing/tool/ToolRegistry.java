@@ -17,7 +17,6 @@ import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
@@ -47,7 +46,6 @@ public class ToolRegistry {
 			case GuideWindow.NAME -> new GuideWindow(sim.getConfig()); 
 			case SearchWindow.NAME -> new SearchWindow(context);
 			case CommanderWindow.NAME -> new CommanderWindow(context);
-            case ResupplyWindow.NAME -> new ResupplyWindow(context);
 			case SettlementWindow.NAME -> new SettlementWindow(context, toolProps);
             case NavigatorWindow.NAME -> new NavigatorWindow(context, toolProps);
             case MonitorWindow.NAME -> new MonitorWindow(context, toolProps);

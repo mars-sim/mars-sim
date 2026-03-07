@@ -13,7 +13,6 @@ import javax.swing.JComboBox;
 
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyManifest;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
-import com.mars_sim.ui.swing.tool.resupply.SettlementSuppliesPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
