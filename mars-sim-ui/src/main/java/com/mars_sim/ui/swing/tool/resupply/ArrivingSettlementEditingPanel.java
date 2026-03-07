@@ -766,12 +766,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 			String template = (String) templateCB.getSelectedItem();
 			int popNum = Integer.parseInt(populationTF.getText());
 			int numOfRobots = Integer.parseInt(numOfRobotsTF.getText());
-			int arrivalSols = 1;
+			var arrival = transportManager.getMarsTime().addTime(1 * 1000D);
 			Coordinates landingLoc = getLandingLocation();
 			String sponsor = (String) sponsorCB.getSelectedItem();
 			ArrivingSettlement newArrivingSettlement =
 					new ArrivingSettlement(name, template, sponsor,
-							arrivalSols, landingLoc,
+							arrival, landingLoc,
 							popNum, numOfRobots);
 			populateArrivingSettlement(newArrivingSettlement);
 			transportManager.addNewTransportItem(newArrivingSettlement);

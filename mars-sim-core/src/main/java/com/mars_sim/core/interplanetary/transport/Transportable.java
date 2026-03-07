@@ -22,7 +22,7 @@ import com.mars_sim.core.time.MarsTime;
  * An class for an item that is transported between planets/moons/etc.
  */
 public abstract class Transportable
-	implements Comparable<Transportable>, Entity, ScheduledEventHandler {
+	implements Entity, ScheduledEventHandler {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -151,6 +151,7 @@ public abstract class Transportable
 	 * 
 	 * @return
 	 */
+	@Override
 	public String getEventDescription() {
 		return (state == TransitState.PLANNED ? "Launch of " : "Arrival of ") + name;
 	}
@@ -171,6 +172,7 @@ public abstract class Transportable
 	 * @param now Current time
 	 * @return return the milliosols to the next phase
 	 */
+	@Override
 	public int execute(MarsTime now) {
 		int nextEvent = 0;
 		HistoricalEvent event = null;
@@ -194,20 +196,6 @@ public abstract class Transportable
 			tm.fireEvent(event);
 		}
 		return nextEvent;
-	}
-
-	/**
-	 * Compare firstly on arrival data and then secondly on name
-	 */
-	@Override
-	public int compareTo(Transportable o) {
-		int result  = getArrivalDate().compareTo(o.getArrivalDate());
-		if (result == 0) {
-			// If arrival time is the same, compare by name alphabetically.
-			result = getName().compareTo(o.getName());
-		}
-
-		return result;
 	}
 
 	/**

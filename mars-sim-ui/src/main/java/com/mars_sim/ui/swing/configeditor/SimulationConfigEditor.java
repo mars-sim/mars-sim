@@ -55,11 +55,11 @@ import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.AuthorityFactory;
+import com.mars_sim.core.configuration.FutureSettlement;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
-import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
@@ -681,7 +681,7 @@ public class SimulationConfigEditor {
 	 */
 	private Scenario finalizeSettlementConfig(String name, String description) {
 		List<InitialSettlement> is = settlementTableModel.getSettlements();
-		List<ArrivingSettlement> arrivals = arrivalTableModel.getArrivals();
+		List<FutureSettlement> arrivals = arrivalTableModel.getArrivals();
 		int maxColonies = coloniesModel.getNumber().intValue();
 		return new Scenario(name, description, is, arrivals, maxColonies, false);
 	}

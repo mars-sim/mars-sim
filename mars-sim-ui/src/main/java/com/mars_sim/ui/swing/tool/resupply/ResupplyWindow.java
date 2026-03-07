@@ -57,7 +57,7 @@ public class ResupplyWindow extends ContentPanel
 
 	/** Tool name. */
 	public static final String NAME = "resupply";
-	public static final String ICON = "resupply";
+	public static final String ICON = "transportable";
     public static final String TITLE = "Resupply Tool";
 
 	// Data members
