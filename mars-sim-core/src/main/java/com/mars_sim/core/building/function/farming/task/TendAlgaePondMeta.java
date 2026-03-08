@@ -13,6 +13,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -83,9 +84,9 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore factor = RatingScore.ZERO_RATING;
+        RatingScoreImpl factor = new RatingScoreImpl(0);
         if (p.isInSettlement()) {
-			factor = super.assessPersonSuitability(t, p);
+			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             if (factor.getScore() == 0D) {
                 return factor;
             }
@@ -121,7 +122,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
         for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
             AlgaeFarming pond = building.getAlgae();
             
-            RatingScore result = new RatingScore("base", BASE_SCORE);
+            RatingScoreImpl result = new RatingScoreImpl("base", BASE_SCORE);
 
             var keeping = pond.getHousekeeping();
             result.addBase("maintenance", 

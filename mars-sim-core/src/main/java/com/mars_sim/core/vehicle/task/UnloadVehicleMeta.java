@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -134,7 +135,7 @@ public class UnloadVehicleMeta extends MetaTask implements SettlementMetaTask {
                                                 SettlementMetaTask owner) {
         double remaining = vehicle.getStoredMass();
         if (remaining > 0D) {
-            RatingScore score = new RatingScore(BASE_SCORE);
+            RatingScoreImpl score = new RatingScoreImpl(BASE_SCORE);
             score.addBase("vehicle", (100D * remaining)/vehicle.getCargoCapacity());
 
             // TODO Do not use CommerceFactor; just use size of load

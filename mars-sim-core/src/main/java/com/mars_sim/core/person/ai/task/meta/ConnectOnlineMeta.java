@@ -12,6 +12,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -74,7 +75,7 @@ public class ConnectOnlineMeta extends FactoryMetaTask {
         if (pref > 0) {
             base *= Math.max(1, stress/20);
         }
-        var result = new RatingScore(base);
+        var result = new RatingScoreImpl(base);
 	        
         if (person.isInSettlement()) {	
             // Get an available office space.

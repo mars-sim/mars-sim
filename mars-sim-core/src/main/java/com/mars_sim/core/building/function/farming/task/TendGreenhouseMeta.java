@@ -13,6 +13,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -80,14 +81,14 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore factor = RatingScore.ZERO_RATING;
+        RatingScoreImpl factor = new RatingScoreImpl(0);
         if (p.isInSettlement()) {
             Building b = ((CropTaskJob)t).farm.getBuilding();
             Farming farm = b.getFarming();
             LifeSupport ls = b.getLifeSupport();
 
             if (farm.getFarmerNum() <= 2 * ls.getOccupantCapacity()) {
-    			factor = super.assessPersonSuitability(t, p);
+    			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
                 if (factor.getScore() <= 0) {
                     return factor;
                 }
@@ -122,7 +123,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         for (Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
-            RatingScore score = new RatingScore(farm.getTendingScore());
+            RatingScoreImpl score = new RatingScoreImpl(farm.getTendingScore());
 
             var keeping = farm.getHousekeeping();
             score.addBase("maintenance", 

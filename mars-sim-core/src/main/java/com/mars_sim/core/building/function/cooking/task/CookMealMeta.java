@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -79,7 +80,7 @@ public class CookMealMeta extends MetaTask
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
 
-        RatingScore factor = super.assessPersonSuitability(t, p);
+        RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
         if (factor.getScore() <= 0) {
             return factor;
         }
@@ -121,7 +122,7 @@ public class CookMealMeta extends MetaTask
                   
                     if (!enoughMeals && (demand > 0)) {
                         
-                        RatingScore rating = new RatingScore(250);
+                        RatingScoreImpl rating = new RatingScoreImpl(250);
                         rating.addBase("cleanliness", (kitchen.getCleanliness() + 1) * 10);
 
                         rating.addModifier("meals", 1 + (mealShortfall/10D));

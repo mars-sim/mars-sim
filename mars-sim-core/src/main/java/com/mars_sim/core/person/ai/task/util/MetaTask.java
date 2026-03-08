@@ -15,6 +15,7 @@ import java.util.Set;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
@@ -329,7 +330,7 @@ public abstract class MetaTask {
 	 * @param cType Commerce type
 	 * @return Modified score
 	 */
-	public static RatingScore applyCommerceFactor(RatingScore score, Settlement s, CommerceType cType) {
+	public static RatingScoreImpl applyCommerceFactor(RatingScoreImpl score, Settlement s, CommerceType cType) {
         score.addModifier(GOODS_MODIFIER, s.getGoodsManager().getCommerceFactor(cType));
 		return score;
 	}
@@ -343,19 +344,18 @@ public abstract class MetaTask {
 	 * @see #assessPersonSuitability(RatingScore, Person)
      */
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore factor = RatingScore.ZERO_RATING;
-	   	
-        if (p.isInSettlement()) {
-			factor = new RatingScore(t.getScore());
-			factor = assessPersonSuitability(factor, p);
-			if (t.isEVA()) {
-				// EVA factor is the radiation and the EVA modifiers applied extra
-				factor.addModifier(RADIATION_MODIFIER, TaskUtil.getRadiationModifier(p.getSettlement()));
-				// Question: how to bypass some checks below in case of emergency ?
-				factor.addModifier(EVA_MODIFIER, TaskUtil.getEVAModifier(p));
-			}
-		}
-		return factor;
+        if (!p.isInSettlement()) {
+            return new RatingScoreImpl(0);
+        }
+        RatingScoreImpl factor = new RatingScoreImpl(t.getScore());
+        assessPersonSuitability(factor, p);
+        if (t.isEVA()) {
+            // EVA factor is the radiation and the EVA modifiers applied extra
+            factor.addModifier(RADIATION_MODIFIER, TaskUtil.getRadiationModifier(p.getSettlement()));
+            // Question: how to bypass some checks below in case of emergency ?
+            factor.addModifier(EVA_MODIFIER, TaskUtil.getEVAModifier(p));
+        }
+        return factor;
 	}
 
 	/**
@@ -367,12 +367,12 @@ public abstract class MetaTask {
 	 * @see #assessRobotSuitability(RatingScore, Robot)
      */
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot robot) {
-        RatingScore factor = RatingScore.ZERO_RATING;
-        if (robot.isInSettlement()) {
-			factor = new RatingScore(t.getScore());
-			factor = assessRobotSuitability(factor, robot);
-		}
-		return factor;
+        if (!robot.isInSettlement()) {
+            return new RatingScoreImpl(0);
+        }
+        RatingScoreImpl factor = new RatingScoreImpl(t.getScore());
+        assessRobotSuitability(factor, robot);
+        return factor;
 	}
 
 	
@@ -387,7 +387,7 @@ public abstract class MetaTask {
 	 * @param score The base rating score that is adjusted to this person
 	 * @return
 	 */
-	protected RatingScore assessPersonSuitability(RatingScore score, Person person) {
+	protected RatingScoreImpl assessPersonSuitability(RatingScoreImpl score, Person person) {
 
         // Effort-driven task modifier.
 		if (effortDriven) {
@@ -430,7 +430,7 @@ public abstract class MetaTask {
 	 * @param score The base rating score that is adjusted to this person
 	 * @return
 	 */
-	protected RatingScore assessRobotSuitability(RatingScore score, Robot robot) {
+	protected RatingScoreImpl assessRobotSuitability(RatingScoreImpl score, Robot robot) {
 
         // Job modifier. If not my job suitable then a penalty.
 //		It's not JobType. RobotJob robotJob = robot.getBotMind().getRobotJob();
@@ -459,7 +459,7 @@ public abstract class MetaTask {
 	 * @param person Being assessed
 	 * @return
 	 */
-	protected static RatingScore assessMoving(RatingScore result, Person person) {
+	protected static RatingScoreImpl assessMoving(RatingScoreImpl result, Person person) {
 		if (person.isInVehicle() && Vehicle.inMovingRover(person)) {
 			result.addModifier(VEHICLE_MODIFIER,2);
 		}
@@ -475,7 +475,7 @@ public abstract class MetaTask {
 	 * @param person Person working
 	 * @return Modified Rating score
 	 */
-	protected static RatingScore assessBuildingSuitability(RatingScore score, Building building,
+	protected static RatingScoreImpl assessBuildingSuitability(RatingScoreImpl score, Building building,
 															Person person) {
 		if (building != null) {
 			score.addModifier("crowding",

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -110,11 +111,11 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		Robot badRobot1 = null;
 		Robot badRobot2 = null;
 
-		RatingScore highestScore0 = new RatingScore(1D);
-		RatingScore highestScore1 = new RatingScore(1D);
-		RatingScore highestScore2 = new RatingScore(1D);
+		RatingScoreImpl highestScore0 = new RatingScoreImpl(1D);
+		RatingScoreImpl highestScore1 = new RatingScoreImpl(1D);
+		RatingScoreImpl highestScore2 = new RatingScoreImpl(1D);
 
-		RatingScore score = RatingScore.ZERO_RATING;
+		RatingScoreImpl score = new RatingScoreImpl(0);
 		
 		for (Robot robot : getAllDownRobotCandidates(settlement)) {
 			
@@ -154,9 +155,9 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		badRobot1 = null;
 		badRobot2 = null;
 
-		highestScore0 = new RatingScore(1D);
-		highestScore1 = new RatingScore(1D);
-		highestScore2 = new RatingScore(1D);
+		highestScore0 = new RatingScoreImpl(1D);
+		highestScore1 = new RatingScoreImpl(1D);
+		highestScore2 = new RatingScoreImpl(1D);
 		
 		for (Robot robot : getAllGoodRobotCandidates(settlement)) {
 				

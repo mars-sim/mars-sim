@@ -19,7 +19,7 @@ public class RatingTest {
 
     @Test
     void testAddModifier() {
-        RatingScore r = new RatingScore(BASE);
+        RatingScoreImpl r = new RatingScoreImpl(BASE);
         assertEquals(BASE, r.getScore(), "Only base");
         var b = r.getBases();
         assertEquals(1, b.size(), "Bases present");
@@ -40,7 +40,7 @@ public class RatingTest {
 
     @Test
     void testSetBase() {
-        RatingScore r = new RatingScore("test", BASE);
+        RatingScoreImpl r = new RatingScoreImpl("test", BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
         r.addBase("test", BASE2);
@@ -49,7 +49,7 @@ public class RatingTest {
 
     @Test
     void testAddBase() {
-        RatingScore r = new RatingScore("test", BASE);
+        RatingScoreImpl r = new RatingScoreImpl("test", BASE);
         r.addModifier(MOD1, MOD1_VALUE);
 
         r.addBase("tests", BASE2);
@@ -58,8 +58,8 @@ public class RatingTest {
 
     @Test
     void testCompare() {
-        RatingScore r1 = new RatingScore("test", 2);
-        RatingScore r2 = new RatingScore("test", 1);
+        RatingScoreImpl r1 = new RatingScoreImpl("test", 2);
+        RatingScoreImpl r2 = new RatingScoreImpl("test", 1);
 
         assertTrue(r1.compareTo(r2) > 0, "Compare base only");
 

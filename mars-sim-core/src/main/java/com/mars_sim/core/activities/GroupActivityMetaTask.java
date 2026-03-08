@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -48,7 +49,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
     }
 
     private static final String NAME = "GroupActivity";
-    private static final RatingScore INSTIGATOR_SCORE = new RatingScore(9000D);
+    private static final RatingScoreImpl INSTIGATOR_SCORE = new RatingScoreImpl(9000D);
 
     public GroupActivityMetaTask() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
@@ -65,7 +66,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
         
          List<SettlementTask> results = new ArrayList<>();
          for(var a : active) {
-            var score = new RatingScore(a.getDefinition().score());
+            var score = new RatingScoreImpl(a.getDefinition().score());
             int expected = (int) (settlement.getNumCitizens() * a.getDefinition().percentagePop());
             results.add(new GroupActivitySettlementTask(this, a, score, expected));
          }
@@ -82,7 +83,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
      */
     @Override
     public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore result = super.assessPersonSuitability(t, p);
+        RatingScoreImpl result = (RatingScoreImpl) super.assessPersonSuitability(t, p);
 
         // Should always be true
         if ((result.getScore() >= 1) && (t instanceof GroupActivitySettlementTask gst)) {
@@ -96,7 +97,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
                 var opinion = p.getRelation().getOpinion(instigator);
                 if (opinion != null) {
                     var modifier = 1 + (opinion.getAverage()/Relation.MAX_OPINION);
-                    result = new RatingScore(result);
+                    result = new RatingScoreImpl(result);
                     result.addModifier("person", modifier);
                 }
             }

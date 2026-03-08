@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -107,7 +108,7 @@ public abstract class DigLocalMeta extends MetaTask
         }
  
         // Determine the base score
-        RatingScore result = new RatingScore(base);
+        RatingScoreImpl result = new RatingScoreImpl(base);
 
         boolean isEmergency = settlement.getRationing().isAtEmergency();
         
@@ -180,7 +181,7 @@ public abstract class DigLocalMeta extends MetaTask
         double thirst = condition.getThirst();
         double exerciseMillisols = p.getCircadianClock().getTodayExerciseTime();
         
-        var result = new RatingScore(t.getScore());
+        var result = new RatingScoreImpl(t.getScore());
     
         // Add a negative base to model Person fitness
         result.addBase("fitness", -(stress * 2 + fatigue + hunger + thirst + exerciseMillisols));

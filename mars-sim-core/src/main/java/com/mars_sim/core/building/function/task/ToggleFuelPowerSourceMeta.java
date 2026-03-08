@@ -16,6 +16,7 @@ import com.mars_sim.core.building.utility.power.FuelPowerSource;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerSource;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -101,7 +102,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore factor = RatingScore.ZERO_RATING;
+        RatingScoreImpl factor = new RatingScoreImpl(0);
         if (p.isInSettlement()) {
             Building building = ((PowerTaskJob)t).getBuilding();
       
@@ -113,7 +114,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
                 return factor;
             }
 	          
-			factor = super.assessPersonSuitability(t, p);
+			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             if ((factor.getScore() >= 1) && building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 // Factor in building crowding and relationship factors.
                 assessBuildingSuitability(factor, building, p);
@@ -148,7 +149,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
             }
 
             if (bestDiff > 0) {
-                RatingScore score = new RatingScore(FACTOR);
+                RatingScoreImpl score = new RatingScoreImpl(FACTOR);
                 score.addModifier("best", bestDiff);
                 tasks.add(new PowerTaskJob(this, building, bestSource, score));
             }

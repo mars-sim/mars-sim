@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
@@ -76,7 +77,7 @@ public class SelfTreatHealthProblemMeta extends FactoryMetaTask {
 
         }
 
-        return createTaskJobs(new RatingScore(result));
+        return createTaskJobs(new RatingScoreImpl(result));
     }
 
    

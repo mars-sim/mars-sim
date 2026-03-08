@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
@@ -42,7 +43,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
+		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
     	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
     		return RatingScore.ZERO_RATING;
     	}
@@ -71,7 +72,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	        	   return RatingScore.ZERO_RATING;
 	        	}
 		            
-	    		missionProbability = new RatingScore(1);
+	    		missionProbability = new RatingScoreImpl(1);
 	    		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDemandCache() / VALUE);
 
 				// Job modifier.

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -132,7 +133,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 			Collection<Malfunctionable> source = MalfunctionFactory.getMalfunctionables(person.getVehicle());
 			for (SettlementTask t: getRepairTasks(source, partStore)) {
 				RepairTaskJob rtj = (RepairTaskJob) t;
-				RatingScore score = new RatingScore(rtj.getScore());
+				RatingScoreImpl score = new RatingScoreImpl(rtj.getScore());
 				score.addModifier("inside", 3D); //Repairs in Vehicles are important
 				tasks.add(new RepairTaskJob(this, rtj.getProblem(), rtj.mal, rtj.getDemand(),
 											rtj.isEVA(), score));
@@ -230,7 +231,7 @@ public class RepairMalfunctionMeta extends FactoryMetaTask implements Settlement
 											MalfunctionRepairWork workType) {    
 		if (!malfunction.isWorkDone(workType)
 				&& (malfunction.numRepairerSlotsEmpty(workType) > 0)) {
-			RatingScore score = new RatingScore(WEIGHT);
+			RatingScoreImpl score = new RatingScoreImpl(WEIGHT);
 	        score.addModifier("severity", malfunction.getSeverity());
 	        
 	        if (RepairHelper.hasRepairParts(partsStore, malfunction)) {

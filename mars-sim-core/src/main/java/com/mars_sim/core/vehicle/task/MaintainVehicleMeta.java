@@ -14,6 +14,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.maintenance.MaintenanceUtil;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
@@ -118,7 +119,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		Vehicle worstVehicle = null;
 		double highestScore = 0;
-		RatingScore score = new RatingScore(0);
+		RatingScoreImpl score = new RatingScoreImpl(0);
 				
 		for (Vehicle vehicle : getAllDownVehicleCandidates(settlement, false)) {
 				

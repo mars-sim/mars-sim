@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
@@ -19,7 +20,7 @@ public class SettlementTaskManagerTest extends MarsSimUnitTest {
     // Test settlement task that just record tinme
     @SuppressWarnings("serial")
 	private static class TestTask extends SettlementTask {
-        private static final RatingScore DEFAULT_SCORE = new RatingScore(10);
+        private static final RatingScoreImpl DEFAULT_SCORE = new RatingScoreImpl(10);
 
         private static int counter = 0;
 

@@ -15,6 +15,7 @@ import java.util.Set;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -210,7 +211,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 				// Is either running or not with with input available
 				if (process.isProcessRunning()) {
-					var score = new RatingScore(MAX_SCORE/2);
+					var score = new RatingScoreImpl(MAX_SCORE/2);
 
 					var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
 
@@ -249,10 +250,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		var inputsAvaiable = isInputsPresent(settlement, process);
 		if (inputsAvaiable) {
 			// Score each process
-			RatingScore score;
+			RatingScoreImpl score;
 			if (isWaste)  {
 				a = computeWasteProcessOutputScore(settlement, process);
-				score = new RatingScore("waste", a.overallScore());
+				score = new RatingScoreImpl("waste", a.overallScore());
 			}
 			else {
 				// Compute the input score
@@ -263,7 +264,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						
 				a = new ResourceProcessAssessment(inputValue, outputValue,
 									outputValue - inputValue, true);
-				score = new RatingScore("outputs", outputValue);
+				score = new RatingScoreImpl("outputs", outputValue);
 				score.addBase("inputs", -inputValue);
 			}
 

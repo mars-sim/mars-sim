@@ -63,6 +63,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.moon.Colony;
 import com.mars_sim.core.moon.Zone;
@@ -1164,7 +1165,7 @@ public class CommanderWindow extends ContentPanel {
 				Person selected = (Person) personBox.getSelectedItem();
 				TaskFactory task = (TaskFactory) taskComboBox.getSelectedItem();
 				selected.getMind().getTaskManager().addPendingTask(new BasicTaskJob(task,
-													new RatingScore(1D)), true);
+													new RatingScoreImpl(1D)), true);
 
 				logBookTA.append(masterClock.getMarsTime().getTruncatedDateTimeStamp()
 						+ " - Assigning '" + task.getName() + "' to " + selected + "\n");

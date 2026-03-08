@@ -17,21 +17,18 @@ public abstract class AbstractTaskJob implements TaskJob {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final double CAP = 1000D;
     private RatingScore score;
     private String name;
 
     /**
-     * Creates an abstract task job.
+     * Creates an abstract task job. The score is stored as-is (immutable once assigned).
      * 
      * @param name
      * @param score
      */
     protected AbstractTaskJob(String name, RatingScore score) {
     	this.name = name;
-  
         this.score = score;
-        this.score.applyRange(0, CAP);
     }
 
     @Override

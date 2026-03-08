@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.person.Person;
@@ -136,7 +137,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
         }
 
         if (demand > 0) {
-            RatingScore score = new RatingScore(base);
+            RatingScoreImpl score = new RatingScoreImpl(base);
             score = applyCommerceFactor(score, s, CommerceType.MANUFACTURING);
             results.add(new ManufactureJob(this, w, lowestSkillNeeded, score, demand));
         }
@@ -151,7 +152,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
      */
     @Override
     public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore score = RatingScore.ZERO_RATING;
+        RatingScoreImpl score = new RatingScoreImpl(0);
         if (p.isInSettlement()
                 && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
             ManufactureJob mgj = (ManufactureJob)t;
@@ -161,7 +162,7 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
             if (skill < mgj.getMinSkill()) {
                 return RatingScore.ZERO_RATING;
             }
-            score = super.assessPersonSuitability(t, p);
+            score = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             score = assessBuildingSuitability(score, mgj.getBuilding(), p);
         }
 
@@ -177,14 +178,14 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
      */
     @Override
     public RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
-        RatingScore score = RatingScore.ZERO_RATING;
+        RatingScoreImpl score = new RatingScoreImpl(0);
         if (r.isInSettlement() && (t instanceof ManufactureJob mgj)) {
             // Check person has minimum skill
 		    int skill = ManufactureWorkTask.getWorkerSkill(r);
             if (skill < mgj.getMinSkill()) {
                 return RatingScore.ZERO_RATING;
             }
-            score = new RatingScore(mgj.getScore());
+            score = new RatingScoreImpl(mgj.getScore());
             score.addModifier("performance", r.getPerformanceRating());
         }
 

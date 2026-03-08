@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -86,7 +87,7 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScore factor = RatingScore.ZERO_RATING;
+        RatingScoreImpl factor = new RatingScoreImpl(0);
 		RoleType roleType = p.getRole().getType(); 
 		
 	   	if (RoleType.GUEST == roleType) {
@@ -95,7 +96,7 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 	   	
         if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			
-			factor = super.assessPersonSuitability(t, p);
+			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
 			if (factor.getScore() == 0D) {
 				return factor;
 			}
@@ -127,20 +128,20 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 		if (settlement.getRationing().isApprovalDue()) {
 //			int levelDiff = settlement.getRationing().getLevelDiff();
 //			if (levelDiff != 0) {
-				RatingScore score = new RatingScore("water.rationing", 5 * BASE_SCORE);
+				RatingScoreImpl score = new RatingScoreImpl("water.rationing", 5 * BASE_SCORE);
 				tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.WATER_RATIONING));
 //			}
 		}
 		
 		boolean iceFlag = settlement.isIceApprovalDue();
 		if (iceFlag) {
-			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE);  
+			RatingScoreImpl score = new RatingScoreImpl("ice.probability", 5 * BASE_SCORE);  
 			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.ICE_RESOURCE));
 		}
 
 		boolean regFlag = settlement.isRegolithApprovalDue();
 		if (regFlag) {
-			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE);  
+			RatingScoreImpl score = new RatingScoreImpl("regolith.probability", 5 * BASE_SCORE);  
 			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		

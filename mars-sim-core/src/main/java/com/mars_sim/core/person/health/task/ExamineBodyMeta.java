@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -87,12 +88,12 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person person) {
-        RatingScore factor = RatingScore.ZERO_RATING;
+        RatingScoreImpl factor = new RatingScoreImpl(0);
         if (person.isInSettlement() &&
 				person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 
 			// Effort-driven task modifier.
-			factor = super.assessPersonSuitability(t, person);
+			factor = (RatingScoreImpl) super.assessPersonSuitability(t, person);
 			if (factor.getScore() == 0D) {
 				return factor;
 			}
@@ -114,11 +115,11 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot robot) {
-        RatingScore factor = RatingScore.ZERO_RATING;
+        RatingScoreImpl factor = new RatingScoreImpl(0);
         if (robot.isInSettlement()) {
 
 			// Effort-driven task modifier.
-			factor = super.assessRobotSuitability(t, robot);
+			factor = (RatingScoreImpl) super.assessRobotSuitability(t, robot);
 			if (factor.getScore() == 0D) {
 				return factor;
 			}
@@ -145,7 +146,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 			for(DeathInfo info : deaths) {
 				if (!info.getExamDone() 
 						&& isVehicleContainerUnitSettlement(info.getPerson())) {
-					RatingScore score = new RatingScore(DEFAULT_SCORE);
+					RatingScoreImpl score = new RatingScoreImpl(DEFAULT_SCORE);
 					score.addBase("due", 
 							getMarsTime().getTimeDiff(info.getTimeOfDeath()) * MOD_SCORE);
 					tasks.add(new ExamineBodyJob(this, info, score));

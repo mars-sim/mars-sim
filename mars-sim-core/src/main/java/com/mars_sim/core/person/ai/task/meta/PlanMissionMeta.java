@@ -13,6 +13,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -79,7 +80,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
                                                 MissionLimitParameters.TOTAL_MISSIONS, 0);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
-            results.add(new PlanTaskJob(this, new RatingScore(shortfall * START_FACTOR)));
+            results.add(new PlanTaskJob(this, new RatingScoreImpl(shortfall * START_FACTOR)));
         }
         return results;
     }
@@ -101,7 +102,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         if (fatigue > 1000 || stress > 75 || hunger > 750)
             return RatingScore.ZERO_RATING;
             
-        var factor = super.assessPersonSuitability(t, p);
+        RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
         if (factor.getScore() == 0D) {
             return factor;
         }

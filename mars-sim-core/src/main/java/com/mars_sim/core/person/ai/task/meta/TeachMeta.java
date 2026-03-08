@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Teach;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
@@ -62,7 +63,7 @@ public class TeachMeta extends FactoryMetaTask {
         if (potentialStudents.isEmpty())
             return EMPTY_TASKLIST;
 
-        RatingScore result = new RatingScore(potentialStudents.size() * 30.0);
+        RatingScoreImpl result = new RatingScoreImpl(potentialStudents.size() * 30.0);
         
         // Add Preference modifier
         result = assessPersonSuitability(result, person);
