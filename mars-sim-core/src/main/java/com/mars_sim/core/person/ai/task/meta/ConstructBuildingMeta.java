@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -101,7 +102,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
             return EMPTY_TASKLIST;
         }
 
-        var score = new RatingScore(WEIGHT * missions.size());
+        var score = new RatingScoreImpl(WEIGHT * missions.size());
         score = assessPersonSuitability(score, person);
         return createTaskJobs(score);
     }
@@ -114,7 +115,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
      * @return A new rating score applying the Person's modifiers
      */
     @Override
-    public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+    public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
         // Check preconditions
         // - an airlock is available for egress
         // - person is qualified for digging local
@@ -122,7 +123,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
     	if (!Walk.anyAirlocksForIngressEgress(p, false)
         || !DigLocal.canDigLocal(p)
         || !EVAOperation.isEVAFit(p)) {
-            return RatingScore.ZERO_RATING;
+            return new RatingScoreImpl(0);
         }
 
         // Probability affected by the person's stress and fatigue.
@@ -134,7 +135,7 @@ public class ConstructBuildingMeta extends FactoryMetaTask {
         double thirst = condition.getThirst();
         double exerciseMillisols = p.getCircadianClock().getTodayExerciseTime();
         
-        var result = new RatingScore(t.getScore());
+        var result = new RatingScoreImpl(t.getScore());
     
         // Add a negative base to model Person fitness
         result.addBase("fitness", -(stress * 2 + fatigue + hunger + thirst + exerciseMillisols));

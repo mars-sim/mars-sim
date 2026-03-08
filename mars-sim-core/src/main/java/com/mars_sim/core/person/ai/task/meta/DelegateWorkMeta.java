@@ -12,6 +12,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.DelegateWork;
@@ -70,7 +71,7 @@ public class DelegateWorkMeta extends FactoryMetaTask {
         else
             return EMPTY_TASKLIST;
         
-        var score = new RatingScore(base);
+        var score = new RatingScoreImpl(base);
             
         // Get an available office space.
         if (person.isInSettlement()) {

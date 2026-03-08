@@ -12,6 +12,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -86,7 +87,7 @@ public class WorkoutMeta extends FactoryMetaTask {
         if (base <= 0)
             return EMPTY_TASKLIST;
         
-        RatingScore result = new RatingScore(base);  // Workout score is divided by 10 as well  
+        RatingScoreImpl result = new RatingScoreImpl(base);  // Workout score is divided by 10 as well  
         result = assessPersonSuitability(result, person);
 
         // Get an available gym.

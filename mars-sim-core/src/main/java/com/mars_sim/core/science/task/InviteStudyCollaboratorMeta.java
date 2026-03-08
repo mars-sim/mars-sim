@@ -12,6 +12,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -89,7 +90,7 @@ public class InviteStudyCollaboratorMeta extends FactoryMetaTask {
         }
  
         // Once a proposal is finished get the invites out quickly
-        var result = new RatingScore(100D);
+        var result = new RatingScoreImpl(100D);
 		
         // In a moving vehicle?
 		result = assessMoving(result, person);

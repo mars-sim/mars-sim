@@ -13,6 +13,7 @@ import java.util.List;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
@@ -91,7 +92,7 @@ public abstract class FactoryMetaTask extends MetaTask
 	 */
 	public List<TaskJob> getTaskJobs(Person person) {
 		double score = getProbability(person);
-		return createTaskJobs(new RatingScore(score));
+		return createTaskJobs(new RatingScoreImpl(score));
 	}
 
 	/**
@@ -102,7 +103,7 @@ public abstract class FactoryMetaTask extends MetaTask
 	 */
 	public List<TaskJob> getTaskJobs(Robot robot) {
 		double score = getProbability(robot);
-		return createTaskJobs(new RatingScore(score));
+		return createTaskJobs(new RatingScoreImpl(score));
 	}
 
 	
@@ -113,7 +114,7 @@ public abstract class FactoryMetaTask extends MetaTask
 	 * @param score Score to the job to create.
 	 * @return List contain the task jobs
 	 */
-	protected List<TaskJob> createTaskJobs(RatingScore score) {
+	protected List<TaskJob> createTaskJobs(RatingScoreImpl score) {
 		// This is to avoid a massive rework in the subclasses.
 		if (score.getScore() <= 0) {
 			return EMPTY_TASKLIST;

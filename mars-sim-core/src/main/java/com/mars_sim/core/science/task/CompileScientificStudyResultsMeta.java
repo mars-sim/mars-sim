@@ -11,6 +11,7 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -106,7 +107,7 @@ public class CompileScientificStudyResultsMeta extends FactoryMetaTask {
             return EMPTY_TASKLIST;
         }
 
-	    RatingScore result = new RatingScore(base);
+	    RatingScoreImpl result = new RatingScoreImpl(base);
         Building b = BuildingManager.getAvailableBuilding(targetScience, person);
         result = assessBuildingSuitability(result, b, person);
         result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);

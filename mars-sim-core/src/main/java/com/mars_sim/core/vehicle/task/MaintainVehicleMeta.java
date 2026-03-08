@@ -14,6 +14,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.VehicleMaintenance;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.maintenance.MaintenanceUtil;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
@@ -48,7 +49,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		private static final long serialVersionUID = 1L;
 
-        public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
+        public VehicleMaintenanceJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScoreImpl score) {
             super(owner, "Vehicle Maintenance " + (eva ? "via EVA " : ""), target, score);
 			setEVA(eva);
         }
@@ -100,7 +101,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
 		var factor = TaskUtil.assessRobot(t, r);
 		if (factor.getScore() >= 100)
 			factor.addModifier("robot.expert", ROBOT_FACTOR);
@@ -118,7 +119,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		Vehicle worstVehicle = null;
 		double highestScore = 0;
-		RatingScore score = new RatingScore(0);
+		RatingScoreImpl score = new RatingScoreImpl(0);
 				
 		for (Vehicle vehicle : getAllDownVehicleCandidates(settlement, false)) {
 				

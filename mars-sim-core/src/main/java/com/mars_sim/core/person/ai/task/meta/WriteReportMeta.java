@@ -12,6 +12,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.WriteReport;
@@ -71,7 +72,7 @@ public class WriteReportMeta extends FactoryMetaTask {
 		if (roleType.isChief())
 			base = 15D;
 
-		RatingScore score = new RatingScore(base);
+		RatingScoreImpl score = new RatingScoreImpl(base);
 		
 		if (person.isInSettlement()) {
 			// Get an available office space.

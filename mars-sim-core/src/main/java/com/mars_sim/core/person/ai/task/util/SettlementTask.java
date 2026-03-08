@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 
 /**
@@ -35,7 +36,7 @@ public abstract class SettlementTask extends AbstractTaskJob {
      * @param focus Entity the focus of the work; maybe null
      * @param score The Rating score for this work
      */
-    protected SettlementTask(SettlementMetaTask parent, String name, Entity focus, RatingScore score) {
+    protected SettlementTask(SettlementMetaTask parent, String name, Entity focus, RatingScoreImpl score) {
         super(name + (focus != null ? " @ " + focus.getName() : ""), score);
         
         this.demand = 1;

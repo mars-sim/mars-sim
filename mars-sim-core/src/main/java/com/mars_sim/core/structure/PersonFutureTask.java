@@ -7,6 +7,7 @@
 package com.mars_sim.core.structure;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -75,7 +76,7 @@ public class PersonFutureTask implements ScheduledEventHandler{
     public int execute(MarsTime currentTime) {
 
 //        logger.info(person, "Executing future task to add " + getFactory().getName() + ".");
-        TaskJob job = new BasicTaskJob(getFactory(), RatingScore.ZERO_RATING);
+        TaskJob job = new BasicTaskJob(getFactory(), new RatingScoreImpl(0));
         person.getTaskManager().addPendingTask(job, false);
         
         // Do not reschedule this event

@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Manufacture;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -43,10 +44,10 @@ public class ManufacturingManager implements Serializable {
 
         private WorkshopProcessInfo info;
         private Salvagable target;
-        private RatingScore value;
+        private RatingScoreImpl value;
         private boolean resourcesAvailable;
 
-        private QueuedProcess(WorkshopProcessInfo info, Salvagable target, RatingScore value,
+        private QueuedProcess(WorkshopProcessInfo info, Salvagable target, RatingScoreImpl value,
                             boolean resourcesAvailable) {
             this.info = info;
             this.target = target;
@@ -68,11 +69,11 @@ public class ManufacturingManager implements Serializable {
          * 
          * @param newPri
          */
-        public void setValue(RatingScore newScore) {
+        public void setValue(RatingScoreImpl newScore) {
             value = newScore;
         }
 
-        public RatingScore getValue() {
+        public RatingScoreImpl getValue() {
             return value;
         }
 
@@ -371,8 +372,8 @@ public class ManufacturingManager implements Serializable {
      * @param info
      * @return
      */
-    private RatingScore getProcessValue(ProcessInfo info) {
-        RatingScore value = new RatingScore();
+    private RatingScoreImpl getProcessValue(ProcessInfo info) {
+        RatingScoreImpl value = new RatingScoreImpl();
         info.getOutputList().forEach(i -> value.addBase(i.getName(),
                         ManufactureUtil.getManufactureProcessItemGoodValuePoint(i, owner, true)));  
         
@@ -391,7 +392,7 @@ public class ManufacturingManager implements Serializable {
     private int addTopValueProcesses(List<? extends WorkshopProcessInfo> potential,
                                      int scoreThreshold, int maxProcesses) {
 
-        record ProcessValue(WorkshopProcessInfo info, RatingScore score) {
+        record ProcessValue(WorkshopProcessInfo info, RatingScoreImpl score) {
             double value() {return score.getScore();}
         }
             
@@ -399,7 +400,7 @@ public class ManufacturingManager implements Serializable {
         List<ProcessValue> candidates = new ArrayList<>();
         for(var p : potential) {
             // Add the individual output values
-            RatingScore value = getProcessValue(p);
+            var value = getProcessValue(p);
             
             if (value.getScore() > scoreThreshold) {
                 candidates.add(new ProcessValue(p, value));

@@ -7,6 +7,7 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
@@ -27,11 +28,11 @@ public abstract class AbstractTaskJob implements TaskJob {
      * @param name
      * @param score
      */
-    protected AbstractTaskJob(String name, RatingScore score) {
+    protected AbstractTaskJob(String name, RatingScoreImpl score) {
     	this.name = name;
   
+        score.applyRange(0, CAP);
         this.score = score;
-        this.score.applyRange(0, CAP);
     }
 
     @Override

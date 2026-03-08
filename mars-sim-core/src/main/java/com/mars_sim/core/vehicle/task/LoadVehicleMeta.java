@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -40,7 +41,7 @@ public class LoadVehicleMeta extends MetaTask
 
 		private Vehicle vehicle;
 		
-        private LoadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScore score) {
+        private LoadJob(SettlementMetaTask owner, Vehicle target, boolean eva, RatingScoreImpl score) {
             super(owner, "Load " + (eva ? "via EVA " : ""), target, score);
             vehicle = target;
             setEVA(eva);
@@ -100,7 +101,7 @@ public class LoadVehicleMeta extends MetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
         return TaskUtil.assessRobot(t, r);
     }
 
@@ -147,7 +148,7 @@ public class LoadVehicleMeta extends MetaTask
                                         boolean insideOnlyTasks,
                                         SettlementMetaTask owner) {
 
-        RatingScore score = new RatingScore(GARAGE_DEFAULT_SCORE);
+        RatingScoreImpl score = new RatingScoreImpl(GARAGE_DEFAULT_SCORE);
         score = applyCommerceFactor(score, settlement, CommerceType.TRANSPORT);
         boolean inGarageAlready = settlement.getBuildingManager().isInGarage(vehicle);
         if (insideOnlyTasks || inGarageAlready) {

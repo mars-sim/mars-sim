@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentOwner;
@@ -39,7 +40,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
 		
 		private static final long serialVersionUID = 1L;
 
-		public ConsolidateTaskJob(SettlementMetaTask owner, RatingScore score) {
+		public ConsolidateTaskJob(SettlementMetaTask owner, RatingScoreImpl score) {
 			super(owner, "Consolidate Containers", null, score);
 		}
 
@@ -83,7 +84,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
                         needsConsolidation(person.getVehicle(), false)) {
             // Create a real list
             result = new ArrayList<>();
-            RatingScore score = new RatingScore(DEFAULT_SCORE);
+            RatingScoreImpl score = new RatingScoreImpl(DEFAULT_SCORE);
             assessPersonSuitability(score, person);
             result.add(new ConsolidateTaskJob(this, score));
         }
@@ -112,7 +113,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
         if (needsConsolidation(settlement, true)) {
             // Create a real list
             result = new ArrayList<>();
-            result.add(new ConsolidateTaskJob(this, new RatingScore(DEFAULT_SCORE)));
+            result.add(new ConsolidateTaskJob(this, new RatingScoreImpl(DEFAULT_SCORE)));
         }
         return result;
     }
@@ -121,7 +122,7 @@ public class ConsolidateContainersMeta extends FactoryMetaTask implements Settle
      * Score modifier for a Robot is based on it's performance rating
      */
     @Override
-    public RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
+    public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r) {
         return TaskUtil.assessRobot(t, r);
     }
 

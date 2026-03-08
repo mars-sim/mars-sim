@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.map.location.Coordinates;
@@ -118,7 +119,7 @@ public class AnalyzeMapDataMeta extends FactoryMetaTask {
 		
 		double unclaimedScore = uncertainty * (1.0 + (int)Math.ceil(unclaimedSites / 5D));
 	
-		var result = new RatingScore("mapdata.uncertainty", CLAIM_FACTOR * unclaimedScore);
+		var result = new RatingScoreImpl("mapdata.uncertainty", CLAIM_FACTOR * unclaimedScore);
 		
 		result.addBase("mapdata.unimproved", Math.min(MAX, UNIMPROVED_FACTOR * unimprovedScore));
 		

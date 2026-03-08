@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.robot.Robot;
@@ -40,7 +41,7 @@ public class SettlementTaskManager implements Serializable {
         private SettlementTaskManager manager;
 
         SettlementTaskProxy(SettlementTaskManager owner, SettlementTask source, RatingScore score) {
-            super(source.getName(), score);
+            super(source.getName(), new RatingScoreImpl(score));
             this.source = source;
             this.manager = owner;
         }

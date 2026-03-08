@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
 import com.mars_sim.core.person.ai.task.util.Task;
@@ -60,6 +61,6 @@ public class RestingMedicalRecoveryMeta extends FactoryMetaTask {
             result+= 100D;
         }
 
-        return createTaskJobs(new RatingScore(result));
+        return createTaskJobs(new RatingScoreImpl(result));
     }
 }

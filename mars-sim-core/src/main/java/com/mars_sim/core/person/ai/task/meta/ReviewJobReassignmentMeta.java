@@ -14,6 +14,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.History.HistoryItem;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.Assignment;
 import com.mars_sim.core.person.ai.job.util.AssignmentType;
@@ -39,7 +40,7 @@ public class ReviewJobReassignmentMeta extends MetaTask
 		
 		private static final long serialVersionUID = 1L;
 
-        public ReviewJobTaskJob(SettlementMetaTask owner, RatingScore score, int jobAssignments) {
+        public ReviewJobTaskJob(SettlementMetaTask owner, RatingScoreImpl score, int jobAssignments) {
             super(owner, "Review Job Assignment", null, score);
 			setDemand(jobAssignments);
         }
@@ -73,9 +74,9 @@ public class ReviewJobReassignmentMeta extends MetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
 		RoleType roleType = p.getRole().getType();
-		RatingScore factor = RatingScore.ZERO_RATING;
+		RatingScoreImpl factor = new RatingScoreImpl(0);
 
 	   	if (RoleType.GUEST == roleType) {
             return factor;
@@ -144,7 +145,7 @@ public class ReviewJobReassignmentMeta extends MetaTask
 
 		List<SettlementTask> result = new ArrayList<>();
 		if (numOfAssignments > 0) {
-			RatingScore score = new RatingScore(base);
+			RatingScoreImpl score = new RatingScoreImpl(base);
 
 			// Addmodifier based on the oldest request; 0.3 per day to a maximum of 3
 			score.addModifier("due", 1D + (0.33D * Math.min(3, oldestRequest)));

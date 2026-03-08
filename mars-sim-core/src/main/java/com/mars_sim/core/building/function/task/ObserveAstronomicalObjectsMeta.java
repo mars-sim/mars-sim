@@ -15,6 +15,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.AstronomicalObservation;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -44,7 +45,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 
 		private static final long serialVersionUID = 1L;
 
-        public AstronomicalTaskJob(SettlementMetaTask owner, ScientificStudy s, RatingScore score) {
+        public AstronomicalTaskJob(SettlementMetaTask owner, ScientificStudy s, RatingScoreImpl score) {
             super(owner, "Astronomy Observations", s, score);
         }
 
@@ -83,7 +84,7 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
             // Any Astro based study active at this Settlement
             for (ScientificStudy s : getAstroStudies(target)) {
             	// Suitable study so create tasks for each Observatory
-                RatingScore score = new RatingScore(100);
+                RatingScoreImpl score = new RatingScoreImpl(100);
                 score = applyCommerceFactor(score, target, CommerceType.TOURISM);
                 result.add(new AstronomicalTaskJob(this, s, score));
             }      
@@ -117,16 +118,16 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
      * @param p Person being assessed
      */
     @Override
-    public RatingScore assessPersonSuitability(SettlementTask st, Person p) {
+    public RatingScoreImpl assessPersonSuitability(SettlementTask st, Person p) {
         if (!p.isInSettlement()
             || !p.getPhysicalCondition().isFitByLevel(500, 50, 500)) {
-            return RatingScore.ZERO_RATING;
+            return new RatingScoreImpl(0);
         }
 
         // Check these is a Observatory usable
         var observatory = determineObservatory(p.getSettlement());
         if (observatory == null) {
-            return RatingScore.ZERO_RATING;
+            return new RatingScoreImpl(0);
         }
 
         double researchModifier = 0D;
@@ -148,10 +149,10 @@ public class ObserveAstronomicalObjectsMeta extends MetaTask implements Settleme
 
         // Can person contribute
         if (researchModifier == 0D) {
-            return RatingScore.ZERO_RATING;
+            return new RatingScoreImpl(0);
         }
 
-        RatingScore result = super.assessPersonSuitability(st, p);
+        RatingScoreImpl result = super.assessPersonSuitability(st, p);
         result.addModifier("research", researchModifier);
 
         // If researcher's current job isn't related to astronomy, divide by two.

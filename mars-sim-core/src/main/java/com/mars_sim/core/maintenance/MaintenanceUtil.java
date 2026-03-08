@@ -7,6 +7,7 @@
 package com.mars_sim.core.maintenance;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.robot.Robot;
@@ -32,10 +33,10 @@ public class MaintenanceUtil {
 	 * @param partsPosted
 	 * @return A score on the need for maintenance
 	 */
-	public static RatingScore scoreMaintenance(MalfunctionManager manager, Malfunctionable entity, 
+	public static RatingScoreImpl scoreMaintenance(MalfunctionManager manager, Malfunctionable entity, 
 			boolean partsPosted) {
 		
-		RatingScore score = new RatingScore("base", 0D);
+		RatingScoreImpl score = new RatingScoreImpl("base", 0D);
 		
 		boolean hasMalfunction = manager.hasMalfunction();
 		
@@ -93,7 +94,7 @@ public class MaintenanceUtil {
 	 * @param partsPosted
 	 * @return
 	 */
-	private static RatingScore computeScore(MalfunctionManager manager, RatingScore score, 
+	private static RatingScoreImpl computeScore(MalfunctionManager manager, RatingScoreImpl score, 
 			double effectiveTime, double inspectionWindow, boolean partsPosted) {
 		
 		double condition = manager.getAdjustedCondition();

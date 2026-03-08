@@ -13,6 +13,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.task.CookMeal;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -144,7 +145,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		needWater = (thirsty && waterAmount >= EatDrink.MIN);
 
 		// Calculate score
-		RatingScore result = new RatingScore();
+		RatingScoreImpl result = new RatingScoreImpl();
 		if (needFood) {
 			// Only eat a meal if person is sufficiently hungry or low on caloric energy.
 			double ghrelin = person.getCircadianClock().getGhrelin();
@@ -153,7 +154,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 
 			if (energy < 2525)
 				hungerBase += (2525 - energy) / 30D;
-			RatingScore hungerScore = new RatingScore(hungerBase);
+			RatingScoreImpl hungerScore = new RatingScoreImpl(hungerBase);
 
 			if (inSettlement) {
 				// Check if there is a local dining building.

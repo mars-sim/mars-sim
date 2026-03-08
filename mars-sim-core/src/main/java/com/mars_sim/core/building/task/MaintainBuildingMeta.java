@@ -12,6 +12,7 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.maintenance.MaintenanceUtil;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
@@ -44,7 +45,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 
 		private static final long serialVersionUID = 1L;
 
-        public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, RatingScore score) {
+        public MaintainTaskJob(SettlementMetaTask owner, Building target, boolean eva, RatingScoreImpl score) {
 			super(owner, "Building Maintenance" + (eva ? " via EVA" : ""), target, score);
 			setEVA(eva);
         }
@@ -101,7 +102,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
         var factor = TaskUtil.assessRobot(t, r);
 		if (factor.getScore() >= 1)
 			factor.addModifier("robot.expert", ROBOT_FACTOR);
@@ -130,7 +131,7 @@ public class MaintainBuildingMeta extends MetaTask implements SettlementMetaTask
 				boolean partsPosted = building.getMalfunctionManager()
 						.hasMaintenancePartsInStorage(settlement);
 				
-				RatingScore score = MaintenanceUtil.scoreMaintenance(manager, building, partsPosted);
+				RatingScoreImpl score = MaintenanceUtil.scoreMaintenance(manager, building, partsPosted);
 	
 				if (score.getScore() > 0) {
 	

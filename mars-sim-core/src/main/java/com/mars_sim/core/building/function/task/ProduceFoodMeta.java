@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -97,7 +98,7 @@ public class ProduceFoodMeta extends FactoryMetaTask {
         // fatigue modifier
         base -= (fatigue - 100) / 2.5D;
 
-        var result = new RatingScore(base);
+        var result = new RatingScoreImpl(base);
         result = assessBuildingSuitability(result, foodProductionBuilding, person);
 
         // FoodProduction good value modifier.

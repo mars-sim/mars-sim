@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -54,7 +55,7 @@ public class ReadMeta extends FactoryMetaTask {
         	return EMPTY_TASKLIST;
         }
 
-        RatingScore result = new RatingScore(VALUE);
+        RatingScoreImpl result = new RatingScoreImpl(VALUE);
         
         result = assessMoving(result, person);
         result = assessPersonSuitability(result, person);

@@ -10,6 +10,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -52,7 +53,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	
 		Settlement settlement = person.getSettlement();
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
+		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
 		
 		// Find people not on a mission and healthy		
 		long availablePeopleNum = settlement.getIndoorPeople().stream()
@@ -82,7 +83,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 				return RatingScore.ZERO_RATING;
 			}
 		}
-		missionProbability = new RatingScore(need);
+		missionProbability = new RatingScoreImpl(need);
 
        	RoleType roleType = person.getRole().getType();
         double roleModifier = switch(roleType) {

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
@@ -282,7 +283,7 @@ public class MissionManager implements Serializable {
 		if (score > 0) {
 			double settlementRatio = paramMgr.getDoubleValue(
 					MissionWeightParameters.INSTANCE.getKey(metaMission.getType()), 1D);
-			baseProb.addModifier("settlement.ratio", settlementRatio);
+			((RatingScoreImpl)baseProb).addModifier("settlement.ratio", settlementRatio);
 		}
 
 		missionProbCache.add(new MissionRating(metaMission, baseProb));

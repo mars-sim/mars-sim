@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
@@ -85,6 +86,6 @@ public class PrescribeMedicationMeta extends FactoryMetaTask {
             .filter(PrescribeMedication::needsMedication)
             .count();
 
-        return createTaskJobs(new RatingScore(patients * PATIENT_SCORE));
+        return createTaskJobs(new RatingScoreImpl(patients * PATIENT_SCORE));
     }
 }
