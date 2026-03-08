@@ -89,31 +89,30 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
 		RoleType roleType = p.getRole().getType(); 
 	   	if (RoleType.GUEST == roleType) {
-            return factor;
+            return RatingScore.ZERO_RATING;
         }
 	   	
-        if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-			
-			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
-			if (factor.getScore() == 0D) {
-				return factor;
-			}
-
-			// This reviewer is valid 
-			double reviewer = switch(roleType) {
-				case RESOURCE_SPECIALIST -> 1.5;
-				case CHIEF_OF_SUPPLY_RESOURCE -> 2;
-				case SUB_COMMANDER -> 3;
-				case COMMANDER -> 4;
-				default -> 1;
-			};
-			
-			factor.addModifier("reviewer", reviewer);
-				
+        if (!p.isInSettlement() || !p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+            return RatingScore.ZERO_RATING;
+        }
+		
+		RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
+		if (factor.getScore() == 0D) {
+			return RatingScore.ZERO_RATING;
 		}
+
+		// This reviewer is valid 
+		double reviewer = switch(roleType) {
+			case RESOURCE_SPECIALIST -> 1.5;
+			case CHIEF_OF_SUPPLY_RESOURCE -> 2;
+			case SUB_COMMANDER -> 3;
+			case COMMANDER -> 4;
+			default -> 1;
+		};
+		
+		factor.addModifier("reviewer", reviewer);
 		return factor;
 	}
 

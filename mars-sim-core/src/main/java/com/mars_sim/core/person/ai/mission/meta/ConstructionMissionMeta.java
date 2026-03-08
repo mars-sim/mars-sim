@@ -53,8 +53,6 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	
 		Settlement settlement = person.getSettlement();
 
-		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
-		
 		// Find people not on a mission and healthy		
 		long availablePeopleNum = settlement.getIndoorPeople().stream()
 					.filter(p -> !p.getMind().hasActiveMission()
@@ -83,7 +81,7 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 				return RatingScore.ZERO_RATING;
 			}
 		}
-		missionProbability = new RatingScoreImpl(need);
+		RatingScoreImpl missionProbability = new RatingScoreImpl(need);
 
        	RoleType roleType = person.getRole().getType();
         double roleModifier = switch(roleType) {

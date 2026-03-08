@@ -43,53 +43,53 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
     	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
     		return RatingScore.ZERO_RATING;
     	}
     	
-		if (person.isInSettlement()) {
-
-			Settlement settlement = person.getSettlement();
-
-			RoleType roleType = person.getRole().getType();
-
-	           if (roleType.isCouncil()
-	            		|| person.getMind().getJobType() == JobType.AREOLOGIST
-	        			|| person.getMind().getJobType() == JobType.CHEMIST
-						|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-						|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-						|| RoleType.MISSION_SPECIALIST == roleType
-						|| RoleType.RESOURCE_SPECIALIST == roleType
-	        		   ) {
-
-
-	        	// Check if there are enough large bag at the settlement for collecting regolith.
-	        	int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
-	            int needed = CollectRegolith.REQUIRED_LARGE_BAGS;
-		        if (stored < needed) {
-	        	   BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
-	        	   return RatingScore.ZERO_RATING;
-	        	}
-		            
-	    		missionProbability = new RatingScoreImpl(1);
-	    		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDemandCache() / VALUE);
-
-				// Job modifier.
-	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-
-				// If this town has a manufacturing objective, divided by bonus
-				missionProbability.addModifier(GOODS, Math.min(1,
-								settlement.getGoodsManager().getCommerceFactor(CommerceType.MANUFACTURING)/2));
-
-				// if introvert, score  0 to  50 --> -2 to 0
-				// if extrovert, score 50 to 100 -->  0 to 2
-				// Increase probability if extrovert
-				int extrovert = person.getExtrovertmodifier();
-				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
-				missionProbability.applyRange(0, LIMIT);
-			}
+		if (!person.isInSettlement()) {
+			return RatingScore.ZERO_RATING;
 		}
+
+		Settlement settlement = person.getSettlement();
+
+		RoleType roleType = person.getRole().getType();
+
+		if (!roleType.isCouncil()
+				&& person.getMind().getJobType() != JobType.AREOLOGIST
+				&& person.getMind().getJobType() != JobType.CHEMIST
+				&& RoleType.CHIEF_OF_MISSION_PLANNING != roleType
+				&& RoleType.CHIEF_OF_SUPPLY_RESOURCE != roleType
+				&& RoleType.MISSION_SPECIALIST != roleType
+				&& RoleType.RESOURCE_SPECIALIST != roleType
+				) {
+			return RatingScore.ZERO_RATING;
+		}
+
+		// Check if there are enough large bag at the settlement for collecting regolith.
+		int stored = settlement.findNumContainersOfType(EquipmentType.LARGE_BAG);
+		int needed = CollectRegolith.REQUIRED_LARGE_BAGS;
+		if (stored < needed) {
+			BuildingManager.injectEquipmentDemand(EquipmentType.LARGE_BAG, settlement, stored, needed);
+			return RatingScore.ZERO_RATING;
+		}
+		
+		RatingScoreImpl missionProbability = new RatingScoreImpl(1);
+		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getRegolithDemandCache() / VALUE);
+
+		// Job modifier.
+		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+
+		// If this town has a manufacturing objective, divided by bonus
+		missionProbability.addModifier(GOODS, Math.min(1,
+						settlement.getGoodsManager().getCommerceFactor(CommerceType.MANUFACTURING)/2));
+
+		// if introvert, score  0 to  50 --> -2 to 0
+		// if extrovert, score 50 to 100 -->  0 to 2
+		// Increase probability if extrovert
+		int extrovert = person.getExtrovertmodifier();
+		missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+		missionProbability.applyRange(0, LIMIT);
 
 		return missionProbability;
 	}

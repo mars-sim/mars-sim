@@ -44,55 +44,56 @@ public class CollectIceMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
     	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
     		return RatingScore.ZERO_RATING;
     	}
     	
-		if (person.isInSettlement()) {
-
-			Settlement settlement = person.getSettlement();
-
-			RoleType roleType = person.getRole().getType();
-
-            if (roleType.isCouncil()
-            		|| person.getMind().getJobType() == JobType.AREOLOGIST
-        			|| person.getMind().getJobType() == JobType.CHEMIST
-        			|| person.getMind().getJobType() == JobType.BOTANIST
-        			|| person.getMind().getJobType() == JobType.CHEF
-					|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-					|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-					|| RoleType.MISSION_SPECIALIST == roleType
-					|| RoleType.RESOURCE_SPECIALIST == roleType
- 					) {
-
-	            // Check if there are enough barrel at the settlement for collecting ice.
-            	int stored = settlement.findNumContainersOfType(EquipmentType.BARREL);
-            	int needed = CollectIce.REQUIRED_BARRELS;
-	            if (stored < needed) {
-	            	BuildingManager.injectEquipmentDemand(EquipmentType.BARREL, settlement, stored, needed);
-	            	return RatingScore.ZERO_RATING;
-	            }
-	            
-				missionProbability = new RatingScoreImpl(1);
-	    		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getIceDemandCache() / VALUE);
-
-				// Job modifier.
-	    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-
-				// If this town has a crop farm objective, divided by bonus
-				missionProbability.addModifier(GOODS, Math.min(1,
-							settlement.getGoodsManager().getCommerceFactor(CommerceType.CROP)/2));
-
-				// if introvert, score  0 to  50 --> -2 to 0
-				// if extrovert, score 50 to 100 -->  0 to 2
-				// Reduce probability if introvert
-				int extrovert = person.getExtrovertmodifier();
-				missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
-
-				missionProbability.applyRange(0D, LIMIT);
-			}
+		if (!person.isInSettlement()) {
+			return RatingScore.ZERO_RATING;
 		}
+
+		Settlement settlement = person.getSettlement();
+
+		RoleType roleType = person.getRole().getType();
+
+        if (!roleType.isCouncil()
+        		&& person.getMind().getJobType() != JobType.AREOLOGIST
+    			&& person.getMind().getJobType() != JobType.CHEMIST
+    			&& person.getMind().getJobType() != JobType.BOTANIST
+    			&& person.getMind().getJobType() != JobType.CHEF
+				&& RoleType.CHIEF_OF_MISSION_PLANNING != roleType
+				&& RoleType.CHIEF_OF_SUPPLY_RESOURCE != roleType
+				&& RoleType.MISSION_SPECIALIST != roleType
+				&& RoleType.RESOURCE_SPECIALIST != roleType
+ 				) {
+			return RatingScore.ZERO_RATING;
+		}
+
+            // Check if there are enough barrel at the settlement for collecting ice.
+        	int stored = settlement.findNumContainersOfType(EquipmentType.BARREL);
+        	int needed = CollectIce.REQUIRED_BARRELS;
+            if (stored < needed) {
+            	BuildingManager.injectEquipmentDemand(EquipmentType.BARREL, settlement, stored, needed);
+            	return RatingScore.ZERO_RATING;
+            }
+            
+			RatingScoreImpl missionProbability = new RatingScoreImpl(1);
+    		missionProbability.addModifier(DEMAND_PROBABILITY, settlement.getIceDemandCache() / VALUE);
+
+			// Job modifier.
+    		missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+
+			// If this town has a crop farm objective, divided by bonus
+			missionProbability.addModifier(GOODS, Math.min(1,
+						settlement.getGoodsManager().getCommerceFactor(CommerceType.CROP)/2));
+
+			// if introvert, score  0 to  50 --> -2 to 0
+			// if extrovert, score 50 to 100 -->  0 to 2
+			// Reduce probability if introvert
+			int extrovert = person.getExtrovertmodifier();
+			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
+
+			missionProbability.applyRange(0D, LIMIT);
 
 		return missionProbability;
 	}

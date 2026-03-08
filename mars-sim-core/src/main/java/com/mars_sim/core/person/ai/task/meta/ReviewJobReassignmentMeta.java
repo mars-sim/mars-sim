@@ -76,27 +76,27 @@ public class ReviewJobReassignmentMeta extends MetaTask
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
 		RoleType roleType = p.getRole().getType();
-		RatingScoreImpl factor = new RatingScoreImpl(0);
 
 	   	if (RoleType.GUEST == roleType) {
-            return factor;
+            return RatingScore.ZERO_RATING;
         }
 		
-        if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
-			&& (roleType != null)
-			&& (roleType.isCouncil()
-        	        || roleType.isChief()     			
-        			|| (roleType == RoleType.MISSION_SPECIALIST
+        if (!p.isInSettlement() || !p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)
+			|| (roleType == null)
+			|| (!roleType.isCouncil()
+        	        && !roleType.isChief()     			
+        			&& !(roleType == RoleType.MISSION_SPECIALIST
 							&& p.getAssociatedSettlement().getNumCitizens() <= 4))) {
-			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
+            return RatingScore.ZERO_RATING;
+        }
+		RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             if (factor.getScore() == 0D) {
-                return factor;
+                return RatingScore.ZERO_RATING;
             }
 			
 			// Get an available office space.
 	        Building building = BuildingManager.getAvailableFunctionTypeBuilding(p, FunctionType.ADMINISTRATION);
 			factor = assessBuildingSuitability(factor, building, p);
-        }
 
         return factor;
     }

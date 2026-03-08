@@ -48,7 +48,6 @@ public class ExplorationMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
     	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
     		return RatingScore.ZERO_RATING;
     	}
@@ -57,20 +56,22 @@ public class ExplorationMeta extends AbstractMetaMission {
 
         RoleType roleType = person.getRole().getType();
 
-		if (roleType.isCouncil()
+		if (!roleType.isCouncil()
 //				|| RoleType.CHIEF_OF_SCIENCE == roleType
-				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-				|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-//	 			|| RoleType.SCIENCE_SPECIALIST == roleType
-	 			|| RoleType.MISSION_SPECIALIST == roleType
-				|| RoleType.RESOURCE_SPECIALIST == roleType
+				&& RoleType.CHIEF_OF_MISSION_PLANNING != roleType
+				&& RoleType.CHIEF_OF_SUPPLY_RESOURCE != roleType
+//				|| RoleType.SCIENCE_SPECIALIST == roleType
+				&& RoleType.MISSION_SPECIALIST != roleType
+				&& RoleType.RESOURCE_SPECIALIST != roleType
 				) {
+			return RatingScore.ZERO_RATING;
+		}
 
 			// 1. Check if there are enough specimen containers at the settlement for
 			// collecting rock samples.
         	int stored = settlement.findNumContainersOfType(EquipmentType.SPECIMEN_BOX);
             int needed = Exploration.REQUIRED_SPECIMEN_CONTAINERS;
-	        if (stored < needed) {
+		        if (stored < needed) {
 				BuildingManager.injectEquipmentDemand(EquipmentType.SPECIMEN_BOX, settlement, stored, needed);
 				
 				return RatingScore.ZERO_RATING;
@@ -83,12 +84,12 @@ public class ExplorationMeta extends AbstractMetaMission {
 				return RatingScore.ZERO_RATING;
 			}
 			
-			missionProbability = new RatingScoreImpl(1);
+			RatingScoreImpl missionProbability = new RatingScoreImpl(1);
 							
 
 			// Check if any mineral locations within rover range and obtain their concentration
 			missionProbability.addModifier(DEMAND_PROBABILITY, Math.min(MAX,
-								settlement.getExplorations().getTotalMineralValue(rover)) / VALUE);
+										settlement.getExplorations().getTotalMineralValue(rover)) / VALUE);
 
 			// Job modifier.
 			missionProbability.addModifier(LEADER, getLeaderSuitability(person));
@@ -102,7 +103,6 @@ public class ExplorationMeta extends AbstractMetaMission {
 			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
 
 			missionProbability.applyRange(0, LIMIT);
-		}
 
 		return missionProbability;
 	}

@@ -152,19 +152,19 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
      */
     @Override
     public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl score = new RatingScoreImpl(0);
-        if (p.isInSettlement()
-                && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-            ManufactureJob mgj = (ManufactureJob)t;
+        if (!p.isInSettlement()
+                || !p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+            return RatingScore.ZERO_RATING;
+        }
+        ManufactureJob mgj = (ManufactureJob)t;
 
             // Check person has minimum skill
 		    int skill = ManufactureWorkTask.getWorkerSkill(p);
             if (skill < mgj.getMinSkill()) {
                 return RatingScore.ZERO_RATING;
             }
-            score = (RatingScoreImpl) super.assessPersonSuitability(t, p);
+            RatingScoreImpl score = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             score = assessBuildingSuitability(score, mgj.getBuilding(), p);
-        }
 
         return score;
     }
@@ -178,16 +178,16 @@ public class ManufacturingMetaTask extends MetaTask implements SettlementMetaTas
      */
     @Override
     public RatingScore assessRobotSuitability(SettlementTask t, Robot r) {
-        RatingScoreImpl score = new RatingScoreImpl(0);
-        if (r.isInSettlement() && (t instanceof ManufactureJob mgj)) {
+        if (!r.isInSettlement() || !(t instanceof ManufactureJob mgj)) {
+            return RatingScore.ZERO_RATING;
+        }
             // Check person has minimum skill
 		    int skill = ManufactureWorkTask.getWorkerSkill(r);
             if (skill < mgj.getMinSkill()) {
                 return RatingScore.ZERO_RATING;
             }
-            score = new RatingScoreImpl(mgj.getScore());
+            RatingScoreImpl score = new RatingScoreImpl(mgj.getScore());
             score.addModifier("performance", r.getPerformanceRating());
-        }
 
         return score;
     }

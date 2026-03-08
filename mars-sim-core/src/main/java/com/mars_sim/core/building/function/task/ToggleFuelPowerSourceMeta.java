@@ -101,25 +101,23 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
-        if (p.isInSettlement()) {
-            Building building = ((PowerTaskJob)t).getBuilding();
+		public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        if (!p.isInSettlement()) return RatingScore.ZERO_RATING;
+        Building building = ((PowerTaskJob)t).getBuilding();
       
             // Checks if this is a standalone power building that requires EVA to reach
             if ((BuildingCategory.POWER == building.getCategory()) 
                     &&     // Checks if the person is physically fit for heavy EVA tasks
                     !EVAOperation.isEVAFit(p)) {
                 // Probability affected by the person's stress, hunger, thirst and fatigue.
-                return factor;
+                return RatingScore.ZERO_RATING;
             }
 	          
-			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
+			RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             if ((factor.getScore() >= 1) && building.hasFunction(FunctionType.LIFE_SUPPORT)) {
                 // Factor in building crowding and relationship factors.
                 assessBuildingSuitability(factor, building, p);
             }
-		}
 		return factor;
 	}
     

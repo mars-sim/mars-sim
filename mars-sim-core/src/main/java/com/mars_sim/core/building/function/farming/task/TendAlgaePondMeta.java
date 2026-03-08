@@ -84,17 +84,15 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
-        if (p.isInSettlement()) {
-			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
+        if (!p.isInSettlement()) return RatingScore.ZERO_RATING;
+		RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             if (factor.getScore() == 0D) {
-                return factor;
+                return RatingScore.ZERO_RATING;
             }
             
             // Crowding modifier.
             Building b = ((AlgaeTaskJob)t).pond.getBuilding();
             assessBuildingSuitability(factor, b, p);
-		}
 		return factor;
 	}
 

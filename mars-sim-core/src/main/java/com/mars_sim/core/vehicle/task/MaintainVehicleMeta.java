@@ -119,7 +119,7 @@ public class MaintainVehicleMeta extends MetaTask implements SettlementMetaTask 
 
 		Vehicle worstVehicle = null;
 		double highestScore = 0;
-		RatingScoreImpl score = new RatingScoreImpl(0);
+		RatingScore score = RatingScore.ZERO_RATING;
 				
 		for (Vehicle vehicle : getAllDownVehicleCandidates(settlement, false)) {
 				

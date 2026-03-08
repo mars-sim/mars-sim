@@ -345,7 +345,7 @@ public abstract class MetaTask {
      */
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         if (!p.isInSettlement()) {
-            return new RatingScoreImpl(0);
+            return RatingScore.ZERO_RATING;
         }
         RatingScoreImpl factor = new RatingScoreImpl(t.getScore());
         assessPersonSuitability(factor, p);
@@ -368,7 +368,7 @@ public abstract class MetaTask {
      */
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot robot) {
         if (!robot.isInSettlement()) {
-            return new RatingScoreImpl(0);
+            return RatingScore.ZERO_RATING;
         }
         RatingScoreImpl factor = new RatingScoreImpl(t.getScore());
         assessRobotSuitability(factor, robot);

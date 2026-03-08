@@ -50,33 +50,31 @@ public class DeliveryMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
-
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
     	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
-    		return missionProbability;
+    		return RatingScore.ZERO_RATING;
     	}
 		
 		RoleType roleType = person.getRole().getType();
-		if (RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-				|| RoleType.MISSION_SPECIALIST == roleType
-				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
-				|| RoleType.RESOURCE_SPECIALIST == roleType
-				|| RoleType.SUB_COMMANDER == roleType
-				|| RoleType.COMMANDER == roleType
+		if (RoleType.CHIEF_OF_SUPPLY_RESOURCE != roleType
+				&& RoleType.MISSION_SPECIALIST != roleType
+				&& RoleType.CHIEF_OF_MISSION_PLANNING != roleType
+				&& RoleType.RESOURCE_SPECIALIST != roleType
+				&& RoleType.SUB_COMMANDER != roleType
+				&& RoleType.COMMANDER != roleType
 				) {
-			
+			return RatingScore.ZERO_RATING;
+		}
+		
 				// Note: checkMission() gives rise to a NULLPOINTEREXCEPTION that points to
 				// Inventory
 				// It happens only when this sim is a loaded saved sim.
-				missionProbability = getSettlementProbability(settlement); 
-			
-		} 
+				RatingScoreImpl missionProbability = getSettlementProbability(settlement); 
 		
 		if (missionProbability.getScore() <= 0)
-			return missionProbability;
+			return RatingScore.ZERO_RATING;
 	
 		// if introvert, score  0 to  50 --> -2 to 0
 		// if extrovert, score 50 to 100 -->  0 to 2

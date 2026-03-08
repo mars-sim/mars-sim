@@ -81,22 +81,19 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
-        if (p.isInSettlement()) {
-            Building b = ((CropTaskJob)t).farm.getBuilding();
-            Farming farm = b.getFarming();
-            LifeSupport ls = b.getLifeSupport();
+        if (!p.isInSettlement()) return RatingScore.ZERO_RATING;
+        Building b = ((CropTaskJob)t).farm.getBuilding();
+        Farming farm = b.getFarming();
+        LifeSupport ls = b.getLifeSupport();
 
-            if (farm.getFarmerNum() <= 2 * ls.getOccupantCapacity()) {
-    			factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
-                if (factor.getScore() <= 0) {
-                    return factor;
-                }
-
-                // Crowding modifier.
-                factor = assessBuildingSuitability(factor, b, p);          
+        if (farm.getFarmerNum() > 2 * ls.getOccupantCapacity()) return RatingScore.ZERO_RATING;
+        RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
+            if (factor.getScore() <= 0) {
+                return RatingScore.ZERO_RATING;
             }
-		}
+
+            // Crowding modifier.
+            factor = assessBuildingSuitability(factor, b, p);
 		return factor;
 	}
 

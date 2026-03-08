@@ -42,20 +42,21 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-        RatingScoreImpl missionProbability = new RatingScoreImpl(0);
     	if (getMarsTime().getMissionSol() < EARLIEST_SOL_TRAVEL) {
-    		return new RatingScoreImpl(0);
+    		return RatingScore.ZERO_RATING;
     	}
     	
-        if (person.isInSettlement()) {
+        if (!person.isInSettlement()) {
+            return RatingScore.ZERO_RATING;
+        }
             // Check if mission is possible for person based on their
             // circumstance.
             Settlement settlement = person.getSettlement();
 
-            missionProbability = getMissionProbability(settlement, person);
+            RatingScoreImpl missionProbability = getMissionProbability(settlement, person);
 
     		if (missionProbability.getScore() <= 0) {
-    			return new RatingScoreImpl(0);
+    			return RatingScore.ZERO_RATING;
     		}
     		
 	        // Job modifier.
@@ -69,8 +70,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
 			missionProbability.addModifier(PERSON_EXTROVERT, (1 + extrovert/2.0));
 			
 			missionProbability.applyRange(0, LIMIT);
-        }
-		 
+
         return missionProbability;
     }
 

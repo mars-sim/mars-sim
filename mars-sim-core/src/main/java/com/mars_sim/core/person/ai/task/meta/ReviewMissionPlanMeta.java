@@ -85,34 +85,35 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
             return RatingScore.ZERO_RATING;
         }
     	
-        RatingScoreImpl factor = new RatingScoreImpl(0);
-        if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
-			MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
-			Mission m = mp.getMission();			
+        if (!p.isInSettlement() || !p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+            return RatingScore.ZERO_RATING;
+        }
+		MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
+		Mission m = mp.getMission();			
 
-			// Is this Person allowed to review this Mission
-			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p)) {
-				factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
-				if (factor.getScore() == 0D) {
-					return factor;
-				}
-
-				// This reviewer is valid
-				RoleType roleType = p.getRole().getType();  
-				double reviewer;
-				if (roleType.isCouncil()) {
-					reviewer = 4;
-				}
-				else {
-					reviewer = switch(roleType) {
-						case MISSION_SPECIALIST -> 1.5;
-						case CHIEF_OF_MISSION_PLANNING -> 3;
-						default -> 1;
-					};
-				}
-				factor.addModifier("reviewer", reviewer);
+		// Is this Person allowed to review this Mission
+		if (p.equals(m.getStartingPerson()) || !mp.isReviewerValid(p)) {
+            return RatingScore.ZERO_RATING;
+        }
+			RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
+			if (factor.getScore() == 0D) {
+				return RatingScore.ZERO_RATING;
 			}
-		}
+
+			// This reviewer is valid
+			RoleType roleType = p.getRole().getType();  
+			double reviewer;
+			if (roleType.isCouncil()) {
+				reviewer = 4;
+			}
+			else {
+				reviewer = switch(roleType) {
+					case MISSION_SPECIALIST -> 1.5;
+					case CHIEF_OF_MISSION_PLANNING -> 3;
+					default -> 1;
+				};
+			}
+			factor.addModifier("reviewer", reviewer);
 		return factor;
 	}
 

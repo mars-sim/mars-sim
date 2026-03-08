@@ -88,21 +88,21 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person person) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
-        if (person.isInSettlement() &&
-				person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+        if (!person.isInSettlement() ||
+				!person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+            return RatingScore.ZERO_RATING;
+        }
 
-			// Effort-driven task modifier.
-			factor = (RatingScoreImpl) super.assessPersonSuitability(t, person);
-			if (factor.getScore() == 0D) {
-				return factor;
-			}
-
-			double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-			if (skill == 0)
-				skill = 0.01D;
-			factor.addModifier(SKILL_MODIFIER, skill);
+		// Effort-driven task modifier.
+		RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, person);
+		if (factor.getScore() == 0D) {
+			return RatingScore.ZERO_RATING;
 		}
+
+		double skill = person.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+		if (skill == 0)
+			skill = 0.01D;
+		factor.addModifier(SKILL_MODIFIER, skill);
 		return factor;
 	}
 
@@ -115,20 +115,20 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessRobotSuitability(SettlementTask t, Robot robot) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
-        if (robot.isInSettlement()) {
+        if (!robot.isInSettlement()) {
+            return RatingScore.ZERO_RATING;
+        }
 
-			// Effort-driven task modifier.
-			factor = (RatingScoreImpl) super.assessRobotSuitability(t, robot);
-			if (factor.getScore() == 0D) {
-				return factor;
-			}
-
-			double skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
-			if (skill == 0)
-				skill = 0.01D;
-			factor.addModifier(SKILL_MODIFIER, skill);
+		// Effort-driven task modifier.
+		RatingScoreImpl factor = (RatingScoreImpl) super.assessRobotSuitability(t, robot);
+		if (factor.getScore() == 0D) {
+			return RatingScore.ZERO_RATING;
 		}
+
+		double skill = robot.getSkillManager().getEffectiveSkillLevel(SkillType.MEDICINE);
+		if (skill == 0)
+			skill = 0.01D;
+		factor.addModifier(SKILL_MODIFIER, skill);
 		return factor;
 	}
 

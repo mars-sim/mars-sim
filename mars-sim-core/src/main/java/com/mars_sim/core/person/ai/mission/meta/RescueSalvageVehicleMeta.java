@@ -35,9 +35,9 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-        RatingScoreImpl missionProbability = new RatingScoreImpl(0);
-
-        if (person.isInSettlement()) {
+        if (!person.isInSettlement()) {
+            return RatingScore.ZERO_RATING;
+        }
 
             Settlement settlement = person.getSettlement();
 
@@ -55,54 +55,54 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
                 else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
                     return RatingScore.ZERO_RATING;  
                 
-                missionProbability = new RatingScoreImpl(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
+                RatingScoreImpl missionProbability = new RatingScoreImpl(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
                 missionProbability.addModifier("stranded", 
                                     RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget));                  
+
+                int all = settlement.getNumCitizens();
+                int minMembers = 0;
+                if (all <= 3)
+                	minMembers = 0;
+                else if (all > 3)	
+                	minMembers = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
+        	    
+                // Check if min number of EVA suits at settlement.
+                if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < minMembers) {
+        	        return RatingScore.ZERO_RATING;
+        	    }
+       
+                // Check if minimum number of people are available at the settlement.
+                // and a backup rover
+                if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, minMembers)
+                        || !RoverMission.hasBackupRover(settlement)) {
+                    return RatingScore.ZERO_RATING;
+                }
+
+               	RoleType roleType = person.getRole().getType();
+                double roleModifier = switch(roleType) {
+                    case MISSION_SPECIALIST -> 1.5;
+                    case CHIEF_OF_MISSION_PLANNING -> 3;
+                    case SUB_COMMANDER -> 4.5;
+                    case COMMANDER -> 6;
+                    default -> 1;
+                };
+                missionProbability.addModifier("Role", roleModifier);
+     
+                // Crowding modifier.
+                int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
+                if (crowding > 0) {
+                    missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
+                }
+                
+                // Job modifier.
+                missionProbability.addModifier(LEADER, getLeaderSuitability(person));
+                missionProbability.applyRange(0, LIMIT);
+
+                return missionProbability;
             }
             else {
                 return RatingScore.ZERO_RATING;
             }
-    
-            int all = settlement.getNumCitizens();
-            int minMembers = 0;
-            if (all <= 3)
-            	minMembers = 0;
-            else if (all > 3)	
-            	minMembers = RescueSalvageVehicle.MIN_STAYING_MEMBERS;
-    	    
-            // Check if min number of EVA suits at settlement.
-            if (MissionUtil.getNumberAvailableEVASuitsAtSettlement(settlement) < minMembers) {
-    	        return RatingScore.ZERO_RATING;
-    	    }
-   
-            // Check if minimum number of people are available at the settlement.
-            // and a backup rover
-            if (!MissionUtil.minAvailablePeopleAtSettlement(settlement, minMembers)
-                    || !RoverMission.hasBackupRover(settlement)) {
-                return RatingScore.ZERO_RATING;
-            }
-
-           	RoleType roleType = person.getRole().getType();
-            double roleModifier = switch(roleType) {
-                case MISSION_SPECIALIST -> 1.5;
-                case CHIEF_OF_MISSION_PLANNING -> 3;
-                case SUB_COMMANDER -> 4.5;
-                case COMMANDER -> 6;
-                default -> 1;
-            };
-            missionProbability.addModifier("Role", roleModifier);
- 
-            // Crowding modifier.
-            int crowding = settlement.getIndoorPeopleCount() - settlement.getPopulationCapacity();
-            if (crowding > 0) {
-                missionProbability.addModifier(OVER_CROWDING, (crowding + 1));
-            }
-            
-            // Job modifier.
-            missionProbability.addModifier(LEADER, getLeaderSuitability(person));
-            missionProbability.applyRange(0, LIMIT);
-        }
-
-        return missionProbability;
     }
+}
 }
