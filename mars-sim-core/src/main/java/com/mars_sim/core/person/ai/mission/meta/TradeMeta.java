@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
@@ -45,7 +44,7 @@ public class TradeMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 		Settlement settlement = person.getAssociatedSettlement();
 		
@@ -87,24 +86,24 @@ public class TradeMeta extends AbstractMetaMission {
 		return missionProbability;
 	}
 
-	private RatingScoreImpl getSettlementProbability(Settlement settlement) {
+	private RatingScore getSettlementProbability(Settlement settlement) {
 		
 		// Check for the best trade settlement within range.			
 		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
 		if (rover == null) {
-			return new RatingScoreImpl(0);
+			return RatingScore.ZERO_RATING;
 		}
 		GoodsManager gManager = settlement.getGoodsManager();
 
 		Deal deal = gManager.getBestDeal(MissionType.TRADE, rover);
 		if (deal == null) {
-			return new RatingScoreImpl(0);
+			return RatingScore.ZERO_RATING;
 		}	
 
 		double tradeProfit = deal.getProfit();
 
 		// Trade value modifier.
-		RatingScoreImpl missionProbability = new RatingScoreImpl(tradeProfit / 1000D);
+		RatingScore missionProbability = new RatingScore(tradeProfit / 1000D);
 		missionProbability = MetaTask.applyCommerceFactor(missionProbability, settlement, CommerceType.TRADE);
 		missionProbability.applyRange(0, Trade.MAX_STARTING_PROBABILITY);
 		

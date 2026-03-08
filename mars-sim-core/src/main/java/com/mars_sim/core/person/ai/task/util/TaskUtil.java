@@ -14,7 +14,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
@@ -150,12 +149,12 @@ public class TaskUtil {
      * @param r Robot being assessed
      * @return A rating
      */
-    public static RatingScoreImpl assessRobot(SettlementTask t, Robot r) {
+    public static RatingScore assessRobot(SettlementTask t, Robot r) {
         if (t.isEVA()) {
-            return new RatingScoreImpl(0);
+            return RatingScore.ZERO_RATING;
         }
 
-        var factor = new RatingScoreImpl(t.getScore());
+        var factor = new RatingScore(t.getScore());
         factor.addModifier("performance", r.getPerformanceRating());
 
         return factor;

@@ -11,7 +11,6 @@ import java.util.List;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -72,7 +71,7 @@ public class RespondToStudyInvitationMeta extends FactoryMetaTask {
             return EMPTY_TASKLIST;
         }
 	    
-        var result = new RatingScoreImpl(invitedStudies.size() * 200D);
+        var result = new RatingScore(invitedStudies.size() * 200D);
 
         Building adminBuilding = RespondToStudyInvitation.getAvailableAdministrationBuilding(person);
         assessBuildingSuitability(result, adminBuilding, person);

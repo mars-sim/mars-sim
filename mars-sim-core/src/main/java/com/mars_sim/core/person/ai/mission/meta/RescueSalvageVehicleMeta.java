@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission.meta;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -35,7 +34,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-        RatingScoreImpl missionProbability = new RatingScoreImpl(0);
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
 
         if (person.isInSettlement()) {
 
@@ -55,7 +54,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
                 else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
                     return RatingScore.ZERO_RATING;  
                 
-                missionProbability = new RatingScoreImpl(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
+                missionProbability = new RatingScore(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
                 missionProbability.addModifier("stranded", 
                                     RescueSalvageVehicle.getRescuePeopleNum(vehicleTarget));                  
             }

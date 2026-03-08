@@ -17,7 +17,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.CacheCreator;
@@ -637,7 +636,7 @@ public abstract class TaskManager implements Serializable {
 			return false;
 		}
 
-		BasicTaskJob task = new BasicTaskJob(mt, new RatingScoreImpl(0));
+		BasicTaskJob task = new BasicTaskJob(mt, RatingScore.ZERO_RATING);
 		return addPendingTask(task, allowDuplicate);
 	}
 	

@@ -12,7 +12,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -38,7 +37,7 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		private static final long serialVersionUID = 1L;
 		private ReviewGoal goal;
 
-        public BudgetResourcesJob(SettlementMetaTask owner, RatingScoreImpl score, int demand, ReviewGoal goal) {
+        public BudgetResourcesJob(SettlementMetaTask owner, RatingScore score, int demand, ReviewGoal goal) {
 			super(owner, getGoalName(goal), null, score);
 			setDemand(demand);
 			this.goal = goal;
@@ -88,8 +87,8 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
 		RoleType roleType = p.getRole().getType(); 
 	   	if (RoleType.GUEST == roleType) {
             return factor;
@@ -129,26 +128,26 @@ public class BudgetResourcesMeta extends MetaTask implements SettlementMetaTask 
 		if (settlement.getRationing().isReviewDue()) {
 			int levelDiff = settlement.getRationing().reviewRationingLevel();
 			if (levelDiff != 0) {
-				RatingScoreImpl score = new RatingScoreImpl("water.rationing", BASE_SCORE * Math.abs(levelDiff)/2);
+				RatingScore score = new RatingScore("water.rationing", BASE_SCORE * Math.abs(levelDiff)/2);
 				tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.WATER_RATIONING));
 			}
 		}
 		
 		int numResource = settlement.getGoodsManager().getResourceReviewDue();
 		if (numResource > 0) { 
-			RatingScoreImpl score = new RatingScoreImpl("resource.lifeSupport", BASE_SCORE); 
+			RatingScore score = new RatingScore("resource.lifeSupport", BASE_SCORE); 
 			tasks.add(new BudgetResourcesJob(this, score, numResource, ReviewGoal.LIFE_RESOURCE));
 		}
 		
 		boolean iceFlag = settlement.isIceReviewDue();
 		if (iceFlag) {
-			RatingScoreImpl score = new RatingScoreImpl("ice.probability", BASE_SCORE);  
+			RatingScore score = new RatingScore("ice.probability", BASE_SCORE);  
 			tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.ICE_RESOURCE));
 		}
 		
 		boolean regFlag = settlement.isRegolithReviewDue();
 		if (regFlag) {
-			RatingScoreImpl score = new RatingScoreImpl("regolith.probability", BASE_SCORE);  
+			RatingScore score = new RatingScore("regolith.probability", BASE_SCORE);  
 			tasks.add(new BudgetResourcesJob(this, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 

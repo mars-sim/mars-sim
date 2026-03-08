@@ -11,7 +11,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.ReportMissionControl;
@@ -75,7 +74,7 @@ public class ReportMissionControlMeta extends FactoryMetaTask {
 		if (base == 0D) {
 			return EMPTY_TASKLIST;
 		}
-		var result = new RatingScoreImpl(base);
+		var result = new RatingScore(base);
 	            
 	    // Get an available office space.
 	    Building building = Management.getAvailableStation(person);

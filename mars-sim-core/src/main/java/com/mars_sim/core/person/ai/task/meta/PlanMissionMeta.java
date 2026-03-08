@@ -13,7 +13,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -37,7 +36,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
 		
 		private static final long serialVersionUID = 1L;
 
-        public PlanTaskJob(SettlementMetaTask owner, RatingScoreImpl score) {
+        public PlanTaskJob(SettlementMetaTask owner, RatingScore score) {
             super(owner, "Plan Mission", null, score);
         }
 
@@ -80,7 +79,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
                                                 MissionLimitParameters.TOTAL_MISSIONS, 0);
         int shortfall = optimalMissions - settlementMissions;
         if (shortfall > 0) {
-            results.add(new PlanTaskJob(this, new RatingScoreImpl(shortfall * START_FACTOR)));
+            results.add(new PlanTaskJob(this, new RatingScore(shortfall * START_FACTOR)));
         }
         return results;
     }
@@ -89,9 +88,9 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
      * Creates the person modifier based on their role in the settlement.
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         if (JobType.TOURIST == p.getMind().getJobType() || !p.isInSettlement() || !p.getMind().canStartNewMission()) {
-            return new RatingScoreImpl(0);
+            return RatingScore.ZERO_RATING;
         }
     		
         // Probability affected by the person's stress and fatigue.
@@ -100,7 +99,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
         double stress = condition.getStress();
         double hunger = condition.getHunger();            
         if (fatigue > 1000 || stress > 75 || hunger > 750)
-            return new RatingScoreImpl(0);
+            return RatingScore.ZERO_RATING;
             
         var factor = super.assessPersonSuitability(t, p);
         if (factor.getScore() == 0D) {

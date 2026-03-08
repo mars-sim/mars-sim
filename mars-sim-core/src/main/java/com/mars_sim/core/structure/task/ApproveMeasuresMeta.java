@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -37,7 +36,7 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 		private static final long serialVersionUID = 1L;
 		private ReviewGoal goal;
 
-        public ApproveMeasuresJob(SettlementMetaTask owner, RatingScoreImpl score, int demand, ReviewGoal goal) {
+        public ApproveMeasuresJob(SettlementMetaTask owner, RatingScore score, int demand, ReviewGoal goal) {
 			super(owner, getGoalName(goal), null, score);
 			setDemand(demand);
 			this.goal = goal;
@@ -86,8 +85,8 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
 		RoleType roleType = p.getRole().getType(); 
 		
 	   	if (RoleType.GUEST == roleType) {
@@ -128,20 +127,20 @@ public class ApproveMeasuresMeta extends MetaTask implements SettlementMetaTask 
 		if (settlement.getRationing().isApprovalDue()) {
 //			int levelDiff = settlement.getRationing().getLevelDiff();
 //			if (levelDiff != 0) {
-				RatingScoreImpl score = new RatingScoreImpl("water.rationing", 5 * BASE_SCORE);
+				RatingScore score = new RatingScore("water.rationing", 5 * BASE_SCORE);
 				tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.WATER_RATIONING));
 //			}
 		}
 		
 		boolean iceFlag = settlement.isIceApprovalDue();
 		if (iceFlag) {
-			RatingScoreImpl score = new RatingScoreImpl("ice.probability", 5 * BASE_SCORE);  
+			RatingScore score = new RatingScore("ice.probability", 5 * BASE_SCORE);  
 			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.ICE_RESOURCE));
 		}
 
 		boolean regFlag = settlement.isRegolithApprovalDue();
 		if (regFlag) {
-			RatingScoreImpl score = new RatingScoreImpl("regolith.probability", 5 * BASE_SCORE);  
+			RatingScore score = new RatingScore("regolith.probability", 5 * BASE_SCORE);  
 			tasks.add(new ApproveMeasuresJob(this, score, 1, ReviewGoal.REGOLITH_RESOURCE));
 		}
 		

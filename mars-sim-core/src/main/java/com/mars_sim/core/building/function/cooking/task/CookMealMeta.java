@@ -12,7 +12,6 @@ import java.util.List;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -41,7 +40,7 @@ public class CookMealMeta extends MetaTask
 
         private Cooking kitchen;
 
-        public CookMealJob(SettlementMetaTask owner, Cooking kitchen, int demand, RatingScoreImpl score) {
+        public CookMealJob(SettlementMetaTask owner, Cooking kitchen, int demand, RatingScore score) {
             super(owner, "Cook Meal", kitchen.getBuilding(), score);
             this.kitchen = kitchen;
 
@@ -78,9 +77,9 @@ public class CookMealMeta extends MetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
 
-        RatingScoreImpl factor = super.assessPersonSuitability(t, p);
+        RatingScore factor = super.assessPersonSuitability(t, p);
         if (factor.getScore() <= 0) {
             return factor;
         }
@@ -100,7 +99,7 @@ public class CookMealMeta extends MetaTask
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         return TaskUtil.assessRobot(t, r);
     }
 
@@ -122,7 +121,7 @@ public class CookMealMeta extends MetaTask
                   
                     if (!enoughMeals && (demand > 0)) {
                         
-                        RatingScoreImpl rating = new RatingScoreImpl(250);
+                        RatingScore rating = new RatingScore(250);
                         rating.addBase("cleanliness", (kitchen.getCleanliness() + 1) * 10);
 
                         rating.addModifier("meals", 1 + (mealShortfall/10D));

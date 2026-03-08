@@ -15,7 +15,6 @@ import java.util.Set;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -52,7 +51,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		
         public ToggleOffJob(SettlementMetaTask mt, Building processBuilding,
 						ResourceProcess process,
-						RatingScoreImpl score) {
+						RatingScore score) {
 			super(mt, "Toggle Off "
 								+ process.getProcessName(), processBuilding, score);
 			this.process = process;
@@ -92,7 +91,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		private boolean useWaste;
 
         public ToggleOnJob(SettlementMetaTask mt, boolean useWaste,
-							ResourceProcessSpec process, RatingScoreImpl score) {
+							ResourceProcessSpec process, RatingScore score) {
 			super(mt, "Toggle On " + process.getName(), null, score);
 			this.process = process;
 			this.useWaste = useWaste;
@@ -151,7 +150,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 	 * @param r Robot making the request
 	 */
 	@Override
-	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         return TaskUtil.assessRobot(t, r);
     }
 
@@ -211,7 +210,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 
 				// Is either running or not with with input available
 				if (process.isProcessRunning()) {
-					var score = new RatingScoreImpl(MAX_SCORE/2);
+					var score = new RatingScore(MAX_SCORE/2);
 
 					var elapsed = getMarsTime().getTimeDiff(process.getToggleDue());
 
@@ -250,10 +249,10 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 		var inputsAvaiable = isInputsPresent(settlement, process);
 		if (inputsAvaiable) {
 			// Score each process
-			RatingScoreImpl score;
+			RatingScore score;
 			if (isWaste)  {
 				a = computeWasteProcessOutputScore(settlement, process);
-				score = new RatingScoreImpl("waste", a.overallScore());
+				score = new RatingScore("waste", a.overallScore());
 			}
 			else {
 				// Compute the input score
@@ -264,7 +263,7 @@ public class ToggleResourceProcessMeta extends MetaTask implements SettlementMet
 						
 				a = new ResourceProcessAssessment(inputValue, outputValue,
 									outputValue - inputValue, true);
-				score = new RatingScoreImpl("outputs", outputValue);
+				score = new RatingScore("outputs", outputValue);
 				score.addBase("inputs", -inputValue);
 			}
 

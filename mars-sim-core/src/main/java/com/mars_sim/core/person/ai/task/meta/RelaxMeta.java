@@ -12,7 +12,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.task.Relax;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
@@ -57,7 +56,7 @@ public class RelaxMeta extends FactoryMetaTask{
             return EMPTY_TASKLIST;
         }
 
-        RatingScoreImpl result = new RatingScoreImpl(WEIGHT);
+        RatingScore result = new RatingScore(WEIGHT);
             
         if (person.isInSettlement()) {
 	        Building recBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.RECREATION);

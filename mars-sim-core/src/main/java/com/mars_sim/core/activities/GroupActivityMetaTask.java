@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
@@ -31,7 +30,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
 		private GroupActivity activity;
 
         protected GroupActivitySettlementTask(SettlementMetaTask parent, GroupActivity activity,
-                                    RatingScoreImpl score, int attendees) {
+                                    RatingScore score, int attendees) {
             super(parent, "Host " + activity.getDefinition().name(), activity.getMeetingPlace(), score);
             this.activity = activity;
             setDemand(attendees);
@@ -49,7 +48,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
     }
 
     private static final String NAME = "GroupActivity";
-    private static final RatingScoreImpl INSTIGATOR_SCORE = new RatingScoreImpl(9000D);
+    private static final RatingScore INSTIGATOR_SCORE = new RatingScore(9000D);
 
     public GroupActivityMetaTask() {
 		super(NAME, WorkerType.PERSON, TaskScope.ANY_HOUR);
@@ -66,7 +65,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
         
          List<SettlementTask> results = new ArrayList<>();
          for(var a : active) {
-            var score = new RatingScoreImpl(a.getDefinition().score());
+            var score = new RatingScore(a.getDefinition().score());
             int expected = (int) (settlement.getNumCitizens() * a.getDefinition().percentagePop());
             results.add(new GroupActivitySettlementTask(this, a, score, expected));
          }
@@ -82,8 +81,8 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
      * @param p Person evaluating the Task
      */
     @Override
-    public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl result = super.assessPersonSuitability(t, p);
+    public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore result = super.assessPersonSuitability(t, p);
 
         // Should always be true
         if ((result.getScore() >= 1) && (t instanceof GroupActivitySettlementTask gst)) {
@@ -97,7 +96,7 @@ public class GroupActivityMetaTask extends MetaTask implements SettlementMetaTas
                 var opinion = p.getRelation().getOpinion(instigator);
                 if (opinion != null) {
                     var modifier = 1 + (opinion.getAverage()/Relation.MAX_OPINION);
-                    result = new RatingScoreImpl(result);
+                    result = new RatingScore(result);
                     result.addModifier("person", modifier);
                 }
             }

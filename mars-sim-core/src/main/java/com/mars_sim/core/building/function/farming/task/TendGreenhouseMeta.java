@@ -13,7 +13,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.LifeSupport;
 import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -41,7 +40,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 
         private Farming farm;
 
-        public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, RatingScoreImpl score) {
+        public CropTaskJob(SettlementMetaTask owner, Farming farm, int demand, RatingScore score) {
             super(owner, "Tend Crops", farm.getBuilding(), score);
             this.farm = farm;
 
@@ -80,8 +79,8 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
             Building b = ((CropTaskJob)t).farm.getBuilding();
             Farming farm = b.getFarming();
@@ -106,7 +105,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         return TaskUtil.assessRobot(t, r);
     }
     
@@ -123,7 +122,7 @@ public class TendGreenhouseMeta extends MetaTask implements SettlementMetaTask {
         for (Building b : settlement.getBuildingManager().getFarmsNeedingWork()) {
             Farming farm = b.getFarming();
 
-            RatingScoreImpl score = new RatingScoreImpl(farm.getTendingScore());
+            RatingScore score = new RatingScore(farm.getTendingScore());
 
             var keeping = farm.getHousekeeping();
             score.addBase("maintenance", 

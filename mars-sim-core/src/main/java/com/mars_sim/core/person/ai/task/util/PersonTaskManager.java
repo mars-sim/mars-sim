@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task.util;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
@@ -148,7 +147,7 @@ public class PersonTaskManager extends TaskManager {
 			defaultInsideTasks = new CacheCreator<>("Default Inside", null);
 			
 			// Create a fallback Task job that can always be done
-			RatingScoreImpl base = new RatingScoreImpl(1D);
+			RatingScore base = new RatingScore(1D);
 			TaskJob sleepJob = new AbstractTaskJob(SLEEP, base) {
 				
 				private static final long serialVersionUID = 1L;
@@ -182,7 +181,7 @@ public class PersonTaskManager extends TaskManager {
 			defaultOutsideTasks = new CacheCreator<>("Default Outside", null);
 
 			// Create a MetaTask to return inside
-			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScoreImpl(1D)) {
+			TaskJob walkBack = new AbstractTaskJob("Return Inside", new RatingScore(1D)) {
 				
 				private static final long serialVersionUID = 1L;
 

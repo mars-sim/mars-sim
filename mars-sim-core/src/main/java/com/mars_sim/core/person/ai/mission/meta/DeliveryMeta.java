@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission.meta;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.Deal;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
@@ -50,7 +49,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScoreImpl missionProbability = new RatingScoreImpl(0);
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
 
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
@@ -94,13 +93,13 @@ public class DeliveryMeta extends AbstractMetaMission {
 	 * @param settlement
 	 * @return
 	 */
-	private RatingScoreImpl getSettlementProbability(Settlement settlement) {
+	private RatingScore getSettlementProbability(Settlement settlement) {
 		// Future: all drones offer the same range (unless it can be retrofitted/customized
 
 		// Check for the best delivery settlement within range.
 		Drone drone = DroneMission.getDroneWithGreatestRange(settlement, false);
 		if (drone == null) {
-			return new RatingScoreImpl(0);
+			return RatingScore.ZERO_RATING;
 		}
 		
 		logger.info(drone, 10_000L, "Available for delivery mission.");
@@ -108,13 +107,13 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 		Deal deal = gManager.getBestDeal(MissionType.DELIVERY, drone);
 		if (deal == null) {
-			return new RatingScoreImpl(0);
+			return RatingScore.ZERO_RATING;
 		}
 
 		double deliveryProfit = deal.getProfit() * VALUE;
 
 		// Delivery value modifier.
-		RatingScoreImpl missionProbability = new RatingScoreImpl(deliveryProfit / DIVISOR);
+		RatingScore missionProbability = new RatingScore(deliveryProfit / DIVISOR);
 		missionProbability = MetaTask.applyCommerceFactor(missionProbability, settlement, CommerceType.TRADE);
 		missionProbability.applyRange(0, Delivery.MAX_STARTING_PROBABILITY);
 		

@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -64,7 +63,7 @@ public class DoInventoryMeta extends FactoryMetaTask {
 			return EMPTY_TASKLIST;
 		}
 		
-		RatingScoreImpl score = new RatingScoreImpl(ENTROPY_LAB, LAB_FACTOR * totENPerL);
+		RatingScore score = new RatingScore(ENTROPY_LAB, LAB_FACTOR * totENPerL);
 
 		NaturalAttributeManager manager = person.getNaturalAttributeManager();
 		

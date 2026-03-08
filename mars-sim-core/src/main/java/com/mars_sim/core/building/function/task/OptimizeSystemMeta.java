@@ -9,7 +9,6 @@ package com.mars_sim.core.building.function.task;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -93,7 +92,7 @@ public class OptimizeSystemMeta extends FactoryMetaTask {
 			}
 		}
 		
-		RatingScoreImpl score = new RatingScoreImpl(ENTROPY_CU, CU_FACTOR * totalEntropyPerCU / popFactor);
+		RatingScore score = new RatingScore(ENTROPY_CU, CU_FACTOR * totalEntropyPerCU / popFactor);
 				
 		score.addBase(ENTROPY_NODE, NODE_FACTOR * totalEntropy / numNode / popFactor);
 		

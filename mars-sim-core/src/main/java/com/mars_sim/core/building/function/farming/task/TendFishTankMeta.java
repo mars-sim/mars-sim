@@ -13,7 +13,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -45,7 +44,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 
         private Fishery tank;
 
-        public FishTaskJob(SettlementMetaTask owner, Fishery tank, RatingScoreImpl score) {
+        public FishTaskJob(SettlementMetaTask owner, Fishery tank, RatingScore score) {
             super(owner, "Tend Fish Tank", tank.getBuilding(), score);
             this.tank = tank;
         }
@@ -83,8 +82,8 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
 			factor = super.assessPersonSuitability(t, p);
             if (factor.getScore() == 0D) {
@@ -104,7 +103,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         return TaskUtil.assessRobot(t, r);
     }
 
@@ -122,7 +121,7 @@ public class TendFishTankMeta extends MetaTask implements SettlementMetaTask {
         for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.FISHERY)) {
             Fishery fishTank = building.getFishery();
             
-            RatingScoreImpl result = new RatingScoreImpl("base", BASE_SCORE);
+            RatingScore result = new RatingScore("base", BASE_SCORE);
             
             var keeping = fishTank.getHousekeeping();
             result.addBase("maintenance", 

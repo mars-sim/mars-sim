@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
@@ -40,7 +39,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 
         private MissionPlanning plan;
 
-        public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, RatingScoreImpl score) {
+        public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, RatingScore score) {
 			super(owner, "Review Mission", plan.getMission(), score);
             this.plan = plan;
         }
@@ -80,12 +79,12 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
     	if (JobType.TOURIST == p.getMind().getJobType()) {
-            return new RatingScoreImpl(0);
+            return RatingScore.ZERO_RATING;
         }
     	
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 			MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
 			Mission m = mp.getMission();			
@@ -130,7 +129,7 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
         	MissionPlanning mp = m.getPlan();
     	
 			if ((mp.getStatus() == PlanType.PENDING) && (mp.getActiveReviewer() == null)) {
-				RatingScoreImpl score = new RatingScoreImpl(BASE_SCORE);               	
+				RatingScore score = new RatingScore(BASE_SCORE);               	
 
 				// Add adjustment based on how many sol the request has since been submitted
 				// if the job assignment submitted date is > 1 sol

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
@@ -81,7 +80,7 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
         }
 
         // Get the local medical aids to use.
-        var result = new RatingScoreImpl(VALUE);
+        var result = new RatingScore(VALUE);
         result.addModifier("patients", Math.max(1D, (treatable.size()/0.33)));
         result = assessPersonSuitability(result, person);
         
@@ -110,7 +109,7 @@ public class TreatMedicalPatientMeta extends FactoryMetaTask {
         }
 
         // Get the local medical aids to use.
-        var result = new RatingScoreImpl(VALUE);
+        var result = new RatingScore(VALUE);
         result.addModifier("patients", Math.max(1D, (treatable.size()/0.33)));
         result = assessRobotSuitability(result, robot);
         

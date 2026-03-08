@@ -12,7 +12,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -42,7 +41,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 
         private DeathInfo patient;
 
-        public ExamineBodyJob(SettlementMetaTask owner, DeathInfo patient, RatingScoreImpl score) {
+        public ExamineBodyJob(SettlementMetaTask owner, DeathInfo patient, RatingScore score) {
 			super(owner, "Examine Body", patient.getPerson(), score);
             this.patient = patient;
         }
@@ -87,8 +86,8 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person person) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessPersonSuitability(SettlementTask t, Person person) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (person.isInSettlement() &&
 				person.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
 
@@ -114,8 +113,8 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot robot) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot robot) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (robot.isInSettlement()) {
 
 			// Effort-driven task modifier.
@@ -146,7 +145,7 @@ public class ExamineBodyMeta  extends MetaTask implements SettlementMetaTask {
 			for(DeathInfo info : deaths) {
 				if (!info.getExamDone() 
 						&& isVehicleContainerUnitSettlement(info.getPerson())) {
-					RatingScoreImpl score = new RatingScoreImpl(DEFAULT_SCORE);
+					RatingScore score = new RatingScore(DEFAULT_SCORE);
 					score.addBase("due", 
 							getMarsTime().getTimeDiff(info.getTimeOfDeath()) * MOD_SCORE);
 					tasks.add(new ExamineBodyJob(this, info, score));

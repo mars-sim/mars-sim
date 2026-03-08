@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -41,7 +40,7 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 
 		private static final long serialVersionUID = 1L;
 
-        public MaintainRobotJob(SettlementMetaTask owner, Robot target, RatingScoreImpl score) {
+        public MaintainRobotJob(SettlementMetaTask owner, Robot target, RatingScore score) {
             super(owner, "Robot Maintenance", target, score);
         }
 
@@ -86,10 +85,10 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
 		// Avoid having a repair bot maintaining itself
 		if (r.equals((Robot)t.getFocus()))
-			return new RatingScoreImpl(0);
+			return RatingScore.ZERO_RATING;
 		
 		var factor = TaskUtil.assessRobot(t, r);
 		if (factor.getScore() >= 100)
@@ -111,11 +110,11 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		Robot badRobot1 = null;
 		Robot badRobot2 = null;
 
-		RatingScoreImpl highestScore0 = new RatingScoreImpl(1D);
-		RatingScoreImpl highestScore1 = new RatingScoreImpl(1D);
-		RatingScoreImpl highestScore2 = new RatingScoreImpl(1D);
+		RatingScore highestScore0 = new RatingScore(1D);
+		RatingScore highestScore1 = new RatingScore(1D);
+		RatingScore highestScore2 = new RatingScore(1D);
 
-		RatingScoreImpl score = new RatingScoreImpl(0);
+		RatingScore score = RatingScore.ZERO_RATING;
 		
 		for (Robot robot : getAllDownRobotCandidates(settlement)) {
 			
@@ -155,9 +154,9 @@ public class MaintainRobotMeta extends MetaTask implements SettlementMetaTask {
 		badRobot1 = null;
 		badRobot2 = null;
 
-		highestScore0 = new RatingScoreImpl(1D);
-		highestScore1 = new RatingScoreImpl(1D);
-		highestScore2 = new RatingScoreImpl(1D);
+		highestScore0 = new RatingScore(1D);
+		highestScore1 = new RatingScore(1D);
+		highestScore2 = new RatingScore(1D);
 		
 		for (Robot robot : getAllGoodRobotCandidates(settlement)) {
 				

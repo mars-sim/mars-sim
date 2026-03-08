@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -83,7 +82,7 @@ public class PeerReviewStudyPaperMeta extends FactoryMetaTask {
 			}
 		}
 
-		RatingScoreImpl result = new RatingScoreImpl(base);
+		RatingScore result = new RatingScore(base);
 		result = applyCommerceFactor(result, person.getAssociatedSettlement(), CommerceType.RESEARCH);
 		result = assessPersonSuitability(result, person);
         return createTaskJobs(result);

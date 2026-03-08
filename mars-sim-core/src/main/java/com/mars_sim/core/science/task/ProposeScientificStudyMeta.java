@@ -12,7 +12,6 @@ import java.util.Set;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -114,7 +113,7 @@ public class ProposeScientificStudyMeta extends FactoryMetaTask {
 			return EMPTY_TASKLIST;
 		}
 
-		RatingScoreImpl result = new RatingScoreImpl(base);
+		RatingScore result = new RatingScore(base);
 		result.addModifier(SCIENCE_MODIFIER, settlement.getPreferences()
 								.getDoubleValue(ScienceParameters.INSTANCE.getKey(science), 1D));
 		// Crowding modifier

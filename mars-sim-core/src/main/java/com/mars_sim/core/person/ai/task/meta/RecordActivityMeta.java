@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.task.meta;
 import java.util.List;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -52,7 +51,7 @@ public class RecordActivityMeta extends FactoryMetaTask {
     		return EMPTY_TASKLIST;
         }
 
-    	var score = new RatingScoreImpl(RandomUtil.getRandomDouble(200));
+    	var score = new RatingScore(RandomUtil.getRandomDouble(200));
         score = assessPersonSuitability(score, person);
         score = applyCommerceFactor(score, person.getAssociatedSettlement(), CommerceType.TOURISM);
 

@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
@@ -23,17 +22,16 @@ public abstract class AbstractTaskJob implements TaskJob {
     private String name;
 
     /**
-     * Creates an abstract task job. The score is capped and a defensive copy is stored
-     * so the rating is immutable once assigned.
+     * Creates an abstract task job.
      * 
      * @param name
      * @param score
      */
     protected AbstractTaskJob(String name, RatingScore score) {
     	this.name = name;
-        RatingScoreImpl copy = new RatingScoreImpl(score);
-        copy.applyRange(0, CAP);
-        this.score = copy;
+  
+        this.score = score;
+        this.score.applyRange(0, CAP);
     }
 
     @Override

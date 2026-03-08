@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.task.util.AbstractTaskJob;
@@ -163,7 +162,7 @@ public class BotTaskManager extends TaskManager {
 	private static synchronized CacheCreator<TaskJob> getPowerSaveTaskMap() {
 		if (powerSaveMap == null) {
 			powerSaveMap = new CacheCreator<>("Power Save Mode", null);
-			TaskJob powerSaveJob = new AbstractTaskJob("SavePower", new RatingScoreImpl(SavePower.DEFAULT_SCORE)) {
+			TaskJob powerSaveJob = new AbstractTaskJob("SavePower", new RatingScore(SavePower.DEFAULT_SCORE)) {
 				
 				private static final long serialVersionUID = 1L;
 
@@ -180,7 +179,7 @@ public class BotTaskManager extends TaskManager {
 	private static synchronized CacheCreator<TaskJob> getChargeTaskMap() {
 		if (chargeMap == null) {
 			chargeMap = new CacheCreator<>("Robot Charge", null);
-			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScoreImpl(1000D)) {
+			TaskJob chargeJob = new AbstractTaskJob("Charge", new RatingScore(1000D)) {
 				
 				private static final long serialVersionUID = 1L;
 

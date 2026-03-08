@@ -13,7 +13,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.AlgaeFarming;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -43,7 +42,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 	
         private AlgaeFarming pond;
 
-        public AlgaeTaskJob(SettlementMetaTask owner, AlgaeFarming pond, RatingScoreImpl score) {
+        public AlgaeTaskJob(SettlementMetaTask owner, AlgaeFarming pond, RatingScore score) {
             super(owner, "Tend Algae Pond", pond.getBuilding(), score);
             this.pond = pond;
         }
@@ -83,8 +82,8 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
 			factor = super.assessPersonSuitability(t, p);
             if (factor.getScore() == 0D) {
@@ -104,7 +103,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
 	@Override
-	public RatingScoreImpl assessRobotSuitability(SettlementTask t, Robot r)  {
+	public RatingScore assessRobotSuitability(SettlementTask t, Robot r)  {
         return TaskUtil.assessRobot(t, r);
     }
 
@@ -122,7 +121,7 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
         for (Building building : settlement.getBuildingManager().getBuildingSet(FunctionType.ALGAE_FARMING)) {
             AlgaeFarming pond = building.getAlgae();
             
-            RatingScoreImpl result = new RatingScoreImpl("base", BASE_SCORE);
+            RatingScore result = new RatingScore("base", BASE_SCORE);
 
             var keeping = pond.getHousekeeping();
             result.addBase("maintenance", 

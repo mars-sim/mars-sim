@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -72,7 +71,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 		double newBase = BASE_SCORE;
 		
-		RatingScoreImpl missionProbability = null;
+		RatingScore missionProbability = null;
 		
 		// Add probability for researcher's primary study (if any).
 		ScientificStudy primaryStudy = person.getResearchStudy().getStudy();
@@ -89,7 +88,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 				newBase += WEIGHT;
 			}
 			
-			missionProbability = new RatingScoreImpl(PRI_STUDY_BASE, newBase);
+			missionProbability = new RatingScore(PRI_STUDY_BASE, newBase);
 			
 			if (StudyStatus.INVITATION_PHASE == primaryStudy.getPhase())
 				missionProbability.addModifier(PROGRESS_BASE, 1.5);
@@ -119,7 +118,7 @@ public class FieldStudyMeta extends AbstractMetaMission {
 			}
 			
 			if (missionProbability == null)
-				missionProbability = new RatingScoreImpl(COL_STUDY_BASE, newBase);
+				missionProbability = new RatingScore(COL_STUDY_BASE, newBase);
 			else
 				missionProbability.addBase(COL_STUDY_BASE, newBase);
 						

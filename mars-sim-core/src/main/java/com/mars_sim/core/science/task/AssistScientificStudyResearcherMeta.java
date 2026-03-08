@@ -11,7 +11,6 @@ import java.util.List;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
@@ -69,7 +68,7 @@ public class AssistScientificStudyResearcherMeta extends FactoryMetaTask {
 		if (size == 0)
         	return EMPTY_TASKLIST;
 	        
-	    RatingScoreImpl result = new RatingScoreImpl((double)size * RandomUtil.getRandomInt(1, 10));
+	    RatingScore result = new RatingScore((double)size * RandomUtil.getRandomInt(1, 10));
         Person researcher = potentialResearchers.get(0);
 
 		// If assistant is in a settlement, use crowding modifier.

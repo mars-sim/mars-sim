@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -43,7 +42,7 @@ public abstract class DigLocalMeta extends MetaTask
 		
 		private static final long serialVersionUID = 1L;
 		
-        public DigLocalTaskJob(DigLocalMeta owner, RatingScoreImpl score, int total) {
+        public DigLocalTaskJob(DigLocalMeta owner, RatingScore score, int total) {
             super(owner, owner.getName().replaceFirst("ging", ""), null, score);
             setDemand(total);
             setEVA(true); // Enable the EVA based assessments
@@ -108,7 +107,7 @@ public abstract class DigLocalMeta extends MetaTask
         }
  
         // Determine the base score
-        RatingScoreImpl result = new RatingScoreImpl(base);
+        RatingScore result = new RatingScore(base);
 
         boolean isEmergency = settlement.getRationing().isAtEmergency();
         
@@ -161,7 +160,7 @@ public abstract class DigLocalMeta extends MetaTask
      * @return A new rating score applying the Person's modifiers
      */
     @Override
-    public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
+    public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
         // Check preconditions
         // - an airlock is available for egress
         // - person is qualified for digging local
@@ -169,7 +168,7 @@ public abstract class DigLocalMeta extends MetaTask
     	if (!Walk.anyAirlocksForIngressEgress(p, false)
         || !DigLocal.canDigLocal(p)
         || !EVAOperation.isEVAFit(p)) {
-            return new RatingScoreImpl(0);
+            return RatingScore.ZERO_RATING;
         }
 
         // Probability affected by the person's stress and fatigue.
@@ -181,7 +180,7 @@ public abstract class DigLocalMeta extends MetaTask
         double thirst = condition.getThirst();
         double exerciseMillisols = p.getCircadianClock().getTodayExerciseTime();
         
-        var result = new RatingScoreImpl(t.getScore());
+        var result = new RatingScore(t.getScore());
     
         // Add a negative base to model Person fitness
         result.addBase("fitness", -(stress * 2 + fatigue + hunger + thirst + exerciseMillisols));

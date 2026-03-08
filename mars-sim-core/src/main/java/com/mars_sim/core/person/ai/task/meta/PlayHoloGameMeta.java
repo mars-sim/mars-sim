@@ -12,7 +12,6 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
@@ -68,7 +67,7 @@ public class PlayHoloGameMeta extends FactoryMetaTask {
         if ((fatigue > 500) || (hunger > 500))
             return EMPTY_TASKLIST;
             
-        var result = new RatingScoreImpl(1.2D);
+        var result = new RatingScore(1.2D);
         result = assessPersonSuitability(result, person);
   
         if (person.isInSettlement()) {

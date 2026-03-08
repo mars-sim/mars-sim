@@ -16,7 +16,6 @@ import com.mars_sim.core.building.utility.power.FuelPowerSource;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerSource;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
@@ -44,7 +43,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 		private FuelPowerSource powerSource;
 
         public PowerTaskJob(SettlementMetaTask owner, Building building, FuelPowerSource powerSource,
-                                    RatingScoreImpl score) {
+                                    RatingScore score) {
             super(owner, "Toggle " + powerSource.getType().getName(), building, score);
 			this.powerSource = powerSource;
 		}
@@ -101,8 +100,8 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
 	 * @return The factor to adjust task score; 0 means task is not applicable
      */
     @Override
-	public RatingScoreImpl assessPersonSuitability(SettlementTask t, Person p) {
-        RatingScoreImpl factor = new RatingScoreImpl(0);
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+        RatingScore factor = RatingScore.ZERO_RATING;
         if (p.isInSettlement()) {
             Building building = ((PowerTaskJob)t).getBuilding();
       
@@ -149,7 +148,7 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
             }
 
             if (bestDiff > 0) {
-                RatingScoreImpl score = new RatingScoreImpl(FACTOR);
+                RatingScore score = new RatingScore(FACTOR);
                 score.addModifier("best", bestDiff);
                 tasks.add(new PowerTaskJob(this, building, bestSource, score));
             }
