@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.RatingScoreImpl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
@@ -29,7 +28,7 @@ public class BasicTaskJob extends AbstractTaskJob {
      * @param factory Creator of the Task
      * @param score The score of the activity
      */
-    public BasicTaskJob(TaskFactory factory, RatingScoreImpl score) {
+    public BasicTaskJob(TaskFactory factory, RatingScore score) {
         super(factory.getName(), score);
         
         this.mtID = factory.getID();

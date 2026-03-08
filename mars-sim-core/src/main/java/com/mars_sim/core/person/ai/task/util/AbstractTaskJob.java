@@ -23,16 +23,17 @@ public abstract class AbstractTaskJob implements TaskJob {
     private String name;
 
     /**
-     * Creates an abstract task job.
+     * Creates an abstract task job. The score is capped and a defensive copy is stored
+     * so the rating is immutable once assigned.
      * 
      * @param name
      * @param score
      */
-    protected AbstractTaskJob(String name, RatingScoreImpl score) {
+    protected AbstractTaskJob(String name, RatingScore score) {
     	this.name = name;
-  
-        score.applyRange(0, CAP);
-        this.score = score;
+        RatingScoreImpl copy = new RatingScoreImpl(score);
+        copy.applyRange(0, CAP);
+        this.score = copy;
     }
 
     @Override
