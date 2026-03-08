@@ -134,4 +134,3 @@ public class MiningMeta extends AbstractMetaMission {
         return missionProbability;
     }
 }
-}

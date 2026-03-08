@@ -84,7 +84,9 @@ public class TendAlgaePondMeta extends MetaTask implements SettlementMetaTask {
      */
     @Override
 	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        if (!p.isInSettlement()) return RatingScore.ZERO_RATING;
+        if (!p.isInSettlement()) {
+            return RatingScore.ZERO_RATING;
+        }
 		RatingScoreImpl factor = (RatingScoreImpl) super.assessPersonSuitability(t, p);
             if (factor.getScore() == 0D) {
                 return RatingScore.ZERO_RATING;

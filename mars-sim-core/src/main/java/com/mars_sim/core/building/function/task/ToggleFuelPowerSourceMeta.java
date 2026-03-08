@@ -102,7 +102,9 @@ public class ToggleFuelPowerSourceMeta extends MetaTask implements SettlementMet
      */
     @Override
 		public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
-        if (!p.isInSettlement()) return RatingScore.ZERO_RATING;
+        if (!p.isInSettlement()) {
+            return RatingScore.ZERO_RATING;
+        }
         Building building = ((PowerTaskJob)t).getBuilding();
       
             // Checks if this is a standalone power building that requires EVA to reach
