@@ -280,10 +280,10 @@ public class MissionManager implements Serializable {
 	private double updateMissionRating(List<MissionRating> missionProbCache,
 									   MetaMission metaMission, RatingScore baseProb, ParameterManager paramMgr) {
 		double score = baseProb.getScore();
-		if (score > 0) {
+		if (score > 0 && baseProb instanceof RatingScoreImpl impl) {
 			double settlementRatio = paramMgr.getDoubleValue(
 					MissionWeightParameters.INSTANCE.getKey(metaMission.getType()), 1D);
-			((RatingScoreImpl)baseProb).addModifier("settlement.ratio", settlementRatio);
+			impl.addModifier("settlement.ratio", settlementRatio);
 		}
 
 		missionProbCache.add(new MissionRating(metaMission, baseProb));

@@ -48,7 +48,7 @@ public class MiningMeta extends AbstractMetaMission {
 
         RatingScoreImpl missionProbability = new RatingScoreImpl(0);
     	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
-    		return RatingScore.ZERO_RATING;
+    		return missionProbability;
     	}
     	
         if (person.isInSettlement()) {
