@@ -106,14 +106,26 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	 * @param settlement  the settlement receiving the supplies.
 	 */
 	public Resupply(ResupplySchedule template, int cycle, MarsTime arrivalDate, Settlement settlement) {
-		this(template.getName() + " #" + cycle, arrivalDate, settlement);
+		this(template.getName() + " #" + cycle, arrivalDate, settlement, template.getManifest());
 
 		// Initialize data members.
 		this.template = template;
 		this.cycle = cycle;
+	}
 
+	/**
+	 * Bespoke resupply mission.
+	 */
+	public Resupply(String name, MarsTime arrivalDate, Settlement destination, ResupplyManifest manifest) {
+		super(name, destination.getCoordinates());
+
+		this.settlement = destination;
+		settlementID = destination.getIdentifier();
+
+		// Schedule the launch
+		setArrivalDate(arrivalDate);
+		
 		// Load up the respply according to the manifest
-		ResupplyManifest manifest = template.getManifest();
 		var supplies = manifest.getSupplies();
 		setBuildings(supplies.getBuildings());
 		setVehicles(supplies.getVehicles());
@@ -122,19 +134,6 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		setNewImmigrantNum(manifest.getPeople());
 		setResources(supplies.getResources());
 		setParts(supplies.getParts());
-	}
-
-	/**
-	 * Bespoke resupply mission.
-	 */
-	public Resupply(String name, MarsTime arrivalDate, Settlement destination) {
-		super(name, destination.getCoordinates());
-
-		this.settlement = destination;
-		settlementID = destination.getIdentifier();
-
-		// Schedule the launch
-		setArrivalDate(arrivalDate);
 	}
 
 	/**

@@ -8,12 +8,13 @@ package com.mars_sim.core.interplanetary.transport.resupply;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.structure.SettlementSupplies;
 
 /**
  * Definition of a Supply Manifest used in a resupply mission.
  */
-public class ResupplyManifest implements Serializable  {
+public class ResupplyManifest implements Named, Serializable  {
     private static final long serialVersionUID = 1L;
 	private String name;
     private int people;

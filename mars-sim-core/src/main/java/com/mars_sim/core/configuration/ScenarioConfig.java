@@ -25,7 +25,6 @@ import org.jdom2.Element;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.authority.Authority;
-import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
@@ -241,17 +240,17 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 		
 		// Add the initial settlements
 		Element arrivalList = new Element(ARRIVING_SETTLEMENT_LIST);
-		for (ArrivingSettlement arrival : item.getArrivals()) {
+		for (var arrival : item.getArrivals()) {
 			Element aElement = new Element(ARRIVING_SETTLEMENT);
-			saveOptionalAttribute(aElement, NAME_ATTR, arrival.getSettlementName());
-			saveOptionalAttribute(aElement, TEMPLATE_ATTR, arrival.getTemplate());
-			saveOptionalAttribute(aElement, PERSONS_ATTR, Integer.toString(arrival.getPopulationNum()));
-			saveOptionalAttribute(aElement, ROBOTS_ATTR, Integer.toString(arrival.getNumOfRobots()));
-			saveOptionalAttribute(aElement, SPONSOR_ATTR, arrival.getSponsorCode());
-			saveOptionalAttribute(aElement, ARRIVAL_ATTR, Integer.toString(arrival.getArrivalSols()));
+			saveOptionalAttribute(aElement, NAME_ATTR, arrival.name());
+			saveOptionalAttribute(aElement, TEMPLATE_ATTR, arrival.template());
+			saveOptionalAttribute(aElement, PERSONS_ATTR, Integer.toString(arrival.populationNum()));
+			saveOptionalAttribute(aElement, ROBOTS_ATTR, Integer.toString(arrival.numOfRobots()));
+			saveOptionalAttribute(aElement, SPONSOR_ATTR, arrival.sponsorCode());
+			saveOptionalAttribute(aElement, ARRIVAL_ATTR, Integer.toString(arrival.arrivalSols()));
 
-			if (arrival.getLandingLocation() != null) {
-				Element locationElement = createLocationElement(arrival.getLandingLocation());
+			if (arrival.landingLocation() != null) {
+				Element locationElement = createLocationElement(arrival.landingLocation());
 				aElement.addContent(locationElement);
 			}
 			
@@ -271,7 +270,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 
 		List<Coordinates> occupiedLocations = new ArrayList<>();
 		List<InitialSettlement> is = loadInitialSettlements(root, occupiedLocations);
-		List<ArrivingSettlement> arrivals = loadArrivingSettlements(root, occupiedLocations);
+		List<FutureSettlement> arrivals = loadFutureSettlements(root, occupiedLocations);
 		
 		return new Scenario(name, description, is, arrivals, maxColonies,predefined);
 	}
@@ -283,8 +282,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
 	 */
-	private List<ArrivingSettlement> loadArrivingSettlements(Element arrivalElement, List<Coordinates> occupiedLocations) {
-		List<ArrivingSettlement> arrivals = new ArrayList<>();
+	private List<FutureSettlement> loadFutureSettlements(Element arrivalElement, List<Coordinates> occupiedLocations) {
+		List<FutureSettlement> arrivals = new ArrayList<>();
 
 		Element arrivalList = arrivalElement.getChild(ARRIVING_SETTLEMENT_LIST);
 		if (arrivalList == null) {
@@ -321,7 +320,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 
 			String sponsor = settlementElement.getAttributeValue(SPONSOR_ATTR);
 
-			arrivals.add(new ArrivingSettlement(name, template, sponsor,
+			arrivals.add(new FutureSettlement(name, template, sponsor,
 												arrivalSols, location ,
 												numOfPeople, numOfRobots));
 		}	

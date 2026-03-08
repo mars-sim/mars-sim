@@ -63,6 +63,8 @@ public class MarsTimeFormat {
 			throw new IllegalStateException("Invalid month: " + monthStr);
 
 		String[] subParts = parts[2].split(COLON);
+		if (subParts.length != 2)
+			throw new IllegalStateException("Invalid sol:millisol: " + parts[2]);
 		int sol = Integer.parseInt(subParts[0]);
 		if (sol < 1)
 			throw new IllegalStateException("Invalid sol number: " + sol);

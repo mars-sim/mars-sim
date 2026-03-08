@@ -4,7 +4,7 @@
  * @date 2023-04-02
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.tool.resupply;
+package com.mars_sim.ui.swing.tool.transportable;
 
 import java.awt.BorderLayout;
 import java.util.List;

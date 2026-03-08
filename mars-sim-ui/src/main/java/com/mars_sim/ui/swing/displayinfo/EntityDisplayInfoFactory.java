@@ -12,6 +12,7 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.equipment.Equipment;
+import com.mars_sim.core.interplanetary.transport.Transportable;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.robot.Robot;
@@ -30,6 +31,7 @@ public final class EntityDisplayInfoFactory {
 	public static final String STUDY_TYPE = "scientificstudy";
 	public static final String EQUIPMENT_TYPE = "equipment";
 	public static final String CONSTRUCTION_TYPE = "constructionsite";
+	public static final String TRANSPORTABLE_TYPE = "transportable";
 
 	// Static bean instances.
 	private static EntityDisplayInfo settlementBean = new SettlementDisplayInfoBean();
@@ -46,6 +48,7 @@ public final class EntityDisplayInfoFactory {
 	private static EntityDisplayInfo equipmentBean = new EntityDisplayInfo(EQUIPMENT_TYPE, SoundConstants.SND_EQUIPMENT);
 	private static EntityDisplayInfo constructionBean = new EntityDisplayInfo(CONSTRUCTION_TYPE);
 	private static EntityDisplayInfo missionBean = new EntityDisplayInfo(MISSION_TYPE);
+	private static EntityDisplayInfo transportBean = new EntityDisplayInfo(TRANSPORTABLE_TYPE);
 
 	/**
 	 * Private constructor
@@ -78,6 +81,7 @@ public final class EntityDisplayInfoFactory {
 			};
 			case Equipment equipment -> equipmentBean;
 			case ConstructionSite constructionSite -> constructionBean;
+			case Transportable transportable -> transportBean;
 			default -> null;
 		};
 	}

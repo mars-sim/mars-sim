@@ -31,10 +31,10 @@ import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
 import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
+import com.mars_sim.ui.swing.tool.transportable.TransportableWizard;
 import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -125,16 +125,14 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));
 
 		// Mission wizard is not a tool								 
-		var item = new JMenuItem(MissionCreate.TITLE);
-		configureMenuItem(item, MissionCreate.ICON, null,
-							KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
-		item.addActionListener(e -> MissionCreate.create(context));	
-		newMenu.add(item);
-
+		newMenu.add(createToolMenuItem(MissionCreate.TITLE, MissionCreate.ICON,
+					KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false), e -> MissionCreate.create(context)));	
 		newMenu.add(createToolMenuItem(SettlementWindow.NAME, SettlementWindow.TITLE, SettlementWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false)));	
-		newMenu.add(createToolMenuItem(ResupplyWindow.NAME, ResupplyWindow.TITLE, ResupplyWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false)));	
+		newMenu.add(createToolMenuItem(TransportableWizard.TITLE, TransportableWizard.ICON,
+										 KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false),
+										e -> TransportableWizard.create(context)));;	
+
 		newMenu.add(createToolMenuItem(CommanderWindow.NAME, CommanderWindow.TITLE, CommanderWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false)));	
 		return newMenu;
@@ -252,19 +250,37 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	}
 
 	/**
-	 * Creates a menu items for the Tool window.
+	 * Creates a menu items for the Tool window that uses the tool name.
 	 * 
-	 * @param name
-	 * @param title
-	 * @param iconName
-	 * @param keyStroke
-	 * @return
+	 * @param name Internal name of the tool.
+	 * @param title Title for the menu item.
+	 * @param iconName Icon name for the menu item.
+	 * @param keyStroke Shortcut key stroke
+	 * @return Menuitem
 	 */
 	private JMenuItem createToolMenuItem(String name, String title, String iconName, KeyStroke keyStroke) {
 		var item = new JMenuItem(title);
 		configureMenuItem(item, iconName, null, keyStroke);
 		item.setActionCommand(name);
 		item.addActionListener(e -> context.openToolWindow(e.getActionCommand()));
+
+		return item;
+	}
+
+	/**
+	 * Creates a menu items for the Tool window that uses an ActionListener.
+	 * 
+	 * @param title Title of the menu item
+	 * @param iconName Icon in the menu item
+	 * @param keyStroke Shortcut key stroke
+	 * @param l 
+	 * 
+	 * @return
+	 */
+	private JMenuItem createToolMenuItem(String title, String iconName, KeyStroke keyStroke, ActionListener l) {
+		var item = new JMenuItem(title);
+		configureMenuItem(item, iconName, null, keyStroke);
+		item.addActionListener(l);
 
 		return item;
 	}

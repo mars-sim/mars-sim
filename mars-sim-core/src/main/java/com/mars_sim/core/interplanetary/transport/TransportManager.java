@@ -26,6 +26,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * A manager for interplanetary transportation.
@@ -75,18 +76,26 @@ public class TransportManager implements Serializable {
 	public void loadArrivingSettments(Scenario scenario, SettlementTemplateConfig settlementTemplateConfig,
 									  AuthorityFactory raFactory) {
 		// Create initial arriving settlements.
-		for (ArrivingSettlement a : scenario.getArrivals()) {
+		for (var a : scenario.getArrivals()) {
 			// Check the defines values are correct; these throw exception
-			settlementTemplateConfig.getItem(a.getTemplate());
+			settlementTemplateConfig.getItem(a.template());
 			
-			if (raFactory.getItem(a.getSponsorCode()) == null) {
-				throw new IllegalArgumentException("Arriving settlement has a incorrect RAcode " + a.getSponsorCode());
+			if (raFactory.getItem(a.sponsorCode()) == null) {
+				throw new IllegalArgumentException("Arriving settlement has a incorrect RAcode " + a.sponsorCode());
 			}
 			
-			a.scheduleLaunch();
-			logger.config("Scheduling a new settlement called '" + a.getName() + "' to arrive at Sol "
-						+ a.getArrivalDate().getTruncatedDateTimeStamp());
-			transportItems.add(a);
+			// Determine the arrival date
+			MarsTime proposedArrival = getMarsTime().addTime(
+					(a.arrivalSols() - 1) * 1000D
+					+ 100 
+					+ RandomUtil.getRandomDouble(890));
+	
+			logger.config("Scheduling a new settlement called '" + a.name() + "' to arrive at Sol "
+						+ proposedArrival.getTruncatedDateTimeStamp());
+			
+			var as = new ArrivingSettlement(a.name(), a.template(), a.sponsorCode(), proposedArrival,
+								a.landingLocation(), a.populationNum(), a.numOfRobots());
+			transportItems.add(as);
 		}
 	}
 	
