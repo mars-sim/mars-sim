@@ -67,7 +67,7 @@
 		<dependency>
 		    <groupId>org.bidib.jbidib.eu.hansolo</groupId>
 		    <artifactId>SteelSeries</artifactId>
-		    <version>3.9.31.2</version>
+		    <version>3.9.31.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
