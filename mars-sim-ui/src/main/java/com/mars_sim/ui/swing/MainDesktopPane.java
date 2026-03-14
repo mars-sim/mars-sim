@@ -46,7 +46,6 @@ import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
-import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
@@ -106,6 +105,7 @@ public class MainDesktopPane extends JDesktopPane
 		if (useAudio) {
 			Properties props = mainWindow.getConfig().getPropSet(AUDIO_PROPS);
 			soundPlayer = new AudioPlayer(props);
+			soundPlayer.playRandomTracks();
 		}
 
 		// Prepare tool windows. Needs to be thread safe as windows are used by clock pulse

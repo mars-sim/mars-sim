@@ -10,6 +10,9 @@ package com.mars_sim.ui.swing.sound;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,11 +46,7 @@ public class OGGSoundClip {
 	private int rate;
 	private int channels;
 
-	private byte[] buffer = null;
-	private int bytes = 0;
-
-	private boolean mute = false;
-	private boolean paused;
+	private boolean isStopped = false;
 	private boolean isMasterGainSupported;
 	
 	private byte[] convbuffer = new byte[convsize];
@@ -58,16 +57,11 @@ public class OGGSoundClip {
 
 	private SourceDataLine outputLine;
 
-	private SyncState oy;
-	private StreamState os;
-	private Page og;
-	private Packet op;
-	private Info vi;
-	private Comment vc;
-	private DspState vd;
-	private Block vb;
 	private BufferedInputStream bitStream = null;
-	private Thread playerThread = null;
+
+	private String trackTitle;
+
+	private static ExecutorService virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
 
 	/**
 	 * Creates a new clip based on a reference into the class path.
@@ -156,33 +150,6 @@ public class OGGSoundClip {
 
 	}
 
-	/**
-	 * Checks the state of the playback.
-	 *
-	 * @return True if the playback has been stopped
-	 */
-	synchronized boolean checkState() {
-		return isStopped();
-	}
-
-	/**
-	 * Checks if the clip has been stopped.
-	 *
-	 * @return True if the clip has been stopped
-	 */
-	public boolean isStopped() {
-		return (playerThread == null || !playerThread.isAlive());
-	}
-
-	/**
-	 * Checks if the clip is still playing.
-	 *
-	 * @return
-	 */
-	public boolean isPlaying() {
-		return !isStopped();
-	}
-	
 	private void disableSound() {
 		// TOD fix this
 		//AudioPlayer.disableAudio();
@@ -192,38 +159,20 @@ public class OGGSoundClip {
 	 * Stops the clip playing.
 	 */
 	public void stop() {
-		if (isStopped()) {
-			return;
-		}
+		// Abort current runner
+		isStopped = true;
 
-		playerThread = null;
 		if (outputLine != null) 
 			outputLine.drain();
-	}
-
-	/**
-	 * Pauses or unpauses the playback.
-	 */
-	 public void setPause(boolean value) { 
-		 paused = value; 
-	 }
-
-	/**
-	 * Checks if the stream is paused.
-	 *
-	 * @return True if the stream is paused
-	 */
-	public boolean isPaused() {
-		return paused;
 	}
 
 	/**
 	 * Plays the clip once for sound effects.
 	 * 
 	 * @param vol
+	 * @param callback 
 	 */
-	public void play(double vol) {
-//		stop();
+	public void play(double vol, Consumer<OGGSoundClip> callback) {
 
 		try {
 			if (bitStream != null) {
@@ -234,17 +183,12 @@ public class OGGSoundClip {
 			logger.log(Level.SEVERE, "IOException in OGGSoundClip's play(). ", e);
 		}
 
-		playerThread = new Thread() {
+		virtualThreadExecutor.execute(new Runnable() {
+			@Override
 			public void run() {
 				 try {
 					 playStream(vol);
-				 } catch (Exception e) {	
-						playerThread = null;
-						
-					 logger.log(Level.SEVERE, "Can't play the bit stream in play(). ", e);
-				 }
 
-				try {
 					if (bitStream != null) {
 						bitStream.reset();
 					}
@@ -252,19 +196,12 @@ public class OGGSoundClip {
 					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
 							e);
 				}
-			};
-		};
-		playerThread.setDaemon(true);
-		playerThread.start();
-	}
 
-	/**
-	 * Loops the clip for background music.
-	 * 
-	 * @param vol
-	 */
-	public void loop(double vol) {
-		play(vol);
+				if (callback != null) {
+					callback.accept(OGGSoundClip.this);
+				}
+			};
+		});
 	}
 
 	/**
@@ -368,40 +305,29 @@ public class OGGSoundClip {
 	}
 
 	/*
-	 * Taken from JOrbisPlayer
-	 */
-	private void initJOrbis() {
-
-		oy = new SyncState();
-		os = new StreamState();
-		og = new Page();
-		op = new Packet();
-
-		vi = new Info();
-		vc = new Comment();
-		vd = new DspState();
-		vb = new Block(vd);
-
-		buffer = null;
-		bytes = 0;
-
-		oy.init();
-	}
-
-	/*
 	 * Plays the sound stream.
 	 * 
 	 * @param vol
 	 */
 	private void playStream(double vol) {
 		boolean chained = false;
-		initJOrbis();
+		
+		var oy = new SyncState();
+		var os = new StreamState();
+		var og = new Page();
+		var op = new Packet();
 
-		while (true) {
-//			if (!checkState()) {
-//				return;
-//			}
+		var vi = new Info();
+		var vc = new Comment();
+		var vd = new DspState();
+		var vb = new Block(vd);
 
+		oy.init();
+
+		byte[] buffer = null;
+		int bytes = 0;
+
+		while (!isStopped) {
 			int eos = 0;
 
 			int index = oy.buffer(BUFFER_SIZE);
@@ -464,10 +390,6 @@ public class OGGSoundClip {
 			
 			while (i < 2) {
 				while (i < 2) {
-//					if (checkState()) {
-//						return;
-//					}
-
 					int result = oy.pageout(og);
 					if (result == 0)
 						break; // Need more data
@@ -503,6 +425,7 @@ public class OGGSoundClip {
 				oy.wrote(bytes);
 			}
 
+			trackTitle = vc.query("title");
 			convsize = BUFFER_SIZE / vi.channels;
 
 			vd.synthesis_init(vi);
@@ -512,22 +435,9 @@ public class OGGSoundClip {
 			int[] _index = new int[vi.channels];
 
 			getOutputLine(vi.channels, vi.rate, vol);
-//			logger.info("Just called getOutputLine(). outputLine is " + outputLine);
 			
 			while (eos == 0) {
 				while (eos == 0) {
-
-//                    if (player != me) {
-//                        try {
-//                            bitStream.close();
-//                            outputLine.drain();
-//                            outputLine.stop();
-//                            outputLine.close();
-//                            outputLine = null;
-//                        } catch (Exception ee) {
-//                        }
-//                        return;
-//                    }
                     
 					int result = oy.pageout(og);
 					if (result == 0)
@@ -544,11 +454,7 @@ public class OGGSoundClip {
 							break;
 						}
 
-						while (true) {
-//							if (checkState()) {
-//								return;
-//							}
-
+						while (!isStopped) {
 							result = os.packetout(op);
 							if (result == 0)
 								break; // need more data
@@ -562,7 +468,7 @@ public class OGGSoundClip {
 									vd.synthesis_blockin(vb);
 								}
 								while ((samples = vd.synthesis_pcmout(_pcmf, _index)) > 0) {
-									if (checkState()) {
+									if (isStopped) {
 										return;
 									}
 
@@ -628,46 +534,32 @@ public class OGGSoundClip {
 		oy.clear();
 	}
 
-	public boolean isMute() {
-		return mute;
-	}
-
 	/**
 	 * Mutes or unmutes the clip.
 	 * 
 	 * @param mute
 	 */
-	public void setMute(boolean mute) {
+	public void setStopped(boolean mute) {
 		// Set mute value.
-		this.mute = mute;
+		this.isStopped = mute;
 
 		if (outputLine == null) {
 			return;
 		} else if (outputLine.isControlSupported(BooleanControl.Type.MUTE)) {
 			BooleanControl muteControl = (BooleanControl) outputLine.getControl(BooleanControl.Type.MUTE);
 			muteControl.setValue(mute);
-
-            paused = mute;
 		}
+	}
+
+	/**
+	 * Get the name of the track/clip
+	 * @return Contents of the 'title' comment
+	 */
+	public String getTitle() {
+		return (trackTitle != null ? trackTitle : "Unknown");
 	}
 
 	public String toString() {
 		return name;
 	}
-
-	public void destroy() {
-		oy = null;
-		os = null;
-		og = null;
-		op = null;
-		vi = null;
-		vc = null;
-		vd = null;
-		vb = null;
-		floatControl = null;
-		outputLine = null;
-		bitStream = null;
-		playerThread = null;
-	}
-
 }

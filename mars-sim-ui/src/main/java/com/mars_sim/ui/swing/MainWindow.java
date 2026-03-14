@@ -49,7 +49,6 @@ import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
 import com.mars_sim.ui.swing.entitywindow.EntityToolBar;
-import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -90,8 +89,6 @@ public class MainWindow
 
 	// Data members
 	private boolean isIconified = false;
-    
-	private int millisolIntCache;
     
 	/** The unit tool bar. */
 	private EntityToolBar unitToolbar;
@@ -574,15 +571,6 @@ public class MainWindow
 	}
 
 	/**
-	 * Gets the audio player.
-	 * 
-	 * @return
-	 */
-	public AudioPlayer getAudioPlayer() {
-		return desktop.getSoundPlayer();
-	}
-
-	/**
 	 * Create a new unit button in toolbar.
 	 *
 	 * @param unit the unit the button is for.
@@ -712,17 +700,6 @@ public class MainWindow
 
 			// Cascade the pulse
 			desktop.clockPulse(pulse);
-			
-			if (desktop.getSoundPlayer() == null)
-				return;
-			
-			int now = pulse.getMarsTime().getMillisolInt();	
-			if (now != millisolIntCache && now != 1000 && now % 15 == 2) {
-
-				desktop.getSoundPlayer().loopThruBackgroundMusic();
-				
-				millisolIntCache = now;
-			}
 		}
 	}
 

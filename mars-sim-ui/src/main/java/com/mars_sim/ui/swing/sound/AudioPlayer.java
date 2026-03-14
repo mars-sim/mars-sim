@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import org.springframework.core.io.Resource;
@@ -37,6 +38,7 @@ public class AudioPlayer {
 	/** music files directory. */
 	private static final String MUSIC_DIR = SimulationRuntime.getMusicDir();
 	private static final String DEFAULT_MUSIC_DIR = "/music";
+	private static final String SOUNDS_ROOT_PATH = "audio/";
 			
 	private static final double DEFAULT_VOL = 0.5;
 
@@ -56,10 +58,18 @@ public class AudioPlayer {
 		private boolean isMuted;
 		private double volume;
 		private OGGSoundClip currentClip;
+		private Consumer<OGGSoundClip> callback;
 
-		public AudioFeed(boolean isMuted, double volume) {
+		/**
+		 * Creates an audio feed.
+		 * @param isMuted Initial muted setting.
+		 * @param volume Initial volume.
+		 * @param callback Callback when the any clip finishes playing
+		 */
+		public AudioFeed(boolean isMuted, double volume, Consumer<OGGSoundClip> callback) {
 			this.isMuted = isMuted;
 			this.volume = volume;
+			this.callback = callback;
 		}
 
 		public double getVolume() {
@@ -74,11 +84,11 @@ public class AudioPlayer {
 			if (currentClip != null) {
 				if (muted) {
 					currentClip.stop();
-					currentClip.setMute(true);
+					currentClip.setStopped(true);
 				}
 				else {
-					currentClip.setMute(false);
-					currentClip.play(volume);
+					currentClip.setStopped(false);
+					currentClip.play(volume, callback);
 				}
 			}
 			this.isMuted = muted;
@@ -97,7 +107,7 @@ public class AudioPlayer {
 		public void play(OGGSoundClip newClip) {
 			currentClip = newClip;
 			if (!isMuted)
-				currentClip.play(volume);
+				currentClip.play(volume, callback);
 		}
 	}
 
@@ -120,13 +130,20 @@ public class AudioPlayer {
 
 		double musicVol = UIConfig.extractDouble(props, MUSIC_VOLUME, DEFAULT_VOL);
 		boolean musicMute = UIConfig.extractBoolean(props, MUSIC_MUTE, false);
-		musicFeed = new AudioFeed(musicMute, musicVol);
+		musicFeed = new AudioFeed(musicMute, musicVol, e -> pickNextTrack(e));
 		
 		double soundVol = UIConfig.extractDouble(props, SOUND_VOLUME, DEFAULT_VOL);
 		boolean soundMute = UIConfig.extractBoolean(props, SOUND_MUTE, false);
-		soundEffectFeed = new AudioFeed(soundMute, soundVol);
+		soundEffectFeed = new AudioFeed(soundMute, soundVol, null);
 	}
 		
+	/**
+	 * Plays random music tracks on repeat.
+	 */
+	public void playRandomTracks() {
+		pickNextTrack(null);
+	}
+
 	/**
 	 * Creates an OGGSoundClip instance for a music/sound file.
 	 * 
@@ -240,7 +257,7 @@ public class AudioPlayer {
 		} else {
 			try {
 				InputStream soundStream = Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + filepath);
+					.getResourceAsStream(SOUNDS_ROOT_PATH + filepath);
 				currentSoundClip = new OGGSoundClip(filepath, soundStream);
 				allSoundClips.put(filepath, currentSoundClip);
 			} catch (IOException e) {
@@ -258,13 +275,13 @@ public class AudioPlayer {
 	 * 
 	 * @param filename
 	 */
-	public void playMusic(String filename) {
+	private void playMusic(String filename) {
 		if (!isMusicMute()) {
 			String parent = musicTracks.get(filename);
 			if (parent != null) {
 				var currentMusic = obtainOGGMusicTrack(parent, filename);		
 				if (currentMusic != null) {
-					musicFeed.play(currentMusic);;
+					musicFeed.play(currentMusic);
 				}
 			}
 		}
@@ -344,33 +361,12 @@ public class AudioPlayer {
 	public boolean isMusicMute() {
 		return musicFeed.isMuted();
 	}
-
-	/**
-	 * Checks if the music track ever started or has stopped
-	 * 
-	 * @return true if no music track is playing
-	 */
-	private boolean isMusicTrackStopped() {
-		var currentMusic = musicFeed.currentClip;
-		if (currentMusic == null)
-			return true;
-		return currentMusic.checkState(); 
-	}
-	
-	/**
-	 * Loops through the background tracks.
-	 */
-	public void loopThruBackgroundMusic() {
-		if (isMusicTrackStopped()) {
-			logger.info("Run playRandomMusicTrack");
-			playRandomMusicTrack();
-		}		
-	}
 	
 	/**
 	 * Picks a new music track to play
+	 * @param lastClip The last clip just finsihed 
 	 */
-	private void pickANewTrack() {
+	private void pickNextTrack(OGGSoundClip lastClip) {
 
 		List<String> musicList = new ArrayList<>(musicTracks.keySet());
 		musicList.removeAll(playedTracks);
@@ -385,22 +381,6 @@ public class AudioPlayer {
 		playedTracks.addLast(choosen);
 		if (playedTracks.size() > PLAYLIST_SIZE) {
 			playedTracks.remove(0); // Remove oldest
-		}
-	}
-	
-	/**
-	 * Plays a randomly selected music track.
-	 */
-	private void playRandomMusicTrack() {
-		if (isMusicMute()) {
-			logger.config(5_000, "Music is muted.");
-		}
-		else if (!isMusicTrackStopped()) {
-			logger.config(5_000, "Music track not stopped.");
-		}
-		else {
-			logger.config(5_000, "Case 3. pickANewTrack.");
-			pickANewTrack();
 		}
 	}
 
