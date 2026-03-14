@@ -49,23 +49,6 @@ public class ConstructionManagerTest extends MarsSimUnitTest {
 
     /*
      * Test method for 'com.mars_sim.simulation.structure.construction.
-     * ConstructionManager.getConstructionSitesNeedingMission()'
-     */
-    @Test
-    public void testGetConstructionSitesNeedingMission() {
-        var manager = buildManager();
-        manager.addBuildingToQueue(LANDER_HAB, null);
-
-        ConstructionSite site2 = manager.getNextConstructionSite(1);
-        assertEquals(1, manager.getConstructionSitesNeedingMission().size());
-
-        var mission = new MockMission();
-        site2.setWorkOnSite(mission);
-        assertEquals(0, manager.getConstructionSitesNeedingMission().size());
-    }
-
-    /*
-     * Test method for 'com.mars_sim.simulation.structure.construction.
      * ConstructionManager.createNewConstructionSite()'
      */
     @Test
@@ -128,8 +111,7 @@ public class ConstructionManagerTest extends MarsSimUnitTest {
 
     @Test
     public void testGetStages() {
-        var manager = buildManager();
-        var phases = manager.getConstructionStages(LANDER_HAB);
+        var phases = ConstructionManager.getConstructionStages(LANDER_HAB);
 
         assertEquals(3, phases.size(), "Phases");
 

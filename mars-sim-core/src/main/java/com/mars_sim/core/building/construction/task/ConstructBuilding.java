@@ -4,9 +4,8 @@
  * @date 2025-09-06
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.task;
+package com.mars_sim.core.building.construction.task;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,10 +18,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
-import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.task.EVAOperation;
+import com.mars_sim.core.person.ai.task.ExitAirlock;
 import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.structure.Airlock;
-import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Crewable;
@@ -65,8 +64,9 @@ public class ConstructBuilding extends EVAOperation {
 	 * Constructor.
 	 *
 	 * @param person the person performing the task.
+	 * @param site the construction site.
 	 */
-	public ConstructBuilding(Person person) {
+	public ConstructBuilding(Person person, ConstructionSite site) {
 		// Use EVAOperation parent constructor.
 		super(NAME, person, RandomUtil.getRandomDouble(10) + 150D, CONSTRUCTION);
 
@@ -74,12 +74,8 @@ public class ConstructBuilding extends EVAOperation {
 			endEVA("Super Unfit.");
         	return;
 		}
-
-		int constructionSkill = person.getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
 		
-		site =	person.getAssociatedSettlement().getConstructionManager().getNextConstructionSite(1 + constructionSkill);
-		// Or may use getConstructionSites().get(0) to pick the very first one.
-
+		this.site = site;
 		if (canConstruct(person, site)) {
 
 			// Initialize data members.
@@ -155,41 +151,6 @@ public class ConstructBuilding extends EVAOperation {
 			workAvailable = stage.getRequiredWorkTime() > stage.getCompletedWorkTime();
 
 		return (workAvailable);
-	}
-
-	/**
-	 * Gets a random building construction mission that needs assistance.
-	 *
-	 * @return construction mission or null if none found.
-	 */
-	public static ConstructionMission getMissionNeedingAssistance(Person person) {
-
-		List<ConstructionMission> constructionMissions = getAllMissionsNeedingAssistance(person.getAssociatedSettlement());
-
-		return RandomUtil.getRandomElement(constructionMissions);
-	}
-
-
-	/**
-	 * Gets a list of all building construction missions that need assistance at a
-	 * settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @return list of building construction missions.
-	 */
-	public static List<ConstructionMission> getAllMissionsNeedingAssistance(Settlement settlement) {
-		
-		List<ConstructionMission> result = new ArrayList<>(); 
-
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof ConstructionMission bcMission) {
-				result.add(bcMission);
-			}
-		}
-
-		return result;
 	}
 
 	/**
@@ -369,17 +330,5 @@ public class ConstructBuilding extends EVAOperation {
 	 */
 	public ConstructionStage getConstructionStage() {
 		return stage;
-	}
-
-	@Override
-	public void destroy() {
-		stage = null;
-		site = null;
-		luv = null;
-		
-		vehicles.clear();
-		vehicles = null;
-
-		super.destroy();
 	}
 }

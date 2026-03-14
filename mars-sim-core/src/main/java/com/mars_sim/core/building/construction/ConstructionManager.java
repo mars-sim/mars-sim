@@ -122,38 +122,13 @@ public class ConstructionManager implements Serializable {
 	}
 
 	/**
-	 * Gets construction sites needing a mission.
-	 * 
-	 * @param construction Search for sites under construction not salvage
-	 * @return list of construction sites.
-	 */
-	public List<ConstructionSite> getConstructionSitesNeedingMission() {
-		List<ConstructionSite> result = new ArrayList<>();
-		for (ConstructionSite site : sites) {
-			if ((site.getWorkOnSite() == null) && !site.isComplete()) {
-				ConstructionStage currentStage = site.getCurrentConstructionStage();
-				if (currentStage != null) {
-					boolean workNeeded = !currentStage.isComplete();
-					
-					// If not construction, i.e. salvage, or has materials then workable
-					workNeeded &= (!site.isConstruction() || currentStage.hasMissingConstructionMaterials());
-					if (workNeeded) {
-					    result.add(site);
-					}
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
 	 * Creates a new construction site.
 	 * 
 	 * @param buildingType The final type of building
 	 * @param placement Where the site is placed
 	 * @param phases Phases required to create the construction.
 	 */
-	private ConstructionSite createNewConstructionSite(String buildingType, LocalBoundedObject placement,
+	public ConstructionSite createNewConstructionSite(String buildingType, LocalBoundedObject placement,
 						 List<ConstructionPhase> phases) {
 		String siteName = String.format("Site %s-%03d", settlement.getSettlementCode(), uniqueId++);
 
@@ -328,7 +303,7 @@ public class ConstructionManager implements Serializable {
 	 * @param buildingType Type to create
 	 * @return list starting for first to last
 	 */
-	static List<ConstructionStageInfo> getConstructionStages(String buildingType) {
+	public static List<ConstructionStageInfo> getConstructionStages(String buildingType) {
 		var consConfig = SimulationConfig.instance().getConstructionConfiguration();
 
 		List<ConstructionStageInfo> results = new ArrayList<>();
