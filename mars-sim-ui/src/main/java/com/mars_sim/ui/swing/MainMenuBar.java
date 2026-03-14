@@ -26,6 +26,8 @@ import javax.swing.SwingUtilities;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager.StyleEntry;
+import com.mars_sim.ui.swing.sound.AudioControl;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
@@ -63,14 +65,15 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * Constructor.
 	 *
 	 * @param context The UI hosting the menu bar.
+	 * @param audioPlayer The audio player to control.
 	 */
-	public MainMenuBar(UIContext context) {
+	public MainMenuBar(UIContext context, AudioPlayer audioPlayer) {
 
 		// Initialize data members
 		this.context = context;
 
 		// Create file menu
-		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
+		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //-NLS-1$
 		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
 		add(fileMenu);
 
@@ -86,7 +89,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		var toolsMenu = createToolsMenu();
 		add(toolsMenu);
 		
-		add(createSettingsMenu());
+		add(createSettingsMenu(audioPlayer));
 
 		// Add a dynamic Windows menu
 		JMenu displayMenu = createDisplayMenu();
@@ -167,10 +170,10 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	}
 
 
-	private JMenu createSettingsMenu() {
+	private JMenu createSettingsMenu(AudioPlayer audioPlayer) {
 
 		// Create settings menu
-		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
+		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //-NLS-1$
 		settingsMenu.setMnemonic(KeyEvent.VK_S); // Alt + S
 
 		addWindowPreferences(settingsMenu);
@@ -198,6 +201,13 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			}
 		}
 		
+		if (audioPlayer != null) {
+			var audio = createToolMenuItem("Audio Control", "sound", null, e -> {
+				AudioControl.showPopup(audioPlayer);
+			});
+			settingsMenu.add(audio);
+		}
+
 		return settingsMenu;
 	}
 

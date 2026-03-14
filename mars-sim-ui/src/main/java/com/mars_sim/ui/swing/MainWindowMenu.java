@@ -21,6 +21,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 
 /**
  * The MainWindowMenu class is the menu for the main window.
@@ -38,9 +39,10 @@ public class MainWindowMenu extends MainMenuBar {
 	 *
 	 * @param mainWindow
 	 *            the main window pane
+	 * @param audio Audio player, but maybe be null 
 	 */
-	public MainWindowMenu(MainDesktopPane mainWindow) {
-		super(mainWindow);
+	public MainWindowMenu(MainDesktopPane mainWindow, AudioPlayer audio) {
+		super(mainWindow, audio);
 	}
 
 	@Override

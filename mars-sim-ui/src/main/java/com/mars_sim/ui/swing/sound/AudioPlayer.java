@@ -4,7 +4,6 @@
  * @date 2025-10-18
  * @author Lars Naesbye Christensen (complete rewrite for OGG)
  */
-
 package com.mars_sim.ui.swing.sound;
 
 import java.io.File;
@@ -40,34 +39,75 @@ public class AudioPlayer {
 	private static final String DEFAULT_MUSIC_DIR = "/music";
 			
 	private static final double DEFAULT_VOL = 0.5;
-	private static final double STEP = 0.05;
 
 	private static final String MUSIC_VOLUME = "music volume";
-	private static final String SOUND_VOLUME = "sound volume";
+	private static final String MUSIC_MUTE = "music mute";
+	private static final String SOUND_VOLUME = "sound effect volume";
+	private static final String SOUND_MUTE = "sound effect mute";
 	private static final String OGG = "ogg";
 	private static final String FULL_PATH = DEFAULT_MUSIC_DIR + "/*." + OGG;
 
 	private static final int PLAYLIST_SIZE = 3;
 
+	/**
+	 * The control a stream of audio.
+	 */
+	private static class AudioFeed {
+		private boolean isMuted;
+		private double volume;
+		private OGGSoundClip currentClip;
 
-	/** The volume of the audio player (0.0 to 1.0) */
-	private double currentMusicVol = DEFAULT_VOL;
-	private double currentSoundVol = DEFAULT_VOL;
+		public AudioFeed(boolean isMuted, double volume) {
+			this.isMuted = isMuted;
+			this.volume = volume;
+		}
 
-	private boolean hasMasterGain = true;
-	private boolean isVolumeDisabled;
+		public double getVolume() {
+			return volume;
+		}
 
-	/** The current clip sound. */
-	private OGGSoundClip currentSoundClip;
-	private OGGSoundClip currentMusic;
+		public boolean isMuted() {
+			return isMuted;
+		}
+
+		public void setMuted(boolean muted) {
+			if (currentClip != null) {
+				if (muted) {
+					currentClip.stop();
+					currentClip.setMute(true);
+				}
+				else {
+					currentClip.setMute(false);
+					currentClip.play(volume);
+				}
+			}
+			this.isMuted = muted;
+		}
+
+		public void setVolume(double newVolume) {
+			volume = Math.clamp(newVolume, 0, 1);
+			if (volume == 0) {
+				setMuted(true);
+			}
+			else if (!isMuted && currentClip != null) {
+				currentClip.determineGain(volume);
+			}
+		}
+
+		public void play(OGGSoundClip newClip) {
+			currentClip = newClip;
+			if (!isMuted)
+				currentClip.play(volume);
+		}
+	}
 
 	private Map<String, OGGSoundClip> allSoundClips;
 	private Map<String, String> musicTracks;
 	
 	private List<String> playedTracks = new ArrayList<>();
 
-	private int playTimes = 0;
-
+	private AudioFeed musicFeed;
+	private AudioFeed soundEffectFeed;
 
 	/**
 	 * The class for managing the audio.
@@ -75,17 +115,16 @@ public class AudioPlayer {
 	 * @param props the properties to initialize the audio player.
 	 */
 	public AudioPlayer(Properties props) {
-
 		
-		if (!isVolumeDisabled) {
-			loadMusicTracks();
-		}
+		loadMusicTracks();
 
 		double musicVol = UIConfig.extractDouble(props, MUSIC_VOLUME, DEFAULT_VOL);
-		currentMusicVol = musicVol;
+		boolean musicMute = UIConfig.extractBoolean(props, MUSIC_MUTE, false);
+		musicFeed = new AudioFeed(musicMute, musicVol);
 		
 		double soundVol = UIConfig.extractDouble(props, SOUND_VOLUME, DEFAULT_VOL);
-		currentSoundVol = soundVol;
+		boolean soundMute = UIConfig.extractBoolean(props, SOUND_MUTE, false);
+		soundEffectFeed = new AudioFeed(soundMute, soundVol);
 	}
 		
 	/**
@@ -194,35 +233,25 @@ public class AudioPlayer {
 	 */
 	public void playSound(String filepath) {
 		logger.info("playSound: " + filepath);
-		if (!isVolumeDisabled && !isEffectMute()) {
-			if (allSoundClips.containsKey(filepath) 
-					&& allSoundClips.get(filepath) != null) {
-				currentSoundClip = allSoundClips.get(filepath);
-			} else {
-				try {
-					InputStream soundStream = Thread.currentThread().getContextClassLoader()
-						.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + filepath);
-					currentSoundClip = new OGGSoundClip(filepath, soundStream);
-					allSoundClips.put(filepath, currentSoundClip);
-				} catch (IOException e) {
-					logger.severe( "Can't load sound effect: ", e);
-				}
-			}
-
-			if (currentSoundClip != null) {
-				currentSoundClip.play(currentSoundVol);
+		OGGSoundClip currentSoundClip = null;
+		if (allSoundClips.containsKey(filepath) 
+				&& allSoundClips.get(filepath) != null) {
+			currentSoundClip = allSoundClips.get(filepath);
+		} else {
+			try {
+				InputStream soundStream = Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + filepath);
+				currentSoundClip = new OGGSoundClip(filepath, soundStream);
+				allSoundClips.put(filepath, currentSoundClip);
+			} catch (IOException e) {
+				logger.severe( "Can't load sound effect: ", e);
 			}
 		}
-	}
 
-
-	/**
-	 * Checks if it's playing.
-	 */
-	public boolean isPlaying() {
-		return currentMusic != null && currentMusic.isPlaying();
+		if (currentSoundClip != null) {
+			soundEffectFeed.play(currentSoundClip);
+		}
 	}
-	
 
 	/**
 	 * Plays a music track.
@@ -230,12 +259,12 @@ public class AudioPlayer {
 	 * @param filename
 	 */
 	public void playMusic(String filename) {
-		if (!isPlaying() && !isMusicMute()) {
+		if (!isMusicMute()) {
 			String parent = musicTracks.get(filename);
 			if (parent != null) {
-				currentMusic = obtainOGGMusicTrack(parent, filename);		
+				var currentMusic = obtainOGGMusicTrack(parent, filename);		
 				if (currentMusic != null) {
-					currentMusic.loop(currentMusicVol);
+					musicFeed.play(currentMusic);;
 				}
 			}
 		}
@@ -245,142 +274,12 @@ public class AudioPlayer {
 	}
 
 	/**
-	 * Gets the volume of the background music.
-	 * 
-	 * @return volume (0.0 to 1.0)
-	 */
-	public double getMusicVolume() {
-		return currentMusicVol;
-	}
-
-	/**
 	 * Gets the volume of the sound effect.
 	 * 
 	 * @return volume (0.0 to 1.0)
 	 */
 	public double getSoundEffectVolume() {
-		return currentSoundVol;
-	}
-
-	/**
-	 * Increases the music volume.
-	 */
-	public void musicVolumeUp() {
-		if (!isVolumeDisabled && hasMasterGain) {
-
-			double v = currentMusicVol + STEP;
-			if (v > 1)
-				v = 1.0;
-
-			unmuteMusic();
-			
-			currentMusicVol = v;
-			
-			determineMusicGain(v);
-			
-			logger.info("New Music Volume: " + v);
-		}
-	}
-
-	/**
-	 * Decreases the music volume.
-	 */
-	public void musicVolumeDown() {	
-		if (!isVolumeDisabled && hasMasterGain) {
-
-			double v = currentMusicVol - STEP;
-			if (v <= 0) {
-				v = 0.0;
-				muteMusic();	
-			}
-
-			currentMusicVol = v;
-
-			determineMusicGain(v);
-			
-			logger.info("New Music Volume: " + v);
-		}
-	}
-
-	/**
-	 * Increases the sound effect volume.
-	 */
-	public void soundVolumeUp() {
-		if (!isVolumeDisabled && hasMasterGain) {
-			double v = currentSoundVol + STEP;
-			if (v > 1)
-				v = 1.0;
-
-			unmuteSoundEffect();
-			
-			currentSoundVol = v;
-		
-			determineSoundGain(v);
-			
-			logger.info("New Sound Volume: " + v);
-		}
-	}
-
-	/**
-	 * Decreases the sound effect volume.
-	 */
-	public void soundVolumeDown() {
-		if (!isVolumeDisabled && hasMasterGain) {
-			double v = currentSoundVol - STEP;
-			if (v <= 0) {
-				v = 0.0;
-				muteSoundEffect();
-			}
-
-			currentSoundVol = v;
-
-			determineSoundGain(v);
-			
-			logger.info("New Sound Volume: " + v);
-		}
-	}
-
-	/**
-	 * Sets the volume of the audio player.
-	 * 
-	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
-	 */
-	public void setMusicVolume(double volume) {
-
-		if (volume <= 0) {
-			volume = 0.0;
-			muteMusic();
-		}
-		else if (volume > 1) {
-			volume = 1.0;
-		}
-		else {
-			unmuteMusic();
-		}
-
-		currentMusicVol = volume;
-		
-		determineMusicGain(volume);
-	}
-
-	/**
-	 * Adjusts the music gain.
-	 * 
-	 * @param volume
-	 */
-	private void determineMusicGain(double volume) {
-		if (currentMusic != null) {
-			currentMusic.determineGain(volume);
-		}
-	}
-	
-	/**
-	 * Restores previous music gain.
-	 */
-	private void restoreLastMusicGain() {
-		if (!isVolumeDisabled && hasMasterGain && currentMusic != null) {
-			currentMusic.determineGain(currentMusicVol);
-		}
+		return soundEffectFeed.getVolume();
 	}
 	
 	/**
@@ -388,45 +287,8 @@ public class AudioPlayer {
 	 * 
 	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
 	 */
-	public void setSoundVolume(double volume) {
-
-		if (volume <= 0) {
-			volume = 0.0;
-			muteSoundEffect();
-		}
-		else if (volume > 1)
-			volume = 1.0;
-		else
-			unmuteSoundEffect();
-		
-		currentSoundVol = volume;
-
-		determineSoundGain(volume);
-	}
-	
-	/**
-	 * Adjusts the sound effect gain.
-	 * 
-	 * @param volume
-	 */
-	private void determineSoundGain(double volume) {
-		if (currentSoundClip != null) {
-			currentSoundClip.determineGain(volume);
-		}
-	}
-	
-	/**
-	 * Checks if the audio player's music is muted.
-	 * 
-	 * @return true if mute.
-	 */
-	private boolean isMusicMute() {
-		if (currentMusicVol <= 0.0)  {
-			return true;
-		}
-		else {
-			return currentMusic != null && (currentMusic.isMute() || currentMusic.isPaused());
-		}
+	public void setSoundEffectVolume(double volume) {
+		soundEffectFeed.setVolume(volume);
 	}
 
 	/**
@@ -434,50 +296,53 @@ public class AudioPlayer {
 	 * 
 	 * @return true if mute.
 	 */
-	private boolean isEffectMute() {
-		if (currentSoundVol <= 0.0) {
-			return true;
-		}
-		else {
-			return currentSoundClip != null && (currentSoundClip.isMute() || currentSoundClip.isPaused());
-		}
+	public boolean isSoundEffectMute() {
+		return soundEffectFeed.isMuted();
 	}
 
 	/**
-	 * Unmutes the sound effect.
+	 * Sets whether sound effects are muted.
+	 *
+	 * @param isMuted true if sound effects should be muted.
 	 */
-	private void unmuteSoundEffect() {
-		if (currentSoundClip != null && currentSoundClip.isMute()) {
-			currentSoundClip.setMute(false);
-		}
+	public void setSoundEffectMute(boolean isMuted) {
+		soundEffectFeed.setMuted(isMuted);
 	}
 
 	/**
-	 * Mutes the sound Effect.
+	 * Gets the volume of the background music.
+	 * 
+	 * @return volume (0.0 to 1.0)
 	 */
-	private void muteSoundEffect() {
-		if (currentSoundClip != null) {
-			currentSoundClip.setMute(true);
-		}
-	}
-
-	/**
-	 * Unmutes the music.
-	 */
-	public void unmuteMusic() {
-		if (currentMusic != null && currentMusic.isMute()) {
-			currentMusic.setMute(false);
-			restoreLastMusicGain();
-		}
+	public double getMusicVolume() {
+		return musicFeed.getVolume();
 	}
 	
 	/**
-	 * Mutes the music.
+	 * Sets the volume of the audio player.
+	 * 
+	 * @param volume (0.0 quiet, .5 medium, 1.0 loud) (0.0 to 1.0 valid range)
 	 */
-	public void muteMusic() {
-		if (currentMusic != null) {
-			currentMusic.setMute(true);
-		}
+	public void setMusicVolume(double volume) {
+		musicFeed.setVolume(volume);
+	}
+
+	/**
+	 * Sets whether music is muted.
+	 *
+	 * @param isMute true if music should be muted.
+	 */
+	public void setMusicMute(boolean isMute) {
+		musicFeed.setMuted(isMute);
+	}
+
+	/**
+	 * Checks if the audio player's music is muted.
+	 * 
+	 * @return true if mute.
+	 */
+	public boolean isMusicMute() {
+		return musicFeed.isMuted();
 	}
 
 	/**
@@ -486,6 +351,7 @@ public class AudioPlayer {
 	 * @return true if no music track is playing
 	 */
 	private boolean isMusicTrackStopped() {
+		var currentMusic = musicFeed.currentClip;
 		if (currentMusic == null)
 			return true;
 		return currentMusic.checkState(); 
@@ -520,9 +386,6 @@ public class AudioPlayer {
 		if (playedTracks.size() > PLAYLIST_SIZE) {
 			playedTracks.remove(0); // Remove oldest
 		}
-
-		// Reset the play times to 1 for this new track
-		playTimes = 1;
 	}
 	
 	/**
@@ -531,34 +394,13 @@ public class AudioPlayer {
 	private void playRandomMusicTrack() {
 		if (isMusicMute()) {
 			logger.config(5_000, "Music is muted.");
-			return;
-		}
-		else if (isVolumeDisabled) {
-			logger.config(5_000, "Volume is disable.");
-			return;
 		}
 		else if (!isMusicTrackStopped()) {
 			logger.config(5_000, "Music track not stopped.");
-			return;
 		}
 		else {
-//			logger.info("1. passed all checks.");
-			// Since Areologie.ogg and Fantascape.ogg are 4 mins long, don't need to replay
-			// them
-			if (currentMusic != null
-					&& playTimes < 2) {
-				logger.config(5_000, "Case 1. pickANewTrack.");
-				pickANewTrack();
-			} else if (currentMusic != null && !currentMusic.isMute()
-					&& playTimes < 4) {
-				logger.config(5_000, "Case 2. playTimes < 4. playMusic.");
-				playMusic(currentMusic.toString());
-				logger.config("Playing background music " + " '" + currentMusic.toString() + "'.");
-				playTimes++;
-			} else {
-				logger.config(5_000, "Case 3. pickANewTrack.");
-				pickANewTrack();
-			}
+			logger.config(5_000, "Case 3. pickANewTrack.");
+			pickANewTrack();
 		}
 	}
 
@@ -567,8 +409,11 @@ public class AudioPlayer {
 	 */
 	public Properties getUIProps() {
         Properties result = new Properties();
-		result.setProperty(MUSIC_VOLUME, Double.toString(currentMusicVol));
-		result.setProperty(SOUND_VOLUME, Double.toString(currentSoundVol));
+		result.setProperty(MUSIC_VOLUME, Double.toString(musicFeed.getVolume()));
+		result.setProperty(MUSIC_MUTE, Boolean.toString(musicFeed.isMuted()));
+		result.setProperty(SOUND_VOLUME, Double.toString(soundEffectFeed.getVolume()));
+		result.setProperty(SOUND_MUTE, Boolean.toString(soundEffectFeed.isMuted()));
+
 		return result;
     }
 }
