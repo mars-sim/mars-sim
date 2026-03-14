@@ -351,6 +351,11 @@ public class AudioPlayer {
 	 */
 	public void setMusicMute(boolean isMute) {
 		musicFeed.setMuted(isMute);
+		
+		// Nothing running, so pick a track to play if unmuting
+		if (!isMute && musicFeed.currentClip == null) {
+			pickNextTrack(null);
+		}
 	}
 
 	/**
@@ -374,6 +379,10 @@ public class AudioPlayer {
 
 		List<String> musicList = new ArrayList<>(musicTracks.keySet());
 		musicList.removeAll(playedTracks);
+		if (musicList.isEmpty()) {
+			playedTracks.clear();
+			musicList = new ArrayList<>(musicTracks.keySet());
+		}
 
 		var choosen = RandomUtil.getRandomElement(musicList);
 

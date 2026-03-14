@@ -23,8 +23,7 @@ class VehicleDisplayInfoBean extends MapEntityDisplayInfo {
     private static final Font VEHICLE_MAP_FONT = new Font("Helvetica", Font.PLAIN, 10);
 	private static final String SND_ROVER_MAINTENANCE = "rover_maintenance.ogg";
 	private static final String SND_ROVER_MALFUNCTION = "rover_malfunction.ogg";
-	private static final String SND_ROVER_MOVING = "rover_moving.ogg";
-	private static final String SND_ROVER_PARKED = "rover_moving.ogg";
+	private static final String SND_ROVER = "rover_moving.ogg";
     /**
      * Constructor.
      */
@@ -77,10 +76,10 @@ class VehicleDisplayInfoBean extends MapEntityDisplayInfo {
 	public String getSound(Entity unit) {
 		Vehicle rover = (Vehicle) unit;
 		StatusType primStatus = rover.getPrimaryStatus();
-        if (primStatus == StatusType.MOVING) return SND_ROVER_MOVING;
+        if (primStatus == StatusType.MOVING) return SND_ROVER;
         else if (rover.haveStatusType(StatusType.MAINTENANCE)) return SND_ROVER_MAINTENANCE;
         else if (rover.haveStatusType(StatusType.MALFUNCTION)) return SND_ROVER_MALFUNCTION;
-        else if ((primStatus == StatusType.GARAGED) || (primStatus == StatusType.PARKED)) return SND_ROVER_PARKED;
+        else if ((primStatus == StatusType.GARAGED) || (primStatus == StatusType.PARKED)) return SND_ROVER;
     	else return "";
 	}
 }

@@ -151,8 +151,7 @@ class OGGSoundClip {
 	}
 
 	private void disableSound() {
-		// TOD fix this
-		//AudioPlayer.disableAudio();
+		// Emoty for future implementation
 	}
 
 	/**
