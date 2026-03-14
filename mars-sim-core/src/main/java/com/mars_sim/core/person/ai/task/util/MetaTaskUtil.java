@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.activities.GroupActivityMetaTask;
+import com.mars_sim.core.building.construction.task.ConstructBuildingMeta;
 import com.mars_sim.core.building.function.cooking.task.CookMealMeta;
 import com.mars_sim.core.building.function.farming.task.TendAlgaePondMeta;
 import com.mars_sim.core.building.function.farming.task.TendFishTankMeta;
@@ -31,7 +32,6 @@ import com.mars_sim.core.manufacture.task.ManufacturingMetaTask;
 import com.mars_sim.core.person.ai.task.meta.AnalyzeMapDataMeta;
 import com.mars_sim.core.person.ai.task.meta.ConnectOnlineMeta;
 import com.mars_sim.core.person.ai.task.meta.ConsolidateContainersMeta;
-import com.mars_sim.core.person.ai.task.meta.ConstructBuildingMeta;
 import com.mars_sim.core.person.ai.task.meta.ConverseMeta;
 import com.mars_sim.core.person.ai.task.meta.DelegateWorkMeta;
 import com.mars_sim.core.person.ai.task.meta.DoInventoryMeta;

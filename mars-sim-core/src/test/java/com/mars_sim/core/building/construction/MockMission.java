@@ -19,7 +19,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
 @SuppressWarnings("serial")
-class MockMission implements Mission {
+public class MockMission implements Mission {
 
     @Override
     public String getContext() {
