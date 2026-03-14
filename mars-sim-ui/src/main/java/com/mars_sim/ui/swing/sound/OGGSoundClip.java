@@ -8,8 +8,6 @@
 package com.mars_sim.ui.swing.sound;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -51,7 +49,6 @@ public class OGGSoundClip {
 	private boolean mute = false;
 	private boolean paused;
 	private boolean isMasterGainSupported;
-//	private boolean isMasterVolumeSupported;
 	
 	private byte[] convbuffer = new byte[convsize];
 
@@ -80,34 +77,9 @@ public class OGGSoundClip {
 	 * @param music true if it is a background music file (Not a sound effect clip)
 	 * @throws IOException Indicated a failure to find the resource
 	 */
-	public OGGSoundClip(String parent, String filename, boolean music) throws IOException {
-		name = parent + "/" + filename;
-
-		try {
-			if (music) {
-				File f = new File(parent, filename);
-				if (f.exists() && f.canRead()) {
-					InputStream targetStream = new FileInputStream(f);
-					init(targetStream);
-				}
-			}
-			else {
-				init(Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(SoundConstants.SOUNDS_ROOT_PATH + filename));
-			}
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, "Couldn't find: " + filename + ": " + e);
-		}
-	}
-
-	/**
-	 * Creates a new clip based on a reference into the class path.
-	 *
-	 * @param in The stream from which the OGG can be read from
-	 * @throws IOException Indicated a failure to read from the stream
-	 */
-	public OGGSoundClip(InputStream in) throws IOException {
-		init(in);
+	public OGGSoundClip(String name, InputStream soundStream) throws IOException {
+		this.name = name;
+		init(soundStream);	
 	}
 
 	/**
@@ -154,9 +126,7 @@ public class OGGSoundClip {
 
 				float max = floatControl.getMaximum(); // max =~ -80
 				float min = floatControl.getMinimum(); // min =~ 6
-				
-//				double value = volume * (max - min/2) + min/2;
-				
+								
 				float value = 0;
 				
 				if (volume >= 1) {
@@ -187,33 +157,11 @@ public class OGGSoundClip {
 	}
 
 	/**
-	 * Computes the volume value for the playback--based on the new value of volume in
-	 * the increment or decrement of 0.05f.
-	 * Note that Master Volume not supported.
-	 * 
-	 * @param volume the volume
-	 */
-//	public void determineVolume(double volume) {
-//		determineGain(volume);
-//	}
-	
-	/**
 	 * Checks the state of the playback.
 	 *
 	 * @return True if the playback has been stopped
 	 */
 	synchronized boolean checkState() {
-		
-//		while (paused && (playerThread != null)) {
-//			
-//	    	try {
-//				name.wait();
-//			} catch (InterruptedException e) {
-//				// Restore interrupted state
-//			    Thread.currentThread().interrupt();
-//			}
-//	    }
-		
 		return isStopped();
 	}
 
@@ -235,8 +183,9 @@ public class OGGSoundClip {
 		return !isStopped();
 	}
 	
-	public void disableSound() {
-		AudioPlayer.disableAudio();
+	private void disableSound() {
+		// TOD fix this
+		//AudioPlayer.disableAudio();
 	}
 
 	/**
@@ -292,13 +241,6 @@ public class OGGSoundClip {
 				 } catch (Exception e) {	
 						playerThread = null;
 						
-					 if (AudioPlayer.isEffectMute()) {
-						 logger.log(Level.CONFIG, "The sound effect is muted.");
-					 }
-					 if (AudioPlayer.isMusicMute()) {
-						 logger.log(Level.CONFIG, "The music is muted.");
-					 }
-					
 					 logger.log(Level.SEVERE, "Can't play the bit stream in play(). ", e);
 				 }
 
@@ -323,30 +265,6 @@ public class OGGSoundClip {
 	 */
 	public void loop(double vol) {
 		play(vol);
-	}
-
-	/**
-	 * Resumes the playback.
-	 * Note: may need to setPause(false) first.
-	 * 
-	 * @param vol
-	 */
-	public void resume(double vol) {
-		if (paused) {
-			paused = false;
-		}
-		
-		setMute(false);	
-		
-		if (isStopped()) {
-			loop(vol);
-		}
-		
-		else if (playerThread != null) {
-			synchronized(this){
-				this.notifyAll();
-			}
-		}
 	}
 
 	/**

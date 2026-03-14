@@ -133,8 +133,10 @@ public class MainWindow
 	 * Constructor 1.
 	 *
 	 * @param cleanUI true if window should display a clean UI.
+	 * 
+	 * @param useAudio whether to initialize the audio player
 	 */
-	public MainWindow(boolean cleanUI, Simulation sim) {
+	public MainWindow(boolean cleanUI, Simulation sim, boolean useAudio) {
 		this.sim = sim;
 
 		logger.config("Starting as " + GameManager.getGameMode());
@@ -196,7 +198,7 @@ public class MainWindow
 		}
 
 		// Set up MainDesktopPane
-		desktop = new MainDesktopPane(this, sim);
+		desktop = new MainDesktopPane(this, sim, useAudio);
 
 		// Set up other elements
 		masterClock = sim.getMasterClock();
@@ -208,12 +210,6 @@ public class MainWindow
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
-		
-		if (desktop.getSoundPlayer() == null)
-			return;
-		
-		// Starts a background sound track.
-		desktop.playBackgroundMusic();
 	}
 
 	/**
