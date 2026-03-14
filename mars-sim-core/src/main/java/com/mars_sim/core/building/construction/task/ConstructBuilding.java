@@ -74,7 +74,8 @@ public class ConstructBuilding extends EVAOperation {
 			endEVA("Super Unfit.");
         	return;
 		}
-
+		
+		this.site = site;
 		if (canConstruct(person, site)) {
 
 			// Initialize data members.
