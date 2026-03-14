@@ -36,7 +36,7 @@ import com.jcraft.jorbis.Info;
 /**
  * A class that creates a sound clip. A complete rewrite for OGG based on JOrbisPlayer example source
  */
-public class OGGSoundClip {
+class OGGSoundClip {
 
 	private static final Logger logger = Logger.getLogger(OGGSoundClip.class.getName());
 

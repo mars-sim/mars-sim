@@ -11,12 +11,16 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
  * Provides display information about a person.
  */
 class PersonDisplayInfoBean extends EntityDisplayInfo {
+	private static final String SND_PERSON_DEAD = "person_dead.ogg";
+	private static final String SND_PERSON_FEMALE1 = "female_person1.ogg";
+	private static final String SND_PERSON_FEMALE2 = "female_person2.ogg";
+	private static final String SND_PERSON_MALE1 = "male_person1.ogg";
+	private static final String SND_PERSON_MALE2 = "male_person2.ogg";
 
 	/**
 	 * Constructor.
@@ -37,15 +41,15 @@ class PersonDisplayInfoBean extends EntityDisplayInfo {
 		String result = "";
 		boolean male = GenderType.MALE == person.getGender();
 		int randomSoundNum = RandomUtil.getRandomInt(1, 2);
-		if (person.getPhysicalCondition().isDead()) result = SoundConstants.SND_PERSON_DEAD;
+		if (person.getPhysicalCondition().isDead()) result = SND_PERSON_DEAD;
 		else {
 			if (male) {
-				if (randomSoundNum == 1) result = SoundConstants.SND_PERSON_MALE1;
-				else if (randomSoundNum == 2) result = SoundConstants.SND_PERSON_MALE2;
+				if (randomSoundNum == 1) result = SND_PERSON_MALE1;
+				else if (randomSoundNum == 2) result = SND_PERSON_MALE2;
 			}
 			else {
-				if (randomSoundNum == 1) result = SoundConstants.SND_PERSON_FEMALE1;
-				else if (randomSoundNum == 2) result = SoundConstants.SND_PERSON_FEMALE2;
+				if (randomSoundNum == 1) result = SND_PERSON_FEMALE1;
+				else if (randomSoundNum == 2) result = SND_PERSON_FEMALE2;
 			}
 		}
 		return result;

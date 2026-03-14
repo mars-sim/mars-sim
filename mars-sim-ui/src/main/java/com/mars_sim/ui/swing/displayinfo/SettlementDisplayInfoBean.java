@@ -8,7 +8,6 @@
 package com.mars_sim.ui.swing.displayinfo;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.ui.swing.sound.SoundConstants;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -18,11 +17,13 @@ import java.awt.Font;
  */
 class SettlementDisplayInfoBean extends MapEntityDisplayInfo {
 
+	private static final String SND_SETTLEMENT = "settlement.ogg";
+
     /**
      * Constructor
      */
     SettlementDisplayInfoBean() {
-        super("settlement", SoundConstants.SND_SETTLEMENT,
+        super("settlement", SND_SETTLEMENT,
              new Font("SansSerif", Font.BOLD, 12), Color.green,
              "map/settlement", "map/settlement_black");
     }

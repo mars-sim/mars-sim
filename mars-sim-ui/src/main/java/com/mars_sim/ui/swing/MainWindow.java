@@ -49,6 +49,7 @@ import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
 import com.mars_sim.ui.swing.entitywindow.EntityToolBar;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -78,8 +79,10 @@ public class MainWindow
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
 	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_PROPS = "main-window";
+	private static final String AUDIO_PROPS = "audio";
+
 	private static final String EXTERNAL_BROWSER = "use-external";
-	
+		
 	/** The main window frame. */
 	private static JFrame frame;
 
@@ -111,6 +114,8 @@ public class MainWindow
 	private boolean useExternalBrowser;
 
 	private ClockListener clockHandler;
+
+	private AudioPlayer soundPlayer;
 
 	/**
 	 * Constructor 1.
@@ -179,14 +184,21 @@ public class MainWindow
 		} else {
 			setUpSavedScreen();
 		}
+		
+		// Initialize audio player
+		if (useAudio) {
+			Properties props = uiconfigs.getPropSet(AUDIO_PROPS);
+			soundPlayer = new AudioPlayer(props);
+			soundPlayer.playRandomTracks();
+		}
 
 		// Set up MainDesktopPane
-		desktop = new MainDesktopPane(this, sim, useAudio);
+		desktop = new MainDesktopPane(this, sim, soundPlayer);
 
 		// Set up other elements
 		masterClock = sim.getMasterClock();
 		
-		init();
+		init(soundPlayer);
 
 		// Show frame
 		frame.setVisible(true);
@@ -348,8 +360,9 @@ public class MainWindow
 	
 	/**
 	 * Initializes UI elements for the frame
+	 * @param audio The audio player to use but maybe null if audio is not initialized
 	 */
-	private void init() {
+	private void init(AudioPlayer audio) {
 	
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -421,7 +434,7 @@ public class MainWindow
 		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
 	
      	// Prepare tool toolbar
-     	toolToolbar = new ToolToolBar(desktop);
+     	toolToolbar = new ToolToolBar(desktop, audio);
      	toolToolbar.requestFocusInWindow();
      	// Add toolToolbar to toolbarPane
      	toolbarPane.add(toolToolbar, BorderLayout.CENTER);
@@ -446,7 +459,7 @@ public class MainWindow
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
 
 		// Prepare menu
-		MainWindowMenu mainWindowMenu = new MainWindowMenu(desktop, desktop.getSoundPlayer());
+		MainWindowMenu mainWindowMenu = new MainWindowMenu(desktop, audio);
 		frame.setJMenuBar(mainWindowMenu);
 		
 		// Close the unit bar when starting up
@@ -677,8 +690,10 @@ public class MainWindow
 		// Add the Style manager details
 		result.putAll(StyleManager.getStyles());
 
-		// Add any Desktop properties
-		result.putAll(desktop.getUIProps());
+		// Add any Audio properties		
+		if (soundPlayer != null) {
+			result.put(AUDIO_PROPS, soundPlayer.getUIProps());
+		}
 
 		// Local details
 		Properties desktopProps = new Properties();

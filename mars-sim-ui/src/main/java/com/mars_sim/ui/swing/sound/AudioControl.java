@@ -6,6 +6,8 @@
 package com.mars_sim.ui.swing.sound;
 
 import java.awt.FlowLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JDialog;
@@ -14,6 +16,7 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.WindowConstants;
+
 
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
@@ -26,6 +29,9 @@ public class AudioControl extends JPanel {
 
 	private static final int MIN_LEVEL = 1;
 	private static final int MAX_LEVEL = 10;
+	
+    public static final String TITLE = "Audio Control";
+    public static final String ICON = "sound";
 
 	private final AudioPlayer audioPlayer;
 
@@ -112,6 +118,8 @@ public class AudioControl extends JPanel {
 		return sliderValue / 10D;
 	}
 
+	private static JDialog openDialog = null;
+
 	/**
 	 * Shows this control panel in a standalone popup frame.
 	 *
@@ -119,14 +127,27 @@ public class AudioControl extends JPanel {
 	 * @return the created frame.
 	 */
 	public static JDialog showPopup(AudioPlayer audioPlayer) {
-		var frame = new JDialog();
-		frame.setTitle("Audio Control");
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.setContentPane(new AudioControl(audioPlayer));
-		frame.pack();
-		frame.setLocationByPlatform(true);
-		frame.setResizable(false);
-		frame.setVisible(true);
-		return frame;
+		if (openDialog != null) {
+			openDialog.toFront();
+		}
+		else {
+			var frame = new JDialog();
+			frame.setTitle("Audio Control");
+			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			frame.setContentPane(new AudioControl(audioPlayer));
+			frame.pack();
+			frame.setLocationByPlatform(true);
+			frame.setResizable(false);
+			frame.setVisible(true);
+			openDialog = frame;
+			frame.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosed(WindowEvent e) {
+					openDialog = null;
+				}
+			});
+
+		}
+		return openDialog;
 	}
 }

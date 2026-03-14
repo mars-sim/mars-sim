@@ -81,6 +81,7 @@ public class AudioPlayer {
 		}
 
 		public void setMuted(boolean muted) {
+			this.isMuted = muted;
 			if (currentClip != null) {
 				if (muted) {
 					currentClip.stop();
@@ -91,7 +92,6 @@ public class AudioPlayer {
 					currentClip.play(volume, callback);
 				}
 			}
-			this.isMuted = muted;
 		}
 
 		public void setVolume(double newVolume) {
@@ -367,6 +367,10 @@ public class AudioPlayer {
 	 * @param lastClip The last clip just finsihed 
 	 */
 	private void pickNextTrack(OGGSoundClip lastClip) {
+
+		if (musicFeed.isMuted()) {
+			return;
+		}
 
 		List<String> musicList = new ArrayList<>(musicTracks.keySet());
 		musicList.removeAll(playedTracks);
