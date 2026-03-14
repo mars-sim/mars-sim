@@ -46,14 +46,10 @@ import com.mars_sim.ui.swing.desktop.ContentWindow;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
-import com.mars_sim.ui.swing.sound.SoundConstants;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.search.SearchWindow;
-import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
 
 /**
@@ -66,14 +62,13 @@ public class MainDesktopPane extends JDesktopPane
 		implements ClockListener, UIContext {
 
 	// Properties for UIConfig settings
-	private static final String DESKTOP_PROPS = "desktop";
-	private static final String PRELOAD_TOOLS = "preload_tools";
+	private static final String AUDIO_PROPS = "audio";
 
 	/** Default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
 	/** The sound player. */
-	private static AudioPlayer soundPlayer;
+	private AudioPlayer soundPlayer;
 
 	/** The game mode of this simulation session. */
 	public GameMode mode;
@@ -89,9 +84,6 @@ public class MainDesktopPane extends JDesktopPane
 	private Image baseImageIcon = ImageLoader.getImage("background");
 
 	private MainWindow mainWindow;
-	
-	// Preload the Tool windows
-	private boolean preloadTools = true;
 
 	// Simulation reference used by the UI windows
 	private Simulation sim;
@@ -100,17 +92,20 @@ public class MainDesktopPane extends JDesktopPane
 	 * Constructor 1.
 	 *
 	 * @param mainWindow the main outer window
+	 * @param sim the simulation being displayed
+	 * @param useAudio whether to initialize the audio player
 	 */
-	public MainDesktopPane(MainWindow mainWindow, Simulation sim) {
+	public MainDesktopPane(MainWindow mainWindow, Simulation sim, boolean useAudio) {
 		super();
 
 		this.mainWindow = mainWindow;
 		this.sim = sim;
 
 		// Initialize sound player
-		if (!AudioPlayer.isAudioDisabled()) {
-			soundPlayer = new AudioPlayer(this);
-			soundPlayer.playMusic(SoundConstants.SND_SPLASH);
+		if (useAudio) {
+			Properties props = mainWindow.getConfig().getPropSet(AUDIO_PROPS);
+			soundPlayer = new AudioPlayer(props);
+			soundPlayer.playRandomTracks();
 		}
 
 		// Prepare tool windows. Needs to be thread safe as windows are used by clock pulse
@@ -144,13 +139,6 @@ public class MainDesktopPane extends JDesktopPane
 		// Push the background to the back
 		moveToBack(backgroundLabel);
 
-		Properties props = mainWindow.getConfig().getPropSet(DESKTOP_PROPS);
-		preloadTools = UIConfig.extractBoolean(props, PRELOAD_TOOLS, false);
-		if (preloadTools) {
-			// Prep tool windows
-			prepareToolWindows();
-		}
-
 		// Set the main window's size
 		Dimension selectedSize = mainWindow.getSelectedSize();
 		if (selectedSize != null) {
@@ -160,14 +148,6 @@ public class MainDesktopPane extends JDesktopPane
 		}
 	}
 
-	/**
-	 * Starts a background sound track.
-	 */
-	public void playBackgroundMusic() {
-		// Play a random music track
-		soundPlayer.playRandomMusicTrack();
-	}
-	
 	/**
 	 * Creates background tile when MainDesktopPane is first displayed. Center
 	 * logoLabel on MainWindow and set backgroundLabel to the size of
@@ -239,18 +219,6 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public JFrame getTopFrame() {
 		return mainWindow.getFrame();
-	}
-
-	/**
-	 * Creates tool windows.
-	 */
-	private void prepareToolWindows() {
-		getToolWindow(CommanderWindow.NAME, true);
-		getToolWindow(NavigatorWindow.NAME, true);
-		getToolWindow(SearchWindow.NAME, true);
-		getToolWindow(TimeTool.NAME, true);
-		getToolWindow(SettlementWindow.NAME, true);
-		getToolWindow(MonitorWindow.NAME, true);
 	}
 
 	/**
@@ -697,13 +665,9 @@ public class MainDesktopPane extends JDesktopPane
 		Map<String, Properties> result = new HashMap<>();
 
 		if (soundPlayer != null) {
-			result.put(AudioPlayer.PROPS_NAME, soundPlayer.getUIProps());
+			result.put(AUDIO_PROPS, soundPlayer.getUIProps());
 		}
 
-		// Add desktop properties
-		Properties desktopProps = new Properties();
-		desktopProps.setProperty(PRELOAD_TOOLS, Boolean.toString(preloadTools));
-		result.put(DESKTOP_PROPS, desktopProps);
 		return result;
     }
 

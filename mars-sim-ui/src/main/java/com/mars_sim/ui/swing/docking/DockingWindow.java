@@ -109,7 +109,7 @@ public class DockingWindow extends JFrame
         toolToolBar = new ToolToolBar(this);
         add(toolToolBar, BorderLayout.NORTH);
 
-        setJMenuBar(new MainMenuBar(this));
+        setJMenuBar(new MainMenuBar(this, null));
 
         // Add the blanks panels for docking anchors
         createBlank(Placement.CENTER);
