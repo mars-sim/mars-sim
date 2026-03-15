@@ -18,12 +18,9 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
-import java.awt.event.ItemEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -34,10 +31,8 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
@@ -84,12 +79,10 @@ public class MainWindow
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
 	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_PROPS = "main-window";
-	private static final String EXTERNAL_BROWSER = "use-external";
+	private static final String AUDIO_PROPS = "audio";
 
-	private static final String SOUND = "sound";
-	private static final String MUSIC = "music";
-	private static final String MUTE = "_mute";
-	
+	private static final String EXTERNAL_BROWSER = "use-external";
+		
 	/** The main window frame. */
 	private static JFrame frame;
 
@@ -99,13 +92,6 @@ public class MainWindow
 
 	// Data members
 	private boolean isIconified = false;
-    
-	private int millisolIntCache;
-	
-	private List<Integer> volCache = new ArrayList<>();
-	
-    private static final int PANEL_WIDTH = 40;
-    private static final int BAR_LENGTH = 200;
     
 	/** The unit tool bar. */
 	private EntityToolBar unitToolbar;
@@ -129,12 +115,16 @@ public class MainWindow
 
 	private ClockListener clockHandler;
 
+	private AudioPlayer soundPlayer;
+
 	/**
 	 * Constructor 1.
 	 *
 	 * @param cleanUI true if window should display a clean UI.
+	 * 
+	 * @param useAudio whether to initialize the audio player
 	 */
-	public MainWindow(boolean cleanUI, Simulation sim) {
+	public MainWindow(boolean cleanUI, Simulation sim, boolean useAudio) {
 		this.sim = sim;
 
 		logger.config("Starting as " + GameManager.getGameMode());
@@ -194,26 +184,27 @@ public class MainWindow
 		} else {
 			setUpSavedScreen();
 		}
+		
+		// Initialize audio player
+		if (useAudio) {
+			Properties props = uiconfigs.getPropSet(AUDIO_PROPS);
+			soundPlayer = new AudioPlayer(props);
+			soundPlayer.playRandomTracks();
+		}
 
 		// Set up MainDesktopPane
-		desktop = new MainDesktopPane(this, sim);
+		desktop = new MainDesktopPane(this, sim, soundPlayer);
 
 		// Set up other elements
 		masterClock = sim.getMasterClock();
 		
-		init();
+		init(soundPlayer);
 
 		// Show frame
 		frame.setVisible(true);
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
-		
-		if (desktop.getSoundPlayer() == null)
-			return;
-		
-		// Starts a background sound track.
-		desktop.playBackgroundMusic();
 	}
 
 	/**
@@ -369,8 +360,9 @@ public class MainWindow
 	
 	/**
 	 * Initializes UI elements for the frame
+	 * @param audio The audio player to use but maybe null if audio is not initialized
 	 */
-	private void init() {
+	private void init(AudioPlayer audio) {
 	
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -419,11 +411,6 @@ public class MainWindow
 		contentPane.add(desktop, BorderLayout.CENTER);
 		mainPane.add(contentPane, BorderLayout.CENTER);
 
-		// Add a sliding left panel menu
-		if (desktop.getSoundPlayer() != null) {
-			createSlidingLeftPanel(contentPane);
-		}	
-    	
      	// Add toolbar pane
 		JPanel toolbarPane = new JPanel(new BorderLayout()); 
 		// Note: use BorderLayout for now since it has the advantage of 
@@ -447,7 +434,7 @@ public class MainWindow
 		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
 	
      	// Prepare tool toolbar
-     	toolToolbar = new ToolToolBar(desktop);
+     	toolToolbar = new ToolToolBar(desktop, audio);
      	toolToolbar.requestFocusInWindow();
      	// Add toolToolbar to toolbarPane
      	toolbarPane.add(toolToolbar, BorderLayout.CENTER);
@@ -472,7 +459,7 @@ public class MainWindow
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
 
 		// Prepare menu
-		MainWindowMenu mainWindowMenu = new MainWindowMenu(desktop);
+		MainWindowMenu mainWindowMenu = new MainWindowMenu(desktop, audio);
 		frame.setJMenuBar(mainWindowMenu);
 		
 		// Close the unit bar when starting up
@@ -494,31 +481,6 @@ public class MainWindow
 		clockHandler = new CompressedClockListener(this, 1000L);
 		masterClock.addClockListener(clockHandler);
 	}
-	  
-	public JPanel createSlidingLeftPanel(JPanel contentPane) {
-        JPanel leftSlidingPanel;
-	
-        // Create left sliding panel
-        leftSlidingPanel = new JPanel();
-        setUpSize(PANEL_WIDTH, BAR_LENGTH * 2, leftSlidingPanel);
-        leftSlidingPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-	 	volCache.add((int)(getAudioPlayer().getMusicVolume() * 100));
-	 	volCache.add((int)(getAudioPlayer().getSoundEffectVolume() * 100));
- 	
-     	// Add a floating volume bar
-     	JToolBar musicBar = createSoundMusicSlider(0, volCache);
-     	leftSlidingPanel.add(musicBar);
-
-     	// Add a floating volume bar
-     	JToolBar soundBar = createSoundMusicSlider(1, volCache);
-     	leftSlidingPanel.add(soundBar);
-     	
-        // Add components
-        contentPane.add(leftSlidingPanel, BorderLayout.WEST);
-
-        return contentPane;
-    }
 	
 	/**
 	 * Creates the speed bar and buttons.
@@ -604,118 +566,6 @@ public class MainWindow
 	}
 	
 	/**
-	 * Creates the sound and music volume slider.
-	 * 
-	 * @param d1
-	 * @return 
-	 */
-	private JToolBar createSoundMusicSlider(int index, List<Integer> volCache) {
-		JToolBar bar = new JToolBar(SwingConstants.VERTICAL);
-		setUpSize(PANEL_WIDTH, BAR_LENGTH, bar);
-     	bar.setAlignmentX(Component.CENTER_ALIGNMENT);
-     	bar.setFloatable(true);
-     	
-     	JLabel emptyLabel = new JLabel("  ");
-     	setUpSize(10, 10, emptyLabel);
-     	bar.add(emptyLabel);
-     	
-     	String type = null;
-     	int volSlider = 0;
-     	if (index == 0) {
-     		type = MUSIC;
-     		volSlider = (int)(getAudioPlayer().getMusicVolume() * 100);
-     	}
-     	else {
-     		type = SOUND;
-     		volSlider = (int)(getAudioPlayer().getSoundEffectVolume() * 100);
-     	}
-		
-		Icon icon = ImageLoader.getIconByName(type);
-		Icon musicMuteIcon = ImageLoader.getIconByName(type + MUTE);
-		JToggleButton toggleButton = new JToggleButton(icon);
-		setUpSize(PANEL_WIDTH - 5, PANEL_WIDTH - 5, toggleButton);
-		toggleButton.setAlignmentX(SwingConstants.CENTER);
-		toggleButton.setToolTipText("Toggle on and off " + type + " volume");
-		toggleButton.setSelected(true);
-		toggleButton.setSelectedIcon(icon);
-		toggleButton.setIcon(musicMuteIcon);
-		bar.add(toggleButton);
-		
-        JSlider slider = new JSlider(SwingConstants.VERTICAL);
-        bar.add(slider);
-        
-        toggleButton.addItemListener(e -> {
-        	final int i = index;
-
-		    if (e.getStateChange() == ItemEvent.SELECTED) {	
-		    	if (volCache.get(i) == 0)
-		    		slider.setValue(25);
-		    	else
-		    		slider.setValue(volCache.get(i));
-		    } 
-		    else if (e.getStateChange() == ItemEvent.DESELECTED) {
-		    	volCache.set(i, slider.getValue());
-			    slider.setValue(0);
-		    }
-		});
-		
-        slider.setMajorTickSpacing(50);
-        slider.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 8));
-        slider.setPaintLabels(true);
-        slider.setToolTipText(type + " volume slider");
-        setUpSize(PANEL_WIDTH, BAR_LENGTH - PANEL_WIDTH - 10, slider);
-        slider.setAlignmentX(SwingConstants.CENTER);
-
-        //this is for setting the value
-        slider.addChangeListener(e -> {
-            int value = ((JSlider)e.getSource()).getValue();         
-            if (icon != null) {
-                if (value == 0) {
-                	toggleButton.setSelected(false);
-                }
-                else if (!toggleButton.isSelected()) {
-                	toggleButton.setSelected(true);
-                }   
-            }
-            
-            try {
-            	if (index == 0)
-            		getAudioPlayer().setMusicVolume(value / 100.0);
-            	else
-            		getAudioPlayer().setSoundVolume(value / 100.0);
-            	
-            } catch (Exception ex) {
-            	logger.severe("Unable to set new music volume: " + ex);
-            }
-        });
-        
-
-        try {
-            slider.setValue(volSlider);
-        } catch (Exception e) {
-        	logger.severe("Unable to set new " + type + " volume: " + e);
-        }
-        
-        
-        return bar;
-    }
-	
-	/**
-	 * Sets up the size of a component.
-	 * 
-	 * @param x
-	 * @param y
-	 * @param comp
-	 */
-	private void setUpSize(int x, int y, Component comp) {
-		Dimension d1 = new Dimension(x, y);
-		comp.setSize(d1);
-		comp.setMinimumSize(d1);
-		comp.setPreferredSize(d1);
-		comp.setMaximumSize(d1);
-	}
-	
-	/**
 	 * Get the window's frame.
 	 *
 	 * @return the frame.
@@ -731,15 +581,6 @@ public class MainWindow
 	 */
 	public MainDesktopPane getDesktop() {
 		return desktop;
-	}
-
-	/**
-	 * Gets the audio player.
-	 * 
-	 * @return
-	 */
-	public AudioPlayer getAudioPlayer() {
-		return desktop.getSoundPlayer();
 	}
 
 	/**
@@ -849,8 +690,10 @@ public class MainWindow
 		// Add the Style manager details
 		result.putAll(StyleManager.getStyles());
 
-		// Add any Desktop properties
-		result.putAll(desktop.getUIProps());
+		// Add any Audio properties		
+		if (soundPlayer != null) {
+			result.put(AUDIO_PROPS, soundPlayer.getUIProps());
+		}
 
 		// Local details
 		Properties desktopProps = new Properties();
@@ -872,17 +715,6 @@ public class MainWindow
 
 			// Cascade the pulse
 			desktop.clockPulse(pulse);
-			
-			if (desktop.getSoundPlayer() == null)
-				return;
-			
-			int now = pulse.getMarsTime().getMillisolInt();	
-			if (now != millisolIntCache && now != 1000 && now % 15 == 2) {
-
-				desktop.getSoundPlayer().loopThruBackgroundMusic();
-				
-				millisolIntCache = now;
-			}
 		}
 	}
 
@@ -898,16 +730,6 @@ public class MainWindow
 		// Make sure the Pause button is synch'ed with the MasterClock state.
 		if (isPaused != playPauseSwitch.isSelected()) {
 			playPauseSwitch.setSelected(isPaused);
-		}
-		
-		if (desktop.getSoundPlayer() == null)
-			return;
-		
-		if (isPaused) {
-			desktop.getSoundPlayer().muteMusic();
-		}
-		else {
-			desktop.getSoundPlayer().unmuteMusic();
 		}
 	}
 

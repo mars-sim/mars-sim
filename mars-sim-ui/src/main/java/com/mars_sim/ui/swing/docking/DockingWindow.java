@@ -36,6 +36,7 @@ import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -93,6 +94,9 @@ public class DockingWindow extends JFrame
         // Enable dynamic layout for Docking windows as they are more flexible
         AttributePanel.setUseDynamicLayout(true);
 
+        // Setup Audio
+        AudioPlayer audio = null;
+
         // Setup the JFrame
         setTitle("Mars Simulation");
         setSize(1200, 800);
@@ -106,10 +110,10 @@ public class DockingWindow extends JFrame
 
         setLayout(new BorderLayout());
         add(dockingPanel, BorderLayout.CENTER);
-        toolToolBar = new ToolToolBar(this);
+        toolToolBar = new ToolToolBar(this, audio);
         add(toolToolBar, BorderLayout.NORTH);
 
-        setJMenuBar(new MainMenuBar(this));
+        setJMenuBar(new MainMenuBar(this, audio));
 
         // Add the blanks panels for docking anchors
         createBlank(Placement.CENTER);

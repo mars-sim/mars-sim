@@ -9,12 +9,13 @@ package com.mars_sim.ui.swing.displayinfo;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
  * Provides display information about a Robot.
  */
 class RobotDisplayInfoBean extends EntityDisplayInfo {
+	private static final String SND_ROVER_MALFUNCTION = "rover_malfunction.ogg";
+	private static final String SND_ROVER_MOVING = "rover_moving.ogg";
 
 	/**
 	 * Constructor.
@@ -34,9 +35,9 @@ class RobotDisplayInfoBean extends EntityDisplayInfo {
 		String result;
 
 		if (((Robot) unit).isOperable()) 
-			result = SoundConstants.SND_ROVER_MOVING;
+			result = SND_ROVER_MOVING;
 		else {
-			result = SoundConstants.SND_ROVER_MALFUNCTION;
+			result = SND_ROVER_MALFUNCTION;
 
 		}
 		return result;

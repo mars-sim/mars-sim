@@ -19,7 +19,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.sound.SoundConstants;
 
 /**
  * Factory for Entity display info beans.
@@ -32,6 +31,7 @@ public final class EntityDisplayInfoFactory {
 	public static final String EQUIPMENT_TYPE = "equipment";
 	public static final String CONSTRUCTION_TYPE = "constructionsite";
 	public static final String TRANSPORTABLE_TYPE = "transportable";
+	private static final String SND_EQUIPMENT = "equipment.ogg";
 
 	// Static bean instances.
 	private static EntityDisplayInfo settlementBean = new SettlementDisplayInfoBean();
@@ -45,7 +45,7 @@ public final class EntityDisplayInfoFactory {
 	private static EntityDisplayInfo cargoRoverBean = new VehicleDisplayInfoBean("unit/rover_cargo");
 	private static EntityDisplayInfo luvBean = new VehicleDisplayInfoBean("unit/luv");
 	private static EntityDisplayInfo deliveryDroneBean = new VehicleDisplayInfoBean("unit/drone");
-	private static EntityDisplayInfo equipmentBean = new EntityDisplayInfo(EQUIPMENT_TYPE, SoundConstants.SND_EQUIPMENT);
+	private static EntityDisplayInfo equipmentBean = new EntityDisplayInfo(EQUIPMENT_TYPE, SND_EQUIPMENT);
 	private static EntityDisplayInfo constructionBean = new EntityDisplayInfo(CONSTRUCTION_TYPE);
 	private static EntityDisplayInfo missionBean = new EntityDisplayInfo(MISSION_TYPE);
 	private static EntityDisplayInfo transportBean = new EntityDisplayInfo(TRANSPORTABLE_TYPE);

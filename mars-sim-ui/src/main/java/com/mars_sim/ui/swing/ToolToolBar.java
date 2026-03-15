@@ -37,6 +37,8 @@ import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
+import com.mars_sim.ui.swing.sound.AudioControl;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
@@ -66,6 +68,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String SAVEAS = "SAVEAS";
 	private static final String EXIT = "EXIT";
 	private static final String MARSCAL = "MARS-CAL";
+	private static final String AUDIO_CONTROL = "AUDIO";
 
 	private static final DateTimeFormatter SHORT_TIMESTAMP_FORMATTER = 
 			DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm");
@@ -73,7 +76,8 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private static final String SOL = "Sol:";
 	private static final String MAIN_WIKI = "main-wiki";
 	
-	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //$NON-NLS-1$
+	private static final String WIKI_URL = Msg.getString("ToolToolBar.wiki.url"); //-NLS-1$
+
 	
 	private UIContext context;
 
@@ -89,22 +93,22 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private JPanel calendarPane;
 	private MasterClock masterClock;
 
+	private AudioPlayer audioPlayer;
+
 	/**
 	 * Constructs a ToolToolBar object.
 	 * 
 	 * @param parentMainWindow the main window pane
 	 */
-	public ToolToolBar(UIContext context) {
-
-		// Use JToolBar constructor
-		super();
+	public ToolToolBar(UIContext context, AudioPlayer audioPlayer) {
 
 		// Initialize data members
+		this.audioPlayer = audioPlayer;
 		this.context = context;
 		masterClock = context.getSimulation().getMasterClock();
 
 		// Set name
-		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
+		setName(Msg.getString("ToolToolBar.toolbar")); //-NLS-1$
 
 		setRollover(true);
 		
@@ -126,17 +130,18 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		
 		addSeparator(new Dimension(20, 20));
 
-		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //$NON-NLS-1$
-		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //$NON-NLS-1$
-		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //$NON-NLS-1$
+		addToolButton(SAVE, Msg.getString("mainMenu.save"), "action/save"); //-NLS-1$
+		addToolButton(SAVEAS, Msg.getString("mainMenu.saveAs"), "action/saveAs"); //-NLS-1$
+		addToolButton(EXIT, Msg.getString("mainMenu.exit"), "action/exit"); //-NLS-1$
 
 		addSeparator(new Dimension(20, 20));
 
-		// Add wiki button
+		// Specialists buttons
+		if (audioPlayer != null) {	
+			addToolButton(AUDIO_CONTROL, AudioControl.TITLE, AudioControl.ICON);
+		}	
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
-		// Add orbit viewer
 		addToolButton(OrbitViewer.NAME, "Orbit Window", OrbitViewer.ICON);
-		// Add guide button
 		addToolButton(GuideWindow.NAME, "Help Tool", GuideWindow.guideIcon);
 		
 		addSeparator(new Dimension(20, 20));
@@ -339,7 +344,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			case MissionCreate.NAME:
 				MissionCreate.create(context);
 				break;
-				
+			
+			case AUDIO_CONTROL:
+				AudioControl.showPopup(audioPlayer);
+				break;
+
 			case TransportableWizard.NAME:
 				TransportableWizard.create(context);
 				break;

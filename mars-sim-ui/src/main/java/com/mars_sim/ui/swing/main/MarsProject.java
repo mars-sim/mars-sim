@@ -32,7 +32,6 @@ import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
 import com.mars_sim.ui.swing.docking.DockingWindow;
-import com.mars_sim.ui.swing.sound.AudioPlayer;
 
 /**
 * MarsProject is the main class for starting mars-sim's UI mode. It creates both the
@@ -57,6 +56,7 @@ public class MarsProject {
 	private boolean useSiteEditor;
 	private boolean isSandbox = false;
 	private boolean useDockingUI = false;
+	private boolean useAudio = true;
 
 	private Simulation sim;
 
@@ -121,7 +121,7 @@ public class MarsProject {
 				DockingWindow.create(sim);
 			}
 			else {
-				new MainWindow(useCleanUI, sim);
+				new MainWindow(useCleanUI, sim, useAudio);
 			}
 
 			// Switch from Splash to main window as one
@@ -233,10 +233,8 @@ public class MarsProject {
 
 			builder.parseCommandLine(line);
 
-			if (line.hasOption(NOAUDIO)) {
-				// Disable all audio not just the volume
-				AudioPlayer.disableAudio();
-			}
+			useAudio = !line.hasOption(NOAUDIO);
+
 			if (line.hasOption(DISPLAY_HELP)) {
 				usage("See available options below", options);
 			}
