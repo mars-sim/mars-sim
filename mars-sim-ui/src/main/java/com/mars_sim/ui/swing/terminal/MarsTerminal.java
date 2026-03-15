@@ -39,7 +39,7 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.CompressedClockListener;
-import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.StyleManager;
 
 public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	
@@ -174,7 +174,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 
         positionTerminal(new Point(0, 0), new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-		frame.setIconImage(MainWindow.getIconImage());
+		frame.setIconImage(StyleManager.getIconImage());
         frame.setVisible(true);
     }
 

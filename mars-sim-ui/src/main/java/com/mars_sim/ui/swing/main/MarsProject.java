@@ -29,8 +29,8 @@ import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
-import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
+import com.mars_sim.ui.swing.desktop.MainWindow;
 import com.mars_sim.ui.swing.docking.DockingWindow;
 
 /**

@@ -29,7 +29,7 @@ import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.StyleManager;
 
 /**
  * The SplashWindow class is a splash screen shown when the project is loading.
@@ -179,7 +179,7 @@ public class SplashWindow extends JComponent {
 		window.setUndecorated(true);
 
 		// Set icon image for window.
-		window.setIconImage(MainWindow.getIconImage());
+		window.setIconImage(StyleManager.getIconImage());
 
 		// Set cursor style.
 		window.setCursor(new Cursor(Cursor.WAIT_CURSOR));

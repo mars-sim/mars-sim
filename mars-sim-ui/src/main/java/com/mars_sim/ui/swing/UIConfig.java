@@ -36,6 +36,8 @@ import org.jdom2.output.XMLOutputter;
 
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.ui.swing.desktop.ContentWindow;
+import com.mars_sim.ui.swing.desktop.MainDesktopPane;
+import com.mars_sim.ui.swing.desktop.MainWindow;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 

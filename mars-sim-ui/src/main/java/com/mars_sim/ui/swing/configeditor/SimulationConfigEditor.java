@@ -70,7 +70,6 @@ import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIConfig;
 
@@ -199,7 +198,7 @@ public class SimulationConfigEditor {
 		hasError = false;
 
 		f = new JFrame();
-		f.setIconImage(MainWindow.getIconImage());
+		f.setIconImage(StyleManager.getIconImage());
 		f.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
