@@ -93,7 +93,7 @@ public class SaveDialog {
 	}
 
 	/**
-	 * Perform the end of simualtion seqeunce. This involves savign the UI config as well as stopping the Simulatiin.
+	 * Perform the end of simulation sequence. This involves saving the UI config as well as stopping the Simulation.
 	 * @param sim Simulation to end.
 	 * @param mainWindow Main window of the application.
 	 */

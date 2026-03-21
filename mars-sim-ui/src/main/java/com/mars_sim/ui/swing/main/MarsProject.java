@@ -29,6 +29,7 @@ import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
 import com.mars_sim.ui.swing.desktop.MainWindow;
@@ -123,6 +124,9 @@ public class MarsProject {
 				config.parseFile();
 			}
 
+			// Set up the look and feel library to be used
+			StyleManager.setStyles(config.getPropSets());
+		
 			// Start audio if enabled
 			AudioPlayer audio = null;
 			if (useAudio) {

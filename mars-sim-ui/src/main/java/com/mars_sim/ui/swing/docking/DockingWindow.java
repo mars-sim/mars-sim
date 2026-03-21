@@ -101,7 +101,6 @@ public class DockingWindow extends JFrame
         this.audio = audio;
 
         // Set up the look and feel library to be used
-		StyleManager.setStyles(Collections.emptyMap());
         StyleManager.setTabPlacement(SwingConstants.TOP);
 
         // Enable dynamic layout for Docking windows as they are more flexible

@@ -52,6 +52,8 @@ public class MasterClockTest {
         assertTrue(listener.lastPulse > 1, "Pulse received");
         assertFalse(listener.doublePulse, "Double pulse detected");
         assertFalse(listener.missedPulse, "Missed pulse detected");
+
+        clock.stop();
     }
 
     @Test
@@ -72,6 +74,8 @@ public class MasterClockTest {
 
         assertTrue(baseline.lastPulse > 1, "Pulse received");
         assertTrue(removed.lastPulse == -1, "Removed listener should not receive pulses");
+
+        clock.stop();
     }
 
     @Test
@@ -107,6 +111,7 @@ public class MasterClockTest {
         waitForPulses(clock);
         
         assertTrue(baseline.lastPulse > pausedPulse, "Pulses received after resuming");
+        clock.stop();
     }
 
     private static void waitForPulses(MasterClock clock) {

@@ -127,9 +127,6 @@ public class MainWindow
 		this.uiconfigs = config;
 		this.soundPlayer = audio;
 
-		// Set up the look and feel library to be used
-		StyleManager.setStyles(uiconfigs.getPropSets());
-
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();
 		GraphicsDevice graphicsDevice = null;
