@@ -28,7 +28,6 @@ public class MasterClockTest {
         }
     };
 
-    private static final long CLOCK_MIN = 1000; // Time to let clock run
     private SimulationConfig config;
 
     @BeforeEach
@@ -48,7 +47,7 @@ public class MasterClockTest {
         clock.start();
 
         // Wait for a few pulses
-        waitForPulses(CLOCK_MIN);
+        waitForPulses(clock);
 
         assertTrue(listener.lastPulse > 1, "Pulse received");
         assertFalse(listener.doublePulse, "Double pulse detected");
@@ -69,7 +68,7 @@ public class MasterClockTest {
         clock.start();
 
         // Wait for a few pulses
-        waitForPulses(CLOCK_MIN);
+        waitForPulses(clock);
 
         assertTrue(baseline.lastPulse > 1, "Pulse received");
         assertTrue(removed.lastPulse == -1, "Removed listener should not receive pulses");
@@ -85,13 +84,19 @@ public class MasterClockTest {
         clock.start();
 
         // Wait for a few pulses to pass
+        waitForPulses(clock);
 
+        // Pause the clock but it might take one pulse
         clock.setPaused(true);
         assertTrue(clock.isPaused(), "Clock is paused");
         long pausedPulse = baseline.lastPulse;
 
         // Wait for a few pulses to pass
-        waitForPulses(CLOCK_MIN);       
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }     
 
         assertTrue(baseline.lastPulse == pausedPulse, "No pulses received while paused");
 
@@ -99,25 +104,35 @@ public class MasterClockTest {
         assertFalse(clock.isPaused(), "Clock is resumed");
 
         // Wait for a few pulses to pass
-        waitForPulses(CLOCK_MIN);
+        waitForPulses(clock);
         
         assertTrue(baseline.lastPulse > pausedPulse, "Pulses received after resuming");
     }
 
-    private static void waitForPulses(long mSec) {
-        try {
-            Thread.sleep(mSec);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+    private static void waitForPulses(MasterClock clock) {
+        long startPulse = clock.getNextPulse();
+        int attempts = 5;
+
+        // Keep sleeping until the next pulse is different from the starting pulse
+        // or time runs out
+        while ((startPulse == clock.getNextPulse()) && attempts >= 0) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            attempts--;
         }
+
+        assertTrue(clock.getNextPulse() > startPulse, "Pulses received");
     }
 
     private static class TestClockListener implements ClockListener {
-        double lastDesiredTR = -1D;
+        int lastDesiredTR = -1;
         boolean lastPause = false;
 
         @Override
-        public void desiredTimeRatioChange(double desiredTR) {
+        public void desiredTimeRatioChange(int desiredTR) {
             lastDesiredTR = desiredTR;
         }
 

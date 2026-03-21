@@ -180,6 +180,8 @@ public class MasterClock implements Serializable {
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
 
+	private boolean shuttingDown = false;
+
 	/**
 	 * Constructor. 
 	 *
@@ -275,9 +277,8 @@ public class MasterClock implements Serializable {
 	 */
 	public synchronized void increaseSpeed() {
 		int tr = findSpeed(desiredTR);		
-		logger.config("Speed increased from " + desiredTR + " to " + tr + ".");
 		
-		desiredTR = tr;
+		setDesiredTR(tr);
 		
 		// Recompute the optimal pulse width
 		computeReferencePulse();
@@ -306,10 +307,8 @@ public class MasterClock implements Serializable {
 		else {
 			return;
 		}
-		
-		logger.config("Speed decreased from " + desiredTR + " to " + tr + ".");
-		
-		desiredTR = tr;
+				
+		setDesiredTR(tr);
 
 		// Recompute the reference pulse width and optimal pulse width
 		computeReferencePulse();
@@ -763,15 +762,13 @@ public class MasterClock implements Serializable {
 			result.get();
 		} catch (ExecutionException ee) {
 			logger.severe( "ExecutionException. Problem with clock listener tasks: ", ee);
-		} catch (RejectedExecutionException ree) {
-			// Application shutting down
-			Thread.currentThread().interrupt();
-			// Executor is shutdown and cannot complete queued tasks
-			logger.severe( "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-		} catch (InterruptedException ie) {
-			// Program closing down
-			Thread.currentThread().interrupt();
-			logger.severe("InterruptedException. Problem with clock listener tasks: ", ie);
+		} catch (InterruptedException | RejectedExecutionException ie) {
+			// If clock is shutting down then interruption is expected.
+			if (!shuttingDown) {
+				// Program closing down
+				Thread.currentThread().interrupt();
+				logger.severe("Exception. Problem with clock listener tasks: ", ie);
+			}
 		}
 	}
 
@@ -878,6 +875,7 @@ public class MasterClock implements Serializable {
 	 * Shuts down clock listener thread pool executor.
 	 */
 	public void shutdown() {
+		shuttingDown = true;
 		if (listenerExecutor != null)
 			listenerExecutor.shutdownNow();
 		if (clockExecutor != null)
@@ -1146,6 +1144,10 @@ public class MasterClock implements Serializable {
 			// Ensure listenerExecutor is working
 			if (listenerExecutor.isTerminated() 
 					|| listenerExecutor.isShutdown()) {
+				if (shuttingDown) {
+					// Application is shutting down, no need to restart the listener executor
+					return false;
+				}
 				// NOTE: check if resuming from power saving can cause this
 				logger.config("ListenerExecutor has died. Restarting listener executor thread.");
 				
@@ -1295,4 +1297,14 @@ public class MasterClock implements Serializable {
 			controlListeners = Collections.synchronizedSet(new HashSet<>());
 		controlListeners.add(baseline);
     }
+
+	/**
+	 * Removes a listener.
+	 * @param listener the listener to remove
+	 */
+	public void removeClockListener(ClockListener listener) {
+		if (controlListeners != null) {
+			controlListeners.remove(listener);
+		}
+	}
 }

@@ -48,6 +48,7 @@ import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SaveDialog;
+import com.mars_sim.ui.swing.utils.SpeedControl;
 
 import io.github.andrewauclair.moderndocking.Dockable;
 import io.github.andrewauclair.moderndocking.DockableStyle;
@@ -92,6 +93,7 @@ public class DockingWindow extends JFrame
     private ToolToolBar toolToolBar;
     private UIConfig config;
     private AudioPlayer audio;
+    private SpeedControl speed;
 
     private DockingWindow(Simulation sim, UIConfig config, AudioPlayer audio) {
         this.sim = sim;
@@ -117,8 +119,14 @@ public class DockingWindow extends JFrame
 
         setLayout(new BorderLayout());
         add(dockingPanel, BorderLayout.CENTER);
+
         toolToolBar = new ToolToolBar(this, this, audio);
-        add(toolToolBar, BorderLayout.NORTH);
+        var topPanel = new JPanel(new BorderLayout());
+        topPanel.add(toolToolBar, BorderLayout.CENTER);
+
+        speed = new SpeedControl(sim.getMasterClock());
+        topPanel.add(speed, BorderLayout.WEST);
+        add(topPanel, BorderLayout.NORTH);
 
         setJMenuBar(new MainMenuBar(this, this, audio));
 
@@ -323,7 +331,7 @@ public class DockingWindow extends JFrame
     @Override
     public void shutdown() {
         // Close the window and release resources
+        speed.unregister();
         dispose();
     }
-
 }

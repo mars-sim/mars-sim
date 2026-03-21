@@ -15,7 +15,7 @@ public interface ClockListener {
      * Desired Speed of the clock has changed
      * @param desiredTR Requested time ratio.
      */
-    void desiredTimeRatioChange(double desiredTR);
+    void desiredTimeRatioChange(int desiredTR);
 
 	/**
 	 * Change the pause state of the clock.

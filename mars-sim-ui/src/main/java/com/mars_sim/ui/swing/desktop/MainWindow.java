@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.desktop;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
@@ -27,11 +26,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
@@ -40,9 +37,9 @@ import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.ContentManager;
@@ -58,6 +55,7 @@ import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.utils.SaveDialog;
+import com.mars_sim.ui.swing.utils.SpeedControl;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -80,7 +78,7 @@ public class MainWindow
 	private static final String EXTERNAL_BROWSER = "use-external";
 		
 	/** The main window frame. */
-	private static JFrame frame;
+	private JFrame frame;
 
 	private transient UIConfig uiconfigs;
 
@@ -99,19 +97,16 @@ public class MainWindow
 	private Dimension selectedSize;
 	
 	private Simulation sim;
-	
-	private MasterClock masterClock;
 
 	private JMemoryMeter memoryBar;
-	
-	/** The control of play or pause the simulation. */
-	private JToggleButton playPauseSwitch;
 
 	private boolean useExternalBrowser;
 
 	private ClockPulseListener clockHandler;
 
 	private AudioPlayer soundPlayer;
+
+	private SpeedControl speedControls;
 
 	/**
 	 * Constructor 1.
@@ -176,11 +171,8 @@ public class MainWindow
 		
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this, sim, soundPlayer);
-
-		// Set up other elements
-		masterClock = sim.getMasterClock();
 		
-		init(soundPlayer);
+		init(soundPlayer, sim.getMasterClock());
 
 		// Show frame
 		frame.setVisible(true);
@@ -328,8 +320,9 @@ public class MainWindow
 	/**
 	 * Initializes UI elements for the frame
 	 * @param audio The audio player to use but maybe null if audio is not initialized
+	 * @param masterClock Main clock
 	 */
-	private void init(AudioPlayer audio) {
+	private void init(AudioPlayer audio, MasterClock masterClock) {
 	
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -393,7 +386,8 @@ public class MainWindow
      	// If user clicks close while it's floating, it does not re-positioning itself
      	// back to top left corner. Rather it creates the unintended consequence 
      	// of having two rows of tool bar
-     	floatingSpeedBar.add(createSpeedBar());	
+		speedControls = new SpeedControl(masterClock);
+     	floatingSpeedBar.add(speedControls);	
 	
     	// Add floatingSpeedBar to toolbarPane
 		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
@@ -451,85 +445,6 @@ public class MainWindow
 	}
 	
 	/**
-	 * Creates the speed bar and buttons.
-	 * 
-	 * @return
-	 */
-	private JPanel createSpeedBar() {
-		
-		JPanel speedPanel = new JPanel(new FlowLayout());
-		speedPanel.setToolTipText("Speed Control");
-		
-		Dimension d1 = new Dimension(25, 25);
-		
-		// Add the decrease speed button
-		JButton decreaseSpeed = new JButton("-");
-		decreaseSpeed.setAlignmentX(SwingConstants.CENTER);
-		decreaseSpeed.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-		decreaseSpeed.setPreferredSize(d1);
-		decreaseSpeed.setMaximumSize(d1);
-		decreaseSpeed.setToolTipText("Decrease the sim speed (aka time ratio)");
-		
-		decreaseSpeed.addActionListener(e -> {
-			if (!masterClock.isPaused()) {
-				masterClock.decreaseSpeed();
-			}
-		});
-		
-		// Create pause switch
-		createPauseSwitch(d1);
-
-		JButton increaseSpeed = new JButton("+");
-		increaseSpeed.setAlignmentX(SwingConstants.CENTER);
-		increaseSpeed.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-		increaseSpeed.setPreferredSize(d1);
-		increaseSpeed.setMaximumSize(d1);
-		increaseSpeed.setToolTipText("Increase the sim speed (aka time ratio)");
-
-		increaseSpeed.addActionListener(e -> {
-			if (!masterClock.isPaused()) {
-				masterClock.increaseSpeed();
-			}
-		});
-		
-		// Add the increase speed button
-		speedPanel.add(decreaseSpeed);
-		speedPanel.add(playPauseSwitch);
-		speedPanel.add(increaseSpeed);
-		
-		return speedPanel;
-	}
-	
-	/**
-	 * Creates the pause button.
-	 * 
-	 * @param d1
-	 */
-	private JToggleButton createPauseSwitch(Dimension d1) {
-		playPauseSwitch = new JToggleButton("\u23E8");
-		playPauseSwitch.setAlignmentX(SwingConstants.CENTER);
-		playPauseSwitch.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-		playPauseSwitch.setPreferredSize(d1);
-		playPauseSwitch.setMaximumSize(d1);
-		playPauseSwitch.setToolTipText("Pause or Resume the Simulation");
-		playPauseSwitch.addActionListener(e -> {
-				boolean isSel = playPauseSwitch.isSelected();
-				if (isSel) {
-					// To show play symbol
-					playPauseSwitch.setText("\u23F5");
-				}
-				else {
-					// To show pause symbol 
-					playPauseSwitch.setText("\u23F8");
-				}		
-				masterClock.setPaused(isSel);	
-			});
-		playPauseSwitch.setText("\u23F8");
-		
-		return playPauseSwitch;
-	}
-
-	/**
 	 * Get the window's frame.
 	 *
 	 * @return the frame.
@@ -540,18 +455,18 @@ public class MainWindow
 	}
 
 	/**
-	 * Gets the main desktop panel.
-	 *
-	 * @return desktop
+	 * Close the main frame and unregister any listeners or active components.
 	 */
-	public MainDesktopPane getDesktop() {
-		return desktop;
-	}
-
 	@Override
 	public void shutdown() {
 		frame.dispose();
-		destroy();
+
+		var masterClock = sim.getMasterClock();
+		masterClock.removeClockPulseListener(clockHandler);
+		masterClock.removeClockListener(this);
+
+		speedControls.unregister();
+		desktop.destroy();
 	}
 
 	/**
@@ -641,14 +556,10 @@ public class MainWindow
 	@Override
 	public void pauseChange(boolean isPaused) {
 		changeTitle(isPaused);
-		// Make sure the Pause button is synch'ed with the MasterClock state.
-		if (isPaused != playPauseSwitch.isSelected()) {
-			playPauseSwitch.setSelected(isPaused);
-		}
 	}
 
 	@Override
-	public void desiredTimeRatioChange(double desiredTR) {
+	public void desiredTimeRatioChange(int desiredTR) {
 		// No need to do anything here since the MasterClock is controlling the time ratio
 		// and the MainWindow does not display the time ratio. If we want to display the time ratio in the future, we can implement this method to update the display.
 	}
@@ -699,16 +610,6 @@ public class MainWindow
 			ourGuide.displayURI(helpURI);
 		}
     }
-
-	/**
-	 * Prepares the panel for deletion.
-	 */
-	public void destroy() {
-		
-		masterClock.removeClockPulseListener(clockHandler);
-
-		desktop.destroy();
-	}
 
 	@Override
 	public List<WindowSpec> getContentSpecs() {
