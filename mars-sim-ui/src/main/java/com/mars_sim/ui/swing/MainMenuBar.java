@@ -61,15 +61,18 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 	private UIContext context;
 
+	private ContentManager manager;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param context The UI hosting the menu bar.
 	 * @param audioPlayer The audio player to control.
 	 */
-	public MainMenuBar(UIContext context, AudioPlayer audioPlayer) {
+	public MainMenuBar(ContentManager manager, UIContext context, AudioPlayer audioPlayer) {
 
 		// Initialize data members
+		this.manager = manager;	
 		this.context = context;
 
 		// Create file menu
@@ -102,6 +105,14 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	}
 
 	/**
+	 * Get the top level content manager in control.
+	 * @return
+	 */
+	protected ContentManager getManager() {
+		return manager;
+	}
+
+	/**
 	 * Create a JMenu that can control the windows displayed. This is window system specifc.
 	 * @return Return null mean no menu is displayed.
 	 */
@@ -114,7 +125,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * Creates the tools menu.
 	 */
 	private JMenu createToolsMenu() {
-		var newMenu = new JMenu(Msg.getString("mainMenu.tools")); //$NON-NLS-1$
+		var newMenu = new JMenu(Msg.getString("mainMenu.tools")); //-NLS-1$
 		newMenu.setMnemonic(KeyEvent.VK_T);
 
 		// Create tool menu items
@@ -147,7 +158,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * @return
 	 */
 	private JMenu createHelpMenu() {
-		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
+		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //-NLS-1$
 		helpMenu.setMnemonic(KeyEvent.VK_H); // Alt + H
 
 		// Create About Mars Simulation Project menu item
@@ -309,7 +320,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			item.setIcon(icon);
 		}
 		if (tooltipKey != null) {
-			item.setToolTipText(Msg.getString(tooltipKey)); //$NON-NLS-1$
+			item.setToolTipText(Msg.getString(tooltipKey)); //-NLS-1$
 		}
 
 		item.setAccelerator(keyStroke);
@@ -334,7 +345,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 		switch(command) {
 			case EXIT:
-				context.requestEndSimulation();
+				SaveDialog.createEndSimulation(context.getSimulation(), manager);
 				break;
 			case SAVE:
 				SaveDialog.create(top, context.getSimulation(),true);

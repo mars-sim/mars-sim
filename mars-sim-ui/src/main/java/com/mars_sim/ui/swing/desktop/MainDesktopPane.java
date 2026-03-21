@@ -16,6 +16,7 @@ import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -28,8 +29,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
@@ -39,6 +38,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
+import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIConfig;
@@ -211,7 +211,7 @@ public class MainDesktopPane extends JDesktopPane
 
 	@Override
 	public JFrame getTopFrame() {
-		return mainWindow.getFrame();
+		return mainWindow.getTopFrame();
 	}
 
 	/**
@@ -273,19 +273,6 @@ public class MainDesktopPane extends JDesktopPane
 	public void addModel(EntityMonitorModel<?> model) {
 		var cw = openToolWindow(MonitorWindow.NAME);
 		((MonitorWindow)cw).displayModel(model);
-	}
-
-	/**
-	 * Returns true if tool window is open.
-	 *
-	 * @param toolName the name of the tool window
-	 * @return true true if tool window is open
-	 */
-	public boolean isToolWindowOpen(String toolName) {
-		var w = getToolWindow(toolName, false);
-		if (w != null)
-			return !w.isClosed();
-		return false;
 	}
 	
 	/**
@@ -349,22 +336,6 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Closes a tool window if it is open.
-	 *
-	 * @param toolName the name of the tool window
-	 */
-	public void closeToolWindow(String toolName) {
-		var window = getToolWindow(toolName, false);
-		if ((window != null) && !window.isClosed()) {
-			try {
-				window.setClosed(true);
-			} catch (PropertyVetoException e) {
-				// ignore
-			}
-		}
-	}
-
-	/**
 	 * Creates and opens a window for an Entity if it isn't already in existence and
 	 * open. This selects the most appropriate tool window.
 	 *
@@ -420,7 +391,7 @@ public class MainDesktopPane extends JDesktopPane
 			entityWindows.add(cw);
 
 			// Create new unit button in tool bar if necessary
-			mainWindow.createUnitButton(entity);
+			mainWindow.getUnitToolBar().createButton(entity);
 
 			cw.setVisible(true);
 
@@ -445,7 +416,7 @@ public class MainDesktopPane extends JDesktopPane
 		if (source.getContent() instanceof EntityContentPanel panel) {
 			Entity unit = panel.getEntity();
 			if (unit != null) {
-				mainWindow.disposeUnitButton(unit);
+				mainWindow.getUnitToolBar().disposeButton(unit);
 			}
 		}
 		entityWindows.remove(source);
@@ -657,19 +628,38 @@ public class MainDesktopPane extends JDesktopPane
 	}
 
 	/**
-	 * Prompts user to exit simulation.
+	 * Get the details of all content windows currently open on the desktop. This is used to save the UI configuration.
+	 * @return
 	 */
-	@Override
-	public void requestEndSimulation() {
-		if (!sim.isSavePending()) {
-			int reply = JOptionPane.showConfirmDialog(getTopFrame(),
-					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
-			if (reply == JOptionPane.YES_OPTION) {
+	public List<WindowSpec> getContentSpecs() {
+		List<WindowSpec> results = new ArrayList<>();
+		
+		// Add all internal windows.
+		JInternalFrame[] windows = getAllFrames();
+		for (var window1 : windows) {
+			if (window1 instanceof ContentWindow tw) {
 
-				getTopFrame().setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				Point winPosn = window1.getLocation();
+				Dimension winSize = window1.getSize();
 
-				mainWindow.exitSimulation();
+				var winOrder = getComponentZOrder(window1);
+				//windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
+
+				Properties props = null;
+				if (window1 instanceof ConfigurableWindow cw) {
+					props = cw.getUIProps();
+				}
+				else {
+					props = new Properties();
+				}
+
+				var winName = tw.getContent().getName();
+				var winType = tw.getContent() instanceof EntityContentPanel ? UIConfig.UNIT : UIConfig.TOOL;
+				var wp = new WindowSpec(winName, winPosn, winSize, winOrder, winType, props);
+				results.add(wp);
 			}
 		}
+
+		return results;
 	}
 }

@@ -8,16 +8,18 @@ package com.mars_sim.ui.swing.docking;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
@@ -27,20 +29,25 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.CompressedClockListener;
+import com.mars_sim.ui.swing.ContentManager;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ContentPanel.Placement;
 import com.mars_sim.ui.swing.MainMenuBar;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.ToolToolBar;
+import com.mars_sim.ui.swing.UIConfig;
+import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
+import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SaveDialog;
 
 import io.github.andrewauclair.moderndocking.Dockable;
 import io.github.andrewauclair.moderndocking.DockableStyle;
@@ -54,7 +61,7 @@ import io.github.andrewauclair.moderndocking.ext.ui.DockingUI;
  * It implements the UIContext interface to provide access to the simulation and other UI features.
  */
 public class DockingWindow extends JFrame 
-        implements ClockListener, UIContext{
+        implements ClockListener, UIContext, ContentManager {
     /**
      * A blank panel used as an anchor for docking regions.
      */
@@ -83,9 +90,13 @@ public class DockingWindow extends JFrame
     private Set<DockingAdapter> windows = new HashSet<>();
     private Map<Placement, Dockable> anchors = new EnumMap<>(Placement.class);
     private ToolToolBar toolToolBar;
+    private UIConfig config;
+    private AudioPlayer audio;
 
-    private DockingWindow(Simulation sim) {
+    private DockingWindow(Simulation sim, UIConfig config, AudioPlayer audio) {
         this.sim = sim;
+        this.config = config;
+        this.audio = audio;
 
         // Set up the look and feel library to be used
 		StyleManager.setStyles(Collections.emptyMap());
@@ -93,10 +104,6 @@ public class DockingWindow extends JFrame
 
         // Enable dynamic layout for Docking windows as they are more flexible
         AttributePanel.setUseDynamicLayout(true);
-
-        // Setup Audio
-        AudioPlayer audio = null;
-
         // Setup the JFrame
         setTitle("Mars Simulation");
         setSize(1200, 800);
@@ -110,10 +117,10 @@ public class DockingWindow extends JFrame
 
         setLayout(new BorderLayout());
         add(dockingPanel, BorderLayout.CENTER);
-        toolToolBar = new ToolToolBar(this, audio);
+        toolToolBar = new ToolToolBar(this, this, audio);
         add(toolToolBar, BorderLayout.NORTH);
 
-        setJMenuBar(new MainMenuBar(this, audio));
+        setJMenuBar(new MainMenuBar(this, this, audio));
 
         // Add the blanks panels for docking anchors
         createBlank(Placement.CENTER);
@@ -127,6 +134,14 @@ public class DockingWindow extends JFrame
         var emptyProps = new Properties();
         addContentPanel(new MonitorWindow(this, emptyProps));
         addContentPanel(new EntityBrowser(this));
+
+        addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				// Save simulation and UI configuration when window is closed.
+				SaveDialog.createEndSimulation(sim, DockingWindow.this);
+			}
+		});
     }
 
     /**
@@ -246,24 +261,6 @@ public class DockingWindow extends JFrame
     }
 
     /**
-     * Request to end the simulation. This will prompt the user for confirmation
-     * if there are no pending saves, and then end the simulation.
-     */
-    @Override
-	public void requestEndSimulation() {
-		if (!sim.isSavePending()) {
-			int reply = JOptionPane.showConfirmDialog(getTopFrame(),
-					"Are you sure you want to exit?", "Exiting the Simulation", JOptionPane.YES_NO_CANCEL_OPTION);
-			if (reply == JOptionPane.YES_OPTION) {
-
-				getTopFrame().setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-				sim.endSimulation();
-			}
-		}
-	}
-
-    /**
      * Master clock pulse update. This will forward the pulse to all content panels
      * that implement the TemporalComponent interface.
      */
@@ -286,13 +283,53 @@ public class DockingWindow extends JFrame
     /**
      * Factory method to create and show a DockingWindow for the given simulation.
      * @param sim Simulation running.
+     * @param config UI configuration to use for the window.
+     * @param audio Audio player for the window.
      * @return The created DockingWindow.
      */
-    public static DockingWindow create(Simulation sim) {
-        var dw = new DockingWindow(sim);
+    public static DockingWindow create(Simulation sim, UIConfig config, AudioPlayer audio) {
+        var dw = new DockingWindow(sim, config, audio);
 
         dw.setVisible(true);
         return dw;
+    }
+
+    @Override
+    public MarsTerminal getMarsTerminal() {
+        return null;
+    }
+
+    /**
+     * Saved any ui properties specifc to the Docking windows.
+     * @return Map of property sets for the UI elements in the Docking window.
+     */
+    @Override
+    public Map<String, Properties> getUIProps() {
+		return Collections.emptyMap();
+    }
+
+    @Override
+    public List<WindowSpec> getContentSpecs() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Get the assigned audio player.
+     */
+    @Override
+    public AudioPlayer getAudio() {
+        return audio;
+    }
+
+    @Override
+    public UIConfig getConfig() {
+        return config;
+    }
+
+    @Override
+    public void shutdown() {
+        // Close the window and release resources
+        dispose();
     }
 
 }

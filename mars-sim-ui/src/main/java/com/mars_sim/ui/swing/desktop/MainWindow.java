@@ -20,6 +20,7 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -29,7 +30,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -37,7 +37,6 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import com.formdev.flatlaf.util.SystemInfo;
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
@@ -45,16 +44,19 @@ import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
+import com.mars_sim.ui.swing.ContentManager;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.UIConfig;
+import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
 import com.mars_sim.ui.swing.entitywindow.EntityToolBar;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -62,7 +64,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * main desktop pane window are, status bar and tool bars.
  */
 public class MainWindow
-		extends JComponent implements ClockListener {
+		extends JComponent implements ClockListener, ContentManager {
 
 	private static final long serialVersionUID = 1L;
 
@@ -73,7 +75,6 @@ public class MainWindow
 	private static final String SHOW_UNIT_BAR = "show-unit-bar";
 	private static final String SHOW_TOOL_BAR = "show-tool-bar";
 	private static final String MAIN_PROPS = "main-window";
-	private static final String AUDIO_PROPS = "audio";
 
 	private static final String EXTERNAL_BROWSER = "use-external";
 		
@@ -114,11 +115,11 @@ public class MainWindow
 	/**
 	 * Constructor 1.
 	 *
-	 * @param cleanUI true if window should display a clean UI.
-	 * 
-	 * @param useAudio whether to initialize the audio player
+	 * @param sim Simulation running.
+	 * @param config UI configuration to use for the window.
+	 * @param audio Audio player for the window.
 	 */
-	public MainWindow(boolean cleanUI, Simulation sim, boolean useAudio) {
+	public MainWindow(Simulation sim, UIConfig config, AudioPlayer audio) {
 		this.sim = sim;
 
 		logger.config("Starting as " + GameManager.getGameMode());
@@ -127,15 +128,8 @@ public class MainWindow
 		// "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
 		System.setProperty("org.apache.batik.warn_destination", "false");
 
-		// Load a UI Config instance according to the user's choice
-		boolean loadConfig = true;
-		if (cleanUI) {
-			loadConfig = askScreenConfig();
-		}
-		uiconfigs = new UIConfig();
-		if (loadConfig) {
-			uiconfigs.parseFile();
-		}
+		this.uiconfigs = config;
+		this.soundPlayer = audio;
 
 		// Set up the look and feel library to be used
 		StyleManager.setStyles(uiconfigs.getPropSets());
@@ -179,13 +173,6 @@ public class MainWindow
 			setUpSavedScreen();
 		}
 		
-		// Initialize audio player
-		if (useAudio) {
-			Properties props = uiconfigs.getPropSet(AUDIO_PROPS);
-			soundPlayer = new AudioPlayer(props);
-			soundPlayer.playRandomTracks();
-		}
-
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this, sim, soundPlayer);
 
@@ -199,21 +186,6 @@ public class MainWindow
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
-	}
-
-	/**
-	 * Asks if the player wants to use last saved screen configuration.
-	 */
-	private boolean askScreenConfig() {
-
-		logger.config("Do you want to use the last saved screen configuration ?");
-		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
-
-		int reply = JOptionPane.showConfirmDialog(frame,
-				"Do you want to use the last saved screen configuration",
-				"Screen Configuration",
-				JOptionPane.YES_NO_OPTION);
-		return (reply == JOptionPane.YES_OPTION);
 	}
 
 	/**
@@ -362,7 +334,7 @@ public class MainWindow
 			@Override
 			public void windowClosing(WindowEvent event) {
 				// Save simulation and UI configuration when window is closed.
-				exitSimulation();
+				SaveDialog.createEndSimulation(sim, MainWindow.this);
 			}
 		});
 
@@ -426,7 +398,7 @@ public class MainWindow
 		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
 	
      	// Prepare tool toolbar
-     	toolToolbar = new ToolToolBar(desktop, audio);
+     	toolToolbar = new ToolToolBar(this, desktop, audio);
      	toolToolbar.requestFocusInWindow();
      	// Add toolToolbar to toolbarPane
      	toolbarPane.add(toolToolbar, BorderLayout.CENTER);
@@ -451,7 +423,7 @@ public class MainWindow
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
 
 		// Prepare menu
-		MainWindowMenu mainWindowMenu = new MainWindowMenu(desktop, audio);
+		MainWindowMenu mainWindowMenu = new MainWindowMenu(this, desktop, audio);
 		frame.setJMenuBar(mainWindowMenu);
 		
 		// Close the unit bar when starting up
@@ -552,17 +524,14 @@ public class MainWindow
 		
 		return playPauseSwitch;
 	}
-	
-	public JToggleButton getPlayPauseSwitch() {
-		return playPauseSwitch;
-	}
-	
+
 	/**
 	 * Get the window's frame.
 	 *
 	 * @return the frame.
 	 */
-	public JFrame getFrame() {
+	@Override
+	public JFrame getTopFrame() {
 		return frame;
 	}
 
@@ -575,35 +544,18 @@ public class MainWindow
 		return desktop;
 	}
 
-	/**
-	 * Create a new unit button in toolbar.
-	 *
-	 * @param unit the unit the button is for.
-	 */
-	public void createUnitButton(Entity unit) {
-		unitToolbar.createButton(unit);
-	}
-
-	/**
-	 * Disposes a unit button in toolbar.
-	 *
-	 * @param unit the unit to dispose.
-	 */
-	public void disposeUnitButton(Entity unit) {
-		unitToolbar.disposeButton(unit);
-	}
-
-	/**
-	 * Exits the running simulation.
-	 */
-	public void exitSimulation() {
-		// Save the UI configuration.
-		sim.endSimulation();
-		uiconfigs.saveFile(this);
-		masterClock.exitProgram();
+	@Override
+	public void shutdown() {
 		frame.dispose();
 		destroy();
-		System.exit(0);
+	}
+
+	/**
+	 * Get the assigned audio player.
+	 */
+	@Override
+	public AudioPlayer getAudio() {
+		return soundPlayer;
 	}
 
 	/**
@@ -640,17 +592,9 @@ public class MainWindow
 	}
 
 	/**
-	 * Is it iconified ?
-	 * 
-	 * @return
-	 */
-	public boolean isIconified() {
-		return isIconified;
-	}
-
-	/**
 	 * Gets the UIConfig for this UI.
 	 */
+	@Override
 	public UIConfig getConfig() {
 		return uiconfigs;
 	}
@@ -658,16 +602,9 @@ public class MainWindow
 	/**
 	 * Gets the UI properties of the application.
 	 */
+	@Override
 	public Map<String, Properties> getUIProps() {
 		Map<String, Properties> result = new HashMap<>();
-
-		// Add the Style manager details
-		result.putAll(StyleManager.getStyles());
-
-		// Add any Audio properties		
-		if (soundPlayer != null) {
-			result.put(AUDIO_PROPS, soundPlayer.getUIProps());
-		}
 
 		// Local details
 		Properties desktopProps = new Properties();
@@ -712,6 +649,7 @@ public class MainWindow
 	 * 
 	 * @return
 	 */
+	@Override
 	public MarsTerminal getMarsTerminal() {
 		return terminal;
 	}
@@ -761,5 +699,10 @@ public class MainWindow
 		masterClock.removeClockListener(clockHandler);
 
 		desktop.destroy();
+	}
+
+	@Override
+	public List<WindowSpec> getContentSpecs() {
+		return desktop.getContentSpecs();
 	}
 }
