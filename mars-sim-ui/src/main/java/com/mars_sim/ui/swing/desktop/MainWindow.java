@@ -40,6 +40,7 @@ import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
+import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.CompressedClockListener;
@@ -64,7 +65,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * main desktop pane window are, status bar and tool bars.
  */
 public class MainWindow
-		extends JComponent implements ClockListener, ContentManager {
+		extends JComponent implements ClockListener, ClockPulseListener, ContentManager {
 
 	private static final long serialVersionUID = 1L;
 
@@ -108,7 +109,7 @@ public class MainWindow
 
 	private boolean useExternalBrowser;
 
-	private ClockListener clockHandler;
+	private ClockPulseListener clockHandler;
 
 	private AudioPlayer soundPlayer;
 
@@ -443,7 +444,10 @@ public class MainWindow
 		// Add this class to the master clock's listener but compress the pulses
 		// to no more than one per second
 		clockHandler = new CompressedClockListener(this, 1000L);
-		masterClock.addClockListener(clockHandler);
+		masterClock.addClockPulseListener(clockHandler);
+
+		// Listen for clock changes
+		masterClock.addClockListener(this);
 	}
 	
 	/**
@@ -518,7 +522,7 @@ public class MainWindow
 					// To show pause symbol 
 					playPauseSwitch.setText("\u23F8");
 				}		
-				masterClock.setPaused(isSel, false);	
+				masterClock.setPaused(isSel);	
 			});
 		playPauseSwitch.setText("\u23F8");
 		
@@ -625,7 +629,7 @@ public class MainWindow
 			memoryBar.refresh();
 
 			// Cascade the pulse
-			desktop.clockPulse(pulse);
+			desktop.updateWindows(pulse);
 		}
 	}
 
@@ -633,10 +637,9 @@ public class MainWindow
 	 * Changes the pause status.
 	 *
 	 * @param isPaused true if set to pause
-	 * @param showPane true if the pane will show up
 	 */
 	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
+	public void pauseChange(boolean isPaused) {
 		changeTitle(isPaused);
 		// Make sure the Pause button is synch'ed with the MasterClock state.
 		if (isPaused != playPauseSwitch.isSelected()) {
@@ -644,6 +647,12 @@ public class MainWindow
 		}
 	}
 
+	@Override
+	public void desiredTimeRatioChange(double desiredTR) {
+		// No need to do anything here since the MasterClock is controlling the time ratio
+		// and the MainWindow does not display the time ratio. If we want to display the time ratio in the future, we can implement this method to update the display.
+	}
+	
 	/**
 	 * Returns the reference of the Mars Terminal.
 	 * 
@@ -696,7 +705,7 @@ public class MainWindow
 	 */
 	public void destroy() {
 		
-		masterClock.removeClockListener(clockHandler);
+		masterClock.removeClockPulseListener(clockHandler);
 
 		desktop.destroy();
 	}

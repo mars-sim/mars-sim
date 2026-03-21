@@ -35,7 +35,6 @@ import javax.swing.event.InternalFrameEvent;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.ConfigurableWindow;
@@ -61,7 +60,7 @@ import com.mars_sim.ui.swing.tool.time.TimeTool;
  */
 @SuppressWarnings("serial")
 public class MainDesktopPane extends JDesktopPane
-		implements ClockListener, UIContext {
+		implements UIContext {
 
 	/** Default logger. */
 	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
@@ -468,7 +467,7 @@ public class MainDesktopPane extends JDesktopPane
 	/**
 	 * Update the desktop and all of its windows.
 	 */
-	private void updateWindows(ClockPulse pulse) {
+	void updateWindows(ClockPulse pulse) {
 
 		// Update all entity windows.
 		for (var w : entityWindows) {
@@ -603,16 +602,6 @@ public class MainDesktopPane extends JDesktopPane
 	@Override
 	public Simulation getSimulation() {
 		return sim;
-	}
-
-	@Override
-	public void clockPulse(ClockPulse pulse) {
-		updateWindows(pulse);
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		// Nothing to do
 	}
 
 	/**

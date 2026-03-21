@@ -12,8 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -21,7 +19,6 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
@@ -36,12 +33,9 @@ import com.mars_sim.console.chat.simcommand.TopLevel;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.core.time.ClockListener;
-import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.ui.swing.StyleManager;
 
-public class MarsTerminal extends SwingTextTerminal implements ClockListener {
+public class MarsTerminal extends SwingTextTerminal {
 	
     private static final Logger logger = Logger.getLogger(MarsTerminal.class.getName());
 		
@@ -119,11 +113,8 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 		}, false);
 
 
-		// Add Mars Terminal to the clock listener.
-		// Has a long delay because only interested in pause changes
-		sim.getMasterClock().addClockListener(new CompressedClockListener(this, 60000L));
 		// Update title
-		changeTitle(false);
+		changeTitle();
 
         this.textIO = new TextIO(this);
 
@@ -149,25 +140,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 	};
 
     private void configureMainMenu() {
-
-		frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent event) {
-				// Save simulation and UI configuration when window is closed.
-				int reply = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Exit", JOptionPane.YES_NO_OPTION);
-		        if (reply == JOptionPane.YES_OPTION) {
-		            printf("Exiting the Simulation..." + System.lineSeparator());
-		        	sim.endSimulation();
-		    		if (sim.getMasterClock() != null)
-		    			sim.getMasterClock().exitProgram();
-
-					frame.setVisible(false);
-			    	dispose(null);
-					System.exit(0);
-		        }
-			}
-		});
-
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setResizable(true);
         
 		setPaneTitle(SimulationRuntime.SHORT_TITLE);
@@ -198,7 +171,7 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
         return menuItem;
     }
 
-	public void changeTitle(boolean isPaused) {
+	private void changeTitle() {
 		String mode = switch (GameManager.getGameMode()) {
 			case COMMAND -> "Command Mode";
 			case SANDBOX -> "Sandbox Mode";
@@ -206,16 +179,6 @@ public class MarsTerminal extends SwingTextTerminal implements ClockListener {
 			case SOCIETY -> "Society Mode";
 		};
 
-		setPaneTitle(SimulationRuntime.SHORT_TITLE + "  -  " + mode + (isPaused ? "  -  [ P A U S E ]" : ""));
-	}
-
-	@Override
-	public void clockPulse(ClockPulse pulse) {
-		// not needed
-	}
-
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-		changeTitle(isPaused);
+		setPaneTitle(SimulationRuntime.SHORT_TITLE + "  -  " + mode);
 	}
 }

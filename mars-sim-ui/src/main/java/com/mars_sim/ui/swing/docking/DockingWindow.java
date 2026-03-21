@@ -26,7 +26,7 @@ import javax.swing.WindowConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.time.ClockListener;
+import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.ui.swing.ContentManager;
@@ -61,7 +61,7 @@ import io.github.andrewauclair.moderndocking.ext.ui.DockingUI;
  * It implements the UIContext interface to provide access to the simulation and other UI features.
  */
 public class DockingWindow extends JFrame 
-        implements ClockListener, UIContext, ContentManager {
+        implements ClockPulseListener, UIContext, ContentManager {
     /**
      * A blank panel used as an anchor for docking regions.
      */
@@ -128,7 +128,7 @@ public class DockingWindow extends JFrame
         // Add this class to the master clock's listener but compress the pulses
 		// to no more than one per second
 		var clockHandler = new CompressedClockListener(this, 1000L);
-        sim.getMasterClock().addClockListener(clockHandler);
+        sim.getMasterClock().addClockPulseListener(clockHandler);
         
         // Add default tools
         var emptyProps = new Properties();
@@ -273,12 +273,6 @@ public class DockingWindow extends JFrame
         }
         toolToolBar.incrementClocks(pulse.getMasterClock());
 	}
-
-    
-    @Override
-    public void pauseChange(boolean isPaused, boolean showPane) {
-        // Do nothing
-    }
 
     /**
      * Factory method to create and show a DockingWindow for the given simulation.
