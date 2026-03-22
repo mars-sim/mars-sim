@@ -37,7 +37,6 @@ import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.authority.MissionAgenda;
 import com.mars_sim.core.authority.MissionCapability;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.StyleManager;
 
 /**
@@ -141,7 +140,7 @@ public class AuthorityEditor  {
 		this.raFactory = raFactory;
 		
 		f = new JDialog(simulationConfigEditor.getFrame(), TITLE, true);
-		f.setIconImage(MainWindow.getIconImage());
+		f.setIconImage(StyleManager.getIconImage());
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());

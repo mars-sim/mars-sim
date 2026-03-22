@@ -49,7 +49,6 @@ import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.StyleManager;
 
 
@@ -413,7 +412,7 @@ public class CrewEditor implements ActionListener {
 	private void createGUI(UserConfigurableConfig<Crew> crewConfig) {
 	
 		f = new JDialog(simulationConfigEditor.getFrame(), TITLE + " - Alpha Crew On-board", true);
-		f.setIconImage(MainWindow.getIconImage());
+		f.setIconImage(StyleManager.getIconImage());
 		f.setResizable(true);
 		f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		f.addWindowListener(new WindowAdapter() {

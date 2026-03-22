@@ -56,7 +56,7 @@ import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.tool.TexturedPanel;
 
 /**
@@ -139,15 +139,13 @@ public class StartUpChooser extends JDialog {
 		setSize(300, 365);
 		
 		if (SystemInfo.isMacOS) {
-			final Toolkit defaultToolkit = Toolkit.getDefaultToolkit();
-			Image image = defaultToolkit.getImage(getClass().getResource(MainWindow.LANDER_91_PATH));
 			final Taskbar taskbar = Taskbar.getTaskbar();
-			taskbar.setIconImage(image);
+			taskbar.setIconImage(StyleManager.getIconImage());
 			// Move the menu bar out of the main window to the top of the screen
 			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 		}
 		else {
-			setIconImage(MainWindow.getIconImage());
+			setIconImage(StyleManager.getIconImage());
 		}
 
         setResizable(false);

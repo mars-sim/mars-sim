@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
@@ -19,13 +18,12 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 
 import org.jdom2.Attribute;
 import org.jdom2.Document;
@@ -35,8 +33,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.ui.swing.desktop.ContentWindow;
-import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.terminal.MarsTerminal;
 
 /**
@@ -61,6 +57,8 @@ public class UIConfig {
 	/** Internal window types. */
 	public static final String TOOL = "tool";
 	public static final String UNIT = "unit";
+	public static final String AUDIO_PROPS = "audio";
+
 	private static final String FILE_NAME = "ui_settings.xml";
 	
 	// Copied from javax.xml.XMLConstants to get around the problem with 2 implementations of 
@@ -86,7 +84,6 @@ public class UIConfig {
 	private static final String TYPE = "type";
 	private static final String NAME = "name";
 	private static final String VALUE = "value";
-	private static final String DISPLAY = "display";
 	private static final String Z_ORDER = "z-order";
 	private static final String PROP_SETS = "prop-sets";
 	private static final String PROP_SET = "prop-set";
@@ -132,19 +129,8 @@ public class UIConfig {
 				Element internalWindows = root.getChild(INTERNAL_WINDOWS);
 				List<Element> internalWindowNodes = internalWindows.getChildren();
 				for (Element internalWindow : internalWindowNodes) {
-					String name = internalWindow.getAttributeValue(NAME);
-					String type = internalWindow.getAttributeValue(TYPE);
-					Point position = parsePosition(internalWindow);
-					Dimension size = parseSize(internalWindow);
-					int zOrder = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
-
-					Element propElement = internalWindow.getChild(PROP_SET);
-					Properties props = null;
-					if (propElement != null) {
-						props = parseProperties(propElement);
-					}
-
-					loadedSpecs.put(name, new WindowSpec(name, position, size, zOrder, type, props));
+					WindowSpec spec = parseWindowSpec(internalWindow);
+					loadedSpecs.put(spec.name(), spec);
 				}
 
 				// Parse props sets
@@ -158,6 +144,24 @@ public class UIConfig {
 				logger.log(Level.SEVERE, "Cannot parse {0} : {1}", new Object[] {FILE_NAME, e.getMessage()});
 		    }
 		}
+	}
+
+	private WindowSpec parseWindowSpec(Element internalWindow) {
+		String name = internalWindow.getAttributeValue(NAME);
+		String type = internalWindow.getAttributeValue(TYPE);
+		Point position = parsePosition(internalWindow);
+		Dimension size = parseSize(internalWindow);
+		int zOrder = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
+
+		Element propElement = internalWindow.getChild(PROP_SET);
+		Properties props;
+		if (propElement != null) {
+			props = parseProperties(propElement);
+		}
+		else {
+			props = new Properties();
+		}
+		return new WindowSpec(name, position, size, zOrder, type, props);
 	}
 
 	private static Properties parseProperties(Element propElement) {
@@ -193,10 +197,7 @@ public class UIConfig {
 	 *
 	 * @param mainWindow the main window.
 	 */
-	public void saveFile(MainWindow mainWindow) {
-		MainDesktopPane desktop = mainWindow.getDesktop();
-
-		MarsTerminal marsTerminal = mainWindow.getMarsTerminal();
+	public void saveFile(ContentManager mainWindow) {
 		
 		File configFile = new File(SimulationRuntime.getSaveDir(), FILE_NAME);
 
@@ -215,45 +216,54 @@ public class UIConfig {
 
 		uiElement.setAttribute(USE_DEFAULT, "false");
 
-		outputTopLevelWindow(uiElement, MAIN_WINDOW, mainWindow.getFrame());
-		outputTopLevelWindow(uiElement, MARS_TERMINAL, marsTerminal.getFrame());
+		outputTopLevelWindow(uiElement, MAIN_WINDOW, mainWindow.getTopFrame());
+		MarsTerminal marsTerminal = mainWindow.getMarsTerminal();
+		if (marsTerminal != null) {
+			outputTopLevelWindow(uiElement, MARS_TERMINAL, marsTerminal.getFrame());
+		}
 		
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
 
 		// Add all internal windows.
-		JInternalFrame[] windows = desktop.getAllFrames();
-		for (var window1 : windows) {
-			if (window1.isVisible() || window1.isIcon()) {
-				Element windowElement = new Element(WINDOW);
-				internalWindowsElement.addContent(windowElement);
-
-				outputWindowCoords(windowElement, window1);
-				windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
-				windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
-
-				if (window1 instanceof ConfigurableWindow cw) {
-					outputProperties(windowElement, "props", cw.getUIProps());
-				}
-
-				if (window1 instanceof ContentWindow tw) {
-					windowElement.setAttribute(NAME, tw.getContent().getName());
-					windowElement.setAttribute(TYPE, (tw.getContent() instanceof EntityContentPanel ? UNIT : TOOL));
-				} else {
-					windowElement.setAttribute(TYPE, "other");
-					windowElement.setAttribute(NAME, "other");
-				}
-			}
+		for (var window1 : mainWindow.getContentSpecs()) {
+			internalWindowsElement.addContent(outputWindowSpec(WINDOW, window1));
 		}
 
 		// Output the extra properties
+		Map<String, Properties> extraProps = new HashMap<>();
+		extraProps.putAll(StyleManager.getStyles());
+		extraProps.putAll(mainWindow.getUIProps());
+
 		Element propsElement = new Element(PROP_SETS);
 		uiElement.addContent(propsElement);
-		for (Entry<String,Properties> entry : mainWindow.getUIProps().entrySet()) {
+		for (Entry<String,Properties> entry : extraProps.entrySet()) {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
 		}
 	
+		// Output the audio properties
+		var audio = mainWindow.getAudio();
+		if (audio != null) {
+			outputProperties(propsElement, UIConfig.AUDIO_PROPS, audio.getUIProps());
+		}
+
 		saveDocumentToXMLFile(outputDoc, new File(SimulationRuntime.getSaveDir(), FILE_NAME));
+	}
+
+	private Element outputWindowSpec(String elemName, WindowSpec window1) {
+		Element windowElement = new Element(elemName);
+		
+		windowElement.setAttribute(LOCATION_X, Integer.toString(window1.position().x));
+		windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.position().y));
+		windowElement.setAttribute(WIDTH, Integer.toString(window1.size().width));
+		windowElement.setAttribute(HEIGHT, Integer.toString(window1.size().height));
+		windowElement.setAttribute(Z_ORDER, Integer.toString(window1.order()));
+		outputProperties(windowElement, "props", window1.props());
+
+		windowElement.setAttribute(NAME, window1.name());
+		windowElement.setAttribute(TYPE, window1.type());
+
+		return windowElement;
 	}
 
 	/**
@@ -284,14 +294,14 @@ public class UIConfig {
 		Element mainWindowElement = new Element(winName);
 		uiElement.addContent(mainWindowElement);
 		
-		outputWindowCoords(mainWindowElement, realWindow);
+		outputWindowCoords(mainWindowElement, realWindow.getLocation(), realWindow.getSize());
 	}
 
-	private void outputWindowCoords(Element windowElement, Component realWindow) {			
-		windowElement.setAttribute(LOCATION_X, Integer.toString(realWindow.getX()));
-		windowElement.setAttribute(LOCATION_Y, Integer.toString(realWindow.getY()));
-		windowElement.setAttribute(WIDTH, Integer.toString(realWindow.getWidth()));
-		windowElement.setAttribute(HEIGHT, Integer.toString(realWindow.getHeight()));
+	private void outputWindowCoords(Element windowElement, Point position, Dimension size) {			
+		windowElement.setAttribute(LOCATION_X, Integer.toString(position.x));
+		windowElement.setAttribute(LOCATION_Y, Integer.toString(position.y));
+		windowElement.setAttribute(WIDTH, Integer.toString(size.width));
+		windowElement.setAttribute(HEIGHT, Integer.toString(size.height));
 	}
 	
 	private void outputProperties(Element parent, String name, Properties values) {

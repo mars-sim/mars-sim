@@ -47,6 +47,10 @@ public class TemporalThreadExecutor implements TemporalExecutor {
 			try {
 				doneLock.acquire();
 			} catch (InterruptedException e) {
+				if (!keepRunning) {
+					// Application is shutting down, no need to log this exception
+					return;
+				}
 				logger.severe(target + ": Problem waitng for pulse", e);
 				Thread.currentThread().interrupt();
 			}

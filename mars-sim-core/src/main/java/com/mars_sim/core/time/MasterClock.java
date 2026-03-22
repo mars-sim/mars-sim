@@ -12,7 +12,7 @@ import java.time.temporal.ChronoField;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -99,8 +99,6 @@ public class MasterClock implements Serializable {
 	// Transient members
 	/** Pausing clock. */
 	private transient boolean isPaused = false;
-	/** Flag for ending the simulation program. */
-	private transient boolean exitProgram;
 	/** The last uptime in terms of number of pulses. */
 	private transient long tLast;
 
@@ -110,6 +108,7 @@ public class MasterClock implements Serializable {
 	private transient ExecutorService clockExecutor;
 	/** A list of clock listener tasks. */
 	private transient Collection<ClockListenerTask> clockListenerTasks;
+	private transient Set<ClockListener> controlListeners;
 	/** The clock pulse. */
 	private transient ClockPulse currentPulse;
 	
@@ -181,6 +180,8 @@ public class MasterClock implements Serializable {
 	/** The thread for running the game loop. */
 	private ClockThreadTask clockThreadTask;
 
+	private boolean shuttingDown = false;
+
 	/**
 	 * Constructor. 
 	 *
@@ -251,7 +252,7 @@ public class MasterClock implements Serializable {
 	 * @param initial
 	 * @return 
 	 */
-	public int findSpeed(int initial) {
+	private static int findSpeed(int initial) {
 
 		if (initial >= SUPER_HIGH_SPEED_RATIO) {
 			return (int)SUPER_HIGH_SPEED_RATIO;
@@ -275,27 +276,9 @@ public class MasterClock implements Serializable {
 	 * Increases the speed or time ratio.
 	 */
 	public synchronized void increaseSpeed() {
-		int tr = desiredTR;
+		int tr = findSpeed(desiredTR);		
 		
-		if (tr >= SUPER_HIGH_SPEED_RATIO) {
-			return;
-		}
-		else if (tr >= HIGH_SPEED_RATIO) {
-			tr = (int)(tr * 1.125);
-		}
-		else if (tr >= MID_SPEED_RATIO) {
-			tr = (int)(tr * 1.25);
-		}
-		else if (desiredTR >= LOW_SPEED_RATIO) {
-			tr = (int)(tr * 1.5);
-		}
-		else {
-			tr = (int)(tr * BASE_RATIO_0);
-		}
-		
-		logger.config("Speed increased from " + desiredTR + " to " + tr + ".");
-		
-		desiredTR = tr;
+		setDesiredTR(tr);
 		
 		// Recompute the optimal pulse width
 		computeReferencePulse();
@@ -324,10 +307,8 @@ public class MasterClock implements Serializable {
 		else {
 			return;
 		}
-		
-		logger.config("Speed decreased from " + desiredTR + " to " + tr + ".");
-		
-		desiredTR = tr;
+				
+		setDesiredTR(tr);
 
 		// Recompute the reference pulse width and optimal pulse width
 		computeReferencePulse();
@@ -356,18 +337,11 @@ public class MasterClock implements Serializable {
 			
 		cpuUtil = originalCPUUtil;
 	}
-	
-	/**
-	 * Computes the new cpu util or load.
-	 */
-	public void computeNewCpuLoad() {
-		cpuUtil = (float)(Math.round((.5 * cpuUtil + .5 * originalCPUUtil) * 100.0)/100.0); 
-	}
 
 	/**
 	 * Computes the reference pulse width and the optimal pulse width according to the desire TR.
 	 */
-	public void computeReferencePulse() {
+	private void computeReferencePulse() {
 		// Re-evaluate the optimal width of a pulse
 		referencePulse = (float) (refPulseRatio * minMilliSolPerPulse 
 						+ (1 - refPulseRatio) * Math.pow(desiredTR, 1.2) / cpuUtil / refPulseDamper);
@@ -495,12 +469,12 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param newListener the listener to add.
 	 */
-	public final void addClockListener(ClockListener newListener) {
+	public void addClockPulseListener(ClockPulseListener newListener) {
 		// Check if clockListenerTaskList already contain the newListener's task,
 		// if it doesn't, create one
 		if (clockListenerTasks == null)
 			clockListenerTasks = Collections.synchronizedSet(new HashSet<>());
-		if (!hasClockListenerTask(newListener)) {
+		if (!clockListenerTasks.stream().anyMatch(task -> task.getClockListener().equals(newListener))) {
 			clockListenerTasks.add(new ClockListenerTask(newListener));
 		}
 	}
@@ -510,52 +484,14 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param oldListener the listener to remove.
 	 */
-	public final void removeClockListener(ClockListener oldListener) {
-		ClockListenerTask task = retrieveClockListenerTask(oldListener);
-		if (task != null) {
-			clockListenerTasks.remove(task);
-		}
-	}
+	public void removeClockPulseListener(ClockPulseListener oldListener) {
+		var found = clockListenerTasks.stream()
+				.filter(task -> task.getClockListener().equals(oldListener))
+				.findAny().orElse(null);
 
-	/**
-	 * Does it have this clock listener ?
-	 *
-	 * @param listener
-	 * @return
-	 */
-	private boolean hasClockListenerTask(ClockListener listener) {
-		Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
-		while (i.hasNext()) {
-			ClockListenerTask c = i.next();
-			if (c.getClockListener().equals(listener))
-				return true;
+		if (found != null) {
+			clockListenerTasks.remove(found);
 		}
-		return false;
-	}
-
-	/**
-	 * Retrieves the clock listener task instance, given its clock listener.
-	 *
-	 * @param listener the clock listener
-	 */
-	private ClockListenerTask retrieveClockListenerTask(ClockListener listener) {
-		if (clockListenerTasks != null) {
-			Iterator<ClockListenerTask> i = clockListenerTasks.iterator();
-			while (i.hasNext()) {
-				ClockListenerTask c = i.next();
-				if (c.getClockListener().equals(listener))
-					return c;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Sets the exit program flag.
-	 */
-	public void exitProgram() {
-		setPaused(true, false);
-		exitProgram = true;
 	}
 
 	/*
@@ -592,6 +528,10 @@ public class MasterClock implements Serializable {
 		if (ratio > 0D && desiredTR != ratio) {
 			desiredTR = ratio;
 			logger.config("Setting desired time-ratio to " + desiredTR + ".");
+
+			if (controlListeners != null) {
+				controlListeners.forEach(listener -> listener.desiredTimeRatioChange(desiredTR));
+			}
 		}
 	}
 
@@ -613,9 +553,6 @@ public class MasterClock implements Serializable {
 		return actualTR;
 	}
 
-
-
-
 	/**
 	 * Calculate the difference between the actualTR and the desiredTR.
 	 * 
@@ -624,7 +561,6 @@ public class MasterClock implements Serializable {
 	private double calculateDeltaTR() {
 		return actualTR - desiredTR;
 	}
-
 			
 	/**
 	 * Adjusts the optimal pulse and the lead pulse to gradually 
@@ -649,9 +585,6 @@ public class MasterClock implements Serializable {
 			// If sleepTime is -ve, then there's lack of CPU, increase leadPulse			
 			leadPulse = (float) (MathUtils.between((1 - d / 3_000), .999_999, 1.000_001) * leadPulse);
 		}
-
-
-		///////////////////////////
 
 		// Between actualTR and desiredTR
 		ratio = actualTR / desiredTR;
@@ -734,14 +667,9 @@ public class MasterClock implements Serializable {
 	 * @param time
 	 */
 	private void fireClockPulse(double time) {
-		////////////////////////////////////////////////////////////////////////////////////		
-		// NOTE: Any changes (Part 0 to Part 3) made below may need to be brought to ClockPulse's fireClockPulse()
-		////////////////////////////////////////////////////////////////////////////////////
-		
-		////////////////////////////////////////////////////////////////////////////////////
+		// NOTE: Any changes (Part 0 to Part 3) made below may need to be brought to ClockPulse's fireClockPulse()		
 		// Part 0: Retrieve values
-		////////////////////////////////////////////////////////////////////////////////////
-		
+	
 		// Get the current millisol integer
 		int currentIntMillisol = marsTime.getMillisolInt();
 		// Get the current millisol
@@ -749,9 +677,7 @@ public class MasterClock implements Serializable {
 		// Get the current sol
 		int currentSol = marsTime.getMissionSol();
 				
-		////////////////////////////////////////////////////////////////////////////////////
 		// Part 1: Update isNewSol and isNewHalfSol
-		////////////////////////////////////////////////////////////////////////////////////
 
 		// Identify if this pulse crosses a sol
 		final boolean isNewSol = (lastSol != currentSol);
@@ -769,9 +695,7 @@ public class MasterClock implements Serializable {
 			isNewHalfSol = lastMillisol < 500 && currentMillisol >= 500;
 		}
 
-		////////////////////////////////////////////////////////////////////////////////////
 		// Part 2: Update isNewIntMillisol and isNewHalfMillisol
-		////////////////////////////////////////////////////////////////////////////////////
 
 		// Checks if this pulse starts a new integer millisol
 		final boolean isNewIntMillisol = (lastIntMillisol != currentIntMillisol);
@@ -793,36 +717,19 @@ public class MasterClock implements Serializable {
 			isNewHalfMillisol = decimalPartLast < .5 && decimalPartCurrent >= .5;
 		}
 		
-		
-		////////////////////////////////////////////////////////////////////////////////////
 		// Part 3: Update lastMillisol
-		////////////////////////////////////////////////////////////////////////////////////
-
-		// Update the lastMillisol
 		this.lastMillisol = (float) currentMillisol;
 	
-		
-		////////////////////////////////////////////////////////////////////////////////////
 		// Part 4: Print the current sol banner
-		////////////////////////////////////////////////////////////////////////////////////
-
 		if (isNewSol)
 			printNewSol(currentSol);
 		
-		
-		////////////////////////////////////////////////////////////////////////////////////
 		// Part 5: Log the pulse
-		////////////////////////////////////////////////////////////////////////////////////
-
 		final long newPulseId = nextPulseId++;
 		int logIndex = (int)(newPulseId % MAX_PULSE_LOG);
 		pulseLog[logIndex] = System.currentTimeMillis();
-
 		
-		////////////////////////////////////////////////////////////////////////////////////
 		// Part 6: Create a clock pulse
-		////////////////////////////////////////////////////////////////////////////////////
-
 		currentPulse = new ClockPulse(newPulseId, time, marsTime, this, 
 				isNewSol, isNewHalfSol, isNewIntMillisol, isNewHalfMillisol);
 		
@@ -847,7 +754,7 @@ public class MasterClock implements Serializable {
 	 *
 	 * @param task
 	 */
-	public void executeClockListenerTask(ClockListenerTask task) {
+	private void executeClockListenerTask(ClockListenerTask task) {
 		Future<String> result = listenerExecutor.submit(task);
 
 		try {
@@ -855,15 +762,13 @@ public class MasterClock implements Serializable {
 			result.get();
 		} catch (ExecutionException ee) {
 			logger.severe( "ExecutionException. Problem with clock listener tasks: ", ee);
-		} catch (RejectedExecutionException ree) {
-			// Application shutting down
-			Thread.currentThread().interrupt();
-			// Executor is shutdown and cannot complete queued tasks
-			logger.severe( "RejectedExecutionException. Problem with clock listener tasks: ", ree);
-		} catch (InterruptedException ie) {
-			// Program closing down
-			Thread.currentThread().interrupt();
-			logger.severe("InterruptedException. Problem with clock listener tasks: ", ie);
+		} catch (InterruptedException | RejectedExecutionException ie) {
+			// If clock is shutting down then interruption is expected.
+			if (!shuttingDown) {
+				// Program closing down
+				Thread.currentThread().interrupt();
+				logger.severe("Exception. Problem with clock listener tasks: ", ie);
+			}
 		}
 	}
 
@@ -936,9 +841,8 @@ public class MasterClock implements Serializable {
 	 * Sets if the simulation is paused or not.
 	 *
 	 * @param value the state to be set.
-	 * @param showPane true if the pane should be shown.
 	 */
-	public void setPaused(boolean value, boolean showPane) {
+	public void setPaused(boolean value) {
 		if (this.isPaused != value) {
 			this.isPaused = value;
 
@@ -952,7 +856,9 @@ public class MasterClock implements Serializable {
 			}
 			
 			// Fire pause change to all clock listeners.
-			firePauseChange(value, showPane);
+			if (controlListeners != null) {
+				controlListeners.forEach(listener -> listener.pauseChange(isPaused));
+			}
 		}
 	}
 
@@ -966,21 +872,10 @@ public class MasterClock implements Serializable {
 	}
 
 	/**
-	 * Sends a pulse change event to all clock listeners.
-	 *
-	 * @param isPaused
-	 * @param showPane
-	 */
-	private void firePauseChange(boolean isPaused, boolean showPane) {
-		if (clockListenerTasks != null) {
-			clockListenerTasks.forEach(cl -> cl.listener.pauseChange(isPaused, showPane));
-		}
-	}
-
-	/**
 	 * Shuts down clock listener thread pool executor.
 	 */
 	public void shutdown() {
+		shuttingDown = true;
 		if (listenerExecutor != null)
 			listenerExecutor.shutdownNow();
 		if (clockExecutor != null)
@@ -1121,7 +1016,6 @@ public class MasterClock implements Serializable {
 		logger.info("Auto pause time: " + value1);
 	}
 
-
 	/**
 	 * Prepares object for garbage collection.
 	 */
@@ -1137,17 +1031,17 @@ public class MasterClock implements Serializable {
 	/**
 	 * Prepares clock listener tasks for setting up threads.
 	 */
-	public class ClockListenerTask implements Callable<String>{
+	private  class ClockListenerTask implements Callable<String>{
 		
 		private static final String DONE = "done";
 
-		private ClockListener listener;
+		private ClockPulseListener listener;
 
-		public ClockListener getClockListener() {
+		public ClockPulseListener getClockListener() {
 			return listener;
 		}
 
-		private ClockListenerTask(ClockListener listener) {
+		private ClockListenerTask(ClockPulseListener listener) {
 			this.listener = listener;
 		}
 
@@ -1178,10 +1072,6 @@ public class MasterClock implements Serializable {
 		private ClockThreadTask() {
 		}
 
-		public boolean getRunning() {
-			return keepRunning;
-		}
-		
 		/**
 		 * Runs the clock.
 		 */
@@ -1254,6 +1144,10 @@ public class MasterClock implements Serializable {
 			// Ensure listenerExecutor is working
 			if (listenerExecutor.isTerminated() 
 					|| listenerExecutor.isShutdown()) {
+				if (shuttingDown) {
+					// Application is shutting down, no need to restart the listener executor
+					return false;
+				}
 				// NOTE: check if resuming from power saving can cause this
 				logger.config("ListenerExecutor has died. Restarting listener executor thread.");
 				
@@ -1390,12 +1284,27 @@ public class MasterClock implements Serializable {
 						Thread.currentThread().interrupt();
 					}
 				}
-
-				// Exit program if exitProgram flag is true.
-				if (exitProgram) {
-					System.exit(0);
-				}
 			} // end of while
 		} // end of run
+	}
+
+	/**
+	 * Add a listener that is notified when 
+	 * @param baseline
+	 */
+    public void addClockListener(ClockListener baseline) {
+        if (controlListeners == null)
+			controlListeners = Collections.synchronizedSet(new HashSet<>());
+		controlListeners.add(baseline);
+    }
+
+	/**
+	 * Removes a listener.
+	 * @param listener the listener to remove
+	 */
+	public void removeClockListener(ClockListener listener) {
+		if (controlListeners != null) {
+			controlListeners.remove(listener);
+		}
 	}
 }

@@ -8,14 +8,14 @@ package com.mars_sim.ui.swing.desktop;
 
 import java.util.Properties;
 
+import javax.swing.Icon;
 import javax.swing.JInternalFrame;
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.MainDesktopPane;
-import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 
 /**
@@ -24,6 +24,8 @@ import com.mars_sim.ui.swing.TemporalComponent;
 @SuppressWarnings("serial")
 public class ContentWindow extends JInternalFrame
     implements ConfigurableWindow, TemporalComponent {
+
+    private static final Icon LANDER_ICON = ImageLoader.getIconByName("lander16");
 
     private ContentPanel content;
 
@@ -43,7 +45,7 @@ public class ContentWindow extends JInternalFrame
 
         this.content = content;
 
-        setFrameIcon(MainWindow.getLanderIcon());
+        setFrameIcon(LANDER_ICON);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         setContentPane(content);

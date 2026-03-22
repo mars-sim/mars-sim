@@ -13,9 +13,9 @@ package com.mars_sim.core.time;
  * The root listener will not receive contiguous pulses such that there will
  * be a jump in the pulse id.
  */
-public class CompressedClockListener implements ClockListener {
+public class CompressedClockListener implements ClockPulseListener {
 
-    private ClockListener listener;
+    private ClockPulseListener listener;
     private long minInterval;
     private long lastForward;
     private double msolsSkipped;
@@ -25,7 +25,7 @@ public class CompressedClockListener implements ClockListener {
      * @param listener Root listener to notify.
      * @param minInterval Minimum interval in milliseconds between pulses.
      */
-    public CompressedClockListener(ClockListener listener, long minInterval) {
+    public CompressedClockListener(ClockPulseListener listener, long minInterval) {
         this.listener = listener;
         this.minInterval = minInterval;
         this.lastForward = 0;
@@ -56,10 +56,4 @@ public class CompressedClockListener implements ClockListener {
 		// Call handler
 		listener.clockPulse(consolidated);
     }
-
-    @Override
-    public void pauseChange(boolean isPaused, boolean showPane) {
-        listener.pauseChange(isPaused, showPane);
-    }
-
 }

@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Image;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -492,6 +493,15 @@ public class StyleManager {
      */
     public static Font getSubTitleFont() {
         return subTitleFont;
+    }
+
+    /**
+     * Gets the lander hab image icon instance.
+     *
+     * @return
+     */
+    public static Image getIconImage() {
+    	return ImageLoader.getImage("lander_hab91.png");
     }
 
     /**
