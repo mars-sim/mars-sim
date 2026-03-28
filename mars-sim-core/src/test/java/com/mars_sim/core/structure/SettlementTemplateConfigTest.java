@@ -76,7 +76,7 @@ class SettlementTemplateConfigTest {
         assertNotNull(buildingPlans, "Building plans not null");
         assertEquals(2, buildingPlans.size(), "Expected 2 building plans");
 
-        // Convert to list for easier testing (TreeSet maintains sorted order)
+        // Convert to list for easier testing
         var plansList = new ArrayList<>(buildingPlans);
         plansList.sort(Comparator.comparingInt(BuildingPlan::delayInSols));
         

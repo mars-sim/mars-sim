@@ -9,9 +9,7 @@ package com.mars_sim.core.structure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.configuration.UserConfigurable;
@@ -47,7 +45,7 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 
 	private List<RobotTemplate> robots = new ArrayList<>();
 
-	private Set<BuildingPlan> buildingPlans = new HashSet<>();
+	private List<BuildingPlan> buildingPlans = new ArrayList<>();
 
 	private ObjectiveType objective = ObjectiveType.CROP_FARM;
 
@@ -169,12 +167,12 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	}
 
 	/**
-	 * Gets the set of building plans for future construction.
+	 * Gets the list of building plans for future construction.
 	 * 
-	 * @return an unmodifiable set of building plans
+	 * @return an unmodifiable list of building plans
 	 */
-	public Set<BuildingPlan> getBuildingPlans() {
-		return Collections.unmodifiableSet(buildingPlans);
+	public List<BuildingPlan> getBuildingPlans() {
+		return Collections.unmodifiableList(buildingPlans);
 	}
 	
 	/**

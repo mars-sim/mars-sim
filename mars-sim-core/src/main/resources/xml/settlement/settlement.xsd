@@ -80,8 +80,8 @@
 
     <xs:element name="building-plan">
         <xs:complexType>
-            <xs:attribute name="building-type" type="xs:string"/>
-            <xs:attribute name="delay-sols" type="xs:integer"/>
+            <xs:attribute name="building-type" type="xs:string" use="required"/>
+            <xs:attribute name="delay-sols" type="xs:nonNegativeInteger" use="required"/>
         </xs:complexType>
     </xs:element>
 
