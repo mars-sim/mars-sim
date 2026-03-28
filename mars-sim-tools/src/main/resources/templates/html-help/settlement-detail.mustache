@@ -15,6 +15,26 @@
 
     {{>settlement-supplies}}   
 
+    {{^buildingPlans.isEmpty}}
+    <div id="buildingPlans">
+      <h3>Building Plans</h3>
+      <table class="details">
+        <thead>
+          <tr>
+          <th>Building Type</th>
+          <th>Sols Until Built</th>
+          </tr>
+        </thead>
+      {{#buildingPlans}}
+        <tr>
+          <td><a href="{{buildingfolder}}{{#filename}}{{buildingType}}{{/filename}}">{{buildingType}}</a></td>
+          <td>{{delayInSols}}</td>
+        </tr>
+      {{/buildingPlans}}
+      </table>
+    </div>
+    {{/buildingPlans.isEmpty}}
+
     {{^settlement.predefinedRobots.isEmpty}}
     <div id="robots">
       <h3>Robots</h3>

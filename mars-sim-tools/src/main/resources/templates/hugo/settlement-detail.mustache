@@ -15,6 +15,16 @@
 
 {{>settlement-supplies}}   
 
+{{^buildingPlans.isEmpty}}
+## Building Plans
+
+| Building Type      | Sols Until Built |
+|--------:|-------:|
+{{#buildingPlans}}
+|[{{buildingType}}]({{buildingfolder}}{{#filename}}{{buildingType}}{{/filename}})|{{delayInSols}}|
+{{/buildingPlans}}
+{{/buildingPlans.isEmpty}}
+
 {{^settlement.predefinedRobots.isEmpty}}
 ## Robots
 
