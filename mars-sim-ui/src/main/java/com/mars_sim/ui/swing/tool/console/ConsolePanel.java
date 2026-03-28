@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.tool.console;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -23,7 +24,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -95,8 +96,9 @@ public class ConsolePanel extends ContentPanel {
         textArea.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
+                // Only accept input if it's after the input start.
                 if (e.isConsumed() || textArea.getCaretPosition() < inputStart) {
-                    return;
+                    moveCaretToEnd();
                 }
 
                 char character = e.getKeyChar();
@@ -117,7 +119,6 @@ public class ConsolePanel extends ContentPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 channel.characterTyped(UP_ARROW_CHAR);
-                moveCaretToEnd();
             }
         });
         inputMap.put(KeyStroke.getKeyStroke("DOWN"), "terminal-down");
@@ -125,7 +126,6 @@ public class ConsolePanel extends ContentPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 channel.characterTyped(DOWN_ARROW_CHAR);
-                moveCaretToEnd();
             }
         });
 
@@ -133,7 +133,7 @@ public class ConsolePanel extends ContentPanel {
         var consumeAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                moveCaretToEnd();
+                // Do nothing - just consume the event to prevent caret movement
             }
         };
         inputMap.put(KeyStroke.getKeyStroke("LEFT"), "terminal-left");
@@ -142,7 +142,13 @@ public class ConsolePanel extends ContentPanel {
         actionMap.put("terminal-right", consumeAction);
 
         JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setWheelScrollingEnabled(true);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         add(scrollPane, BorderLayout.CENTER);
+
+        Dimension dim = new Dimension(700, 300);
+        //setMinimumSize(dim);
+        setPreferredSize(dim);
     }
 
     @Override
@@ -159,7 +165,29 @@ public class ConsolePanel extends ContentPanel {
         if ((output == null) || output.isEmpty()) {
             return;
         }
+        
+        moveCaretToEnd();
         runBypassingDocumentInputRestriction(() -> textArea.append(output));
+    }
+
+    /**
+     * Move the caret to the end of the document and scroll to make it visible.
+     */
+    private void moveCaretToEnd() {
+        // Always move to the end.
+        int endPosition = textArea.getDocument().getLength();
+        textArea.setCaretPosition(endPosition);
+
+        try {
+            var caretView = textArea.modelToView2D(endPosition);
+
+            if (caretView != null) {
+                textArea.scrollRectToVisible(caretView.getBounds());
+            }
+        }
+        catch (BadLocationException e) {
+            // Ignore invalid caret locations
+        }
     }
 
     /**
@@ -199,34 +227,6 @@ public class ConsolePanel extends ContentPanel {
     }
 
     /**
-     * Move the caret and make sure it;s visible in the scroll pane.
-     */
-    private void moveCaretToEnd() {
-        Runnable moveAction = () -> {
-            int endPosition = textArea.getDocument().getLength();
-            textArea.setCaretPosition(endPosition);
-            try {
-                var caretView = textArea.modelToView2D(endPosition);
-                if (caretView != null) {
-                    textArea.scrollRectToVisible(caretView.getBounds());
-                }
-            }
-            catch (BadLocationException e) {
-                // Ignore invalid caret locations
-            }
-        };
-
-        // If we're already on the EDT, just run the action.
-        // Otherwise, use invokeLater to ensure it runs on the EDT.
-        if (SwingUtilities.isEventDispatchThread()) {
-            moveAction.run();
-        }
-        else {
-            SwingUtilities.invokeLater(moveAction);
-        }
-    }
-
-    /**
      * A UserChannel implementation backed by the console's JTextArea. User input is read character-by-character and buffered
      * until a newline is entered, at which point the full line of input is returned.
      * Restricted characters are not added to the buffer, but are still passed to the channel for hotkey processing.
@@ -256,7 +256,6 @@ public class ConsolePanel extends ContentPanel {
         @Override
         public String getInput(String prompt) {
             appendOutput(prompt);
-            moveCaretToEnd();
 
             // Remember the start of the user input so we can restrict editing
             inputStart = textArea.getCaretPosition();
@@ -333,14 +332,13 @@ public class ConsolePanel extends ContentPanel {
             });
 
             buffer = nextBuffer;
-            moveCaretToEnd();
         }
 
         public void characterTyped(Character character) {
             try {
                 charQueue.put(character);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
+                // Just ignore
                 e.printStackTrace();
             }
         }
@@ -355,7 +353,6 @@ public class ConsolePanel extends ContentPanel {
         public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
                 throws BadLocationException {
             if (offset < inputStart) {
-                moveCaretToEnd();
                 return;
             }
 
@@ -374,7 +371,6 @@ public class ConsolePanel extends ContentPanel {
         @Override
         public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
             if (offset < inputStart) {
-                moveCaretToEnd();
                 return;
             }
             
@@ -384,7 +380,6 @@ public class ConsolePanel extends ContentPanel {
             
             if (userInputLength <= 0) {
                 // No user input to delete
-                moveCaretToEnd();
                 return;
             }
             
@@ -394,7 +389,6 @@ public class ConsolePanel extends ContentPanel {
             int adjustedLength = Math.min(length, maxRemovable);
             
             if (adjustedLength <= 0) {
-                moveCaretToEnd();
                 return;
             }
             
@@ -405,7 +399,6 @@ public class ConsolePanel extends ContentPanel {
         public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
                 throws BadLocationException {
             if (offset < inputStart) {
-                moveCaretToEnd();
                 return;
             }
 
