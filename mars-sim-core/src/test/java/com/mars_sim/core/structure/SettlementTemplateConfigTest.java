@@ -2,6 +2,9 @@ package com.mars_sim.core.structure;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -58,5 +61,31 @@ class SettlementTemplateConfigTest {
 
         assertEquals("MS", hubBase.getSponsor().getName(), "Sponsor");
 
+    }
+
+    @Test
+    void testAlphaBase1BuildingPlans() {
+        var st = config.getSettlementTemplateConfiguration();
+
+        var alphaBase1 = st.getItem("Alpha Base 1");
+        assertNotNull(alphaBase1, "Alpha Base 1 template found");
+        assertEquals("Alpha Base 1", alphaBase1.getName(), "Name of template");
+
+        // Test building plans
+        var buildingPlans = alphaBase1.getBuildingPlans();
+        assertNotNull(buildingPlans, "Building plans not null");
+        assertEquals(2, buildingPlans.size(), "Expected 2 building plans");
+
+        // Convert to list for easier testing (TreeSet maintains sorted order)
+        var plansList = new ArrayList<>(buildingPlans);
+        plansList.sort(Comparator.comparingInt(BuildingPlan::delayInSols));
+        
+        // First plan should be Inflatable Greenhouse (delay 30)
+        assertEquals("Inflatable Greenhouse", plansList.get(0).buildingType(), "First plan building type");
+        assertEquals(30, plansList.get(0).delayInSols(), "First plan delay");
+
+        // Second plan should be Manufacturing Workshop (delay 60) 
+        assertEquals("Manufacturing Workshop", plansList.get(1).buildingType(), "Second plan building type");
+        assertEquals(60, plansList.get(1).delayInSols(), "Second plan delay");
     }
 }
