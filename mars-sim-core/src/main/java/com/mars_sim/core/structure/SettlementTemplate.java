@@ -45,6 +45,8 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 
 	private List<RobotTemplate> robots = new ArrayList<>();
 
+	private List<BuildingPlan> buildingPlans = new ArrayList<>();
+
 	private ObjectiveType objective = ObjectiveType.CROP_FARM;
 
 	private GroupActivitySchedule activitySchedule;
@@ -153,6 +155,24 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 */
 	public List<RobotTemplate> getPredefinedRobots() {
 		return Collections.unmodifiableList(robots);
+	}
+
+	/**
+	 * Adds a building plan for future construction.
+	 * 
+	 * @param buildingPlan the building plan to add
+	 */
+	void addBuildingPlan(BuildingPlan buildingPlan) {
+		buildingPlans.add(buildingPlan);
+	}
+
+	/**
+	 * Gets the list of building plans for future construction.
+	 * 
+	 * @return an unmodifiable list of building plans
+	 */
+	public List<BuildingPlan> getBuildingPlans() {
+		return Collections.unmodifiableList(buildingPlans);
 	}
 	
 	/**
