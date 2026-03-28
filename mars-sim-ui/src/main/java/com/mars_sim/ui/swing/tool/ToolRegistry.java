@@ -13,6 +13,7 @@ import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
+import com.mars_sim.ui.swing.tool.console.ConsolePanel;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -49,6 +50,7 @@ public class ToolRegistry {
 			case SettlementWindow.NAME -> new SettlementWindow(context, toolProps);
             case NavigatorWindow.NAME -> new NavigatorWindow(context, toolProps);
             case MonitorWindow.NAME -> new MonitorWindow(context, toolProps);
+            case ConsolePanel.NAME -> new ConsolePanel(context, toolProps);
 			default -> null;
 		};
     }

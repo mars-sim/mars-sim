@@ -29,6 +29,7 @@ import com.mars_sim.ui.swing.StyleManager.StyleEntry;
 import com.mars_sim.ui.swing.sound.AudioControl;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
+import com.mars_sim.ui.swing.tool.console.ConsolePanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -149,6 +150,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 		newMenu.add(createToolMenuItem(CommanderWindow.NAME, CommanderWindow.TITLE, CommanderWindow.ICON,
 										 KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false)));	
+		newMenu.add(createToolMenuItem(ConsolePanel.NAME, ConsolePanel.TITLE, ConsolePanel.ICON,
+										 KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0, false)));	
 		return newMenu;
 	}
 

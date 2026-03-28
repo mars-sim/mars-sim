@@ -40,6 +40,7 @@ import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.sound.AudioControl;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
+import com.mars_sim.ui.swing.tool.console.ConsolePanel;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
@@ -169,6 +170,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		addToolButton(TransportableWizard.NAME, null, TransportableWizard.ICON);
 		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON);
 		addToolButton(EntityBrowser.NAME, null, EntityBrowser.ICON);
+		addToolButton(ConsolePanel.NAME, null, ConsolePanel.ICON);
 
 		addSeparator(new Dimension(20, 20));
 	}

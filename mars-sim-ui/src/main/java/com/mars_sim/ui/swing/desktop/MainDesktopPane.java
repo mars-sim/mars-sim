@@ -632,7 +632,6 @@ public class MainDesktopPane extends JDesktopPane
 				Dimension winSize = window1.getSize();
 
 				var winOrder = getComponentZOrder(window1);
-				//windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isIcon()));
 
 				Properties props = null;
 				if (window1 instanceof ConfigurableWindow cw) {
