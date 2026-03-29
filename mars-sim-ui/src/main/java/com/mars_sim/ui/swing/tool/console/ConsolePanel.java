@@ -86,7 +86,7 @@ public class ConsolePanel extends ContentPanel {
         textArea.setEditable(true);
         textArea.setLineWrap(false);
         textArea.setWrapStyleWord(false);
-        textArea.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        textArea.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
 
         ((DefaultCaret) textArea.getCaret()).setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
@@ -129,7 +129,7 @@ public class ConsolePanel extends ContentPanel {
             }
         });
 
-        // Copnsume left and right keys
+        // Consume left and right keys
         var consumeAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -338,8 +338,9 @@ public class ConsolePanel extends ContentPanel {
             try {
                 charQueue.put(character);
             } catch (InterruptedException e) {
-                // Just ignore
-                e.printStackTrace();
+                // Restore interrupt status and exit without noisy logging
+                Thread.currentThread().interrupt();
+                return;
             }
         }
     }

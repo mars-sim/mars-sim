@@ -142,7 +142,7 @@ public class Conversation implements UserOutbound {
     }
 
 	/**
-	 * Output the introduction for the currfent active command.
+	 * Output the introduction for the current active command.
 	 */
 	private void outputIntro() {
 		String preamble = current.getIntroduction();
