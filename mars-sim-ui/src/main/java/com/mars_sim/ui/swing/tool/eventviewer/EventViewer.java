@@ -35,6 +35,7 @@ import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 
 /**
  * EventViewer displays historical events in a collapsible panel format.
@@ -177,6 +178,15 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
             // Refresh the display
             revalidate();
             repaint();
+
+            // New events play a sound to alert the user
+            var entity = event.getEntity();
+            if (entity != null) {
+                var displayInfo = EntityDisplayInfoFactory.getDisplayInfo(entity);
+                if (displayInfo != null) {
+                    uiContext.playSound(displayInfo.getSound(entity));
+                }
+            }
         }
     }
 
