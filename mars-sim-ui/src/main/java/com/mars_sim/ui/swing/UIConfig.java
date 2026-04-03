@@ -33,7 +33,6 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.ui.swing.terminal.MarsTerminal;
 
 /**
  * Static class for saving/loading user interface configuration data.
@@ -76,9 +75,7 @@ public class UIConfig {
 	private static final String LOCATION_Y = "location-y";
 	private static final String WIDTH = "width";
 	private static final String HEIGHT = "height";
-	
-	private static final String MARS_TERMINAL = "mars-terminal";
-	
+		
 	private static final String INTERNAL_WINDOWS = "internal-windows";
 	private static final String WINDOW = "window";
 	private static final String TYPE = "type";
@@ -93,9 +90,6 @@ public class UIConfig {
 
 	private Point mainWindowPosn = new Point(0,0);
 	private Dimension mainWindowSize = new Dimension(1024, 720);
-
-	private Point marsTerminalPosn = new Point(0,0);
-	private Dimension marsTerminalSize = new Dimension(1024, 720);
 	
 	private boolean useDefault;
 
@@ -117,10 +111,6 @@ public class UIConfig {
 				Element mainWindow = root.getChild(MAIN_WINDOW);
 				mainWindowSize = parseSize(mainWindow);
 				mainWindowPosn = parsePosition(mainWindow);
-
-				Element terminalWindow = root.getChild(MARS_TERMINAL);
-				marsTerminalSize = parseSize(terminalWindow);
-				marsTerminalPosn = parsePosition(terminalWindow);
 				
 				// Global props
 				useDefault = parseBoolean(root, USE_DEFAULT);
@@ -217,10 +207,6 @@ public class UIConfig {
 		uiElement.setAttribute(USE_DEFAULT, "false");
 
 		outputTopLevelWindow(uiElement, MAIN_WINDOW, mainWindow.getTopFrame());
-		MarsTerminal marsTerminal = mainWindow.getMarsTerminal();
-		if (marsTerminal != null) {
-			outputTopLevelWindow(uiElement, MARS_TERMINAL, marsTerminal.getFrame());
-		}
 		
 		Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
 		uiElement.addContent(internalWindowsElement);
@@ -345,24 +331,6 @@ public class UIConfig {
 		return mainWindowSize;
 	}
 
-	/**
-	 * Gets the screen location of the Mars Terminal origin.
-	 *
-	 * @return location.
-	 */
-	public Point getMarsTerminalLocation() {
-		return marsTerminalPosn;
-	}
-
-	/**
-	 * Gets the size of the Mars Terminal.
-	 *
-	 * @return size.
-	 */
-	public Dimension getMarsTerminalDimension() {
-		return marsTerminalSize;
-	}
-	
 	/**
 	 * Gets any saved properties of the internal window on the desktop.
 	 *

@@ -42,7 +42,6 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
-import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -293,11 +292,6 @@ public class DockingWindow extends JFrame
 
         dw.setVisible(true);
         return dw;
-    }
-
-    @Override
-    public MarsTerminal getMarsTerminal() {
-        return null;
     }
 
     /**
