@@ -122,7 +122,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         
         add(scrollPane, BorderLayout.CENTER);
 
-        var dim = new Dimension(200, 400);
+        var dim = new Dimension(300, 400);
         setPreferredSize(dim);
         setMinimumSize(dim);
     }

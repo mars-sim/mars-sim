@@ -112,7 +112,6 @@ public class MonitorWindow extends ContentPanel
 	private static final String BOT_ICON = "robot";
 	private static final String VEHICLE_ICON = "vehicle";
 	private static final String CROP_ICON = "crop";
-	private static final String EVENT_ICON = "event";
 	private static final String FOOD_ICON = "food";
 	private static final String TRADE_ICON = "trade";
 	private static final String PEOPLE_ICON = "people";
@@ -256,8 +255,6 @@ public class MonitorWindow extends ContentPanel
 		
 		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
 
-		newTabs.add(new TableTab(this, new EventTableModel(context.getSimulation().getEventManager()), true, true,
-				EVENT_ICON));
 		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, true, SCIENCE_ICON));
 
 		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, "mission"));
