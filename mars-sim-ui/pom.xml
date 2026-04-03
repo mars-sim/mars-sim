@@ -45,11 +45,6 @@
 			<version>${modern-docking.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.beryx</groupId>
-			<artifactId>text-io</artifactId>
-			<version>3.4.1</version>
-		</dependency>
-		<dependency>
 		    <groupId>com.miglayout</groupId>
 		    <artifactId>miglayout-swing</artifactId>
 		    <version>11.4.2</version>

@@ -48,7 +48,8 @@ public class GuideWindow extends ContentPanel implements ActionListener, Hyperli
 
 	/** Tool name. */
 	public static final String NAME = "guide";
-	public static final String HELP_ICON = "action/guide";
+	public static final String TITLE = "Help";
+	public static final String ICON = "action/guide";
 	public static final String TUTORIAL_ICON = "action/tutorial";
 	public static final String HOME_ICON = "action/home";
 	
@@ -59,7 +60,7 @@ public class GuideWindow extends ContentPanel implements ActionListener, Hyperli
 	
 	public static final Icon idCardIcon = ImageLoader.getIconByName("action/about");
 	public static final Icon wikiIcon = ImageLoader.getIconByName(WIKI_ICON);
-	public static final Icon guideIcon = ImageLoader.getIconByName(HELP_ICON);
+	public static final Icon guideIcon = ImageLoader.getIconByName(ICON);
 	
 	private JLabel urlLabel;
 	

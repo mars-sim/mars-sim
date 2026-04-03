@@ -94,6 +94,7 @@ implements ActionListener {
 
 	public static final String NAME = "astro";
 	public static final String ICON = "astro";
+	public static final String TITLE = "Orbit Viewer";
 	
 	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 600;

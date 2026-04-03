@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
-import com.mars_sim.ui.swing.terminal.MarsTerminal;
 
 /**
  * This represents the content manager for the main window. It provides methods to get the properties of all UI elements and the details of all content windows currently open on the desktop.
@@ -22,13 +21,6 @@ import com.mars_sim.ui.swing.terminal.MarsTerminal;
  * It provides an interface to the shared main UI components, such as the Mars Terminal and the content windows and UIConfig.
  */
 public interface ContentManager {
-
-    /**
-     * Get the MarsTerminal instance. This is used to save the UI configuration.
-     * THis will be replaced once the Mars Terminal becomes a Content Panel.
-     * @return The MarsTerminal instance.
-     */
-    MarsTerminal getMarsTerminal();
 
     /**
      * Get the properties of all UI elements. This is used to save the UI configuration.

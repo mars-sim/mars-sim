@@ -48,6 +48,7 @@ import com.mars_sim.ui.swing.tool.MapSelector;
  */
 public class EntityBrowser extends ContentPanel implements EntityManagerListener {
     public static final String NAME = "entitybrowser";
+    public static final String TITLE = "Entity Browser";
     public static final String ICON = "action/entitybrowser";
 
     // This values MUST match the Entity prefix used in message.properties

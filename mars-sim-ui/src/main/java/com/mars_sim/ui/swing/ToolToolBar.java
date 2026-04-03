@@ -36,19 +36,12 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.sound.AudioControl;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
-import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
-import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
+import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.search.SearchWindow;
-import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
 import com.mars_sim.ui.swing.tool.time.MarsCalendarDisplay;
-import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.tool.transportable.TransportableWizard;
 import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -146,7 +139,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			addToolButton(AUDIO_CONTROL, AudioControl.TITLE, AudioControl.ICON);
 		}	
 		addToolButton(MAIN_WIKI, "Wiki", GuideWindow.wikiIcon);
-		addToolButton(OrbitViewer.NAME, "Orbit Window", OrbitViewer.ICON);
 		addToolButton(GuideWindow.NAME, "Help Tool", GuideWindow.guideIcon);
 		
 		addSeparator(new Dimension(20, 20));
@@ -160,16 +152,16 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void prepareToolButtons() {
 
 		// Add Tools buttons
-		addToolButton(NavigatorWindow.NAME, null, NavigatorWindow.ICON);
-		addToolButton(SearchWindow.NAME, null, SearchWindow.ICON);
-		addToolButton(TimeTool.NAME, null, TimeTool.ICON);
-		addToolButton(MonitorWindow.NAME, null, MonitorWindow.ICON);
-		addToolButton(MissionCreate.NAME, MissionCreate.TITLE, MissionCreate.ICON);
-		addToolButton(SettlementWindow.NAME, null, SettlementWindow.ICON);
-		addToolButton(TransportableWizard.NAME, null, TransportableWizard.ICON);
-		addToolButton(CommanderWindow.NAME, null, CommanderWindow.ICON);
-		addToolButton(EntityBrowser.NAME, null, EntityBrowser.ICON);
+		for(var ts : ToolRegistry.TOOL_INFOS) {
+			if (ts.category() != ToolRegistry.ToolCategory.HELP) {
+				addToolButton(ts.name(), ts.title(), ts.iconName());
+			}
+		}
+		addSeparator(new Dimension(20, 20));
 
+		// Add Wizards buttons
+		addToolButton(MissionCreate.NAME, MissionCreate.TITLE, MissionCreate.ICON);
+		addToolButton(TransportableWizard.NAME, TransportableWizard.TITLE, TransportableWizard.ICON);
 		addSeparator(new Dimension(20, 20));
 	}
   

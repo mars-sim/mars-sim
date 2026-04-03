@@ -13,7 +13,6 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Point;
 import java.awt.Taskbar;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -51,7 +50,6 @@ import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.components.JMemoryMeter;
 import com.mars_sim.ui.swing.entitywindow.EntityToolBar;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
-import com.mars_sim.ui.swing.terminal.MarsTerminal;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.utils.SaveDialog;
@@ -81,8 +79,6 @@ public class MainWindow
 	private JFrame frame;
 
 	private transient UIConfig uiconfigs;
-
-	private MarsTerminal terminal;
 
 	// Data members
 	private boolean isIconified = false;
@@ -153,9 +149,6 @@ public class MainWindow
 		frame.setResizable(true);
 		frame.setMinimumSize(new Dimension(640, 640));
 
-		// Setup before loading defaults
-		terminal = new MarsTerminal(sim);
-
 		// Set the UI configuration
 		boolean useDefault = uiconfigs.useUIDefault();
 
@@ -200,11 +193,6 @@ public class MainWindow
 				+ ", "
 				+ uiconfigs.getMainWindowLocation().y
 				+ ").");
-		
-		
-		// For Mars Terminal
-		// Set frame size
-		terminal.positionTerminal(uiconfigs.getMarsTerminalLocation(), uiconfigs.getMarsTerminalDimension());
 	}
 
 	/**
@@ -216,8 +204,8 @@ public class MainWindow
 	 * @param useDefaults
 	 */
 	private void setUpDefaultScreen(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefaults) {
-  int initY;
-  int initX;
+		int initY;
+		int initX;
 		
 		// Set main window frame size
 		selectedSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMainWindowDimension());
@@ -240,14 +228,6 @@ public class MainWindow
 				+ ", "
 				+ (screenHeight - selectedSize.height) / 2
 				+ ").");
-		
-		
-		// Set Mars Terminal frame size
-		var terminalSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMarsTerminalDimension());
-
-		terminal.positionTerminal(new Point(((screenWidth - terminalSize.width) / 2),
-										((screenHeight - terminalSize.height) / 2)),
-				terminalSize);
 	}
 
 
@@ -559,16 +539,6 @@ public class MainWindow
 	public void desiredTimeRatioChange(int desiredTR) {
 		// No need to do anything here since the MasterClock is controlling the time ratio
 		// and the MainWindow does not display the time ratio. If we want to display the time ratio in the future, we can implement this method to update the display.
-	}
-	
-	/**
-	 * Returns the reference of the Mars Terminal.
-	 * 
-	 * @return
-	 */
-	@Override
-	public MarsTerminal getMarsTerminal() {
-		return terminal;
 	}
 	
 	/**
