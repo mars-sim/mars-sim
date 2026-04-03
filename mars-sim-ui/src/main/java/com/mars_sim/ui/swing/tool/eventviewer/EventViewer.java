@@ -26,6 +26,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
@@ -62,7 +63,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
      * @param uiContext The UI context
      */
     public EventViewer(UIContext uiContext, Properties userSettings) {
-        super(NAME, "Historical Events", Placement.CENTER);
+        super(NAME, "Historical Events", Placement.RIGHT);
         
         this.uiContext = uiContext;
         this.eventManager = uiContext.getSimulation().getEventManager();
@@ -118,12 +119,11 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         // Create scroll pane
         var scrollPane = new JScrollPane(eventListPanel);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
         add(scrollPane, BorderLayout.CENTER);
 
-        var dim = new Dimension(300, 400);
+        var dim = new Dimension(270, 400);
         setPreferredSize(dim);
         setMinimumSize(dim);
     }
@@ -170,23 +170,25 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
     @Override
     public void eventAdded(HistoricalEvent event) {
         if (isEventVisible(event)) {
-            // Add new event at the top of the list
-            CollapsibleEventPanel eventPanel = new CollapsibleEventPanel(event, uiContext);
-            eventListPanel.add(eventPanel, 0);
-            eventListPanel.add(Box.createVerticalStrut(2), 1); // Small gap after the new panel
-            
-            // Refresh the display
-            revalidate();
-            repaint();
+            SwingUtilities.invokeLater(() -> {
+                // Add new event at the top of the list
+                CollapsibleEventPanel eventPanel = new CollapsibleEventPanel(event, uiContext);
+                eventListPanel.add(eventPanel, 0);
+                eventListPanel.add(Box.createVerticalStrut(2), 1); // Small gap after the new panel
+                
+                // Refresh the display
+                revalidate();
+                repaint();
 
-            // New events play a sound to alert the user
-            var entity = event.getEntity();
-            if (entity != null) {
-                var displayInfo = EntityDisplayInfoFactory.getDisplayInfo(entity);
-                if (displayInfo != null) {
-                    uiContext.playSound(displayInfo.getSound(entity));
+                // New events play a sound to alert the user
+                var entity = event.getEntity();
+                if (entity != null) {
+                    var displayInfo = EntityDisplayInfoFactory.getDisplayInfo(entity);
+                    if (displayInfo != null) {
+                        uiContext.playSound(displayInfo.getSound(entity));
+                    }
                 }
-            }
+            });
         }
     }
 

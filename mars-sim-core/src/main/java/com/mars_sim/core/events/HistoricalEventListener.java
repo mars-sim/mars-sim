@@ -9,7 +9,7 @@ package com.mars_sim.core.events;
 
 /**
  * This interface is implemented by any object that is to receive notification
- * of the registration or removal of an HistoricalEvent.
+ * of the registration of an HistoricalEvent.
  */
 public interface HistoricalEventListener {
 

@@ -7,6 +7,8 @@
 package com.mars_sim.ui.swing.tool.eventviewer;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -18,6 +20,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,7 +36,7 @@ import com.mars_sim.ui.swing.components.EntityLabel;
  * Shows basic information when collapsed and detailed information when expanded.
  */
 @SuppressWarnings("serial")
-public class CollapsibleEventPanel extends JPanel {
+class CollapsibleEventPanel extends JPanel {
     
     private static final String EXPAND_SYMBOL = "▶";
     private static final String COLLAPSE_SYMBOL = "▼";
@@ -51,7 +54,7 @@ public class CollapsibleEventPanel extends JPanel {
      * @param uiContext The UI context for creating EntityLabels
      */
     public CollapsibleEventPanel(HistoricalEvent event, UIContext uiContext) {
-        //this.event = event;
+
         initializeUI(event, uiContext);
     }
     
@@ -60,6 +63,7 @@ public class CollapsibleEventPanel extends JPanel {
      */
     private void initializeUI(HistoricalEvent event, UIContext uiContext) {
         setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEtchedBorder());
 
         this.event = event;
         this.uiContext = uiContext;
@@ -68,7 +72,7 @@ public class CollapsibleEventPanel extends JPanel {
         
         add(headerPanel, BorderLayout.NORTH);
 
-        // Any width but musy have a max height to prevent excessively large panels
+        // Any width but must have a max height to prevent excessively large panels
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
     }
     
@@ -76,7 +80,7 @@ public class CollapsibleEventPanel extends JPanel {
      * Create the header panel that shows basic event information.
      */
     private JPanel createHeaderPanel(HistoricalEvent event) {
-        JPanel headerPanel = new JPanel(new BorderLayout());
+        JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         headerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         
@@ -94,26 +98,31 @@ public class CollapsibleEventPanel extends JPanel {
         headerPanel.add(expandCollapseLabel, BorderLayout.WEST);
         
         // Main header content
-        JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        contentPanel.setOpaque(false);
+        JPanel topDetailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        topDetailsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         // Event type
         JLabel typeLabel = new JLabel(event.getType().getName());
-        contentPanel.add(typeLabel);
+        topDetailsPanel.add(typeLabel);
         
         // Timestamp
         if (event.getTimestamp() != null) {
             JLabel timeLabel = new JLabel("at " + event.getTimestamp().getTruncatedDateTimeStamp());
-            contentPanel.add(timeLabel);
+            topDetailsPanel.add(timeLabel);
         }
         
+        var detailsPanel = Box.createVerticalBox();
+        detailsPanel.add(topDetailsPanel);
+
         // Entity
         if (event.getEntity() != null) {
             JLabel entityLabel = new JLabel("(" + event.getEntity().getName() + ")");
-            contentPanel.add(entityLabel);
+            entityLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            entityLabel.setBackground(Color.RED);
+            detailsPanel.add(entityLabel);
         }
         
-        headerPanel.add(contentPanel, BorderLayout.CENTER);
+        headerPanel.add(detailsPanel, BorderLayout.CENTER);
         return headerPanel;
     }
     
@@ -122,7 +131,9 @@ public class CollapsibleEventPanel extends JPanel {
      */
     private void createDetailPanel() {
         detailPanel = new JPanel(new GridBagLayout());
-        detailPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+        detailPanel.setBorder(BorderFactory.createCompoundBorder(
+                            BorderFactory.createEmptyBorder(0, 3, 0, 3),
+                            BorderFactory.createBevelBorder(BevelBorder.LOWERED)));
         
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.WEST;
