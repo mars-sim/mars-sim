@@ -260,12 +260,4 @@ class EventTableModel extends CachingTableModel<HistoricalEvent>
 
 		super.destroy();
 	}
-
-	/**
-	 * Events have been removed from the system. Just reload the table
-	 */
-	@Override
-	public void eventsRemoved(int startIndex, int endIndex) {
-		reapplyFilter();
-	}
 }

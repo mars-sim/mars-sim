@@ -18,13 +18,5 @@ public interface HistoricalEventListener {
 	 *
 	 * @param event The new {@link HistoricalEvent} added.
 	 */
-	public void eventAdded(HistoricalEvent he);
-	
-	/**
-	 * A consecutive sequence of events have been removed from the manager.
-	 *
-	 * @param startIndex First exclusive index of the event to be removed.
-	 * @param endIndex Last exclusive index of the event to be removed..
-	 */
-	public void eventsRemoved(int startIndex, int endIndex);
+	public void eventAdded(HistoricalEvent event);
 }
