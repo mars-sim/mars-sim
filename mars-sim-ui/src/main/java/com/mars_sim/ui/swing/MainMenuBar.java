@@ -28,15 +28,9 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager.StyleEntry;
 import com.mars_sim.ui.swing.sound.AudioControl;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
-import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
-import com.mars_sim.ui.swing.tool.console.ConsolePanel;
+import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.search.SearchWindow;
-import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
-import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.tool.transportable.TransportableWizard;
 import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -129,29 +123,33 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		var newMenu = new JMenu(Msg.getString("mainMenu.tools")); //-NLS-1$
 		newMenu.setMnemonic(KeyEvent.VK_T);
 
-		// Create tool menu items
-		newMenu.add(createToolMenuItem(NavigatorWindow.NAME, NavigatorWindow.TITLE, NavigatorWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false)));
-		newMenu.add(createToolMenuItem(SearchWindow.NAME, SearchWindow.TITLE, SearchWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false)));
-		newMenu.add(createToolMenuItem(TimeTool.NAME, TimeTool.TITLE, TimeTool.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false)));								
-		newMenu.add(createToolMenuItem(MonitorWindow.NAME, MonitorWindow.TITLE, MonitorWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));
+		// Create Generic menu items
+		int key = KeyEvent.VK_F1;
+		for(var ts : ToolRegistry.TOOL_INFOS) {
+			if (ts.category() == ToolRegistry.ToolCategory.GENERIC) {
+				var ks = KeyStroke.getKeyStroke(key++, 0, false);
+				newMenu.add(createToolMenuItem(ts.name(), ts.title(), ts.iconName(), ks));
+			}
+		}
+		newMenu.add(new JSeparator());
 
 		// Mission wizard is not a tool								 
 		newMenu.add(createToolMenuItem(MissionCreate.TITLE, MissionCreate.ICON,
-					KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false), e -> MissionCreate.create(context)));	
-		newMenu.add(createToolMenuItem(SettlementWindow.NAME, SettlementWindow.TITLE, SettlementWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false)));	
+					KeyStroke.getKeyStroke(key++, 0, false), e -> MissionCreate.create(context)));	
 		newMenu.add(createToolMenuItem(TransportableWizard.TITLE, TransportableWizard.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false),
-										e -> TransportableWizard.create(context)));;	
-
-		newMenu.add(createToolMenuItem(CommanderWindow.NAME, CommanderWindow.TITLE, CommanderWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false)));	
-		newMenu.add(createToolMenuItem(ConsolePanel.NAME, ConsolePanel.TITLE, ConsolePanel.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F10, 0, false)));	
+										 KeyStroke.getKeyStroke(key++, 0, false),
+										e -> TransportableWizard.create(context)));
+		newMenu.add(new JSeparator());
+		
+		// Create Utility menu items
+		key = KeyEvent.VK_F1;
+		for(var ts : ToolRegistry.TOOL_INFOS) {
+			if (ts.category() == ToolRegistry.ToolCategory.UTILITY) {
+				var ks = KeyStroke.getKeyStroke(key++, InputEvent.CTRL_DOWN_MASK, false);
+				newMenu.add(createToolMenuItem(ts.name(), ts.title(), ts.iconName(), ks));
+			}
+		}
+		
 		return newMenu;
 	}
 
@@ -178,7 +176,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				
 		helpMenu.add(createMenuItem("mainMenu.tutorial", "action/tutorial", TUTORIAL, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
-		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
+		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.ICON, OPEN_GUIDE, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
 		return helpMenu;
 	}

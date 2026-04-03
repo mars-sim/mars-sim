@@ -31,6 +31,31 @@ public class ToolRegistry {
         // Prevent instantiation
     }
 
+    public enum ToolCategory {
+        GENERIC,
+        HELP,
+        UTILITY
+    }
+
+    /**
+     * Information about a tool.
+     */
+    public record ToolInfo(String name, ToolCategory category, String title, String iconName) {}
+
+    // List of all available tools
+    public static final ToolInfo[] TOOL_INFOS = {
+        new ToolInfo(NavigatorWindow.NAME, ToolCategory.GENERIC, NavigatorWindow.TITLE, NavigatorWindow.ICON),
+        new ToolInfo(SettlementWindow.NAME, ToolCategory.GENERIC, SettlementWindow.TITLE, SettlementWindow.ICON),
+        new ToolInfo(EntityBrowser.NAME, ToolCategory.GENERIC, EntityBrowser.TITLE, EntityBrowser.ICON),
+        new ToolInfo(MonitorWindow.NAME, ToolCategory.GENERIC, MonitorWindow.TITLE, MonitorWindow.ICON),
+        new ToolInfo(CommanderWindow.NAME, ToolCategory.GENERIC, CommanderWindow.TITLE, CommanderWindow.ICON),
+        new ToolInfo(OrbitViewer.NAME, ToolCategory.UTILITY, OrbitViewer.TITLE, OrbitViewer.ICON),
+        new ToolInfo(TimeTool.NAME, ToolCategory.UTILITY, TimeTool.TITLE, TimeTool.ICON),
+        new ToolInfo(GuideWindow.NAME, ToolCategory.HELP, GuideWindow.TITLE, GuideWindow.ICON),
+        new ToolInfo(SearchWindow.NAME, ToolCategory.UTILITY, SearchWindow.TITLE, SearchWindow.ICON),
+        new ToolInfo(ConsolePanel.NAME, ToolCategory.GENERIC, ConsolePanel.TITLE, ConsolePanel.ICON)
+    };
+
     /**
      * Build a tool for the given tool name.
      * @param toolName Name of the tool
