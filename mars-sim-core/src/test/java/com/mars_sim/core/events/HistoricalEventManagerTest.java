@@ -18,11 +18,6 @@ class HistoricalEventManagerTest extends MarsSimUnitTest {
                 called++;
                 last = he;
             }
-
-            @Override
-            public void eventsRemoved(int startIndex, int endIndex) {
-                throw new UnsupportedOperationException("Unimplemented method 'eventsRemoved'");
-            }
         };
 
         var manager = new HistoricalEventManager(getContext().getSim().getMasterClock());

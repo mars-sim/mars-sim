@@ -399,14 +399,25 @@ public class MainDesktopPane extends JDesktopPane
 
 			// Play sound
 			if (soundPlayer != null) {
-				var sound = EntityDisplayInfoFactory.getDisplayInfo(entity).getSound(entity);
+				var sound = EntityDisplayInfoFactory.getSound(entity);
 				if (sound != null) {
-					soundPlayer.playSound(sound);
+					playSound(sound);
 				}
 			}	
 		}
 	}
 
+	/**
+	 * Plays a sound by name.
+	 * @param soundName The name of the sound to play
+	 */
+	@Override
+	public void playSound(String soundName) {
+		if (soundPlayer != null) {
+			soundPlayer.playSound(soundName);
+		}
+	}
+	
 	/**
 	 * Entity panel has been closed
 	 * @param source Parent comntent window
