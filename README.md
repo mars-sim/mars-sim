@@ -460,14 +460,9 @@ your machine, JCP won't be able to recognize them.
 7. To keep track of the versions of OpenJDK have been installed on your machine, you may try using 
 [JDKMon](https://harmoniccode.blogspot.com/2021/04/friday-fun-lxiii-jdkmon.html).
 
-## Remote Console Connection
-To set up true headless mode in your platform, follow the steps in this
-[wiki](https://github.com/mars-sim/mars-sim/wiki/Remote-Console-Connection).
-
 ## Outreach
 Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/)
-to discuss relevant topics with regard to the development of mars-sim. See also
-old/archived [SF discussions](https://sourceforge.net/p/mars-sim/discussion/).
+to discuss relevant topics with regard to the development of mars-sim.
 
 ## Discussions
 Feel free to start a thread on a particular topic at our GitHub
@@ -475,7 +470,6 @@ Feel free to start a thread on a particular topic at our GitHub
 
 ## Issues and Tickets
 * Current : [GH Issues](https://github.com/mars-sim/mars-sim/issues)
-* Past/Archived : [SF Issues](https://sourceforge.net/p/mars-sim/tickets/search/?q=status%3Awont-fix+or+status%3Aclosed)
 
 Help us by filling in the info below when submitting an issue :
 
@@ -513,19 +507,11 @@ e.g. Include the followings :
  - Add any other context about the problem here. By providing more info above when filing it, 
    you help expedite the handling of the issues you submit.
 
-> [!NOTE]
-> If you double-click the jar file in an attempt to start mars-sim but nothing shows up, 
-it's possible that an old instance of JVM has already been running in the background. 
-To see if it's indeed the case, in Windows OS, you may hit <kbd>CTRL</kbd>+<kbd>ESC</kbd> 
-to bring up the Task Manager and scroll down to find any *orphaned* instances of 
-`Java(TM) Platform SE binary` running in the background. Be sure you first clear them off 
-the memory by right-clicking on each of them and choosing `End Task`.
-
 
 ## Contribution
 We welcome anyone to contribute to mars-sim in terms of ideas, concepts and coding. 
-If you would like to contribute to coding, see this 
-[wiki](https://github.com/mars-sim/mars-sim/wiki/Development-Environment) 
+If you would like to contribute to coding, see 
+[Contributing](https://github.com/mars-sim/mars-sim?tab=contributing-ov-file) 
 for developers. Also, we will answer your questions in our 
 [Gitter chatroom](https://gitter.im/mokun/mars-sim).
 
@@ -547,15 +533,6 @@ For technical detail, check out [DeepWiki](https://deepwiki.com/mars-sim/mars-si
 
 ## Download
 Find the past and recent [releases](https://github.com/mars-sim/mars-sim/releases).
-
-Alternatively, go to our backup SourceForge
-[Repo](https://sourceforge.net/projects/mars-sim/files/mars-sim/3.10.0/).
-
-> [!NOTE]
-> If you prefer, click SF's button below to automatically sense the correct OS platform to download.
-
-[![Download Mars Simulation Project](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/mars-sim/files/latest/download)
-
 
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
