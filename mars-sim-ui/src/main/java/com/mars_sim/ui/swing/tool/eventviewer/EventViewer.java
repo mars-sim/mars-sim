@@ -183,9 +183,9 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
                 // New events play a sound to alert the user
                 var entity = event.getEntity();
                 if (entity != null) {
-                    var displayInfo = EntityDisplayInfoFactory.getDisplayInfo(entity);
-                    if (displayInfo != null) {
-                        uiContext.playSound(displayInfo.getSound(entity));
+                    var sound = EntityDisplayInfoFactory.getSound(entity);
+                    if (sound != null) {
+                        uiContext.playSound(sound);
                     }
                 }
             });

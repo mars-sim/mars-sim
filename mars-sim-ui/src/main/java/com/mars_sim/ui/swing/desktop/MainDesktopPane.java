@@ -399,7 +399,7 @@ public class MainDesktopPane extends JDesktopPane
 
 			// Play sound
 			if (soundPlayer != null) {
-				var sound = EntityDisplayInfoFactory.getDisplayInfo(entity).getSound(entity);
+				var sound = EntityDisplayInfoFactory.getSound(entity);
 				if (sound != null) {
 					playSound(sound);
 				}
