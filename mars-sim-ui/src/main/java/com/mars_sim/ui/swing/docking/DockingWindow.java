@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -26,9 +27,10 @@ import javax.swing.WindowConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.CompressedClockListener;
+import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentManager;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ContentPanel.Placement;
@@ -44,6 +46,7 @@ import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
+import com.mars_sim.ui.swing.tool.eventviewer.EventViewer;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SaveDialog;
@@ -104,6 +107,7 @@ public class DockingWindow extends JFrame
 
         // Enable dynamic layout for Docking windows as they are more flexible
         AttributePanel.setUseDynamicLayout(true);
+
         // Setup the JFrame
         setTitle("Mars Simulation");
         setSize(1200, 800);
@@ -137,9 +141,7 @@ public class DockingWindow extends JFrame
         sim.getMasterClock().addClockPulseListener(clockHandler);
         
         // Add default tools
-        var emptyProps = new Properties();
-        addContentPanel(new MonitorWindow(this, emptyProps));
-        addContentPanel(new EntityBrowser(this));
+        openInitialTools();
 
         addWindowListener(new WindowAdapter() {
 			@Override
@@ -148,6 +150,37 @@ public class DockingWindow extends JFrame
 				SaveDialog.createEndSimulation(sim, DockingWindow.this);
 			}
 		});
+    }
+
+    /**
+     * Open initial windows based on the UIConfig. If no windows are configured, open a default set of tools.
+     */
+    private void openInitialTools() {
+        List<WindowSpec> startingWindows = config.getConfiguredWindows();
+
+		if (!startingWindows.isEmpty()) {
+			for(WindowSpec w : startingWindows) {
+				switch(w.type()) {
+					case UIConfig.TOOL:
+						openToolWindow(w.name());
+					break;
+
+					case UIConfig.UNIT:
+						var u = EntityContentFactory.getEntity(sim, w.props());
+						if (u != null) {
+                            createEntityWindow(u, w.props());
+						}
+					break;
+                    default:
+				}
+ 			}
+        }
+        else {
+            // No starting windows configured so open defaults
+            openToolWindow(EntityBrowser.NAME);
+            openToolWindow(EventViewer.NAME);
+            openToolWindow(MonitorWindow.NAME);
+        }
     }
 
     /**
@@ -219,7 +252,15 @@ public class DockingWindow extends JFrame
 		}
 				
 		// Build a new window
-        Properties props = new Properties();
+        createEntityWindow(entity, new Properties());
+    }
+
+    /**
+     * Open an Entity window for an Entity using a set of user properties.
+     * @param entity Entity to display
+     * @param props User properties.
+     */
+    private void createEntityWindow(Entity entity, Properties props) {
 		var panel = EntityContentFactory.getEntityPanel(entity, this, props);
 		if (panel != null) {
             // Cheat to shrink the window size to fit content
@@ -315,9 +356,32 @@ public class DockingWindow extends JFrame
 		return Collections.emptyMap();
     }
 
+    /**
+     * Get the details of open windows.
+     */
     @Override
     public List<WindowSpec> getContentSpecs() {
-        return Collections.emptyList();
+        var results = new ArrayList<WindowSpec>();
+        
+		// Add all internal windows.
+		for (var window1 : windows) {
+
+            var content = window1.getContent();
+            Properties props = null;
+            if (content instanceof ConfigurableWindow cw) {
+                props = cw.getUIProps();
+            }
+            else {
+                props = new Properties();
+            }
+
+            var winName = content.getName();
+            var winType = content instanceof EntityContentPanel ? UIConfig.UNIT : UIConfig.TOOL;
+            var wp = new WindowSpec(winName, null, null, 0, winType, props);
+            results.add(wp);
+        }
+
+		return results;
     }
 
     /**

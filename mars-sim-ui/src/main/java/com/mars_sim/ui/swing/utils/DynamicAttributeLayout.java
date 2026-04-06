@@ -96,10 +96,12 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
         var constraints = new GridBagConstraints();
         constraints.gridx = cell.col * gridPerColumn;
         constraints.gridy = cell.row;
-        constraints.gridwidth = gridPerLabel;
+        constraints.weightx = 0;
+
+        //constraints.gridwidth = gridPerLabel;
         constraints.anchor = GridBagConstraints.LINE_END;
-        constraints.ipadx = X_PAD;
-        constraints.ipady = Y_PAD;
+        // constraints.ipadx = X_PAD;
+        // constraints.ipady = Y_PAD;
 
         return constraints;
     }
@@ -112,10 +114,12 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
         var constraints = new GridBagConstraints();
         constraints.gridx = (cell.col * gridPerColumn) + gridPerLabel;
         constraints.gridy = cell.row;
-        constraints.gridwidth = gridPerValue;
+        constraints.weightx = 1;
+
+        //constraints.gridwidth = gridPerValue;
         constraints.anchor = GridBagConstraints.LINE_START;
-        constraints.ipadx = X_PAD + (cell.col != (currentColumns-1) ? COLUMN_PAD : 0);
-        constraints.ipady = Y_PAD;
+        //constraints.ipadx = X_PAD + (cell.col != (currentColumns-1) ? COLUMN_PAD : 0);
+        //constraints.ipady = Y_PAD;
         return constraints;
     }
     

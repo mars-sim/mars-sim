@@ -33,6 +33,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import com.mars_sim.core.SimulationRuntime;
+import com.mars_sim.core.configuration.ConfigHelper;
 
 /**
  * Static class for saving/loading user interface configuration data.
@@ -69,7 +70,8 @@ public class UIConfig {
 	// UI config elements and attributes.
 	private static final String UI = "ui";
 	private static final String USE_DEFAULT = "use-default";
-	
+	private static final String USE_DOCKING = "use-docking";
+
 	private static final String MAIN_WINDOW = "main-window";
 	private static final String LOCATION_X = "location-x";
 	private static final String LOCATION_Y = "location-y";
@@ -93,6 +95,8 @@ public class UIConfig {
 	
 	private boolean useDefault;
 
+	private boolean useDockingUI = false;
+
 	/**
 	 * Loads and parses the XML save file.
 	 */
@@ -114,6 +118,7 @@ public class UIConfig {
 				
 				// Global props
 				useDefault = parseBoolean(root, USE_DEFAULT);
+				useDockingUI = parseBoolean(root, USE_DOCKING);
 
 				// Parse Internal Window
 				Element internalWindows = root.getChild(INTERNAL_WINDOWS);
@@ -166,16 +171,23 @@ public class UIConfig {
 	}
 
 	private static Dimension parseSize(Element window) {
-		int width = Integer.parseInt(window.getAttributeValue(WIDTH));
-		int height = Integer.parseInt(window.getAttributeValue(HEIGHT));
+		int width = ConfigHelper.getOptionalAttributeInt(window, WIDTH, -1);
+		int height = ConfigHelper.getOptionalAttributeInt(window, HEIGHT, -1);
 
-		return new Dimension(width, height);
+		if (width >= 0 && height >= 0) {
+			return new Dimension(width, height);
+		}
+		return null;
 	}
 
 	private static Point parsePosition(Element window) {
-		int locationX = Integer.parseInt(window.getAttributeValue(LOCATION_X));
-		int locationY = Integer.parseInt(window.getAttributeValue(LOCATION_Y));
-		return new Point(locationX, locationY);
+		int locationX = ConfigHelper.getOptionalAttributeInt(window, LOCATION_X, -1);
+		int locationY = ConfigHelper.getOptionalAttributeInt(window, LOCATION_Y, -1);
+
+		if (locationX >= 0 && locationY >= 0) {
+			return new Point(locationX, locationY);
+		}
+		return null;
 	}
 	
 	private static boolean parseBoolean(Element item, String attrName) {
@@ -205,6 +217,7 @@ public class UIConfig {
 		outputDoc.setRootElement(uiElement);
 
 		uiElement.setAttribute(USE_DEFAULT, "false");
+		uiElement.setAttribute(USE_DOCKING, Boolean.toString(useDockingUI));
 
 		outputTopLevelWindow(uiElement, MAIN_WINDOW, mainWindow.getTopFrame());
 		
@@ -239,10 +252,17 @@ public class UIConfig {
 	private Element outputWindowSpec(String elemName, WindowSpec window1) {
 		Element windowElement = new Element(elemName);
 		
-		windowElement.setAttribute(LOCATION_X, Integer.toString(window1.position().x));
-		windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.position().y));
-		windowElement.setAttribute(WIDTH, Integer.toString(window1.size().width));
-		windowElement.setAttribute(HEIGHT, Integer.toString(window1.size().height));
+		var posn = window1.position();
+		if (posn != null) {
+			windowElement.setAttribute(LOCATION_X, Integer.toString(posn.x));
+			windowElement.setAttribute(LOCATION_Y, Integer.toString(posn.y));
+		}
+
+		var size = window1.size();
+		if (size != null) {
+			windowElement.setAttribute(WIDTH, Integer.toString(size.width));
+			windowElement.setAttribute(HEIGHT, Integer.toString(size.height));
+		}
 		windowElement.setAttribute(Z_ORDER, Integer.toString(window1.order()));
 		outputProperties(windowElement, "props", window1.props());
 
@@ -312,6 +332,22 @@ public class UIConfig {
 	public boolean useUIDefault() {
 		return useDefault;
 	}
+
+	/**
+	 * Checks if the UI should use the docking framework.
+	 * @return true if the docking framework should be used.
+	 */
+	public boolean useDockingUI() {
+		return useDockingUI;
+	}
+
+	/**
+	 * Sets whether the UI should use the docking framework.
+	 * @param useDocking New value for using the docking framework.
+	 */
+    public void setUseDockingUI(boolean useDocking) {
+		this.useDockingUI = useDocking;
+    }
 
 	/**
 	 * Gets the screen location of the main window origin.
@@ -422,4 +458,5 @@ public class UIConfig {
     	}
     	return result;
     }
+
 }

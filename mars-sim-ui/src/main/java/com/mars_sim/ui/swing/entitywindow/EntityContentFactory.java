@@ -110,7 +110,7 @@ public class EntityContentFactory {
 
         // Default to UnitManager lookup
         try {
-            UnitType uType = UnitType.valueOf(type);
+            UnitType uType = UnitType.valueOf(type.toUpperCase());
             return sim.getUnitManager().getUnitByName(uType, name);
         }
         catch (RuntimeException ex) {

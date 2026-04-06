@@ -152,11 +152,9 @@ public class MainWindow
 		// Set the UI configuration
 		boolean useDefault = uiconfigs.useUIDefault();
 
-		if (useDefault) {
+		if (useDefault || !setUpSavedScreen()) {
 			logger.config("Will calculate screen size for default display instead.");
 			setUpDefaultScreen(graphicsDevice, screenWidth, screenHeight, useDefault);
-		} else {
-			setUpSavedScreen();
 		}
 		
 		// Set up MainDesktopPane
@@ -174,25 +172,23 @@ public class MainWindow
 	/**
 	 * Sets up the screen config used from last saved session.
 	 */
-	private void setUpSavedScreen() {
+	private boolean setUpSavedScreen() {
+		// Display screen at a certain location
+		var location = uiconfigs.getMainWindowLocation();
+		if (location == null) {
+			return false;
+		}
+		frame.setLocation(uiconfigs.getMainWindowLocation());
+
 		// For the Main Window	
 		selectedSize = uiconfigs.getMainWindowDimension();
+		if (selectedSize != null) {
+			// Set frame size
+			frame.setSize(selectedSize);
+			logger.config("Last saved window dimension: " + selectedSize);
+		}
 
-		// Set frame size
-		frame.setSize(selectedSize);
-		logger.config("Last saved window dimension: "
-				+ selectedSize.width
-				+ " x "
-				+ selectedSize.height
-				+ ".");
-
-		// Display screen at a certain location
-		frame.setLocation(uiconfigs.getMainWindowLocation());
-		logger.config("Last saved main window's frame starts at ("
-				+ uiconfigs.getMainWindowLocation().x
-				+ ", "
-				+ uiconfigs.getMainWindowLocation().y
-				+ ").");
+		return true;
 	}
 
 	/**
