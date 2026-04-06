@@ -483,7 +483,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				vehicle.setEmergencyBeacon(true);
 		
 				// Creating mission emergency beacon event.
-				registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
+				registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
 			}
 		}
 
@@ -1233,7 +1233,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				
 				// Creating emergency destination mission event for going to a new settlement.
 				if (!newDestination.equals(oldHome)) {
-					registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_EMERGENCY_DESTINATION, reason.getName());
+					registerHistoricalEvent(newDestination, HistoricalEventType.MISSION_EMERGENCY_DESTINATION, reason.getName());
 				}
 			}
 			// Note: for Drone mission, Will need to alert the player differently if it runs out of fuel
@@ -1259,7 +1259,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public void setEmergencyBeacon(Worker member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
-			registerHistoricalEvent(member, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason);
+			registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason);
 			logger.info(vehicle, member.getName()
 					+ " activated emergency beacon.");
 		} else {

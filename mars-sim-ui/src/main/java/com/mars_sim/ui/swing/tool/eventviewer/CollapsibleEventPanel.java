@@ -104,7 +104,7 @@ class CollapsibleEventPanel extends JPanel {
         headerPanel.add(expandCollapseLabel, BorderLayout.WEST);
         
         // Main header content
-        JPanel topDetailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel topDetailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         topDetailsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         // Event type
@@ -113,7 +113,7 @@ class CollapsibleEventPanel extends JPanel {
         
         // Timestamp
         if (event.getTimestamp() != null) {
-            JLabel timeLabel = new JLabel("at " + event.getTimestamp().getTruncatedDateTimeStamp());
+            JLabel timeLabel = new JLabel("@ " + event.getTimestamp().getTruncatedDateTimeStamp());
             topDetailsPanel.add(timeLabel);
         }
         
