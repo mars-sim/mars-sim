@@ -146,7 +146,7 @@ public class ConsolePanel extends ContentPanel {
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         add(scrollPane, BorderLayout.CENTER);
 
-        Dimension dim = new Dimension(700, 300);
+        Dimension dim = new Dimension(700, 200);
         //setMinimumSize(dim);
         setPreferredSize(dim);
     }

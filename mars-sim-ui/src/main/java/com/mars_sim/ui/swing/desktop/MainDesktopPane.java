@@ -291,9 +291,9 @@ public class MainDesktopPane extends JDesktopPane
 			UIConfig config = mainWindow.getConfig();
 			Point location = null;
 			WindowSpec previousDetails = config.getInternalWindowDetails(toolName);
-			if (previousDetails != null) {
+			if ((previousDetails != null) && (previousDetails.position() != null)) {
 				location = previousDetails.position();
-				if (window.isResizable()) {
+				if (window.isResizable() && previousDetails.size() != null) {
 					window.setSize(previousDetails.size());
 				}
 			} else if (toolName.equals(TimeTool.NAME))
@@ -450,8 +450,8 @@ public class MainDesktopPane extends JDesktopPane
 			
 			// Make sure store position is visible
 			Dimension desktopSize = getSize();
-			if ((newPosition.getX() >= desktopSize.getWidth())
-					|| (newPosition.getY() >= desktopSize.getHeight())) {
+			if ((newPosition != null) && ((newPosition.getX() >= desktopSize.getWidth())
+					|| (newPosition.getY() >= desktopSize.getHeight()))) {
 				newPosition = null;
 			}
 		}
@@ -600,6 +600,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 
 			else {
+				
 				openToolWindow(MonitorWindow.NAME);
 			}
 		}

@@ -115,7 +115,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         // List for new Settlements
         unitManager.addEntityManagerListener(UnitType.SETTLEMENT, this);
 
-        var dims = new Dimension(250, 400);
+        var dims = new Dimension(250, 300);
         setMinimumSize(dims);
         setPreferredSize(dims);
     }

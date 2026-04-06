@@ -33,6 +33,7 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 import com.mars_sim.core.SimulationRuntime;
+import com.mars_sim.core.configuration.ConfigHelper;
 
 /**
  * Static class for saving/loading user interface configuration data.
@@ -166,16 +167,23 @@ public class UIConfig {
 	}
 
 	private static Dimension parseSize(Element window) {
-		int width = Integer.parseInt(window.getAttributeValue(WIDTH));
-		int height = Integer.parseInt(window.getAttributeValue(HEIGHT));
+		int width = ConfigHelper.getOptionalAttributeInt(window, WIDTH, -1);
+		int height = ConfigHelper.getOptionalAttributeInt(window, HEIGHT, -1);
 
-		return new Dimension(width, height);
+		if (width >= 0 && height >= 0) {
+			return new Dimension(width, height);
+		}
+		return null;
 	}
 
 	private static Point parsePosition(Element window) {
-		int locationX = Integer.parseInt(window.getAttributeValue(LOCATION_X));
-		int locationY = Integer.parseInt(window.getAttributeValue(LOCATION_Y));
-		return new Point(locationX, locationY);
+		int locationX = ConfigHelper.getOptionalAttributeInt(window, LOCATION_X, -1);
+		int locationY = ConfigHelper.getOptionalAttributeInt(window, LOCATION_Y, -1);
+
+		if (locationX >= 0 && locationY >= 0) {
+			return new Point(locationX, locationY);
+		}
+		return null;
 	}
 	
 	private static boolean parseBoolean(Element item, String attrName) {
@@ -239,10 +247,17 @@ public class UIConfig {
 	private Element outputWindowSpec(String elemName, WindowSpec window1) {
 		Element windowElement = new Element(elemName);
 		
-		windowElement.setAttribute(LOCATION_X, Integer.toString(window1.position().x));
-		windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.position().y));
-		windowElement.setAttribute(WIDTH, Integer.toString(window1.size().width));
-		windowElement.setAttribute(HEIGHT, Integer.toString(window1.size().height));
+		var posn = window1.position();
+		if (posn != null) {
+			windowElement.setAttribute(LOCATION_X, Integer.toString(posn.x));
+			windowElement.setAttribute(LOCATION_Y, Integer.toString(posn.y));
+		}
+
+		var size = window1.size();
+		if (size != null) {
+			windowElement.setAttribute(WIDTH, Integer.toString(size.width));
+			windowElement.setAttribute(HEIGHT, Integer.toString(size.height));
+		}
 		windowElement.setAttribute(Z_ORDER, Integer.toString(window1.order()));
 		outputProperties(windowElement, "props", window1.props());
 
