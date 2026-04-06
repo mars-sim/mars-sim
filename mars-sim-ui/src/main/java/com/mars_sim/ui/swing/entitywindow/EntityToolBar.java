@@ -20,7 +20,7 @@ import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 
 /**
  * The UnitToolBar class is a UI toolbar for holding shortcut buttons for Entities. There should
@@ -70,8 +70,10 @@ public class EntityToolBar extends JToolBar {
 			return;
 		}
 
-		var tempButton = new JButton(entity.getName(),
-        				UnitDisplayInfoFactory.getButtonIcon(entity));
+		var info = EntityDisplayInfoFactory.getDisplayInfo(entity);
+		var tempButton = new JButton(entity.getName(), info.getButtonIcon(entity));
+		tempButton.setToolTipText(info.getSingularLabel());
+		
 		// Prepare default unit button values
 		tempButton.setVerticalTextPosition(SwingConstants.BOTTOM);
 		tempButton.setHorizontalTextPosition(SwingConstants.CENTER);

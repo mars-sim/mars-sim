@@ -453,7 +453,8 @@ public abstract class MissionProject implements Mission {
 	 * @param eventType the update type.
 	 * @param target    the event target or null if none.
 	 */
-	protected final void fireMissionUpdate(String eventType, Object target) {
+    @Override
+	public void fireMissionUpdate(String eventType, Object target) {
 		if (listeners != null) {
 			synchronized (listeners) {
 				var event = new EntityEvent(this, eventType, target);

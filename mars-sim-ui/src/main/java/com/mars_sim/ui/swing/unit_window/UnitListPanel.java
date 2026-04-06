@@ -16,10 +16,12 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.utils.EntityListLauncher;
 
 /**
@@ -54,6 +56,8 @@ public abstract class UnitListPanel<T extends Entity> extends JPanel {
 		// Create unit list
 		JList<T> list = new JList<>(this.model);
 		list.addMouseListener(new EntityListLauncher(desktop));
+		list.setToolTipText(EntityListLauncher.TOOLTIP);
+		list.setCellRenderer(new NamedListCellRenderer(SwingConstants.LEFT));
 		
 		// Create scroll panel
 		JScrollPane scrollPanel = new JScrollPane();

@@ -23,7 +23,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mineral.MineralMap;
 import com.mars_sim.core.person.ai.mission.Mining;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.vehicle.Rover;
@@ -309,7 +308,7 @@ public class ExplorationManager implements Serializable {
 	 * @return true if mineral locations.
 	 * @throws Exception if error determining mineral locations.
 	 */
-	private Map<String, Integer> getNearbyMineral(Rover rover) {
+	private Map<Integer, Integer> getNearbyMineral(Rover rover) {
 				
 		double roverRange = rover.getEstimatedRange();
 		double tripTimeLimit = rover.getTotalTripTimeLimit(true);
@@ -371,15 +370,14 @@ public class ExplorationManager implements Serializable {
 	 * @return estimated value of the minerals at the site (VP).
 	 * @throws MissionException if error determining the value.
 	 */
-	private static int getTotalMineralValue(Settlement settlement, Map<String, Integer> minerals) {
+	private static int getTotalMineralValue(Settlement settlement, Map<Integer, Integer> minerals) {
 
 		double result = 0D;
 
 		for (var entry : minerals.entrySet()) {
-		    String mineralType = entry.getKey();
+		    int mineralId = entry.getKey();
 		    double concentration = entry.getValue();
-			int mineralResource = ResourceUtil.findIDbyAmountResourceName(mineralType);
-			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
+			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralId);
 			double mineralAmount = (concentration / 100) * Mining.MINERAL_GOOD_VALUE_FACTOR;
 			result += mineralValue * mineralAmount;
 		}

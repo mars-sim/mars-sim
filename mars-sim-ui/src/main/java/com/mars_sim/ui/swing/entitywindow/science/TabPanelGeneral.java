@@ -1,12 +1,12 @@
 package com.mars_sim.ui.swing.entitywindow.science;
 
 import java.awt.BorderLayout;
-import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JTextArea;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
@@ -26,7 +26,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityListener {
 
 	private JProgressBar progress;
-	private JTextArea topics;
+	private DefaultListModel<String> topics;
 
     TabPanelGeneral(ScientificStudy study, UIContext context) {
 		super(
@@ -50,23 +50,25 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 		AttributePanel infoPane = new AttributePanel();
 		
 		content.add(infoPane);
-		infoPane.addTextField(Msg.getString("Entity.name"), study.getName(), null);
-		infoPane.addTextField(Msg.getString("ScientificStudy.science"), study.getScience().getName(), null);
-		infoPane.addTextField(Msg.getString("ScientificStudy.level"), Integer.toString(study.getDifficultyLevel()), null);
-		infoPane.addTextField(Msg.getString("ScientificStudy.phase"), study.getPhase().getName(), null);
+		infoPane.addTextField(Msg.getString("entity.name"), study.getName(), null);
+		infoPane.addTextField(Msg.getString("scientificstudy.science"), study.getScience().getName(), null);
+		infoPane.addTextField(Msg.getString("scientificstudy.level"), Integer.toString(study.getDifficultyLevel()), null);
+		infoPane.addTextField(Msg.getString("scientificstudy.phase"), study.getPhase().getName(), null);
 		
-		infoPane.addLabelledItem(Msg.getString("ScientificStudy.lead"),
+		infoPane.addLabelledItem(Msg.getString("scientificstudy.lead"),
 									new EntityLabel(study.getPrimaryResearcher(), getContext()));
-		infoPane.addLabelledItem(Msg.getString("Settlement.singular"),
-									new EntityLabel(study.getPrimarySettlement(), getContext()));
 
 		progress = new JProgressBar(0, 100);
 		progress.setStringPainted(true);
-		infoPane.addLabelledItem(Msg.getString("ScientificStudy.completed"), progress);
+		infoPane.addLabelledItem(Msg.getString("scientificstudy.completed"), progress);
 
-		topics = SwingHelper.createTextBlock(Msg.getString("ScientificStudy.topics"), "");
-		topics.setRows(5);
-		content.add(topics);
+		// Topics block
+		var topicsPanel = new JPanel(new BorderLayout());
+		topicsPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("scientificstudy.topics")));
+		content.add(topicsPanel);
+		topics = new DefaultListModel<>();
+		var topicsList = new JList<>(topics);
+		topicsPanel.add(topicsList, BorderLayout.CENTER);
 
 		updateProgress();
 		updateTopics();
@@ -82,8 +84,8 @@ class TabPanelGeneral extends EntityTabPanel<ScientificStudy> implements EntityL
 	private void updateTopics() {
 		var study = getEntity();
 		
-		var topicStr = study.getTopic().stream().collect(Collectors.joining(","));
-		topics.setText(topicStr);
+		topics.clear();
+		study.getTopic().stream().forEach(t -> topics.addElement(t));
 	}
 
 	@Override

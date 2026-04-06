@@ -41,15 +41,4 @@ public class MapUtils {
 						xHalf, (int)(xHalf - (displaySize.getWidth()/2)),
 						yHalf, (int)(yHalf - (displaySize.getHeight()/2)));
 	}
-
-	/**
-	 * Gets the distance in terms of the number of pixels.
-	 * 
-	 * @param distance
-	 * @param mapType
-	 * @return
-	 */
-	public static int getPixelDistance(double distance, MapDisplay baseMap) {
-		return (int) Math.round(distance / Coordinates.MARS_CIRCUMFERENCE * baseMap.getPixelWidth());
-	}
 }

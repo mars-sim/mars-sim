@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.map.location.Coordinates;
@@ -51,16 +51,15 @@ public class AreologyFieldStudy extends FieldStudyMission {
 	 * Constructor with explicit information.
 	 * 
 	 * @param members            the mission members.
-	 * @param leadResearcher     the lead researcher
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 * @throws MissionException if error creating mission.
 	 */
-	public AreologyFieldStudy(Collection<Worker> members, Person leadResearcher,
+	public AreologyFieldStudy(List<Worker> members,
 			ScientificStudy study, Rover rover, Coordinates fieldSite) {
 
-		super(MissionType.AREOLOGY, leadResearcher, rover,
+		super(MissionType.AREOLOGY, rover,
 			  study, FIELD_SITE_TIME, members, fieldSite);
 	}
 

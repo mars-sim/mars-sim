@@ -20,6 +20,7 @@ import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.Mining;
+import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -123,10 +124,10 @@ public class ExploredCommand extends AbstractSettlementCommand {
 			String mineral = "";
 
 			// Create summary of minerals
-			Optional<Entry<String, Double>> highest = s.getEstimatedMineralConcentrations().entrySet().stream()
-								.max(Comparator.comparing(Entry::getValue));
+			Optional<Entry<Integer, MineralSite.MineralDetails>> highest = s.getMinerals().entrySet().stream()
+								.max(Comparator.comparing(e -> e.getValue().concentration()));
 			if (highest.isPresent())
-				mineral = String.format("%s - %.1f", highest.get().getKey(), highest.get().getValue());
+				mineral = String.format("%s - %.1f", ResourceUtil.findAmountResourceName(highest.get().getKey()), highest.get().getValue().concentration());
 			
 			String status = (s.isMinable() ? "M" : "-") +  (s.isExplored() ? "E" : "-") + (s.isClaimed() ? "C" : "-") +(s.isReserved() ? "R" : "-") + "  ";
 			var owner = s.getOwner();

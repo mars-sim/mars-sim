@@ -21,7 +21,7 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**

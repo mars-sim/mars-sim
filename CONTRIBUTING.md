@@ -11,6 +11,7 @@ GitHub: https://github.com/mars-sim/mars-sim
 ### Table of contents 
 * [Discussions](#discussion)
 * [Issues and Bugs](#issue)
+* [Commits](#commit)
 * [Pull Request](#pull)
 * [Submission Guidelines](#submit)
 * [Code Development](#coding)
@@ -32,6 +33,11 @@ If you have crafted a solution to an existing issue, please submit a Pull Reques
 
 __Please observe the rules and guidelines below__.
 
+## <a name="commit"></a> Commit
+
+The project follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) approach to commit messages.
+
+Whenever possible commits should not break the code base, e.g. UnitTests should still pass.
 
 ## <a name="pull"></a> Pull Request
 
@@ -39,6 +45,7 @@ If you discover a bug and would like to offer a fix, do by all means
 do a `Pull Request` and write a few words telling us your approach 
 and methodology. We welcome your help and contributions to mars-sim. 
 
+The project uses [Squash Commits](https://github.blog/open-source/git/squash-your-commits/) so the description of pull requests should describe the whole delivery.
 
 ## <a name="submit"></a> Submission Guidelines
 

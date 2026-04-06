@@ -101,12 +101,15 @@ public class Conversation implements UserOutbound {
 		this.current = newCommand;
 	}
 	
+	/**
+	 * Conversation is completed so stop processing input.
+	 */
     public void setCompleted() {
     	active = false;
     }
     
 	/**
-	 * Interacts with the end user.
+	 * Interacts with the end user. This is a blocking method.
 	 */
     public void interact() {
     	if (current == null) {
@@ -117,16 +120,18 @@ public class Conversation implements UserOutbound {
 		while (active) {
 			// A new chat so let it welcome itself
 			if (current != lastCurrent) {
-	        	String preamble = current.getIntroduction();
-	        	if (preamble != null) {
-	        		println(preamble);
-				}
+				outputIntro();
 	        	lastCurrent = current;
 			}
 			
 	      	try {
 	        	// Get the input
-	      		getInput();
+    			var prompt = current.getPrompt(this) + " > ";
+    			var input = getInput(prompt);
+				if (!active) {
+					break; // Conversation has been ended while waiting for input
+				}
+				processInput(input);
         	}
         	catch (RuntimeException rte) {
         		printProblem(rte);
@@ -136,12 +141,21 @@ public class Conversation implements UserOutbound {
 		comms.close();
     }
 
-    /**
-     * Gets the input.
-     */
-    private void getInput() {
-    	String prompt = current.getPrompt(this) + " > ";
-    	String input = getInput(prompt);
+	/**
+	 * Output the introduction for the current active command.
+	 */
+	private void outputIntro() {
+		String preamble = current.getIntroduction();
+		if (preamble != null) {
+			println(preamble);
+		}
+	}
+
+	/**
+	 * Process the user input and update the conversation state accordingly.
+	 * @param input User input string
+	 */
+	private void processInput(String input) {
     	if (!input.isEmpty()) {
 			options = null; // Remove any auto complete options once user executes
 			
@@ -162,7 +176,7 @@ public class Conversation implements UserOutbound {
 			current.execute(this, input);
 		}
     }
-    
+
     private void printProblem(Exception rte) {
 		LOGGER.log(Level.SEVERE, "Problem executing command ", rte);
 		
@@ -180,6 +194,11 @@ public class Conversation implements UserOutbound {
 		current = previous.pop();
 	}
 
+	/**
+	 * Ask the user a question and get their response
+	 * @param prompt Question to prompt the user with
+	 * @return User response
+	 */
 	public String getInput(String prompt) {
 		return comms.getInput(prompt);
 	}
@@ -194,10 +213,10 @@ public class Conversation implements UserOutbound {
 		comms.print(text);
 	}
 
-	public CancellableCommand getActiveCommand() {
-		return activeCommand;
-	}
-
+	/**
+	 * Sets the active command that can be cancelled.
+	 * @param activeCommand The command to set as active
+	 */
 	public void setActiveCommand(CancellableCommand activeCommand) {
 		this.activeCommand = activeCommand;
 	}

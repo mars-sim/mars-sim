@@ -25,7 +25,6 @@ import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.unit_window.UnitWindow;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
@@ -37,9 +36,6 @@ public class PopUpUnitMenu extends JPopupMenu {
 
 	public static final int WIDTH_1 = WIDTH_0;
 	public static final int HEIGHT_1 = 300;
-
-	public static final int WIDTH_2 = UnitWindow.WIDTH - 130;
-	public static final int HEIGHT_2 = UnitWindow.HEIGHT - 70;
 
     public PopUpUnitMenu(final Unit unit, UIContext context){
 		add(unit.getUnitType().getName() + " : " + unit.getName());

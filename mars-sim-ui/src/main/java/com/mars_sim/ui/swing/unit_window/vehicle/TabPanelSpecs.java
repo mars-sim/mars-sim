@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 import java.awt.BorderLayout;
 
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.EntityEvent;
@@ -23,6 +22,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -36,21 +36,21 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 
 	private static final String SPECS_ICON = "specs";
 	
-	private JLabel estimatedRange;
-	private JLabel currentRange;
-	private JLabel cumEnergyUsage;
-	private JLabel cumFuelUsage;
-	private JLabel roadSpeed;
-	private JLabel roadPower;
-	private JLabel cumFE;
-	private JLabel cumFC;
-	private JLabel estFC;
-	private JLabel estFE;
-	private JLabel adjFC;
-	private JLabel adjFE;
-	private JLabel instantFE;
-	private JLabel instantFC;
-	private JLabel estFCFECoef;
+	private JDoubleLabel estimatedRange;
+	private JDoubleLabel currentRange;
+	private JDoubleLabel cumEnergyUsage;
+	private JDoubleLabel cumFuelUsage;
+	private JDoubleLabel roadSpeed;
+	private JDoubleLabel roadPower;
+	private JDoubleLabel cumFE;
+	private JDoubleLabel cumFC;
+	private JDoubleLabel estFC;
+	private JDoubleLabel estFE;
+	private JDoubleLabel adjFC;
+	private JDoubleLabel adjFE;
+	private JDoubleLabel instantFE;
+	private JDoubleLabel instantFC;
+	private JDoubleLabel estFCFECoef;
 
 
 	/**
@@ -84,8 +84,10 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		grid1.addRow( "Base Speed", StyleManager.DECIMAL_KPH.format(vSpec.getBaseSpeed()));
 		grid1.addRow( "Base Power", StyleManager.DECIMAL_KW.format(vSpec.getBasePower()));
 
-		roadSpeed = grid1.addRow( "Ave Road Speed", null);
-		roadPower = grid1.addRow( "Ave Road Power", null);
+		roadSpeed = new JDoubleLabel(StyleManager.DECIMAL_KPH);
+		grid1.addLabelledItem("Ave Road Speed", roadSpeed, null);
+		roadPower = new JDoubleLabel(StyleManager.DECIMAL_KW);
+		grid1.addLabelledItem("Ave Road Power", roadPower, null);
 		
 		grid1.addRow( "Base Accel", StyleManager.DECIMAL_M_S2.format(vSpec.getBaseAccel()));	
 		grid1.addRow( "Peak Power", StyleManager.DECIMAL_KW.format(vSpec.getPeakPower()));
@@ -98,7 +100,8 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		topPanel.setBorder(SwingHelper.createLabelBorder("Fuel Consumption (FC) / Fuel Economy (FE)"));
 		
 		grid.addRow( "Base FC*FE", StyleManager.DECIMAL_KWH_KG.format(vSpec.getCoeffBaseFCFE()/1000));
-		estFCFECoef = grid.addRow( "Est FC*FE", null);		
+		estFCFECoef = new JDoubleLabel(StyleManager.DECIMAL_KWH_KG);
+		grid.addLabelledItem("Est FC*FE", estFCFECoef, null);
 		
 		grid.addRow( "Base FC", StyleManager.DECIMAL_KWH_KM.format(vSpec.getBaseFuelConsumption()/1000));
 		grid.addRow( "Base FE", StyleManager.DECIMAL_KM_KG.format(vSpec.getBaseFuelEconomy()));	
@@ -106,17 +109,25 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		grid.addRow( "Initial FC", StyleManager.DECIMAL_KWH_KM.format(vSpec.getInitialFuelConsumption()/1000));
 		grid.addRow( "Initial FE", StyleManager.DECIMAL_KM_KG.format(vSpec.getInitialFuelEconomy()));			
 
-		adjFC = grid.addRow( "Adj FC", null);
-		adjFE = grid.addRow( "Adj FE", null);			
+		adjFC = new JDoubleLabel(StyleManager.DECIMAL_KWH_KM);
+		grid.addLabelledItem("Adj FC", adjFC, null);
+		adjFE = new JDoubleLabel(StyleManager.DECIMAL_KM_KG);
+		grid.addLabelledItem("Adj FE", adjFE, null);
 	
-		cumFC = grid.addRow( "Cum FC", null);
-		cumFE = grid.addRow( "Cum FE", null);	
+		cumFC = new JDoubleLabel(StyleManager.DECIMAL_KWH_KM);
+		grid.addLabelledItem("Cum FC", cumFC, null);
+		cumFE = new JDoubleLabel(StyleManager.DECIMAL_KM_KG);
+		grid.addLabelledItem("Cum FE", cumFE, null);
 		
-		estFC = grid.addRow( "Estimated FC", null);
-		estFE = grid.addRow( "Estimated FE", null);			
-		
-		instantFC = grid.addRow( "Instant FC", null);
-		instantFE = grid.addRow( "Instant FE", null);
+		estFC = new JDoubleLabel(StyleManager.DECIMAL_KWH_KM);
+		grid.addLabelledItem("Estimated FC", estFC, null);
+		estFE = new JDoubleLabel(StyleManager.DECIMAL_KM_KG);
+		grid.addLabelledItem("Estimated FE", estFE, null);
+			
+		instantFC = new JDoubleLabel(StyleManager.DECIMAL_KWH_KM);
+		grid.addLabelledItem("Instant FC", instantFC, null);
+		instantFE = new JDoubleLabel(StyleManager.DECIMAL_KM_KG);
+		grid.addLabelledItem("Instant FE", instantFE, null);
 		
 						
 		AttributePanel grid2 = new AttributePanel(5, 2);
@@ -134,13 +145,17 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		grid2.addRow( "DT Fuel Energy", StyleManager.DECIMAL_KWH.format(vSpec.getDrivetrainFuelEnergy()));
 		grid2.addRow( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()));
 
-		cumEnergyUsage = grid2.addRow( "Cum Energy Used", null);	
+		cumEnergyUsage = new JDoubleLabel(StyleManager.DECIMAL2_KWH);
+		grid2.addLabelledItem("Cum Energy Used", cumEnergyUsage, null);
 		
-		currentRange = grid2.addRow( "Current Range", null);
+		currentRange = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		grid2.addLabelledItem("Current Range", currentRange, null);
 		
-		cumFuelUsage = grid2.addRow( "Cum Fuel Used", null);	
+		cumFuelUsage = new JDoubleLabel(StyleManager.DECIMAL_KG);
+		grid2.addLabelledItem("Cum Fuel Used", cumFuelUsage, null);
 
-		estimatedRange = grid2.addRow( "Estimated Range", null);
+		estimatedRange = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		grid2.addLabelledItem("Estimated Range", estimatedRange, null);
 
 		// Load the dynamic values
 		updateSpecs();
@@ -152,32 +167,32 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 	private void updateSpecs() {
 		var v = getEntity();
 
-		estFCFECoef.setText(StyleManager.DECIMAL_KWH_KG.format(v.getCoeffEstFCFE()/1000));		
+		estFCFECoef.setValue(v.getCoeffEstFCFE()/1000);
 		
-		roadSpeed.setText(StyleManager.DECIMAL_KPH.format(v.getRoadSpeedHistoryAverage()));
-		roadPower.setText(StyleManager.DECIMAL_KW.format(v.getRoadPowerHistoryAverage()));
+		roadSpeed.setValue(v.getRoadSpeedHistoryAverage());
+		roadPower.setValue(v.getRoadPowerHistoryAverage());
 	
-		cumEnergyUsage.setText(StyleManager.DECIMAL2_KWH.format(v.getCumEnergyUsage()));	
-		cumFuelUsage.setText(StyleManager.DECIMAL_KG.format(v.getCumFuelUsage()));	
+		cumEnergyUsage.setValue(v.getCumEnergyUsage());
+		cumFuelUsage.setValue(v.getCumFuelUsage());
 		
-		cumFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getCumFuelEconomy()));
-		cumFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getCumFuelConsumption()/1000));
+		cumFE.setValue(v.getCumFuelEconomy());
+		cumFC.setValue(v.getCumFuelConsumption()/1000);
 		
-		adjFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getAdjustedFuelEconomy()));
-		adjFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getAdjustedFuelConsumption()/1000));
+		adjFE.setValue(v.getAdjustedFuelEconomy());
+		adjFC.setValue(v.getAdjustedFuelConsumption()/1000);
 		
-		estFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getEstimatedFuelEconomy()));
-		estFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getEstimatedFuelConsumption()/1000));
+		estFE.setValue(v.getEstimatedFuelEconomy());
+		estFC.setValue(v.getEstimatedFuelConsumption()/1000);
 		
-		instantFE.setText(StyleManager.DECIMAL_KM_KG.format(v.getIFuelEconomy()));
-		instantFC.setText(StyleManager.DECIMAL_KWH_KM.format(v.getIFuelConsumption()/1000));
+		instantFE.setValue(v.getIFuelEconomy());
+		instantFC.setValue(v.getIFuelConsumption()/1000);
 		
-		currentRange.setText(StyleManager.DECIMAL_KM.format(v.getRange()));
+		currentRange.setValue(v.getRange());
 		if (v instanceof Rover r) {
-			estimatedRange.setText(StyleManager.DECIMAL_KM.format(r.getEstimatedRange()));
+			estimatedRange.setValue(r.getEstimatedRange());
 		}
 		else if (v instanceof Drone d) {
-			estimatedRange.setText(StyleManager.DECIMAL_KM.format(d.getEstimatedRange()));
+			estimatedRange.setValue(d.getEstimatedRange());
 		}
 	}
 

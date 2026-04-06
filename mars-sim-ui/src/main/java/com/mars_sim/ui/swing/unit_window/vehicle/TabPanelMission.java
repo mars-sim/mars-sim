@@ -70,9 +70,9 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 	public TabPanelMission(Vehicle vehicle, UIContext context) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("Mission.singular"), //-NLS-1$
+			Msg.getString("mission.singular"), //-NLS-1$
 			ImageLoader.getIconByName(FLAG_MISSION),
-			Msg.getString("Mission.singular"), //-NLS-1$
+			Msg.getString("mission.singular"), //-NLS-1$
 			context, vehicle
 		);
 	}
@@ -87,9 +87,9 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 
 		// Prepare mission panel
 		missionLabel = new EntityLabel(getContext());
-		missionTopPanel.addLabelledItem(Msg.getString("Entity.name"), missionLabel);
+		missionTopPanel.addLabelledItem(Msg.getString("entity.name"), missionLabel);
 		
-		missionPhase = missionTopPanel.addRow(Msg.getString("Mission.phase"), "");
+		missionPhase = missionTopPanel.addRow(Msg.getString("mission.phase"), "");
 
 		// Prepare mission bottom panel
 		JPanel missionBottomPanel = new JPanel(new BorderLayout(0, 0));
@@ -97,7 +97,7 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 		topContentPanel.add(missionBottomPanel, BorderLayout.CENTER);
 
 		// Prepare member label
-		JLabel memberLabel = new JLabel(Msg.getString("Mission.members"), SwingConstants.CENTER); //-NLS-1$
+		JLabel memberLabel = new JLabel(Msg.getString("mission.members"), SwingConstants.CENTER); //-NLS-1$
 		StyleManager.applySubHeading(memberLabel);
 		missionBottomPanel.add(memberLabel, BorderLayout.NORTH);
 

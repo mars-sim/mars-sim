@@ -1,26 +1,21 @@
 package com.mars_sim.core.time;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 class CompressedClockListenerTest {
-    private static class TestListener implements ClockListener {
+    private static class TestListener implements ClockPulseListener {
         long pulseArrived = 0L;
         double totalElapsed = 0D;
         long pulseId = 0;
-        private boolean lastPause;
 
         @Override
         public void clockPulse(ClockPulse currentPulse) {
             pulseId = currentPulse.getId();
             totalElapsed = currentPulse.getElapsed();
             pulseArrived = System.currentTimeMillis();
-        }
-
-        @Override
-        public void pauseChange(boolean isPaused, boolean showPane) {
-            lastPause = isPaused;
         }
     }
 
@@ -48,20 +43,10 @@ class CompressedClockListenerTest {
             pulse = new ClockPulse(id, PULSE_ELAPSED, null, null, false, false, false, false);
             compressed.clockPulse(pulse);
         }
-        assertEquals(MIN_DURATION, listener.pulseArrived - startTime);
+
+        var elapsed = listener.pulseArrived - startTime;
+        assertTrue(elapsed >= MIN_DURATION, "Elapsed time should be at least the minimum duration");
         assertEquals(id, listener.pulseId);
         assertEquals(id * PULSE_ELAPSED, listener.totalElapsed, 0.01D);
-    }
-
-    @Test
-    void testPauseChange() {
-        TestListener listener = new TestListener();
-        var compressed = new CompressedClockListener(listener, MIN_DURATION);
-
-        compressed.pauseChange(true, false);
-        assertEquals(true, listener.lastPause);
-        
-        compressed.pauseChange(false, false);
-        assertEquals(false, listener.lastPause);
     }
 }

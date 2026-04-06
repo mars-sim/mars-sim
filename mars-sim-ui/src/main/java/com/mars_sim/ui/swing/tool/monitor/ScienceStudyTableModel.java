@@ -17,7 +17,7 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 
 /**
  * Table model for Scientific Studies.
@@ -40,12 +40,12 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
     static {
         COLUMNS = new ColumnSpec[COMPLETED + 1];
 
-        COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
-        COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
-        COLUMNS[PHASE] = new ColumnSpec(Msg.getString("ScientificStudy.phase"), String.class);
-        COLUMNS[SCIENCE] = new ColumnSpec(Msg.getString("ScientificStudy.science"), String.class);
-        COLUMNS[LEVEL] = new ColumnSpec(Msg.getString("ScientificStudy.level"), Integer.class);
-        COLUMNS[COMPLETED] = new ColumnSpec(Msg.getString("ScientificStudy.completed"), Double.class, ColumnSpec.STYLE_PERCENTAGE);
+        COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
+        COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
+        COLUMNS[PHASE] = new ColumnSpec(Msg.getString("scientificstudy.phase"), String.class);
+        COLUMNS[SCIENCE] = new ColumnSpec(Msg.getString("scientificstudy.science"), String.class);
+        COLUMNS[LEVEL] = new ColumnSpec(Msg.getString("scientificstudy.level"), Integer.class);
+        COLUMNS[COMPLETED] = new ColumnSpec(Msg.getString("scientificstudy.completed"), Double.class, ColumnSpec.STYLE_PERCENTAGE);
     }
 
     private ScientificStudyManager mgr;
@@ -56,7 +56,7 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
      * @param mgr the Scientific Study Manager
      */
     public ScienceStudyTableModel(ScientificStudyManager mgr) {
-		super(Msg.getString("ScientificStudy.plural"),
+		super(Msg.getString("scientificstudy.plural"),
 				COLUMNS);	
 		this.mgr = mgr;
 

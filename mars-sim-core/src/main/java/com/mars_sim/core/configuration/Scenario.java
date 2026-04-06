@@ -8,7 +8,6 @@ package com.mars_sim.core.configuration;
 
 import java.util.List;
 
-import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.structure.InitialSettlement;
 
 /**
@@ -20,11 +19,11 @@ public class Scenario implements UserConfigurable {
 	private boolean bundled;
 	private String name;
 	private List<InitialSettlement> settlements;
-	private List<ArrivingSettlement> arrivals;
+	private List<FutureSettlement> arrivals;
 	private int maxColonies;
 
 	public Scenario(String name, String description, List<InitialSettlement> settlements,
-			List<ArrivingSettlement> arrivals, int maxColonies, boolean bundled) {
+			List<FutureSettlement> arrivals, int maxColonies, boolean bundled) {
 		super();
 		this.name = name;
 		this.description = description;
@@ -50,10 +49,10 @@ public class Scenario implements UserConfigurable {
 	}
 
 	/**
-	 * The initial settlements associated with this scenario.
+	 * The future settlements associated with this scenario.
 	 * @return
 	 */
-	public List<ArrivingSettlement> getArrivals() {
+	public List<FutureSettlement> getArrivals() {
 		return arrivals;
 	}
 	

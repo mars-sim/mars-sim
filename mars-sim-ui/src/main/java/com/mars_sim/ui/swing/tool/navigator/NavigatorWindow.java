@@ -13,7 +13,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -66,10 +65,9 @@ import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer.MapFilter;
 import com.mars_sim.ui.swing.tool.map.LandmarkMapLayer;
 import com.mars_sim.ui.swing.tool.map.MapLayer;
-import com.mars_sim.ui.swing.tool.map.MapMouseListener;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
-import com.mars_sim.ui.swing.tool.map.NavpointMapLayer;
+import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
@@ -148,7 +146,7 @@ public class NavigatorWindow extends ContentPanel
 
 		@Override
 		public boolean isSelected() {
-			return mapPanel.hasMapLayer(layer);
+			return mapPanel.isLayerVisible(layer);
 		}
 
 		@Override
@@ -176,6 +174,7 @@ public class NavigatorWindow extends ContentPanel
 	private static final String MINERAL_LAYER = "minerals";
 	private static final String DAYLIGHT_LAYER = "daylightTracking";
 	private static final String EXPLORED_LAYER = "exploredSites";
+	private static final String UNIT_LAYER = "unit";
 
 	private static final String MAPTYPE_PROP = "mapType";
 	private static final String RESOLUTION_PROP = "resolution";
@@ -251,29 +250,19 @@ public class NavigatorWindow extends ContentPanel
 		mapPanel = new MapPanel(context);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		wholePane.add(mapPanel, BorderLayout.CENTER);
-		
-		mapPanel.setMouseDragger();
+		mapPanel.setMouseMoveListener(c -> updateStatusBar(c));
 
-		// Create a mouse listener to show hotspots and update status bar
-		var mapListner = new MapMouseListener(mapPanel) {
-		    @Override
-    		public void mouseMoved(MouseEvent event) {
-				var coord = mapPanel.getMouseCoordinates(event.getX(), event.getY());
-				updateStatusBar(coord);
-				super.mouseMoved(event);
-			}
-		};
-		mapPanel.addMouseListener(mapListner);
-		mapPanel.addMouseMotionListener(mapListner);
-		
 		// Create map layers.
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(MINERAL_LAYER, new MineralMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer("unit", new UnitMapLayer(mapPanel)));
-		mapLayers.add(new NamedLayer("navPoints", new NavpointMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer(UNIT_LAYER, new UnitMapLayer(mapPanel)));
+		mapLayers.add(new NamedLayer("navPoints", new MissionMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("vehicleTrails", new VehicleTrailMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer("landmarks", new LandmarkMapLayer(mapPanel)));
 		mapLayers.add(new NamedLayer(EXPLORED_LAYER, new ExploredSiteMapLayer(mapPanel)));
+
+		// Add layer to map
+		mapLayers.forEach(l -> mapPanel.addMapLayer(l.layer));
 
 		mapPanel.showMap(new Coordinates((Math.PI / 2D), 0D));
 		
@@ -396,21 +385,13 @@ public class NavigatorWindow extends ContentPanel
 			
 			// Check if the GPU button is on or not
 			boolean isSelected = gpuButton.isSelected();
-			String gpuStateStr1 = " off";
-			if (isSelected) {
-				gpuStateStr1 = " on";
-				logger.config("GPU button is ON.");
-			}
-			else {
-				logger.config("GPU button is OFF.");
-			}
-			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + gpuStateStr1);
+			IntegerMapData.setUseGPU(isSelected);
+			gpuButton.setText(Msg.getString("NavigatorWindow.button.gpu") + (isSelected ? " On" : " Off")); //-NLS-1$
 		}
 		else {
 			// Gray out the GPU button since it's NOT supported
 			gpuButton.setEnabled(false);
 			gpuButton.setText("No GPU");
-			logger.config("GPU not available for rendering maps.");
 		}
 		
 		gpuButton.validate();
@@ -447,16 +428,13 @@ public class NavigatorWindow extends ContentPanel
 				}
 			}
 		}
-		
+
+		// Add default map layers
 		if (!layerDefined) {
-			// Add default map layers
-			for (var l : mapLayers) {
-				String layerName = l.name();
-				if (!layerName.equals(DAYLIGHT_LAYER) && !layerName.equals(MINERAL_LAYER)
-					&& !layerName.equals(EXPLORED_LAYER)) {
-					setMapLayer(true, layerName);
-				}
-			}
+			mapLayers.forEach(l -> setMapLayer(false, l.name()));
+
+			// Add units
+			setMapLayer(true, UNIT_LAYER);
 		}
 	}
 	
@@ -699,7 +677,6 @@ public class NavigatorWindow extends ContentPanel
 	 * @param layerName Name of the map layer to change
 	 */
 	private void setMapLayer(boolean setMap, String layerName) {
-		int idx = 0;
 		NamedLayer selected = null;
 		for(var nl : mapLayers) {
 			if (nl.name().equals(layerName)) {
@@ -710,11 +687,8 @@ public class NavigatorWindow extends ContentPanel
 		if (selected == null) {
 			logger.warning("No layer called " + layerName);
 		}
-		else if (setMap) {
-			mapPanel.addMapLayer(selected.layer, idx);
-		}
 		else {
-			mapPanel.removeMapLayer(selected.layer);
+			mapPanel.setVisibleMapLayer(selected.layer, setMap);
 		}
 	}
 
@@ -778,9 +752,8 @@ public class NavigatorWindow extends ContentPanel
 	 */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
-		if ((mapPanel != null) && mapPanel.updateDisplay()) {
-			updateMapControls();
-		}
+		if (mapPanel != null)
+			mapPanel.updateDisplay();
 	}
 	
 	@Override
@@ -798,7 +771,7 @@ public class NavigatorWindow extends ContentPanel
 		for (var e : mapLayers) {
 			// Record the choice of layers
 			results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + LAYER_VISIBLE,
-							Boolean.toString(mapPanel.hasMapLayer(e.layer())));
+							Boolean.toString(mapPanel.isLayerVisible(e.layer())));
 			if (e.layer() instanceof FilteredMapLayer fl) {
 				for(var f : fl.getFilterDetails()) {
 					results.setProperty(LAYER_PROP + e.name() + MAP_SEPERATOR + f.name(),

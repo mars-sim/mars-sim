@@ -9,7 +9,6 @@ package com.mars_sim.core.person.ai.mission;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
@@ -157,7 +156,7 @@ public class Mining extends EVAMission
 		setEVAEquipment(EquipmentType.LARGE_BAG, newContainerNum);
 
 		// Add mining site nav point.
-		addNavpoint(miningSite.getLocation(), "a mining site");
+		addNavpoint(miningSite.getLocation(), miningSite.getName());
 		
 		// Add home settlement
 		Settlement s = getStartingSettlement();
@@ -531,11 +530,11 @@ public class Mining extends EVAMission
 
 		double result = 0D;
 
-		for (Map.Entry<String, Double> conc : site.getEstimatedMineralConcentrations().entrySet()) {
-			int mineralResource = ResourceUtil.findIDbyAmountResourceName(conc.getKey());
+		for (var conc : site.getMinerals().entrySet()) {
+			int mineralResource = conc.getKey();
 			double mineralValue = settlement.getGoodsManager().getGoodValuePoint(mineralResource);
 			double reserve = site.getRemainingMass();
-			double mineralAmount = (conc.getValue() / 100) * reserve / AVERAGE_RESERVE_GOOD_VALUE * MINERAL_GOOD_VALUE_FACTOR;
+			double mineralAmount = (conc.getValue().concentration() / 100) * reserve / AVERAGE_RESERVE_GOOD_VALUE * MINERAL_GOOD_VALUE_FACTOR;
 			result += mineralValue * mineralAmount;
 		}
 

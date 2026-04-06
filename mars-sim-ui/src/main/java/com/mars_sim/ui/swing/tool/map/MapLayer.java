@@ -26,5 +26,10 @@ public interface MapLayer {
 	 * @param g         graphics context of the map display.
 	 * @param d			Size of region being drawn
 	 */
-	public List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g, Dimension d);
+	List<MapHotspot> displayLayer(Coordinates mapCenter, MapDisplay baseMap, Graphics2D g, Dimension d);
+
+	/**
+	 * Release any resources or listeners used by the layer. Called when layer is removed from map or map is closed.
+	 */
+	default void release() {}
 }

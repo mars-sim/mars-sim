@@ -34,7 +34,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -85,23 +85,23 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
-		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("Vehicle.type"), String.class);
-		COLUMNS[MODEL] = new ColumnSpec(Msg.getString("Vehicle.model"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
+		COLUMNS[TYPE] = new ColumnSpec(Msg.getString("vehicle.type"), String.class);
+		COLUMNS[MODEL] = new ColumnSpec(Msg.getString("vehicle.model"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec("Location", String.class);
 		COLUMNS[DESTINATION] = new ColumnSpec("Destination", String.class);
 		COLUMNS[DESTDIST] = new ColumnSpec("Dist. to next [km]", Double.class);
-		COLUMNS[MISSION] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
+		COLUMNS[MISSION] = new ColumnSpec(Msg.getString("mission.singular"), String.class);
 		COLUMNS[CREW] = new ColumnSpec("Crew", Integer.class);
-		COLUMNS[DRIVER] = new ColumnSpec(Msg.getString("Vehicle.operator"), String.class);
-		COLUMNS[STATUS] = new ColumnSpec(Msg.getString("Vehicle.status"), String.class);
+		COLUMNS[DRIVER] = new ColumnSpec(Msg.getString("vehicle.operator"), String.class);
+		COLUMNS[STATUS] = new ColumnSpec(Msg.getString("vehicle.status"), String.class);
 		COLUMNS[BEACON] = new ColumnSpec("Beacon", String.class);
 		COLUMNS[RESERVED] = new ColumnSpec("Reserved", String.class);
-		COLUMNS[SPEED] = new ColumnSpec(Msg.getString("Vehicle.speed"), Double.class);
+		COLUMNS[SPEED] = new ColumnSpec(Msg.getString("vehicle.speed"), Double.class);
 		COLUMNS[MALFUNCTION] = new ColumnSpec("Malfunction", String.class);
 		COLUMNS[BATTERY] = new ColumnSpec("Battery", String.class);
-		COLUMNS[FUEL] = new ColumnSpec(Msg.getString("Vehicle.fuelType"), String.class);
+		COLUMNS[FUEL] = new ColumnSpec(Msg.getString("vehicle.fuelType"), String.class);
 		COLUMNS[METHANE] = new ColumnSpec("Methane", Double.class);
 		COLUMNS[METHANOL] = new ColumnSpec("Methanol", Double.class);
 		COLUMNS[OXYGEN] = new ColumnSpec("Oxygen", Double.class);
@@ -125,7 +125,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	
 	public VehicleTableModel() {
 		super(
-			Msg.getString("Vehicle.plural"),
+			Msg.getString("vehicle.plural"),
 			COLUMNS
 		);
 

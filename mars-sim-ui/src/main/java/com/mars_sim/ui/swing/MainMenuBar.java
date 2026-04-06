@@ -26,15 +26,12 @@ import javax.swing.SwingUtilities;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager.StyleEntry;
-import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
+import com.mars_sim.ui.swing.sound.AudioControl;
+import com.mars_sim.ui.swing.sound.AudioPlayer;
+import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.tool.mission.MissionWindow;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
-import com.mars_sim.ui.swing.tool.resupply.ResupplyWindow;
-import com.mars_sim.ui.swing.tool.search.SearchWindow;
-import com.mars_sim.ui.swing.tool.settlement.SettlementWindow;
-import com.mars_sim.ui.swing.tool.time.TimeTool;
+import com.mars_sim.ui.swing.tool.missionwizard.MissionCreate;
+import com.mars_sim.ui.swing.tool.transportable.TransportableWizard;
 import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -59,18 +56,22 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 	private UIContext context;
 
+	private ContentManager manager;
+
 	/**
 	 * Constructor.
 	 *
 	 * @param context The UI hosting the menu bar.
+	 * @param audioPlayer The audio player to control.
 	 */
-	public MainMenuBar(UIContext context) {
+	public MainMenuBar(ContentManager manager, UIContext context, AudioPlayer audioPlayer) {
 
 		// Initialize data members
+		this.manager = manager;	
 		this.context = context;
 
 		// Create file menu
-		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
+		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //-NLS-1$
 		fileMenu.setMnemonic(KeyEvent.VK_F); // Alt + F
 		add(fileMenu);
 
@@ -86,7 +87,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		var toolsMenu = createToolsMenu();
 		add(toolsMenu);
 		
-		add(createSettingsMenu());
+		add(createSettingsMenu(audioPlayer));
 
 		// Add a dynamic Windows menu
 		JMenu displayMenu = createDisplayMenu();
@@ -96,6 +97,14 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 		// Create help menu
 		add(createHelpMenu());
+	}
+
+	/**
+	 * Get the top level content manager in control.
+	 * @return
+	 */
+	protected ContentManager getManager() {
+		return manager;
 	}
 
 	/**
@@ -111,26 +120,36 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * Creates the tools menu.
 	 */
 	private JMenu createToolsMenu() {
-		var newMenu = new JMenu(Msg.getString("mainMenu.tools")); //$NON-NLS-1$
+		var newMenu = new JMenu(Msg.getString("mainMenu.tools")); //-NLS-1$
 		newMenu.setMnemonic(KeyEvent.VK_T);
 
-		// Create tool menu items
-		newMenu.add(createToolMenuItem(NavigatorWindow.NAME, NavigatorWindow.TITLE, NavigatorWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false)));
-		newMenu.add(createToolMenuItem(SearchWindow.NAME, SearchWindow.TITLE, SearchWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false)));
-		newMenu.add(createToolMenuItem(TimeTool.NAME, TimeTool.TITLE, TimeTool.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false)));								
-		newMenu.add(createToolMenuItem(MonitorWindow.NAME, MonitorWindow.TITLE, MonitorWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false)));	
-		newMenu.add(createToolMenuItem(MissionWindow.NAME, MissionWindow.TITLE, MissionWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false)));	
-		newMenu.add(createToolMenuItem(SettlementWindow.NAME, SettlementWindow.TITLE, SettlementWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false)));	
-		newMenu.add(createToolMenuItem(ResupplyWindow.NAME, ResupplyWindow.TITLE, ResupplyWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false)));	
-		newMenu.add(createToolMenuItem(CommanderWindow.NAME, CommanderWindow.TITLE, CommanderWindow.ICON,
-										 KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false)));	
+		// Create Generic menu items
+		int key = KeyEvent.VK_F1;
+		for(var ts : ToolRegistry.TOOL_INFOS) {
+			if (ts.category() == ToolRegistry.ToolCategory.GENERIC) {
+				var ks = KeyStroke.getKeyStroke(key++, 0, false);
+				newMenu.add(createToolMenuItem(ts.name(), ts.title(), ts.iconName(), ks));
+			}
+		}
+		newMenu.add(new JSeparator());
+
+		// Mission wizard is not a tool								 
+		newMenu.add(createToolMenuItem(MissionCreate.TITLE, MissionCreate.ICON,
+					KeyStroke.getKeyStroke(key++, 0, false), e -> MissionCreate.create(context)));	
+		newMenu.add(createToolMenuItem(TransportableWizard.TITLE, TransportableWizard.ICON,
+										 KeyStroke.getKeyStroke(key++, 0, false),
+										e -> TransportableWizard.create(context)));
+		newMenu.add(new JSeparator());
+		
+		// Create Utility menu items
+		key = KeyEvent.VK_F1;
+		for(var ts : ToolRegistry.TOOL_INFOS) {
+			if (ts.category() == ToolRegistry.ToolCategory.UTILITY) {
+				var ks = KeyStroke.getKeyStroke(key++, InputEvent.CTRL_DOWN_MASK, false);
+				newMenu.add(createToolMenuItem(ts.name(), ts.title(), ts.iconName(), ks));
+			}
+		}
+		
 		return newMenu;
 	}
 
@@ -140,7 +159,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	 * @return
 	 */
 	private JMenu createHelpMenu() {
-		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
+		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //-NLS-1$
 		helpMenu.setMnemonic(KeyEvent.VK_H); // Alt + H
 
 		// Create About Mars Simulation Project menu item
@@ -157,16 +176,16 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				
 		helpMenu.add(createMenuItem("mainMenu.tutorial", "action/tutorial", TUTORIAL, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
-		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.HELP_ICON, OPEN_GUIDE, null,
+		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.ICON, OPEN_GUIDE, null,
 										KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
 		return helpMenu;
 	}
 
 
-	private JMenu createSettingsMenu() {
+	private JMenu createSettingsMenu(AudioPlayer audioPlayer) {
 
 		// Create settings menu
-		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //$NON-NLS-1$
+		JMenu settingsMenu = new JMenu(Msg.getString("mainMenu.settings")); //-NLS-1$
 		settingsMenu.setMnemonic(KeyEvent.VK_S); // Alt + S
 
 		addWindowPreferences(settingsMenu);
@@ -194,6 +213,12 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			}
 		}
 		
+		if (audioPlayer != null) {
+			var audio = createToolMenuItem(AudioControl.TITLE, AudioControl.ICON, null,
+					e -> {AudioControl.showPopup(audioPlayer);});
+			settingsMenu.add(audio);
+		}
+
 		return settingsMenu;
 	}
 
@@ -246,19 +271,37 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	}
 
 	/**
-	 * Creates a menu items for the Tool window.
+	 * Creates a menu items for the Tool window that uses the tool name.
 	 * 
-	 * @param name
-	 * @param title
-	 * @param iconName
-	 * @param keyStroke
-	 * @return
+	 * @param name Internal name of the tool.
+	 * @param title Title for the menu item.
+	 * @param iconName Icon name for the menu item.
+	 * @param keyStroke Shortcut key stroke
+	 * @return Menuitem
 	 */
 	private JMenuItem createToolMenuItem(String name, String title, String iconName, KeyStroke keyStroke) {
 		var item = new JMenuItem(title);
 		configureMenuItem(item, iconName, null, keyStroke);
 		item.setActionCommand(name);
 		item.addActionListener(e -> context.openToolWindow(e.getActionCommand()));
+
+		return item;
+	}
+
+	/**
+	 * Creates a menu items for the Tool window that uses an ActionListener.
+	 * 
+	 * @param title Title of the menu item
+	 * @param iconName Icon in the menu item
+	 * @param keyStroke Shortcut key stroke
+	 * @param l 
+	 * 
+	 * @return
+	 */
+	private JMenuItem createToolMenuItem(String title, String iconName, KeyStroke keyStroke, ActionListener l) {
+		var item = new JMenuItem(title);
+		configureMenuItem(item, iconName, null, keyStroke);
+		item.addActionListener(l);
 
 		return item;
 	}
@@ -278,7 +321,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			item.setIcon(icon);
 		}
 		if (tooltipKey != null) {
-			item.setToolTipText(Msg.getString(tooltipKey)); //$NON-NLS-1$
+			item.setToolTipText(Msg.getString(tooltipKey)); //-NLS-1$
 		}
 
 		item.setAccelerator(keyStroke);
@@ -303,7 +346,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 		switch(command) {
 			case EXIT:
-				context.requestEndSimulation();
+				SaveDialog.createEndSimulation(context.getSimulation(), manager);
 				break;
 			case SAVE:
 				SaveDialog.create(top, context.getSimulation(),true);

@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Image;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -108,8 +110,9 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_G_M3 = new DecimalFormat("#,##0.00 " 
     								+ Msg.getString("unit.grampercubicmeter"));
     // For air pressure
-    public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 " 
-    								+ Msg.getString("pressure.unit.kPa"));
+    public static final DecimalFormat DECIMAL_KPA = new DecimalFormat("#,##0.00 kPa");
+
+    private static int tabPlacement = SwingConstants.LEFT;
 
     // Look and Feel styles
     record StyleEntry(String name, String category, Color accentColour, String lafClassName) {}
@@ -446,6 +449,21 @@ public class StyleManager {
     }
 
     /**
+     * Gets the tab placement for JTabbedPanes.
+     */
+    public static int getTabPlacement() {
+        return tabPlacement;
+    }
+
+    /**
+     * Sets the tab placement for JTabbedPanes.
+     * @param tabPlacement New placement.
+     */
+    public static void setTabPlacement(int tabPlacement) {
+        StyleManager.tabPlacement = tabPlacement;
+    }
+
+    /**
      * Gets the Bold default font.
      * 
      * @return
@@ -475,6 +493,15 @@ public class StyleManager {
      */
     public static Font getSubTitleFont() {
         return subTitleFont;
+    }
+
+    /**
+     * Gets the lander hab image icon instance.
+     *
+     * @return
+     */
+    public static Image getIconImage() {
+    	return ImageLoader.getImage("lander_hab91.png");
     }
 
     /**

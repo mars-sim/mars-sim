@@ -413,26 +413,26 @@ public class ReviewMissionPlan extends Task {
 			Settlement settlement = person.getAssociatedSettlement();
 			
 			double score = mp.getScore();
-			double minScore = settlement.getMinimumPassingScore();
+			double minScore = mp.getPassingScore();
 			if (score > minScore) {
 				// Approved
 				// Updates the mission plan status
-				missionManager.approveMissionPlan(mp, PlanType.APPROVED, settlement.getMinimumPassingScore());
+				missionManager.approveMissionPlan(mp, PlanType.APPROVED);
 					
 				logger.log(worker, Level.INFO, 0, "Approved " + requestedBy
 						+ "'s " + m.getName() + " mission plan. Score: " 
 						+ Math.round(score*10.0)/10.0 
-						+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
+						+ " [Min: " + Math.round(minScore*10.0)/10.0 + "].");
 			}
 			else {
 				// Not Approved
 				// Updates the mission plan status
-				missionManager.approveMissionPlan(mp, PlanType.NOT_APPROVED, settlement.getMinimumPassingScore());
+				missionManager.approveMissionPlan(mp, PlanType.NOT_APPROVED);
 			
 				logger.log(worker, Level.INFO, 0, "Did NOT approve " + requestedBy
 						+ "'s " + m.getName() + " mission plan. Score: " 
 						+ Math.round(score*10.0)/10.0 
-						+ " [Min: " + Math.round(settlement.getMinimumPassingScore()*10.0)/10.0 + "].");
+						+ " [Min: " + Math.round(minScore*10.0)/10.0 + "].");
 			}
 								
 			settlement.saveMissionScore(score);

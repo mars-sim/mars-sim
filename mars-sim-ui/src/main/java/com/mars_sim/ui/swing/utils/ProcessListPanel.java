@@ -15,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.manufacture.WorkshopProcess;
+import com.mars_sim.ui.swing.UIContext;
 
 /**
  * This is a panel that renders a list of workshop processes that are active
@@ -26,10 +27,13 @@ public class ProcessListPanel extends JPanel {
     private List<WorkshopProcess> processCache = Collections.emptyList();
     
     private boolean showBuilding;
+
+    private UIContext context;
     
-    public ProcessListPanel(boolean showBuilding) {
+    public ProcessListPanel(boolean showBuilding, UIContext context) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.showBuilding = showBuilding;
+        this.context = context;
     }
     
     /**
@@ -54,7 +58,7 @@ public class ProcessListPanel extends JPanel {
             // Add manu panels for new processes.
             for(var process : processes) {
                 if (!processCache.contains(process))
-                    add(new WorkshopProcessPanel(process, showBuilding, WORD_WIDTH));
+                    add(new WorkshopProcessPanel(process, showBuilding, WORD_WIDTH, context));
             }
 
             // Remove  panels for old processes.

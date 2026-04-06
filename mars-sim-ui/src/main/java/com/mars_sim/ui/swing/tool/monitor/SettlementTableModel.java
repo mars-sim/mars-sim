@@ -24,7 +24,7 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects. It maps
@@ -76,7 +76,7 @@ public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COL_TO_RESOURCE = new int[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
 		COLUMNS[POPULATION] = new ColumnSpec("Pop", Integer.class);
 		COLUMNS[PARKED] = new ColumnSpec("Parked Veh", Integer.class);
 		COLUMNS[MISSION] = new ColumnSpec("Mission Veh", Integer.class);
@@ -146,7 +146,7 @@ public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 	 * simulation.
 	 */
 	public SettlementTableModel() {
-		super(Msg.getString("Settlement.plural"), COLUMNS);
+		super(Msg.getString("settlement.plural"), COLUMNS);
 
 		setupCaches();
 	}

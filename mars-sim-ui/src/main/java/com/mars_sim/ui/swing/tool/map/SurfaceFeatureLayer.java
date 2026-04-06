@@ -17,7 +17,7 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.tool.AverageTimer;
 
 /**
- * This is a map layer for the MapPanel that renders surface feature defed as SurfacePOIs
+ * This is a map layer for the MapPanel that renders surface features defined as SurfacePOIs
  * to the map taking into account the viewpoint on the map.
  */
 public abstract class SurfaceFeatureLayer<T extends SurfacePOI> implements MapLayer {

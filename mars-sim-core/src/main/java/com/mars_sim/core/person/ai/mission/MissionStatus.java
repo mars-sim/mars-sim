@@ -15,13 +15,16 @@ import java.io.Serializable;
 public class MissionStatus implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private static final String MSG_KEY_PREFIX = "mission.status.";
+	private static final String MSG_KEY_OLDPREFIX = "Mission.status.";
 
 	/**
 	 * Factory helper method to create a status based on a resource.
 	 */
 	public static MissionStatus createResourceStatus(int missingResourceId) {
 		String resourceName = GoodsUtil.getGood(missingResourceId).getName();
-		return new MissionStatus("Mission.status.noResources", resourceName);
+		return new MissionStatus("mission.status.noResources", resourceName);
 	}
 
 	/**
@@ -34,11 +37,24 @@ public class MissionStatus implements Serializable {
 	private String name;
 
 	public MissionStatus(String key) {
-		this.name = Msg.getString(key);
+		this.name = Msg.getString(correctKey(key));
+	}
+	
+	public MissionStatus(String key, String argument) {
+		this.name  = Msg.getString(correctKey(key), argument);
 	}
 
-	public MissionStatus(String key, String argument) {
-		this.name  = Msg.getString(key, argument);
+	/**
+	 * Corrects the message key to handle old prefixes.
+	 * @param key Requested key
+	 * @return Correct key to lower case
+	 */
+	private static String correctKey(String key) {	
+		// Hack for the transition phase
+		if (key.startsWith(MSG_KEY_OLDPREFIX)) {
+			key = MSG_KEY_PREFIX + key.substring(MSG_KEY_OLDPREFIX.length());
+		}
+		return key;
 	}
 
 	public String getName() {

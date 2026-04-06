@@ -101,8 +101,9 @@ public class TreeCheckFactory {
                     return;
                 }
                 DefaultMutableTreeNode tn = (DefaultMutableTreeNode) tp.getLastPathComponent();
-                var clicked = (SelectableNode)tn.getUserObject();
-                clicked.toggleSelection();
+                if (tn.getUserObject() instanceof SelectableNode clicked) {
+                    clicked.toggleSelection();
+                }
 
                 // // Repainting tree after the data structures were updated
                 source.repaint();                          

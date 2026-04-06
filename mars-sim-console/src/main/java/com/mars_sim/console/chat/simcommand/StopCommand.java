@@ -26,7 +26,6 @@ public class StopCommand extends ChatCommand {
             context.println("Stopping the Simulation...");
             Simulation sim = context.getSim();
         	sim.endSimulation(); 
-    		sim.getMasterClock().exitProgram();
 
 			context.setCompleted();
 			context.println("Closing conversation.");

@@ -377,14 +377,12 @@ public class MissionManager implements Serializable {
 	 * Approves a mission plan.
 	 *
 	 * @param missionPlan
-	 * @param d
-	 * @param status
+	 * @param newStatus
 	 */
 	public void approveMissionPlan(MissionPlanning missionPlan, 
-								   PlanType newStatus, double threshold) {
+								   PlanType newStatus) {
 
 		if (missionPlan.getStatus() == PlanType.PENDING) {
-			missionPlan.setPassingScore(threshold);
 
 			if (newStatus == PlanType.APPROVED) {
 				missionPlan.setStatus(PlanType.APPROVED);

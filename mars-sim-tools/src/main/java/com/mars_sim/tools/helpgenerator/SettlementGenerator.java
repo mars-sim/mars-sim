@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.mars_sim.core.building.BuildingTemplate;
 import com.mars_sim.core.resource.ItemType;
+import com.mars_sim.core.structure.BuildingPlan;
 import com.mars_sim.core.structure.SettlementSupplies;
 import com.mars_sim.core.structure.SettlementTemplate;
 import com.mars_sim.tools.helpgenerator.HelpContext.ItemQuantity;
@@ -54,6 +55,12 @@ public class SettlementGenerator extends TypeGenerator<SettlementTemplate> {
     @Override
     protected void addEntityProperties(SettlementTemplate st, Map<String,Object> scope) {
         addSupplies(getParent(), st.getSupplies(), scope);
+        
+        // Add building plans sorted by delayInSols then by building type
+        List<BuildingPlan> buildingPlans = new ArrayList<>(st.getBuildingPlans());
+        buildingPlans.sort(Comparator.comparing(BuildingPlan::delayInSols)
+                                     .thenComparing(BuildingPlan::buildingType));
+        scope.put("buildingPlans", buildingPlans);
     }
 
     /**

@@ -202,4 +202,12 @@ public interface Mission extends MonitorableEntity {
 	 * @return
 	 */
     List<MissionObjective> getObjectives();
+
+    /**
+     * Fires an entity update event.
+     *
+     * @param eventType the update type.
+     * @param target    the event target or null if none.
+     */
+    void fireMissionUpdate(String eventType, Object target);
 }

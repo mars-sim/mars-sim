@@ -22,7 +22,7 @@ public class AuthorityWindow extends EntityContentPanel<Authority> {
     public AuthorityWindow(Authority entity, UIContext context, Properties props) {
         super(entity, context);
 
-        addTabPanel(new TabPanelGeneral(entity, context));
+        addDefaultTabPanel(new TabPanelGeneral(entity, context));
         addTabPanel(new TabPanelObjective(entity, context));
         addTabPanel(new TabPanelSettlements(entity, context));
         

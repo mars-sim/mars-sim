@@ -39,7 +39,8 @@ public class ExploredSiteMapLayer extends SurfaceFeatureLayer<MineralSite>
 
 		@Override
 		public String getTooltipText() {
-			String tooltip = "<html>Mineral Certainty: " + site.getAverageCertainty() +"%"
+			String tooltip = "<html>Name: " + site.getName()
+							+ "<br>Mineral Certainty: " + site.getAverageCertainty() +"%"
 							+ "<br>Explored: " + site.isExplored()
 							+ "<br>Minable: " + site.isMinable()
 							+ "<br>Reserved: " + site.isReserved();

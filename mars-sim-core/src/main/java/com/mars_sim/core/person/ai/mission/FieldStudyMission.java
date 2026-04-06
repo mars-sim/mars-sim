@@ -7,7 +7,6 @@
 package com.mars_sim.core.person.ai.mission;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -102,20 +101,18 @@ public abstract class FieldStudyMission extends EVAMission {
 	 * Constructor with explicit information.
 	 * 
 	 * @param members            the mission members.
-	 * @param leadResearcher     the lead researcher
 	 * @param study              the scientific study.
 	 * @param rover              the rover used by the mission.
 	 * @param fieldSite          the field site to research.
 	 * @param description        the mission description.
 	 */
 	protected FieldStudyMission(MissionType missionType,
-			Person leadResearcher,
 			Rover rover, ScientificStudy study, double fieldSiteTime,
-			Collection<Worker> members,
+			List<Worker> members,
 			Coordinates fieldSite) {
 
 		// Use RoverMission constructor.
-		super(missionType, leadResearcher, rover, RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
+		super(missionType, members.get(0), rover, RESEARCH_SITE, ScientificStudyFieldWork.LIGHT_LEVEL);
 
 		objective = new FieldStudyObjectives(study, study.getScience(), fieldSiteTime);
 		addObjective(objective);
@@ -178,7 +175,7 @@ public abstract class FieldStudyMission extends EVAMission {
 						|| StudyStatus.INVITATION_PHASE == collabStudy.getPhase()
 						|| 	StudyStatus.RESEARCH_PHASE == collabStudy.getPhase()
 						|| StudyStatus.PAPER_PHASE == collabStudy.getPhase()
-						|| StudyStatus.PEER_REVIEW_PHASE == primaryStudy.getPhase());
+						|| StudyStatus.PEER_REVIEW_PHASE == collabStudy.getPhase());
 			
 					if (isOngoing && !collabStudy.isCollaborativeResearchCompleted(researcher)
 						&& (science == collabStudy.getContribution(researcher))) {

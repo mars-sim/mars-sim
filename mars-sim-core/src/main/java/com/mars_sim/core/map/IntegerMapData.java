@@ -20,6 +20,7 @@ import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,12 +45,12 @@ import com.mars_sim.core.map.location.Coordinates;
  	private static Logger logger = Logger.getLogger(IntegerMapData.class.getName());
 
  	private static boolean isGPUCapable = true;
- 	private static boolean hardwareAccel = true;
+	private static boolean useGPU = false;
 	
  	private static final double TWO_PI = Math.PI * 2;
  	
  	// The factor to apply for calculate the min & max rho
-  	private static final double MAX_RHO_MULTIPLER = 5;
+  	private static final double MAX_RHO_MULTIPLER = 10;
   	private static final double MIN_RHO_MULTIPLER = 0.9;
   	
  	private static final double HALF_PI = Math.PI / 2D;
@@ -86,16 +87,24 @@ import com.mars_sim.core.map.location.Coordinates;
  	 * 
 	 * @param mapMetaData Meta data describing this map stack
 	 * @param res The Resolution level in the map stack
-	 * @param dataFilename Golds the source data
+	 * @param dataFilename Holds the source data
+ 	 * @param callback Called if teh data needs async loading
  	 * @throws IOException Problem loading map data
  	 */
- 	IntegerMapData(MapMetaData mapMetaData, int res, String dataFilename) throws IOException {
+ 	IntegerMapData(MapMetaData mapMetaData, int res, String dataFilename, Consumer<MapData> callback) throws IOException {
 		this.meta = mapMetaData;
 		this.resolution = res;
 
+		// Callback to load the map data once the file is available
+		Consumer<File> loadCallback = dataFile -> {
+			loadMapData(dataFile);
+			if (callback != null) {
+				callback.accept(this);
+			}
+		};
 		// Load data files async
 		var dataFile = FileLocator.locateFileAsync(MapDataFactory.MAPS_FOLDER + dataFilename,
-						this::loadMapData);
+						loadCallback);
 		
 		// Data file is already available
 		if (dataFile != null) {
@@ -104,7 +113,6 @@ import com.mars_sim.core.map.location.Coordinates;
 
 		// Check if OpenCL is supported
 		isGPUCapable = OpenCL.initCompute();
-		hardwareAccel = isGPUAvailable();
 		if (isGPUCapable) {
 			setKernel();
 		}
@@ -114,7 +122,6 @@ import com.mars_sim.core.map.location.Coordinates;
  	 * Sets up the JOCL kernel program.
  	 */
 	private void setKernel() {
- 
 		try {
 			var program = getProgram(CL_FILE);
 			kernel = getKernel(program, KERNEL_NAME)
@@ -122,7 +129,8 @@ import com.mars_sim.core.map.location.Coordinates;
 					.setArg(12, 1F); // This last arguments get changed every call
 			logger.config("GPU OpenCL accel enabled.");
 		} catch(Exception e) {
-			hardwareAccel = false;
+			isGPUCapable = false;
+			useGPU = false;
 			logger.log(Level.SEVERE, "Exception with GPU OpenCL when loading kernel program.", e);
 		}
  	}
@@ -367,19 +375,13 @@ import com.mars_sim.core.map.location.Coordinates;
  		// Create an array of int RGB color values to create the map image from.
  		int[] mapArray = new int[mapBoxWidth * mapBoxHeight];
 	
-//		int r = colorPixels.length;
-//		int c = colorPixels[r-1].length;
-//		int totalElements = r * c;
-//		System.out.println("totalElements: " + totalElements);
-	
 		var rendered = false;
-		if (hardwareAccel) {
+		if (useGPU && isGPUCapable) {
 			try {
 				gpu(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
 				rendered = true;
-//				logger.config("GPU OpenCL map rendering successful.");
 			} catch(Exception e) {
-				hardwareAccel = false;
+				isGPUCapable = false;
 				rendered = false; // Fallback to CPU
 				logger.log(Level.SEVERE, "Exception in GPU OpenCL map rendering: " + e.getMessage());
 			}
@@ -388,7 +390,6 @@ import com.mars_sim.core.map.location.Coordinates;
 		if (!rendered) {
 			try {
 				cpu0(centerPhi, centerTheta, mapBoxWidth, mapBoxHeight, newRho, mapArray);
-//				logger.config("CPU map rendering successful.");
 			} catch(Exception e) {
 				rendered = false;
 				logger.log(Level.SEVERE, "Exception in CPU map rendering: " + e.getMessage());
@@ -801,23 +802,6 @@ import com.mars_sim.core.map.location.Coordinates;
  	}
 
  	/**
- 	 * Sets the value of GPU hardware accel.
- 	 * 
- 	 * @param value
- 	 */
- 	public static void setHardwareAccel(boolean value) {
- 		hardwareAccel = value;
- 	}
- 	
-	/**
-	 * What is the setting to use hardware acceleration
-	 * @return
-	 */
-	public static boolean isHardwareAccel() {
-		return hardwareAccel;
-	}
-
- 	/**
  	 * Checks if GPU hardware is capable.
  	 * 
  	 * @return
@@ -826,6 +810,23 @@ import com.mars_sim.core.map.location.Coordinates;
  		return isGPUCapable;
  	}
  	
+	/**
+	 * Sets whether GPU is to be used.
+	 * @param newUse New value of use.
+	 */
+	public static void setUseGPU(boolean newUse) {
+		useGPU = newUse;
+	}
+
+	/**
+	 * Checks if GPU is to be used.
+	 * 
+	 * @return
+	 */
+	public static boolean getUseGPU() {
+		return useGPU;
+	}
+
 	/**
 	 * Gets the status if the data has been loaded ?
 	 */

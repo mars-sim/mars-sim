@@ -75,7 +75,7 @@ public class TravelToSettlement extends RoverMission {
 			setDestinationSettlement(getRandomDestinationSettlement(startingMember, s));
 			if (destinationSettlement != null) {
 				addNavpoint(destinationSettlement);
-				setName(Msg.getString("Mission.description.travelToSettlement.detail", // $NON-NLS-1$
+				setName(Msg.getString("mission.description.travelToSettlement.detail", // $NON-NLS-1$
 						destinationSettlement.getName())); 
 			}
 			else {

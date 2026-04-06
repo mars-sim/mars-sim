@@ -25,12 +25,12 @@ public class PauseCommand extends ChatCommand {
 		MasterClock clock = context.getSim().getMasterClock();
 		if (clock.isPaused()) {
 			context.println("Unpausing the simulation...");
-			clock.setPaused(false, false);
+			clock.setPaused(false);
 			context.println("Unpaused");		
 		}
 		else {
 			context.println("Pausing the simulation...");
-			clock.setPaused(true, false);
+			clock.setPaused(true);
 			context.println("Paused");
 		}
 		return true;

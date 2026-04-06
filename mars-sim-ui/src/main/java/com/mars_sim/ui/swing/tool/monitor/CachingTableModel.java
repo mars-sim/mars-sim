@@ -16,7 +16,7 @@ import java.util.Set;
 
 import javax.swing.SwingUtilities;
 
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 
 /**
  * This class provides a table model implementation that caches values for specific columns to

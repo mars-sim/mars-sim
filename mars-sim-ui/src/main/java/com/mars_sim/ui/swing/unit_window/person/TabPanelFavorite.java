@@ -118,7 +118,7 @@ class TabPanelFavorite extends EntityTableTabPanel<Person> {
 		@Override
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
-				case 0 -> Msg.getString("Task.singular");
+				case 0 -> Msg.getString("task.singular");
 				case 1 -> Msg.getString("TabPanelFavorite.column.like");
 				default -> null;
 			};

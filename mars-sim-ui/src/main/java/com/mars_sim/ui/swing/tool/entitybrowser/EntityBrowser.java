@@ -30,7 +30,9 @@ import javax.swing.tree.TreePath;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.UnitType;
+import com.mars_sim.core.interplanetary.transport.TransitState;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
+import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -46,19 +48,22 @@ import com.mars_sim.ui.swing.tool.MapSelector;
  */
 public class EntityBrowser extends ContentPanel implements EntityManagerListener {
     public static final String NAME = "entitybrowser";
+    public static final String TITLE = "Entity Browser";
     public static final String ICON = "action/entitybrowser";
 
     // This values MUST match the Entity prefix used in message.properties
-    private static final String PERSON = "Person";
-    private static final String BUILDING = "Building";
-    private static final String CONSTRUCTION = "ConstructionSite";
-    private static final String VEHICLE = "Vehicle";
-    private static final String ROBOT = "Robot";
-    private static final String MISSION = "Mission";
-    private static final String SCIENTIFIC_STUDY = "ScientificStudy";
-    private static final String TRANSPORT = "TransportItem";
+    private static final String PERSON = "person";
+    private static final String BUILDING = "building";
+    private static final String CONSTRUCTION = "constructionsite";
+    private static final String VEHICLE = "vehicle";
+    private static final String ROBOT = "robot";
+    private static final String MISSION = "mission";
+    private static final String SCIENTIFIC_STUDY = "scientificstudy";
+    private static final String TRANSPORT = "transportable";
     private static final String[] ENTITY_TYPES = {BUILDING, CONSTRUCTION, MISSION, PERSON, ROBOT, SCIENTIFIC_STUDY, TRANSPORT, VEHICLE};
     private static final int MAX_ITEMS = 30;
+
+    private static final String TOOLTIP = Msg.getString("entity.doubleClick");
 
     // Default configurations for name groupings
     private static record NameGrouping(String label, String filter) {}
@@ -75,6 +80,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     private UIContext context;
     private ScientificStudyManager scienceMgr;
     private TransportManager transportMgr;
+    private DefaultMutableTreeNode globalNode;
 
     public EntityBrowser(UIContext context) {
         super(NAME, "Entity Browser", Placement.LEFT);
@@ -91,7 +97,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         entities = new HashMap<>();
         
         // Create the tree pane
-        var root = new DefaultMutableTreeNode(Msg.getString("Settlement.plural"));
+        var root = new DefaultMutableTreeNode(Msg.getString("settlement.plural"));
 		entityModel = new DefaultTreeModel(root);
 
         // Inital load with Settlements
@@ -99,6 +105,11 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             .map(this::createSettlementNode)
             .forEach(root::add);
         
+        // Create a node to represent global entities that are not associated with a settlement.
+        globalNode = new DefaultMutableTreeNode("Global");
+        globalNode.add(new PlaceholderNode());
+        root.add(globalNode);
+
         buildUI(mainPane, entityModel);
 
         // List for new Settlements
@@ -123,8 +134,9 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         locate.addActionListener(e -> showLocation());
         buttonPanel.add(locate);
 
-        // Add the tree
+        // Add the tree with a meaningfull tooltip
         tree = new JTree(model);
+        tree.setToolTipText(TOOLTIP);
         var scrollPane = new JScrollPane(tree);
         mainPane.add(scrollPane, BorderLayout.CENTER);
 
@@ -195,6 +207,10 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         }
         else if (node instanceof EntityNode en && en.getEntity() instanceof Settlement) {
             expandSettlementNode(en);
+            entityModel.nodeStructureChanged(node);
+        }
+        else if (node.equals(globalNode)) {
+            expandGlobalNode(node);
             entityModel.nodeStructureChanged(node);
         }
     }
@@ -280,6 +296,14 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         }
     }
 
+    
+    private void expandGlobalNode(DefaultMutableTreeNode node) {
+        // Remove placeholder
+        removePlaceholder(node);
+
+        node.add(createTopTypeNode(TRANSPORT, null));
+    }
+
     /**
      * User requests expansion of the given type node. This will get the appropriate Entities from the Settlement
      * and either add them directly below or create sub-nodes if there are too many.
@@ -300,9 +324,19 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             case BUILDING -> settlement.getBuildingManager().getBuildingSet();
             case MISSION -> context.getSimulation().getMissionManager().getMissionsForSettlement(settlement);
             case SCIENTIFIC_STUDY -> scienceMgr.getAllStudies(settlement);
-            case TRANSPORT -> transportMgr.getTransportItems().stream()
-                                        .filter(ti -> ti.getSettlementName().equals(settlement.getName()))
-                                        .toList();
+            case TRANSPORT -> {
+                        if (settlement == null) {
+                            yield transportMgr.getTransportItems().stream()
+                                                .filter(it -> it instanceof ArrivingSettlement)
+                                                .filter(as -> as.getTransitState() != TransitState.ARRIVED)
+                                                .toList();
+                        }
+                        else {
+                            yield transportMgr.getTransportItems().stream()
+                                                .filter(ti -> ti.getSettlementName().equals(settlement.getName()))
+                                                .toList();
+                        }
+                    }
             default -> Collections.emptyList();
         };
             

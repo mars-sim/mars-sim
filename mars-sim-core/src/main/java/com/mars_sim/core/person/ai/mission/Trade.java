@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -129,10 +130,10 @@ public class Trade extends RoverMission implements CommerceMission {
 	 * @param sellGoods
 	 * @param buyGoods
 	 */
-	public Trade(Collection<Worker> members, Settlement tradingSettlement,
+	public Trade(List<Worker> members, Settlement tradingSettlement,
 			Rover rover, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
 		// Use RoverMission constructor.
-		super(MissionType.TRADE, (Worker) members.toArray()[0], rover);
+		super(MissionType.TRADE, members.get(0), rover);
 
 		outbound = true;
 

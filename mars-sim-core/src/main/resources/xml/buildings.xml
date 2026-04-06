@@ -288,17 +288,17 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				
 					<!-- Clockwise from right most room to the left most room -->
 					<!-- Room 1 -->
-					<activity-spot xloc="0.45" yloc="3.85" name="Bunk 1" />
-					<activity-spot xloc="1.25" yloc="3.3" name="Bunk 1"/>					
+					<activity-spot xloc="0.45" yloc="3.85"/>
+					<activity-spot xloc="1.25" yloc="3.3"/>					
 					<!-- Room 2 -->
-					<activity-spot xloc="-0.45" yloc="3.85" name="Bunk 2"/>
-					<activity-spot xloc="-1.25" yloc="3.3" name="Bunk 2"/>
+					<activity-spot xloc="-0.45" yloc="3.85"/>
+					<activity-spot xloc="-1.25" yloc="3.3"/>
 					<!-- Room 3 -->
-					<activity-spot xloc="-3.85" yloc="0.45" name="Bunk 3"/>
-					<activity-spot xloc="-3.3" yloc="1.4" name="Bunk 3"/>
+					<activity-spot xloc="-3.85" yloc="0.45"/>
+					<activity-spot xloc="-3.3" yloc="1.4"/>
 					<!-- Room 4 -->
-					<activity-spot xloc="-2.77" yloc="-0.45" name="Bunk 4"/>
-					<activity-spot xloc="-3.3" yloc="-1.4" name="Bunk 4"/>
+					<activity-spot xloc="-2.77" yloc="-0.45"/>
+					<activity-spot xloc="-3.3" yloc="-1.4"/>
 					
 				</activity>
 			</living-accommodation>
@@ -2373,35 +2373,35 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<living-accommodation capacity="20" guesthouse="true">
 				<activity>					
 												
-					<activity-spot xloc="1.9" yloc="1.65" name="Bunk 2" />
-					<activity-spot xloc="2.48" yloc="2.35" name="Bunk 2" />
+					<activity-spot xloc="1.9" yloc="1.65" />
+					<activity-spot xloc="2.48" yloc="2.35" />
 					
-					<activity-spot xloc="1.9" yloc="0.25" name="Bunk 4" />
-					<activity-spot xloc="2.48" yloc="0.95" name="Bunk 4" />
+					<activity-spot xloc="1.9" yloc="0.25" />
+					<activity-spot xloc="2.48" yloc="0.95" />
 					
-					<activity-spot xloc="1.9" yloc="-1.2" name="Bunk 6" />
-					<activity-spot xloc="2.48" yloc="-0.5" name="Bunk 6" />
+					<activity-spot xloc="1.9" yloc="-1.2" />
+					<activity-spot xloc="2.48" yloc="-0.5" />
 					
-					<activity-spot xloc="1.9" yloc="-2.55" name="Bunk 8" />
-					<activity-spot xloc="2.48" yloc="-1.9" name="Bunk 8" />
+					<activity-spot xloc="1.9" yloc="-2.55" />
+					<activity-spot xloc="2.48" yloc="-1.9" />
 					
-					<activity-spot xloc="1.9" yloc="-3.3" name="Bunk 10" />
-					<activity-spot xloc="2.2" yloc="-4.0" name="Bunk 10" />
+					<activity-spot xloc="1.9" yloc="-3.3" />
+					<activity-spot xloc="2.2" yloc="-4.0" />
 
-					<activity-spot xloc="-1.9" yloc="1.65" name="Bunk 1" />
-					<activity-spot xloc="-2.48" yloc="2.35" name="Bunk 1" />
+					<activity-spot xloc="-1.9" yloc="1.65"/>
+					<activity-spot xloc="-2.48" yloc="2.35"/>
 					
-					<activity-spot xloc="-1.9" yloc="0.25" name="Bunk 3" />
-					<activity-spot xloc="-2.48" yloc="0.95" name="Bunk 3" />
+					<activity-spot xloc="-1.9" yloc="0.25" />
+					<activity-spot xloc="-2.48" yloc="0.95" />
 					
-					<activity-spot xloc="-1.9" yloc="-1.2" name="Bunk 5" />
-					<activity-spot xloc="-2.48" yloc="-0.5" name="Bunk 5" />
+					<activity-spot xloc="-1.9" yloc="-1.2" />
+					<activity-spot xloc="-2.48" yloc="-0.5" />
 					
-					<activity-spot xloc="-1.9" yloc="-2.55" name="Bunk 7" />
-					<activity-spot xloc="-2.48" yloc="-1.9" name="Bunk 7" />
+					<activity-spot xloc="-1.9" yloc="-2.55" />
+					<activity-spot xloc="-2.48" yloc="-1.9" />
 					
-					<activity-spot xloc="-1.9" yloc="-3.3" name="Bunk 9" />
-					<activity-spot xloc="-2.2" yloc="-4.0" name="Bunk 9" />
+					<activity-spot xloc="-1.9" yloc="-3.3" />
+					<activity-spot xloc="-2.2" yloc="-4.0" />
 
 				</activity>
 			</living-accommodation>

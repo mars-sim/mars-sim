@@ -16,6 +16,7 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.core.mission.predefined.TestDriveMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -65,13 +66,20 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 		int reviewChoice = CommandHelper.getOptionInput(context, List.of("Yes", "No"), "Request a review");
 		if (reviewChoice >= 0) {
 			// Create mission
-			Mission newMission = choosen.constructInstance(leader, reviewChoice == 0);
+			var doReview = (reviewChoice == 0);
+			Mission newMission = choosen.constructInstance(leader, doReview);
 			if (newMission.isDone()) {
 				context.println("Mission failed to start " + newMission.getMissionStatus());
 			}
 			else {
 				context.println("Create Mission " + newMission.getName());
 				context.getSim().getMissionManager().addMission(newMission);
+
+				if (doReview) {
+					// Must still skip Preparing state
+					context.println("Mission plan requires review");
+					newMission.getPlan().setStatus(PlanType.PENDING);
+				}
 			}
 		}
 

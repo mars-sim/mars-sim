@@ -29,8 +29,10 @@ import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
-import com.mars_sim.ui.swing.MainWindow;
+import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
+import com.mars_sim.ui.swing.desktop.MainWindow;
 import com.mars_sim.ui.swing.docking.DockingWindow;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 
@@ -57,6 +59,7 @@ public class MarsProject {
 	private boolean useSiteEditor;
 	private boolean isSandbox = false;
 	private boolean useDockingUI = false;
+	private boolean useAudio = true;
 
 	private Simulation sim;
 
@@ -115,17 +118,37 @@ public class MarsProject {
 			// Build and run the simulator
 			sim = builder.start(splashWindow::setStatusMessage);
 
+			// Open global UI configs
+			UIConfig config = new UIConfig();
+			if (!useCleanUI || askScreenConfig()) {
+				config.parseFile();
+			}
+
+			// Set up the look and feel library to be used
+			StyleManager.setStyles(config.getPropSets());
+		
+			// Start audio if enabled
+			AudioPlayer audio = null;
+			if (useAudio) {
+				Properties props = config.getPropSet(UIConfig.AUDIO_PROPS);
+				audio = new AudioPlayer(props);
+			}
+			
 			// Build main window
 			splashWindow.setStatusMessage("Starting the Main Window...");
 			if (useDockingUI) {
-				DockingWindow.create(sim);
+				DockingWindow.create(sim, config, audio);
 			}
 			else {
-				new MainWindow(useCleanUI, sim);
+				new MainWindow(sim, config, audio);
 			}
 
 			// Switch from Splash to main window as one
 			SwingUtilities.invokeLater(splashWindow::remove);
+
+			if (audio != null) {
+				audio.playRandomTracks();
+			}
 
 			logger.config("Starting the Master Clock...");		
 			sim.startClock(false);
@@ -134,6 +157,22 @@ public class MarsProject {
 			// Catch everything
 			exitWithError("Problem starting " + e.getMessage(), e);
 		}
+	}
+
+	
+	/**
+	 * Asks if the player wants to use last saved screen configuration.
+	 */
+	private boolean askScreenConfig() {
+
+		logger.config("Do you want to use the last saved screen configuration ?");
+		logger.config("To proceed, please choose 'Yes' or 'No' button in the dialog box.");
+
+		int reply = JOptionPane.showConfirmDialog(null,
+				"Do you want to use the last saved screen configuration",
+				"Screen Configuration",
+				JOptionPane.YES_NO_OPTION);
+		return (reply == JOptionPane.YES_OPTION);
 	}
 
 	/**
@@ -233,10 +272,8 @@ public class MarsProject {
 
 			builder.parseCommandLine(line);
 
-			if (line.hasOption(NOAUDIO)) {
-				// Disable all audio not just the volume
-				AudioPlayer.disableAudio();
-			}
+			useAudio = !line.hasOption(NOAUDIO);
+
 			if (line.hasOption(DISPLAY_HELP)) {
 				usage("See available options below", options);
 			}

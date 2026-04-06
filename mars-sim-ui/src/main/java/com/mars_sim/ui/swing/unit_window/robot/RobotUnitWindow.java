@@ -9,6 +9,7 @@ package com.mars_sim.ui.swing.unit_window.robot;
 import java.util.Properties;
 
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.entitywindow.worker.TabPanelActivity;
@@ -38,8 +39,11 @@ public class RobotUnitWindow extends EntityContentPanel<Robot> {
 		// Use UnitWindow constructor
 		super(robot, context);
 					
+		setHeading(robot.getAssociatedSettlement(), "specs", 
+				Msg.getString("robot.type"), robot.getRobotType().getName());
+
 		// Add tab panels
-		addTabPanel(new TabPanelGeneralRobot(robot, context));
+		addDefaultTabPanel(new TabPanelGeneralRobot(robot, context));
 
 		addTabPanel(new TabPanelActivity(robot, context));
 		addTabPanel(new TabPanelAttribute(robot, context));

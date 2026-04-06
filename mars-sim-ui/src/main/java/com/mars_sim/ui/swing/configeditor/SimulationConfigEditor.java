@@ -55,11 +55,11 @@ import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.authority.AuthorityFactory;
+import com.mars_sim.core.configuration.FutureSettlement;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
-import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Crew;
@@ -70,7 +70,6 @@ import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainWindow;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIConfig;
 
@@ -199,7 +198,7 @@ public class SimulationConfigEditor {
 		hasError = false;
 
 		f = new JFrame();
-		f.setIconImage(MainWindow.getIconImage());
+		f.setIconImage(StyleManager.getIconImage());
 		f.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
@@ -377,7 +376,7 @@ public class SimulationConfigEditor {
 		simPanel.add(startButton);
 
 		// Edit Authority button.
-		JButton authorityButton = new JButton(ImageLoader.getIconByName("sponsor")); //$NON-NLS-1$
+		JButton authorityButton = new JButton(ImageLoader.getIconByName("authority")); //$NON-NLS-1$
 		authorityButton.setToolTipText(Msg.getString("SimulationConfigEditor.tooltip.authorityEditor")); //$NON-NLS-1$
 		authorityButton.addActionListener(e -> editAuthorities());
 
@@ -681,7 +680,7 @@ public class SimulationConfigEditor {
 	 */
 	private Scenario finalizeSettlementConfig(String name, String description) {
 		List<InitialSettlement> is = settlementTableModel.getSettlements();
-		List<ArrivingSettlement> arrivals = arrivalTableModel.getArrivals();
+		List<FutureSettlement> arrivals = arrivalTableModel.getArrivals();
 		int maxColonies = coloniesModel.getNumber().intValue();
 		return new Scenario(name, description, is, arrivals, maxColonies, false);
 	}

@@ -8,24 +8,31 @@ package com.mars_sim.ui.swing.entitywindow;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
+import com.mars_sim.ui.swing.ImageLoader;
+import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.
@@ -41,30 +48,33 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	private static final String SELECTED_TAB = "selected_tab";
 
     private static final int WIDTH = 550;
-	private static final int HEIGHT = 550;
+	private static final int HEIGHT = 500;
 
     private T entity;
-	private List<TabPanel> tabPanels = new ArrayList<>();
+	private List<EntityTabPanel<?>> tabPanels = new ArrayList<>();
     private UIContext context;
     private JTabbedPane tabPane;
+    private EntityTabPanel<?> defaultTab;
 
     /**
-     * Construct a entity panel to render a single Entity.
+     * Construct a entity panel to render a single Entity. The entity type used for naming is derived
+     * from the name of the entity Class.
      * @param entity Entity to display.
      * @param context Overall UI context
      */
     protected EntityContentPanel(T entity, UIContext context) {
-        super(entity.getClass().getSimpleName() + ":" + entity.getName(), entity.getName(), Placement.CENTER);
+        super(entity.getClass().getSimpleName() + ":" + entity.getName(),
+                getEntityType(entity) + " : " + entity.getName(), Placement.CENTER);
 
         this.entity = entity;
         this.context = context;
 
-        tabPane = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+        tabPane = new JTabbedPane(StyleManager.getTabPlacement(), JTabbedPane.SCROLL_TAB_LAYOUT);
         add(tabPane, BorderLayout.CENTER);
 
 		// Add a listener for the tab changes
 		tabPane.addChangeListener(e -> {
-			TabPanel newTab = getSelected();
+			var newTab = getSelected();
 			if (!newTab.isUIDone()) {
 				newTab.initializeUI();
 			}
@@ -84,19 +94,60 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     }
 
     /**
+     * Get the entity type string for the given entity.
+     * This can be used as a key in the Msg class and also a key to the associated icon.
+     * @param entity Entity to get the type for.
+     * @return Name of the type.
+     */
+    private static String getEntityType(Entity entity) {
+        return EntityDisplayInfoFactory.getDisplayInfo(entity).getSingularLabel();
+    }
+
+    /**
 	 * Returns the currently selected tab.
 	 *
 	 * @return Monitor tab being displayed.
 	 */
-	private TabPanel getSelected() {
+	private EntityTabPanel<?> getSelected() {
 		// Not using SwingUtilities.updateComponentTreeUI(this)
-		TabPanel selected = null;
+		EntityTabPanel<?> selected = null;
 		int selectedIdx = tabPane.getSelectedIndex();
 		if ((selectedIdx != -1) && (selectedIdx < tabPanels.size()))
 			selected = tabPanels.get(selectedIdx);
 		return selected;
 	}
 
+    /**
+     * Set the heading panel for the entity window. This will create a panel
+     * with the parent entity on the left and the category on the right.
+     * @param parent Parent entity to display on the left.
+     * @param categoryIcon Icon name for the category on the right.
+     * @param categoryName Name of the category on the right.
+     * @param categoryValue Value of the category on the right.
+     */
+    protected void setHeading(Entity parent, String categoryIcon, String categoryName, String categoryValue) {
+        var infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        infoPanel.setBorder(new MarsPanelBorder());
+        add(infoPanel, BorderLayout.NORTH);
+
+        // Left hand label is based on the type of the parent entity
+        var displayinfo = EntityDisplayInfoFactory.getDisplayInfo(parent);
+        infoPanel.add(createLabelValue(displayinfo.getButtonIcon(parent), displayinfo.getSingularLabel(),
+                    new EntityLabel(parent, getContext())));
+
+        // Right hand label is based on the category
+        var categoryIconImage = ImageLoader.getIconByName(categoryIcon);
+        infoPanel.add(createLabelValue(categoryIconImage, categoryName, new JLabel(categoryValue)));
+    }
+
+    private static JPanel createLabelValue(Icon icon, String label, JComponent value) {
+        var panel = new JPanel();
+        var left = new JLabel(icon);
+        left.setToolTipText(label);
+        panel.add(left);
+        panel.add(value);
+        return panel;
+    }
     /**
      * Apply the initial UI Properties to the entity window
      * @param props Any initial properties for the window.
@@ -110,7 +161,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         String selectedTab = props.getProperty(SELECTED_TAB);
         if (selectedTab != null) {
             for (int i = 0; i < tabPanels.size(); i++) {
-                TabPanel tab = tabPanels.get(i);
+                var tab = tabPanels.get(i);
                 if (tab.getTabTitle().equals(selectedTab)) {
                     tabPane.setSelectedIndex(i);
                     break;
@@ -139,12 +190,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	public Properties getUIProps() {
 		Properties result = new Properties();
 		result.setProperty(UNIT_NAME, entity.getName());
-        if (entity instanceof Unit u) {
-            result.setProperty(UNIT_TYPE, u.getUnitType().name());
-        }
-        else { 
-		    result.setProperty(UNIT_TYPE, entity.getClass().getSimpleName().toUpperCase());
-        }
+        result.setProperty(UNIT_TYPE, EntityDisplayInfoFactory.getDisplayInfo(entity).getEntityKey());
         var selected = getSelected();
         if (selected != null) {
 		    result.setProperty(SELECTED_TAB, selected.getTabTitle());
@@ -154,15 +200,46 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
 	}
 
     /**
+     * Add the default tab panel to the entity window. This tab is always added first
+     * and selected by default.
+     * @param panel Tab panel to add as the default.
+     */
+    protected void addDefaultTabPanel(EntityTabPanel<?> panel) {
+        defaultTab = panel;
+
+        // Default always goes to the beginning
+        addTabPanel(panel, 0);
+    }
+
+    /**
      * Add a tab panel to the entity window. This uses the icon and title of the TabPanel to
-     * create the tab.
+     * create the tab. This will be inserted after the default tab and according to alphabetical
+     * order of the tab titles.
      * @param panel
      */
-    protected void addTabPanel(TabPanel panel) {
-        tabPanels.add(panel);
+    protected void addTabPanel(EntityTabPanel<?> panel) {
+        int position = (defaultTab != null) ? 1 : 0;
+        while (position < tabPanels.size()) {
+            var existingPanel = tabPanels.get(position);
+            if (panel.getTabTitle().compareTo(existingPanel.getTabTitle()) < 0) {
+                break;
+            }
+
+            position++;
+        }
+        addTabPanel(panel, position);
+    }
+    
+    /**
+     * Add a tab panel to the entity window at the specified position.
+     * @param panel New panel to add.
+     * @param position Position to insert the panel at.
+     */
+    private void addTabPanel(EntityTabPanel<?> panel, int position) { 
+        tabPanels.add(position, panel);
 
         // Have to ignore the title to force the icon to show correctly
-        tabPane.addTab(null, panel.getTabIcon(), panel, panel.getTabToolTip());
+        tabPane.insertTab( null, panel.getTabIcon(), panel.getVisual(), panel.getTabToolTip(), position);
     }
 
     /**
@@ -171,7 +248,8 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      */
     @Override
     public void clockUpdate(ClockPulse pulse) {
-        if (getSelected() instanceof TemporalComponent tc) {
+        var selected = getSelected();
+        if (selected instanceof TemporalComponent tc && selected.isUIDone()) {
             tc.clockUpdate(pulse);
         }
     }
@@ -188,6 +266,10 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         }
     }
 
+    /**
+     * Prepare to destroy the panel and its resources. This will remove any listeners
+     * from the entity and destroy all tab panels.
+     */
     @Override
     public void destroy() {
         // Some Entities are MonitorableEntities and can send events

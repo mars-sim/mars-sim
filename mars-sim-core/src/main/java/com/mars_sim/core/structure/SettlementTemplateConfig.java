@@ -79,6 +79,9 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
     private static final String EVA = "EVA";
     private static final String ROBOT = "robot";
+    private static final String BUILDING_PLAN = "building-plan";
+    private static final String BUILDING_TYPE = "building-type";
+    private static final String DELAY_SOLS = "delay-sols";
 
     private final PartPackageConfig partPackageConfig;
     private final BuildingPackageConfig buildingPackageConfig;
@@ -394,6 +397,14 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             String name = robotElement.getAttributeValue(NAME);
             String model = robotElement.getAttributeValue(MODEL);
             settlementTemplate.addRobot(new RobotTemplate(name, rType, model));
+        }
+
+        // Load building plans
+        List<Element> buildingPlanNodes = templateElement.getChildren(BUILDING_PLAN);
+        for (Element buildingPlanElement : buildingPlanNodes) {
+            String buildingType = buildingPlanElement.getAttributeValue(BUILDING_TYPE);
+            int delaySols = ConfigHelper.getAttributeInt(buildingPlanElement, DELAY_SOLS);
+            settlementTemplate.addBuildingPlan(new BuildingPlan(buildingType, delaySols));
         }
 
         // Load resupplies

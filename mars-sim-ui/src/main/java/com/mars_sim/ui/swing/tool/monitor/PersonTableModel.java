@@ -31,7 +31,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
 /**
@@ -78,22 +78,22 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	 */
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("Entity.name"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("Settlement.singular"), String.class);
-		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("Person.health"), String.class);
-		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("Person.energy"), String.class);
-		COLUMNS[WATER] = new ColumnSpec(Msg.getString("Person.water"), String.class);
-		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("Person.fatigue"), String.class);
-		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("Person.stress"), String.class);
-		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("Person.performance"), String.class);
-		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("Person.emotion"), String.class);
+		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
+		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
+		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("person.health"), String.class);
+		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("person.energy"), String.class);
+		COLUMNS[WATER] = new ColumnSpec(Msg.getString("person.water"), String.class);
+		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("person.fatigue"), String.class);
+		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("person.stress"), String.class);
+		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("person.performance"), String.class);
+		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("person.emotion"), String.class);
 		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("PersonTableModel.column.location"), String.class);
 		COLUMNS[LOCALE] = new ColumnSpec(Msg.getString("PersonTableModel.column.locale"), String.class);
-		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("Person.role"), String.class);
-		COLUMNS[JOB] = new ColumnSpec(Msg.getString("Person.job"), String.class);
-		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("Person.shift"), String.class);
-		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("Mission.singular"), String.class);
-		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("Task.singular"), String.class);
+		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("person.role"), String.class);
+		COLUMNS[JOB] = new ColumnSpec(Msg.getString("person.job"), String.class);
+		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("person.shift"), String.class);
+		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("mission.singular"), String.class);
+		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("task.singular"), String.class);
 
 		EVENT_COLUMN_MAPPING = new HashMap<>();
 		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);

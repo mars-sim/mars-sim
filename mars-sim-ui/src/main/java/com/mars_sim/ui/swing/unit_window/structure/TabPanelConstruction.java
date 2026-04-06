@@ -27,30 +27,31 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.AbstractTableModel;
 
-import com.mars_sim.core.Unit;
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.building.construction.ConstructionConfig;
 import com.mars_sim.core.building.construction.ConstructionManager;
 import com.mars_sim.core.building.construction.ConstructionManager.BuildingSchedule;
+import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 @SuppressWarnings("serial")
-public class TabPanelConstruction extends TabPanel {
+class TabPanelConstruction extends EntityTabPanel<Settlement> implements EntityListener{
 
 	private static final String CONST_ICON = "construction";
 	
 	// Data members
-	/** The Settlement instance. */
-	private Settlement settlement;
 	private ConstructionSitesPanel sitesPanel;
 	private QueueTableModel queue;
 	private JCheckBox overrideCheckbox;
@@ -65,25 +66,24 @@ public class TabPanelConstruction extends TabPanel {
 
 	/**
 	 * Constructor.
-	 * @param unit the unit the tab panel is for.
-	 * @param desktop the desktop.
+	 * @param settlement the settlement the tab panel is for.
+	 * @param context the UI context.
 	 */
-	public TabPanelConstruction(Unit unit, MainDesktopPane desktop) {
+	public TabPanelConstruction(Settlement settlement, UIContext context) {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelConstruction.title"), //-NLS-1$
-			ImageLoader.getIconByName(CONST_ICON),
-			Msg.getString("TabPanelConstruction.title"), //-NLS-1$
-			desktop
+			ImageLoader.getIconByName(CONST_ICON), null,
+			context, settlement
 		);
 
-		settlement = (Settlement) unit;
-		cConfig = desktop.getSimulation().getConfig().getConstructionConfiguration();
+		cConfig = context.getSimulation().getConfig().getConstructionConfiguration();
 	}
 	
 	@Override
 	protected void buildUI(JPanel content) {
 		
+		var settlement = getEntity();
 		ConstructionManager manager = settlement.getConstructionManager();
 
 		// Create override panel.
@@ -101,12 +101,12 @@ public class TabPanelConstruction extends TabPanel {
 		JPanel mainContentPanel = new JPanel(new GridLayout(2, 1));
 		content.add(mainContentPanel, BorderLayout.CENTER);
 
-		sitesPanel = new ConstructionSitesPanel(manager);
+		sitesPanel = new ConstructionSitesPanel(manager, getContext());
 		mainContentPanel.add(sitesPanel);
 
 		var queuePanel = new JPanel();
 		queuePanel.setLayout(new BorderLayout());
-		queuePanel.setBorder(StyleManager.createLabelBorder("Construction Q"));
+		queuePanel.setBorder(SwingHelper.createLabelBorder("Construction Q"));
 		mainContentPanel.add(queuePanel);
 
 		var selectionPanel = new  JPanel(new BorderLayout());
@@ -128,16 +128,16 @@ public class TabPanelConstruction extends TabPanel {
 
 		var buttonPanel = new JPanel(new GridLayout(1, 3));
 		var addSButton = new JButton("Add Site");
-		addSButton.addActionListener(event -> addBuildingToSite());
+		addSButton.addActionListener(event -> addBuildingToSite(settlement));
 		buttonPanel.add(addSButton);
 
 		var addQButton = new JButton("Add To Queue");
-		addQButton.addActionListener(event -> addBuildingToQueue());
+		addQButton.addActionListener(event -> addBuildingToQueue(settlement));
 		buttonPanel.add(addQButton);
 
 		deleteButton = new JButton("Delete from queue");
 		deleteButton.setEnabled(false);
-		deleteButton.addActionListener(event -> removeBuilding());
+		deleteButton.addActionListener(event -> removeBuilding(settlement));
 		buttonPanel.add(deleteButton);
 		selectionPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -163,44 +163,64 @@ public class TabPanelConstruction extends TabPanel {
 		deleteButton.setEnabled(!lsm.isSelectionEmpty());
 	}
 
-	private void addBuildingToSite() {
+	private void addBuildingToSite(Settlement settlement) {
 		String selectedBuilding = (String) buildingChoice.getSelectedItem();
-		var bConfig = getDesktop().getSimulation().getConfig().getBuildingConfiguration();
+		var bConfig = getContext().getSimulation().getConfig().getBuildingConfiguration();
 		var spec = bConfig.getBuildingSpec(selectedBuilding);
 		if (spec != null) {
 			settlement.getConstructionManager().createNewBuildingSite(spec);
 		}
 	}
 
-	private void addBuildingToQueue() {
+	private void addBuildingToQueue(Settlement settlement) {
 		String selectedBuilding = (String) buildingChoice.getSelectedItem();
 		settlement.getConstructionManager().addBuildingToQueue(selectedBuilding, null);
 
-		updateQueueModel();
+		updateQueueModel(settlement);
 	}
 
-	private void removeBuilding() {
+	private void removeBuilding(Settlement settlement) {
 		int selectedIdx = queueTable.getSelectedRow();
 		if (selectedIdx >= 0) {
 			var queueItem = queue.getValueAt(selectedIdx);
 			settlement.getConstructionManager().removeBuildingFromQueue(queueItem);
 
-			updateQueueModel();
+			updateQueueModel(settlement);
 		}
 	}
 
-	private void updateQueueModel() {
+	private void updateQueueModel(Settlement settlement) {
 		queue.update(settlement.getConstructionManager().getBuildingSchedule());
 	}
 
+	/**
+	 * Listen for the creation of new Sites.
+	 * @param event New event
+	 */
 	@Override
-	public void update() {
+	public void entityUpdate(EntityEvent event) {
+		if (!event.getType().equals(ConstructionSite.START_CONSTRUCTION_SITE_EVENT)) {
+			return;
+		}
+
+		var settlement = getEntity();
 		sitesPanel.update();
-		updateQueueModel();
+		updateQueueModel(settlement);
 
 		// Update construction override check box if necessary.
 		if (settlement.getProcessOverride(OverrideType.CONSTRUCTION) != overrideCheckbox.isSelected()) 
 			overrideCheckbox.setSelected(settlement.getProcessOverride(OverrideType.CONSTRUCTION));
+	}
+
+	/**
+	 * Must remove the listeners on Construction sites
+	 */
+	@Override
+	public void destroy() {
+		if (sitesPanel != null) {
+			sitesPanel.destroy();
+		}
+		super.destroy();
 	}
 
 	private class QueueTableModel extends AbstractTableModel

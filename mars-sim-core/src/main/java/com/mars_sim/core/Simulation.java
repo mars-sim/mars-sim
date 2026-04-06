@@ -80,7 +80,7 @@ import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.science.ScientificStudyUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.ExplorationManager;
-import com.mars_sim.core.time.ClockListener;
+import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
@@ -93,9 +93,9 @@ import com.mars_sim.core.vehicle.Rover;
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
  */
-public class Simulation implements ClockListener, Serializable {
+public class Simulation implements ClockPulseListener, Serializable {
 
-	private static class AutoSaveTrigger implements ClockListener {
+	private static class AutoSaveTrigger implements ClockPulseListener {
 		private Simulation sim;
 		private SaveType type;
 		
@@ -105,11 +105,6 @@ public class Simulation implements ClockListener, Serializable {
 			this.type = type;
 		}
 
-		@Override
-		public void pauseChange(boolean isPaused, boolean showPane) {
-			// placeholder
-		}
-		
 		@Override
 		public void clockPulse(ClockPulse currentPulse) {
 			// Set the pending save flag for an auto save
@@ -151,15 +146,13 @@ public class Simulation implements ClockListener, Serializable {
 
 	private transient boolean justSaved = true;
 
-	private transient boolean clockOnPause = false;
-
 	private boolean initialSimulationCreated = false;
 
 	/** The time stamp of the last saved sim. */
 	private Date lastSaveTimeStamp = null;
 	
 	/** Clock listener that triggers autosaving **/
-	private transient ClockListener autoSaveHandler;
+	private transient ClockPulseListener autoSaveHandler;
 
 	// Intransient data members (stored in save file)
 	private LunarWorld lunarWorld; 
@@ -650,6 +643,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Re-initialize Mission related class
 		AbstractMission.initializeInstances(sim, eventManager, unitManager,
 				surfaceFeatures, missionManager, pc);
+		MissionStep.initializeInstances(masterClock, unitManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 		
@@ -678,16 +672,16 @@ public class Simulation implements ClockListener, Serializable {
 	 * @param autosaveDefault True if default is used for autosave
 	 */
 	public void startClock(boolean autosaveDefault) {
-		masterClock.addClockListener(this);
+		masterClock.addClockPulseListener(this);
 		
 		// Add a listener to trigger the auto save
-		ClockListener autoSaver = new AutoSaveTrigger(this, autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
+		ClockPulseListener autoSaver = new AutoSaveTrigger(this, autosaveDefault ? SaveType.AUTOSAVE_AS_DEFAULT : SaveType.AUTOSAVE);
 		long autoSaveDuration = simulationConfig.getAutosaveInterval() * 60000L;
 
 		autoSaveHandler = new CompressedClockListener(autoSaver, autoSaveDuration);
 		logger.config("Setting up autosave to be triggered every " + autoSaveDuration + " ms (" +
 				autoSaveDuration/60.0/1000.0 + " mins).");
-		masterClock.addClockListener(autoSaveHandler);
+		masterClock.addClockPulseListener(autoSaveHandler);
 		masterClock.start();
 		
 		printLastSavedSol();
@@ -882,7 +876,7 @@ public class Simulation implements ClockListener, Serializable {
 		masterClock.stop();
 		
 		if (!isAlreadyPaused) 
-			masterClock.setPaused(true, false);
+			masterClock.setPaused(true);
 
 		// Call up garbage collector System.gc(). But it's still up to the gc what it will do.
 
@@ -954,7 +948,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Restarts the master clock and adds back the Simulation clock listener
 		if (!isAlreadyPaused) 
-			masterClock.setPaused(false, false);
+			masterClock.setPaused(false);
 		
 		masterClock.start();
 	}
@@ -1114,7 +1108,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		String unit = "";
 
-		masterClock.setPaused(true, false);
+		masterClock.setPaused(true);
 
 		for (Serializable o : list) {
 			String name = o.getClass().getSimpleName();
@@ -1194,7 +1188,7 @@ public class Simulation implements ClockListener, Serializable {
 
 		sb.append(sizeStr + System.lineSeparator());
 
-		masterClock.setPaused(false, false);
+		masterClock.setPaused(false);
 
 		return sb;
 	}
@@ -1223,8 +1217,8 @@ public class Simulation implements ClockListener, Serializable {
 	public void stop() {
 		if (masterClock != null) {
 			masterClock.stop();
-			masterClock.removeClockListener(this);
-			masterClock.removeClockListener(autoSaveHandler);
+			masterClock.removeClockPulseListener(this);
+			masterClock.removeClockPulseListener(autoSaveHandler);
 		}
 	}
 
@@ -1410,7 +1404,7 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	@Override
 	public void clockPulse(ClockPulse pulse) {
-		if (doneInitializing && !clockOnPause) {
+		if (doneInitializing) {
 			// Refresh all Data loggers; this can be refactored later to a Manager class
 			DataLogger.changeTime(pulse.getMasterClock().getMarsTime());
 			
@@ -1441,11 +1435,6 @@ public class Simulation implements ClockListener, Serializable {
 		}
 	}
 
-	@Override
-	public void pauseChange(boolean isPaused, boolean showPane) {
-        clockOnPause = isPaused;
-	}
-
 	/**
 	 * Destroys the current simulation to prepare for creating or loading a new
 	 * simulation.
@@ -1455,9 +1444,9 @@ public class Simulation implements ClockListener, Serializable {
 
 		// Remove old clock listeners ?
 		if (masterClock != null) {
-			masterClock.removeClockListener(this);
+			masterClock.removeClockPulseListener(this);
 			if (autoSaveHandler != null) {
-				masterClock.removeClockListener(autoSaveHandler);
+				masterClock.removeClockPulseListener(autoSaveHandler);
 			}
 		}
 		malfunctionFactory = null;

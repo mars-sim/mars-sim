@@ -20,7 +20,7 @@ public class RatingScoreRenderer {
     /**
      * Prefix to the key in the message bundle
      */
-    private static final String RATING_KEY = "Rating.modifiers.";
+    private static final String RATING_KEY = "rating.modifiers.";
     private static final DecimalFormat SCORE_FORMAT = new DecimalFormat("0.###");
 
     private RatingScoreRenderer() {}

@@ -13,7 +13,7 @@
 		<flatlaf.version>3.7</flatlaf.version>
 		<jfreechart.version>1.5.6</jfreechart.version>
 		<jide-oss.version>3.7.15</jide-oss.version>
-		<modern-docking.version>1.3.1</modern-docking.version>
+		<modern-docking.version>1.4.2</modern-docking.version>
 
 		<mainClass>com.mars_sim.ui.swing.main.MarsProject</mainClass>
 		<target.name>mars-sim-swing-${project.version}</target.name>
@@ -31,7 +31,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.mars-sim</groupId>
-			<artifactId>mars-sim-headless</artifactId>
+			<artifactId>mars-sim-console</artifactId>
 			<version>${project.version}</version>
 		</dependency>	
 		<dependency>
@@ -43,11 +43,6 @@
 			<groupId>io.github.andrewauclair</groupId>
 			<artifactId>modern-docking-ui</artifactId>
 			<version>${modern-docking.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.beryx</groupId>
-			<artifactId>text-io</artifactId>
-			<version>3.4.1</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.miglayout</groupId>
@@ -116,6 +111,12 @@
 			<groupId>com.formdev</groupId>
 			<artifactId>jide-oss</artifactId>
 			<version>${jide-oss.version}</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>${slf4j.version}</version>
 		</dependency>
 	</dependencies>
   	<build>

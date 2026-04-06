@@ -32,7 +32,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 class TabPanelGeneral extends EntityTabPanel<Authority> {
 	
-	private static final int EMBLEM_WIDTH = 200;
+	private static final int EMBLEM_WIDTH = 150;
 	private static final String AGENCY_FOLDER = "agency/";
 	
 	/**
@@ -45,7 +45,7 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 		super(
 			GENERAL_TITLE,
 			ImageLoader.getIconByName(GENERAL_ICON),
-			null,
+			GENERAL_TOOLTIP,
 			context, ra
 		);
 	}
@@ -92,7 +92,7 @@ class TabPanelGeneral extends EntityTabPanel<Authority> {
 		mainPanel.add(attrPanel);
 
 		attrPanel.addTextField("Code", agencyShortName, null);
-		attrPanel.addTextField(Msg.getString("Entity.name"), ra.getDescription(), null);
+		attrPanel.addTextField(Msg.getString("entity.name"), ra.getDescription(), null);
 		attrPanel.addTextField("Corporation", Boolean.toString(ra.isCorporation()), null);
 
 		// Country names

@@ -20,7 +20,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementTask;
 import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 

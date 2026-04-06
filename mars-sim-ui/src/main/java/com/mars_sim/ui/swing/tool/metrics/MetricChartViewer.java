@@ -44,6 +44,7 @@ public class MetricChartViewer extends ContentPanel
     
     // Constants
     public static final String NAME = "metricsviewer";
+    public static final String TITLE = "Metric Chart Viewer";
     public static final String ICON = "metrics";
 
     private static final String SELECT_PROMPT = "-- Select --";

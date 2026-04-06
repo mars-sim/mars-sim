@@ -9,17 +9,13 @@ package com.mars_sim.ui.swing.tool.map;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
@@ -29,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,15 +58,23 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 	private static final boolean SHOW_MAP_DETAILS = false; // Enable for map details in header
 
-	private int dragx;
-	private int dragy;
-
+	/**
+	 * Control for the MapLayer to handle the visibility of the layer and the layer itself.
+	 */
+	private static class LayerControl {
+		MapLayer layer;
+		boolean visible;
+		
+		public LayerControl(MapLayer layer) {
+			this.layer = layer;
+			this.visible = true;
+		}
+	}
+	
 	private transient ExecutorService executor;
 
 	// Data members
-	private boolean mouseDragging;
 	private boolean mapError;
-	private boolean wait;
 
 	private String mapErrorMessage;
 	
@@ -80,14 +85,16 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	
 	private JSlider zoomSlider;
 	
-	private List<MapLayer> mapLayers;
-
-	private MapData backgroundMapData;
+	private List<LayerControl> mapLayers;
 
 	private JLabel mapDetails;
 	private JLabel statusLabel;
 
 	private List<MapHotspot> hotspots = new ArrayList<>();
+
+	// Local callbacks to mouse actions
+	private Consumer<Coordinates> mouseMover;
+	private Consumer<Coordinates> mouseClicker;
 
 	/**
 	 * Constructor.
@@ -102,24 +109,17 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = Executors.newSingleThreadExecutor();
 		
 		mapError = false;
-		wait = false;
 		mapLayers = new CopyOnWriteArrayList<>();
 		centerCoords = new Coordinates(HALF_PI, 0D);
 	
 		buildZoomSlider();
-
-		addMouseWheelListener(this);
 		
 		setLayout(new BorderLayout(10, 20));
-		
-		JPanel zoomPane = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 40));
-       	add(zoomPane, BorderLayout.EAST);
-       	
-	    zoomPane.setBackground(new Color(0, 0, 0, 128));
-	    zoomPane.setOpaque(false);
-	    zoomPane.setAlignmentX(RIGHT_ALIGNMENT);
-	    zoomPane.setAlignmentY(CENTER_ALIGNMENT);
-       	zoomPane.add(zoomSlider);
+
+		zoomSlider.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 10));
+		zoomSlider.setAlignmentX(RIGHT_ALIGNMENT);
+		zoomSlider.setAlignmentY(CENTER_ALIGNMENT);
+		add(zoomSlider, BorderLayout.EAST);
 
 		// Build the status panel
 		statusLabel = new JLabel("");
@@ -133,6 +133,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			mapDetails.setOpaque(true);
 			add(mapDetails, BorderLayout.NORTH);
 		}
+
+		var mouseListener = new MapMouseListener(this);
+		addMouseListener(mouseListener);
+		addMouseMotionListener(mouseListener);
+
+		addMouseWheelListener(this);
 	}
 
 	/**
@@ -151,36 +157,12 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
 	private void buildZoomSlider() {
-
-//		UIDefaults sliderDefaults = new UIDefaults();
-
-//        sliderDefaults.put("Slider.thumbWidth", 15);
-//        sliderDefaults.put("Slider.thumbHeight", 15);
-//        sliderDefaults.put("Slider:SliderThumb.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
-//		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		    g.setStroke(new BasicStroke(2f));
-//		    g.setColor(Color.BLACK);
-//		    g.fillOval(1, 1, w-1, h-1);
-//		    g.setColor(Color.WHITE);
-//		    g.drawOval(1, 1, w-1, h-1);
-//		});
-//        sliderDefaults.put("Slider:SliderTrack.backgroundPainter", (Painter<JComponent>) (g, c, w, h) -> {
-//		    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		    g.setStroke(new BasicStroke(2f));
-//		    g.setColor(Color.BLACK);
-//		    g.fillRoundRect(0, 6, w, 6, 6, 6);
-//		    g.setColor(Color.WHITE);
-//		    g.drawRoundRect(0, 6, w, 6, 6, 6);
-//		});
+		var color = Color.WHITE;
 
         zoomSlider = new JSlider(SwingConstants.VERTICAL, 0, MAX_SLIDER, 25);
-        zoomSlider.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 100));
-        zoomSlider.setPreferredSize(new Dimension(60, 300));
-        zoomSlider.setSize(new Dimension(60, 300));
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
-		zoomSlider.setForeground(Color.ORANGE.darker().darker());
-		zoomSlider.setBackground(new Color(0, 0, 0, 128));
+		zoomSlider.setForeground(color);
 		zoomSlider.setOpaque(false);
 		
 		zoomSlider.setVisible(true);
@@ -190,7 +172,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 
 		Dictionary<Integer, JLabel> labelTable = new Hashtable<>();	
 		for (int i = 1; i <= SLIDER_LABELS; i++) {
-			labelTable.put(i * (MAX_SLIDER/SLIDER_LABELS), new JLabel(Integer.toString(i)));
+			var tick = new JLabel(Integer.toString(i));
+			tick.setForeground(color);
+			labelTable.put(i * (MAX_SLIDER/SLIDER_LABELS), tick);
 		}
 		zoomSlider.setLabelTable(labelTable);
     }
@@ -236,103 +220,39 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public int getMapResolution() {
 		return marsMap.getResolution();
 	}
-	
-	/*
-	 * Sets up the mouse dragging capability.
-	 */
-	public void setMouseDragger() {
 
-		// Detect the mouse scroll
-		addMouseWheelListener(this);
-		
-		// Note: need navWin prior to calling addMouseMotionListener()
-		addMouseMotionListener(new MouseAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				int x = e.getX();
-				int y = e.getY();
-				int dx = dragx - x;
-				int dy = dragy - y;
-
-				if ((dx != 0 || dy != 0) 
-					 && x > 0 && x < getWidth() 
-					 && y > 0 && y < getHeight()) {
-					
-					mouseDragging = true;
-					
-					// Update the centerCoords while dragging
-					centerCoords = centerCoords.convertRectIntToSpherical(dx, dy, marsMap.getRho());
-					// Do we really want to update the map while dragging ? 
-					// Yes. It's needed to provide smooth viewing of the surface map
-					marsMap.drawMap(centerCoords, getRho(), getSize());
-				
-					repaint();
-				}
-
-				dragx = x;
-				dragy = y;
-
-			}
-		});
-
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				dragx = e.getX();
-				dragy = e.getY();
-
-				mouseDragging = true;
-				
-				setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				dragx = 0;
-				dragy = 0;
-				
-				mouseDragging = false;
-
-				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			}
-		});
-	}
-
-	public boolean isChanging() {
-		return mouseDragging;
-	}
-	
 	/**
 	 * Adds a new map layer.
 	 * 
 	 * @param newLayer the new map layer.
-	 * @param index    the index order of the map layer.
 	 */
-	public void addMapLayer(MapLayer newLayer, int index) {
-		if (newLayer != null) {
-			if (!mapLayers.contains(newLayer)) {
-				if (index < mapLayers.size()) {
-					mapLayers.add(index, newLayer);
-				} else {
-					mapLayers.add(newLayer);
-				}
-			}
-		} else
+	public void addMapLayer(MapLayer newLayer) {
+		if (newLayer == null) {
 			throw new IllegalArgumentException("newLayer is null");
+		}
+
+		if (mapLayers.stream().filter(ml -> ml.layer.equals(newLayer)).findFirst().isEmpty()) {
+			mapLayers.add(new LayerControl(newLayer));
+		}
 	}
 
 	/**
-	 * Removes a map layer.
+	 * Change visibility of a map layer.
 	 * 
-	 * @param oldLayer the old map layer.
+	 * @param layer the map layer.
+	 * @param visible  the visibility of the map layer.
 	 */
-	public void removeMapLayer(MapLayer oldLayer) {
-		if (oldLayer != null) {
-			if (mapLayers.contains(oldLayer)) {
-				mapLayers.remove(oldLayer);
-			}
-		} else
-			throw new IllegalArgumentException("oldLayer is null");
+	public void setVisibleMapLayer(MapLayer layer, boolean visible) {
+		if (layer == null) {
+			throw new IllegalArgumentException("layer is null");
+		}
+		var found = mapLayers.stream().filter(ml -> ml.layer.equals(layer)).findFirst().orElse(null);
+		if (found != null) {
+			found.visible = visible;
+		}
+		else {
+			logger.warning("Can't find layer for visibility: " + layer.getClass().getSimpleName());
+		}
 	}
 
 	/**
@@ -341,8 +261,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @param layer the map layer.
 	 * @return true if map has the map layer.
 	 */
-	public boolean hasMapLayer(MapLayer layer) {
-		return mapLayers.contains(layer);
+	public boolean isLayerVisible(MapLayer layer) {
+		return mapLayers.stream().filter(ml -> ml.layer.equals(layer)).findFirst().map(ml -> ml.visible).orElse(false);
 	}
 	   
 	/**
@@ -376,18 +296,13 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * @return Display was updated immediately
 	 */
 	public boolean loadMap(String newMapString, int res) {
-		if (backgroundMapData != null) {
-			logger.warning("Map already loading in the background");
-			return false;
-		}
-
 		var mapmeta = MapDataFactory.getMapMetaData(newMapString);
 		if (mapmeta == null) {
 			logger.severe("No map meta with id " + newMapString);
 			return false;
 		}
 
-		var newMapData = mapmeta.getData(res);
+		var newMapData = mapmeta.getData(res, this::loadCompleted);
 		if (newMapData.getStatus() == MapState.LOADED) {
 			// It is ready
 			createMapDisplay(newMapData);
@@ -395,9 +310,25 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 
 		// Wait for this map to load
-		backgroundMapData = newMapData;
 		setStatusLabel("Loading " + mapmeta.getDescription() + " level:" + res);
 		return false;
+	}
+
+	/**
+	 * Callback when an async map data load is completed.
+	 * @param md MapData loaded
+	 */
+	private void loadCompleted(MapData md) {
+		var state = md.getStatus();
+		if (state == MapState.LOADED) {
+			// Background map is done so display it
+			createMapDisplay(md);
+			setStatusLabel(null);
+		}
+		else if (state == MapState.FAILED) {
+			logger.warning("Background loading failed");
+			setStatusLabel("Failed to load map data for " + md.getMetaData().getDescription());
+		}
 	}
 
 	private void createMapDisplay(MapData newMapData) {
@@ -414,14 +345,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 	
 	/**
-	 * Get the center point in the panel
-	 * @return
+	 * Show the map centred at newCenter, regenerating if necessary.
+	 * @param newCenter
 	 */
-	public IntPoint getCenterPoint() {
-		return new IntPoint(getWidth()/2, getHeight()/2);
-
-	}
-
 	public void showMap(Coordinates newCenter) {
 		showMap(newCenter, getRho());
 	}
@@ -446,7 +372,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		}
 			
 		if (recreateMap) {
-			wait = true;
 			updateDisplay(rho);
 		}
 	}
@@ -456,26 +381,8 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * 
 	 * @return Map displayed was changed
 	 */
-	public boolean updateDisplay() {
-		boolean changed = false;
-		if (backgroundMapData != null) {
-			var state = backgroundMapData.getStatus();
-			if (state == MapState.LOADED) {
-				// Background map is done so display it
-				createMapDisplay(backgroundMapData);
-				backgroundMapData = null;
-				changed = true;
-				setStatusLabel(null);
-			}
-			else if (state == MapState.FAILED) {
-				logger.warning("Background loading failed");
-				backgroundMapData = null;
-				setStatusLabel(null);
-			}
-		}
+	public void updateDisplay() {
 		updateDisplay(getRho());
-
-		return changed;
 	}
 
 	/**
@@ -534,7 +441,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 					marsMap.drawMap(centerCoords, rho, sz);
 				}
 				
-				wait = false;
 				repaint();
 				
 			} catch (Exception e) {
@@ -549,67 +455,67 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (isShowing()) {
+		Graphics2D g2d = (Graphics2D) g.create();
+		
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        	Graphics2D g2d = (Graphics2D) g.create();
-	        
-        	g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-			g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-			g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+		if (marsMap == null) {
+			// First paint with no user defined map
+			loadMap(MapDataFactory.DEFAULT_MAP_TYPE, 0);
+			logger.warning("MarsMap is null, loading requested.");
+		}
 
-			if (marsMap == null) {
-				// First paint with no user defined map
-				loadMap(MapDataFactory.DEFAULT_MAP_TYPE, 0);
+		if (mapError) {
+			// Draw error message
+			if (mapErrorMessage == null)
+				mapErrorMessage = "Null Map";
+			drawCenteredMessage(mapErrorMessage, g2d);
+		}
+		else {
+			// Paint black background
+			g2d.setColor(Color.BLACK);
+
+			var size = getSize();
+			
+			g2d.fillRect(0, 0, (int)size.getWidth(), (int)size.getHeight());
+		
+			if ((centerCoords != null) && marsMap != null) {
+				double activeRho = calculateRHO();
+				Image mapImage = marsMap.getMapImage(centerCoords, activeRho, size);
+				if (mapImage != null) {
+					g2d.drawImage(mapImage, 0, 0, this);  
+					mapImage.flush();
+				}
+				else {
+					logger.warning("MapImage is null");
+				}
+
+				// Reset the hotspots
+				hotspots = new ArrayList<>();
+
+				// Display the layers and record any hotspots
+				for (var i : mapLayers) {
+					if (i.visible) {
+						hotspots.addAll(i.layer.displayLayer(centerCoords, marsMap, g2d, size));
+					}
+				}
+			
+				g2d.setBackground(Color.BLACK);
 			}
-	        if (wait) {
-	        	String message = "Generating Map";
-	        	drawCenteredMessage(message, g2d);
-	        }
-	        else {
-	        	if (mapError) {
-	                // Draw error message
-	                if (mapErrorMessage == null) mapErrorMessage = "Null Map";
-	                drawCenteredMessage(mapErrorMessage, g2d);
-	            }
-	        	else {
-	        		
-	        		// Clear the background with white
-	        		// Not working: g2d.clearRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT)
-	        		// Paint black background
-	        		g2d.setColor(Color.BLACK);
+			else {
+				drawCenteredMessage("Loading Map Data", g2d);
 
-					var size = getSize();
-	                
-	        		g2d.fillRect(0, 0, (int)size.getWidth(), (int)size.getHeight());
-        		
-	                if (centerCoords != null) {
-	                	if (marsMap != null && marsMap.isImageDone()) {
-	                		Image mapImage = marsMap.getMapImage(centerCoords, calculateRHO(), size);
-	                		if (mapImage != null) {
-	                			g2d.drawImage(mapImage, 0, 0, this);  
-	                			
-	                			mapImage.flush();
-	                		}
-	                	}
-	                	else
-	                		return;
+				logger.warning("Paint skipped " + 
+						((centerCoords == null) ? "centerCoords is null. " : "") +
+						((marsMap == null) ? "marsMap is null. " : "")
+						);
+			}
+		}
 	
-	                	// Reset the hotspots
-	                	hotspots = new ArrayList<>();
-
-						// Display the layers and record any hotspots
-	                	for (var i : mapLayers) {
-	                		hotspots.addAll(i.displayLayer(centerCoords, marsMap, g2d, size));
-						}
-              		
-		        		g2d.setBackground(Color.BLACK);
-	                }
-	        	}
-	        }
-	
-	        g2d.dispose();
-        }
+	    g2d.dispose();
     }
 
 	/**
@@ -641,34 +547,6 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	}
 
 	/**
-	 * Gets the true surface lat and lon coordinates of the mouse pointer.
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-    public Coordinates getMouseCoordinates(int x, int y) {
-		double xx = x - getWidth() / 2.0;
-		double yy = y - getHeight() / 2.0;
-		// Based on the current centerCoords
-		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
-    }
-
-	
-	/**
-	 * Gets the Coordinates of a point on the Map from a center.
-	 * 
-	 * @param center
-	 * @param displayPos
-	 * @return
-	 */
-    public Coordinates getCoordsOfPoint(Coordinates center, IntPoint displayPos) {
-		return center.convertRectIntToSpherical(displayPos.getiX() - getWidth()/2, 
-										displayPos.getiY() - getHeight()/2,
-										marsMap.getRho());
-    }
-
-	/**
 	 * Gets the parent desktop.
 	 */
 	public UIContext getDesktop() {
@@ -698,8 +576,66 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 			repaint();
 		}
 	}
+
+	/**
+	 * Sets the mouse move listener. This is used to track the mouse movement in terms of the Coordinate frame.
+	 * @param mouseMoveListener The listener to notify.
+	 */
+	public void setMouseMoveListener(Consumer<Coordinates> mouseMoveListener) {
+		mouseMover = mouseMoveListener;
+	}
+
+	/**
+	 * Notify the map panel that the mouse has moved to a new position.
+	 * This is used to track the mouse movement in terms of the Coordinate frame.
+	 * @param mousePos Mouse position
+	 */
+	void notifyMouseMoved(IntPoint mousePos) {
+		if (mouseMover != null) {
+			mouseMover.accept(convertMouseToCoordinates(mousePos));
+		}
+    }
+
+	/**
+	 * Notify the map panel that the mouse has been dragged to a new position.
+	 * @param dx Change in X
+	 * @param dy Change in Y
+	 */
+	void dragPosition(int dx, int dy) {
+		// Update the centerCoords while dragging
+		centerCoords = centerCoords.convertRectIntToSpherical(dx, dy, marsMap.getRho());
+		// Do we really want to update the map while dragging ? 
+		// Yes. It's needed to provide smooth viewing of the surface map
+		marsMap.drawMap(centerCoords, getRho(), getSize());
 	
-    
+		repaint();
+	}
+
+	/**
+	 * Notify the map panel that the mouse has been clicked at a position in terms of the Coordinates.
+	 * @param mouseClickListener Listener to notify.
+	 */
+	public void setMouseClickListener(Consumer<Coordinates> mouseClickListener) {
+		this.mouseClicker = mouseClickListener;
+	}
+
+	/**
+	 * Notify the map panel that the mouse has been clicked at a position in terms of the Coordinates.
+	 * @param mousePos Screen position of the mouse click.
+	 */
+	void notifyMouseClicked(IntPoint mousePos) {
+		if (mouseClicker != null) {
+			mouseClicker.accept(convertMouseToCoordinates(mousePos));
+		}
+	}
+
+	private Coordinates convertMouseToCoordinates(IntPoint mousePos) {
+		double xx = mousePos.getX() - getWidth() / 2.0;
+		double yy = mousePos.getY() - getHeight() / 2.0;
+		// Based on the current centerCoords
+		return centerCoords.convertRectToSpherical(xx, yy, marsMap.getRho());
+	}
+
     /**
      * Gets the scale of the Mars surface map.
      * 
@@ -722,8 +658,9 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 	 * Prepares map panel for deletion.
 	 */
 	public void destroy() {
-		// Remove clock listener.
+		mapLayers.forEach(ml -> ml.layer.release());
 		mapLayers = null;
+		
 		if (executor != null) {
 			// Stop anything running
 			executor.shutdownNow();
@@ -731,4 +668,5 @@ public class MapPanel extends JPanel implements MouseWheelListener {
 		executor = null;
 		marsMap = null;
 	}
+
 }

@@ -30,9 +30,9 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.ColumnSpec;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
 
 /**
@@ -248,9 +248,9 @@ public class TabPanelSchedule extends EntityTabPanel<Worker>
 	 */
 	private class ActivityPanel extends JHistoryPanel<OneActivity> {
 		private static final ColumnSpec[] COLUMNS = {
-								new ColumnSpec(Msg.getString("Entity.description"), String.class),
-								new ColumnSpec(Msg.getString("Task.phase"), String.class),
-								new ColumnSpec(Msg.getString("Mission.singular"), String.class)
+								new ColumnSpec(Msg.getString("entity.description"), String.class),
+								new ColumnSpec(Msg.getString("task.phase"), String.class),
+								new ColumnSpec(Msg.getString("mission.singular"), String.class)
 										};
 
 		ActivityPanel(History<OneActivity> source) {

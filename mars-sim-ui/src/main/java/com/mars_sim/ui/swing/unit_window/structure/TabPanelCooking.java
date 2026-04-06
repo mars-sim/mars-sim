@@ -29,19 +29,22 @@ import com.mars_sim.core.building.function.cooking.Cooking;
 import com.mars_sim.core.building.function.cooking.Cooking.DishStats;
 import com.mars_sim.core.building.function.cooking.DishRecipe;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MainDesktopPane;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
+import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
-import com.mars_sim.ui.swing.unit_window.TabPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This is a tab panel for displaying a settlement's Food Menu.
  */
 @SuppressWarnings("serial")
-public class TabPanelCooking extends TabPanel {
+class TabPanelCooking extends EntityTabPanel<Settlement> implements TemporalComponent {
 
 	private static final String COOKING_ICON = "cooking";
 
@@ -60,29 +63,25 @@ public class TabPanelCooking extends TabPanel {
 	/** The cook capacity label. */
 	private JLabel cookCapacityLabel;
 
-	private Settlement settlement;
-
 	/**
 	 * Constructor.
 	 * 
 	 * @param unit    the unit to display.
-	 * @param desktop the main desktop.
+	 * @param context the UI context.
 	 */
-	public TabPanelCooking(Settlement unit, MainDesktopPane desktop) {
+	public TabPanelCooking(Settlement unit, UIContext context) {
 
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(COOKING_ICON),
-			Msg.getString("TabPanelCooking.title"), //$NON-NLS-1$
-			desktop);
-
-		settlement = unit;
+			ImageLoader.getIconByName(COOKING_ICON), null,
+			context, unit);
 	}
 
 	@Override
 	protected void buildUI(JPanel content) {
-		
+		var settlement = getEntity();
+
 		JPanel northPanel = new JPanel(new BorderLayout());
 		content.add(northPanel, BorderLayout.NORTH);
 			
@@ -104,7 +103,7 @@ public class TabPanelCooking extends TabPanel {
 
 		// Prepare available meals label
 		AttributePanel m = new AttributePanel(3);
-		m.setBorder(StyleManager.createLabelBorder("Dishes"));
+		m.setBorder(SwingHelper.createLabelBorder("Dishes"));
 
 		availableMealsLabel = m.addTextField(Msg.getString("TabPanelCooking.available"), //$NON-NLS-1$
 												"", null);
@@ -149,19 +148,18 @@ public class TabPanelCooking extends TabPanel {
 
 		table.setAutoCreateRowSorter(true);
 
-		update();
+		clockUpdate(null);
 	}
 
-	/**
-	 * Updates the info on this panel.
-	 */
+
 	@Override
-	public void update() {
+	public void clockUpdate(ClockPulse pulse) {
 		cookingTableModel.update();
-		updaetDishes();
+		updateDishes();
 	}
 
-	private void updaetDishes() {
+	private void updateDishes() {
+		var settlement = getEntity();
 		int numCooks = 0;
 		int cookCapacity = 0;
 		int availableMeals = 0;
@@ -189,7 +187,7 @@ public class TabPanelCooking extends TabPanel {
 	/**
 	 * Internal class used as model for the cooking table.
 	 */
-	private class CookingTableModel extends AbstractTableModel {
+	private static class CookingTableModel extends AbstractTableModel {
 
 		private Settlement settlement;
 
@@ -205,11 +203,12 @@ public class TabPanelCooking extends TabPanel {
 			nameList = new ArrayList<>();
 		}
 
+		@Override
 		public int getRowCount() {
 			return nameList.size();
-
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 4;
 		}

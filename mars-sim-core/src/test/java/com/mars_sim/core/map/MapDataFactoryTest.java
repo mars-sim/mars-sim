@@ -27,7 +27,7 @@ class MapDataFactoryTest {
     @Test
     void testLoadResolution() throws CoordinatesException {
         var found = MapDataFactory.getMapMetaData(MapDataFactory.DEFAULT_MAP_TYPE);
-        var mapData = found.getData(0);
+        var mapData = found.getData(0, null);
         assertNotNull(mapData, "Resolution 0 of default");
         assertEquals(MapState.LOADED, mapData.getStatus(), "Is ready");
         assertTrue(mapData.getRhoDefault() > 0, "Has default +ve RHO");

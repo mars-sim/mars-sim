@@ -9,6 +9,7 @@ package com.mars_sim.core.map;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.mars_sim.core.map.common.FileLocator;
 
@@ -101,15 +102,16 @@ public class MapMetaData {
     }
 
     /**
-     * Gets the map data associate with a particular resolution
+     * Gets the map data associate with a particular resolution. This may load async.
      * 
-     * @param newRes
+     * @param newRes the resolution level for the map data on thos "family"
+     * @param callback the callback to notify when the map data is loaded
      * @return
      */
-    public MapData getData(int newRes) {
+    public MapData getData(int newRes, Consumer<MapData> callback) {
         var filename = listOfMaps.get(newRes).getFilename();
 
-        return MapDataFactory.loadMapData(this, newRes, filename);
+        return MapDataFactory.loadMapData(this, newRes, filename, callback);
     }
     
 	/**

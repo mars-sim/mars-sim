@@ -55,6 +55,8 @@ public class ConstructionSite extends FixedUnit {
 
     private List<ConstructionPhase> phases;
 
+    private int priority = 1;
+
     public static final String ADD_CONSTRUCTION_STAGE_EVENT = "add construction stage";
 
     public static final String ADD_CONSTRUCTION_MATERIALS_EVENT = "add construction materials";
@@ -108,6 +110,22 @@ public class ConstructionSite extends FixedUnit {
     @Override
     public double getFacing() {
         return facing;
+    }
+
+    /**
+     * Gets the priority of the construction site, which can be used to determine the order of tasks.
+     * @return Value in the range of 1-10
+     */
+    public int getPriority() {
+        return priority;
+    }
+
+    /**
+     * Update the priority of the construction site, which can be used to determine the order of tasks.
+     * @param priority Value should be between 1 and 10. Values outside this range will be clamped.
+     */
+    public void setPriority(int priority) {
+        this.priority = Math.clamp(priority, 1, 10);
     }
 
     /**

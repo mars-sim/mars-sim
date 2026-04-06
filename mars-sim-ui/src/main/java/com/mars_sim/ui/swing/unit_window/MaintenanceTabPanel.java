@@ -31,26 +31,19 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.JDoubleLabel;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.components.PercentageTableCellRenderer;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * The MaintenanceTabPanel is a tab panel for maintenance information.
  */
 @SuppressWarnings("serial")
-public class MaintenanceTabPanel extends TabPanelTable implements TemporalComponent {
+public class MaintenanceTabPanel extends EntityTableTabPanel<Malfunctionable> implements TemporalComponent {
     private static final String SPANNER_ICON = "maintenance";
 	private static final String REPAIR_PARTS_NEEDED = "Parts Needed: ";
-	private static final String AGO = " ago";
-
-	private static final String[] COLUMN_TOOL_TIPS = {
-		    "The Part name", 
-		    "The System Function",
-		    "The # of Parts",
-		    "The Probability that Triggers Maintenance"};
-	
-	/** Is UI constructed. */
-	private boolean uiDone = false;
 	
 	/** The malfunction manager instance. */
 	private MalfunctionManager manager;
@@ -58,13 +51,13 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 	private JProgressBar wearCondition;
 	private JProgressBar currentInspection;
 	
-	private JLabel inspectionWinLabel;
-	private JLabel lastCompletedLabel;
-	private JLabel baseWorkTimeLabel;
+	private JDoubleLabel inspectionWinLabel;
+	private JDoubleLabel lastCompletedLabel;
+	private JDoubleLabel baseWorkTimeLabel;
 	private JLabel partsLabel;
 	private JLabel malPLabel;
 	private JLabel maintPLabel;
-	private JLabel numMaintLabel;
+	private JIntegerLabel numMaintLabel;
 	
 	/** The parts table model. */
 	private PartTableModel tableModel;
@@ -80,7 +73,7 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 			Msg.getString("MaintenanceTabPanel.title"), 
 			ImageLoader.getIconByName(SPANNER_ICON), 
 			Msg.getString("MaintenanceTabPanel.tooltip"),   
-			context
+			malfunctionable, context
 		);
 
 		// Initialize data members.
@@ -88,7 +81,6 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 
         tableModel = new PartTableModel(manager);
 
-		setHeaderToolTips(COLUMN_TOOL_TIPS);
 		setTableTitle(Msg.getString("MaintenanceTabPanel.tableBorder"));
 	}
 
@@ -105,7 +97,7 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 	
 		JPanel topPanel = new JPanel(new BorderLayout());
 
-		AttributePanel labelPanel = new AttributePanel(7, 1);
+		AttributePanel labelPanel = new AttributePanel();
 		topPanel.add(labelPanel, BorderLayout.NORTH);
 		
 		Dimension barSize = new Dimension(100, 15);
@@ -116,11 +108,12 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 		wearCondition.setMaximumSize(barSize);
 		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.wearCondition"), wearCondition);
 
-		lastCompletedLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.lastCompleted"), "", 
-												null);
-		inspectionWinLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.inspectionWin"), "");
-		
-		baseWorkTimeLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.baseWorkTime"), "");
+		lastCompletedLabel = new JDoubleLabel(StyleManager.DECIMAL2_SOLS);
+		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.lastCompleted"), lastCompletedLabel);
+		inspectionWinLabel = new JDoubleLabel(StyleManager.DECIMAL2_SOLS);
+		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.inspectionWin"), inspectionWinLabel);
+		baseWorkTimeLabel = new JDoubleLabel(StyleManager.DECIMAL3_SOLS);
+		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.baseWorkTime"), baseWorkTimeLabel);
 		
 		currentInspection = new JProgressBar();
 		currentInspection.setStringPainted(true);		
@@ -128,14 +121,15 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 		currentInspection.setToolTipText(Msg.getString("MaintenanceTabPanel.current.toolTip"));
 		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.currentInspection"), currentInspection);
 
-		numMaintLabel = labelPanel.addRow(Msg.getString("MaintenanceTabPanel.numMaint"), "",
+		numMaintLabel = new JIntegerLabel();
+		labelPanel.addLabelledItem(Msg.getString("MaintenanceTabPanel.numMaint"), numMaintLabel,
 				Msg.getString("MaintenanceTabPanel.numMaint.toolTip"));
 		
 		partsLabel = labelPanel.addTextField(Msg.getString("MaintenanceTabPanel.partsNeeded"), "", null);
 		
 		topPanel.add(new JPanel(), BorderLayout.CENTER);
 		
-		AttributePanel dataPanel = new AttributePanel(2, 1);
+		AttributePanel dataPanel = new AttributePanel();
 		topPanel.add(dataPanel, BorderLayout.SOUTH);
 	
 		malPLabel = dataPanel.addTextField(
@@ -164,32 +158,14 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
-		// This is a placeholder until all the TabPanels have been migrated
-		update();
-	}
 
-	/**
-	 * Updates this panel.
-	 */
-	@Override
-	public void update() {
-		if (!uiDone)
-			initializeUI();
-		
 		// Update the wear condition label.
 		wearCondition.setValue((int) manager.getWearCondition());
 
 		// Update last completed label.
-		double timeSinceLastMaint = manager.getEffectiveTimeSinceLastMaintenance()/1000;
-		lastCompletedLabel.setText(StyleManager.DECIMAL2_SOLS.format(timeSinceLastMaint) + AGO);
-
-		// Update inspection window label.
-		double window = manager.getStandardInspectionWindow()/1000D;
-		inspectionWinLabel.setText(StyleManager.DECIMAL2_SOLS.format(window));
-
-		// Update inspection work time.
-		double baseWorkTime = manager.getBaseMaintenanceWorkTime()/1000;
-		baseWorkTimeLabel.setText(StyleManager.DECIMAL3_SOLS.format(baseWorkTime));
+		lastCompletedLabel.setValue(manager.getEffectiveTimeSinceLastMaintenance()/1000);
+		inspectionWinLabel.setValue(manager.getStandardInspectionWindow()/1000D);
+		baseWorkTimeLabel.setValue(manager.getBaseMaintenanceWorkTime()/1000);
 		
 		// Update progress bar.
 		double completed = manager.getInspectionWorkTimeCompleted();
@@ -197,7 +173,7 @@ public class MaintenanceTabPanel extends TabPanelTable implements TemporalCompon
 		currentInspection.setValue((int)(100.0 * completed / total));
 
 		int newNumMaint = manager.getNumberOfMaintenances();
-		numMaintLabel.setText(newNumMaint + "");
+		numMaintLabel.setValue(newNumMaint);
 		
 		// Future: need to compare what parts are missing and what parts are 
 		// available for swapping out (just need time)

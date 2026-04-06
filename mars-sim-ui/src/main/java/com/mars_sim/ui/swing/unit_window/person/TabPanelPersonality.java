@@ -43,8 +43,7 @@ class TabPanelPersonality extends EntityTabPanel<Person> {
 		// Use the TabPanel constructor
 		super(
 			Msg.getString("TabPanelPersonality.title"), //$NON-NLS-1$
-			ImageLoader.getIconByName(PER_ICON),		
-			Msg.getString("TabPanelPersonality.title"), //$NON-NLS-1$
+			ImageLoader.getIconByName(PER_ICON), null,		
 			context, person
 		);
 	}

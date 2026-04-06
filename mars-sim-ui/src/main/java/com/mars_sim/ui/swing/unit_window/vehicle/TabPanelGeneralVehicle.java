@@ -7,14 +7,9 @@
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.util.Set;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import org.apache.batik.gvt.GraphicsNode;
 
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.time.ClockPulse;
@@ -25,11 +20,9 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.tool.svg.SVGGraphicNodeIcon;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 import com.mars_sim.ui.swing.utils.AttributePanel;
-
-import io.github.parubok.text.multiline.MultilineLabel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a vehicle.
@@ -70,12 +63,8 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 
 		var vehicle = getEntity();
 
-		// Add SVG Image loading for the building
-		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getBaseImage());
-		SVGGraphicNodeIcon svgIcon = new SVGGraphicNodeIcon(svg, 128, 64, true);
-		JLabel svgLabel = new JLabel(svgIcon);
-		JPanel svgPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-		svgPanel.add(svgLabel);
+		// Add SVG Image loading for the vehicle
+		var svgPanel = SVGMapUtil.createVehiclePanel(vehicle.getBaseImage(), 128, 64);
 		panel.add(svgPanel, BorderLayout.NORTH);
 		
 		fuelTypeID = vehicle.getFuelTypeID();
@@ -87,60 +76,51 @@ class TabPanelGeneralVehicle extends EntityTabPanel<Vehicle>
 			fuelTypeStr = ResourceUtil.findAmountResourceName(fuelTypeID);
 		}	
 		
-		JPanel labelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		addBorder(labelPanel, Msg.getString("Entity.description"));
-		var label = new MultilineLabel();
-		labelPanel.add(label);
 		String text = vehicle.getDescription().replace("\n", " ").replace("\t", "");
-		label.setText(text);
-		label.setPreferredWidthLimit(430);
-		label.setLineSpacing(1.2f);
-		label.setMaxLines(30);
-		label.setBorder(new EmptyBorder(5, 5, 5, 5));
-		label.setSeparators(Set.of(' ', '/', '|', '(', ')'));
-		panel.add(labelPanel, BorderLayout.CENTER);
+		var label = SwingHelper.createTextBlock(Msg.getString("entity.description"), text);
+		panel.add(label, BorderLayout.CENTER);
 		
 		// Prepare attribute panel.
 		AttributePanel infoPanel = new AttributePanel();
 		
 		panel.add(infoPanel, BorderLayout.SOUTH);
 		
-		infoPanel.addRow(Msg.getString("Entity.name"), vehicle.getName());
-		infoPanel.addRow(Msg.getString("Vehicle.type"), vehicle.getSpecName());
-		infoPanel.addRow(Msg.getString("Vehicle.model"), vehicle.getModelName());
+		infoPanel.addTextField(Msg.getString("entity.name"), vehicle.getName(), null);
+		infoPanel.addTextField(Msg.getString("vehicle.type"), vehicle.getSpecName(), null);
+		infoPanel.addTextField(Msg.getString("vehicle.model"), vehicle.getModelName(), null);
 		
 		// FUTURE: 
 		// add date of commission
 		// add country
 		// add maintainer
 		
-		infoPanel.addRow("Max Crew", vehicle.getVehicleSpec().getCrewSize() + "");
+		infoPanel.addTextField("Max Crew", vehicle.getVehicleSpec().getCrewSize() + "", null);
 
-		currentMassLabel = infoPanel.addRow("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()));
-		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()));
+		currentMassLabel = infoPanel.addTextField("Current Mass", StyleManager.DECIMAL_KG.format(vehicle.getMass()), null);
+		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(vehicle.getBaseMass()), null);
 		
-		remainCapLabel = infoPanel.addRow("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()));
-		infoPanel.addRow("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehicle.getCargoCapacity()));
+		remainCapLabel = infoPanel.addTextField("Remaining Capacity", StyleManager.DECIMAL_KG.format(vehicle.getRemainingCargoCapacity()), null);
+		infoPanel.addTextField("Cargo Capacity", StyleManager.DECIMAL_KG.format(vehicle.getCargoCapacity()), null);
 
 		fuelCap = vehicle.getFuelCapacity();
 		
-		infoPanel.addRow(Msg.getString("Vehicle.fuelType"), fuelTypeStr);
+		infoPanel.addTextField(Msg.getString("vehicle.fuelType"), fuelTypeStr, null);
 		
 		double fuel = vehicle.getSpecificAmountResourceStored(fuelTypeID);
 		
-		fuelTankLabel = infoPanel.addRow("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
-				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)");
+		fuelTankLabel = infoPanel.addTextField("Fuel Tank", StyleManager.DECIMAL_KG.format(fuel) + " (" + 
+				StyleManager.DECIMAL_PERC.format(100 * fuel/fuelCap) + " Filled)", null);
 		
-		infoPanel.addRow("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap));
+		infoPanel.addTextField("Fuel Cap", StyleManager.DECIMAL_KG.format(fuelCap), null);
 		
-		infoPanel.addRow("Cell Stack", vehicle.getFuellCellStack() + "");	
-		infoPanel.addRow("Battery Module", vehicle.getBatteryModule() + "");	
-		batteryPercentLabel = infoPanel.addRow("Battery Percent", 
-				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()));
-		infoPanel.addRow("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicle.getBatteryCapacity()));	
+		infoPanel.addTextField("Cell Stack", vehicle.getFuellCellStack() + "", null);	
+		infoPanel.addTextField("Battery Module", vehicle.getBatteryModule() + "", null);	
+		batteryPercentLabel = infoPanel.addTextField("Battery Percent", 
+				StyleManager.DECIMAL_PERC.format(vehicle.getBatteryPercent()), null);
+		infoPanel.addTextField("Battery Cap", StyleManager.DECIMAL_KWH.format(vehicle.getBatteryCapacity()), null);	
 	}
-	
-    /**
+
+	/**
      * Update the variable Vehicle
      * @param pulse Incoming pulse.
      */

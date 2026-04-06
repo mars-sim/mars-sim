@@ -616,7 +616,7 @@ public class CommanderWindow extends ContentPanel {
 	 */
 	private void createFinancePanel(Colony c, JPanel financePanel) {
 		
-		AttributePanel financeGrid = new AttributePanel(1, 1);
+		AttributePanel financeGrid = new AttributePanel();
 		financeGrid.setBorder(new EmptyBorder(5, 5, 5, 5));
 		financeGrid.setBorder(BorderFactory.createTitledBorder(" Financial Service"));
 

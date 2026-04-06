@@ -42,7 +42,7 @@ public class EquipmentUnitWindow extends EntityContentPanel<Equipment> {
     public EquipmentUnitWindow(Equipment equipment, UIContext context, Properties props) {
         super(equipment, context);
 
-        addTabPanel(new TabPanelGeneralEquipment(equipment, context));
+        addDefaultTabPanel(new TabPanelGeneralEquipment(equipment, context));
         addTabPanel(new InventoryTabPanel(equipment, context));
         addTabPanel(new LocationTabPanel(equipment, context));
 

@@ -598,6 +598,9 @@ public class Settlement extends Unit implements Temporal,
 
 		initialiseEssentials(true, supplies.getBuildings());
 		
+		// Add building plans from template to construction queue
+		addBuildingPlansToQueue(sTemplate);
+		
 		buildingManager.initializeFunctionsNMeteorite();
 	
 		// Create adjacent building map
@@ -630,6 +633,30 @@ public class Settlement extends Unit implements Temporal,
 		if (meetings != null) {
 			for(var ga : meetings.meetings()) {
 				new GroupActivity(ga, this, masterClock.getMarsTime());
+			}
+		}
+	}
+
+	/**
+	 * Adds building plans from the settlement template to the construction manager queue.
+	 * Each plan will be scheduled for construction at the current Mars time plus the delay in sols.
+	 * 
+	 * @param template the settlement template containing building plans
+	 */
+	private void addBuildingPlansToQueue(SettlementTemplate template) {
+		var buildingPlans = template.getBuildingPlans();
+		if (buildingPlans != null && !buildingPlans.isEmpty()) {
+			MarsTime currentTime = masterClock.getMarsTime();
+			
+			for (BuildingPlan plan : buildingPlans) {
+				// Calculate the scheduled time: current time + delay in sols
+				MarsTime scheduledTime = currentTime.addTime(plan.delayInSols() * 1000.0); // Add sols converted to millisols
+				
+				// Add to construction queue
+				constructionManager.addBuildingToQueue(plan.buildingType(), scheduledTime);
+				
+				logger.config(this, "Scheduled " + plan.buildingType() + " for construction on sol " 
+							+ scheduledTime.getMissionSol() + " (delay: " + plan.delayInSols() + " sols)");
 			}
 		}
 	}

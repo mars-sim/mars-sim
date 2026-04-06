@@ -22,8 +22,9 @@ import com.mars_sim.core.map.location.IntPoint;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfo;
-import com.mars_sim.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfo;
+import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
+import com.mars_sim.ui.swing.displayinfo.MapEntityDisplayInfo;
 
 /**
  * The UnitMapLayer is an abstract graphics layer to display units.
@@ -136,12 +137,12 @@ public class UnitMapLayer implements FilteredMapLayer {
 	private void renderUnit(Unit unit, Coordinates unitPosn, Coordinates mapCenter, MapDisplay baseMap, Graphics2D g,
 							Dimension displaySize, List<MapHotspot> hotspots) {
 		
-		UnitDisplayInfo i = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-		if (i != null && i.isMapDisplayed(unit)
+		EntityDisplayInfo i = EntityDisplayInfoFactory.getDisplayInfo(unit);
+		if (i instanceof MapEntityDisplayInfo mui && mui.isMapDisplayed(unit)
 			&& mapCenter != null && mapCenter.getAngle(unitPosn) < baseMap.getHalfAngle()) {
 				
 				IntPoint locn = MapUtils.getRectPosition(unitPosn, mapCenter, baseMap, displaySize);
-				var hs = displayUnit(unit, i, locn, baseMap, g);
+				var hs = displayUnit(unit, mui, locn, baseMap, g);
 				hotspots.add(hs);
 		}
 	}
@@ -155,7 +156,7 @@ public class UnitMapLayer implements FilteredMapLayer {
 	 * @param baseMap   the type of map.
 	 * @param g         the graphics context.
 	 */
-	private MapHotspot displayUnit(Unit unit, UnitDisplayInfo displayInfo, IntPoint location,
+	private MapHotspot displayUnit(Unit unit, MapEntityDisplayInfo displayInfo, IntPoint location,
 							MapDisplay baseMap, Graphics2D g) {
 
 
