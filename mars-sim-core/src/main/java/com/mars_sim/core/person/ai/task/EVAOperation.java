@@ -893,11 +893,11 @@ public abstract class EVAOperation extends Task {
 				
 		if (problem == null) {
 			var rescueEvent = new HistoricalEvent(HistoricalEventType.MISSION_RESCUE_PERSON,
-				p.getMission(),
+				p, p.getAssociatedSettlement(),
 				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
 				p.getTaskDescription(),
-				p.getName(),
-				p, p.getAssociatedSettlement(), p.getCoordinates()
+				p.getMission(),
+				p.getCoordinates()
 				);
 			registerNewEvent(rescueEvent);
 

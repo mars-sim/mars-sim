@@ -14,9 +14,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.person.Person;
@@ -67,6 +71,8 @@ public abstract class MissionProject implements Mission {
             log.addEntry(activeStep.getDescription());
             stepStarted = log.getLastEntry().getTime();
             fireMissionUpdate(Mission.PHASE_EVENT, null);
+
+			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, activeStep.getDescription());
         }
 
         @Override
@@ -233,6 +239,21 @@ public abstract class MissionProject implements Mission {
     protected void stepCompleted(MissionStep ms) {
         // Do nothing
     }
+
+    	/**
+	 * Registers this historical mission event about a member.
+	 * 
+	 * @param affected the entity affected by the event
+	 * @param type the type of the historical event
+	 * @param message 	
+	 */
+	private void registerHistoricalEvent(Entity affected, HistoricalEventType type, String message) {
+		
+		// Creating mission joining event.
+		HistoricalEvent newEvent = new HistoricalEvent(type, this, getAssociatedSettlement(),
+														message, null, affected, null);
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+	}
 
     /**
 	 * Checks to see if a member is capable of joining a mission.

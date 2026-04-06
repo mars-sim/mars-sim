@@ -181,8 +181,7 @@ public class ArrivingSettlement extends Transportable {
 													   getLandingLocation(), null);
 		var s = build.createFullSettlement(spec);
 
-		return new HistoricalEvent(HistoricalEventType.TRANSPORT_ITEM_ARRIVED, this,
-						this.getName(), "", "", this, s);
+		return new HistoricalEvent(HistoricalEventType.TRANSPORT_ITEM_ARRIVED, this, s, null, null);
 	}
 
 

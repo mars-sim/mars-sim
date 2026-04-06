@@ -187,8 +187,8 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 			var rad = exposure.addDose(RadiationType.SEP, regionType, buffer * 1.2);
 			
 			HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventType.HAZARD_RADIATION_EXPOSURE,
-														rad, rad.toString(), person.getTaskDescription(),
-														person.getName(), person, person.getAssociatedSettlement());
+														person, person.getAssociatedSettlement(),
+														rad.toString(), person.getTaskDescription());
 			Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
 			person.fireUnitUpdate(EntityEventType.RADIATION_EVENT);

@@ -266,6 +266,18 @@ public class DockingWindow extends JFrame
         return this;
     }
 
+    
+	/**
+	 * Plays a sound by name.
+	 * @param soundName The name of the sound to play
+	 */
+	@Override
+	public void playSound(String soundName) {
+        if (audio != null) {
+            audio.playSound(soundName);
+        }
+	}
+
     /**
      * Master clock pulse update. This will forward the pulse to all content panels
      * that implement the TemporalComponent interface.

@@ -18,21 +18,14 @@ class HistoricalEventManagerTest extends MarsSimUnitTest {
                 called++;
                 last = he;
             }
-
-            @Override
-            public void eventsRemoved(int startIndex, int endIndex) {
-                throw new UnsupportedOperationException("Unimplemented method 'eventsRemoved'");
-            }
         };
 
         var manager = new HistoricalEventManager(getContext().getSim().getMasterClock());
         manager.addListener(listener);
 
         var s = buildSettlement("Event");
-        var event = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED,
-                    "Test Source","Test Cause",
-                "While Testing","Test Who",
-                            s, s);
+        var event = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED, s, s,
+                    "Test Source","Test Cause");
         manager.registerNewEvent(event);
 
         assertEquals(1, listener.called);
@@ -41,10 +34,8 @@ class HistoricalEventManagerTest extends MarsSimUnitTest {
         manager.removeListener(listener);
 
         var event2 = new HistoricalEvent(
-            HistoricalEventType.MEDICAL_CURED,
-            "Test Source", "Test Cause",
-            "While Testing","Test Who",
-            s,s);
+            HistoricalEventType.MEDICAL_CURED, s, s,
+            "Test Source", "Test Cause");
         manager.registerNewEvent(event2);
         
         assertEquals(1, listener.called);
@@ -56,17 +47,13 @@ class HistoricalEventManagerTest extends MarsSimUnitTest {
         var s = buildSettlement("Event");
         var manager = new HistoricalEventManager(getContext().getSim().getMasterClock());
 
-        var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED,
-                                "Test Source", "Test Cause",
-                            "While Testing","Test Who",
-                                        s,s);
+        var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED, s, s,
+                                "Test Source", "Test Cause");
         manager.registerNewEvent(event1);
         assertEquals(1, manager.getEvents().size());
 
-        var event2 = new HistoricalEvent(HistoricalEventType.MEDICAL_DEATH,
-                                "Test Source", "Test Cause",
-                            "While Testing","Test Who",
-                                        s,s);
+        var event2 = new HistoricalEvent(HistoricalEventType.MEDICAL_DEATH, s, s,
+                                "Test Source", "Test Cause");
         manager.registerNewEvent(event2);
         assertEquals(2, manager.getEvents().size());
     }
@@ -79,20 +66,16 @@ class HistoricalEventManagerTest extends MarsSimUnitTest {
 
         // Add distinct events up to the match range
         for(int id=0; id<HistoricalEventManager.MATCH_RANGE; id++) {
-            var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED,
-                                "Test Source", "Cause " + id,
-                            "While Testing","Test Who",
-                                        s,s);
+            var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED, s, s,
+                                "Test Source", "Cause " + id);
             manager.registerNewEvent(event1);
             assertEquals(id + 1, manager.getEvents().size());
         }
 
         // Repeat the events and no increase
         for(int id=0; id<HistoricalEventManager.MATCH_RANGE; id++) {
-            var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED,
-                                "Test Source", "Cause " + id,
-                            "While Testing","Test Who",
-                                        s,s);
+            var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED, s, s,
+                                "Test Source", "Cause " + id);
             manager.registerNewEvent(event1);
             assertEquals(HistoricalEventManager.MATCH_RANGE, manager.getEvents().size());
         }

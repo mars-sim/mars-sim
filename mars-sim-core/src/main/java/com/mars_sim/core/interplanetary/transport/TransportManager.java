@@ -23,6 +23,7 @@ import com.mars_sim.core.interplanetary.transport.resupply.Resupply;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyUtil;
 import com.mars_sim.core.interplanetary.transport.settlement.ArrivingSettlement;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -127,9 +128,9 @@ public class TransportManager implements Serializable {
 	 * @param reason
 	 */
 	public static HistoricalEvent createEvent(Transportable transportItem, HistoricalEventType action) {
-		return new HistoricalEvent(action, transportItem,
-						transportItem.getName(), "", "", transportItem,
-						(transportItem instanceof Resupply r ? r.getSettlement() : null),
+		Settlement base = (transportItem instanceof Resupply r ? r.getSettlement() : null);
+		return new HistoricalEvent(action, transportItem, base,
+						null, null, base,
 						transportItem.getLandingLocation()
 		);
 	}

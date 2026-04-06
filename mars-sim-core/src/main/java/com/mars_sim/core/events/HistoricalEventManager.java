@@ -86,10 +86,7 @@ public class HistoricalEventManager implements Serializable {
 				if (e.getType() == newEvent.getType()
 						&& e.getSource().equals(newEvent.getSource())
 						&& e.getWhatCause().equals(newEvent.getWhatCause())
-						&& e.getWhileDoing().equals(newEvent.getWhileDoing())
-						&& e.getWho().equals(newEvent.getWho())
-						&& e.getEntity().equals(newEvent.getEntity())
-						&& e.getCoordinates().equals(newEvent.getCoordinates())) {
+						&& e.getWhileDoing().equals(newEvent.getWhileDoing())) {
 					return true;
 				}
 			}
@@ -104,8 +101,6 @@ public class HistoricalEventManager implements Serializable {
 	 * @param newEvent The event to register.
 	 */
 	public void registerNewEvent(HistoricalEvent newEvent) {
-		if (newEvent.getCategory() == HistoricalEventCategory.TASK)
-			return;
 
 		HistoricalEventType type = newEvent.getType();
 

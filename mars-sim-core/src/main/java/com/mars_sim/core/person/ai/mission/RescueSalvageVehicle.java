@@ -248,7 +248,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		}
 
 		// Set mission event.
-		registerHistoricalEvent(member, HistoricalEventType.MISSION_RENDEZVOUS,
+		registerHistoricalEvent(vehicleTarget, HistoricalEventType.MISSION_RENDEZVOUS,
 								(objective.isRescue() ? "Rescue Stranded Vehicle" : "Salvage Vehicle"));
 	}
 
@@ -277,7 +277,7 @@ public class RescueSalvageVehicle extends RoverMission {
 
     	Malfunction serious = objective.getRecoverVehicle().getMalfunctionManager().getMostSeriousMalfunction();
 		if (serious != null) {
-			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_SALVAGE_VEHICLE, serious.getName());
+			registerHistoricalEvent(rover, HistoricalEventType.MISSION_SALVAGE_VEHICLE, serious.getName());
 		}
 	}
 

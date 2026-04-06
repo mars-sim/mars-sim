@@ -25,10 +25,8 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.events.HistoricalEvent;
@@ -345,34 +343,15 @@ public abstract class AbstractMission implements Mission, Temporal {
 	/**
 	 * Registers this historical mission event about a member.
 	 * 
-	 * @param member
-	 * @param type
-	 * @param message
+	 * @param affected the entity affected by the event
+	 * @param type the type of the historical event
+	 * @param message 	
 	 */
-	protected void registerHistoricalEvent(Worker member, HistoricalEventType type, String message) {
-		Unit container = null;
-		Coordinates coordinates = null;
-		if (member.isInSettlement()) {
-			Building workPlace = member.getBuildingLocation();
-			if (workPlace != null) {
-				container = workPlace;
-			}
-			else {
-				container = member.getAssociatedSettlement();
-			}
-			coordinates = member.getAssociatedSettlement().getCoordinates();
-		} else if (member.isInVehicle()) {
-			container = member.getVehicle();
-			coordinates = member.getVehicle().getCoordinates();
-		} else {
-			container = null;
-			coordinates = member.getCoordinates();
-		}
-
+	protected void registerHistoricalEvent(Entity affected, HistoricalEventType type, String message) {
+		
 		// Creating mission joining event.
-		HistoricalEvent newEvent = new HistoricalEvent(type, this, message,
-														missionString, member.getName(), container,
-														getAssociatedSettlement(), coordinates);
+		HistoricalEvent newEvent = new HistoricalEvent(type, this, getAssociatedSettlement(),
+														message, null, affected, getCurrentMissionLocation());
 		eventManager.registerNewEvent(newEvent);
 	}
 
@@ -540,6 +519,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Move phase on
+		var oldPhase = phase;
  		phase = newPhase;
 		setPhaseEnded(false);
 		phaseStartTime = clock.getMarsTime();
@@ -554,6 +534,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		// Add entry to the log
 		addMissionLog(newPhase.getName(), getStartingPerson().getName());
+
+		if (!oldPhase.equals(INIT_PHASE)) {
+			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, phaseDescription);
+		}
 
 		fireMissionUpdate(PHASE_EVENT, newPhase);
 	}

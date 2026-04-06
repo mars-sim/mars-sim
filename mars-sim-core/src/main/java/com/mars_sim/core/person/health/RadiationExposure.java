@@ -637,8 +637,8 @@ public class RadiationExposure implements Serializable, Temporal {
 				}
 
 				HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventType.HAZARD_RADIATION_EXPOSURE,
-												rad, rad.toString(), person.getTaskDescription(),
-												person.getName(), person, person.getAssociatedSettlement());
+												person, person.getAssociatedSettlement(),
+												rad.toString(), person.getTaskDescription());
 				Simulation.instance().getEventManager().registerNewEvent(hEvent);
 
 				person.fireUnitUpdate(EntityEventType.RADIATION_EVENT);

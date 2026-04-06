@@ -31,56 +31,68 @@ public class HistoricalEvent implements Serializable {
 	/** Time event occurred. */
 	private MarsTime timestamp;
 	/** Source of event may be null. */
-	private Object source;
+	private Entity source;
+	private Settlement homeTown;
 	private String whatCause;
 	private String whileDoing;
-	private String who;
-	private Entity entity;
-	private Settlement homeTown;
+	private Entity affected;
 	private Coordinates coordinates;
+	private boolean acknowledged = false;
 
+	/**
+	 * Constructs an event that relates directly to an Entity only. The time is not defined
+	 * until the event is registered with the Event Manager.
+	 * 
+	 * @param type The type of event
+	 * @param source The source entity of the event (can be null)
+	 * @param whatCause A description of the cause of the event
+	 * @param whileDoing A description of what the source was doing when the event occurred
+	 * 
+	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
+	 */
+	public HistoricalEvent(HistoricalEventType type, Entity source, Settlement homeTown, String whatCause,
+			String whileDoing)  {
+		this(type, source, homeTown,whatCause, whileDoing, null, null);
+	}
+
+	
 	/**
 	 * Constructs an event with the appropriate information. The time is not defined
 	 * until the event is registered with the Event Manager.
 	 * 
-	 * @param type			{@link HistoricalEventType} Type of event
-	 * @param source		The source for this event
-	 * @param whatCause		The cause for this event
-	 * @param whileDoing	during or While doing what
-	 * @param whoAffected	Who is being primarily affected by this event
-	 * @param entity		the building/vehicle where it occurs
+	 * @param type The type of event
+	 * @param source The source entity of the event (can be null)
+	 * @param whatCause A description of the cause of the event
+	 * @param whileDoing A description of what the source was doing when the event occurred
+	 * @param affected An entity that was affected by the event (can be null)
+	 * 
 	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
 	 */
-	public HistoricalEvent(HistoricalEventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, Entity entity, Settlement settlement) {
-		this(type, source, whatCause, whileDoing, whoAffected, entity,
-				settlement, settlement.getCoordinates());
+	public HistoricalEvent(HistoricalEventType type, Entity source, Settlement homeTown, String whatCause,
+			String whileDoing, Entity affected)  {
+		this(type, source, homeTown,whatCause, whileDoing, affected, null);
 	}
 
 	/**
 	 * Constructs an event with the appropriate information. The time is not defined
 	 * until the event is registered with the Event Manager.
-	 * 
-	 * @param type			{@link HistoricalEventType} Type of event
-	 * @param source		The source for this event
-	 * @param whatCause		The cause for this event
-	 * @param whileDoing	during or While doing what
-	 * @param whoAffected	Who is being primarily affected by this event
-	 * @param entity		where the event occurs
-	 * @param settlement	the associated settlement where it belongs
-	 * @param coordinates	the coordinates where it belongs
-	 * @see com.mars_sim.core.events.HistoricalEventManager#registerNewEvent
+	 * @param type The type of event
+	 * @param source The source entity of the event
+	 * @param homeTown The associated settlement of the event
+	 * @param whatCause A description of the cause of the event
+	 * @param whileDoing A description of what the source was doing when the event occurred
+	 * @param affected An entity that was affected by the event (can be null)
+	 * @param coordinates The coordinates where the event occurred (can be null)
 	 */
-	public HistoricalEvent(HistoricalEventType type, Object source, String whatCause,
-			String whileDoing, String whoAffected, Entity entity, Settlement settlement, Coordinates coordinates) {
+	public HistoricalEvent(HistoricalEventType type, Entity source, Settlement homeTown, String whatCause,
+			String whileDoing, Entity affected, Coordinates coordinates) {
 		this.type = type;
 		this.source = source;
 		this.whatCause = whatCause;
 		this.whileDoing = whileDoing;
-		this.who = whoAffected;
-		this.entity = entity;
-		this.homeTown = settlement;
+		this.affected = affected;
 		this.coordinates = coordinates;
+		this.homeTown = homeTown;
 	}
 
 	/**
@@ -111,21 +123,12 @@ public class HistoricalEvent implements Serializable {
 	}
 
 	/**
-	 * Gets the name of the offender or the person affected.
+	 * Gets the building/vehicle entity affected by the event.
 	 * 
-	 * @return String the name.
+	 * @return the affected entity
 	 */
-	public String getWho() {
-		return who;
-	}
-
-	/**
-	 * Gets the building/vehicle entity.
-	 * 
-	 * @return he building/vehicle entity string
-	 */
-	public Entity getEntity() {
-		return entity;
+	public Entity getAffected() {
+		return affected;
 	}
 
 	/**
@@ -169,7 +172,7 @@ public class HistoricalEvent implements Serializable {
 	 * 
 	 * @return source
 	 */
-	public Object getSource() {
+	public Entity getSource() {
 		return source;
 	}
 	
@@ -180,5 +183,23 @@ public class HistoricalEvent implements Serializable {
 	 */
 	public HistoricalEventCategory getCategory() {
 		return type.getCategory();
+	}
+
+	/**
+	 * Gets the acknowledged status of the event.
+	 * 
+	 * @return true if the event has been acknowledged, false otherwise
+	 */
+	public boolean isAcknowledged() {
+		return acknowledged;
+	}
+
+	/**
+	 * Sets the acknowledged status of the event.
+	 * 
+	 * @param acknowledged true to mark as acknowledged, false otherwise
+	 */
+	public void setAcknowledged(boolean acknowledged) {
+		this.acknowledged = acknowledged;
 	}
 }
