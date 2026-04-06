@@ -13,7 +13,7 @@ import com.mars_sim.core.tool.Msg;
 public enum HistoricalEventCategory implements Named{
 
 	MEDICAL, MALFUNCTION, MISSION,
-	TASK, TRANSPORT, HAZARD;
+	TRANSPORT, HAZARD;
 	
 	private String name;
 

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -46,6 +47,7 @@ import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 public class EventViewer extends ContentPanel implements ConfigurableWindow, HistoricalEventListener {
 
     private static final String SELECTED_CATEGORIES = "selectedCategories";
+    private static final String SHOW_ACKNOWLEDGED = "showAcknowledged";
     public static final String NAME = "eventviewer";
 	public static final String ICON = "event";
 	public static final String TITLE = "Event Viewer";
@@ -55,6 +57,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
     private UIContext uiContext;
     private JButton filterButton;
     private JPopupMenu filterMenu;
+    private JCheckBox showAcknowledgedCheckBox;
     private Set<HistoricalEventCategory> selectedCategories;
     
     /**
@@ -71,7 +74,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         // Load initial filter before loading events
         loadInitialFilter(userSettings);
 
-        initializeUI();
+        initializeUI(userSettings);
         loadEvents();
         
         // Register as listener for new events
@@ -105,11 +108,11 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
     /**
      * Initialize the user interface components.
      */
-    private void initializeUI() {
+    private void initializeUI(Properties userSettings) {
         setLayout(new BorderLayout());
         
         // Create toolbar
-        var toolbar = createToolbar();
+        var toolbar = createToolbar(userSettings);
         add(toolbar, BorderLayout.NORTH);
         
         // Create the main panel to hold all event panels
@@ -129,7 +132,17 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
     }
     
     private boolean isEventVisible(HistoricalEvent event) {
-        return selectedCategories.contains(event.getCategory());
+        // Check category filter
+        if (!selectedCategories.contains(event.getCategory())) {
+            return false;
+        }
+        
+        // Check acknowledged filter - if checkbox is unchecked, hide acknowledged events
+        if (!showAcknowledgedCheckBox.isSelected() && event.isAcknowledged()) {
+            return false;
+        }
+        
+        return true;
     }
 
     /**
@@ -150,7 +163,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         
         // Create collapsible panel for each event
         for (HistoricalEvent event : sortedEvents) {
-            CollapsibleEventPanel eventPanel = new CollapsibleEventPanel(event, uiContext);
+            CollapsibleEventPanel eventPanel = new CollapsibleEventPanel(event, this, uiContext);
             eventListPanel.add(eventPanel);
             eventListPanel.add(Box.createVerticalStrut(2)); // Small gap between panels
         }
@@ -172,7 +185,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         if (isEventVisible(event)) {
             SwingUtilities.invokeLater(() -> {
                 // Add new event at the top of the list
-                CollapsibleEventPanel eventPanel = new CollapsibleEventPanel(event, uiContext);
+                CollapsibleEventPanel eventPanel = new CollapsibleEventPanel(event, this, uiContext);
                 eventListPanel.add(eventPanel, 0);
                 eventListPanel.add(Box.createVerticalStrut(2), 1); // Small gap after the new panel
                 
@@ -181,7 +194,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
                 repaint();
 
                 // New events play a sound to alert the user
-                var entity = event.getEntity();
+                var entity = event.getSource();
                 if (entity != null) {
                     var sound = EntityDisplayInfoFactory.getSound(entity);
                     if (sound != null) {
@@ -195,7 +208,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
     /**
      * Create the toolbar with filter controls.
      */
-    private JToolBar createToolbar() {
+    private JToolBar createToolbar(Properties userSettings) {
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
         toolbar.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -211,6 +224,18 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         filterButton.addActionListener(e -> showFilterMenu());
         toolbar.add(filterButton);
         updateFilterButton();  // Aligned with any preloaded filter settings
+        
+        // Add some spacing
+        toolbar.add(Box.createHorizontalStrut(20));
+        
+        // Add acknowledged filter checkbox                
+        String showAcknowledgedStr = userSettings.getProperty(SHOW_ACKNOWLEDGED, "false");
+        showAcknowledgedCheckBox = new JCheckBox("Show Acknowledged", Boolean.parseBoolean(showAcknowledgedStr));
+        showAcknowledgedCheckBox.setToolTipText("Show or hide acknowledged events");
+        showAcknowledgedCheckBox.addActionListener(e -> {
+            loadEvents(); // Refresh the event list when checkbox changes
+        });
+        toolbar.add(showAcknowledgedCheckBox);
         
         // Create filter popup menu
         createFilterMenu();
@@ -305,7 +330,24 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
             .map(HistoricalEventCategory::name)
             .collect(Collectors.joining(","));
         props.setProperty(SELECTED_CATEGORIES, selectedCategoryNames);
+        
+        // Save show acknowledged setting
+        props.setProperty(SHOW_ACKNOWLEDGED, String.valueOf(showAcknowledgedCheckBox.isSelected()));
 
         return props;
+    }
+
+    /**
+     * Status of events has changed so check it is still visible.
+     * @param event Changed event
+     * @param collapsibleEventPanel Panel to check
+     */
+    void recheckEvent(HistoricalEvent event, CollapsibleEventPanel collapsibleEventPanel) {
+        if (!isEventVisible(event)) {
+            // If the event is no longer visible, remove it from the list
+            eventListPanel.remove(collapsibleEventPanel);
+            eventListPanel.revalidate();
+            eventListPanel.repaint();
+        }
     }
 }

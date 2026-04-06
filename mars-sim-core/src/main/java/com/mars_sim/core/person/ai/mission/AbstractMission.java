@@ -370,9 +370,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Creating mission joining event.
-		HistoricalEvent newEvent = new HistoricalEvent(type, this, message,
-														missionString, member.getName(), container,
-														getAssociatedSettlement(), coordinates);
+		HistoricalEvent newEvent = new HistoricalEvent(type, this, getAssociatedSettlement(),
+														message, null, container,coordinates);
 		eventManager.registerNewEvent(newEvent);
 	}
 

@@ -741,8 +741,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	private HistoricalEvent createMalfunctionEvent(HistoricalEventType type, Malfunction malfunction, String whileDoing,
 			String whoAffected) {
-		return new HistoricalEvent(type, malfunction, malfunction.getName(),
-									whileDoing, whoAffected, entity, entity.getAssociatedSettlement());
+		return new HistoricalEvent(type, entity, entity.getAssociatedSettlement(), malfunction.getName(),
+									whileDoing, null);
 	}
 	
 	/**

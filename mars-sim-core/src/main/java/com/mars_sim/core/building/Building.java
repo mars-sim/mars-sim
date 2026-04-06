@@ -16,9 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.config.BuildingSpec;
@@ -61,10 +60,7 @@ import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
-import com.mars_sim.core.events.HistoricalEvent;
-
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -1394,21 +1390,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 			} // check if this person happens to be inside the affected building
 			
 		} // loop for persons
-		
-
-		if (victimNames == null)
-			victimNames = "";
-			
-		// Pick the last person who witness this event in the affected building. Could be no one.
-		HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventType.HAZARD_ACTS_OF_GOD,
-								this, mal.getMalfunctionMeta().getName(),
-					 "", victimNames,
-								this, getAssociatedSettlement());
-
-		if (eventManager == null)
-			eventManager = Simulation.instance().getEventManager();
-		
-		eventManager.registerNewEvent(hEvent);
 
 		fireUnitUpdate(EntityEventType.METEORITE_EVENT);
 	}

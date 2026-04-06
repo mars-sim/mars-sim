@@ -27,10 +27,11 @@ public enum HistoricalEventType {
 	MEDICAL_RESUSCITATED		(HistoricalEventCategory.MEDICAL),
 
 	MISSION_START					(HistoricalEventCategory.MISSION),
+	MISSION_PHASE					(HistoricalEventCategory.MISSION),
 	MISSION_JOINING					(HistoricalEventCategory.MISSION),
 	MISSION_FINISH					(HistoricalEventCategory.MISSION),
 	MISSION_EMERGENCY_DESTINATION	(HistoricalEventCategory.MISSION),
-	MISSION_NOT_ENOUGH_RESOURCES		(HistoricalEventCategory.MISSION),
+	MISSION_NOT_ENOUGH_RESOURCES	(HistoricalEventCategory.MISSION),
 	MISSION_MEDICAL_EMERGENCY		(HistoricalEventCategory.MISSION),
 	MISSION_EMERGENCY_BEACON_ON		(HistoricalEventCategory.MISSION),
 	MISSION_EMERGENCY_BEACON_OFF	(HistoricalEventCategory.MISSION),
@@ -39,8 +40,6 @@ public enum HistoricalEventType {
 	MISSION_RESCUE_PERSON			(HistoricalEventCategory.MISSION),
 	MISSION_ONLY_ONE_MEMBER			(HistoricalEventCategory.MISSION),
 	MISSION_LEAD_NO_SHOW			(HistoricalEventCategory.MISSION),
-
-	TASK_START			(HistoricalEventCategory.TASK),
 
 	TRANSPORT_ITEM_CREATED		(HistoricalEventCategory.TRANSPORT),
 	TRANSPORT_ITEM_CANCELLED	(HistoricalEventCategory.TRANSPORT),

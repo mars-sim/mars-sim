@@ -8,12 +8,8 @@ package com.mars_sim.core.person.health.task;
 
 import java.util.logging.Level;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.building.function.MedicalCare;
-import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -23,7 +19,6 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.HealthProblem;
 import com.mars_sim.core.person.health.MedicalAid;
 import com.mars_sim.core.person.health.Treatment;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -153,23 +148,6 @@ public abstract class TreatHealthProblem extends MedicalAidTask {
 
         	logger.log(worker, Level.INFO, 0, "Treating " + healthProblem.getSufferer().getName()
         			+ " for " + healthProblem.getComplaint().getType().getName());
-
-            // Create starting task event if needed.
-            if (getCreateEvents()) {
-            	Unit unit = null;
-            	if (worker instanceof Person p) {
-            		unit = p;
-            	}
-            	else if (worker instanceof Robot r) {
-            		unit = r;
-            	}
-            	                	
-                HistoricalEvent startingEvent = new HistoricalEvent(HistoricalEventType.TASK_START, 
-                                                            healthProblem.getSufferer(),"Tracking Task",
-                                                            getName(), unit.getName(),
-                                                            unit, unit.getAssociatedSettlement());
-                registerNewEvent(startingEvent);
-            }
         }
 
         // Check for accident in medical aid.

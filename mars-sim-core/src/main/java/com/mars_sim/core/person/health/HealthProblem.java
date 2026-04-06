@@ -14,6 +14,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.time.MarsTime;
@@ -75,12 +76,12 @@ public class HealthProblem implements Serializable {
 	 * @param eventType
 	 */
 	public void registerHistoricalEvent(HistoricalEventType eventType) {
-		var event = new HistoricalEvent(eventType, 
-				this, this.getComplaint().getName(),
-				sufferer.getTaskDescription(), sufferer.getName(),
-				sufferer,
-				sufferer.getAssociatedSettlement(),
-				sufferer.getCoordinates());
+		Coordinates location = null;
+		if (!sufferer.isInSettlement()) {
+			location = sufferer.getCoordinates();
+		}
+		var event = new HistoricalEvent(eventType, sufferer, sufferer.getAssociatedSettlement(), getComplaint().getName(),
+				sufferer.getTaskDescription(), null, location);
 
 
 		eventManager.registerNewEvent(event);

@@ -8,7 +8,6 @@
 package com.mars_sim.console.chat.simcommand;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
@@ -43,15 +42,13 @@ public class EventCommand extends ChatCommand {
 			int latest = events.size() - 1;
 			int lastId = Math.max(latest - EVENT_SIZE, 0);
 			for(int idx = latest; idx >= lastId; idx--) {
-				HistoricalEvent e = events.get(idx);
-				String source = Objects.requireNonNullElse(e.getSource(), "").toString();
-				
+				HistoricalEvent e = events.get(idx);				
 				response.appendHeading(e.getCategory().getName() + " @ " + e.getTimestamp().getDateTimeStamp());
 				response.appendLabeledString("Type", e.getType().getName());
-				response.appendLabeledString("Source", source);
+				response.appendLabeledString("Source", (e.getSource() != null ? e.getSource().getName() : ""));
 				response.appendLabeledString("Cause", e.getWhatCause());
-				response.appendLabeledString("Entity", (e.getEntity() != null ?
-								e.getEntity().getName() : ""));
+				response.appendLabeledString("Affected", (e.getAffected() != null ?
+								e.getAffected().getName() : ""));
 				response.appendLabeledString("Coords", e.getCoordinates().getFormattedString());
 				var homeTown = e.getHomeTown();
 				response.appendLabeledString("Settlement", homeTown != null ? homeTown.getName() : "");

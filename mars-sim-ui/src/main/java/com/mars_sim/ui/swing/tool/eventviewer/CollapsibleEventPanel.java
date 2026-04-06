@@ -21,6 +21,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,15 +47,18 @@ class CollapsibleEventPanel extends JPanel {
     private boolean expanded = false;
     private HistoricalEvent event;
     private UIContext uiContext;
+    private EventViewer viewer;
     
     /**
      * Constructor.
      * 
      * @param event The historical event to display
+     * @param eventViewer 
      * @param uiContext The UI context for creating EntityLabels
      */
-    public CollapsibleEventPanel(HistoricalEvent event, UIContext uiContext) {
+    public CollapsibleEventPanel(HistoricalEvent event, EventViewer eventViewer, UIContext uiContext) {
 
+        this.viewer = eventViewer;
         initializeUI(event, uiContext);
     }
     
@@ -78,6 +82,8 @@ class CollapsibleEventPanel extends JPanel {
     
     /**
      * Create the header panel that shows basic event information.
+     * @param event The historical event to display
+     * @return The header panel component
      */
     private JPanel createHeaderPanel(HistoricalEvent event) {
         JPanel headerPanel = new JPanel(new BorderLayout(10, 0));
@@ -114,13 +120,11 @@ class CollapsibleEventPanel extends JPanel {
         var detailsPanel = Box.createVerticalBox();
         detailsPanel.add(topDetailsPanel);
 
-        // Entity
-        if (event.getEntity() != null) {
-            JLabel entityLabel = new JLabel("(" + event.getEntity().getName() + ")");
-            entityLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            entityLabel.setBackground(Color.RED);
-            detailsPanel.add(entityLabel);
-        }
+        // Source
+        JLabel sourceLabel = new JLabel("(" + event.getSource().getName() + ")");
+        sourceLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        sourceLabel.setBackground(Color.RED);
+        detailsPanel.add(sourceLabel);
         
         headerPanel.add(detailsPanel, BorderLayout.CENTER);
         return headerPanel;
@@ -141,6 +145,20 @@ class CollapsibleEventPanel extends JPanel {
         
         int row = 0;
         
+        // Acknowledged checkbox
+        var acknowledgedCheckBox = new JCheckBox();
+        acknowledgedCheckBox.setSelected(event.isAcknowledged());
+        acknowledgedCheckBox.addActionListener(e -> {
+            event.setAcknowledged(acknowledgedCheckBox.isSelected());
+
+            // If acknowledged check it is still visible.
+            if (event.isAcknowledged()) {
+                viewer.recheckEvent(event, this);
+            }   
+        });
+        addDetailRow("Source:", new EntityLabel(event.getSource(), uiContext), gbc, row++);
+        addDetailRow("Acknowledged:", acknowledgedCheckBox, gbc, row++);
+        
         // Category
         addDetailRow("Category:", new JLabel(event.getCategory().getName()), gbc, row++);
         
@@ -155,15 +173,12 @@ class CollapsibleEventPanel extends JPanel {
         }
         
         // Who
-        if (event.getEntity() != null) {
-            addDetailRow("Who:", new EntityLabel(event.getEntity(), uiContext), gbc, row++);
+        if (event.getAffected() != null) {
+            addDetailRow("Affected:", new EntityLabel(event.getAffected(), uiContext), gbc, row++);
         }
         
-        // Home Town or Coordinates but not both
-        if (event.getHomeTown() != null) {
-            addDetailRow("Settlement:", new EntityLabel(event.getHomeTown(), uiContext), gbc, row++);
-        }
-        else if (event.getCoordinates() != null) {
+        // Coordinates but not both
+        if (event.getCoordinates() != null) {
             addDetailRow("Location:", new JLabel(event.getCoordinates().getFormattedString()), gbc, row++);
         }
     }

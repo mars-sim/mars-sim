@@ -128,8 +128,8 @@ public class TransportManager implements Serializable {
 	 */
 	public static HistoricalEvent createEvent(Transportable transportItem, HistoricalEventType action) {
 		return new HistoricalEvent(action, transportItem,
-						transportItem.getName(), "", "", transportItem,
 						(transportItem instanceof Resupply r ? r.getSettlement() : null),
+						null, null, null,
 						transportItem.getLandingLocation()
 		);
 	}
