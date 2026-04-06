@@ -136,7 +136,7 @@ public class MarsProject {
 			
 			// Build main window
 			splashWindow.setStatusMessage("Starting the Main Window...");
-			if (useDockingUI) {
+			if (config.useDockingUI() || useDockingUI) {
 				DockingWindow.create(sim, config, audio);
 			}
 			else {

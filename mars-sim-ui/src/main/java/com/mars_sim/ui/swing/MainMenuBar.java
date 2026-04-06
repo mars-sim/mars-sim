@@ -53,6 +53,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	private static final String CHANGELOG = "changelog";
 	private static final String LAF = "laf";
 	private static final String LOOK_AND_FEEL_ICON = "action/theme";
+	private static final String WINDOW_UI = "window_ui";
 
 	private UIContext context;
 
@@ -204,10 +205,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			JMenu subMenu = new JMenu(g.getKey());
 			lafMenu.add(subMenu);
 			for(var entry : g.getValue()) {
-				JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(entry.name());
-				lafItem.setSelected(entry.name().equals(currentLAF));
-				lafItem.setActionCommand(LAF);
-				lafItem.addActionListener(this);
+				var lafItem = createRadioButton(entry.name(),
+						entry.name().equals(currentLAF), LAF);
 				subMenu.add(lafItem);
 				group.add(lafItem);
 			}
@@ -219,7 +218,27 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			settingsMenu.add(audio);
 		}
 
+		// Add window system options
+		settingsMenu.addSeparator();
+		var config = manager.getConfig();
+		ButtonGroup windowGroup = new ButtonGroup();
+		var dockingItem = createRadioButton("Use Docking UI",
+									config.useDockingUI(), WINDOW_UI);
+		settingsMenu.add(dockingItem);
+		windowGroup.add(dockingItem);
+		var windowItem = createRadioButton("Use Window UI",
+									!config.useDockingUI(), WINDOW_UI);
+		settingsMenu.add(windowItem);
+		windowGroup.add(windowItem);
+
 		return settingsMenu;
+	}
+
+	private JRadioButtonMenuItem createRadioButton(String name, boolean selected, String command) {
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(name, selected);
+		item.setActionCommand(command);
+		item.addActionListener(this);
+		return item;
 	}
 
 	/**
@@ -374,6 +393,13 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				if (StyleManager.setLAF(newStyle)) {
 					SwingUtilities.updateComponentTreeUI(top);
 				}
+				break;
+			case WINDOW_UI:
+				boolean useDocking = selectedItem.getText().equals("Use Docking UI");
+				// Handle window UI change here
+				manager.getConfig().setUseDockingUI(useDocking);
+				JOptionPane.showMessageDialog(top, "UI needs restarting to apply changes.",
+										"Restart Required", JOptionPane.INFORMATION_MESSAGE);
 				break;
 			default:
 				// Shouldn't be here

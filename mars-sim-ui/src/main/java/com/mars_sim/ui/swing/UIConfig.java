@@ -70,7 +70,8 @@ public class UIConfig {
 	// UI config elements and attributes.
 	private static final String UI = "ui";
 	private static final String USE_DEFAULT = "use-default";
-	
+	private static final String USE_DOCKING = "use-docking";
+
 	private static final String MAIN_WINDOW = "main-window";
 	private static final String LOCATION_X = "location-x";
 	private static final String LOCATION_Y = "location-y";
@@ -94,6 +95,8 @@ public class UIConfig {
 	
 	private boolean useDefault;
 
+	private boolean useDockingUI = false;
+
 	/**
 	 * Loads and parses the XML save file.
 	 */
@@ -115,6 +118,7 @@ public class UIConfig {
 				
 				// Global props
 				useDefault = parseBoolean(root, USE_DEFAULT);
+				useDockingUI = parseBoolean(root, USE_DOCKING);
 
 				// Parse Internal Window
 				Element internalWindows = root.getChild(INTERNAL_WINDOWS);
@@ -213,6 +217,7 @@ public class UIConfig {
 		outputDoc.setRootElement(uiElement);
 
 		uiElement.setAttribute(USE_DEFAULT, "false");
+		uiElement.setAttribute(USE_DOCKING, Boolean.toString(useDockingUI));
 
 		outputTopLevelWindow(uiElement, MAIN_WINDOW, mainWindow.getTopFrame());
 		
@@ -329,6 +334,22 @@ public class UIConfig {
 	}
 
 	/**
+	 * Checks if the UI should use the docking framework.
+	 * @return true if the docking framework should be used.
+	 */
+	public boolean useDockingUI() {
+		return useDockingUI;
+	}
+
+	/**
+	 * Sets whether the UI should use the docking framework.
+	 * @param useDocking New value for using the docking framework.
+	 */
+    public void setUseDockingUI(boolean useDocking) {
+		this.useDockingUI = useDocking;
+    }
+
+	/**
 	 * Gets the screen location of the main window origin.
 	 *
 	 * @return location.
@@ -437,4 +458,5 @@ public class UIConfig {
     	}
     	return result;
     }
+
 }
