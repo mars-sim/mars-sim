@@ -41,7 +41,7 @@ class DockingAdapter extends JPanel implements Dockable {
     }
 
     /**
-     * The ContentPanels are designed to be have internal sceolling support.
+     * ContentPanels are designed to be have internal scrolling support.
      * @return false
      */
     @Override
