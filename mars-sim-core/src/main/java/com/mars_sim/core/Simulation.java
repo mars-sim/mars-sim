@@ -58,6 +58,7 @@ import com.mars_sim.core.interplanetary.transport.TransportManager;
 import com.mars_sim.core.logging.SimuLoggingFormatter;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.metrics.MetricManager;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.moon.LunarColonyManager;
 import com.mars_sim.core.moon.LunarWorld;
@@ -131,9 +132,9 @@ public class Simulation implements ClockPulseListener, Serializable {
 	private static final String DASHES = " ---------------------------------------------------------";
 
 	/** Default save filename. */
-	public static final  String SAVE_FILE = Msg.getString("Simulation.saveFile"); //$NON-NLS-1$
+	public static final  String SAVE_FILE = Msg.getString("Simulation.saveFile"); //-NLS-1$
 	/** Default save filename extension. */
-	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //$NON-NLS-1$
+	public static final String SAVE_FILE_EXTENSION = Msg.getString("Simulation.saveFile.extension"); //-NLS-1$
 
 
 	/** true if displaying graphic user interface. */
@@ -154,35 +155,22 @@ public class Simulation implements ClockPulseListener, Serializable {
 	private transient ClockPulseListener autoSaveHandler;
 
 	// Intransient data members (stored in save file)
-	/** The lunar world (both surface and underground). */
 	private LunarWorld lunarWorld; 
-	/** The lunar colony manager. */
 	private LunarColonyManager lunarColonyManager;
-	/** Orbital info. */
 	private OrbitInfo orbitInfo;
-	/** The weather info. */
 	private Weather weather;
-	/** The surface features. */
 	private SurfaceFeatures surfaceFeatures;
-	/** All historical info. */
 	private HistoricalEventManager eventManager;
-	/** The malfunction factory. */
 	private MalfunctionFactory malfunctionFactory;
-	/** Manager for all units in simulation. */
 	private UnitManager unitManager;
-	/** Mission controller. */
 	private MissionManager missionManager;
-	/** Medical complaints. */
 	private MedicalManager medicalManager;
-	/** Master clock for the simulation. */
 	private MasterClock masterClock;
-	/** Manages scientific studies. */
 	private ScientificStudyManager scientificStudyManager;
-	/** Manages transportation of settlements and resupplies from Earth. */
 	private TransportManager transportManager;
-	/** Manages the global market. */
 	private MarketManager marketManager;
 	private ScheduledEventManager scheduledEvents;
+	private MetricManager metricManager;
 
 	/** The SimulationConfig instance. */
 	private transient SimulationConfig simulationConfig;
@@ -285,6 +273,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Create marsClock instance
 		masterClock = new MasterClock(simulationConfig, 256);
 		scheduledEvents = new ScheduledEventManager(masterClock);
+		metricManager = new MetricManager();
 
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
@@ -314,6 +303,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Create marsClock instance
 		masterClock = new MasterClock(simulationConfig, 256);
 		scheduledEvents = new ScheduledEventManager(masterClock);
+		metricManager = new MetricManager();
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
@@ -421,6 +411,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Common handler for full planet events
 		scheduledEvents = new ScheduledEventManager(masterClock);
+		metricManager = new MetricManager();
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
@@ -765,8 +756,11 @@ public class Simulation implements ClockPulseListener, Serializable {
 			unitManager = (UnitManager) ois.readObject();
 			masterClock = (MasterClock) ois.readObject();
 			scheduledEvents = (ScheduledEventManager) ois.readObject();
+			metricManager = (MetricManager) ois.readObject();
+
 			
 			UnitSet.reinit(unitManager);
+			metricManager.reinit();
 
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Cannot deserialize : " + e.getMessage(), e);
@@ -1047,6 +1041,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 			oos.writeObject(unitManager);
 			oos.writeObject(masterClock);
 			oos.writeObject(scheduledEvents);
+			oos.writeObject(metricManager);
 
 			oos.flush();
 			oos.close();
@@ -1094,6 +1089,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 				marketManager,
 				eventManager,
 				unitManager,
+				metricManager,
 				masterClock
 		);
 
@@ -1273,6 +1269,10 @@ public class Simulation implements ClockPulseListener, Serializable {
 		return surfaceFeatures;
 	}
 	
+    public MetricManager getMetricManager() {
+        return metricManager;
+    }
+
 	/**
 	 * Gets the mission manager.
 	 *

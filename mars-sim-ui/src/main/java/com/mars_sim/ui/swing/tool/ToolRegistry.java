@@ -17,6 +17,7 @@ import com.mars_sim.ui.swing.tool.console.ConsolePanel;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.eventviewer.EventViewer;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
+import com.mars_sim.ui.swing.tool.metrics.MetricChartViewer;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.navigator.NavigatorWindow;
 import com.mars_sim.ui.swing.tool.search.SearchWindow;
@@ -55,7 +56,8 @@ public class ToolRegistry {
         new ToolInfo(TimeTool.NAME, ToolCategory.UTILITY, TimeTool.TITLE, TimeTool.ICON),
         new ToolInfo(GuideWindow.NAME, ToolCategory.HELP, GuideWindow.TITLE, GuideWindow.ICON),
         new ToolInfo(SearchWindow.NAME, ToolCategory.UTILITY, SearchWindow.TITLE, SearchWindow.ICON),
-        new ToolInfo(ConsolePanel.NAME, ToolCategory.GENERIC, ConsolePanel.TITLE, ConsolePanel.ICON)
+        new ToolInfo(ConsolePanel.NAME, ToolCategory.GENERIC, ConsolePanel.TITLE, ConsolePanel.ICON),
+        new ToolInfo(MetricChartViewer.NAME, ToolCategory.GENERIC, MetricChartViewer.TITLE, MetricChartViewer.ICON)
     };
 
     /**
@@ -75,6 +77,7 @@ public class ToolRegistry {
 			case SearchWindow.NAME -> new SearchWindow(context);
             case EventViewer.NAME -> new EventViewer(context, toolProps);
 			case CommanderWindow.NAME -> new CommanderWindow(context);
+            case MetricChartViewer.NAME -> new MetricChartViewer(sim.getMetricManager());
 			case SettlementWindow.NAME -> new SettlementWindow(context, toolProps);
             case NavigatorWindow.NAME -> new NavigatorWindow(context, toolProps);
             case MonitorWindow.NAME -> new MonitorWindow(context, toolProps);

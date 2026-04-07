@@ -121,6 +121,71 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 		this.totalMillisols = calculateTotalMillisols(orbit, month, sol, millisol);
 		this.intMillisol = (int) millisol;
 	}
+
+	/**
+	 * Constructor 3. Creates a MarsTime object from total millisols.
+	 * This constructor converts total millisols back to orbit, month, sol, and millisol components
+	 * using the reverse logic of calculateTotalMillisols.
+	 * Note that time will NOT increment in this clock.
+	 *
+	 * @param totalMillisols the total millisols since the beginning of the simulation
+	 */
+	public MarsTime(double totalMillisols) {
+		this.totalMillisols = totalMillisols;
+		
+		double remainingMillisols = totalMillisols;
+		int currentOrbit = 0;
+		int currentMonth = 1;
+		int currentSol = 1;
+		int currentMissionSol = 0;
+		
+		// Calculate orbit by subtracting full orbits
+		while (true) {
+			double orbitMillisols = MarsTimeFormat.isLeapOrbit(currentOrbit) ? 
+				SOLS_PER_ORBIT_LEAPYEAR * 1000D : SOLS_PER_ORBIT_NON_LEAPYEAR * 1000D;
+			
+			if (remainingMillisols >= orbitMillisols) {
+				remainingMillisols -= orbitMillisols;
+				currentOrbit++;
+			} else {
+				break;
+			}
+		}
+		
+		// Calculate month by subtracting full months
+		while (true) {
+			double monthMillisols = MarsTimeFormat.getSolsInMonth(currentMonth, currentOrbit) * 1000D;
+			
+			if (remainingMillisols >= monthMillisols) {
+				remainingMillisols -= monthMillisols;
+				currentMonth++;
+			} else {
+				break;
+			}
+		}
+		
+		// Calculate sol by subtracting full sols
+		while (remainingMillisols >= 1000D) {
+			remainingMillisols -= 1000D;
+			currentSol++;
+			currentMissionSol++;
+			
+			if (currentSol > MarsTimeFormat.getSolsInMonth(currentMonth, currentOrbit)) {
+				currentSol = 1;
+			}
+		}
+		
+		// Calculate mission sol from total millisols
+		currentMissionSol = (int) (totalMillisols / 1000D) + 1; // +1 because mission starts at Sol 1
+		
+		// Set final values
+		this.orbit = currentOrbit;
+		this.month = currentMonth;
+		this.solOfMonth = currentSol;
+		this.millisol = remainingMillisols;
+		this.missionSol = currentMissionSol;
+		this.intMillisol = (int) remainingMillisols;
+	}
 	
 	/**
 	 * Converts seconds to millisols.
