@@ -141,7 +141,7 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
         }
 
         // Add a 10% margin
-        int maxColumnWidth = (int)(maxLabel + maxValue + (X_PAD * 2) * 1.1);
+        int maxColumnWidth = (int)((maxLabel + maxValue + (X_PAD * 2)) * 1.1);
         int potentialColumns = container.getWidth()/maxColumnWidth;
         if ((potentialColumns == 0) || (currentColumns == potentialColumns)) {
             return;

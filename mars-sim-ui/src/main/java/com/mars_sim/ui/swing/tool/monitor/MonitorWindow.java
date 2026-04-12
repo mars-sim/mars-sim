@@ -784,8 +784,8 @@ public class MonitorWindow extends ContentPanel
 	public void destroy() {
 		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
 
-		// Remove listeners for the active tab
-		MonitorModel activeModel = activeTab.getModel();
+		// Remove listeners for the active tab; should already be present but just in case
+		MonitorModel activeModel = (activeTab != null) ? activeTab.getModel() : null;
 		if (activeModel != null) {
 			activeModel.setMonitorEntities(false);
 		}

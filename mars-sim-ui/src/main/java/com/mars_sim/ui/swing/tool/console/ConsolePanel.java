@@ -262,7 +262,7 @@ public class ConsolePanel extends ContentPanel {
         }
 
         /**
-         * Handles writting to the text area. Ensures new text is added at the end.
+         * Handles writing to the text area. Ensures new text is added at the end.
          * @param output Content to add
          */
         private void appendOutput(String output) {

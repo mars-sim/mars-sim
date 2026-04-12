@@ -102,10 +102,12 @@ class DockingAdapter extends JPanel implements Dockable {
     public boolean requestClose() {
 
         // Line up the close in the future, cannot deregister until after the call stack unwinds
-        DockingWindow window = (DockingWindow) getTopLevelAncestor();
-        SwingUtilities.invokeLater(() ->
-            window.closeContentPanel(this)
-        );
+        var topLevelAncestor = getTopLevelAncestor();
+        if (topLevelAncestor instanceof DockingWindow window) {
+            SwingUtilities.invokeLater(() ->
+                window.closeContentPanel(this)
+            );
+        }
         // Return true to allow the close to proceed.
         return true;
     }
