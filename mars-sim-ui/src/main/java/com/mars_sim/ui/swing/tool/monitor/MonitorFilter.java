@@ -11,6 +11,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -19,7 +20,6 @@ import javax.swing.WindowConstants;
 
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.StyleManager;
 
 
 /**
@@ -31,7 +31,7 @@ class MonitorFilter extends JDialog
 implements ActionListener {
 
 	// Data members
-	private FilteredTableModel model;
+	private transient FilteredTableModel model;
 
 	/**
 	 * Constructor.
@@ -50,7 +50,7 @@ implements ActionListener {
 		// Prepare content pane
 		JPanel mainPane = new JPanel();
 		mainPane.setLayout(new BorderLayout());
-		mainPane.setBorder(StyleManager.newEmptyBorder());
+		mainPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		setContentPane(mainPane);
 
 		var filters = model.getActiveFilters();

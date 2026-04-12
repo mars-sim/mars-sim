@@ -21,6 +21,7 @@ import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A panel for displaying collect resources objectives information.
@@ -69,7 +70,7 @@ public class CollectResourcePanel extends JPanel implements EntityListener {
 		list.setVisibleRowCount(-1);
 
 
-		return StyleManager.createScrollBorder(title, list);
+		return SwingHelper.createScrollBorder(title, list, null);
 	}
 
 

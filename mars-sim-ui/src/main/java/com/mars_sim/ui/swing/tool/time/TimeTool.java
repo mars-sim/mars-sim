@@ -200,7 +200,7 @@ public class TimeTool extends ContentPanel {
 		martianTimeLabel.setText("");
 		martianTimeLabel.setToolTipText("Mars Timestamp in Universal Mean Time (UMT)");
 		martianTimePane.add(martianTimeLabel, BorderLayout.CENTER);
-		martianTimePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianTime"))); //$NON-NLS-1$
+		martianTimePane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.martianTime"))); //$NON-NLS-1$
 
 		JButton wikiButton = new JButton(GuideWindow.wikiIcon);
 		wikiButton.setAlignmentX(.5f);
@@ -215,7 +215,7 @@ public class TimeTool extends ContentPanel {
 		// Create Martian month panel
 		JPanel martianMonthPane = new JPanel(new BorderLayout());
 		martianMonthPane.setPreferredSize(new Dimension(WIDTH, 160));
-		martianMonthPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianMonth"))); //$NON-NLS-1$
+		martianMonthPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.martianMonth"))); //$NON-NLS-1$
 		martianPane.add(martianMonthPane, BorderLayout.CENTER);
 		
 		// Create Martian calendar label panel
@@ -253,7 +253,7 @@ public class TimeTool extends ContentPanel {
 		// Create Martian hemisphere panel
 		AttributePanel hemiPane = new AttributePanel(3);
 		seasonPane.add(hemiPane, BorderLayout.NORTH);		
-		hemiPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.martianSeasons"))); //$NON-NLS-1$
+		hemiPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.martianSeasons"))); //$NON-NLS-1$
 
 		String str =
 				"<html>&#8201;Earth (days) vs Mars (sols)" +
@@ -285,7 +285,7 @@ public class TimeTool extends ContentPanel {
 		
 		// Create speed panel
 		AttributePanel speedPane = new AttributePanel(8);
-		speedPane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
+		speedPane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.simParam"))); //$NON-NLS-1$
 		attributePane.add(speedPane, BorderLayout.NORTH);
 
 		ticksPerSecLabel = speedPane.addTextField(Msg.getString("TimeWindow.ticksPerSecond"), "", //$NON-NLS-1$
@@ -309,7 +309,7 @@ public class TimeTool extends ContentPanel {
 	
 		// Create pulse panel
 		AttributePanel pulsePane = new AttributePanel(5);
-		pulsePane.setBorder(StyleManager.createLabelBorder(Msg.getString("TimeWindow.pulseParams"))); //$NON-NLS-1$
+		pulsePane.setBorder(SwingHelper.createLabelBorder(Msg.getString("TimeWindow.pulseParams"))); //$NON-NLS-1$
 		attributePane.add(pulsePane, BorderLayout.CENTER);
 		
 		taskPulseLabel = pulsePane.addTextField(TASK_PULSE_TIME, "", 

@@ -29,9 +29,9 @@ import javax.swing.JTextArea;
 
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.UserConfigurableListRenderer;
 import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This is a modal dialog used to allow the user to complete a selection of a list of options.
@@ -66,7 +66,7 @@ class SelectionDialog extends JDialog {
     protected static<T extends UserConfigurable> JPanel createComboPane(String label, Collection<T> potentials,
                                                     Consumer<T> listener) {
         var contentPane = new JPanel();
-        contentPane.setBorder(StyleManager.createLabelBorder(label));
+        contentPane.setBorder(SwingHelper.createLabelBorder(label));
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 
         var selectPanel = new JPanel();

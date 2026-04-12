@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -25,7 +26,6 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.StyleManager;
 
 /**
  * The TableProperties class display the columns of a specific table.
@@ -34,7 +34,7 @@ import com.mars_sim.ui.swing.StyleManager;
 @SuppressWarnings("serial")
 class TableProperties extends JDialog {
 
-    private TableColumnModel model;
+    private transient TableColumnModel model;
     private List<JCheckBox> columnButtons = new ArrayList<>();
 
     /**
@@ -54,7 +54,7 @@ class TableProperties extends JDialog {
         // Prepare content pane
         JPanel mainPane = new JPanel();
         mainPane.setLayout(new BorderLayout());
-        mainPane.setBorder(StyleManager.newEmptyBorder());
+        mainPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         setContentPane(mainPane);
 
         // Create column pane

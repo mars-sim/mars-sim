@@ -26,6 +26,7 @@ import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
@@ -65,7 +66,7 @@ public class ExplorationPanel extends JPanel
 		sitesPane = new JPanel();
 		sitesPane.setLayout(new BoxLayout(sitesPane, BoxLayout.PAGE_AXIS));
 
-		horz.add(StyleManager.createScrollBorder("Sites", sitesPane));
+		horz.add(SwingHelper.createScrollBorder("Sites", sitesPane, null));
 
 		sitePanes = new HashMap<>();
 

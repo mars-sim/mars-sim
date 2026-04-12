@@ -38,6 +38,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A panel for displaying construction custom mission information.
@@ -87,7 +88,7 @@ public class ConstructionPanel extends JPanel implements EntityListener, Objecti
         
         // Create remaining construction materials label.
         String remainingMaterialsLabelString = Msg.getString("ConstructionMissionCustomInfoPanel.constructionMaterials"); //$NON-NLS-1$
-        Border blackline = StyleManager.createLabelBorder(remainingMaterialsLabelString);
+        Border blackline = SwingHelper.createLabelBorder(remainingMaterialsLabelString);
         remainingMaterialsLabelPane.setBorder(blackline);
         
         // Create the materials table and model.

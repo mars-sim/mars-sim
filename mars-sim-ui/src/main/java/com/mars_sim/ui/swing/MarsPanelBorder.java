@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing;
 
+import javax.swing.BorderFactory;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 
@@ -22,6 +23,6 @@ public class MarsPanelBorder extends CompoundBorder {
 	 */
 	public MarsPanelBorder() {
 
-		super(new EtchedBorder(), StyleManager.newEmptyBorder());
+		super(new EtchedBorder(), BorderFactory.createEmptyBorder(1, 1, 1, 1));
 	}
 }

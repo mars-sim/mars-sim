@@ -59,6 +59,7 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessInfoRenderer;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
@@ -165,7 +166,7 @@ class TabPanelManufacture extends EntityTabPanel<Settlement>
 		// Create parameter controls
 		var pMgr = target.getPreferences();
 		var parameterPanel = new AttributePanel();
-		parameterPanel.setBorder(StyleManager.createLabelBorder("Controls"));
+		parameterPanel.setBorder(SwingHelper.createLabelBorder("Controls"));
 		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_VALUE, 30);
 		addParameter(parameterPanel, pMgr, ManufacturingParameters.NEW_MANU_LIMIT, 200);
 		addParameter(parameterPanel, pMgr, ManufacturingParameters.MAX_QUEUE_SIZE, 200);
@@ -212,13 +213,6 @@ class TabPanelManufacture extends EntityTabPanel<Settlement>
 		queueTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		queueTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		queueTable.getSelectionModel().addListSelectionListener(this::queueSelectionChanged);
-
-		// Can result in java.lang.ArrayIndexOutOfBoundsException when a process is done and its row is deleted
-//		queueTable.setAutoCreateRowSorter(true);
-		
-//		TableRowSorter<TableModel> sorter = new TableRowSorter<>(queueTable.getModel());
-//		sorter.setSortsOnUpdates(true);
-//		queueTable.setRowSorter(sorter);
 		
 		scrollPane.setViewportView(queueTable);
 
