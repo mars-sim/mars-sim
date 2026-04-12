@@ -192,4 +192,13 @@ public final class SwingHelper {
 		}
         return listScroller;
     }
+
+	/**
+	 * Helper method to convert a Dimension to a string for display.
+	 * @param size Dimension to convert
+	 * @return String representation of the dimension
+	 */
+    public static String toString(Dimension minimumSize) {
+        return (int) minimumSize.getWidth() + "x" + (int) minimumSize.getHeight();
+    }
 }

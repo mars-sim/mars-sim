@@ -166,7 +166,7 @@ public class MonitorWindow extends ContentPanel
 	 */
 	public MonitorWindow(UIContext context, Properties uiProps) {
 		// Use TableWindow constructor
-		super(NAME, TITLE, Placement.BOTTOM);
+		super(NAME, TITLE, Placement.CENTER);
 		
 		this.context = context;
 
@@ -778,11 +778,18 @@ public class MonitorWindow extends ContentPanel
 
 	/**
 	 * Prepares tool window for deletion.
+	 * Remove listeners and references to allow for garbage collection.
 	 */
 	@Override
 	public void destroy() {
-		super.destroy();
-
 		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
+
+		// Remove listeners for the active tab; should already be present but just in case
+		MonitorModel activeModel = (activeTab != null) ? activeTab.getModel() : null;
+		if (activeModel != null) {
+			activeModel.setMonitorEntities(false);
+		}
+			
+		super.destroy();
 	}
 }

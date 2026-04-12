@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
 import java.text.DecimalFormat;
@@ -19,17 +18,12 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import javax.swing.plaf.ColorUIResource;
 
 import com.formdev.flatlaf.FlatLaf;
@@ -181,6 +175,8 @@ public class StyleManager {
     private static Font smallLabelFont;
 
     private static Map<String,Properties> styles = new HashMap<>();
+
+    private static boolean debugEnabled = false;
     
     // Creates the built-in defaults.
     static {
@@ -275,11 +271,10 @@ public class StyleManager {
         // Adjust colors on JTable
         UIDefaults defaults = UIManager.getLookAndFeelDefaults();
         Color selBackground = (Color) defaults.get("Table.selectionBackground");
-        if (defaults.get(TABLE_ALTERNATE_ROW_COLOR) == null) {
+        defaults.computeIfAbsent(TABLE_ALTERNATE_ROW_COLOR, k -> {
             Color tabBackground = (Color) defaults.get("Table.background");
-
-            defaults.put(TABLE_ALTERNATE_ROW_COLOR, getTableAlternativeColor(selBackground, tabBackground));
-        }
+            return getTableAlternativeColor(selBackground, tabBackground);
+        });
 
         // Table Header is a shade off from the inactive select colour
         if (accentColor != null) {
@@ -435,20 +430,7 @@ public class StyleManager {
     public static void applySubHeading(JComponent item) {
         item.setFont(subHeadingFont);
     }
-
-    /**
-     * Creates a titled border that uses the sub title font.
-     * 
-     * @param title
-     * @return
-     */
-    public static Border createLabelBorder(String title) {
-        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
-                                                        TitledBorder.DEFAULT_POSITION,
-                                                        subTitleFont, (Color)null);
-    }
-
-    /**
+ /**
      * Gets the tab placement for JTabbedPanes.
      */
     public static int getTabPlacement() {
@@ -505,23 +487,18 @@ public class StyleManager {
     }
 
     /**
-     * Creates a standardized empty border.
+     * Enabled the UI debug mode.
+     * @param debug New debug setting.
      */
-    public static Border newEmptyBorder() {
-    	return new EmptyBorder(1, 1, 1, 1);
+    public static void setDebug(boolean debug) {
+        debugEnabled = debug;
     }
 
     /**
-     * Creates a scroll pane with border and title
-     * 
-     * @param title
-     * @param content
-     * @return
+     * Is the UI in debug mode.
+     * @return Debug enabled
      */
-    public static JScrollPane createScrollBorder(String title, Component content) {
-		JScrollPane listScroller = new JScrollPane(content);
-		listScroller.setBorder(StyleManager.createLabelBorder(title));
-
-        return listScroller;
+    public static boolean isDebug() {
+        return debugEnabled;
     }
 }

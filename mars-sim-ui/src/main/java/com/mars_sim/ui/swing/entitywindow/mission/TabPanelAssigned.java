@@ -40,6 +40,7 @@ import com.mars_sim.ui.swing.components.TableModelUpdater;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * Tab panel for assigned mission members and Vehicles.
@@ -84,7 +85,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		
 		// Prepare attribute panel.
 		AttributePanel attributePanel = new AttributePanel();
-        attributePanel.setBorder(StyleManager.createLabelBorder(Msg.getString("vehicle.singular")));
+        attributePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("vehicle.singular")));
 
 		attributePanel.addLabelledItem(Msg.getString("entity.name"), new EntityLabel(v, getContext()));
 		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("vehicle.status"), "", null);

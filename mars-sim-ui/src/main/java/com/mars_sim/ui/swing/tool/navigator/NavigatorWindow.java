@@ -71,6 +71,7 @@ import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.TreeCheckFactory;
 import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
 
@@ -250,7 +251,7 @@ public class NavigatorWindow extends ContentPanel
 		mapPanel = new MapPanel(context);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		wholePane.add(mapPanel, BorderLayout.CENTER);
-		mapPanel.setMouseMoveListener(c -> updateStatusBar(c));
+		mapPanel.setMouseMoveListener(this::updateStatusBar);
 
 		// Create map layers.
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
@@ -287,7 +288,7 @@ public class NavigatorWindow extends ContentPanel
 		
 		JPanel searchPane = new JPanel();
 		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
-		searchPane.setBorder(StyleManager.createLabelBorder("Search"));
+		searchPane.setBorder(SwingHelper.createLabelBorder("Search"));
 
 		controlPane.add(searchPane, BorderLayout.NORTH);
         
@@ -298,11 +299,11 @@ public class NavigatorWindow extends ContentPanel
 		JTree layers = TreeCheckFactory.createCheckTree(layerRoot);
 		JScrollPane treeView = new JScrollPane(layers);
 		controlPane.add(treeView, BorderLayout.CENTER);
-		treeView.setBorder(StyleManager.createLabelBorder("Layers"));
+		treeView.setBorder(SwingHelper.createLabelBorder("Layers"));
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
-		buttonPane.setBorder(StyleManager.createLabelBorder("Graphics"));
+		buttonPane.setBorder(SwingHelper.createLabelBorder("Graphics"));
 		controlPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Prepare gpu button

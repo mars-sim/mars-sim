@@ -259,7 +259,7 @@ public class CommanderWindow extends ContentPanel {
 				
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(StyleManager.newEmptyBorder());
+		mainPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		add(mainPane);
 
 		JPanel topPane = new JPanel(new FlowLayout());

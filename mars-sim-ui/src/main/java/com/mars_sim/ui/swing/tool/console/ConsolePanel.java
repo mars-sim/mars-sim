@@ -15,7 +15,6 @@ import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -58,11 +57,12 @@ public class ConsolePanel extends ContentPanel {
     private JTextArea textArea;
     private int inputStart;
     private boolean bypassDocumentInputRestriction;
-    private Conversation conversation;
-    private Thread consoleThread;
-    private TextAreaChannel channel;
 
-    public ConsolePanel(UIContext context, Properties toolProps) {
+    private transient Conversation conversation;
+    private transient Thread consoleThread;
+    private transient TextAreaChannel channel;
+
+    public ConsolePanel(UIContext context) {
         super(NAME, TITLE, Placement.BOTTOM);
 
         buildUI();
@@ -75,7 +75,7 @@ public class ConsolePanel extends ContentPanel {
                         context.getSimulation());
         
         // Run the conversation in a Virtual thread because it is a blocking operation
-        consoleThread = Thread.ofVirtual().name("Console").start(() ->
+        consoleThread = Thread.ofVirtual().name(TITLE).start(() ->
             conversation.interact()
         );
     }
@@ -146,9 +146,8 @@ public class ConsolePanel extends ContentPanel {
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         add(scrollPane, BorderLayout.CENTER);
 
-        Dimension dim = new Dimension(700, 200);
-        //setMinimumSize(dim);
-        setPreferredSize(dim);
+        setMinimumSize(new Dimension(500, 150));
+        setPreferredSize(new Dimension(700, 200));
     }
 
     @Override
@@ -159,15 +158,6 @@ public class ConsolePanel extends ContentPanel {
         }
 
         super.destroy();
-    }
-
-    private void appendOutput(String output) {
-        if ((output == null) || output.isEmpty()) {
-            return;
-        }
-        
-        moveCaretToEnd();
-        runBypassingDocumentInputRestriction(() -> textArea.append(output));
     }
 
     /**
@@ -187,42 +177,6 @@ public class ConsolePanel extends ContentPanel {
         }
         catch (BadLocationException e) {
             // Ignore invalid caret locations
-        }
-    }
-
-    /**
-     * Check if the character is a restricted input character that should not be added to the input buffer, but should still be passed to the channel for hotkey processing.
-     * @param character Inbound character
-     * @return is restricted.
-     */
-    private boolean isRestrictedInputCharacter(char character) {
-        return (character != '\n' && Character.isISOControl(character))  
-                || character == '\t';
-    }
-
-    private String removeRestrictedInputCharacters(String text) {
-        if (text == null || text.isEmpty()) {
-            return text;
-        }
-
-        StringBuilder filtered = new StringBuilder(text.length());
-        for (int i = 0; i < text.length(); i++) {
-            char character = text.charAt(i);
-            if (!isRestrictedInputCharacter(character)) {
-                filtered.append(character);
-            }
-        }
-        return filtered.toString();
-    }
-
-    private void runBypassingDocumentInputRestriction(Runnable action) {
-        boolean previous = bypassDocumentInputRestriction;
-        bypassDocumentInputRestriction = true;
-        try {
-            action.run();
-        }
-        finally {
-            bypassDocumentInputRestriction = previous;
         }
     }
 
@@ -280,7 +234,7 @@ public class ConsolePanel extends ContentPanel {
                         break;
                     }
                     else if (character == DELETE_CHAR || character == BACKSPACE_CHAR) {
-                        if (buffer.length() > 0) {
+                        if (!buffer.isEmpty()) {
                             buffer = buffer.substring(0, buffer.length() - 1);
                         }
                     }
@@ -307,6 +261,37 @@ public class ConsolePanel extends ContentPanel {
             appendOutput(text);
         }
 
+        /**
+         * Handles writing to the text area. Ensures new text is added at the end.
+         * @param output Content to add
+         */
+        private void appendOutput(String output) {
+            if ((output == null) || output.isEmpty()) {
+                return;
+            }
+            
+            moveCaretToEnd();
+            runBypassingDocumentInputRestriction(() -> textArea.append(output));
+        }
+
+        /**
+         * Handler method to run a block of code while bypassing the document input restriction. This is necessary to allow programmatic updates to the text area (such as appending output) without being blocked by the DocumentFilter, while still enforcing input restrictions on user-typed content.
+         * @param action The block of code to execute
+         */
+        private void runBypassingDocumentInputRestriction(Runnable action) {
+            boolean previous = bypassDocumentInputRestriction;
+            bypassDocumentInputRestriction = true;
+            try {
+                action.run();
+            }
+            finally {
+                bypassDocumentInputRestriction = previous;
+            }
+        }
+
+        /**
+         * Special keystroke trigger a handler.
+         */
         @Override
         public boolean registerHandler(String keyStroke, UserOutbound listener, boolean interuptExecution) {
             hotkeys.put(keyStroke.toLowerCase(), listener);
@@ -340,7 +325,6 @@ public class ConsolePanel extends ContentPanel {
             } catch (InterruptedException e) {
                 // Restore interrupt status and exit without noisy logging
                 Thread.currentThread().interrupt();
-                return;
             }
         }
     }
@@ -413,6 +397,31 @@ public class ConsolePanel extends ContentPanel {
                 return;
             }
             super.replace(fb, offset, length, filtered, attrs);
+        }
+
+        private String removeRestrictedInputCharacters(String text) {
+            if (text == null || text.isEmpty()) {
+                return text;
+            }
+
+            StringBuilder filtered = new StringBuilder(text.length());
+            for (int i = 0; i < text.length(); i++) {
+                char character = text.charAt(i);
+                if (!isRestrictedInputCharacter(character)) {
+                    filtered.append(character);
+                }
+            }
+            return filtered.toString();
+        }
+ 
+        /**
+         * Check if the character is a restricted input character that should not be added to the input buffer, but should still be passed to the channel for hotkey processing.
+         * @param character Inbound character
+         * @return is restricted.
+         */
+        private boolean isRestrictedInputCharacter(char character) {
+            return (character != '\n' && Character.isISOControl(character))  
+                    || character == '\t';
         }
     }
 }

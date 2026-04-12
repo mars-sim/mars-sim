@@ -27,6 +27,7 @@ import javax.swing.WindowConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.CompressedClockListener;
@@ -88,6 +89,8 @@ public class DockingWindow extends JFrame
             return DockableStyle.CENTER_ONLY;
         }
     }
+
+    private static SimLogger logger = SimLogger.getLogger(DockingWindow.class.getName());
 
     private Simulation sim;
     private Set<DockingAdapter> windows = new HashSet<>();
@@ -184,12 +187,28 @@ public class DockingWindow extends JFrame
     }
 
     /**
+     * This method is called by a DockingAdapter when its content panel is closed. It will deregister the Dockable
+     * and destroy the ContentPanel.
+     * 
+     * @param panel Panel being closed.
+     */
+    void closeContentPanel(DockingAdapter panel) {
+        logger.info("Closing content panel: " + panel.getPersistentID());
+        Docking.deregisterDockable(panel);
+        windows.remove(panel);
+        panel.getContent().destroy();
+    }
+
+    /**
      * Add a content panel to the docking window. This will wrap the panel in a DockingAdapter
      * and dock it to the appropriate region based on its placement.
      * @param panel Content to add
      */
     private void addContentPanel(ContentPanel panel) {
         var w = new DockingAdapter(panel);
+        
+        Docking.registerDockable(w);
+        logger.info("Content Panel registered: " + w.getPersistentID() + " " + panel.getTitle());
 
         // Check if there is a target for dockering already in the Placement
         var target = anchors.get(panel.getPlacement());

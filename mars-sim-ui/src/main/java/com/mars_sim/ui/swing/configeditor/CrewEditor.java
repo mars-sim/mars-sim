@@ -160,7 +160,53 @@ public class CrewEditor implements ActionListener {
 			int num = i + 1;
 			displayPanel.setBorder(BorderFactory.createTitledBorder("Crewman " + num + " "));
 		}
+			
+		/**
+		 * Set up the sponsor comboxbox model
+		 * 
+		 * @return DefaultComboBoxModel<String>
+		 */
+		private DefaultComboBoxModel<String> setUpSponsorCBModel() {
+						
+			DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
+			m.addElement(SETTLEMENT_SPONSOR);
+			m.addAll(raFactory.getItemNames());
+			return m;
+		}
+	
+		/**
+		 * Set up the country comboxbox model
+		 * 
+		 * @return DefaultComboBoxModel<String>
+		 */
+		private DefaultComboBoxModel<String> setUpCountryCBModel() {
+			DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
+
+			populateCountryCombo(SETTLEMENT_SPONSOR, m);
+			return m;
+		}
 		
+		/**
+		 * Load the country model from a ReportingAuthority
+		 * @param sponsor
+		 * @param model
+		 */
+		private void populateCountryCombo(String sponsorCode, DefaultComboBoxModel<String> model) {
+			// removing old data
+			model.removeAllElements();
+
+			if ((sponsorCode == null) || SETTLEMENT_SPONSOR.equals(sponsorCode)) {
+				// Load all known countries
+				NationSpecConfig nameConfig = new NationSpecConfig(SimulationConfig.instance());
+				model.addAll(nameConfig.getItemNames());			
+			}
+			else {
+				// Load the countries from RA
+				Authority ra = raFactory.getItem(sponsorCode);
+				model.addAll(ra.getCountries());
+			}
+		}
+	
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			removeMember(this);
@@ -427,13 +473,13 @@ public class CrewEditor implements ActionListener {
 		// Create main panel.
 		mainPane = new JPanel(new BorderLayout());
 		mainPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		mainPane.setBorder(StyleManager.newEmptyBorder());
+		mainPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		f.getContentPane().add(mainPane);
 		
 		// Create main panel.
 		scrollPane = new JPanel();
 		scrollPane.setLayout(new BoxLayout(scrollPane, BoxLayout.X_AXIS));
-		scrollPane.setBorder(StyleManager.newEmptyBorder());
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
 		// Prepare scroll panel.
 		JScrollPane scrollPanel = new JScrollPane(scrollPane);
@@ -542,18 +588,14 @@ public class CrewEditor implements ActionListener {
 	 * @param loadFromXML
 	 * @return
 	 */
-	private static boolean retrieveCrewMBTI(Member m , int row) {
-				
-		if (row == 0)
-			return m.isExtrovert();
-		else if (row == 1)
-			return m.isIntuitive();
-		else if (row == 2)
-			return m.isFeeler();
-		else if (row == 3)
-			return m.isJudger();
-		else
-			return false;		
+	private static boolean retrieveCrewMBTI(Member m , int row) {		
+		return switch (row) {
+			case 0 -> m.isExtrovert();
+			case 1 -> m.isIntuitive();
+			case 2 -> m.isFeeler();
+			case 3 -> m.isJudger();
+			default -> false;
+		};		
 	}
 
 	/**
@@ -616,55 +658,6 @@ public class CrewEditor implements ActionListener {
 		return m;
 	}
 
-	/**
-	 * Set up the country comboxbox model
-	 * 
-	 * @return DefaultComboBoxModel<String>
-	 */
-	private DefaultComboBoxModel<String> setUpCountryCBModel() {
-		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
-
-		populateCountryCombo(SETTLEMENT_SPONSOR, m);
-		return m;
-	}
-	
-	/**
-	 * Set up the sponsor comboxbox model
-	 * 
-	 * @param country
-	 * @return DefaultComboBoxModel<String>
-	 */
-	private DefaultComboBoxModel<String> setUpSponsorCBModel() {
-					
-		DefaultComboBoxModel<String> m = new DefaultComboBoxModel<>();
-		m.addElement(SETTLEMENT_SPONSOR);
-		m.addAll(raFactory.getItemNames());
-		return m;
-	}
- 
-
-	/**
-	 * Load the country model from a ReportingAuthority
-	 * @param sponsor
-	 * @param model
-	 */
-	private void populateCountryCombo(String sponsorCode, DefaultComboBoxModel<String> model) {
-		// removing old data
-		model.removeAllElements();
-
-		if ((sponsorCode == null) || SETTLEMENT_SPONSOR.equals(sponsorCode)) {
-			// Load all known countries
-			NationSpecConfig nameConfig = new NationSpecConfig(SimulationConfig.instance());
-			model.addAll(nameConfig.getItemNames());			
-		}
-		else {
-			// Load the countries from RA
-			Authority ra = raFactory.getItem(sponsorCode);
-			model.addAll(ra.getCountries());
-		}
-	}
-	
-	
 	private void designateCrew(Crew newCrew) {		
 		String crewName = newCrew.getName();
 		List<Member> members = newCrew.getTeam();

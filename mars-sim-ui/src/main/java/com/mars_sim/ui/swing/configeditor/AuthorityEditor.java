@@ -144,13 +144,13 @@ public class AuthorityEditor  {
 
 		// Create main panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(StyleManager.newEmptyBorder());
+		mainPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		f.getContentPane().add(mainPane);
 		
 		// Create main panel.
 		JPanel contentPane = new JPanel();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
-		contentPane.setBorder(StyleManager.newEmptyBorder());
+		contentPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		mainPane.add(contentPane, BorderLayout.CENTER);
 				
 		JPanel leftPanel = new JPanel(new BorderLayout());
@@ -202,7 +202,7 @@ public class AuthorityEditor  {
 		genderRatio.setMinorTickSpacing(5);
 		genderRatio.setPaintTicks(true);
 		genderRatio.setPaintLabels(true);
-		Hashtable<Integer,JComponent> labelTable = new Hashtable<>();
+		var labelTable = new Hashtable<Integer, JComponent>();
 		labelTable.put(0, new JLabel("All Female") );
 		labelTable.put(50, new JLabel("Even") );
 		labelTable.put(100, new JLabel("All Male") );

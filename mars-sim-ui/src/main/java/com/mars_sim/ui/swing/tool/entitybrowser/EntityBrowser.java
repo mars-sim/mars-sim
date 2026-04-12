@@ -83,7 +83,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     private DefaultMutableTreeNode globalNode;
 
     public EntityBrowser(UIContext context) {
-        super(NAME, "Entity Browser", Placement.LEFT);
+        super(NAME, TITLE, Placement.LEFT);
 
         this.context = context;
         this.scienceMgr = context.getSimulation().getScientificStudyManager();
@@ -115,9 +115,8 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         // List for new Settlements
         unitManager.addEntityManagerListener(UnitType.SETTLEMENT, this);
 
-        var dims = new Dimension(250, 300);
-        setMinimumSize(dims);
-        setPreferredSize(dims);
+        setMinimumSize(new Dimension(250, 200));
+        setPreferredSize(new Dimension(250, 300));
     }
 
     private void buildUI(JPanel mainPane, DefaultTreeModel model) {
@@ -327,7 +326,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             case TRANSPORT -> {
                         if (settlement == null) {
                             yield transportMgr.getTransportItems().stream()
-                                                .filter(it -> it instanceof ArrivingSettlement)
+                                                .filter(ArrivingSettlement.class::isInstance)
                                                 .filter(as -> as.getTransitState() != TransitState.ARRIVED)
                                                 .toList();
                         }

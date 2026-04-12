@@ -52,6 +52,7 @@ import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
@@ -153,7 +154,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		if (screenSize == null || screenSize.getWidth() == 0 || screenSize.getHeight() == 0) {
 			screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			logger.config("Toolkit default screen size is " + screenSize.getWidth() + " x " + screenSize.getHeight());
+			logger.config("Toolkit default screen size is " + SwingHelper.toString(screenSize));
 		}
 
 		Image backgroundImage = createImage((int) screenSize.getWidth(), (int) screenSize.getHeight());

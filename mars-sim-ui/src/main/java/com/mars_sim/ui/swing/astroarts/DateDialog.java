@@ -28,7 +28,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.astroarts.ATime;
-import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
@@ -62,14 +62,11 @@ public class DateDialog extends JDialog {
 		setLayout(new BorderLayout());
 		
 		JPanel currentPanel = new JPanel(new BorderLayout());
-		currentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		currentPanel.setBorder(SwingHelper.createLabelBorder("Current Date"));
 		add(currentPanel, BorderLayout.CENTER);
-
-		currentPanel.setBorder(StyleManager.createLabelBorder("Current Date"));	
 
 		AttributePanel attrPanel = new AttributePanel();
 		currentPanel.add(attrPanel, BorderLayout.NORTH);
-		
 		// Controls
 		monthCB = new JComboBox<>();
 		for (int i = 0; i < 12; i++) {
@@ -100,12 +97,13 @@ public class DateDialog extends JDialog {
 		add(choosePanel, BorderLayout.NORTH);
 		
 		JPanel chooseDatePanel = new JPanel(new GridLayout(4, 1, 0, 0));			
-		chooseDatePanel.setBorder(StyleManager.createLabelBorder("Choose Your Date"));	
-		choosePanel.add(chooseDatePanel, BorderLayout.CENTER);
+	chooseDatePanel.setBorder(SwingHelper.createLabelBorder("Choose Your Date"));	
 		
 		buttonSimDate = new JRadioButton("Simulation Date");
 		buttonSimDate.setBorder(new EmptyBorder(0, 15, 0, 0));
 		chooseDatePanel.add(buttonSimDate);
+		choosePanel.add(chooseDatePanel, BorderLayout.CENTER);
+
 		buttonSimDate.addActionListener(e -> {
 				monthCB.setSelectedIndex(earthTime.getMonthValue() - 1);
 				tfDate.setText(Integer.toString(earthTime.getDayOfMonth()));

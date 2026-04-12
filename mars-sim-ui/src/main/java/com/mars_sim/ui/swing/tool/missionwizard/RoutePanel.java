@@ -111,17 +111,21 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 		// Always add unit layer
 		mapPanel.addMapLayer(new UnitMapLayer(mapPanel));
 
+        // Focus on the starting settlement
+        var starting = state.getStartingSettlement();
+        mapPanel.showMap(starting.getCoordinates());
+
 		// Lastly add navpoint layer
 		navpointLayer = new RoutePathLayer(mapPanel);
 		mapPanel.addMapLayer(navpointLayer);
-        mapPanel.setMouseClickListener(c -> setPointSelection(c));
+        mapPanel.setMouseClickListener(this::setPointSelection);
 
         // Add a single route path that is a proxy to the leg model
         routePath = new RoutePathAdapter(state.getStartingSettlement().getCoordinates(), legTableModel);
         navpointLayer.addPath(routePath);
 
 		var mapPane = new JPanel(new BorderLayout());
-		mapPane.setBorder(SwingHelper.createLabelBorder("Route"));
+		mapPane.setBorder(SwingHelper.createLabelBorder("Proposed Route"));
         
 		var dims = new Dimension(10, 200);
 		mapPane.setPreferredSize(dims);
