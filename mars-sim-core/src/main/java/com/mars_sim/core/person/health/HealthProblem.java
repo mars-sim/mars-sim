@@ -204,7 +204,7 @@ public class HealthProblem implements Serializable {
 		setState(HealthProblemState.BEING_TREATED);
 
 		// Create medical event for treatment.
-		registerHistoricalEvent(HistoricalEventType.MEDICAL_TREATED);
+		registerHistoricalEvent(HistoricalEventType.MEDICAL_START_TREATMENT);
 
 		logger.info(getSufferer(), "Began to receive treatment for " + getComplaint().getName() + ".");
 	}
@@ -257,7 +257,7 @@ public class HealthProblem implements Serializable {
 				requiresBedRest = getComplaint().requiresBedRestRecovery();
 				
 				// Create medical event for recovering.
-				registerHistoricalEvent(HistoricalEventType.MEDICAL_RECOVERY);
+				registerHistoricalEvent(HistoricalEventType.MEDICAL_START_RECOVERY);
 			} else {
 				setCured();
 			}

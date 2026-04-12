@@ -107,8 +107,6 @@ public class TransportManager implements Serializable {
 	 */
 	public void addNewTransportItem(Transportable transportItem) {
 		transportItems.add(transportItem);
-
-		fireEvent(TransportManager.createEvent(transportItem, HistoricalEventType.TRANSPORT_ITEM_CREATED));
 	}
 
 	/**

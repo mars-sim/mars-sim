@@ -74,11 +74,11 @@ public class HistoricalEventManager implements Serializable {
 	}
 
 	/**
-	 * Is this new event distinct from recent events?
-	 * @param newEvent
-	 * @return
+	 * Is this new event a repeat of recent events?
+	 * @param newEvent Event to be compared with recent events.
+	 * @return true if the new event is a repeat of recent events, false otherwise.
 	 */
-	private boolean isDistinct(HistoricalEvent newEvent) {
+	private boolean isRepeat(HistoricalEvent newEvent) {
 		if (lastEvents != null) {
 			int index = Math.max(0, lastEvents.size() - (MATCH_RANGE + 1)); // Start at beginning of check range
 			for (; index < lastEvents.size(); index++) {
@@ -104,11 +104,8 @@ public class HistoricalEventManager implements Serializable {
 
 		HistoricalEventType type = newEvent.getType();
 
-		if (type == HistoricalEventType.MISSION_JOINING)
-			return;
-		else if (type == HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES)
-			return;
-		else if (isDistinct(newEvent))
+		if (type == HistoricalEventType.MISSION_NOT_ENOUGH_RESOURCES
+			|| isRepeat(newEvent))
 			return;
 
 		newEvent.setTimestamp(masterClock.getMarsTime());
