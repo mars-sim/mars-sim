@@ -181,6 +181,8 @@ public class StyleManager {
     private static Font smallLabelFont;
 
     private static Map<String,Properties> styles = new HashMap<>();
+
+    private static boolean debugEnabled = false;
     
     // Creates the built-in defaults.
     static {
@@ -523,5 +525,21 @@ public class StyleManager {
 		listScroller.setBorder(StyleManager.createLabelBorder(title));
 
         return listScroller;
+    }
+
+    /**
+     * Enabled the UI debug mode.
+     * @param debug New debug setting.
+     */
+    public static void setDebug(boolean debug) {
+        debugEnabled = debug;
+    }
+
+    /**
+     * Is the UI in debug mode.
+     * @return Debug enabled
+     */
+    public static boolean isDebug() {
+        return debugEnabled;
     }
 }

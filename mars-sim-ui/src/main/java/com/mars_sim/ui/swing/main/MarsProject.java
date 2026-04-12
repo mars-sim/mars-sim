@@ -49,15 +49,14 @@ public class MarsProject {
 	private static final String NEW = "new";
 	private static final String DOCKINGUI = "dockingui";
 	private static final String CLEANUI = "cleanui";
-	private static final String SANDBOX = "sandbox";
 	private static final String SITE_EDITOR = "site";
 	private static final String LOAD_ARG = "load";
+	private static final String DEBUGUI = "debugui";
 	
 	/** true if displaying graphic user interface. */
 	private boolean useNew = false;
 	private boolean useCleanUI = false;
 	private boolean useSiteEditor;
-	private boolean isSandbox = false;
 	private boolean useDockingUI = false;
 	private boolean useAudio = true;
 
@@ -256,8 +255,8 @@ public class MarsProject {
 				.desc("Disable loading stored UI configurations").get());
 		options.addOption(Option.builder(DOCKINGUI)
 				.desc("Enable the docking UI").get());
-		options.addOption(Option.builder(SANDBOX)
-				.desc("Start in Sandbox Mode").get());
+		options.addOption(Option.builder(DEBUGUI)
+				.desc("Enable debug UI").get());
 		options.addOption(Option.builder(NEW)
 				.desc("Enable quick start").get());
 		options.addOption(Option.builder(SITE_EDITOR)
@@ -278,6 +277,7 @@ public class MarsProject {
 				usage("See available options below", options);
 			}
 			useNew = line.hasOption(NEW);
+			StyleManager.setDebug(line.hasOption(DEBUGUI));
 			useCleanUI = line.hasOption(CLEANUI);
 			useDockingUI = line.hasOption(DOCKINGUI);
 
@@ -289,7 +289,6 @@ public class MarsProject {
 			}
 			
 			useSiteEditor = line.hasOption(SITE_EDITOR);
-			isSandbox = line.hasOption(SANDBOX);
 		}
 		catch (ParseException e) {
 			usage("Problem with arguments: " + e.getMessage(), options);

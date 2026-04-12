@@ -154,7 +154,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      */
     protected void applyProps(Properties props) {
         // Add the listener panel if the entity is MonitorableEntity
-        if (entity instanceof MonitorableEntity m) {
+        if (StyleManager.isDebug() &&entity instanceof MonitorableEntity m) {
             addTabPanel(new ListenerTabPanel(m, context));
         }
         
