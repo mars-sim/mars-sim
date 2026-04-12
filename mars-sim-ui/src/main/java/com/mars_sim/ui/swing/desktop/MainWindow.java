@@ -185,7 +185,7 @@ public class MainWindow
 		if (selectedSize != null) {
 			// Set frame size
 			frame.setSize(selectedSize);
-			logger.config("Last saved window dimension: " + selectedSize);
+			logger.config("Last saved window dimension: " + SwingHelper.toString(selectedSize));
 		}
 
 		return true;
@@ -208,11 +208,7 @@ public class MainWindow
 
 		frame.setSize(selectedSize);
 
-		logger.config("Default main window dimension: "
-				+ selectedSize.width
-				+ " x "
-				+ selectedSize.height
-				+ ".");
+		logger.config("Default main window dimension: " + SwingHelper.toString(selectedSize));
 
 		initX = (int)(screenWidth - selectedSize.width) / 2;
 		initY = (int)(screenHeight - selectedSize.height) / 2;
@@ -220,9 +216,9 @@ public class MainWindow
 
 		logger.config("Use default configuration to set main window's frame to the center of the screen.");
 		logger.config("The main window frame is centered and starts at ("
-				+ (screenWidth - selectedSize.width) / 2
+				+ initX
 				+ ", "
-				+ (screenHeight - selectedSize.height) / 2
+				+ initY
 				+ ").");
 	}
 
@@ -244,16 +240,16 @@ public class MainWindow
 			var mode = gd.getDisplayMode();
 			frameSize = new Dimension(mode.getWidth(), mode.getHeight());
 			logger.config("Use default screen configuration.");
-			logger.config("Selected screen size is " + frameSize.width + " x " + frameSize.height);
+			logger.config("Selected screen size is " + SwingHelper.toString(frameSize));
 		} else {
 			// Use any stored size
 			frameSize = dimension;
-			logger.config("Use last saved window size " + frameSize.width + " x " + frameSize.height);
+			logger.config("Use last saved window size " + SwingHelper.toString(frameSize));
 		}
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		if (screenSize != null) {
-			logger.config("Current toolkit screen size is " + screenSize.width + " x " + screenSize.height);
+			logger.config("Current toolkit screen size is " + SwingHelper.toString(screenSize));
 
 			if (frameSize != null) {
 				// Check selected is not bigger than the screen
@@ -270,11 +266,10 @@ public class MainWindow
 					frameSize = new Dimension(
 							(int) Math.round(screenSize.getWidth() * .8),
 							(int) Math.round(screenSize.getHeight() * .8));
-					logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
 				} else {
 					frameSize = new Dimension(screenSize);
-					logger.config("New window size is " + frameSize.width + " x " + frameSize.height);
 				}
+				logger.config("New window size is " + SwingHelper.toString(frameSize));
 			}
 		}
 
