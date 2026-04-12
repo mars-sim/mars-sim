@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool;
 
+import java.util.List;
 import java.util.Properties;
 
 import com.mars_sim.core.Simulation;
@@ -44,7 +45,7 @@ public class ToolRegistry {
     public record ToolInfo(String name, ToolCategory category, String title, String iconName) {}
 
     // List of all available tools
-    public static final ToolInfo[] TOOL_INFOS = {
+    public static final List<ToolInfo> TOOL_INFOS = List.of(
         new ToolInfo(NavigatorWindow.NAME, ToolCategory.GENERIC, NavigatorWindow.TITLE, NavigatorWindow.ICON),
         new ToolInfo(SettlementWindow.NAME, ToolCategory.GENERIC, SettlementWindow.TITLE, SettlementWindow.ICON),
         new ToolInfo(EntityBrowser.NAME, ToolCategory.GENERIC, EntityBrowser.TITLE, EntityBrowser.ICON),
@@ -56,7 +57,7 @@ public class ToolRegistry {
         new ToolInfo(GuideWindow.NAME, ToolCategory.HELP, GuideWindow.TITLE, GuideWindow.ICON),
         new ToolInfo(SearchWindow.NAME, ToolCategory.UTILITY, SearchWindow.TITLE, SearchWindow.ICON),
         new ToolInfo(ConsolePanel.NAME, ToolCategory.GENERIC, ConsolePanel.TITLE, ConsolePanel.ICON)
-    };
+    );
 
     /**
      * Build a tool for the given tool name.
@@ -78,7 +79,7 @@ public class ToolRegistry {
 			case SettlementWindow.NAME -> new SettlementWindow(context, toolProps);
             case NavigatorWindow.NAME -> new NavigatorWindow(context, toolProps);
             case MonitorWindow.NAME -> new MonitorWindow(context, toolProps);
-            case ConsolePanel.NAME -> new ConsolePanel(context, toolProps);
+            case ConsolePanel.NAME -> new ConsolePanel(context);
 			default -> null;
 		};
     }

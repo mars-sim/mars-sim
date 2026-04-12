@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.utils;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -24,8 +25,9 @@ import javax.swing.JPanel;
 class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
 
     private static final int X_PAD = 4;
-    private static final int Y_PAD = 4;
-    private static final int COLUMN_PAD = 2;
+
+    private static final Insets LABEL_INSETS = new Insets(1, X_PAD, 1, 0);
+    private static final Insets VALUE_INSETS = new Insets(1, 0, 1, X_PAD);
 
     private int gridPerValue;
     private int gridPerLabel;
@@ -37,16 +39,6 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
     // The position of a cell in terms of the grid
     private record CellPosition(int col, int row) {}
     
-    /**
-     * Handles resizing of the parent panel
-     */
-    private class Resizer extends ComponentAdapter {
-        @Override
-        public void componentResized(ComponentEvent e) {
-            adjustLayout();
-        }
-    }
-
     public DynamicAttributeLayout(JPanel container, int cols) {
         gbl = new GridBagLayout();
         container.setLayout(gbl);
@@ -56,7 +48,18 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
         gridPerValue = 1;
         gridPerColumn = gridPerLabel + gridPerValue;
         
-        container.addComponentListener(new Resizer());
+        // Get notified when the container is resized or shown so we can adjust the layout
+        container.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                adjustLayout();
+            }
+
+            @Override
+            public void componentShown(ComponentEvent e) {
+                adjustLayout();
+            }
+        });
     }
 
     /**
@@ -96,12 +99,9 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
         var constraints = new GridBagConstraints();
         constraints.gridx = cell.col * gridPerColumn;
         constraints.gridy = cell.row;
-        constraints.weightx = 0;
 
-        //constraints.gridwidth = gridPerLabel;
         constraints.anchor = GridBagConstraints.LINE_END;
-        // constraints.ipadx = X_PAD;
-        // constraints.ipady = Y_PAD;
+        constraints.insets = LABEL_INSETS;
 
         return constraints;
     }
@@ -114,12 +114,8 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
         var constraints = new GridBagConstraints();
         constraints.gridx = (cell.col * gridPerColumn) + gridPerLabel;
         constraints.gridy = cell.row;
-        constraints.weightx = 1;
-
-        //constraints.gridwidth = gridPerValue;
+        constraints.insets = VALUE_INSETS;
         constraints.anchor = GridBagConstraints.LINE_START;
-        //constraints.ipadx = X_PAD + (cell.col != (currentColumns-1) ? COLUMN_PAD : 0);
-        //constraints.ipady = Y_PAD;
         return constraints;
     }
     
@@ -145,7 +141,7 @@ class DynamicAttributeLayout implements AttributePanel.AttributePanelLayout {
         }
 
         // Add a 10% margin
-        int maxColumnWidth = (int)((maxLabel + maxValue + (X_PAD * 2) + COLUMN_PAD) * 1.1);
+        int maxColumnWidth = (int)(maxLabel + maxValue + (X_PAD * 2) * 1.1);
         int potentialColumns = container.getWidth()/maxColumnWidth;
         if ((potentialColumns == 0) || (currentColumns == potentialColumns)) {
             return;

@@ -126,23 +126,14 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         
         add(scrollPane, BorderLayout.CENTER);
 
-        var dim = new Dimension(270, 300);
-        setPreferredSize(dim);
-        setMinimumSize(dim);
+        setPreferredSize(new Dimension(270, 400));
+        setMinimumSize(new Dimension(270, 200));
     }
     
     private boolean isEventVisible(HistoricalEvent event) {
-        // Check category filter
-        if (!selectedCategories.contains(event.getCategory())) {
-            return false;
-        }
-        
-        // Check acknowledged filter - if checkbox is unchecked, hide acknowledged events
-        if (!showAcknowledgedCheckBox.isSelected() && event.isAcknowledged()) {
-            return false;
-        }
-        
-        return true;
+        // Check category filter and acknowledged filter
+        return (selectedCategories.contains(event.getCategory())
+                && (showAcknowledgedCheckBox.isSelected() || !event.isAcknowledged()));
     }
 
     /**
@@ -156,10 +147,8 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         // Filter and sort events by timestamp, most recent first
         List<HistoricalEvent> sortedEvents = events.stream()
             .filter(this::isEventVisible)
-            .sorted((e1, e2) -> {
-                return e2.getTimestamp().compareTo(e1.getTimestamp());
-            })
-            .collect(Collectors.toList());
+            .sorted((e1, e2) -> e2.getTimestamp().compareTo(e1.getTimestamp()))
+            .toList();
         
         // Create collapsible panel for each event
         for (HistoricalEvent event : sortedEvents) {
@@ -230,11 +219,11 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         
         // Add acknowledged filter checkbox                
         String showAcknowledgedStr = userSettings.getProperty(SHOW_ACKNOWLEDGED, "false");
-        showAcknowledgedCheckBox = new JCheckBox("Show Acknowledged", Boolean.parseBoolean(showAcknowledgedStr));
+        showAcknowledgedCheckBox = new JCheckBox("Acknowledged", Boolean.parseBoolean(showAcknowledgedStr));
         showAcknowledgedCheckBox.setToolTipText("Show or hide acknowledged events");
-        showAcknowledgedCheckBox.addActionListener(e -> {
-            loadEvents(); // Refresh the event list when checkbox changes
-        });
+        showAcknowledgedCheckBox.addActionListener(e -> 
+            loadEvents() // Refresh the event list when checkbox changes
+        );
         toolbar.add(showAcknowledgedCheckBox);
         
         // Create filter popup menu

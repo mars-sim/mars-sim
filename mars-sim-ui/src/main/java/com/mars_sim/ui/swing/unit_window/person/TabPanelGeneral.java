@@ -26,8 +26,6 @@ import com.mars_sim.ui.swing.utils.AttributePanel;
  */
 @SuppressWarnings("serial")
 class TabPanelGeneral extends EntityTabPanel<Person> {
-	
-	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
 			
 	/**
 	 * Constructor.
@@ -58,12 +56,10 @@ class TabPanelGeneral extends EntityTabPanel<Person> {
 		infoPanel.addTextField(Msg.getString("person.bloodType"), person.getBloodType(), null);
 				
 		// Prepare birthdate and age textfield
+		infoPanel.addTextField(Msg.getString("person.age"), Integer.toString(person.getAge()), null);
 		var birthDate = person.getBirthDate();
-		String birthTxt = Msg.getString(
-			TAB_BIRTH_DATE_AGE,
-			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
-			Integer.toString(person.getAge())); //$NON-NLS-1$
-		infoPanel.addTextField(Msg.getString("person.birthDate"), birthTxt, null);
+		infoPanel.addTextField(Msg.getString("person.birthDate"),
+					birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)), null);
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();

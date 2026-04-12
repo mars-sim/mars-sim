@@ -166,7 +166,7 @@ public class MonitorWindow extends ContentPanel
 	 */
 	public MonitorWindow(UIContext context, Properties uiProps) {
 		// Use TableWindow constructor
-		super(NAME, TITLE, Placement.BOTTOM);
+		super(NAME, TITLE, Placement.CENTER);
 		
 		this.context = context;
 
