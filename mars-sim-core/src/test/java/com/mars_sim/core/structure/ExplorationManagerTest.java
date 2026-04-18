@@ -16,9 +16,9 @@ import com.mars_sim.core.map.location.CoordinatesException;
 import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 
-public class ExplorationManagerTest extends MarsSimUnitTest {
+class ExplorationManagerTest extends MarsSimUnitTest {
     @Test
-    public void testCreateARegionOfInterest() {
+    void testCreateARegionOfInterest() {
         var s = buildSettlement("mock");
 
         var eMgr = new ExplorationManager(s);
@@ -46,7 +46,7 @@ public class ExplorationManagerTest extends MarsSimUnitTest {
     }
 
      @Test
-     public void testCreateUnclaimedARegionOfInterest() throws CoordinatesException {
+    void testCreateUnclaimedARegionOfInterest() throws CoordinatesException {
         var locn = CoordinatesFormat.fromString("10.0 10.0");
 
         // Find a random location within 20K with minerals
@@ -57,7 +57,7 @@ public class ExplorationManagerTest extends MarsSimUnitTest {
 
         // Create a site 1KM from the base, no settlemetn as unclaimed
         var siteLocn = found.getKey();
-        var newRoI = sf.createROI(siteLocn, 100);
+        var newRoI = sf.declareNewROI(siteLocn, 100);
 
         assertNotNull(newRoI, "New RoI created");
         assertEquals(siteLocn, newRoI.getCoordinates(), "New ROI coordinates");
@@ -66,7 +66,7 @@ public class ExplorationManagerTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testStatistics() {
+    void testStatistics() {
         var s = buildSettlement("Test", false, Coordinates.getRandomLocation());
 
         var eMgr = new ExplorationManager(s);

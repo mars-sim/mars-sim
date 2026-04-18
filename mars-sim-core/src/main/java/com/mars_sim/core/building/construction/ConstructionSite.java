@@ -17,6 +17,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalBoundedObject;
@@ -90,6 +91,9 @@ public class ConstructionSite extends FixedUnit {
         this.length = placement.getLength();
         this.facing = placement.getFacing();
         this.position = placement.getPosition();
+
+        registerHistoricalEvent(HistoricalEventType.CONSTRUCTION_STAGE_STARTED, initPhase.stageInfo().getName(),
+                    null, null, null);
     }
 
     @Override
@@ -215,6 +219,9 @@ public class ConstructionSite extends FixedUnit {
                 + (isConstruction ? "construction" : "salvage"));
 
         fireUnitUpdate(ConstructionSite.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
+        registerHistoricalEvent(HistoricalEventType.CONSTRUCTION_STAGE_STARTED, nextPhase.stageInfo().getName(),
+        null, null, null);
+
         return phases.isEmpty();
     }
 
@@ -247,6 +254,7 @@ public class ConstructionSite extends FixedUnit {
         // Fire construction event.
         fireUnitUpdate(ConstructionSite.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 
+        registerHistoricalEvent(HistoricalEventType.BUILDING_CREATED, uniqueName, null, newBuilding, null);
         return newBuilding;
     }
 
@@ -315,8 +323,6 @@ public class ConstructionSite extends FixedUnit {
 		logger.info(this, "Manually relocated by player from " 
 				+ existingPosn + " to "
 				+ position);
-        
-
 	}
 
 	@Override

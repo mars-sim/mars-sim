@@ -526,10 +526,9 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	 *
 	 * @param location		the location coordinates.
 	 * @param skill			the skill
-	 * @return the explored location
+	 * @return the explored location or null if the location is not suitable for exploration.
 	 */
-	public synchronized MineralSite declareROI(Coordinates location,
-			int skill) {
+	public synchronized MineralSite declareNewROI(Coordinates location, int skill) {
 		
 		MineralSite result = null;
 				
@@ -577,35 +576,14 @@ public class SurfaceFeatures implements Serializable, Temporal {
 	/**
 	 * Gets a location already been declared/considered as a Region Of Interest (ROI).
 	 * 
-	 * @param coord
-	 * @return
+	 * @param coord Coordinates of the location to check.
+	 * @return Site or null if not found.
 	 */
 	public MineralSite getDeclaredROI(Coordinates coord) {
 		return regionOfInterestLocations.stream()
 				  .filter(e -> e.getCoordinates().equals(coord))
 				  .findFirst()
 				  .orElse(null);
-	}
-
-	
-	/**
-	 * Creates a Region of Interest (ROI) at a given location and
-	 * estimate its mineral concentrations.
-	 * 
-	 * @param siteLocation
-	 * @param skill
-	 * @return ExploredLocation
-	 */
-	public MineralSite createROI(Coordinates siteLocation, int skill) {
-
-		// Check if this siteLocation has already been added or not to SurfaceFeatures
-		MineralSite el = getDeclaredROI(siteLocation);
-		if (el == null) {
-			// If it hasn't been claimed yet, then claim it
-			el = declareROI(siteLocation, skill);
-		}
-		
-		return el;
 	}
 
 	/**

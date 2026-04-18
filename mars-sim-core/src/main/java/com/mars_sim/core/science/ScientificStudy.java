@@ -24,6 +24,8 @@ import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -61,15 +63,15 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	private static final SimLogger logger = SimLogger.getLogger(ScientificStudy.class.getName());
 
 	// Scientific study event types
-	public static final String STUDY_COMPLETION_EVENT = "study completion event";
+	private static final String STUDY_COMPLETION_EVENT = "study completion event";
 	public static final String PHASE_CHANGE_EVENT = "study phase change event";
-	public static final String PROPOSAL_WORK_EVENT = "study proposal work event";
+	private static final String PROPOSAL_WORK_EVENT = "study proposal work event";
 	public static final String ADD_COLLABORATOR_EVENT = "add study collaborator event";
 	public static final String REMOVE_COLLABORATOR_EVENT = "remove study collaborator event";
-	public static final String PRIMARY_RESEARCH_WORK_EVENT = "study primary research work event";
-	public static final String COLLABORATION_RESEARCH_WORK_EVENT = "study collaboration research work event";
-	public static final String PRIMARY_PAPER_WORK_EVENT = "study primary paper work event";
-	public static final String COLLABORATION_PAPER_WORK_EVENT = "study collaboration paper work event";
+	private static final String PRIMARY_RESEARCH_WORK_EVENT = "study primary research work event";
+	private static final String COLLABORATION_RESEARCH_WORK_EVENT = "study collaboration research work event";
+	private static final String PRIMARY_PAPER_WORK_EVENT = "study primary paper work event";
+	private static final String COLLABORATION_PAPER_WORK_EVENT = "study collaboration paper work event";
 
 	// Data members
 	/** The assigned study number. */
@@ -181,6 +183,9 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		peerReviewStartTime = null;
 		listeners = new HashSet<>();
 		topics = new ArrayList<>();
+
+		// Register the initial phase
+		registerHistoricalEvent(HistoricalEventType.STUDY_START_PHASE, phase.getName());
 	}
 
 	/**
@@ -245,6 +250,18 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(PHASE_CHANGE_EVENT);
+
+		registerHistoricalEvent(HistoricalEventType.STUDY_START_PHASE, phase.getName());
+	}
+
+	/**
+	 * Create a historical event for this scientific study.
+	 * @param eventType the type of event.
+	 * @param message the message to include in the event.
+	 */
+	private void registerHistoricalEvent(HistoricalEventType eventType, String message) {
+		var event = new HistoricalEvent(eventType, this, getPrimarySettlement(), message, null);
+		Simulation.instance().getEventManager().registerNewEvent(event);
 	}
 
 	/**
@@ -817,6 +834,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		
 		// Fire scientific study update event.
 		fireScientificStudyUpdate(STUDY_COMPLETION_EVENT);
+		registerHistoricalEvent(HistoricalEventType.STUDY_FINISH, reason);
 	}
 
 	/**

@@ -17,8 +17,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.environment.SurfaceFeatures;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mineral.MineralMap;
@@ -225,25 +228,16 @@ public class ExplorationManager implements Serializable {
 		List<Double> list = new ArrayList<>();
 		for (var e : interestingLocns) {
 			if (e.site != null) {
-				switch(status) {
-					case SITE_STAT: 
-						list.add(e.distance);
-						break;
-					
-					case CLAIMED_STAT:
-						if (e.site.isClaimed() && e.site.getOwner().equals(base.getReportingAuthority())) {
-							list.add(e.distance);
-						}
-						break;
-					
-					case UNCLAIMED_STAT:
-						if (!e.site.isClaimed()) {
-							list.add(e.distance);
-						}
-						break;
-					
-					default:
-						break;
+				boolean add = switch(status) {
+					case SITE_STAT -> true;
+					case CLAIMED_STAT -> e.site.isClaimed()
+								&& e.site.getOwner().equals(base.getReportingAuthority());
+					case UNCLAIMED_STAT -> !e.site.isClaimed();
+					default -> false;
+				};
+
+				if (add) {
+					list.add(e.distance);
 				}
 			}	
 		}
@@ -276,13 +270,22 @@ public class ExplorationManager implements Serializable {
 	 * @return ExploredLocation
 	 */
 	public MineralSite createROI(Coordinates siteLocation, int skill) {
-		var el = surfaceFeatures.createROI(siteLocation, skill);
-		if (el != null) {
-			// Record this site locally
-			var p = findProspect(siteLocation);
+		var el = surfaceFeatures.getDeclaredROI(siteLocation);
 
-			p.site = el;
+		// Could already been declared by another settlement, so only declare if not already declared
+		if (el == null) {
+			el = surfaceFeatures.declareNewROI(siteLocation, skill);
+			if (el == null) {
+				logger.warning(base, "Failed to declare ROI at " + siteLocation);
+				return null;
+			}
+			registerHistoricalEvent(HistoricalEventType.SITE_DISCOVERED, el);
 		}
+
+		// Record this site locally
+		var p = findProspect(siteLocation);
+		p.site = el;
+
 		return el;
 	}
 	
@@ -291,7 +294,7 @@ public class ExplorationManager implements Serializable {
 					.filter(s -> s.locn.equals(siteLocation))
 					.findAny().orElse(null);
 		if (p == null) {
-			// Odd as all potential Coordinates shoudl be known
+			// Odd as all potential Coordinates should be known
 			var distance = base.getCoordinates().getDistance(siteLocation);
 			p = new Prospect(siteLocation, distance);
 			interestingLocns.add(p);
@@ -412,7 +415,21 @@ public class ExplorationManager implements Serializable {
 	 */
     public void claimSite(MineralSite newSite) {
 		newSite.setClaimed(base.getReportingAuthority());
+		registerHistoricalEvent(HistoricalEventType.SITE_CLAIMED, newSite);
 		var p = findProspect(newSite.getCoordinates());
 		p.site = newSite;
     }	
+
+	
+	/**
+	 * Create a historical event for the associated Settlement covering a Mineral site. The site's coordinates
+	 * are used as the Coordinates of the event.
+	 * @param eventType the type of event.
+	 * @param site the mineral site associated with the event.
+	 */
+	private void registerHistoricalEvent(HistoricalEventType eventType, MineralSite site) {
+		var event = new HistoricalEvent(eventType, base, base, site.getName(),
+				null, null, site.getCoordinates());
+		Simulation.instance().getEventManager().registerNewEvent(event);
+	}
 }

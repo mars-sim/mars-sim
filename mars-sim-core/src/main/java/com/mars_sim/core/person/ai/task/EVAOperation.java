@@ -19,7 +19,6 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.Equipment;
-import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
@@ -427,19 +426,16 @@ public abstract class EVAOperation extends Task {
 
 		// Check for any EVA problems.
 		if (hasEVASuitProblem(person)) {
-//			May add back for testing : logger.info(worker, 10_000L, getName() + "': EVA problems.");
 			return true;
 		}
 
 		// Check if it is at meal time and the person is doubly hungry
 		if (isHungryAtMealTime(person, 0)) {
-//			May add back for future testing : logger.info(worker, 10_000L, "Ending '" + getName() + "': Doubly hungry at meal time.");
 			return true;
 		}
 
         // Checks if the person is physically drained
 		if (isExhausted(person)) {
-//			May add back for future testing : logger.info(worker, 10_000L, "Ending '" + getName() + "': Exhausted.");
 			return true;
 		}
 		
@@ -460,7 +456,6 @@ public abstract class EVAOperation extends Task {
 
 		// Check for sunlight
 		if (!isSunlightAboveLevel(person.getCoordinates(), minEVASunlight)) {
-//			May add back for future testing : logger.info(worker, 10_000L, getName() + "': too dark already.");
 			return true;
 		}
 
@@ -530,26 +525,11 @@ public abstract class EVAOperation extends Task {
 	}
 	
 	/**
-	 * Checks to see if the person is supposed to be outside. This is used to abort an EVA.
-	 * Any call to this method that relates to a problem should be replaced with {@link #endEVA(String)}
-	 * 
-	 * @param reason
-	 * @deprecated Use {@link #endEVA(String)}
-	 */
-	protected void checkLocation(String reason) {
-		endEVA(reason);
-	}
-
-	/**
 	 * Aborts an EVA, if the Person is outside get them to return otherwise end the Task.
 	 * 
 	 * @param reason Reason for ending.
 	 */
 	protected void endEVA(String reason) {
-		if (reason != null) {
-// 			May add back for future testing :logger.info(worker, 20_000, "Ending EVA '" + getName() + "': " + reason);
-		}
-		
 		if (person.isOutside()) {
             setPhase(WALK_BACK_INSIDE);
 		}
@@ -892,14 +872,9 @@ public abstract class EVAOperation extends Task {
 		HealthProblem problem = p.getPhysicalCondition().getMostSerious();
 				
 		if (problem == null) {
-			var rescueEvent = new HistoricalEvent(HistoricalEventType.MISSION_RESCUE_PERSON,
-				p, p.getAssociatedSettlement(),
-				PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
-				p.getTaskDescription(),
-				p.getMission(),
-				p.getCoordinates()
-				);
-			registerNewEvent(rescueEvent);
+			p.registerHistoricalEvent(HistoricalEventType.MISSION_RESCUE_PERSON,
+										PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
+										p.getTaskDescription(), p.getMission(), p.getCoordinates());
 
 		}
 		else {
