@@ -11,10 +11,9 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -166,7 +165,7 @@ public class RadiationExposure implements Serializable, Temporal {
 			return career > limit.career;
 		}
 		
-	};
+	}
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -244,7 +243,9 @@ public class RadiationExposure implements Serializable, Temporal {
 	private static final String DOSE_OF = " mSv cumulativeDoses of ";
 	private static final String EVA_OPERATION = " during an EVA operation.";
 
-	private int solCache = 1, counter30 = 1, counter360 = 1;
+	private int solCache = 1;
+	private int counter30 = 1;
+	private int counter360 = 1;
 
 	private boolean isSick;
 
@@ -357,7 +358,7 @@ public class RadiationExposure implements Serializable, Temporal {
 
 
 	private int rand(int ceil) {
-		int base = (int)(ceil / 2);
+		int base = (ceil / 2);
 		return RandomUtil.getRandomInt(base, ceil);
 	}
 
@@ -375,12 +376,6 @@ public class RadiationExposure implements Serializable, Temporal {
 			}
 		}
 		
-		// Checks radiation
-		// Note: if a person is outside, it's handled by EVAOperation's isRadiationDetected()
-//		if (!person.isOutside()) {
-//			isRadiationDetected(pulse.getElapsed());
-//		}
-			
 		return true;
 	}
 
@@ -422,8 +417,6 @@ public class RadiationExposure implements Serializable, Temporal {
 			counter30 = 0;
 		}
 
-		// TODO: convert to Martian system. For now, use 360 sol for simplicity and
-		// synchronization with the 30-day carryover
 		if (counter360 == 360) {
 			carryOverDosage(true);
 			counter360 = 0;
@@ -636,10 +629,8 @@ public class RadiationExposure implements Serializable, Temporal {
 					logger.info(person, str + " while " + activity);
 				}
 
-				HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventType.HAZARD_RADIATION_EXPOSURE,
-												person, person.getAssociatedSettlement(),
-												rad.toString(), person.getTaskDescription());
-				Simulation.instance().getEventManager().registerNewEvent(hEvent);
+				person.registerHistoricalEvent(HistoricalEventType.HAZARD_RADIATION_EXPOSURE, rad.toString(),
+							person.getTaskDescription(), null, null);
 
 				person.fireUnitUpdate(EntityEventType.RADIATION_EVENT);
 

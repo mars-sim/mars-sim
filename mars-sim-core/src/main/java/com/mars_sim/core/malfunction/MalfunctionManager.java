@@ -20,17 +20,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.equipment.ResourceHolder;
-import com.mars_sim.core.events.HistoricalEvent;
-
-import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
@@ -98,9 +95,9 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of malfunction by time since last maintenance. */
 	private static final double MAINT_TO_MAL_RATIO = 5;
 	/** The lower limit factor for maintenance. 1.000_033_516_95 will result in 10 % certainty per orbit. */	
-	private static final double MAINTENANCE_LOWER_LIMIT = 0; //MALFUNCTION_LOWER_LIMIT; // * MAINT_TO_MAL_RATIO; //1.000_033_516_95;
+	private static final double MAINTENANCE_LOWER_LIMIT = 0; 
 	/** The upper limit factor for both malfunction and maintenance. 1.000_335_221_5 will result in 100% certainty per orbit. */
-	private static final double UPPER_LIMIT = 2;//1.000_335_221_5;
+	private static final double UPPER_LIMIT = 2;
 	
 	/** Wear-and-tear points earned from a low quality inspection. */
 	private static final double LOW_QUALITY_INSPECTION = 200;
@@ -189,7 +186,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static MasterClock masterClock;
 	private static MedicalManager medic;
 	private static MalfunctionFactory factory;
-	private static HistoricalEventManager eventManager;
 	private static PartConfig partConfig;
 	
 	/**
@@ -218,25 +214,16 @@ public class MalfunctionManager implements Serializable, Temporal {
 		boolean isMainPowerGen = false;
 		boolean isHallway = false;
 		
-		if (UnitType.BUILDING == entity.getUnitType()) {
-
-			Building building = (Building)entity;
+		if (entity instanceof Building building) {
 			if (building.isInhabitable()) {
 				// Usually power building gets deployed first.
 				isInhabitable = true;
 				
-				if (BuildingCategory.ERV == building.getCategory()) {
-					// Next is resource processing building such as ERV 
-					isERV = true;
-				}
-				else if (BuildingCategory.POWER == building.getCategory()) {
-					// Next is the main power generator
-					isMainPowerGen = true;
-				}
+				isERV = BuildingCategory.ERV == building.getCategory();
+				isMainPowerGen = BuildingCategory.POWER == building.getCategory();
 			}
-			else if (BuildingCategory.CONNECTION == building.getCategory()) {
-				// Next is resource processing building such as ERV 
-				isHallway = true;
+			else {
+				isHallway = BuildingCategory.CONNECTION == building.getCategory();
 			}
 		}
 
@@ -716,33 +703,14 @@ public class MalfunctionManager implements Serializable, Temporal {
 			}
 		}
 
-		HistoricalEvent newEvent = createMalfunctionEvent(
-								eventType, 
-								malfunction, 
-								whileDoing, 
-								whoAffected);
+		getUnit().registerHistoricalEvent(eventType, malfunction.getName(), whileDoing, actor, null);
 		
-		eventManager.registerNewEvent(newEvent);
-
-		if (eventType.getName().equalsIgnoreCase("Acts of God"))
-			logger.log(entity, Level.WARNING, 0, 
-								malfunction.getName()
-								+ PROBABLE_CAUSE 
-								+ eventType.getName() 
-								+ ".");
-		else
-			logger.log(entity, Level.WARNING, 0, 
+		logger.log(entity, Level.WARNING, 0, 
 					malfunction.getName()
 					+ PROBABLE_CAUSE 
 					+ eventType.getName() 
 					+ "."
 					+ (actor != null ? CAUSED_BY + whoAffected + "'." : "."));
-	}
-
-	private HistoricalEvent createMalfunctionEvent(HistoricalEventType type, Malfunction malfunction, String whileDoing,
-			String whoAffected) {
-		return new HistoricalEvent(type, entity, entity.getAssociatedSettlement(), malfunction.getName(),
-									whileDoing, null);
 	}
 	
 	/**
@@ -795,7 +763,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 			
 			double inspectFactor = (effTimeSinceLastMaint/standardInspectionWindow) + .1D;
 			double wearFactor = (100 - currentWearCondPercent) * WEAR_MALFUNCTION_FACTOR;		
-			double malfunctionChance = time * inspectFactor * wearFactor; // * FREQUENCY;
+			double malfunctionChance = time * inspectFactor * wearFactor;
 
 			// Keep for debugging: logger.info(entity, "MalfunctionChance min: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %")
 			
@@ -809,7 +777,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 			malfunctionProbability = 1.0 - Math.exp(-malfunctionChance) ;
 			// Keep for debugging: logger.info(entity, "MalfunctionChance log10: " + Math.round(malfunctionChance * 100_000.0)/100_000.0 + " %")
 				
-			boolean hasMal = false;
 			// Check for malfunction due to lack of maintenance and wear condition.
 			if (time > 0 && RandomUtil.lessThanRandPercent(malfunctionProbability)) {
 				// Reset delay back to MAX_DELAY. 
@@ -817,17 +784,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	
 				// Note: call selectMalfunction is just checking for the possibility 
 				// of having malfunction and doesn't necessarily mean it has to result in a malfunction
-				hasMal = selectMalfunction((Unit)entity);
+				selectMalfunction((Unit)entity);
 			}
 
 			// FUTURE : how to connect maintenance to field reliability statistics of parts used in this units	
-			
-			if (hasMal) {
-				// Note: If it already has a malfunction in this tick,
-				// do inhibit any task of inspection over this entity for maintenance so that 
-				// settlers can handle the stress.
-				return;
-			}
 		}
 	}
 		
@@ -976,19 +936,13 @@ public class MalfunctionManager implements Serializable, Temporal {
 		}
 		else {
 			Map<String, Double> effects = fixed.getLifeSupportEffects();
-			if (!effects.isEmpty()) {
-				if (effects.containsKey(OXYGEN))
-					resetModifiers(0);
-			}
+			if (effects.containsKey(OXYGEN))
+				resetModifiers(0);
 
-			getUnit().fireUnitUpdate(MALFUNCTION_EVENT, fixed);
+			var u = getUnit();
+			u.fireUnitUpdate(MALFUNCTION_EVENT, fixed);
 
-			String chiefRepairer = fixed.getMostProductiveRepairer();
-
-			HistoricalEvent newEvent = createMalfunctionEvent(HistoricalEventType.MALFUNCTION_FIXED, fixed,
-					null, chiefRepairer);
-
-			eventManager.registerNewEvent(newEvent);
+			u.registerHistoricalEvent(HistoricalEventType.MALFUNCTION_FIXED, fixed.getName(), null, null, null);
 
 			logger.log(entity, Level.INFO, 20_000L, "The malfunction '" + fixed.getName() + "' had been dealt with.");
 		}
@@ -1003,9 +957,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	public void setLifeSupportModifiers(double time) {
 
 		double tempOxygenFlowModifier = 0D;
-//		double tempWaterFlowModifier = 0D;
-//		double tempAirPressureModifier = 0D;
-//		double tempTemperatureModifier = 0D;
 
 		// Make any life support modifications.
 		if (hasMalfunction()) {
@@ -1023,12 +974,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 					
 					if (effects.get(OXYGEN) != null)
 						tempOxygenFlowModifier += effects.get(OXYGEN) * (100D - malfunction.getPercentageFixed())/100D;
-//					if (effects.get(WATER) != null)
-//						tempWaterFlowModifier += effects.get(WATER) * (100D - malfunction.getPercentageFixed())/100D;
-//					if (effects.get(PRESSURE) != null)
-//						tempAirPressureModifier += effects.get(PRESSURE) * (100D - malfunction.getPercentageFixed())/100D;
-//					if (effects.get(TEMPERATURE) != null)
-//						tempTemperatureModifier += effects.get(TEMPERATURE) * (100D - malfunction.getPercentageFixed())/100D;
 				}
 			}
 
@@ -1087,8 +1032,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public void createASeriesOfMalfunctions(String location, Unit actor) {
 		int nervousness = SCORE_DEFAULT;
-		if (actor instanceof Person) {
-			Person p = (Person) actor;
+		if (actor instanceof Person p) {
 			nervousness = p.getMind().getTraitManager()
 					.getPersonalityTrait(PersonalityTraitType.NEUROTICISM);
 		}
@@ -1133,12 +1077,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			// Add stress to people affected by the accident.
 			Collection<Person> people = entity.getAffectedPeople();
-			Iterator<Person> i = people.iterator();
-			while (i.hasNext()) {
-				Person p = i.next();
-//	            logger.info(p, 10_000, "Adding " + Math.round(ACCIDENT_STRESS * 100.0)/100.0 + " to the stress.");
-				p.getPhysicalCondition().addStress(ACCIDENT_STRESS);
-			}
+			people.forEach(p -> p.getPhysicalCondition().addStress(ACCIDENT_STRESS));
 		}
 	}
 
@@ -1199,20 +1138,15 @@ public class MalfunctionManager implements Serializable, Temporal {
 		
 		if (partsPosted) {
 			
-			int shortfall = consumeMaintenanceParts((EquipmentOwner) containerUnit);
+			int shortfall = consumeMaintenanceParts(containerUnit);
 			
-			if (shortfall == -1) {
-				logger.warning(entity, 30_000L, "No spare part(s) available for maintenance on " 
-						+ entity + ".");
-			}
-			else if (shortfall == 0) {
-				logger.warning(entity, 30_000L, "No spare part posted yet on " 
-						+ entity + ".");
-			}
-			else {
-				logger.info(entity, 30_000L, "Spare part(s) consumed on a maintenance task on " 
-						+ entity + ".");
-			}
+			String shortfallMsg = switch(shortfall) {
+				case -1 -> "No spare part(s) available for maintenance on " + entity + ".";
+				case 0 -> "No spare part posted yet on " + entity + ".";
+				default -> "Spare part(s) consumed on a maintenance task on " + entity + ".";
+			};
+
+			logger.info(entity, 30_000L, shortfallMsg);
 		}
 		else {
 			// Performs the inspection maintenance to see if any parts need to be replaced
@@ -1262,7 +1196,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public double getAdjustedCondition() { 
-		// Compare with currentWearCondPercent = currentWearLifeTime/baseWearLifeTime * 100;
 		return currentWearLifeTime / (baseWearLifeTime + cumulativeTime) * 100;
 	}
 
@@ -1326,12 +1259,11 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * Gets the unit.
 	 */
 	private Unit getUnit() {
-		if (entity instanceof Unit u)
-			return u;
-		else if (entity instanceof Building b)
-			return b.getSettlement();
-		else
+		if (entity instanceof Unit unit) {
+			return unit;
+		} else {
 			throw new IllegalStateException("Could not find unit associated with malfunctionable.");
+		}
 	}
 
 	/**
@@ -1364,7 +1296,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public List<MaintenanceScope> getMaintenanceScopeList(String scope) {
-//		May add back for debugging: logger.info("scope: " + scope + "  scopeMap: " + scopeMap.keySet().toString());
 		return scopeMap.getOrDefault(scope, Collections.emptyList());
 	}
 	
@@ -1515,9 +1446,7 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 * @return
 	 */
 	public boolean areMaintenancePartsNeeded() {
-		if (partsNeededForMaintenance == null || partsNeededForMaintenance.isEmpty())
-			return false;
-		return true;
+		return (partsNeededForMaintenance != null && !partsNeededForMaintenance.isEmpty());
 	}
 	
 	/**
@@ -1756,17 +1685,12 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/**
 	 * Initializes instances after loading from a saved sim.
 	 *
-	 * @param c0 {@link MasterClock}
-	 * @param mf {@link MalfunctionFactory}
-	 * @param m {@link MedicalManager}
-	 * @param e {@link HistoricalEventManager}
 	 */
 	public static void initializeInstances(MasterClock c0, MalfunctionFactory mf,
-										   MedicalManager mm, HistoricalEventManager em, PartConfig pc) {
+										   MedicalManager mm, PartConfig pc) {
 		masterClock = c0;
 		factory = mf;
 		medic = mm;
-		eventManager = em;
 		partConfig = pc;
 	}
 
@@ -1775,7 +1699,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	 */
 	public static void setNoFailures(boolean newFlag) {
 		noFailures = newFlag;
-//		logger.info("No failures flag set to " + noFailures);
 	}
 
 	/**

@@ -9,8 +9,6 @@ package com.mars_sim.core.person.health;
 import java.io.Serializable;
 
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.events.HistoricalEvent;
-
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -80,11 +78,9 @@ public class HealthProblem implements Serializable {
 		if (!sufferer.isInSettlement()) {
 			location = sufferer.getCoordinates();
 		}
-		var event = new HistoricalEvent(eventType, sufferer, sufferer.getAssociatedSettlement(), getComplaint().getName(),
-				sufferer.getTaskDescription(), null, location);
 
-
-		eventManager.registerNewEvent(event);
+		sufferer.registerHistoricalEvent(eventType, getComplaint().getName(), sufferer.getTaskDescription(),
+							null, location);
 	}
 
 	/**

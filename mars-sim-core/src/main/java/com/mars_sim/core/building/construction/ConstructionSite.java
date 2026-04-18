@@ -11,15 +11,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mars_sim.core.Entity;
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.config.BuildingSpec;
 import com.mars_sim.core.building.construction.ConstructionStageInfo.Stage;
-import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.BoundedObject;
@@ -95,7 +92,8 @@ public class ConstructionSite extends FixedUnit {
         this.facing = placement.getFacing();
         this.position = placement.getPosition();
 
-        registerHistoricalEvent(HistoricalEventType.CONSTRUCTION_STAGE_STARTED, initPhase.stageInfo().getName(), null);
+        registerHistoricalEvent(HistoricalEventType.CONSTRUCTION_STAGE_STARTED, initPhase.stageInfo().getName(),
+                    null, null, null);
     }
 
     @Override
@@ -221,7 +219,8 @@ public class ConstructionSite extends FixedUnit {
                 + (isConstruction ? "construction" : "salvage"));
 
         fireUnitUpdate(ConstructionSite.ADD_CONSTRUCTION_STAGE_EVENT, currentStage);
-        registerHistoricalEvent(HistoricalEventType.CONSTRUCTION_STAGE_STARTED, nextPhase.stageInfo().getName(), null);
+        registerHistoricalEvent(HistoricalEventType.CONSTRUCTION_STAGE_STARTED, nextPhase.stageInfo().getName(),
+        null, null, null);
 
         return phases.isEmpty();
     }
@@ -255,7 +254,7 @@ public class ConstructionSite extends FixedUnit {
         // Fire construction event.
         fireUnitUpdate(ConstructionSite.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 
-        registerHistoricalEvent(HistoricalEventType.BUILDING_CREATED, uniqueName, newBuilding);
+        registerHistoricalEvent(HistoricalEventType.BUILDING_CREATED, uniqueName, null, newBuilding, null);
         return newBuilding;
     }
 
@@ -324,21 +323,7 @@ public class ConstructionSite extends FixedUnit {
 		logger.info(this, "Manually relocated by player from " 
 				+ existingPosn + " to "
 				+ position);
-        
-
 	}
-
-	/**
-	 * Create a historical event for this scientific study.
-	 * @param eventType the type of event.
-	 * @param message the message to include in the event.
-     * @param affected the entity affected by the event, if applicable.
-	 */
-	private void registerHistoricalEvent(HistoricalEventType eventType, String message, Entity affected) {
-		var event = new HistoricalEvent(eventType, this, getAssociatedSettlement(), message, null, affected);
-		Simulation.instance().getEventManager().registerNewEvent(event);
-	}
-
 
 	@Override
 	public UnitType getUnitType() {

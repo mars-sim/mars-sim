@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.equipment.EquipmentOwner;
 import com.mars_sim.core.logging.SimLogger;
@@ -523,31 +521,6 @@ public class Malfunction implements Serializable {
 	}
 
 	/**
-	 * Gets the name of the person who spent most time repairing this malfunction.
-	 *
-	 * @return the name of the person
-	 */
-	public String getMostProductiveRepairer() {
-		// Collate all values
-		Map<String, Double> totalWork = work.values().stream()
-			.flatMap(w -> w.activeWorkers.entrySet().stream())
-			.collect(Collectors.toMap(Map.Entry::getKey,
-								  Map.Entry::getValue,
-								  Double::sum								  
-								  ));
-
-		// Find the max
-		Map.Entry<String, Double> maxEntry = totalWork.entrySet()
-				.stream()
-				.max(Map.Entry.comparingByValue())
-				.orElse(null); // .get()
-    	if (maxEntry != null && maxEntry.getKey() != null)
-    		return maxEntry.getKey();
-    	else
-    		return null;
-	}
-
-	/**
 	 * Gets a list of repairers who have worked on this type of malfunction repair.
 	 * 
 	 * @param type
@@ -639,21 +612,6 @@ public class Malfunction implements Serializable {
 			}
 		}
 		return selectedScope;
-	}
-	
-	/**
-	 * Randomly picks one of the scopes.
-	 * 
-	 * @return
-	 */
-	private String pickOneScope() {
-		Set<String> scopes = definition.getSystems();
-
-		int rand = RandomUtil.getRandomInt(scopes.size() - 1);
-		return scopes.stream()
-				     .skip(rand)
-				     .findFirst()
-				     .orElse(null);
 	}
 
 	/**

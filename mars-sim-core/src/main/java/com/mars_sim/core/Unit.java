@@ -13,7 +13,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.environment.Weather;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -292,6 +295,28 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 			return Collections.emptySet();
 		}
 		return Collections.unmodifiableSet(listeners);
+	}
+
+	
+	/**
+	 * Create a historical event for this Unit.
+	 * @param eventType the type of event.
+	 * @param message the message to include in the event.
+	 * @param doing the action being done in the event, maybe null.
+     * @param affected the entity affected by the event, maybe null.
+	 * @param where the coordinates of the event, maybe null
+	 */
+	public void registerHistoricalEvent(HistoricalEventType eventType, String message, String doing, Entity affected,
+			Coordinates where) {
+		var base = getAssociatedSettlement();
+
+		// Not briliant but Settlements logging are their own home base
+		if (base == null && this instanceof Settlement settlement) {
+			base = settlement;
+		}
+
+		var event = new HistoricalEvent(eventType, this, base, message, doing, affected, where);
+		Simulation.instance().getEventManager().registerNewEvent(event);
 	}
 
 	/**

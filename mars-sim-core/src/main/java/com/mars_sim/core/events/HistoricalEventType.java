@@ -53,7 +53,10 @@ public enum HistoricalEventType {
 	CONSTRUCTION_STAGE_STARTED	(HistoricalEventCategory.CONSTRUCTION),
 
 	SITE_CLAIMED				(HistoricalEventCategory.EXPLORATION),
-	SITE_DISCOVERED				(HistoricalEventCategory.EXPLORATION);
+	SITE_DISCOVERED				(HistoricalEventCategory.EXPLORATION),
+	
+	CHANGE_ROLE					(HistoricalEventCategory.ORGANIZATION),
+	CHANGE_JOB					(HistoricalEventCategory.ORGANIZATION);
 
 	private String name;
 	private HistoricalEventCategory category;
