@@ -120,7 +120,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
-	public static enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
+	public enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
 	
 	private static final int NUM_BACKGROUND_IMAGES = 20;
 
@@ -403,6 +403,7 @@ public class Settlement extends Unit implements Temporal,
 	
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
+		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 
 		// Mock use the default shifts
 		// Initialize schedule event manager
@@ -435,11 +436,9 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-
-		final double GEN_MAX = 1_000_000;
 		
 		// Create equipment inventory
-		eqmInventory = new EquipmentInventory(this, GEN_MAX);
+		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 		futureEvents = new ScheduledEventManager(masterClock);
 		creditManager = new CreditManager(this, unitManager);
 

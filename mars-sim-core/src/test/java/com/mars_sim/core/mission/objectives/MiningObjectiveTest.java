@@ -13,10 +13,10 @@ import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
-public class MiningObjectiveTest extends MarsSimUnitTest {
+class MiningObjectiveTest extends MarsSimUnitTest {
     
     @Test
-    public void testExtractedMineral() {
+    void testExtractedMineral() {
         var sf = getSim().getSurfaceFeatures();
 
         // Use a huge range for search to guarantee a site
@@ -24,7 +24,7 @@ public class MiningObjectiveTest extends MarsSimUnitTest {
                     100000, Collections.emptyList());
 
         // Give big skill to handle small conc
-        var site = sf.declareROI(potentials.getKey(), 10);
+        var site = sf.declareNewROI(potentials.getKey(), 10);
 
         LightUtilityVehicle l = null;
 		var obj = new MiningObjective(l, site);

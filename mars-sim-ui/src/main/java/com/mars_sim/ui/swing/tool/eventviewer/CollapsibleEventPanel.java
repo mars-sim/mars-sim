@@ -31,6 +31,7 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.utils.CoordinatesLabel;
 
 /**
  * A collapsible panel that displays a HistoricalEvent.
@@ -157,19 +158,19 @@ class CollapsibleEventPanel extends JPanel {
             }   
         });
         addDetailRow("Source:", new EntityLabel(event.getSource(), uiContext), gbc, row++);
-        addDetailRow("Acknowledged:", acknowledgedCheckBox, gbc, row++);
+        addDetailRow("Acknowledge:", acknowledgedCheckBox, gbc, row++);
         
         // Category
         addDetailRow("Category:", new JLabel(event.getCategory().getName()), gbc, row++);
         
         // What Cause
         if (event.getWhatCause() != null && !event.getWhatCause().isEmpty()) {
-            addDetailRow("What Cause:", new JLabel(event.getWhatCause()), gbc, row++);
+            addDetailRow("Cause:", new JLabel(event.getWhatCause()), gbc, row++);
         }
         
         // While Doing
         if (event.getWhileDoing() != null && !event.getWhileDoing().isEmpty()) {
-            addDetailRow("While Doing:", new JLabel(event.getWhileDoing()), gbc, row++);
+            addDetailRow("Doing:", new JLabel(event.getWhileDoing()), gbc, row++);
         }
         
         // Who
@@ -177,9 +178,14 @@ class CollapsibleEventPanel extends JPanel {
             addDetailRow("Affected:", new EntityLabel(event.getAffected(), uiContext), gbc, row++);
         }
         
+        // Base
+        if (event.getHomeTown() != null) {
+            addDetailRow("Base:", new EntityLabel(event.getHomeTown(), uiContext), gbc, row++);
+        }
+
         // Coordinates but not both
         if (event.getCoordinates() != null) {
-            addDetailRow("Location:", new JLabel(event.getCoordinates().getFormattedString()), gbc, row++);
+            addDetailRow("Location:", new CoordinatesLabel(event.getCoordinates(), uiContext), gbc, row);
         }
     }
     

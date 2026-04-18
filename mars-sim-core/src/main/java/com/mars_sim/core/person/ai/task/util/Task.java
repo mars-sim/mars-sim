@@ -27,8 +27,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.CropConfig;
 import com.mars_sim.core.environment.OrbitInfo;
 import com.mars_sim.core.environment.SurfaceFeatures;
-import com.mars_sim.core.events.HistoricalEvent;
-import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunctionable;
 import com.mars_sim.core.map.location.LocalBoundedObject;
@@ -129,8 +127,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 
 	/** The static instance of the master clock */
 	protected static MasterClock masterClock;
-	/** The static instance of the event manager */
-	protected static HistoricalEventManager eventManager;
 	/** The static instance of the UnitManager */
 	protected static UnitManager unitManager;
 	/** The static instance of the ScientificStudyManager */
@@ -312,15 +308,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	 * Subclasses should override to receive callback when the Task is ending.
 	 */
 	protected void clearDown() {
-	}
-
-	/**
-	 * Helper method for Event subclasses to register historical events.
-	 * 
-	 * @param newEvent the new event
-	 */
-	public static void registerNewEvent(HistoricalEvent newEvent) {
-		eventManager.registerNewEvent(newEvent);
 	}
 	
 	/**
@@ -945,7 +932,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		} 
 		if (!success) {
 			// If no available activity spot, go to an empty location in building
-			success = walkToEmptyActivitySpotInBuilding(building, allowFail);
+			walkToEmptyActivitySpotInBuilding(building, allowFail);
 		}
 	}
 
@@ -1042,14 +1029,12 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		if (originBuilding != null && originBuilding.equals(building)
 			// Check if this worker has already occupied a spot for this function
 			&& f.checkWorkerActivitySpot(worker)) {
-//			logger.info(worker, "Already at a spot for " + f.getFunctionType().getName() + ". No need to go further to claim one.");
 				return true;
 		}
 		
 		LocalPosition loc = f.getAvailableActivitySpot();
 		
 		if (loc == null) {
-//			logger.info(worker, 10_000L, getDescription() + ". No available spots for " + f.getFunctionType().getName() + " in " + building +  ".");
 			return false;
 		}
 			
@@ -1062,20 +1047,11 @@ public abstract class Task implements Serializable, Comparable<Task> {
 			boolean canWalk = createWalkingSubtask(building, loc, allowFail, true);
 			
 			if (canWalk) {
-//					logger.info(worker, "Walking toward " + building + ".");
-
-				// Q: how to make it the building only after it has arrived ?
-				// Use setToBuilding() to both add to life support/robotic station and the building itself
-				// BuildingManager.setToBuilding(worker, building);
-				
-//					logger.info(worker, "Claimed the spot. Walking toward " + building + ".");
 				return true;
 			}
 			else {
 				// Reverse the walk and go back to the original building
-//				createWalkingSubtask(originBuilding, originLoc, allowFail, true);
-//				logger.info(worker, 10_000L, "Failed to claim the spot. Walking back to " + originBuilding + ".");
-				
+		
 				// Unclaim the activity spot.
 				worker.leaveActivitySpot(true);
 				
@@ -1489,7 +1465,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		// Set standard pulse time to a quarter of the value of the current pulse width
 		setStandardPulseTime(Math.min(masterClock.geTaskPulseWidth(), masterClock.getLeadPulseTime()));
 		
-		eventManager = s.getEventManager();
 		unitManager = s.getUnitManager();
 		scientificStudyManager = s.getScientificStudyManager();
 		surfaceFeatures = s.getSurfaceFeatures();

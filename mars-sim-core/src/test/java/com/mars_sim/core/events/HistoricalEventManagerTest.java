@@ -67,7 +67,7 @@ class HistoricalEventManagerTest extends MarsSimUnitTest {
         // Add distinct events up to the match range
         for(int id=0; id<HistoricalEventManager.MATCH_RANGE; id++) {
             var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED, s, s,
-                                "Test Source", "Cause " + id);
+                                "Cause " + id, null);
             manager.registerNewEvent(event1);
             assertEquals(id + 1, manager.getEvents().size());
         }
@@ -75,7 +75,7 @@ class HistoricalEventManagerTest extends MarsSimUnitTest {
         // Repeat the events and no increase
         for(int id=0; id<HistoricalEventManager.MATCH_RANGE; id++) {
             var event1 = new HistoricalEvent(HistoricalEventType.MEDICAL_CURED, s, s,
-                                "Test Source", "Cause " + id);
+                                "Cause " + id, null);
             manager.registerNewEvent(event1);
             assertEquals(HistoricalEventManager.MATCH_RANGE, manager.getEvents().size());
         }

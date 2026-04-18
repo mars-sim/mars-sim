@@ -364,7 +364,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		malfunctionFactory = new MalfunctionFactory();
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
-												medicalManager, eventManager,
+												medicalManager,
 												simulationConfig.getPartConfiguration());
 
 		// Initialize ScientificStudy
@@ -518,7 +518,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		// Initialize instances prior to UnitManager initiation
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
-											medicalManager, eventManager,
+											medicalManager,
 											simulationConfig.getPartConfiguration());
 
 		Relation.initializeInstances(unitManager);
@@ -637,7 +637,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		JobSpec.initializeInstances(unitManager, missionManager);
 		
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
-				medicalManager, eventManager,
+				medicalManager,
 				simulationConfig.getPartConfiguration());
 	
 		Relation.initializeInstances(unitManager);

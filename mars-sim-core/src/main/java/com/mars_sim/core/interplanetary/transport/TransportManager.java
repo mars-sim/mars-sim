@@ -107,8 +107,6 @@ public class TransportManager implements Serializable {
 	 */
 	public void addNewTransportItem(Transportable transportItem) {
 		transportItems.add(transportItem);
-
-		fireEvent(TransportManager.createEvent(transportItem, HistoricalEventType.TRANSPORT_ITEM_CREATED));
 	}
 
 	/**
@@ -130,7 +128,7 @@ public class TransportManager implements Serializable {
 	public static HistoricalEvent createEvent(Transportable transportItem, HistoricalEventType action) {
 		Settlement base = (transportItem instanceof Resupply r ? r.getSettlement() : null);
 		return new HistoricalEvent(action, transportItem, base,
-						null, null, base,
+						null, null, null,
 						transportItem.getLandingLocation()
 		);
 	}

@@ -199,22 +199,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 		Person person = (Person) startingMember;
 
 		if (person.isInSettlement()) {
-
-			// Created mission starting event.
-			registerHistoricalEvent(person, HistoricalEventType.MISSION_START, "Mission Starting");
-
-			// Log mission starting.
-			int n = members.size();
-			String appendStr = "";
-			if (n == 0)
-				appendStr = ".";
-			else if (n == 1)
-				appendStr = "' with 1 other.";
-			else
-				appendStr = "' with " + n + " others.";
-
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + missionString + appendStr);
+					"Began organizing " + missionString + ", members " + members.size());
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -331,9 +317,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			members.add(member);
 
 			signUp.add(member);
-			registerHistoricalEvent(member, HistoricalEventType.MISSION_JOINING,
-									"Adding a member");
-	
+
 			fireMissionUpdate(ADD_MEMBER_EVENT, member);
 
 			logger.log(member, Level.FINER, 0, "Just got added to " + missionString + ".");
@@ -519,7 +503,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		// Move phase on
-		var oldPhase = phase;
  		phase = newPhase;
 		setPhaseEnded(false);
 		phaseStartTime = clock.getMarsTime();
@@ -535,9 +518,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		// Add entry to the log
 		addMissionLog(newPhase.getName(), getStartingPerson().getName());
 
-		if (!oldPhase.equals(INIT_PHASE)) {
-			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, phaseDescription);
-		}
+		registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, phaseDescription);
 
 		fireMissionUpdate(PHASE_EVENT, newPhase);
 	}
@@ -1306,8 +1287,11 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected void startReview() {
 		setPhase(REVIEWING, null);
-		plan = new MissionPlanning(this, getMarsTime().getMissionSol(), getAssociatedSettlement().getMinimumPassingScore());
+
+		var minScore = getAssociatedSettlement().getMinimumPassingScore();
+		plan = new MissionPlanning(this, getMarsTime().getMissionSol(), minScore);
 	}
+	
 	/**
 	 * Returns the mission plan.
 	 *

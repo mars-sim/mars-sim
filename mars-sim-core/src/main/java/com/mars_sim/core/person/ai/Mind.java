@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai;
 import java.io.Serializable;
 
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.AssignmentHistory;
@@ -38,7 +39,6 @@ public class Mind implements Serializable, Temporal {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Mind.class.getName());
 
-	private static final int MAX_EXECUTE = 100; // Maximum number of iterations of a Task per pulse
 	private static final int MAX_ZERO_EXECUTE = 100; // Maximum number of executeTask action that consume no time
 	private static final int RELATION_UPDATE_CYCLE = 250;
 	private static final int EMOTION_UPDATE_CYCLE = 250;
@@ -192,7 +192,6 @@ public class Mind implements Serializable, Temporal {
 	private void takeAction(double time) {
 		double pulseTime = time;
 		int zeroCount = 0;    // Count the number of conseq. zero executions
-		int callCount = 0;
 		// Loop around using up time; recursion can blow stack memory
 		do {
 			// Perform a task if the person has one, or determine a new task/mission.
@@ -219,13 +218,6 @@ public class Mind implements Serializable, Temporal {
 				}
 
 				// Safety check to track a repeating Task loop
-				if (callCount >= MAX_EXECUTE) {
-					logger.warning(person, 20_000, "Calling '"
-							+ taskManager.getTaskName() + "' for "
-							+ callCount + " iterations.");
-					callCount++;
-					return;
-				}
 				if (remainingTime == pulseTime) {
 					// No time has been consumed previously
 					// This is not supposed to happen but still happens a lot.
@@ -348,18 +340,22 @@ public class Mind implements Serializable, Temporal {
 		AssignmentHistory jh = person.getJobHistory();
 
 		// Future: check if the initiator's role allows the job to be changed
-		if (newJob != jobType) {
+		if (newJob != jobType && (bypassingJobLock || !jobLock)) {
+			// Set to the new job
+			var oldJob = jobType;
+			jobType = newJob;
+			jh.saveJob(newJob, assignedBy, status, approvedBy);
 
-			if (bypassingJobLock || !jobLock) {
-				// Set to the new job
-				jobType = newJob;
-				jh.saveJob(newJob, assignedBy, status, approvedBy);
+			person.fireUnitUpdate(EntityEventType.JOB_EVENT, newJob);
 
-				person.fireUnitUpdate(EntityEventType.JOB_EVENT, newJob);
-
-				// Note: the new job will be Locked in until the beginning of the next day
-				jobLock = true;
+			// Record the job change as a historical event
+			if (oldJob != null) {
+				person.registerHistoricalEvent(HistoricalEventType.CHANGE_JOB, newJob.getName(),
+								null, null, null);
 			}
+
+			// Note: the new job will be Locked in until the beginning of the next day
+			jobLock = true;
 		}
 	}
 
