@@ -459,4 +459,11 @@ public class UIConfig {
     	return result;
     }
 
+	/**
+	 * Add a window spec to the loaded specs. This is used by tools to add their window details to the config for saving.
+	 * @param windowSpec Spec to load.
+	 */
+	public void addWindowSpec(WindowSpec windowSpec) {
+		loadedSpecs.put(windowSpec.name(), windowSpec);
+	}
 }
