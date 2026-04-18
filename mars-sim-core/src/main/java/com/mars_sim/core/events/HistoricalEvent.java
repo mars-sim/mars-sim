@@ -202,4 +202,18 @@ public class HistoricalEvent implements Serializable {
 	public void setAcknowledged(boolean acknowledged) {
 		this.acknowledged = acknowledged;
 	}
+
+	/**
+	 * Determines if this event is equivalent to another event. This is used to determine if an event is a repeat of recent events.
+	 * @param newEvent The event to be compared with recent events.
+	 * @return True if they are equivalent, false otherwise.
+	 */
+	public boolean isEquivalent(HistoricalEvent newEvent) {
+		return (type == newEvent.getType()
+				&& source.equals(newEvent.getSource())
+
+				// Cause maybe be null so check for null before equals
+				&& ((whatCause == null && newEvent.getWhatCause() == null)
+					|| (whatCause != null && whatCause.equals(newEvent.getWhatCause()))));
+	}
 }

@@ -83,10 +83,7 @@ public class HistoricalEventManager implements Serializable {
 			int index = Math.max(0, lastEvents.size() - (MATCH_RANGE + 1)); // Start at beginning of check range
 			for (; index < lastEvents.size(); index++) {
 				HistoricalEvent e = lastEvents.get(index);
-				if (e.getType() == newEvent.getType()
-						&& e.getSource().equals(newEvent.getSource())
-						&& e.getWhatCause().equals(newEvent.getWhatCause())
-						&& e.getWhileDoing().equals(newEvent.getWhileDoing())) {
+				if (e.isEquivalent(newEvent)) {
 					return true;
 				}
 			}

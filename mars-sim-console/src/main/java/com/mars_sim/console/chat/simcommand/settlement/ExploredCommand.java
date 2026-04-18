@@ -60,7 +60,7 @@ public class ExploredCommand extends AbstractSettlementCommand {
 		
 		boolean addSite = true;
 		while(addSite) {
-			int searchRange = 50;
+			int searchRange = 200;
 
 			var found = eMgr.acquireNearbyMineralLocation(searchRange);
 			if (found != null) {

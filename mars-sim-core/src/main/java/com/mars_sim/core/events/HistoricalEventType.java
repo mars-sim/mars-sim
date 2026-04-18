@@ -50,7 +50,10 @@ public enum HistoricalEventType {
 	HAZARD_RADIATION_EXPOSURE	(HistoricalEventCategory.HAZARD),
 	
 	BUILDING_CREATED			(HistoricalEventCategory.CONSTRUCTION),
-	CONSTRUCTION_STAGE_STARTED	(HistoricalEventCategory.CONSTRUCTION);
+	CONSTRUCTION_STAGE_STARTED	(HistoricalEventCategory.CONSTRUCTION),
+
+	SITE_CLAIMED				(HistoricalEventCategory.EXPLORATION),
+	SITE_DISCOVERED				(HistoricalEventCategory.EXPLORATION);
 
 	private String name;
 	private HistoricalEventCategory category;
