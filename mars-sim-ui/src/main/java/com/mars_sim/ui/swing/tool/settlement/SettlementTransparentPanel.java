@@ -12,10 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
-import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.Icon;
@@ -49,11 +45,11 @@ import javax.swing.event.ChangeListener;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.GameManager.GameMode;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.Entity;
-import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingManager;
@@ -126,21 +122,12 @@ public class SettlementTransparentPanel extends JComponent {
     private Font sunFont = new Font(Font.MONOSPACED, Font.PLAIN, 12);
     private Font sunBoldFont = new Font(Font.MONOSPACED, Font.BOLD, 12);
 
-    // Thread-safe: simulation thread may update, EDT reads
-    private Map<Settlement, String> resourceCache = new ConcurrentHashMap<>();
+    private String resourceCache = "";
 
     private GameMode mode;
 
     private DisplaySingle bannerBar;
     private JSlider zoomSlider;
-
-    private javax.swing.Timer zoomDebounce;
-    private ChangeListener zoomListener;
-    private MouseWheelListener mouseWheelListener;
-
-    // Patch 1: idempotent installation + cleanup on detach
-    private boolean listenersInstalled;
-    private HierarchyListener mapPanelHierarchyListener;
 
     private JLabel emptyLabel;
     /** label for projected sunrise time. */
@@ -170,8 +157,6 @@ public class SettlementTransparentPanel extends JComponent {
     private JPopupMenu labelsMenu;
     /** Settlement Combo box */
     private JComboBox<Settlement> settlementListBox;
-    /** Settlement Combo box model. */
-    private SettlementComboBoxModel settlementCBModel;
 
     private SettlementMapPanel mapPanel;
     private UIContext context;
@@ -289,16 +274,6 @@ public class SettlementTransparentPanel extends JComponent {
         eastPane.add(controlPane, BorderLayout.CENTER);
 
         centerPanel.add(eastPane, BorderLayout.EAST);
-
-        // Patch 1: listen for mapPanel displayability change to detach listeners to avoid leaks
-        if (mapPanelHierarchyListener == null) {
-            mapPanelHierarchyListener = e -> {
-                if ((e.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED) != 0 && !mapPanel.isDisplayable()) {
-                    detachListeners();
-                }
-            };
-            mapPanel.addHierarchyListener(mapPanelHierarchyListener);
-        }
 
         mapPanel.setVisible(true);
     }
@@ -427,7 +402,7 @@ public class SettlementTransparentPanel extends JComponent {
      */
     private void buildSettlementNameComboBox() {
 
-        settlementCBModel = new SettlementComboBoxModel();
+        var settlementCBModel = new SettlementComboBoxModel();
         settlementListBox = new JComboBox<>(settlementCBModel);
         settlementListBox.setPreferredSize(new Dimension(getNameLength() * 9, 30));
         settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
@@ -471,6 +446,8 @@ public class SettlementTransparentPanel extends JComponent {
      * Changes the map display to the selected settlement.
      */
     private void changeSettlement(Settlement s) {
+        resourceCache = "";
+
         // Set the selected settlement in SettlementMapPanel
         mapPanel.setSettlement(s);
         // Set the population label in the status bar
@@ -537,14 +514,12 @@ public class SettlementTransparentPanel extends JComponent {
      * Builds the banner text from current caches (does *not* touch UI).
      */
     private String buildBannerText(Settlement s) {
-        String resources = (resourceCache != null) ? resourceCache.get(s) : null;
-        if (resources == null) resources = "";
         StringBuilder sb = new StringBuilder();
         var ds = s.getDustStorm();
         if (ds != null) {
             sb.append(ds.getDescription());
         }
-        sb.append(resources);
+        sb.append(resourceCache);
         sb.append(TEMPERATURE).append(tString);
         sb.append(WINDSPEED).append(wsString);
         sb.append(ZENITH_ANGLE).append(zaString);
@@ -648,8 +623,6 @@ public class SettlementTransparentPanel extends JComponent {
         temperatureIcon.setIcon(updatedIcon);
         temperatureIcon.setToolTipText(tooltip);
 
-        ///////////////////////////////////////////////
-
         if (windSpeedCache > 120) {
             if (opticalDepthCache > 0.7) {
                 updatedIcon = ImageLoader.getIconByName("weather/sandstorm");
@@ -682,8 +655,6 @@ public class SettlementTransparentPanel extends JComponent {
 
         windIcon.setIcon(updatedIcon);
         windIcon.setToolTipText(tooltip);
-
-        ///////////////////////////////////////////////
 
         if (opticalDepthCache > 1.0) {
             updatedIcon = ImageLoader.getIconByName("weather/sand");
@@ -737,116 +708,49 @@ public class SettlementTransparentPanel extends JComponent {
         initDebounce(zoomSlider);
 
         // Prepare mouse wheel listener for zooming (install idempotently elsewhere).
-        mouseWheelListener = new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent evt) {
+        MouseWheelListener mouseWheelListener = evt -> {
 
-                int numClicks = evt.getWheelRotation();
-                int value = zoomSlider.getValue();
-                int min = zoomSlider.getMinimum();
-                int max = zoomSlider.getMaximum();
+            int numClicks = evt.getWheelRotation();
+            int value = zoomSlider.getValue();
+            int min = zoomSlider.getMinimum();
+            int max = zoomSlider.getMaximum();
 
-                if (numClicks > 0) {
-                    // wheel down -> zoom out
-                    if (value - 1 >= min) {
-                        zoomSlider.setValue(value - 1);
-                    }
+            if (numClicks > 0) {
+                // wheel down -> zoom out
+                if (value - 1 >= min) {
+                    zoomSlider.setValue(value - 1);
                 }
-                else if (numClicks < 0) {
-                    // wheel up -> zoom in
-                    if (value + 1 <= max) {
-                        zoomSlider.setValue(value + 1);
-                    }
-                }
-
-                evt.consume();
             }
+            else if (numClicks < 0) {
+                // wheel up -> zoom in
+                if (value + 1 <= max) {
+                    zoomSlider.setValue(value + 1);
+                }
+            }
+
+            evt.consume();
         };
 
-        // Patch 1: install the wheel listener idempotently to avoid duplicates
-        if (mapPanel != null && !listenersInstalled) {
-            mapPanel.addMouseWheelListener(mouseWheelListener);
-            listenersInstalled = true;
-        }
+        mapPanel.addMouseWheelListener(mouseWheelListener);
     }
 
     /**
      * Sets up the zoom slider with a timer to debounce any redundant re-rendering work.
      */
     private void initDebounce(JSlider slider) {
-        zoomListener = e -> {
+        ChangeListener zoomListener = e -> {
             int value = ((JSlider) e.getSource()).getValue();
-            if (zoomDebounce == null) {
-                zoomDebounce = new javax.swing.Timer(50, ae -> convertTo(value));
-                zoomDebounce.setRepeats(false);
-                zoomDebounce.start();
-            }
-            else if (zoomDebounce.isRunning()) {
-                zoomDebounce.restart();
-            }
-            else {
-                zoomDebounce = null;
-                zoomDebounce = new javax.swing.Timer(50, ae -> convertTo(value));
-                zoomDebounce.setRepeats(false);
-                zoomDebounce.start();
-            }
+            mapPanel.setScale(value);
+
         };
         slider.addChangeListener(zoomListener);
-    }
-
-    /**
-     * Converts the zoom value found on the slider to a map scale.
-     */
-    private void convertTo(int value) {
-        // Slider min is 1; mapPanel clamps & quantizes internally.
-        mapPanel.setScale(value);
-    }
-
-    /**
-     * Ensure we stop timers and detach listeners when removed from a container.
-     * (Fixed: avoid calling super.removeNotify() twice.)
-     */
-    @Override
-    public void removeNotify() {
-        try {
-            destroy();
-        } finally {
-            super.removeNotify();
-        }
-    }
-
-
-    /**
-     * Detach the listeners this panel installs, idempotently.
-     * (Patch 1 core: prevent retained references when the map window closes)
-     */
-    private void detachListeners() {
-        // Stop and clear debounce timer
-        if (zoomDebounce != null) {
-            zoomDebounce.stop();
-        }
-        // Remove our slider change listener
-        if (zoomSlider != null && zoomListener != null) {
-            zoomSlider.removeChangeListener(zoomListener);
-        }
-        // Remove mouse wheel listener from mapPanel
-        if (mapPanel != null && mouseWheelListener != null) {
-            mapPanel.removeMouseWheelListener(mouseWheelListener);
-        }
-        listenersInstalled = false;
     }
 
     /**
      * Sets the zoom slider value. Avoids redundant change events.
      */
     public void setZoomValue(int value) {
-        if (zoomSlider != null && zoomSlider.getValue() != value) {
-            if (zoomDebounce != null && zoomDebounce.isRunning()) {
-            	// Prevent a stale convertTo firing
-                zoomDebounce.stop(); 
-            }
-            zoomSlider.setValue(value);
-        }
+        zoomSlider.setValue(value);
     }
 
     private void buildInfoP() {
@@ -1230,23 +1134,12 @@ public class SettlementTransparentPanel extends JComponent {
         if (yestersolResources.isEmpty())
             return;
 
-        resourceCache.put(s, text.toString());
+        resourceCache = text.toString();
     }
 
     /**
      * Prepare class for deletion (idempotent, EDT-safe).
      */
     public void destroy() {
-
-        // Ensure Swing teardown happens on the EDT
-        if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
-            javax.swing.SwingUtilities.invokeLater(this::destroy);
-            return;
-        }
-
-        // --- Core patch cleanup: detach installed listeners ---
-        detachListeners();
-
-        mapPanelHierarchyListener = null;
     }
 }
