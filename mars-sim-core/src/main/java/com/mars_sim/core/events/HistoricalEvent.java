@@ -7,6 +7,7 @@
 package com.mars_sim.core.events;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.map.location.Coordinates;
@@ -86,6 +87,9 @@ public class HistoricalEvent implements Serializable {
 	 */
 	public HistoricalEvent(HistoricalEventType type, Entity source, Settlement homeTown, String whatCause,
 			String whileDoing, Entity affected, Coordinates coordinates) {
+		Objects.requireNonNull(type, "Event type cannot be null");
+		Objects.requireNonNull(source, "Event source cannot be null");
+
 		this.type = type;
 		this.source = source;
 		this.whatCause = whatCause;

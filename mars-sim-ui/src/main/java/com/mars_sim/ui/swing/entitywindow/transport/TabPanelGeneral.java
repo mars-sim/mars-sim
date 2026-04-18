@@ -24,6 +24,7 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.CoordinatesLabel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -37,7 +38,7 @@ class TabPanelGeneral extends EntityTabPanel<Transportable> {
 	private JLabel stateTextField;
 	private JLabel launchDateTextField;
 	private JLabel arrivalDateTextField;
-	private JLabel landingLocationTextField;
+	private CoordinatesLabel landingLocation;
 
     public TabPanelGeneral(Transportable entity, UIContext context) {
 		super(
@@ -61,7 +62,8 @@ class TabPanelGeneral extends EntityTabPanel<Transportable> {
 		stateTextField = attributesPanel.addTextField(Msg.getString("transportable.state"), null, null);
 		launchDateTextField = attributesPanel.addTextField(Msg.getString("transportable.launchDate"), null, null);
 		arrivalDateTextField = attributesPanel.addTextField(Msg.getString("transportable.arrivalDate"), null, null);
-		landingLocationTextField = attributesPanel.addTextField(Msg.getString("transportable.landingLocation"), null, null);
+		landingLocation = new CoordinatesLabel(getContext());
+        attributesPanel.addLabelledItem(Msg.getString("transportable.landingLocation"), landingLocation, null);
 
         if (getEntity() instanceof Resupply r && r.getTemplate() != null) {            
             contentPanel.add(buildSchedulePanel(r.getTemplate()));
@@ -102,7 +104,7 @@ class TabPanelGeneral extends EntityTabPanel<Transportable> {
             arrivalDateTextField.setText(entity.getArrivalDate().getDateTimeStamp());
         }
         if (entity.getLandingLocation() != null) {
-            landingLocationTextField.setText(entity.getLandingLocation().getFormattedString());
+            landingLocation.setCoordinates(entity.getLandingLocation());
         } 
 	}
 

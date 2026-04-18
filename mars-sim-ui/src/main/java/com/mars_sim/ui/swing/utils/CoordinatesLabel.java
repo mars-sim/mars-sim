@@ -27,6 +27,10 @@ import com.mars_sim.ui.swing.tool.MapSelector;
 @SuppressWarnings("serial")
 public class CoordinatesLabel extends JPanel {
 	
+    private JLabel label;
+    private Coordinates displayed;
+    private JButton mapButton;
+
     /**
      * Constructor for creating
      * 
@@ -34,17 +38,42 @@ public class CoordinatesLabel extends JPanel {
      * @param uiContext the UI context for launcher windows
      */
     public CoordinatesLabel(Coordinates location, UIContext uiContext) {
+        this(uiContext);
+        setCoordinates(location);
+    }
+
+    /**
+     * Constructor for creating an empty CoordinatesLabel with just the map button.
+     * Useful for cases where the coordinates may not be known at the time of creation.
+     * @param uiContext the UI context for launcher windows
+     */
+    public CoordinatesLabel(UIContext uiContext) {
 
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
-        var label = new JLabel(location.getFormattedString(), SwingConstants.LEFT);
+        label = new JLabel("", SwingConstants.LEFT);
         add(label);
         add(Box.createRigidArea(new Dimension(5, 0)));
 
         // Some entities have a physical location
-        var mapButton = new JButton(EntityLabel.LOCATE); 
+        mapButton = new JButton(EntityLabel.LOCATE); 
         mapButton.setToolTipText(Msg.getString("EntityLabel.locate"));
-        mapButton.addActionListener(e -> MapSelector.displayCoords(uiContext, location));
+        mapButton.addActionListener(e -> MapSelector.displayCoords(uiContext, displayed));
 
         add(mapButton);
+    }
+
+    /**
+     * Sets the coordinates to display and updates the label text and map button state accordingly.
+     * @param location Location to display
+     */
+    public void setCoordinates(Coordinates location) {
+        this.displayed = location;
+        if (location == null) {
+            label.setText("...");
+        }
+        else {
+            label.setText(location.getFormattedString());
+        }
+        mapButton.setEnabled(location != null);
     }
 }

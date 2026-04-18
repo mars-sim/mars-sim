@@ -525,17 +525,6 @@ public abstract class EVAOperation extends Task {
 	}
 	
 	/**
-	 * Checks to see if the person is supposed to be outside. This is used to abort an EVA.
-	 * Any call to this method that relates to a problem should be replaced with {@link #endEVA(String)}
-	 * 
-	 * @param reason
-	 * @deprecated Use {@link #endEVA(String)}
-	 */
-	protected void checkLocation(String reason) {
-		endEVA(reason);
-	}
-
-	/**
 	 * Aborts an EVA, if the Person is outside get them to return otherwise end the Task.
 	 * 
 	 * @param reason Reason for ending.

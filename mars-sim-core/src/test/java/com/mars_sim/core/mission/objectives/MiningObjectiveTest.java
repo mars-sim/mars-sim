@@ -13,10 +13,10 @@ import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.vehicle.LightUtilityVehicle;
 
-public class MiningObjectiveTest extends MarsSimUnitTest {
+class MiningObjectiveTest extends MarsSimUnitTest {
     
     @Test
-    public void testExtractedMineral() {
+    void testExtractedMineral() {
         var sf = getSim().getSurfaceFeatures();
 
         // Use a huge range for search to guarantee a site

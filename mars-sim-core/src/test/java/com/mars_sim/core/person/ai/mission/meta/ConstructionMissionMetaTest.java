@@ -15,12 +15,13 @@ import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 
-public class ConstructionMissionMetaTest extends MarsSimUnitTest {
+class ConstructionMissionMetaTest extends MarsSimUnitTest {
     private static final String LANDER_HAB = "Lander Hab";
 
     @Test
-    public void testProbabiltyArchitectSite() {
-        var s = buildSettlement("mock");
+    void testProbabiltyArchitectSite() {
+        // Having inital pop. create Chain of Command
+        var s = buildSettlement("mock", 10);
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
@@ -46,8 +47,8 @@ public class ConstructionMissionMetaTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testProbabiltySalvageSite() {
-        var s = buildSettlement("mock");
+    void testProbabiltySalvageSite() {
+        var s = buildSettlement("mock", 10);
         var a = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0D);
 
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
@@ -67,8 +68,8 @@ public class ConstructionMissionMetaTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testProbabiltyDoctor() {
-        var s = buildSettlement("mock");
+    void testProbabiltyDoctor() {
+        var s = buildSettlement("mock", 10);
         var doctor = buildPerson("worker", s, JobType.DOCTOR);
         doctor.setRole(RoleType.AGRICULTURE_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {
@@ -94,8 +95,8 @@ public class ConstructionMissionMetaTest extends MarsSimUnitTest {
     }
     
     @Test
-    public void testProbabiltyArchitectQueue() {
-        var s = buildSettlement("mock");
+    void testProbabiltyArchitectQueue() {
+        var s = buildSettlement("mock", 10);
         var architect = buildPerson("worker", s, JobType.ARCHITECT);
         architect.setRole(RoleType.ENGINEERING_SPECIALIST);
         for(int i = 0; i < ConstructionMission.MIN_PEOPLE; i++) {

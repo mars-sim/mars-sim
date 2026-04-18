@@ -310,7 +310,7 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 			Coordinates where) {
 		var base = getAssociatedSettlement();
 
-		// Not briliant but Settlements logging are their own home base
+		// Not brilliant but Settlements logging are their own home base
 		if (base == null && this instanceof Settlement settlement) {
 			base = settlement;
 		}
