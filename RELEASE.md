@@ -8,7 +8,7 @@ modeling and simulation details than most classic simulation games.
 There are 2 release approaches supported.
 
 ### Standalone Installation
-For Windows there is a MSI file provided that will install the Swing UI version. This operation uses a common Windows installer pattern. It will automatically install an enbeded Java runtime as part of the installation.
+For Windows there is a MSI file provided that will install the Swing UI version. This operation uses a common Windows installer pattern. It will automatically install an embedded Java runtime as part of the installation.
 
 ### Manual Installation
 For manual installation there is a ZIP file that contains pre-built versions of the mars-sim application:
