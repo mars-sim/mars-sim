@@ -34,6 +34,6 @@ jobs:
     - name: Create Release
       run: |
         cd ${{github.workspace}}
-        gh release create v${{ env.POM_VERSION }} ./mars-sim-dist/target/mars-sim-${{ env.POM_VERSION }}.zip --verify-tag --draft --title 'Release v${{ env.POM_VERSION }}' --notes-file ./RELEASE.md     
+        gh release create v${{ env.POM_VERSION }} ./mars-sim-dist/target/mars-sim-${{ env.POM_VERSION }}.zip --generate-notes --verify-tag --draft --title 'Release v${{ env.POM_VERSION }}' --notes-file ./RELEASE.md     
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
