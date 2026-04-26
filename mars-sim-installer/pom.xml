@@ -6,7 +6,7 @@
   <parent>
 	  <artifactId>mars-sim</artifactId>
 	  <groupId>com.mars-sim</groupId>
-	  <version>4.0</version>
+	  <version>4.1</version>
   </parent>
   <artifactId>mars-sim-installer</artifactId>
   <name>mars-sim-installer</name>
@@ -81,7 +81,7 @@
                       <arg value="--app-version"/><arg value="${project.version}"/>
                       <arg value="--type"/><arg value="@{type}"/>
                       <arg value="--arguments"/><arg value="-log"/>
-                      <arg value="--java-options"/><arg value="-Xmx2g"/>
+                      <arg value="--java-options"/><arg value="-Xmx4g"/>
                       <arg value="--about-url"/><arg value="${mars.website}"/>
 
                       <!-- OS-specific args -->
