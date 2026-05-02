@@ -169,7 +169,7 @@ public class NavigatorWindow extends ContentPanel
 	private static final String MAP_SEPERATOR = "~";
 
 	private static final String LEVEL = "Level ";
-	private static final String CHOOSE_SETTLEMENT = "Settlement";
+	private static final String CHOOSE_SETTLEMENT = "Choose";
 	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
 
 	private static final String MINERAL_LAYER = "minerals";
@@ -284,7 +284,7 @@ public class NavigatorWindow extends ContentPanel
 		JPanel controlPane = new JPanel(new BorderLayout(0, 0));
 
 		controlPane.setPreferredSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
-		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, 200));
+		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, 220));
 		
 		JPanel searchPane = new JPanel();
 		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
@@ -500,7 +500,7 @@ public class NavigatorWindow extends ContentPanel
 	private JPanel createSettlementPane() {   
 	    var settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
-	    JLabel label = new JLabel("Settlement: ");
+	    JLabel label = new JLabel("> ");
 	    settlementPane.add(label);
 	    	
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();
