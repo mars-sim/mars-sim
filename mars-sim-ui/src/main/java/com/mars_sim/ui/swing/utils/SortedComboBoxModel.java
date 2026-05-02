@@ -28,7 +28,7 @@ public class SortedComboBoxModel<E> extends AbstractListModel<E>
     private Comparator<E> comparator;
     private Object selectedObject;
 
-    public SortedComboBoxModel(Collection<E> initialList, Comparator<E> comparator) {
+    public SortedComboBoxModel(Collection<? extends E> initialList, Comparator<E> comparator) {
         this.comparator = comparator;
         if (!initialList.isEmpty()) {
             this.choices.addAll(initialList);
