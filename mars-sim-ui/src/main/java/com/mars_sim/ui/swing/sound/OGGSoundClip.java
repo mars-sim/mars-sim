@@ -191,9 +191,11 @@ class OGGSoundClip {
 					if (bitStream != null) {
 						bitStream.reset();
 					}
-				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
-							e);
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, "Trouble setting up a bit stream to play the sound of " 
+							+ name, e);
+					
+					stop();
 				}
 
 				if (callback != null) {
