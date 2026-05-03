@@ -9,7 +9,9 @@ package com.mars_sim.ui.swing.tool.eventviewer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -20,24 +22,27 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventListener;
 import com.mars_sim.core.events.HistoricalEventManager;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
+import com.mars_sim.ui.swing.utils.SettlementsSelector;
 
 /**
  * EventViewer displays historical events in a collapsible panel format.
@@ -46,19 +51,23 @@ import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 @SuppressWarnings("serial")
 public class EventViewer extends ContentPanel implements ConfigurableWindow, HistoricalEventListener {
 
-    private static final String SELECTED_CATEGORIES = "selectedCategories";
-    private static final String SHOW_ACKNOWLEDGED = "showAcknowledged";
     public static final String NAME = "eventviewer";
 	public static final String ICON = "event";
 	public static final String TITLE = "Event Viewer";
     
+    private static final String SELECTED_SETTLEMENT = "selectedSettlement";
+    private static final String SELECTED_CATEGORIES = "selectedCategories";
+    private static final String SHOW_ACKNOWLEDGED = "showAcknowledged";
+
     private HistoricalEventManager eventManager;
     private JPanel eventListPanel;
     private UIContext uiContext;
-    private JButton filterButton;
+    private JButton catButton;
     private JPopupMenu filterMenu;
     private JCheckBox showAcknowledgedCheckBox;
     private Set<HistoricalEventCategory> selectedCategories;
+    private Set<Settlement> selectedSettlements = Collections.emptySet();
+    private SettlementsSelector settlementSelector;
     
     /**
      * Constructor.
@@ -75,6 +84,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         loadInitialFilter(userSettings);
 
         initializeUI(userSettings);
+        selectedSettlements = settlementSelector.getSelectedSettlements();
         loadEvents();
         
         // Register as listener for new events
@@ -126,13 +136,14 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         
         add(scrollPane, BorderLayout.CENTER);
 
-        setPreferredSize(new Dimension(270, 400));
-        setMinimumSize(new Dimension(270, 200));
+        setPreferredSize(new Dimension(300, 400));
+        setMinimumSize(new Dimension(300, 200));
     }
     
     private boolean isEventVisible(HistoricalEvent event) {
         // Check category filter and acknowledged filter
         return (selectedCategories.contains(event.getCategory())
+                && ((event.getHomeTown() == null) || selectedSettlements.contains(event.getHomeTown()))
                 && (showAcknowledgedCheckBox.isSelected() || !event.isAcknowledged()));
     }
 
@@ -197,34 +208,48 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
     /**
      * Create the toolbar with filter controls.
      */
-    private JToolBar createToolbar(Properties userSettings) {
-        JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
-        toolbar.setLayout(new FlowLayout(FlowLayout.LEFT));
+    private JComponent createToolbar(Properties userSettings) {
+        var toolbar = Box.createVerticalBox();
         
         // Add filter label
-        JLabel filterLabel = new JLabel("Filter:");
-        filterLabel.setFont(StyleManager.getLabelFont());
-        toolbar.add(filterLabel);
+        var categoryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        toolbar.add(categoryPanel);
+        JLabel catLabel = new JLabel("Category:");
+        catLabel.setFont(StyleManager.getLabelFont());
+        categoryPanel.add(catLabel);
         
-        // Create filter button
-        filterButton = new JButton();
-        filterButton.setToolTipText("Click to filter events by category");
-        filterButton.addActionListener(e -> showFilterMenu());
-        toolbar.add(filterButton);
-        updateFilterButton();  // Aligned with any preloaded filter settings
-        
-        // Add some spacing
-        toolbar.add(Box.createHorizontalStrut(20));
-        
+        // Create category filter
+        catButton = new JButton();
+        catButton.setToolTipText("Click to filter events by category");
+        catButton.addActionListener(e -> showFilterMenu());
+        categoryPanel.add(catButton);
+
         // Add acknowledged filter checkbox                
         String showAcknowledgedStr = userSettings.getProperty(SHOW_ACKNOWLEDGED, "false");
         showAcknowledgedCheckBox = new JCheckBox("Acknowledged", Boolean.parseBoolean(showAcknowledgedStr));
         showAcknowledgedCheckBox.setToolTipText("Show or hide acknowledged events");
+        showAcknowledgedCheckBox.setFont(StyleManager.getLabelFont());
         showAcknowledgedCheckBox.addActionListener(e -> 
             loadEvents() // Refresh the event list when checkbox changes
         );
-        toolbar.add(showAcknowledgedCheckBox);
+        categoryPanel.add(showAcknowledgedCheckBox);
+
+        updateFilterButton();  // Aligned with any preloaded filter settings
+
+        // add Settlements selector
+        var settlementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        toolbar.add(settlementPanel);
+        JLabel settlementLabel = new JLabel("Settlement:");
+        settlementLabel.setFont(StyleManager.getLabelFont());
+        settlementPanel.add(settlementLabel);
+        String settlementString = userSettings.getProperty(SELECTED_SETTLEMENT, null);
+        settlementSelector = new SettlementsSelector(uiContext.getSimulation().getUnitManager(), settlementString,
+                                false);
+        settlementSelector.setSelectionListener("settlementChanged", e -> {
+            selectedSettlements = settlementSelector.getSelectedSettlements();
+            loadEvents(); // Refresh the event list when settlement selection changes
+        });        
+        settlementPanel.add(settlementSelector);
         
         // Create filter popup menu
         createFilterMenu();
@@ -238,17 +263,24 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
     private void createFilterMenu() {
         filterMenu = new JPopupMenu("Category Filter");
         
-        // Add "All" option
+        // Add control options
         JMenuItem allItem = new JMenuItem("All");
         allItem.addActionListener(e -> {
-            selectedCategories.clear();
             selectedCategories.addAll(EnumSet.allOf(HistoricalEventCategory.class));
             updateFilterButton();
             loadEvents();
-            filterMenu.setVisible(false);
         });
         filterMenu.add(allItem);
-        
+
+        JMenuItem toggleItem = new JMenuItem("Toggle All");
+        toggleItem.addActionListener(e -> {
+            var newSelected = new HashSet<>(EnumSet.allOf(HistoricalEventCategory.class));
+            newSelected.removeAll(selectedCategories);
+            selectedCategories = newSelected;
+            updateFilterButton();
+            loadEvents();
+        });
+        filterMenu.add(toggleItem);
         filterMenu.addSeparator();
         
         // Add checkbox for each category
@@ -272,14 +304,15 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
      */
     private void showFilterMenu() {
         // Update checkbox states based on current selection
-        for (int i = 2; i < filterMenu.getComponentCount(); i++) { // Skip All and separator
-            if (filterMenu.getComponent(i) instanceof JCheckBoxMenuItem item) {
-                HistoricalEventCategory category = HistoricalEventCategory.values()[i - 2];
+        int idx = 3;
+        for (HistoricalEventCategory category : HistoricalEventCategory.values()) { // Skip All and separator
+            if (filterMenu.getComponent(idx) instanceof JCheckBoxMenuItem item) {
                 item.setSelected(selectedCategories.contains(category));
             }
+            idx++;
         }
         
-        filterMenu.show(filterButton, 0, filterButton.getHeight());
+        filterMenu.show(catButton, 0, catButton.getHeight());
     }
     
     /**
@@ -290,12 +323,12 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         int totalCount = HistoricalEventCategory.values().length;
         
         if (selectedCount == totalCount) {
-            filterButton.setText("All Categories");
+            catButton.setText("All Categories");
         } else if (selectedCount == 1) {
             HistoricalEventCategory category = selectedCategories.iterator().next();
-            filterButton.setText(category.getName() + " ");
+            catButton.setText(category.getName() + " ");
         } else {
-            filterButton.setText(selectedCount + " Categories ");
+            catButton.setText(selectedCount + " Categories ");
         }
     }
     
@@ -308,6 +341,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         if (eventManager != null) {
             eventManager.removeListener(this);
         }
+        settlementSelector.unregister();
         super.destroy();
     }
 
@@ -320,8 +354,16 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
             .collect(Collectors.joining(","));
         props.setProperty(SELECTED_CATEGORIES, selectedCategoryNames);
         
-        // Save show acknowledged setting
         props.setProperty(SHOW_ACKNOWLEDGED, String.valueOf(showAcknowledgedCheckBox.isSelected()));
+
+        String settlementString = switch(settlementSelector.getSelectedItem()) {
+            case Entity s -> s.getName();
+            case String str -> str;
+            default -> null;
+        };
+        if (settlementString != null) {
+            props.setProperty(SELECTED_SETTLEMENT, settlementString);
+        }
 
         return props;
     }
