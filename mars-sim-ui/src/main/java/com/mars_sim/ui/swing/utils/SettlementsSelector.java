@@ -57,8 +57,8 @@ public class SettlementsSelector extends JPanel {
     /**
      * Constructor.
      * @param unitMgr Unit manager to get settlements and listen for changes.
+     * @param selected The name of the initially selected settlement or authority, or null for no selection.
      * @param showDescription Whether to show the description label.
-     * @param initialSelected The initially selected item, which can be a Settlement, Authority, or null (for no selection).
      */
     public SettlementsSelector(UnitManager unitMgr, String selected, boolean showDescription) {
         super();
@@ -92,21 +92,20 @@ public class SettlementsSelector extends JPanel {
     private void buildUI(List<Entity> choices, String selectedName, boolean showDescription) {
 		SortedComboBoxModel<Object> model = new SortedComboBoxModel<>(choices, new SelectionComparator());
 		model.addElement(ALL);
-        if (selectedName != null) {
-            if (selectedName.equals(ALL)) {
-                model.setSelectedItem(ALL);
-            }
-            else {
-                // Search for a matching name
-                var selected = choices.stream()
-                                    .filter(e -> e.getName().equals(selectedName))
-                                    .findFirst()
-                                    .orElse(null);
-                if (selected != null) {                   
-                    model.setSelectedItem(selected);
-                }
-            }
-        }
+
+		Object selectedItem = ALL;
+        if ((selectedName != null) && !selectedName.equals(ALL)) {
+			// Search for a matching name
+			var found = choices.stream()
+								.filter(e -> e.getName().equals(selectedName))
+								.findFirst()
+								.orElse(null);
+			if (found != null) {                   
+				selectedItem = found;
+			}
+		}
+
+		model.setSelectedItem(selectedItem);
 		selectionCombo = new JComboBox<>(model);
 		selectionCombo.setOpaque(false);
 	
@@ -143,7 +142,7 @@ public class SettlementsSelector extends JPanel {
 										.collect(Collectors.joining(", ", "(", ")"));
 	        }
 			case String str when str.equals(ALL) ->
-                    newSelection = new HashSet<>(unitMgr.getSettlements());
+                    newSelection = new HashSet<>(getAllSettlements());
 			default -> Collections.emptySet();   // Should never happen
 		}
 
@@ -197,11 +196,24 @@ public class SettlementsSelector extends JPanel {
         return selection;
     }
 
-
+	/**
+	 * Add a listener that gets notified when the selection changes.
+	 * @param actionCommand The action command to be used in the ActionEvent.
+	 * @param listener The listener to be notified.
+	 */
     public void setSelectionListener(String actionCommand, ActionListener listener) {
         this.selectionListener = listener;
         this.actionCommand = actionCommand;
     }
+
+	/**
+	 * Get all valid settlements based on the current game mode.
+	 * @return
+	 */
+	private Collection<Settlement> getAllSettlements() {
+		return (GameManager.getGameMode() == GameMode.COMMAND) ?
+			unitMgr.getCommanderSettlements() : unitMgr.getSettlements();
+	}
 
     /**
 	 * Sets up a list of settlements and associated authorities.
@@ -210,13 +222,8 @@ public class SettlementsSelector extends JPanel {
 	 */
 	private List<Entity> setupSelectionChoices() {
 
-		Collection<Settlement> settlements;
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			settlements = unitMgr.getCommanderSettlements();
-		}
-		else { 
-			settlements = unitMgr.getSettlements();
-		}
+		Collection<Settlement> settlements = getAllSettlements();
+
 		List<Entity> choices = new ArrayList<>(settlements);
 		
 		// Create the Authority maps
@@ -312,7 +319,7 @@ public class SettlementsSelector extends JPanel {
 	}
 
     /**
-     * Unregistoer this component from any listeners
+     * Unregister this component from any listeners
      */
     public void unregister() {
         unitMgr.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);

@@ -84,6 +84,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         loadInitialFilter(userSettings);
 
         initializeUI(userSettings);
+        selectedSettlements = settlementSelector.getSelectedSettlements();
         loadEvents();
         
         // Register as listener for new events
@@ -340,6 +341,7 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         if (eventManager != null) {
             eventManager.removeListener(this);
         }
+        settlementSelector.unregister();
         super.destroy();
     }
 
@@ -357,10 +359,11 @@ public class EventViewer extends ContentPanel implements ConfigurableWindow, His
         String settlementString = switch(settlementSelector.getSelectedItem()) {
             case Entity s -> s.getName();
             case String str -> str;
-            default -> "";
+            default -> null;
         };
-        props.setProperty(SELECTED_SETTLEMENT, settlementString);
-
+        if (settlementString != null) {
+            props.setProperty(SELECTED_SETTLEMENT, settlementString);
+        }
 
         return props;
     }
