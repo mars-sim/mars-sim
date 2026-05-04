@@ -95,12 +95,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	 * 
 	 * @param manager the content manager for the main window, used to access shared UI components and save the UI configuration on exit.
 	 * @param context the UIContext for this toolbar, used to access the simulation and open tool windows.
-	 * @param audioPlayer the AudioPlayer for the simulation, used to control audio settings.
 	 */
-	public ToolToolBar(ContentManager manager, UIContext context, AudioPlayer audioPlayer) {
+	public ToolToolBar(ContentManager manager, UIContext context) {
 
 		// Initialize data members
-		this.audioPlayer = audioPlayer;
+		this.audioPlayer = manager.getAudio();
 		this.context = context;
 		this.manager = manager;
 		masterClock = context.getSimulation().getMasterClock();

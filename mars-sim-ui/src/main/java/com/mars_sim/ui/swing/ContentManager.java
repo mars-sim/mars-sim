@@ -6,56 +6,153 @@
  */
 package com.mars_sim.ui.swing;
 
+import java.awt.Taskbar;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
+import com.formdev.flatlaf.util.SystemInfo;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
+import com.mars_sim.ui.swing.utils.SaveDialog;
+
 
 /**
- * This represents the content manager for the main window. It provides methods to get the properties of all UI elements and the details of all content windows currently open on the desktop.
+ * This represents the content manager for the main window. It provides methods to get the properties of all UI elements.
  * This is used to save the UI configuration.
- * It provides an interface to the shared main UI components, such as the Mars Terminal and the content windows and UIConfig.
  */
-public interface ContentManager {
+public abstract class ContentManager {
+
+    private static final String AUDIO_PROPS = "audio";
+    private static final String STYLE_PROPS = "style";
+
+    private UIConfig config;
+    private AudioPlayer audio = null;
+    private JFrame mainFrame;
+    private Simulation sim;
+
+    protected ContentManager(Simulation sim, UIConfig config, boolean useAudio) {
+        this.config = config;
+        this.sim = sim;
+
+        // Set up the look and feel library to be used
+		StyleManager.setUIProps(config.getPropSet(STYLE_PROPS));
+		
+		// Start audio if enabled
+		if (useAudio) {
+            Properties props = config.getPropSet(AUDIO_PROPS);
+            audio = new AudioPlayer(props);
+		}
+			
+        mainFrame = new JFrame("Mars Simulation");
+		mainFrame.setResizable(true);
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainFrame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				// Save simulation and UI configuration when window is closed.
+				SaveDialog.createEndSimulation(sim, ContentManager.this);
+			}
+		});
+
+        // Setup icons
+		if (SystemInfo.isMacOS) {
+			Taskbar taskbar = Taskbar.getTaskbar();
+			taskbar.setIconImage(StyleManager.getIconImage());
+			
+			// Move the menu bar out of the main window to the top of the screen
+			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
+		}
+		else {
+			mainFrame.setIconImage(StyleManager.getIconImage());
+		}
+    }
+
+	/**
+	 * Sets up the screen config used from last saved session.
+	 */
+	protected boolean loadSavedScreen() {
+		// Display screen at a certain location
+		var location = config.getMainWindowLocation();
+		if (location == null) {
+			return false;
+		}
+		mainFrame.setLocation(config.getMainWindowLocation());
+
+		// For the Main Window	
+		var selectedSize = config.getMainWindowDimension();
+		if (selectedSize != null) {
+			// Set frame size
+			mainFrame.setSize(selectedSize);
+		}
+
+		return true;
+	}
 
     /**
-     * Get the properties of all UI elements. This is used to save the UI configuration.
-     * @return A map of UI element names to their properties.
-     */
-    Map<String, Properties> getUIProps();
+	 * Gets the UI property sets of the application. Each set has a name. 
+	 * @return A map of UI property sets.
+	 */
+	public Map<String, Properties> getUIProps() {
+        Map<String, Properties> result = new HashMap<>();
+
+        if (audio != null) {
+            result.put(AUDIO_PROPS, audio.getUIProps());
+        }
+
+        result.put(STYLE_PROPS, StyleManager.getUIProps());
+        return result;
+    }
 
     /**
 	 * Get the details of all content windows currently open on the desktop. This is used to save the UI configuration.
 	 * @return
 	 */
-	List<WindowSpec> getContentSpecs();
+	public abstract List<WindowSpec> getContentSpecs();
+    
+    /**
+     * Get the UI configuration for the main window.
+     * @return UI configuration.
+     */
+    public UIConfig getConfig() {
+        return config;
+    }
+    
+    /**
+     * Get the top-level frame of the main window.
+     * @return Top level main frame.
+     */
+    public JFrame getTopFrame() {
+        return mainFrame;
+    }
 
     /**
-     * Get the UIConfig for this UI. This is used to save the UI configuration.
-     * @return
+     * Get the Simulation instance.
+     * @return The Simulation instance.
      */
-    UIConfig getConfig();
-
-
-    /**
-     * Get the top-level frame of the main window. This is used to save the UI configuration.
-     * @return Top lewvel main frame.
-     */
-    JFrame getTopFrame();
+    public Simulation getSimulation() {
+        return sim;
+    }
 
     /**
-     * Shutdown the UI. This is used to save the UI configuration and close all UI elements.
-     * It is a method of no return.
+     * Shutdown the UI. The subclass should implement this method to perform any necessary cleanup when the application is closed..
      */
-    void shutdown();
+    public void shutdown() {
+        mainFrame.dispose();
+    }
 
     /**
-     * Get the AudioPlayer instance. 
-     * @return The AudioPlayer instance.
+     * Get the AudioPlayer instance. This could be null if audio is not enabled.
+      * @return The AudioPlayer instance, or null if audio is not enabled.
      */
-    AudioPlayer getAudio();
+    public AudioPlayer getAudio() {
+        return audio;
+    }
 }
