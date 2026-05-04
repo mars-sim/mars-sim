@@ -55,7 +55,7 @@ public abstract class ContentManager {
 			
         mainFrame = new JFrame("Mars Simulation");
 		mainFrame.setResizable(true);
-        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         mainFrame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent event) {
@@ -76,7 +76,7 @@ public abstract class ContentManager {
 			mainFrame.setIconImage(StyleManager.getIconImage());
 		}
 
-        // Activiate notification manager
+        // Activate notification manager
         this.noticeMgr = new NotificationManager(sim, mainFrame, config.getPropSet(NOTIFICATION_PROPS));
     }
 

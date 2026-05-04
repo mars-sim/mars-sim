@@ -46,10 +46,10 @@ public class NotificationManager implements HistoricalEventListener {
 	private static final SimLogger logger = SimLogger.getLogger(NotificationManager.class.getName());
 
     enum NotificationControl {
-        NEVER, ALWAYS, WHEN_CLOSED
+        NEVER, ALWAYS, WHEN_MINIMISED
     }
 
-    private NotificationControl notificationControl = NotificationControl.WHEN_CLOSED; // Default value
+    private NotificationControl notificationControl = NotificationControl.WHEN_MINIMISED; // Default value
     private TrayIcon trayIcon;
     private JFrame mainFrame;
 
@@ -167,9 +167,9 @@ public class NotificationManager implements HistoricalEventListener {
      */
     private static String getDisplayName(NotificationControl control) {
         return switch (control) {
-            case NEVER -> "Never show notifications";
-            case ALWAYS -> "Always show notifications";
-            case WHEN_CLOSED -> "Show notifications when window is closed";
+            case NEVER -> "Never show";
+            case ALWAYS -> "Always show";
+            case WHEN_MINIMISED -> "Only Show when minimised";
             default -> control.name();  
         };
     }
@@ -202,7 +202,7 @@ public class NotificationManager implements HistoricalEventListener {
 
         // Check if we can show a notification based on the control setting and main frame visibility
         if (trayIcon != null && (notificationControl == NotificationControl.ALWAYS
-                    || (notificationControl == NotificationControl.WHEN_CLOSED
+                    || (notificationControl == NotificationControl.WHEN_MINIMISED
                             && (mainFrame != null) && (mainFrame.getState() == Frame.ICONIFIED)))) {
             SwingUtilities.invokeLater(() -> trayIcon.displayMessage(title, message, messageType));
         }
@@ -210,7 +210,7 @@ public class NotificationManager implements HistoricalEventListener {
 
     /**
      * Get the notification-related UI properties to be saved in the configuration.
-     * @return Settings to contol notifications.
+     * @return Settings to control notifications.
      */
     public Properties getUIProps() {
         Properties props = new Properties();
