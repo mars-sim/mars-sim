@@ -32,11 +32,13 @@ public abstract class ContentManager {
 
     private static final String AUDIO_PROPS = "audio";
     private static final String STYLE_PROPS = "style";
+    private static final String NOTIFICATION_PROPS = "notification";
 
     private UIConfig config;
     private AudioPlayer audio = null;
     private JFrame mainFrame;
     private Simulation sim;
+    private NotificationManager noticeMgr;
 
     protected ContentManager(Simulation sim, UIConfig config, boolean useAudio) {
         this.config = config;
@@ -73,6 +75,9 @@ public abstract class ContentManager {
 		else {
 			mainFrame.setIconImage(StyleManager.getIconImage());
 		}
+
+        // Activiate notification manager
+        this.noticeMgr = new NotificationManager(sim, mainFrame, config.getPropSet(NOTIFICATION_PROPS));
     }
 
 	/**
@@ -103,11 +108,15 @@ public abstract class ContentManager {
 	public Map<String, Properties> getUIProps() {
         Map<String, Properties> result = new HashMap<>();
 
+        result.put(STYLE_PROPS, StyleManager.getUIProps());
+
         if (audio != null) {
             result.put(AUDIO_PROPS, audio.getUIProps());
         }
 
-        result.put(STYLE_PROPS, StyleManager.getUIProps());
+        if (noticeMgr != null) {
+            result.put(NOTIFICATION_PROPS, noticeMgr.getUIProps());
+        }
         return result;
     }
 
@@ -139,6 +148,13 @@ public abstract class ContentManager {
      */
     public Simulation getSimulation() {
         return sim;
+    }
+
+    /**
+     * Get the notification manager instance.
+     */
+    public NotificationManager getNotifications() {
+        return noticeMgr;   
     }
 
     /**
