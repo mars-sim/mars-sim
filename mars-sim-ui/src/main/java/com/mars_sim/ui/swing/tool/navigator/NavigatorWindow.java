@@ -500,7 +500,7 @@ public class NavigatorWindow extends ContentPanel
 	private JPanel createSettlementPane() {   
 	    var settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
-	    JLabel label = new JLabel("> ");
+	    JLabel label = new JLabel("\u25B6");
 	    settlementPane.add(label);
 	    	
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();

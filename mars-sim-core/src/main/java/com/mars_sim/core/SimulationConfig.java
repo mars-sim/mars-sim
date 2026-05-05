@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * SimulationConfig.java
- * @date 2021-09-25
+ * @date 2026-05-05
  * @author Scott Davis
  */
 package com.mars_sim.core;
@@ -32,6 +32,7 @@ import com.mars_sim.core.malfunction.MalfunctionConfig;
 import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.map.common.FileLocator;
 import com.mars_sim.core.mineral.MineralMapConfig;
+import com.mars_sim.core.moon.MoonConfig;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.health.MedicalConfig;
 import com.mars_sim.core.resource.AmountResourceConfig;
@@ -59,6 +60,7 @@ public class SimulationConfig {
 	private static final String XML_EXTENSION = ".xml";
 	private static final String SIMULATION_FILE = "simulation";
 	private static final String GOVERNANCE_FILE = "governance";
+	private static final String LUNAR_COLONY_FILE = "moonbases";
 	private static final String PEOPLE_FILE = "people";
 	private static final String VEHICLE_FILE = "vehicles";
 	private static final String SETTLEMENT_FILE = "settlements";
@@ -127,6 +129,7 @@ public class SimulationConfig {
 	 */
 
 	// Subset configuration classes
+	private MoonConfig moonConfig;
 	private PartConfig partConfig;
 	private AmountResourceConfig resourceConfig;
 	private PersonConfig personConfig;
@@ -425,6 +428,15 @@ public class SimulationConfig {
 	}
 
 	/**
+	 * Gets the moon config file.
+	 * 
+	 * @return MoonConfig 
+	 */
+	public MoonConfig getMoonConfig() {
+		return moonConfig;
+	}
+	
+	/**
 	 * Gets the part config subset.
 	 *
 	 * @return part config
@@ -653,6 +665,9 @@ public class SimulationConfig {
 
 		// Load subset configuration classes.
 		raFactory = new AuthorityFactory(parseXMLFileAsJDOMDocument(GOVERNANCE_FILE, true));
+		
+		moonConfig = new MoonConfig(parseXMLFileAsJDOMDocument(LUNAR_COLONY_FILE, true));
+		
 		resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 		partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 		PartPackageConfig partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true),
@@ -661,6 +676,7 @@ public class SimulationConfig {
 		personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
 		medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
 		landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
+		
 		mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
 		manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
 		malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
