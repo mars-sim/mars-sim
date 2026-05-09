@@ -1,6 +1,6 @@
 package com.mars_sim.core.person.ai;
 
-import com.mars_sim.core.data.Rating;
+import com.mars_sim.core.data.RatedActivity;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.RandomUtil;
@@ -20,11 +20,11 @@ import static org.mockito.Mockito.*;
 class CacheCreatorTest {
 
     @Mock private MarsTime marsTime;
-    @Mock private Rating rating1;
-    @Mock private Rating rating2;
+    @Mock private RatedActivity rating1;
+    @Mock private RatedActivity rating2;
     @Mock private RatingScore score1;
     @Mock private RatingScore score2;
-    @InjectMocks private CacheCreator<Rating> cacheCreator;
+    @InjectMocks private CacheCreator<RatedActivity> cacheCreator;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +46,7 @@ class CacheCreatorTest {
 
     @Test
     public void testAdd() {
-        List<Rating> ratings = new ArrayList<>();
+        List<RatedActivity> ratings = new ArrayList<>();
         ratings.add(rating1);
         ratings.add(rating2);
 
@@ -78,7 +78,7 @@ class CacheCreatorTest {
             randomUtilStatic.when(() -> RandomUtil
                     .getRandomDouble(8.0)).thenReturn(4.0);
 
-            Rating selectedRating = cacheCreator.getRandomSelection();
+            RatedActivity selectedRating = cacheCreator.getRandomSelection();
             Assertions.assertEquals(rating1, selectedRating);
             Assertions.assertEquals(3.0, cacheCreator.getTotalProbability());
             Assertions.assertEquals(1.0, cacheCreator.getCache().size());

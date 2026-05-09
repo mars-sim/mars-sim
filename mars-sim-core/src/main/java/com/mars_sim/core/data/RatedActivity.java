@@ -7,11 +7,11 @@
 package com.mars_sim.core.data;
 
 /**
- * This represents a Rating of an entity in terms of a score. The implementing class will 
- * have move details of how this Rating could be used to influence the simulation.
- * @see RatingLog#logSelectedRating(String, String, Rating, java.util.List)
+ * This represents a Rating of an activity in terms of a score. The implementing class will 
+ * have more details of how this rating could be used to influence the simulation.
+ * @see RatingLog#logSelectedRating(String, String, RatedActivity, java.util.List)
  */
-public interface Rating {
+public interface RatedActivity {
 	
     /**
      * Returns the name of this Rating.

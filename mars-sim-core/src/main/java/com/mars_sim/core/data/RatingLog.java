@@ -92,7 +92,7 @@ public class RatingLog {
      * @param options The options selected from
      */
     public static void logSelectedRating(String module, String selector,
-                        Rating selected, List<? extends Rating> options) {
+                        RatedActivity selected, List<? extends RatedActivity> options) {
         Set<String> selectors = modules.get(module);
 
         // Active if this module has selectors and the selectors are emtpy meaning match on module
