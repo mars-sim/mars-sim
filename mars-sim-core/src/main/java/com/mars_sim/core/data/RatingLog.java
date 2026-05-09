@@ -137,7 +137,7 @@ public class RatingLog {
      * @param r Rating to be described
      * @return JSONLines fragment
      */
-    private static String ratingToJsonLines(RatingScore r) {
+    private static String ratingToJsonLines(Rating r) {
         StringBuilder output = new StringBuilder();
 
         output.append("{\"score\":").append(SCORE_FORMAT.format(r.getScore()));

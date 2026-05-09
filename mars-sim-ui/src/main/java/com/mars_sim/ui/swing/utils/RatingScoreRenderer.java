@@ -9,7 +9,7 @@ package com.mars_sim.ui.swing.utils;
 import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -30,7 +30,7 @@ public class RatingScoreRenderer {
      * @param score
      * @return
      */
-    public static String getHTMLFragment(RatingScore score) {
+    public static String getHTMLFragment(Rating score) {
         StringBuilder output = new StringBuilder();
         output.append("<b>Score: ").append(SCORE_FORMAT.format(score.getScore())).append("</b><br>");
 

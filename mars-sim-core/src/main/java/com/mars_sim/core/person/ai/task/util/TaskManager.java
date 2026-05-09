@@ -15,6 +15,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.History;
+import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.logging.SimLogger;
@@ -50,7 +51,7 @@ public abstract class TaskManager implements Serializable {
 	private transient Worker worker;
 	/** The current task the worker is doing. */
 	private Task currentTask;
-	private RatingScore currentScore;
+	private Rating currentScore;
 
 	/** The last task the person was doing. */
 	private Task lastTask;
@@ -118,7 +119,7 @@ public abstract class TaskManager implements Serializable {
 	 * 
 	 * @return Will be null if task has been preselected.
 	 */
-    public RatingScore getScore() {
+    public Rating getScore() {
         return currentScore;
     }
 
@@ -762,18 +763,10 @@ public abstract class TaskManager implements Serializable {
 			canPerformTask = person.getMind().getTaskManager().checkReplaceTask(newTask, allowSameTask);
 		}
 
-		if (canPerformTask) {
-			/**
-			 * Do not delete. Reserve for debugging.
-			 */
-//			if (currentTask != null) 
-//				logger.info(person, 20_000, "Assigned with '" + newTaskName + "' to replace '" + currentTaskName + "'.");
-//			else
-//				logger.info(person, 20_000, "Assigned with '" + newTaskName + "'.");
-		}
-		else
+		if (!canPerformTask) {
 			logger.info(person, 20_000, "Unable to assign with '" + newTaskName + "'.");
-
+		}
+		
 		return canPerformTask;
 	}
 	
@@ -819,7 +812,6 @@ public abstract class TaskManager implements Serializable {
 		if (currentTask != null) {
 
 			if (!allowSameTask && currentTask.getName().equals(newTaskName)) {
-//				logger.info(robot, 20_000, "Already assigned with '" + currentTaskName + "'.");
 				// If the robot has been doing this task, 
 				// then there is no need of adding it.
 				return false;
@@ -833,18 +825,9 @@ public abstract class TaskManager implements Serializable {
 
 		boolean canPerformTask = robot.getBotMind().getBotTaskManager().checkReplaceTask(newTask, allowSameTask);
 		
-		if (canPerformTask) {
-			/**
-			 * Do not delete. Reserve for debugging.
-			 */
-//			if (currentTask != null) {
-//				logger.info(robot, 20_000, "Assigned with '" + newTaskName + "' to replace '" + currentTaskName + "'.");
-//			}
-//			else
-//				logger.info(robot, 20_000, "Assigned with '" + newTaskName + "'.");
-		}
-		else
+		if (!canPerformTask) {
 			logger.info(robot, 20_000, "Unable to perform '" + newTaskName + "'.");
+		}
 		
 		return canPerformTask;
 	}

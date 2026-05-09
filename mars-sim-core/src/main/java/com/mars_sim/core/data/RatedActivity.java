@@ -25,5 +25,5 @@ public interface RatedActivity {
      * 
      * @return
      */
-    RatingScore getScore();
+    Rating getScore();
 }

@@ -25,7 +25,6 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.CacheCreator;
@@ -334,7 +333,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		// Task has changed so update the score
 		var scoreLabel = "Directly Assigned";
 		String scoreTooltip = null; 
-		RatingScore score = taskManager.getScore();
+		var score = taskManager.getScore();
 		if (score != null) {
 			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
 			scoreTooltip = HTML + RatingScoreRenderer.getHTMLFragment(score) + END_HTML;

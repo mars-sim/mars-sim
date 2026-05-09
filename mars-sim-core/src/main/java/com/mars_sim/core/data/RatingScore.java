@@ -6,22 +6,17 @@
  */
 package com.mars_sim.core.data;
 
-import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- * A class to represent a score Rating. Consists of a base value and a set
+ * A class to represent a score modifiable Rating. Consisting of a base value and a set
  * of modifiers that are applied to create a final score.
  */
-public class RatingScore implements Comparable<RatingScore>, Serializable {
+public class RatingScore implements Rating {
 
 	private static final long serialVersionUID = 1L;
-
-    private static final DecimalFormat SCORE_FORMAT = new DecimalFormat("0.###");
 
     /**
      * An instance that is a zero score that is immutable
@@ -82,10 +77,10 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
      * 
      * @param source Source of the copy
      */
-    public RatingScore(RatingScore source) {
-        this.score = source.score;
-        this.modifiers = new HashMap<>(source.modifiers);
-        this.bases = new HashMap<>(source.bases);
+    public RatingScore(Rating source) {
+        this.score = source.getScore();
+        this.modifiers = new HashMap<>(source.getModifiers());
+        this.bases = new HashMap<>(source.getBases());
     }
 
     /**
@@ -93,6 +88,7 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
      * 
      * @return
      */
+    @Override
     public double getScore() {
         return score;
     }
@@ -102,6 +98,7 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
      * 
      * @return
      */
+    @Override
     public Map<String, Double> getModifiers() {
         return Collections.unmodifiableMap(modifiers);
     }
@@ -111,6 +108,7 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
      * 
      * @return
      */
+    @Override
     public Map<String, Double> getBases() {
         return Collections.unmodifiableMap(bases);
     }
@@ -170,38 +168,5 @@ public class RatingScore implements Comparable<RatingScore>, Serializable {
         else if (score > upper) {
             score = upper;
         }
-    }
-
-    /**
-     * Produces a string output of this rating.
-     * 
-     * @return
-     */
-    public String getOutput() {
-        
-        StringBuilder output = new StringBuilder();
-        output.append("Score: ").append(SCORE_FORMAT.format(score)).append(" (");
-        output.append(bases.entrySet().stream()
-                                .map(entry -> entry.getKey() + ": " + SCORE_FORMAT.format(entry.getValue()))
-                                .collect(Collectors.joining(", ")));
-        if (!modifiers.isEmpty()) {
-            output.append(", ");
-        }
-        output.append(modifiers.entrySet().stream()
-                                .map(entry -> entry.getKey() + ": " + SCORE_FORMAT.format(entry.getValue()))
-                                .collect(Collectors.joining(", ")));
-        output.append(")");
-        return output.toString();
-    }
-
-    /**
-     * Compares with another rating score, based on the total.
-     * 
-     * @param o
-     * @return
-     */
-    @Override
-    public int compareTo(RatingScore o) {
-        return Double.compare(score, o.getScore());
     }
 }
