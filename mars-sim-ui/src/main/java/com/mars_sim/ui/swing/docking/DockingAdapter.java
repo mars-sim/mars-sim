@@ -27,17 +27,19 @@ import io.github.andrewauclair.moderndocking.Dockable;
  */
 class DockingAdapter extends JPanel implements Dockable {
 
+    private DockingWindow dockingParent;
     private ContentPanel content;
     private JLabel contentLabel;
     private JLabel contentSize;
 
     /**
      * Create a new DockingAdapter to wrap the given content panel.
+     * @param parent the parent docking window, used to notify when the content panel is closed.
      * @param contentPanel Panel holding the content.
      */
-    public DockingAdapter(ContentPanel contentPanel) {
+    public DockingAdapter(DockingWindow parent, ContentPanel contentPanel) {
+        this.dockingParent = parent;
         this.content = contentPanel;
-
         setLayout(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
 
@@ -102,12 +104,10 @@ class DockingAdapter extends JPanel implements Dockable {
     public boolean requestClose() {
 
         // Line up the close in the future, cannot deregister until after the call stack unwinds
-        var topLevelAncestor = getTopLevelAncestor();
-        if (topLevelAncestor instanceof DockingWindow window) {
-            SwingUtilities.invokeLater(() ->
-                window.closeContentPanel(this)
-            );
-        }
+        SwingUtilities.invokeLater(() ->
+            dockingParent.closeContentPanel(this)
+        );
+    
         // Return true to allow the close to proceed.
         return true;
     }

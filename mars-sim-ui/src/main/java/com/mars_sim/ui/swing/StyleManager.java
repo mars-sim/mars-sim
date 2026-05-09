@@ -13,7 +13,6 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -293,12 +292,11 @@ public class StyleManager {
 	}
 
     /**
-     * Gets the styles used.
-     * 
+     * Get the properties configurable style parameters.
      * @return
      */
-    public static Map<String, Properties> getStyles() {
-        return styles;
+    public static Properties getUIProps() {
+        return styles.get(LAF_STYLE);
     }
 
     /**
@@ -306,14 +304,8 @@ public class StyleManager {
      * 
      * @param newStyles
      */
-    public static void setStyles(Map<String,Properties> newStyles) {
-        // MErge the incoming styles with the ones used internally
-        for(Entry<String, Properties> usedStyle : styles.entrySet()) {
-            Properties overrides = newStyles.get(usedStyle.getKey());
-            if (overrides != null) {
-                usedStyle.getValue().putAll(overrides);
-            }
-        }
+    public static void setUIProps(Properties newStyles) {
+        styles.get(LAF_STYLE).putAll(newStyles);
 
         // Load LAF to use styles
         setLAF(getLAF());

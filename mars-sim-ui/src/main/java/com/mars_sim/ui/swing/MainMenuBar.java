@@ -214,8 +214,14 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		
 		if (audioPlayer != null) {
 			var audio = createToolMenuItem(AudioControl.TITLE, AudioControl.ICON, null,
-					e -> {AudioControl.showPopup(audioPlayer);});
+					e -> AudioControl.showPopup(audioPlayer));
 			settingsMenu.add(audio);
+		}
+
+		// Notification control
+		var notificationManager = manager.getNotifications();
+		if (notificationManager != null) {
+			settingsMenu.add(notificationManager.getSettingsMenu());
 		}
 
 		// Add window system options

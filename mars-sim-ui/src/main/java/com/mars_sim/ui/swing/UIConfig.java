@@ -57,7 +57,6 @@ public class UIConfig {
 	/** Internal window types. */
 	public static final String TOOL = "tool";
 	public static final String UNIT = "unit";
-	public static final String AUDIO_PROPS = "audio";
 
 	private static final String FILE_NAME = "ui_settings.xml";
 	
@@ -231,19 +230,12 @@ public class UIConfig {
 
 		// Output the extra properties
 		Map<String, Properties> extraProps = new HashMap<>();
-		extraProps.putAll(StyleManager.getStyles());
 		extraProps.putAll(mainWindow.getUIProps());
 
 		Element propsElement = new Element(PROP_SETS);
 		uiElement.addContent(propsElement);
 		for (Entry<String,Properties> entry : extraProps.entrySet()) {
 			outputProperties(propsElement, entry.getKey(), entry.getValue());
-		}
-	
-		// Output the audio properties
-		var audio = mainWindow.getAudio();
-		if (audio != null) {
-			outputProperties(propsElement, UIConfig.AUDIO_PROPS, audio.getUIProps());
 		}
 
 		saveDocumentToXMLFile(outputDoc, new File(SimulationRuntime.getSaveDir(), FILE_NAME));
@@ -389,15 +381,6 @@ public class UIConfig {
 	 */
 	public WindowSpec getInternalWindowDetails(String windowName) {
 		return loadedSpecs.get(windowName);
-	}
-
-	/**
-	 * Gets the property sets defined in the config.
-	 * 
-	 * @return
-	 */
-	public Map<String, Properties> getPropSets() {
-		return propSets;
 	}
 
 	/**

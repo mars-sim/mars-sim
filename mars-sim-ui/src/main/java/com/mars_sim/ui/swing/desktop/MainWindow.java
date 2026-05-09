@@ -10,14 +10,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Taskbar;
 import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -25,17 +20,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 
-import com.formdev.flatlaf.util.SystemInfo;
 import com.mars_sim.core.GameManager;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.time.ClockListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.ClockPulseListener;
@@ -43,7 +34,6 @@ import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.ContentManager;
 import com.mars_sim.ui.swing.MarsPanelBorder;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
@@ -52,7 +42,6 @@ import com.mars_sim.ui.swing.entitywindow.EntityToolBar;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SpeedControl;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -60,10 +49,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The MainWindow class is the primary UI frame for the project. It contains the
  * main desktop pane window are, status bar and tool bars.
  */
-public class MainWindow
-		extends JComponent implements ClockListener, ClockPulseListener, ContentManager {
-
-	private static final long serialVersionUID = 1L;
+public class MainWindow extends ContentManager implements ClockListener, ClockPulseListener {
 
 	private static final Logger logger = Logger.getLogger(MainWindow.class.getName());
 
@@ -74,11 +60,6 @@ public class MainWindow
 	private static final String MAIN_PROPS = "main-window";
 
 	private static final String EXTERNAL_BROWSER = "use-external";
-		
-	/** The main window frame. */
-	private JFrame frame;
-
-	private transient UIConfig uiconfigs;
 
 	// Data members
 	private boolean isIconified = false;
@@ -92,15 +73,11 @@ public class MainWindow
 
 	private Dimension selectedSize;
 	
-	private Simulation sim;
-
 	private JMemoryMeter memoryBar;
 
 	private boolean useExternalBrowser;
 
 	private ClockPulseListener clockHandler;
-
-	private AudioPlayer soundPlayer;
 
 	private SpeedControl speedControls;
 
@@ -111,17 +88,14 @@ public class MainWindow
 	 * @param config UI configuration to use for the window.
 	 * @param audio Audio player for the window.
 	 */
-	public MainWindow(Simulation sim, UIConfig config, AudioPlayer audio) {
-		this.sim = sim;
+	public MainWindow(Simulation sim, UIConfig config, boolean useAudio) {
+		super(sim, config, useAudio);
 
 		logger.config("Starting as " + GameManager.getGameMode());
 
 		// Set Apache Batik library system property so that it doesn't output:
 		// "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
 		System.setProperty("org.apache.batik.warn_destination", "false");
-
-		this.uiconfigs = config;
-		this.soundPlayer = audio;
 
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gd = ge.getScreenDevices();
@@ -145,22 +119,22 @@ public class MainWindow
 		int screenHeight = graphicsDevice.getDisplayMode().getHeight();
 
 		// Set up the frame
-		frame = new JFrame();
-		frame.setResizable(true);
+		var frame = getTopFrame();
 		frame.setMinimumSize(new Dimension(640, 640));
 
 		// Set the UI configuration
-		boolean useDefault = uiconfigs.useUIDefault();
+		boolean useDefault = getConfig().useUIDefault();
 
-		if (useDefault || !setUpSavedScreen()) {
+		if (useDefault || !loadSavedScreen()) {
 			logger.config("Will calculate screen size for default display instead.");
-			setUpDefaultScreen(graphicsDevice, screenWidth, screenHeight, useDefault);
+			setUpDefaultScreen(frame, graphicsDevice, screenWidth, screenHeight, useDefault);
 		}
 		
+		var soundPlayer = getAudio();
+
 		// Set up MainDesktopPane
 		desktop = new MainDesktopPane(this, sim, soundPlayer);
-		
-		init(soundPlayer, sim.getMasterClock());
+		init(frame, soundPlayer, sim.getMasterClock());
 
 		// Show frame
 		frame.setVisible(true);
@@ -170,48 +144,26 @@ public class MainWindow
 	}
 
 	/**
-	 * Sets up the screen config used from last saved session.
-	 */
-	private boolean setUpSavedScreen() {
-		// Display screen at a certain location
-		var location = uiconfigs.getMainWindowLocation();
-		if (location == null) {
-			return false;
-		}
-		frame.setLocation(uiconfigs.getMainWindowLocation());
-
-		// For the Main Window	
-		selectedSize = uiconfigs.getMainWindowDimension();
-		if (selectedSize != null) {
-			// Set frame size
-			frame.setSize(selectedSize);
-			logger.config("Last saved window dimension: " + SwingHelper.toString(selectedSize));
-		}
-
-		return true;
-	}
-
-	/**
 	 * Sets up the default screen config.
-	 * 
+	 * @param frame 
 	 * @param gd
 	 * @param screenWidth
 	 * @param screenHeight
 	 * @param useDefaults
 	 */
-	private void setUpDefaultScreen(GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefaults) {
+	private void setUpDefaultScreen(JFrame frame, GraphicsDevice gd, int screenWidth, int screenHeight, boolean useDefaults) {
 		int initY;
 		int initX;
 		
 		// Set main window frame size
-		selectedSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, uiconfigs.getMainWindowDimension());
+		selectedSize = calculatedScreenSize(gd, screenWidth, screenHeight, useDefaults, getConfig().getMainWindowDimension());
 
 		frame.setSize(selectedSize);
 
 		logger.config("Default main window dimension: " + SwingHelper.toString(selectedSize));
 
-		initX = (int)(screenWidth - selectedSize.width) / 2;
-		initY = (int)(screenHeight - selectedSize.height) / 2;
+		initX = (screenWidth - selectedSize.width) / 2;
+		initY = (screenHeight - selectedSize.height) / 2;
 		frame.setLocation(initX, initY);
 
 		logger.config("Use default configuration to set main window's frame to the center of the screen.");
@@ -289,41 +241,9 @@ public class MainWindow
 	 * Initializes UI elements for the frame
 	 * @param audio The audio player to use but maybe null if audio is not initialized
 	 * @param masterClock Main clock
+	 * @param frame 
 	 */
-	private void init(AudioPlayer audio, MasterClock masterClock) {
-	
-		frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent event) {
-				// Save simulation and UI configuration when window is closed.
-				SaveDialog.createEndSimulation(sim, MainWindow.this);
-			}
-		});
-
-		frame.addWindowStateListener(e -> {
-			int state = e.getNewState();
-			isIconified = (state == Frame.ICONIFIED);
-			if (state == Frame.MAXIMIZED_HORIZ
-					|| state == Frame.MAXIMIZED_VERT)
-				logger.log(Level.CONFIG, "MainWindow set to maximum.");
-			repaint();
-		});
-	
-		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-		changeTitle(false);
-
-		if (SystemInfo.isMacOS) {
-			final Taskbar taskbar = Taskbar.getTaskbar();
-			taskbar.setIconImage(StyleManager.getIconImage());
-			
-			// Move the menu bar out of the main window to the top of the screen
-			System.setProperty( "apple.laf.useScreenMenuBar", "true" );
-		}
-		else {
-			frame.setIconImage(StyleManager.getIconImage());
-		}
-		
+	private void init(JFrame frame, AudioPlayer audio, MasterClock masterClock) {
 
 		// Set up the main pane
 		JPanel mainPane = new JPanel(new BorderLayout());
@@ -361,7 +281,7 @@ public class MainWindow
 		toolbarPane.add(floatingSpeedBar, BorderLayout.WEST);
 	
      	// Prepare tool toolbar
-     	toolToolbar = new ToolToolBar(this, desktop, audio);
+     	toolToolbar = new ToolToolBar(this, desktop);
      	toolToolbar.requestFocusInWindow();
      	// Add toolToolbar to toolbarPane
      	toolbarPane.add(toolToolbar, BorderLayout.CENTER);
@@ -380,7 +300,7 @@ public class MainWindow
 		bottomPane.add(unitToolbar, BorderLayout.CENTER);
 
 		// set the visibility of tool and unit bars from preferences
-		Properties props = uiconfigs.getPropSet(MAIN_PROPS);
+		Properties props = getConfig().getPropSet(MAIN_PROPS);
 		unitToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_UNIT_BAR, false));
 		toolToolbar.setVisible(UIConfig.extractBoolean(props, SHOW_TOOL_BAR, true));
 		useExternalBrowser = UIConfig.extractBoolean(props, EXTERNAL_BROWSER, false);
@@ -411,38 +331,20 @@ public class MainWindow
 		// Listen for clock changes
 		masterClock.addClockListener(this);
 	}
-	
-	/**
-	 * Get the window's frame.
-	 *
-	 * @return the frame.
-	 */
-	@Override
-	public JFrame getTopFrame() {
-		return frame;
-	}
 
 	/**
 	 * Close the main frame and unregister any listeners or active components.
 	 */
 	@Override
 	public void shutdown() {
-		frame.dispose();
+		super.shutdown();
 
-		var masterClock = sim.getMasterClock();
+		var masterClock = getSimulation().getMasterClock();
 		masterClock.removeClockPulseListener(clockHandler);
 		masterClock.removeClockListener(this);
 
 		speedControls.unregister();
 		desktop.destroy();
-	}
-
-	/**
-	 * Get the assigned audio player.
-	 */
-	@Override
-	public AudioPlayer getAudio() {
-		return soundPlayer;
 	}
 
 	/**
@@ -464,34 +366,11 @@ public class MainWindow
 	}
 
 	/**
-	 * Changes the title.
-	 * 
-	 * @param isPaused
-	 */
-	private void changeTitle(boolean isPaused) {
-		String suffix = switch (GameManager.getGameMode()) {
-			case COMMAND -> "Command Mode";
-			case SANDBOX -> "Sandbox Mode";
-			case SPONSOR -> "Sponsor Mode";
-			case SOCIETY ->  "Society Mode";	
-		};
-		frame.setTitle(SimulationRuntime.SHORT_TITLE + "  -  " + suffix + (isPaused ? "  -  [ P A U S E ]" : ""));
-	}
-
-	/**
-	 * Gets the UIConfig for this UI.
-	 */
-	@Override
-	public UIConfig getConfig() {
-		return uiconfigs;
-	}
-
-	/**
 	 * Gets the UI properties of the application.
 	 */
 	@Override
 	public Map<String, Properties> getUIProps() {
-		Map<String, Properties> result = new HashMap<>();
+		Map<String, Properties> result = super.getUIProps();
 
 		// Local details
 		Properties desktopProps = new Properties();
@@ -523,7 +402,7 @@ public class MainWindow
 	 */
 	@Override
 	public void pauseChange(boolean isPaused) {
-		changeTitle(isPaused);
+		// No need to do anything here since the MasterClock is controlling the pause status
 	}
 
 	@Override
@@ -556,7 +435,7 @@ public class MainWindow
 	 * @param helpPage
 	 */
 	public void showHelp(String helpPage) {
-		var library = GuideWindow.getHelp(sim.getConfig());
+		var library = GuideWindow.getHelp(getSimulation().getConfig());
 
 		var  helpURI = library.getPage(helpPage);	
 		if (useExternalBrowser) {

@@ -193,7 +193,7 @@ public class SimulationConfigEditor {
 		// Preload the config to set up the preferred LAF
 		UIConfig configs = new UIConfig();
 		configs.parseFile();
-		StyleManager.setStyles(configs.getPropSets());
+		StyleManager.setUIProps(configs.getPropSet("style"));
 
 		hasError = false;
 
