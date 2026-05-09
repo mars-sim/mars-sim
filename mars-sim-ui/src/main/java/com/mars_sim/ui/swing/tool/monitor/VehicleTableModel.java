@@ -314,7 +314,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 					result = value;
 				break;
 				
-			case ROCK_SAMPLES : ;
+			case ROCK_SAMPLES :
 				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.ROCK_SAMPLES_ID);
 				if (value == 0.0)
 					result = null;
@@ -379,7 +379,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 			else if (target instanceof Integer item) {
 				resourceId = item;
 				if (ResourceType.getType(resourceId) != ResourceType.AMOUNT_RESOURCE)
-					// if it's an item resource, quit
+					// if resource is not an amount then quit
 					return;
 			}
 

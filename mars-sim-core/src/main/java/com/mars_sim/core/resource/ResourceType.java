@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * ResourceIdentifier.java
+ * ResourceType.java
  * @date 2026-05-03
  * @author Barry Evans
  */
