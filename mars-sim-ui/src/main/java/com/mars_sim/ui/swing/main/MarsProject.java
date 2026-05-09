@@ -60,8 +60,6 @@ public class MarsProject {
 	private boolean useDockingUI = false;
 	private boolean useAudio = true;
 
-	private Simulation sim;
-
 	private String simFile;
 
 
@@ -78,6 +76,7 @@ public class MarsProject {
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
+  Simulation sim;
 				
 		SimulationBuilder builder = new SimulationBuilder();
 		
@@ -338,11 +337,11 @@ public class MarsProject {
 	 */
 	private void usage(String message, Options options) {
         // New non-deprecated HelpFormatter (Commons CLI 1.10+)
-        final HelpFormatter fmt = HelpFormatter.builder().get();
+        final HelpFormatter fmt = HelpFormatter.builder().setShowSince(false).get();
         final String header = "\n" + message + "\n";
         final String footer = "";
         try {
-            fmt.printHelp("mars-sim-ui [options]", header, options, footer, true);
+            fmt.printHelp("mars-sim-ui", header, options, footer, true);
         } catch (IOException ioe) {
             // Fallback if printing help fails
             logger.severe(message);

@@ -42,6 +42,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.MaintenanceScope;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
@@ -1140,50 +1141,51 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			int id = entry.getKey();
 			Object value = entry.getValue();
 
-			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			switch(ResourceType.getType(id)) {
+				case ResourceType.AMOUNT_RESOURCE: {
+					double amount = (Double) value;
+					double amountStored = vehicle.getSpecificAmountResourceStored(id);
 
-				double amount = (Double) value;
-				double amountStored = vehicle.getSpecificAmountResourceStored(id);
-
-				// Check inside vehicle
-				if (VehicleType.isRover(vehicle.getVehicleType())) {
-					Rover rover = (Rover) vehicle;
-					// Check people's possession
-					for (Person person: rover.getCrew()) {
-						amountStored += person.getSpecificAmountResourceStored(id);
+					// Check inside vehicle
+					if (VehicleType.isRover(vehicle.getVehicleType())) {
+						Rover rover = (Rover) vehicle;
+						// Check people's possession
+						for (Person person: rover.getCrew()) {
+							amountStored += person.getSpecificAmountResourceStored(id);
+						}
+						// Check vehicle's equipment
+						for (Equipment equipment: rover.getContainerSet()) {
+							amountStored += equipment.getSpecificAmountResourceStored(id);
+						}
 					}
-					// Check vehicle's equipment
-					for (Equipment equipment: rover.getContainerSet()) {
-						amountStored += equipment.getSpecificAmountResourceStored(id);
+					
+					if (amountStored < amount) {
+						String newLog = "Not enough "
+								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
+								+ getName() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
+								+ Math.round(amountStored * 100D) / 100D + " kg.";
+						logger.log(vehicle, Level.WARNING, 10_000, newLog);
+						return id;
 					}
-				}
+					} break;
 				
-				if (amountStored < amount) {
-					String newLog = "Not enough "
-							+ ResourceUtil.findAmountResourceName(id) + " to continue with "
-							+ getName() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
-							+ Math.round(amountStored * 100D) / 100D + " kg.";
-					logger.log(vehicle, Level.WARNING, 10_000, newLog);
-					return id;
-				}
+				case ResourceType.ITEM_RESOURCE: {
+					int num = (Integer) value;
+					int numStored = vehicle.getItemResourceStored(id);
+
+					if (numStored < num) {
+						String newLog = "Not enough "
+								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
+								+ getName() + " - Required: " + num + " - Vehicle stored: " + numStored + ".";
+						logger.log(vehicle, Level.WARNING, 10_000,  newLog);
+						return id;
+					}
+					} break;
+
+				default:
+					logger.warning(vehicle, "Phase: " + getPhase() + ": unable to process the resource '"
+								+ GoodsUtil.getGood(id) + "'.");
 			}
-
-			else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-				int num = (Integer) value;
-				int numStored = vehicle.getItemResourceStored(id);
-
-				if (numStored < num) {
-					String newLog = "Not enough "
-							+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
-							+ getName() + " - Required: " + num + " - Vehicle stored: " + numStored + ".";
-					logger.log(vehicle, Level.WARNING, 10_000,  newLog);
-					return id;
-				}
-			}
-
-			else
-				logger.warning(vehicle, "Phase: " + getPhase() + ": unable to process the resource '"
-						+ GoodsUtil.getGood(id) + "'.");
 		}
 		return -1;
 	}
@@ -1378,7 +1380,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		while (i.hasNext()) {
 			Integer id = i.next();
 			// Check if it's an amount resource that can be stored inside
-			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			if (ResourceType.getType(id) == ResourceType.AMOUNT_RESOURCE) {
 				double amount = (double) optionalResources.get(id);
 
 				// Obtain a container for storing the amount resource

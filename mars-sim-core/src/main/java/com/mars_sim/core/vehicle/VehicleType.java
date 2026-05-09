@@ -7,7 +7,7 @@
  */
 package com.mars_sim.core.vehicle;
 
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.tool.Msg;
 
 public enum VehicleType {
@@ -68,7 +68,7 @@ public enum VehicleType {
 	 * @return
 	 */
 	public static VehicleType convertID2Type(int id) {
-		return VehicleType.values()[id - ResourceUtil.FIRST_VEHICLE_RESOURCE_ID];
+		return VehicleType.values()[id - ResourceType.FIRST_VEHICLE_RESOURCE_ID];
 	}
 	
 	/**
@@ -78,7 +78,7 @@ public enum VehicleType {
 	 * @return
 	 */
 	public static int getVehicleID(VehicleType type) {
-		return ResourceUtil.FIRST_VEHICLE_RESOURCE_ID + type.ordinal();
+		return ResourceType.FIRST_VEHICLE_RESOURCE_ID + type.ordinal();
 	}
 	
 	/**

@@ -29,6 +29,7 @@ import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -377,7 +378,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 			}
 			else if (target instanceof Integer item) {
 				resourceId = item;
-				if (resourceId >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+				if (ResourceType.getType(resourceId) != ResourceType.AMOUNT_RESOURCE)
 					// if it's an item resource, quit
 					return;
 			}

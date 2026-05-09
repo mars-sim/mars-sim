@@ -27,6 +27,7 @@ import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.structure.MockSettlement;
@@ -368,7 +369,7 @@ public class LoadControllerTest {
 		checkVehicleInventory(vehicle, manifest);
 
 		double optionalLoaded;
-		if (missingId < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+		if (ResourceType.getType(missingId) == ResourceType.AMOUNT_RESOURCE) {
 			optionalLoaded = vehicle.getSpecificAmountResourceStored(missingId);
 		}
 		else {
@@ -456,7 +457,7 @@ public class LoadControllerTest {
 		requiredResourcesMap.putAll(manifest.getAmounts(false));
 		for (Entry<Integer, Double> resource : requiredResourcesMap.entrySet()) {
 			int key = resource.getKey();
-			if (key < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			if (ResourceType.getType(key) == ResourceType.AMOUNT_RESOURCE) {
 				String resourceName = ResourceUtil.findAmountResourceName(key);
 
 				double stored = source.getSpecificAmountResourceStored(key);

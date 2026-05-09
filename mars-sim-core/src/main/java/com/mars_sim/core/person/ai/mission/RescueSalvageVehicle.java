@@ -21,7 +21,7 @@ import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
@@ -424,24 +424,31 @@ public class RescueSalvageVehicle extends RoverMission {
 
 			for (var needed : rescueResources.entrySet()) {
 				var id = needed.getKey();
-				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-					double amount = (Double) needed.getValue();
-					if (useBuffer) {
-						amount *= RESCUE_RESOURCE_BUFFER;
-					}
-					if (result.containsKey(id)) {
-						amount += (Double) result.get(id);
-					}
+				switch(ResourceType.getType(id)) {
+					case ResourceType.AMOUNT_RESOURCE: {
+						double amount = (Double) needed.getValue();
+						if (useBuffer) {
+							amount *= RESCUE_RESOURCE_BUFFER;
+						}
+						if (result.containsKey(id)) {
+							amount += (Double) result.get(id);
+						}
 
-					result.put(id, amount);
-					
-				}  // Check if these resources are Parts
-				else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-					int num = (Integer) needed.getValue();
-					if (result.containsKey(id)) {
-						num += (Integer) result.get(id);
-					}
-					result.put(id, num);
+						result.put(id, amount);
+						
+					} break;
+
+					// Check if these resources are Parts
+					case ResourceType.ITEM_RESOURCE: {
+						int num = (Integer) needed.getValue();
+						if (result.containsKey(id)) {
+							num += (Integer) result.get(id);
+						}
+						result.put(id, num);
+					} break;
+
+					default: // Do nothing
+						break;
 				}
 			}
 		}
