@@ -6,19 +6,20 @@
  */
 package com.mars_sim.core.person.ai.task.util;
 
+import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 
 /**
- * Abstract implementation of a Task Job for holding its name & the rating score.
+ * Abstract implementation of a Task Job for holding its name & the rating.
  */
 public abstract class AbstractTaskJob implements TaskJob {
 
 	private static final long serialVersionUID = 1L;
 	
 	private static final double CAP = 1000D;
-    private RatingScore score;
+    private Rating score;
     private String name;
 
     /**
@@ -31,11 +32,11 @@ public abstract class AbstractTaskJob implements TaskJob {
     	this.name = name;
   
         this.score = score;
-        this.score.applyRange(0, CAP);
+        score.applyRange(0, CAP);
     }
 
     @Override
-    public RatingScore getScore() {
+    public Rating getScore() {
         return score;
     }
 
