@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * A class to represent a score Rating. Consists of a base value and a set
  * of modifiers that are applied to create a final score.
  */
-public interface Rating extends Comparable<RatingScore>, Serializable {
+public interface Rating extends Comparable<Rating>, Serializable {
 
     public static final DecimalFormat SCORE_FORMAT = new DecimalFormat("0.###");
 
@@ -74,7 +74,7 @@ public interface Rating extends Comparable<RatingScore>, Serializable {
      * @return Return comparative result based on score.
      */
     @Override
-    default int compareTo(RatingScore o) {
+    default int compareTo(Rating o) {
         return Double.compare(getScore(), o.getScore());
     }
 }

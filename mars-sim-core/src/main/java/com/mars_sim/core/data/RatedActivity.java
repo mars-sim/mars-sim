@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Rating.java
+ * RatedActivity.java
  * @date 2023-09-10
  * @author Barry Evans
  */

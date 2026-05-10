@@ -16,7 +16,7 @@ import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.Settlement;
 
 class SettlementTaskManagerTest extends MarsSimUnitTest {
-    // Test settlement task that just record tinme
+    // Test settlement task that just record time
     @SuppressWarnings("serial")
 	private static class TestTask extends SettlementTask {
         private static final RatingScore DEFAULT_SCORE = new RatingScore(10);
