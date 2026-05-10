@@ -19,15 +19,14 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-// Use the non-deprecated HelpFormatter in the new package:
 import org.apache.commons.cli.help.HelpFormatter;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import com.mars_sim.console.chat.service.Credentials;
 import com.mars_sim.console.chat.service.RemoteChatService;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationRuntime;
-import com.mars_sim.core.tool.RandomStringUtils;
 
 /**
  * MarsProjectHeadless is the main class for starting mars-sim in purely
@@ -197,11 +196,11 @@ public class MarsProjectHeadless {
             // Load the credential file
             File credFile = new File(serviceDataDir, CREDENTIALS_FILE);
             Credentials credentials = null;
-            String adminPassword;
+            String adminPassword = null;
             if (credFile.exists()) {
                 credentials = Credentials.load(credFile);
                 if (changePassword) {
-                    adminPassword = RandomStringUtils.random(8, true, true);
+                    adminPassword = RandomStringUtils.secure().next(8, true, true);
                     credentials.setPassword(Credentials.ADMIN, adminPassword);
                 }
                 else {
@@ -210,7 +209,7 @@ public class MarsProjectHeadless {
             }
             else {
                 credentials = new Credentials(credFile);
-                adminPassword = RandomStringUtils.random(8, true, true);
+                adminPassword = RandomStringUtils.secure().next(8, true, true);
                 credentials.addUser(Credentials.ADMIN, adminPassword);
                 credentials.addUser("normal", "test456");
             }
@@ -232,7 +231,7 @@ public class MarsProjectHeadless {
      *
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         SimulationRuntime.initialseLogging();
 
