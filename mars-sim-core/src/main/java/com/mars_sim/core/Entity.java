@@ -22,4 +22,10 @@ public interface Entity extends Named, Serializable {
      * @return This may be null if a top level entity.
      */
     String getContext();
+
+    /**
+     * Get the unique identifier for the entity. This is used to uniquely identify the entity across the system and should be immutable.
+     * @return The unique identifier of the entity.
+     */
+    EntityIdentifier getEntityIdentifier();
 }

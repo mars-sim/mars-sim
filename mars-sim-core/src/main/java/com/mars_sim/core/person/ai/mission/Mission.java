@@ -25,7 +25,6 @@ import com.mars_sim.core.time.MarsTime;
 public interface Mission extends MonitorableEntity {
 
 	// Mission event types
-	static final String DESIGNATION_EVENT = "designation";
 	static final String PHASE_EVENT = "phase";
 	static final String PHASE_DESCRIPTION_EVENT = "phase description";
 	static final String MIN_MEMBERS_EVENT = "minimum members";

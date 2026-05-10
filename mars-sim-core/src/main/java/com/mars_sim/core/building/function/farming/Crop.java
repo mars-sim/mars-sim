@@ -9,6 +9,7 @@ package com.mars_sim.core.building.function.farming;
 import java.util.Arrays;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.data.ValueMax;
@@ -1541,4 +1542,8 @@ public class Crop implements Comparable<Crop>, Entity {
 		return building.getContext();
 	}
 
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("Crop", String.valueOf(identifier));
+	}
 }

@@ -110,6 +110,15 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	}
 
 	/**
+	 * Gets the unique identifier for the entity. This is used to uniquely identify the entity across the system and is immutable.
+	 *
+	 * @return The unique identifier of the entity.
+	 */
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier(getUnitType().name(), String.valueOf(identifier));
+	}
+
+	/**
 	 * Constructor 1: the name and identifier are defined.
 	 *
 	 * @param name     {@link String} the name of the unit

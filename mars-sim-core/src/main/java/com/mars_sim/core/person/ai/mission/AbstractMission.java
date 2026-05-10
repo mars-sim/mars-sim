@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
@@ -121,11 +122,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private boolean aborted = false;
 	
 	/** The mission string. */
-	private String missionString;
-	/** The sol sortie string */
-	private String solSortieString;
+	private String name;
 	/** The mission designation string. */
-	private String missionDesignationString = "";
+	private String designationString = "";
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
 	
@@ -179,12 +178,15 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected AbstractMission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
 
-		this.solSortieString = missionManager.computeSolSortieString();
+		var solSortieString = missionManager.computeSolSortieString();
 		this.identifier = missionManager.getIdentifier();
 		
-		this.missionString = missionType.getName() + " " + solSortieString;
+		this.name = missionType.getName() + " " + solSortieString;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
+
+		this.designationString = createDesignationString(missionType, solSortieString,
+									startingMember.getAssociatedSettlement(), this.identifier);
 
 		missionStatus = new HashSet<>();
 		members = new UnitSet<>();
@@ -200,7 +202,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 		if (person.isInSettlement()) {
 			logger.log(startingMember, Level.INFO, 0,
-					"Began organizing " + missionString + ", members " + members.size());
+					"Began organizing " + name + ", members " + members.size());
 
 			// Add starting member to mission.
 			startingMember.setMission(this);
@@ -208,6 +210,14 @@ public abstract class AbstractMission implements Mission, Temporal {
 			// Note: do NOT set his shift to ON_CALL yet.
 			// let the mission lead have more sleep before departing
 		}
+	}
+	
+	/**
+	 * Gets the unique identifier for the entity. This is used to uniquely identify the entity across the system and is immutable.
+	 */
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("Mission", designationString);
 	}
 	
 	/**
@@ -285,7 +295,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Gets the string representation of this mission.
 	 */
 	public String toString() {
-		return missionString;
+		return name;
 	}
 
 	/**
@@ -320,7 +330,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 
 			fireMissionUpdate(ADD_MEMBER_EVENT, member);
 
-			logger.log(member, Level.FINER, 0, "Just got added to " + missionString + ".");
+			logger.log(member, Level.FINER, 0, "Just got added to " + name + ".");
 		}
 	}
 
@@ -435,7 +445,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public final String getName() {
-		return missionString;
+		return name;
 	}
 
 	/**
@@ -445,7 +455,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
     public void setName(String newName) {
-		this.missionString = newName;
+		this.name = newName;
 		fireMissionUpdate(EntityEventType.NAME_EVENT);
     }
 
@@ -1265,8 +1275,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 				break;
 			
 			case APPROVED:
-				createDesignationString();
-
 				logger.info(this, "Mission plan approved.");
 
 				if (!(this instanceof VehicleMission)) {
@@ -1332,25 +1340,24 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public String getFullMissionDesignation() {
-		return missionDesignationString;
+		return designationString;
 	}
 
 	/**
 	 * Creates the mission designation string for this mission.
 	 */
-	protected void createDesignationString() {
+	public static String createDesignationString(MissionType type, String solSortieString, Settlement owner,
+								int id) {
 		StringBuilder buffer = new StringBuilder();
-		buffer.append(Conversion.getOneLetterInitial(missionType.getName().replace("with", "").trim()))
+		buffer.append(Conversion.getOneLetterInitial(type.getName().replace("with", "").trim()))
 			  .append("-")
 			  .append(solSortieString)
 			  .append("-")
-			  .append(getAssociatedSettlement().getSettlementCode())
+			  .append(owner.getSettlementCode())
 			  .append('-')
-			  .append(identifier);
+			  .append(id);
 		
-		missionDesignationString = buffer.toString();
-
-		fireMissionUpdate(DESIGNATION_EVENT, missionDesignationString);
+		return buffer.toString();
 	}
 
 	@Override
@@ -1421,7 +1428,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		AbstractMission m = (AbstractMission) obj;
-		return this.solSortieString == m.solSortieString;
+		return this.identifier == m.identifier;
 	}
 
 	/**

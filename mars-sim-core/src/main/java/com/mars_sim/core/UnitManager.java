@@ -123,7 +123,7 @@ public class UnitManager implements Serializable, Temporal {
 	 * @param type
 	 * @return
 	 */
-	private Map<Integer, ? extends Unit> getUnitMap(UnitType type) {
+	public Map<Integer, ? extends Unit> getUnitMap(UnitType type) {
 		return switch (type) {
 			case PERSON -> lookupPerson;
 			case VEHICLE -> lookupVehicle;

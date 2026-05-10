@@ -352,6 +352,8 @@ public class Simulation implements ClockPulseListener, Serializable {
 	
 		marketManager = new MarketManager(this);
 		
+		transportManager = new TransportManager(this);
+		
         // Initialize RoleUtil
         RoleUtil.initialize();
      
@@ -467,6 +469,9 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Initialize MarketManager instance		
 		marketManager = new MarketManager(this);
 		
+		// Initialize TransportManager instance		
+		transportManager = new TransportManager(this);
+
 		// Initialize Unit
 		Rover.initializeInstances(simulationConfig);
 		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
@@ -539,7 +544,8 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		BuildingManager.initializeInstances(simulationConfig, masterClock, unitManager);
 		ExplorationManager.initialise(surfaceFeatures);
-		
+
+
 		doneInitializing = true;
 		
 		// Set this flag to false

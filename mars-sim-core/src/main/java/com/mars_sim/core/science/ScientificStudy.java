@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Simulation;
@@ -186,6 +187,14 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 
 		// Register the initial phase
 		registerHistoricalEvent(HistoricalEventType.STUDY_START_PHASE, phase.getName());
+	}
+
+	/**
+	 * Gets the unique identifier for the entity. This is used to uniquely identify the entity across the system and is immutable.
+	 */
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("SCIENTIFICSTUDY", String.valueOf(id));
 	}
 
 	/**

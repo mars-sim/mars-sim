@@ -16,6 +16,7 @@ import java.util.Set;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
@@ -65,9 +66,7 @@ public class EquipmentInventory
 		
 		// Create microInventory instance
 		microInventory = new MicroInventory(owner, cargoCapacity);
-		
-		///////////// EXPERIMENTAL ONLY /////////////
-		
+				
 		// Create the amount resource bin set
 		amountResourceBinSet = new HashSet<>();
 		
@@ -76,7 +75,6 @@ public class EquipmentInventory
 		
 		amountResourceBinSet.add(baskets);
 		amountResourceBinSet.add(crates);
-		//////////////////////////////////////////////
 	}
 
 	/**
@@ -174,11 +172,9 @@ public class EquipmentInventory
 	 */
 	@Override
 	public boolean containsEquipment(EquipmentType type) {
-		if (type == EquipmentType.EVA_SUIT) {
-			if (suitSet.isEmpty())
+		if (type == EquipmentType.EVA_SUIT && suitSet.isEmpty())
 				return false;
-		}
-
+		
 		return containerSet.stream().anyMatch(e -> e.getEquipmentType() == type);
 	}
 
@@ -792,21 +788,6 @@ public class EquipmentInventory
 		return false;
 	}
 	
-	/**
-	 * Checks if it has the container type.
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public boolean haveContainerTypeResource(BinType type) {
-		for (AmountResourceBin c: amountResourceBinSet) {
-			if (c.getBinType() == type) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	@Override
 	public double getAmountResourceStored(BinType type, int id, int resource) {
 		for (AmountResourceBin c: amountResourceBinSet) {
@@ -926,11 +907,9 @@ public class EquipmentInventory
 	@Override
 	public double getCargoCapacity(BinType type, int id) {
 		for (AmountResourceBin c: amountResourceBinSet) {
-			if (c.getBinType() == type) {
-				if (c.getBinMap().containsKey(id)) {
-					return c.getCapacity();
-				}
-			}
+			if (c.getBinType() == type && c.getBinMap().containsKey(id)) {
+				return c.getCapacity();
+			}	
 		}
 		
 		return 0;
@@ -956,6 +935,15 @@ public class EquipmentInventory
 	public String getContext() {
 		return owner.getDescription();
 	}	
+
+	/**
+	 * This returns the unique identifier of the owner unit.
+	 * This is not perfect and highlights the dependency on the owner entity that is target for issue #1729.
+	 */
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return owner.getEntityIdentifier();
+	}
 
 	public void destroy() {
 		containerSet.clear();

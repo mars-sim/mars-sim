@@ -77,7 +77,7 @@ public class MissionManager implements Serializable {
 	 *
 	 * @return
 	 */
-	synchronized String computeSolSortieString() {
+	public synchronized String computeSolSortieString() {
 		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
 		int id = 1;
 		if (solCache != missionSol) {

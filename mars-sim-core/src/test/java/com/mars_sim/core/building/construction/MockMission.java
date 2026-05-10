@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.Person;
@@ -185,6 +186,11 @@ public class MockMission implements Mission {
     @Override
     public void fireMissionUpdate(String eventType, Object target) {
         throw new UnsupportedOperationException("Unimplemented method 'fireMissionUpdate'");
+    }
+
+    @Override
+    public EntityIdentifier getEntityIdentifier() {
+        throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
     }
 
 }

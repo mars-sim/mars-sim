@@ -7,6 +7,7 @@
 package com.mars_sim.core.interplanetary.transport;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitManager;
@@ -47,8 +48,12 @@ public abstract class Transportable
 		return name;
 	}
 
-	public void setName(String newName) {
-		name = newName;
+	/**
+	 * Gets the unique identifier for the entity. This is used to uniquely identify the entity across the system and is immutable.
+	 */
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("Transportable", name);
 	}
 
 	public Coordinates getLandingLocation() {

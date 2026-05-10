@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.authority.Organization;
@@ -204,14 +205,13 @@ public class Colony implements Temporal, Entity, Comparable<Colony> {
 	}
 	
 	/**
-	 * Gets the id.
-	 * 
-	 * @return
+	 * Get the unique identifier for the colony.
 	 */
-	public int getId() {
-		return id;
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("Colony", String.valueOf(id));
 	}
-	
+
 	/**
 	 * Gets the nation.
 	 * 
