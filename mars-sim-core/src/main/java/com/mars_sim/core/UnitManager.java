@@ -137,22 +137,6 @@ public class UnitManager implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the Unit of a certain type matching the name.
-	 *
-	 * @param type The UnitType to search for
-	 * @param name Name of the unit
-	 */
-	public Unit getUnitByName(UnitType type, String name) {
-		Map<Integer,? extends Unit> map = getUnitMap(type);
-		for(Unit u : map.values()) {
-			if (u.getName().equalsIgnoreCase(name)) {
-				return u;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Gets the unit with a particular identifier (unit id).
 	 *
 	 * @param id identifier

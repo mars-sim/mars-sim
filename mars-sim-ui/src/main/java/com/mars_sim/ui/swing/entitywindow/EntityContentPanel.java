@@ -22,6 +22,7 @@ import javax.swing.JTabbedPane;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityResolver;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
@@ -43,8 +44,7 @@ import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 public class EntityContentPanel<T extends Entity> extends ContentPanel
     implements ConfigurableWindow, EntityListener {
 
-    static final String UNIT_TYPE = "unittype";
-	static final String UNIT_NAME = "unitname";
+    static final String ENTITY_ID = "entity";
 	private static final String SELECTED_TAB = "selected_tab";
 
     private static final int WIDTH = 550;
@@ -189,8 +189,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     @Override
 	public Properties getUIProps() {
 		Properties result = new Properties();
-		result.setProperty(UNIT_NAME, entity.getName());
-        result.setProperty(UNIT_TYPE, EntityDisplayInfoFactory.getDisplayInfo(entity).getEntityKey());
+		result.setProperty(ENTITY_ID, EntityResolver.toString(entity.getEntityIdentifier()));
         var selected = getSelected();
         if (selected != null) {
 		    result.setProperty(SELECTED_TAB, selected.getTabTitle());

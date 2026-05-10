@@ -50,4 +50,25 @@ public class EntityResolver {
         UnitType unitType = UnitType.valueOf(identifier.type());
         return sim.getUnitManager().getUnitMap(unitType).get(numberId);
     }
+
+    /**
+     * Parse a string representation of an EntityIdentifier. The string should have been constructed via {@link #toString(EntityIdentifier)}
+     * @param stringId the string representation of the EntityIdentifier
+     */
+    public static EntityIdentifier fromString(String stringId) {
+        var parts = stringId.split(":");
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid EntityIdentifier string: " + stringId);
+        }
+        return new EntityIdentifier(parts[0], parts[1]);
+    }
+
+    /**
+     * Convert a EntityIdentifier to a string representation. This should be reversible via {@link #fromString(String)}.
+     * @param id Identfier to convert
+     * @return
+     */
+    public static String toString(EntityIdentifier id) {
+        return id.type() + ":" + id.id();
+    }
 }

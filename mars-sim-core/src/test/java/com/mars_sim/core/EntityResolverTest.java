@@ -14,6 +14,27 @@ import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 class EntityResolverTest extends MarsSimUnitTest {
+        @Test
+        void testEntityIdentifierStringConversion() {
+            // Test a variety of entity types and ids
+            EntityIdentifier[] ids = new EntityIdentifier[] {
+                new EntityIdentifier("SETTLEMENT", "123"),
+                new EntityIdentifier("PERSON", "456"),
+                new EntityIdentifier("VEHICLE", "789"),
+                new EntityIdentifier("AUTHORITY", "NASA"),
+                new EntityIdentifier("SCIENTIFICSTUDY", "study-001"),
+                new EntityIdentifier("MISSION", "mission-abc"),
+                new EntityIdentifier("TRANSPORTABLE", "resupply-42"),
+                new EntityIdentifier("BUILDING", "321"),
+                new EntityIdentifier("ROBOT", "654"),
+                new EntityIdentifier("EVA_SUIT", "eva-77")
+            };
+            for (EntityIdentifier id : ids) {
+                String str = EntityResolver.toString(id);
+                EntityIdentifier parsed = EntityResolver.fromString(str);
+                assertEquals(id, parsed, "EntityIdentifier toString/fromString reversible for: " + id);
+            }
+        }
     @Test
     void testSettlement() {
         var s1 = buildSettlement("S1");
