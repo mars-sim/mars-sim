@@ -19,7 +19,7 @@ import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.MarketManager;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.Part;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -217,7 +217,7 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	 */
     private Object getRepair(Settlement settlement, Good good) {
 
-    	if (good.getID() < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+    	if (ResourceType.getType(good.getID()) != ResourceType.ITEM_RESOURCE) {
     		return null;
     	}
     	
@@ -249,33 +249,21 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	 * @return
 	 */
     private Object getQuantity(Settlement settlement, int id) {
-
-    	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-    		return null;
-    	}
-    	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-    		return settlement.getItemResourceStored(id);
-    	}
-    	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
-    		// For Vehicle
-    		return settlement.findNumVehiclesOfType(VehicleType.convertID2Type(id));
-    	}
-    	else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
-    		// For EVA suits 
-    		EquipmentType type = EquipmentType.convertID2Type(id);
-    		if (type == EquipmentType.EVA_SUIT)
-    			return settlement.getNumEVASuit();
-    		// For Equipment 
-    		return settlement.findNumContainersOfType(type);
-    	}
-    	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
-    		// For Robots 
-    		return settlement.getNumBots();
-    	}
-    	else {
-    		// For Bins 
-    		return settlement.findNumBinsOfType(BinType.convertID2Type(id));
-    	}
+		switch(ResourceType.getType(id)) {
+			case ResourceType.AMOUNT_RESOURCE: return null;
+			case ResourceType.ITEM_RESOURCE: return settlement.getItemResourceStored(id);
+			case ResourceType.VEHICLE_RESOURCE: return settlement.findNumVehiclesOfType(VehicleType.convertID2Type(id));
+			case ResourceType.EQUIPMENT_RESOURCE: {
+				// For Equipment
+				EquipmentType type = EquipmentType.convertID2Type(id);
+				if (type == EquipmentType.EVA_SUIT)
+					return settlement.getNumEVASuit();
+				return settlement.findNumContainersOfType(type);
+			}
+			case ResourceType.ROBOT_RESOURCE: return settlement.getNumBots();
+			case ResourceType.BIN_RESOURCE: return settlement.findNumBinsOfType(BinType.convertID2Type(id));
+			default: return null;
+		}
     }
 
 	/**
@@ -287,46 +275,48 @@ class TradeTableModel extends CategoryTableModel<Good> {
 	 */
     private Object getTotalMass(Settlement settlement, Good good) {
     	int id = good.getID(); 
-    	
-    	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-      		// For Amount Resource
-    		return Math.round(settlement.getSpecificAmountResourceStored(id) * 100.0)/100.0;
-    	}
-    	else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-    		// For Item Resource
-    		Part p = ItemResourceUtil.findItemResource(id);
-    		if (p != null) {
-    			return settlement.getItemResourceStored(id) * p.getMassPerItem();
+    	switch(ResourceType.getType(id)) {
+			case ResourceType.AMOUNT_RESOURCE: {
+      			// For Amount Resource
+    			return Math.round(settlement.getSpecificAmountResourceStored(id) * 100.0)/100.0;
     		}
-    		return 0.0;
-    	}
-    	else if (id < ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID) {
-    		// For Vehicle
-    		VehicleType vehicleType = VehicleType.convertID2Type(id);
-    		if (settlement.getAVehicle(vehicleType) == null)
-    			return 0.0;
-    		
-    		return settlement.findNumVehiclesOfType(vehicleType) * CollectionUtils.getVehicleTypeBaseMass(vehicleType); 
-    	}
-    	else if (id < ResourceUtil.FIRST_ROBOT_RESOURCE_ID) {
-    		// For Equipment   		
-    		EquipmentType type = EquipmentType.convertID2Type(id);
+			case ResourceType.ITEM_RESOURCE: {
+				// For Item Resource
+				Part p = ItemResourceUtil.findItemResource(id);
+				if (p != null) {
+					return settlement.getItemResourceStored(id) * p.getMassPerItem();
+				}
+				return 0.0;
+			}
+			case ResourceType.VEHICLE_RESOURCE: {
+				// For Vehicle
+				VehicleType vehicleType = VehicleType.convertID2Type(id);
+				if (settlement.getAVehicle(vehicleType) == null)
+					return 0.0;
+				
+    			return settlement.findNumVehiclesOfType(vehicleType) * CollectionUtils.getVehicleTypeBaseMass(vehicleType); 
+}
+			case ResourceType.EQUIPMENT_RESOURCE: {
+				// For Equipment   		
+				EquipmentType type = EquipmentType.convertID2Type(id);
 
-    		if (type == EquipmentType.EVA_SUIT)
-    			return settlement.getNumEVASuit() * EquipmentFactory.getEquipmentMass(type);
-    		
-    		return settlement.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
-    	}
-    	else if (id < ResourceUtil.FIRST_BIN_RESOURCE_ID) {
-    		// For Robots   
-    		// Future: will need to account for individual robot mass
-    		return settlement.getNumBots() * Robot.EMPTY_MASS;
-    	}    	
-    	else {
-    		// For Bins   		
-    		BinType type = BinType.convertID2Type(id);
-    		return settlement.findNumBinsOfType(type) * BinFactory.getBinMass(type);	
-    	}
+				if (type == EquipmentType.EVA_SUIT)
+					return settlement.getNumEVASuit() * EquipmentFactory.getEquipmentMass(type);
+				
+				return settlement.findNumContainersOfType(type) * EquipmentFactory.getEquipmentMass(type);		
+			}
+			case ResourceType.ROBOT_RESOURCE: {
+				// For Robots   
+				// Future: will need to account for individual robot mass
+				return settlement.getNumBots() * Robot.EMPTY_MASS;
+			}    	
+			case ResourceType.BIN_RESOURCE: {
+				// For Bins   		
+				BinType type = BinType.convertID2Type(id);
+				return settlement.findNumBinsOfType(type) * BinFactory.getBinMass(type);	
+			}
+			default: return null;
+		}
     }
 
 	/**

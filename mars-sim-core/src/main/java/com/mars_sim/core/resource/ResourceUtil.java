@@ -18,17 +18,12 @@ import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.goods.GoodType;
 
+/**
+ * Helper class for Amount Resources.
+ */
 public class ResourceUtil {
 
-	
-	public static final int FIRST_AMOUNT_RESOURCE_ID = 200;
-	public static final int FIRST_ITEM_RESOURCE_ID = 500;
-	public static final int FIRST_VEHICLE_RESOURCE_ID = 1000;
-	public static final int FIRST_EQUIPMENT_RESOURCE_ID = 1010;
-	public static final int FIRST_ROBOT_RESOURCE_ID = 1020;
-	public static final int FIRST_BIN_RESOURCE_ID = 1040;
-
-	public static final int WATER_ID = FIRST_AMOUNT_RESOURCE_ID;
+	public static final int WATER_ID = ResourceType.FIRST_AMOUNT_RESOURCE_ID;
 	public static final int FOOD_ID = WATER_ID + 1;
 
 	public static final int OXYGEN_ID = FOOD_ID + 1;
@@ -276,7 +271,7 @@ public class ResourceUtil {
 		fixedResources.put("water", WATER_ID);
 
 		// This check will only fail if a new resource has not been added correctly
-		int expectedSize = FIRST_FREE_AMOUNT_RESOURCE_ID - FIRST_AMOUNT_RESOURCE_ID;
+		int expectedSize = FIRST_FREE_AMOUNT_RESOURCE_ID - ResourceType.FIRST_AMOUNT_RESOURCE_ID;
 		if (fixedResources.size() != expectedSize) {
 			throw new IllegalStateException("The number of fixed resources is not correct. Expected: " 
 					+ expectedSize + ", Actual: " + fixedResources.size());

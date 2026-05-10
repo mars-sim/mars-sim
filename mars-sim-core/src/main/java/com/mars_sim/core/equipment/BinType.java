@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.equipment;
 
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 
 
 /**
@@ -21,8 +21,6 @@ public enum BinType {
 	;
 	
 	private String name;	
-
-	private static final int FIRST_BIN_RESOURCE_ID = ResourceUtil.FIRST_BIN_RESOURCE_ID;
 		
 	/** hidden constructor. */
 	private BinType(String name) {
@@ -48,7 +46,7 @@ public enum BinType {
 		if (name != null) {
 	    	for (BinType e : BinType.values()) {
 	    		if (name.equalsIgnoreCase(e.name)) {
-	    			return e.ordinal() + FIRST_BIN_RESOURCE_ID;
+	    			return e.ordinal() + ResourceType.FIRST_BIN_RESOURCE_ID;
 	    		}
 	    	}
 		}
@@ -62,7 +60,7 @@ public enum BinType {
 	 * @return {@link BinType}
 	 */
 	public static BinType convertID2Type(int typeID) {
-		return BinType.values()[typeID - FIRST_BIN_RESOURCE_ID];
+		return BinType.values()[typeID - ResourceType.FIRST_BIN_RESOURCE_ID];
 	}
 
 	/**
@@ -90,6 +88,6 @@ public enum BinType {
 	 * @return
 	 */
 	public static int getResourceID(BinType type) {
-		return type.ordinal() + FIRST_BIN_RESOURCE_ID;
+		return type.ordinal() + ResourceType.FIRST_BIN_RESOURCE_ID;
 	}
 }

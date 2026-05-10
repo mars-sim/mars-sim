@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.equipment;
 
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.tool.Msg;
 
 
@@ -23,8 +23,6 @@ public enum EquipmentType {
 	THERMAL_BOTTLE, WHEELBARROW;
 	
 	private String name;	
-
-	private static final int FIRST_EQUIPMENT_RESOURCE_ID = ResourceUtil.FIRST_EQUIPMENT_RESOURCE_ID;
 		
 	/** hidden constructor. */
 	private EquipmentType() {
@@ -45,7 +43,7 @@ public enum EquipmentType {
 		if (name != null) {
 	    	for (EquipmentType e : EquipmentType.values()) {
 	    		if (name.equalsIgnoreCase(e.name)) {
-	    			return e.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+	    			return e.ordinal() + ResourceType.FIRST_EQUIPMENT_RESOURCE_ID;
 	    		}
 	    	}
 		}
@@ -59,7 +57,7 @@ public enum EquipmentType {
 	 * @return {@link EquipmentType}
 	 */
 	public static EquipmentType convertID2Type(int typeID) {
-		return EquipmentType.values()[typeID - FIRST_EQUIPMENT_RESOURCE_ID];
+		return EquipmentType.values()[typeID - ResourceType.FIRST_EQUIPMENT_RESOURCE_ID];
 	}
 
 	/**
@@ -87,6 +85,6 @@ public enum EquipmentType {
 	 * @return
 	 */
 	public static int getResourceID(EquipmentType type) {
-		return type.ordinal() + FIRST_EQUIPMENT_RESOURCE_ID;
+		return type.ordinal() + ResourceType.FIRST_EQUIPMENT_RESOURCE_ID;
 	}
 }

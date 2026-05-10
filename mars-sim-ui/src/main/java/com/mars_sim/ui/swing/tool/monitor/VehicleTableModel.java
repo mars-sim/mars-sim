@@ -29,6 +29,7 @@ import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -313,7 +314,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 					result = value;
 				break;
 				
-			case ROCK_SAMPLES : ;
+			case ROCK_SAMPLES :
 				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.ROCK_SAMPLES_ID);
 				if (value == 0.0)
 					result = null;
@@ -377,8 +378,8 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 			}
 			else if (target instanceof Integer item) {
 				resourceId = item;
-				if (resourceId >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-					// if it's an item resource, quit
+				if (ResourceType.getType(resourceId) != ResourceType.AMOUNT_RESOURCE)
+					// if resource is not an amount then quit
 					return;
 			}
 

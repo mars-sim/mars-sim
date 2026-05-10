@@ -35,7 +35,7 @@ public class SuppliesManifest {
         this.mandatoryItem = new HashMap<>();
         for(var m : mandatoryResources.entrySet())  {
             int resourceId = m.getKey();
-            if (resourceId < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+            if (ResourceType.getType(resourceId) == ResourceType.AMOUNT_RESOURCE)
                 mandatoryAmount.put(resourceId, m.getValue().doubleValue());
             else
                 mandatoryItem.put(resourceId, m.getValue().intValue());
@@ -45,12 +45,11 @@ public class SuppliesManifest {
         this.optionalItem = new HashMap<>();
         for(var m : optionalResources.entrySet())  {
             int resourceId = m.getKey();
-            if (resourceId < ResourceUtil.FIRST_ITEM_RESOURCE_ID)
+            if (ResourceType.getType(resourceId) == ResourceType.AMOUNT_RESOURCE)
                 optionalAmount.put(resourceId, m.getValue().doubleValue());
             else
                 optionalItem.put(resourceId, m.getValue().intValue());
         }
-
 
         this.mandatoryEqm = mandatoryEqm;
         this.optionalEqm = optionalEqm;

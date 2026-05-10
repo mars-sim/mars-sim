@@ -12,7 +12,7 @@ import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
@@ -144,7 +144,7 @@ class FoodTableModel extends CategoryTableModel<Food> {
     private Object getTotalMass(Settlement settlement, Food food) {
     	int id = food.getID(); 
     	
-    	if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+    	if (ResourceType.getType(id) == ResourceType.AMOUNT_RESOURCE) {
       		// For Amount Resource
     		return settlement.getSpecificAmountResourceStored(id);
     	}
