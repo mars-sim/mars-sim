@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.UnitManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.utils.EntityListLauncher;
@@ -35,7 +34,6 @@ import com.mars_sim.ui.swing.utils.EntityListLauncher;
 public abstract class UnitListPanel<T extends Entity> extends JPanel {
 	private DefaultListModel<T> model;
 	private List<T> cachedData;
-	private UIContext desktop;
 
 	protected UnitListPanel(UIContext desktop) {
 		this(desktop, null);
@@ -50,7 +48,6 @@ public abstract class UnitListPanel<T extends Entity> extends JPanel {
 	protected UnitListPanel(UIContext desktop, Dimension dim) {
 		super(new FlowLayout(FlowLayout.CENTER));
 
-		this.desktop = desktop;
 		this.model = new DefaultListModel<T>();
 		
 		// Create unit list
@@ -71,25 +68,7 @@ public abstract class UnitListPanel<T extends Entity> extends JPanel {
 		// Populate by triggering a refresh
 		update();
 	}
-	
-	/**
-	 * Converts a collection of Unit Identifiers into a
-	 * collection of T.
-	 * 
-	 * @param ids Unit ids
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	protected Collection<T> getUnitsFromIds(Collection<Integer> ids) {
-		List<T> result = new ArrayList<>();
-		UnitManager um = desktop.getSimulation().getUnitManager();
-		
-		for(Integer id : ids) {
-			result.add( (T) um.getUnitByID(id));
-		}
-		return result;
-	}
-	
+
 	/**
 	 * Returns the collection of Units to display.
 	 * 
