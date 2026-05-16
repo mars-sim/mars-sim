@@ -7,6 +7,7 @@
 
 package com.mars_sim.core.equipment;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,7 +17,6 @@ import java.util.Set;
 
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.resource.AmountResource;
@@ -27,7 +27,7 @@ import com.mars_sim.core.resource.ResourceUtil;
  * basic capacity management.
  */
 public class EquipmentInventory
-		implements EquipmentOwner, ItemHolder, BinHolder {
+		implements EquipmentOwner, ItemHolder, BinHolder, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -924,25 +924,6 @@ public class EquipmentInventory
 		}
 		
 		return 0;
-	}
-	
-	@Override
-	public String getName() {
-		return owner.getName();
-	}
-
-	@Override
-	public String getContext() {
-		return owner.getDescription();
-	}	
-
-	/**
-	 * This returns the unique identifier of the owner unit.
-	 * This is not perfect and highlights the dependency on the owner entity that is target for issue #1729.
-	 */
-	@Override
-	public EntityIdentifier getEntityIdentifier() {
-		return owner.getEntityIdentifier();
 	}
 
 	public void destroy() {

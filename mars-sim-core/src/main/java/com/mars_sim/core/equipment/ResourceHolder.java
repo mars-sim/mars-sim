@@ -8,13 +8,11 @@ package com.mars_sim.core.equipment;
 
 import java.util.Set;
 
-import com.mars_sim.core.Entity;
-
 /**
  * Represents an entity that can hold resources.
  *
  */
-public interface ResourceHolder extends Entity {
+public interface ResourceHolder {
 
 	/**
 	 * Gets the specific amount resources stored, NOT including those inside equipment.

@@ -347,7 +347,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	protected boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
+		return Storage.retrieveAnResource(amount, resource, building, value);
 	}
 
 	/**
@@ -358,7 +358,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @param source
 	 */
 	protected void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
+		Storage.storeAnResource(amount, resource, building, source);
 	}
 
 	/**
