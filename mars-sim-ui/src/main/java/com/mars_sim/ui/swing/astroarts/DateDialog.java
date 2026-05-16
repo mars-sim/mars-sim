@@ -28,8 +28,8 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.astroarts.ATime;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 
 
 /**

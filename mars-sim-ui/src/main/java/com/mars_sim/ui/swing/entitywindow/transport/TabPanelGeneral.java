@@ -22,8 +22,8 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.CoordinatesLabel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 

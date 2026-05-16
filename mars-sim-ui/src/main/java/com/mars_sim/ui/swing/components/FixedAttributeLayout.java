@@ -4,7 +4,7 @@
  * @date 2023-08-27
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import java.awt.GridLayout;
 

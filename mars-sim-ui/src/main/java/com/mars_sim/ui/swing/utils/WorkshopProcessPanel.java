@@ -22,7 +22,6 @@ import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 
 /**
  * A panel showing information about a Workshop process.

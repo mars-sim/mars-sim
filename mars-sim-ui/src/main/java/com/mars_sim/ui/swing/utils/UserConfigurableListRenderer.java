@@ -4,7 +4,7 @@
  * @date 2025-09-23
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.components;
+package com.mars_sim.ui.swing.utils;
 
 import java.awt.Component;
 

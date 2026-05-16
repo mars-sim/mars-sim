@@ -41,10 +41,10 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 @SuppressWarnings("serial")
 class TabPanelConstruction extends EntityTabPanel<Settlement> implements EntityListener{

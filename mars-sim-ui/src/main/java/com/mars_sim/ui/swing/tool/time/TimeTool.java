@@ -39,8 +39,8 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**

@@ -20,7 +20,7 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**

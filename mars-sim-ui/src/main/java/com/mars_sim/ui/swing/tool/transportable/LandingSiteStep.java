@@ -15,11 +15,11 @@ import com.mars_sim.core.environment.SurfaceFeatures;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.MineralMapLayer;
 import com.mars_sim.ui.swing.tool.map.SurfacePOILayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 

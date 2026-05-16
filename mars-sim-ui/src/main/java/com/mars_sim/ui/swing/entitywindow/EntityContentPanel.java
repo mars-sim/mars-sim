@@ -31,8 +31,8 @@ import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.

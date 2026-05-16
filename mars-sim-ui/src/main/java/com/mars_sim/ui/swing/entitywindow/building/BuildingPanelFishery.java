@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 
 import com.mars_sim.core.building.Building;
@@ -23,7 +24,6 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * The BuildingPanelFishery class is a building function panel for

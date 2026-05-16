@@ -20,8 +20,8 @@ import javax.swing.SwingConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.utils.EntityListLauncher;
+import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
 
 /**
  * A class that presents a selectable visual list of Units. Double clicking

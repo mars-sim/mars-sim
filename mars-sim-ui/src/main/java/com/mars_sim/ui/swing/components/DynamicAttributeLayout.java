@@ -4,7 +4,7 @@
  * @date 2026-01-11
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

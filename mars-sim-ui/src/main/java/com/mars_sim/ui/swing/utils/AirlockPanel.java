@@ -25,6 +25,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;

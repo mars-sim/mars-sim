@@ -18,7 +18,6 @@ import javax.swing.SwingConstants;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.MapSelector;
 
 /**

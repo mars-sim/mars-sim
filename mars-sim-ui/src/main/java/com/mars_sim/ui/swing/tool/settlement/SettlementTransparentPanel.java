@@ -68,8 +68,8 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.NamedListCellRenderer;
 import com.mars_sim.ui.swing.tool.settlement.SettlementMapPanel.DisplayOption;
+import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
 
 import eu.hansolo.steelseries.gauges.DisplaySingle;
 import eu.hansolo.steelseries.tools.LcdColor;

@@ -34,7 +34,7 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 /**
  * The SearchWindow is a tool window that allows the user to search

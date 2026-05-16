@@ -25,8 +25,8 @@ import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 

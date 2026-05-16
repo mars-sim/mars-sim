@@ -10,8 +10,8 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 
 public class WizardDemo extends WizardPane<Properties> {
 

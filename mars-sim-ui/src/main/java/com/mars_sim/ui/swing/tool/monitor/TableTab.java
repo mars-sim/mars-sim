@@ -29,8 +29,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.ColumnSpecHelper;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.utils.EntityModel;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It

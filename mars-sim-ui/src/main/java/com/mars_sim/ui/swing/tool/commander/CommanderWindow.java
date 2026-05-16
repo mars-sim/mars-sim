@@ -78,12 +78,12 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.JComboBoxMW;
 import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.JComboBoxMW;
 import com.mars_sim.ui.swing.tool.SmartScroller;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 
 import net.miginfocom.swing.MigLayout;
 

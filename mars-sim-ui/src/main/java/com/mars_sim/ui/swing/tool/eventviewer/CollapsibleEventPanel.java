@@ -30,8 +30,8 @@ import javax.swing.border.BevelBorder;
 import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.CoordinatesLabel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 /**
  * A collapsible panel that displays a HistoricalEvent.
