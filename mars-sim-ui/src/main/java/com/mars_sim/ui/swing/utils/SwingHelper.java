@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.formdev.flatlaf.FlatLaf;
@@ -36,7 +37,7 @@ import io.github.parubok.text.multiline.MultilineLabel;
  */
 public final class SwingHelper {
 
-	private static boolean USE_TEXTARAEA_FOR_TEXT_BLOCKS = false;
+	private static boolean textBlocksUseTextArea = false;
 
 	private SwingHelper() {
 	}
@@ -108,19 +109,6 @@ public final class SwingHelper {
 			//placeholder
 		}
 	}
-
-	
-    /**
-     * Creates a titled border that uses the sub title font.
-     * 
-     * @param title
-     * @return
-     */
-    public static Border createLabelBorder(String title) {
-        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
-                                                        TitledBorder.DEFAULT_POSITION,
-                                                        StyleManager.getSubTitleFont(), (Color)null);
-    }
 	
 	/*
 	 * Creates a text block.
@@ -130,7 +118,7 @@ public final class SwingHelper {
 	 * @return The Swing component
 	 */
 	public static JComponent createTextBlock(String title, String content) {
-		if (USE_TEXTARAEA_FOR_TEXT_BLOCKS) {
+		if (textBlocksUseTextArea) {
 			return createTextBlockArea(title, content);
 		}
 		return createTextBlockMulti(title, content);
@@ -191,6 +179,27 @@ public final class SwingHelper {
 			listScroller.setMinimumSize(dim);
 		}
         return listScroller;
+    }
+
+	/**
+	 * Creates a compound border with an etched border and an empty border.
+	 * @return The compound border
+	 */
+	public static Border createEtchedBorder() {
+		return BorderFactory.createCompoundBorder(new EtchedBorder(),
+					BorderFactory.createEmptyBorder(1, 1, 1, 1));
+	}
+
+    /**
+     * Creates a titled border that uses the sub title font.
+     * 
+     * @param title
+     * @return
+     */
+    public static Border createLabelBorder(String title) {
+        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
+                                                        TitledBorder.DEFAULT_POSITION,
+                                                        StyleManager.getSubTitleFont(), (Color)null);
     }
 
 	/**

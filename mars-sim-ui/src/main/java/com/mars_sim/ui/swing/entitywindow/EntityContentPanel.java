@@ -27,12 +27,12 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 import com.mars_sim.ui.swing.utils.EntityLabel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.
@@ -127,7 +127,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      */
     protected void setHeading(Entity parent, String categoryIcon, String categoryName, String categoryValue) {
         var infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        infoPanel.setBorder(new MarsPanelBorder());
+        infoPanel.setBorder(SwingHelper.createEtchedBorder());
         add(infoPanel, BorderLayout.NORTH);
 
         // Left hand label is based on the type of the parent entity

@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
@@ -57,7 +57,7 @@ implements ActionListener {
 
 		// Create category pane
 		JPanel categoryPane = new JPanel(new GridLayout(filters.size(), 1));
-		categoryPane.setBorder(new MarsPanelBorder());
+		categoryPane.setBorder(SwingHelper.createEtchedBorder());
 		mainPane.add(categoryPane, BorderLayout.CENTER);
 
 		// Create filter checboxes

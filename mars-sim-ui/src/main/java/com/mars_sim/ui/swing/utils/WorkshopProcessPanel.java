@@ -20,7 +20,6 @@ import javax.swing.SwingConstants;
 import com.mars_sim.core.manufacture.WorkshopProcess;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.UIContext;
 
 /**
@@ -50,7 +49,7 @@ class WorkshopProcessPanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Set border
-        setBorder(new MarsPanelBorder());
+        setBorder(SwingHelper.createEtchedBorder());
 
         // Prepare name panel.
         JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));

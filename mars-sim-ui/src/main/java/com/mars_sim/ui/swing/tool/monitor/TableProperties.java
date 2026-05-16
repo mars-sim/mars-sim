@@ -25,7 +25,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The TableProperties class display the columns of a specific table.
@@ -59,7 +59,7 @@ class TableProperties extends JDialog {
 
         // Create column pane
         JPanel columnPane = new JPanel(new GridLayout(0, 1));
-        columnPane.setBorder(new MarsPanelBorder());
+        columnPane.setBorder(SwingHelper.createEtchedBorder());
 
         // Create a checkbox for each column in the model
         TableModel dataModel = table.getModel();

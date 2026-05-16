@@ -32,11 +32,11 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.MapSelector;
 import com.mars_sim.ui.swing.utils.SettlementsSelector;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each
@@ -115,7 +115,7 @@ public class MonitorWindow extends ContentPanel
 		
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout(5, 5));
-		mainPane.setBorder(new MarsPanelBorder());
+		mainPane.setBorder(SwingHelper.createEtchedBorder());
 		add(mainPane, BorderLayout.CENTER);
 
 		// Set up default selection

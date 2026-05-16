@@ -33,7 +33,6 @@ import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.ContentManager;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
@@ -292,7 +291,7 @@ public class MainWindow extends ContentManager implements ClockListener, ClockPu
 		// Prepare unit toolbar
 		unitToolbar = new EntityToolBar(desktop);
 
-		unitToolbar.setBorder(new MarsPanelBorder());
+		unitToolbar.setBorder(SwingHelper.createEtchedBorder());
 		// Remove the toolbar border, to blend into figure contents
 		unitToolbar.setBorderPainted(true);
 

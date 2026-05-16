@@ -34,7 +34,6 @@ import com.mars_sim.core.unit.AbstractMobileUnit;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
@@ -109,7 +108,7 @@ public class LocationTabPanel extends EntityTabPanel<Unit>
 
 		// Create top panel
 		JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-		topPanel.setBorder(new MarsPanelBorder());
+		topPanel.setBorder(SwingHelper.createEtchedBorder());
 		content.add(topPanel, BorderLayout.NORTH);
 
 		JPanel northPanel = new JPanel(new FlowLayout());

@@ -28,10 +28,10 @@ import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A tab panel with info about an item's salvage.
@@ -107,7 +107,7 @@ public class SalvageTabPanel extends EntityTabPanel<Salvagable> {
         
         // Create the parts panel.
         JPanel partsPanel = new JPanel(new BorderLayout(0, 10));
-        partsPanel.setBorder(new MarsPanelBorder());
+        partsPanel.setBorder(SwingHelper.createEtchedBorder());
         content.add(partsPanel);
         
         // Create the parts label.
@@ -191,16 +191,20 @@ public class SalvageTabPanel extends EntityTabPanel<Salvagable> {
         
         @Override
         public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return "Part";
-            else if (columnIndex == 1) return "Number";
-            else return "unknown";
+            return switch (columnIndex) {
+              case 0 -> "Part";
+              case 1 -> "Number";
+              default -> "unknown";
+            };
         }
         
         @Override
         public Object getValueAt(int row, int column) {
-            if (column == 0) return keys.get(row);
-            else if (column == 1) return parts.get(keys.get(row));
-            else return "unknown";
+            return switch (column) {
+              case 0 -> keys.get(row);
+              case 1 -> parts.get(keys.get(row));
+              default -> "unknown";
+            };
         }
   
         /**

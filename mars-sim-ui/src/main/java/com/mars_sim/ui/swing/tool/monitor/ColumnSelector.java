@@ -25,7 +25,7 @@ import javax.swing.WindowConstants;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.MarsPanelBorder;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This window displays a list of columns from the specified model.
@@ -60,7 +60,7 @@ public class ColumnSelector extends JDialog {
         setContentPane(mainPane);
 
 		// Set the border.
-		((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
+		((JComponent) getContentPane()).setBorder(SwingHelper.createEtchedBorder());
 
 		// Add all valid columns into the list
 		Vector<String> items = new Vector<>();
