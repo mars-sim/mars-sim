@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * Entity.java
+ * EntityIdentifier.java
  * @date 2026-05-10
  * @author Barry Evans
  */

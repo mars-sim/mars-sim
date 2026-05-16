@@ -34,7 +34,7 @@ public class EntityResolver {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No mission found with id: " + identifier.id()));
 
-                case "Transportable", "TRANSPORTABLE" -> simulation.getTransportManager().getTransportItems().stream()
+                case "TRANSPORTABLE" -> simulation.getTransportManager().getTransportItems().stream()
                     .filter(item -> item.getEntityIdentifier().id().equals(identifier.id()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No transport item found with id: " + identifier.id()));

@@ -53,15 +53,11 @@ public abstract class Transportable
 	 */
 	@Override
 	public EntityIdentifier getEntityIdentifier() {
-		return new EntityIdentifier("Transportable", name);
+		return new EntityIdentifier("TRANSPORTABLE", name);
 	}
 
 	public Coordinates getLandingLocation() {
 		return landingSite;
-	}
-
-	protected void updateLandingLocation(Coordinates newLocation) {
-		landingSite = newLocation;
 	}
 
 	public TransitState getTransitState() {

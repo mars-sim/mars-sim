@@ -190,8 +190,4 @@ public class ArrivingSettlement extends Transportable {
 	public void reinit(UnitManager um) {
 		// This is not needed
 	}
-
-    public void setLandingLocation(Coordinates landingLocation) {
-		updateLandingLocation(landingLocation);
-    }
 }
