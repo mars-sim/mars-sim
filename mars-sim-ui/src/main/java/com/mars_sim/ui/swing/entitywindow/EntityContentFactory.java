@@ -9,8 +9,9 @@ package com.mars_sim.ui.swing.entitywindow;
 import java.util.Properties;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
+import com.mars_sim.core.EntityResolver;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
@@ -23,7 +24,6 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 import com.mars_sim.ui.swing.entitywindow.authority.AuthorityWindow;
 import com.mars_sim.ui.swing.entitywindow.building.BuildingUnitWindow;
 import com.mars_sim.ui.swing.entitywindow.construction.ConstructionSiteWindow;
@@ -79,42 +79,16 @@ public class EntityContentFactory {
 	 * @return
 	 */
 	public static Entity getEntity(Simulation sim, Properties settings) {
-		String type = settings.getProperty(EntityContentPanel.UNIT_TYPE);
-		String name = settings.getProperty(EntityContentPanel.UNIT_NAME);
+		String stringId = settings.getProperty(EntityContentPanel.ENTITY_ID);
 
-		if ((type == null) || (name == null)) {
-            return null;
-        }
+        EntityIdentifier identifier = EntityResolver.fromString(stringId);
 
-        if (EntityDisplayInfoFactory.AUTHORITY_TYPE.equals(type)) {
-            return sim.getConfig().getReportingAuthorityFactory().getItem(name);
-        }
-        else if (EntityDisplayInfoFactory.STUDY_TYPE.equals(type)) {
-            // Find the study matching the given name
-            return sim.getScientificStudyManager().getAllStudies().stream()
-                .filter(study -> study.getName().equals(name))
-                .findFirst()
-                .orElse(null);
-        }
-        else if (EntityDisplayInfoFactory.MISSION_TYPE.equals(type)) {
-            // Find the mission matching the given name
-            return sim.getMissionManager().getMissions().stream()
-                .filter(mission -> mission.getName().equals(name))
-                .findFirst()
-                .orElse(null);
-        }
-         else if (EntityDisplayInfoFactory.EQUIPMENT_TYPE.equals(type)) {
-            // Find the equipment matching the given name
-            return sim.getUnitManager().getUnitByName(UnitType.CONTAINER, name);
-        }
-
-        // Default to UnitManager lookup
+        // Resolver may throw exceptino in failure
         try {
-            UnitType uType = UnitType.valueOf(type.toUpperCase());
-            return sim.getUnitManager().getUnitByName(uType, name);
+            return EntityResolver.resolve(sim, identifier);
         }
         catch (RuntimeException ex) {
-            // Unknown unit type
+            // Unknown entity type
             return null;
         }
 	}

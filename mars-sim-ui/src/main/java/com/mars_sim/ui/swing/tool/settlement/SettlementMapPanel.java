@@ -44,7 +44,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.tool.MoreMath;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIContext;
@@ -515,8 +514,8 @@ public class SettlementMapPanel extends JPanel {
 		double yDiff = yd / scale;
 
 		// Correct due to rotation of map.
-		double c = MoreMath.cos(rotation);
-		double s = MoreMath.sin(rotation);
+		double c = Math.cos(rotation);
+		double s = Math.sin(rotation);
 
 		double realXDiff = c * xDiff + s * yDiff;
 		double realYDiff = c * yDiff - s * xDiff;

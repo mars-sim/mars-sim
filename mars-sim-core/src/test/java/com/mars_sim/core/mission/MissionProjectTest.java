@@ -14,6 +14,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -74,6 +75,11 @@ class MissionProjectTest extends MarsSimUnitTest {
                 steps.add(new TestStep(this, i, OXYGEN_VALUE, FOOD_VALUE));
             }
             setSteps(steps);
+        }
+
+        @Override
+        public EntityIdentifier getEntityIdentifier() {
+            throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
         }
     }
 

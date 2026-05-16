@@ -16,6 +16,7 @@ import java.util.Set;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.UnitSet;
@@ -24,6 +25,7 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.mission.AbstractMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
@@ -121,8 +123,18 @@ public abstract class MissionProject implements Mission {
         leader.setMission(this);
         this.log = new MissionLog();
         this.control = new MissionController(name);
+
+        // Needs reworking in the future
+        var solSortieString = Simulation.instance().getMissionManager().computeSolSortieString();
+        this.missionCallSign = AbstractMission.createDesignationString(type, solSortieString,
+									leader.getAssociatedSettlement(), 1);
     }
 
+    @Override
+    public EntityIdentifier getEntityIdentifier() {
+        return new EntityIdentifier("Mission", getFullMissionDesignation());
+    }
+    
     /**
      * Aborts the mission for a reason.
      * 

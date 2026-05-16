@@ -149,7 +149,6 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 				case VehicleMission.NAVPOINTS_EVENT -> NAVPOINT_NUM;
 				case Mission.STARTING_SETTLEMENT_EVENT -> STARTING_SETTLEMENT;
 				case EntityEventType.NAME_EVENT -> MISSION_STRING;
-				case Mission.DESIGNATION_EVENT ->DESIGNATION;
 				case Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT -> MEMBER_NUM;
 				case Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT -> PHASE;
 				default -> -1;

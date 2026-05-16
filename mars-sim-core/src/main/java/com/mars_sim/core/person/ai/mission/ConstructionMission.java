@@ -177,9 +177,6 @@ public class ConstructionMission extends AbstractMission {
 
 		objective = new ConstructionObjective(site, stage, constructionVehicles, luvAttachmentParts);
 		addObjective(objective);
-		
-		// Create mission designation
-		createDesignationString();
 
 		setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
 	}

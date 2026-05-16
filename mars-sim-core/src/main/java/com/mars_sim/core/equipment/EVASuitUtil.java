@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
@@ -43,9 +44,10 @@ public final class EVASuitUtil {
 	 * @param person
 	 * @param entity
 	 * @param inSettlement
-	 * @param entity
+	 * @param disqualified
 	 */
 	public static void checkIn(Person person, Object entity, boolean inSettlement, boolean disqualified) {
+		Entity housingEntity = (Entity)entity;
 		EquipmentOwner housing = null;
 		
 		if (inSettlement)
@@ -62,7 +64,7 @@ public final class EVASuitUtil {
 			
 			if (!success) {
 				logger.warning(person, 4_000,
-						"Could not transfer " + suit + FROM + person + TO + housing.getName() + ".");
+						"Could not transfer " + suit + FROM + person + TO + housingEntity.getName() + ".");
 			}
 		}
 		

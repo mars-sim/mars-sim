@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -293,4 +294,12 @@ implements Entity, UserConfigurable {
 		return new ParameterManager(missionAgenda.getCapabilities().stream()
 								.map(m -> m.getPreferences()).toList());
     }
+
+	/**
+	 * Identifier is based on the acronym of the Authority, which is unique across the system.
+	 */
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("AUTHORITY", acronym);
+	}
 }
