@@ -468,9 +468,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		// Initialize MarketManager instance		
 		marketManager = new MarketManager(this);
-		
-		// Initialize TransportManager instance		
-		transportManager = new TransportManager(this);
 
 		// Initialize Unit
 		Rover.initializeInstances(simulationConfig);
