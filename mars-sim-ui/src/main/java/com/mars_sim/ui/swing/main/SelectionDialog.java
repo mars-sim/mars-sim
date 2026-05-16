@@ -29,9 +29,9 @@ import javax.swing.JTextArea;
 
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.components.UserConfigurableListRenderer;
-import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
+import com.mars_sim.ui.swing.components.SortedComboBoxModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.UserConfigurableListRenderer;
 
 /**
  * This is a modal dialog used to allow the user to complete a selection of a list of options.

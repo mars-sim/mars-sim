@@ -23,7 +23,7 @@ import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 
 /**
  * This tab panel displays the active listeners registered on a MonitorableEntity.

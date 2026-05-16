@@ -110,7 +110,7 @@ public abstract class Airlock implements Serializable {
 		}
 	}
 
-	public AirlockState airlockState;
+	private AirlockState airlockState;
 
 	// Data members
 	/** True if inner door is locked. */
@@ -138,6 +138,8 @@ public abstract class Airlock implements Serializable {
 	/** The occupant reservation map. */
 	private Map<Integer, Integer> reservationMap;
 
+	private boolean transitioning = false;
+
     protected static UnitManager unitManager;
     protected static MarsSurface marsSurface;
     private static MasterClock clock;
@@ -146,9 +148,8 @@ public abstract class Airlock implements Serializable {
 	 * Constructs an airlock object for a unit.
 	 *
 	 * @param capacity number of people airlock can hold.
-	 * @throws IllegalArgumentException if capacity is less than one.
 	 */
-	public Airlock(int capacity) throws IllegalArgumentException {
+	protected Airlock(int capacity) {
 
 		// Initialize data members
 		if (capacity < 1)
@@ -485,7 +486,18 @@ public abstract class Airlock implements Serializable {
 	 *
 	 * @param value
 	 */
-	public abstract void setTransitioning(boolean value);
+	public void setTransitioning(boolean value) {
+		transitioning = value;
+	}
+
+	/**
+	 * Checks if the airlock is allowed to be transitioning its state.
+	 *
+	 * @param value
+	 */
+	public boolean isTransitioning() {
+		return transitioning;
+	}
 	
 	/**
 	 * Is this person the airlock operator ?
@@ -928,7 +940,7 @@ public abstract class Airlock implements Serializable {
 	 * @return true if person is in airlock
 	 */
 	public boolean inAirlock(Person p) {
-		return occupant123IDs.contains((Integer)p.getIdentifier());
+		return occupant123IDs.contains(p.getIdentifier());
 	}
 
 	/**
@@ -954,13 +966,6 @@ public abstract class Airlock implements Serializable {
 	 * @return entity.
 	 */
 	public abstract Object getEntity();
-
-	/**
-	 * Gets the locale this airlock is at.
-	 *
-	 * @return entity.
-	 */
-	//public abstract String getLocale();
 
 	/**
 	 * Gets an available position inside the airlock entity.
@@ -1077,7 +1082,7 @@ public abstract class Airlock implements Serializable {
 	public Set<Person> noEVASuit() {
 		return getAllInsideOccupants()
 				.stream()
-				.map(i -> getPersonByID(i))
+				.map(this::getPersonByID)
 				.filter(p -> (p.getSuit() == null))
 				.collect(Collectors.toSet());
 	}

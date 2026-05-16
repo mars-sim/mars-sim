@@ -22,9 +22,9 @@ import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.unit_window.UnitListPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 
 /**
  * The TabPanelBots is a tab panel for a vehicle's bots crew information.

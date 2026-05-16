@@ -38,8 +38,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.MapSelector;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 /**
  * The Entity Browser is for exploring entities. It uses dynamic loading to avoid long load times and excessive memory consumption.

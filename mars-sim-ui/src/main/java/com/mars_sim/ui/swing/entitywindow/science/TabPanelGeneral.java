@@ -14,9 +14,9 @@ import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**

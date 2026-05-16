@@ -45,8 +45,6 @@ extends Airlock {
 	public static final int MAX_SLOTS = 2;
 	
 	// Data members.
-	/** True if airlock's state is in transition of change. */
-	private boolean transitioning;
 	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
@@ -541,24 +539,6 @@ extends Airlock {
 	}
 
 	/**
-	 * Allows or disallows the airlock to be transitioning its state.
-	 *
-	 * @param value
-	 */
-	public void setTransitioning(boolean value) {
-		transitioning = value;
-	}
-
-	/**
-	 * Checks if the airlock is allowed to be transitioning its state.
-	 *
-	 * @param value
-	 */
-	public boolean isTransitioning() {
-		return transitioning;
-	}
-	
-	/**
 	 * Gets the remaining airlock cycle time.
 	 *
 	 * @return time (millisols)
@@ -581,7 +561,7 @@ extends Airlock {
 
 			double time = pulse.getElapsed();
 			
-			if (transitioning) {
+			if (isTransitioning()) {
 				// Starts the air exchange and state transition
 				addTime(time);
 			}
@@ -622,6 +602,7 @@ extends Airlock {
 		return false;
 	}
 	
+	@Override
 	public void destroy() {
 	    vehicle = null;
 	    airlockInsidePosMap.clear();
@@ -630,5 +611,7 @@ extends Airlock {
 	    airlockInsidePosMap = null;
 	    airlockInteriorPosMap = null;
 	    airlockExteriorPosMap = null;
+
+		super.destroy();
 	}
 }

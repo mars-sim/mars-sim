@@ -20,9 +20,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A generic wizard pane implementation that holds a central state class and follows a
@@ -98,7 +98,7 @@ public abstract class WizardPane<T> {
         buttonPanel.add(finishButton);
 
         content = new JPanel(new BorderLayout());
-        content.setBorder(new MarsPanelBorder());
+        content.setBorder(SwingHelper.createEtchedBorder());
 
         instructionLabel = new JLabel();
         instructionLabel.setHorizontalAlignment(SwingConstants.CENTER);

@@ -24,9 +24,9 @@ import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A panel showing information about a foodProduction process.
@@ -58,7 +58,7 @@ public class FoodProductionPanel extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		// Set border
-		setBorder(new MarsPanelBorder());
+		setBorder(SwingHelper.createEtchedBorder());
 
 		// Prepare name panel.
 		JPanel namePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));

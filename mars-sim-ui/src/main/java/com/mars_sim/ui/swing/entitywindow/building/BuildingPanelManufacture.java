@@ -27,11 +27,11 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ProcessListPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * A building panel displaying the manufacture building function.

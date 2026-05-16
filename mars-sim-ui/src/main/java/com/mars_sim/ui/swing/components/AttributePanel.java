@@ -4,7 +4,7 @@
  * @date 2023-08-27
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -88,19 +88,7 @@ public class AttributePanel extends JPanel {
 		addLabelledItem(titleLabel, contentLabel, tooltip);
 		return contentLabel;
 	}
-	
-	/**
-	 * Adds a field and label to a Panel. The layout should be Spring layout.
-	 * 
-	 * @param titleLabel The fixed label
-	 * @param content Initial content of the text field
-	 * @param tooltip
-	 * @return The JLabel that can be updated.
-	 */
-	public JLabel addRow(String titleLabel, String content, String tooltip) {
-		return addTextField(titleLabel, content, tooltip);
-	}
-	
+
 	/**
 	 * Adds a field and label to a Panel. The layout should be Spring layout.
 	 * 

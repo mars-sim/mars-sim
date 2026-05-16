@@ -17,8 +17,8 @@ import com.mars_sim.core.mission.objectives.FieldStudyObjectives;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 /**
  * A panel for displaying study field mission information.

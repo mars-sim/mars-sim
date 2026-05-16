@@ -4,7 +4,7 @@
  * @date 2025-06-01
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.components;
+package com.mars_sim.ui.swing.utils;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;

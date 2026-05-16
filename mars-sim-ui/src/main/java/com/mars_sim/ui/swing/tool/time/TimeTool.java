@@ -37,10 +37,9 @@ import com.mars_sim.core.time.MarsTimeFormat;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -180,7 +179,7 @@ public class TimeTool extends ContentPanel {
 		// Set up main pane
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setPreferredSize(new Dimension(WIDTH - 5, HEIGHT));
-		mainPane.setBorder(new MarsPanelBorder());
+		mainPane.setBorder(SwingHelper.createEtchedBorder());
 
 		scrollPane.setViewportView(mainPane);
 		scrollPane.setPreferredSize(new Dimension(WIDTH, HEIGHT));

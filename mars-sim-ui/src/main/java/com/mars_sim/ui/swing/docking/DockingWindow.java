@@ -36,6 +36,7 @@ import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
@@ -43,7 +44,6 @@ import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
 import com.mars_sim.ui.swing.tool.eventviewer.EventViewer;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SpeedControl;
 
 import io.github.andrewauclair.moderndocking.Dockable;

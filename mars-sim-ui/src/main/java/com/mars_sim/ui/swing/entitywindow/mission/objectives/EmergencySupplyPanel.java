@@ -18,8 +18,8 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 
 /**

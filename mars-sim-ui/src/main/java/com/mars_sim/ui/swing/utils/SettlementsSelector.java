@@ -34,6 +34,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.ui.swing.components.SortedComboBoxModel;
 
 /**
  * This is a component that allows the user to select a settlement, authority, or all settlements.

@@ -57,8 +57,8 @@ import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.JCoordinateEditor;
-import com.mars_sim.ui.swing.components.NamedListCellRenderer;
+import com.mars_sim.ui.swing.components.TreeCheckFactory;
+import com.mars_sim.ui.swing.components.TreeCheckFactory.SelectableNode;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
@@ -71,9 +71,9 @@ import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
+import com.mars_sim.ui.swing.utils.JCoordinateEditor;
+import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.TreeCheckFactory;
-import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing

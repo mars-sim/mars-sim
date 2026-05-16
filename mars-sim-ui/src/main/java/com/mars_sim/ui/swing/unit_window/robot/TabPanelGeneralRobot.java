@@ -18,9 +18,9 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -65,9 +65,9 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 		topPanel.add(infoPanel, BorderLayout.NORTH);
 
 		var r = getEntity();
-		infoPanel.addRow(Msg.getString("robot.type"), r.getRobotType().getName());
-		infoPanel.addRow(Msg.getString("robot.model"), r.getModel());
-		infoPanel.addRow("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
+		infoPanel.addTextField(Msg.getString("robot.type"), r.getRobotType().getName(), null);
+		infoPanel.addTextField(Msg.getString("robot.model"), r.getModel(), null);
+		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
 
 		String text = r.getDescription().replace("\n", " ").replace("\t", "");
 		var desc = SwingHelper.createTextBlock(Msg.getString("entity.description"), text);

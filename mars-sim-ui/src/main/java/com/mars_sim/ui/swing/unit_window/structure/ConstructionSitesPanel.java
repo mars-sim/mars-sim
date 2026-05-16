@@ -32,8 +32,8 @@ import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**

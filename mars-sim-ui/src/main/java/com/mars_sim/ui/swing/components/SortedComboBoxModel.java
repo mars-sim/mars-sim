@@ -4,7 +4,7 @@
  * @date 2024-06-29
  * @author Barry Evans
  */
-package com.mars_sim.ui.swing.utils;
+package com.mars_sim.ui.swing.components;
 
 import java.util.ArrayList;
 import java.util.Collection;
