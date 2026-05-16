@@ -93,6 +93,8 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	private Map<String, Integer> newVehicles;
 	private Map<String, Integer> newEquipment;
 	private Map<String, Integer> newBins;
+	private Map<String, Integer> newRobots;
+	
 	private Map<AmountResource, Double> newResources;
 	private Map<Part, Integer> newParts;
 
@@ -129,6 +131,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 		var supplies = manifest.getSupplies();
 		setBuildings(supplies.getBuildings());
 		setVehicles(supplies.getVehicles());
+		setRobots(supplies.getRobots());
 		setEquipment(supplies.getEquipment());
 		setBins(supplies.getBins());
 		setNewImmigrantNum(manifest.getPeople());
@@ -1131,6 +1134,25 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	}
 
 	/**
+	 * Gets a map of the resupply robots.
+	 * 
+	 * @return map of robot type and number.
+	 */
+	@Override
+	public Map<String, Integer> getRobots() {
+		return newRobots;
+	}
+
+	/**
+	 * Sets the map of resupply robots.
+	 * 
+	 * @param newRobots map of robot type and number.
+	 */
+	public void setRobots(Map<String, Integer> newRobots) {
+		this.newRobots = newRobots;
+	}
+
+	/**
 	 * Gets a map of the resupply equipment.
 	 * 
 	 * @return map of equipment type and number.
@@ -1152,7 +1174,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	/**
 	 * Gets a map of the resupply bins.
 	 * 
-	 * @return map of equipment type and number.
+	 * @return map of bin type and number.
 	 */
 	@Override
 	public Map<String, Integer> getBins() {
@@ -1162,7 +1184,7 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	/**
 	 * Sets the map of resupply bins.
 	 * 
-	 * @param newBin map of bin type and number.
+	 * @param newBins map of bin type and number.
 	 */
 	public void setBins(Map<String, Integer> newBins) {
 		this.newBins = newBins;

@@ -4,12 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.ResourceUtil;
 
 class SettlementTemplateConfigTest {
     private SimulationConfig config;
@@ -41,7 +43,6 @@ class SettlementTemplateConfigTest {
         assertEquals("Standard 4 Shift", hubBase.getShiftDefinition().getName(), "Shift pattern");
     
         var supplies = hubBase.getSupplies();
-        assertFalse(supplies.getEquipment().isEmpty(), "Equipment is empty");
 
         assertFalse(supplies.getParts().isEmpty(), "Parts is empty");
         int num = supplies.getParts().get(
@@ -50,12 +51,58 @@ class SettlementTemplateConfigTest {
         assertTrue(supplies.getParts().get(
                             ItemResourceUtil.findItemResource(ItemResourceUtil.SLS_3D_PRINTER_ID)) > 0, "Has printers");
 
-        assertFalse(supplies.getBins().isEmpty(), "Bins is empty");
         assertFalse(supplies.getBuildings().isEmpty(), "Buildings is empty");
-        assertFalse(supplies.getResources().isEmpty(), "Resources is empty");
-        assertFalse(supplies.getVehicles().isEmpty(), "Vehciles is empty");
 
-        assertFalse(hubBase.getPredefinedRobots().isEmpty(), "Robots is empty");
+        Map<String, Double> expectedResources = Map.of(
+            "Food", 4320.0,
+            "Water", 7200.0,
+            "Oxygen", 5760.0
+        ); 
+        for (var entry : expectedResources.entrySet()) {
+            var resource = ResourceUtil.findAmountResource(entry.getKey());
+            assertNotNull(resource, "Resource found: " + entry.getKey());
+            assertEquals(entry.getValue(), supplies.getResources().get(resource), "Resource amount for " + entry.getKey());
+        }
+
+        Map<String, Integer> expectedVehicles = Map.of(
+            "Explorer Rover", 2,
+            "Long Range Explorer", 2,
+            "Transport Rover", 3,
+            "Cargo Rover", 3,
+            "Light Utility Vehicle", 4,
+            "Delivery Drone", 3,
+            "Cargo Drone", 2
+        );
+        assertEquals(expectedVehicles, supplies.getVehicles(), "Vehicles");
+
+        Map<String, Integer> expectedBins = Map.of(
+            "crate", 40,
+            "basket", 40,
+            "pot", 40
+        );
+        assertEquals(expectedBins, supplies.getBins(), "Bins");
+
+        Map<String, Integer> expectedEquipment = Map.of(
+            "EVA Suit", 60,
+            "barrel", 240,
+            "bag", 240,
+            "gas canister", 240,
+            "large bag", 240,
+            "specimen box", 240,
+            "thermal bottle", 64,
+            "wheelbarrow", 48
+        );
+        assertEquals(expectedEquipment, supplies.getEquipment(), "Equipment");
+
+        Map<String,Integer> expectedRobots = Map.of(
+            "ChefBot-Standard", 2,
+            "DeliveryBot-Standard", 2,
+            "GardenBot-Advanced", 3,
+            "MakerBot-Standard", 4,
+            "MedicBot-Advanced", 2,
+            "RepairBot-Standard", 5
+        );
+        assertEquals(expectedRobots, supplies.getRobots(), "Robots");
 
         assertEquals(1, hubBase.getResupplyMissionTemplates().size(), "Supply mission");
 

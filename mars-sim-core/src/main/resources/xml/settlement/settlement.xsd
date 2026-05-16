@@ -70,6 +70,14 @@
         </xs:complexType>
     </xs:element>
     
+    <xs:element name="robot-new">
+        <xs:complexType>
+            <xs:attribute name="type" type="xs:string"/>
+            <xs:attribute name="number" type="xs:decimal"/>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- This is deprecated-->
     <xs:element name="robot">
         <xs:complexType>
             <xs:attribute name="type" type="xs:string"/>
@@ -155,6 +163,7 @@
                 <xs:element ref="standalone" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="building-package" minOccurs="0" maxOccurs="unbounded"/> 
                 <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="robot-new"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="robot"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="building-plan"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="equipment"  minOccurs="0" maxOccurs="unbounded"/>

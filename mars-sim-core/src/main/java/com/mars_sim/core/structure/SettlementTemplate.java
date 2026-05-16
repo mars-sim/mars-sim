@@ -15,7 +15,6 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
-import com.mars_sim.core.robot.RobotTemplate;
 
 /**
  * This class defines a template for modeling the initial conditions and building configurations of a settlement. 
@@ -42,8 +41,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	private boolean bundled;
 
 	private ShiftPattern shiftDefn;
-
-	private List<RobotTemplate> robots = new ArrayList<>();
 
 	private List<BuildingPlan> buildingPlans = new ArrayList<>();
 
@@ -137,24 +134,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 */
 	public int getDefaultNumOfRobots() {
 		return defaultNumOfRobots;
-	}
-
-	/**
-	 * Adds the robot template.
-	 * 
-	 * @param newRobot
-	 */
-	void addRobot(RobotTemplate newRobot) {
-		robots.add(newRobot);
-	}
-
-	/**
-	 * Gets a list of robot templates.
-	 * 
-	 * @return
-	 */
-	public List<RobotTemplate> getPredefinedRobots() {
-		return Collections.unmodifiableList(robots);
 	}
 
 	/**

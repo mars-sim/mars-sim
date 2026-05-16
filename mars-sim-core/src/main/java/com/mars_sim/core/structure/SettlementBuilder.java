@@ -55,7 +55,6 @@ import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotConfig;
 import com.mars_sim.core.robot.RobotDemand;
 import com.mars_sim.core.robot.RobotSpec;
-import com.mars_sim.core.robot.RobotTemplate;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.tool.RandomUtil;
@@ -151,10 +150,6 @@ public final class SettlementBuilder {
 		// Manually add job positions
 		JobUtil.tuneJobDeficit(settlement);
 		outputTimecheck(settlement, watch, "Tune Job");
-
-		// Create pre-configured robots as stated in Settlement template
-		createPreconfiguredRobots(template, settlement);
-		outputTimecheck(settlement, watch, "Create Preconfigured Robots");
 
 		// Create more robots to fill the settlement(s)
 		createRobots(settlement, settlement.getInitialNumOfRobots());
@@ -631,43 +626,6 @@ public final class SettlementBuilder {
 					}
 				}
 			}
-		}
-	}
-
-	/**
-	 * Creates all configured Robots.
-	 * 
-	 * @param template
-	 * @param settlement
-	 * @throws Exception if error parsing XML.
-	 */
-	private void createPreconfiguredRobots(SettlementTemplate template, Settlement settlement) {
-		for(RobotTemplate rt : template.getPredefinedRobots()) {
-			String newName = rt.getName();
-
-			if (newName != null) {
-				// Check predefined name does not exist already
-				int idx = 1;
-				Collection<Robot> robots = unitManager.getRobots();
-				boolean goodName = false;
-				while(!goodName) {
-					final String nextName = newName;
-					Optional<Robot> found = robots.stream().filter(r -> r.getName().equals(nextName)).findAny();
-					goodName = found.isEmpty();
-					if (!goodName) {
-						newName = rt.getName() + " #" + idx++;
-					}
-				}
-			}
-			else {
-				// Generate a name
-				newName = Robot.generateName(rt.getType());
-			}
-
-			// Find the spec for this robot, take any model
-			RobotSpec spec = robotConfig.getRobotSpec(rt.getType(), rt.getModel());
-
-			buildRobot(settlement, spec, newName);
 		}
 	}
 

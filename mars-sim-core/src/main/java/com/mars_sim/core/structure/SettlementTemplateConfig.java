@@ -21,8 +21,6 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.resource.*;
-import com.mars_sim.core.robot.RobotTemplate;
-import com.mars_sim.core.robot.RobotType;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -72,13 +70,12 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
 
     private static final String SHIFT_PATTERN = "shift-pattern";
-    private static final String MODEL = "model";
     private static final String MANIFEST_NAME = "manifest-name";
     private static final String SCHEDULE = "schedule";
     private static final String ACTIVITY_SCHEDULE = "activity-schedule";
 
     private static final String EVA = "EVA";
-    private static final String ROBOT = "robot";
+    private static final String ROBOT = "robot-new";
     private static final String BUILDING_PLAN = "building-plan";
     private static final String BUILDING_TYPE = "building-type";
     private static final String DELAY_SOLS = "delay-sols";
@@ -389,16 +386,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             settlementTemplate.setObjective(oType);
         }
 
-        // Load robots
-        List<Element> robotNodes = templateElement.getChildren(ROBOT);
-        for (Element robotElement : robotNodes) {
-            RobotType rType = ConfigHelper.getEnum(RobotType.class,
-                    robotElement.getAttributeValue(TYPE));
-            String name = robotElement.getAttributeValue(NAME);
-            String model = robotElement.getAttributeValue(MODEL);
-            settlementTemplate.addRobot(new RobotTemplate(name, rType, model));
-        }
-
         // Load building plans
         List<Element> buildingPlanNodes = templateElement.getChildren(BUILDING_PLAN);
         for (Element buildingPlanElement : buildingPlanNodes) {
@@ -454,6 +441,10 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         // Load vehicles
         Map<String, Integer> newVehicles = ConfigHelper.parseIntList(context, supplyElement.getChildren(VEHICLE),
                                                     TYPE, s -> s, NUMBER);
+        
+                                                    // Load robots
+        Map<String, Integer> newBots = ConfigHelper.parseIntList(context, supplyElement.getChildren(ROBOT),
+                                                    TYPE, s -> s, NUMBER);
 
         // Load parts
         Map<Part, Integer> newParts = ConfigHelper.parseIntList(context, supplyElement.getChildren(PART),
@@ -474,7 +465,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             }
         }
         
-        return new SettlementSuppliesImpl(newBuildings, newVehicles, newEquipment, newBins,
+        return new SettlementSuppliesImpl(newBuildings, newVehicles, newBots, newEquipment, newBins,
                                     newResources, newParts);
     }
 
