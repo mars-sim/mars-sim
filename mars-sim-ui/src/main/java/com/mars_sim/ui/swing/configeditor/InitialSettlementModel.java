@@ -7,21 +7,13 @@
 package com.mars_sim.ui.swing.configeditor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import javax.swing.table.AbstractTableModel;
-
-import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.authority.AuthorityFactory;
 import com.mars_sim.core.configuration.Scenario;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.map.location.CoordinatesFormat;
 import com.mars_sim.core.structure.InitialSettlement;
 import com.mars_sim.core.structure.SettlementTemplateConfig;
-import com.mars_sim.core.tool.Msg;
 
 /**
  * Represents a table model of the initial settlements. This has some intelligence
@@ -31,38 +23,7 @@ import com.mars_sim.core.tool.Msg;
  * recalculated.
  */
 @SuppressWarnings("serial")
-class InitialSettlementModel extends AbstractTableModel {
-
-	// Inner class representing a settlement configuration.
-	private final class SettlementInfo {
-		String name;
-		String sponsor;
-		String template;
-		String population;
-		String numOfRobots;
-		String latitude;
-		String longitude;
-		String crew;
-	}
-
-	public static final int SETTLEMENT_COL = 0;
-	public static final int SPONSOR_COL = 1;
-	public static final int PHASE_COL = 2;
-	public static final int SETTLER_COL = 3;
-	public static final int CREW_COL = 4;
-	public static final int BOT_COL = 5;
-	public static final int LAT_COL = 6;
-	public static final int LON_COL = 7;
-	
-	public static final int NUM_DECIMAL_PLACES = 4;
-	public static final double DECIMAL_PLACES = 10000.0;
-	
-	private String errorMessage;
-	private String[] columns;
-	
-	private List<SettlementInfo> settlementInfoList;
-	private SettlementTemplateConfig settlementTemplateConfig;
-	private AuthorityFactory raFactory;
+class InitialSettlementModel extends PotentialSettlementModel {
 
 	/**
 	 * Constructor.
@@ -71,24 +32,7 @@ class InitialSettlementModel extends AbstractTableModel {
 	 * @param raFactory 
 	 */
 	InitialSettlementModel(SettlementTemplateConfig settlementTemplateConfig, AuthorityFactory raFactory) {
-		super();
-
-		this.settlementTemplateConfig = settlementTemplateConfig;
-		this.raFactory = raFactory;
-		
-		// Add table columns.
-		columns = new String[] { 
-				Msg.getString("SimulationConfigEditor.column.name"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.sponsor"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.template"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.population"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.crew"),
-				Msg.getString("SimulationConfigEditor.column.numOfRobots"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.latitude"), //$NON-NLS-1$
-				Msg.getString("SimulationConfigEditor.column.longitude") //$NON-NLS-1$
-		};
-		
-		this.settlementInfoList = new ArrayList<>();
+		super(true, settlementTemplateConfig, raFactory);
 	}
 
 	
@@ -99,7 +43,7 @@ class InitialSettlementModel extends AbstractTableModel {
 		settlementInfoList.clear();
 
 		for (InitialSettlement spec : selected.getSettlements()) {
-			SettlementInfo info = toSettlementInfo(spec);
+			var info = toSettlementInfo(spec);
 				
 			settlementInfoList.add(info);
 		}
@@ -107,19 +51,14 @@ class InitialSettlementModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 
-	private SettlementInfo toSettlementInfo(InitialSettlement spec) {
-		SettlementInfo info = new SettlementInfo();
+	private PotentialSettlementInfo toSettlementInfo(InitialSettlement spec) {
+		PotentialSettlementInfo info = new PotentialSettlementInfo();
 		info.name = spec.getName();
 		info.sponsor = spec.getSponsor();
 		info.crew = spec.getCrew();
 		info.template = spec.getSettlementTemplate();
-		info.population = Integer.toString(spec.getPopulationNumber());
-		info.numOfRobots = Integer.toString(spec.getNumOfRobots());
-		Coordinates location = spec.getLocation();
-		if (location != null) {
-			info.latitude = location.getFormattedLatitudeString();
-			info.longitude = location.getFormattedLongitudeString();
-		}	
+		info.population = spec.getPopulationNumber();
+		info.location = spec.getLocation();
 		return info;
 	}
 
@@ -129,311 +68,8 @@ class InitialSettlementModel extends AbstractTableModel {
 	 * @return
 	 */
 	public List<InitialSettlement> getSettlements() {
-
-		List<InitialSettlement> is = new ArrayList<>();
-
-		// Add configuration settlements from table data.
-		for (SettlementInfo info : settlementInfoList) {
-			int populationNum = Integer.parseInt(info.population);
-			int numOfRobots = Integer.parseInt(info.numOfRobots);
-			
-			// take care to internationalize the coordinates
-			String latitude = info.latitude.replace("N", Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			latitude = latitude.replace("S", Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			String longitude = info.longitude.replace("E", Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
-			longitude = longitude.replace("W", Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
-
-			Coordinates location = new Coordinates(latitude, longitude);
-
-			is.add(new InitialSettlement(info.name, info.sponsor, info.template,
-												populationNum, numOfRobots, location, info.crew));
-
-		}
-		
-		return is;
-	}
-	
-	@Override
-	public int getRowCount() {
-		return settlementInfoList.size();
-	}
-
-	@Override
-	public int getColumnCount() {
-		return columns.length;
-	}
-
-	/*
-	 * JTable uses this method to determine the default renderer/ editor for each
-	 * cell. If we didn't implement this method, then the last column would contain
-	 * text ("true"/"false"), rather than a check box.
-	 */
-	@Override
-	public Class<?> getColumnClass(int c) {
-		return getValueAt(0, c).getClass();
-	}
-
-	@Override
-	public String getColumnName(int columnIndex) {
-		if ((columnIndex > -1) && (columnIndex < columns.length)) {
-			return columns[columnIndex];
-		} else {
-			return Msg.getString("SimulationConfigEditor.log.invalidColumn"); //$NON-NLS-1$
-		}
-	}
-
-	@Override
-	public boolean isCellEditable(int row, int column) {
-		return true;
-	}
-
-	@Override
-	public Object getValueAt(int row, int column) {
-		Object result = Msg.getString("unknown"); //$NON-NLS-1$
-
-		if ((row > -1) && (row < getRowCount())) {
-			SettlementInfo info = settlementInfoList.get(row);
-			if ((column > -1) && (column < getColumnCount())) {
-                result = switch (column) {
-                    case SETTLEMENT_COL -> info.name;
-                    case SPONSOR_COL -> info.sponsor;
-                    case PHASE_COL -> info.template;
-                    case SETTLER_COL -> info.population;
-                    case CREW_COL -> info.crew;
-                    case BOT_COL -> info.numOfRobots;
-                    case LAT_COL -> info.latitude;
-                    case LON_COL -> info.longitude;
-                    default -> result;
-                };
-			} else {
-				result = Msg.getString("SimulationConfigEditor.log.invalidColumn"); //$NON-NLS-1$
-			}
-		} else {
-			result = Msg.getString("SimulationConfigEditor.log.invalidRow"); //$NON-NLS-1$
-		}
-
-		return result;
-	}
-
-	@Override
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		if ((rowIndex > -1) && (rowIndex < getRowCount())) {
-			SettlementInfo info = settlementInfoList.get(rowIndex);
-			if ((columnIndex > -1) && (columnIndex < getColumnCount())) {
-				switch (columnIndex) {
-				
-				case SETTLEMENT_COL:
-					info.name = (String) aValue;
-					break;
-					
-				case SPONSOR_COL:
-					String newSponsor = (String) aValue;
-					if (!info.sponsor.equals(newSponsor)) {
-						info.sponsor = newSponsor;
-						info.name = tailorSettlementNameBySponsor(info.sponsor, rowIndex);
-					}
-					break;	
-					
-				case PHASE_COL:
-					info.template = (String) aValue;
-					info.population = Integer.toString(ConfigModelHelper.determineNewSettlementPopulation(info.template, settlementTemplateConfig));
-					info.numOfRobots = Integer.toString(ConfigModelHelper.determineNewSettlementNumOfRobots(info.template, settlementTemplateConfig));
-					break;
-					
-				case SETTLER_COL:
-					info.population = (String) aValue;
-					break;
-					
-				case CREW_COL:
-					info.crew = (String) aValue;
-					break;
-					
-				case BOT_COL:
-					info.numOfRobots = (String) aValue;
-					break;
-
-				case LAT_COL:
-					String latStr = ((String) aValue).trim();
-					double doubleLat = 0;
-					String dir1 = latStr.substring(latStr.length() - 1, latStr.length());
-					if (dir1.equalsIgnoreCase("N") || dir1.equalsIgnoreCase("S")) {
-						if (latStr.length() > NUM_DECIMAL_PLACES) {
-							doubleLat = Double.parseDouble(latStr.substring(0, latStr.length() - 1));
-							doubleLat = Math.round(doubleLat * DECIMAL_PLACES) / DECIMAL_PLACES;
-							info.latitude = doubleLat + " " + dir1.toUpperCase();
-						}
-						else {
-							info.latitude = (String) aValue;
-						}
-					}
-					else {
-						info.latitude = (String) aValue;
-					}
-					String latError = CoordinatesFormat.checkLat(info.latitude);
-					if (latError != null)
-						setError(latError);
-					break;
-
-				case LON_COL:
-					String longStr = ((String) aValue).trim();
-					double doubleLong = 0;
-					String dir2 = longStr.substring(longStr.length() - 1, longStr.length());
-					if (dir2.equalsIgnoreCase("E") || dir2.equalsIgnoreCase("W")) {
-						if (longStr.length() > NUM_DECIMAL_PLACES) {
-							doubleLong = Double.parseDouble(longStr.substring(0, longStr.length() - 1));
-							doubleLong = Math.round(doubleLong * DECIMAL_PLACES) / DECIMAL_PLACES;
-							info.longitude = doubleLong + " " + dir2.toUpperCase();
-						}
-						else {
-							info.longitude = (String) aValue;
-						}
-					}
-					else {
-						info.longitude = (String) aValue;
-					}
-					String lonError = CoordinatesFormat.checkLon(info.longitude);
-					if (lonError != null)
-						setError(lonError);
-					break;
-
-				default:
-					break;
-				}
-			}
-
-			if (columnIndex != SPONSOR_COL || columnIndex != PHASE_COL)
-				checkForAllErrors();
-
-			fireTableDataChanged();
-		}
-	}
-
-
-	/**
-	 * Returns a random settlement name tailored by the sponsor
-	 * 
-	 * @param sponsor
-	 * @return
-	 */
-	private String tailorSettlementNameBySponsor(String sponsor, int index) {
-		Authority ra = raFactory.getItem(sponsor);
-
-		List<String> usedNames = new ArrayList<>();
-		
-		// Add configuration settlements from table data.
-		for (int x = 0; x < getRowCount(); x++) {
-			String name = (String) getValueAt(x, SETTLEMENT_COL);
-			usedNames.add(name);
-
-		}
-
-		// Gets a list of settlement names that are tailored to this country
-		var name = ra.getSettlementNames().generateName(usedNames);
-
-		if (name == null)
-			name = "Settlement #" + index;
-		return name;
-	}
-	
-	/**
-	 * Remove a set of settlements from the table.
-	 * 
-	 * @param rowIndexes
-	 *            an array of row indexes of the settlements to remove.
-	 */
-	public void removeSettlements(int[] rowIndexes) {
-		List<SettlementInfo> removedSettlements = new ArrayList<>(rowIndexes.length);
-
-		for (int x = 0; x < rowIndexes.length; x++) {
-			if ((rowIndexes[x] > -1) && (rowIndexes[x] < getRowCount())) {
-				removedSettlements.add(settlementInfoList.get(rowIndexes[x]));
-			}
-		}
-
-		Iterator<SettlementInfo> i = removedSettlements.iterator();
-		while (i.hasNext()) {
-			SettlementInfo s = i.next();
-			settlementInfoList.remove(s);
-		}
-
-		fireTableDataChanged();
-	}
-
-	/**
-	 * Check for all errors in the table.
-	 */
-	private void checkForAllErrors() {
-		errorMessage = null;
-		
-		Set<Coordinates> usedCoordinates = new HashSet<>();
-		Set<String> usedCrews = new HashSet<>();
-		for(SettlementInfo settlement : settlementInfoList) {
-
-			// Check that settlement name is valid.
-			if ((settlement.name == null) || (settlement.name.isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.nameMissing")); //$NON-NLS-1$
-			}
-
-			// Check if population is valid.
-			if ((settlement.population == null) || (settlement.population.isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.populationMissing")); //$NON-NLS-1$
-			} else {
-				try {
-					int popInt = Integer.parseInt(settlement.population);
-					if (popInt < 0) {
-						setError(Msg.getString("SimulationConfigEditor.error.populationTooFew")); //$NON-NLS-1$
-					}
-				} catch (NumberFormatException e) {
-					setError(Msg.getString("SimulationConfigEditor.error.populationInvalid")); //$NON-NLS-1$
-				}
-			}
-
-			// Check if number of robots is valid.
-			if ((settlement.numOfRobots == null) || (settlement.numOfRobots.isEmpty())) {
-				setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsMissing")); //$NON-NLS-1$
-			} else {
-				try {
-					int num = Integer.parseInt(settlement.numOfRobots);
-					if (num < 0) {
-						setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsTooFew")); //$NON-NLS-1$
-					}
-				} catch (NumberFormatException e) {
-					setError(Msg.getString("SimulationConfigEditor.error.numOfRobotsInvalid")); //$NON-NLS-1$
-				}
-			}
-			
-			String latError = CoordinatesFormat.checkLat(settlement.latitude);
-			if (latError != null)
-				setError(latError);
-			String lonError = CoordinatesFormat.checkLon(settlement.longitude);
-			if (lonError != null)
-				setError(lonError);
-			
-			// Only check duplicate if no errors
-			if ((latError == null) && (lonError == null)) {
-				Coordinates c = new Coordinates(settlement.latitude, settlement.longitude);
-				if (!usedCoordinates.add(c))
-					setError(Msg.getString("SimulationConfigEditor.error.latitudeLongitudeRepeating")); //$NON-NLS-1$
-			}
-			
-			if (settlement.crew != null) {
-				if (usedCrews.contains(settlement.crew)) {
-					setError(Msg.getString("SimulationConfigEditor.error.duplicateCrew"));
-				}
-				else {
-					usedCrews.add(settlement.crew);
-				}
-			}
-		}
-	}
-	
-	private void setError(String error) {
-		if (errorMessage == null) {
-			errorMessage = error;
-		}
-		else {
-			errorMessage += ", " + error;
-		}	
+		return settlementInfoList.stream().map(info -> new InitialSettlement(info.name, info.sponsor, info.template,
+												info.population, 0, info.location, info.crew)).toList();
 	}
 
 	/**
@@ -447,13 +83,9 @@ class InitialSettlementModel extends AbstractTableModel {
 											settlementInfoList.size()),
 					sponsor, template,
 					ConfigModelHelper.determineNewSettlementPopulation(template, settlementTemplateConfig),
-					ConfigModelHelper.determineNewSettlementNumOfRobots(template, settlementTemplateConfig),
+					0,
 					location, null);
 		settlementInfoList.add(toSettlementInfo(newRow));
 		fireTableDataChanged();
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
 	}
 }

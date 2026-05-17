@@ -83,7 +83,6 @@ public class Resupply extends Transportable implements SettlementSupplies {
 
 	// Data members
 	private int newImmigrantNum;
-	private int newBotNum;
 	private int settlementID;
 	private transient Settlement settlement;
 	
@@ -1205,25 +1204,6 @@ public class Resupply extends Transportable implements SettlementSupplies {
 	public void setNewImmigrantNum(int newImmigrantNum) {
 		this.newImmigrantNum = newImmigrantNum;
 	}
-
-	/**
-	 * Gets the number of bots in the resupply mission.
-	 * 
-	 * @return the number of bots.
-	 */
-	public int getNewBotNum() {
-		return newBotNum;
-	}
-	
-	/**
-	 * Sets the number of bots in the resupply mission.
-	 * 
-	 * @param newBotNum the number of bots.
-	 */
-	public void setNewBotNum(int newBotNum) {
-		this.newBotNum = newBotNum;
-	}
-	
 	
 	/**
 	 * Gets a map of the resupply resources.

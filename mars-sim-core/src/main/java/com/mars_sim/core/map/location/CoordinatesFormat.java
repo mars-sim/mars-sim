@@ -127,6 +127,20 @@ public final class CoordinatesFormat {
         return longValue * DEG_TO_RADIAN;
     }
 
+    /**
+     * Check teh format of a string representation of a coordinate.
+     * @param format the string to check
+     * @return Error message or null if valid
+     */
+    public static String checkFormat(String format) {
+        try {
+            fromString(format);
+        } catch (CoordinatesException e) {
+            return e.getMessage();
+        }
+        return null;
+    }
+
     public static String checkLat(String latitude) {
         // Attempt to parse the string; will throw exception if invalid
         try {

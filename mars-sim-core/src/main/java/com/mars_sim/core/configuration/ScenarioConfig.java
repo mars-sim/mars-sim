@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -227,7 +228,6 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			saveOptionalAttribute(settlementElement, NAME_ATTR, settlement.getName());
 			saveOptionalAttribute(settlementElement, TEMPLATE_ATTR, settlement.getSettlementTemplate());
 			saveOptionalAttribute(settlementElement, PERSONS_ATTR, Integer.toString(settlement.getPopulationNumber()));
-			saveOptionalAttribute(settlementElement, ROBOTS_ATTR, Integer.toString(settlement.getNumOfRobots()));
 			saveOptionalAttribute(settlementElement, SPONSOR_ATTR, settlement.getSponsor());
 			saveOptionalAttribute(settlementElement, CREW_ATTR, settlement.getCrew());
 
@@ -245,7 +245,6 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			saveOptionalAttribute(aElement, NAME_ATTR, arrival.name());
 			saveOptionalAttribute(aElement, TEMPLATE_ATTR, arrival.template());
 			saveOptionalAttribute(aElement, PERSONS_ATTR, Integer.toString(arrival.populationNum()));
-			saveOptionalAttribute(aElement, ROBOTS_ATTR, Integer.toString(arrival.numOfRobots()));
 			saveOptionalAttribute(aElement, SPONSOR_ATTR, arrival.sponsorCode());
 			saveOptionalAttribute(aElement, ARRIVAL_ATTR, Integer.toString(arrival.arrivalSols()));
 
@@ -312,17 +311,11 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 				throw new IllegalStateException("Number of persons cannot be less than zero: " + numOfPeople);
 			}
 
-			String numOfRobotsStr = settlementElement.getAttributeValue(ROBOTS_ATTR);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			if (numOfRobots < 0) {
-				throw new IllegalStateException("Number Of Robots cannot be less than zero: " + numOfRobots);
-			}
-
 			String sponsor = settlementElement.getAttributeValue(SPONSOR_ATTR);
 
 			arrivals.add(new FutureSettlement(name, template, sponsor,
 												arrivalSols, location ,
-												numOfPeople, numOfRobots));
+												numOfPeople));
 		}	
 		return arrivals;
 	}
@@ -354,12 +347,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 				throw new IllegalStateException("populationNumber cannot be less than zero: " + popNumber);
 			}
 
-			String numOfRobotsStr = settlementElement.getAttributeValue(ROBOTS_ATTR);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			if (numOfRobots < 0) {
-				throw new IllegalStateException("The number of robots cannot be less than zero: " + numOfRobots);
-			}
-
+			int numOfRobots = ConfigHelper.getOptionalAttributeInt(settlementElement, ROBOTS_ATTR, 0);
+			
 			String sponsor = settlementElement.getAttributeValue(SPONSOR_ATTR);
 			String crew = settlementElement.getAttributeValue(CREW_ATTR);
 			
