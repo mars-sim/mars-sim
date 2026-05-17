@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -152,8 +151,8 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Tune Job");
 
 		// Create more robots to fill the settlement(s)
-		createRobots(settlement, settlement.getInitialNumOfRobots());
-		outputTimecheck(settlement, watch, "Create Robots");
+		createRobotsOnDemand(settlement, settlement.getInitialNumOfRobots());
+		outputTimecheck(settlement, watch, "Create Robots on Demand");
 
 		watch.stop();
 		if (MEASURE_PHASES) {
@@ -171,6 +170,8 @@ public final class SettlementBuilder {
 	 */
 	public void createSupplies(SettlementSupplies supplies, Settlement settlement) {
 		createVehicles(supplies, settlement);
+
+		createRobots(supplies, settlement);
 
 		createEquipment(supplies, settlement);
 
@@ -247,6 +248,25 @@ public final class SettlementBuilder {
 	}
 
 	/**
+	 * Creates the initial robots at a settlement.
+	 * 
+	 * @param template
+	 * @param settlement
+	 */
+	private void createRobots(SettlementSupplies template, Settlement settlement) {
+		for(Entry<String, Integer> v : template.getRobots().entrySet()) {
+			String robotType = v.getKey();
+			int number = v.getValue();
+			for (int x = 0; x < number; x++) {
+			
+				// Find the spec for this robot, take any model
+				RobotSpec spec = robotConfig.getRobotSpec(robotType);
+				buildRobot(settlement, spec);
+			}
+		}
+	}
+
+	/**
 	 * Creates the initial vehicles at a settlement.
 	 * 
 	 * @param template
@@ -301,9 +321,9 @@ public final class SettlementBuilder {
 	 * 
 	 * @param settlement
 	 * @param target
-	 * @throws Exception if Robots can not be constructed
+	 * @deprecated This is no longer used as we want to have more control over the number of robots created at the start of the game. Instead, we can specify the number of robots in the settlement template and they will be created in createRobots() method.
 	 */
-	public void createRobots(Settlement settlement, int target) {
+	private void createRobotsOnDemand(Settlement settlement, int target) {
 		// Randomly create all remaining robots to fill the settlements to capacity.
 		RobotDemand demand = new RobotDemand(settlement);
 
@@ -312,13 +332,10 @@ public final class SettlementBuilder {
 			// Get a robotType randomly
 			RobotType robotType = demand.getBestNewRobot();
 
-			// Adopt Static Factory Method and Factory Builder Pattern
-			String newName = Robot.generateName(robotType);
-
 			// Find the spec for this robot, take any model
 			RobotSpec spec = robotConfig.getRobotSpec(robotType, null);
 
-			buildRobot(settlement, spec, newName);
+			buildRobot(settlement, spec);
 		}
 	}
 
@@ -327,9 +344,10 @@ public final class SettlementBuilder {
 	 * 
 	 * @param settlement Home of the Robot
 	 * @param spec Specification of what to build
-	 * @param name New name
 	 */
-	private void buildRobot(Settlement settlement, RobotSpec spec, String name) {
+	private void buildRobot(Settlement settlement, RobotSpec spec) {
+		String name = Robot.generateName(spec.getRobotType());
+
 		Robot robot = new Robot(name, settlement, spec);
 		robot.initialize();
 

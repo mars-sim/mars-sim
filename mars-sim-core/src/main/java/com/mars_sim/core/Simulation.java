@@ -51,7 +51,6 @@ import com.mars_sim.core.environment.Weather;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.ScheduledEventManager;
-import com.mars_sim.core.goods.CreditManager;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.MarketManager;
 import com.mars_sim.core.interplanetary.transport.TransportManager;
@@ -395,7 +394,8 @@ public class Simulation implements ClockPulseListener, Serializable {
 		MissionStep.initializeInstances(masterClock, unitManager);
 
 		TaskManager.initializeInstances(this, simulationConfig);
-
+		JobSpec.initializeInstances(unitManager, missionManager);
+		
 		doneInitializing = true;
 	}
 
@@ -524,9 +524,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 											simulationConfig.getPartConfiguration());
 
 		Relation.initializeInstances(unitManager);
-		
-		CreditManager.initializeInstances(unitManager);	
-		
+				
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
 		
 		//  Re-initialize the GameManager
@@ -644,9 +642,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 				simulationConfig.getPartConfiguration());
 	
 		Relation.initializeInstances(unitManager);
-		
-		CreditManager.initializeInstances(unitManager);
-		
+				
 		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
 				
 		//  Re-initialize the GameManager

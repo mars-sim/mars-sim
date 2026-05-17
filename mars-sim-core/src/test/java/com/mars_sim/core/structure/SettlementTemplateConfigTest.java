@@ -83,11 +83,11 @@ class SettlementTemplateConfigTest {
         assertEquals(expectedBins, supplies.getBins(), "Bins");
 
         Map<String, Integer> expectedEquipment = Map.of(
-            "EVA Suit", 60,
             "barrel", 240,
             "bag", 240,
             "gas canister", 240,
             "large bag", 240,
+            "eva suit", 60,
             "specimen box", 240,
             "thermal bottle", 64,
             "wheelbarrow", 48

@@ -273,7 +273,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         // Obtains the default population
         int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
         // Obtains the default numbers of robots
-        int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
+        int defaultNumOfRobots = ConfigHelper.getOptionalAttributeInt(templateElement, DEFAULT_NUM_ROBOTS, 0);
 
         // Look up the shift pattern
         ShiftPattern pattern = null;
@@ -323,25 +323,8 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
        // Load building packages
        List<Element> buildingPackageNodes = templateElement.getChildren(BUILDING_PACKAGE);
-       for (Element buildingPackageElement : buildingPackageNodes) {
-           String packageName = buildingPackageElement.getAttributeValue(NAME);
-
-           List<BuildingTemplate> buildingPackages = buildingPackageConfig.getBuildingsInPackage(packageName);
-
-           for (BuildingTemplate buildingTemplate: buildingPackages) {
-
-               // Get the building type
-               String buildingType = buildingTemplate.getBuildingType();
-
-               int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
-
-               String uniqueName = buildingType + " " + last;
-
-               // Overwrite with a new building nick name
-               buildingTemplates.add(new BuildingTemplate(uniqueName, buildingTemplate));
-           }
-       }
-
+       parseBuildingPackages(buildingPackageNodes, buildingTypeNumMap, buildingTemplates);
+      
         // Check that building connections point to valid building ID's.
         for (BuildingTemplate buildingTemplate : buildingTemplates) {
 
@@ -412,6 +395,27 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         return settlementTemplate;
     }
 
+    private void parseBuildingPackages(List<Element> buildingPackageNodes, Map<String, Integer> buildingTypeNumMap, List<BuildingTemplate> buildingTemplates) {
+        for (Element buildingPackageElement : buildingPackageNodes) {
+           String packageName = buildingPackageElement.getAttributeValue(NAME);
+
+           List<BuildingTemplate> buildingPackages = buildingPackageConfig.getBuildingsInPackage(packageName);
+
+           for (BuildingTemplate buildingTemplate: buildingPackages) {
+
+               // Get the building type
+               String buildingType = buildingTemplate.getBuildingType();
+
+               int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
+
+               String uniqueName = buildingType + " " + last;
+
+               // Overwrite with a new building nick name
+               buildingTemplates.add(new BuildingTemplate(uniqueName, buildingTemplate));
+           }
+       }
+    }
+
     /**
      * Parses an XML to create a Settlement Supply instance. The buildings are created externally.
      * 
@@ -427,7 +431,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
         // Load equipment
         Map<String, Integer> newEquipment = ConfigHelper.parseIntList(context, supplyElement.getChildren(EQUIPMENT),
-                            TYPE, s -> s, NUMBER);
+                            TYPE, String::toLowerCase, NUMBER);
 
         // Load bins
         Map<String, Integer> newBins = ConfigHelper.parseIntList(context, supplyElement.getChildren(BIN),

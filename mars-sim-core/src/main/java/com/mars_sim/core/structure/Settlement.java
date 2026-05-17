@@ -609,7 +609,7 @@ public class Settlement extends Unit implements Temporal,
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
 		// Initialize credit manager.
-		creditManager = new CreditManager(this);
+		creditManager = new CreditManager(this, unitManager);
 
 		// Initialize settlement task manager.
 		taskManager = new SettlementTaskManager(this);
