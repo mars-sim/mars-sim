@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.authority.AuthorityFactory;
+import com.mars_sim.core.authority.NationSpecConfig;
 import com.mars_sim.core.equipment.EVASuit;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;

@@ -196,14 +196,14 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		JPanel bedPanel = new JPanel(new BorderLayout(8, 1));
 		northPanel.add(bedPanel);
 	
-		// Prepare bed time ta
+		// Prepare sleep times JList
 		sleepTimes = new DefaultListModel<>();
 		var sleeps = new JList<>(sleepTimes);
-		sleeps.setToolTipText("The 3 best times to go to bed [msol (weight)]");
+		sleeps.setToolTipText("The 3 best times to go to bed [At # msol (weight)]");
 
 		// Wrap with a panel to get border correct
 		var sleepsPanel = new JPanel(new BorderLayout());
-		sleepsPanel.setBorder(SwingHelper.createLabelBorder("Sleep times"));
+		sleepsPanel.setBorder(SwingHelper.createLabelBorder("Sleep Times"));
 		sleepsPanel.add(sleeps, BorderLayout.CENTER);
 		
 		// Prepare panel for bed time ta .
@@ -213,8 +213,12 @@ class TabPanelHealth extends EntityTabPanel<Person>
 
 		// Prepare panel for bed location
 		JPanel bedLocPanel = new JPanel(new BorderLayout(0, 0));
-		bedLocationLabel = new JLabel("Assigned : ", SwingConstants.CENTER);
-		bedLocPanel.add(bedLocationLabel);
+		JPanel bedAssignedPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JLabel lodgingLabel = new JLabel("Lodging Assigned : ", SwingConstants.CENTER);
+		bedLocationLabel = new JLabel();
+		bedLocPanel.add(bedAssignedPanel);
+		bedAssignedPanel.add(lodgingLabel);
+		bedAssignedPanel.add(bedLocationLabel);
 		bedPanel.add(bedLocPanel, BorderLayout.NORTH);
 			
 		// Prepare middle panel
@@ -497,13 +501,13 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	}
 
 	/**
-	 * Updates the sleep time.
-	 * @param  person Person being observed 
+	 * Updates the sleep times.
 	 * 
+	 * @param  person Person being observed 
 	 * @return Text representation of sleep time
 	 */
 	private void updateSleepTime(Person person) {	
-		// Checks the 3 best sleep time
+		// Checks the 3 best sleep times
 		sleepTimes.clear();
 
     	int [] bestSleepTime = person.getPreferredSleepHours();
@@ -513,10 +517,10 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		}
 		Arrays.sort(bestSleepTime);
 		
-		// Prepare sleep time TF
+		// Prepare sleep time TFA
 		for (int i=0; i<size; i++) {
 			int sleepTime = bestSleepTime[i];
-			String text = sleepTime + " msol (w:" + person.getSleepWeight(sleepTime) + ")";
+			String text = "\t" + "At " + sleepTime + " msol (weight:" + person.getSleepWeight(sleepTime) + ")";
 			sleepTimes.addElement(text);
 		}
 	}
@@ -561,7 +565,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		if (allocatedBed != null) {
 			bedText = allocatedBed.getSpotDescription();
 		}
- 		bedLocationLabel.setText("Assigned : " + bedText);
+ 		bedLocationLabel.setText(bedText);
 		
 		// Update sleep time table model
 		sleepExerciseTableModel.update(circadianClock);

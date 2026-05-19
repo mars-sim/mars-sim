@@ -16,6 +16,9 @@ public class LunarWorld implements Serializable, Temporal {
 
 	private static final long serialVersionUID = 1L;
 
+	public LunarWorld() {
+		
+	}
 
 	@Override
 	public boolean timePassing(ClockPulse pulse) {		

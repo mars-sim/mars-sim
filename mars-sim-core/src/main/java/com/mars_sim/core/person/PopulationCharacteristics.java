@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * PopulationCharaceristics.java
- * @date 2023-12-23
+ * @date 2026-05-18
  * @author Barry Evans
  */
 package com.mars_sim.core.person;
@@ -65,8 +65,13 @@ public class PopulationCharacteristics{
   		
   		return tempAge;
   	}
-  	
-  	
+
+  	/**
+  	 * Computes a person's height randomly.
+  	 * 
+  	 * @param gender
+  	 * @return
+  	 */
     public double getRandomHeight(GenderType gender) {
 
 		double dadHeight = RandomUtil.getGaussianPositive(maleHeight, maleHeight / 7D);
@@ -84,7 +89,11 @@ public class PopulationCharacteristics{
 
     /**
 	 * Computes a person's weight and its chromosome.
-	 */
+     * 
+     * @param gender
+     * @param height
+     * @return
+     */
 	public double getRandomWeight(GenderType gender, double height) {
 		// For a 20-year-old in the US:
 		// male : height : 176.5 weight : 68.5

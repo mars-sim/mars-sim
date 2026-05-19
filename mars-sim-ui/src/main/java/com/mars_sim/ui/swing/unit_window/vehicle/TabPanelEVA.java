@@ -9,11 +9,8 @@ package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.person.Person;
-import com.mars_sim.core.structure.Airlock.AirlockMode;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Rover;
@@ -21,9 +18,7 @@ import com.mars_sim.core.vehicle.VehicleAirlock;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.AirlockPanel;
 
 /**

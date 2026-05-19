@@ -14,7 +14,6 @@ import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.parameter.ParameterManager;
-import com.mars_sim.core.person.NationSpecConfig;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.RandomUtil;
 

@@ -1,16 +1,18 @@
 /*
  * Mars Simulation Project
  * NationSpec.java
- * @date 2023-07-23
+ * @date 2026-05-18
  * @author Barry Evans
  */
-package com.mars_sim.core.person;
+package com.mars_sim.core.authority;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.configuration.UserConfigurable;
+import com.mars_sim.core.person.GenderType;
+import com.mars_sim.core.person.PopulationCharacteristics;
 import com.mars_sim.core.tool.RandomUtil;
 
 /**
@@ -42,7 +44,7 @@ public class NationSpec implements UserConfigurable {
 		this.bundled = bundled;
 	}
 
-	double getGDP() {
+	public double getGDP() {
 		return gdp;
 	}
 	

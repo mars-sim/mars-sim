@@ -1,3 +1,10 @@
+/*
+ * Mars Simulation Project
+ * NationSpecConfigTest.java
+ * @date 2026-05-18
+ * @author Barry Evans
+ */
+
 package com.mars_sim.core.person;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,6 +20,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.authority.NationSpec;
+import com.mars_sim.core.authority.NationSpecConfig;
 import com.mars_sim.core.tool.RandomUtil;
 
 public class NationSpecConfigTest {

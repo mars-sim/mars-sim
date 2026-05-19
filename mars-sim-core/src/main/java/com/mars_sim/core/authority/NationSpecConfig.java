@@ -1,10 +1,10 @@
 /*
  * Mars Simulation Project
  * NationSpecConfig.java
- * @date 2023-07-23
+ * @date 2026-05-18
  * @author Barry Evans
  */
-package com.mars_sim.core.person;
+package com.mars_sim.core.authority;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.authority.Nation;
 import com.mars_sim.core.configuration.ConfigHelper;
 import com.mars_sim.core.configuration.UserConfigurableConfig;
 
@@ -42,21 +41,22 @@ public class NationSpecConfig extends UserConfigurableConfig<NationSpec> {
 
     // Note: each of the predefined country below has a xml file
     private static final String[] COUNTRIES = {
-                        "Austria",  "Belgium", "Brazil", 
+                        "Austria", "Belgium", "Brazil", 
                         "Canada", "China", "Czech Republic",
-                        "Denmark", "Estonia", "Finland", "France", 
+                        "Denmark", 
+                        "Estonia", 
+                        "Finland", "France", 
                         "Germany", "Greece",
-                        "Hungary", "India", "Ireland", "Italy", 
-                        "Japan", "Luxembourg",
+                        "Hungary", 
+                        "India", "Ireland", "Italy", 
+                        "Japan", 
+                        "Luxembourg",
                         "Netherlands", "Norway", 
                         "Poland", "Portugal", 
                         "Romania", "Russia",
-                        "Saudi Arabia",
-                        "South Korea", "Spain", "Sweden", "Switzerland", 
+                        "Saudi Arabia", "South Korea", "Spain", "Sweden", "Switzerland", 
                         "Taiwan",
-                        "United Arab Emirates",
-                        "United Kingdom", "United States"};
-
+                        "United Arab Emirates", "United Kingdom", "United States"};
 
     private static List<Nation> nations = new ArrayList<>();
     
