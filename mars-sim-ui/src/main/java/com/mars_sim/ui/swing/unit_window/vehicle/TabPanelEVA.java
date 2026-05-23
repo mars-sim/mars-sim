@@ -70,4 +70,10 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
 	public void clockUpdate(ClockPulse pulse) {
 		airlockPanel.clockUpdate(pulse);
     }
+
+    @Override
+    public void destroy() {
+    	airlockPanel.unregister();
+        super.destroy();
+    }
 }

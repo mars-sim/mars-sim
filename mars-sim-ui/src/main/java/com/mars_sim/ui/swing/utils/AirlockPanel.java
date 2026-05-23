@@ -29,7 +29,7 @@ import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
+import com.mars_sim.ui.swing.utils.model.GenericPersonModel;
 
 /**
  * The AirlockPanel class presents the airlock information and activities.
@@ -67,10 +67,10 @@ public class AirlockPanel extends JPanel implements TemporalComponent{
 	private JLabel outerDoorStateLabel;
 	private JLabel airlockModeLabel;
 
-	private UnitListPanel<Person> occupantListPanel;
-	private UnitListPanel<Person> outsideListPanel;
-	private UnitListPanel<Person> insideListPanel;
-	private UnitListPanel<Person> reservationListPanel;
+	private EVAModel outsideModel;
+	private EVAModel occupantModel;
+	private EVAModel reservationModel;
+	private EVAModel insideModel;
 
     public AirlockPanel(Airlock airlock, UIContext context) {
         super(new BorderLayout());
@@ -155,51 +155,60 @@ public class AirlockPanel extends JPanel implements TemporalComponent{
         return topPanel;
     }
 
+	/**
+	 * Models the persons in the airlock.
+	 */
+	private abstract class EVAModel extends GenericPersonModel {
+
+		EVAModel() {
+			super(NAME, TASK);
+		}
+
+		public void update() {
+			setEntities(getData());
+		}
+
+		protected abstract Collection<Person> getData();
+	}
+
     private JPanel createZonePanel(UIContext context) {
 		// Create gridPanel
 		JPanel gridPanel = new JPanel(new GridLayout(2, 2));
 
-		var listSize = new Dimension(200, 95);
+		var listSize = new Dimension(200, 115);
 
-		// Create outsideListPanel 
-		outsideListPanel = new UnitListPanel<>(context, listSize) {
-			@Override
+		outsideModel = new EVAModel() {
 			protected Collection<Person> getData() {
 				return getPersonsFromIds(context, airlock.getAwaitingOuterDoor());
 			}
 		};
-		outsideListPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("AirlockPanel.outside")));
-		gridPanel.add(outsideListPanel);
+		gridPanel.add(SwingHelper.createScrolledTable(outsideModel, context, Msg.getString("AirlockPanel.outside"), listSize));
 
 		// Create occupant list panel
-		occupantListPanel = new UnitListPanel<>(context, listSize) {
-			@Override
+		occupantModel = new EVAModel() {
 			protected Collection<Person> getData() {
 				return getPersonsFromIds(context, airlock.getAllInsideOccupants());
 			}
 		};
-		occupantListPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("AirlockPanel.within")));
-		gridPanel.add(occupantListPanel);
+		gridPanel.add(SwingHelper.createScrolledTable(occupantModel, context, Msg.getString("AirlockPanel.within"), listSize));
 
 		// Create insideListPanel 
-		insideListPanel = new UnitListPanel<>(context, listSize) {
+		insideModel = new EVAModel() {
 			@Override
 			protected Collection<Person> getData() {
 				return getPersonsFromIds(context, airlock.getAwaitingInnerDoor());
 			}
 		};
-		insideListPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("AirlockPanel.inside")));
-		gridPanel.add(insideListPanel);
+		gridPanel.add(SwingHelper.createScrolledTable(insideModel, context, Msg.getString("AirlockPanel.inside"), listSize));
 		
 		// Create reservation panel
-		reservationListPanel = new UnitListPanel<>(context, listSize) {
+		reservationModel = new EVAModel() {
 			@Override
 			protected Collection<Person> getData() {
 				return getPersonsFromIds(context, airlock.getReserved());
 			}		
 		};	
-		reservationListPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("AirlockPanel.reserved")));
-		gridPanel.add(reservationListPanel);
+		gridPanel.add(SwingHelper.createScrolledTable(reservationModel, context, Msg.getString("AirlockPanel.reserved"), listSize));
 		return gridPanel;
     }
 
@@ -288,12 +297,22 @@ public class AirlockPanel extends JPanel implements TemporalComponent{
 		}
 		
         // Update occupant list
-        occupantListPanel.update();
-        outsideListPanel.update();
-    	insideListPanel.update();
-        reservationListPanel.update();
+        occupantModel.update();
+        outsideModel.update();
+    	insideModel.update();
+        reservationModel.update();
     }
 
+	/**
+	 * Drop listeners to prevent memory leaks when panel is closed.
+	 */
+	public void unregister() {
+		outsideModel.unregister();
+		occupantModel.unregister();
+		insideModel.unregister();
+		reservationModel.unregister();
+	}
+	
     private static String getBoolean(boolean value) {
         return value ? "Yes" : "No";
     }

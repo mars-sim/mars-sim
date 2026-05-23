@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.entitywindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Set;
 
@@ -83,6 +84,7 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 		// Configure scrollPane with horizontal scrollbar
 		var scrollPane = new JScrollPane(listenerList);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setMaximumSize(new Dimension(200, -1)); // Force a maximum size
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		// Initial population of the list
