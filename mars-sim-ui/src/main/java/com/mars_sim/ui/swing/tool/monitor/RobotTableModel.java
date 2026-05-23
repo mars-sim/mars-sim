@@ -265,7 +265,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 				break;
 
 			case TYPE: 
-				result = robot.getRobotType().getName();
+				result = robot.getModel(); // Model gives a better description
 				break;
 
 			case SETTLEMENT: 

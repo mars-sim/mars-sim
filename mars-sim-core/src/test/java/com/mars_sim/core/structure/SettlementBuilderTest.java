@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.vehicle.Vehicle;
 
@@ -43,7 +44,7 @@ class SettlementBuilderTest extends MarsSimUnitTest{
 
         // Must force to Interger not Long
         Map<String,Integer> actualRobots = settlement.getAllAssociatedRobots().stream()
-                .map(r -> r.getRobotType().getName() + "-" + r.getModel())
+                .map(Robot::getModel)
                 .collect(Collectors.groupingBy(name -> name, Collectors.reducing(0, e -> 1, (a,b) -> a+b)));
         assertEquals(template.getSupplies().getRobots(), actualRobots, "Robot count");
 
