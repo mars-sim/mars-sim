@@ -20,6 +20,7 @@ class SettlementSuppliesImpl implements SettlementSupplies {
 	private static final long serialVersionUID = 1L;
 	private List<BuildingTemplate> buildings;
 	private Map<String, Integer> vehicles;
+	private Map<String, Integer> robots;
 	private Map<String, Integer> equipment;
 	private Map<String, Integer> bins;
 	private Map<AmountResource, Double> resources;
@@ -27,11 +28,12 @@ class SettlementSuppliesImpl implements SettlementSupplies {
 
     
     SettlementSuppliesImpl(List<BuildingTemplate> buildings, Map<String, Integer> vehicles,
-            Map<String, Integer> equipment, Map<String, Integer> bins,
-            Map<AmountResource, Double> resources,
+            Map<String, Integer> robots, Map<String, Integer> equipment,
+            Map<String, Integer> bins, Map<AmountResource, Double> resources,
             Map<Part, Integer> parts) {
         this.buildings = buildings;
         this.vehicles = vehicles;
+        this.robots = robots;
         this.equipment = equipment;
         this.bins = bins;
         this.resources = resources;
@@ -43,6 +45,7 @@ class SettlementSuppliesImpl implements SettlementSupplies {
      * 
      * @return list of building templates.
      */
+    @Override
     public List<BuildingTemplate> getBuildings() {
         return buildings;
     }
@@ -52,8 +55,19 @@ class SettlementSuppliesImpl implements SettlementSupplies {
      * 
      * @return map.
      */
+    @Override
     public Map<String, Integer> getVehicles() {
         return vehicles;
+    }
+
+    /**
+     * Gets a map of robot types and number.
+     * 
+     * @return map.
+     */
+    @Override
+    public Map<String, Integer> getRobots() {
+        return robots;
     }
 
     /**
@@ -61,6 +75,7 @@ class SettlementSuppliesImpl implements SettlementSupplies {
      * 
      * @return map.
      */
+    @Override
     public Map<String, Integer> getEquipment() {
         return equipment;
     }
@@ -70,6 +85,7 @@ class SettlementSuppliesImpl implements SettlementSupplies {
      * 
      * @return map.
      */
+    @Override
     public Map<String, Integer> getBins() {
         return bins;
     }
@@ -79,6 +95,7 @@ class SettlementSuppliesImpl implements SettlementSupplies {
      * 
      * @return map.
      */
+    @Override
     public Map<AmountResource, Double> getResources() {
         return resources;
     }
@@ -88,6 +105,7 @@ class SettlementSuppliesImpl implements SettlementSupplies {
      * 
      * @return map.
      */
+    @Override
     public Map<Part, Integer> getParts() {
         return parts;
     }

@@ -21,8 +21,6 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
 import com.mars_sim.core.resource.*;
-import com.mars_sim.core.robot.RobotTemplate;
-import com.mars_sim.core.robot.RobotType;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -49,7 +47,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String NAME = "name";
     private static final String DESCRIPTION = "description";
     private static final String DEFAULT_POPULATION = "default-population";
-    private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
     private static final String OBJECTIVE = "objective";
 
     private static final String ID = "id";
@@ -72,10 +69,11 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
 
     private static final String SHIFT_PATTERN = "shift-pattern";
-    private static final String MODEL = "model";
     private static final String MANIFEST_NAME = "manifest-name";
     private static final String SCHEDULE = "schedule";
     private static final String ACTIVITY_SCHEDULE = "activity-schedule";
+
+    private static final String INITIAL_SUPPLIES = "initial-supplies";
 
     private static final String EVA = "EVA";
     private static final String ROBOT = "robot";
@@ -115,12 +113,12 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     }
 
     /**
-     * Get. the manifest that are used in the Settlement templates.
+     * Get the resupply configuration used in the Settlement templates.
      * 
-     * @return
+     * @return the resupply configuration
      */
-    public List<ResupplyManifest> getSupplyManifests() {
-        return resupplyConfig.getAll();
+    public ResupplyConfig getResupplyConfig() {
+        return resupplyConfig;
     }
 
     /**
@@ -275,8 +273,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
         // Obtains the default population
         int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
-        // Obtains the default numbers of robots
-        int defaultNumOfRobots = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_NUM_ROBOTS));
 
         // Look up the shift pattern
         ShiftPattern pattern = null;
@@ -326,25 +322,8 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
        // Load building packages
        List<Element> buildingPackageNodes = templateElement.getChildren(BUILDING_PACKAGE);
-       for (Element buildingPackageElement : buildingPackageNodes) {
-           String packageName = buildingPackageElement.getAttributeValue(NAME);
-
-           List<BuildingTemplate> buildingPackages = buildingPackageConfig.getBuildingsInPackage(packageName);
-
-           for (BuildingTemplate buildingTemplate: buildingPackages) {
-
-               // Get the building type
-               String buildingType = buildingTemplate.getBuildingType();
-
-               int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
-
-               String uniqueName = buildingType + " " + last;
-
-               // Overwrite with a new building nick name
-               buildingTemplates.add(new BuildingTemplate(uniqueName, buildingTemplate));
-           }
-       }
-
+       parseBuildingPackages(buildingPackageNodes, buildingTypeNumMap, buildingTemplates);
+      
         // Check that building connections point to valid building ID's.
         for (BuildingTemplate buildingTemplate : buildingTemplates) {
 
@@ -367,7 +346,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         }
 
         // Get supplies
-        var supplies = parseSupplies("Settlement template " + settlementTemplateName, templateElement,
+        var supplies = parseSupplies("Settlement template " + settlementTemplateName, templateElement.getChild(INITIAL_SUPPLIES),
                             buildingTemplates, partPackageConfig);
 
         // Add templateID
@@ -379,7 +358,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
                 pattern,
                 activitySchedule,
                 defaultPopulation,
-                defaultNumOfRobots,
                 supplies);
 
         // Check the objective
@@ -387,16 +365,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         if (objectiveText != null) {
             var oType = ConfigHelper.getEnum(ObjectiveType.class, objectiveText);
             settlementTemplate.setObjective(oType);
-        }
-
-        // Load robots
-        List<Element> robotNodes = templateElement.getChildren(ROBOT);
-        for (Element robotElement : robotNodes) {
-            RobotType rType = ConfigHelper.getEnum(RobotType.class,
-                    robotElement.getAttributeValue(TYPE));
-            String name = robotElement.getAttributeValue(NAME);
-            String model = robotElement.getAttributeValue(MODEL);
-            settlementTemplate.addRobot(new RobotTemplate(name, rType, model));
         }
 
         // Load building plans
@@ -425,6 +393,27 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         return settlementTemplate;
     }
 
+    private void parseBuildingPackages(List<Element> buildingPackageNodes, Map<String, Integer> buildingTypeNumMap, List<BuildingTemplate> buildingTemplates) {
+        for (Element buildingPackageElement : buildingPackageNodes) {
+           String packageName = buildingPackageElement.getAttributeValue(NAME);
+
+           List<BuildingTemplate> buildingPackages = buildingPackageConfig.getBuildingsInPackage(packageName);
+
+           for (BuildingTemplate buildingTemplate: buildingPackages) {
+
+               // Get the building type
+               String buildingType = buildingTemplate.getBuildingType();
+
+               int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
+
+               String uniqueName = buildingType + " " + last;
+
+               // Overwrite with a new building nick name
+               buildingTemplates.add(new BuildingTemplate(uniqueName, buildingTemplate));
+           }
+       }
+    }
+
     /**
      * Parses an XML to create a Settlement Supply instance. The buildings are created externally.
      * 
@@ -440,7 +429,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
         // Load equipment
         Map<String, Integer> newEquipment = ConfigHelper.parseIntList(context, supplyElement.getChildren(EQUIPMENT),
-                            TYPE, s -> s, NUMBER);
+                            TYPE, String::toLowerCase, NUMBER);
 
         // Load bins
         Map<String, Integer> newBins = ConfigHelper.parseIntList(context, supplyElement.getChildren(BIN),
@@ -453,6 +442,10 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
         // Load vehicles
         Map<String, Integer> newVehicles = ConfigHelper.parseIntList(context, supplyElement.getChildren(VEHICLE),
+                                                    TYPE, s -> s, NUMBER);
+        
+                                                    // Load robots
+        Map<String, Integer> newBots = ConfigHelper.parseIntList(context, supplyElement.getChildren(ROBOT),
                                                     TYPE, s -> s, NUMBER);
 
         // Load parts
@@ -474,7 +467,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
             }
         }
         
-        return new SettlementSuppliesImpl(newBuildings, newVehicles, newEquipment, newBins,
+        return new SettlementSuppliesImpl(newBuildings, newVehicles, newBots, newEquipment, newBins,
                                     newResources, newParts);
     }
 

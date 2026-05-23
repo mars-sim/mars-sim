@@ -28,7 +28,6 @@ public class ArrivingSettlement extends Transportable {
 
 	// Data members.
 	private int populationNum;
-	private int numOfRobots;
 	private int templateID;
 	
 	private String template;
@@ -45,16 +44,14 @@ public class ArrivingSettlement extends Transportable {
 	 * @param landingLocation the landing location.
 	 * @param populationNum   the population of new immigrants arriving with the
 	 *                        settlement.
-	 * @param numOfRobots     the number of new robots.
 	 */
 	public ArrivingSettlement(String name, String template, String sponsorCode,
 			MarsTime arrivalDate, Coordinates landingLocation,
-			int populationNum, int numOfRobots) {
+			int populationNum) {
 		super(name, landingLocation);
 		this.template = template;
 		this.sponsorCode = sponsorCode;
 		this.populationNum = populationNum;
-		this.numOfRobots = numOfRobots;
 
 		setArrivalDate(arrivalDate);
 	}
@@ -141,24 +138,6 @@ public class ArrivingSettlement extends Transportable {
 		this.populationNum = populationNum;
 	}
 
-	/**
-	 * Gets the number of robots of the arriving settlement.
-	 * 
-	 * @return numOfRobots.
-	 */
-	public int getNumOfRobots() {
-		return numOfRobots;
-	}
-
-	/**
-	 * Sets the number of robots of the arriving settlement.
-	 * 
-	 * @param numOfRobots.
-	 */
-	public void setNumOfRobots(int numOfRobots) {
-		this.numOfRobots = numOfRobots;
-	}
-
 	@Override
 	public String getSettlementName() {
 		return getName();
@@ -177,7 +156,7 @@ public class ArrivingSettlement extends Transportable {
 	protected synchronized HistoricalEvent performArrival(SimulationConfig sc, Simulation sim) {
 		SettlementBuilder build = new SettlementBuilder(sim, sc, null);
 		InitialSettlement spec = new InitialSettlement(getName(), sponsorCode,
-													   template, populationNum, numOfRobots,
+													   template, populationNum,
 													   getLandingLocation(), null);
 		var s = build.createFullSettlement(spec);
 

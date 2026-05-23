@@ -365,7 +365,6 @@ public class SimulationBuilder {
 				+ "' with settlement name '" + settlementName + "'.");
 		return new InitialSettlement(settlementName, authority.getName(), template, 
 									 settlementTemplate.getDefaultPopulation(),
-									 settlementTemplate.getDefaultNumOfRobots(),
 									 location, null);
 	}
 

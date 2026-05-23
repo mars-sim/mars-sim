@@ -34,6 +34,13 @@ public interface SettlementSupplies extends Serializable {
     Map<String, Integer> getVehicles();
 
     /**
+     * Gets a map of robot types and number.
+     * 
+     * @return map.
+     */
+    Map<String, Integer> getRobots();
+
+    /**
      * Gets a map of equipment types and number.
      * 
      * @return map.

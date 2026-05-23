@@ -31,6 +31,7 @@ import com.mars_sim.ui.swing.components.NumberCellRenderer;
  */
 public class SettlementSuppliesPanel {
 
+    private static final String QUANTITY = "Quantity";
     private JTabbedPane panel;
 
     public SettlementSuppliesPanel() {
@@ -66,13 +67,19 @@ public class SettlementSuppliesPanel {
 		// Create vehicles panel.
         Map<String, Integer> vehicles = supplies.getVehicles();
         if (!vehicles.isEmpty()) {
-			panel.addTab("Vehicles", createVehiclesDisplayPanel(vehicles));
+			panel.addTab("Vehicles", createDisplayPanel(vehicles, "Vehicle Type"));
+		}
+
+		// Create Robot panel.
+        Map<String, Integer> robots = supplies.getRobots();
+        if (!robots.isEmpty()) {
+			panel.addTab("Robots", createDisplayPanel(robots, "Robot Type"));
 		}
 
 		// Create equipment panel.
         Map<String, Integer> equipment = supplies.getEquipment();
         if (!equipment.isEmpty()) {
-            panel.addTab("Equipment", createEquipmentDisplayPanel(equipment));
+            panel.addTab("Equipment", createDisplayPanel(equipment, "Equipment Type"));
 		}
 
 		// Create resources panel.
@@ -88,8 +95,7 @@ public class SettlementSuppliesPanel {
 		}
     }
 
-    
-	/**
+    /**
 	 * Creates the building display panel.
 	 * @param buildings2
 	 * 
@@ -105,38 +111,17 @@ public class SettlementSuppliesPanel {
                             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
         // CReate table
-        JScrollPane tablePane = createValueTable(buildingMap, "Building Type", "Quantity", 0);
+        JScrollPane tablePane = createValueTable(buildingMap, "Building Type", QUANTITY, 0);
         buildingsPanel.add(tablePane, BorderLayout.CENTER);
 
 		return buildingsPanel;
 	}
 
-	
-
-    /**
-	 * Creates the vehicle display panel.
-     * @param vehicles
-	 * 
-	 * @return panel.
-	 */
-	private JPanel createVehiclesDisplayPanel(Map<String, Integer> vehicles) {
-		JPanel vehiclesPanel = new JPanel(new BorderLayout());
-        JScrollPane tablePane = createValueTable(vehicles, "Vehicle Type", "Quantity", 0);
-        vehiclesPanel.add(tablePane, BorderLayout.CENTER);
-        return vehiclesPanel;
-	}
-
-	/**
-	 * Creates the equipment display panel.
-	 * @param equipment2
-	 * 
-	 * @return panel.
-	 */
-	private JPanel createEquipmentDisplayPanel(Map<String, Integer> equipment2) {
-		JPanel equipmentPanel = new JPanel(new BorderLayout());
-        JScrollPane tablePane = createValueTable(equipment2, "Equipment Type", "Quantity", 0);
-        equipmentPanel.add(tablePane, BorderLayout.CENTER);
-        return equipmentPanel;
+	private JPanel createDisplayPanel(Map<String, Integer> values, String label) {
+		JPanel valuePanel = new JPanel(new BorderLayout());
+        JScrollPane tablePane = createValueTable(values, label, QUANTITY, 0);
+        valuePanel.add(tablePane, BorderLayout.CENTER);
+        return valuePanel;
 	}
 
 	/**
@@ -148,7 +133,7 @@ public class SettlementSuppliesPanel {
 	private JPanel createResourcesDisplayPanel(Map<AmountResource, Double> resources) {
         // Convert Resource to it's name
         Map<String, Double> resources2 = resources.entrySet().stream()
-                    .collect(Collectors.toMap(entry -> entry.getKey().getName(), entry -> entry.getValue()));
+                    .collect(Collectors.toMap(entry -> entry.getKey().getName(), Entry::getValue));
 
 		JPanel resourcesPanel = new JPanel(new BorderLayout());
         JScrollPane tablePane = createValueTable(resources2, "Resource Type", "Amount [kg]", 1);
@@ -165,12 +150,9 @@ public class SettlementSuppliesPanel {
 	private JPanel createPartsDisplayPanel(Map<Part, Integer> parts) {
         // Convert Part to it's name
         Map<String, Integer> parts2 = parts.entrySet().stream()
-                        .collect(Collectors.toMap(entry -> entry.getKey().getName(), entry -> entry.getValue()));
+                        .collect(Collectors.toMap(entry -> entry.getKey().getName(), Entry::getValue));
 
-		JPanel partsPanel = new JPanel(new BorderLayout());
-        JScrollPane tablePane = createValueTable(parts2, "Part Type", "Quantity", 0);
-        partsPanel.add(tablePane, BorderLayout.CENTER);
-        return partsPanel;
+        return createDisplayPanel(parts2, "Part Type");
 	}
 
     /**

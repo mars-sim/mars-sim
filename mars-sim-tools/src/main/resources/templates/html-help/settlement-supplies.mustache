@@ -46,6 +46,33 @@
 </div>
 {{/resources.isEmpty}}
 
+
+{{^robots.isEmpty}}
+<div id="robots">
+    <h3>Robots</h3>
+    <table class="details">
+        <thead>
+            <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+            </tr>
+        </thead>
+        {{#robots}}
+        <tr><td>
+        {{#typefolder}}
+            <a href="{{typefolder}}{{#filename}}{{name}}{{/filename}}">{{name}}</a>
+        {{/typefolder}}
+        {{^typefolder}}
+            {{name}}
+        {{/typefolder}}
+        </td>
+        <td>{{amount}}</td>
+        </tr>
+        {{/robots}}
+    </table>
+</div>
+{{/robots.isEmpty}}
+
 {{^equipment.isEmpty}}
 <div id="equipment">
     <h3>Equipment</h3>

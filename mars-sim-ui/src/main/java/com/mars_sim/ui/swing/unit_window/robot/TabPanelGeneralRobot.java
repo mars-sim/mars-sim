@@ -65,7 +65,6 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 		topPanel.add(infoPanel, BorderLayout.NORTH);
 
 		var r = getEntity();
-		infoPanel.addTextField(Msg.getString("robot.type"), r.getRobotType().getName(), null);
 		infoPanel.addTextField(Msg.getString("robot.model"), r.getModel(), null);
 		infoPanel.addTextField("Base Mass", StyleManager.DECIMAL_KG.format(r.getBaseMass()), "The base mass of this unit");
 

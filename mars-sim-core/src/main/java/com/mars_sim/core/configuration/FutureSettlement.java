@@ -13,4 +13,4 @@ import com.mars_sim.core.map.location.Coordinates;
  */
 public record FutureSettlement(String name, String template, String sponsorCode,
 			int arrivalSols, Coordinates landingLocation,
-			int populationNum, int numOfRobots) {}
+			int populationNum) {}

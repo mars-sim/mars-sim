@@ -32,7 +32,6 @@ class FutureSettlementStep extends WizardStep<TransportState> {
 	private JComboBox<String> templateCB;
 	private JComboBox<String> sponsorCB;
 	private JSpinner population;
-	private JSpinner robots;
 
 	private SettlementTemplateConfig templateConfig;
 
@@ -67,9 +66,6 @@ class FutureSettlementStep extends WizardStep<TransportState> {
 		populationPane.add(new JLabel("Population: "));
 		population = new JSpinner(new SpinnerNumberModel(0, 0, 256, 1));
 		populationPane.add(population);
-		populationPane.add(new JLabel("Robots: "));
-		robots = new JSpinner(new SpinnerNumberModel(0, 0, 256, 1));
-		populationPane.add(robots);
 		content.add(populationPane);
 
 		content.add(Box.createVerticalGlue());
@@ -83,7 +79,6 @@ class FutureSettlementStep extends WizardStep<TransportState> {
 		if (templateName != null) {
 			var template = templateConfig.getItem(templateName);
 			population.setValue(template.getDefaultPopulation());
-			robots.setValue(template.getDefaultNumOfRobots());
 
 			// Preload Sponsor based on template default if available.
 			var defaultSponsor = template.getSponsor();
@@ -104,6 +99,5 @@ class FutureSettlementStep extends WizardStep<TransportState> {
 		state.setArrivingTemplate((String) templateCB.getSelectedItem());
 		state.setArrivingSponsor((String) sponsorCB.getSelectedItem());
 		state.setPopulation((Integer) population.getValue());
-		state.setRobots((Integer) robots.getValue());
 	}
 }
