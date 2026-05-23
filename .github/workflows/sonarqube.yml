@@ -9,6 +9,9 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   sonarqube:
     # Only run in the canonical repository and not for Dependabot
