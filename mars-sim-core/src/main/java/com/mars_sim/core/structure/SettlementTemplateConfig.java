@@ -47,7 +47,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String NAME = "name";
     private static final String DESCRIPTION = "description";
     private static final String DEFAULT_POPULATION = "default-population";
-    private static final String DEFAULT_NUM_ROBOTS = "number-of-robots";
     private static final String OBJECTIVE = "objective";
 
     private static final String ID = "id";
@@ -74,8 +73,10 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String SCHEDULE = "schedule";
     private static final String ACTIVITY_SCHEDULE = "activity-schedule";
 
+    private static final String SUPPLIES = "supplies";
+
     private static final String EVA = "EVA";
-    private static final String ROBOT = "robot-new";
+    private static final String ROBOT = "robot";
     private static final String BUILDING_PLAN = "building-plan";
     private static final String BUILDING_TYPE = "building-type";
     private static final String DELAY_SOLS = "delay-sols";
@@ -272,8 +273,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
         // Obtains the default population
         int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
-        // Obtains the default numbers of robots
-        int defaultNumOfRobots = ConfigHelper.getOptionalAttributeInt(templateElement, DEFAULT_NUM_ROBOTS, 0);
 
         // Look up the shift pattern
         ShiftPattern pattern = null;
@@ -347,7 +346,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         }
 
         // Get supplies
-        var supplies = parseSupplies("Settlement template " + settlementTemplateName, templateElement,
+        var supplies = parseSupplies("Settlement template " + settlementTemplateName, templateElement.getChild(SUPPLIES),
                             buildingTemplates, partPackageConfig);
 
         // Add templateID
@@ -359,7 +358,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
                 pattern,
                 activitySchedule,
                 defaultPopulation,
-                defaultNumOfRobots,
                 supplies);
 
         // Check the objective

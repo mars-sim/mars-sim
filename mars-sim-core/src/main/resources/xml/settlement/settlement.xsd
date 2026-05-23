@@ -70,19 +70,10 @@
         </xs:complexType>
     </xs:element>
     
-    <xs:element name="robot-new">
-        <xs:complexType>
-            <xs:attribute name="type" type="xs:string"/>
-            <xs:attribute name="number" type="xs:decimal"/>
-        </xs:complexType>
-    </xs:element>
-
-    <!-- This is deprecated-->
     <xs:element name="robot">
         <xs:complexType>
             <xs:attribute name="type" type="xs:string"/>
-            <xs:attribute name="name" type="xs:string"  use="optional"/>
-            <xs:attribute name="model" type="xs:string"  use="optional"/>
+            <xs:attribute name="number" type="xs:decimal"/>
         </xs:complexType>
     </xs:element>
 
@@ -155,6 +146,20 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="supplies">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="robot"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="equipment"  minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="bin"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="resource"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="part"  minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element ref="part-package" minOccurs="0" maxOccurs="unbounded"/>              
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="template">
         <xs:complexType>
             <xs:sequence>
@@ -162,15 +167,8 @@
                 <xs:element ref="connector" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="standalone" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="building-package" minOccurs="0" maxOccurs="unbounded"/> 
-                <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="robot-new"  minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="robot"  minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="building-plan"  minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="equipment"  minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="bin"  minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="resource"  minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="part"  minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="part-package" minOccurs="0" maxOccurs="unbounded"/>              
+                <xs:element ref="supplies"  minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="resupply" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>
@@ -179,7 +177,6 @@
             <xs:attribute name="shift-pattern" type="xs:string"  use="optional"/>
             <xs:attribute name="objective" type="xs:string"  use="optional"/>
             <xs:attribute name="default-population" type="xs:integer"/>
-            <xs:attribute name="number-of-robots" type="xs:integer"  use="optional"/>
         </xs:complexType>
     </xs:element>
 </xs:schema>

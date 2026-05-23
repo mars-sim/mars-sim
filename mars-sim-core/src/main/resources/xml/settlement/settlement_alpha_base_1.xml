@@ -259,6 +259,12 @@
 	<building-package name="Methane Set 1 - 1x3" />	
   	<building-package name="Brine Water Well Set 1 - 1x3"/>	 	
 
+     <!-- Planned buildings for future construction (key feature) -->
+    <building-plan building-type="Inflatable Greenhouse" delay-sols="30"/>
+    <building-plan building-type="Manufacturing Workshop" delay-sols="60"/>
+
+    <supplies>
+
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Long Range Explorer" number="1" />
     <vehicle type="Transport Rover" number="2" />
@@ -267,16 +273,12 @@
     <vehicle type="Delivery Drone" number="2" />
     <vehicle type="Cargo Drone" number="2" />
 
-    <robot-new type="ChefBot-Standard" number="1"/>
-    <robot-new type="DeliveryBot-Standard" number="2"/>
-    <robot-new type="GardenBot-Advanced" number="3"/>
-    <robot-new type="MakerBot-Standard" number="2"/>
-    <robot-new type="MedicBot-Advanced" number="1"/>
-    <robot-new type="RepairBot-Standard" number="2"/>
-
-     <!-- Planned buildings for future construction (key feature) -->
-    <building-plan building-type="Inflatable Greenhouse" delay-sols="30"/>
-    <building-plan building-type="Manufacturing Workshop" delay-sols="60"/>
+    <robot type="ChefBot-Standard" number="1"/>
+    <robot type="DeliveryBot-Standard" number="2"/>
+    <robot type="GardenBot-Advanced" number="3"/>
+    <robot type="MakerBot-Standard" number="2"/>
+    <robot type="MedicBot-Advanced" number="1"/>
+    <robot type="RepairBot-Standard" number="2"/>
 
     <equipment type="EVA Suit" number="36" />
 
@@ -295,7 +297,9 @@
 	<resource type="oxygen" amount="5760" />
 
     <part-package name="Standard Part Package 1" number="6" />
-      
+
+    </supplies>
+
     <resupply>
        	<resupply-mission name="Bi-Monthly Delivery" manifest-name="Standard Resupply 1">
             <schedule firstSol="1" eventTime="400" frequency="62" /> 

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Alpha Base 2" shift-pattern="Long 3 Shift" 
-        default-population="48" number-of-robots="24" sponsor="MS"
+        default-population="48" sponsor="MS"
         description="Large Base" objective="CROP_FARM">
         
     <!-- row 0 -->               
@@ -286,6 +286,8 @@
 	<building-package name="MD4 Set 1 - 1x2"/>
   	<building-package name="Brine Water Well Set 1 - 1x3"/>	 	
  
+    <supplies>
+ 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Long Range Explorer" number="1" />
     <vehicle type="Transport Rover" number="2" />
@@ -295,14 +297,12 @@
     <vehicle type="Cargo Drone" number="2" />
     
     <!-- Robots -->
-    <robot name="Huey" type="GardenBot" model="Advanced"/>
-    <robot name="Dewey" type="GardenBot" model="Advanced"/>
-    <robot name="TeslaBot-G" type="GardenBot" model="Advanced"/>
-    <robot name="TeslaBot-R" type="RepairBot" model="Advanced"/>
-    <robot name="TeslaBot-MR" type="MakerBot" model="Advanced"/> 
-    <robot name="TeslaBot-C" type="ChefBot" model="Advanced"/>
-    <robot name="TeslaBot-D" type="DeliveryBot" model="Advanced"/>
-    <robot name="TeslaBot-MC" type="MedicBot" model="Advanced"/>
+    <robot type="ChefBot-Standard" number="1"/>
+    <robot type="DeliveryBot-Standard" number="3"/>
+    <robot type="GardenBot-Advanced" number="4"/>
+    <robot type="MakerBot-Standard" number="2"/>
+    <robot type="MedicBot-Advanced" number="1"/>
+    <robot type="RepairBot-Standard" number="2"/>
   
     
     <equipment type="EVA Suit" number="36" />
@@ -322,6 +322,9 @@
 	<resource type="oxygen" amount="5760" />
 
     <part-package name="Standard Part Package 1" number="6" />
+ 
+    </supplies>
+
       
     <resupply>
        	<resupply-mission name="Bi-Monthly Delivery" manifest-name="Standard Resupply 1">

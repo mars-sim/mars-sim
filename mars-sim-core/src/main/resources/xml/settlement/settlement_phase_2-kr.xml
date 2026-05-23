@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Phase 2-KR" default-population="16" description="Phase 2 base for KASA"
-	number-of-robots="5" sponsor="KASA">
+	sponsor="KASA">
     
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
@@ -160,10 +160,18 @@
 	<building-package name="Small Areothermal Well Set 1 - 1x1"/> 
  	<building-package name="Brine Water Well Set 1 - 1x1"/>
  	 
+    <supplies>
+ 	 
     <vehicle type="Explorer Rover" number="3" />
     <vehicle type="Light Utility Vehicle" number="3" />
     <vehicle type="Delivery Drone" number="3" />
 
+    <!-- Standard Phase 2 allocation-->
+    <robot type="GardenBot-Advanced" number="2"/>
+    <robot type="MakerBot-Standard" number="2"/>
+    <robot type="MedicBot-Advanced" number="1"/>
+    <robot type="RepairBot-Standard" number="2"/>
+    
     <equipment type="EVA Suit" number="16" />
 
     <!-- Containers-->
@@ -181,6 +189,9 @@
 	<resource type="oxygen" amount="2880" />
  
     <part-package name="Standard Part Package 1" number="2" />
+ 	 
+    </supplies>
+
   
     <resupply>
        	<resupply-mission name="BiMonthly Delivery" manifest-name="Standard Resupply 1">

@@ -151,7 +151,6 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Tune Job");
 
 		// Create more robots to fill the settlement(s)
-		createRobotsOnDemand(settlement, template.getDefaultNumOfRobots());
 		outputTimecheck(settlement, watch, "Create Robots on Demand");
 
 		watch.stop();
@@ -316,6 +315,7 @@ public final class SettlementBuilder {
 
 	/**
 	 * Creates initial Robots based on available capacity at settlements.
+	 * Need to find a home for this as teh logic mnay be useful
 	 * 
 	 * @param settlement
 	 * @param target

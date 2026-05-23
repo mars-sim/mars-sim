@@ -269,7 +269,6 @@
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->
 		<!-- See http://www.marssociety.org/home/about/mars-direct for more info. -->
 		<!-- default-population: the default population capacity for the template. -->
-		<!-- number-of-robots: the default number of robots for the template. -->
 		<!-- sponsor: the name of the sponsoring organization for the template. -->
 		
 		<!-- 5 Phase 0 templates -->

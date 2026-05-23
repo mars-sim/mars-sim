@@ -27,7 +27,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 
 	// Data members.
 	private int defaultPopulation;
-	private int defaultNumOfRobots;
 	
 	private String name;
 	private Authority sponsor;
@@ -59,14 +58,13 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	public SettlementTemplate(String name, String desription, boolean bundled,
 								Authority sponsor, ShiftPattern shiftDefn,
 								GroupActivitySchedule activitySchedule,
-								int defaultPopulation, int defaultNumOfRobots,
+								int defaultPopulation,
 								SettlementSupplies supplies) {
 		this.name = name;
 		this.description = desription;
 		this.bundled = bundled;
 		this.sponsor = sponsor;
 		this.defaultPopulation = defaultPopulation;
-		this.defaultNumOfRobots = defaultNumOfRobots;
 		this.shiftDefn = shiftDefn;
 		this.activitySchedule = activitySchedule;
 		this.supplies = supplies;
@@ -125,15 +123,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 */
 	public GroupActivitySchedule getActivitySchedule() {
 		return activitySchedule;
-	}
-
-	/**
-	 * Gets the default robot capacity of the template.
-	 * 
-	 * @return robot capacity.
-	 */
-	public int getDefaultNumOfRobots() {
-		return defaultNumOfRobots;
 	}
 
 	/**
