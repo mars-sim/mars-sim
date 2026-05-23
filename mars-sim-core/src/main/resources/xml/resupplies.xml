@@ -41,7 +41,9 @@
 		<equipment type="large bag" number="24" />
 		<equipment type="specimen box" number="24" />
     	<equipment type="thermal bottle" number="8" />	
- 	    <equipment type="wheelbarrow" number="8" />	   	
+ 	    <equipment type="wheelbarrow" number="8" />	   
+
+		<robot-new type="RepairBot-Standard" number="1"/>
 	
 	    <!-- Life Support Resources -->
 	    <resource type="food" amount="1000.0" />
@@ -289,6 +291,8 @@
     	<equipment type="thermal bottle" number="8" />			
    	    <equipment type="wheelbarrow" number="4" />
    	    
+		<robot-new type="RepairBot-Standard" number="5"/>
+
 
 		<!-- Resource provided in this resupply. -->
 		<!-- type: the type of resource (see resources.txt) -->
@@ -351,6 +355,10 @@
 		
 		<part-package name="Standard Part Package 1" number="3" />
 		
+		<robot-new type="RepairBot-Standard" number="1"/>
+		<robot-new type="GardenBot-Standard" number="1"/>
+		<robot-new type="MakerBot-Standard" number="1"/>
+
 	</resupply>
 
 </resupply-list>

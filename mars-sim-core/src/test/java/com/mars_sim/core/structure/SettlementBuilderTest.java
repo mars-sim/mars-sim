@@ -32,7 +32,7 @@ class SettlementBuilderTest extends MarsSimUnitTest{
         SettlementBuilder builder = new SettlementBuilder(getSim(), getConfig(), null);
 
         // Build the settlement 
-        InitialSettlement initialSettlement = new InitialSettlement(expectedName, expectedAuthority, templateName, expectedPop, 0, expectedLocn, null);
+        InitialSettlement initialSettlement = new InitialSettlement(expectedName, expectedAuthority, templateName, expectedPop, expectedLocn, null);
         Settlement settlement = builder.createFullSettlement(initialSettlement);
 
         assertNotNull(settlement, "Settlement");

@@ -6,7 +6,6 @@
  */
 package com.mars_sim.ui.swing.configeditor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.mars_sim.core.authority.AuthorityFactory;
@@ -69,7 +68,7 @@ class InitialSettlementModel extends PotentialSettlementModel {
 	 */
 	public List<InitialSettlement> getSettlements() {
 		return settlementInfoList.stream().map(info -> new InitialSettlement(info.name, info.sponsor, info.template,
-												info.population, 0, info.location, info.crew)).toList();
+												info.population, info.location, info.crew)).toList();
 	}
 
 	/**
@@ -83,7 +82,6 @@ class InitialSettlementModel extends PotentialSettlementModel {
 											settlementInfoList.size()),
 					sponsor, template,
 					ConfigModelHelper.determineNewSettlementPopulation(template, settlementTemplateConfig),
-					0,
 					location, null);
 		settlementInfoList.add(toSettlementInfo(newRow));
 		fireTableDataChanged();

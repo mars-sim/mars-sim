@@ -151,7 +151,7 @@ public final class SettlementBuilder {
 		outputTimecheck(settlement, watch, "Tune Job");
 
 		// Create more robots to fill the settlement(s)
-		createRobotsOnDemand(settlement, settlement.getInitialNumOfRobots());
+		createRobotsOnDemand(settlement, template.getDefaultNumOfRobots());
 		outputTimecheck(settlement, watch, "Create Robots on Demand");
 
 		watch.stop();
@@ -230,13 +230,11 @@ public final class SettlementBuilder {
 		}
 
 		int populationNumber = spec.getPopulationNumber();
-		int initialNumOfRobots = spec.getNumOfRobots();
 
 		// Add scenarioID
 		Settlement settlement = Settlement.createNewSettlement(name,
 									spec.getSettlementTemplate(), ra,
-									location, populationNumber,
-									initialNumOfRobots);
+									location, populationNumber);
 		
 		Settlement.initializeStatics();
 		

@@ -156,7 +156,7 @@ public class ArrivingSettlement extends Transportable {
 	protected synchronized HistoricalEvent performArrival(SimulationConfig sc, Simulation sim) {
 		SettlementBuilder build = new SettlementBuilder(sim, sc, null);
 		InitialSettlement spec = new InitialSettlement(getName(), sponsorCode,
-													   template, populationNum, 0,
+													   template, populationNum,
 													   getLandingLocation(), null);
 		var s = build.createFullSettlement(spec);
 

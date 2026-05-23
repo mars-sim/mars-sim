@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.ObjectInputFilter.Config;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +49,6 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String LOCATION_EL = "location";
 	private static final String COORDINATE_ATTR = "coordinates";	
 	private static final String PERSONS_ATTR = "persons";
-	private static final String ROBOTS_ATTR = "robots";
 	private static final String SPONSOR_ATTR = "sponsor";
 	private static final String SCENARIO_CONFIG = "scenario-configuration";
 	private static final String ARRIVING_SETTLEMENT_LIST = "arriving-settlement-list";
@@ -346,13 +344,11 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			if (popNumber < 0) {
 				throw new IllegalStateException("populationNumber cannot be less than zero: " + popNumber);
 			}
-
-			int numOfRobots = ConfigHelper.getOptionalAttributeInt(settlementElement, ROBOTS_ATTR, 0);
 			
 			String sponsor = settlementElement.getAttributeValue(SPONSOR_ATTR);
 			String crew = settlementElement.getAttributeValue(CREW_ATTR);
 			
-			initialSettlements .add(new InitialSettlement(settlementName, sponsor, template, popNumber, numOfRobots,
+			initialSettlements .add(new InitialSettlement(settlementName, sponsor, template, popNumber,
 										location, crew));
 		}
 		
