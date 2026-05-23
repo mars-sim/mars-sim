@@ -263,7 +263,7 @@
     <building-plan building-type="Inflatable Greenhouse" delay-sols="30"/>
     <building-plan building-type="Manufacturing Workshop" delay-sols="60"/>
 
-    <supplies>
+    <initial-supplies>
 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Long Range Explorer" number="1" />
@@ -298,7 +298,7 @@
 
     <part-package name="Standard Part Package 1" number="6" />
 
-    </supplies>
+    </initial-supplies>
 
     <resupply>
        	<resupply-mission name="Bi-Monthly Delivery" manifest-name="Standard Resupply 1">

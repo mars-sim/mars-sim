@@ -77,7 +77,7 @@
  	    
  	    	    
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
-    <supplies>
+    <initial-supplies>
     <vehicle type="Long Range Explorer" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
@@ -137,7 +137,7 @@
     <part-package name="Standard Part Package 1" number="1" />
 
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->
-    </supplies>
+    </initial-supplies>
 
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">

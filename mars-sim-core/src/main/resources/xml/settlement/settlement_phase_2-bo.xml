@@ -125,7 +125,7 @@
 	<building-package name="MD1 Set 1 - 1x2"/>
  	<building-package name="Brine Water Well Set 1 - 1x1"/>
  	 
-    <supplies>
+    <initial-supplies>
  	 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
@@ -155,7 +155,7 @@
  
     <part-package name="Standard Part Package 1" number="2" />
  	 
-    </supplies>
+    </initial-supplies>
 
  
     <resupply>

@@ -128,7 +128,7 @@ public final class CoordinatesFormat {
     }
 
     /**
-     * Check teh format of a string representation of a coordinate.
+     * Check the format of a string representation of a coordinate.
      * @param format the string to check
      * @return Error message or null if valid
      */

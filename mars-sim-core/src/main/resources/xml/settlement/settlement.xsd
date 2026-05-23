@@ -146,7 +146,7 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="supplies">
+    <xs:element name="initial-supplies">
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="vehicle"  minOccurs="0" maxOccurs="unbounded"/>
@@ -168,7 +168,7 @@
                 <xs:element ref="standalone" minOccurs="0" maxOccurs="unbounded"/>
                 <xs:element ref="building-package" minOccurs="0" maxOccurs="unbounded"/> 
                 <xs:element ref="building-plan"  minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element ref="supplies"  minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="initial-supplies"  minOccurs="1" maxOccurs="1"/>
                 <xs:element ref="resupply" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
             <xs:attribute name="name" type="xs:string"/>

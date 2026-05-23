@@ -150,9 +150,6 @@ public final class SettlementBuilder {
 		JobUtil.tuneJobDeficit(settlement);
 		outputTimecheck(settlement, watch, "Tune Job");
 
-		// Create more robots to fill the settlement(s)
-		outputTimecheck(settlement, watch, "Create Robots on Demand");
-
 		watch.stop();
 		if (MEASURE_PHASES) {
 			logger.config(settlement, "Fully created in " + watch.getDuration());

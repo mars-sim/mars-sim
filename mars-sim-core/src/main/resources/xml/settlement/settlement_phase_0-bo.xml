@@ -50,7 +50,7 @@
     <building-package name="Solar Set 1 - 1x3"/>
        	  	
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
-    <supplies>
+    <initial-supplies>
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
@@ -111,7 +111,7 @@
     <part-package name="Standard Part Package 1" number="1" />
 
     <!-- The resupply missions from Earth scheduled for this type of settlement. -->
-    </supplies>
+    </initial-supplies>
 
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">

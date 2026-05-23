@@ -195,7 +195,7 @@
 	<building-package name="TOPAZ-3 Set 1 - 1x3"/>		   	
  	<building-package name="Brine Water Well Set 1 - 1x2"/>	 	
 
-    <supplies>
+    <initial-supplies>
 
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Transport Rover" number="1" />
@@ -229,7 +229,7 @@
 	
     <part-package name="Standard Part Package 1" number="3" />
 
-    </supplies>
+    </initial-supplies>
 
 
     <resupply>

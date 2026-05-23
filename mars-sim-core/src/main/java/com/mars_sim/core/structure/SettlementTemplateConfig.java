@@ -73,7 +73,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String SCHEDULE = "schedule";
     private static final String ACTIVITY_SCHEDULE = "activity-schedule";
 
-    private static final String SUPPLIES = "supplies";
+    private static final String INITIAL_SUPPLIES = "initial-supplies";
 
     private static final String EVA = "EVA";
     private static final String ROBOT = "robot";
@@ -346,7 +346,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         }
 
         // Get supplies
-        var supplies = parseSupplies("Settlement template " + settlementTemplateName, templateElement.getChild(SUPPLIES),
+        var supplies = parseSupplies("Settlement template " + settlementTemplateName, templateElement.getChild(INITIAL_SUPPLIES),
                             buildingTemplates, partPackageConfig);
 
         // Add templateID

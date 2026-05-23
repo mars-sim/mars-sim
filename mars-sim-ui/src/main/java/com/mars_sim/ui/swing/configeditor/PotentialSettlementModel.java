@@ -134,7 +134,7 @@ abstract class PotentialSettlementModel extends AbstractTableModel {
                     case SETTLER_VALUE -> info.population;
                     case CREW_VALUE -> info.crew;
                     case ARRIVAL_VALUE -> info.arrivalIn;
-                    case LOCN_VALUE -> info.location.getFormattedString();
+                    case LOCN_VALUE -> (info.location != null) ? info.location.getFormattedString() : null;
                     default -> result;
                 };
 			} else {
