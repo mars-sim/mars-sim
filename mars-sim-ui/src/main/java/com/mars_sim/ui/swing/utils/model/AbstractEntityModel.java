@@ -21,6 +21,7 @@ import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.EnhancedTableModel;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.StatefulComponent;
 
 /**
  * A generic table model showing entities. It provides a number of predefined available columns.
@@ -28,7 +29,7 @@ import com.mars_sim.ui.swing.utils.EntityModel;
  * The model automatically monitors the entities for changes and updates the table as needed.
  */
 abstract class AbstractEntityModel<T extends MonitorableEntity> extends AbstractTableModel
-    implements EnhancedTableModel, EntityListener, EntityModel {
+    implements EnhancedTableModel, EntityListener, EntityModel, StatefulComponent {
 
 	private List<T> entities = Collections.emptyList();
     private ColumnSpec[] columns;
@@ -47,7 +48,7 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
         if (newEntities.size() != entities.size() || !entities.containsAll(newEntities)) {
             // Update in swing thread as table has sorting
             SwingUtilities.invokeLater(() -> {
-                unregister();
+                cleanUp();
                 entities = new ArrayList<>(newEntities);
 
                 // reload the whole table
@@ -56,12 +57,17 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
                 entities.forEach(e -> e.addEntityListener(this));
             });
         }
+        else {
+            // No change in entities, but we still need to update the table as the content
+            SwingUtilities.invokeLater(() -> fireTableDataChanged());
+        }
     }
 
     /**
      * Unregister the listening for EntityEvents of the managed Entities.
      */
-    public void unregister() {
+    @Override
+    public void cleanUp() {
        entities.forEach(e -> e.removeEntityListener(this));
     }
 

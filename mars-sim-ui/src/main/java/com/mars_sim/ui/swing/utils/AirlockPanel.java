@@ -35,7 +35,7 @@ import com.mars_sim.ui.swing.utils.model.GenericPersonModel;
  * The AirlockPanel class presents the airlock information and activities.
  * It supports the ability to be updated on a ClockPulse.
  */
-public class AirlockPanel extends JPanel implements TemporalComponent{
+public class AirlockPanel extends JPanel implements StatefulComponent,TemporalComponent{
 
     private Airlock airlock;
 
@@ -306,11 +306,12 @@ public class AirlockPanel extends JPanel implements TemporalComponent{
 	/**
 	 * Drop listeners to prevent memory leaks when panel is closed.
 	 */
-	public void unregister() {
-		outsideModel.unregister();
-		occupantModel.unregister();
-		insideModel.unregister();
-		reservationModel.unregister();
+	@Override
+	public void cleanUp() {
+		outsideModel.cleanUp();
+		occupantModel.cleanUp();
+		insideModel.cleanUp();
+		reservationModel.cleanUp();
 	}
 	
     private static String getBoolean(boolean value) {

@@ -146,7 +146,7 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	@Override
 	public void destroy() {
 		if (citizenModel != null) {
-			citizenModel.unregister();
+			citizenModel.cleanUp();
 		}
 
 		super.destroy();
