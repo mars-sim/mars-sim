@@ -113,12 +113,12 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     }
 
     /**
-     * Get. the manifest that are used in the Settlement templates.
+     * Get the resupply configuration used in the Settlement templates.
      * 
-     * @return
+     * @return the resupply configuration
      */
-    public List<ResupplyManifest> getSupplyManifests() {
-        return resupplyConfig.getAll();
+    public ResupplyConfig getResupplyConfig() {
+        return resupplyConfig;
     }
 
     /**

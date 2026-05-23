@@ -10,10 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
-class SettlementTemplateConfigTest {
+public class SettlementTemplateConfigTest {
     private SimulationConfig config;
 
     @BeforeEach
@@ -58,11 +59,7 @@ class SettlementTemplateConfigTest {
             "Water", 7200.0,
             "Oxygen", 5760.0
         ); 
-        for (var entry : expectedResources.entrySet()) {
-            var resource = ResourceUtil.findAmountResource(entry.getKey());
-            assertNotNull(resource, "Resource found: " + entry.getKey());
-            assertEquals(entry.getValue(), supplies.getResources().get(resource), "Resource amount for " + entry.getKey());
-        }
+        assertResources(expectedResources, supplies.getResources());
 
         Map<String, Integer> expectedVehicles = Map.of(
             "Explorer Rover", 2,
@@ -108,6 +105,14 @@ class SettlementTemplateConfigTest {
 
         assertEquals("MS", hubBase.getSponsor().getName(), "Sponsor");
 
+    }
+
+    public static void assertResources(Map<String, Double> expectedResources, Map<AmountResource, Double> resources) {
+        for (var entry : expectedResources.entrySet()) {
+            var resource = ResourceUtil.findAmountResource(entry.getKey());
+            assertNotNull(resource, "Resource found: " + entry.getKey());
+            assertEquals(entry.getValue(), resources.get(resource), "Resource amount for " + entry.getKey());
+        }
     }
 
     @Test
