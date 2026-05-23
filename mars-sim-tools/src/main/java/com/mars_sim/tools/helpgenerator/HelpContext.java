@@ -205,6 +205,7 @@ public class HelpContext {
 			case AMOUNT_RESOURCE -> ResourceGenerator.TYPE_NAME;
 			case BIN -> null;
 			case EQUIPMENT -> null;
+			case ROBOT -> RobotGenerator.TYPE_NAME;
 			case PART -> PartGenerator.TYPE_NAME;
 			case VEHICLE -> VehicleGenerator.TYPE_NAME;
 		};
