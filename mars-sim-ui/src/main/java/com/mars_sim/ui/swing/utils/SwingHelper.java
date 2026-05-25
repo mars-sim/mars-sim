@@ -179,7 +179,7 @@ public final class SwingHelper {
         // Create table
         JTable table = new JTable(model);
         table.setAutoCreateRowSorter(true);
-        table.setCellSelectionEnabled(false);
+		table.setRowSelectionAllowed(true);
 		ColumnSpecHelper.applyRenderers(table, model);
 
 		if ((model instanceof EntityModel) && content != null) {

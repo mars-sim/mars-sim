@@ -57,10 +57,6 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
                 entities.forEach(e -> e.addEntityListener(this));
             });
         }
-        else {
-            // No change in entities, but we still need to update the table as the content
-            SwingUtilities.invokeLater(() -> fireTableDataChanged());
-        }
     }
 
     /**
@@ -108,9 +104,14 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
     @Override
     public void entityUpdate(EntityEvent event) {
         var source = event.getSource();
-        int idx = entities.indexOf(source);
-        if (idx >= 0) {
-            SwingUtilities.invokeLater(() -> fireTableRowsUpdated(idx, idx));
+        if (entities.contains(source)) {
+            // Need to check index when update is fired as rows may change
+            SwingUtilities.invokeLater(() -> {
+                var idx = entities.indexOf(source);
+                if (idx >= 0) {
+                    fireTableRowsUpdated(idx, idx);
+                }
+            });
         }
     }
 }

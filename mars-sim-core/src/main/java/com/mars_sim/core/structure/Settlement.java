@@ -2257,7 +2257,7 @@ public class Settlement extends Unit implements Temporal,
 	public Collection<Vehicle> getMissionVehicles() {
 		return ownedVehicles.stream()
 				.filter(v -> v.getMission() != null
-					&& (v.getMission().getStage() == Stage.ACTIVE))
+					&& !v.getMission().isDone())
 				.toList();
 	}
 
