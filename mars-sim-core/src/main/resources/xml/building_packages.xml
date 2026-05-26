@@ -501,13 +501,13 @@
 	        yloc="-80.0" facing="0.0" />
 	            	    
 	    <standalone type="Medium Battery Array" xloc="60.0"
-	        yloc="-50.0" facing="0.0" />
+	        yloc="-90.0" facing="0.0" />
 	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-60.0" facing="0.0" />
+	        yloc="-100.0" facing="0.0" />
 	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-70.0" facing="0.0" />
+	        yloc="-110.0" facing="0.0" />
 	    <standalone type="Solar Photovoltaic Array" xloc="60.0"
-	        yloc="-80.0" facing="0.0" />      	    
+	        yloc="-120.0" facing="0.0" /> 	    
 	</building-package>
 	
 		<building-package name="Solar Set 2 - 1x9" >
@@ -600,62 +600,62 @@
 	</building-package>
 
 	<building-package name="Solar Thermal Set 2 - 1x3" >   
-	    <standalone type="Medium Battery Array" xloc="75.0"
+	    <standalone type="Medium Battery Array" xloc="90.0"
 	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-80.0" facing="0.0" />       	    
 	</building-package>
 	
 	<building-package name="Solar Thermal Set 2 - 1x6" > 
-	    <standalone type="Medium Battery Array" xloc="75.0"
+	    <standalone type="Medium Battery Array" xloc="90.0"
 	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="75.0"
+	    <standalone type="Medium Battery Array" xloc="90.0"
 	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-120.0" facing="0.0" />
 	</building-package>
 		
 	<building-package name="Solar Thermal Set 2 - 1x9" >
-	    <standalone type="Medium Battery Array" xloc="75.0"
+	    <standalone type="Medium Battery Array" xloc="90.0"
 	        yloc="-50.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-60.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-70.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-80.0" facing="0.0" />
 	        
-	    <standalone type="Medium Battery Array" xloc="75.0"
+	    <standalone type="Medium Battery Array" xloc="90.0"
 	        yloc="-90.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-100.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-110.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-120.0" facing="0.0" />
 	
-	    <standalone type="Medium Battery Array" xloc="75.0"
+	    <standalone type="Medium Battery Array" xloc="90.0"
 	        yloc="-130.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-140.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-150.0" facing="0.0" />
-	    <standalone type="Solar Thermal Collector" xloc="75.0"
+	    <standalone type="Solar Thermal Collector" xloc="90.0"
 	        yloc="-160.0" facing="0.0" />           	    
 	</building-package>
 	
