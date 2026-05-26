@@ -34,7 +34,7 @@ public class VehicleMapLayer extends AbstractMapLayer {
 
     private static final Color VEHICLE_SELECTED_COLOR = Color.WHITE;
     
-	private static final ColorChoice VEHICLE_COLOR = new ColorChoice(Color.YELLOW.darker(), Color.BLACK);
+	private static final ColorChoice VEHICLE_COLOR = new ColorChoice(Color.YELLOW, Color.BLACK);
 	
 	private static final Font LABEL_FONT = new Font(Font.SERIF, Font.PLAIN, 10); // Note size doesn;t matter
 

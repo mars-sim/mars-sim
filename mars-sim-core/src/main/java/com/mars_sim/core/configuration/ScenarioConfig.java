@@ -58,8 +58,15 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 	// Default scenario
 	public static final String DEFAULT_SCENARIO = "Default";
-	private static final String[] PREDEFINED_SCENARIOS = {DEFAULT_SCENARIO, "Single Settlement"};
+	private static final String[] PREDEFINED_SCENARIOS = {DEFAULT_SCENARIO, 
+															"Single Settlement",
+															"Two Settlements"};
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param config
+	 */
 	public ScenarioConfig(SimulationConfig config) {
 		super(PREFIX);
 
@@ -70,7 +77,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 
 	/**
-	 * Generate an export of a Scenario including any custom UserConfigurables
+	 * Generates an export of a Scenario including any custom UserConfigurables
 	 * 
 	 * @param item
 	 * @return Items exported
@@ -121,7 +128,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 
 	/**
-	 * Add unbundled ReportingAuthority to the list
+	 * Adds unbundled ReportingAuthority to the list.
+	 * 
 	 * @param raFactory
 	 * @param raToExport
 	 * @param name

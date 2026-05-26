@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="scenario.xsd"
+  name="Two Settlements" description="Two Settlements">
+  
+  <initial-settlement-list>
+    
+	<settlement name="Terminus" template="Alpha Base 2" persons="36" robots="18" sponsor="MS" crew="Founders">
+       	<!-- PM-1 site (Elev -3.2 km) in Phelgra Montes, the 1st prime landing -->
+		<location coordinates="35.23 163.95" />     
+	</settlement>
+		
+	<settlement name="Star Base" template="Phase 3-SX" persons="16" robots="8" sponsor="SPACEX">
+    <!-- 52nd Lunar and Planetary Science Conference 2021 (LPI COntrib. No. 2548), 
+       "SpaceX Starship Landing Sites on Mars" 2420.pdf -->
+     	<!-- AP-1site (Elev -3.9 km) in Arcadia Planitia, the 2nd prime landing -->
+		<location coordinates="39.8 202.1" />
+	</settlement>
+		
+  </initial-settlement-list>
+</scenario-configuration>

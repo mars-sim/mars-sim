@@ -160,7 +160,7 @@ public class StartUpChooser extends JDialog {
 		
         add(contentPanel);
 
-        JLabel instructions = new JLabel(Msg.getString("StartUpChooser.instructions"));
+        JLabel instructions = new JLabel(Msg.getString("StartUpChooser.instructions")); // -NLS-1$
         instructions.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
                             BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         instructions.setHorizontalAlignment(SwingConstants.CENTER);
@@ -323,7 +323,8 @@ public class StartUpChooser extends JDialog {
     }
 
     private void selectScenario() {
-        var content = SelectionDialog.createComboPane(scenarioLabel, scenarioConfig.getKnownItems(), s -> selectedScenario = s);
+        var content = SelectionDialog.createComboPane(scenarioLabel, 
+        		scenarioConfig.getKnownItems(), s -> selectedScenario = s);
 
         if (SelectionDialog.showDialog(this, content, scenarioLabel)) {
             choiceMade(SCENARIO);
