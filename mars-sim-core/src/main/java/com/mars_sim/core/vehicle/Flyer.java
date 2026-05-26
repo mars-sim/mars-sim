@@ -32,13 +32,10 @@ public abstract class Flyer extends Vehicle {
 	public final static String DRONE = "drone";
 	
 	// Data members
-	/** Current total elevation above the sea level in km. */
-	private double elevation;
-
 	/** Current hovering height in km. */
 	private double hoveringHeight = 0;
 
-//	/** Current Angle of Attack in degree. */
+	/** Current Angle of Attack in degree. */
 //	private double AoA;
 
 // NASA Space Shuttle Fuel Cell Power Plant 7.6 kg/kW
@@ -78,24 +75,6 @@ public abstract class Flyer extends Vehicle {
 	}
 
 	/**
-	 * Returns the elevation of the vehicle [in km].
-	 * 
-	 * @return elevation
-	 */
-	public double getElevation() {
-		return elevation;
-	}
-
-	/**
-	 * Sets the elevation of the vehicle [in km].
-	 * 
-	 * @param elevation
-	 */
-	public void setElevation(double elevation) {
-		this.elevation = elevation;
-	}
-
-	/**
 	 * Gets the average angle of attack over over a sample distance in direction
 	 * vehicle is traveling.
 	 * 
@@ -103,28 +82,5 @@ public abstract class Flyer extends Vehicle {
 	 */
 	public double getAngleOfAttack() {
 		return getTerrainGrade();
-	}
-
-	/**
-	 * Gets the average angle of terrain over over a sample distance in direction
-	 * vehicle is traveling.
-	 * 
-	 * @return vehicle's current terrain grade angle from horizontal
-	 *         (radians)
-	 */
-	public double getTerrainGrade() {
-		return getTerrainGrade(getDirection());
-	}
-
-	/**
-	 * Gets the average angle of terrain over over a sample distance in a given
-	 * direction from the vehicle.
-	 * 
-	 * @return vehicle's current terrain grade angle from horizontal
-	 *         (radians)
-	 */
-	public double getTerrainGrade(Direction direction) {
-		// Determine the terrain grade in a given direction from the vehicle.
-		return TerrainElevation.determineTerrainSteepness(getCoordinates(), direction);
 	}
 }

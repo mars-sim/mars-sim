@@ -27,8 +27,8 @@ public abstract class GroundVehicle extends Vehicle {
     public static final double LEAST_AMOUNT = .001D;
 	
 	// Data members
-	/** Current elevation in km. */
-	private double elevation;
+//	/** Current elevation in km. */
+//	private double elevation;
 	/** Ground vehicle's basic terrain handling capability. */
 	private double terrainHandlingCapability;
 	/** True if vehicle is stuck. */
@@ -49,23 +49,23 @@ public abstract class GroundVehicle extends Vehicle {
 		terrainHandlingCapability = spec.getTerrainHandling();
 	}
 
-	/**
-	 * Returns the elevation of the vehicle [in km].
-	 * 
-	 * @return elevation of the ground vehicle (in km)
-	 */
-	public double getElevation() {
-		return elevation;
-	}
-
-	/**
-	 * Sets the elevation of the vehicle [in km].
-	 * 
-	 * @param elevation new elevation for ground vehicle
-	 */
-	public void setElevation(double elevation) {
-		this.elevation = elevation;
-	}
+//	/**
+//	 * Returns the elevation of the vehicle [in km].
+//	 * 
+//	 * @return elevation of the ground vehicle (in km)
+//	 */
+//	public double getElevation() {
+//		return elevation;
+//	}
+//
+//	/**
+//	 * Sets the elevation of the vehicle [in km].
+//	 * 
+//	 * @param elevation new elevation for ground vehicle
+//	 */
+//	public void setElevation(double elevation) {
+//		this.elevation = elevation;
+//	}
 
 	/**
 	 * Returns the vehicle's terrain capability.
@@ -85,29 +85,6 @@ public abstract class GroundVehicle extends Vehicle {
 		terrainHandlingCapability = c;
 	}
 
-	/**
-	 * Gets the average angle of terrain over a sample distance in direction
-	 * vehicle is traveling.
-	 * 
-	 * @return ground vehicle's current terrain grade angle from horizontal
-	 *         (radians)
-	 */
-	public double getTerrainGrade() {
-		return getTerrainGrade(getDirection());
-	}
-
-	/**
-	 * Gets the average angle of terrain over a sample distance in a given
-	 * direction from the vehicle.
-	 * 
-	 * @return ground vehicle's current terrain grade angle from horizontal
-	 *         (radians)
-	 */
-	public double getTerrainGrade(Direction direction) {
-		// Determine the terrain grade in a given direction from the vehicle.
-		return TerrainElevation.determineTerrainSteepness(getCoordinates(), direction);
-	}
-    
 	/**
 	 * Returns true if ground vehicle is stuck.
 	 * 

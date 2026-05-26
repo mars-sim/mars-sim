@@ -1993,7 +1993,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (distanceProposed != result) {
 				// Record the distance
 				distanceProposed = result;
-				
+				// Update the distance event
 				fireMissionUpdate(DISTANCE_EVENT);	
 			}
 		}
@@ -2036,7 +2036,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (distanceTotalRemaining != total) {
 			// Record the distance
 			distanceTotalRemaining = total;
-			
+			// Update the distance event
 			fireMissionUpdate(DISTANCE_EVENT);
 		}
 		
@@ -2073,14 +2073,15 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (vehicle != null) {
 			double diff = vehicle.getOdometerMileage() - startingTravelledDistance;
 			if (diff != distanceTravelled) {
-				// Update or record the distance
+				// Record the distance
 				distanceTravelled = diff;
+				// Update the distance event
 				fireMissionUpdate(DISTANCE_EVENT);
-				return diff;
 			}
+			return diff;
 		}
 
-		return distanceTravelled;
+		return 0;
 	}
 
 	/**
