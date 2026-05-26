@@ -165,7 +165,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 		// Create About Mars Simulation Project menu item
 		helpMenu.add(createMenuItem("mainMenu.about", "action/about", ABOUT, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, false)));
+				KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, false)));
 	
 		helpMenu.add(new JSeparator());
 			
@@ -176,13 +176,19 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK, false)));
 				
 		helpMenu.add(createMenuItem("mainMenu.tutorial", "action/tutorial", TUTORIAL, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
+				KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
+		
 		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.ICON, OPEN_GUIDE, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
+				KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
+		
 		return helpMenu;
 	}
 
-
+	/**
+	 * Creates the settings menu.
+	 * 
+	 * @return
+	 */
 	private JMenu createSettingsMenu(AudioPlayer audioPlayer) {
 
 		// Create settings menu
@@ -248,7 +254,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	}
 
 	/**
-	 * Add any window specific preferences to the settings menu. This should be overriden.
+	 * Adds any window specific preferences to the settings menu. This should be overridden.
+	 * 
 	 * @param settingsMenu The parent menu to add to.
 	 */
 	protected void addWindowPreferences(JMenu settingsMenu) {
