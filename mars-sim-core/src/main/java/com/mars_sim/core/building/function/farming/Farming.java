@@ -911,7 +911,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		// Power (kW) required for normal operations.
 		double powerRequired = 0D;
 
@@ -950,7 +950,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getLowPowerRequired() {
+	public double getLowPowerLoad() {
 
 		// Get power required for occupant life support.
 		double powerRequired = 0D;

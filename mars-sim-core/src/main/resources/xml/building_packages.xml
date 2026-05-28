@@ -297,18 +297,18 @@
 	</building-package>
 			
 	<building-package name="MD4 Set 1 - 1x1" >
-	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="0" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="0" facing="90.0" />
 	</building-package>
 	
 	<building-package name="MD4 Set 1 - 1x2" >
-	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="0" facing="90.0" />
-	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="30" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="0" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="30" facing="90.0" />
 	</building-package>
 
 	<building-package name="MD4 Set 1 - 1x3" >
-	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="0" facing="90.0" />
-	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="30" facing="90.0" />
-	    <standalone type="MD4 Nuclear Reactor" xloc="220.0" yloc="60" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="0" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="30" facing="90.0" />
+	    <standalone type="MD4 Nuclear Reactor" xloc="240.0" yloc="60" facing="90.0" />
 	</building-package>
 	
 	<building-package name="Kilo Set 1 - 1x1" >
@@ -381,44 +381,77 @@
 	</building-package>
 		
 	<building-package name="TOPAZ-3 Set 1 - 1x1">
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="30" facing="90.0" />    	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />    	
 	</building-package>
 
 	<building-package name="TOPAZ-3 Set 1 - 1x2">
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="30" facing="90.0" />   
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="60" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />	
 	</building-package>
 
 	<building-package name="TOPAZ-3 Set 1 - 1x3">
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="30" facing="90.0" />   
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="60" facing="90.0" />
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="90" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="100" facing="90.0" />	
 	</building-package>
 		
 	<building-package name="TOPAZ-3 Set 1 - 1x4">
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="30" facing="90.0" />   
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="60" facing="90.0" />
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="90" facing="90.0" />	
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="120" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="100" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="140" facing="90.0" />	
 	</building-package>
 		
 	<building-package name="TOPAZ-3 Set 1 - 1x5">
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="30" facing="90.0" />   
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="60" facing="90.0" />
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="90" facing="90.0" />	
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="120" facing="90.0" />	
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="150" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="100" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="140" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="180" facing="90.0" />	
 	</building-package>
 		
 	<building-package name="TOPAZ-3 Set 1 - 1x6">
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="30" facing="90.0" />   
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="60" facing="90.0" />
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="90" facing="90.0" />	
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="120" facing="90.0" />	
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="150" facing="90.0" />	
-	    <standalone type="TOPAZ-3 Reactor" xloc="220.0" yloc="180" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="100" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="140" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="180" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="220" facing="90.0" />	
 	</building-package>
-					
+				
+	<building-package name="TOPAZ-3 Set 1 - 1x7">
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="100" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="140" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="180" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="220" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="260" facing="90.0" />	
+	</building-package>
+		
+	<building-package name="TOPAZ-3 Set 1 - 1x8">
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="100" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="140" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="180" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="220" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="260" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="300" facing="90.0" />	
+	</building-package>				
+		
+	<building-package name="TOPAZ-3 Set 1 - 1x9">
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="20" facing="90.0" />   
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="60" facing="90.0" />
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="100" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="140" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="180" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="220" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="260" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="300" facing="90.0" />	
+	    <standalone type="TOPAZ-3 Reactor" xloc="240.0" yloc="340" facing="90.0" />	
+	</building-package>		
+						
 	<building-package name="Solar Set 1 - 1x3" >   
 	    <standalone type="Medium Battery Array" xloc="45.0"
 	        yloc="-50.0" facing="0.0" />
@@ -693,6 +726,42 @@
 	    <standalone type="Wind Turbine" xloc="105.0" yloc="-140.0" facing="0.0" />
 	    <standalone type="Wind Turbine" xloc="105.0" yloc="-150.0" facing="0.0" />
 	    <standalone type="Wind Turbine" xloc="105.0" yloc="-160.0" facing="0.0" />
+	</building-package>
+
+   	<building-package name="Wind Set 2 - 1x3">
+		<standalone type="Medium Battery Array" xloc="120.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-80.0" facing="0.0" />
+	</building-package>
+	
+   	<building-package name="Wind Set 2 - 1x6">
+		<standalone type="Medium Battery Array" xloc="120.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-80.0" facing="0.0" />
+
+		<standalone type="Medium Battery Array" xloc="120.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-120.0" facing="0.0" />
+	</building-package>
+
+   	<building-package name="Wind Set 2 - 1x9">
+		<standalone type="Medium Battery Array" xloc="120.0" yloc="-50.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-60.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-70.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-80.0" facing="0.0" />
+
+		<standalone type="Medium Battery Array" xloc="120.0" yloc="-90.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-100.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-110.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-120.0" facing="0.0" />
+
+		<standalone type="Medium Battery Array" xloc="120.0" yloc="-130.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-140.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-150.0" facing="0.0" />
+	    <standalone type="Wind Turbine" xloc="120.0" yloc="-160.0" facing="0.0" />
 	</building-package>
 
 	<!-- Note: in future, brine water well shouldn't'have a standard location and 

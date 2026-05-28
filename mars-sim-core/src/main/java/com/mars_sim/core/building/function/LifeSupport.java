@@ -35,7 +35,7 @@ public class LifeSupport extends Function {
 	// Data members
 	private int occupantCapacity;
 
-	private double powerRequired;
+	private double lifeSupportPower;
 	private double length;
 	private double width;
 	protected double floorArea;
@@ -56,7 +56,7 @@ public class LifeSupport extends Function {
 		occupants = new UnitSet<>();
 
 		this.occupantCapacity = spec.getCapacity();
-		this.powerRequired = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
+		this.lifeSupportPower = spec.getDoubleProperty(BuildingConfig.LIFE_SUPPORT_POWER);
 
 		length = building.getLength();
 		width = building.getWidth();
@@ -105,7 +105,7 @@ public class LifeSupport extends Function {
 		double result = occupantCapacity * occupantCapacityValue;
 
 		// Subtract power usage cost per sol.
-		double power = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
+		double power = spec.getDoubleProperty(BuildingConfig.LIFE_SUPPORT_POWER);
 		double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
 		result -= powerValue;
@@ -254,8 +254,8 @@ public class LifeSupport extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
-		return powerRequired;
+	public double getFullPowerLoad() {
+		return lifeSupportPower;
 	}
 
 	@Override

@@ -116,7 +116,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private int zone;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	private int baseLevel;
-
+	/** The power priority number for this building. */
+	private int powerPriority;
+	
 	/** Default : 22.5 deg celsius. */
 	private double presetTemperature = 0; //22.5D
 	private double width;
@@ -126,8 +128,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double floorArea;
 	private double areaFactor;
 	private double facing;
-	private double baseFullPowerRequirement;
-	private double baseLowPowerRequirement;
+	private double baseFullPowerLoad;
+	private double baseLowPowerLoad;
 	private double powerNeededForEVAHeater;
 	
 	/** Unique template id assigned for the settlement template of this building belong. */
@@ -231,8 +233,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 		setDescription(buildingSpec.getDescription());
 
 		// Get base power requirements.
-		baseFullPowerRequirement = buildingSpec.getBasePowerRequirement();
-		baseLowPowerRequirement = buildingSpec.getBasePowerDownPowerRequirement();
+		powerPriority = buildingSpec.getPowerPriority();
+		baseFullPowerLoad = buildingSpec.getBaseFullPower();
+		baseLowPowerLoad = buildingSpec.getBaseLowPower();
 
 		// Set room temperature
 		presetTemperature = buildingSpec.getPresetTemperature();
@@ -278,6 +281,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return category;
 	}
 
+	public int getPowerPriority() {
+		return powerPriority;
+	}
+	
 	/**
 	 * Gets the preset temperature of a building.
 	 *
@@ -663,16 +670,16 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets the total power requirement for full-power mode on all functions.
+	 * Gets the total power load for full-power mode on all functions.
 	 *
 	 * @return power in kW.
 	 */
-	public double getFullPowerRequired() {
-		double result = baseFullPowerRequirement;
+	public double getFullPowerLoad() {
+		double result = baseFullPowerLoad;
 
 		// Determine power required for each function.
 		for (Function function : getFunctions()) {
-			double power = function.getFullPowerRequired();
+			double power = function.getFullPowerLoad();
 			if (power > 0) {
 				result += power;
 			}
@@ -682,22 +689,22 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets the total power requirement for full-power mode on all functions.
+	 * Gets the total low power load.
 	 *
 	 * @return power in kW.
 	 */
-	public double getCombinedPowerLoad() {
-		double result = baseFullPowerRequirement;
+	public double getLowPowerLoad() {
+		double result = baseLowPowerLoad;
 
 		// Determine power required for each function.
 		for (Function function : getFunctions()) {
-			double power = function.getCombinedPowerLoad();
+			double power = function.getLowPowerLoad(); // getCombinedPowerLoad();
 			if (power > 0) {
 				result += power;
 			}
 		}
 
-		return result + powerNeededForEVAHeater;
+		return result;
 	}
 	
 	/**
@@ -713,22 +720,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 		
 		if (generator != null) {
 			result = generator.getGeneratedPower();
-		}
-
-		return result;
-	}
-	
-	/**
-	 * Gets the total power requirement for low-power mode on all functions.
-	 *
-	 * @return power in kW.
-	 */
-	public double getLowPowerRequired() {
-		double result = baseLowPowerRequirement;
-
-		// Determine power required for each function.
-		for (Function function : getFunctions()) {
-			result += function.getLowPowerRequired();
 		}
 
 		return result;

@@ -156,7 +156,7 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 			case TYPE -> building.getBuildingType();
 			case CATEGORY -> building.getCategory().getName();
 			case POWER_MODE -> building.getPowerMode() != null ? building.getPowerMode().getName() : null;
-			case POWER_REQ -> building.getFullPowerRequired();
+			case POWER_REQ -> building.getFullPowerLoad();
 			case POWER_GEN -> building.getGeneratedPower();
 			case DELTA_TEMP -> furnace != null ? building.getDeltaTemp() : null;
 			case DEV_TEMP -> furnace != null ? building.getDevTemp() : null;

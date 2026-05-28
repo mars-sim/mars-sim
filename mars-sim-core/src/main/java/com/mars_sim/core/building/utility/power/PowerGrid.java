@@ -220,25 +220,40 @@ public class PowerGrid implements Serializable, Temporal {
 	/**
 	 * Time passing for power grid.
 	 * 
-	 * @param time amount of time passing (in millisols)
+	 * @param pulse clock pulse
 	 */
 	@Override
 	public boolean timePassing(ClockPulse pulse) {
-
+		// Get the amount of time in millisols
+		double time = pulse.getElapsed();
+		
 		logger.log(settlement, Level.FINEST, 0, Msg.getString("PowerGrid.log.settlementPowerSituation", settlement.getName()));
 		
 		// update the total power generated in the grid.
 		double powerGen = updateTotalPowerGenerated();
 
 		// Determine total power required in the grid.
-		double powerReq = updateTotalRequiredPower();
+		double powerReq = updateTotalLoadPower();
 
 		// Update overall grid efficiency.
-		updateEfficiency(pulse.getElapsed());
+		updateEfficiency(time);
 
+		// Update the total power storage capacity in the grid.
+		double energyCap = updateTotalEnergyStorageCapacity();
+
+		// Update the total power stored in the grid.
+		double energyStored = updateTotalStoredEnergy();
+		
+		// GEt the power gap due to the battery storage.
+		double powerGap = (energyCap - energyStored) / time / HOURS_PER_MILLISOL;
+		
+		if (powerGap < 0)
+			powerGap = 0;
+		
 		// Update the power flow.
-		double powerDiff = powerReq * ROLLING_FACTOR - powerGen;
-		sufficientPower = (powerDiff < 0);
+		double powerDiff = powerReq * ROLLING_FACTOR + powerGap / 10 - powerGen;
+				
+		sufficientPower = (powerDiff >= 0);
 			
 		// Run at the start of the sim once only
 		if (justLoaded				
@@ -250,21 +265,14 @@ public class PowerGrid implements Serializable, Temporal {
 
 		if (!justLoaded) {			
 			// May add back for debugging : logger.info(settlement, 0, "neededPower: " + Math.round(neededPower) + "  powerGenerated: " + Math.round(powerGen) + "  powerRequired: " + Math.round(powerReq))
-		
-			// Note: powerDiff can be +ve or -ve
-			if (powerDiff < 0) {
-				handleExcessPower(pulse.getElapsed(), powerDiff);
+
+			if (sufficientPower) {
+				handleExcessPower(time, powerDiff);
 			}
 			else {
-				handleLackOfPower(pulse.getElapsed(), powerDiff);
+				handleLackOfPower(time, powerDiff);
 			}
 		}
-		
-		// Update the total power storage capacity in the grid.
-		updateTotalEnergyStorageCapacity();
-
-		// Update the total power stored in the grid.
-		updateTotalStoredEnergy();
 
 		// Update power value.
 		determinePowerValue();
@@ -328,8 +336,7 @@ public class PowerGrid implements Serializable, Temporal {
 	private void handleExcessPower(double time, double neededPower) {
 		// Note: excess is always +ve
 		double excess = -neededPower;
-		sufficientPower = true;
-		
+	
 		Set<Building> buildings = manager.getBuildingSet(FunctionType.POWER_GENERATION);
 
 		// 1. Switch from no power to low power in inhabitable buildings
@@ -338,10 +345,8 @@ public class PowerGrid implements Serializable, Temporal {
 				true, PowerMode.NO_POWER, PowerMode.LOW_POWER);
 		
 		excess -= netPower1;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated - netPower1);
-		
-		if (excess < 0) {
+
+		if (excess <= 0) {
 			sufficientPower = false;
 			return;
 		}
@@ -355,10 +360,8 @@ public class PowerGrid implements Serializable, Temporal {
 				true, PowerMode.LOW_POWER, PowerMode.FULL_POWER);
 		
 		excess -= netPower2;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated - netPower2);
-		
-		if (excess < 0) {
+	
+		if (excess <= 0) {
 			sufficientPower = false;
 			return;
 		}
@@ -371,10 +374,8 @@ public class PowerGrid implements Serializable, Temporal {
 				FunctionType.POWER_GENERATION, PowerSourceType.FUEL_POWER);
 		
 		excess -= methanePower;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated - methanePower);
-		
-		if (excess < 0) {
+
+		if (excess <= 0) {
 			sufficientPower = false;
 			return;
 		}
@@ -387,10 +388,8 @@ public class PowerGrid implements Serializable, Temporal {
 				false, PowerMode.NO_POWER, PowerMode.LOW_POWER);
 		
 		excess -= netPower3;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated - netPower3);
-		
-		if (excess < 0) {
+
+		if (excess <= 0) {
 			sufficientPower = false;
 			return;
 		}
@@ -404,10 +403,8 @@ public class PowerGrid implements Serializable, Temporal {
 				false, PowerMode.LOW_POWER, PowerMode.FULL_POWER);
 		
 		excess -= netPower4;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated - netPower4);
-		
-		if (excess < 0) {
+
+		if (excess <= 0) {
 			sufficientPower = false;
 			return;
 		}
@@ -417,11 +414,11 @@ public class PowerGrid implements Serializable, Temporal {
 		double timeHr = time * HOURS_PER_MILLISOL;
 		double excessEnergy = excess * timeHr * systemEfficiency;
 		double unableToStoreEnergy = storeExcessPower(excessEnergy, timeHr);
-		double excessPower = unableToStoreEnergy / timeHr / systemEfficiency;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated - excessPower);
+		double excessPower0 = unableToStoreEnergy / timeHr;
 		
-		if (excess < 0) {
+		excess = excessPower0 / systemEfficiency;
+
+		if (excess <= 0) {
 			sufficientPower = false;
 			return;
 		}
@@ -431,10 +428,8 @@ public class PowerGrid implements Serializable, Temporal {
 		if (rand == 9) {
 			double netPower02 = stepUpDownPower(false, excess);
 			excess -= netPower02;
-			// Update the total generated power
-			setGeneratedPower(powerGenerated + netPower02);
-			
-			if (excess < 0) {
+
+			if (excess <= 0) {
 				sufficientPower = false;
 				return;
 			}
@@ -443,10 +438,8 @@ public class PowerGrid implements Serializable, Temporal {
 		// 8. Step down the capacity of the fission power plant by a small percent
 		double netPower02 = stepUpDownPower(false, excess);
 		excess -= netPower02;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated + netPower02);
-		
-		if (excess < 0) {
+
+		if (excess <= 0) {
 			sufficientPower = false;
 			return;
 		}
@@ -455,11 +448,11 @@ public class PowerGrid implements Serializable, Temporal {
 
 		excessEnergy = excess * timeHr * systemEfficiency;
 		unableToStoreEnergy = storeExcessPower(excessEnergy, timeHr);
-		excessPower = unableToStoreEnergy / timeHr / systemEfficiency;
-		// Update the total generated power
-		setGeneratedPower(powerGenerated - excessPower);
+		double excessPower1 = unableToStoreEnergy / timeHr;
 		
-		if (excess < 0) {
+		excess = excessPower1 / systemEfficiency;
+		
+		if (excess <= 0) {
 			sufficientPower = false;
 		}
 	}
@@ -474,7 +467,6 @@ public class PowerGrid implements Serializable, Temporal {
 		// May add back for debugging: logger.info(settlement, "neededPower: " + Math.round(neededPower))
 		// insufficient power produced, need to pull energy from batteries to meet the
 		// demand
-		sufficientPower = false;
 		
 		// 1. Increases the load capacity of fission reactors if available
 		double fissionPower0 = stepUpDownPower(true, neededPower);
@@ -684,10 +676,10 @@ public class PowerGrid implements Serializable, Temporal {
 	 * @param gridLackPower true if the power grid has insufficient power
 	 * @param powerToHandle (always +ve) either the excess power or the needed power
 	 * @param buildings
-	 * @param lifeSupport
+	 * @param lifeSupport true if only looking at building having life support
 	 * @param oldPowerMode
 	 * @param newPowerMode
-	 * @return the power that can be saved or the power that can be supplied after switching to the new power mode
+	 * @return the delta power to be saved or used after switching to the new power mode
 	 */
 	private double adjustBuildingPowerLevel(boolean gridLackPower, double powerToHandle, Set<Building> buildings, 
 			boolean lifeSupport, PowerMode oldPowerMode, PowerMode newPowerMode) {
@@ -698,65 +690,110 @@ public class PowerGrid implements Serializable, Temporal {
 		while (i.hasNext()) {
 			Building building = i.next();
 
-			boolean life = building.hasFunction(FunctionType.LIFE_SUPPORT);
+			boolean life = (lifeSupport == building.hasFunction(FunctionType.LIFE_SUPPORT));
 			
 			boolean isGenerator = building.getCategory() == BuildingCategory.POWER;
-			if (isGenerator && !life)
-				continue;
-			
+
 			PowerMode thisOldPM = building.getPowerMode();
 			boolean morePower = canGenMoreThanLoad(building, newPowerMode);
 			double power = 0;
 			
-			if (lifeSupport == life // && (!gridLackPower && morePower)
-					&& thisOldPM == oldPowerMode) {
+			if (thisOldPM == oldPowerMode) {
 			
-				/////// IF LACK OF POWER /////// 
-				// For stepping down power
-				if (oldPowerMode == PowerMode.FULL_POWER
-					&& newPowerMode == PowerMode.LOW_POWER) {
-					power = building.getFullPowerRequired()
-							- building.getLowPowerRequired();
-				}
-				// For stepping down power
-				else if (oldPowerMode == PowerMode.LOW_POWER
-					&& newPowerMode == PowerMode.NO_POWER) {
-					power = building.getLowPowerRequired();
-				}
-				
-				// For stepping up power
-				else if (oldPowerMode == PowerMode.LOW_POWER
-					&& newPowerMode == PowerMode.FULL_POWER) {
-					power = building.getFullPowerRequired()
-							- building.getLowPowerRequired();
-				}
-				// For stepping up power
-				else if (oldPowerMode == PowerMode.NO_POWER
-					&& newPowerMode == PowerMode.LOW_POWER) {
-					power = building.getLowPowerRequired();
-				}
-				else {
-					continue;
-				}
+				if (gridLackPower) {
+					/////// IF LACK OF POWER /////// 
+				 				
+					// For stepping down power
+					if (oldPowerMode == PowerMode.FULL_POWER
+						&& newPowerMode == PowerMode.LOW_POWER) {
+						power = building.getFullPowerLoad()
+								- building.getLowPowerLoad();
+						
+						powerToHandle -= power;
+	
+						if (powerToHandle > 0 && !morePower) {
+							// Case 1 : Can handle power
 							
-				powerToHandle -= power;
-				if (powerToHandle > 0) {
-					netPower += power;
-					// In case of excess power, +ve powerToHandle means it can handle the stepping up of power 
-					// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
-					// Switch from one power mode to another
-					building.setPowerMode(newPowerMode);
+							netPower += power;
+							// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
+							// Switch from one power mode to another
+							building.setPowerMode(newPowerMode);
+						}
+				
+						else {
+							// Case 2 : Can't handle power
+							// When lacking power and needing to step up power level
+						}
+					}
+					// For stepping down power
+					else if (oldPowerMode == PowerMode.LOW_POWER
+						&& newPowerMode == PowerMode.NO_POWER) {
+						power = building.getLowPowerLoad();
+						
+						powerToHandle -= power;
+	
+						if (powerToHandle > 0 && !morePower) {
+							// Case 1 : Can handle power
+							
+							netPower += power;
+							// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
+							// Switch from one power mode to another
+							building.setPowerMode(newPowerMode);
+						}
+				
+						else {
+							// Case 2 : Can't handle power
+							// When lacking power and needing to step up power level
+						}
+					}
 				}
 				
 				else {
-					// When lacking power and needing to step up power level
-					if (gridLackPower && !morePower) {
-						netPower += power;
-						// Switch from one power mode to another
-						building.setPowerMode(newPowerMode);	
+					/////// IF EXCESS OF POWER /////// 
+	
+					// For stepping up power
+					if (oldPowerMode == PowerMode.LOW_POWER
+						&& newPowerMode == PowerMode.FULL_POWER) {
+						power = building.getFullPowerLoad()
+								- building.getLowPowerLoad();
+						
+						powerToHandle -= power;
+	
+						if (powerToHandle > 0) {
+							// Case 1 : Can handle power
+							
+							netPower += power;
+							// In case of excess power, +ve powerToHandle means it can handle the stepping up of power 					
+							// Switch from one power mode to another
+							building.setPowerMode(newPowerMode);
+						}
+						
+						else {
+							// Case 2 : Can't handle power
+							// When lacking power and needing to step up power level
+						}
 					}
-
-					return netPower;
+					// For stepping up power
+					else if (oldPowerMode == PowerMode.NO_POWER
+						&& newPowerMode == PowerMode.LOW_POWER) {
+						power = building.getLowPowerLoad();
+						
+						powerToHandle -= power;
+	
+						if (powerToHandle > 0) {
+							// Case 1 : Can handle power
+							
+							netPower += power;
+							// In case of lacking power, +ve powerToHandle means it can handle the stepping up of power 					
+							// Switch from one power mode to another
+							building.setPowerMode(newPowerMode);
+						}
+				
+						else {
+							// Case 2 : Can't handle power
+							// When lacking power and needing to step up power level
+						}
+					}
 				}
 			}
 		}
@@ -764,15 +801,16 @@ public class PowerGrid implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Adjust the power level in power generating buildings.
-	 * Note: for now, use only in methane power
+	 * Adjusts the power level in power generating buildings.
+	 * 
+	 * @Note: for now, use only in methane power
 	 * 
 	 * @param stepUp turning up power level
 	 * @param originalPower
 	 * @param buildings
 	 * @param functionType
 	 * @param powerSourceType
-	 * @return
+	 * @return the power to be saved or used after switching to the new power mode
 	 */
 	private double adjustPowerGenerator(boolean stepUp, double originalPower, 
 			Set<Building> buildings, FunctionType functionType,
@@ -826,8 +864,10 @@ public class PowerGrid implements Serializable, Temporal {
 				
 				if (newPower < 0)
 					return newPower;
+
 			}
 		}
+		
 		return newPower;
 	}
 	
@@ -849,24 +889,27 @@ public class PowerGrid implements Serializable, Temporal {
 	/**
 	 * Updates the total energy stored in the grid.
 	 * 
+	 * @return
 	 * @throws BuildingException if error determining total energy stored.
 	 */
-	private void updateTotalStoredEnergy() {
+	private double updateTotalStoredEnergy() {
 		double store = manager.getBuildingSet(FunctionType.POWER_STORAGE).stream()
 								.mapToDouble(b -> b.getPowerStorage().getBattery().getCurrentStoredEnergy())
 								.sum();
 		setStoredEnergy(store);
+		
+		return store;
 	}
 
 	/**
-	 * Updates the total power required in the grid.
+	 * Updates the total power load in the grid.
 	 * 
 	 * @return
-	 * @throws BuildingException if error determining total power required.
+	 * @throws BuildingException if error determining total power load.
 	 */
-	private double updateTotalRequiredPower() {
+	private double updateTotalLoadPower() {
 		double power = manager.getBuildingSet(FunctionType.POWER_GENERATION).stream()
-				.mapToDouble(b -> b.getFullPowerRequired())
+				.mapToDouble(b -> b.getFullPowerLoad())
 				.sum();
 		// Note: need to check the required power in full power mode 
 		// so that the return value will show how much power needed
@@ -878,13 +921,16 @@ public class PowerGrid implements Serializable, Temporal {
 	/**
 	 * Updates the total energy storage capacity in the grid.
 	 * 
+	 * @return
 	 * @throws BuildingException if error determining total energy storage capacity.
 	 */
-	private void updateTotalEnergyStorageCapacity() {
+	private double updateTotalEnergyStorageCapacity() {
 		double capacity = manager.getBuildingSet(FunctionType.POWER_STORAGE).stream()
 									.mapToDouble(b -> b.getPowerStorage().getBattery().getEnergyStorageCapacity())
 									.sum();
 		setStoredEnergyCapacity(capacity);
+		
+		return capacity;
 	}
 
 	/**
@@ -908,9 +954,9 @@ public class PowerGrid implements Serializable, Temporal {
 
 		double powerLoad = 0D;
 		if (mode == PowerMode.FULL_POWER)
-			powerLoad = b.getFullPowerRequired();
+			powerLoad = b.getFullPowerLoad();
 		else if (mode == PowerMode.LOW_POWER)
-			powerLoad = b.getLowPowerRequired();
+			powerLoad = b.getLowPowerLoad();
 
 		return generated > powerLoad;
 	}

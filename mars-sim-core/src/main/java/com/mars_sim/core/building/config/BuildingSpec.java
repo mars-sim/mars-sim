@@ -32,8 +32,9 @@ public class BuildingSpec {
 	private int maintenanceTime;
 	private int wearLifeTime;
 	
-	private double basePowerRequirement;
-	private double basePowerDownPowerRequirement;
+	private int powerPriority;
+	private double baseFullPowerLoad;
+	private double baseLowPowerLoad;
 	private double presetTemperature;
 
 	private double length;
@@ -71,14 +72,16 @@ public class BuildingSpec {
 	 * @param presetTemperature
 	 * @param maintenanceTime
 	 * @param wearLifeTime
-	 * @param basePowerRequirement
-	 * @param basePowerDownPowerRequirement
+	 * @param powerPriority
+	 * @param baseFullPower
+	 * @param baseLowPower
 	 * @param supportedFunctions
 	 */
 	BuildingSpec(String buildingType, String description, BuildingCategory category, 
-			double width, double length, String alignment, ConstructionType constructionType, Set<String> scopeNames, int baseLevel,
-			double presetTemperature, int maintenanceTime,
-			int wearLifeTime, double basePowerRequirement, double basePowerDownPowerRequirement,
+			double width, double length, String alignment, ConstructionType constructionType, 
+			Set<String> scopeNames, int baseLevel,
+			double presetTemperature, int maintenanceTime, int wearLifeTime, 
+			int powerPriority, double baseFullPower, double baseLowPower,
 			Map<FunctionType, FunctionSpec> supportedFunctions) {
 		
 		super();
@@ -94,8 +97,9 @@ public class BuildingSpec {
 		this.presetTemperature = presetTemperature;
 		this.maintenanceTime = maintenanceTime;
 		this.wearLifeTime = wearLifeTime;
-		this.basePowerRequirement = basePowerRequirement;
-		this.basePowerDownPowerRequirement = basePowerDownPowerRequirement;
+		this.powerPriority = powerPriority;
+		this.baseFullPowerLoad = baseFullPower;
+		this.baseLowPowerLoad = baseLowPower;
 		this.supportedFunctions = supportedFunctions;
 		
 		if (supportedFunctions.containsKey(FunctionType.LIFE_SUPPORT)) {
@@ -163,12 +167,16 @@ public class BuildingSpec {
 		return category;
 	}
 
-	public double getBasePowerRequirement() {
-		return basePowerRequirement;
+	public int getPowerPriority() {
+		return powerPriority;
+	}
+	
+	public double getBaseFullPower() {
+		return baseFullPowerLoad;
 	}
 
-	public double getBasePowerDownPowerRequirement() {
-		return basePowerDownPowerRequirement;
+	public double getBaseLowPower() {
+		return baseLowPowerLoad;
 	}
 	
 	public int getWearLifeTime() {

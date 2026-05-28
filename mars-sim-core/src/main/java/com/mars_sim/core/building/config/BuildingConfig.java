@@ -59,12 +59,6 @@ public class BuildingConfig {
 	private static final String RESEARCH_SPECIALTY = "research-specialty";
 
 	private static final String NUMBER_MODULES = "number-modules";
-
-	// The common power required XML attribute
-	public static final String POWER_REQUIRED = "power-required";
-
-	private static final String BASE_POWER = "base-power";
-	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
 	
 	private static final String PROCESS_ENGINE = "process-engine";
 	private static final String RESOURCE_CAPACITY = "resource-capacity";
@@ -90,8 +84,18 @@ public class BuildingConfig {
 	private static final String SCOPE = "scope";
 	
 	// Power source types
+	public static final String BASE_POWER = "base-power";
+	public static final String LIFE_SUPPORT_POWER = "life-support-power";
+	
+	private static final String BASE_FULL_POWER = "base-full-power";
+	private static final String BASE_LOW_POWER = "base-low-power";
+	
 	private static final String POWER_SOURCE = "power-source";
-	private static final String POWER = "power";
+	
+	public static final String POWER = "power";
+	
+	private static final String PRIORITY = "power-priority";
+	
 	private static final Set<String> DEFAULT_SOURCE_ATTR = Set.of(TYPE, MODULES, CONVERSION, PERCENT_LOADING);
 
 	private Map<String, BuildingSpec> buildSpecMap = new HashMap<>();
@@ -152,9 +156,10 @@ public class BuildingConfig {
 		int maintenanceTime = Integer.parseInt(buildingElement.getAttributeValue(MAINTENANCE_TIME));
 		int wearLifeTime = Integer.parseInt(buildingElement.getAttributeValue(WEAR_LIFETIME));
 
-		Element powerElement = buildingElement.getChild(POWER_REQUIRED);
-		double basePowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
-		double basePowerDownPowerRequirement = Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
+		Element basePowerElement = buildingElement.getChild(BASE_POWER);
+		int powerPriority = Integer.parseInt(basePowerElement.getAttributeValue(PRIORITY));
+		double baseFullPowerLoad = Double.parseDouble(basePowerElement.getAttributeValue(BASE_FULL_POWER));
+		double baseLowPowerLoad = Double.parseDouble(basePowerElement.getAttributeValue(BASE_LOW_POWER));
 		
 		ConstructionType constructionType = ConstructionType.PRE_FABRICATED;
 		String construction = buildingElement.getAttributeValue(CONSTRUCTION);
@@ -201,7 +206,7 @@ public class BuildingConfig {
 		return new BuildingSpec(buildingTypeName, desc, category, 
 				width, length, alignment, constructionType, scopeNames, baseLevel,
 			 	presetTemp, maintenanceTime, wearLifeTime,
-			 	basePowerRequirement, basePowerDownPowerRequirement,
+			 	powerPriority, baseFullPowerLoad, baseLowPowerLoad,
 			 	supportedFunctions);
 	}
 

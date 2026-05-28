@@ -31,7 +31,7 @@ public class AstronomicalObservation extends Function {
 	private static final Logger logger = Logger.getLogger(AstronomicalObservation.class.getName());
 
 	// Data members
-	private double powerRequired;
+	private double fullPowerLoad;
 	private int techLevel;
 	private int observatoryCapacity;
 	private int observerNum;
@@ -47,7 +47,7 @@ public class AstronomicalObservation extends Function {
 		// Use function constructor.
 		super(FunctionType.ASTRONOMICAL_OBSERVATION, spec, building);
 
-		powerRequired = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
+		fullPowerLoad = spec.getDoubleProperty(BuildingConfig.POWER);
 		techLevel = spec.getTechLevel();
 		observatoryCapacity = spec.getCapacity();
 	}
@@ -58,8 +58,8 @@ public class AstronomicalObservation extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
-		return powerRequired;
+	public double getFullPowerLoad() {
+		return fullPowerLoad;
 	}
 
 	/**
@@ -166,7 +166,7 @@ public class AstronomicalObservation extends Function {
 		double result = buildingObservatorySupply * existingObservatoryValue;
 
 		// Subtract power usage cost per sol.
-		double power = fSpec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
+		double power = fSpec.getDoubleProperty(BuildingConfig.POWER);
 		double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 		result -= powerValue;
@@ -180,7 +180,7 @@ public class AstronomicalObservation extends Function {
 	@Override
 	public double getMaintenanceTime() {
 
-		double result = powerRequired;
+		double result = fullPowerLoad;
 
 		// Add maintenance for tech level.
 		result *= techLevel * .5;

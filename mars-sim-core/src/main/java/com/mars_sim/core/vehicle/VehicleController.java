@@ -579,9 +579,6 @@ import com.mars_sim.core.tool.RandomUtil;
 			 vehicle.addDistanceLastMaintenance(distanceTravelled);
 			 // Derive the instantaneous fuel economy [in km/kg]
 		 }
-		 else
-			 logger.log(vehicle, Level.SEVERE, 0,  
-					 "distanceTravelled : " + distanceTravelled);
 		 
 		 Mission mission = vehicle.getMission();
 		    

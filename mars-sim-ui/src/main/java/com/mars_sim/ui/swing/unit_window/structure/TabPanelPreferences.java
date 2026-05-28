@@ -300,7 +300,7 @@ class TabPanelPreferences extends EntityTableTabPanel<Settlement> {
 					newValue = Boolean.parseBoolean((String)value);
 					break;
 				case DOUBLE:
-					newValue = Double.parseDouble((String)value);
+					newValue = Math.round(Double.parseDouble((String)value) * 10.0)/10.0;
 					break;
 				case INTEGER:
 					newValue = Integer.parseInt((String)value);

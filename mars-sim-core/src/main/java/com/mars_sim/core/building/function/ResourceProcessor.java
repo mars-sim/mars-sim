@@ -163,27 +163,12 @@ public abstract class ResourceProcessor extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		double result = 0D;
 		for(ResourceProcess process : processes) {
 			if (process.isProcessRunning()) {
 				result += process.getPowerRequired();
 			}
-		}
-		return result;
-	}
-
-
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 *
-	 * @return power (kW)
-	 */
-	@Override
-	public double getFullPowerRequired() {
-		double result = 0D;
-		for(ResourceProcess process : processes) {
-			result += process.getPowerRequired();
 		}
 		return result;
 	}
@@ -194,13 +179,13 @@ public abstract class ResourceProcessor extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getLowPowerRequired() {
-		return getCombinedPowerLoad() * lowPowerProcessingLevel;
+	public double getLowPowerLoad() {
+		return getFullPowerLoad() * lowPowerProcessingLevel;
 	}
 
 	@Override
 	public double getMaintenanceTime() {
-		double result = getCombinedPowerLoad() * .25;
+		double result = getFullPowerLoad();
 		// Add num of processes.
 		result *= processes.size() * .5;
 		

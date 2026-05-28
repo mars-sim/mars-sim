@@ -120,7 +120,7 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 		weedDemandLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, tank.getWeedDemand());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelFishery.weedDemand"), weedDemandLabel);
 		
-		powerReqLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, tank.getCombinedPowerLoad());
+		powerReqLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, tank.getFullPowerLoad());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelFishery.powerReq"), powerReqLabel);
 		
 		// Update the cumulative work time
@@ -171,7 +171,7 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 		
 		waterMassLabel.setValue(tank.getWaterMass());
 		
-		powerReqLabel.setValue(tank.getCombinedPowerLoad());
+		powerReqLabel.setValue(tank.getFullPowerLoad());
 		
 		// Update the cumulative work time
 		workTimeLabel.setValue(tank.getCumulativeWorkTime()/1000.0);
