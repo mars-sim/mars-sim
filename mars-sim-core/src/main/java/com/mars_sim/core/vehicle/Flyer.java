@@ -7,8 +7,6 @@
 
 package com.mars_sim.core.vehicle;
 
-import com.mars_sim.core.environment.TerrainElevation;
-import com.mars_sim.core.map.location.Direction;
 import com.mars_sim.core.structure.Settlement;
 
 /**

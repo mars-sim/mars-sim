@@ -85,7 +85,6 @@ public class BuildingConfig {
 	
 	// Power source types
 	public static final String BASE_POWER = "base-power";
-	public static final String LIFE_SUPPORT_POWER = "life-support-power";
 	
 	private static final String BASE_FULL_POWER = "base-full-power";
 	private static final String BASE_LOW_POWER = "base-low-power";
