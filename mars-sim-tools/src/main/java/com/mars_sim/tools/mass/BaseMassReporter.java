@@ -8,6 +8,7 @@ package com.mars_sim.tools.mass;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -36,6 +37,7 @@ public final class BaseMassReporter {
 
 	private static final String CONFIG_ARG = "configdir";
 	private static final String HELP_ARG = "help";
+	private static final String USAGE = "BaseMassReporter [options]";
 
 	private BaseMassReporter() {
 		// Utility class.
@@ -138,12 +140,12 @@ public final class BaseMassReporter {
 	private static void printUsage(PrintStream out, Options options, String message) {
 		HelpFormatter formatter = HelpFormatter.builder().get();
 		String header = "\n" + message + "\n";
-		try {
-			formatter.printHelp("BaseMassReporter [options]", header, options, null, true);
+		try (PrintWriter writer = new PrintWriter(out, true)) {
+			formatter.printHelp(writer, 120, USAGE, header, options, 1, 4, null, true);
 		}
 		catch (IOException e) {
 			out.println(message);
-			out.println("usage: BaseMassReporter [options]");
+			out.println("usage: " + USAGE);
 		}
 	}
 }
