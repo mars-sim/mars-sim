@@ -8,13 +8,10 @@
 package com.mars_sim.core.equipment;
 
 import java.util.EnumMap;
-import java.util.Optional;
 
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.manufacture.ManufactureConfig;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -22,16 +19,22 @@ import com.mars_sim.core.structure.Settlement;
  */
 public final class EquipmentFactory {
 
-	/** Default logger. */
-	private static final SimLogger logger = SimLogger.getLogger(EquipmentFactory.class.getName());
-
 	// Default mass for uncalculated types
 	protected static final double DEFAULT_MASS = 0.0001;
 	
-	private static EnumMap<EquipmentType, Double> weights = new EnumMap<>(EquipmentType.class);
+	private static final EnumMap<EquipmentType, Double> weights = new EnumMap<>(EquipmentType.class);
+	static {
+		weights.put(EquipmentType.EVA_SUIT, 16.18);
+		weights.put(EquipmentType.BAG, 0.1);
+		weights.put(EquipmentType.BARREL, 1.3);
+		weights.put(EquipmentType.GAS_CANISTER, 4.4);
+		weights.put(EquipmentType.LARGE_BAG, 0.2);
+		weights.put(EquipmentType.SPECIMEN_BOX, 0.65);
+		weights.put(EquipmentType.THERMAL_BOTTLE, 0.5);
+		weights.put(EquipmentType.WHEELBARROW, 12.16);
+	}
 	
 	private static UnitManager unitManager;
-	private static ManufactureConfig manufactureConfig;
 
 	/**
 	 * Private constructor for static factory class.
@@ -96,48 +99,7 @@ public final class EquipmentFactory {
 	 * @throws Exception if equipment mass could not be determined.
 	 */
 	public static double getEquipmentMass(EquipmentType type) {
-		return weights.computeIfAbsent(type, t-> calculateMass(t));
-	}
-
-	/**
-	 * Calculates the mass of the output of a process.
-	 * 
-	 * @param processName
-	 * @return
-	 */
-    private static double calculateMass(EquipmentType type) {
-		
-		// Note: it's haphazard to match the string of the manu process since it can change.
-		// Will need to implement a better way in matching and looking for the manu process that assemblies the item of interest.
-		String processName = switch(type) {
-			case BAG -> "Manufacture bag";
-			case BARREL -> "Make plastic barrel";
-			case EVA_SUIT -> "Assemble EVA suit";
-			case GAS_CANISTER -> "Make gas canister";
-			case LARGE_BAG -> "Manufacture large bag";
-			case SPECIMEN_BOX -> "Make plastic specimen box";
-			case THERMAL_BOTTLE -> "Manufacture thermal bottle";
-			case WHEELBARROW -> "Make wheelbarrow";
-		};
-
-	    Optional<ManufactureProcessInfo> found = manufactureConfig.getManufactureProcessList()
-		 	.stream()
-			.filter(f -> f.getName().equalsIgnoreCase(processName))
-			.findFirst();
-	
-		if (found.isPresent()) {
-			var manufactureProcessInfo = found.get();
-			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
-			var mass = manufactureProcessInfo.calculateTotalInputMass();
-			// Calculate output quantity
-			var quantity = manufactureProcessInfo.calculateOutputQuantity(type.getName());					
-			// Save the key value pair onto the weights Map
-			return mass/quantity;
-		}
-
-	    logger.severe("The process '" + processName + "' cannot be found.");
-	    		
-		return DEFAULT_MASS;
+		return weights.getOrDefault(type, DEFAULT_MASS);
     }
     
 	/**
@@ -147,6 +109,5 @@ public final class EquipmentFactory {
 	 */
 	public static void initialise(UnitManager mgr, ManufactureConfig mConfig) {
 		unitManager = mgr;
-		manufactureConfig = mConfig;
 	}
 }

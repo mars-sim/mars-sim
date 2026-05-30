@@ -24,6 +24,8 @@ import org.apache.commons.cli.help.HelpFormatter;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
+import com.mars_sim.core.equipment.EquipmentFactory;
+import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.robot.RobotSpec;
 import com.mars_sim.core.resource.ItemType;
@@ -31,7 +33,7 @@ import com.mars_sim.core.vehicle.VehicleSpec;
 
 /**
  * Command line utility to compare configured and manufacture-derived base mass values
- * for Robot and Vehicle specs.
+ * for Robot, Vehicle and Equipment specs.
  */
 public final class BaseMassReporter {
 
@@ -95,13 +97,20 @@ public final class BaseMassReporter {
 		config.getRobotConfiguration().getRobotSpecs().stream()
 				.sorted(Comparator.comparing(RobotSpec::getName))
 				.forEach(spec -> printRobot(spec, processes, out));
+
+		out.println();
+		out.println("Equipment type mass comparison");
+		out.println("Spec Name | Process | Defined Mass (kg) | Calculated Mass (kg) | Delta (kg)");
+		Arrays.stream(EquipmentType.values())
+				.sorted(Comparator.comparing(EquipmentType::getName))
+				.forEach(type -> printEquipment(type, processes, out));
 	}
 
 	private static void printVehicle(VehicleSpec spec, List<ManufactureProcessInfo> processes,
 			PrintStream out) {
 		Optional<ManufactureProcessInfo> process = findProcessByOutputName(processes, ItemType.VEHICLE, spec.getName());
 		String processName = process.map(ManufactureProcessInfo::getName).orElse("not found");
-		Double calculated = process.map(ManufactureProcessInfo::calculateTotalInputMass).orElse(null);
+		Double calculated = process.map(info -> calculateOutputMass(info, spec.getName())).orElse(null);
 		printResult(spec.getName(), processName, spec.getEmptyMass(), calculated, out);
 	}
 
@@ -109,8 +118,16 @@ public final class BaseMassReporter {
 		Optional<ManufactureProcessInfo> process = findProcessByOutputName(processes, ItemType.ROBOT,
 				spec.getName());
 		String processName = process.map(ManufactureProcessInfo::getName).orElse("not found");
-		Double calculated = process.map(ManufactureProcessInfo::calculateTotalInputMass).orElse(null);
+		Double calculated = process.map(info -> calculateOutputMass(info, spec.getName())).orElse(null);
 		printResult(spec.getName(), processName, spec.getMass(), calculated, out);
+	}
+
+	private static void printEquipment(EquipmentType type, List<ManufactureProcessInfo> processes, PrintStream out) {
+		Optional<ManufactureProcessInfo> process = findProcessByOutputName(processes, ItemType.EQUIPMENT,
+				type.getName());
+		String processName = process.map(ManufactureProcessInfo::getName).orElse("not found");
+		Double calculated = process.map(info -> calculateOutputMass(info, type.getName())).orElse(null);
+		printResult(type.getName(), processName, EquipmentFactory.getEquipmentMass(type), calculated, out);
 	}
 
 	private static Optional<ManufactureProcessInfo> findProcessByOutputName(
@@ -119,6 +136,11 @@ public final class BaseMassReporter {
 				.filter(process -> process.getOutputList().stream()
 						.anyMatch(item -> (item.getType() == type) && item.getName().equalsIgnoreCase(outputName)))
 				.findFirst();
+	}
+
+	private static double calculateOutputMass(ManufactureProcessInfo process, String outputName) {
+		double quantity = process.calculateOutputQuantity(outputName);
+		return process.calculateTotalInputMass() / quantity;
 	}
 
 	private static void printResult(String specName, String processName, double definedMass, Double calculated,
