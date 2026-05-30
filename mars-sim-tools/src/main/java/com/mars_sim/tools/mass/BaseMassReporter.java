@@ -140,14 +140,19 @@ public final class BaseMassReporter {
 
 	private static double calculateOutputMass(ManufactureProcessInfo process, String outputName) {
 		double quantity = process.calculateOutputQuantity(outputName);
+		if (!Double.isFinite(quantity) || (quantity <= 0D)) {
+			return Double.NaN;
+		}
 		return process.calculateTotalInputMass() / quantity;
 	}
 
 	private static void printResult(String specName, String processName, double definedMass, Double calculated,
 			PrintStream out) {
-		String calculatedValue = (calculated == null ? "N/A" : String.format(Locale.ROOT, "%.2f", calculated));
-		String deltaValue = (calculated == null ? "N/A"
-				: String.format(Locale.ROOT, "%.2f", (definedMass - calculated.doubleValue())));
+		boolean hasCalculated = (calculated != null) && Double.isFinite(calculated);
+		String calculatedValue = (hasCalculated ? String.format(Locale.ROOT, "%.2f", calculated) : "N/A");
+		String deltaValue = (hasCalculated
+				? String.format(Locale.ROOT, "%.2f", (definedMass - calculated.doubleValue()))
+				: "N/A");
 		out.printf(Locale.ROOT, "%s | %s | %.2f | %s | %s%n",
 				specName, processName, definedMass, calculatedValue, deltaValue);
 	}

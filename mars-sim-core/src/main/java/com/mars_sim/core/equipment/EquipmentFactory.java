@@ -11,7 +11,6 @@ import java.util.EnumMap;
 
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.manufacture.ManufactureConfig;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -22,6 +21,7 @@ public final class EquipmentFactory {
 	// Default mass for uncalculated types
 	protected static final double DEFAULT_MASS = 0.0001;
 	
+	// Base masses (kg) aligned with current manufacturing input-mass/output-quantity calculations.
 	private static final EnumMap<EquipmentType, Double> weights = new EnumMap<>(EquipmentType.class);
 	static {
 		weights.put(EquipmentType.EVA_SUIT, 16.18);
@@ -107,7 +107,7 @@ public final class EquipmentFactory {
 	 * 
 	 * @param mgr
 	 */
-	public static void initialise(UnitManager mgr, ManufactureConfig mConfig) {
+	public static void initialise(UnitManager mgr) {
 		unitManager = mgr;
 	}
 }
