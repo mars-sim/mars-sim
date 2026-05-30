@@ -6,12 +6,20 @@
  */
 package com.mars_sim.tools.mass;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
@@ -26,28 +34,50 @@ import com.mars_sim.core.vehicle.VehicleSpec;
  */
 public final class BaseMassReporter {
 
-	private static final String CONFIG_ARG = "--configdir";
-	private static final String HELP_ARG = "--help";
+	private static final String CONFIG_ARG = "configdir";
+	private static final String HELP_ARG = "help";
 
 	private BaseMassReporter() {
 		// Utility class.
 	}
 
 	public static void main(String[] args) {
-		if (args.length == 1 && HELP_ARG.equalsIgnoreCase(args[0])) {
-			printUsage(System.out);
+		Options options = createOptions();
+		CommandLine line;
+		try {
+			line = new DefaultParser().parse(options, args);
+		}
+		catch (ParseException e) {
+			printUsage(System.err, options, "Problem with arguments: " + e.getMessage());
 			return;
 		}
 
-		for (int i = 0; i < args.length; i++) {
-			if (CONFIG_ARG.equalsIgnoreCase(args[i]) && (i + 1 < args.length)) {
-				SimulationRuntime.setDataDir(args[i + 1]);
-				i++;
-			}
+		if (line.hasOption(HELP_ARG)) {
+			printUsage(System.out, options, "Compares configured robot and vehicle base masses with manufacture process input mass.");
+			return;
+		}
+
+		if (line.hasOption(CONFIG_ARG)) {
+			SimulationRuntime.setDataDir(line.getOptionValue(CONFIG_ARG));
 		}
 
 		SimulationConfig config = SimulationConfig.loadConfig();
 		report(config, System.out);
+	}
+
+	private static Options createOptions() {
+		Options options = new Options();
+		options.addOption(Option.builder("h")
+				.longOpt(HELP_ARG)
+				.desc("Display help options")
+				.build());
+		options.addOption(Option.builder()
+				.longOpt(CONFIG_ARG)
+				.argName("dir")
+				.hasArg()
+				.desc("Alternative simulation data directory")
+				.build());
+		return options;
 	}
 
 	static void report(SimulationConfig config, PrintStream out) {
@@ -105,8 +135,14 @@ public final class BaseMassReporter {
 				specName, processName, definedMass, calculatedValue, deltaValue);
 	}
 
-	private static void printUsage(PrintStream out) {
-		out.println("Usage: BaseMassReporter [--configdir <dir>]");
-		out.println("Compares configured robot and vehicle base masses with manufacture process input mass.");
+	private static void printUsage(PrintStream out, Options options, String message) {
+		out.println(message);
+		HelpFormatter formatter = HelpFormatter.builder().get();
+		try {
+			formatter.printHelp(out, 120, "BaseMassReporter", null, options, 1, 4, null, true);
+		}
+		catch (IOException e) {
+			out.println("Usage: BaseMassReporter [--configdir <dir>]");
+		}
 	}
 }
