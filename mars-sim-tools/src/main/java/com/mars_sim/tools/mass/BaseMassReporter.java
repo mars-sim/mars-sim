@@ -70,13 +70,13 @@ public final class BaseMassReporter {
 		options.addOption(Option.builder("h")
 				.longOpt(HELP_ARG)
 				.desc("Display help options")
-				.build());
+				.get());
 		options.addOption(Option.builder()
 				.longOpt(CONFIG_ARG)
 				.argName("dir")
 				.hasArg()
 				.desc("Alternative simulation data directory")
-				.build());
+				.get());
 		return options;
 	}
 
@@ -136,13 +136,14 @@ public final class BaseMassReporter {
 	}
 
 	private static void printUsage(PrintStream out, Options options, String message) {
-		out.println(message);
 		HelpFormatter formatter = HelpFormatter.builder().get();
+		String header = "\n" + message + "\n";
 		try {
-			formatter.printHelp(out, 120, "BaseMassReporter", null, options, 1, 4, null, true);
+			formatter.printHelp("BaseMassReporter [options]", header, options, null, true);
 		}
 		catch (IOException e) {
-			out.println("Usage: BaseMassReporter [--configdir <dir>]");
+			out.println(message);
+			out.println("usage: BaseMassReporter [options]");
 		}
 	}
 }
