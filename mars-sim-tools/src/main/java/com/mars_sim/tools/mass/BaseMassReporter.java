@@ -140,8 +140,10 @@ public final class BaseMassReporter {
 	private static void printUsage(PrintStream out, Options options, String message) {
 		HelpFormatter formatter = HelpFormatter.builder().get();
 		String header = "\n" + message + "\n";
-		try (PrintWriter writer = new PrintWriter(out, true)) {
+		PrintWriter writer = new PrintWriter(out, true);
+		try {
 			formatter.printHelp(writer, 120, USAGE, header, options, 1, 4, null, true);
+			writer.flush();
 		}
 		catch (IOException e) {
 			out.println(message);
