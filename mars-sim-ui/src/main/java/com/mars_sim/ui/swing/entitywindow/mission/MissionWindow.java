@@ -35,6 +35,6 @@ public class MissionWindow extends EntityContentPanel<Mission> {
             addTabPanel(new TabPanelNavigation(vm, context));
         }
         
-        applyProps(props);
+        activateListener();
     }
 }

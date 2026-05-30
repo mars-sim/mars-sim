@@ -43,5 +43,6 @@ public class ConstructionSiteWindow extends EntityContentPanel<ConstructionSite>
         addTabPanel(new LocationTabPanel(constructionSite, context));
 
         applyProps(getUIProps());
+        activateListener();
     }
 }

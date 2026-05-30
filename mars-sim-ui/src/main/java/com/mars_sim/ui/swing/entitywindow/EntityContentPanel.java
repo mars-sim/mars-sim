@@ -87,7 +87,12 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         setMinimumSize(dim);
         setPreferredSize(dim);
 
-        // Some Entities are MonitorableEntities and can send events
+    }
+
+    /**
+     * Activate this content panel as an entity listener once initialization is complete.
+     */
+    protected void activateListener() {
         if (entity instanceof MonitorableEntity u) {
             u.addEntityListener(this);
         }

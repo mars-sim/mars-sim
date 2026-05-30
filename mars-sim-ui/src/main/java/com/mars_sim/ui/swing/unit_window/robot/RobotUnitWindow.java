@@ -57,5 +57,6 @@ public class RobotUnitWindow extends EntityContentPanel<Robot> {
 		addTabPanel(new TabPanelSkill(robot, context));
 		
 		applyProps(props);
+		activateListener();
 	}
 }

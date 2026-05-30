@@ -58,6 +58,7 @@ public class EquipmentUnitWindow extends EntityContentPanel<Equipment> {
         	addTabPanel(new SalvageTabPanel(equipment, context));
 
         applyProps(props);
+        activateListener();
     }
 
     /** 
