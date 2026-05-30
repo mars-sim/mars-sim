@@ -11,6 +11,8 @@ import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -130,6 +132,15 @@ class SelectionDialog extends JDialog {
  
         //Initialize values.
         pack();
+
+        // Closed via toolbar then cancel
+        addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				choiceMade(CANCEL);
+			}
+		});
+
     }
  
     private synchronized void choiceMade(int choice) {
