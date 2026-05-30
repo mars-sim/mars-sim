@@ -20,7 +20,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.model.GenericVehicleModel;
+import com.mars_sim.ui.swing.utils.model.BaseVehicleModel;
 
 /** 
  * The TabPanelVehicles is a tab panel for parked vehicles and vehicles on mission.
@@ -87,7 +87,7 @@ class TabPanelVehicles extends EntityTabPanel<Settlement>
 	/**
 	 * The MissionVehicleModel is a model for mission vehicles.
 	 */
-	private static class MissionVehicleModel extends GenericVehicleModel {
+	private static class MissionVehicleModel extends BaseVehicleModel {
 		private Settlement settlement;
 
 		public MissionVehicleModel(Settlement settlement) {
@@ -103,7 +103,7 @@ class TabPanelVehicles extends EntityTabPanel<Settlement>
 	/**
 	 * The ParkedVehicleModel is a model for parked vehicles.
 	 */
-	private static class ParkedVehicleModel extends GenericVehicleModel {
+	private static class ParkedVehicleModel extends BaseVehicleModel {
 		private Settlement settlement;
 		
 		public ParkedVehicleModel(Settlement settlement) {

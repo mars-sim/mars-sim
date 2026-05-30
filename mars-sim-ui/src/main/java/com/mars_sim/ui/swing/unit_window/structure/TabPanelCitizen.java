@@ -21,7 +21,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.model.GenericPersonModel;
+import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 
 /**
  * The TabPanelCitizen is a tab panel for information on all people
@@ -155,7 +155,7 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	/**
 	 * Table model showing all Persons in a Settlement.
 	 */
-	private static class CitizenModel extends GenericPersonModel {
+	private static class CitizenModel extends BasePersonModel {
 
 		private Settlement settlement;
 

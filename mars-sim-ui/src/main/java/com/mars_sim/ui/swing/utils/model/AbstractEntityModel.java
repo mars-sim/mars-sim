@@ -7,9 +7,13 @@
 package com.mars_sim.ui.swing.utils.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
@@ -31,11 +35,27 @@ import com.mars_sim.ui.swing.utils.StatefulComponent;
 abstract class AbstractEntityModel<T extends MonitorableEntity> extends AbstractTableModel
     implements EnhancedTableModel, EntityListener, EntityModel, StatefulComponent {
 
+    // Used to associate column index with column spec and event types to listen for
+    public record EntityColumnSpec(ColumnSpec column, Set<String> eventTypes) {}
+
+    
 	private List<T> entities = Collections.emptyList();
     private ColumnSpec[] columns;
+    private Map<String, List<Integer>> monitoredEvents = new HashMap<>();
 
-    protected AbstractEntityModel(ColumnSpec... columns) {
-        this.columns = columns;
+
+    protected AbstractEntityModel(EntityColumnSpec... columns) {
+        // Create the event map by extracting the event types against the index of the EntityColumnSpec
+        int idx = 0;
+        for (EntityColumnSpec ecs : columns) {
+            if (ecs.eventTypes() != null) {
+                for (String eventType : ecs.eventTypes()) {
+                    monitoredEvents.computeIfAbsent(eventType, k -> new ArrayList<>()).add(idx);
+                }
+            }
+            idx++;
+        }
+        this.columns = Arrays.stream(columns).map(EntityColumnSpec::column).toArray(ColumnSpec[]::new);
     }
 
     /**
@@ -54,7 +74,10 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
                 // reload the whole table
                 fireTableDataChanged();
 
-                entities.forEach(e -> e.addEntityListener(this));
+                // If there are no monitored events, then no need to register as listener
+                if (!monitoredEvents.isEmpty()) {
+                    entities.forEach(e -> e.addEntityListener(this));
+                }
             });
         }
     }
@@ -101,17 +124,52 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
         return null;
     }
 
+    /**
+     * Get a cell value for the associated Entity. Column index maps to the associated ColumnSpec where the id
+     * is used to determine the value to return.
+     * @param entity Source of value.
+     * @param valueIndex Index of the value.
+     * @return Object to render
+     */
+    protected abstract Object getEntityValue(T entity, int valueIndex);
+    
+    /**
+     * Get a cell value for the associated Entity. Column index maps to the associated ColumnSpec where the id
+     * is used to determine the value to return.
+     * @param rowIndex Row index
+     * @param columnIndex Column index. 
+     * @return Associated value.
+     */
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        var spec = getColumnSpec(columnIndex);
+        if (rowIndex < 0 || rowIndex >= entities.size()) {
+            return null;
+        }
+        var entity = entities.get(rowIndex);
+        return getEntityValue(entity, spec.id());
+    }
+
+    /**
+     * Handle entity updates. If there is a column impacted by this event type, the relevant cell will be updated.
+     * @param event The entity event.
+     */
     @Override
     public void entityUpdate(EntityEvent event) {
         var source = event.getSource();
         if (entities.contains(source)) {
             // Need to check index when update is fired as rows may change
-            SwingUtilities.invokeLater(() -> {
-                var idx = entities.indexOf(source);
-                if (idx >= 0) {
-                    fireTableRowsUpdated(idx, idx);
-                }
-            });
+            var impactedCols = monitoredEvents.get(event.getType());
+            if (impactedCols != null) {
+                // Fire event for each individual column column
+                SwingUtilities.invokeLater(() -> {
+                    // Check row is still valid
+                    var row = entities.indexOf(source);
+                    if (row >= 0) {
+                        impactedCols.forEach(col -> fireTableCellUpdated(row, col));
+                    }
+                });
+            }
         }
     }
 }

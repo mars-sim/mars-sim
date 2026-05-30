@@ -19,7 +19,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.model.GenericRobotModel;
+import com.mars_sim.ui.swing.utils.model.BaseRobotModel;
 
 /**
  * This is a tab panel for robots.
@@ -95,7 +95,7 @@ class TabPanelBots extends EntityTableTabPanel<Settlement> implements TemporalCo
 		super.destroy();
 	}
 
-	private static class BotModel extends GenericRobotModel {
+	private static class BotModel extends BaseRobotModel {
 		private final Settlement home;
 
 		public BotModel(Settlement home) {

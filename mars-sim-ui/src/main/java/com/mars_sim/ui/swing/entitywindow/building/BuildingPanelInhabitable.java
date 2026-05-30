@@ -22,7 +22,7 @@ import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.model.GenericPersonModel;
+import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 
 /**
  * This class is a building function panel representing 
@@ -102,7 +102,7 @@ public class BuildingPanelInhabitable extends EntityTabPanel<Building> implement
 	/**
 	 * Models the persons in the building.
 	 */
-	private class InhabitantModel extends GenericPersonModel {
+	private class InhabitantModel extends BasePersonModel {
 
 		InhabitantModel	() {
 			super(NAME, TASK);

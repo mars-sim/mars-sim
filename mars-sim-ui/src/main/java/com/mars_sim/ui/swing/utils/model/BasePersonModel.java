@@ -1,0 +1,62 @@
+/*
+ * Mars Simulation Project
+ * GenericPersonModel.java
+ * @date 2026-05-21
+ * @author Barry Evans
+ */
+package com.mars_sim.ui.swing.utils.model;
+
+import java.util.Set;
+
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.task.util.TaskManager;
+import com.mars_sim.core.tool.Msg;
+import com.mars_sim.core.unit.MobileUnit;
+import com.mars_sim.ui.swing.components.ColumnSpec;
+
+/**
+ * A generic table model showing Persons. It provides a number of predefined available columns.
+ * The subclass defines which columns are to be rendered.
+ * The model automatically monitors the Person for changes and updates the table as needed.
+ */
+public abstract class BasePersonModel extends AbstractEntityModel<Person> {
+
+    private static final int NAME_VAL = 0;
+    private static final int INSIDE_VAL = 1;
+    private static final int TASK_VAL = 2;
+
+    // Display Person name, passive and unchanging
+    protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class), null);
+    
+    // Display whether the Person is inside, passive and unchanging
+    protected static final EntityColumnSpec INSIDE = new EntityColumnSpec(new ColumnSpec(INSIDE_VAL, "Inside", Boolean.class),
+                                                            Set.of(MobileUnit.CONTAINER_EVENT));
+    // Display the Person's current task, reacts to events
+    protected static final EntityColumnSpec TASK = new EntityColumnSpec(new ColumnSpec(TASK_VAL, Msg.getString("task.singular"), String.class),
+                                                            Set.of(TaskManager.TASK_EVENT));
+
+    /**
+     * Create a generic person model with the specified columns.
+     * @param columns Columns to show.
+     */
+    protected BasePersonModel(EntityColumnSpec... columns) {
+        super(columns);
+    }
+
+    /**
+     * Get a cell value for the associated Person. Column index maps to the associated ColumnSpec where the id
+     * is used to determine the value to return.
+     * @param entity The Person entity.
+     * @param valueIndex Column index. 
+     * @return Associated value.
+     */
+    @Override
+    protected Object getEntityValue(Person entity, int valueIndex) {
+        return switch(valueIndex) {
+            case NAME_VAL-> entity.getName();
+            case INSIDE_VAL -> entity.isInside();
+            case TASK_VAL -> entity.getMind().getTaskManager().getTaskName();
+            default -> "";
+        };
+    }
+}

@@ -29,7 +29,7 @@ import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.utils.model.GenericPersonModel;
+import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 
 /**
  * The AirlockPanel class presents the airlock information and activities.
@@ -158,7 +158,7 @@ public class AirlockPanel extends JPanel implements StatefulComponent,TemporalCo
 	/**
 	 * Models the persons in the airlock.
 	 */
-	private abstract class EVAModel extends GenericPersonModel {
+	private abstract class EVAModel extends BasePersonModel {
 
 		EVAModel() {
 			super(NAME, TASK);

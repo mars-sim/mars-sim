@@ -28,7 +28,7 @@ import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.model.GenericMissionModel;
+import com.mars_sim.ui.swing.utils.model.BaseMissionModel;
 
 /**
  * Tab panel displaying a list of settlement missions.<br>
@@ -209,7 +209,7 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 	/**
 	 * The ActiveMissionModel is a model for active missions.
 	 */
-	private static class ActiveMissionModel extends GenericMissionModel {
+	private static class ActiveMissionModel extends BaseMissionModel {
 		private Settlement settlement;
 		private MissionManager mMgr;
 
