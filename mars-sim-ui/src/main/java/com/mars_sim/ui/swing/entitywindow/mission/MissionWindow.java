@@ -34,7 +34,7 @@ public class MissionWindow extends EntityContentPanel<Mission> {
         if (entity instanceof VehicleMission vm) {
             addTabPanel(new TabPanelNavigation(vm, context));
         }
-        
+        applyProps(props);
         activateListener();
     }
 }
