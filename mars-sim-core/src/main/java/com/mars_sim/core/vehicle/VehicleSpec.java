@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.manufacture.ManufactureConfig;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
@@ -263,7 +262,7 @@ public class VehicleSpec implements Serializable {
 	private double additionalEndMass = 0;	
 	
 	/** 
-	 * The calculated empty mass [kg] of the vehicle, based on its parts. 
+	 * The configured empty mass [kg] of the vehicle. 
 	 */
 	private double calculatedEmptyMass;
 	
@@ -410,6 +409,8 @@ public class VehicleSpec implements Serializable {
 	
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * 68.5D;
+		this.calculatedEmptyMass = emptyMass;
+		this.partIDs = Collections.emptySet();
 	}
 	
 	/**
@@ -436,35 +437,29 @@ public class VehicleSpec implements Serializable {
 	 */
 	void calculateDetails(ManufactureConfig manuConfig) {
 		
-		calculateEmptyMass(manuConfig);
+		loadBuildParts(manuConfig);
 		
 		defineVehiclePerformance();
 	}
 
 	/**
-	 * Calculates the base/empty mass of this type of vehicle.
+	 * Loads the part IDs used to build this type of vehicle, if a manufacturing process exists.
 	 */
-	private void calculateEmptyMass(ManufactureConfig manuConfig) {
-				
-		// Find the name of the process to build this type of vehicle Spec
-		ManufactureProcessInfo buildDetails = null;
+	private void loadBuildParts(ManufactureConfig manuConfig) {
+		if (manuConfig == null) {
+			partIDs = Collections.emptySet();
+			return;
+		}
+
 		String buildName = "Assemble " + type.name().replace("_", " ");
-		for (ManufactureProcessInfo info : manuConfig.getManufactureProcessList()) {
-			if (info.getName().equalsIgnoreCase(buildName)) {
-				buildDetails = info;
-			}
-		}
-		if (buildDetails == null) {
-			throw new IllegalStateException("Can not find Manufacturing process for vehicle called "
-											+ buildName);
-		}
-			
-		partIDs = buildDetails.getInputList().stream()
+		partIDs = manuConfig.getManufactureProcessList().stream()
+					.filter(info -> info.getName().equalsIgnoreCase(buildName))
+					.findFirst()
+					.map(info -> info.getInputList().stream()
 					.filter(p -> p.getType() == ItemType.PART)
-					.map(ProcessItem::getId).collect(Collectors.toSet());
-				
-		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part
-		calculatedEmptyMass = buildDetails.calculateTotalInputMass();
+					.map(ProcessItem::getId)
+					.collect(Collectors.toSet()))
+					.orElse(Collections.emptySet());
 	}
 	
 	/**
