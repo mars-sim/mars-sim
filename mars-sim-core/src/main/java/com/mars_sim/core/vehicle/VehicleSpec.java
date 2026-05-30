@@ -264,7 +264,7 @@ public class VehicleSpec implements Serializable {
 	/** 
 	 * The configured empty mass [kg] of the vehicle. 
 	 */
-	private double calculatedEmptyMass;
+	private double emptyMass;
 	
 	/** 
 	 * Width of vehicle (meters). 
@@ -409,7 +409,7 @@ public class VehicleSpec implements Serializable {
 	
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * 68.5D;
-		this.calculatedEmptyMass = emptyMass;
+		this.emptyMass = emptyMass;
 		this.partIDs = Collections.emptySet();
 	}
 	
@@ -597,9 +597,9 @@ public class VehicleSpec implements Serializable {
 		coefficientBaseFCFE = baseFuelEconomy * baseFuelConsumption;
 		
 		// Accounts for the estimated additional beginning mass
-		beginningMass = calculatedEmptyMass + additionalBeginningMass;
+		beginningMass = emptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
-		endMass = calculatedEmptyMass + additionalEndMass;
+		endMass = emptyMass + additionalEndMass;
 		// Accounts for the additional payload mass
 		massModifier = calculateMassModifier(additionalBeginningMass, additionalEndMass);
 		
@@ -626,9 +626,9 @@ public class VehicleSpec implements Serializable {
 	 */
 	public double calculateMassModifier(double additionalBeginningMass, double additionalEndMass) {
 		// Accounts for the estimated additional beginning mass
-		beginningMass = calculatedEmptyMass + additionalBeginningMass;
+		beginningMass = emptyMass + additionalBeginningMass;
 		
-		return 1 + .2 * (additionalBeginningMass + additionalEndMass) / calculatedEmptyMass;
+		return 1 + .2 * (additionalBeginningMass + additionalEndMass) / emptyMass;
 	}
 	
 	/**
@@ -799,7 +799,7 @@ public class VehicleSpec implements Serializable {
 
 	/** @return the emptyMass */
 	public final double getEmptyMass() {
-		return calculatedEmptyMass;
+		return emptyMass;
 	}
 
 	/** @return the crewSize */
