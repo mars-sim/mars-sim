@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * GenericVehicleModel.java
+ * BaseVehicleModel.java
  * @date 2026-05-23
  * @author Barry Evans
  */

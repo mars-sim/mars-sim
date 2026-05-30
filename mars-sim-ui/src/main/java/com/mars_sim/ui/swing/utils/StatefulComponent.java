@@ -7,8 +7,8 @@
 package com.mars_sim.ui.swing.utils;
 
 /**
- * An interface for components that have a state and need to be cleaned up before being removed from the UI.
- * It is just a marker interface with a single method to clean up the component. 
+ * A cleanup/lifecycle interface for components that have a state and need to be cleaned up before being removed from the UI.
+ * Implementers must provide a {@link #release()} method to properly release resources and unregister listeners. 
  */
 public interface StatefulComponent {
 

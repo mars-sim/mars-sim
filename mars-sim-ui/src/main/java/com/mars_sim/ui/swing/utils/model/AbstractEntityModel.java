@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Entity;
@@ -26,6 +25,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.EnhancedTableModel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.StatefulComponent;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A generic table model showing entities. It provides a number of predefined available columns.
@@ -67,7 +67,7 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
         // Cannot use straight equals because parameter is not a list
         if (newEntities.size() != entities.size() || !entities.containsAll(newEntities)) {
             // Update in swing thread as table has sorting
-            SwingUtilities.invokeLater(() -> {
+            SwingHelper.runInEDT(() -> {
                 release();
                 entities = new ArrayList<>(newEntities);
 
@@ -162,7 +162,7 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
             var impactedCols = monitoredEvents.get(event.getType());
             if (impactedCols != null) {
                 // Fire event for each individual column column
-                SwingUtilities.invokeLater(() -> {
+                SwingHelper.runInEDT(() -> {
                     // Check row is still valid
                     var row = entities.indexOf(source);
                     if (row >= 0) {

@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * GenericMissionModel.java
+ * BaseMissionModel.java
  * @date 2026-05-23
  * @author Barry Evans
  */
@@ -22,10 +22,10 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
     private static final int NAME_VAL = 0;
     private static final int PHASE_VAL = 1;
 
-    // Show Misison name, passive and unchanging
+    // Show Mission name, passive and unchanging
     protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class),
                                                             null);
-    // Show Misison phase description and reacts to events
+    // Show Mission phase description and reacts to events
     protected static final EntityColumnSpec PHASE = new EntityColumnSpec(new ColumnSpec(PHASE_VAL, Msg.getString("mission.phase"), String.class),
                                                             Set.of(Mission.PHASE_EVENT, Mission.PHASE_DESCRIPTION_EVENT));
 

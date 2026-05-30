@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
@@ -247,4 +248,18 @@ public final class SwingHelper {
     public static String toString(Dimension minimumSize) {
         return (int) minimumSize.getWidth() + "x" + (int) minimumSize.getHeight();
     }
+
+	/**
+	 * Runs a task in the Event Dispatch Thread (EDT). If already on the EDT, it runs immediately; otherwise, it is scheduled to run on the EDT.
+	 * This is a helper method to ensure that UI updates are performed on the correct thread without blocking.
+	 * @param updateTask	The task to run on the EDT
+	 */
+	public static void runInEDT(Runnable updateTask) {
+		// Only defer to EDT if not already on it
+		if (SwingUtilities.isEventDispatchThread()) {
+			updateTask.run();
+		} else {
+			SwingUtilities.invokeLater(updateTask);
+		}
+	}
 }

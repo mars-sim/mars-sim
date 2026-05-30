@@ -84,7 +84,7 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 		// Configure scrollPane with horizontal scrollbar
 		var scrollPane = new JScrollPane(listenerList);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setMaximumSize(new Dimension(200, -1)); // Force a maximum size
+		scrollPane.setMaximumSize(new Dimension(200, 1024)); // Force a maximum size
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		// Initial population of the list

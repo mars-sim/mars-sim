@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * GenericPersonModel.java
+ * BasePersonModel.java
  * @date 2026-05-21
  * @author Barry Evans
  */
@@ -28,7 +28,7 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
     // Display Person name, passive and unchanging
     protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class), null);
     
-    // Display whether the Person is inside, passive and unchanging
+    // Display whether the Person is inside based on a changed of container
     protected static final EntityColumnSpec INSIDE = new EntityColumnSpec(new ColumnSpec(INSIDE_VAL, "Inside", Boolean.class),
                                                             Set.of(MobileUnit.CONTAINER_EVENT));
     // Display the Person's current task, reacts to events

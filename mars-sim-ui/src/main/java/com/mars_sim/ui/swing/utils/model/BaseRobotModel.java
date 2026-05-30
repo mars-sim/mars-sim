@@ -1,6 +1,6 @@
 /*
  * Mars Simulation Project
- * GenericRobotModel.java
+ * BaseRobotModel.java
  * @date 2026-05-23
  * @author Barry Evans
  */
