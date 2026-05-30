@@ -74,7 +74,7 @@ class TabPanelEVA extends EntityTabPanel<Rover> implements TemporalComponent{
     @Override
     public void destroy() {
         if (airlockPanel != null) {
-            airlockPanel.cleanUp();
+            airlockPanel.release();
         }
         super.destroy();
     }

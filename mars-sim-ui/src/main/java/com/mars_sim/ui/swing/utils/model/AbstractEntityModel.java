@@ -48,7 +48,7 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
         if (newEntities.size() != entities.size() || !entities.containsAll(newEntities)) {
             // Update in swing thread as table has sorting
             SwingUtilities.invokeLater(() -> {
-                cleanUp();
+                release();
                 entities = new ArrayList<>(newEntities);
 
                 // reload the whole table
@@ -63,7 +63,7 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
      * Unregister the listening for EntityEvents of the managed Entities.
      */
     @Override
-    public void cleanUp() {
+    public void release() {
        entities.forEach(e -> e.removeEntityListener(this));
     }
 

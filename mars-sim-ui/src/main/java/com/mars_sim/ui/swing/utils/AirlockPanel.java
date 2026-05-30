@@ -307,11 +307,11 @@ public class AirlockPanel extends JPanel implements StatefulComponent,TemporalCo
 	 * Drop listeners to prevent memory leaks when panel is closed.
 	 */
 	@Override
-	public void cleanUp() {
-		outsideModel.cleanUp();
-		occupantModel.cleanUp();
-		insideModel.cleanUp();
-		reservationModel.cleanUp();
+	public void release() {
+		outsideModel.release();
+		occupantModel.release();
+		insideModel.release();
+		reservationModel.release();
 	}
 	
     private static String getBoolean(boolean value) {

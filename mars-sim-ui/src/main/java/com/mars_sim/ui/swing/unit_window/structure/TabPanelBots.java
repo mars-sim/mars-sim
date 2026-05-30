@@ -90,7 +90,7 @@ class TabPanelBots extends EntityTableTabPanel<Settlement> implements TemporalCo
 	@Override
 	public void destroy() {
 		if (model != null) {
-			model.cleanUp();
+			model.release();
 		}
 		super.destroy();
 	}

@@ -94,7 +94,7 @@ public class BuildingPanelInhabitable extends EntityTabPanel<Building> implement
 	@Override
 	public void destroy() {
 		if (inhabitants != null) {
-			inhabitants.cleanUp();
+			inhabitants.release();
 		}
 		super.destroy();
 	}

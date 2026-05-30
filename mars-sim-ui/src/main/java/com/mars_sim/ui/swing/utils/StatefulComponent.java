@@ -16,5 +16,5 @@ public interface StatefulComponent {
      * Cleans up the component for removal from the UI. This method should be called before removing the component from the UI
      * to ensure that any resources are properly released and any listeners are unregistered.
      */
-    void cleanUp();
+    void release();
 }

@@ -73,7 +73,7 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 	@Override
     public void destroy() {
 		if (airlockPanel != null) {
-    		airlockPanel.cleanUp();
+    		airlockPanel.release();
         }
         super.destroy();
     }

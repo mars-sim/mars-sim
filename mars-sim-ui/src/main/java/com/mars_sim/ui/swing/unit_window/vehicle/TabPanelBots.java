@@ -86,7 +86,7 @@ public class TabPanelBots extends EntityTableTabPanel<Vehicle>
 	@Override
 	public void destroy() {
 		if (model != null) {
-			model.cleanUp();
+			model.release();
 		}
 		super.destroy();
 	}

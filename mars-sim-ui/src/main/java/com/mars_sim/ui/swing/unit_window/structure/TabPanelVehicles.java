@@ -78,8 +78,8 @@ class TabPanelVehicles extends EntityTabPanel<Settlement>
 	@Override
 	public void destroy() {
 		if (missionVehicles != null) {
-			parkedVehicles.cleanUp();
-			missionVehicles.cleanUp();
+			parkedVehicles.release();
+			missionVehicles.release();
 		}
 		super.destroy();
 	}
