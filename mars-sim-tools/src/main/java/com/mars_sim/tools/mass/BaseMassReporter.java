@@ -69,12 +69,10 @@ public final class BaseMassReporter {
 
 	private static Options createOptions() {
 		Options options = new Options();
-		options.addOption(Option.builder("h")
-				.longOpt(HELP_ARG)
+		options.addOption(Option.builder(HELP_ARG)
 				.desc("Display help options")
 				.get());
-		options.addOption(Option.builder()
-				.longOpt(CONFIG_ARG)
+		options.addOption(Option.builder(CONFIG_ARG)
 				.argName("dir")
 				.hasArg()
 				.desc("Alternative simulation data directory")
@@ -109,23 +107,18 @@ public final class BaseMassReporter {
 
 	private static void printRobot(RobotSpec spec, List<ManufactureProcessInfo> processes, PrintStream out) {
 		Optional<ManufactureProcessInfo> process = findProcessByOutputName(processes, ItemType.ROBOT,
-				spec.getName(), spec.getRobotType().getName());
+				spec.getName());
 		String processName = process.map(ManufactureProcessInfo::getName).orElse("not found");
 		Double calculated = process.map(ManufactureProcessInfo::calculateTotalInputMass).orElse(null);
 		printResult(spec.getName(), processName, spec.getMass(), calculated, out);
 	}
 
 	private static Optional<ManufactureProcessInfo> findProcessByOutputName(
-			List<ManufactureProcessInfo> processes, ItemType type, String... specNames) {
+			List<ManufactureProcessInfo> processes, ItemType type, String outputName) {
 		return processes.stream()
 				.filter(process -> process.getOutputList().stream()
-						.anyMatch(item -> (item.getType() == type) && matchesAnyName(item.getName(), specNames)))
+						.anyMatch(item -> (item.getType() == type) && item.getName().equalsIgnoreCase(outputName)))
 				.findFirst();
-	}
-
-	private static boolean matchesAnyName(String outputName, String... specNames) {
-		return (outputName != null)
-				&& Arrays.stream(specNames).anyMatch(specName -> (specName != null) && outputName.equalsIgnoreCase(specName));
 	}
 
 	private static void printResult(String specName, String processName, double definedMass, Double calculated,
@@ -140,9 +133,10 @@ public final class BaseMassReporter {
 	private static void printUsage(PrintStream out, Options options, String message) {
 		HelpFormatter formatter = HelpFormatter.builder().get();
 		String header = "\n" + message + "\n";
+
 		PrintWriter writer = new PrintWriter(out, true);
 		try {
-			formatter.printHelp(writer, 120, USAGE, header, options, 1, 4, null, true);
+			formatter.printHelp(USAGE, header, options, "", true);
 			writer.flush();
 		}
 		catch (IOException e) {
