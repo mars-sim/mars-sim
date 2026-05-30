@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.building.utility.power.PowerSourceType;
 import com.mars_sim.core.manufacture.ManufactureConfig;
+import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
@@ -451,15 +452,20 @@ public class VehicleSpec implements Serializable {
 			return;
 		}
 
-		String buildName = "Assemble " + type.name().replace("_", " ");
-		partIDs = manuConfig.getManufactureProcessList().stream()
-					.filter(info -> info.getName().equalsIgnoreCase(buildName))
-					.findFirst()
+		partIDs = findBuildProcess(manuConfig)
 					.map(info -> info.getInputList().stream()
-					.filter(p -> p.getType() == ItemType.PART)
-					.map(ProcessItem::getId)
-					.collect(Collectors.toSet()))
+						.filter(p -> p.getType() == ItemType.PART)
+						.map(ProcessItem::getId)
+						.collect(Collectors.toSet()))
 					.orElse(Collections.emptySet());
+	}
+
+	private java.util.Optional<ManufactureProcessInfo> findBuildProcess(ManufactureConfig manuConfig) {
+		return manuConfig.getManufactureProcessList().stream()
+					.filter(info -> info.getOutputList().stream()
+							.anyMatch(item -> (item.getType() == ItemType.VEHICLE)
+									&& item.getName().equalsIgnoreCase(name)))
+					.findFirst();
 	}
 	
 	/**

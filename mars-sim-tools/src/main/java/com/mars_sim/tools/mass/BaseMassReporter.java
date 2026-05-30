@@ -8,16 +8,15 @@ package com.mars_sim.tools.mass;
 
 import java.io.PrintStream;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.robot.RobotSpec;
-import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.vehicle.VehicleSpec;
 
 /**
@@ -51,9 +50,7 @@ public final class BaseMassReporter {
 	}
 
 	static void report(SimulationConfig config, PrintStream out) {
-		var processes = config.getManufactureConfiguration().getManufactureProcessList().stream()
-				.collect(Collectors.toMap(p -> p.getName().toLowerCase(Locale.ROOT), Function.identity(),
-						(a, b) -> a));
+		var processes = config.getManufactureConfiguration().getManufactureProcessList();
 
 		out.println("Vehicle spec mass comparison");
 		out.println("Spec Name | Process | Defined Mass (kg) | Calculated Mass (kg) | Delta (kg)");
@@ -69,30 +66,37 @@ public final class BaseMassReporter {
 				.forEach(spec -> printRobot(spec, processes, out));
 	}
 
-	private static void printVehicle(VehicleSpec spec, Map<String, ManufactureProcessInfo> processes,
+	private static void printVehicle(VehicleSpec spec, List<ManufactureProcessInfo> processes,
 			PrintStream out) {
-		String processName = "Assemble " + spec.getType().name().replace("_", " ");
-		Double calculated = findCalculatedMass(processes, processName);
+		Optional<ManufactureProcessInfo> process = findProcessByOutputName(processes, ItemType.VEHICLE, spec.getName());
+		String processName = process.map(ManufactureProcessInfo::getName).orElse("not found");
+		Double calculated = process.map(ManufactureProcessInfo::calculateTotalInputMass).orElse(null);
 		printResult(spec.getName(), processName, spec.getEmptyMass(), calculated, out);
 	}
 
-	private static void printRobot(RobotSpec spec, Map<String, ManufactureProcessInfo> processes, PrintStream out) {
-		String processName = "Assemble a " + formatRobotType(spec.getRobotType());
-		Double calculated = findCalculatedMass(processes, processName);
+	private static void printRobot(RobotSpec spec, List<ManufactureProcessInfo> processes, PrintStream out) {
+		Optional<ManufactureProcessInfo> process = findProcessByOutputName(processes, ItemType.ROBOT,
+				spec.getName(), spec.getRobotType().getName());
+		String processName = process.map(ManufactureProcessInfo::getName).orElse("not found");
+		Double calculated = process.map(ManufactureProcessInfo::calculateTotalInputMass).orElse(null);
 		printResult(spec.getName(), processName, spec.getMass(), calculated, out);
 	}
 
-	private static Double findCalculatedMass(Map<String, ManufactureProcessInfo> processes, String processName) {
-		ManufactureProcessInfo process = processes.get(processName.toLowerCase(Locale.ROOT));
-		if (process == null) {
-			return null;
-		}
-		return process.calculateTotalInputMass();
+	private static Optional<ManufactureProcessInfo> findProcessByOutputName(
+			List<ManufactureProcessInfo> processes, ItemType type, String... specNames) {
+		return processes.stream()
+				.filter(process -> process.getOutputList().stream()
+						.anyMatch(item -> (item.getType() == type) && matchesAnyName(item.getName(), specNames)))
+				.findFirst();
 	}
 
-	private static String formatRobotType(RobotType type) {
-		String raw = type.name().toLowerCase(Locale.ROOT);
-		return Character.toUpperCase(raw.charAt(0)) + raw.substring(1);
+	private static boolean matchesAnyName(String outputName, String... specNames) {
+		for (String specName : specNames) {
+			if ((specName != null) && outputName.equalsIgnoreCase(specName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static void printResult(String specName, String processName, double definedMass, Double calculated,
