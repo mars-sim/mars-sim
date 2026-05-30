@@ -89,6 +89,11 @@ public class CommandHelper {
 	public static final String DEG_FORMAT = "%.2f\u00B0";
 	public static final String KPA_FORMAT = "%.2f kPa";
 	public static final String CELSIUS_FORMAT = "%.2f C\u00B0";
+
+	// Use by teh getYesNoInput method to return values for yes, no and cancel
+    public static final int CANCEL = 0;
+    public static final int YES = 1;
+    public static final int NO = 2;
 	
 	private CommandHelper() {
 		// Do nothing
@@ -119,6 +124,27 @@ public class CommandHelper {
 		return choice;
 	}
 	
+	/**
+	 * Prompt the user for a yes/no choice with the optino to cancel
+	 * @param context Context of the conversation
+	 * @param question Question to ask
+	 * @return Result of the choice as YES, NO or CANCEL
+	 */
+    public static int getYesNoInput(Conversation context, String question) {
+		var answer = context.getInput(question + " (yes/no/cancel)");
+		answer = answer.toLowerCase();
+
+		return switch(answer) {
+			case "yes", "y" -> YES;
+			case "no", "n" -> NO;
+			case "cancel", "c" -> CANCEL;
+			default -> {
+				context.println("Invalid choice");
+				yield CANCEL;
+			}
+		};
+    }
+
 	/**
 	 * Displays the status of a Scientific Study.
 	 * 
@@ -331,7 +357,9 @@ public class CommandHelper {
 		
 		if (!mission.isDone()) {
 			response.appendLabeledString(PHASE, mission.getPhaseDescription());
-			response.appendLabeledString("Phase Started", mission.getPhaseStartTime().getTruncatedDateTimeStamp());
+			var startTime = mission.getPhaseStartTime();
+			response.appendLabeledString("Phase Started", (startTime != null ?
+										startTime.getTruncatedDateTimeStamp() : "N/A"	));
 		
 			List<String> names = plist.stream().map(Entity::getName).sorted().toList();
 			response.appendNumberedList("Members", names);
@@ -590,4 +618,5 @@ public class CommandHelper {
 									p.getCurrentProductionLevel(), nextToggle);
 		}
 	}
+
 }

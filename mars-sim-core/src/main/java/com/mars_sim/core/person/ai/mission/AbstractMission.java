@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -228,7 +229,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
 	public final void addEntityListener(EntityListener newListener) {
 		if (listeners == null) {
-			listeners = new HashSet<>();
+			// Use a concurrent set as there is a rare potential for a listener to unregsiter itself when events are fired
+			listeners = new CopyOnWriteArraySet<>();
 		}
 		synchronized (listeners) {
 			listeners.add(newListener);
