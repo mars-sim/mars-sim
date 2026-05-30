@@ -332,7 +332,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
 		
 		unitManager = new UnitManager();
-		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
+		EquipmentFactory.initialise(unitManager);
 
 		// Initialize OuterSpace instance
 		OuterSpace outerSpace = new OuterSpace();
@@ -491,7 +491,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager);
 		
-		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
+		EquipmentFactory.initialise(unitManager);
 
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, masterClock);
@@ -612,7 +612,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Re-initialize Person/Robot related class
 		Mind.initializeInstances(missionManager);
 		
-		EquipmentFactory.initialise(unitManager, simulationConfig.getManufactureConfiguration());
+		EquipmentFactory.initialise(unitManager);
 		// Initialize instances in Airlock
 		Airlock.initializeInstances(unitManager, marsSurface, masterClock);
 		

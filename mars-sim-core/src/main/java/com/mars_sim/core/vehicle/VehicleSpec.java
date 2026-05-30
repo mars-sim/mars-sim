@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -263,9 +264,9 @@ public class VehicleSpec implements Serializable {
 	private double additionalEndMass = 0;	
 	
 	/** 
-	 * The calculated empty mass [kg] of the vehicle, based on its parts. 
+	 * The configured empty mass [kg] of the vehicle. 
 	 */
-	private double calculatedEmptyMass;
+	private double emptyMass;
 	
 	/** 
 	 * Width of vehicle (meters). 
@@ -410,6 +411,8 @@ public class VehicleSpec implements Serializable {
 	
 		// Get estimated total crew weight
 		this.estimatedTotalCrewWeight = crewSize * 68.5D;
+		this.emptyMass = emptyMass;
+		this.partIDs = Collections.emptySet();
 	}
 	
 	/**
@@ -436,35 +439,34 @@ public class VehicleSpec implements Serializable {
 	 */
 	void calculateDetails(ManufactureConfig manuConfig) {
 		
-		calculateEmptyMass(manuConfig);
+		loadBuildParts(manuConfig);
 		
 		defineVehiclePerformance();
 	}
 
 	/**
-	 * Calculates the base/empty mass of this type of vehicle.
+	 * Loads the part IDs used to build this type of vehicle, if a manufacturing process exists.
 	 */
-	private void calculateEmptyMass(ManufactureConfig manuConfig) {
-				
-		// Find the name of the process to build this type of vehicle Spec
-		ManufactureProcessInfo buildDetails = null;
-		String buildName = "Assemble " + type.name().replace("_", " ");
-		for (ManufactureProcessInfo info : manuConfig.getManufactureProcessList()) {
-			if (info.getName().equalsIgnoreCase(buildName)) {
-				buildDetails = info;
-			}
+	private void loadBuildParts(ManufactureConfig manuConfig) {
+		if (manuConfig == null) {
+			partIDs = Collections.emptySet();
+			return;
 		}
-		if (buildDetails == null) {
-			throw new IllegalStateException("Can not find Manufacturing process for vehicle called "
-											+ buildName);
-		}
-			
-		partIDs = buildDetails.getInputList().stream()
-					.filter(p -> p.getType() == ItemType.PART)
-					.map(ProcessItem::getId).collect(Collectors.toSet());
-				
-		// Calculate total mass as the summation of the multiplication of the quantity and mass of each part
-		calculatedEmptyMass = buildDetails.calculateTotalInputMass();
+
+		partIDs = findBuildProcess(manuConfig)
+					.map(info -> info.getInputList().stream()
+						.filter(p -> p.getType() == ItemType.PART)
+						.map(ProcessItem::getId)
+						.collect(Collectors.toSet()))
+					.orElse(Collections.emptySet());
+	}
+
+	private Optional<ManufactureProcessInfo> findBuildProcess(ManufactureConfig manuConfig) {
+		return manuConfig.getManufactureProcessList().stream()
+					.filter(info -> info.getOutputList().stream()
+							.anyMatch(item -> (item.getType() == ItemType.VEHICLE)
+									&& item.getName().equalsIgnoreCase(name)))
+					.findFirst();
 	}
 	
 	/**
@@ -602,9 +604,9 @@ public class VehicleSpec implements Serializable {
 		coefficientBaseFCFE = baseFuelEconomy * baseFuelConsumption;
 		
 		// Accounts for the estimated additional beginning mass
-		beginningMass = calculatedEmptyMass + additionalBeginningMass;
+		beginningMass = emptyMass + additionalBeginningMass;
 		// Accounts for the estimated additional end mass
-		endMass = calculatedEmptyMass + additionalEndMass;
+		endMass = emptyMass + additionalEndMass;
 		// Accounts for the additional payload mass
 		massModifier = calculateMassModifier(additionalBeginningMass, additionalEndMass);
 		
@@ -631,9 +633,9 @@ public class VehicleSpec implements Serializable {
 	 */
 	public double calculateMassModifier(double additionalBeginningMass, double additionalEndMass) {
 		// Accounts for the estimated additional beginning mass
-		beginningMass = calculatedEmptyMass + additionalBeginningMass;
+		beginningMass = emptyMass + additionalBeginningMass;
 		
-		return 1 + .2 * (additionalBeginningMass + additionalEndMass) / calculatedEmptyMass;
+		return 1 + .2 * (additionalBeginningMass + additionalEndMass) / emptyMass;
 	}
 	
 	/**
@@ -804,7 +806,7 @@ public class VehicleSpec implements Serializable {
 
 	/** @return the emptyMass */
 	public final double getEmptyMass() {
-		return calculatedEmptyMass;
+		return emptyMass;
 	}
 
 	/** @return the crewSize */
