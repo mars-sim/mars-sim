@@ -316,7 +316,7 @@ public class PowerGrid implements Serializable, Temporal {
 					double net = powerSource.getCurrentPower(b) - previous;
 					if (Double.isFinite(net)) {
 						netPower += net;
-						neededPower -= netPower;
+						neededPower -= net;
 						if (neededPower <= 0) {
 							return netPower;
 						}
