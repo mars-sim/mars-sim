@@ -25,7 +25,7 @@ public class AuthorityWindow extends EntityContentPanel<Authority> {
         addDefaultTabPanel(new TabPanelGeneral(entity, context));
         addTabPanel(new TabPanelObjective(entity, context));
         addTabPanel(new TabPanelSettlements(entity, context));
-        
         applyProps(props);
+        activateListener();
     }
 }

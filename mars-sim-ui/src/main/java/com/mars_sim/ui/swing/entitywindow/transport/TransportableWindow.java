@@ -44,5 +44,6 @@ public class TransportableWindow extends EntityContentPanel<Transportable> {
         addTabPanel(new TabPanelSupplies(entity, context));
 
         applyProps(props);
+        activateListener();
     }
 }
