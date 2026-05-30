@@ -7,6 +7,7 @@
 package com.mars_sim.tools.mass;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -91,12 +92,8 @@ public final class BaseMassReporter {
 	}
 
 	private static boolean matchesAnyName(String outputName, String... specNames) {
-		for (String specName : specNames) {
-			if ((specName != null) && outputName.equalsIgnoreCase(specName)) {
-				return true;
-			}
-		}
-		return false;
+		return (outputName != null)
+				&& Arrays.stream(specNames).anyMatch(specName -> (specName != null) && outputName.equalsIgnoreCase(specName));
 	}
 
 	private static void printResult(String specName, String processName, double definedMass, Double calculated,
