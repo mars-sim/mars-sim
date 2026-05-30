@@ -278,7 +278,7 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 		return switch (eventType) {
 			case PowerGrid.POWER_MODE_EVENT -> POWER_MODE;
 			case PowerGrid.GENERATED_POWER_EVENT -> POWER_GEN;
-			case PowerGrid.REQUIRED_POWER_EVENT -> POWER_REQ;
+			case PowerGrid.POWER_LOAD_EVENT -> POWER_REQ;
 			case Heating.REQUIRED_HEAT_EVENT -> HEAT_REQ;
 			case Heating.GENERATED_HEAT_EVENT -> HEAT_GEN;
 			case ThermalGeneration.HEAT_SURPLUS_EVENT -> HEAT_SURPLUS;

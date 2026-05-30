@@ -85,7 +85,7 @@ public class PowerStorage extends Function {
 		PowerGrid grid = settlement.getPowerGrid();
 
 		double hrInSol = 1000D * PowerGrid.HOURS_PER_MILLISOL;
-		double demand = grid.getRequiredPower() * hrInSol;
+		double demand = grid.getPowerLoad() * hrInSol;
 
 		double supply = 0D;
 		Iterator<Building> iStore = settlement.getBuildingManager().getBuildingSet(FunctionType.POWER_STORAGE).iterator();

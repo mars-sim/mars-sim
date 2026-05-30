@@ -128,7 +128,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		// Prepare power generated tf.
 		powerGenCache = powerGrid.getGeneratedPower();
 		// Prepare power used tf.
-		powerLoadCache = powerGrid.getRequiredPower();
+		powerLoadCache = powerGrid.getPowerLoad();
 		// Prepare the power usage percent
 		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 100 * 10.0)/10.0 ;
 		
@@ -280,7 +280,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		// Update power generated TF
 		double gen = powerGrid.getGeneratedPower();
 		// Update power used TF.
-		double req = powerGrid.getRequiredPower();
+		double req = powerGrid.getPowerLoad();
 
 		if (Math.abs(powerGenCache - gen) > .4 || Math.abs(powerLoadCache - req) > .4) {
 			powerGenCache = gen;

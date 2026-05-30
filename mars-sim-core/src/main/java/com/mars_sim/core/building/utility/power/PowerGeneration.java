@@ -124,7 +124,7 @@ public class PowerGeneration extends Function {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getPowerGrid().getRequiredPower();
+		double demand = settlement.getPowerGrid().getPowerLoad();
 
 		double supply = 0D;
 		boolean removedBuilding = false;

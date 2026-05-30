@@ -708,6 +708,24 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 	
 	/**
+	 * Gets the total power load for current mode on all functions.
+	 *
+	 * @return power in kW.
+	 */
+	public double getCurrentPowerLoad() {
+		double result = 0;
+		
+		if (powerModeCache == PowerMode.FULL_POWER) {
+			result = getFullPowerLoad();
+		}
+		else if (powerModeCache == PowerMode.LOW_POWER) {
+			result = getLowPowerLoad();
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Gets the power generated for full-power mode on all functions.
 	 *
 	 * @return power in kW.

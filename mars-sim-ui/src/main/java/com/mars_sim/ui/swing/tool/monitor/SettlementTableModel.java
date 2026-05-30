@@ -202,7 +202,7 @@ public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 				break;
 
 			case POWER_LOAD: 
-				double reqPower = settle.getPowerGrid().getRequiredPower();
+				double reqPower = settle.getPowerGrid().getPowerLoad();
 				if (reqPower < 0D || Double.isNaN(reqPower) || Double.isInfinite(reqPower))
 					reqPower = 0.0;
 				result = reqPower;
@@ -307,7 +307,7 @@ public class SettlementTableModel extends EntityMonitorModel<Settlement> {
 				columnNum = COMPUTING_UNIT;
 			} else if (PowerGrid.GENERATED_POWER_EVENT.equals(eventType)) {
 				columnNum = POWER_GEN;
-			} else if (PowerGrid.REQUIRED_POWER_EVENT.equals(eventType)) {
+			} else if (PowerGrid.POWER_LOAD_EVENT.equals(eventType)) {
 				columnNum = POWER_LOAD;
 			} else if (PowerGrid.STORED_ENERGY_EVENT.equals(eventType)) {
 				columnNum = ENERGY_STORED;

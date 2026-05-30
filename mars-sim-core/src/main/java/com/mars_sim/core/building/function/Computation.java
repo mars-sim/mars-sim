@@ -131,7 +131,7 @@ public class Computation extends Function {
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getPowerGrid().getRequiredPower();
+		double demand = settlement.getPowerGrid().getPowerLoad();
 
 		double supply = 0D;
 		boolean removedBuilding = false;
