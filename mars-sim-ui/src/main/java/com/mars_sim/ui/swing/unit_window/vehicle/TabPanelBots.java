@@ -6,36 +6,31 @@
  */
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.util.Collection;
-
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
-import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
+import com.mars_sim.ui.swing.utils.model.BaseRobotModel;
 
 /**
  * The TabPanelBots is a tab panel for a vehicle's bots crew information.
  */
 @SuppressWarnings("serial")
-public class TabPanelBots extends EntityTabPanel<Vehicle>
+public class TabPanelBots extends EntityTableTabPanel<Vehicle>
 	implements EntityListener {
 
 	private static final String ROBOT_ICON = "robot";
-
-	private UnitListPanel<Robot> crewList;
+	private BotModel model;
 
 	/**
 	 * Constructor.
@@ -48,16 +43,17 @@ public class TabPanelBots extends EntityTabPanel<Vehicle>
 			Msg.getString("robot.plural"),
 			ImageLoader.getIconByName(ROBOT_ICON),
 			null,
-			context, vehicle
+			vehicle, context
 		);
 	}
 
+	/**
+	 * Info panel shows the bot crew capacity.
+	 */
 	@Override
-	protected void buildUI(JPanel content) {
-
+	protected JPanel createInfoPanel() {
 		// Create crew count panel
 		AttributePanel crewCountPanel = new AttributePanel();
-		content.add(crewCountPanel, BorderLayout.NORTH);
 
 		var crewable = (Crewable)getEntity();
 
@@ -65,18 +61,7 @@ public class TabPanelBots extends EntityTabPanel<Vehicle>
 		crewCountPanel.addTextField(Msg.getString("TabPanelBots.capacity"),
 					Integer.toString(crewable.getRobotCrewCapacity()), null);
 
-		// Create crew display panel
-		JPanel crewDisplayPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		content.add(crewDisplayPanel, BorderLayout.CENTER);
-
-		// Create crew list
-		crewList = new UnitListPanel<>(getContext(), new Dimension(175, 100)) {
-			@Override
-			protected Collection<Robot> getData() {
-				return crewable.getRobotCrew();
-			}
-		};
-		crewDisplayPanel.add(crewList);
+		return crewCountPanel;
 	}
 
 	/**
@@ -85,7 +70,38 @@ public class TabPanelBots extends EntityTabPanel<Vehicle>
 	@Override
 	public void entityUpdate(EntityEvent event) {
 		if (EntityEventType.INVENTORY_STORING_UNIT_EVENT.equals(event.getType())) {
-			crewList.update();
+			model.update();
+		}
+	}
+
+	@Override
+	protected TableModel createModel() {
+		if (model == null) {
+			model = new BotModel((Crewable)getEntity());
+		}
+
+		return model;
+	}
+
+	@Override
+	public void destroy() {
+		if (model != null) {
+			model.release();
+		}
+		super.destroy();
+	}
+
+	private static class BotModel extends BaseRobotModel {
+		private final Crewable crewable;
+
+		public BotModel(Crewable crewable) {
+			super(NAME, TASK);
+			this.crewable = crewable;
+		}
+
+		public void update() {
+			SwingUtilities.invokeLater(() -> 
+					setEntities(crewable.getRobotCrew()));
 		}
 	}
 }

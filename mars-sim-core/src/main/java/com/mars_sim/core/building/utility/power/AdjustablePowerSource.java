@@ -27,4 +27,12 @@ public interface AdjustablePowerSource {
 	 * @return percent
 	 */
 	public double getCurrentLoadCapacity();
+	
+	/**
+	 * Gets the current usage ratio.
+	 * 
+	 * @return
+	 */
+	public double getUsageRatio();
+	
 }

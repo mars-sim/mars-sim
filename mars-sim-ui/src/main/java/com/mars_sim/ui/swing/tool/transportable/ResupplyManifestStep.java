@@ -38,7 +38,7 @@ class ResupplyManifestStep extends WizardStep<TransportState> {
 
 		manifestCB = new JComboBox<>();
 		manifestCB.setRenderer(new NamedListCellRenderer());
-		parent.getContext().getSimulation().getConfig().getSettlementTemplateConfiguration().getSupplyManifests()
+		parent.getContext().getSimulation().getConfig().getSettlementTemplateConfiguration().getResupplyConfig().getAll()
 					.forEach(manifestCB::addItem);
 		manifestCB.addItemListener(e -> manifestSelection());
 

@@ -102,8 +102,7 @@ public class TransportableWizard extends WizardPane<TransportState> {
 				state.getArrivingSponsor(),
 				state.getArrivalDate(),
 				state.getLandingSite(),
-				state.getArrivingPopulation(),
-				state.getArrivingRobots());
+				state.getArrivingPopulation());
 		return arriving;
 	}
 

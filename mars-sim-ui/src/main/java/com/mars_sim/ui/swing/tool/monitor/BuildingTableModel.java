@@ -156,7 +156,7 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 			case TYPE -> building.getBuildingType();
 			case CATEGORY -> building.getCategory().getName();
 			case POWER_MODE -> building.getPowerMode() != null ? building.getPowerMode().getName() : null;
-			case POWER_REQ -> building.getFullPowerRequired();
+			case POWER_REQ -> building.getFullPowerLoad();
 			case POWER_GEN -> building.getGeneratedPower();
 			case DELTA_TEMP -> furnace != null ? building.getDeltaTemp() : null;
 			case DEV_TEMP -> furnace != null ? building.getDevTemp() : null;
@@ -276,9 +276,9 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	 */
 	private int getColumnIndexForEventType(String eventType) {
 		return switch (eventType) {
-			case PowerGrid.POWER_MODE_EVENT -> POWER_MODE;
+			case Building.POWER_MODE_EVENT -> POWER_MODE;
 			case PowerGrid.GENERATED_POWER_EVENT -> POWER_GEN;
-			case PowerGrid.REQUIRED_POWER_EVENT -> POWER_REQ;
+			case PowerGrid.POWER_LOAD_EVENT -> POWER_REQ;
 			case Heating.REQUIRED_HEAT_EVENT -> HEAT_REQ;
 			case Heating.GENERATED_HEAT_EVENT -> HEAT_GEN;
 			case ThermalGeneration.HEAT_SURPLUS_EVENT -> HEAT_SURPLUS;

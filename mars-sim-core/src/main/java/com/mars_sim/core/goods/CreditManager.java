@@ -36,25 +36,6 @@ public class CreditManager implements Serializable {
 	private transient List<CreditListener> listeners;
 	/** The map of this settlement's credit/debit with another settlement. */
 	private Map<Integer, Double> creditMap = new HashMap<>();
-	
-	/** The Unit Manager instance. */
-	private static UnitManager unitManager;
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param settlement
-	 */
-	public CreditManager(Settlement settlement) {
-		settlementID = settlement.getIdentifier();
-		// Creates credit manager with all settlements in the simulation.
-		Iterator<Settlement> i = unitManager.getSettlements().iterator();
-		while (i.hasNext()) {
-			int id = i.next().getIdentifier();
-			if (!creditMap.containsKey(id) && settlementID != id)
-				creditMap.put(id, 0.0);
-		}
-	}
 
 	/**
 	 * Constructor 2. For maven test only
@@ -187,15 +168,6 @@ public class CreditManager implements Serializable {
 	public void removeListener(CreditListener oldListener) {
 		if (getListeners().contains(oldListener))
 			getListeners().remove(oldListener);
-	}
-
-	/**
-	 * Initializes instances.
-	 * 
-	 * @param um the unitManager instance
-	 */
-	public static void initializeInstances(UnitManager um) {
-		unitManager = um;		
 	}
 	
 	/**

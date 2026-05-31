@@ -136,7 +136,7 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 		var foodDemand = pond.getNutrientDemand();	
 		foodDemandLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, foodDemand);
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.foodDemand"), foodDemandLabel);
-		powerReqLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, pond.getCombinedPowerLoad());
+		powerReqLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, pond.getFullPowerLoad());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.powerReq"), powerReqLabel);
 		
 		var tempCache = pond.getBuilding().getCurrentTemperature();	
@@ -203,7 +203,7 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 		foodDemandLabel.setValue(newFoodDemand);
 		
 		// Update powerReqLabel
-		powerReqLabel.setValue(pond.getCombinedPowerLoad());
+		powerReqLabel.setValue(pond.getFullPowerLoad());
 		tempLabel.setValue(getEntity().getCurrentTemperature());
 		
 		// Update solar irradiance label

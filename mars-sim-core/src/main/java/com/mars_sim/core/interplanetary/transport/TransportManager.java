@@ -95,7 +95,7 @@ public class TransportManager implements Serializable {
 						+ proposedArrival.getTruncatedDateTimeStamp());
 			
 			var as = new ArrivingSettlement(a.name(), a.template(), a.sponsorCode(), proposedArrival,
-								a.landingLocation(), a.populationNum(), a.numOfRobots());
+								a.landingLocation(), a.populationNum());
 			transportItems.add(as);
 		}
 	}

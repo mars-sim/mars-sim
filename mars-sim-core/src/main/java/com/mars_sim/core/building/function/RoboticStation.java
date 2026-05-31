@@ -214,7 +214,7 @@ public class RoboticStation extends Function {
 	 * @return power (kW) default zero
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		double power = 0;
 		if (powerToDraw > 0) {
 			// Set the power load this time to the power load to draw

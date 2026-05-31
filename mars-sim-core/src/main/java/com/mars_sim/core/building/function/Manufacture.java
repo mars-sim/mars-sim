@@ -272,7 +272,7 @@ public class Manufacture extends Function {
 	}
 
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		return ongoingProcesses.stream()
 				.filter(p -> p.getProcessTimeRemaining() > 0D)
 				.mapToDouble(p -> p.getInfo().getPowerRequired())
@@ -280,8 +280,8 @@ public class Manufacture extends Function {
 	}
 
 	@Override
-	public double getLowPowerRequired() {
-		return getCombinedPowerLoad();
+	public double getLowPowerLoad() {
+		return 0.1 * getFullPowerLoad();
 	}
 
 	@Override
@@ -326,7 +326,7 @@ public class Manufacture extends Function {
 
 	@Override
 	public double getMaintenanceTime() {
-		double result = getCombinedPowerLoad() * .25;
+		double result = getFullPowerLoad() * 10;
 		// Add maintenance for tech level.
 		result *= techLevel * .5;
 		// Add maintenance for num of printers in use.

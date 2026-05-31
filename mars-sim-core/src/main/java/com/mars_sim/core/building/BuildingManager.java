@@ -1935,7 +1935,7 @@ public class BuildingManager implements Serializable {
 			result *= 1000D;
 
 			// Subtract power costs per Sol.
-			double power = spec.getBasePowerRequirement();
+			double power = spec.getBaseFullPower();
 			double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL;
 			double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 			result -= powerValue;

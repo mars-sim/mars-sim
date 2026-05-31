@@ -170,15 +170,6 @@ public abstract class Function implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets the amount of heat required when function is at full heat.
-	 *
-	 * @return heat (kW) default 0
-	 */
-	public double getCombinedPowerLoad() {
-		return 0;
-	}
-	
-	/**
 	 * Gets the amount of heat required when function is at heat down level.
 	 *
 	 * @return heat (kW) default zero
@@ -188,20 +179,20 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the amount of power required when function is at full power.
+	 * Gets the amount of power load when function is at full power.
 	 *
 	 * @return power (kW) default zero
 	 */
-	public double getFullPowerRequired() {
+	public double getFullPowerLoad() {
 		return 0;
 	}
 
 	/**
-	 * Gets the amount of power required when function is at low power level.
+	 * Gets the amount of power load when function is at low power level.
 	 *
 	 * @return power (kW)
 	 */
-	public double getLowPowerRequired() {
+	public double getLowPowerLoad() {
 		return 0;
 	}
 

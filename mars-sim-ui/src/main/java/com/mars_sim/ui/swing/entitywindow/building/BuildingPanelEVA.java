@@ -69,4 +69,12 @@ class BuildingPanelEVA extends EntityTabPanel<Building> implements TemporalCompo
 	public void clockUpdate(ClockPulse pulse) {
 		airlockPanel.clockUpdate(pulse);
 	}
+
+	@Override
+    public void destroy() {
+		if (airlockPanel != null) {
+    		airlockPanel.release();
+        }
+        super.destroy();
+    }
 }

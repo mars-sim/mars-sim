@@ -801,12 +801,12 @@ public class AlgaeFarming extends Function {
 	}
 	
 	/**
-	 * Gets the amount of power required when function is at full power.
+	 * Gets the amount of power load when function is at full power.
 	 * 
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		// Power (kW) required for normal operations.
 		return waterMass * POWER_PER_LITRE 
 				+ getCurrentAlgae() * POWER_PER_KG_ALGAE 
@@ -820,8 +820,8 @@ public class AlgaeFarming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getLowPowerRequired() {
-		return getCombinedPowerLoad() * .1;
+	public double getLowPowerLoad() {
+		return getFullPowerLoad() * .1;
 	}
 
 	@Override

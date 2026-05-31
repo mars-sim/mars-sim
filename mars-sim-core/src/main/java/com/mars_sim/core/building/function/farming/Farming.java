@@ -817,8 +817,10 @@ public class Farming extends Function {
 			if (powerMode == PowerMode.FULL_POWER)
 				productionLevel = 1D;
 			else if (powerMode == PowerMode.LOW_POWER)
-				productionLevel = .5D;
-
+				productionLevel = .5;
+			else if (powerMode == PowerMode.NO_POWER)
+				productionLevel = .1;
+			
 			double solarIrradiance = surface.getSolarIrradiance(building.getSettlement().getCoordinates());
 			double greyFilterRate = building.getSettlement().getGreyWaterFilteringRate();
 
@@ -911,7 +913,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		// Power (kW) required for normal operations.
 		double powerRequired = 0D;
 
@@ -950,7 +952,7 @@ public class Farming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getLowPowerRequired() {
+	public double getLowPowerLoad() {
 
 		// Get power required for occupant life support.
 		double powerRequired = 0D;

@@ -183,9 +183,9 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 		// Update power used if necessary.
 		double totalUsed = 0D;
 		if (powerModeCache == PowerMode.FULL_POWER) 
-			totalUsed = building.getFullPowerRequired();
+			totalUsed = building.getFullPowerLoad();
 		else if (powerModeCache == PowerMode.LOW_POWER) 
-			totalUsed = building.getLowPowerRequired();
+			totalUsed = building.getLowPowerLoad();
 		totalUsedLabel.setValue(totalUsed);
 
 		if (generator == null)

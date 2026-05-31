@@ -207,8 +207,6 @@ public class Settlement extends Unit implements Temporal,
 	
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
-	/** The number of robots at the start of the settlement. */
-	private int initialNumOfRobots;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
 	/** Numbers of citizens of this settlement. */
@@ -460,17 +458,14 @@ public class Settlement extends Unit implements Temporal,
 	 * @param sponsor
 	 * @param location
 	 * @param populationNumber
-	 * @param initialNumOfRobots
 	 */
-	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber,
-			int initialNumOfRobots) {
+	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber) {
 		// Use Structure constructor
 		super(name);
 
 		this.settlementCode = createCode(name);
 		this.location = location;
 		this.template = template;
-		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
 		this.sponsor = sponsor;
 		this.zone = MarsZone.getMarsZone(location);
@@ -516,12 +511,11 @@ public class Settlement extends Unit implements Temporal,
 	 * @param sponsor
 	 * @param location
 	 * @param populationNumber
-	 * @param initialNumOfRobots
 	 * @return
 	 */
 	public static Settlement createNewSettlement(String name, String template, Authority sponsor,
-			Coordinates location, int populationNumber, int initialNumOfRobots) {
-		return new Settlement(name, template, sponsor, location, populationNumber, initialNumOfRobots);
+			Coordinates location, int populationNumber) {
+		return new Settlement(name, template, sponsor, location, populationNumber);
 	}
 
 	/**
@@ -607,7 +601,7 @@ public class Settlement extends Unit implements Temporal,
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
 		// Initialize credit manager.
-		creditManager = new CreditManager(this);
+		creditManager = new CreditManager(this, unitManager);
 
 		// Initialize settlement task manager.
 		taskManager = new SettlementTaskManager(this);
@@ -2226,7 +2220,7 @@ public class Settlement extends Unit implements Temporal,
 	public Collection<Vehicle> getMissionVehicles() {
 		return ownedVehicles.stream()
 				.filter(v -> v.getMission() != null
-					&& (v.getMission().getStage() == Stage.ACTIVE))
+					&& !v.getMission().isDone())
 				.toList();
 	}
 
@@ -2397,15 +2391,6 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public int getInitialPopulation() {
 		return initialPopulation;
-	}
-
-	/**
-	 * Gets the initial number of robots the settlement.
-	 *
-	 * @return initial number of robots
-	 */
-	public int getInitialNumOfRobots() {
-		return initialNumOfRobots;
 	}
 
 	/**

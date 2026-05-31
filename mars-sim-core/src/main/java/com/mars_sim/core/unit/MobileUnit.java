@@ -12,6 +12,9 @@ import com.mars_sim.core.vehicle.Vehicle;
  */
 public interface MobileUnit extends SurfacePOI {
 
+	// Event type when the mobile unit changes container
+	static final String CONTAINER_EVENT = "container";
+
 	/**
 	 * Where is this mobile unit residing
 	 * @return

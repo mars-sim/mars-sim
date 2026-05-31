@@ -21,13 +21,18 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.ColumnSpecHelper;
+import com.mars_sim.ui.swing.components.EnhancedTableModel;
 
 import io.github.parubok.text.multiline.MultilineLabel;
 
@@ -162,8 +167,41 @@ public final class SwingHelper {
 		label.setMinimumSize(new Dimension(50,50));
 		return label;
 	}
+    /**
+     * Create a table to display the model in a scroll pane. The table is sortable and read only.
+	 * 
+	 * @param model The model to display in the table
+	 * @param content The UI context to use for launching entities; can be null
+	 * @param name The title for the border; can be null
+	 * @param dim Preferred size; can be null
+     */
+    public static JScrollPane createScrolledTable(EnhancedTableModel model, UIContext content,
+									String name, Dimension dim) {
+        // Create table
+        JTable table = new JTable(model);
+        table.setAutoCreateRowSorter(true);
+		table.setRowSelectionAllowed(true);
+		ColumnSpecHelper.applyRenderers(table, model);
 
-	
+		if ((model instanceof EntityModel) && content != null) {
+			EntityLauncher.attach(table, content);
+		}
+
+        var scrollPane = new JScrollPane(table);
+
+		if (dim != null) {
+			scrollPane.setPreferredSize(dim);
+			scrollPane.setMinimumSize(dim);
+		}
+
+		if (name != null) {
+			var border = createLabelBorder(name);
+			scrollPane.setBorder(border);
+		}
+		
+		return scrollPane;
+    }
+
     /**
      * Creates a scroll pane with border and title
      * 
@@ -210,4 +248,18 @@ public final class SwingHelper {
     public static String toString(Dimension minimumSize) {
         return (int) minimumSize.getWidth() + "x" + (int) minimumSize.getHeight();
     }
+
+	/**
+	 * Runs a task in the Event Dispatch Thread (EDT). If already on the EDT, it runs immediately; otherwise, it is scheduled to run on the EDT.
+	 * This is a helper method to ensure that UI updates are performed on the correct thread without blocking.
+	 * @param updateTask	The task to run on the EDT
+	 */
+	public static void runInEDT(Runnable updateTask) {
+		// Only defer to EDT if not already on it
+		if (SwingUtilities.isEventDispatchThread()) {
+			updateTask.run();
+		} else {
+			SwingUtilities.invokeLater(updateTask);
+		}
+	}
 }

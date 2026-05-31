@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -162,6 +161,24 @@ public class RobotConfig {
 	}
 	
 	/**
+	 * Gets the robot spec for a type and optional model. It is the format <type>-<make>.
+	 * @param type String of the type
+	 * @return Matched RobotSpec
+	 */
+	public RobotSpec getRobotSpec(String type) {
+		String[] parts = type.split("-");
+
+		RobotType robotType = RobotType.valueOf(parts[0].toUpperCase());
+
+		// Defaults to standard
+		String model = "standard";
+		if (parts.length > 1) {
+			model = parts[1];
+		}
+		return getRobotSpec(robotType, model);
+	}
+
+	/**
 	 * Gets the robot spec for a typ and opttional model
 	 * 
 	 * @param type Robot type is mandatory
@@ -171,7 +188,7 @@ public class RobotConfig {
 	public RobotSpec getRobotSpec(RobotType type, String make) {
 		List<RobotSpec> matches = specs.stream().filter(s -> (s.getRobotType() == type)
 													&& ((make == null) || (make.equalsIgnoreCase(s.getMakeModel()))))
-										.collect(Collectors.toList());
+										.toList();
 		// Return the first match
 		if (matches.isEmpty()) {
 			throw new IllegalArgumentException("No RobotSpec with type=" + type + ", make=" + make);

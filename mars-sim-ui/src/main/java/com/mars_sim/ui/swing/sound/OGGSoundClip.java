@@ -418,6 +418,8 @@ class OGGSoundClip {
 					// throw new InternalException(e);
 					// Note: when loading from a saved sim, the following log statement appears excessively
 					logger.log(Level.SEVERE, "Exception in reading bitstream.", e);
+					
+					return;
 				}
 				
 				if (bytes == 0 && i < 2) {

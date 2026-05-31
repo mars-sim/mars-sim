@@ -1405,7 +1405,7 @@ Note: 1 kg of H2 is 14.13 liter
 			<part name="biosensor" number="2" />
 		</inputs>
 		<outputs>
-			<robot name="RepairBot" number="1" />
+			<robot name="RepairBot-standard" number="1" />
 		</outputs>
 	</process>
 

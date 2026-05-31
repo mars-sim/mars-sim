@@ -28,6 +28,16 @@
 {{/equipment}}
 {{/equipment.isEmpty}}
 
+{{^robots.isEmpty}}
+## Robots
+
+| Robot Spec. | Quantity |
+|:-----|-----:|
+{{#robots}}
+|[{{name}}]({{typefolder}}{{#filename}}{{name}}{{/filename}})|{{amount}}|
+{{/robots}}
+{{/robots.isEmpty}}
+
 {{^vehicles.isEmpty}}
 ## Vehicles
 

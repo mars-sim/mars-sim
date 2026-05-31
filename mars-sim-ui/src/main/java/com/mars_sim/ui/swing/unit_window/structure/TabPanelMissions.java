@@ -9,13 +9,10 @@ package com.mars_sim.ui.swing.unit_window.structure;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.Collection;
 
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -27,9 +24,10 @@ import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.model.BaseMissionModel;
 
 /**
  * Tab panel displaying a list of settlement missions.<br>
@@ -40,23 +38,26 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalComponent{
 
+	private static final String STD_DEVIATION = "Standard Deviation \u03C3";
+	private static final String MEAN_DISTANCE = "Mean Distance \u03BC";
+
 	private static final String MISSION_ICON = "mission";
 
 	// Data members	
-	private JLabel siteLabel;
-	private JLabel numROIsLabel;
+	private JIntegerLabel siteLabel;
+	private JIntegerLabel numROIsLabel;
 	private JDoubleLabel siteMeanLabel;
 	private JDoubleLabel siteSDevLabel;
 	
-	private JLabel claimedSiteLabel;
+	private JIntegerLabel claimedSiteLabel;
 	private JDoubleLabel claimedMeanLabel;
 	private JDoubleLabel claimedSDevLabel;
 	
-	private JLabel unclaimedSiteLabel;
+	private JIntegerLabel unclaimedSiteLabel;
 	private JDoubleLabel unclaimedMeanLabel;
 	private JDoubleLabel unclaimedSDevLabel;
 	
-	private UnitListPanel<Mission> missionList;
+	private ActiveMissionModel model;
 	
 	private JCheckBox overrideCheckbox;
 
@@ -78,7 +79,7 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 	@Override
 	protected void buildUI(JPanel content) {
 
-		JPanel topPanel = new JPanel(new BorderLayout(0, 10));
+		JPanel topPanel = new JPanel(new BorderLayout());
 		content.add(topPanel, BorderLayout.NORTH);
 
 		
@@ -86,53 +87,42 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		topPanel.add(sitePanel, BorderLayout.NORTH);
 		sitePanel.setBorder(SwingHelper.createLabelBorder("Nearby Sites"));
 		
-		siteLabel = sitePanel.addTextField("Sites Found","", null);
-		numROIsLabel = sitePanel.addTextField("Declared ROIs", "", null);
+		siteLabel = new JIntegerLabel();
+		sitePanel.addLabelledItem("Sites Found", siteLabel);
+		numROIsLabel = new JIntegerLabel();
+		sitePanel.addLabelledItem("Declared ROIs", numROIsLabel);
 		siteMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
-		sitePanel.addLabelledItem("Mean Distance \u03BC", siteMeanLabel); 
+		sitePanel.addLabelledItem(MEAN_DISTANCE, siteMeanLabel); 
 		siteSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
-		sitePanel.addLabelledItem("Standard Deviation \u03C3", siteSDevLabel);
+		sitePanel.addLabelledItem(STD_DEVIATION, siteSDevLabel);
 		
 		
 		AttributePanel twoPanel = new AttributePanel();
 		topPanel.add(twoPanel, BorderLayout.CENTER);
 		twoPanel.setBorder(SwingHelper.createLabelBorder("Claimed Sites"));
 		
-		claimedSiteLabel = twoPanel.addTextField("Sites", "", null);
+		claimedSiteLabel = new JIntegerLabel();
+		twoPanel.addLabelledItem("Sites", claimedSiteLabel);
 		claimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
-		twoPanel.addLabelledItem("Mean Distance \u03BC", claimedMeanLabel);
+		twoPanel.addLabelledItem(MEAN_DISTANCE, claimedMeanLabel);
 		claimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
-		twoPanel.addLabelledItem("Standard Deviation \u03C3", claimedSDevLabel);
-		
+		twoPanel.addLabelledItem(STD_DEVIATION, claimedSDevLabel);
 		
 		AttributePanel unclaimPanel = new AttributePanel();
 		topPanel.add(unclaimPanel, BorderLayout.SOUTH);
 		unclaimPanel.setBorder(SwingHelper.createLabelBorder("Unclaimed Sites"));
 		
-		unclaimedSiteLabel = unclaimPanel.addTextField("Sites", "", null);		
+		unclaimedSiteLabel = new JIntegerLabel();
+		unclaimPanel.addLabelledItem("Sites", unclaimedSiteLabel);
 		unclaimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
-		unclaimPanel.addLabelledItem("Mean Distance \u03BC", unclaimedMeanLabel);
+		unclaimPanel.addLabelledItem(MEAN_DISTANCE, unclaimedMeanLabel);
 		unclaimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
-		unclaimPanel.addLabelledItem("Standard Deviation \u03C3", unclaimedSDevLabel);
+		unclaimPanel.addLabelledItem(STD_DEVIATION, unclaimedSDevLabel);
 		
-		
-		// Create center panel.
-		JPanel centerPanel = new JPanel(new BorderLayout());
-		content.add(centerPanel, BorderLayout.CENTER);
-
 		// Create mission list panel.
-		JPanel missionListPanel = new JPanel();
-		centerPanel.add(missionListPanel, BorderLayout.CENTER);
-		missionListPanel.setBorder(SwingHelper.createLabelBorder("Active Missions"));
-
-		// Create mission list.
-		missionList = new UnitListPanel<Mission>(getContext(), new Dimension(300, 100)) {
-			@Override
-			protected Collection<Mission> getData() {
-				return getEntity().getMissionControl().getActiveMissions();
-			}
-		};
-		missionListPanel.add(missionList);
+		model = new ActiveMissionModel(getEntity());
+		var missionListPanel = SwingHelper.createScrolledTable(model, getContext(), "Active Missions", new Dimension(300, 100));
+		content.add(missionListPanel, BorderLayout.CENTER);
 
 		buildBottomPanel(content, getEntity());
 
@@ -167,21 +157,21 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		var claimed = eMgr.getStatistics(ExplorationManager.CLAIMED_STAT);
 		var unclaimed = eMgr.getStatistics(ExplorationManager.UNCLAIMED_STAT);
 		
-		siteLabel.setText(Integer.toString(eMgr.getNearbyMineralLocations().size()));
-		numROIsLabel.setText(Integer.toString(eMgr.getDeclaredROIs().size()));
+		siteLabel.setValue(eMgr.getNearbyMineralLocations().size());
+		numROIsLabel.setValue(eMgr.getDeclaredROIs().size());
 		siteMeanLabel.setValue(site.mean());
 		siteSDevLabel.setValue(site.sd());
 		
-		claimedSiteLabel.setText(eMgr.numDeclaredROIs(true) + "");
+		claimedSiteLabel.setValue(eMgr.numDeclaredROIs(true));
 		claimedMeanLabel.setValue(claimed.mean());
 		claimedSDevLabel.setValue(claimed.sd());
 		
-		unclaimedSiteLabel.setText(eMgr.numDeclaredROIs(false) + "");		
+		unclaimedSiteLabel.setValue(eMgr.numDeclaredROIs(false));
 		unclaimedMeanLabel.setValue(unclaimed.mean());
 		unclaimedSDevLabel.setValue(unclaimed.sd());
 		
 		// Update mission list if necessary.
-		missionList.update();
+		model.update();
 
 		// Update mission override check box if necessary.
 		if (settlement.getProcessOverride(OverrideType.MISSION) != overrideCheckbox.isSelected())
@@ -204,5 +194,29 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 		updateMissionStats();
+	}
+
+	@Override
+	public void destroy() {
+		if (model != null) {
+			model.release();
+		}
+		super.destroy();
+	}
+
+	/**
+	 * The ActiveMissionModel is a model for active missions.
+	 */
+	private static class ActiveMissionModel extends BaseMissionModel {
+		private Settlement settlement;
+
+		public ActiveMissionModel(Settlement settlement) {
+			super(NAME, PHASE);
+			this.settlement = settlement;
+		}
+
+		public void update() {
+			setEntities(settlement.getMissionControl().getActiveMissions());
+		}
 	}
 }

@@ -572,13 +572,14 @@ import com.mars_sim.core.tool.RandomUtil;
 		 vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTravelled)); 
 
 		 // Note: in regen mode, both energyByBattery and fuelNeeded are zero
+		 if (distanceTravelled > 0.0) {
+			 // Add distance traveled to vehicle's odometer.
+			 vehicle.addOdometerMileage(distanceTravelled, energyByBattery, fuelNeeded);
+			 // Track maintenance due to distance traveled.
+			 vehicle.addDistanceLastMaintenance(distanceTravelled);
+			 // Derive the instantaneous fuel economy [in km/kg]
+		 }
 		 
-		 // Add distance traveled to vehicle's odometer.
-		 vehicle.addOdometerMileage(distanceTravelled, energyByBattery, fuelNeeded);
-		 // Track maintenance due to distance traveled.
-		 vehicle.addDistanceLastMaintenance(distanceTravelled);
-		 // Derive the instantaneous fuel economy [in km/kg]
-		 	 
 		 Mission mission = vehicle.getMission();
 		    
 		 if (mission instanceof AbstractVehicleMission vm) {

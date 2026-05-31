@@ -111,8 +111,8 @@ public class EVA extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
-		return 0.75;
+	public double getFullPowerLoad() {
+		return 1.25;
 	}
 
 	/**
@@ -121,8 +121,8 @@ public class EVA extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getLowPowerRequired() {
-		return 0.075;
+	public double getLowPowerLoad() {
+		return 0.1 * getFullPowerLoad();
 	}
 
 	@Override

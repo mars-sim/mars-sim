@@ -124,7 +124,7 @@ public class PowerGeneration extends Function {
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getPowerGrid().getRequiredPower();
+		double demand = settlement.getPowerGrid().getPowerLoad();
 
 		double supply = 0D;
 		boolean removedBuilding = false;
@@ -191,13 +191,13 @@ public class PowerGeneration extends Function {
 				// Toggling on and off should be driven by needs in PowerGrid
 				
 				PowerMode powerMode = building.getPowerMode();
-				if (powerMode == PowerMode.FULL_POWER) {
-
+				if (powerMode == PowerMode.FULL_POWER
+						|| powerMode == PowerMode.LOW_POWER) {
+					// Note: for low power mode, do not set to half time
 					source.setTime(time);
 				}
-				// May add back : else if (powerMode == PowerMode.LOW_POWER) { // Note: For now, low power mode will reduce the generated power by 50% : //source.setTime(time / 2)
-				else if (powerMode == PowerMode.NO_POWER) {
 
+				else if (powerMode == PowerMode.NO_POWER) {
 					source.setTime(0);
 				}
 			}

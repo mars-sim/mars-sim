@@ -21,31 +21,29 @@ public class SystemCommand extends AbstractUnitCommand {
 
     @Override
     protected boolean execute(Conversation context, String input, Unit source) {
-        if (!(source instanceof Robot)) {
-            context.println("Unit is not a Robot");
+        if (source instanceof Robot robot) {
+            StructuredResponse response = new StructuredResponse();
+            Battery battery = robot.getSystemCondition().getBattery();
+            response.appendLabeledString("Model", robot.getModel());
+
+            response.appendLabeledString("Battery Power", String.format(CommandHelper.PERC_FORMAT,
+                    battery.getBatteryPercent()));
+            response.appendLabeledString("Low Power Threshold", String.format(CommandHelper.PERC_FORMAT,
+                    battery.getLowPowerPercent()));
+            response.appendLabeledString("Recommended Charging Threshold", String.format(CommandHelper.PERC_FORMAT,
+                    robot.getSystemCondition().getRecommendedThreshold()));
+            response.appendLabeledString("Battery Capacity", String.format(CommandHelper.KWH_FORMAT, battery.getEnergyStorageCapacity()));   
+            response.appendLabeledString("Charging", robot.getSystemCondition().getBattery().isCharging() ? "Yes" : "No");
+            response.appendLabeledString("Standby Power", String.format(CommandHelper.KW_FORMAT, battery.getStandbyPowerConsumption()));                                                                                                                                                             
+
+            if (robot.getOccupiedStation() != null) {
+                response.appendLabeledString("Occupied Station", robot.getOccupiedStation().getBuilding().getName());
+            }
+
+            context.println(response.getOutput());
+            return true;
         }
-
-        StructuredResponse response = new StructuredResponse();
-        Robot robot = ((Robot) source);
-        Battery battery = robot.getSystemCondition().getBattery();
-        response.appendLabeledString("Type", robot.getRobotType().getName());
-        response.appendLabeledString("Model", robot.getModel());
-
-        response.appendLabeledString("Battery Power", String.format(CommandHelper.PERC_FORMAT,
-        		battery.getBatteryPercent()));
-        response.appendLabeledString("Low Power Threshold", String.format(CommandHelper.PERC_FORMAT,
-        		battery.getLowPowerPercent()));
-        response.appendLabeledString("Recommended Charging Threshold", String.format(CommandHelper.PERC_FORMAT,
-        		robot.getSystemCondition().getRecommendedThreshold()));
-        response.appendLabeledString("Battery Capacity", String.format(CommandHelper.KWH_FORMAT, battery.getEnergyStorageCapacity()));   
-        response.appendLabeledString("Charging", robot.getSystemCondition().getBattery().isCharging() ? "Yes" : "No");
-        response.appendLabeledString("Standby Power", String.format(CommandHelper.KW_FORMAT, battery.getStandbyPowerConsumption()));                                                                                                                                                             
-
-        if (robot.getOccupiedStation() != null) {
-            response.appendLabeledString("Occupied Station", robot.getOccupiedStation().getBuilding().getName());
-        }
-
-        context.println(response.getOutput());
-        return true;
+        context.println("This command can only be used on Robots.");
+        return false;
     }
 }

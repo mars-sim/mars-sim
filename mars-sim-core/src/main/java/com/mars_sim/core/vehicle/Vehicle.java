@@ -32,6 +32,7 @@ import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.MSolDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
+import com.mars_sim.core.environment.TerrainElevation;
 import com.mars_sim.core.equipment.Container;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.equipment.EquipmentInventory;
@@ -135,6 +136,8 @@ public abstract class Vehicle extends AbstractMobileUnit
 	/** True if vehicle is ready to be drawn on the map. */
 	private boolean isReady = false;
 	
+	/** Current elevation in km. */
+	private double elevation;
 	/** Parked facing (degrees clockwise from North). */
 	private double facingParked;
 	/** The Base Lifetime Wear in msols **/
@@ -142,13 +145,13 @@ public abstract class Vehicle extends AbstractMobileUnit
 	/** Current accel of vehicle in m/s2. */
 	private double accel = 0;
 	/** Current speed of vehicle in kph. */
-	private double speed = 0; //
+	private double speed = 0;
 	/** Total cumulative distance traveled by vehicle (km). */
-	private double odometerMileage; //
+	private double odometerMileage;
 	/** The last distance travelled by vehicle (km). */
 	private double lastDistance;
 	/** Distance traveled by vehicle since last maintenance (km) . */
-	private double distanceMaint; //
+	private double distanceMaint;
 	/** The cumulative fuel usage of the vehicle [kg] */
 	private double cumFuelUsedKG;
 	/** The cumulative energy usage of the vehicle [kWh] */
@@ -377,6 +380,47 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return facingParked;
 	}
 
+	/**
+	 * Returns the elevation of the vehicle [in km].
+	 * 
+	 * @return elevation of the ground vehicle (in km)
+	 */
+	public double getElevation() {
+		return elevation;
+	}
+
+	/**
+	 * Sets the elevation of the vehicle [in km].
+	 * 
+	 * @param elevation new elevation for ground vehicle
+	 */
+	public void setElevation(double elevation) {
+		this.elevation = elevation;
+	}
+	
+	/**
+	 * Gets the average angle of terrain over over a sample distance in direction
+	 * vehicle is traveling.
+	 * 
+	 * @return vehicle's current terrain grade angle from horizontal
+	 *         (radians)
+	 */
+	public double getTerrainGrade() {
+		return getTerrainGrade(getDirection());
+	}
+
+	/**
+	 * Gets the average angle of terrain over over a sample distance in a given
+	 * direction from the vehicle.
+	 * 
+	 * @return vehicle's current terrain grade angle from horizontal
+	 *         (radians)
+	 */
+	public double getTerrainGrade(Direction direction) {
+		// Determine the terrain grade in a given direction from the vehicle.
+		return TerrainElevation.determineTerrainSteepness(getCoordinates(), elevation, direction);
+	}
+	
 	/**
 	 * Get the loading plan associated with this Vehicle
 	 */
@@ -1259,10 +1303,10 @@ public abstract class Vehicle extends AbstractMobileUnit
 	 * @param cumFuelUsedKG the fuel used [kg]
 	 */
 	public void addOdometerMileage(double distance, double cumEnergyUsed, double cumFuelUsedKG) {
-		this.odometerMileage += distance;
-		this.lastDistance = distance;
-		this.cumEnergyUsedKWH += cumEnergyUsed/1000;
-		this.cumFuelUsedKG += cumFuelUsedKG;
+		odometerMileage += distance;
+		lastDistance = distance;
+		cumEnergyUsedKWH += cumEnergyUsed/1000;
+		cumFuelUsedKG += cumFuelUsedKG;
 	}
 
 	/**
@@ -1358,10 +1402,6 @@ public abstract class Vehicle extends AbstractMobileUnit
 		return spec.getBaseAccel();
 	}
 	
-	public abstract double getTerrainGrade();
-
-	public abstract double getElevation();
-
 	/**
 	 * Gets the operator of the vehicle (person or AI).
 	 *

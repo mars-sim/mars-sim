@@ -223,6 +223,13 @@ public abstract class RoverMission extends AbstractVehicleMission {
 						+ ". Inside " + r.getName() + " but not a mission member of " + getName() + ".");
 				addMissionLog("Not a member - " + p.getName(), ((Person)member).getName());
 				result = false;
+				
+				// Question: how to check if this person is loading resources and 
+				// add a delay for him to finish what he has started ?
+				
+				// Have the person leave the vehicle
+				r.removePerson(p);
+				BuildingManager.addPersonToRandomBuildingSpot(p, getAssociatedSettlement());
 			}
 		}
 		

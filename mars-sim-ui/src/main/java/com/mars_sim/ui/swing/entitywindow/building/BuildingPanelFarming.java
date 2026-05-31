@@ -165,7 +165,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 		// Prepare farmers label
 		farmerLabel = new JIntegerLabel(farm.getFarmerNum());
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.numFarmers.title"), farmerLabel, "# of active gardeners tending the greenhouse");
-		lightingLabel = new JDoubleLabel(StyleManager.DECIMAL2_KW, farm.getCombinedPowerLoad());
+		lightingLabel = new JDoubleLabel(StyleManager.DECIMAL2_KW, farm.getTotalLightingPower());
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.lighting"), lightingLabel,
 			 	Msg.getString("BuildingPanelFarming.lighting.tooltip"));
 		
@@ -391,7 +391,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 		cropsLabel.setValue(farm.getCrops().size());
 
 		// Update lighting label 
-		lightingLabel.setValue(farm.getCombinedPowerLoad());
+		lightingLabel.setValue(farm.getTotalLightingPower());
 		
 		// Update solar irradiance label
 		radLabel.setValue(surfaceFeatures.getSolarIrradiance(location));

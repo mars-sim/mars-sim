@@ -35,27 +35,4 @@ class ConfigModelHelper {
 
 		return result;
 	}
-
-	/**
-	 * Determines the new settlement number of robots.
-	 * 
-	 * @param templateName
-	 *            the settlement template name.
-	 * @return number of robots.
-	 */
-	static int determineNewSettlementNumOfRobots(String templateName, SettlementTemplateConfig settlementTemplateConfig) {
-
-		int result = 0;
-
-		if (templateName != null) {
-			SettlementTemplate template = settlementTemplateConfig.getItem(templateName);
-			if (template != null) {
-				result = template.getDefaultNumOfRobots();
-			}
-		}
-
-		return result;
-	}
-
-
 }

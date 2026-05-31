@@ -131,7 +131,7 @@ public class Computation extends Function {
 	 */
 	public static double getFunctionValue(String type, boolean newBuilding, Settlement settlement) {
 
-		double demand = settlement.getPowerGrid().getRequiredPower();
+		double demand = settlement.getPowerGrid().getPowerLoad();
 
 		double supply = 0D;
 		boolean removedBuilding = false;
@@ -449,7 +449,7 @@ public class Computation extends Function {
 				
 				// e.g. at 30% eff, if power = 0.3 kW, cooling = 0.7 kW. total power req = 1 kW.
 				
-				double instantPower = getCombinedPowerLoad();
+				double instantPower = getFullPowerLoad();
 				
 				instantCoolingLoad = instantPower * COOLING_PERCENT / 100;
 				
@@ -564,12 +564,12 @@ public class Computation extends Function {
 	}
 
 	/**
-	 * Gets the amount of power required, based on the current load.
+	 * Gets the full power load, based on the current load.
 	 *
 	 * @return power (kW) default zero
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		double loadFraction = (peakCU - freeCU) / peakCU;
 		double nonLoadFraction = 1 - loadFraction;
 		

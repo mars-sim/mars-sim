@@ -234,7 +234,7 @@ class TabPanelComputing extends EntityTableTabPanel<Settlement>
 			var b = buildings.get(row);
 			return switch (column) {
 				case 0 -> b.getName();
-				case 1 -> Math.round(b.getComputation().getCombinedPowerLoad() * 10.0)/10.0;
+				case 1 -> Math.round(b.getComputation().getFullPowerLoad() * 10.0)/10.0;
 				case 2 -> Math.round(b.getComputation().getInstantHeatGenerated() * 10.0)/10.0;
 				case 3 -> Math.round(b.getComputation().getInstantCoolingLoad() * 10.0)/10.0;
 				case 4 -> Math.round(b.getComputation().getUsagePercent() * 10.0)/10.0;

@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Phase 1-IN" default-population="4" description="Phase 1 base for ISRO"
-	number-of-robots="4" sponsor="ISRO">
+	sponsor="ISRO">
 
     <building id="0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="0.0">
@@ -62,9 +62,17 @@
     <building-package name="Kilo Set 1 - 1x2"/>
  	<building-package name="Brine Water Well Set 1 - 1x1"/>
  	       	
+    <initial-supplies>
+ 	       	
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
+
+    <!-- Standard Phase 1 allocation-->
+    <robot type="GardenBot-Advanced" number="1"/>
+    <robot type="MakerBot-Standard" number="1"/>
+    <robot type="MedicBot-Advanced" number="1"/>
+    <robot type="RepairBot-Standard" number="1"/>
 
     <equipment type="EVA Suit" number="8" />
 
@@ -83,6 +91,9 @@
 	<resource type="oxygen" amount="1440" />
 	
     <part-package name="Standard Part Package 1" number="1" />
+ 	       	
+    </initial-supplies>
+
 
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
