@@ -10,14 +10,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.RatingScore;
-import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -56,8 +54,6 @@ public class MissionManager implements Serializable {
 
 	/** The currently on-going missions in the simulation. */
 	private List<Mission> onGoingMissions;
-	/** A history of mission plans by sol. */
-	private SolMetricDataLogger<String> historicalMissions;
 
 	/**
 	 * Constructor.
@@ -67,7 +63,6 @@ public class MissionManager implements Serializable {
 		identifier = 1;
 		solCache = 1;
 		onGoingMissions = new CopyOnWriteArrayList<>();
-		historicalMissions = new SolMetricDataLogger<>(30);
 		listeners = null;
 	}
 
@@ -344,7 +339,7 @@ public class MissionManager implements Serializable {
 									  && settlement.equals(m.getAssociatedSettlement())
 									  && m.getPlan() != null
 									  && m.getPlan().getStatus() == PlanType.PENDING))
-							  .collect(Collectors.toList());
+							  .toList();
 	}
 
 
@@ -386,26 +381,15 @@ public class MissionManager implements Serializable {
 
 			if (newStatus == PlanType.APPROVED) {
 				missionPlan.setStatus(PlanType.APPROVED);
-				historicalMissions.increaseDataPoint(PlanType.APPROVED.name(), 1D);
 			}
 			else if (newStatus == PlanType.NOT_APPROVED) {
 				missionPlan.setStatus(PlanType.NOT_APPROVED);
-				historicalMissions.increaseDataPoint(PlanType.NOT_APPROVED.name(), 1D);
 
 				Mission m = missionPlan.getMission();
 				m.abortMission(MISSION_PLAN_NOT_APPROVED);
 				removeMission(m);
 			}
 		}
-	}
-
-	/**
-	 * Gets the historical mission maps.
-	 * 
-	 * @return
-	 */
-	public Map<Integer, Map<String, Double>> getHistoricalMissions() {
-		return historicalMissions.getHistory();
 	}
 
 	/**
@@ -420,9 +404,6 @@ public class MissionManager implements Serializable {
 		if (listeners != null) {
 			listeners.clear();
 			listeners = null;
-		}
-		if (historicalMissions != null) {
-			historicalMissions = null;
 		}
 	}
 }

@@ -69,6 +69,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.RandomMineralFactory;
+import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
@@ -97,13 +98,11 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -176,10 +175,6 @@ public class Settlement extends Unit implements Temporal,
 	private static final double GREY_WATER_THRESHOLD = 0.00001;
 	/** Safe low temperature range. */
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
-	/** Initial mission passing score. */
-	private static final double INITIAL_MISSION_PASSING_SCORE = 50D;
-	/** The Maximum mission score that can be recorded. */
-	private static final double MAX_MISSION_SCORE = 1000D;
 	/** Normal air pressure [in kPa]. */
 	private static final double NORMAL_AIR_PRESSURE = 34D;
 	/** Maximum percentage of citizens that are EVA'ing. */
@@ -251,8 +246,6 @@ public class Settlement extends Unit implements Temporal,
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	private double greyWaterFilteringRate = 1;
-	/** The currently minimum passing score for mission approval. */
-	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
 	/** The settlement's current indoor temperature. */
 	private double currentTemperature = 22.5;
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */
@@ -361,6 +354,7 @@ public class Settlement extends Unit implements Temporal,
 	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
+	private MissionControl missionControl;
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -506,6 +500,8 @@ public class Settlement extends Unit implements Temporal,
 		rationing = new Rationing(this);
 		// Construct the Relation instance.
 		relation = new Relation(this);
+
+		missionControl = new MissionControl(this);
 	}
 
 
@@ -622,10 +618,6 @@ public class Settlement extends Unit implements Temporal,
 
 		// Set objective
 		setObjective(sTemplate.getObjective(), 2);
-
-		// Initialize the missionScores list
-		missionScores = new ArrayList<>();
-		missionScores.add(INITIAL_MISSION_PASSING_SCORE);
 
 		// Create meetings
 		var meetings = sTemplate.getActivitySchedule();
@@ -1228,9 +1220,6 @@ public class Settlement extends Unit implements Temporal,
 		refreshResourceStat();
 		// refresh yesterday sleep map
 		refreshSleepMap();
-
-		// Decrease the Mission score.
-		minimumPassingScore *= 1.05;
 
 		// Check the Grey water situation
 		if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
@@ -2135,29 +2124,7 @@ public class Settlement extends Unit implements Temporal,
 		.filter(v -> v.getVehicleType() == vehicleType)
 		.findAny().orElse(null);
 	}
-	
-	/**
-	 * Gets a mission capable rover.
-	 *
-	 * @return an mission capable rover
-	 * @throws MissionException if problem determining if vehicles are usable.
-	 */
-	public Vehicle getMissionCapableRover() {
-		Collection<Vehicle> list = getParkedGaragedVehicles();
-		if (list.isEmpty())
-			return null;
-		for (Vehicle v : list) {
-			if (VehicleType.isRover(v.getVehicleType())
-					&& !v.haveStatusType(StatusType.MAINTENANCE)
-					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-					&& v.isUsableVehicle()
-					&& !v.isReserved()) {
-				return v;
-			}
-		}
-		return null;
-	}
-	
+
 	/**
 	 * Adds an equipment to be owned by the settlement.
 	 *
@@ -2826,40 +2793,6 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public double getRegolithDemandCache() {
 		return regolithDemandCache;
-	}
-
-	/**
-	 * Calculates the current minimum passing score.
-	 *
-	 * @return
-	 */
-	public double getMinimumPassingScore() {
-		return minimumPassingScore;
-	}
-
-	/**
-	 * Saves the mission score.
-	 *
-	 * @param score
-	 */
-	public void saveMissionScore(double score) {
-
-		// Recalculate the new minimum score; minimum score ages in the timePulse method
-		double total = 0;
-		for (double s : missionScores) {
-			total += s;
-		}
-
-		// Simplify how minimum score is calculated. Use of trending scores
-		// seems to make it harder to get missions approved over time
-		minimumPassingScore = total / missionScores.size();
-
-		// Cap any very large score to protect the average
-		double desiredMax = MathUtils.between(minimumPassingScore * 1.5D, 0, MAX_MISSION_SCORE);
-		missionScores.add(Math.min(score, desiredMax));
-
-		if (missionScores.size() > 30)
-			missionScores.remove(0);
 	}
 
 	public double getOutsideTemperature() {
@@ -3619,6 +3552,14 @@ public class Settlement extends Unit implements Temporal,
 		return waterConsumptionRate;
 	}
 	
+	/**
+	 * Get the control for Missions of this Settlement.
+	 * @return
+	 */
+	public MissionControl getMissionControl() {
+		return missionControl;
+	}
+
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */

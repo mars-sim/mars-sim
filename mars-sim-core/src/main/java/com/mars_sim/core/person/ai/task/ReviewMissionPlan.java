@@ -17,6 +17,7 @@ import com.mars_sim.core.building.function.Management;
 import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -76,42 +77,49 @@ public class ReviewMissionPlan extends Task {
 		super(NAME, person, false, false, STRESS_MODIFIER, SkillType.MANAGEMENT,
 				RandomUtil.getRandomInt(20, 40), RandomUtil.getRandomInt(40, 80));
 				
-		if (person.isInSettlement()) {
+		if (!person.isInSettlement()) {
+			endTask();
+			return;
+		}
 
-			this.mp = target;
-			mp.setActiveReviewer(person);
+		this.mp = target;
+		mp.setActiveReviewer(person);
 
-			// If person is in a settlement, try to find an office building.
-			Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
+		Building choosenBuilding = null;
+		FunctionType choosenFunction = null;
 
-			// Note: office building is optional
-			if (officeBuilding != null) {
-				office = officeBuilding.getAdministration();	
-				if (!office.isFull()) {
-					office.addStaff();
-					// Walk to the office building.
-					walkToTaskSpecificActivitySpotInBuilding(officeBuilding, FunctionType.ADMINISTRATION, true);
-				}
-			}
+		// If person is in a settlement, try to find an office building.
+		Building officeBuilding = BuildingManager.getAvailableFunctionTypeBuilding(person, FunctionType.ADMINISTRATION);
 
-			else {
-				Building managementBuilding = Management.getAvailableStation(person);
-				if (managementBuilding != null) {
-					// Walk to the management building.
-					walkToTaskSpecificActivitySpotInBuilding(managementBuilding, FunctionType.MANAGEMENT, true);
-				}
-				else {	
-					Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
-					// Note: dining building is optional
-					if (dining != null) {
-						// Walk to the dining building.
-						walkToTaskSpecificActivitySpotInBuilding(dining, FunctionType.DINING, true);
-					}
-				}
+		// Note: office building is optional
+		if (officeBuilding != null) {
+			office = officeBuilding.getAdministration();	
+			if (!office.isFull()) {
+				office.addStaff();
+
+				choosenBuilding = officeBuilding;
+				choosenFunction = FunctionType.ADMINISTRATION;
 			}
 		}
 		else {
-			endTask();
+			Building managementBuilding = Management.getAvailableStation(person);
+			if (managementBuilding != null) {
+				choosenBuilding = managementBuilding;
+				choosenFunction = FunctionType.MANAGEMENT;
+			}
+			else {	
+				Building dining = BuildingManager.getAvailableDiningBuilding(person, false);
+				// Note: dining building is optional
+				if (dining != null) {
+					choosenBuilding = dining;
+					choosenFunction = FunctionType.DINING;
+				}
+			}
+		}
+
+		// Walk to the choosen building.
+		if (choosenBuilding != null) {
+			walkToTaskSpecificActivitySpotInBuilding(choosenBuilding, choosenFunction, true);
 		}
 
 		// Initialize phase	
@@ -141,7 +149,7 @@ public class ReviewMissionPlan extends Task {
     	Settlement reviewerSettlement = person.getAssociatedSettlement();
 
 		PlanType status = mp.getStatus();
-		if (status != null && status == PlanType.PENDING) {
+		if (status == PlanType.PENDING) {
 			if (mp.getPercentComplete() >= 100) {
 				// Go to the finished phase and finalize the approval
 				setPhase(APPROVING);
@@ -161,34 +169,30 @@ public class ReviewMissionPlan extends Task {
 				}
 			}
 
-			// if not 100% reviewed
 			Mission m = mp.getMission();
+
+			// Starter cannot review own Mission and nearly completed review.
 			if (!m.getStartingPerson().equals(person)
-					&& mp.isReviewerValid(person)) {
+					&& mp.isReviewerValid(person) && isAlmostTimeCompleted()) {
 				
-				// Simulate the person has just spent 90% duration for this task
-				// Now a mission score will be calculated
-				if (isAlmostTimeCompleted()) {
+				// 9. reviewer role weight
+				RoleType role = person.getRole().getType();
+				
+				if (role.isCouncil()) 
+					// Perform the executive review 
+					completeExecutiveReview(m, reviewerSettlement, mp);
+				else
+					// Perform the general review 
+					completeReview(m, reviewerSettlement, mp);
 					
-					// 9. reviewer role weight
-					RoleType role = person.getRole().getType();
-					
-					if (role.isCouncil()) 
-						// Perform the executive review 
-						completeExecutiveReview(m, reviewerSettlement, mp);
-					else
-						// Perform the general review 
-						completeReview(m, reviewerSettlement, mp);
-						
-					logger.log(worker, Level.INFO, 0, "Done reviewing " + m.getStartingPerson().getName()
-									+ "'s " + m.getName() + " mission plan.");
-					// Add experience
-					addExperience(time);
-					
-					endTask();
-					
-					return 0;
-				}
+				logger.log(worker, Level.INFO, 0, "Done reviewing " + m.getStartingPerson().getName()
+								+ "'s " + m.getName() + " mission plan.");
+				// Add experience
+				addExperience(time);
+				
+				endTask();
+				
+				return 0;
 			}
 		}
 		
@@ -403,39 +407,9 @@ public class ReviewMissionPlan extends Task {
 
 		if (status != null && status == PlanType.PENDING
 				&& mp.getPercentComplete() >= 60) {
-									
-			logger.log(worker, Level.INFO, 0, "Going over the approval of mission plans.");
-				
-
-			Mission m = mp.getMission();
-			String requestedBy = m.getStartingPerson().getName();
-		
-			Settlement settlement = person.getAssociatedSettlement();
-			
-			double score = mp.getScore();
-			double minScore = mp.getPassingScore();
-			if (score > minScore) {
-				// Approved
-				// Updates the mission plan status
-				missionManager.approveMissionPlan(mp, PlanType.APPROVED);
-					
-				logger.log(worker, Level.INFO, 0, "Approved " + requestedBy
-						+ "'s " + m.getName() + " mission plan. Score: " 
-						+ Math.round(score*10.0)/10.0 
-						+ " [Min: " + Math.round(minScore*10.0)/10.0 + "].");
-			}
-			else {
-				// Not Approved
-				// Updates the mission plan status
-				missionManager.approveMissionPlan(mp, PlanType.NOT_APPROVED);
-			
-				logger.log(worker, Level.INFO, 0, "Did NOT approve " + requestedBy
-						+ "'s " + m.getName() + " mission plan. Score: " 
-						+ Math.round(score*10.0)/10.0 
-						+ " [Min: " + Math.round(minScore*10.0)/10.0 + "].");
-			}
-								
-			settlement.saveMissionScore(score);
+												
+			MissionControl control= person.getAssociatedSettlement().getMissionControl();
+			control.reviewCompleted(mp);
 			
 			// Add experience
 			addExperience(time);

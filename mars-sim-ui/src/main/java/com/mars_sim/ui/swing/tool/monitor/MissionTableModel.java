@@ -213,9 +213,9 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 			case PHASE:
 				MissionPlanning plan = mission.getPlan();
 				if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
-					int percent = (int) plan.getPercentComplete();
+					int percent = plan.getPercentComplete();
 					int score = (int)plan.getScore();
-					int min = (int)mission.getAssociatedSettlement().getMinimumPassingScore();
+					int min = (int)plan.getPassingScore();
 					result = percent + "% Reviewed - Score: " + score + " [Min: " + min + "]";
 				}
 				else

@@ -1296,7 +1296,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected void startReview() {
 		setPhase(REVIEWING, null);
 
-		var minScore = getAssociatedSettlement().getMinimumPassingScore();
+		var minScore = getAssociatedSettlement().getMissionControl().getMinimumPassingScore();
 		plan = new MissionPlanning(this, getMarsTime().getMissionSol(), minScore);
 	}
 	

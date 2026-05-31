@@ -5,31 +5,32 @@
  * @author Barry Evans
  */
 
-package com.mars_sim.console.chat.simcommand;
+package com.mars_sim.console.chat.simcommand.settlement;
 
 import java.util.Map;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
+import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.person.ai.mission.PlanType;
+import com.mars_sim.core.structure.Settlement;
 
 /**
  * Command to display mission stats
  * This is a singleton.
  */
-public class MissionPlanCommand extends ChatCommand {
+public class MissionPlanCommand extends AbstractSettlementCommand {
 
 	public static final ChatCommand MISSION_PLAN = new MissionPlanCommand();
 
 	private MissionPlanCommand() {
-		super(TopLevel.SIMULATION_GROUP, "mp", "planning", "Planned mission counts");
+		super("mp", "planning", "Planned mission counts");
 		
 		setInteractive(true);
 	}
 
 	@Override
-	public boolean execute(Conversation context, String input) {
-
+	protected boolean execute(Conversation context, String input, Settlement settlement) {
 		String prompt2 = "Show me the statistics on the mission plans submitted."
 				+ System.lineSeparator() + System.lineSeparator() + " 1. Today" + System.lineSeparator()
 				+ " 2. last 3 sols (Each)" + System.lineSeparator() + " 3. Last 7 sols (Each)"
@@ -93,7 +94,7 @@ public class MissionPlanCommand extends ChatCommand {
 		response.appendHeading("On Sol " + today + ", the " + (totals ? "combined " : "")
 								+ "data for the last " + max + " sols shows");
 
-		Map<Integer, Map<String, Double>> plannings = context.getSim().getMissionManager().getHistoricalMissions();
+		Map<Integer, Map<String, Double>> plannings = settlement.getMissionControl().getHistoricalMissions();
 
 		int totalApproved = 0;
 		int totalNotApproved = 0;
