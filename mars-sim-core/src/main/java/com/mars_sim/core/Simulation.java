@@ -394,7 +394,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		MissionStep.initializeInstances(masterClock, unitManager);
 
 		TaskManager.initializeInstances(this, simulationConfig);
-		JobSpec.initializeInstances(unitManager, missionManager);
+		JobSpec.initializeInstances(unitManager);
 		
 		doneInitializing = true;
 	}
