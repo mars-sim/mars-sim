@@ -276,7 +276,7 @@ class BuildingTableModel extends EntityMonitorModel<Building> {
 	 */
 	private int getColumnIndexForEventType(String eventType) {
 		return switch (eventType) {
-			case PowerGrid.POWER_MODE_EVENT -> POWER_MODE;
+			case Building.POWER_MODE_EVENT -> POWER_MODE;
 			case PowerGrid.GENERATED_POWER_EVENT -> POWER_GEN;
 			case PowerGrid.POWER_LOAD_EVENT -> POWER_REQ;
 			case Heating.REQUIRED_HEAT_EVENT -> HEAT_REQ;

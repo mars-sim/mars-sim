@@ -35,6 +35,7 @@ import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.building.utility.power.SolarPowerSource;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
@@ -130,7 +131,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		// Prepare power used tf.
 		powerLoadCache = powerGrid.getPowerLoad();
 		// Prepare the power usage percent
-		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 100 * 10.0)/10.0 ;
+		percentPowerUsage = MathUtils.between(Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0, 0, 100);
 		
 		percentPowerUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
 				StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
@@ -285,7 +286,8 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		if (Math.abs(powerGenCache - gen) > .4 || Math.abs(powerLoadCache - req) > .4) {
 			powerGenCache = gen;
 			powerLoadCache = req;
-			percentPowerUsage = Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0;
+			
+			percentPowerUsage = MathUtils.between(Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0, 0, 100);
 
 			String s = StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KW.format(powerLoadCache) 

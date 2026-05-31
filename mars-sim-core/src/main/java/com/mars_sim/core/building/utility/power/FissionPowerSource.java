@@ -91,14 +91,22 @@ public class FissionPowerSource extends PowerSource implements AdjustablePowerSo
 	}
 	
 	/**
-	 * Gets the current load capacity
+	 * Gets the current load capacity.
 	 * 
 	 * @return percent
 	 */
 	public double getCurrentLoadCapacity() {
 		return currentLoadCapacity;
 	}
-
+	
+	/**
+	 * Gets the current usage ratio.
+	 * 
+	 * @return
+	 */
+	public double getUsageRatio() {
+		return currentPowerElectrical / currentLoadCapacity;
+	}
 	
 	/**
 	 * Increases the power load capacity.

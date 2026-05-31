@@ -2368,7 +2368,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			wear-lifetime="3340000" maintenance-time="125" room-temperature="22" base-mass="1850">
 		<description> The Compact Quarters hosts 12 basic beds and small desks.
 		</description>
-		<base-power power-priority="9" base-full-power="2.0" base-low-power="0.2" />
+		<base-power power-priority="9" base-full-power="1.0" base-low-power="0.1" />
 
 		<functions>
 			<life-support capacity="20" />
@@ -2465,7 +2465,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			that is configured to house as many as 12 beds. It also provides storage space
 			for critical rate resources. It is furnished with a solar panel rooftop.
 		</description>
-		<base-power power-priority="9" base-full-power="2.0" base-low-power="0.2" />
+		<base-power power-priority="9" base-full-power="1.0" base-low-power="0.1" />
 
 		<functions>
 			<life-support capacity="12" />
@@ -3175,7 +3175,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			3-D printers and additive manufacturing machines for processing resources,
 			synthesizing parts and items for use.
 		</description>
-		<base-power power-priority="4" base-full-power="3.0" base-low-power="0.3" />
+		<base-power power-priority="4" base-full-power="2.0" base-low-power="0.2" />
 
 		<functions>
 			<computation computing-unit="4.0" power-demand="1.0">
@@ -3613,7 +3613,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			stored excess power during non-peak hours and released power during peak power
 			usage.
 		</description>
-		<base-power power-priority="10" base-full-power="0.5" base-low-power="0.05" />
+		<base-power power-priority="10" base-full-power="0.25" base-low-power="0.05" />
 
 		<functions>
 			<!-- power storage capacity in the energy unit of kW hr. -->
@@ -3941,7 +3941,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 		 	for making items and synthesizing resource. It provides storage space for
 		 	housing commonly used resources.
 		</description>
-		<base-power power-priority="4" base-full-power="3.0" base-low-power="0.3" />
+		<base-power power-priority="4" base-full-power="2.0" base-low-power="0.2" />
 
 		<functions>
 			<computation computing-unit="4.0" power-demand="1.0">
@@ -4299,7 +4299,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			two beds. It is a retractable housing custom-tailored for
 			temporary mining outpost operation.
 		</description>
-		<base-power power-priority="10" base-full-power="1.5" base-low-power="0.15" />
+		<base-power power-priority="10" base-full-power="1.0" base-low-power="0.1" />
 
 		<functions>
 			<life-support capacity="4" />

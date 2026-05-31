@@ -104,6 +104,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	private static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
+	
+    public static final String POWER_MODE_EVENT = "power mode";
 
 	// Data members
 	/** The flag to track if the impact is immientnt for the current sol. */
@@ -756,7 +758,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void setPowerMode(PowerMode powerMode) {
 		if (powerModeCache != powerMode) {
 			powerModeCache = powerMode;
-			fireUnitUpdate(PowerGrid.POWER_MODE_EVENT, this);
+			fireUnitUpdate(POWER_MODE_EVENT, this);
 		}
 	}
 
