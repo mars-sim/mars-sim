@@ -321,7 +321,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             case VEHICLE -> settlement.getAllAssociatedVehicles();
             case CONSTRUCTION -> settlement.getConstructionManager().getConstructionSites();
             case BUILDING -> settlement.getBuildingManager().getBuildingSet();
-            case MISSION -> context.getSimulation().getMissionManager().getMissionsForSettlement(settlement);
+            case MISSION -> settlement.getMissionControl().getActiveMissions();
             case SCIENTIFIC_STUDY -> scienceMgr.getAllStudies(settlement);
             case TRANSPORT -> {
                         if (settlement == null) {

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingLog;
@@ -246,47 +245,6 @@ public class MissionManager implements Serializable {
 									&& settlement.equals(m.getAssociatedSettlement())
 									&& (m.getMissionType() == mType)))
 							.count();
-	}
-
-	/**
-	 * Gets all the active missions associated with a given settlement.
-	 *
-	 * @param settlement the settlement to find missions.
-	 * @return list of missions associated with the settlement.
-	 */
-	public List<Mission> getMissionsForSettlement(Settlement settlement) {
-
-		if (settlement == null) {
-			throw new IllegalArgumentException("settlement is null");
-		}
-
-		if (onGoingMissions == null || onGoingMissions.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		return onGoingMissions.stream()
-				.filter(m -> (!m.isDone() && settlement.equals(m.getAssociatedSettlement())))
-				.collect(Collectors.toList());
-	}
-
-	/**
-	 * Gets the missions pending for approval in a given settlement.
-	 *
-	 * @param settlement
-	 * @return list of pending missions associated with the settlement.
-	 */
-	public List<Mission> getPendingMissions(Settlement settlement) {
-
-		if (settlement == null) {
-			throw new IllegalArgumentException("settlement is null");
-		}
-
-		return onGoingMissions.stream()
-							  .filter(m -> (!m.isDone()
-									  && settlement.equals(m.getAssociatedSettlement())
-									  && m.getPlan() != null
-									  && m.getPlan().getStatus() == PlanType.PENDING))
-							  .toList();
 	}
 
 

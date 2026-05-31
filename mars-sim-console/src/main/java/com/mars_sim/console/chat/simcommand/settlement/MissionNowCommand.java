@@ -7,8 +7,7 @@
 
 package com.mars_sim.console.chat.simcommand.settlement;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
@@ -34,16 +33,14 @@ public class MissionNowCommand extends AbstractSettlementCommand {
 			onlyActive = "active".equalsIgnoreCase(input);
 		}
 		
-		List<Mission> missions;
+		Set<Mission> missions;
 		if (onlyActive) {
 			// By default this only return uncompleted Missions
-			missions = context.getSim().getMissionManager().getMissionsForSettlement(settlement);
+			missions = settlement.getMissionControl().getActiveMissions();
 		}
 		else {
 			// This is all missions
-			missions = context.getSim().getMissionManager().getMissions().stream()
-								.filter(m -> settlement.equals(m.getAssociatedSettlement()))
-								.collect(Collectors.toList());
+			missions = settlement.getMissionControl().getAllMissions();
 		}
 			
 		// Display what we have found	

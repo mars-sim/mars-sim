@@ -9,6 +9,8 @@ package com.mars_sim.core.mission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.SolMetricDataLogger;
@@ -173,4 +175,25 @@ public class MissionControl implements ScheduledEventHandler {
 		return historicalMissions.getHistory();
 	}
 
+	/**
+	 * Gets all the missions associated with this control.
+	 * TODO the implementayion will be changed in a later commit.
+	 * @return set of missions associated with this control.
+	 */
+	public Set<Mission> getAllMissions() {
+		return Simulation.instance().getMissionManager().getMissions()
+				.stream()
+				.filter(m -> m.getAssociatedSettlement().equals(owner))
+				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Gets all the active missions associated with this control.
+	 * @return set of active missions associated with this control.
+	 */
+	public Set<Mission> getActiveMissions() {
+		return getAllMissions().stream()
+				.filter(m -> !m.isDone())
+				.collect(Collectors.toSet());
+	}
 }

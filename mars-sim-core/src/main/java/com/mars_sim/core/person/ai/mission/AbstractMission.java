@@ -1438,7 +1438,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		clock = si.getMasterClock();
 
 		MissionLog.initialise(clock);
-		MissionUtil.initializeInstances(u, m);
+		MissionUtil.initializeInstances(u);
 		AbstractMetaMission.initializeInstances(clock);
 	}
 }

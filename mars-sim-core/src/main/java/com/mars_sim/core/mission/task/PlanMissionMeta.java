@@ -72,7 +72,7 @@ public class PlanMissionMeta extends MetaTask implements SettlementMetaTask {
     @Override
     public List<SettlementTask> getSettlementTasks(Settlement settlement) {
         List<SettlementTask> results = new ArrayList<>();
-        int settlementMissions = missionManager.getMissionsForSettlement(settlement).size();
+        int settlementMissions = settlement.getMissionControl().getActiveMissions().size();
 
         int optimalMissions = settlement.getPreferences().getIntValue(
                                                 MissionLimitParameters.TOTAL_MISSIONS, 0);

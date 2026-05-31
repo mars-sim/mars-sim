@@ -446,6 +446,8 @@ public class Settlement extends Unit implements Temporal,
 		
 		// Initialize the rationing instance
 		rationing = new Rationing(this);
+
+		missionControl = new MissionControl(this);
 	}
 
 	/**

@@ -100,8 +100,8 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	@Override
 	protected boolean applySettlementFilter(Set<Settlement> filter) {
 		
-		Collection<Mission> missions = missionManager.getMissions().stream()
-				.filter(m -> filter.contains(m.getAssociatedSettlement()))
+		Collection<Mission> missions = filter.stream()
+				.flatMap(s -> s.getMissionControl().getAllMissions().stream())
 				.toList();
 	
 		resetItems(missions);

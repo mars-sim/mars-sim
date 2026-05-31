@@ -500,7 +500,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      * @param settlement Settlement being checked
      */
     protected Stream<Vehicle> getVehiclesOnMissions(Settlement settlement) {
-        return missionManager.getMissionsForSettlement(settlement).stream()
+		return settlement.getMissionControl().getActiveMissions().stream()
                 .filter(VehicleMission.class::isInstance)
                 .map(vm -> ((VehicleMission) vm).getVehicle())
                 .filter(Objects::nonNull);

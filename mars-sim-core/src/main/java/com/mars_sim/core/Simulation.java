@@ -516,7 +516,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		TaskManager.initializeInstances(this, simulationConfig);
 		
-		JobSpec.initializeInstances(unitManager, missionManager);
+		JobSpec.initializeInstances(unitManager);
 		
 		// Initialize instances prior to UnitManager initiation
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
@@ -637,7 +637,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		TaskManager.initializeInstances(sim, simulationConfig);
 		
-		JobSpec.initializeInstances(unitManager, missionManager);
+		JobSpec.initializeInstances(unitManager);
 		
 		MalfunctionManager.initializeInstances(masterClock, malfunctionFactory,
 				medicalManager,

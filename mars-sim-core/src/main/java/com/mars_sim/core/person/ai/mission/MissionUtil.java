@@ -11,7 +11,6 @@ import java.util.Iterator;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -23,7 +22,6 @@ public class MissionUtil {
 	private static final String PHASE_1 = "phase 1";
 	private static final String MINING = "mining";
 	private static final String TRADING = "trading";
-    private static MissionManager missionManager;
     private static UnitManager unitManager;
 
     private MissionUtil() {
@@ -70,24 +68,6 @@ public class MissionUtil {
 		return result;
 	}
 
-
-    /**
-	 * Checks to see how many currently embarking missions at the settlement.
-	 *
-	 * @param settlement the settlement.
-	 * @return true if embarking missions.
-	 */
-	public static int numEmbarkingMissions(Settlement settlement) {
-		int result = 0;
-		for(Mission i : missionManager.getMissionsForSettlement(settlement)) {
-			if (i.getStage() == Stage.PREPARATION) {
-				result++;
-			}
-		}
-
-		return result;
-	}
-
     /**
 	 * Checks to see if at least a minimum number of people are available for a
 	 * mission at a settlement.
@@ -122,8 +102,7 @@ public class MissionUtil {
 		return result;
 	}
 
-    public static void initializeInstances(UnitManager u, MissionManager m) {
+    public static void initializeInstances(UnitManager u) {
         unitManager = u;
-        missionManager = m;
     }
 }

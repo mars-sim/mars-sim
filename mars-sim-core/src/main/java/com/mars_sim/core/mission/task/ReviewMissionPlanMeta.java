@@ -13,7 +13,6 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.role.RoleType;
@@ -58,8 +57,6 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	private static final double MAX_SCORE = 750.0; // Max score once max age is reached
 	private static final int MAX_AGE = 7;
 	private static final double SOL_DELAY_MODIFIER = ((MAX_SCORE - BASE_SCORE)/BASE_SCORE) / MAX_AGE;
-
-	private static MissionManager missionManager;
     
     public ReviewMissionPlanMeta() {
 		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
@@ -123,7 +120,11 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
 		List<SettlementTask> tasks = new ArrayList<>();
 	
-        for (Mission m : missionManager.getPendingMissions(settlement)) {
+		var pendingMissions = settlement.getMissionControl().getActiveMissions().stream()
+							  .filter(m -> (m.getPlan() != null
+									  && m.getPlan().getStatus() == PlanType.PENDING))
+							  .toList();
+        for (Mission m : pendingMissions) {
 
         	MissionPlanning mp = m.getPlan();
     	
@@ -147,9 +148,4 @@ public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTas
 	
         return tasks;
     }
-
-	public static void initialiseInstances(MissionManager mm) {
-		missionManager = mm;
-	}
-
 }

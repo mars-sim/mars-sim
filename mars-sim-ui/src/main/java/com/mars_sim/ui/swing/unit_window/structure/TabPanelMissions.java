@@ -126,11 +126,10 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		missionListPanel.setBorder(SwingHelper.createLabelBorder("Active Missions"));
 
 		// Create mission list.
-		var missionMgr = getContext().getSimulation().getMissionManager();
 		missionList = new UnitListPanel<Mission>(getContext(), new Dimension(300, 100)) {
 			@Override
 			protected Collection<Mission> getData() {
-				return missionMgr.getMissionsForSettlement(getEntity());
+				return getEntity().getMissionControl().getActiveMissions();
 			}
 		};
 		missionListPanel.add(missionList);
