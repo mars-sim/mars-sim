@@ -22,29 +22,30 @@ import com.mars_sim.core.time.MarsTime;
 @SuppressWarnings("serial")
 public class MockMission implements Mission {
 
+    private boolean done = false;
+
     @Override
     public String getContext() {
-        throw new UnsupportedOperationException("Unimplemented method 'getContext'");
+        return "Mock";
     }
 
     @Override
     public void abortMission(MissionStatus reason) {
-        throw new UnsupportedOperationException("Unimplemented method 'abortMission'");
+        done = true;        
     }
 
     @Override
     public void abortPhase() {
-        throw new UnsupportedOperationException("Unimplemented method 'abortPhase'");
     }
 
     @Override
     public boolean isDone() {
-        throw new UnsupportedOperationException("Unimplemented method 'isDone'");
+        return done;
     }
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return "MockMission";
     }
 
     @Override
@@ -185,7 +186,6 @@ public class MockMission implements Mission {
 
     @Override
     public void fireMissionUpdate(String eventType, Object target) {
-        throw new UnsupportedOperationException("Unimplemented method 'fireMissionUpdate'");
     }
 
     @Override

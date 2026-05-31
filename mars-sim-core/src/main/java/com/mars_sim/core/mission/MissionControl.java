@@ -14,7 +14,10 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
+import com.mars_sim.core.person.ai.mission.MissionStatus;
+import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
@@ -31,15 +34,20 @@ public class MissionControl implements ScheduledEventHandler {
 	private static final double INITIAL_MISSION_PASSING_SCORE = 50D;
 	/** The Maximum mission score that can be recorded. */
 	private static final double MAX_MISSION_SCORE = 1000D;
-    
+
+    // Status for a mission plan that is not approved
+	private static final MissionStatus MISSION_PLAN_NOT_APPROVED = MissionStatus.createResourceStatus("Mission.status.notApproved");
+
     private static final SimLogger logger = SimLogger.getLogger(MissionControl.class.getName());
 
 	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
     private List<Double> missionScores = new ArrayList<>();
-	/** A history of mission plans by sol. */
 	private SolMetricDataLogger<String> historicalMissions;
+	private Settlement owner;
+	private int id = 1;
 
     public MissionControl(Settlement settlement) {
+		this.owner = settlement;
         missionScores.add(minimumPassingScore);
 
 		historicalMissions = new SolMetricDataLogger<>(10);
@@ -49,6 +57,30 @@ public class MissionControl implements ScheduledEventHandler {
 		startOfNextSol = startOfNextSol.advanceToNextMSol(settlement.getTimeZone().getMSolOffset());
         settlement.getFutureManager().addEvent(startOfNextSol, this);
     }
+
+	// The naming conventino to apply to a new Mission
+	public record MissionNaming(String name, String callSign) {}
+
+	/**
+	 * Creates the mission unique names for a new mission under this control
+	 * @param type The type of the mission
+	 * @return Naming convention to apply
+	 */
+	public synchronized MissionNaming generateNames(MissionType type) {
+		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
+
+		String sortieString = missionSol + "-" + id;
+
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(type.getShortCode())
+			  .append("-")
+			  .append(owner.getSettlementCode())
+			  .append("-")
+			  .append(sortieString);
+		id++;
+
+		return new MissionNaming(type.getName() + " " + sortieString, buffer.toString());
+	}
 
     /**
 	 * Calculates the current minimum passing score.
@@ -103,14 +135,26 @@ public class MissionControl implements ScheduledEventHandler {
      * @param mp Plan completed.
      */
     public void reviewCompleted(MissionPlanning mp) {
+		if (mp.getStatus() != PlanType.PENDING) {
+			logger.warning(mp.getMission(), "Attempted to review a mission plan that is not pending review.");
+			return;
+		}
+
         double score = mp.getScore();
 		double minScore = mp.getPassingScore();   // Passing score is set when the review is started
 		PlanType state = (score > minScore ? PlanType.APPROVED : PlanType.NOT_APPROVED);
 		historicalMissions.increaseDataPoint(state.name(), 1D);
 
 		// Updates the mission plan status
-        var missionManager = Simulation.instance().getMissionManager();
-		missionManager.approveMissionPlan(mp, state);
+		mp.setStatus(state);
+		if (state == PlanType.NOT_APPROVED) {
+			// Failure needs a bit more work
+			Mission m = mp.getMission();
+			m.abortMission(MISSION_PLAN_NOT_APPROVED);
+
+			var missionManager = Simulation.instance().getMissionManager();
+			missionManager.removeMission(m);
+		}
 					
 		logger.info(mp.getMission(), "Review completed, outcome is " + state.getName() + ", score: " 
 						+ Math.round(score*10.0)/10.0 

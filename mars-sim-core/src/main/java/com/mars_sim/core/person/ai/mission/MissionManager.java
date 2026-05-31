@@ -37,17 +37,6 @@ public class MissionManager implements Serializable {
 
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(MissionManager.class.getName());
-
-	private static final MissionStatus MISSION_PLAN_NOT_APPROVED = MissionStatus.createResourceStatus("Mission.status.notApproved");
-	
-	/** The mission identifier. */
-	private int identifier;
-	/** The mission sortie id. Note it goes back to 1 at the start of each sol. */
-	private int sortieID;
-	/** The sol cache. */	
-	private int solCache;
-	/** The sol sortie string. */		
-	private String solSortieString;
 	
 	/** The mission listeners. */
 	private transient List<MissionManagerListener> listeners;
@@ -60,52 +49,10 @@ public class MissionManager implements Serializable {
 	 */
 	public MissionManager() {
 		// Initialize data members
-		identifier = 1;
-		solCache = 1;
 		onGoingMissions = new CopyOnWriteArrayList<>();
 		listeners = null;
 	}
 
-	/**
-	 * Gets the sol sortie string. Must be synchronised to prevent duplicate identifiers 
-	 * being assigned via different threads.
-	 *
-	 * @return
-	 */
-	public synchronized String computeSolSortieString() {
-		int missionSol = Simulation.instance().getMasterClock().getMarsTime().getMissionSol();
-		int id = 1;
-		if (solCache != missionSol) {
-			solCache = missionSol;
-			sortieID = 0;
-		}
-		
-		id = ++sortieID;
-		identifier++;
-		
-		solSortieString = missionSol + "-" + String.format("%03d", id);
-		
-		return solSortieString;
-	}
-
-	/**
-	 * Gets the sortie id.
-	 *
-	 * @return
-	 */
-	public int getSortieID() {
-		return sortieID;
-	}
-	
-	/**
-	 * Gets the identifier.
-	 *
-	 * @return
-	 */
-	public int getIdentifier() {
-		return identifier;
-	}
-	
 	/**
 	 * Adds a listener.
 	 *
@@ -192,7 +139,7 @@ public class MissionManager implements Serializable {
 	 *
 	 * @param the mission to be removed
 	 */
-	private void removeMission(Mission oldMission) {
+	public void removeMission(Mission oldMission) {
 		synchronized (onGoingMissions) {
 			if (onGoingMissions.contains(oldMission)) {
 				onGoingMissions.remove(oldMission);
@@ -366,30 +313,6 @@ public class MissionManager implements Serializable {
 	 */
 	public void requestMissionApproving(MissionPlanning plan) {
 		addMissionPlanning(plan);
-	}
-
-	/**
-	 * Approves a mission plan.
-	 *
-	 * @param missionPlan
-	 * @param newStatus
-	 */
-	public void approveMissionPlan(MissionPlanning missionPlan, 
-								   PlanType newStatus) {
-
-		if (missionPlan.getStatus() == PlanType.PENDING) {
-
-			if (newStatus == PlanType.APPROVED) {
-				missionPlan.setStatus(PlanType.APPROVED);
-			}
-			else if (newStatus == PlanType.NOT_APPROVED) {
-				missionPlan.setStatus(PlanType.NOT_APPROVED);
-
-				Mission m = missionPlan.getMission();
-				m.abortMission(MISSION_PLAN_NOT_APPROVED);
-				removeMission(m);
-			}
-		}
 	}
 
 	/**

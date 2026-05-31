@@ -80,7 +80,7 @@ public class CommandHelper {
 	public static final String KM_FORMAT = "%.2f km";
 	public static final String KW_FORMAT = "%,.2f kW";
 	public static final String KWH_FORMAT = "%.2f kWh";
-	public static final String PERC_FORMAT = "%.0f%%";
+	public static final String PERC_FORMAT = "%d%%";
 	public static final String PERC1_FORMAT = "%.1f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";

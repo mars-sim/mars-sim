@@ -117,7 +117,7 @@ public class MissionPlanCommand extends AbstractSettlementCommand {
 				}
 			}
 			else {
-	        	context.println("No plans submitted.");
+	        	context.println("No plans reviewed.");
 	        	return false;
 	        }
 		}

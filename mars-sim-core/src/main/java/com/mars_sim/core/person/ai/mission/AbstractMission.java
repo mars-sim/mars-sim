@@ -55,7 +55,6 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.RandomUtil;
 
 
@@ -112,8 +111,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
-	/** Unique identifier  */
-	protected int identifier;
 	
 	/** Has the current phase ended? */
 	private boolean phaseEnded = false;
@@ -177,16 +174,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected AbstractMission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
-
-		var solSortieString = missionManager.computeSolSortieString();
-		this.identifier = missionManager.getIdentifier();
-		
-		this.name = missionType.getName() + " " + solSortieString;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 
-		this.designationString = createDesignationString(missionType, solSortieString,
-									startingMember.getAssociatedSettlement(), this.identifier);
+		var names = startingMember.getAssociatedSettlement().getMissionControl().generateNames(missionType);
+		this.name = names.name();
+		this.designationString = names.callSign();
 
 		missionStatus = new HashSet<>();
 		members = new UnitSet<>();
@@ -1343,23 +1336,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		return designationString;
 	}
 
-	/**
-	 * Creates the mission designation string for this mission.
-	 */
-	public static String createDesignationString(MissionType type, String solSortieString, Settlement owner,
-								int id) {
-		StringBuilder buffer = new StringBuilder();
-		buffer.append(Conversion.getOneLetterInitial(type.getName().replace("with", "").trim()))
-			  .append("-")
-			  .append(solSortieString)
-			  .append("-")
-			  .append(owner.getSettlementCode())
-			  .append('-')
-			  .append(id);
-		
-		return buffer.toString();
-	}
-
 	@Override
 	public Set<MissionStatus> getMissionStatus() {
 		return missionStatus;
@@ -1428,7 +1404,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		AbstractMission m = (AbstractMission) obj;
-		return this.identifier == m.identifier;
+		return this.designationString.equals(m.designationString);
 	}
 
 	/**
@@ -1437,7 +1413,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		return (1 + identifier) % 64; 
+		return designationString.hashCode();
 	}
 
 	/**
