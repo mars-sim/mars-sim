@@ -23,6 +23,11 @@ import com.mars_sim.core.time.MarsTime;
 public class MockMission implements Mission {
 
     private boolean done = false;
+    private Settlement s;
+
+    public MockMission(Settlement s) {
+        this.s = s;
+    }
 
     @Override
     public String getContext() {
@@ -36,6 +41,7 @@ public class MockMission implements Mission {
 
     @Override
     public void abortPhase() {
+        throw new UnsupportedOperationException("Unimplemented method 'abortPhase'");
     }
 
     @Override
@@ -55,7 +61,7 @@ public class MockMission implements Mission {
 
     @Override
     public Settlement getAssociatedSettlement() {
-        throw new UnsupportedOperationException("Unimplemented method 'getAssociatedSettlement'");
+        return s;
     }
 
     @Override
@@ -186,6 +192,7 @@ public class MockMission implements Mission {
 
     @Override
     public void fireMissionUpdate(String eventType, Object target) {
+        // Ignore in testing
     }
 
     @Override

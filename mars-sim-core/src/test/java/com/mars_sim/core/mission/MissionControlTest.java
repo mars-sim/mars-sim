@@ -1,6 +1,7 @@
 package com.mars_sim.core.mission;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,7 +47,7 @@ class MissionControlTest extends MarsSimUnitTest{
         var s = buildSettlement("Test");
         var missionControl = new MissionControl(s);
 
-        var m = new MockMission();
+        var m = new MockMission(s);
 
         double passScore = 75D;
         MissionPlanning mp = new MissionPlanning(m, 1, passScore);
@@ -72,7 +73,7 @@ class MissionControlTest extends MarsSimUnitTest{
         var s = buildSettlement("Test");
         var missionControl = new MissionControl(s);
 
-        var m = new MockMission();
+        var m = new MockMission(s);
 
         double passScore = 75D;
         MissionPlanning mp = new MissionPlanning(m, 1, passScore);
@@ -92,6 +93,44 @@ class MissionControlTest extends MarsSimUnitTest{
         assertEquals(1D, numNotApproved, "Historical score should match final score");
 
         assertNull(history.get(1).get(PlanType.APPROVED.name()), "There should be no approved missions");
+    }
+
+    
+    @Test
+    void testActiveCount() {
+        var s1 = buildSettlement("Test");
+        var mc1 = new MissionControl(s1);
+
+        var s2 = buildSettlement("Test");
+        var mc2 = new MissionControl(s2);
+
+        var m = new MockMission(s1);
+
+        getSim().getMissionManager().addMission(m);
+
+        var active = mc1.getActiveMissions();
+        assertEquals(1, active.size(), "There should be one active mission");
+        assertEquals(1, mc1.getAllMissions().size(), "There should be one mission");
+
+        assertTrue(mc2.getAllMissions().isEmpty(), "There should be no missions in other settlement");
+    }
+
+    
+    @Test
+    void testAbortCount() {
+        var s1 = buildSettlement("Test");
+        var mc1 = new MissionControl(s1);
+
+        var m = new MockMission(s1);
+
+        getSim().getMissionManager().addMission(m);
+
+        var active = mc1.getActiveMissions();
+        assertFalse(active.isEmpty(), "There should be one active mission");
+
+        m.abortMission(null);
+        assertTrue(mc1.getActiveMissions().isEmpty(), "There should be no active mission");
+        assertEquals(1, mc1.getAllMissions().size(), "There should be one mission");
     }
 }
 

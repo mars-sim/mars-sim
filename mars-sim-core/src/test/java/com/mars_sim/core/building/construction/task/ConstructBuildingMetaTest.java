@@ -13,7 +13,7 @@ import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
-public class ConstructBuildingMetaTest extends MarsSimUnitTest {
+class ConstructBuildingMetaTest extends MarsSimUnitTest {
 
     private ConstructionSite buildSite(Settlement s, String buildingName) {
 
@@ -58,7 +58,7 @@ public class ConstructBuildingMetaTest extends MarsSimUnitTest {
         var s = buildSettlement("Construct");
 
         var site = buildSite(s, "Garage");
-        site.setWorkOnSite(new MockMission());
+        site.setWorkOnSite(new MockMission(s));
 
         var meta = new ConstructBuildingMeta();
         var tasks = meta.getSettlementTasks(s);

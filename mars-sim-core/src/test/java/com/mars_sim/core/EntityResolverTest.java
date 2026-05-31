@@ -182,9 +182,9 @@ class EntityResolverTest extends MarsSimUnitTest {
 
     @Test
     void testMission() {
-        buildSettlement("MissionTestSettlement");
+        var s = buildSettlement("MissionTestSettlement");
 
-        var mission = new MockMission() {
+        var mission = new MockMission(s) {
             @Override
             public EntityIdentifier getEntityIdentifier() {
                 return new EntityIdentifier("MISSION", "mock-mission-1");

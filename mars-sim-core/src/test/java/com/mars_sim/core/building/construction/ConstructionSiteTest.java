@@ -33,7 +33,7 @@ import com.mars_sim.core.vehicle.VehicleType;
 /**
  * Unit test for the ConstructionSite class.
  */
-public class ConstructionSiteTest extends MarsSimUnitTest {
+class ConstructionSiteTest extends MarsSimUnitTest {
 
     private static final String WORKSHOP = "Workshop";
     private static final int BUILDING_WIDTH = 10;
@@ -101,7 +101,7 @@ public class ConstructionSiteTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testDemolish() {
+    void testDemolish() {
         var s = buildSettlement("demo");
 
         var demoPhases = List.of(new ConstructionPhase(buildingInfo, false));
@@ -118,7 +118,7 @@ public class ConstructionSiteTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testConstructionResources() {
+    void testConstructionResources() {
         var s = buildSettlement("const");
         var site = new ConstructionSite(s, "Site1", WORKSHOP, phases, PLACE);
 
@@ -182,7 +182,7 @@ public class ConstructionSiteTest extends MarsSimUnitTest {
      * ConstructionSite.isAllConstructionComplete()'
      */
     @Test
-    public void testIsStageComplete() {
+    void testIsStageComplete() {
         var s = buildSettlement("stage");
 
         var site = new ConstructionSite(s, "Site1", WORKSHOP, phases, PLACE);
@@ -207,7 +207,7 @@ public class ConstructionSiteTest extends MarsSimUnitTest {
      * ConstructionSite.isAllConstructionComplete()'
      */
     @Test
-    public void testIsSiteComplete() {
+    void testIsSiteComplete() {
         var s = buildSettlement("stage" );
 
         var site = new ConstructionSite(s, "Site2", WORKSHOP, phases, PLACE);
@@ -236,12 +236,12 @@ public class ConstructionSiteTest extends MarsSimUnitTest {
      * ConstructionSite.setUndergoingConstruction(boolean)'
      */
     @Test
-    public void testSetWorkOnSite() {
+    void testSetWorkOnSite() {
         var s = buildSettlement("work");
 
         var site = new ConstructionSite(s, "Site3", WORKSHOP, phases, PLACE);
 
-        var mission = new MockMission();
+        var mission = new MockMission(s);
         site.setWorkOnSite(mission);
         assertEquals(mission, site.getWorkOnSite());
 
