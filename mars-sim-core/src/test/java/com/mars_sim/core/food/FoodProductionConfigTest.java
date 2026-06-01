@@ -69,21 +69,22 @@ class FoodProductionConfigTest {
         var processByName =
                     Maps.uniqueIndex(foodConfig.getProcessList(),
                         FoodProductionProcessInfo::getName);
-        var process = processByName.get("Process Soybean into Soy Flour");
+        // Note that the process name is case sensitive
+        var process = processByName.get("Process Soybeans into Soy Flour");
         assertNotNull(process, "Food processes defined");
 
         List<ProcessItem> expectedInputs = new ArrayList<>();
         expectedInputs.add(ManufactureConfigTest.createAmount("Soybean", 1D));
         expectedInputs.add(ManufactureConfigTest.createAmount("Water", 1D));
-        expectedInputs.add(ManufactureConfigTest.createPart("oven", 1D));
+        expectedInputs.add(ManufactureConfigTest.createPart("oven", 1));
 
-        assertEquals(expectedInputs, process.getInputList(), "Antenna expected inputs");
+        assertEquals(expectedInputs, process.getInputList(), "Expected inputs");
 
         List<ProcessItem> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(ManufactureConfigTest.createAmount("Soy Flour", 1D));
-        expectedOutputs.add(ManufactureConfigTest.createPart("oven", 1D));
+        expectedOutputs.add(ManufactureConfigTest.createAmount("Soy Flour", 2D));
+        expectedOutputs.add(ManufactureConfigTest.createPart("oven", 1));
 
-        assertEquals(expectedOutputs, process.getOutputList(), "Antenna expected outputs");
+        assertEquals(expectedOutputs, process.getOutputList(), "Expected outputs");
 
     }
 

@@ -460,19 +460,19 @@
 		</outputs>
 	</process>
 
-	<process name="Process Soybean into Soy flour"
+	<process name="Process Soybeans into Soy Flour"
 		tech="1" skill="2" work-time="50" process-time="300"
 			power-required="0.25">
-		<description> Create defatted soy flour by cracking, screening, heating soybean 
+		<description> Create defatted soy flour by cracking, screening, heating soybeans 
 		at 130 deg C with hot extrusion and high pressure .  </description>
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="soybean" amount="1.0" />
-			<resource name="water" amount="1.0" />
+			<resource name="Soybean" amount="1.0" />
+			<resource name="Water" amount="1.0" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
-			<resource name="soy flour" amount="1.0" />
+			<resource name="Soy Flour" amount="2.0" />
 		</outputs>
 	</process>
 
@@ -481,7 +481,7 @@
 		tech="1" skill="2" work-time="70" process-time="1000"
 			power-required="0.6">
 
-		<description> Boil Soybeans, add vinegar and Rhizopus oligosporus starter, and
+		<description> Boil soybeans, add vinegar and Rhizopus oligosporus starter, and
 			allow to ferment.</description>
 
 		<inputs>

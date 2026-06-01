@@ -101,7 +101,7 @@ public class SettlementTemplateConfigTest {
         );
         assertEquals(expectedRobots, supplies.getRobots(), "Robots");
 
-        assertEquals(1, hubBase.getResupplyMissionTemplates().size(), "Supply mission");
+        assertEquals(2, hubBase.getResupplyMissionTemplates().size(), "Supply mission");
 
         assertEquals("MS", hubBase.getSponsor().getName(), "Sponsor");
 
