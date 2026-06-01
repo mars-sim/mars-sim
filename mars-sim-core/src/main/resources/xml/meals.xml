@@ -333,7 +333,7 @@
 			<ingredient name="Apple" proportion="0.3"/>
 			<ingredient name="Blueberry" proportion="0.3"/>
 			<ingredient name="Orange" proportion="0.2"/>
-			<ingredient name="Cinnamon" proportion="0.1"/>
+			<ingredient name="glucose" proportion="0.1"/>
 		</dish>
 		<dish name="Granola">
 			<ingredient name="Granola bar" proportion="0.3"/>
@@ -346,7 +346,7 @@
 		</dish>
 		<dish name="Strawberries">
 			<ingredient name="Strawberry" proportion="0.5"/>
-			<ingredient name="Sugar" proportion="0.1"/>
+			<ingredient name="glucose" proportion="0.1"/>
 		</dish>
 		<dish name="Blueberry muffin">
 			<ingredient name="Blueberry muffin" proportion="0.5"/>

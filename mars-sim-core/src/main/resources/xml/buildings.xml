@@ -493,7 +493,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="yeast" amount="50.0" />
 				<resource-initial type="epsom salt" amount="50.0" />
 				<resource-initial type="table salt" amount="50.0" />
-				<resource-initial type="sugar" amount="50.0" />
+				<resource-initial type="glucose" amount="50.0" />
 				<resource-initial type="mustard" amount="50.0" />
 				<resource-initial type="sesame seed" amount="50.0" />
 				<resource-initial type="sesame oil" amount="50.0" />
@@ -1163,7 +1163,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="8"/>
+				<process-engine name="Glucose Fermentation" number-modules="8"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="16"/>
 				
 				<activity>
@@ -1500,7 +1500,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- Inflatable Greenhouse -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="10"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>		
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
+				
 				<activity>
 					<activity-spot xloc="-1.6" yloc="3.6" />
 				</activity>
@@ -1677,8 +1681,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="20"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="36"/>
-
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="32"/>
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="16"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="8"/>
+				
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
 				</activity>
@@ -2699,7 +2706,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="Yeast" amount="500.0" />
 				<resource-capacity type="Epsom Salt" amount="500.0" />
 				<resource-capacity type="Table Salt" amount="500.0" />
-				<resource-capacity type="Sugar" amount="500.0" />
+				<resource-capacity type="glucose" amount="500.0" />
 				<resource-capacity type="Rice Vinegar" amount="500.0" />
 				<resource-capacity type="Soy Sauce" amount="500.0" />
 				<resource-capacity type="Soymilk" amount="500.0" />
@@ -3064,9 +3071,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
-				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
+				<process-engine name="Glucose Fermentation" number-modules="2"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
-				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="8"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
 				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
 				
@@ -4245,7 +4252,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="yeast" amount="50.0" />
 				<resource-initial type="epsom salt" amount="50.0" />
 				<resource-initial type="table salt" amount="50.0" />
-				<resource-initial type="sugar" amount="50.0" />
+				<resource-initial type="glucose" amount="50.0" />
 				<resource-initial type="mustard" amount="50.0" />
 				<resource-initial type="sesame seed" amount="50.0" />
 				<resource-initial type="sesame oil" amount="50.0" />
@@ -4597,8 +4604,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<!-- "Inground Greenhouse" -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="12"/>
+				<process-engine name="Atmospheric processing" number-modules="8"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="6"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="3"/>
+				
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />
 				</activity>
