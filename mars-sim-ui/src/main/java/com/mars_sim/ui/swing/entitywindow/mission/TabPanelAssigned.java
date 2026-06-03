@@ -91,7 +91,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("vehicle.status"), "", null);
 		speedLabel = new JDoubleLabel(StyleManager.DECIMAL_KPH, 0, 0.01D);
         attributePanel.addLabelledItem(Msg.getString("vehicle.speed"), speedLabel);
-		distanceNextNavLabel = new JDoubleLabel(StyleManager.DECIMAL_KM, 0, 0.01D);
+		distanceNextNavLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM, 0, 0.01D);
         attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.distanceNextNavPoint"), distanceNextNavLabel);
 		
         traveledLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.distanceTraveled"), "", null);
@@ -149,8 +149,8 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		if (getEntity() instanceof VehicleMission vm) {
 			distanceNextNavLabel.setValue(vm.getDistanceCurrentLegRemaining());
 
-			double travelledDistance = Math.round(vm.getTotalDistanceTravelled()*10.0)/10.0;
-			double estTotalDistance = Math.round(vm.getTotalDistanceProposed()*10.0)/10.0;
+			double travelledDistance = Math.round(vm.getTotalDistanceTravelled()*100.0)/100.0;
+			double estTotalDistance = Math.round(vm.getTotalDistanceProposed()*100.0)/100.0;
 			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 					travelledDistance,
 					estTotalDistance
@@ -178,6 +178,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 	/**
 	 * Table model for mission members.
 	 */
+	@SuppressWarnings("serial")
 	private static class MemberTableModel extends AbstractTableModel implements EntityListener, EntityModel {
 
 		private static final String NAME = Msg.getString("entity.name");

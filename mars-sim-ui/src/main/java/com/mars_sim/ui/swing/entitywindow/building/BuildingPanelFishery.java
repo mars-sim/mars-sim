@@ -84,16 +84,16 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 		center.add(labelPanel, BorderLayout.NORTH);
 		
 		labelPanel.addTextField(Msg.getString("BuildingPanelFishery.tankSize"), 
-				StyleManager.DECIMAL_LITER2.format(tank.getTankSize()), null);
+				StyleManager.DECIMAL_LITER.format(tank.getTankSize()), null);
 		
-		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, tank.getWaterMass());
+		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, tank.getWaterMass());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterMass"), waterMassLabel);
 		
 		numFish = tank.getNumFish();
 		numFishLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numFish"),
 									Integer.toString(numFish), null);
 				
-		fishMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG, tank.getTotalFishMass());
+		fishMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, tank.getTotalFishMass());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelFishery.fishMass"), fishMassLabel);
 				
 		numIdealFish = tank.getIdealFish();
@@ -114,7 +114,7 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 		numWeedLabel = labelPanel.addTextField(Msg.getString("BuildingPanelFishery.numWeed"),
 									Integer.toString(numWeed), null);
 		
-		weedMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG, tank.getTotalWeedMass());
+		weedMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, tank.getTotalWeedMass());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelFishery.weedMass"), weedMassLabel);
 		
 		weedDemandLabel = new JDoubleLabel(StyleManager.DECIMAL_PLACES2, tank.getWeedDemand());

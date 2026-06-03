@@ -58,9 +58,9 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
         AttributePanel springPanel = new AttributePanel(2);
         content.add(springPanel, BorderLayout.NORTH);
 
-		odometerTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getOdometerMileage());
+		odometerTF = new JDoubleLabel(StyleManager.DECIMAL2_KM, vehicle.getOdometerMileage());
 		springPanel.addLabelledItem(Msg.getString("vehicle.odometer"), odometerTF);
-		maintTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getDistanceLastMaintenance());
+		maintTF = new JDoubleLabel(StyleManager.DECIMAL2_KM, vehicle.getDistanceLastMaintenance());
 		springPanel.addLabelledItem(Msg.getString("TabPanelLog.label.maintDist"), maintTF);
 
 		statusPanel = new LogPanel(vehicle.getVehicleLog());

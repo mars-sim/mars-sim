@@ -11,7 +11,6 @@ import java.awt.FlowLayout;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.environment.OrbitInfo;
@@ -32,7 +31,6 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 /**
  * The TabPanelWeather is a tab panel for location information.
  */
-@SuppressWarnings("serial")
 class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComponent {
 
 	private static final String WEATHER_ICON = "weather";
@@ -79,26 +77,21 @@ class TabPanelWeather extends EntityTabPanel<Settlement> implements TemporalComp
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
         content.add(mainPanel, BorderLayout.NORTH);
 		Settlement s = getEntity();
-
+		
+        JPanel northPanel = new JPanel(new BorderLayout(0, 10));       
+        mainPanel.add(northPanel, BorderLayout.NORTH);
+        
 		// Create location panel
 		AttributePanel locnPanel = new AttributePanel();
 		locnPanel.setBorder(SwingHelper.createLabelBorder("Location"));
 		locnPanel.addTextField("Lat", s.getLocation().getFormattedLatitudeString(), null);
 		locnPanel.addTextField("Lon", s.getLocation().getFormattedLongitudeString(), null);
 		locnPanel.addTextField("Zone", s.getTimeZone().getId(), null);
-
-      	// Create weatherPanel
-        JPanel centerEastPanel = new JPanel(new BorderLayout(5, 5));
-        centerEastPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-        centerEastPanel.add(locnPanel, BorderLayout.NORTH);
-        
-        JPanel eastPanel = new JPanel(new BorderLayout(0, 10));       
-        mainPanel.add(eastPanel, BorderLayout.EAST);
-        eastPanel.add(centerEastPanel, BorderLayout.CENTER);
-
+        northPanel.add(locnPanel, BorderLayout.NORTH);
+               
     	// Prepare temperature panel
         JPanel temperaturePanel = new JPanel(new FlowLayout());
-        centerEastPanel.add(temperaturePanel, BorderLayout.CENTER);
+        mainPanel.add(temperaturePanel, BorderLayout.CENTER);
 
         JPanel metricsPanel = new JPanel(new BorderLayout(5, 5));
         mainPanel.add(metricsPanel, BorderLayout.CENTER);

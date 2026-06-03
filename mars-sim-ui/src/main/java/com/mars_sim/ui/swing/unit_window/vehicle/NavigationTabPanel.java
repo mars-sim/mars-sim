@@ -48,7 +48,6 @@ import com.mars_sim.ui.swing.utils.EntityLabel;
 /**
  * The NavigationTabPanel is a tab panel for a vehicle's navigation information.
  */
-@SuppressWarnings("serial")
 public class NavigationTabPanel extends EntityTabPanel<Vehicle>
         implements ActionListener, EntityListener {
     
@@ -200,14 +199,14 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
 
         destinationCoord = destinationSpringPanel.addRow("Destination Coordinates", "");
-        remainingDistanceLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+        remainingDistanceLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
         destinationSpringPanel.addLabelledItem("Remaining Distance", remainingDistanceLabel);
         etaLabel = destinationSpringPanel.addRow("ETA", "");
         statusLabel = destinationSpringPanel.addRow(Msg.getString("vehicle.status"), "");
         beaconLabel = destinationSpringPanel.addRow("Emergency Beacon", "");
         speedLabel = new JDoubleLabel(StyleManager.DECIMAL_KPH);
         destinationSpringPanel.addLabelledItem(Msg.getString("vehicle.speed"), speedLabel);        
-        elevationLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+        elevationLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
         destinationSpringPanel.addLabelledItem(Msg.getString("vehicle.elevation"), elevationLabel);
 
         if (vehicle instanceof Drone) {

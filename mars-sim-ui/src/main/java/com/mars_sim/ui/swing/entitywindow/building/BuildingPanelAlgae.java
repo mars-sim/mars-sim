@@ -102,13 +102,13 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.type"), 
 				"Spirulina", null);
 		
-		algaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getCurrentAlgae());
+		algaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, pond.getCurrentAlgae());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algaeMass"), algaeMassLabel);
 				
-		idealAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getIdealAlgae());
+		idealAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, pond.getIdealAlgae());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.idealAlgaeMass"), idealAlgaeMassLabel);
 		
-		maxAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getMaxAlgae());
+		maxAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, pond.getMaxAlgae());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxAlgaeMass"), maxAlgaeMassLabel);
 
 		var algaeProducedCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
@@ -122,7 +122,7 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 									algaeHarvestLabel,
 									Msg.getString("BuildingPanelAlgae.algae.harvested.tooltip"));
 		
-		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_LITER2, pond.getWaterMass());
+		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_LITER, pond.getWaterMass());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterMass"), waterMassLabel);
 		
 		algaeWaterRatio = pond.getAlgaeWaterRatio();
@@ -130,7 +130,7 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 			StyleManager.DECIMAL2_G_LITER.format(algaeWaterRatio)
 				+ " (" + Math.round(AlgaeFarming.ALGAE_TO_WATER_RATIO*100000.0)/100.0 + ")", null);
 		
-		foodMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, pond.getFoodMass());
+		foodMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, pond.getFoodMass());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.foodMass"), foodMassLabel);
 		
 		var foodDemand = pond.getNutrientDemand();	

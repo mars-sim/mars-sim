@@ -186,7 +186,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 									Msg.getString("BuildingPanelFarming.workTime.tooltip"));
 
 		double[] water = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.WATER_ID);
-		waterCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, water[0]);
+		waterCumLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, water[0]);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.waterCum.title"), waterCumLabel,
 								Msg.getString("BuildingPanelFarming.waterCum.tooltip"));
 		waterPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, water[1], 0.01);
@@ -194,7 +194,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 									Msg.getString("BuildingPanelFarming.waterDailyAve.tooltip"));
 		
 		double[] o2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.OXYGEN_ID);
-		o2CumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, o2[0], 0.01);
+		o2CumLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, o2[0], 0.01);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.o2Cum.title"), o2CumLabel,
 								Msg.getString("BuildingPanelFarming.o2Cum.tooltip"));
 		o2PerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, o2[1], 0.01);
@@ -202,7 +202,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 											Msg.getString("BuildingPanelFarming.o2DailyAve.tooltip"));
 
 		double[] greyWater = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.GREY_WATER_ID);
-		greyWaterCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, greyWater[0], 0.01);
+		greyWaterCumLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, greyWater[0], 0.01);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.greyWaterCum.title"), greyWaterCumLabel,
 								Msg.getString("BuildingPanelFarming.greyWaterCum.tooltip"));
 		greyWaterPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, greyWater[1], 0.01);
@@ -210,7 +210,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 											Msg.getString("BuildingPanelFarming.greyWaterDailyAve.tooltip"));
 
 		double[] co2 = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.CO2_ID);
-		co2CumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, co2[0], 0.01);
+		co2CumLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, co2[0], 0.01);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.co2Cum.title"), co2CumLabel,
 								Msg.getString("BuildingPanelFarming.co2Cum.tooltip"));
 		co2PerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, co2[1], 0.01);
@@ -218,7 +218,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 								Msg.getString("BuildingPanelFarming.co2DailyAve.tooltip"));
 
 		double[] soil = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.SOIL_ID);
-		soilCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, soil[0], 0.01);
+		soilCumLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, soil[0], 0.01);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.soilCum.title"), soilCumLabel,
 								Msg.getString("BuildingPanelFarming.soilCum.tooltip"));
 		soilPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, soil[1], 0.01);
@@ -226,7 +226,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 											Msg.getString("BuildingPanelFarming.soilDailyAve.tooltip"));
 
 		double[] cropWaste = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.CROP_WASTE_ID);
-		cropWasteCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, cropWaste[0], 0.01);
+		cropWasteCumLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, cropWaste[0], 0.01);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.cropWasteCum.title"), cropWasteCumLabel,
 								Msg.getString("BuildingPanelFarming.cropWasteCum.tooltip"));
 		cropWastePerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, cropWaste[1], 0.01);
@@ -234,7 +234,7 @@ class BuildingPanelFarming extends EntityTabPanel<Building>
 								Msg.getString("BuildingPanelFarming.cropWasteDailyAve.tooltip"));
 
 		double[] leaves = farm.computeAllCropsCumulativeDailyAverage(ResourceUtil.LEAVES_ID);
-		leavesCumLabel = new JDoubleLabel(StyleManager.DECIMAL_KG2, leaves[0], 0.01);
+		leavesCumLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, leaves[0], 0.01);
 		springPanel.addLabelledItem(Msg.getString("BuildingPanelFarming.leavesCum.title"), leavesCumLabel,
 								Msg.getString("BuildingPanelFarming.leavesCum.tooltip"));
 		leavesPerSolLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, leaves[1], 0.01);

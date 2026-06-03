@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -199,6 +201,9 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		// Prepare sleep times JList
 		sleepTimes = new DefaultListModel<>();
 		var sleeps = new JList<>(sleepTimes);
+		DefaultListCellRenderer renderer = (DefaultListCellRenderer) sleeps.getCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		sleeps.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
 		sleeps.setToolTipText("The 3 best times to go to bed [At # msol (weight)]");
 
 		// Wrap with a panel to get border correct
@@ -370,13 +375,13 @@ class TabPanelHealth extends EntityTabPanel<Person>
             }
         };
 	
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
+		renderer1.setHorizontalAlignment(SwingConstants.CENTER);
 		TableColumnModel rModel = radiationTable.getColumnModel();
-		rModel.getColumn(0).setCellRenderer(renderer);
-		rModel.getColumn(1).setCellRenderer(renderer);
-		rModel.getColumn(2).setCellRenderer(renderer);
-		rModel.getColumn(3).setCellRenderer(renderer);
+		rModel.getColumn(0).setCellRenderer(renderer1);
+		rModel.getColumn(1).setCellRenderer(renderer1);
+		rModel.getColumn(2).setCellRenderer(renderer1);
+		rModel.getColumn(3).setCellRenderer(renderer1);
 
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 65));
 		rModel.getColumn(0).setPreferredWidth(35);
