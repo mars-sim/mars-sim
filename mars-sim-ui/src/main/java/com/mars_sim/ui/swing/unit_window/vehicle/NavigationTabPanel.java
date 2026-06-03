@@ -62,6 +62,10 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
     private JLabel beaconLabel;
     private JDoubleLabel speedLabel;
     private JDoubleLabel elevationLabel;
+    
+	private JDoubleLabel odometerTF;
+	private JDoubleLabel maintTF;
+    
     private JLabel destinationCoord;
     private JDoubleLabel remainingDistanceLabel;
     private JLabel etaLabel;
@@ -113,6 +117,7 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
 
         // Prepare direction display
         var vehicle = getEntity();
+
         directionDisplay = new DirectionDisplayPanel(vehicle);
         directionDisplay.setToolTipText("Compass for showing the direction of travel");
         directionDisplayPanel.add(directionDisplay);
@@ -124,7 +129,7 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
         terrainDisplay = new TerrainDisplayPanel(vehicle);
         terrainDisplay.setToolTipText("Terrain indicator for showing elevation changes");
         terrainDisplayPanel.add(terrainDisplay);
-   
+
 		// Prepare the main panel for housing the driving  spring layout.
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		content.add(mainPanel, BorderLayout.CENTER);	
@@ -197,7 +202,8 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
 		// Prepare the top panel using spring layout.
 		AttributePanel destinationSpringPanel = new AttributePanel();
 		locPanel.add(destinationSpringPanel, BorderLayout.NORTH);
-
+       
+		
         destinationCoord = destinationSpringPanel.addRow("Destination Coordinates", "");
         remainingDistanceLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
         destinationSpringPanel.addLabelledItem("Remaining Distance", remainingDistanceLabel);
@@ -219,6 +225,11 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
         pilotLabel = new EntityLabel(getContext());
         destinationSpringPanel.addLabelledItem(Msg.getString("vehicle.operator"), pilotLabel);
 
+		odometerTF = new JDoubleLabel(StyleManager.DECIMAL2_KM, vehicle.getOdometerMileage());
+		destinationSpringPanel.addLabelledItem(Msg.getString("vehicle.odometer"), odometerTF);
+		maintTF = new JDoubleLabel(StyleManager.DECIMAL2_KM, vehicle.getDistanceLastMaintenance());
+		destinationSpringPanel.addLabelledItem(Msg.getString("TabPanelLog.label.maintDist"), maintTF);
+        
         updateDisplay();
     }
 
@@ -229,6 +240,8 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
 
         var vehicle = getEntity();
 
+		updateMileage(vehicle);
+		
         // Update status label
         statusLabel.setText(vehicle.printStatusTypes());
       
@@ -353,6 +366,18 @@ public class NavigationTabPanel extends EntityTabPanel<Vehicle>
         }
     }
 
+
+    /**
+     * Updates mileage.
+     * 
+     * @param vehicle
+     */
+	private void updateMileage(Vehicle vehicle) {
+
+		odometerTF.setValue(vehicle.getOdometerMileage());
+		maintTF.setValue(vehicle.getDistanceLastMaintenance());
+	}
+	
     /**
      * Action event occurs.
      *

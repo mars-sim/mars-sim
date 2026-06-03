@@ -69,12 +69,16 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 
 		// Update will refresh data
 		statusPanel.refresh();
-		updateMileage();
+		
+		updateMileage(vehicle);
 	}
 
-	private void updateMileage() {
-		var vehicle = getEntity();
-
+    /**
+     * Updates mileage.
+     * 
+     * @param vehicle
+     */
+	private void updateMileage(Vehicle vehicle) {
 		odometerTF.setValue(vehicle.getOdometerMileage());
 		maintTF.setValue(vehicle.getDistanceLastMaintenance());
 	}
@@ -103,7 +107,9 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 	@Override
 	public void entityUpdate(EntityEvent event) {
 		if (EntityEventType.COORDINATE_EVENT.equals(event.getType())) {
-			updateMileage();
+			
+			var vehicle = getEntity();
+			updateMileage(vehicle);
 		}
 		else if (EntityEventType.STATUS_EVENT.equals(event.getType())) {
 			statusPanel.refresh();
