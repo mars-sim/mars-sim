@@ -423,7 +423,7 @@ public class Fishery extends Function {
 		
 		int num = fish.size();
 
-		logger.info(building, "A fish was born: "  + (num - numFish) + " -> " + num + ".");
+		logger.info(building, "# of fish birthed: "  + (num - numFish) + " -> " + num + ".");
     }
 	
 	/**
@@ -438,7 +438,7 @@ public class Fishery extends Function {
 
 		int num = weeds.size();
 
-		logger.info(building, "A weed was born: "  + (num - numWeed) + " -> " + num + ".");
+		logger.info(building, "# of weeds birthed: "  + (num - numWeed) + " -> " + num + ".");
     }
     
 	/**
@@ -637,7 +637,7 @@ public class Fishery extends Function {
 	 * @return
 	 */
 	public double catchFish(Worker fisher, double workTime) {
-		if (!canCatchFish()) return workTime;
+//		if (!canCatchFish()) return workTime;
 				
 		Fish candidate = null;
 		
@@ -649,7 +649,7 @@ public class Fishery extends Function {
 		for (int i = 0; i < numFish ; i++) {
 			Fish f = fish.get(i);
 			double tempAge = f.getAge();
-			if (tempAge > age) {
+			if (tempAge >= age) {
 				age = tempAge;
 				candidate = f;
 			}
@@ -668,11 +668,8 @@ public class Fishery extends Function {
 		// Record as a harvest
 		addResourceLog(mass, ResourceUtil.FISH_MEAT_ID);
 		
-		// Fish stored as KG, 90% is useful
-		store(mass * .9, ResourceUtil.FISH_MEAT_ID, "Fishery::catchFish");
-		
-		// Fish Oil is 10% of fish size, a guess
-		store(mass * 0.1, ResourceUtil.FISH_OIL_ID, "Fishery::catchFish");
+		// Assume 100% is good
+		store(mass, ResourceUtil.FISH_MEAT_ID, "Fishery::catchFish");
 		
 		return 0.0;
 	}

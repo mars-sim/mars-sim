@@ -129,7 +129,7 @@ public class Organism implements Serializable {
    *   zero, then the return value is <CODE>true</CODE>; otherwise the return 
    *   value is <CODE>false</CODE>.
    **/
-   public boolean isAlive( )
+   public boolean isAlive()
    {
       return (size > 0);
    }

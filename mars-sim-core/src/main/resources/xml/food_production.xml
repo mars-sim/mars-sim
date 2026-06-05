@@ -1282,31 +1282,32 @@
 	</process>
 
 	<process name="Process fish oil from fish meat"
-		tech="1" skill="1" work-time="5" process-time="50"
+		tech="1" skill="1" work-time="5" process-time="10"
 			power-required="0.1">
 
 		<description>Derive fish oil from fish meats. Press and refine it
 			for use </description>
 
 		<inputs>
-			<resource name="fish meat" amount="2.0" />
+			<resource name="fish meat" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="fish oil" amount="0.5" />
+			<resource name="fish oil" amount="0.3" />
+			<resource name="food" amount="0.7" />
 		</outputs>
 	</process>
 
 	<process name="Make fish patty from fish meat"
-		tech="2" skill="1" work-time="25" process-time="25"
-			power-required="0.5">
+		tech="2" skill="1" work-time="10" process-time="5"
+			power-required="0.1">
 		<description>A fish patty is made of
 			textured fish meat and other ingredients. </description>
 		<inputs>
-			<resource name="fish meat" amount="3" />
+			<resource name="fish meat" amount="1" />
 			<resource name="table salt" amount="0.01" />
 		</inputs>
 		<outputs>
-			<resource name="fish patty" amount="3" />
+			<resource name="fish patty" amount="1" />
 		</outputs>
 	</process>
 
