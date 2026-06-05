@@ -80,17 +80,18 @@ public class Herbivore extends Animal {
    public void nibble(Plant meal)
    {
       final double PORTION = 0.5; // Eat no more than this portion of plant
-      final double MAX_FRACTION = 0.1; // Eat no more than this fraction of need
+      final double MAX_FRACTION = 0.3; // Eat no more than this fraction of need
       double amount; // How many ounces of the plant will be eaten
       
       // Set amount to some portion of the plant, but no more than a given
       // maximum fraction of the total need, and no more than what the
       // herbivore still needs to eat this frame.
-      amount = PORTION * meal.getSize( );
-      if (amount > MAX_FRACTION * getNeed( ))
-         amount = MAX_FRACTION * getNeed( );
-      if (amount > stillNeed( ))
-         amount = stillNeed( );
+      amount = PORTION * meal.getSize();
+      double need = MAX_FRACTION * getNeed();
+      if (amount > need)
+         amount = need;
+      if (amount > stillNeed())
+         amount = stillNeed();
 
       // Eat the plant
       eat(amount);

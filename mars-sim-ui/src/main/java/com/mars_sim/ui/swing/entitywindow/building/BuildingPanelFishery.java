@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * BuildingPanelFishery.java
- * @date 2023-12-07
+ * @date 2026-06-04
  * @author Barry Evans
  */
 package com.mars_sim.ui.swing.entitywindow.building;
@@ -41,6 +41,7 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 	private int maxFish;
 	private int numWeed;
 	
+	private JDoubleLabel kgHarvestedLabel;
 	private JDoubleLabel ageLabel;
 	private JDoubleLabel fishHarvestedLabel;
 	private JLabel numFishLabel;
@@ -107,7 +108,11 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 		ageLabel = new JDoubleLabel(StyleManager.DECIMAL2_SOLS, tank.getAverageAge()/1000);
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelFishery.age"), ageLabel);
 		
-		fishHarvestedLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, tank.computeDailyAverage(ResourceUtil.FISH_MEAT_ID));
+		kgHarvestedLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, tank.getKgHarvested());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelFishery.kgHarvestedFish"), kgHarvestedLabel,
+									Msg.getString("BuildingPanelFishery.kgHarvestedFish.tooltip"));
+		
+		fishHarvestedLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG_SOL, tank.computeDailyAverage(ResourceUtil.FISH_MEAT_ID));
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelFishery.harvestedFish"), fishHarvestedLabel,
 									Msg.getString("BuildingPanelFishery.harvestedFish.tooltip"));
 		numWeed = tank.getNumWeed();
@@ -162,6 +167,8 @@ class BuildingPanelFishery extends EntityTabPanel<Building>
 		fishMassLabel.setValue(tank.getTotalFishMass());
 		
 		fishHarvestedLabel.setValue(tank.computeDailyAverage(ResourceUtil.FISH_MEAT_ID));
+			
+		kgHarvestedLabel.setValue(tank.getKgHarvested());
 		
 		ageLabel.setValue(tank.getAverageAge()/1000);
 

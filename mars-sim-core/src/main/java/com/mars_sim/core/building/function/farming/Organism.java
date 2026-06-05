@@ -76,7 +76,7 @@ public class Organism implements Serializable {
    {
       size += amount;
       if (size <= 0)
-         expire( );
+         expire();
    }
       
       
@@ -86,7 +86,7 @@ public class Organism implements Serializable {
    *   The size and growth rate of this <CODE>Organism</CODE> have been set
    *    to zero. 
    **/
-   public void expire( )
+   public void expire()
    {
       size = rate = 0;
    }
