@@ -8,21 +8,25 @@ package com.mars_sim.ui.swing.tool.map;
 
 import java.util.List;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityManagerListener;
+import com.mars_sim.core.UnitManager;
+import com.mars_sim.core.UnitType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
-import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
+import com.mars_sim.core.structure.Settlement;
 
 /** 
  * The MissionMapLayer is a map layer to display mission navpoints.
- * It extends RoutePathLayer to reuse the path display code, but it gets the navpoints from the mission manager
+ * It extends RoutePathLayer to reuse the path display code, but it gets the navpoints from the missions
  * or single selected Mission.
  */
-public class MissionMapLayer extends RoutePathLayer implements EntityListener, MissionManagerListener{
+public class MissionMapLayer extends RoutePathLayer
+        implements EntityListener, EntityManagerListener{
 
     private static class MissionProxy implements RoutePath {
         private Mission mission;
@@ -51,7 +55,7 @@ public class MissionMapLayer extends RoutePathLayer implements EntityListener, M
     }
     
     private static final String MISSION_PREFIX = "Mission :";
-    private MissionManager missionManager;
+    private UnitManager unitMgr;
 
     /**
      * Display all active Missions on a layer, and listen for new missions to add to the display.
@@ -61,13 +65,12 @@ public class MissionMapLayer extends RoutePathLayer implements EntityListener, M
     public MissionMapLayer(MapPanel parent) {
         super(parent);
 
-        missionManager = parent.getDesktop().getSimulation().getMissionManager();
-        missionManager.addListener(this);
-        for (Mission mission : missionManager.getMissions()) {
-			if (mission instanceof VehicleMission vm && !vm.isDone()) {
-                addPath(new MissionProxy(vm));
-                vm.addEntityListener(this);
-            }
+        // Listen for new Settlements
+        unitMgr = parent.getDesktop().getSimulation().getUnitManager();
+        unitMgr.addEntityManagerListener(UnitType.SETTLEMENT, this);
+
+        for(var s : unitMgr.getSettlements()) {
+            addSettlement(s);
         }
     }
 
@@ -93,11 +96,17 @@ public class MissionMapLayer extends RoutePathLayer implements EntityListener, M
             }
         }
 
-        if (missionManager != null) {
-            missionManager.removeListener(this);
+        // Remove Entity manager listeners
+        if (unitMgr != null) {
+            unitMgr.removeEntityManagerListener(UnitType.SETTLEMENT, this);
+            unitMgr.getSettlements().forEach(s -> s.getMissionControl().removeListener(this));
         }
     }
 
+    /**
+     * Mission has been updated. If it's done, remove it from the display.
+     * @param event Mission updated.
+     */
     @Override
     public void entityUpdate(EntityEvent event) {
         if (event.getSource() instanceof Mission m && m.isDone()) {
@@ -105,21 +114,52 @@ public class MissionMapLayer extends RoutePathLayer implements EntityListener, M
         }
     }
 
+    /**
+     * A new Settlement or Mission has been added.
+     * @param newEntity Entity added.
+     */
     @Override
-    public void addMission(Mission mission) {
+    public void entityAdded(Entity newEntity) {
+        if (newEntity instanceof Mission m) {
+            addMission(m);
+        }
+        else if (newEntity instanceof Settlement s) {
+            addSettlement(s);
+        }
+    }
+
+    /**
+     * Entity has been removed from the parent manager. If it's a mission, remove it from the display.
+     * @param event Entity removed.
+     */
+    @Override
+    public void entityRemoved(Entity event) {
+        if (event instanceof Mission m) {
+            removeMission(m);
+        }
+    }
+
+    private void addSettlement(Settlement settlement) {
+        // Listen for new missions in each settlement
+        settlement.addEntityListener(this);
+
+        // Add existing missions
+        settlement.getMissionControl().getActiveMissions().forEach(this::addMission);
+    }
+
+    private void addMission(Mission mission) {
         if (mission instanceof VehicleMission vm && !vm.isDone()) {
             addPath(new MissionProxy(vm));
             vm.addEntityListener(this);
         }
     }
 
-    @Override
-    public void removeMission(Mission m) {
+    private void removeMission(Mission m) {
         m.removeEntityListener(this);
 
         // Remove path if mission is done.
         for(RoutePath path : getPaths()) {
-            if (path instanceof MissionProxy mp && mp.mission == m) {
+            if (path instanceof MissionProxy mp && mp.mission.equals(m)) {
                 removePath(path);
                 break;
             }

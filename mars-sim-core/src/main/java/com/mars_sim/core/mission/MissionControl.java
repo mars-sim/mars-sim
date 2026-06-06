@@ -15,15 +15,23 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.mission.util.MissionRating;
+import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.CacheCreator;
 import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.MissionLimitParameters;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
 import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.core.person.ai.mission.MissionWeightParameters;
 import com.mars_sim.core.person.ai.mission.PlanType;
+import com.mars_sim.core.person.ai.mission.meta.MetaMission;
+import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
@@ -274,5 +282,97 @@ public class MissionControl implements ScheduledEventHandler {
 		return getAllMissions().stream()
 				.filter(m -> !m.isDone())
 				.collect(Collectors.toSet());
+	}
+
+	
+	/**
+	 * Gets a new mission for a person based on potential missions available.
+	 *
+	 * @param person person to find the mission for
+	 * @return new mission
+	 */
+	public Mission getNewMission(Person person) {
+		var potentialMissions = calculateMissionProbabilities(person);
+
+		// Any to choose from?
+		if (potentialMissions.isEmpty()) {
+			person.getMind().getTaskManager().setMissionRatings(potentialMissions, null);
+			return null;
+		}
+
+		// Build a cache of the suitable ones
+		CacheCreator<MissionRating> missionProbCache = new CacheCreator<>("Mission", null);
+		missionProbCache.add(potentialMissions);
+
+		// Choose one based on the scores and return it
+		var selectedMission = missionProbCache.getRandomSelection();
+		if (selectedMission == null) {
+			logger.severe(person, 20_000L, "selectedMission is null. Could not determine a new mission.");
+			return null;
+		}
+
+		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, potentialMissions);
+
+		// Construct and return the mission
+		Mission mission = selectedMission.getMeta().constructInstance(person, true);
+		person.getMind().getTaskManager().setMissionRatings(potentialMissions, selectedMission);
+
+		return mission;
+	}
+
+	/**
+	 * Calculate the scores for all the potential missions for a person and return the list of scored missions.
+	 * @param leader Leader wanting to start a new Mission
+	 * @return List of scored potential missions for the person. The list may be empty if no suitable missions are found.
+	 */
+	private List<MissionRating> calculateMissionProbabilities(Person leader) {
+		List<MissionRating> potentials = new ArrayList<>();
+		ParameterManager paramMgr = owner.getPreferences();
+
+		var activeMissionsByType = getActiveMissions().stream()
+				.collect(Collectors.groupingBy(Mission::getMissionType, Collectors.counting()));
+
+		for (MetaMission metaMission : MetaMissionUtil.getMetaMissions()) {
+			if (canAcceptMission(metaMission, paramMgr, activeMissionsByType)) {
+				var score = scoreMission(metaMission, leader, paramMgr);
+				if (score != null) {
+					potentials.add(score);
+				}
+			}
+		}
+		return potentials;
+	}
+
+	/**
+	 * Checks if a mission can be accepted based on the maximum number of active missions of that type allowed by the settlement preferences.
+	 * @param metaMission The mission type to check
+	 * @param paramMgr The parameter manager containing the settlement preferences
+	 * @param activeMissionsByType A map of active missions grouped by their type
+	 * @return true if the mission can be accepted, false otherwise
+	 */
+	private boolean canAcceptMission(MetaMission metaMission, ParameterManager paramMgr, Map<MissionType, Long> activeMissionsByType) {
+		int maxMissions = paramMgr.getIntValue(MissionLimitParameters.INSTANCE.getKey(metaMission.getType()),
+											Integer.MAX_VALUE);
+		int activeMissions = activeMissionsByType.getOrDefault(metaMission.getType(), 0L).intValue();
+		return activeMissions < maxMissions;
+	}
+
+	/**
+	 * Score the valid meta mission to be started by a leader.
+	 * The score is based on the base probability of the mission and modified by the settlement ratio for that type of mission.
+	 * @return MissionRating for the mission which includes the meta mission and the final score. Null if not suitable.
+	 */
+	private MissionRating scoreMission(MetaMission metaMission, Person person,ParameterManager paramMgr) {
+		var score = metaMission.getProbability(person);
+		if (score.getScore() <= 0) {
+			return null;
+		}
+
+		// Valid Mission so get full score
+		double settlementRatio = paramMgr.getDoubleValue(
+					MissionWeightParameters.INSTANCE.getKey(metaMission.getType()), 1D);
+		score.addModifier("settlement.ratio", settlementRatio);
+
+		return new MissionRating(metaMission, score);
 	}
 }

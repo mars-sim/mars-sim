@@ -403,6 +403,8 @@ public class Settlement extends Unit implements Temporal,
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(initialPopulation);
 		shiftManager = new ShiftManager(this, shifts,
 										masterClock.getMarsTime().getMillisolInt());
+
+		missionControl = new MissionControl(this);
 	}
 	
 	/**

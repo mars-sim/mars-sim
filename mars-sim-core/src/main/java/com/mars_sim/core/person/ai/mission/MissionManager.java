@@ -154,45 +154,6 @@ public class MissionManager implements Serializable {
 		}
 	}
 
-	/**
-	 * Gets a new mission for a person based on potential missions available.
-	 *
-	 * @param person person to find the mission for
-	 * @return new mission
-	 */
-	public Mission getNewMission(Person person) {
-		MarsTime marsTime = Simulation.instance().getMasterClock().getMarsTime();
-		CacheCreator<MissionRating> missionProbCache = new CacheCreator<>("Mission", marsTime);
-		List<MissionRating> missionCache = new ArrayList<>();
-		Settlement startingSettlement = person.getAssociatedSettlement();
-		ParameterManager paramMgr = startingSettlement.getPreferences();
-
-		double calculateTotalProbCache = calculateMissionProbabilities(
-				person, missionCache, paramMgr, startingSettlement);
-
-		missionProbCache.add(missionCache);
-		
-		if (calculateTotalProbCache <= 0D) {
-			person.getMind().getTaskManager().setMissionRatings(missionCache, null);
-			return null;
-		}
-
-		var selectedMission = missionProbCache.getRandomSelection();
-
-		if (selectedMission == null) {
-			logger.severe(person, 20_000L, "selectedMission is null. Could not determine a new mission.");
-			return null;
-		}
-
-		RatingLog.logSelectedRating("missionstart", person.getName(), selectedMission, missionCache);
-
-		// Construct and return the mission
-		Mission mission = selectedMission.getMeta().constructInstance(person, true);
-		person.getMind().getTaskManager().setMissionRatings(missionCache, selectedMission);
-
-		return mission;
-	}
-
 	private double calculateMissionProbabilities(Person person, List<MissionRating> missionProbCache,
 												 ParameterManager paramMgr, Settlement startingSettlement) {
 		double totalProbCache = 0D;

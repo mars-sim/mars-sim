@@ -17,7 +17,6 @@ import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.PersonTaskManager;
@@ -70,8 +69,6 @@ public class Mind implements Serializable, Temporal {
 	/** The person's relationship with others. */
 	private Relation relation;
 	
-	private static MissionManager missionManager;
-
 	/**
 	 * Constructor 1.
 	 *
@@ -187,7 +184,6 @@ public class Mind implements Serializable, Temporal {
 	 * Takes appropriate action for a given amount of time.
 	 *
 	 * @param time time in millisols
-	 * @throws Exception if error during action.
 	 */
 	private void takeAction(double time) {
 		double pulseTime = time;
@@ -432,7 +428,7 @@ public class Mind implements Serializable, Temporal {
 		boolean isPersonToWeak = person.getPerformanceRating() < MINIMUM_MISSION_PERFORMANCE;
 
 		if (!isPersonToWeak) {
-			Mission newMission = missionManager.getNewMission(person);
+			Mission newMission = person.getAssociatedSettlement().getMissionControl().getNewMission(person);
 			if (newMission != null) {
 				setMission(newMission);
 				return newMission;
@@ -530,15 +526,6 @@ public class Mind implements Serializable, Temporal {
 	 */
 	public Relation getRelation( ) {
 		return relation;
-	}
-
-	/**
-	 * Reloads instances after loading from a saved sim.
-	 *
-	 * @param m missionManager instance
-	 */
-	public static void initializeInstances(MissionManager m) {
-		missionManager = m;
 	}
 
 	public void reinit() {

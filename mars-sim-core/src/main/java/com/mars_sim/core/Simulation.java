@@ -488,8 +488,6 @@ public class Simulation implements ClockPulseListener, Serializable {
         
         // Initialize RoleU
 		History.initializeInstances(masterClock);
-		// Re-initialize Person/Robot related class
-		Mind.initializeInstances(missionManager);
 		
 		EquipmentFactory.initialise(unitManager);
 
@@ -609,8 +607,6 @@ public class Simulation implements ClockPulseListener, Serializable {
   
         // Initialize RoleU
 		History.initializeInstances(masterClock);
-		// Re-initialize Person/Robot related class
-		Mind.initializeInstances(missionManager);
 		
 		EquipmentFactory.initialise(unitManager);
 		// Initialize instances in Airlock
