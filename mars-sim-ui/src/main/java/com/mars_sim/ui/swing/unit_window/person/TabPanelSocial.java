@@ -6,40 +6,32 @@
  */
 package com.mars_sim.ui.swing.unit_window.person;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.social.Relation.Opinion;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.ColumnSpec;
+import com.mars_sim.ui.swing.components.TableModelUpdater;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.model.BasePersonModel;
+import com.mars_sim.ui.swing.utils.model.BaseWorkerModel;
 
 /**
  * A tab panel displaying a person's social relationships.
  */
 @SuppressWarnings("serial")
-class TabPanelSocial extends EntityTableTabPanel<Person>
-			implements ListSelectionListener {
+class TabPanelSocial extends EntityTableTabPanel<Person> {
 
 	private static final String SOCIAL_ICON = "social";
 	
 	private RelationshipTableModel relationshipTableModel;
 
-	
 	/**
 	 * Constructor.
 	 * 
@@ -71,18 +63,6 @@ class TabPanelSocial extends EntityTableTabPanel<Person>
 		columnModel.getColumn(3).setPreferredWidth(30);
 		columnModel.getColumn(4).setPreferredWidth(30);
 		columnModel.getColumn(5).setPreferredWidth(50);
-
-		// Align the content to the center of the cell
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		columnModel.getColumn(0).setCellRenderer(renderer);
-		columnModel.getColumn(1).setCellRenderer(renderer);
-		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		columnModel.getColumn(2).setCellRenderer(renderer);
-		columnModel.getColumn(3).setCellRenderer(renderer);
-		columnModel.getColumn(4).setCellRenderer(renderer);
-		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		columnModel.getColumn(5).setCellRenderer(renderer);
 	}
 
 	/**
@@ -94,92 +74,48 @@ class TabPanelSocial extends EntityTableTabPanel<Person>
 	}
 
 	/**
-	 * Called whenever the value of the selection changes.
-	 * @param e the event that characterizes the change.
-	 */
-	public void valueChanged(ListSelectionEvent e) {
-		relationshipTableModel.update();
-	}
-
-	/**
 	 * Internal class used as model for the relationship table.
 	 */
-	private static class RelationshipTableModel extends AbstractTableModel
-			implements EntityModel {
+	private static class RelationshipTableModel extends BasePersonModel {
+		private static final int RESPECT_VAL = 200;
+		private static final int CARE_VAL = 201;
+		private static final int TRUST_VAL = 202;
+		private static final int RELATIONSHIP_VAL = 203;
+
+		private static final EntityColumnSpec RESPECT = new EntityColumnSpec(new ColumnSpec(RESPECT_VAL, Msg.getString("TabPanelSocial.column.respect"), Integer.class),
+                                                            null);
+		private static final EntityColumnSpec CARE = new EntityColumnSpec(new ColumnSpec(CARE_VAL, Msg.getString("TabPanelSocial.column.care"), Integer.class),
+															null);
+		private static final EntityColumnSpec TRUST = new EntityColumnSpec(new ColumnSpec(TRUST_VAL, Msg.getString("TabPanelSocial.column.trust"), Integer.class),
+															null);
+		private static final EntityColumnSpec RELATIONSHIP = new EntityColumnSpec(new ColumnSpec(RELATIONSHIP_VAL, Msg.getString("TabPanelSocial.column.relationship"), String.class),
+															null);
 
 		private Person person;	
-		private List<Person> knownPeople;
 
 		private RelationshipTableModel(Person person) {
+			super(NAME, SETTLEMENT, RESPECT, CARE, TRUST, RELATIONSHIP);
 			this.person = person;
-			knownPeople = new ArrayList<>(RelationshipUtil.getAllKnownPeople(person));
-		}
-
-		public int getRowCount() {
-			return knownPeople.size();
-		}
-
-		public int getColumnCount() {
-			return 6;
+			setEntities(RelationshipUtil.getAllKnownPeople(person));
 		}
 
 		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return switch (columnIndex) {
-				case 0, 1, 5 -> String.class;
-				case 2, 3, 4 -> Integer.class;
-				default -> Object.class;
-			};
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			return switch (columnIndex) {
-				case 0 -> Msg.getString("settlement.singular");
-				case 1 -> Msg.getString("entity.name");
-				case 2 -> Msg.getString("TabPanelSocial.column.respect");
-				case 3 -> Msg.getString("TabPanelSocial.column.care");
-				case 4 -> Msg.getString("TabPanelSocial.column.trust");
-				case 5 -> Msg.getString("TabPanelSocial.column.relationship");
-				default -> null;
-			};
-		}
-
-		@Override
-		public Object getValueAt(int row, int column) {
-			Person p = knownPeople.get(row);
-			Opinion opinion = person.getRelation().getOpinion(p);
-
-			return switch (column) {
-				case 0 -> p.getAssociatedSettlement().getName();
-				case 1 -> p.getName();
-				case 2 -> (int)Math.round(opinion.d0());
-				case 3 -> (int)Math.round(opinion.d1());
-				case 4 -> (int)Math.round(opinion.d2());
-				case 5 -> getRelationshipString(opinion.getAverage());
-				default -> null;
+		protected Object getEntityValue(Person entity, int valueIndex) {
+			Opinion opinion = person.getRelation().getOpinion(entity);
+			return switch (valueIndex) {
+				case RESPECT_VAL -> (int)Math.round(opinion.d0());
+				case CARE_VAL -> (int)Math.round(opinion.d1());
+				case TRUST_VAL -> (int)Math.round(opinion.d2());
+				case RELATIONSHIP_VAL -> RelationshipUtil.describeRelationship(opinion.getAverage());
+				default -> BaseWorkerModel.getWorkerValue(entity, valueIndex);
 			};
 		}
 
 		public void update() {
-			List<Person> newKnownPeople = new ArrayList<>(RelationshipUtil.getAllKnownPeople(person));
-			if (!knownPeople.equals(newKnownPeople)) {
-				knownPeople = newKnownPeople;
-				fireTableDataChanged();
+			if (!setEntities(RelationshipUtil.getAllKnownPeople(person))) {
+				// No row changed so update all rows to update values
+				SwingHelper.runInEDT(new TableModelUpdater(this));
 			}
-			else {
-				fireTableRowsUpdated(0, knownPeople.size()-1);
-			}
-			
-		}
-
-		private static String getRelationshipString(double opinion) {
-			return Conversion.capitalize(RelationshipUtil.describeRelationship(opinion));
-		}
-
-		@Override
-		public Entity getAssociatedEntity(int row) {
-			return knownPeople.get(row);
 		}
 	}
 }

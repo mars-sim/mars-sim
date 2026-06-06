@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.utils.model;
 import java.util.Set;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.unit.MobileUnit;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 
@@ -21,19 +19,16 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  */
 public abstract class BasePersonModel extends AbstractEntityModel<Person> {
 
-    private static final int NAME_VAL = 0;
-    private static final int INSIDE_VAL = 1;
-    private static final int TASK_VAL = 2;
+    private static final int INSIDE_VAL = 100;
 
-    // Display Person name, passive and unchanging
-    protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class), null);
-    
+    // Columns based on Worker
+    protected static final EntityColumnSpec NAME = BaseWorkerModel.NAME;
+    protected static final EntityColumnSpec TASK = BaseWorkerModel.TASK;
+    protected static final EntityColumnSpec SETTLEMENT = BaseWorkerModel.SETTLEMENT;
+
     // Display whether the Person is inside based on a changed of container
     protected static final EntityColumnSpec INSIDE = new EntityColumnSpec(new ColumnSpec(INSIDE_VAL, "Inside", Boolean.class),
                                                             Set.of(MobileUnit.CONTAINER_EVENT));
-    // Display the Person's current task, reacts to events
-    protected static final EntityColumnSpec TASK = new EntityColumnSpec(new ColumnSpec(TASK_VAL, Msg.getString("task.singular"), String.class),
-                                                            Set.of(TaskManager.TASK_EVENT));
 
     /**
      * Create a generic person model with the specified columns.
@@ -53,10 +48,8 @@ public abstract class BasePersonModel extends AbstractEntityModel<Person> {
     @Override
     protected Object getEntityValue(Person entity, int valueIndex) {
         return switch(valueIndex) {
-            case NAME_VAL-> entity.getName();
-            case INSIDE_VAL -> entity.isInside();
-            case TASK_VAL -> entity.getMind().getTaskManager().getTaskName();
-            default -> "";
+            case INSIDE_VAL -> entity.isInside();        
+            default -> BaseWorkerModel.getWorkerValue(entity, valueIndex);
         };
     }
 }

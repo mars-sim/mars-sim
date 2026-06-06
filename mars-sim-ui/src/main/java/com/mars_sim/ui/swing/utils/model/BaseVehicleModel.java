@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.utils.model;
 
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.components.ColumnSpec;
@@ -22,6 +23,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     private static final int NAME_VAL = 0;
     private static final int MISSION_VAL = 1;
     private static final int TYPE_VAL = 2;
+    private static final int STATUS_VAL = 3;
 
     // Basic fixed properties of a Vehicle
     protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"), String.class), null);
@@ -30,6 +32,10 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     // Mission property that changes via events
     protected static final EntityColumnSpec MISSION = new EntityColumnSpec(new ColumnSpec(MISSION_VAL, Msg.getString("mission.singular"),
                                 String.class), Set.of(Vehicle.MISSION_EVENT));
+
+    // Status property that changes via events
+    protected static final EntityColumnSpec STATUS = new EntityColumnSpec(new ColumnSpec(STATUS_VAL, Msg.getString("vehicle.status"), String.class),
+                                Set.of(EntityEventType.STATUS_EVENT));    
 
     /**
      * Create a generic vehicle model with the specified columns.
@@ -52,6 +58,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
             case NAME_VAL -> entity.getName();
             case MISSION_VAL -> (entity.getMission() != null) ? entity.getMission().getName() : "";
             case TYPE_VAL -> entity.getVehicleType().getName();
+            case STATUS_VAL -> entity.printStatusTypes();
             default -> "";
         };
     }

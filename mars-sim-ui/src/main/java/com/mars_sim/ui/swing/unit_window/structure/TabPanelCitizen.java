@@ -141,18 +141,6 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	}
 
 	/**
-	 * Unregister the model from listening to the entities before destroying the panel.
-	 */
-	@Override
-	public void destroy() {
-		if (citizenModel != null) {
-			citizenModel.release();
-		}
-
-		super.destroy();
-	}
-
-	/**
 	 * Table model showing all Persons in a Settlement.
 	 */
 	private static class CitizenModel extends BasePersonModel {
