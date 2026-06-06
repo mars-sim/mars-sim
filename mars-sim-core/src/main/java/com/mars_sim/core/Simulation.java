@@ -390,7 +390,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		ExplorationManager.initialise(surfaceFeatures);
 
 		AbstractMission.initializeInstances(this, eventManager, unitManager,
-			surfaceFeatures, missionManager, simulationConfig.getPersonConfig());
+			surfaceFeatures, simulationConfig.getPersonConfig());
 		MissionStep.initializeInstances(masterClock, unitManager);
 
 		TaskManager.initializeInstances(this, simulationConfig);
@@ -532,7 +532,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Set instances for classes that extend Unit and Task and Mission
 		AbstractMission.initializeInstances(this, eventManager, unitManager,
-				surfaceFeatures, missionManager, pc);	
+				surfaceFeatures, pc);	
 		MissionStep.initializeInstances(masterClock, unitManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
@@ -650,7 +650,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		// Re-initialize Mission related class
 		AbstractMission.initializeInstances(sim, eventManager, unitManager,
-				surfaceFeatures, missionManager, pc);
+				surfaceFeatures, pc);
 		MissionStep.initializeInstances(masterClock, unitManager);
 
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);

@@ -10,13 +10,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
-import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
@@ -33,7 +33,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  */
 @SuppressWarnings("serial")
 class MissionTableModel extends EntityMonitorModel<Mission>
-		implements MissionManagerListener {
+		implements EntityManagerListener {
 
 	// Column indexes
 	private static final int DATE_FILED = 0;
@@ -57,8 +57,6 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
 		
-	private MissionManager missionManager;
-
 	static {
 		COLUMNS = new ColumnSpec[COLUMNCOUNT];
 		COLUMNS[DATE_FILED] = new ColumnSpec(Msg.getString("MissionTableModel.column.filed"), MarsTime.class);
@@ -85,10 +83,6 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	public MissionTableModel(Simulation sim) {
 		super(Msg.getString("mission.plural"), COLUMNS);
 
-		missionManager = sim.getMissionManager();
-				
-		missionManager.addListener(this);
-
 		// Mark this column up so as to hide it to save space in case of a single settlement view
 		setSettlementColumn(STARTING_SETTLEMENT);
 	}
@@ -105,7 +99,10 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 				.toList();
 	
 		resetItems(missions);
-		
+
+		// Change listeners to match the new filter
+		getSelectedSettlements().forEach(s -> s.getMissionControl().removeListener(this));
+		filter.forEach(s -> s.getMissionControl().addListener(this));
 		return true;
 	}
 
@@ -115,10 +112,12 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	 * @param mission the new mission.
 	 */
 	@Override
-	public void addMission(Mission mission) {
-		var s = mission.getAssociatedSettlement();
+	public void entityAdded(Entity mission) {
+		var s = ((Mission) mission).getAssociatedSettlement();
+
+		// Should never fail but good to check
 		if (getSelectedSettlements().contains(s)) {
-			addItem(mission);
+			addItem((Mission) mission);
 		}
 	}
 
@@ -128,8 +127,8 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	 * @param mission the old mission.
 	 */
 	@Override
-	public void removeMission(Mission mission) {
-		removeItem(mission);
+	public void entityRemoved(Entity mission){
+		removeItem((Mission) mission);
 	}
 
 	/**
@@ -288,7 +287,7 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	 */
 	@Override
 	public void destroy() {
-		missionManager.removeListener(this);
+		getSelectedSettlements().forEach(s -> s.getMissionControl().removeListener(this));
 		super.destroy();
 	}
 }

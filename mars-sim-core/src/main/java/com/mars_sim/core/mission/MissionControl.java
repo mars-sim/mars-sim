@@ -7,15 +7,18 @@
 package com.mars_sim.core.mission;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionStatus;
@@ -47,6 +50,8 @@ public class MissionControl implements ScheduledEventHandler {
 	private SolMetricDataLogger<String> historicalMissions;
 	private Settlement owner;
 	private int id = 1;
+	
+	private transient Set<EntityManagerListener> listeners;
 
     public MissionControl(Settlement settlement) {
 		this.owner = settlement;
@@ -132,6 +137,23 @@ public class MissionControl implements ScheduledEventHandler {
         return 1000;
     }
 
+	/**
+	 * Request a mission plan is reviewed
+	 *
+	 * @param plan {@link MissionPlanning}
+	 */
+	public void requestMissionReview(MissionPlanning plan) {
+
+		Mission mission = plan.getMission();
+		Person p = mission.getStartingPerson();
+
+		logger.info(p, "Put together a mission plan for " + plan.getMission().getName() + ".");
+
+		// Add this mission only after the mission plan has been submitted for review.
+		addMission(mission);
+	}
+
+
     /**
      * Review of a misson plan is completed.
      * @param mp Plan completed.
@@ -154,8 +176,7 @@ public class MissionControl implements ScheduledEventHandler {
 			Mission m = mp.getMission();
 			m.abortMission(MISSION_PLAN_NOT_APPROVED);
 
-			var missionManager = Simulation.instance().getMissionManager();
-			missionManager.removeMission(m);
+			removeMission(m);
 		}
 					
 		logger.info(mp.getMission(), "Review completed, outcome is " + state.getName() + ", score: " 
@@ -175,9 +196,67 @@ public class MissionControl implements ScheduledEventHandler {
 		return historicalMissions.getHistory();
 	}
 
+	
+	/**
+	 * Adds a new mission as the ongoing list under control of this control.
+	 * @param mission The mission to be added to the ongoing list.
+	 * TODO the implementation will be changed in a later commit.
+	 */
+	public void addMission(Mission mission) {
+		var missionManager = Simulation.instance().getMissionManager();
+		missionManager.addOngoingMission(mission);
+
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.forEach(l -> l.entityAdded(mission));
+			}
+		}
+	}
+
+	/**
+	 * Removes a mission from the ongoing list under control of this control.
+	 * @param mission Mission to remove
+	 * TODO the implementation will be changed in a later commit.
+	 */
+	public void removeMission(Mission mission) {
+		var missionManager = Simulation.instance().getMissionManager();
+		missionManager.removeOngoingMission(mission);
+
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.forEach(l -> l.entityRemoved(mission));
+			}
+		}
+	}
+
+	/**
+	 * Add a listener for changes to missions controlled by this settlement.
+	 * @param listener the listener to register.
+	 */
+	public void addListener(EntityManagerListener listener) {
+		if (listeners == null) {
+			listeners = new HashSet<>();
+		}
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
+	}
+
+	/**
+	 * Remove a previously registered mission change listener.
+	 * @param listener listener to remove.
+	 */
+	public void removeListener(EntityManagerListener listener) {
+		if (listeners != null) {
+			synchronized (listeners) {
+				listeners.remove(listener);
+			}
+		}
+	}
+	
 	/**
 	 * Gets all the missions associated with this control.
-	 * TODO the implementayion will be changed in a later commit.
+	 * TODO the implementation will be changed in a later commit.
 	 * @return set of missions associated with this control.
 	 */
 	public Set<Mission> getAllMissions() {

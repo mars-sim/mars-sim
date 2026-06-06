@@ -107,16 +107,13 @@ public class MissionManager implements Serializable {
 			return Collections.emptyList();
 	}
 
+
 	/**
 	 * Adds a new mission to the mission list.
 	 *
 	 * @param newMission new mission to be added
 	 */
-	public void addMission(Mission newMission) {
-		if (newMission == null) {
-			throw new IllegalArgumentException("newMission is null");
-		}
-
+	public void addOngoingMission(Mission newMission) {
 		synchronized (onGoingMissions) {
 			if (!onGoingMissions.contains(newMission)) {
 				onGoingMissions.add(newMission);
@@ -138,7 +135,7 @@ public class MissionManager implements Serializable {
 	 *
 	 * @param the mission to be removed
 	 */
-	public void removeMission(Mission oldMission) {
+	public void removeOngoingMission(Mission oldMission) {
 		synchronized (onGoingMissions) {
 			if (onGoingMissions.contains(oldMission)) {
 				onGoingMissions.remove(oldMission);
@@ -245,32 +242,6 @@ public class MissionManager implements Serializable {
 									&& settlement.equals(m.getAssociatedSettlement())
 									&& (m.getMissionType() == mType)))
 							.count();
-	}
-
-
-	/**
-	 * Adds a mission plan.
-	 *
-	 * @param plan {@link MissionPlanning}
-	 */
-	public void addMissionPlanning(MissionPlanning plan) {
-
-		Mission mission = plan.getMission();
-		Person p = mission.getStartingPerson();
-
-		logger.info(p, "Put together a mission plan for " + plan.getMission().getName() + ".");
-
-		// Add this mission only after the mission plan has been submitted for review.
-		addMission(mission);
-	}
-
-	/**
-	 * Submits a request for approving a mission plan.
-	 *
-	 * @param mission
-	 */
-	public void requestMissionApproving(MissionPlanning plan) {
-		addMissionPlanning(plan);
 	}
 
 	/**

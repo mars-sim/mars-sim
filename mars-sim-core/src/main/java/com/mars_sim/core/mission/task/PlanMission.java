@@ -217,7 +217,8 @@ public class PlanMission extends Task {
 				
 				// Set the plan pending and add to approval list
 				plan.setStatus(PlanType.PENDING);
-				missionManager.requestMissionApproving(plan);
+				var control = mission.getAssociatedSettlement().getMissionControl();
+				control.requestMissionReview(plan);
 				
 				endTask();
 			}

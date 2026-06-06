@@ -4,10 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
+import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.building.construction.MockMission;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
 import com.mars_sim.core.person.ai.mission.MissionType;
@@ -106,7 +111,7 @@ class MissionControlTest extends MarsSimUnitTest{
 
         var m = new MockMission(s1);
 
-        getSim().getMissionManager().addMission(m);
+        s1.getMissionControl().addMission(m);
 
         var active = mc1.getActiveMissions();
         assertEquals(1, active.size(), "There should be one active mission");
@@ -123,7 +128,7 @@ class MissionControlTest extends MarsSimUnitTest{
 
         var m = new MockMission(s1);
 
-        getSim().getMissionManager().addMission(m);
+        s1.getMissionControl().addMission(m);
 
         var active = mc1.getActiveMissions();
         assertFalse(active.isEmpty(), "There should be one active mission");
@@ -131,6 +136,52 @@ class MissionControlTest extends MarsSimUnitTest{
         m.abortMission(null);
         assertTrue(mc1.getActiveMissions().isEmpty(), "There should be no active mission");
         assertEquals(1, mc1.getAllMissions().size(), "There should be one mission");
+    }
+
+    @Test
+    void testEntityManagerListenerMissionAddedAndRemoved() {
+        var settlement = buildSettlement("Test");
+        var missionControl = new MissionControl(settlement);
+        var mission = new MockMission(settlement);
+
+        var addedCount = new int[1];
+        var removedCount = new int[1];
+        var addedEntity = new AtomicReference<Entity>();
+        var removedEntity = new AtomicReference<Entity>();
+
+        EntityManagerListener listener = new EntityManagerListener() {
+            @Override
+            public void entityAdded(Entity newEntity) {
+                addedCount[0]++;
+                addedEntity.set(newEntity);
+            }
+
+            @Override
+            public void entityRemoved(Entity removedEntityParam) {
+                removedCount[0]++;
+                removedEntity.set(removedEntityParam);
+            }
+        };
+
+        missionControl.addListener(listener);
+
+        missionControl.addMission(mission);
+
+        assertEquals(1, addedCount[0], "Exactly one mission added event should be fired");
+        assertSame(mission, addedEntity.get(), "Added event should contain the added mission");
+
+        missionControl.removeMission(mission);
+        assertEquals(1, removedCount[0], "Exactly one mission removed event should be fired");
+        assertSame(mission, removedEntity.get(), "Removed event should contain the removed mission");
+
+        missionControl.removeListener(listener);
+
+        var mission1 = new MockMission(settlement);
+        missionControl.addMission(mission1);
+        assertEquals(1, addedCount[0], "No additional mission added event should be fired after listener is removed");
+
+        missionControl.removeMission(mission1);
+        assertEquals(1, removedCount[0], "No additional mission removed event should be fired after listener is removed");
     }
 }
 

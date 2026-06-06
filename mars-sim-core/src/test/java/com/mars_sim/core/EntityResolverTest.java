@@ -191,7 +191,7 @@ class EntityResolverTest extends MarsSimUnitTest {
             }
         };
 
-        getSim().getMissionManager().addMission(mission);
+        s.getMissionControl().addMission(mission);
 
         var id = mission.getEntityIdentifier();
         assertNotNull(id, "Mission has identifier");

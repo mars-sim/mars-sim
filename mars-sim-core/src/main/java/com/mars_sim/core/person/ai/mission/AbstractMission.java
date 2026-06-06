@@ -162,7 +162,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	// Static members
 	protected static UnitManager unitManager;
 	private static HistoricalEventManager eventManager;
-	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	private static MasterClock clock;
@@ -764,7 +763,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		
 		StringBuilder status = new StringBuilder();
 		
-		if (listOfStatuses.isBlank() || listOfStatuses == null) {
+		if (listOfStatuses.isBlank()) {
 			status.append("Ended the ")
 			.append(getName())
 			.append(" without status flags.");
@@ -1426,15 +1425,13 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param e {@link HistoricalEventManager}
 	 * @param u {@link UnitManager}
 	 * @param sf {@link SurfaceFeatures}
-	 * @param m {@link MissionManager}
 	 */
 	public static void initializeInstances(Simulation si, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, 
-			MissionManager m, PersonConfig pc) {
+			PersonConfig pc) {
 		eventManager = e;
 		unitManager = u;
 		surfaceFeatures = sf;
-		missionManager = m;
 		personConfig = pc;
 
 		clock = si.getMasterClock();
