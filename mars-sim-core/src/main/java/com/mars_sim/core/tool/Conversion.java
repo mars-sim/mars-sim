@@ -24,7 +24,7 @@ public final class Conversion {
 
 	    if (input != null) {
 		    for (char c : input.toCharArray()) {
-		        if (Character.isSpaceChar(c) || c == '(' ) {
+		        if (Character.isSpaceChar(c) || c == '(') {
 		            nextTitleCase = true;
 		        } else if (nextTitleCase) {
 		            c = Character.toTitleCase(c);
@@ -53,7 +53,8 @@ public final class Conversion {
 			for (char c : charArray) {
 				if (Character.isSpaceChar(c) 
 						|| c == '('
-						|| c == '-') {
+						|| c == '-'
+						|| c == '_') {
 					nextTitleCase = true;
 				} else if (nextTitleCase) {
 					// Check if it is "And" string and skip making the 'a' upper-case

@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Alpha Base 2" shift-pattern="Long 3 Shift" 
+        name="Alpha Base 3" shift-pattern="Long 3 Shift" 
         default-population="48" sponsor="MS"
         description="Large Base" objective="CROP_FARM">
         
@@ -57,7 +57,8 @@
         </connection-list>
     </building>
 
-    <!-- row 3 -->
+    <!-- row 3 -->  
+
     <building id="H6" type="Brickcore3x3" xloc="-6.0"
         yloc="38" facing="270.0">
         <connection-list>
@@ -73,6 +74,7 @@
         </connection-list>
     </building>
     
+       
     <building id="RQ1" type="Residential Quarters" xloc="-21.5"
         yloc="42.5" facing="270.0">
         <connection-list>
@@ -94,18 +96,16 @@
         </connection-list>
     </building>  
     
-    <building id="H7" type="Hallway" length="57.0625" xloc="-36"
+    <building id="H7" type="Hallway" length="57.0" xloc="-36.0"
         yloc="38" facing="270.0">
         <connection-list>
             <connection id="H6" hatch-facing="west" />
-            
             <connection id="RQ0" hatch-facing="north" />
             <connection id="RQ1" hatch-facing="north" />
             <connection id="H9" hatch-facing="north" />
             <connection id="H10" hatch-facing="north" />
             <connection id="IN" hatch-facing="north" />
             <connection id="LOU" hatch-facing="north" />
-            
             <connection id="COM" hatch-facing="south" />       
             <connection id="LAB" hatch-facing="south" />
             <connection id="SF" hatch-facing="south" />
@@ -141,6 +141,13 @@
         </connection-list>
     </building>
 
+    <!--  building id="H8" type="Brickcore3x3" xloc="-56.5"
+        yloc="38" facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="west"  />
+        </connection-list>
+    </building  -->
+    
     <building id="H9" type="Hallway" length="7.0" xloc="-36.0"
         yloc="42.5" facing="0.0">
         <connection-list>

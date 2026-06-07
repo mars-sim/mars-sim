@@ -86,8 +86,9 @@ public class ThermalGeneration extends Function {
 		if (spec instanceof GenerationSpec ss) {
 			for (SourceSpec sourceSpec : ss.getSources()) {
 				double heat = sourceSpec.getCapacity();
+				// In case of hallway and tunnel, heat is variable and depends on the floor area
 				if (building.getCategory() == BuildingCategory.CONNECTION) {
-					heat = heat * building.getFloorArea() / 9;
+					heat = heat * building.getFloorArea() / 6;
 				}
 				HeatSource heatSource = null;
 				HeatSourceType sourceType = HeatSourceType.valueOf(sourceSpec.getType().toUpperCase().replace(" ", "_"));
