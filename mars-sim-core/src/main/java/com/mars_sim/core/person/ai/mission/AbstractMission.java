@@ -210,7 +210,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public EntityIdentifier getEntityIdentifier() {
-		return new EntityIdentifier("MISSION", designationString);
+		return new EntityIdentifier("MISSION", designationString,
+				Integer.toString(startingMember.getAssociatedSettlement().getIdentifier()));
 	}
 	
 	/**

@@ -23,7 +23,7 @@ class EntityResolverTest extends MarsSimUnitTest {
                 new EntityIdentifier("VEHICLE", "789"),
                 new EntityIdentifier("AUTHORITY", "NASA"),
                 new EntityIdentifier("SCIENTIFICSTUDY", "study-001"),
-                new EntityIdentifier("MISSION", "mission-abc"),
+                new EntityIdentifier("MISSION", "mission-abc", "S1"),
                 new EntityIdentifier("TRANSPORTABLE", "resupply-42"),
                 new EntityIdentifier("BUILDING", "321"),
                 new EntityIdentifier("ROBOT", "654"),
@@ -184,13 +184,7 @@ class EntityResolverTest extends MarsSimUnitTest {
     void testMission() {
         var s = buildSettlement("MissionTestSettlement");
 
-        var mission = new MockMission(s) {
-            @Override
-            public EntityIdentifier getEntityIdentifier() {
-                return new EntityIdentifier("MISSION", "mock-mission-1");
-            }
-        };
-
+        var mission = new MockMission(s, "Test 1");
         s.getMissionControl().addMission(mission);
 
         var id = mission.getEntityIdentifier();

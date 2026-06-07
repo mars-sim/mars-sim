@@ -135,7 +135,8 @@ public abstract class MissionProject implements Mission {
 
     @Override
     public EntityIdentifier getEntityIdentifier() {
-        return new EntityIdentifier("MISSION", getFullMissionDesignation());
+        return new EntityIdentifier("MISSION", getFullMissionDesignation(), 
+                Integer.toString(getAssociatedSettlement().getIdentifier()));
     }
     
     /**

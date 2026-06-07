@@ -16,6 +16,12 @@ public class EntityResolver {
         // Private constructor to prevent instantiation
     }
 
+    /**
+     * Resolve an identifer to an entity within the simulation. The identifier should be globally unique across the system and should be immutable.
+     * @param simulation the simulation instance
+     * @param identifier the entity identifier
+     * @return the resolved entity
+     */
     public static Entity resolve(Simulation simulation, EntityIdentifier identifier) {
         return switch(identifier.type()) {
             // First batch based on Unit type
@@ -29,12 +35,15 @@ public class EntityResolver {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No scientific study found with id: " + identifier.id()));
             
-            case "MISSION" -> simulation.getMissionManager().getMissions().stream()
+            case "MISSION" -> {
+                var parentSettement = simulation.getUnitManager().getSettlementByID(Integer.parseInt(identifier.parentId()));
+                yield parentSettement.getMissionControl().getAllMissions().stream()
                     .filter(mission -> mission.getEntityIdentifier().id().equals(identifier.id()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No mission found with id: " + identifier.id()));
+                }
 
-                case "TRANSPORTABLE" -> simulation.getTransportManager().getTransportItems().stream()
+            case "TRANSPORTABLE" -> simulation.getTransportManager().getTransportItems().stream()
                     .filter(item -> item.getEntityIdentifier().id().equals(identifier.id()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("No transport item found with id: " + identifier.id()));
@@ -57,10 +66,14 @@ public class EntityResolver {
      */
     public static EntityIdentifier fromString(String stringId) {
         var parts = stringId.split(":");
-        if (parts.length != 2) {
+        if (parts.length == 2) {
+            return new EntityIdentifier(parts[0], parts[1]);
+        }
+        else if (parts.length == 3) {
+            return new EntityIdentifier(parts[0], parts[1], parts[2]); 
+        } else {
             throw new IllegalArgumentException("Invalid EntityIdentifier string: " + stringId);
         }
-        return new EntityIdentifier(parts[0], parts[1]);
     }
 
     /**
@@ -69,6 +82,9 @@ public class EntityResolver {
      * @return
      */
     public static String toString(EntityIdentifier id) {
+        if (id.parentId() != null) {
+            return id.type() + ":" + id.id() + ":" + id.parentId();
+        }
         return id.type() + ":" + id.id();
     }
 }
