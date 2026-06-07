@@ -36,7 +36,13 @@ public class EntityResolver {
                     .orElseThrow(() -> new IllegalArgumentException("No scientific study found with id: " + identifier.id()));
             
             case "MISSION" -> {
+                if (identifier.parentId() == null) {
+                    throw new IllegalArgumentException("Mission identifier must have a parent settlement id");
+                }
                 var parentSettement = simulation.getUnitManager().getSettlementByID(Integer.parseInt(identifier.parentId()));
+                if (parentSettement == null) {
+                    throw new IllegalArgumentException("No settlement found with id: " + identifier.parentId());
+                }
                 yield parentSettement.getMissionControl().getAllMissions().stream()
                     .filter(mission -> mission.getEntityIdentifier().id().equals(identifier.id()))
                     .findFirst()

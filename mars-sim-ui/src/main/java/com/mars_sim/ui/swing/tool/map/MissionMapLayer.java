@@ -141,7 +141,7 @@ public class MissionMapLayer extends RoutePathLayer
 
     private void addSettlement(Settlement settlement) {
         // Listen for new missions in each settlement
-        settlement.addEntityListener(this);
+        settlement.getMissionControl().addListener(this);
 
         // Add existing missions
         settlement.getMissionControl().getActiveMissions().forEach(this::addMission);

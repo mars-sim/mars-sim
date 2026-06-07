@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import com.mars_sim.core.EntityManagerListener;
@@ -55,7 +56,7 @@ public class MissionControl implements ScheduledEventHandler {
 
 	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
     private List<Double> missionScores = new ArrayList<>();
-	private Set<Mission> allMissions = new HashSet<>();
+	private Set<Mission> allMissions = new CopyOnWriteArraySet<>();
 	private SolMetricDataLogger<String> historicalMissions;
 	private Settlement owner;
 	private int id = 1;

@@ -454,7 +454,9 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		 */
 		@Override
 		public void entityRemoved(Entity mission){
-			((Mission)mission).removeEntityListener(missionListener);
+			Mission m = (Mission) mission;
+			m.removeEntityListener(missionListener);
+			monitoredMissions.remove(mission);
 		}
 
 		/**
