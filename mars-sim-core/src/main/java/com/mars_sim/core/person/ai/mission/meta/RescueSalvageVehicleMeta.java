@@ -47,12 +47,8 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             if (vehicle != null) {
                 vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
                         vehicle.getEstimatedRange());
-                if (vehicle == vehicleTarget)
+                if (vehicleTarget == null || vehicle.equals(vehicleTarget))
                     return RatingScore.ZERO_RATING;
-                else if (vehicleTarget == null)
-                    return RatingScore.ZERO_RATING;
-                else if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget))
-                    return RatingScore.ZERO_RATING;  
                 
                 missionProbability = new RatingScore(1 + RescueSalvageVehicle.BASE_RESCUE_MISSION_WEIGHT);
                 missionProbability.addModifier("stranded", 

@@ -25,7 +25,6 @@ import com.mars_sim.core.food.FoodProductionUtil;
 import com.mars_sim.core.manufacture.ManufactureUtil;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.process.ProcessInfo;
 import com.mars_sim.core.structure.Settlement;
@@ -49,7 +48,6 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	private static final double SKILL_FACTOR = 1D;
 	private static final double TECH_FACTOR = 2D;
 
-	protected static MissionManager missionManager;
     protected static VehicleConfig vehicleConfig;
 	protected static PersonConfig personConfig;
 	protected static CropConfig cropConfig;
@@ -500,7 +498,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
      * @param settlement Settlement being checked
      */
     protected Stream<Vehicle> getVehiclesOnMissions(Settlement settlement) {
-        return missionManager.getMissionsForSettlement(settlement).stream()
+		return settlement.getMissionControl().getActiveMissions().stream()
                 .filter(VehicleMission.class::isInstance)
                 .map(vm -> ((VehicleMission) vm).getVehicle())
                 .filter(Objects::nonNull);
@@ -548,8 +546,7 @@ public abstract class Good implements Serializable, Comparable<Good> {
 	 * @param sc
 	 * @param m
 	 */
-	static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u) {
-		missionManager = m;
+	static void initializeInstances(SimulationConfig sc, UnitManager u) {
 		unitManager = u;
 		vehicleConfig = sc.getVehicleConfiguration();
 		personConfig = sc.getPersonConfig();

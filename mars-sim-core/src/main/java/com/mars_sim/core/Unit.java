@@ -17,7 +17,6 @@ import com.mars_sim.core.events.HistoricalEvent;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -61,7 +60,6 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	protected static MasterClock masterClock;
 
 	protected static UnitManager unitManager;
-	protected static MissionManager missionManager;
 
 	protected static Weather weather;
 
@@ -375,11 +373,10 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 *
 	 */
 	public static void initializeInstances(MasterClock c0, UnitManager um,
-			Weather w, MissionManager mm) {
+			Weather w) {
 		masterClock = c0;
 		weather = w;
 		unitManager = um;
-		missionManager = mm;
 	}
 
 	/**

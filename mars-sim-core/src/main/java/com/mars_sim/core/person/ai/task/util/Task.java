@@ -36,7 +36,6 @@ import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.task.Walk;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.robot.Robot;
@@ -135,8 +134,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 	protected static SurfaceFeatures surfaceFeatures;
 	/** The static instance of the OrbitInfo */
 	protected static OrbitInfo orbitInfo;
-	/** The static instance of the MissionManager */
-	protected static MissionManager missionManager;
 	/** The static instance of the SimulationConfig */
 	protected static SimulationConfig simulationConfig = SimulationConfig.instance();
 	/** The static instance of the personConfig */
@@ -1469,7 +1466,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 		scientificStudyManager = s.getScientificStudyManager();
 		surfaceFeatures = s.getSurfaceFeatures();
 		orbitInfo = s.getOrbitInfo();
-		missionManager = s.getMissionManager();
 		personConfig = pc;
 	}
 	

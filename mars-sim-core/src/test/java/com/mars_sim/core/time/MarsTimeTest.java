@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class MarsTimeTest {
+class MarsTimeTest {
 
     @Test
     void testAddTime() {
@@ -78,4 +78,43 @@ public class MarsTimeTest {
         later = new MarsTime(1,1, 2, 150D, 1);
         assertNotEquals(start.getDate(), later.getDate(), "Difference of different MarsDates");
     }
+
+    @Test
+    void testAdvanceToNextMSolSameSol() {
+        MarsTime start = new MarsTime(1, 1, 1, 100D, 1);
+
+        MarsTime later = start.advanceToNextMSol(500);
+
+        assertEquals(start.getOrbit(), later.getOrbit(), "Orbit should stay the same");
+        assertEquals(start.getMonth(), later.getMonth(), "Month should stay the same");
+        assertEquals(start.getSolOfMonth(), later.getSolOfMonth(), "Sol should stay the same");
+        assertEquals(start.getMissionSol(), later.getMissionSol(), "Mission sol should stay the same");
+        assertEquals(500D, later.getMillisol(), "Millisol should advance to target");
+    }
+
+    @Test
+    void testAdvanceToNextMSolSameTimeGoesToNextSol() {
+        MarsTime start = new MarsTime(1, 1, 1, 600D, 1);
+
+        MarsTime later = start.advanceToNextMSol(500);
+
+        assertEquals(start.getOrbit(), later.getOrbit(), "Orbit should stay the same");
+        assertEquals(start.getMonth(), later.getMonth(), "Month should stay the same");
+        assertEquals(start.getSolOfMonth() + 1, later.getSolOfMonth(), "Sol should advance to next sol");
+        assertEquals(start.getMissionSol() + 1, later.getMissionSol(), "Mission sol should advance to next sol");
+        assertEquals(500D, later.getMillisol(), "Millisol should match target on next sol");
+    }
+
+    @Test
+    void testAdvanceToNextMSolAcrossMonthBoundary() {
+        MarsTime start = new MarsTime(1, 1, MarsTime.SOLS_PER_MONTH_LONG, 900D, 1);
+
+        MarsTime later = start.advanceToNextMSol(100);
+
+        assertEquals(start.getOrbit(), later.getOrbit(), "Orbit should stay the same");
+        assertEquals(start.getMonth() + 1, later.getMonth(), "Month should advance at month boundary");
+        assertEquals(1, later.getSolOfMonth(), "Sol should rollover to first sol of new month");
+        assertEquals(start.getMissionSol() + 1, later.getMissionSol(), "Mission sol should advance by one");
+        assertEquals(100D, later.getMillisol(), "Millisol should match target on next sol");
+    } 
 }

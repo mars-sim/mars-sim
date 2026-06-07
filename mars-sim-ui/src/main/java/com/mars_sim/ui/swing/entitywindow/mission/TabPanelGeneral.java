@@ -237,8 +237,8 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 		var mission = getEntity();
 		MissionPlanning plan = mission.getPlan();
 		if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
-			getContext().getSimulation().getMissionManager().approveMissionPlan(plan, (approved ?
-								PlanType.APPROVED : PlanType.NOT_APPROVED));
+			plan.setScore((approved ? plan.getPassingScore() + 10 : 0)); // Set score above or below passing score to ensure correct outcome
+			mission.getAssociatedSettlement().getMissionControl().reviewCompleted(plan);
 			updateFields(mission); // Force a full refresh
 		}
 	}
