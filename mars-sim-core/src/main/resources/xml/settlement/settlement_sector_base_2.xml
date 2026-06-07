@@ -1,34 +1,57 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Sector Base 1" default-population="216" description="Sector base 1 for Mars Society"
+        name="Sector Base 2" default-population="216" description="Sector base 2 for Mars Society"
 		sponsor="MS">
 
 	<!-- row 0: 000 to 099 -->
 
     <building id="G1" type="Loading Dock Garage" xloc="4.5" yloc="0.0" facing="270.0">
         <connection-list>
-            <connection id="MCA001" hatch-facing="east" />
+            <connection id="B1" hatch-facing="east" />
         </connection-list>
     </building>
     	  
     <building id="EVA1" type="EVA Airlock" xloc="-7.5" yloc="-6.0" facing="270.0">
         <connection-list>
-            <connection id="MCA001" hatch-facing="north" />
-        </connection-list>
-    </building>
-
-    <building id="MCA001" type="Core A" xloc="-7.5" yloc="0.0" facing="0.0">
-        <connection-list>
-            <connection id="EVA1" hatch-facing="south" />
-            <connection id="G1" hatch-facing="west" />
-            <connection id="Q001" hatch-facing="east" />
-            <connection id="MCA101" hatch-facing="north" />
+            <connection id="B1" hatch-facing="north" />
         </connection-list>
     </building>
     
+    
+	<building id="B1" type="Brickway" length="30.0" xloc="-7.5" yloc="12.0" facing="180.0">
+        <connection-list>     
+        
+			<!-- row 0: 000 to 099 -->        
+            <connection id="EVA1" hatch-facing="south" />
+            <connection id="G1" hatch-facing="west" />
+            <connection id="Q001" hatch-facing="east" />
+ 
+     	    <!-- Row 1: 100 to 199 -->
+
+            <connection id="G103" hatch-facing="east" />
+
+    		<!-- Row 2 : 202 to 299 --> 	
+
+            <connection id="MHAB1" hatch-facing="west" />
+            <connection id="POND201" hatch-facing="east" />
+  
+   			<!-- Row 3 : 302 to 399 -->
+ 
+            <connection id="G303" hatch-facing="east" />
+
+   			<!-- Row 4 : 402 to 499 -->
+
+            <connection id="G3" hatch-facing="west" /> 
+            <connection id="Q403" hatch-facing="east" />   
+          	<connection id="EVA3" hatch-facing="north" />
+
+        </connection-list>
+    </building>
+        	
+    
     <building id="Q001" type="Compact Quarters" xloc="-15.0" yloc="0.0" facing="90.0">
         <connection-list>
-            <connection id="MCA001" hatch-facing="west" />
+            <connection id="B1" hatch-facing="west" />
             <connection id="Q002" hatch-facing="east" />
         </connection-list>
     </building>
@@ -125,17 +148,10 @@
    
     
     <!-- Row 1: 100 to 199 -->
-    <building id="MCA101" type="Core A" xloc="-7.5" yloc="6.0" facing="0.0">
-        <connection-list>
-            <connection id="MCA001" hatch-facing="south" />
-            <connection id="G103" hatch-facing="east" />
-            <connection id="MCA201" hatch-facing="north" />
-        </connection-list>
-    </building>
 
     <building id="G103" type="Inflatable Greenhouse" xloc="-15.0" yloc="6.0" facing="90.0">
         <connection-list>
-            <connection id="MCA101" hatch-facing="west" />
+            <connection id="B1" hatch-facing="west" />
             <connection id="G104" hatch-facing="east" />
         </connection-list>
     </building>
@@ -206,23 +222,13 @@
 
     <building id="MHAB1" type="Machinery Hab" xloc="0.0" yloc="12.0" facing="180.0">
         <connection-list>
-            <connection id="MCA201" hatch-facing="east" />
+            <connection id="B1" hatch-facing="east" />
         </connection-list>
     </building>
-        	
-     <building id="MCA201" type="Core A" xloc="-7.5" yloc="12.0" facing="0.0">
-        <connection-list>
-            <connection id="MCA101" hatch-facing="south" />
-            <connection id="MHAB1" hatch-facing="west" />
-            <connection id="POND201" hatch-facing="east" />
-            <connection id="MCA301" hatch-facing="north" />
-        </connection-list>
-    </building>
-    
 
     <building id="POND201" type="Algae Pond" xloc="-15.0" yloc="12.0" facing="90.0">
         <connection-list>
-            <connection id="MCA201" hatch-facing="west" />
+            <connection id="B1" hatch-facing="west" />
             <connection id="POND202" hatch-facing="east" />
         </connection-list>
     </building>
@@ -297,19 +303,10 @@
     
 
    <!-- Row 3 : 302 to 399 -->
-    	
-     <building id="MCA301" type="Core A" xloc="-7.5" yloc="18.0" facing="0.0">
-        <connection-list>
-            <connection id="MCA201" hatch-facing="south" />
-            <connection id="G303" hatch-facing="east" />
-            <connection id="MCA401" hatch-facing="north" /> 
-        </connection-list>
-    </building>
-    
 
     <building id="G303" type="Inflatable Greenhouse" xloc="-15.0" yloc="18.0" facing="90.0">
         <connection-list>
-            <connection id="MCA301" hatch-facing="west" />
+            <connection id="B1" hatch-facing="west" />
             <connection id="G304" hatch-facing="east" />
         </connection-list>
     </building>
@@ -380,29 +377,20 @@
       
     <building id="G3" type="Loading Dock Garage" xloc="4.5" yloc="24.0" facing="270.0">
         <connection-list>
-            <connection id="MCA401" hatch-facing="east" />
+            <connection id="B1" hatch-facing="east" />
         </connection-list>
     </building>
      	
   	<building id="EVA3" type="EVA Airlock" xloc="-7.5" yloc="30.0" facing="90.0">
         <connection-list>
-            <connection id="MCA401" hatch-facing="south" />
+            <connection id="B1" hatch-facing="south" />
         </connection-list>
     </building>
-        	
-     <building id="MCA401" type="Core A" xloc="-7.5" yloc="24.0" facing="0.0">
-        <connection-list>
-            <connection id="MCA301" hatch-facing="south" />
-            <connection id="G3" hatch-facing="west" /> 
-            <connection id="Q403" hatch-facing="east" />   
-          	<connection id="EVA3" hatch-facing="north" />
-        </connection-list>
-    </building>
-    
+
 
     <building id="Q403" type="Compact Quarters" xloc="-15.0" yloc="24.0" facing="90.0">
         <connection-list>
-            <connection id="MCA401" hatch-facing="west" />
+            <connection id="B1" hatch-facing="west" />
             <connection id="Q404" hatch-facing="east" />
         </connection-list>
     </building>

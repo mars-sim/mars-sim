@@ -84,14 +84,15 @@
 		<description>Make granola bar using puffed quinoa/rice/wheat, honey/sugarcane, nuts and dried fruits.</description>
 		<inputs>
 			<resource name="Quinoa" amount="4.0">
-				<alternative name="Rice" amount="4.0" />
+				<alternative name="rice" amount="4.0" />
 				<alternative name="Wheat" amount="4.0" />
 			</resource>
 			<resource name="Strawberry" amount="0.5">
 				<alternative name="Blueberry" amount="0.5" />
 			</resource>
-			<resource name="Honey"  amount="0.5">
-				<alternative name="Sugarcane Juice" amount="0.5" />
+			<resource name="honey" amount="0.5">
+				<alternative name="sugarcane juice" amount="0.5" />
+				<alternative name="glucose" amount="0.5" />
 			</resource>
 			<resource name="Peanut" amount="1.0" />
 		</inputs>
@@ -108,15 +109,16 @@
 		<description>Make protein bars using puffed quinoa/rice/wheat, honey/sugarcane juice, nuts and dried fruits.</description>
 		<inputs>
 			<resource name="Quinoa" amount="2.0">
-				<alternative name="Rice" amount="2.0" />
+				<alternative name="rice" amount="2.0" />
 				<alternative name="Wheat" amount="2.0" />
 			</resource>
 			<resource name="Okara" amount="2.0" />
 			<resource name="Strawberry" amount="0.5">
 				<alternative name="Blueberry" amount="0.5" />
 			</resource>
-			<resource name="Honey" amount="0.5">
-				<alternative name="Sugarcane Juice" amount="0.5" />
+			<resource name="honey" amount="0.5">
+				<alternative name="sugarcane juice" amount="0.5" />
+				<alternative name="glucose" amount="0.5" />
 			</resource>
 			<resource name="Peanut" amount="1.0" />
 		</inputs>
@@ -133,8 +135,8 @@
 		<description>Cut potatoes and make French Fries.</description>
 		<inputs>
 			<resource name="Potato" amount="10.0" />
-			<resource name="Peanut Oil" amount="1.0">
-				<alternative name="Soybean Oil" amount="1.0" />
+			<resource name="Peanut oil" amount="1.0">
+				<alternative name="soybean oil" amount="1.0" />
 			</resource>
 
 		</inputs>
@@ -153,14 +155,14 @@
 			wait for germination. When germinated, freeze dry them. </description>
 		<inputs>
 			<part name="refrigerator" number="1" />
-			<resource name="Soybean" amount="3.0" />
-			<resource name="Water" amount="3.0" />
+			<resource name="soybean" amount="3.0" />
+			<resource name="water" amount="3.0" />
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 
 		<outputs>
 			<part name="refrigerator" number="1" />
-			<resource name="Soy Sprout" amount="15.0" />
+			<resource name="soy Sprout" amount="15.0" />
 		</outputs>
 	</process>
 
@@ -178,16 +180,18 @@
 			one-quarter inch in length. Dry out sprouts for up to 12 hours 
 			after fully germinated. </description>
 		<inputs>
-			<resource name="Quinoa" amount="3.0" />
-			<resource name="Water" amount="3.0" />
+			<resource name="quinoa" amount="3.0" />
+			<resource name="water" amount="3.0" />
 		</inputs>
 
 		<outputs>
-			<resource name="Quinoa Sprout" amount="15.0" />
+			<resource name="quinoa sprout" amount="15.0" />
 		</outputs>
 	</process>
 
-	<!-- see http://dx.doi.org/10.2135/cropsci1999.0011183X0039000200017x and http://dx.doi.org/10.1016/B978-0-12-394437-5.00130-3 for soymilk/tofu yield (5.1 ml/g and 0.865 g/ml) and okara yield (1.1 per kg beans) and water:dry bean ratio (8:1 to 10:1); assumes density of soymilk is 1.03 kg/l and about 3/4 as much sugar as before; aiming for 13.6 g/l total sugar -->
+	<!-- see http://dx.doi.org/10.2135/cropsci1999.0011183X0039000200017x and http://dx.doi.org/10.1016/B978-0-12-394437-5.00130-3 
+	for soymilk/tofu yield (5.1 ml/g and 0.865 g/ml) and okara yield (1.1 per kg beans) and water:dry bean ratio (8:1 to 10:1); 
+	assumes density of soymilk is 1.03 kg/l and about 3/4 as much sugar as before; aiming for 13.6 g/l total sugar -->
 	<process name="Make Okara and Soymilk from Soybeans"
 		tech="1" skill="0" work-time="30" process-time="70"
 			power-required="0.5">
@@ -198,16 +202,16 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Soybean" amount="0.95" />
-			<resource name="Water" amount="10.5" />
-			<resource name="Sugar" amount="0.0465" />
+			<resource name="soybean" amount="0.95" />
+			<resource name="water" amount="10.5" />
+			<resource name="glucose" amount="0.0465" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Grey Water" amount="1.9" />
-			<resource name="Okara" amount="1.045" />
-			<resource name="Soymilk" amount="5" />
+			<resource name="grey water" amount="1.9" />
+			<resource name="okara" amount="1.045" />
+			<resource name="soymilk" amount="5" />
 		</outputs>
 	</process>
 
@@ -238,7 +242,7 @@
 			<resource name="Peanut" amount="4.0" />
 		</inputs>
 		<outputs>
-			<resource name="Peanut Oil" amount="2.0" />
+			<resource name="Peanut oil" amount="2.0" />
 		</outputs>
 	</process>
 
@@ -272,9 +276,9 @@
 			TODO: add cocoa powder, cinnamon or other spice
 			/>-->
 			<resource name="Peanut" amount="3.0" />
-			<resource name="Soybean Oil" amount="0.5" />
+			<resource name="soybean oil" amount="0.5" />
 			<resource name="table salt" amount="0.1" />
-			<resource name="Soy Protein" amount="0.1" />
+			<resource name="soy Protein" amount="0.1" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
@@ -282,7 +286,7 @@
 		</outputs>
 	</process>
 	
-	<process name="Bake White Bread from Soy Flour"
+	<process name="Bake White Bread from Soy flour"
 		tech="1" skill="1" work-time="50" process-time="200"
 			power-required="1.0">
 
@@ -290,9 +294,9 @@
 
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Soy Flour" amount="1.0" />
-			<resource name="Water" amount="0.33" />
-			<resource name="Yeast" amount="0.01" />
+			<resource name="soy flour" amount="1.0" />
+			<resource name="water" amount="0.33" />
+			<resource name="yeast" amount="0.01" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
@@ -309,14 +313,14 @@
 
 		<inputs>
 			<part name="stove" number="1" />
-			<resource name="Soymilk" amount="2.5" />
+			<resource name="soymilk" amount="2.5" />
 			<resource name="calcium sulfate" amount="0.03" />
 		</inputs>
 		<outputs>
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="2.1" />
 			<!-- Grey Water is (edible) tofu whey -->
-			<resource name="Grey Water" amount="0.4" />
+			<resource name="grey water" amount="0.4" />
 		</outputs>
 	</process>
 	
@@ -329,14 +333,14 @@
 
 		<inputs>
 			<part name="stove" number="1" />
-			<resource name="Soymilk" amount="2.5" />
+			<resource name="soymilk" amount="2.5" />
 			<resource name="Epsom Salt" amount="0.021" />
 		</inputs>
 		<outputs>
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="2.1" />
 			<!-- Grey Water is (edible) tofu whey -->
-			<resource name="Grey Water" amount="0.4" />
+			<resource name="grey water" amount="0.4" />
 		</outputs>
 	</process>
 
@@ -349,14 +353,14 @@
 
 		<inputs>
 			<part name="stove" number="1" />
-			<resource name="Soymilk" amount="2.5" />
-			<resource name="Rice Vinegar" amount="0.039" />
+			<resource name="soymilk" amount="2.5" />
+			<resource name="rice vinegar" amount="0.039" />
 		</inputs>
 		<outputs>
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="2.1" />
 			<!-- Grey Water is (edible) tofu whey -->
-			<resource name="Grey Water" amount="0.4" />
+			<resource name="grey water" amount="0.4" />
 		</outputs>
 	</process>
 
@@ -370,8 +374,8 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Soybean" amount="1.7" />
-			<resource name="Water" amount="18.7" />
+			<resource name="soybean" amount="1.7" />
+			<resource name="water" amount="18.7" />
 			<resource name="Epsom Salt" amount="0.076" />
 		</inputs>
 		<outputs>
@@ -379,7 +383,7 @@
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="7.5" />
 			<resource name="Okara" amount="1.87" />
-			<resource name="Grey Water" amount="3.4" />
+			<resource name="grey water" amount="3.4" />
 		</outputs>
 	</process>
 
@@ -393,16 +397,16 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Soybean" amount="1.7" />
-			<resource name="Water" amount="18.7" />
-			<resource name="Rice Vinegar" amount="0.0691" />
+			<resource name="soybean" amount="1.7" />
+			<resource name="water" amount="18.7" />
+			<resource name="rice vinegar" amount="0.0691" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="7.5" />
 			<resource name="Okara" amount="1.87" />
-			<resource name="Grey Water" amount="3.4" />
+			<resource name="grey water" amount="3.4" />
 		</outputs>
 	</process>
 
@@ -416,18 +420,18 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Soybean" amount="1.25" />
-			<resource name="Water" amount="13.75" />
+			<resource name="soybean" amount="1.25" />
+			<resource name="water" amount="13.75" />
 			<resource name="Epsom Salt" amount="0.556" />
-			<resource name="Sugar" amount="0.280" />
+			<resource name="glucose" amount="0.280" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="3.0" />
-			<resource name="Soymilk" amount="3.0" />
+			<resource name="soymilk" amount="3.0" />
 			<resource name="Okara" amount="1.375" />
-			<resource name="Grey Water" amount="6.07" />
+			<resource name="grey water" amount="6.07" />
 		</outputs>
 	</process>
 
@@ -441,25 +445,25 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
-			<resource name="Soybean" amount="1.25" />
-			<resource name="Water" amount="13.75" />
-			<resource name="Rice Vinegar" amount="0.0508" />
-			<resource name="Sugar" amount="0.280" />
+			<resource name="soybean" amount="1.25" />
+			<resource name="water" amount="13.75" />
+			<resource name="rice vinegar" amount="0.0508" />
+			<resource name="glucose" amount="0.280" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="3.0" />
-			<resource name="Soymilk" amount="3.0" />
+			<resource name="soymilk" amount="3.0" />
 			<resource name="Okara" amount="1.375" />
-			<resource name="Grey Water" amount="6.07" />
+			<resource name="grey water" amount="6.07" />
 		</outputs>
 	</process>
 
-	<process name="Process Soybean into Soy Flour"
+	<process name="Process Soybeans into Soy Flour"
 		tech="1" skill="2" work-time="50" process-time="300"
 			power-required="0.25">
-		<description> Create defatted soy flour by cracking, screening, heating soybean 
+		<description> Create defatted soy flour by cracking, screening, heating soybeans 
 		at 130 deg C with hot extrusion and high pressure .  </description>
 		<inputs>
 			<part name="oven" number="1" />
@@ -468,7 +472,7 @@
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
-			<resource name="Soy Flour" amount="1.0" />
+			<resource name="Soy Flour" amount="2.0" />
 		</outputs>
 	</process>
 
@@ -477,20 +481,20 @@
 		tech="1" skill="2" work-time="70" process-time="1000"
 			power-required="0.6">
 
-		<description> Boil Soybeans, add vinegar and Rhizopus oligosporus starter, and
+		<description> Boil soybeans, add vinegar and Rhizopus oligosporus starter, and
 			allow to ferment.</description>
 
 		<inputs>
 			<part name="autoclave" number="1" />
 			<resource name="soybean" amount="1.0" />
-			<resource name="Water" amount="3.5" />
-			<resource name="Rice Vinegar" amount="0.138" />
+			<resource name="water" amount="3.5" />
+			<resource name="rice vinegar" amount="0.138" />
 			<resource name="Rhizopus oligosporus" amount="0.0023" />
 		</inputs>
 		<outputs>
 			<part name="autoclave" number="1" />
 			<resource name="Tempeh" amount="1.9" />
-			<resource name="Grey Water" amount="2.0" />
+			<resource name="grey water" amount="2.0" />
 		</outputs>
 	</process>
 
@@ -504,7 +508,7 @@
 
 		<inputs>
 			<part name="autoclave" number="1" />
-			<resource name="Rice Vinegar" amount="0.174" />
+			<resource name="rice vinegar" amount="0.174" />
 			<resource name="Okara" amount="2.9" />
 			<resource name="Rhizopus oligosporus" amount="0.0029" />
 		</inputs>
@@ -524,15 +528,15 @@
 		<inputs>
 			<part name="autoclave" number="1" />
 			<resource name="soybean" amount="1.0" />
-			<resource name="Water" amount="3.5" />
-			<resource name="Rice Vinegar" amount="0.198" />
+			<resource name="water" amount="3.5" />
+			<resource name="rice vinegar" amount="0.198" />
 			<resource name="Okara" amount="1.0" />
 			<resource name="Rhizopus oligosporus" amount="0.0033" />
 		</inputs>
 		<outputs>
 			<part name="autoclave" number="1" />
 			<resource name="Tempeh" amount="2.66" />
-			<resource name="Grey Water" amount="1.0" />
+			<resource name="grey water" amount="1.0" />
 		</outputs>
 	</process>
 	
@@ -547,8 +551,8 @@
 		<inputs>
 			<part name="autoclave" number="1" />
 			<resource name="soybean" amount="1.7" />
-			<resource name="Water" amount="18.7" />
-			<resource name="Rice Vinegar" amount="0.181" />
+			<resource name="water" amount="18.7" />
+			<resource name="rice vinegar" amount="0.181" />
 			<resource name="Rhizopus oligosporus" amount="0.0019" />
 		</inputs>
 		<outputs>
@@ -557,7 +561,7 @@
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="7.5" />
 			<resource name="Tempeh" amount="1.42" />
-			<resource name="Grey Water" amount="4.83" />
+			<resource name="grey water" amount="4.83" />
 		</outputs>
 	</process>
 	
@@ -572,8 +576,8 @@
 		<inputs>
 			<part name="autoclave" number="1" />
 			<resource name="soybean" amount="1.7" />
-			<resource name="Water" amount="18.7" />
-			<resource name="Rice Vinegar" amount="0.112" />
+			<resource name="water" amount="18.7" />
+			<resource name="rice vinegar" amount="0.112" />
 			<resource name="Rhizopus oligosporus" amount="0.0019" />
 			<resource name="Epsom Salt" amount="0.0962" />
 		</inputs>
@@ -583,7 +587,7 @@
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="7.5" />
 			<resource name="Tempeh" amount="1.42" />
-			<resource name="Grey Water" amount="4.83" />
+			<resource name="grey water" amount="4.83" />
 		</outputs>
 	</process>
 	
@@ -598,19 +602,19 @@
 		<inputs>
 			<part name="autoclave" number="1" />
 			<resource name="soybean" amount="1.25" />
-			<resource name="Water" amount="13.75" />
-			<resource name="Rice Vinegar" amount="0.133" />
+			<resource name="water" amount="13.75" />
+			<resource name="rice vinegar" amount="0.133" />
 			<resource name="Rhizopus oligosporus" amount="0.0014" />
-			<resource name="Sugar" amount="0.028" />
+			<resource name="glucose" amount="0.028" />
 		</inputs>
 		<outputs>
 			<part name="autoclave" number="1" />
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="3.0" />
-			<resource name="Soymilk" amount="3.0" />
+			<resource name="soymilk" amount="3.0" />
 			<resource name="Tempeh" amount="1.04" />
-			<resource name="Grey Water" amount="6.07" />
+			<resource name="grey water" amount="6.07" />
 		</outputs>
 	</process>
 	
@@ -625,35 +629,35 @@
 		<inputs>
 			<part name="autoclave" number="1" />
 			<resource name="soybean" amount="1.25" />
-			<resource name="Water" amount="13.75" />
-			<resource name="Rice Vinegar" amount="0.0825" />
+			<resource name="water" amount="13.75" />
+			<resource name="rice vinegar" amount="0.0825" />
 			<resource name="Rhizopus oligosporus" amount="0.0014" />
 			<resource name="Epsom Salt" amount="0.0707" />
-			<resource name="Sugar" amount="0.028" />
+			<resource name="glucose" amount="0.028" />
 		</inputs>
 		<outputs>
 			<part name="autoclave" number="1" />
 			<part name="blender" number="1" />
 			<part name="stove" number="1" />
 			<resource name="Tofu" amount="3.0" />
-			<resource name="Soymilk" amount="3.0" />
+			<resource name="soymilk" amount="3.0" />
 			<resource name="Tempeh" amount="1.04" />
-			<resource name="Grey Water" amount="6.07" />
+			<resource name="grey water" amount="6.07" />
 		</outputs>
 	</process>
 	
-	<process name="Process White Rice into Rice Flour"
+	<process name="Process White Rice into Rice flour"
 		tech="1" skill="2" work-time="25" process-time="300"
 			power-required="0.25">
 		<description> Rinse rice, dry, and finely grind.</description>
 		<inputs>
 			<resource name="White Rice" amount="1.0" />
-			<resource name="Water" amount="3.0" />
+			<resource name="water" amount="3.0" />
 			<resource name="calcium sulfate" amount="0.05" />
 		</inputs>
 		<outputs>
-			<resource name="Water" amount="2.9" />
-			<resource name="Rice Flour" amount="1.0" />
+			<resource name="water" amount="2.9" />
+			<resource name="rice flour" amount="1.0" />
 		</outputs>
 
 	</process>
@@ -664,7 +668,7 @@
 		May enrich milled rice with vitamins and minerals </description>
 
 		<inputs>
-			<resource name="Rice" amount="2.0" />
+			<resource name="rice" amount="2.0" />
 
 		</inputs>
 		<outputs>
@@ -681,7 +685,7 @@
 		and the embryo or germ. Brown rice requires longer cooking time than either parboiled or regular-milled white rice </description>
 
 		<inputs>
-			<resource name="Rice" amount="2.0" />
+			<resource name="rice" amount="2.0" />
 
 		</inputs>
 		<outputs>
@@ -691,18 +695,18 @@
 	</process>
 
 	<!-- http://www.knowledgebank.irri.org/step-by-step-production/postharvest/milling says rice is 20 % hull, 11 % bran, and 69 % other ideally, but ranges are 20 % hull, 8-12 % bran, and 68-72 % other; extrapolates waste from buckwheat -->
-	<process name= "Process Brown Rice into Rice Flour"
+	<process name= "Process Brown Rice into Rice flour"
 		tech="1" skill="2" work-time="38" process-time="330"
 			power-required="5.3">
 		<description> Rinse rice, dry, and finely grind </description>
 		<inputs>
 			<resource name="Brown Rice" amount="1.0" />
-			<resource name="Water" amount="3.0" />
+			<resource name="water" amount="3.0" />
 
 		</inputs>
 		<outputs>
-			<resource name="Grey Water" amount="2.9" />
-			<resource name="Rice Flour" amount="0.856" />
+			<resource name="grey water" amount="2.9" />
+			<resource name="rice flour" amount="0.856" />
 			<resource name="rice bran oil" amount="0.112" />
 			<resource name="Food Waste" amount="0.032" />
 		</outputs>
@@ -729,32 +733,32 @@
 	    https://www.sciencedirect.com/topics/agricultural-and-biological-sciences/milling-fractions says for Buckwheat cultivar Siva, 
 	    it is 55.4 % flour (from raw grain), 24.2 % bran, and 17.4 % husk according to Skrabanja et al., 2003a 
 	    assumes waste is linear from grain to wholegrain to white   -->
-	<process name= "Process Wheat into Wheat Flour"
+	<process name= "Process Wheat into Wheat flour"
 		tech="1" skill="2" work-time="50" process-time="400"
 			power-required="5.0">
 		<description> Rinse wheat, dry, and finely grind </description>
 		<inputs>
 			<resource name="Wheat" amount="1.0" />
-			<resource name="Water" amount="3.0" />
+			<resource name="water" amount="3.0" />
 
 		</inputs>
 		<outputs>
-			<resource name="Grey Water" amount="2.9" />
-			<resource name="Wheat Flour" amount="0.792" />
+			<resource name="grey water" amount="2.9" />
+			<resource name="Wheat flour" amount="0.792" />
 			<resource name="Crop Waste" amount="0.208" />
 		</outputs>
 	</process>
 		
-	<process name="Extract Soy Protein from Soy Flour"
+	<process name="Extract Soy Protein from Soy flour"
 		tech="2" skill="2" work-time="50" process-time="400"
 			power-required="1.0">
 		<description> Create Defatted Soy Proteins from Soy Flour by Alkaline extraction, Centrifugation, Acid Precipitation of Proteins, Centrifugation, Washing,  Spry Drying and Isolation of Proteins   </description>
 		<inputs>
-			<resource name="Soy Flour" amount="1.0" />
-			<resource name="Water" amount="3.0" />
+			<resource name="soy flour" amount="1.0" />
+			<resource name="water" amount="3.0" />
 		</inputs>
 		<outputs>
-			<resource name="Soy Protein" amount="1.0" />
+			<resource name="soy Protein" amount="1.0" />
 		</outputs>
 	</process>
 
@@ -765,11 +769,11 @@
 		<description> Cracking, Screening, Heating at 130 deg C, Hot extrusion, Pressure at 40-60 MPa. Screening and Decantation of Oil </description>
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Soybean" amount="2.5" />
+			<resource name="soybean" amount="2.5" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
-			<resource name="Soybean Oil" amount="0.437" />
+			<resource name="soybean oil" amount="0.437" />
 			<resource name="Food Waste" amount="2.063" />
 			<!-- It should be press cake (and maybe some grey water that is squeezed out too?), which can be used like okara if cooked? <resource name="Okara" amount="2.063"/> -->
 		</outputs>
@@ -784,7 +788,7 @@
 			<resource name="Sesame Seed" amount="2.5" />
 		</inputs>
 		<outputs>
-			<resource name="Sesame Oil" amount="1.25" />
+			<resource name="Sesame oil" amount="1.25" />
 			<resource name="Food Waste" amount="1.25" />
 		</outputs>
 	</process>
@@ -796,12 +800,12 @@
 		<description> Continuous pressing by means of expellers is a widely applied
 						process for the extraction of oil from Garlic</description>
 		<inputs>
-			<resource name="Garlic" amount="5.0" />
+			<resource name="garlic" amount="5.0" />
 			<!-- 0.99 oil means 2x as strong as dry garlic; 0.39 means 5x as strong -->
-			<resource name="Sesame Oil" amount="0.99" />
+			<resource name="Sesame oil" amount="0.99" />
 		</inputs>
 		<outputs>
-			<resource name="Garlic Oil" amount="1.0" />
+			<resource name="Garlic oil" amount="1.0" />
 			<resource name="Food Waste" amount="4.99" />
 		</outputs>
 	</process>
@@ -814,10 +818,10 @@
 		</description>
 		<inputs>
 			<resource name="Olive" amount="3.0" />
-			<resource name="Water" amount="0.9" />
+			<resource name="water" amount="0.9" />
 		</inputs>
 		<outputs>
-			<resource name="Olive Oil" amount="0.9" />
+			<resource name="Olive oil" amount="0.9" />
 			<resource name="Food Waste" amount="3.0" />
 		</outputs>
 	</process>
@@ -836,8 +840,8 @@
 			<resource name="Carrot" amount="0.35" />
 			<resource name="Morel Mushroom" amount="0.15" />
 			<resource name="table salt" amount="0.01" />
-			<resource name="Soybean" amount="0.45" />
-			<resource name="Sugar" amount="0.05" />
+			<resource name="soybean" amount="0.45" />
+			<resource name="glucose" amount="0.05" />
 		</inputs>
 		<outputs>
 			<resource name="Veggie Patty" amount="3.0" />
@@ -858,8 +862,8 @@
 			<resource name="Carrot" amount="0.35" />
 			<resource name="Morel Mushroom" amount="0.15" />
 			<resource name="table salt" amount="0.01" />
-			<resource name="Soybean" amount="0.45" />
-			<resource name="Sugar" amount="0.05" />
+			<resource name="soybean" amount="0.45" />
+			<resource name="glucose" amount="0.05" />
 		</inputs>
 		<outputs>
 			<resource name="Veggie Patty" amount="3.0" />
@@ -880,8 +884,8 @@
 			<resource name="Carrot" amount="0.35" />
 			<resource name="Morel Mushroom" amount="0.15" />
 			<resource name="table salt" amount="0.01" />
-			<resource name="Soybean" amount="0.45" />
-			<resource name="Sugar" amount="0.05" />
+			<resource name="soybean" amount="0.45" />
+			<resource name="glucose" amount="0.05" />
 		</inputs>
 		<outputs>
 			<resource name="Veggie Patty" amount="3.0" />
@@ -900,31 +904,35 @@
 			<part name="oven" number="1" />
 			<resource name="Quinoa" amount="1.75" />
 			<resource name="Rhizopus oligosporus" amount="0.008" />
-			<resource name="Water" amount="6.125" />
-			<resource name="Rice Vinegar" amount="0.236" />
-			<resource name="Soy Sauce" amount="0.035" />
-			<resource name="Garlic" amount="0.025" />
-			<resource name="Sugarcane Juice" amount="0.035" />
+			<resource name="water" amount="6.125" />
+			<resource name="rice vinegar" amount="0.236" />
+			<resource name="soy Sauce" amount="0.035" />
+			<resource name="garlic" amount="0.025" />
+			<resource name="glucose" amount="0.035">
+				<alternative name="sugarcane juice" amount="0.035" />
+				<alternative name="honey" amount="0.035" />
+			</resource>
+			
 			<resource name="green bell pepper" amount="0.03" />
 			<resource name="spring onion" amount="0.025" />
 		</inputs>
 		<outputs>
 			<part name="autoclave" number="1" />
 			<part name="oven" number="1" />
-			<resource name="Grey Water" amount="3.5" />			
+			<resource name="grey water" amount="3.5" />			
 			<resource name="Veggie Patty" amount="3.33" />
 		</outputs>
 	</process>
 
-	<process name="Bake Wheat Bun from Wheat Flour"
+	<process name="Bake Wheat Bun from Wheat flour"
 		tech="1" skill="2" work-time="50" process-time="250"
 			power-required="1.0">
 		<description>Bake Wheat Burger Bun from Wheat Flour </description>
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Wheat Flour" amount="0.95" />
-			<resource name="Water" amount="1" />
-			<resource name="Yeast" amount="0.01" />
+			<resource name="Wheat flour" amount="0.95" />
+			<resource name="water" amount="1" />
+			<resource name="yeast" amount="0.01" />
 			<resource name="Sesame Seed" amount="0.05" />
 		</inputs>
 		<outputs>
@@ -933,15 +941,15 @@
 		</outputs>
 	</process>
 
-	<process name="Bake Wheat Bread from Wheat Flour"
+	<process name="Bake Wheat Bread from Wheat flour"
 		tech="1" skill="2" work-time="50" process-time="250"
 			power-required="1.0">
 		<description>Bake Wheat Bread from Wheat Flour </description>
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Wheat Flour" amount="1.0" />
-			<resource name="Water" amount="0.33" />
-			<resource name="Yeast" amount="0.01" />
+			<resource name="Wheat flour" amount="1.0" />
+			<resource name="water" amount="0.33" />
+			<resource name="yeast" amount="0.01" />
 		</inputs>
 		<outputs>
 			<part name="oven" number="1" />
@@ -949,16 +957,16 @@
 		</outputs>
 	</process>
 
-	<process name="Make Wheat Noodles from Wheat Flour"
+	<process name="Make Wheat Noodles from Wheat flour"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="0.5">
 		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.  </description>
 		<inputs>
-			<resource name="Wheat Flour" amount="1.0" />
-			<resource name="Water" amount="1" />
+			<resource name="Wheat flour" amount="1.0" />
+			<resource name="water" amount="1" />
 			<resource name="Baking soda" amount="0.02" />
-			<resource name="Soy Protein" amount="0.08" />
+			<resource name="soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
 			<resource name="Wheat Noodle" amount="1.0" />
@@ -966,19 +974,19 @@
 	</process>
 
 
-	<process name="Make Rice Noodles from Rice Flour"
+	<process name="Make Rice Noodles from Rice flour"
 		tech="1" skill="1" work-time="50" process-time="100"
 			power-required="0.5">
 		<description> Mix flour with water and knead to form dough. Heat paste into flat sheet.
 		 cut sheet into different thickness.</description>
 		<inputs>
-			<resource name="Rice Flour" amount="1.0" />
-			<resource name="Water" amount="1" />
+			<resource name="rice flour" amount="1.0" />
+			<resource name="water" amount="1" />
 			<resource name="Baking soda" amount="0.02" />
-			<resource name="Soy Protein" amount="0.08" />
+			<resource name="soy Protein" amount="0.08" />
 		</inputs>
 		<outputs>
-			<resource name="Rice Noodle" amount="1.0" />
+			<resource name="rice Noodle" amount="1.0" />
 		</outputs>
 	</process>
 
@@ -993,16 +1001,16 @@
 			<part name="autoclave" number="1" />
 			<resource name="White Rice" amount="5.0" />
 			<resource name="Acetic Acid Bacteria" amount="0.3" />
-			<resource name="Yeast" amount="0.3" />
-			<resource name="Sugar" amount=".5" />
-			<resource name="Water" amount="13.25" />
+			<resource name="yeast" amount="0.3" />
+			<resource name="glucose" amount=".5" />
+			<resource name="water" amount="13.25" />
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
 			<part name="plastic bottle" number="5" />
 			<part name="autoclave" number="1" />
-			<resource name="Grey Water" amount="1.25" />
-			<resource name="Rice Vinegar" amount="15.0" />
+			<resource name="grey water" amount="1.25" />
+			<resource name="rice vinegar" amount="15.0" />
 		</outputs>
 	</process>
 
@@ -1014,9 +1022,9 @@
 		<inputs>
 			<part name="plastic bottle" number="2" />
 			<resource name="Mustard Seed" amount="0.5" />
-			<resource name="Rice Vinegar" amount="0.1" />
-			<resource name="Sugar" amount=".4" />
-			<resource name="Water" amount="4" />
+			<resource name="rice vinegar" amount="0.1" />
+			<resource name="glucose" amount=".4" />
+			<resource name="water" amount="4" />
 		</inputs>
 		<outputs>
 			<part name="plastic bottle" number="2" />
@@ -1032,12 +1040,12 @@
 			<part name="plastic bottle" number="2" />
 			<part name="stove" number="1" />
 			<resource name="tomato" amount="5.0" />
-			<resource name="Garlic" amount="0.022" />
+			<resource name="garlic" amount="0.022" />
 			<resource name="table salt" amount="0.0105" />
 			<resource name="white onion" amount="0.267" />
 			<resource name="Mustard" amount="0.0092" />
-			<resource name="Rice Vinegar" amount="0.443" />
-			<resource name="Sugar" amount="0.367" />
+			<resource name="rice vinegar" amount="0.443" />
+			<resource name="glucose" amount="0.367" />
 		</inputs>
 		<outputs>
 			<part name="plastic bottle" number="2" />
@@ -1056,18 +1064,18 @@
 		<inputs>
 			<part name="plastic bottle" number="5" />
 			<part name="autoclave" number="1" />
-			<resource name="Soybean" amount="5.0" />
+			<resource name="soybean" amount="5.0" />
 			<resource name="Wheat" amount="1.0" />
 			<resource name="table salt" amount="0.1" />
 			<resource name="Aspergillus Mix" amount="0.0057" />
-			<resource name="Water" amount="11.25" />
+			<resource name="water" amount="11.25" />
 			<resource name="sodium hypochlorite" amount="0.003" />
 		</inputs>
 		<outputs>
 			<part name="plastic bottle" number="5" />
 			<part name="autoclave" number="1" />
-			<resource name="Grey Water" amount="1.25" />			
-			<resource name="Soy Sauce" amount="15.0" />
+			<resource name="grey water" amount="1.25" />			
+			<resource name="soy Sauce" amount="15.0" />
 		</outputs>
 	</process>
 		
@@ -1080,19 +1088,19 @@
 			<part name="plastic bottle" number="1" />
 			<part name="autoclave" number="1" />
 			<part name="blender" number="1" />
-			<resource name="Soybean" amount="0.7" />
-			<resource name="Rice" amount="0.4" />
+			<resource name="soybean" amount="0.7" />
+			<resource name="rice" amount="0.4" />
 			<resource name="Aspergillus Mix" amount="0.001" />
 			<resource name="table salt" amount="0.3" />
-			<resource name="Water" amount="5.25" />
+			<resource name="water" amount="5.25" />
 			<resource name="sodium hypochlorite" amount="0.002" />
 		</inputs>
 		<outputs>
 			<part name="plastic bottle" number="1" />
 			<part name="autoclave" number="1" />
 			<part name="blender" number="1" />
-			<resource name="Miso" amount="2.81" />
-			<resource name="Grey Water" amount="3.54" />
+			<resource name="miso" amount="2.81" />
+			<resource name="grey water" amount="3.54" />
 		</outputs>
 	</process>
 
@@ -1107,14 +1115,14 @@
 		crushing peeled sugarcane in a mill or by hand cranked machine. </description>
 		<inputs>
 			<!-- <equipment name="oven" number="1" -->
-			<resource name="Sugarcane" amount="10" />
-			<resource name="Water" amount="1" />
+			<resource name="sugarcane" amount="10" />
+			<resource name="water" amount="1" />
 		</inputs>
 		<outputs>
-			<resource name="Sugar" amount="1.6" />
-			<resource name="Cane Fiber" amount="1.6" />
+			<resource name="glucose" amount="1.6" />
+			<resource name="cane fiber" amount="1.6" />
 			<!-- resource name="bagasse" amount="1.0" -->
-			<resource name="Sugarcane Juice" amount="7.3" />
+			<resource name="sugarcane juice" amount="7.3" />
 		</outputs>
 	</process>
 
@@ -1123,8 +1131,8 @@
 			power-required="0.5">
 		<description>Fiber cloth Weaving </description>
 		<inputs>
-			<resource name="Cane Fiber" amount="2">
-				<alternative name="Soy Fiber" amount="2" />
+			<resource name="cane fiber" amount="2">
+				<alternative name="soy fiber" amount="2" />
 			</resource>
 		</inputs>
 		<outputs>
@@ -1138,7 +1146,7 @@
 			power-required=".1">
 		<description>Extract minerals from Soybean Ash. </description>
 		<inputs>
-			<resource name="Soybean Ash" amount="1" />
+			<resource name="soybean ash" amount="1" />
 		</inputs>
 		<outputs>
 			<resource name="Potassium" amount=".018" />
@@ -1156,12 +1164,15 @@
 			and bake in preheated oven at 200 deg C. </description>
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
-			<resource name="Sugar" amount="0.2" />
+			<resource name="glucose" amount="0.2" />
 			<resource name="table salt" amount="0.1" />
-			<resource name="Water" amount="2.0" />
-			<resource name="Honey" amount="0.1" />
+			<resource name="water" amount="2.0" />
+			<resource name="honey" amount="0.1">
+				<alternative name="sugarcane juice" amount="0.1" />
+				<alternative name="glucose" amount="0.1" />
+			</resource>
 			<resource name="Baking soda" amount="0.1" />
-			<resource name="Wheat Flour" amount="1.5" />
+			<resource name="Wheat flour" amount="1.5" />
 		</inputs>
 		<outputs>
 			<resource name="Blueberry Muffin" amount="2.0" />
@@ -1175,12 +1186,15 @@
 			and bake in preheated oven at 200 deg C. </description>
 		<inputs>
 			<resource name="Blueberry" amount="0.2" />
-			<resource name="Sugar" amount="0.15" />
+			<resource name="glucose" amount="0.15" />
 			<resource name="table salt" amount="0.1" />
-			<resource name="Water" amount="2.0" />
-			<resource name="Honey" amount="0.1" />
+			<resource name="water" amount="2.0" />
+			<resource name="honey" amount="0.1">
+				<alternative name="sugarcane juice" amount="0.1" />
+				<alternative name="glucose" amount="0.1" />
+			</resource>
 			<resource name="Baking soda" amount="0.1" />
-			<resource name="Wheat Flour" amount="1.3" />
+			<resource name="Wheat flour" amount="1.3" />
 			<resource name="Okara" amount="0.35" />
 		</inputs>
 		<outputs>
@@ -1196,8 +1210,8 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<resource name="Cranberry" amount="2.0" />
-			<resource name="Water" amount="7.0" />
-			<resource name="Sugar" amount="1" />
+			<resource name="water" amount="7.0" />
+			<resource name="glucose" amount="1" />
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
@@ -1215,8 +1229,8 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<resource name="Cranberry" amount="2.0" />
-			<resource name="Water" amount="1.0" />
-			<resource name="Sugar" amount=".5" />
+			<resource name="water" amount="1.0" />
+			<resource name="glucose" amount=".5" />
 			<resource name="table salt" amount=".15" />
 			<resource name="Ginger" amount=".2" />
 		</inputs>
@@ -1237,7 +1251,7 @@
 			<resource name="Phosphorus" amount=".07" />
 			<resource name="Zinc" amount=".01" />
 			<resource name="Blueberry" amount=".02" />
-			<resource name="Cane Fiber" amount=".1" />
+			<resource name="cane fiber" amount=".1" />
 		</inputs>
 		<outputs>
 			<resource name="Immune Booster" amount=".2" />
@@ -1253,12 +1267,12 @@
 
 		<inputs>
 			<part name="oven" number="1" />
-			<resource name="Soy Flour" amount="0.2" />
-			<resource name="Rice Flour" amount="0.4" />
-			<resource name="Wheat Flour" amount="0.4" />
-			<resource name="Water" amount="0.33" />
-			<resource name="Yeast" amount="0.01" />
-			<resource name="Soybean Oil" amount="0.01" />
+			<resource name="soy flour" amount="0.2" />
+			<resource name="rice flour" amount="0.4" />
+			<resource name="Wheat flour" amount="0.4" />
+			<resource name="water" amount="0.33" />
+			<resource name="yeast" amount="0.01" />
+			<resource name="soybean oil" amount="0.01" />
 			<resource name="table salt" amount="0.01" />
 		</inputs>
 		<outputs>
@@ -1268,31 +1282,32 @@
 	</process>
 
 	<process name="Process fish oil from fish meat"
-		tech="1" skill="1" work-time="5" process-time="50"
+		tech="1" skill="1" work-time="5" process-time="10"
 			power-required="0.1">
 
 		<description>Derive fish oil from fish meats. Press and refine it
 			for use </description>
 
 		<inputs>
-			<resource name="fish meat" amount="2.0" />
+			<resource name="fish meat" amount="1.0" />
 		</inputs>
 		<outputs>
-			<resource name="fish oil" amount="0.5" />
+			<resource name="fish oil" amount="0.3" />
+			<resource name="food" amount="0.7" />
 		</outputs>
 	</process>
 
 	<process name="Make fish patty from fish meat"
-		tech="2" skill="1" work-time="25" process-time="25"
-			power-required="0.5">
+		tech="2" skill="1" work-time="10" process-time="5"
+			power-required="0.1">
 		<description>A fish patty is made of
 			textured fish meat and other ingredients. </description>
 		<inputs>
-			<resource name="fish meat" amount="3" />
+			<resource name="fish meat" amount="1" />
 			<resource name="table salt" amount="0.01" />
 		</inputs>
 		<outputs>
-			<resource name="fish patty" amount="3" />
+			<resource name="fish patty" amount="1" />
 		</outputs>
 	</process>
 

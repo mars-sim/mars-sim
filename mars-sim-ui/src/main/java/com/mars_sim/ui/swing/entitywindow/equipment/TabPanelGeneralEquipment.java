@@ -62,7 +62,7 @@ class TabPanelGeneralEquipment extends EntityTabPanel<Equipment>
 		
 		var eqm = getEntity();
 		infoPanel.addTextField("Type", eqm.getEquipmentType().getName(), null);
-		infoPanel.addTextField("Mass", StyleManager.DECIMAL_KG2.format(eqm.getBaseMass()), null);
+		infoPanel.addTextField("Mass", StyleManager.DECIMAL2_KG.format(eqm.getBaseMass()), null);
 
 		ownerLabel = new EntityLabel(eqm.getRegisteredOwner(), getContext());
 		infoPanel.addLabelledItem("Registered Owner", ownerLabel, null);

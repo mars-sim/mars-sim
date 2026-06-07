@@ -281,7 +281,7 @@ public class BuildingConnectorManager implements Serializable {
 			String hatchFace = connectionTemplate.getHatchFace();
 			
 			if (hatchFace != null) {
-				// Case 1: Use the new definition of defining the connection. For instance,
+				// Case 1: Use the new hatch-facing for defining the connection. For instance,
 				
 //				<building id="RQ" type="Residential Quarters" xloc="-21.5" yloc="42.5" facing="270.0">
 //					<connection-list>
@@ -293,7 +293,7 @@ public class BuildingConnectorManager implements Serializable {
 						bFacing, halfL, halfW, hatchFace);
 			}
 			else {
-				// Case 2: Use the tradition definition of defining the connection. For instance,
+				// Case 2: Use the tradition xloc and yloc placement for defining the connection. For instance,
 				
 //				<building id="18" type="Infirmary" xloc="-34.0" yloc="38" facing="270.0">
 //					<connection-list>

@@ -57,7 +57,7 @@ public class ExplorationPanel extends JPanel
 		// Set layout.
 		setLayout(new BorderLayout());
 
-		var horz = new JPanel(new GridLayout(1, 2));
+		var horz = new JPanel(new GridLayout(2, 1));
 		add(horz, BorderLayout.CENTER);
 
 		resourceModel = new DefaultListModel<>();

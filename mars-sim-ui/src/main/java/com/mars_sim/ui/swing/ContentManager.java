@@ -53,7 +53,7 @@ public abstract class ContentManager {
             audio = new AudioPlayer(props);
 		}
 			
-        mainFrame = new JFrame("Mars Simulation");
+        mainFrame = new JFrame("Mars Simulation Project");
 		mainFrame.setResizable(true);
         mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         mainFrame.addWindowListener(new WindowAdapter() {

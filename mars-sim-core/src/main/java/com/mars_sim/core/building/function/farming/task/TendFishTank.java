@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * TendFishTank.java
- * @date 2023-12-07
+ * @date 2026-06-04
  * @author Barry Evans
  */
 package com.mars_sim.core.building.function.farming.task;
@@ -77,31 +77,35 @@ public class TendFishTank extends TendHousekeeping {
 	}
 
 	/**
-	 * Select the best subtask for a Worker to apply to a FishTank
+	 * Selects the best subtask for a Worker to apply to a FishTank.
+	 * 
 	 * @param fishTank The tank being processed
-	 * @param doFishing Including fishing
+	 * @param human
 	 * @return
 	 */
-	static TaskPhase selectActivity(Fishery fishTank, boolean doFishing) {
-		TaskPhase selected;
-		int rand = RandomUtil.getRandomInt(6);
-				
-		// If it hasn't tended the fish for over 500 millisols, do it now
-		if (fishTank.getWeedDemand() > 0) {
-			selected = TENDING;
+	static TaskPhase selectActivity(Fishery fishTank, boolean human) {
+
+		// Future: consider if it hasn't tended the fish for over 50 millisols, do it right away
+		
+		if (fishTank.getWeedDemand() > RandomUtil.getRandomDouble(2)) {
+			return TENDING;
 		}
 
+		TaskPhase selected;
+		
+		// The probability of harvesting a fish depends on numbers of fish available
+		int rand = RandomUtil.getRandomInt((int)Math.ceil(4.0 * fishTank.getIdealFish() / fishTank.getNumFish()));
+		
 		// Note: may offer exception in future
-		else if (rand == 0 && doFishing && fishTank.canCatchFish()) {
-			// Do fishing
+		if (rand == 0 && fishTank.canCatchFish()) {
 			selected = CATCHING;
 		}
-		else if (rand == 1 || rand == 2) {
-			selected = CLEANING;
-		}
-		else if (rand == 3 || rand == 4) {
-			selected = INSPECTING;
-		}
+//		else if (rand > 0 && rand < 3) {
+//			selected = INSPECTING;
+//		}
+//		else if (rand >= 4 && rand < 7) {
+//			selected = CLEANING;
+//		}
 		else {
 			selected = TENDING;
 		}
@@ -116,6 +120,11 @@ public class TendFishTank extends TendHousekeeping {
 			return time;
 		} else if (TENDING.equals(getPhase())) {
 			return tendingPhase(time);
+//		Note that cleaning and inspecting are taken care by the HouseKeeping class
+//		} else if (CLEANING.equals(getPhase())) {
+//			return cleaningPhase(time);
+//		} else if (INSPECTING.equals(getPhase())) {
+//			return inspectingPhase(time);
 		} else if (CATCHING.equals(getPhase())) {
 			return catchingPhase(time);
 		} else {
@@ -124,13 +133,15 @@ public class TendFishTank extends TendHousekeeping {
 	}
 
 	/**
-	 * Performs the tending phase.
+	 * Performs the catching phase.
 	 * 
 	 * @param time the amount of time (millisols) to perform the phase.
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double catchingPhase(double time) {
 
+		logger.info(worker, "Catching a fish phase.");
+		
 		double workTime = time;
 
 		// Check if building has malfunction.
@@ -171,9 +182,9 @@ public class TendFishTank extends TendHousekeeping {
 		// Check for accident
 		checkForAccident(building, time, 0.003);
 
-		if ((remainingTime > 0) || (fishTank.getSurplusStock() == 0)) {
+		if ((remainingTime == 0.0) || (fishTank.getSurplusStock() == 0)) {
 			endTask();
-
+			
 			// Scale it back to the. Calculate used time 
 			double usedTime = workTime - remainingTime;
 			return time - (usedTime / mod);
@@ -197,7 +208,41 @@ public class TendFishTank extends TendHousekeeping {
 	 * @return the amount of time (millisols) left over after performing the phase.
 	 */
 	private double tendingPhase(double time) {
-
+		return choosePhase(time, 0);
+	}
+	
+	
+	/**
+	 * Performs the inspecting phase.
+	 * 
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double inspectingPhase(double time) {
+		return choosePhase(time, 2);
+	}
+	
+	
+	/**
+	 * Performs the cleaning phase.
+	 * 
+	 * @param time the amount of time (millisols) to perform the phase.
+	 * @return the amount of time (millisols) left over after performing the phase.
+	 */
+	private double cleaningPhase(double time) {
+		return choosePhase(time, 1);
+	}
+	
+	
+	/**
+	 * Chooses a phase.
+	 * 
+	 * @param time
+	 * @param choice
+	 * @return
+	 */
+	private double choosePhase(double time, int choice) {
+		
 		double workTime = time;
 
 		// Check if building has malfunction.
@@ -217,7 +262,17 @@ public class TendFishTank extends TendHousekeeping {
 
 		workTime *= mod;
 
-		double remainingTime = fishTank.tendWeeds(workTime);
+		double remainingTime = 0;
+		
+		if (choice == 0) {
+			fishTank.tendWeeds(workTime);
+		}
+		else if (choice == 1) {	
+			fishTank.cleanTank(workTime);
+		}
+		else if (choice == 2) {
+			fishTank.inspectTank(workTime);
+		}
 
 		// Assume tending can reduce stress
 		if (person != null)

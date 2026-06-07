@@ -54,7 +54,6 @@ import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
-import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
@@ -1411,7 +1410,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double getWallThickness() {
 		return switch(constructionType) {
 			case PRE_FABRICATED 	-> 0.000_025_4;
-			case INFLATABLE 		-> 0.000_001_8;
+			case INFLATABLE 		-> 0.000_005_8;
 			case SEMI_ENGINEERED 	-> 0.000_010_0;
 			default -> 0;
 		};

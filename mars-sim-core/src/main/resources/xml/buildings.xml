@@ -493,7 +493,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="yeast" amount="50.0" />
 				<resource-initial type="epsom salt" amount="50.0" />
 				<resource-initial type="table salt" amount="50.0" />
-				<resource-initial type="sugar" amount="50.0" />
+				<resource-initial type="glucose" amount="50.0" />
 				<resource-initial type="mustard" amount="50.0" />
 				<resource-initial type="sesame seed" amount="50.0" />
 				<resource-initial type="sesame oil" amount="50.0" />
@@ -913,11 +913,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					fuel-type="methane"	capacity="20.0" />
 			</thermal-generation>
 			
-			<waste-processing low-power-level="0.25">
-				<process-engine name="Grey Water Processor" number-modules="2"/>
-				<process-engine name="Black Water Processor" number-modules="2"/>
-			</waste-processing>				
-			
 		</functions>
 	</building>
 	<!-- end of Core A -->
@@ -1021,9 +1016,10 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 	<!-- end of Core C -->
 
-	<building type="Corridor 3x9" width="3.0" length="9.0" north-south-alignment="length" base-level="0"
+	<building type="Brickcore3x9" width="3.0" length="9.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="0"
 			wear-lifetime="3340000" maintenance-time="54" room-temperature="20.5" base-mass="540">
-		<description> Corridor 3x9 is a 3m by 9m utility tube that primarily connects
+		<description> Brickcore3x9 is a 3m by 9m utility tube that primarily connects
 		  other modules together
 		</description>
 		<base-power power-priority="2" base-full-power="0.5" base-low-power="0.05" />
@@ -1071,11 +1067,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-	<!-- end of Corridor 3x9-->
+	<!-- end of Brickcore3x9-->
 	
-	<building type="Corridor 3x3" width="3.0" length="3.0" north-south-alignment="length" base-level="0"
+	<building type="Brickcore3x3" width="3.0" length="3.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="0"
 			wear-lifetime="3340000" maintenance-time="18" room-temperature="20.5" base-mass="180">
-		<description> Corridor 3x3 is a 3m by 3m access tube that primarily connects
+		<description> Brickcore3x3 is a 3m by 3m access tube that primarily connects
 		  other modules together
 		</description>
 		<base-power power-priority="2" base-full-power="0.2" base-low-power="0.02" />
@@ -1117,7 +1114,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		</functions>
 	</building>
-	<!-- end of Corridor 3x3 -->
+	<!-- end of Brickcore3x3 -->
 	
 	<building type="Bioreactor-F" width="9.0" length="6.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="60" room-temperature="20.5" base-mass="1000">
@@ -1163,7 +1160,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="8"/>
+				<process-engine name="Glucose Fermentation" number-modules="8"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="16"/>
 				
 				<activity>
@@ -1500,7 +1497,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<!-- Inflatable Greenhouse -->
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="10"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="16"/>		
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
+				
 				<activity>
 					<activity-spot xloc="-1.6" yloc="3.6" />
 				</activity>
@@ -1677,8 +1678,11 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<resource-processing low-power-level="0.25">
 				<process-engine name="Atmospheric processing" number-modules="20"/>
-				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="36"/>
-
+				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="32"/>
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="16"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="8"/>
+				
 				<activity>
 					<activity-spot xloc="-4.5" yloc="8.25" />
 				</activity>
@@ -2699,7 +2703,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-capacity type="Yeast" amount="500.0" />
 				<resource-capacity type="Epsom Salt" amount="500.0" />
 				<resource-capacity type="Table Salt" amount="500.0" />
-				<resource-capacity type="Sugar" amount="500.0" />
+				<resource-capacity type="glucose" amount="500.0" />
 				<resource-capacity type="Rice Vinegar" amount="500.0" />
 				<resource-capacity type="Soy Sauce" amount="500.0" />
 				<resource-capacity type="Soymilk" amount="500.0" />
@@ -3064,9 +3068,9 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			<resource-processing low-power-level="0.25">
 				<!-- Bio-based processes -->
 				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="8"/>
-				<process-engine name="Glucose Fermentation by Cyanobacteria" number-modules="2"/>
+				<process-engine name="Glucose Fermentation" number-modules="2"/>
 				<process-engine name="Photo Fermentation by Chlorella" number-modules="4"/>
-				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="8"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="4"/>
 				<process-engine name="Methanogenesis by Archaea" number-modules="4"/>
 				<process-engine name="Oxidation of Methane into Methanol by Methanotrophs" number-modules="8"/>
 				
@@ -4021,7 +4025,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<connection />
-			<life-support capacity="3" />
+			<!-- For hallway and tunnel, the final capacity is initial capacity * floor area / 4 -->
+			<life-support capacity="2" />
 
 			<power-generation>
 				<power-source type="Solar Power Source" power="1.0" />
@@ -4034,12 +4039,46 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 						
 			<thermal-generation>
+				<!-- For hallway and Tunnel, the final capacity is initial capacity * 3 kW * floor area / 6 -->
 				<heat-source type="Solar Heating" capacity="3.0" />
 				<heat-source type="Electric Heating" capacity="3.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
+	<!-- A brickway's length is variable and determined in templates or during construction. -->
+	<building type="Brickway" width="6.0" length="-1.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="0"
+			wear-lifetime="3340000" maintenance-time="20" room-temperature="18.0" base-mass="100"
+			category="CONNECTION">
+		<description> The Brickway is a pressurized access tube connecting
+			two inhabitable buildings. It allows only one person to access it
+			at a time.
+		</description>
+		<base-power power-priority="2" base-full-power="0.1" base-low-power="0.01" />
+
+		<functions>
+			<connection />
+			<!-- For brickway, hallway and tunnel, the final capacity is initial capacity * floor area / 4 -->
+			<life-support capacity="2" />
+
+			<power-generation>
+				<power-source type="Solar Power Source" power="1.0" />
+			</power-generation>
+
+			<robotic-station capacity="1">
+				<activity>
+					<activity-spot xloc="0.0" yloc="0.0" />
+				</activity>
+			</robotic-station>
+						
+			<thermal-generation>
+				<!-- For brickway, hallway and Tunnel, the final capacity is initial capacity * 3 kW * floor area / 6 -->
+				<heat-source type="Solar Heating" capacity="3.0" />
+				<heat-source type="Electric Heating" capacity="3.0" />
+			</thermal-generation>
+		</functions>
+	</building>
 <!-- The buildings below are constructed with in-situ materials, primarly 
 	underground and are used primarily for trading and mining settlements -->
 
@@ -4245,7 +4284,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				<resource-initial type="yeast" amount="50.0" />
 				<resource-initial type="epsom salt" amount="50.0" />
 				<resource-initial type="table salt" amount="50.0" />
-				<resource-initial type="sugar" amount="50.0" />
+				<resource-initial type="glucose" amount="50.0" />
 				<resource-initial type="mustard" amount="50.0" />
 				<resource-initial type="sesame seed" amount="50.0" />
 				<resource-initial type="sesame oil" amount="50.0" />
@@ -4597,8 +4636,12 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</research>
 			<!-- "Inground Greenhouse" -->
 			<resource-processing low-power-level="0.25">
-				<process-engine name="Atmospheric processing" number-modules="12"/>
+				<process-engine name="Atmospheric processing" number-modules="8"/>
 				<process-engine name="Water-Gas Shift Reaction (WGSR)" number-modules="12"/>
+				<!-- Bio-based processes -->
+				<process-engine name="Photosynthetic Conversion of CO2 to Ethylene" number-modules="6"/>
+				<process-engine name="Cellulolysis of Fiber into Glucose" number-modules="3"/>
+				
 				<activity>
 					<activity-spot xloc="2.0" yloc="4.5" />
 				</activity>
@@ -4666,8 +4709,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 		<functions>
 			<connection />
-			
-			<life-support capacity="3" />
+			<!-- For hallway and tunnel, the final capacity is initial capacity * floor area / 4 -->
+			<life-support capacity="2" />
 			
 			<robotic-station capacity="1">
 				<activity>
@@ -4676,6 +4719,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 						
 			<thermal-generation>
+				<!-- For hallway and Tunnel, the final capacity is initial capacity * 3 kW * floor area / 6 -->
 				<heat-source type="Fuel Heating" toggle="true"
 					fuel-type="methane"	capacity="3.0"/>
 				<heat-source type="Electric Heating" capacity="3.0" />

@@ -102,7 +102,7 @@
 	
 	<process name="Photosynthetic Conversion of CO2 to Ethylene" power-required="0.1" >
 		<description>
-		The direct conversion of carbon dioxide to ethylene using cyanobacteria involves an engineered 
+		The direct conversion of carbon dioxide to ethylene using photoautotrophic cyanobacteria involves an engineered 
 		photosynthetic process. While natural photosynthesis produces glucose and oxygen from carbon 
 		dioxide and water, the engineered system described in research allows cyanobacteria to use 
 		electricity and light to convert carbon dioxide into ethylene (C₂H₄) or acetate.
@@ -132,11 +132,16 @@
 		<output resource="oxygen" rate="64.0" />
 	</process>
 	
-	<process name="Glucose Fermentation by Cyanobacteria" power-required="0.0" >
+	<process name="Glucose Fermentation" power-required="0.0" >
 		<description>
-         This reaction is not catalysed by single micro-organisms but by syntrophic 
-         associations of micro-organisms. First the glucose is fermented to acetate, 
-         C02 and H2 or to acetate, formate and H2:
+         These fermentations are brought about by strictly anaerobic bacteria.
+         
+         Facultative anaerobes such as members of the family Enterobacteriaceae, including Escherichia coli, Salmonella, 
+         and Shigella. 
+         
+         Obligate anaerobes such as Clostridium, Propionibacterium, and various lactic acid bacteria.
+         
+         The glucose is fermented to acetate, C02 and H2 or to acetate, formate and H2:
          
 	     C6H12O6 + 2H2O -> 2CH3COOH (acetic acid) + 2CO2 + 4H2
 	     180 g/mol,  2*18 g/mol ->  2 * 60g/mol, 2*44 g/mol + 4 *2 g/mol
@@ -202,7 +207,7 @@
 
 	<process name="Methanogenesis by Archaea" power-required="0.0" >
 		<description>
-		Methanogenesis is the only way that methanogenic archaea can obtain energy 
+		Methanogenesis is the only way that methanogenic archaea (Methanoarchaea) can obtain energy 
 		for growth and these are the only organisms known to produce methane as a catabolic end product.
 		
 	     CH3OH + H2 -> CH4 + H2O 

@@ -120,7 +120,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private int lastResourceCheck = 0;
 	
 	/** Vehicle traveled distance at start of mission. */
-	private double startingTravelledDistance = 0D;
+//	private double startingTravelledDistance = 0D;
 	/** Total traveled distance. */
 	private double distanceTravelled = 0D;
 	/** The estimated total distance for this mission. */
@@ -319,7 +319,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected void setVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
 			vehicle = newVehicle;
-			startingTravelledDistance = vehicle.getOdometerMileage();
+//			startingTravelledDistance = vehicle.getOdometerMileage();
 			claimVehicle(vehicle);
 		}
 		else {
@@ -2071,14 +2071,19 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private double computeTotalDistanceTravelled() {
 		if (vehicle != null) {
-			double diff = vehicle.getOdometerMileage() - startingTravelledDistance;
-			if (diff != distanceTravelled) {
+			double newDist = navPoints.stream()
+	                 .mapToDouble(NavPoint::getActualTravelled)
+	                 .sum();
+					
+			if (newDist != distanceTravelled) {
 				// Record the distance
-				distanceTravelled = diff;
+				distanceTravelled = newDist;
 				// Update the distance event
 				fireMissionUpdate(DISTANCE_EVENT);
 			}
-			return diff;
+			
+
+			return newDist;
 		}
 
 		return 0;

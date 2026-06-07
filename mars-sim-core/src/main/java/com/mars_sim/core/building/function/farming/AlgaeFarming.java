@@ -43,8 +43,6 @@ public class AlgaeFarming extends Function {
 	/** The average CO2 needed [in kg]. */
 	private static double averageCarbonDioxideNeeded;
 	
-
-	// 
 	public static final int PRODUCED_ALGAE_ID = 0;
 	
 	private static final int LIGHT_FACTOR = 0;

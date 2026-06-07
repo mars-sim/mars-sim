@@ -416,11 +416,14 @@
         <resource type="water" amount="7200" />
         <resource type="oxygen" amount="5760" />
 
-        <part-package name="tech" number="1" />
+        <part-package name="Tech Part Package 1" number="1" />
         <part-package name="Standard Part Package 1" number="8" />
     </initial-supplies>
 
     <resupply>
+       	<resupply-mission name="Bi-Monthly Delivery" manifest-name="Standard Resupply 1">
+            <schedule firstSol="1" eventTime="400" frequency="62" /> 
+        </resupply-mission>
        	<resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
             <schedule firstSol="30" frequency="62" />
         </resupply-mission>

@@ -91,9 +91,9 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		sitePanel.addLabelledItem("Sites Found", siteLabel);
 		numROIsLabel = new JIntegerLabel();
 		sitePanel.addLabelledItem("Declared ROIs", numROIsLabel);
-		siteMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		siteMeanLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		sitePanel.addLabelledItem(MEAN_DISTANCE, siteMeanLabel); 
-		siteSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		siteSDevLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		sitePanel.addLabelledItem(STD_DEVIATION, siteSDevLabel);
 		
 		
@@ -103,9 +103,9 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		
 		claimedSiteLabel = new JIntegerLabel();
 		twoPanel.addLabelledItem("Sites", claimedSiteLabel);
-		claimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		claimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		twoPanel.addLabelledItem(MEAN_DISTANCE, claimedMeanLabel);
-		claimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		claimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		twoPanel.addLabelledItem(STD_DEVIATION, claimedSDevLabel);
 		
 		AttributePanel unclaimPanel = new AttributePanel();
@@ -114,9 +114,9 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		
 		unclaimedSiteLabel = new JIntegerLabel();
 		unclaimPanel.addLabelledItem("Sites", unclaimedSiteLabel);
-		unclaimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		unclaimedMeanLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		unclaimPanel.addLabelledItem(MEAN_DISTANCE, unclaimedMeanLabel);
-		unclaimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		unclaimedSDevLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		unclaimPanel.addLabelledItem(STD_DEVIATION, unclaimedSDevLabel);
 		
 		// Create mission list panel.

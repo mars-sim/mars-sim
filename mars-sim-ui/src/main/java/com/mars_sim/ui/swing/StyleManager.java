@@ -39,15 +39,16 @@ public class StyleManager {
 
     // Shared generic formatters 
     public static final DecimalFormat CURRENCY_PLACES1 = new DecimalFormat("$ #,###,##0.0");
+    
     public static final DecimalFormat DECIMAL_PLACES0 = new DecimalFormat("#,###,###,###");
     public static final DecimalFormat DECIMAL_PLACES1 = new DecimalFormat("#,###,##0.0");
+    public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     public static final DecimalFormat DECIMAL_PLACES3 = new DecimalFormat("#,###,##0.000");
     public static final DecimalFormat DECIMAL_PLACES4 = new DecimalFormat("#,###,##0.0000");
-    public static final DecimalFormat DECIMAL_PLACES2 = new DecimalFormat("#,###,##0.00");
     
     // Unit specific formatters
     public static final DecimalFormat DECIMAL_AH = new DecimalFormat("#,##0.0 Ah");
-    public static final DecimalFormat DECIMAL_LITER2 = new DecimalFormat("#,##0.0 Liter");
+    public static final DecimalFormat DECIMAL_LITER = new DecimalFormat("#,##0.0 Liter");
     
     public static final DecimalFormat DECIMAL_KM_KG = new DecimalFormat("#,##0.00 km/kg");
     public static final DecimalFormat DECIMAL_WH_KM = new DecimalFormat("#,##0.00 Wh/km");
@@ -63,7 +64,8 @@ public class StyleManager {
     								+ Msg.getString("unit.meterpersec")); //-NLS-1$
     
     public static final DecimalFormat DECIMAL_KJ = new DecimalFormat("#,##0.0 kJ");
-    public static final DecimalFormat DECIMAL_KM = new DecimalFormat("#,##0.00 km");
+    
+    public static final DecimalFormat DECIMAL2_KM = new DecimalFormat("#,##0.00 km");
     public static final DecimalFormat DECIMAL3_KM = new DecimalFormat("#,##0.000 km");
     
     public static final DecimalFormat DECIMAL_M = new DecimalFormat("#,##0.00 m");
@@ -71,7 +73,7 @@ public class StyleManager {
     public static final DecimalFormat DECIMAL_KPH = new DecimalFormat("##0.00 kph");
     
     public static final DecimalFormat DECIMAL_KG = new DecimalFormat("#,##0.0 kg");
-    public static final DecimalFormat DECIMAL_KG2 = new DecimalFormat("#,##0.00 kg");
+    public static final DecimalFormat DECIMAL2_KG = new DecimalFormat("#,##0.00 kg");
 
     public static final DecimalFormat DECIMAL1_KG_SOL = new DecimalFormat("#,##0.0 kg/sol");
     public static final DecimalFormat DECIMAL2_KG_SOL = new DecimalFormat("#,##0.00 kg/sol");

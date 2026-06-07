@@ -154,7 +154,7 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
         });
         navpointScrollPane.setViewportView(navpointTable);
 
-		var dims = new Dimension(10, 100);
+		var dims = new Dimension(10, 112);
 		navpointScrollPane.setPreferredSize(dims);
 		navpointScrollPane.setMinimumSize(dims);
 
@@ -261,8 +261,8 @@ class TabPanelNavigation extends EntityTabPanel<VehicleMission>
 					case 0 -> Msg.getString("NavpointPanel.column.navpoint") + " " + (row + 1);
 					case 1 -> navpoint.getLocation().getFormattedString();
 					case 2 -> navpoint.getDescription();
-					case 3 -> Math.round(navpoint.getPointToPointDistance()*10.0)/10.0;
-					case 4 -> Math.round(navpoint.getActualTravelled()*10.0)/10.0;
+					case 3 -> Math.round(navpoint.getPointToPointDistance()*100.0)/100.0;
+					case 4 -> Math.round(navpoint.getActualTravelled()*100.0)/100.0;
 					default -> Msg.getString("unknown");
 					}; //$NON-NLS-1$
             }   

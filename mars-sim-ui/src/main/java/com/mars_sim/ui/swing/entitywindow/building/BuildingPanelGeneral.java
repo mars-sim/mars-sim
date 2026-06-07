@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
@@ -24,11 +25,11 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The BuildingPanelGeneral class is a building function panel showing
  * the general status of a settlement building.
  */
-@SuppressWarnings("serial")
 class BuildingPanelGeneral extends EntityTabPanel<Building> {
 		
 	/**
 	 * Constructor.
+	 * 
 	 * @param building the building
 	 * @param context the UI context
 	 */
@@ -41,7 +42,7 @@ class BuildingPanelGeneral extends EntityTabPanel<Building> {
 	}
 
 	/**
-	 * Build the UI elements
+	 * Builds the UI elements.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -64,8 +65,8 @@ class BuildingPanelGeneral extends EntityTabPanel<Building> {
 
 		infoPanel.addTextField(Msg.getString("building.type"), building.getBuildingType(), null);
 		infoPanel.addTextField(Msg.getString("building.category"), building.getCategory().getName(), null);
-		infoPanel.addTextField(Msg.getString("building.construction"), building.getConstruction().name(), null);
-
+		infoPanel.addTextField(Msg.getString("building.construction"), Conversion.capitalize(building.getConstruction().name()), null);
+		infoPanel.addTextField(Msg.getString("building.templateid"), building.getTemplateID(), null);
 		// Prepare dimension label
 		infoPanel.addTextField(Msg.getString("entity.internalPosn"), building.getPosition().getShortFormat(), 
 				"The center x and y coordinates of this building, according to the Settlement Map");

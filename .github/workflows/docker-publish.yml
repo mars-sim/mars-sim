@@ -29,7 +29,7 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v1
         with:
-          java-version: 21
+          java-version: 25
           
       - name: Build with Maven
         run: mvn -B package -DskipTests=true --file pom.xml 
@@ -63,7 +63,9 @@ jobs:
         docker build . --file Dockerfile --tag $IMAGE_NAME
           
     - name: Log into registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      env:
+        SECRET: ${{ secrets.GITHUB_TOKEN }}
+      run: echo "$SECRET" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
     - name: Push image
       run: |
