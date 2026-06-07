@@ -1,7 +1,7 @@
 package com.mars_sim.core.person.ai.task.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +15,8 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.MetaTask.TaskScope;
 import com.mars_sim.core.structure.Settlement;
 
-public class SettlementTaskManagerTest extends MarsSimUnitTest {
-    // Test settlement task that just record tinme
+class SettlementTaskManagerTest extends MarsSimUnitTest {
+    // Test settlement task that just record time
     @SuppressWarnings("serial")
 	private static class TestTask extends SettlementTask {
         private static final RatingScore DEFAULT_SCORE = new RatingScore(10);
@@ -75,7 +75,7 @@ public class SettlementTaskManagerTest extends MarsSimUnitTest {
             if (reject) {
                 return RatingScore.ZERO_RATING;
             }
-            return t.getScore();
+            return new RatingScore(t.getScore());
         }
     };
 
@@ -101,7 +101,7 @@ public class SettlementTaskManagerTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testGetTasks() {
+    void testGetTasks() {
         var s = buildSettlement("mock");
         var manager = buildManager(s, SCOPE_METATTASKS);
         Person p = buildPerson("Worker", s);
@@ -120,12 +120,11 @@ public class SettlementTaskManagerTest extends MarsSimUnitTest {
         manager.timePassing();
         manager.getTasks(p);
         var available3 = manager.getAvailableTasks();
-        assertFalse(available1.equals(available3), "Settlement Tasks change after timepassing");
-
+        assertNotEquals(available1, available3, "Settlement Tasks change after timepassing");
     }
 
     @Test
-    public void testGetNonWorkTasks() {
+    void testGetNonWorkTasks() {
         var s = buildSettlement("mock");
         var manager = buildManager(s, SCOPE_METATTASKS);
         Person p = buildPerson("OffDuty", s);
@@ -145,7 +144,7 @@ public class SettlementTaskManagerTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testGetWorkTasks() {
+    void testGetWorkTasks() {
         var s = buildSettlement("mock");
         var manager = buildManager(s, SCOPE_METATTASKS);
         Person p = buildPerson("OnDuty", s);
@@ -168,7 +167,7 @@ public class SettlementTaskManagerTest extends MarsSimUnitTest {
      * Check that a Peron can reject tasks
      */
     @Test
-    public void testPersonScoring() {
+    void testPersonScoring() {
         var s = buildSettlement("mock");
 
         // One meta rejects and one accepts

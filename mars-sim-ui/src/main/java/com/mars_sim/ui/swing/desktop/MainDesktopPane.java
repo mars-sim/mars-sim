@@ -52,6 +52,7 @@ import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The MainDesktopPane class is the desktop part of the project's UI. It
@@ -153,7 +154,7 @@ public class MainDesktopPane extends JDesktopPane
 
 		if (screenSize == null || screenSize.getWidth() == 0 || screenSize.getHeight() == 0) {
 			screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			logger.config("Toolkit default screen size is " + screenSize.getWidth() + " x " + screenSize.getHeight());
+			logger.config("Toolkit default screen size is " + SwingHelper.toString(screenSize));
 		}
 
 		Image backgroundImage = createImage((int) screenSize.getWidth(), (int) screenSize.getHeight());
@@ -253,14 +254,19 @@ public class MainDesktopPane extends JDesktopPane
 			return null;
 		}
 		ContentWindow w = new ContentWindow(this, content);
-
-		// Close it from the start
+		
+		// Must close before attaching listener to avoid events during setup
 		try {
 			w.setClosed(true);
 		} catch (PropertyVetoException e) {
-			logger.warning("Problem loading tool window " + e.getMessage());
+			// Ignore
 		}
+
+		w.addInternalFrameListener(new ContentWindowListener());
 		toolWindows.add(w);
+
+
+
 		return w;
 	}
 
@@ -291,9 +297,9 @@ public class MainDesktopPane extends JDesktopPane
 			UIConfig config = mainWindow.getConfig();
 			Point location = null;
 			WindowSpec previousDetails = config.getInternalWindowDetails(toolName);
-			if (previousDetails != null) {
+			if ((previousDetails != null) && (previousDetails.position() != null)) {
 				location = previousDetails.position();
-				if (window.isResizable()) {
+				if (window.isResizable() && previousDetails.size() != null) {
 					window.setSize(previousDetails.size());
 				}
 			} else if (toolName.equals(TimeTool.NAME))
@@ -345,15 +351,37 @@ public class MainDesktopPane extends JDesktopPane
 		openEntityPanel(entity, null);
     }
 
-	private class EntityPanelListener extends InternalFrameAdapter {
+	/**
+	 * Listens for internal frame closing events on content windows and disposes of them properly when they are closed.
+	 */
+	private class ContentWindowListener extends InternalFrameAdapter {
 		/**
-		 * Removes unit button from toolbar when unit window is closed.
+		 * Internal frame has closed.
 		 *
 		 * @param e internal frame event.
 		 */
 		@Override
 		public void internalFrameClosing(InternalFrameEvent e) {
-			disposeEntityPanel((ContentWindow) e.getSource());
+			var source = (ContentWindow) e.getSource();
+			var content = source.getContent();
+			
+			// Check Entity windows first
+			if (entityWindows.contains(source)) {
+				entityWindows.remove(source);
+				if (content instanceof EntityContentPanel<?> panel) {
+					Entity unit = panel.getEntity();
+					if (unit != null) {
+						mainWindow.getUnitToolBar().disposeButton(unit);
+					}
+				}
+			}
+			else if (toolWindows.contains(source)) {
+				// Remember settings for tool windows
+				UIConfig config = mainWindow.getConfig();
+				config.addWindowSpec(toWindowSpec(source));
+				toolWindows.remove(source);
+			}
+			source.destroy();
 		}
 	}
 	
@@ -380,7 +408,7 @@ public class MainDesktopPane extends JDesktopPane
 		if (panel != null) {
 			var cw = new ContentWindow(this, panel);
 			// Set internal frame listener
-			cw.addInternalFrameListener(new EntityPanelListener());
+			cw.addInternalFrameListener(new ContentWindowListener());
 
 			add(cw, 0);
 
@@ -399,27 +427,23 @@ public class MainDesktopPane extends JDesktopPane
 
 			// Play sound
 			if (soundPlayer != null) {
-				var sound = EntityDisplayInfoFactory.getDisplayInfo(entity).getSound(entity);
+				var sound = EntityDisplayInfoFactory.getSound(entity);
 				if (sound != null) {
-					soundPlayer.playSound(sound);
+					playSound(sound);
 				}
 			}	
 		}
 	}
 
 	/**
-	 * Entity panel has been closed
-	 * @param source Parent comntent window
+	 * Plays a sound by name.
+	 * @param soundName The name of the sound to play
 	 */
-	private void disposeEntityPanel(ContentWindow source) {
-		if (source.getContent() instanceof EntityContentPanel panel) {
-			Entity unit = panel.getEntity();
-			if (unit != null) {
-				mainWindow.getUnitToolBar().disposeButton(unit);
-			}
+	@Override
+	public void playSound(String soundName) {
+		if (soundPlayer != null) {
+			soundPlayer.playSound(soundName);
 		}
-		entityWindows.remove(source);
-		source.destroy();
 	}
 
 	/**  
@@ -439,8 +463,8 @@ public class MainDesktopPane extends JDesktopPane
 			
 			// Make sure store position is visible
 			Dimension desktopSize = getSize();
-			if ((newPosition.getX() >= desktopSize.getWidth())
-					|| (newPosition.getY() >= desktopSize.getHeight())) {
+			if ((newPosition != null) && ((newPosition.getX() >= desktopSize.getWidth())
+					|| (newPosition.getY() >= desktopSize.getHeight()))) {
 				newPosition = null;
 			}
 		}
@@ -589,6 +613,7 @@ public class MainDesktopPane extends JDesktopPane
 			}
 
 			else {
+				
 				openToolWindow(MonitorWindow.NAME);
 			}
 		}
@@ -627,27 +652,34 @@ public class MainDesktopPane extends JDesktopPane
 		JInternalFrame[] windows = getAllFrames();
 		for (var window1 : windows) {
 			if (window1 instanceof ContentWindow tw) {
-
-				Point winPosn = window1.getLocation();
-				Dimension winSize = window1.getSize();
-
-				var winOrder = getComponentZOrder(window1);
-
-				Properties props = null;
-				if (window1 instanceof ConfigurableWindow cw) {
-					props = cw.getUIProps();
-				}
-				else {
-					props = new Properties();
-				}
-
-				var winName = tw.getContent().getName();
-				var winType = tw.getContent() instanceof EntityContentPanel ? UIConfig.UNIT : UIConfig.TOOL;
-				var wp = new WindowSpec(winName, winPosn, winSize, winOrder, winType, props);
-				results.add(wp);
+				results.add(toWindowSpec(tw));
 			}
 		}
 
 		return results;
+	}
+
+	/**
+	 * Gets the details of a content window. This is used to save the UI configuration.
+	 * @param tw Content window to get the details of
+	 * @return Key details of the content window for saving in the UI configuration
+	 */
+	private WindowSpec toWindowSpec(ContentWindow tw) {
+		Point winPosn = tw.getLocation();
+		Dimension winSize = tw.getSize();
+
+		var winOrder = getComponentZOrder(tw);
+
+		Properties props = null;
+		if (tw instanceof ConfigurableWindow cw) {
+			props = cw.getUIProps();
+		}
+		else {
+			props = new Properties();
+		}
+
+		var winName = tw.getContent().getName();
+		var winType = tw.getContent() instanceof EntityContentPanel ? UIConfig.UNIT : UIConfig.TOOL;
+		return new WindowSpec(winName, winPosn, winSize, winOrder, winType, props);
 	}
 }

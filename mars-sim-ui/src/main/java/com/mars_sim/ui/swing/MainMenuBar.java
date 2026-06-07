@@ -53,6 +53,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 	private static final String CHANGELOG = "changelog";
 	private static final String LAF = "laf";
 	private static final String LOOK_AND_FEEL_ICON = "action/theme";
+	private static final String WINDOW_UI = "window_ui";
 
 	private UIContext context;
 
@@ -164,7 +165,7 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 
 		// Create About Mars Simulation Project menu item
 		helpMenu.add(createMenuItem("mainMenu.about", "action/about", ABOUT, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, false)));
+				KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK, false)));
 	
 		helpMenu.add(new JSeparator());
 			
@@ -175,13 +176,19 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK, false)));
 				
 		helpMenu.add(createMenuItem("mainMenu.tutorial", "action/tutorial", TUTORIAL, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
+				KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_DOWN_MASK, false)));
+		
 		helpMenu.add(createMenuItem("mainMenu.guide", GuideWindow.ICON, OPEN_GUIDE, null,
-										KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
+				KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_DOWN_MASK, false)));
+		
 		return helpMenu;
 	}
 
-
+	/**
+	 * Creates the settings menu.
+	 * 
+	 * @return
+	 */
 	private JMenu createSettingsMenu(AudioPlayer audioPlayer) {
 
 		// Create settings menu
@@ -204,10 +211,8 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 			JMenu subMenu = new JMenu(g.getKey());
 			lafMenu.add(subMenu);
 			for(var entry : g.getValue()) {
-				JRadioButtonMenuItem lafItem = new JRadioButtonMenuItem(entry.name());
-				lafItem.setSelected(entry.name().equals(currentLAF));
-				lafItem.setActionCommand(LAF);
-				lafItem.addActionListener(this);
+				var lafItem = createRadioButton(entry.name(),
+						entry.name().equals(currentLAF), LAF);
 				subMenu.add(lafItem);
 				group.add(lafItem);
 			}
@@ -215,15 +220,42 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 		
 		if (audioPlayer != null) {
 			var audio = createToolMenuItem(AudioControl.TITLE, AudioControl.ICON, null,
-					e -> {AudioControl.showPopup(audioPlayer);});
+					e -> AudioControl.showPopup(audioPlayer));
 			settingsMenu.add(audio);
 		}
+
+		// Notification control
+		var notificationManager = manager.getNotifications();
+		if (notificationManager != null) {
+			settingsMenu.add(notificationManager.getSettingsMenu());
+		}
+
+		// Add window system options
+		settingsMenu.addSeparator();
+		var config = manager.getConfig();
+		ButtonGroup windowGroup = new ButtonGroup();
+		var dockingItem = createRadioButton("Use Docking UI",
+									config.useDockingUI(), WINDOW_UI);
+		settingsMenu.add(dockingItem);
+		windowGroup.add(dockingItem);
+		var windowItem = createRadioButton("Use Window UI",
+									!config.useDockingUI(), WINDOW_UI);
+		settingsMenu.add(windowItem);
+		windowGroup.add(windowItem);
 
 		return settingsMenu;
 	}
 
+	private JRadioButtonMenuItem createRadioButton(String name, boolean selected, String command) {
+		JRadioButtonMenuItem item = new JRadioButtonMenuItem(name, selected);
+		item.setActionCommand(command);
+		item.addActionListener(this);
+		return item;
+	}
+
 	/**
-	 * Add any window specific preferences to the settings menu. This should be overriden.
+	 * Adds any window specific preferences to the settings menu. This should be overridden.
+	 * 
 	 * @param settingsMenu The parent menu to add to.
 	 */
 	protected void addWindowPreferences(JMenu settingsMenu) {
@@ -374,6 +406,13 @@ public class MainMenuBar extends JMenuBar implements ActionListener {
 				if (StyleManager.setLAF(newStyle)) {
 					SwingUtilities.updateComponentTreeUI(top);
 				}
+				break;
+			case WINDOW_UI:
+				boolean useDocking = selectedItem.getText().equals("Use Docking UI");
+				// Handle window UI change here
+				manager.getConfig().setUseDockingUI(useDocking);
+				JOptionPane.showMessageDialog(top, "UI needs restarting to apply changes.",
+										"Restart Required", JOptionPane.INFORMATION_MESSAGE);
 				break;
 			default:
 				// Shouldn't be here

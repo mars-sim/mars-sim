@@ -13,8 +13,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.environment.Weather;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.ai.mission.MissionManager;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
@@ -58,7 +60,6 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	protected static MasterClock masterClock;
 
 	protected static UnitManager unitManager;
-	protected static MissionManager missionManager;
 
 	protected static Weather weather;
 
@@ -104,6 +105,15 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 */
 	public final int getIdentifier() {
 		return identifier;
+	}
+
+	/**
+	 * Gets the unique identifier for the entity. This is used to uniquely identify the entity across the system and is immutable.
+	 *
+	 * @return The unique identifier of the entity.
+	 */
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier(getUnitType().name(), String.valueOf(identifier));
 	}
 
 	/**
@@ -294,6 +304,28 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 		return Collections.unmodifiableSet(listeners);
 	}
 
+	
+	/**
+	 * Create a historical event for this Unit.
+	 * @param eventType the type of event.
+	 * @param message the message to include in the event.
+	 * @param doing the action being done in the event, maybe null.
+     * @param affected the entity affected by the event, maybe null.
+	 * @param where the coordinates of the event, maybe null
+	 */
+	public void registerHistoricalEvent(HistoricalEventType eventType, String message, String doing, Entity affected,
+			Coordinates where) {
+		var base = getAssociatedSettlement();
+
+		// Not brilliant but Settlements logging are their own home base
+		if (base == null && this instanceof Settlement settlement) {
+			base = settlement;
+		}
+
+		var event = new HistoricalEvent(eventType, this, base, message, doing, affected, where);
+		Simulation.instance().getEventManager().registerNewEvent(event);
+	}
+
 	/**
 	 * Fires an entity update event.
 	 *
@@ -341,11 +373,10 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 *
 	 */
 	public static void initializeInstances(MasterClock c0, UnitManager um,
-			Weather w, MissionManager mm) {
+			Weather w) {
 		masterClock = c0;
 		weather = w;
 		unitManager = um;
-		missionManager = mm;
 	}
 
 	/**

@@ -23,10 +23,10 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
 
 
@@ -58,9 +58,9 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
         AttributePanel springPanel = new AttributePanel(2);
         content.add(springPanel, BorderLayout.NORTH);
 
-		odometerTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getOdometerMileage());
+		odometerTF = new JDoubleLabel(StyleManager.DECIMAL2_KM, vehicle.getOdometerMileage());
 		springPanel.addLabelledItem(Msg.getString("vehicle.odometer"), odometerTF);
-		maintTF = new JDoubleLabel(StyleManager.DECIMAL_KM, vehicle.getDistanceLastMaintenance());
+		maintTF = new JDoubleLabel(StyleManager.DECIMAL2_KM, vehicle.getDistanceLastMaintenance());
 		springPanel.addLabelledItem(Msg.getString("TabPanelLog.label.maintDist"), maintTF);
 
 		statusPanel = new LogPanel(vehicle.getVehicleLog());
@@ -69,12 +69,16 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 
 		// Update will refresh data
 		statusPanel.refresh();
-		updateMileage();
+		
+		updateMileage(vehicle);
 	}
 
-	private void updateMileage() {
-		var vehicle = getEntity();
-
+    /**
+     * Updates mileage.
+     * 
+     * @param vehicle
+     */
+	private void updateMileage(Vehicle vehicle) {
 		odometerTF.setValue(vehicle.getOdometerMileage());
 		maintTF.setValue(vehicle.getDistanceLastMaintenance());
 	}
@@ -103,7 +107,9 @@ class TabPanelLog extends EntityTabPanel<Vehicle> implements EntityListener{
 	@Override
 	public void entityUpdate(EntityEvent event) {
 		if (EntityEventType.COORDINATE_EVENT.equals(event.getType())) {
-			updateMileage();
+			
+			var vehicle = getEntity();
+			updateMileage(vehicle);
 		}
 		else if (EntityEventType.STATUS_EVENT.equals(event.getType())) {
 			statusPanel.refresh();

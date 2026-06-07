@@ -20,10 +20,10 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.JHistoryPanel;
 
 /**
@@ -62,7 +62,7 @@ class TabPanelGeneralEquipment extends EntityTabPanel<Equipment>
 		
 		var eqm = getEntity();
 		infoPanel.addTextField("Type", eqm.getEquipmentType().getName(), null);
-		infoPanel.addTextField("Mass", StyleManager.DECIMAL_KG2.format(eqm.getBaseMass()), null);
+		infoPanel.addTextField("Mass", StyleManager.DECIMAL2_KG.format(eqm.getBaseMass()), null);
 
 		ownerLabel = new EntityLabel(eqm.getRegisteredOwner(), getContext());
 		infoPanel.addLabelledItem("Registered Owner", ownerLabel, null);

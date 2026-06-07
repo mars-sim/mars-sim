@@ -10,50 +10,33 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ItemEvent;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
-import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.EntityManagerListener;
-import com.mars_sim.core.GameManager;
-import com.mars_sim.core.GameManager.GameMode;
-import com.mars_sim.core.UnitManager;
-import com.mars_sim.core.UnitType;
-import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.tool.MapSelector;
-import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
+import com.mars_sim.ui.swing.utils.SettlementsSelector;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The MonitorWindow is a tool window that displays a selection of tables each
@@ -63,38 +46,6 @@ import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
 public class MonitorWindow extends ContentPanel
 			implements ConfigurableWindow, TableModelListener{
 
-	/**
-	 * This is a comparator that sorts in the following order:
-	 * 1) String
-	 * 2) Authority
-	 * 3) Settlement
-	 */
-	private static class SelectionComparator implements Comparator<Object> {
-
-		@Override
-		public int compare(Object o1, Object o2) {
-			// String are always first
-			if (o1 instanceof String) {
-				return -1;
-			}
-			else if (o2 instanceof String) {
-				return 1;
-			}
-			if ((o1 instanceof Settlement) && (o2 instanceof Authority)) {
-				return 1;
-			}
-			else if ((o1 instanceof Authority) && (o2 instanceof Settlement)) {
-				return -1;
-			}
-			else if ((o1 instanceof Entity e1) && (o2 instanceof Entity e2)) {
-				return e1.getName().compareTo(e2.getName());
-			}
-
-			// Should never get here
-			return 0;
-		}
-	}
-
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(MonitorWindow.class.getName());
 
@@ -102,7 +53,6 @@ public class MonitorWindow extends ContentPanel
 	private static final int WIDTH = 1366;
 	private static final int HEIGHT = 640;
 
-	private static final String ALL = "All";
 	public static final String NAME = "monitor";
 	public static final String ICON = "monitor";
     public static final String TITLE = Msg.getString("MonitorWindow.title");
@@ -112,7 +62,6 @@ public class MonitorWindow extends ContentPanel
 	private static final String BOT_ICON = "robot";
 	private static final String VEHICLE_ICON = "vehicle";
 	private static final String CROP_ICON = "crop";
-	private static final String EVENT_ICON = "event";
 	private static final String FOOD_ICON = "food";
 	private static final String TRADE_ICON = "trade";
 	private static final String PEOPLE_ICON = "people";
@@ -141,24 +90,15 @@ public class MonitorWindow extends ContentPanel
 	private JButton buttonDetails;
 	private JButton buttonFilter;
 	
-	/** Selection Combo box */
-	private JComboBox<Object> selectionCombo;
-	
 	private JPanel statusPanel;
 
 	private Set<Settlement> currentSelection;
 
-	private UnitManager unitManager;
-
-	private EntityManagerListener umListener;
-
 	private MonitorTab activeTab;
 
-	private Map<Authority, Set<Settlement>> authorities;
-
-	private JLabel selectionDescription;
-
 	private UIContext context;
+
+	private SettlementsSelector settlementSelector;
 
 	/**
 	 * Constructor.
@@ -167,44 +107,31 @@ public class MonitorWindow extends ContentPanel
 	 */
 	public MonitorWindow(UIContext context, Properties uiProps) {
 		// Use TableWindow constructor
-		super(NAME, TITLE, Placement.BOTTOM);
+		super(NAME, TITLE, Placement.CENTER);
 		
 		this.context = context;
 
-		unitManager = context.getSimulation().getUnitManager();
+		var unitManager = context.getSimulation().getUnitManager();
 		
 		// Get content pane
 		JPanel mainPane = new JPanel(new BorderLayout(5, 5));
-		mainPane.setBorder(new MarsPanelBorder());
+		mainPane.setBorder(SwingHelper.createEtchedBorder());
 		add(mainPane, BorderLayout.CENTER);
 
 		// Set up default selection
-		var choices = setupSelectionChoices();
-		Object defaultSelection = ALL;
 		String previousChoice = (uiProps != null ? uiProps.getProperty(FILTER_PROP) : null);
-		if (previousChoice != null) {
-			for(Entity s : choices) {
-				if (s.getName().equals(previousChoice)) {
-					defaultSelection = s;
-				}
-			}
-		}
 
 		// Create the settlement combo box
-        buildSelectionCombo(choices, defaultSelection);
+		settlementSelector = new SettlementsSelector(unitManager, previousChoice, true);
+		settlementSelector.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement"));
 
 		// Create top pane
 		JPanel topPane = new JPanel(new FlowLayout());
 		topPane.add(new JLabel("Settlement Filter:"));
-		topPane.add(selectionCombo);
-		selectionDescription = new JLabel("");
-		topPane.add(selectionDescription);
+		topPane.add(settlementSelector);
 
 		mainPane.add(topPane, BorderLayout.NORTH);
 		
-		// Update the selection description
-		applySelection(defaultSelection);
-
 		// Create tabbed pane for the table
 		tabsSection = new JTabbedPane(StyleManager.getTabPlacement(), JTabbedPane.SCROLL_TAB_LAYOUT);
 		
@@ -234,7 +161,11 @@ public class MonitorWindow extends ContentPanel
 		setMinimumSize(new Dimension(640, 256));
 		
 		// Lastly activate the default tab
+		currentSelection = settlementSelector.getSelectedSettlements();
 		selectNewTab(getSelectedTab());
+
+		// List for changes in the settlement selection
+		settlementSelector.setSelectionListener("selectionChanged", e -> changeSelection());
 	}
 
 	/**
@@ -256,8 +187,6 @@ public class MonitorWindow extends ContentPanel
 		
 		newTabs.add(new TableTab(this, new TradeTableModel(), true, false, TRADE_ICON));
 
-		newTabs.add(new TableTab(this, new EventTableModel(context.getSimulation().getEventManager()), true, true,
-				EVENT_ICON));
 		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, true, SCIENCE_ICON));
 
 		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, "mission"));
@@ -345,154 +274,11 @@ public class MonitorWindow extends ContentPanel
 	}
 
 	/**
-	 * Sets up a list of settlements and associated authorities.
-	 *
-	 * @return Map of authority to settlements
+	 * Reacts to a change in the settlement selection. 
 	 */
-	private List<Entity> setupSelectionChoices() {
-
-		Collection<Settlement> settlements;
-		if (GameManager.getGameMode() == GameMode.COMMAND) {
-			settlements = unitManager.getCommanderSettlements();
-		}
-		else { 
-			settlements = unitManager.getSettlements();
-		}
-		List<Entity> choices = new ArrayList<>(settlements);
-		
-		// Create the Authority maps
-		authorities = new HashMap<>();
-		for (var s : settlements) {
-			var ra = s.getReportingAuthority();
-			authorities.computeIfAbsent(ra, k -> new HashSet<>()).add(s);
-		}	
-
-		choices.addAll(authorities.keySet());
-
-		return choices;
-	}
-
-	/**
-	 * Builds the settlement combo box that uses the settlements and reporting authorities.
-	 * 
-	 * @param choices
-	 * @param selected
-	 */
-	private void buildSelectionCombo(List<Entity> choices, Object selected) {
-		List<Object> converted = new ArrayList<>(choices); // List is a pain
-
-		SortedComboBoxModel<Object> model = new SortedComboBoxModel<>(converted, new SelectionComparator());
-		model.addElement(ALL);
-		model.setSelectedItem(selected);
-		selectionCombo = new JComboBox<>(model);
-		selectionCombo.setOpaque(false);
-		selectionCombo.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
-		selectionCombo.setPreferredSize(new Dimension(200, 25));
-	
-		// Add renderer
-		selectionCombo.setRenderer(new SelectionComboRenderer());
-		
-		// Set the item listener only after the setup is done
-		selectionCombo.addItemListener(this::changeSelection);
-
-		// Listen for new Settlements
-		umListener = new EntityManagerListener() {
-			@Override
-			public void entityAdded(Entity newEntity) {
-				addNewSettlement(newEntity);
-			}
-
-			@Override
-			public void entityRemoved(Entity removedEntity) {
-				if (removedEntity instanceof Settlement s) {
-					// Update authorities tracking
-					var ra = s.getReportingAuthority();
-					var remainingSettlements = authorities.get(ra);
-					if (remainingSettlements != null) {
-						remainingSettlements.remove(s);
-					}
-					// Force rebuild of the selection list
-					var choices = setupSelectionChoices();
-					Object currentSelection = selectionCombo.getSelectedItem();
-					buildSelectionCombo(choices, currentSelection);
-					updateTab();
-				}
-			}
-		};
-		unitManager.addEntityManagerListener(UnitType.SETTLEMENT, umListener);
-
-	}
-
-	/**
-	 * Adds new settlement to the selection and updates the Reporting Authority.
-	 * 
-	 * @param entity
-	 */
-	private void addNewSettlement(Entity entity) {
-		if (entity instanceof Settlement s) {
-			SortedComboBoxModel<Object> ms = (SortedComboBoxModel<Object>) selectionCombo.getModel();
-			ms.addElement(s);
-
-			var ra = s.getReportingAuthority();
-			if (!authorities.containsKey(ra)) {
-				authorities.put(ra, new HashSet<>());
-				ms.addElement(ra);
-			}
-			authorities.get(ra).add(s);
-
-			// Force a refresh in case new Settlement should be displayed
-			updateTab();
-		}
-	}
-
-	/**
-	 * Reacts to a change in the Combo selection. 
-	 * 
-	 * @param event
-	 */
-	private void changeSelection(ItemEvent event) {
-		applySelection(event.getItem());
+	private void changeSelection() {
+		currentSelection = settlementSelector.getSelectedSettlements();
 		updateTab();
-	}
-	
-	/**
-	 * Updates the internal selection status based on a new item.
-	 * 
-	 * @param item
-	 */
-	private void applySelection(Object item) {
-		String newDescription = "";
-		Set<Settlement> newSelection = null;
-
-		switch (item) {
-			case Settlement s -> {
-				newSelection = Set.of(s);
-			}
-			case Authority a -> {
-				newSelection = authorities.get(a);
-				if (newSelection != null) {
-					newDescription = newSelection.stream()
-										.map(Settlement::getName)
-										.sorted()
-										.collect(Collectors.joining(", ", "(", ")"));
-				}
-			}
-			case String str -> {
-				if (!str.equals(ALL)) {
-					// Should always be ALL
-					return;
-				}
-				newSelection = new HashSet<>(unitManager.getSettlements());
-			}
-			default -> {
-				// Unknown type
-				return;
-			}
-		}
-
-		// Change to the selection, must be read only as it is shared
-		currentSelection = Collections.unmodifiableSet(newSelection);
-		selectionDescription.setText(newDescription);
 	}
 
 	/**
@@ -501,11 +287,7 @@ public class MonitorWindow extends ContentPanel
 	 * @param isOpaque
 	 */
 	private void setSettlementBox(boolean isOpaque) {
-		// Set the box opaque
-		selectionCombo.setOpaque(isOpaque);
-		selectionCombo.setEnabled(!isOpaque);
-		selectionCombo.setVisible(!isOpaque);
-		selectionDescription.setVisible(!isOpaque);
+		settlementSelector.setVisible(!isOpaque);
 	}
 
 	/**
@@ -724,7 +506,7 @@ public class MonitorWindow extends ContentPanel
 	@Override
 	public Properties getUIProps() {
 		Properties result = new Properties();
-		Object e = selectionCombo.getSelectedItem();
+		Object e = settlementSelector.getSelectedItem();
 		if (e instanceof Entity ent) {
 			result.setProperty(FILTER_PROP, ent.getName());
 		}
@@ -734,58 +516,20 @@ public class MonitorWindow extends ContentPanel
 		return result;
 	}
 	
-	private class SelectionComboRenderer extends JLabel implements
-        ListCellRenderer<Object> {
-
-		public SelectionComboRenderer() {
-
-			setOpaque(true);
-			setVerticalAlignment(CENTER);
-
-		}
-
-		@Override
-		public Component getListCellRendererComponent(
-				JList<? extends Object> list,
-				Object value, int index, boolean isSelected,
-				boolean cellHasFocus) {
-
-			// Center horizontally
-			setHorizontalAlignment(CENTER); 
-			
-			this.setFont(list.getFont());
-
-			if (isSelected) {
-				setBackground(list.getSelectionBackground());
-				setForeground(list.getSelectionForeground());
-			} else {
-				setBackground(list.getBackground());
-				setForeground(list.getForeground());
-			}
-
-			
-			if (value instanceof Settlement s) {
-				this.setText(s.getName());
-			}
-			else if (value instanceof Authority a) {
-				var children = authorities.get(a);
-				this.setText(a.getName() + " (" + (children != null ? children.size() : 0) + ")");
-			}
-			else if (value instanceof String s) {
-				this.setText(s);
-            }
-			
-			return this;
-		}
-	}
-
 	/**
 	 * Prepares tool window for deletion.
+	 * Remove listeners and references to allow for garbage collection.
 	 */
 	@Override
 	public void destroy() {
-		super.destroy();
+		settlementSelector.unregister();
 
-		unitManager.removeEntityManagerListener(UnitType.SETTLEMENT, umListener);
+		// Remove listeners for the active tab; should already be present but just in case
+		MonitorModel activeModel = (activeTab != null) ? activeTab.getModel() : null;
+		if (activeModel != null) {
+			activeModel.setMonitorEntities(false);
+		}
+			
+		super.destroy();
 	}
 }

@@ -7,28 +7,29 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.Simulation;
+import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
-import com.mars_sim.core.person.ai.mission.MissionManagerListener;
 import com.mars_sim.core.person.ai.mission.NavPoint;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.resource.AmountResource;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -119,9 +120,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		RESOURCE_TO_COL.put(ResourceUtil.ICE_ID, ICE);
 	}
 
-	private static MissionManager missionManager = Simulation.instance().getMissionManager();
-
-	private transient LocalMissionManagerListener missionManagerListener;
+	private transient LocalMissionManagerListener missionControlListener;
 	
 	public VehicleTableModel() {
 		super(
@@ -131,7 +130,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 
 		setCachedColumns(OXYGEN, ICE);
 		setSettlementColumn(SETTLEMENT);
-		missionManagerListener = new LocalMissionManagerListener();
+		missionControlListener = new LocalMissionManagerListener();
 	}
 
 	/**
@@ -146,7 +145,8 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 				.toList();
 	
 		resetItems(vehicles);
-		
+
+		missionControlListener.setSettlements(filter);
 		return true;
 	}
 
@@ -313,7 +313,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 					result = value;
 				break;
 				
-			case ROCK_SAMPLES : ;
+			case ROCK_SAMPLES :
 				value = vehicle.getSpecificAmountResourceStored(ResourceUtil.ROCK_SAMPLES_ID);
 				if (value == 0.0)
 					result = null;
@@ -377,8 +377,8 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 			}
 			else if (target instanceof Integer item) {
 				resourceId = item;
-				if (resourceId >= ResourceUtil.FIRST_ITEM_RESOURCE_ID)
-					// if it's an item resource, quit
+				if (ResourceType.getType(resourceId) != ResourceType.AMOUNT_RESOURCE)
+					// if resource is not an amount then quit
 					return;
 			}
 
@@ -398,25 +398,40 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	public void destroy() {
 		super.destroy();
 
-		if (missionManagerListener != null) {
-			missionManagerListener.destroy();
+		if (missionControlListener != null) {
+			missionControlListener.destroy();
 		}
-		missionManagerListener = null;
+		missionControlListener = null;
 	}
 
 
-	private class LocalMissionManagerListener implements MissionManagerListener {
+	private class LocalMissionManagerListener implements EntityManagerListener {
 
-		private List<Mission> missions;
+		private Set<VehicleMission> monitoredMissions = Collections.emptySet();
+		private Set<Settlement> monitoredSettlements = Collections.emptySet();
 		private EntityListener missionListener;
 
 		LocalMissionManagerListener() {
 			missionListener = new LocalMissionListener();
+		}
 
-			missions = missionManager.getMissions();
+		public void setSettlements(Set<Settlement> settlementFilter) {
+			// Unregister from old missions
+			monitoredMissions.forEach(vm -> vm.removeEntityListener(missionListener));
+			monitoredSettlements.forEach(s -> s.getMissionControl().removeListener(this));
 
-			for (Mission m : missions)
-				addMission(m);
+			if (settlementFilter != null) {
+				// If new set of Settlements is provided then register to be notifed of new Missions
+				// and the VehicleMissions associated with the Settlements.
+				monitoredMissions = new HashSet<>();
+				monitoredSettlements = new HashSet<>(settlementFilter);
+				for(var s : monitoredSettlements) {
+					s.getMissionControl().addListener(this);
+					s.getMissionControl().getAllMissions().stream()
+							.filter(m -> !m.isDone())
+							.forEach(this::entityAdded);
+				}
+			}
 		}
 
 		/**
@@ -424,9 +439,12 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		 * 
 		 * @param mission the new mission.
 		 */
-		public void addMission(Mission mission) {
-			mission.addEntityListener(missionListener);
-			fireTableDataChanged();
+		@Override
+		public void entityAdded(Entity mission) {
+			if (mission instanceof VehicleMission vm) {
+				vm.addEntityListener(missionListener);
+				monitoredMissions.add(vm);
+			}
 		}
 
 		/**
@@ -434,17 +452,19 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		 * 
 		 * @param mission the old mission.
 		 */
-		public void removeMission(Mission mission){
-			mission.removeEntityListener(missionListener);
-			fireTableDataChanged();
+		@Override
+		public void entityRemoved(Entity mission){
+			Mission m = (Mission) mission;
+			m.removeEntityListener(missionListener);
+			monitoredMissions.remove(mission);
 		}
 
 		/**
 		 * Prepares for deletion.
 		 */
 		public void destroy() {
-			for (Mission m : missions) removeMission(m);
-			missions = null;
+			setSettlementFilter(null);
+			monitoredMissions = null;
 			missionListener = null;
 		}
 	}

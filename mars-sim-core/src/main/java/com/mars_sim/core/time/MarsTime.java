@@ -284,6 +284,20 @@ public class MarsTime implements Comparable<MarsTime>, Serializable {
 	}
 
 	/**
+	 * Advance this time to the next occurance of the mSol. If the time is already after the mSol, then advance to the next sol.
+	 * @param mSol the mSol for the future time (e.g. 0 for midnight, 500 for midday)
+	 * @return the new time
+	 */
+    public MarsTime advanceToNextMSol(int mSol) {
+        if (millisol < mSol) {
+			// Advance in the same sol
+			return new MarsTime(orbit, month, solOfMonth, mSol, missionSol);
+		} else {
+			return addTime((1000D - millisol) + mSol);
+		}
+    }
+
+	/**
 	 * Gets the Mars date element of this timestamp.
 	 * 
 	 * @return

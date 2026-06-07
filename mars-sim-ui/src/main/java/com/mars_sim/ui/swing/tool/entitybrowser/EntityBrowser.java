@@ -38,8 +38,8 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.tool.MapSelector;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 /**
  * The Entity Browser is for exploring entities. It uses dynamic loading to avoid long load times and excessive memory consumption.
@@ -83,7 +83,7 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
     private DefaultMutableTreeNode globalNode;
 
     public EntityBrowser(UIContext context) {
-        super(NAME, "Entity Browser", Placement.LEFT);
+        super(NAME, TITLE, Placement.LEFT);
 
         this.context = context;
         this.scienceMgr = context.getSimulation().getScientificStudyManager();
@@ -115,9 +115,8 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
         // List for new Settlements
         unitManager.addEntityManagerListener(UnitType.SETTLEMENT, this);
 
-        var dims = new Dimension(250, 400);
-        setMinimumSize(dims);
-        setPreferredSize(dims);
+        setMinimumSize(new Dimension(250, 200));
+        setPreferredSize(new Dimension(250, 300));
     }
 
     private void buildUI(JPanel mainPane, DefaultTreeModel model) {
@@ -322,12 +321,12 @@ public class EntityBrowser extends ContentPanel implements EntityManagerListener
             case VEHICLE -> settlement.getAllAssociatedVehicles();
             case CONSTRUCTION -> settlement.getConstructionManager().getConstructionSites();
             case BUILDING -> settlement.getBuildingManager().getBuildingSet();
-            case MISSION -> context.getSimulation().getMissionManager().getMissionsForSettlement(settlement);
+            case MISSION -> settlement.getMissionControl().getActiveMissions();
             case SCIENTIFIC_STUDY -> scienceMgr.getAllStudies(settlement);
             case TRANSPORT -> {
                         if (settlement == null) {
                             yield transportMgr.getTransportItems().stream()
-                                                .filter(it -> it instanceof ArrivingSettlement)
+                                                .filter(ArrivingSettlement.class::isInstance)
                                                 .filter(as -> as.getTransitState() != TransitState.ARRIVED)
                                                 .toList();
                         }

@@ -16,9 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.Simulation;
-import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.config.BuildingSpec;
@@ -55,16 +54,12 @@ import com.mars_sim.core.building.function.farming.Fishery;
 import com.mars_sim.core.building.task.MaintainBuilding;
 import com.mars_sim.core.building.utility.heating.ThermalGeneration;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
-import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.environment.MeteoriteImpactProperty;
 import com.mars_sim.core.equipment.ItemHolder;
 import com.mars_sim.core.equipment.ResourceHolder;
-import com.mars_sim.core.events.HistoricalEvent;
-
 import com.mars_sim.core.events.HistoricalEventManager;
-import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
@@ -108,6 +103,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	// Assuming 20% chance for each person to witness or be conscious of the
 	// meteorite impact in an affected building
 	private static final double METEORITE_IMPACT_PROBABILITY_AFFECTED = 20;
+	
+    public static final String POWER_MODE_EVENT = "power mode";
 
 	// Data members
 	/** The flag to track if the impact is immientnt for the current sol. */
@@ -120,7 +117,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private int zone;
 	/** The base level for this building. -1 for in-ground, 0 for above-ground. */
 	private int baseLevel;
-
+	/** The power priority number for this building. */
+	private int powerPriority;
+	
 	/** Default : 22.5 deg celsius. */
 	private double presetTemperature = 0; //22.5D
 	private double width;
@@ -130,8 +129,8 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double floorArea;
 	private double areaFactor;
 	private double facing;
-	private double baseFullPowerRequirement;
-	private double baseLowPowerRequirement;
+	private double baseFullPowerLoad;
+	private double baseLowPowerLoad;
 	private double powerNeededForEVAHeater;
 	
 	/** Unique template id assigned for the settlement template of this building belong. */
@@ -235,8 +234,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 		setDescription(buildingSpec.getDescription());
 
 		// Get base power requirements.
-		baseFullPowerRequirement = buildingSpec.getBasePowerRequirement();
-		baseLowPowerRequirement = buildingSpec.getBasePowerDownPowerRequirement();
+		powerPriority = buildingSpec.getPowerPriority();
+		baseFullPowerLoad = buildingSpec.getBaseFullPower();
+		baseLowPowerLoad = buildingSpec.getBaseLowPower();
 
 		// Set room temperature
 		presetTemperature = buildingSpec.getPresetTemperature();
@@ -282,6 +282,10 @@ public class Building extends FixedUnit implements Malfunctionable,
 		return category;
 	}
 
+	public int getPowerPriority() {
+		return powerPriority;
+	}
+	
 	/**
 	 * Gets the preset temperature of a building.
 	 *
@@ -667,16 +671,16 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets the total power requirement for full-power mode on all functions.
+	 * Gets the total power load for full-power mode on all functions.
 	 *
 	 * @return power in kW.
 	 */
-	public double getFullPowerRequired() {
-		double result = baseFullPowerRequirement;
+	public double getFullPowerLoad() {
+		double result = baseFullPowerLoad;
 
 		// Determine power required for each function.
 		for (Function function : getFunctions()) {
-			double power = function.getFullPowerRequired();
+			double power = function.getFullPowerLoad();
 			if (power > 0) {
 				result += power;
 			}
@@ -686,22 +690,40 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets the total power requirement for full-power mode on all functions.
+	 * Gets the total low power load.
 	 *
 	 * @return power in kW.
 	 */
-	public double getCombinedPowerLoad() {
-		double result = baseFullPowerRequirement;
+	public double getLowPowerLoad() {
+		double result = baseLowPowerLoad;
 
 		// Determine power required for each function.
 		for (Function function : getFunctions()) {
-			double power = function.getCombinedPowerLoad();
+			double power = function.getLowPowerLoad(); // getCombinedPowerLoad();
 			if (power > 0) {
 				result += power;
 			}
 		}
 
-		return result + powerNeededForEVAHeater;
+		return result;
+	}
+	
+	/**
+	 * Gets the total power load for current mode on all functions.
+	 *
+	 * @return power in kW.
+	 */
+	public double getCurrentPowerLoad() {
+		double result = 0;
+		
+		if (powerModeCache == PowerMode.FULL_POWER) {
+			result = getFullPowerLoad();
+		}
+		else if (powerModeCache == PowerMode.LOW_POWER) {
+			result = getLowPowerLoad();
+		}
+
+		return result;
 	}
 	
 	/**
@@ -721,22 +743,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 
 		return result;
 	}
-	
-	/**
-	 * Gets the total power requirement for low-power mode on all functions.
-	 *
-	 * @return power in kW.
-	 */
-	public double getLowPowerRequired() {
-		double result = baseLowPowerRequirement;
-
-		// Determine power required for each function.
-		for (Function function : getFunctions()) {
-			result += function.getLowPowerRequired();
-		}
-
-		return result;
-	}
 
 	/**
 	 * Gets the building's power mode.
@@ -751,7 +757,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	public void setPowerMode(PowerMode powerMode) {
 		if (powerModeCache != powerMode) {
 			powerModeCache = powerMode;
-			fireUnitUpdate(PowerGrid.POWER_MODE_EVENT, this);
+			fireUnitUpdate(POWER_MODE_EVENT, this);
 		}
 	}
 
@@ -1394,21 +1400,6 @@ public class Building extends FixedUnit implements Malfunctionable,
 			} // check if this person happens to be inside the affected building
 			
 		} // loop for persons
-		
-
-		if (victimNames == null)
-			victimNames = "";
-			
-		// Pick the last person who witness this event in the affected building. Could be no one.
-		HistoricalEvent hEvent = new HistoricalEvent(HistoricalEventType.HAZARD_ACTS_OF_GOD,
-								this, mal.getMalfunctionMeta().getName(),
-					 "", victimNames,
-								this, getAssociatedSettlement());
-
-		if (eventManager == null)
-			eventManager = Simulation.instance().getEventManager();
-		
-		eventManager.registerNewEvent(hEvent);
 
 		fireUnitUpdate(EntityEventType.METEORITE_EVENT);
 	}
@@ -1419,7 +1410,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double getWallThickness() {
 		return switch(constructionType) {
 			case PRE_FABRICATED 	-> 0.000_025_4;
-			case INFLATABLE 		-> 0.000_001_8;
+			case INFLATABLE 		-> 0.000_005_8;
 			case SEMI_ENGINEERED 	-> 0.000_010_0;
 			default -> 0;
 		};

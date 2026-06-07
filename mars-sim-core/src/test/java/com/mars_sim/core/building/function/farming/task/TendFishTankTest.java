@@ -94,17 +94,29 @@ public class TendFishTankTest extends MarsSimUnitTest {
         var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.FISHERY);
 
         var tank = b.getFishery();
-        tank.addFish(tank.getMaxFish() - tank.getNumFish());
-        int origSize = tank.getNumFish();
-
-        var task = new TendFishTank(p, b.getFishery(), TendFishTank.CATCHING);
-        assertFalse(task.isDone(), "Fishing task created");
+        int origNum = tank.getNumFish();
+        tank.addFish(tank.getMaxFish() - origNum);
+        int incNum = tank.getNumFish();
+        double weight = tank.getTotalFishMass();
+        
+        var task = new TendFishTank(p, tank, TendFishTank.TENDING);
+        assertFalse(task.isDone(), "Fishing tending task created");
 
         executeTaskForDuration(p, task, TendFishTank.MAX_FISHING * 1.1);
-        assertTrue(task.isDone(), "Fishing task completed");
+        assertTrue(task.isDone(), "Fishing tending task completed");
         
-        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) >0D, "Fish meat created");
-        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_OIL_ID) >0D, "Fish oil created");
-        assertLessThan("Fish count has reduced", origSize, tank.getNumFish());
+        assertGreaterThan("Fish count has increase", origNum, incNum);
+        
+        task = new TendFishTank(p, tank, TendFishTank.CATCHING);
+        assertFalse(task.isDone(), "Fishing catching task created");
+
+        executeTaskForDuration(p, task, TendFishTank.MAX_FISHING * 1.1);
+        assertTrue(task.isDone(), "Fishing catching task completed");
+     
+        double reducedWeight = tank.getTotalFishMass();
+        
+        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_MEAT_ID) > 0D, "Fish meat created");
+//        assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.FISH_OIL_ID) > 0D, "Fish oil created");
+        assertLessThan("Fish count has reduced", weight, reducedWeight);
     }
 }

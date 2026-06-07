@@ -42,6 +42,7 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.MaintenanceScope;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resource.SuppliesManifest;
 import com.mars_sim.core.robot.Robot;
@@ -119,7 +120,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	private int lastResourceCheck = 0;
 	
 	/** Vehicle traveled distance at start of mission. */
-	private double startingTravelledDistance = 0D;
+//	private double startingTravelledDistance = 0D;
 	/** Total traveled distance. */
 	private double distanceTravelled = 0D;
 	/** The estimated total distance for this mission. */
@@ -219,7 +220,6 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		}
 		else {
 			// Set initial mission phase.
-			createDesignationString();
 			startLoadingPhase();
 		}
 
@@ -319,7 +319,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	protected void setVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
 			vehicle = newVehicle;
-			startingTravelledDistance = vehicle.getOdometerMileage();
+//			startingTravelledDistance = vehicle.getOdometerMileage();
 			claimVehicle(vehicle);
 		}
 		else {
@@ -483,7 +483,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				vehicle.setEmergencyBeacon(true);
 		
 				// Creating mission emergency beacon event.
-				registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
+				registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason.getName());
 			}
 		}
 
@@ -1140,50 +1140,51 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			int id = entry.getKey();
 			Object value = entry.getValue();
 
-			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			switch(ResourceType.getType(id)) {
+				case ResourceType.AMOUNT_RESOURCE: {
+					double amount = (Double) value;
+					double amountStored = vehicle.getSpecificAmountResourceStored(id);
 
-				double amount = (Double) value;
-				double amountStored = vehicle.getSpecificAmountResourceStored(id);
-
-				// Check inside vehicle
-				if (VehicleType.isRover(vehicle.getVehicleType())) {
-					Rover rover = (Rover) vehicle;
-					// Check people's possession
-					for (Person person: rover.getCrew()) {
-						amountStored += person.getSpecificAmountResourceStored(id);
+					// Check inside vehicle
+					if (VehicleType.isRover(vehicle.getVehicleType())) {
+						Rover rover = (Rover) vehicle;
+						// Check people's possession
+						for (Person person: rover.getCrew()) {
+							amountStored += person.getSpecificAmountResourceStored(id);
+						}
+						// Check vehicle's equipment
+						for (Equipment equipment: rover.getContainerSet()) {
+							amountStored += equipment.getSpecificAmountResourceStored(id);
+						}
 					}
-					// Check vehicle's equipment
-					for (Equipment equipment: rover.getContainerSet()) {
-						amountStored += equipment.getSpecificAmountResourceStored(id);
+					
+					if (amountStored < amount) {
+						String newLog = "Not enough "
+								+ ResourceUtil.findAmountResourceName(id) + " to continue with "
+								+ getName() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
+								+ Math.round(amountStored * 100D) / 100D + " kg.";
+						logger.log(vehicle, Level.WARNING, 10_000, newLog);
+						return id;
 					}
-				}
+					} break;
 				
-				if (amountStored < amount) {
-					String newLog = "Not enough "
-							+ ResourceUtil.findAmountResourceName(id) + " to continue with "
-							+ getName() + " - Required: " + Math.round(amount * 100D) / 100D + " kg - Vehicle stored: "
-							+ Math.round(amountStored * 100D) / 100D + " kg.";
-					logger.log(vehicle, Level.WARNING, 10_000, newLog);
-					return id;
-				}
+				case ResourceType.ITEM_RESOURCE: {
+					int num = (Integer) value;
+					int numStored = vehicle.getItemResourceStored(id);
+
+					if (numStored < num) {
+						String newLog = "Not enough "
+								+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
+								+ getName() + " - Required: " + num + " - Vehicle stored: " + numStored + ".";
+						logger.log(vehicle, Level.WARNING, 10_000,  newLog);
+						return id;
+					}
+					} break;
+
+				default:
+					logger.warning(vehicle, "Phase: " + getPhase() + ": unable to process the resource '"
+								+ GoodsUtil.getGood(id) + "'.");
 			}
-
-			else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-				int num = (Integer) value;
-				int numStored = vehicle.getItemResourceStored(id);
-
-				if (numStored < num) {
-					String newLog = "Not enough "
-							+ ItemResourceUtil.findItemResource(id).getName() + " to continue with "
-							+ getName() + " - Required: " + num + " - Vehicle stored: " + numStored + ".";
-					logger.log(vehicle, Level.WARNING, 10_000,  newLog);
-					return id;
-				}
-			}
-
-			else
-				logger.warning(vehicle, "Phase: " + getPhase() + ": unable to process the resource '"
-						+ GoodsUtil.getGood(id) + "'.");
 		}
 		return -1;
 	}
@@ -1233,7 +1234,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 				
 				// Creating emergency destination mission event for going to a new settlement.
 				if (!newDestination.equals(oldHome)) {
-					registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_EMERGENCY_DESTINATION, reason.getName());
+					registerHistoricalEvent(newDestination, HistoricalEventType.MISSION_EMERGENCY_DESTINATION, reason.getName());
 				}
 			}
 			// Note: for Drone mission, Will need to alert the player differently if it runs out of fuel
@@ -1259,7 +1260,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	public void setEmergencyBeacon(Worker member, Vehicle vehicle, boolean beaconOn, String reason) {
 
 		if (beaconOn) {
-			registerHistoricalEvent(member, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason);
+			registerHistoricalEvent(vehicle, HistoricalEventType.MISSION_EMERGENCY_BEACON_ON, reason);
 			logger.info(vehicle, member.getName()
 					+ " activated emergency beacon.");
 		} else {
@@ -1378,7 +1379,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		while (i.hasNext()) {
 			Integer id = i.next();
 			// Check if it's an amount resource that can be stored inside
-			if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			if (ResourceType.getType(id) == ResourceType.AMOUNT_RESOURCE) {
 				double amount = (double) optionalResources.get(id);
 
 				// Obtain a container for storing the amount resource
@@ -1992,7 +1993,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 			if (distanceProposed != result) {
 				// Record the distance
 				distanceProposed = result;
-				
+				// Update the distance event
 				fireMissionUpdate(DISTANCE_EVENT);	
 			}
 		}
@@ -2035,7 +2036,7 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 		if (distanceTotalRemaining != total) {
 			// Record the distance
 			distanceTotalRemaining = total;
-			
+			// Update the distance event
 			fireMissionUpdate(DISTANCE_EVENT);
 		}
 		
@@ -2070,16 +2071,22 @@ public abstract class AbstractVehicleMission extends AbstractMission implements 
 	 */
 	private double computeTotalDistanceTravelled() {
 		if (vehicle != null) {
-			double diff = vehicle.getOdometerMileage() - startingTravelledDistance;
-			if (diff != distanceTravelled) {
-				// Update or record the distance
-				distanceTravelled = diff;
+			double newDist = navPoints.stream()
+	                 .mapToDouble(NavPoint::getActualTravelled)
+	                 .sum();
+					
+			if (newDist != distanceTravelled) {
+				// Record the distance
+				distanceTravelled = newDist;
+				// Update the distance event
 				fireMissionUpdate(DISTANCE_EVENT);
-				return diff;
 			}
+			
+
+			return newDist;
 		}
 
-		return distanceTravelled;
+		return 0;
 	}
 
 	/**

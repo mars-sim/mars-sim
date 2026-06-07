@@ -34,7 +34,7 @@ import javax.swing.table.TableCellRenderer;
 
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.ColumnSpecHelper;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 
 
 /**

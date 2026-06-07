@@ -333,7 +333,7 @@ public class DriveGroundVehicle extends OperateVehicle {
 	 */
 	protected void updateVehicleElevationAltitude() {
 		// Update vehicle elevation.
-		((GroundVehicle) getVehicle()).setElevation(getGroundElevation());
+		getVehicle().setElevation(getGroundElevation());
 	}
 
 	/**

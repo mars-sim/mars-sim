@@ -30,7 +30,7 @@ public class BuildingConfigTest {
     public static FunctionSpec getLifeSupportSpec() {
 		if (lifeSupportSpec == null) {
 			
-			lifeSupportSpec = new FunctionSpec(FunctionType.LIFE_SUPPORT, Map.of(BuildingConfig.POWER_REQUIRED, 1D,
+			lifeSupportSpec = new FunctionSpec(FunctionType.LIFE_SUPPORT, Map.of(BuildingConfig.BASE_POWER, 1D,
 													  FunctionSpec.CAPACITY, 10),
 														null);
 		}

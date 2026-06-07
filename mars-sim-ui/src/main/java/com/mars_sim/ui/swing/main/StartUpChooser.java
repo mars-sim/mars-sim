@@ -160,7 +160,7 @@ public class StartUpChooser extends JDialog {
 		
         add(contentPanel);
 
-        JLabel instructions = new JLabel(Msg.getString("StartUpChooser.instructions"));
+        JLabel instructions = new JLabel(Msg.getString("StartUpChooser.instructions")); // -NLS-1$
         instructions.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
                             BorderFactory.createEmptyBorder(2, 2, 2, 2)));
         instructions.setHorizontalAlignment(SwingConstants.CENTER);
@@ -189,6 +189,7 @@ public class StartUpChooser extends JDialog {
         addStartButton(buttonPanel, "loadScenario", e -> selectScenario());
         addStartButton(buttonPanel, "loadTemplate", e -> selectTemplate());
         addStartButton(buttonPanel, "editScenario", e -> choiceMade(EDIT_SCENARIO));
+        addStartButton(buttonPanel, "exit", e -> choiceMade(EXIT));
         
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 120)));
         
@@ -312,24 +313,19 @@ public class StartUpChooser extends JDialog {
         		
         content.add(SelectionDialog.createComboPane(templateLabel, templateConfig.getKnownItems(),
                                                 s -> selectedTemplate = s));
-        content.add(SelectionDialog.createComboPane(Msg.getString("StartUpChooser.authority"), authorityConfig.getKnownItems(),
+        content.add(SelectionDialog.createComboPane(Msg.getString("authority.singular"), authorityConfig.getKnownItems(),
                                                 s -> selectedAuthority = s));
         if (SelectionDialog.showDialog(this, content, templateLabel)) {
             choiceMade(TEMPLATE);
         }
-        else {
-        	choiceMade(EXIT);
-        }
     }
 
     private void selectScenario() {
-        var content = SelectionDialog.createComboPane(scenarioLabel, scenarioConfig.getKnownItems(), s -> selectedScenario = s);
+        var content = SelectionDialog.createComboPane(scenarioLabel, 
+        		scenarioConfig.getKnownItems(), s -> selectedScenario = s);
 
         if (SelectionDialog.showDialog(this, content, scenarioLabel)) {
             choiceMade(SCENARIO);
-        }
-        else {
-        	choiceMade(EXIT);
         }
     }
 
@@ -344,9 +340,6 @@ public class StartUpChooser extends JDialog {
 			selectedFile = chooser.getSelectedFile().getAbsolutePath();
             choiceMade(LOAD_SIM);
 		}
-        else {
-        	choiceMade(EXIT);
-        }
 	}
 
     private synchronized void choiceMade(int choice) {

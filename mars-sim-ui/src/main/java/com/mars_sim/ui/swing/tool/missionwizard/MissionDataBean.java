@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.environment.MineralSite;
 import com.mars_sim.core.goods.Good;
@@ -122,8 +121,7 @@ class MissionDataBean {
 			default -> throw new IllegalStateException("Mission type: " + type + " unknown");
 		}
 
-		var missionManager = Simulation.instance().getMissionManager();
-	    missionManager.addMission(mission);
+	    startingSettlement.getMissionControl().addMission(mission);
 
 		return mission;
 	}

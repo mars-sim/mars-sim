@@ -34,12 +34,13 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.TableModelUpdater;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * Tab panel for assigned mission members and Vehicles.
@@ -84,13 +85,13 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		
 		// Prepare attribute panel.
 		AttributePanel attributePanel = new AttributePanel();
-        attributePanel.setBorder(StyleManager.createLabelBorder(Msg.getString("vehicle.singular")));
+        attributePanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("vehicle.singular")));
 
 		attributePanel.addLabelledItem(Msg.getString("entity.name"), new EntityLabel(v, getContext()));
 		vehicleStatusLabel = attributePanel.addTextField(Msg.getString("vehicle.status"), "", null);
 		speedLabel = new JDoubleLabel(StyleManager.DECIMAL_KPH, 0, 0.01D);
         attributePanel.addLabelledItem(Msg.getString("vehicle.speed"), speedLabel);
-		distanceNextNavLabel = new JDoubleLabel(StyleManager.DECIMAL_KM, 0, 0.01D);
+		distanceNextNavLabel = new JDoubleLabel(StyleManager.DECIMAL2_KM, 0, 0.01D);
         attributePanel.addLabelledItem(Msg.getString("MainDetailPanel.distanceNextNavPoint"), distanceNextNavLabel);
 		
         traveledLabel = attributePanel.addTextField(Msg.getString("MainDetailPanel.distanceTraveled"), "", null);
@@ -148,8 +149,8 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 		if (getEntity() instanceof VehicleMission vm) {
 			distanceNextNavLabel.setValue(vm.getDistanceCurrentLegRemaining());
 
-			double travelledDistance = Math.round(vm.getTotalDistanceTravelled()*10.0)/10.0;
-			double estTotalDistance = Math.round(vm.getTotalDistanceProposed()*10.0)/10.0;
+			double travelledDistance = Math.round(vm.getTotalDistanceTravelled()*100.0)/100.0;
+			double estTotalDistance = Math.round(vm.getTotalDistanceProposed()*100.0)/100.0;
 			traveledLabel.setText(Msg.getString("MainDetailPanel.kmTraveled", //$NON-NLS-1$
 					travelledDistance,
 					estTotalDistance
@@ -177,6 +178,7 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 	/**
 	 * Table model for mission members.
 	 */
+	@SuppressWarnings("serial")
 	private static class MemberTableModel extends AbstractTableModel implements EntityListener, EntityModel {
 
 		private static final String NAME = Msg.getString("entity.name");

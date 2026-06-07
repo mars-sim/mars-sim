@@ -107,7 +107,8 @@ public class BuildingUnitWindow extends EntityContentPanel<Building> {
     	 			break;
             }
         }
-        
+
 		applyProps(props);
+        activateListener();
     }
 }

@@ -71,6 +71,7 @@ public class PersonUnitWindow extends EntityContentPanel<Person>
 		addTabPanel(new TabPanelSocial(person, context));		
 
 		applyProps(props);
+		activateListener();
 	}
 	
 	@Override

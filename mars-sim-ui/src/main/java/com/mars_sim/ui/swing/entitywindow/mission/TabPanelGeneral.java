@@ -34,10 +34,10 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -237,8 +237,8 @@ class TabPanelGeneral extends EntityTabPanel<Mission> implements EntityListener 
 		var mission = getEntity();
 		MissionPlanning plan = mission.getPlan();
 		if ((plan != null) && plan.getStatus() == PlanType.PENDING) {
-			getContext().getSimulation().getMissionManager().approveMissionPlan(plan, (approved ?
-								PlanType.APPROVED : PlanType.NOT_APPROVED));
+			plan.setScore((approved ? plan.getPassingScore() + 10 : 0)); // Set score above or below passing score to ensure correct outcome
+			mission.getAssociatedSettlement().getMissionControl().reviewCompleted(plan);
 			updateFields(mission); // Force a full refresh
 		}
 	}

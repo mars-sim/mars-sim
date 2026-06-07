@@ -92,7 +92,7 @@ public class RatingLog {
      * @param options The options selected from
      */
     public static void logSelectedRating(String module, String selector,
-                        Rating selected, List<? extends Rating> options) {
+                        RatedActivity selected, List<? extends RatedActivity> options) {
         Set<String> selectors = modules.get(module);
 
         // Active if this module has selectors and the selectors are emtpy meaning match on module
@@ -137,7 +137,7 @@ public class RatingLog {
      * @param r Rating to be described
      * @return JSONLines fragment
      */
-    private static String ratingToJsonLines(RatingScore r) {
+    private static String ratingToJsonLines(Rating r) {
         StringBuilder output = new StringBuilder();
 
         output.append("{\"score\":").append(SCORE_FORMAT.format(r.getScore()));

@@ -18,7 +18,6 @@ import com.mars_sim.core.building.config.StorageSpec;
 import com.mars_sim.core.equipment.EquipmentInventory;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 
@@ -198,24 +197,24 @@ public class Storage extends Function {
 	/**
 	 * Stores a resource.
 	 *
-	 * @param amount
-	 * @param ar     {@link AmountResource}
-	 * @param inv    {@link Inventory}
-	 * @param method the name of the calling java method
+	 * @param amount Amount to store
+	 * @param id Id of the resource
+	 * @param b the building the resource is being stored in.
+	 * @param source the source of the resource (e.g. the name of the calling
 	 * @return true if it is being stored properly
 	 */
-	public static boolean storeAnResource(double amount, int id, ResourceHolder rh, String method) {
+	static boolean storeAnResource(double amount, int id, Building b, String source) {
 		boolean result = false;
 
 		if (amount > 0) {
-			
+			ResourceHolder rh = b.getSettlement();
 			double excess = rh.storeAmountResource(id, amount);
 			
 			if (excess == 0.0) {
 				return true;
 			}
 			else if (excess > 0) {
-				logger.log(rh, Level.INFO, 60_000, method
+				logger.log(b.getAssociatedSettlement(), Level.INFO, 60_000, source
 		    		+ "Storage full for "
 		    		+ ResourceUtil.findAmountResourceName(id) 
 		    		+ ". To store: "
@@ -230,10 +229,10 @@ public class Storage extends Function {
 			}
 		}
 		
-		else if (!method.equals("")) {
-			logger.log(rh, Level.SEVERE, 10_000,
+		else if (!source.equals("")) {
+			logger.log(b.getAssociatedSettlement(), Level.SEVERE, 10_000,
 				"Attempting to store non-positive amount of "
-				+ ResourceUtil.findAmountResourceName(id) + " at " + method);
+				+ ResourceUtil.findAmountResourceName(id) + " at " + source);
 		}
 
 		return result;
@@ -242,15 +241,16 @@ public class Storage extends Function {
 	/**
 	 * Retrieves a resource or test if a resource is available.
 	 *
-	 * @param requestedAmount
-	 * @param id
-	 * @param inv
-	 * @param isRetrieving
+	 * @param amount Amount to retrieve.
+	 * @param id Id of the resource
+	 * @param b the building the resource is being retrieved from.
+	 * @param isRetrieving true if the resource is being retrieved, false if just testing if it is available.
 	 * @return true if the 'full' amount can be retrieved.
 	 */
-	public static boolean retrieveAnResource(double amount, int id, ResourceHolder rh, boolean isRetrieving) {
+	static boolean retrieveAnResource(double amount, int id, Building b, boolean isRetrieving) {
 		boolean result = false;
 		if (amount > 0) {
+			ResourceHolder rh = b.getSettlement();
 			double amountStored = rh.getSpecificAmountResourceStored(id);
 
 			if (amountStored < 0.00001) {
@@ -261,7 +261,7 @@ public class Storage extends Function {
 				if (isRetrieving) {
 					rh.retrieveAmountResource(id, amount);
 				}
-				logger.warning(rh, 30_000,
+				logger.warning(b.getAssociatedSettlement(), 30_000,
 						"Ran out of "
 						+ ResourceUtil.findAmountResourceName(id) + "."
 						);
@@ -276,7 +276,7 @@ public class Storage extends Function {
 		}
 		else {
 			result = false;
-			logger.severe(rh, 10_000,
+			logger.severe(b.getAssociatedSettlement(), 10_000,
 					"Attempting to retrieve non-positive amount of "
 					+ ResourceUtil.findAmountResourceName(id));
 		}

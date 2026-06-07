@@ -5,15 +5,15 @@
 	<parent>
 		<groupId>com.mars-sim</groupId>
 		<artifactId>mars-sim</artifactId>
-		<version>3.11.0</version>
+		<version>4.1</version>
 	</parent>
 	<artifactId>mars-sim-ui</artifactId>
 	<name>mars-sim-ui</name>
 	<properties>
-		<flatlaf.version>3.7</flatlaf.version>
+		<flatlaf.version>3.7.1</flatlaf.version>
 		<jfreechart.version>1.5.6</jfreechart.version>
 		<jide-oss.version>3.7.15</jide-oss.version>
-		<modern-docking.version>1.4.2</modern-docking.version>
+		<modern-docking.version>1.4.8</modern-docking.version>
 
 		<mainClass>com.mars_sim.ui.swing.main.MarsProject</mainClass>
 		<target.name>mars-sim-swing-${project.version}</target.name>
@@ -47,7 +47,7 @@
 		<dependency>
 		    <groupId>com.miglayout</groupId>
 		    <artifactId>miglayout-swing</artifactId>
-		    <version>11.4.2</version>
+		    <version>11.4.3</version>
 		</dependency>
 		<dependency>
 		    <groupId>io.github.parubok</groupId>
@@ -62,7 +62,7 @@
 		<dependency>
 		    <groupId>org.bidib.jbidib.eu.hansolo</groupId>
 		    <artifactId>SteelSeries</artifactId>
-		    <version>3.9.31.2</version>
+		    <version>3.9.31.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
@@ -125,7 +125,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.7.1</version>
+				<version>3.8.0</version>
 				<configuration>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>

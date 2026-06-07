@@ -15,7 +15,6 @@ import com.mars_sim.core.authority.Authority;
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplySchedule;
 import com.mars_sim.core.person.ai.shift.ShiftPattern;
-import com.mars_sim.core.robot.RobotTemplate;
 
 /**
  * This class defines a template for modeling the initial conditions and building configurations of a settlement. 
@@ -28,7 +27,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 
 	// Data members.
 	private int defaultPopulation;
-	private int defaultNumOfRobots;
 	
 	private String name;
 	private Authority sponsor;
@@ -42,8 +40,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	private boolean bundled;
 
 	private ShiftPattern shiftDefn;
-
-	private List<RobotTemplate> robots = new ArrayList<>();
 
 	private List<BuildingPlan> buildingPlans = new ArrayList<>();
 
@@ -62,14 +58,13 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	public SettlementTemplate(String name, String desription, boolean bundled,
 								Authority sponsor, ShiftPattern shiftDefn,
 								GroupActivitySchedule activitySchedule,
-								int defaultPopulation, int defaultNumOfRobots,
+								int defaultPopulation,
 								SettlementSupplies supplies) {
 		this.name = name;
 		this.description = desription;
 		this.bundled = bundled;
 		this.sponsor = sponsor;
 		this.defaultPopulation = defaultPopulation;
-		this.defaultNumOfRobots = defaultNumOfRobots;
 		this.shiftDefn = shiftDefn;
 		this.activitySchedule = activitySchedule;
 		this.supplies = supplies;
@@ -128,33 +123,6 @@ public class SettlementTemplate implements Serializable, UserConfigurable {
 	 */
 	public GroupActivitySchedule getActivitySchedule() {
 		return activitySchedule;
-	}
-
-	/**
-	 * Gets the default robot capacity of the template.
-	 * 
-	 * @return robot capacity.
-	 */
-	public int getDefaultNumOfRobots() {
-		return defaultNumOfRobots;
-	}
-
-	/**
-	 * Adds the robot template.
-	 * 
-	 * @param newRobot
-	 */
-	void addRobot(RobotTemplate newRobot) {
-		robots.add(newRobot);
-	}
-
-	/**
-	 * Gets a list of robot templates.
-	 * 
-	 * @return
-	 */
-	public List<RobotTemplate> getPredefinedRobots() {
-		return Collections.unmodifiableList(robots);
 	}
 
 	/**

@@ -14,6 +14,7 @@ import com.mars_sim.core.Simulation;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.History.HistoryItem;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.GroupActivityType;
 
@@ -73,12 +74,13 @@ public class Role implements Serializable {
 
 		if (newType != oldType) {
 			var home = person.getAssociatedSettlement();
+			var command = home.getChainOfCommand();
 
 			// Note : if this is a leadership role, only one person should occupy this position 
 			List<Person> predecessors = Collections.emptyList();
 			if (newType.isChief() || newType.isCouncil()) {
 				// Find a list of predecessors who are occupying this role
-				predecessors = home.getChainOfCommand().findPeopleWithRole(newType);
+				predecessors = command.findPeopleWithRole(newType);
 				if (!predecessors.isEmpty()) {
 					Person p = predecessors.get(0);
 					// Predecessors to seek for a new role to fill
@@ -94,14 +96,17 @@ public class Role implements Serializable {
 			roleType = newType;
 			roleHistory.add(roleType);
 			
-			if (home.getChainOfCommand() != null) {
-				// Check for null in case of maven test ConstructionMissionMetaTest
-				// Save the role in the settlement Registry
-				home.getChainOfCommand().registerRole(roleType);
-			}
+			// Save the role in the settlement Registry
+			command.registerRole(roleType);
 
 			// Records the role change and fire unit update
 			person.fireUnitUpdate(ROLE_EVENT, roleType);
+
+			// If a change then create event
+			if (oldType != null) {
+				person.registerHistoricalEvent(HistoricalEventType.CHANGE_ROLE, roleType.getName(),
+					null, null, null);
+			}
 
 			// For Council members being changed have a meeting
 			if (roleType.isCouncil() && !predecessors.isEmpty()

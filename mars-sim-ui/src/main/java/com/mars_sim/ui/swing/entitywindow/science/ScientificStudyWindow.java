@@ -38,6 +38,6 @@ public class ScientificStudyWindow extends EntityContentPanel<ScientificStudy> {
         addTabPanel(new TabPanelCollaborators(study, context));
 
         applyProps(props);
-    }   
-
+        activateListener();
+    }
 }

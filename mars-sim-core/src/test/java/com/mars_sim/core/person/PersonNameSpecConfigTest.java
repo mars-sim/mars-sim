@@ -17,6 +17,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.authority.NationSpec;
+import com.mars_sim.core.authority.NationSpecConfig;
 import com.mars_sim.core.tool.RandomUtil;
 
 public class PersonNameSpecConfigTest {

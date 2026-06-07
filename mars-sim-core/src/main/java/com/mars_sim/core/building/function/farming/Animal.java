@@ -27,7 +27,7 @@ public class Animal extends Organism {
 	/** default serial id. */
     private static final long serialVersionUID = 1L;
    // The period of time a fish can survive without eating
-   public static final double STARVING_SOL = 3000;
+   public static final double STARVING_MILLISOLS = 7000;
    private double needEachFrame;  // Amount of food needed (in ounces per frame)
    private double eatenThisFrame; // Ounces of food eaten so far this frame
    private double foodDelayTime; // The cumulative amount of time
@@ -95,7 +95,7 @@ public class Animal extends Organism {
    *   the total amount of food that this <CODE>Animal</CODE> needs to survive
    *   one frame (measured in ounces)
    **/
-   public double getNeed( )   
+   public double getNeed()   
    {
       return needEachFrame;
    }
@@ -122,28 +122,33 @@ public class Animal extends Organism {
    
    
    /**
-   * Simulate the passage in the life of this <CODE>Animal</CODE>.
-   * <b>Postcondition:</b>
-   *   The size of this <CODE>Animal</CODE> has been changed by its current 
-   *   growth rate. If the new size is less than or equal to zero, then 
-   *   <CODE>expire</CODE> is activated to set both size and growth rate to 
-   *   zero. Also, if this <CODE>Animal</CODE> has eaten less than its need 
-   *   over the past frame, then <CODE>expire</CODE> has been activated.
-   **/
-   public void growPerFrame(double time) 
-   {
-      super.growPerFrame(time);
-      foodDelayTime += time;
-      age += time;
-      // For each day
-      if (foodDelayTime > STARVING_SOL && eatenThisFrame < needEachFrame) {
-         foodDelayTime = foodDelayTime - STARVING_SOL;
-         // Set size and rate to zero
-    	 expire();
-         eatenThisFrame = 0;
-      }
+    * Simulate the passage in the life of this <CODE>Animal</CODE>.
+    * <b>Postcondition:</b>
+    *   The size of this <CODE>Animal</CODE> has been changed by its current 
+    *   growth rate. If the new size is less than or equal to zero, then 
+    *   <CODE>expire</CODE> is activated to set both size and growth rate to 
+    *   zero. Also, if this <CODE>Animal</CODE> has eaten less than its need 
+    *   over the past frame, then <CODE>expire</CODE> has been activated.
+    **/
+	public void growPerFrame(double time) {
+		if (eatenThisFrame < needEachFrame) {
+			foodDelayTime += time;
+	    }
+		else {
+			super.growPerFrame(time);
+		}
+      
+		age += time;
+      
+		if (foodDelayTime > STARVING_MILLISOLS) {
+			foodDelayTime = foodDelayTime - STARVING_MILLISOLS;
+			// Set size and rate to zero
+			expire();
+			eatenThisFrame = 0;
+		}
    }
 
+	
    public double getAge() {
 	   return age;
    }
@@ -155,7 +160,7 @@ public class Animal extends Organism {
    *   the ounces of food that this <CODE>Animal</CODE> still needs to survive 
    *   this frame (which is the total need minus the amount eaten so far).
    **/
-   public double stillNeed( )
+   public double stillNeed()
    {
       if (eatenThisFrame >= needEachFrame)
          return 0;

@@ -30,13 +30,13 @@ import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.tool.map.MapPanel;
 import com.mars_sim.ui.swing.tool.map.RoutePath;
 import com.mars_sim.ui.swing.tool.map.RoutePathLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 
@@ -111,17 +111,21 @@ class RoutePanel extends WizardStep<MissionDataBean> {
 		// Always add unit layer
 		mapPanel.addMapLayer(new UnitMapLayer(mapPanel));
 
+        // Focus on the starting settlement
+        var starting = state.getStartingSettlement();
+        mapPanel.showMap(starting.getCoordinates());
+
 		// Lastly add navpoint layer
 		navpointLayer = new RoutePathLayer(mapPanel);
 		mapPanel.addMapLayer(navpointLayer);
-        mapPanel.setMouseClickListener(c -> setPointSelection(c));
+        mapPanel.setMouseClickListener(this::setPointSelection);
 
         // Add a single route path that is a proxy to the leg model
         routePath = new RoutePathAdapter(state.getStartingSettlement().getCoordinates(), legTableModel);
         navpointLayer.addPath(routePath);
 
 		var mapPane = new JPanel(new BorderLayout());
-		mapPane.setBorder(SwingHelper.createLabelBorder("Route"));
+		mapPane.setBorder(SwingHelper.createLabelBorder("Proposed Route"));
         
 		var dims = new Dimension(10, 200);
 		mapPane.setPreferredSize(dims);

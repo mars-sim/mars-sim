@@ -25,16 +25,15 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The BuildingPanelThermal class is a building function panel representing 
  * the heat production of a settlement building.
  */
-@SuppressWarnings("serial")
 class BuildingPanelThermal
 extends EntityTabPanel<Building> implements TemporalComponent {
 
@@ -107,12 +106,12 @@ extends EntityTabPanel<Building> implements TemporalComponent {
 		if (furnace != null) {
 			
 			var airHeatSinkCache = furnace.getHeating().getAirHeatSink();
-			airHeatSinkLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, airHeatSinkCache);
+			airHeatSinkLabel = new JDoubleLabel(StyleManager.DECIMAL2_KW, airHeatSinkCache);
 			infoPanel.addLabelledItem(Msg.getString("BuildingPanelThermal.airHeatSink"), airHeatSinkLabel,
 								"The air heat sink of this building");
 	
 			var waterHeatSinkCache = furnace.getHeating().getWaterHeatSink();		
-			waterHeatSinkLabel = new JDoubleLabel(StyleManager.DECIMAL_KW, waterHeatSinkCache);
+			waterHeatSinkLabel = new JDoubleLabel(StyleManager.DECIMAL2_KW, waterHeatSinkCache);
 			infoPanel.addLabelledItem(Msg.getString("BuildingPanelThermal.waterHeatSink"), waterHeatSinkLabel,
 								"The water heat sink of this building");
 

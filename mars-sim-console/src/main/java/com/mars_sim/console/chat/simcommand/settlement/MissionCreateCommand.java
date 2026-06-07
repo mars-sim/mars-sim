@@ -63,27 +63,32 @@ public class MissionCreateCommand extends AbstractSettlementCommand {
 		}
 		Person leader = leaders.get(leaderNum);
 
-		int reviewChoice = CommandHelper.getOptionInput(context, List.of("Yes", "No"), "Request a review");
-		if (reviewChoice >= 0) {
+		int reviewChoice = CommandHelper.getYesNoInput(context, "Request a review");
+		if (reviewChoice != CommandHelper.CANCEL) {
 			// Create mission
-			var doReview = (reviewChoice == 0);
+			var doReview = (reviewChoice == CommandHelper.YES);
 			Mission newMission = choosen.constructInstance(leader, doReview);
 			if (newMission.isDone()) {
 				context.println("Mission failed to start " + newMission.getMissionStatus());
 			}
 			else {
 				context.println("Create Mission " + newMission.getName());
-				context.getSim().getMissionManager().addMission(newMission);
+				settlement.getMissionControl().addMission(newMission);
 
 				if (doReview) {
-					// Must still skip Preparing state
-					context.println("Mission plan requires review");
-					newMission.getPlan().setStatus(PlanType.PENDING);
+					var plan = newMission.getPlan();
+					if (plan == null) {
+						context.println("Mission does not have a plan to review");
+					}
+					else {
+						// Must still skip Preparing state
+						context.println("Mission plan requires review");
+						plan.setStatus(PlanType.PENDING);
+					}
 				}
 			}
 		}
 
 		return true;
 	}
-
 }

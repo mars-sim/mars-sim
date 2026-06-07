@@ -32,7 +32,7 @@ import com.mars_sim.core.metrics.MetricManager;
 import com.mars_sim.core.metrics.MetricManagerListener;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.components.NamedListCellRenderer;
+import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**

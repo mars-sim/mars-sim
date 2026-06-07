@@ -25,7 +25,6 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.CacheCreator;
@@ -40,13 +39,13 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * The TabPanelActivity is a tab panel for a person's current tasks and
@@ -334,7 +333,7 @@ public class TabPanelActivity extends EntityTabPanel<Worker>
 		// Task has changed so update the score
 		var scoreLabel = "Directly Assigned";
 		String scoreTooltip = null; 
-		RatingScore score = taskManager.getScore();
+		var score = taskManager.getScore();
 		if (score != null) {
 			scoreLabel = StyleManager.DECIMAL_PLACES2.format(score.getScore());
 			scoreTooltip = HTML + RatingScoreRenderer.getHTMLFragment(score) + END_HTML;

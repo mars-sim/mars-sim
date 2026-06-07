@@ -14,9 +14,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.UnitSet;
+import com.mars_sim.core.events.HistoricalEvent;
+import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.person.Person;
@@ -67,6 +72,8 @@ public abstract class MissionProject implements Mission {
             log.addEntry(activeStep.getDescription());
             stepStarted = log.getLastEntry().getTime();
             fireMissionUpdate(Mission.PHASE_EVENT, null);
+
+			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_PHASE, activeStep.getDescription());
         }
 
         @Override
@@ -111,12 +118,27 @@ public abstract class MissionProject implements Mission {
         this.maxMembers = maxMembers;
         this.minMembers = minMembers;
 
+        var names = leader.getAssociatedSettlement().getMissionControl().generateNames(type);
+        this.missionCallSign = names.callSign();
+        if (name == null) {
+            // Use default generated if no user name defined
+            name = names.name();
+        }
+        
         this.leader = leader;
         leader.setMission(this);
         this.log = new MissionLog();
         this.control = new MissionController(name);
+
+
     }
 
+    @Override
+    public EntityIdentifier getEntityIdentifier() {
+        return new EntityIdentifier("MISSION", getFullMissionDesignation(), 
+                Integer.toString(getAssociatedSettlement().getIdentifier()));
+    }
+    
     /**
      * Aborts the mission for a reason.
      * 
@@ -233,6 +255,21 @@ public abstract class MissionProject implements Mission {
     protected void stepCompleted(MissionStep ms) {
         // Do nothing
     }
+
+    	/**
+	 * Registers this historical mission event about a member.
+	 * 
+	 * @param affected the entity affected by the event
+	 * @param type the type of the historical event
+	 * @param message 	
+	 */
+	private void registerHistoricalEvent(Entity affected, HistoricalEventType type, String message) {
+		
+		// Creating mission joining event.
+		HistoricalEvent newEvent = new HistoricalEvent(type, this, getAssociatedSettlement(),
+														message, null, affected, null);
+		Simulation.instance().getEventManager().registerNewEvent(newEvent);
+	}
 
     /**
 	 * Checks to see if a member is capable of joining a mission.

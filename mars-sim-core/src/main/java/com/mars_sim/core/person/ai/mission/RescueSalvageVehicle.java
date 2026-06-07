@@ -7,21 +7,20 @@
 
 package com.mars_sim.core.person.ai.mission;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.mars_sim.core.Simulation;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
-import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
@@ -248,7 +247,7 @@ public class RescueSalvageVehicle extends RoverMission {
 		}
 
 		// Set mission event.
-		registerHistoricalEvent(member, HistoricalEventType.MISSION_RENDEZVOUS,
+		registerHistoricalEvent(vehicleTarget, HistoricalEventType.MISSION_RENDEZVOUS,
 								(objective.isRescue() ? "Rescue Stranded Vehicle" : "Salvage Vehicle"));
 	}
 
@@ -277,7 +276,7 @@ public class RescueSalvageVehicle extends RoverMission {
 
     	Malfunction serious = objective.getRecoverVehicle().getMalfunctionManager().getMostSeriousMalfunction();
 		if (serious != null) {
-			registerHistoricalEvent(getStartingPerson(), HistoricalEventType.MISSION_SALVAGE_VEHICLE, serious.getName());
+			registerHistoricalEvent(rover, HistoricalEventType.MISSION_SALVAGE_VEHICLE, serious.getName());
 		}
 	}
 
@@ -313,47 +312,33 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @return vehicle or null if none available.
 	 */
 	public static Vehicle findBeaconVehicle(Settlement settlement, double range) {
-		Vehicle result = null;
 		double halfRange = range / 2D;
 
-		Collection<Vehicle> emergencyBeaconVehicles = new ConcurrentLinkedQueue<>();
-		Collection<Vehicle> vehiclesNeedingRescue = new ConcurrentLinkedQueue<>();
+		List<Vehicle> vehiclesNeedingRescue = new ArrayList<>();
 
 		// Find all available vehicles.
-		for (Vehicle vehicle : unitManager.getVehicles()) {
+		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
 			if (vehicle.isBeaconOn() && (getRescueingVehicle(vehicle) == null)) {
-				emergencyBeaconVehicles.add(vehicle);
-
 				if (vehicle instanceof Crewable crew
 						&& (crew.getCrewNum() > 0 || crew.getRobotCrewNum() > 0)) {
+					// Has crew needing rescue, so add to front of list.
+					vehiclesNeedingRescue.add(0, vehicle);
+				}
+				else {
+					// No crew needing rescue, so add to end of list.
 					vehiclesNeedingRescue.add(vehicle);
-				}			
+				}		
 			}
 		}
 
-		// Check for vehicles with crew needing rescue first.
-		if (!vehiclesNeedingRescue.isEmpty()) {
-			Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), vehiclesNeedingRescue);
-			if (vehicle != null) {
-				double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
-				if (vehicleRange <= halfRange) {
-					result = vehicle;
-				}
+		// Check vehciles in order they were added
+		for(var potentialVehicle : vehiclesNeedingRescue) {
+			double vehicleRange = settlement.getCoordinates().getDistance(potentialVehicle.getCoordinates());
+			if (vehicleRange <= halfRange) {
+				return potentialVehicle;
 			}
 		}
-
-		// Check for vehicles needing salvage next.
-		if ((result == null) && (!emergencyBeaconVehicles.isEmpty())) {
-			Vehicle vehicle = findClosestVehicle(settlement.getCoordinates(), emergencyBeaconVehicles);
-			if (vehicle != null) {
-				double vehicleRange = settlement.getCoordinates().getDistance(vehicle.getCoordinates());
-				if (vehicleRange <= halfRange) {
-					result = vehicle;
-				}
-			}
-		}
-
-		return result;
+		return null;
 	}
 
 	/**
@@ -363,9 +348,9 @@ public class RescueSalvageVehicle extends RoverMission {
 	 * @return The vehcile doing the rescue
 	 */
 	public static Vehicle getRescueingVehicle(Vehicle vehicle) {
-		var mMgr = Simulation.instance().getMissionManager();
+		var mMgr = vehicle.getAssociatedSettlement().getMissionControl();
 
-		return mMgr.getMissions().stream()
+		return mMgr.getActiveMissions().stream()
 			.filter(RescueSalvageVehicle.class::isInstance)
 			.map(m -> (RescueSalvageVehicle)m)
 			.filter(mo -> (mo.objective != null
@@ -373,26 +358,6 @@ public class RescueSalvageVehicle extends RoverMission {
 			.map(tv -> tv.getVehicle())
 			.findAny()
 			.orElse(null);
-	}
-
-	/**
-	 * Gets the closest vehicle in a vehicle collection
-	 * 
-	 * @param location the location to measure from.
-	 * @param vehicles the vehicle collection.
-	 * @return closest vehicle.
-	 */
-	private static Vehicle findClosestVehicle(Coordinates location, Collection<Vehicle> vehicles) {
-		Vehicle closest = null;
-		double closestDistance = Double.MAX_VALUE;
-		for(Vehicle vehicle : vehicles) {
-			double vehicleDistance = location.getDistance(vehicle.getCoordinates());
-			if (vehicleDistance < closestDistance) {
-				closest = vehicle;
-				closestDistance = vehicleDistance;
-			}
-		}
-		return closest;
 	}
 
 	/**
@@ -424,24 +389,31 @@ public class RescueSalvageVehicle extends RoverMission {
 
 			for (var needed : rescueResources.entrySet()) {
 				var id = needed.getKey();
-				if (id < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
-					double amount = (Double) needed.getValue();
-					if (useBuffer) {
-						amount *= RESCUE_RESOURCE_BUFFER;
-					}
-					if (result.containsKey(id)) {
-						amount += (Double) result.get(id);
-					}
+				switch(ResourceType.getType(id)) {
+					case ResourceType.AMOUNT_RESOURCE: {
+						double amount = (Double) needed.getValue();
+						if (useBuffer) {
+							amount *= RESCUE_RESOURCE_BUFFER;
+						}
+						if (result.containsKey(id)) {
+							amount += (Double) result.get(id);
+						}
 
-					result.put(id, amount);
-					
-				}  // Check if these resources are Parts
-				else if (id < ResourceUtil.FIRST_VEHICLE_RESOURCE_ID) {
-					int num = (Integer) needed.getValue();
-					if (result.containsKey(id)) {
-						num += (Integer) result.get(id);
-					}
-					result.put(id, num);
+						result.put(id, amount);
+						
+					} break;
+
+					// Check if these resources are Parts
+					case ResourceType.ITEM_RESOURCE: {
+						int num = (Integer) needed.getValue();
+						if (result.containsKey(id)) {
+							num += (Integer) result.get(id);
+						}
+						result.put(id, num);
+					} break;
+
+					default: // Do nothing
+						break;
 				}
 			}
 		}
@@ -464,35 +436,5 @@ public class RescueSalvageVehicle extends RoverMission {
 		}
 		
 		return result;
-	}
-
-
-	/**
-	 * Checks if this is the closest settlement to a beacon vehicle that could
-	 * rescue/salvage it.
-	 * 
-	 * @param thisSettlement this settlement.
-	 * @param thisVehicle    the beacon vehicle.
-	 * @return true if this is the closest settlement.
-	 * @throws MissionException if error in checking settlements.
-	 */
-	public static boolean isClosestCapableSettlement(Settlement thisSettlement, Vehicle thisVehicle) {
-
-		double distance = thisSettlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
-
-		for(Settlement settlement : unitManager.getSettlements()) {
-			if (!settlement.equals(thisSettlement)) {
-				double settlementDistance = settlement.getCoordinates().getDistance(thisVehicle.getCoordinates());
-				if ((settlementDistance < distance) && (settlement.getIndoorPeopleCount() >= MIN_GOING_MEMBERS)) {
-					for(Vehicle vehicle : settlement.getParkedGaragedVehicles()) {
-						if (vehicle instanceof Rover && vehicle.getEstimatedRange() >= (settlementDistance * 2D)) {
-							return false;
-						}
-					}
-				}
-			}
-		}
-
-		return true;
 	}
 }

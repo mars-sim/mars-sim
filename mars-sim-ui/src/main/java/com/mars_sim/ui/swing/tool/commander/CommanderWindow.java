@@ -78,12 +78,12 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.JComboBoxMW;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.JComboBoxMW;
 import com.mars_sim.ui.swing.tool.SmartScroller;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -259,7 +259,7 @@ public class CommanderWindow extends ContentPanel {
 				
 		// Create content panel.
 		JPanel mainPane = new JPanel(new BorderLayout());
-		mainPane.setBorder(StyleManager.newEmptyBorder());
+		mainPane.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 		add(mainPane);
 
 		JPanel topPane = new JPanel(new FlowLayout());
@@ -1197,7 +1197,7 @@ public class CommanderWindow extends ContentPanel {
 
 	    JLabel label = new JLabel("Task Queue", SwingConstants.CENTER);
 		StyleManager.applySubHeading(label);
-		label.setBorder(new MarsPanelBorder());
+		label.setBorder(SwingHelper.createEtchedBorder());
 
 	    JPanel taskQueuePanel = new JPanel(new BorderLayout());
 	    taskQueuePanel.add(label, BorderLayout.NORTH);
@@ -1236,7 +1236,7 @@ public class CommanderWindow extends ContentPanel {
 
 		JLabel logLabel = new JLabel("Log Book", SwingConstants.CENTER);
 		StyleManager.applySubHeading(logLabel);
-		logLabel.setBorder(new MarsPanelBorder());
+		logLabel.setBorder(SwingHelper.createEtchedBorder());
 
 	    JPanel logPanel = new JPanel(new BorderLayout());
 	    logPanel.add(logLabel, BorderLayout.NORTH);

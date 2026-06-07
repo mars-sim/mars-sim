@@ -18,9 +18,9 @@ import javax.swing.event.DocumentListener;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
@@ -54,7 +54,7 @@ public class NotesTabPanel extends EntityTabPanel<Unit> {
 
 		// Create notes panel
 		JPanel notesPanel = new JPanel(new BorderLayout(5, 5));
-		notesPanel.setBorder(new MarsPanelBorder());
+		notesPanel.setBorder(SwingHelper.createEtchedBorder());
 		notesPanel.setBorder(new EmptyBorder(1, 1, 1, 1));
 		content.add(notesPanel, BorderLayout.CENTER);
 		

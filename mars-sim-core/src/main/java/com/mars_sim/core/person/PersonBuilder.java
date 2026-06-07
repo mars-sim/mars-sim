@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.mars_sim.core.authority.Authority;
+import com.mars_sim.core.authority.NationSpec;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.ai.SkillManager;

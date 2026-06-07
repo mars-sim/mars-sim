@@ -143,6 +143,6 @@ public class RobotSpec implements Serializable {
 	 * @return
 	 */
     public String getName() {
-		return robotType.getName() + " " + makeModel;
+		return robotType.getName() + "-" + makeModel;
     }
 }

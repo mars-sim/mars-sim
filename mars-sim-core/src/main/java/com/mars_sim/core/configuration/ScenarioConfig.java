@@ -49,7 +49,6 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	private static final String LOCATION_EL = "location";
 	private static final String COORDINATE_ATTR = "coordinates";	
 	private static final String PERSONS_ATTR = "persons";
-	private static final String ROBOTS_ATTR = "robots";
 	private static final String SPONSOR_ATTR = "sponsor";
 	private static final String SCENARIO_CONFIG = "scenario-configuration";
 	private static final String ARRIVING_SETTLEMENT_LIST = "arriving-settlement-list";
@@ -59,8 +58,15 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	
 	// Default scenario
 	public static final String DEFAULT_SCENARIO = "Default";
-	private static final String[] PREDEFINED_SCENARIOS = {DEFAULT_SCENARIO, "Single Settlement"};
+	private static final String[] PREDEFINED_SCENARIOS = {DEFAULT_SCENARIO, 
+															"Single Settlement",
+															"Two Settlements"};
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param config
+	 */
 	public ScenarioConfig(SimulationConfig config) {
 		super(PREFIX);
 
@@ -71,7 +77,7 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 
 	/**
-	 * Generate an export of a Scenario including any custom UserConfigurables
+	 * Generates an export of a Scenario including any custom UserConfigurables
 	 * 
 	 * @param item
 	 * @return Items exported
@@ -122,7 +128,8 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 	}
 
 	/**
-	 * Add unbundled ReportingAuthority to the list
+	 * Adds unbundled ReportingAuthority to the list.
+	 * 
 	 * @param raFactory
 	 * @param raToExport
 	 * @param name
@@ -227,7 +234,6 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			saveOptionalAttribute(settlementElement, NAME_ATTR, settlement.getName());
 			saveOptionalAttribute(settlementElement, TEMPLATE_ATTR, settlement.getSettlementTemplate());
 			saveOptionalAttribute(settlementElement, PERSONS_ATTR, Integer.toString(settlement.getPopulationNumber()));
-			saveOptionalAttribute(settlementElement, ROBOTS_ATTR, Integer.toString(settlement.getNumOfRobots()));
 			saveOptionalAttribute(settlementElement, SPONSOR_ATTR, settlement.getSponsor());
 			saveOptionalAttribute(settlementElement, CREW_ATTR, settlement.getCrew());
 
@@ -245,7 +251,6 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			saveOptionalAttribute(aElement, NAME_ATTR, arrival.name());
 			saveOptionalAttribute(aElement, TEMPLATE_ATTR, arrival.template());
 			saveOptionalAttribute(aElement, PERSONS_ATTR, Integer.toString(arrival.populationNum()));
-			saveOptionalAttribute(aElement, ROBOTS_ATTR, Integer.toString(arrival.numOfRobots()));
 			saveOptionalAttribute(aElement, SPONSOR_ATTR, arrival.sponsorCode());
 			saveOptionalAttribute(aElement, ARRIVAL_ATTR, Integer.toString(arrival.arrivalSols()));
 
@@ -312,17 +317,11 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 				throw new IllegalStateException("Number of persons cannot be less than zero: " + numOfPeople);
 			}
 
-			String numOfRobotsStr = settlementElement.getAttributeValue(ROBOTS_ATTR);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			if (numOfRobots < 0) {
-				throw new IllegalStateException("Number Of Robots cannot be less than zero: " + numOfRobots);
-			}
-
 			String sponsor = settlementElement.getAttributeValue(SPONSOR_ATTR);
 
 			arrivals.add(new FutureSettlement(name, template, sponsor,
 												arrivalSols, location ,
-												numOfPeople, numOfRobots));
+												numOfPeople));
 		}	
 		return arrivals;
 	}
@@ -353,17 +352,11 @@ public class ScenarioConfig extends UserConfigurableConfig<Scenario> {
 			if (popNumber < 0) {
 				throw new IllegalStateException("populationNumber cannot be less than zero: " + popNumber);
 			}
-
-			String numOfRobotsStr = settlementElement.getAttributeValue(ROBOTS_ATTR);
-			int numOfRobots = Integer.parseInt(numOfRobotsStr);
-			if (numOfRobots < 0) {
-				throw new IllegalStateException("The number of robots cannot be less than zero: " + numOfRobots);
-			}
-
+			
 			String sponsor = settlementElement.getAttributeValue(SPONSOR_ATTR);
 			String crew = settlementElement.getAttributeValue(CREW_ATTR);
 			
-			initialSettlements .add(new InitialSettlement(settlementName, sponsor, template, popNumber, numOfRobots,
+			initialSettlements .add(new InitialSettlement(settlementName, sponsor, template, popNumber,
 										location, crew));
 		}
 		

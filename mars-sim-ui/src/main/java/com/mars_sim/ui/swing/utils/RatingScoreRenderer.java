@@ -9,11 +9,11 @@ package com.mars_sim.ui.swing.utils;
 import java.text.DecimalFormat;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.data.Rating;
 import com.mars_sim.core.tool.Msg;
 
 /**
- * This static class provides methods to render a RatingScore.
+ * This static class provides methods to render a Rating.
  */
 public class RatingScoreRenderer {
 
@@ -26,11 +26,11 @@ public class RatingScoreRenderer {
     private RatingScoreRenderer() {}
 
     /**
-     * Render a RatingScore into a HTML fragment that shows the Base and Modifiers
-     * @param score
-     * @return
+     * Render a Rating into a HTML fragment that shows the Base and Modifiers
+     * @param score Score to be rendered
+     * @return HTML fragment version of Rating.
      */
-    public static String getHTMLFragment(RatingScore score) {
+    public static String getHTMLFragment(Rating score) {
         StringBuilder output = new StringBuilder();
         output.append("<b>Score: ").append(SCORE_FORMAT.format(score.getScore())).append("</b><br>");
 

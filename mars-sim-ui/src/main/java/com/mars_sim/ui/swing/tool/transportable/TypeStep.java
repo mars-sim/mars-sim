@@ -22,8 +22,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import com.mars_sim.core.Named;
-import com.mars_sim.ui.swing.components.JMarsTimeEditor;
-import com.mars_sim.ui.swing.components.NamedListCellRenderer;
+import com.mars_sim.ui.swing.utils.JMarsTimeEditor;
+import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 

@@ -81,8 +81,8 @@ import com.mars_sim.core.astroarts.Comet;
 import com.mars_sim.core.astroarts.TimeSpan;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.ui.swing.ContentPanel;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 
 /**
@@ -406,7 +406,7 @@ implements ActionListener {
 		gbcCtrlPanel.fill = GridBagConstraints.BOTH;
 		
 		ctrlPanel.setLayout(gblCtrlPanel);
-		ctrlPanel.setBorder(new MarsPanelBorder());
+		ctrlPanel.setBorder(SwingHelper.createEtchedBorder());
 		
 		// Set Control Label
 		JLabel controlLabel = new JLabel("Controls", SwingConstants.CENTER);

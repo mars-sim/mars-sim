@@ -47,7 +47,8 @@ public class FunctionSpec {
 	}
 
 	/**
-	 * Copy constructor used by sub classes
+	 * Copies constructor used by sub classes.
+	 * 
 	 * @param base
 	 */
 	protected FunctionSpec(FunctionSpec base) {

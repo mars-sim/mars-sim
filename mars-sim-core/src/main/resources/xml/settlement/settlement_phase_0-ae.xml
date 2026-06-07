@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Phase 0-AE" default-population="4" description="Phase 0 base for United Arab Emirates"
-		number-of-robots="4" sponsor="UAESA">
+		sponsor="UAESA">
 
     <!-- Lander habitat building is the main habitation in the Mars Direct
         mission plan. -->
@@ -71,9 +71,16 @@
     <building-package name="Solar Set 1 - 1x3"/>
     			   
     <!-- A rover for collecting rock samples from remote sites and ice prospecting. -->
+    <initial-supplies>
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="1" />
     <vehicle type="Delivery Drone" number="1" />
+
+    <!-- Standard Phase 0 allocation-->
+    <robot type="MakerBot-Standard" number="1"/>
+    <robot type="MedicBot-Standard" number="1"/>
+    <robot type="RepairBot-Standard" number="1"/>
+    <robot type="GardenBot-Standard" number="1"/>
 
     <!-- Equipment -->
     <equipment type="EVA Suit" number="8" />
@@ -125,6 +132,8 @@
     <part-package name="Standard Part Package 1" number="1" />
    
 	<!-- The resupply missions from Earth scheduled for this type of settlement. -->
+    </initial-supplies>
+
     <resupply>
         <resupply-mission name="Food Delivery" manifest-name="Food Resupply 1">
             <schedule firstSol="2" frequency="80" /> 

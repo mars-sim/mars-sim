@@ -6,18 +6,10 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Entity;
-import com.mars_sim.core.location.LocationStateType;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.structure.PopulationStats;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -26,10 +18,10 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 
 /**
  * The TabPanelCitizen is a tab panel for information on all people
@@ -52,7 +44,7 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	private JLabel populationIndoorLabel;
 	private JLabel genderRatioLabel;
 	
-	private PersonModel citizenModel;
+	private CitizenModel citizenModel;
 
 	/**
 	 * Constructor.
@@ -101,7 +93,7 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 
 	@Override
 	protected TableModel createModel() {
-		citizenModel = new PersonModel(getEntity());
+		citizenModel = new CitizenModel(getEntity());
 
 		return citizenModel;
 	}
@@ -149,72 +141,32 @@ class TabPanelCitizen extends EntityTableTabPanel<Settlement> implements Tempora
 	}
 
 	/**
-	 * Table model showing all Persons in a Settlement
+	 * Unregister the model from listening to the entities before destroying the panel.
 	 */
-	private static class PersonModel extends AbstractTableModel implements EntityModel {
+	@Override
+	public void destroy() {
+		if (citizenModel != null) {
+			citizenModel.release();
+		}
+
+		super.destroy();
+	}
+
+	/**
+	 * Table model showing all Persons in a Settlement.
+	 */
+	private static class CitizenModel extends BasePersonModel {
 
 		private Settlement settlement;
-		private List<Person> citizens = Collections.emptyList();
 
-
-		private PersonModel(Settlement settlement) {
+		private CitizenModel(Settlement settlement) {
+			super(NAME, INSIDE);
 			this.settlement = settlement;
 			update();
 		}
 
-		private void update() {
-			var newCitizens = settlement.getAllAssociatedPeople();
-			if (!newCitizens.equals(citizens)) {
-				citizens = new ArrayList<>(newCitizens);
-
-				// reload the whole table
-				fireTableDataChanged();
-			}
-			else if (!citizens.isEmpty()) {
-				fireTableRowsUpdated(0, citizens.size()-1);
-			}
-		}
-
-		@Override
-		public int getRowCount() {
-			return citizens.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 2;
-		}
-
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == 1) {
-				return Boolean.class;
-			}
-			return String.class;
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			return switch(columnIndex) {
-				case 0 -> Msg.getString("entity.name");
-				case 1 -> "Inside";
-				default -> "";
-			};
-		}
-
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			var c = citizens.get(rowIndex);
-			return switch(columnIndex) {
-				case 0 -> c.getName();
-				case 1 -> c.getLocationStateType() == LocationStateType.INSIDE_SETTLEMENT;
-				default -> "";
-			};
-		}
-
-		@Override
-		public Entity getAssociatedEntity(int row) {
-			return citizens.get(row);
+		public void update() {
+			setEntities(settlement.getAllAssociatedPeople());
 		}
 	}
 }

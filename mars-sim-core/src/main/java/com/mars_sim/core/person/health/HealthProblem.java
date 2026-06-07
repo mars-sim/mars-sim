@@ -9,11 +9,10 @@ package com.mars_sim.core.person.health;
 import java.io.Serializable;
 
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.events.HistoricalEvent;
-
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.time.MarsTime;
@@ -75,15 +74,13 @@ public class HealthProblem implements Serializable {
 	 * @param eventType
 	 */
 	public void registerHistoricalEvent(HistoricalEventType eventType) {
-		var event = new HistoricalEvent(eventType, 
-				this, this.getComplaint().getName(),
-				sufferer.getTaskDescription(), sufferer.getName(),
-				sufferer,
-				sufferer.getAssociatedSettlement(),
-				sufferer.getCoordinates());
+		Coordinates location = null;
+		if (!sufferer.isInSettlement()) {
+			location = sufferer.getCoordinates();
+		}
 
-
-		eventManager.registerNewEvent(event);
+		sufferer.registerHistoricalEvent(eventType, getComplaint().getName(), sufferer.getTaskDescription(),
+							null, location);
 	}
 
 	/**
@@ -203,7 +200,7 @@ public class HealthProblem implements Serializable {
 		setState(HealthProblemState.BEING_TREATED);
 
 		// Create medical event for treatment.
-		registerHistoricalEvent(HistoricalEventType.MEDICAL_TREATED);
+		registerHistoricalEvent(HistoricalEventType.MEDICAL_START_TREATMENT);
 
 		logger.info(getSufferer(), "Began to receive treatment for " + getComplaint().getName() + ".");
 	}
@@ -256,7 +253,7 @@ public class HealthProblem implements Serializable {
 				requiresBedRest = getComplaint().requiresBedRestRecovery();
 				
 				// Create medical event for recovering.
-				registerHistoricalEvent(HistoricalEventType.MEDICAL_RECOVERY);
+				registerHistoricalEvent(HistoricalEventType.MEDICAL_START_RECOVERY);
 			} else {
 				setCured();
 			}

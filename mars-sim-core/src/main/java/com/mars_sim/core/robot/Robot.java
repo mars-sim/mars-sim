@@ -12,25 +12,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
+import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.building.function.Function;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.RoboticStation;
 import com.mars_sim.core.building.function.SystemType;
-import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.MarsSurface;
 import com.mars_sim.core.equipment.Container;
@@ -41,7 +38,6 @@ import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.malfunction.Malfunctionable;
-import com.mars_sim.core.manufacture.ManufactureProcessInfo;
 import com.mars_sim.core.manufacture.Salvagable;
 import com.mars_sim.core.manufacture.SalvageInfo;
 import com.mars_sim.core.manufacture.SalvageProcessInfo;
@@ -74,10 +70,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 	/** default logger. */
 	private static final  SimLogger logger = SimLogger.getLogger(Robot.class.getName());
-
-	// Static members
 	
-	private static final String REPAIRBOT = "RepairBot";
 	/** The base carrying capacity (kg) of a robot. */
 	private static final double BASE_CAPACITY = 60D;
 	/** The estimate base mass in kg. */
@@ -91,23 +84,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 	/** String name of a robot */	
 	public static final String TYPE = SystemType.ROBOT.getName();
-	
-	private static final String CURRENTLY = "Currently ";
-	
-	/** The string tag of operable. */
-	private static final String OPERABLE = "Operable";
-	/** The string tag of inoperable. */
-	private static final String INOPERABLE = "Inoperable";
 
-	/** The status modes available. */
-	private static final List<BotMode> AVAILABLE_MODES = Arrays.asList(
-			BotMode.CHARGING ,
-			BotMode.MAINTENANCE,
-			BotMode.MALFUNCTION,
-			BotMode.OUT_OF_POWER,
-			BotMode.POWER_SAVE,
-			BotMode.NOMINAL 
-			);
 	
 	// Data members
 	/** Is the robot is inoperable. */
@@ -172,7 +149,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		// Initialize data members.
 		this.robotType = spec.getRobotType();
-		this.model = spec.getMakeModel();
+		this.model = spec.getName();
 		this.rate = spec.getConsumptionRate();
 		
 		primaryMode = BotMode.NOMINAL;
@@ -187,7 +164,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		isInoperable = false;
 		
 		// Set description for this robot
-		setDescription("[ " + CURRENTLY + OPERABLE + " ] " + spec.getDescription());
+		setDescription(spec.getDescription());
 		
 		// Construct the SystemCondition instance.
 		condition = new SystemCondition(this, spec);
@@ -236,44 +213,7 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 		carryingCapacity = (int)BASE_CAPACITY + strength;
 		// Construct the EquipmentInventory instance.
 		eqmInventory = new EquipmentInventory(this, carryingCapacity);
-		
-		// Calculate and set the base mass based on parts and inventory content
-		setBaseMass(calculateMass()); 
 	}
-
-	/**
-	 * Calculates the mass of the output of a process.
-	 * 
-	 * @param processName
-	 * @return
-	 */
-    private static double calculateMass() {
-		
-		// Note: it's haphazard to match the string of the manu process since it can change.
-		// Will need to implement a better way in matching and looking for the manu process 
-    	// that assemblies the item of interest.
-		String processName = ItemResourceUtil.ASSEMBLE_A_REPARTBOT;
-	
-	    Optional<ManufactureProcessInfo> found = SimulationConfig.instance().
-	    		getManufactureConfiguration().getManufactureProcessList()
-		 	.stream()
-			.filter(f -> f.getName().equalsIgnoreCase(processName))
-			.findFirst();
-	
-		if (found.isPresent()) {
-			var manufactureProcessInfo = found.get();
-			// Calculate total mass as the summation of the multiplication of the quantity and mass of each part 
-			var mass = manufactureProcessInfo.calculateTotalInputMass();
-			// Calculate output quantity
-			var quantity = manufactureProcessInfo.calculateOutputQuantity(REPAIRBOT);					
-			// Save the key value pair onto the weights Map
-			return mass/quantity;
-		}
-
-	    logger.severe("The process '" + processName + "' cannot be found.");
-	    		
-		return EMPTY_MASS;
-    }
     
 	/**
 	 * Create birth time of the robot.
@@ -448,13 +388,9 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 	public void setInoperable(boolean value) {
 	
 		if (value) {
-			super.setDescription(getDescription().replace(OPERABLE, INOPERABLE));
 			botMind.setInactive();
 		}
-		else {
-			super.setDescription(getDescription().replace(INOPERABLE, OPERABLE));
-		}
-		
+
 		isInoperable = value;
 	}
 	

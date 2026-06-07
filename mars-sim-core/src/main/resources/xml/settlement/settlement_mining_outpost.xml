@@ -1,7 +1,7 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
     name="Mining Outpost" default-population="4" description="Base for Mining Outpost for Mars Society"
-    number-of-robots="4" sponsor="MS" objective="MANUFACTURING_DEPOT">
+    sponsor="MS" objective="MANUFACTURING_DEPOT">
     <building id="00" type="Outpost Hub" xloc="0.0" yloc="0.0"
         facing="0.0">
         <connection-list>
@@ -144,9 +144,17 @@
 	<building-package name="Methane Set 1 - 1x2"/> 
 
  	
+    <initial-supplies>
+
+ 	
     <vehicle type="Explorer Rover" number="2" />
     <vehicle type="Light Utility Vehicle" number="2" />
     <vehicle type="Delivery Drone" number="2" />
+
+    <robot type="MakerBot-Standard" number="1"/>
+    <robot type="MedicBot-Standard" number="1"/>
+    <robot type="RepairBot-Standard" number="1"/>
+    <robot type="DeliveryBot-Standard" number="1"/>
 
     <equipment type="EVA Suit" number="8" />
     
@@ -168,6 +176,10 @@
 	<resource type="methanol" amount="7200" />
 	
     <part-package name="Standard Part Package 1" number="1" />
+
+ 	
+    </initial-supplies>
+
   
     <resupply>
        	<resupply-mission name="Quarterly Delivery" manifest-name="Standard Resupply 1">

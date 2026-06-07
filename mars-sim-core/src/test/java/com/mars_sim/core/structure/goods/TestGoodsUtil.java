@@ -17,7 +17,7 @@ import com.mars_sim.core.goods.GoodsManager;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class TestGoodsUtil {
+class TestGoodsUtil {
 
 
 	@BeforeEach
@@ -25,41 +25,41 @@ public class TestGoodsUtil {
         SimulationConfig config = SimulationConfig.loadConfig();
   
         // Don't need a full GoodsManager initialisation
-        GoodsManager.initializeInstances(config, null, null, null);
+        GoodsManager.initializeInstances(config, null, null);
     }
 
 	@Test
-    public void testGoodsListNotNull() {
+    void testGoodsListNotNull() {
         List<Good> goodsList = GoodsUtil.getGoodsList();
         assertNotNull(goodsList);
 	}
 
 	@Test
-	public void testGoodsListNotZero() {
+	void testGoodsListNotZero() {
         List<Good> goodsList = GoodsUtil.getGoodsList();
 		assertTrue(goodsList.size() > 0);
 	}
 
 	@Test
-	public void testGoodsListContainsWater() {
+	void testGoodsListContainsWater() {
 		Good waterGood = GoodsUtil.getGood(ResourceUtil.WATER_ID);
 		assertNotNull(waterGood, "Found water Good");
 	}
 
 	@Test
-	public void testGoodsListContainsBag() {
+	void testGoodsListContainsBag() {
 		Good bagGood = GoodsUtil.getEquipmentGood(EquipmentType.BAG);
 		assertNotNull(bagGood, "Found Bag Good");
 	}
 
 	@Test
-	public void testGoodsListContainsPot() {
+	void testGoodsListContainsPot() {
 		Good potGood = GoodsUtil.getBinGood(BinType.POT);
 		assertNotNull(potGood, "Found Pot Good");
 	}
 	
 	@Test
-	public void testGoodsListContainsExplorerRover() {
+	void testGoodsListContainsExplorerRover() {
 		// "Explorer Rover" is a valid vehicle type
         String typeName = "Explorer Rover";
 		Good explorerRoverGood = GoodsUtil.getVehicleGood(typeName);
@@ -67,7 +67,7 @@ public class TestGoodsUtil {
 	}
 
 	@Test
-	public void testGoodsListDoesntContainFalseRover() {
+	void testGoodsListDoesntContainFalseRover() {
 		// "False Rover" is not a valid vehicle type
 		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
 		assertNull(falseRoverGood, "Non-Existent Vehicle Good not found");

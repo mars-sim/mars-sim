@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.Building;
-import com.mars_sim.core.building.config.BuildingConfig;
+import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.config.FunctionSpec;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.logging.SimLogger;
@@ -32,10 +32,12 @@ public class LifeSupport extends Function {
 	/** default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(LifeSupport.class.getName());
 
+	private static final double POWER_PER_OCCUPANT = .25; // in kW
+	
 	// Data members
 	private int occupantCapacity;
 
-	private double powerRequired;
+	private double lifeSupportPower;
 	private double length;
 	private double width;
 	protected double floorArea;
@@ -53,15 +55,21 @@ public class LifeSupport extends Function {
 	public LifeSupport(Building building, FunctionSpec spec) {
 		super(FunctionType.LIFE_SUPPORT, spec, building);
 
-		occupants = new UnitSet<>();
 
-		this.occupantCapacity = spec.getCapacity();
-		this.powerRequired = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
+		this.lifeSupportPower = occupantCapacity * POWER_PER_OCCUPANT;
 
 		length = building.getLength();
 		width = building.getWidth();
 		floorArea = length * width;
 
+		occupants = new UnitSet<>();
+
+		this.occupantCapacity = spec.getCapacity();
+		
+		if (BuildingCategory.CONNECTION == building.getCategory()) {
+			occupantCapacity = (int)(Math.ceil(occupantCapacity * floorArea / 4));
+		}
+		
 		double t = AirComposition.C_TO_K + building.getCurrentTemperature();
 		double vol = building.getVolumeInLiter(); // 1 Cubic Meter = 1,000 Liters
 		air = new AirComposition(t, vol);
@@ -105,7 +113,7 @@ public class LifeSupport extends Function {
 		double result = occupantCapacity * occupantCapacityValue;
 
 		// Subtract power usage cost per sol.
-		double power = spec.getDoubleProperty(BuildingConfig.POWER_REQUIRED);
+		double power = POWER_PER_OCCUPANT;
 		double powerPerSol = power * MarsTime.HOURS_PER_MILLISOL * 1000D;
 		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
 		result -= powerValue;
@@ -254,8 +262,8 @@ public class LifeSupport extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
-		return powerRequired;
+	public double getFullPowerLoad() {
+		return lifeSupportPower;
 	}
 
 	@Override

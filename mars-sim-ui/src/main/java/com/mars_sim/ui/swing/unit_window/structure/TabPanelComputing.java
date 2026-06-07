@@ -26,8 +26,8 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 
 /**
@@ -234,7 +234,7 @@ class TabPanelComputing extends EntityTableTabPanel<Settlement>
 			var b = buildings.get(row);
 			return switch (column) {
 				case 0 -> b.getName();
-				case 1 -> Math.round(b.getComputation().getCombinedPowerLoad() * 10.0)/10.0;
+				case 1 -> Math.round(b.getComputation().getFullPowerLoad() * 10.0)/10.0;
 				case 2 -> Math.round(b.getComputation().getInstantHeatGenerated() * 10.0)/10.0;
 				case 3 -> Math.round(b.getComputation().getInstantCoolingLoad() * 10.0)/10.0;
 				case 4 -> Math.round(b.getComputation().getUsagePercent() * 10.0)/10.0;

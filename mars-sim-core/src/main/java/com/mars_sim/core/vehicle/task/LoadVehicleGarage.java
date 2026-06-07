@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.task.util.TaskPhase;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.resource.ItemResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -189,7 +190,7 @@ public class LoadVehicleGarage extends Task {
 		// Check if there are enough resources at the settlement.
 		for (Entry<Integer, Number> required : resources.entrySet()) {
 			int resource = required.getKey();
-			if (resource < ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			if (ResourceType.getType(resource) == ResourceType.AMOUNT_RESOURCE) {
 
 				double stored = settlement.getAllAmountResourceStored(resource);
 				double needed = required.getValue().doubleValue();
@@ -205,7 +206,7 @@ public class LoadVehicleGarage extends Task {
 				}
 			}
 
-			else if (resource >= ResourceUtil.FIRST_ITEM_RESOURCE_ID) {
+			else if (ResourceType.getType(resource) == ResourceType.ITEM_RESOURCE) {
 				int needed = required.getValue().intValue();
 				int settlementNeed = getRemainingSettlementNum(settlement, vehicleCrewNum, resource);
 				int numLoaded = vehicle.getItemResourceStored(resource);

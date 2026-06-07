@@ -35,14 +35,15 @@ import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.building.utility.power.SolarPowerSource;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
@@ -128,9 +129,9 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		// Prepare power generated tf.
 		powerGenCache = powerGrid.getGeneratedPower();
 		// Prepare power used tf.
-		powerLoadCache = powerGrid.getRequiredPower();
+		powerLoadCache = powerGrid.getPowerLoad();
 		// Prepare the power usage percent
-		percentPowerUsage = Math.round(powerGenCache/powerLoadCache * 100 * 10.0)/10.0 ;
+		percentPowerUsage = MathUtils.between(Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0, 0, 100);
 		
 		percentPowerUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
 				StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
@@ -210,17 +211,20 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 	@Override
 	protected void setColumnDetails(TableColumnModel powerColumns) {
 
-		powerColumns.getColumn(0).setPreferredWidth(10);
-		powerColumns.getColumn(1).setPreferredWidth(100);
-		powerColumns.getColumn(2).setPreferredWidth(50);
-		powerColumns.getColumn(3).setPreferredWidth(50);
-		powerColumns.getColumn(4).setPreferredWidth(50);
+		powerColumns.getColumn(0).setPreferredWidth(8);
+		powerColumns.getColumn(1).setPreferredWidth(20);
+		powerColumns.getColumn(2).setPreferredWidth(120);
+		powerColumns.getColumn(3).setPreferredWidth(35);
+		powerColumns.getColumn(4).setPreferredWidth(35);
+		powerColumns.getColumn(5).setPreferredWidth(35);
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.LEFT);
+		powerColumns.getColumn(1).setCellRenderer(renderer);
 		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		powerColumns.getColumn(2).setCellRenderer(renderer);
 		powerColumns.getColumn(3).setCellRenderer(renderer);
 		powerColumns.getColumn(4).setCellRenderer(renderer);
+		powerColumns.getColumn(5).setCellRenderer(renderer);
 	}
 
 
@@ -277,12 +281,13 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		// Update power generated TF
 		double gen = powerGrid.getGeneratedPower();
 		// Update power used TF.
-		double req = powerGrid.getRequiredPower();
+		double req = powerGrid.getPowerLoad();
 
 		if (Math.abs(powerGenCache - gen) > .4 || Math.abs(powerLoadCache - req) > .4) {
 			powerGenCache = gen;
 			powerLoadCache = req;
-			percentPowerUsage = Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0;
+			
+			percentPowerUsage = MathUtils.between(Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0, 0, 100);
 
 			String s = StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
@@ -339,15 +344,16 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		}
 
 		public int getColumnCount() {
-			return 5;
+			return 6;
 		}
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			return switch (columnIndex) {
 				case 0 -> Icon.class;
-				case 1 -> String.class;
-				case 2,3,4 -> Double.class;
+				case 1 -> Integer.class;
+				case 2 -> String.class;
+				case 3,4, 5 -> Double.class;
 				default -> null;
 			};
 		}
@@ -356,10 +362,11 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		public String getColumnName(int columnIndex) {
 			return switch (columnIndex) {
 				case 0 -> Msg.getString("TabPanelPowerGrid.column.s");
-				case 1 -> Msg.getString("building.singular");
-				case 2 -> Msg.getString("TabPanelPowerGrid.column.generated");
-				case 3 -> Msg.getString("TabPanelPowerGrid.column.used");
-				case 4 -> Msg.getString("TabPanelPowerGrid.column.stored");
+				case 1 -> Msg.getString("TabPanelPowerGrid.column.priority");
+				case 2 -> Msg.getString("building.singular");
+				case 3 -> Msg.getString("TabPanelPowerGrid.column.generated");
+				case 4 -> Msg.getString("TabPanelPowerGrid.column.used");
+				case 5 -> Msg.getString("TabPanelPowerGrid.column.stored");
 				default -> null;
 			};
 		}
@@ -379,8 +386,9 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 							default -> null;
 						};
 					}
-				case 1 -> { return buildings.get(row).getName(); }
-				case 2 -> {
+				case 1 -> { return buildings.get(row).getPowerPriority(); }
+				case 2 -> { return buildings.get(row).getName(); }
+				case 3 -> {
 						double generated = 0D;
 						PowerGeneration pg = building.getFunction(FunctionType.POWER_GENERATION);
 						if (pg != null) {
@@ -391,15 +399,15 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 						}
 						return Math.round(generated * 10.0) / 10.0;
 					}
-				case 3 -> {
+				case 4 -> {
 						double used = 0D;
 						if (powerMode == PowerMode.FULL_POWER)
-							used = building.getFullPowerRequired();
+							used = building.getFullPowerLoad();
 						else if (powerMode == PowerMode.LOW_POWER)
-							used = building.getLowPowerRequired();
+							used = building.getLowPowerLoad();
 						return Math.round(used * 10.0) / 10.0;
 					}
-				default -> {
+				case 5 -> {
 						PowerStorage ps = building.getPowerStorage();
 						double stored = 0D;
 						if (ps != null) {
@@ -409,7 +417,8 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 					
 						return 0D;
 					}
-			}	
+			}
+			return null;
 		}
 
 		public void update() {

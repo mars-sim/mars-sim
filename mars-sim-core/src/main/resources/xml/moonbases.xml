@@ -1,0 +1,25 @@
+<?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
+<!DOCTYPE base-list [
+	<!ELEMENT base-list (base*)>
+	<!ELEMENT base EMPTY>
+	<!ATTLIST base name CDATA #REQUIRED>
+	<!ATTLIST base agency CDATA #REQUIRED>	
+	<!ATTLIST base latitude CDATA #REQUIRED>	
+	<!ATTLIST base longitude CDATA #REQUIRED>
+
+]>
+	<base-list>
+		<base name="Kennedy" agency="NASA" latitude="-89.90" longitude="0.00" />
+		<base name="Kararmin" agency="ISRA" latitude="88.63" longitude="24.40" />
+		<base name="Yue De" agency="CNSA" latitude="25.85" longitude="30.45" />
+		<base name="Barmingrad" agency="RKA" latitude="38.24" longitude="-35.00" />
+		<base name="LunarOne" agency="SPACEX" latitude="14.00" longitude="302.00" />
+		<base name="Borington" agency="SPACEX" latitude="23.70" longitude="-47.40" />
+		<base name="Peary" agency="MS" latitude="9.70" longitude="-20.10" />
+		<base name="Selene" agency="ESA" latitude="5.00" longitude="120.50" />
+		<base name="Pacifica" agency="CSA" latitude="26.00" longitude="148.00" />
+		<base name="O'Neill" agency="BO" latitude="-69.70" longitude="-172.00" />
+		<base name="Kala" agency="UAESA" latitude="-42.00" longitude="-177.90" />		
+		<base name="Hilal" agency="SSA" latitude="-30.20" longitude="173.90" />
+		<base name="Aadhira" agency="ISRO" latitude="-19.00" longitude="-95.00" />	
+	</base-list>

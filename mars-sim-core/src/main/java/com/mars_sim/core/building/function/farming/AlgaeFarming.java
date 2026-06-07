@@ -43,8 +43,6 @@ public class AlgaeFarming extends Function {
 	/** The average CO2 needed [in kg]. */
 	private static double averageCarbonDioxideNeeded;
 	
-
-	// 
 	public static final int PRODUCED_ALGAE_ID = 0;
 	
 	private static final int LIGHT_FACTOR = 0;
@@ -801,12 +799,12 @@ public class AlgaeFarming extends Function {
 	}
 	
 	/**
-	 * Gets the amount of power required when function is at full power.
+	 * Gets the amount of power load when function is at full power.
 	 * 
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
+	public double getFullPowerLoad() {
 		// Power (kW) required for normal operations.
 		return waterMass * POWER_PER_LITRE 
 				+ getCurrentAlgae() * POWER_PER_KG_ALGAE 
@@ -820,8 +818,8 @@ public class AlgaeFarming extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getLowPowerRequired() {
-		return getCombinedPowerLoad() * .1;
+	public double getLowPowerLoad() {
+		return getFullPowerLoad() * .1;
 	}
 
 	@Override

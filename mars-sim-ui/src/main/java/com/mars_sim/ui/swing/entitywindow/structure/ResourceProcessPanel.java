@@ -34,10 +34,10 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
 import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.JProcessButton;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
 
 /**
  * Creates a JPanel that will render a list of ResourceProcesses in a JTable.

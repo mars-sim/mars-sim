@@ -170,15 +170,6 @@ public abstract class Function implements Serializable, Temporal {
 	}
 	
 	/**
-	 * Gets the amount of heat required when function is at full heat.
-	 *
-	 * @return heat (kW) default 0
-	 */
-	public double getCombinedPowerLoad() {
-		return 0;
-	}
-	
-	/**
 	 * Gets the amount of heat required when function is at heat down level.
 	 *
 	 * @return heat (kW) default zero
@@ -188,20 +179,20 @@ public abstract class Function implements Serializable, Temporal {
 	}
 
 	/**
-	 * Gets the amount of power required when function is at full power.
+	 * Gets the amount of power load when function is at full power.
 	 *
 	 * @return power (kW) default zero
 	 */
-	public double getFullPowerRequired() {
+	public double getFullPowerLoad() {
 		return 0;
 	}
 
 	/**
-	 * Gets the amount of power required when function is at low power level.
+	 * Gets the amount of power load when function is at low power level.
 	 *
 	 * @return power (kW)
 	 */
-	public double getLowPowerRequired() {
+	public double getLowPowerLoad() {
 		return 0;
 	}
 
@@ -347,7 +338,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @return
 	 */
 	protected boolean retrieve(double amount, int resource, boolean value) {
-		return Storage.retrieveAnResource(amount, resource, building.getSettlement(), value);
+		return Storage.retrieveAnResource(amount, resource, building, value);
 	}
 
 	/**
@@ -358,7 +349,7 @@ public abstract class Function implements Serializable, Temporal {
 	 * @param source
 	 */
 	protected void store(double amount, int resource, String source) {
-		Storage.storeAnResource(amount, resource, building.getSettlement(), source);
+		Storage.storeAnResource(amount, resource, building, source);
 	}
 
 	/**

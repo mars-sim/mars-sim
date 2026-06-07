@@ -44,4 +44,10 @@ public interface UIContext extends Serializable {
      * @return
      */
     JFrame getTopFrame();
+
+    /**
+     * Play a sound by name. The sound name is defined by the UI implementation and may not be supported by all UIs.
+     * @param soundName The name of the sound to play
+     */
+    void playSound(String soundName);
 }

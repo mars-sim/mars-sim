@@ -57,8 +57,8 @@ import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.JCoordinateEditor;
-import com.mars_sim.ui.swing.components.NamedListCellRenderer;
+import com.mars_sim.ui.swing.components.TreeCheckFactory;
+import com.mars_sim.ui.swing.components.TreeCheckFactory.SelectableNode;
 import com.mars_sim.ui.swing.tool.JStatusBar;
 import com.mars_sim.ui.swing.tool.map.ExploredSiteMapLayer;
 import com.mars_sim.ui.swing.tool.map.FilteredMapLayer;
@@ -71,8 +71,9 @@ import com.mars_sim.ui.swing.tool.map.MissionMapLayer;
 import com.mars_sim.ui.swing.tool.map.ShadingMapLayer;
 import com.mars_sim.ui.swing.tool.map.UnitMapLayer;
 import com.mars_sim.ui.swing.tool.map.VehicleTrailMapLayer;
-import com.mars_sim.ui.swing.utils.TreeCheckFactory;
-import com.mars_sim.ui.swing.utils.TreeCheckFactory.SelectableNode;
+import com.mars_sim.ui.swing.utils.JCoordinateEditor;
+import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The NavigatorWindow is a tool window that displays a map and a globe showing
@@ -168,7 +169,7 @@ public class NavigatorWindow extends ContentPanel
 	private static final String MAP_SEPERATOR = "~";
 
 	private static final String LEVEL = "Level ";
-	private static final String CHOOSE_SETTLEMENT = "Settlement";
+	private static final String CHOOSE_SETTLEMENT = "Choose";
 	private static final String MAPTYPE_RELOAD_ACTION = "notloaded";
 
 	private static final String MINERAL_LAYER = "minerals";
@@ -250,7 +251,7 @@ public class NavigatorWindow extends ContentPanel
 		mapPanel = new MapPanel(context);
 		mapPanel.setPreferredSize(new Dimension(MAP_BOX_WIDTH, MAP_BOX_HEIGHT));
 		wholePane.add(mapPanel, BorderLayout.CENTER);
-		mapPanel.setMouseMoveListener(c -> updateStatusBar(c));
+		mapPanel.setMouseMoveListener(this::updateStatusBar);
 
 		// Create map layers.
 		mapLayers.add(new NamedLayer(DAYLIGHT_LAYER, new ShadingMapLayer(mapPanel)));
@@ -283,11 +284,11 @@ public class NavigatorWindow extends ContentPanel
 		JPanel controlPane = new JPanel(new BorderLayout(0, 0));
 
 		controlPane.setPreferredSize(new Dimension(CONTROL_PANE_WIDTH, MAP_BOX_HEIGHT));
-		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, 200));
+		controlPane.setMinimumSize(new Dimension(CONTROL_PANE_WIDTH, 220));
 		
 		JPanel searchPane = new JPanel();
 		searchPane.setLayout(new BoxLayout(searchPane, BoxLayout.Y_AXIS));
-		searchPane.setBorder(StyleManager.createLabelBorder("Search"));
+		searchPane.setBorder(SwingHelper.createLabelBorder("Search"));
 
 		controlPane.add(searchPane, BorderLayout.NORTH);
         
@@ -298,11 +299,11 @@ public class NavigatorWindow extends ContentPanel
 		JTree layers = TreeCheckFactory.createCheckTree(layerRoot);
 		JScrollPane treeView = new JScrollPane(layers);
 		controlPane.add(treeView, BorderLayout.CENTER);
-		treeView.setBorder(StyleManager.createLabelBorder("Layers"));
+		treeView.setBorder(SwingHelper.createLabelBorder("Layers"));
 
 		JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
-		buttonPane.setBorder(StyleManager.createLabelBorder("Graphics"));
+		buttonPane.setBorder(SwingHelper.createLabelBorder("Graphics"));
 		controlPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Prepare gpu button
@@ -499,7 +500,7 @@ public class NavigatorWindow extends ContentPanel
 	private JPanel createSettlementPane() {   
 	    var settlementPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
-	    JLabel label = new JLabel("Settlement: ");
+	    JLabel label = new JLabel("\u25B6");
 	    settlementPane.add(label);
 	    	
 		DefaultComboBoxModel<Settlement> model = new DefaultComboBoxModel<>();

@@ -46,6 +46,7 @@ public class VehicleConfigTest {
 
         assertEquals(40D, found.getBaseSpeed());
         assertEquals(90D, found.getBasePower(), "Base power");
+        assertEquals(931.3D, found.getEmptyMass(), "Configured empty mass");
 
         assertEquals(1, found.getLabTechLevel(), "Lab level");
         assertEquals(2, found.getLabCapacity(), "Lab Capacity");

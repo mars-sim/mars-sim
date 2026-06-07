@@ -8,9 +8,7 @@ package com.mars_sim.ui.swing.docking;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,18 +16,18 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.time.ClockPulseListener;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.ui.swing.ContentManager;
+import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ContentPanel.Placement;
 import com.mars_sim.ui.swing.MainMenuBar;
@@ -38,15 +36,14 @@ import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.ToolToolBar;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIConfig.WindowSpec;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityContentFactory;
 import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
-import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
+import com.mars_sim.ui.swing.tool.eventviewer.EventViewer;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.SaveDialog;
 import com.mars_sim.ui.swing.utils.SpeedControl;
 
 import io.github.andrewauclair.moderndocking.Dockable;
@@ -60,8 +57,8 @@ import io.github.andrewauclair.moderndocking.ext.ui.DockingUI;
  * The main window for the Mars Simulation UI that uses a docking approach to the window layout.
  * It implements the UIContext interface to provide access to the simulation and other UI features.
  */
-public class DockingWindow extends JFrame 
-        implements ClockPulseListener, UIContext, ContentManager {
+public class DockingWindow extends ContentManager 
+        implements ClockPulseListener, UIContext {
     /**
      * A blank panel used as an anchor for docking regions.
      */
@@ -86,47 +83,46 @@ public class DockingWindow extends JFrame
         }
     }
 
-    private Simulation sim;
+    private static SimLogger logger = SimLogger.getLogger(DockingWindow.class.getName());
+
     private Set<DockingAdapter> windows = new HashSet<>();
     private Map<Placement, Dockable> anchors = new EnumMap<>(Placement.class);
     private ToolToolBar toolToolBar;
-    private UIConfig config;
-    private AudioPlayer audio;
     private SpeedControl speed;
 
-    private DockingWindow(Simulation sim, UIConfig config, AudioPlayer audio) {
-        this.sim = sim;
-        this.config = config;
-        this.audio = audio;
+    private DockingWindow(Simulation sim, UIConfig config, boolean useAudio) {
+        super(sim, config, useAudio);
 
         // Set up the look and feel library to be used
         StyleManager.setTabPlacement(SwingConstants.TOP);
 
         // Enable dynamic layout for Docking windows as they are more flexible
         AttributePanel.setUseDynamicLayout(true);
+
         // Setup the JFrame
-        setTitle("Mars Simulation");
-        setSize(1200, 800);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        var frame = getTopFrame();
+        if (!loadSavedScreen()) {
+            frame.setSize(1200, 800);
+        }
 
         // Initialize Docking. Force tabs for single Dockerables
-        Docking.initialize(this);
+        Docking.initialize(frame);
         DockingUI.initialize();
 
-        RootDockingPanel dockingPanel = new RootDockingPanel(this);
+        RootDockingPanel dockingPanel = new RootDockingPanel(frame);
 
-        setLayout(new BorderLayout());
-        add(dockingPanel, BorderLayout.CENTER);
+        frame.setLayout(new BorderLayout());
+        frame.add(dockingPanel, BorderLayout.CENTER);
 
-        toolToolBar = new ToolToolBar(this, this, audio);
+        toolToolBar = new ToolToolBar(this, this);
         var topPanel = new JPanel(new BorderLayout());
         topPanel.add(toolToolBar, BorderLayout.CENTER);
 
         speed = new SpeedControl(sim.getMasterClock());
         topPanel.add(speed, BorderLayout.WEST);
-        add(topPanel, BorderLayout.NORTH);
+        frame.add(topPanel, BorderLayout.NORTH);
 
-        setJMenuBar(new MainMenuBar(this, this, audio));
+        frame.setJMenuBar(new MainMenuBar(this, this, getAudio()));
 
         // Add the blanks panels for docking anchors
         createBlank(Placement.CENTER);
@@ -137,17 +133,52 @@ public class DockingWindow extends JFrame
         sim.getMasterClock().addClockPulseListener(clockHandler);
         
         // Add default tools
-        var emptyProps = new Properties();
-        addContentPanel(new MonitorWindow(this, emptyProps));
-        addContentPanel(new EntityBrowser(this));
+        openInitialTools();
+    }
 
-        addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent event) {
-				// Save simulation and UI configuration when window is closed.
-				SaveDialog.createEndSimulation(sim, DockingWindow.this);
-			}
-		});
+    /**
+     * Open initial windows based on the UIConfig. If no windows are configured, open a default set of tools.
+     */
+    private void openInitialTools() {
+        List<WindowSpec> startingWindows = getConfig().getConfiguredWindows();
+
+		if (!startingWindows.isEmpty()) {
+            var sim = getSimulation();
+			for(WindowSpec w : startingWindows) {
+				switch(w.type()) {
+					case UIConfig.TOOL:
+						openToolWindow(w.name());
+					break;
+
+					case UIConfig.UNIT:
+						var u = EntityContentFactory.getEntity(sim, w.props());
+						if (u != null) {
+                            createEntityWindow(u, w.props());
+						}
+					break;
+                    default:
+				}
+ 			}
+        }
+        else {
+            // No starting windows configured so open defaults
+            openToolWindow(EntityBrowser.NAME);
+            openToolWindow(EventViewer.NAME);
+            openToolWindow(MonitorWindow.NAME);
+        }
+    }
+
+    /**
+     * This method is called by a DockingAdapter when its content panel is closed. It will deregister the Dockable
+     * and destroy the ContentPanel.
+     * 
+     * @param panel Panel being closed.
+     */
+    void closeContentPanel(DockingAdapter panel) {
+        logger.info("Closing content panel: " + panel.getPersistentID());
+        Docking.deregisterDockable(panel);
+        windows.remove(panel);
+        panel.getContent().destroy();
     }
 
     /**
@@ -156,7 +187,10 @@ public class DockingWindow extends JFrame
      * @param panel Content to add
      */
     private void addContentPanel(ContentPanel panel) {
-        var w = new DockingAdapter(panel);
+        var w = new DockingAdapter(this, panel);
+        
+        Docking.registerDockable(w);
+        logger.info("Content Panel registered: " + w.getPersistentID() + " " + panel.getTitle());
 
         // Check if there is a target for dockering already in the Placement
         var target = anchors.get(panel.getPlacement());
@@ -167,7 +201,7 @@ public class DockingWindow extends JFrame
         else {
             // Add direct to the window in the specified region
             var region = getRegion(panel.getPlacement());
-            Docking.dock(w, this, region);
+            Docking.dock(w, getTopFrame(), region);
         }
         windows.add(w);
 
@@ -196,7 +230,7 @@ public class DockingWindow extends JFrame
     private void createBlank(Placement placement) {
         var anchor = new Anchor();
         Docking.registerDockingAnchor(anchor);
-        Docking.dock(anchor, this, getRegion(placement));
+        Docking.dock(anchor, getTopFrame(), getRegion(placement));
 
         anchors.put(placement, anchor);
     }
@@ -219,7 +253,15 @@ public class DockingWindow extends JFrame
 		}
 				
 		// Build a new window
-        Properties props = new Properties();
+        createEntityWindow(entity, new Properties());
+    }
+
+    /**
+     * Open an Entity window for an Entity using a set of user properties.
+     * @param entity Entity to display
+     * @param props User properties.
+     */
+    private void createEntityWindow(Entity entity, Properties props) {
 		var panel = EntityContentFactory.getEntityPanel(entity, this, props);
 		if (panel != null) {
             // Cheat to shrink the window size to fit content
@@ -256,15 +298,17 @@ public class DockingWindow extends JFrame
         return toolContent;
     }
 
-    @Override
-    public Simulation getSimulation() {
-        return sim;
-    }
-
-    @Override
-    public JFrame getTopFrame() {
-        return this;
-    }
+	/**
+	 * Plays a sound by name.
+	 * @param soundName The name of the sound to play
+	 */
+	@Override
+	public void playSound(String soundName) {
+        var audio = getAudio();
+        if (audio != null) {
+            audio.playSound(soundName);
+        }
+	}
 
     /**
      * Master clock pulse update. This will forward the pulse to all content panels
@@ -284,47 +328,49 @@ public class DockingWindow extends JFrame
      * Factory method to create and show a DockingWindow for the given simulation.
      * @param sim Simulation running.
      * @param config UI configuration to use for the window.
-     * @param audio Audio player for the window.
+     * @param useAudio Whether to use audio for the window.
      * @return The created DockingWindow.
      */
-    public static DockingWindow create(Simulation sim, UIConfig config, AudioPlayer audio) {
-        var dw = new DockingWindow(sim, config, audio);
+    public static DockingWindow create(Simulation sim, UIConfig config, boolean useAudio) {
+        var dw = new DockingWindow(sim, config, useAudio);
 
-        dw.setVisible(true);
+        dw.getTopFrame().setVisible(true);
         return dw;
     }
 
     /**
-     * Saved any ui properties specifc to the Docking windows.
-     * @return Map of property sets for the UI elements in the Docking window.
+     * Get the details of open windows.
      */
-    @Override
-    public Map<String, Properties> getUIProps() {
-		return Collections.emptyMap();
-    }
-
     @Override
     public List<WindowSpec> getContentSpecs() {
-        return Collections.emptyList();
-    }
+        var results = new ArrayList<WindowSpec>();
+        
+		// Add all internal windows.
+		for (var window1 : windows) {
 
-    /**
-     * Get the assigned audio player.
-     */
-    @Override
-    public AudioPlayer getAudio() {
-        return audio;
-    }
+            var content = window1.getContent();
+            Properties props = null;
+            if (content instanceof ConfigurableWindow cw) {
+                props = cw.getUIProps();
+            }
+            else {
+                props = new Properties();
+            }
 
-    @Override
-    public UIConfig getConfig() {
-        return config;
+            var winName = content.getName();
+            var winType = content instanceof EntityContentPanel ? UIConfig.UNIT : UIConfig.TOOL;
+            var wp = new WindowSpec(winName, null, null, 0, winType, props);
+            results.add(wp);
+        }
+
+		return results;
     }
 
     @Override
     public void shutdown() {
+        super.shutdown();
+
         // Close the window and release resources
         speed.unregister();
-        dispose();
     }
 }

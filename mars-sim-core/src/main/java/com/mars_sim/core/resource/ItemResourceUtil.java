@@ -24,10 +24,8 @@ public class ItemResourceUtil {
 	
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(ItemResourceUtil.class.getName());
-
-	private static final int FIRST_ITEM_RESOURCE_ID = ResourceUtil.FIRST_ITEM_RESOURCE_ID;
 	
-	public static final int AIRLEAK_PATCH_ID = FIRST_ITEM_RESOURCE_ID;
+	public static final int AIRLEAK_PATCH_ID = ResourceType.FIRST_ITEM_RESOURCE_ID;
 	public static final int BATTERY_MODULE_ID = AIRLEAK_PATCH_ID + 1;
 	
 	public static final int FIRE_EXTINGUISHER_ID = BATTERY_MODULE_ID + 1;
@@ -96,7 +94,7 @@ public class ItemResourceUtil {
 		fixedItemResources.put("methanol fuel cell stack", METHANOL_FUEL_CELL_STACK_ID);
 		
 		// This check will only fail if a new resource has not been added correctly
-		int expectedSize = FIRST_FREE_ITEM_RESOURCE_ID - FIRST_ITEM_RESOURCE_ID;
+		int expectedSize = FIRST_FREE_ITEM_RESOURCE_ID - ResourceType.FIRST_ITEM_RESOURCE_ID;
 		if (fixedItemResources.size() != expectedSize) {
 			throw new IllegalStateException("The number of fixed item resources is not correct. Expected: " 
 					+ expectedSize + ", Actual: " + fixedItemResources.size());

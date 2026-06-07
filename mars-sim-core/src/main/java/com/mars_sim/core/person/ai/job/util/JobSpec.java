@@ -17,7 +17,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.Research;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.science.ScienceType;
@@ -34,7 +33,6 @@ public abstract class JobSpec {
 	private Map<RoleType, Double> jobProspects;
 	private JobType jobType;
 
-	protected static MissionManager missionManager;
 	protected static UnitManager unitManager;
 	
 	/**
@@ -72,11 +70,9 @@ public abstract class JobSpec {
 	 * Reloads instances after loading from a saved sim.
 	 * 
 	 * @param u {@link UnitManager}
-	 * @param m {@link MissionManager}
 	 */
-	public static void initializeInstances(UnitManager u, MissionManager m) {
+	public static void initializeInstances(UnitManager u) {
 		unitManager = u;
-		missionManager = m;
 	}
 
 	/**
@@ -142,7 +138,7 @@ public abstract class JobSpec {
 		double result = 0D;
 		Collection<Vehicle> parked = settlement.getParkedGaragedVehicles();
 		
-		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
 			if (mission instanceof RoverMission rm) {
 				Rover rover = rm.getRover();
 				if ((rover != null) && !parked.contains(rover)) {

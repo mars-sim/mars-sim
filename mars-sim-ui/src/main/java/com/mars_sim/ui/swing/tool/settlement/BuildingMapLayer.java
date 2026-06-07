@@ -36,10 +36,17 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
 public class BuildingMapLayer extends AbstractMapLayer {
 
 	private static final String HATCH = "hatch";
+	
 	private static final String HALLWAY = "Hallway";
 	private static final String H = "H";
 	private static final String TUNNEL = "Tunnel";
 	private static final String T = "T";
+	private static final String BRICKWAY = "Brickway";
+	private static final String B = "B";
+	private static final String BRICKCORE3 = "Brickcore3x3";
+	private static final String B3 = "B3";
+	private static final String BRICKCORE9 = "Brickcore3x9";
+	private static final String B9 = "B9";
 	
     // Static members
     private static final Font SPOT_FONT = new Font(Font.SERIF, Font.ITALIC, 3); 
@@ -55,24 +62,27 @@ public class BuildingMapLayer extends AbstractMapLayer {
     private static final Color BLACK_OUTLINE = new Color(0, 0, 0, 190);
 	private static final Color WHITE_OUTLINE = new Color(255, 255, 255, 190);
 	private static final Color GREY_OUTLINE = new Color(192, 192, 192, 190);
- 	private static final ColorChoice BUILDING_COLOR = new ColorChoice(Color.gray.darker(), WHITE_OUTLINE);
+	private static final Color DARK_GREEN = Color.GREEN.darker().darker();
+	private static final Color ULTRA_VIOLET = new Color (115, 102, 189);
+	private static final Color LIGHT_VIOLET = new Color (214, 180, 252);
+ 	private static final ColorChoice BUILDING_COLOR = new ColorChoice(Color.GRAY.darker(), WHITE_OUTLINE);
     private static final ColorChoice SPOT_COLOR = new ColorChoice(Color.BLACK, GREY_OUTLINE);
 
-	private static final Map<BuildingCategory,ColorChoice> BUILDING_COLORS = new EnumMap<>(BuildingCategory.class);
+	private static final Map<BuildingCategory, ColorChoice> BUILDING_COLORS = new EnumMap<>(BuildingCategory.class);
 
 	static {
-		BUILDING_COLORS.put(BuildingCategory.WORKSHOP, new ColorChoice(new Color(195, 176, 145), WHITE_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.WORKSHOP, new ColorChoice(new Color(195, 176, 145).darker(), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.LABORATORY, new ColorChoice(new Color(51, 102, 153), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.LIVING, new ColorChoice(new Color (236, 121, 154).darker(), WHITE_OUTLINE));
-		BUILDING_COLORS.put(BuildingCategory.MEDICAL, new ColorChoice(new Color (51, 204, 255), WHITE_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.MEDICAL, new ColorChoice(new Color (51, 204, 255).darker(), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.COMMAND, new ColorChoice(new Color(255, 102, 102).darker(), WHITE_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.VEHICLE, new ColorChoice(Color.yellow, GREY_OUTLINE));
 		BUILDING_COLORS.put(BuildingCategory.CONNECTION, new ColorChoice(Color.gray, WHITE_OUTLINE));
-		BUILDING_COLORS.put(BuildingCategory.FARMING, new ColorChoice(new Color (133, 187, 101), WHITE_OUTLINE));
-		BUILDING_COLORS.put(BuildingCategory.PROCESSING, new ColorChoice(new Color (182, 201, 255), BLACK_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.FARMING, new ColorChoice(DARK_GREEN, WHITE_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.PROCESSING, new ColorChoice(LIGHT_VIOLET, Color.GRAY.darker()));
 		BUILDING_COLORS.put(BuildingCategory.POWER, new ColorChoice(new Color(174, 198, 207), BLACK_OUTLINE));
-		BUILDING_COLORS.put(BuildingCategory.EVA, new ColorChoice(new Color (184, 134, 11), WHITE_OUTLINE));
-		BUILDING_COLORS.put(BuildingCategory.ERV, new ColorChoice(new Color (83, 83, 83), WHITE_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.EVA, new ColorChoice(new Color (184, 134, 11).darker(), WHITE_OUTLINE));
+		BUILDING_COLORS.put(BuildingCategory.ERV, new ColorChoice(new Color (51, 0, 0), WHITE_OUTLINE));
 	}
         
     private SettlementMapPanel mapPanel;
@@ -142,7 +152,8 @@ public class BuildingMapLayer extends AbstractMapLayer {
         }
 
         if (showLabel) {
-            String[] words = building.getName().replace(HALLWAY, H).replace(TUNNEL, T).split(" ");
+            String[] words = building.getName().replace(HALLWAY, H).replace(TUNNEL, T)
+            		.replace(BRICKWAY, B).replace(BRICKCORE3, B3).replace(BRICKCORE9, B9).split(" ");
     
             ColorChoice frontColor = BUILDING_COLORS.getOrDefault(building.getCategory(), BUILDING_COLOR);
 

@@ -72,6 +72,8 @@ public abstract class AbstractMobileUnit extends Unit
 	protected void setContainer(UnitHolder destination, LocationStateType newState) {
 		this.locnState = newState;
 		container = destination;
+
+		fireUnitUpdate(CONTAINER_EVENT);
 	}
 
 	/**

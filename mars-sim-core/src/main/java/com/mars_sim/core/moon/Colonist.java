@@ -1,6 +1,6 @@
 package com.mars_sim.core.moon;
 
-import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.person.PersonBuilder;
 import com.mars_sim.core.person.ai.SkillManager;
 import com.mars_sim.core.person.ai.SkillOwner;
@@ -8,7 +8,7 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.time.Temporal;
 import com.mars_sim.core.tool.RandomUtil;
 
-public abstract class Colonist implements Entity, SkillOwner, Temporal {
+public abstract class Colonist implements SkillOwner, Temporal {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -105,6 +105,11 @@ public abstract class Colonist implements Entity, SkillOwner, Temporal {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("Colonist", name);
 	}
 	
 	/**

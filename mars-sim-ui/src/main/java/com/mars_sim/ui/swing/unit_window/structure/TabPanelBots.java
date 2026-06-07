@@ -6,41 +6,31 @@
  */
 package com.mars_sim.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Collection;
-
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableModel;
 
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
-import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.JIntegerLabel;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
+import com.mars_sim.ui.swing.utils.model.BaseRobotModel;
 
 /**
  * This is a tab panel for robots.
  */
 @SuppressWarnings("serial")
-class TabPanelBots extends EntityTabPanel<Settlement> implements TemporalComponent {
+class TabPanelBots extends EntityTableTabPanel<Settlement> implements TemporalComponent {
 
 	private static final String ROBOT_ICON = "robot";
 
-	private int robotNumCache;
-	private int robotIndoorCache;
-
-	private Settlement settlement;
-
-	private JLabel robotNumLabel;
-	private JLabel robotIndoorLabel;
-	private UnitListPanel<Robot> robotList;
+	private JIntegerLabel robotNumLabel;
+	private BotModel model;
 
 
 	/**
@@ -54,55 +44,68 @@ class TabPanelBots extends EntityTabPanel<Settlement> implements TemporalCompone
 		super(
 			Msg.getString("robot.plural"), // $NON-NLS-1$
 			ImageLoader.getIconByName(ROBOT_ICON), null,
-			context, unit
+			unit, context
 		);
-
-		settlement = unit;
 	}
 
+	
+	/**
+	 * Info panel shows the bot count.
+	 */
 	@Override
-	protected void buildUI(JPanel content) {
+	protected JPanel createInfoPanel() {
 
 		// Prepare count spring layout panel.
 		AttributePanel countPanel = new AttributePanel(3);
-		content.add(countPanel, BorderLayout.NORTH);
 
 		// Create robot num label
-		robotNumCache = settlement.getNumBots();
-		robotNumLabel = countPanel.addTextField(Msg.getString("TabPanelBots.associated"),
-													Integer.toString(robotNumCache), null); // $NON-NLS-1$
+		robotNumLabel = new JIntegerLabel(getEntity().getNumBots());
+		countPanel.addLabelledItem(Msg.getString("TabPanelBots.associated"), robotNumLabel, null); // $NON-NLS-1$
 
-		// Create robot indoor label
-		robotIndoorCache = settlement.getNumBots();
-		robotIndoorLabel = countPanel.addTextField(Msg.getString("TabPanelBots.indoor"),
-													Integer.toString(robotIndoorCache), null);
-
-		// Create robot capacity label
 		countPanel.addTextField(Msg.getString("TabPanelBots.capacity"),
-											Integer.toString(settlement.getRobotCapacity()), null); // $NON-NLS-1$
-
-		// Create spring layout robot display panel
-		robotList = new UnitListPanel<>(getContext(), new Dimension(175, 200)) {
-			@Override
-			protected Collection<Robot> getData() {
-				return settlement.getAllAssociatedRobots();
-			}			
-		};
-		robotList.setBorder(SwingHelper.createLabelBorder(Msg.getString("robot.plural")));
-		content.add(robotList, BorderLayout.CENTER);
+											Integer.toString(getEntity().getRobotCapacity()), null); // $NON-NLS-1$
+		return countPanel;
 	}
 
 
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 		// Update robot num
-		if (robotNumCache != settlement.getNumBots()) {
-			robotNumCache = settlement.getNumBots();
-			robotNumLabel.setText(Integer.toString(robotNumCache));
-			robotIndoorLabel.setText(Integer.toString(robotIndoorCache));
+		robotNumLabel.setValue(getEntity().getNumBots());
+	
+		// Update robot list
+		model.update();
+	}
+
+
+	@Override
+	protected TableModel createModel() {
+		if (model == null) {
+			model = new BotModel(getEntity());
 		}
 
-		// Update robot list
-		robotList.update();
+		return model;
+	}
+
+	@Override
+	public void destroy() {
+		if (model != null) {
+			model.release();
+		}
+		super.destroy();
+	}
+
+	private static class BotModel extends BaseRobotModel {
+		private final Settlement home;
+
+		public BotModel(Settlement home) {
+			super(NAME, TASK);
+			this.home = home;
+		}
+
+		public void update() {
+			SwingUtilities.invokeLater(() -> 
+					setEntities(home.getAllAssociatedRobots()));
+		}
 	}
 }

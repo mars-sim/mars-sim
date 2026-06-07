@@ -26,13 +26,14 @@ import com.mars_sim.core.building.construction.ConstructionStage;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.ConstructionStageFormat;
-import com.mars_sim.ui.swing.utils.ToolTipTableModel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The TabPanelSiteGeneral is a tab panel for general information about a construction site.
@@ -103,7 +104,7 @@ class TabPanelSiteGeneral extends EntityTabPanel<ConstructionSite>
 		};
 		phaseTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
 
-		var scrollPane = StyleManager.createScrollBorder("Remaining Phases", phaseTable);
+		var scrollPane = SwingHelper.createScrollBorder("Remaining Phases", phaseTable, null);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		content.add(scrollPane, BorderLayout.CENTER);

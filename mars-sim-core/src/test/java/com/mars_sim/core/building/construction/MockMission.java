@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.MissionObjective;
 import com.mars_sim.core.person.Person;
@@ -21,14 +22,27 @@ import com.mars_sim.core.time.MarsTime;
 @SuppressWarnings("serial")
 public class MockMission implements Mission {
 
+    private boolean done = false;
+    private Settlement s;
+    private String name;
+
+    public MockMission(Settlement s) {
+        this(s, "test-mission");
+    }
+
+    public MockMission(Settlement s, String name) {
+        this.name = name;
+        this.s = s;
+    }
+
     @Override
     public String getContext() {
-        throw new UnsupportedOperationException("Unimplemented method 'getContext'");
+        return "Mock";
     }
 
     @Override
     public void abortMission(MissionStatus reason) {
-        throw new UnsupportedOperationException("Unimplemented method 'abortMission'");
+        done = true;        
     }
 
     @Override
@@ -38,12 +52,12 @@ public class MockMission implements Mission {
 
     @Override
     public boolean isDone() {
-        throw new UnsupportedOperationException("Unimplemented method 'isDone'");
+        return done;
     }
 
     @Override
     public String getName() {
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return name;
     }
 
     @Override
@@ -53,7 +67,7 @@ public class MockMission implements Mission {
 
     @Override
     public Settlement getAssociatedSettlement() {
-        throw new UnsupportedOperationException("Unimplemented method 'getAssociatedSettlement'");
+        return s;
     }
 
     @Override
@@ -184,7 +198,16 @@ public class MockMission implements Mission {
 
     @Override
     public void fireMissionUpdate(String eventType, Object target) {
-        throw new UnsupportedOperationException("Unimplemented method 'fireMissionUpdate'");
+        // Ignore in testing
     }
+
+	/**
+	 * Gets the unique identifier for the entity. This is used to uniquely identify the entity across the system and is immutable.
+	 */
+	@Override
+	public EntityIdentifier getEntityIdentifier() {
+		return new EntityIdentifier("MISSION", name,
+				Integer.toString(s.getIdentifier()));
+	}
 
 }

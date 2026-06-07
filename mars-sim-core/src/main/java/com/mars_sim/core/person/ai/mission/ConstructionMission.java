@@ -101,7 +101,8 @@ public class ConstructionMission extends AbstractMission {
 			p.getMind().setMission(this); // THis has probably already been set
 		}
 
-		var site = startingMember.getAssociatedSettlement().getConstructionManager().getNextConstructionSite(constructionSkill);
+		var home = startingMember.getAssociatedSettlement();
+		var site = home.getConstructionManager().getNextConstructionSite(constructionSkill);
 		if (site == null) {
 			endMission(NEW_CONSTRUCTION_STAGE_NOT_DETERMINED);
 			return;
@@ -112,7 +113,7 @@ public class ConstructionMission extends AbstractMission {
 		// e.g. Pouring the foundation, Building the frame, or Constructing the building
 
 		// Call missionManager to add this mission
-	    missionManager.addMission(this);
+	    home.getMissionControl().addMission(this);
 	}
 
 	/**
@@ -157,7 +158,6 @@ public class ConstructionMission extends AbstractMission {
 		var settlement = site.getAssociatedSettlement();
 		site.setWorkOnSite(this);
 
-		
 		// Site prepare time
 		sitePrepTime = SITE_PREPARE_TIME;
 		if (settlement.getPreferences().getBooleanValue(SettlementParameters.QUICK_CONST,
@@ -165,7 +165,6 @@ public class ConstructionMission extends AbstractMission {
 			sitePrepTime *= 0.1D;
 		}
 		
-
 		var stage = site.getCurrentConstructionStage();
 		// Reserve construction vehicles.
 		if (constructionVehicles == null) {
@@ -177,9 +176,6 @@ public class ConstructionMission extends AbstractMission {
 
 		objective = new ConstructionObjective(site, stage, constructionVehicles, luvAttachmentParts);
 		addObjective(objective);
-		
-		// Create mission designation
-		createDesignationString();
 
 		setPhase(PREPARE_SITE_PHASE, site.getAssociatedSettlement().getName());
 	}

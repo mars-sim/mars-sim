@@ -50,8 +50,6 @@ public class ClassicAirlock extends Airlock {
 	private static final double AIRLOCK_VOLUME_IN_LITER = AIRLOCK_VOLUME_IN_CM * 1000D; // 12 m^3
 
     // Data members.
-	/** True if airlock's state is in transition of change. */
-	private boolean transitioning;
 	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
@@ -692,24 +690,6 @@ public class ClassicAirlock extends Airlock {
 	public boolean isActivated() {
 		return activated;
 	}
-
-	/**
-	 * Allows or disallows the airlock to be transitioning its state.
-	 *
-	 * @param value
-	 */
-	public void setTransitioning(boolean value) {
-		transitioning = value;
-	}
-
-	/**
-	 * Checks if the airlock is allowed to be transitioning its state.
-	 *
-	 * @param value
-	 */
-	public boolean isTransitioning() {
-		return transitioning;
-	}
 	
 	/**
 	 * Gets the remaining airlock cycle time.
@@ -734,7 +714,7 @@ public class ClassicAirlock extends Airlock {
 
 			double time = pulse.getElapsed();
 			
-			if (transitioning) {
+			if (isTransitioning()) {
 				// Starts the air exchange and state transition
 				addTime(time);
 			}

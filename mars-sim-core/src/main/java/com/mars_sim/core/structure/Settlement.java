@@ -19,11 +19,11 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.activities.GroupActivity;
 import com.mars_sim.core.air.AirComposition;
@@ -69,6 +69,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.mineral.RandomMineralFactory;
+import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Commander;
 import com.mars_sim.core.person.Person;
@@ -88,7 +89,6 @@ import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.process.CompletedProcess;
-import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
@@ -97,13 +97,11 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MarsZone;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.tool.RandomUtil;
 import com.mars_sim.core.unit.UnitHolder;
 import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Rover;
-import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -120,7 +118,7 @@ public class Settlement extends Unit implements Temporal,
 	private static final SimLogger logger = SimLogger.getLogger(Settlement.class.getName());
 
 	// Static members
-	public static enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
+	public enum MeasureType {ICE_PROBABILITY, REGOLITH_PROBABILITY};
 	
 	private static final int NUM_BACKGROUND_IMAGES = 20;
 
@@ -176,10 +174,6 @@ public class Settlement extends Unit implements Temporal,
 	private static final double GREY_WATER_THRESHOLD = 0.00001;
 	/** Safe low temperature range. */
 	public static final double SAFE_TEMPERATURE_RANGE = 18;
-	/** Initial mission passing score. */
-	private static final double INITIAL_MISSION_PASSING_SCORE = 50D;
-	/** The Maximum mission score that can be recorded. */
-	private static final double MAX_MISSION_SCORE = 1000D;
 	/** Normal air pressure [in kPa]. */
 	private static final double NORMAL_AIR_PRESSURE = 34D;
 	/** Maximum percentage of citizens that are EVA'ing. */
@@ -212,8 +206,6 @@ public class Settlement extends Unit implements Temporal,
 	
 	/** The number of people at the start of the settlement. */
 	private int initialPopulation;
-	/** The number of robots at the start of the settlement. */
-	private int initialNumOfRobots;
 	/** The cache for the mission sol. */
 	private int solCache = 0;
 	/** Numbers of citizens of this settlement. */
@@ -251,8 +243,6 @@ public class Settlement extends Unit implements Temporal,
 	private double iceCollectionRate = RandomUtil.getRandomDouble(0.2, 1);
 	/** The rate [kg per millisol] of filtering grey water for irrigating the crop. */
 	private double greyWaterFilteringRate = 1;
-	/** The currently minimum passing score for mission approval. */
-	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
 	/** The settlement's current indoor temperature. */
 	private double currentTemperature = 22.5;
 	/** The settlement's current indoor pressure [in kPa], not Pascal. */
@@ -361,6 +351,7 @@ public class Settlement extends Unit implements Temporal,
 	
 	/** A history of completed processes. */
 	private History<CompletedProcess> processHistory = new History<>(80);
+	private MissionControl missionControl;
 	
 	private static SimulationConfig simulationConfig = SimulationConfig.instance();
 	private static SettlementConfig settlementConfig = simulationConfig.getSettlementConfiguration();
@@ -403,6 +394,7 @@ public class Settlement extends Unit implements Temporal,
 	
 		// Add chain of command
 		chainOfCommand = new ChainOfCommand(this);
+		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 
 		// Mock use the default shifts
 		// Initialize schedule event manager
@@ -410,6 +402,8 @@ public class Settlement extends Unit implements Temporal,
 		ShiftPattern shifts = settlementConfig.getShiftByPopulation(initialPopulation);
 		shiftManager = new ShiftManager(this, shifts,
 										masterClock.getMarsTime().getMillisolInt());
+
+		missionControl = new MissionControl(this);
 	}
 	
 	/**
@@ -435,11 +429,9 @@ public class Settlement extends Unit implements Temporal,
 		indoorPeople = new UnitSet<>();
 		touristPool = new UnitSet<>();
 		robotsWithin = new UnitSet<>();
-
-		final double GEN_MAX = 1_000_000;
 		
 		// Create equipment inventory
-		eqmInventory = new EquipmentInventory(this, GEN_MAX);
+		eqmInventory = new EquipmentInventory(this, MAX_STOCK_CAP);
 		futureEvents = new ScheduledEventManager(masterClock);
 		creditManager = new CreditManager(this, unitManager);
 
@@ -453,6 +445,8 @@ public class Settlement extends Unit implements Temporal,
 		
 		// Initialize the rationing instance
 		rationing = new Rationing(this);
+
+		missionControl = new MissionControl(this);
 	}
 
 	/**
@@ -465,17 +459,14 @@ public class Settlement extends Unit implements Temporal,
 	 * @param sponsor
 	 * @param location
 	 * @param populationNumber
-	 * @param initialNumOfRobots
 	 */
-	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber,
-			int initialNumOfRobots) {
+	private Settlement(String name, String template, Authority sponsor, Coordinates location, int populationNumber) {
 		// Use Structure constructor
 		super(name);
 
 		this.settlementCode = createCode(name);
 		this.location = location;
 		this.template = template;
-		this.initialNumOfRobots = initialNumOfRobots;
 		this.initialPopulation = populationNumber;
 		this.sponsor = sponsor;
 		this.zone = MarsZone.getMarsZone(location);
@@ -507,6 +498,8 @@ public class Settlement extends Unit implements Temporal,
 		rationing = new Rationing(this);
 		// Construct the Relation instance.
 		relation = new Relation(this);
+
+		missionControl = new MissionControl(this);
 	}
 
 
@@ -519,12 +512,11 @@ public class Settlement extends Unit implements Temporal,
 	 * @param sponsor
 	 * @param location
 	 * @param populationNumber
-	 * @param initialNumOfRobots
 	 * @return
 	 */
 	public static Settlement createNewSettlement(String name, String template, Authority sponsor,
-			Coordinates location, int populationNumber, int initialNumOfRobots) {
-		return new Settlement(name, template, sponsor, location, populationNumber, initialNumOfRobots);
+			Coordinates location, int populationNumber) {
+		return new Settlement(name, template, sponsor, location, populationNumber);
 	}
 
 	/**
@@ -610,7 +602,7 @@ public class Settlement extends Unit implements Temporal,
 		shiftManager = new ShiftManager(this, sTemplate.getShiftDefinition(),
 										 masterClock.getMarsTime().getMillisolInt());
 		// Initialize credit manager.
-		creditManager = new CreditManager(this);
+		creditManager = new CreditManager(this, unitManager);
 
 		// Initialize settlement task manager.
 		taskManager = new SettlementTaskManager(this);
@@ -623,10 +615,6 @@ public class Settlement extends Unit implements Temporal,
 
 		// Set objective
 		setObjective(sTemplate.getObjective(), 2);
-
-		// Initialize the missionScores list
-		missionScores = new ArrayList<>();
-		missionScores.add(INITIAL_MISSION_PASSING_SCORE);
 
 		// Create meetings
 		var meetings = sTemplate.getActivitySchedule();
@@ -1229,9 +1217,6 @@ public class Settlement extends Unit implements Temporal,
 		refreshResourceStat();
 		// refresh yesterday sleep map
 		refreshSleepMap();
-
-		// Decrease the Mission score.
-		minimumPassingScore *= 1.05;
 
 		// Check the Grey water situation
 		if (getSpecificAmountResourceStored(ResourceUtil.GREY_WATER_ID) < GREY_WATER_THRESHOLD) {
@@ -2136,29 +2121,7 @@ public class Settlement extends Unit implements Temporal,
 		.filter(v -> v.getVehicleType() == vehicleType)
 		.findAny().orElse(null);
 	}
-	
-	/**
-	 * Gets a mission capable rover.
-	 *
-	 * @return an mission capable rover
-	 * @throws MissionException if problem determining if vehicles are usable.
-	 */
-	public Vehicle getMissionCapableRover() {
-		Collection<Vehicle> list = getParkedGaragedVehicles();
-		if (list.isEmpty())
-			return null;
-		for (Vehicle v : list) {
-			if (VehicleType.isRover(v.getVehicleType())
-					&& !v.haveStatusType(StatusType.MAINTENANCE)
-					&& v.getMalfunctionManager().getMalfunctions().isEmpty()
-					&& v.isUsableVehicle()
-					&& !v.isReserved()) {
-				return v;
-			}
-		}
-		return null;
-	}
-	
+
 	/**
 	 * Adds an equipment to be owned by the settlement.
 	 *
@@ -2258,7 +2221,7 @@ public class Settlement extends Unit implements Temporal,
 	public Collection<Vehicle> getMissionVehicles() {
 		return ownedVehicles.stream()
 				.filter(v -> v.getMission() != null
-					&& (v.getMission().getStage() == Stage.ACTIVE))
+					&& !v.getMission().isDone())
 				.toList();
 	}
 
@@ -2429,15 +2392,6 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public int getInitialPopulation() {
 		return initialPopulation;
-	}
-
-	/**
-	 * Gets the initial number of robots the settlement.
-	 *
-	 * @return initial number of robots
-	 */
-	public int getInitialNumOfRobots() {
-		return initialNumOfRobots;
 	}
 
 	/**
@@ -2827,40 +2781,6 @@ public class Settlement extends Unit implements Temporal,
 	 */
 	public double getRegolithDemandCache() {
 		return regolithDemandCache;
-	}
-
-	/**
-	 * Calculates the current minimum passing score.
-	 *
-	 * @return
-	 */
-	public double getMinimumPassingScore() {
-		return minimumPassingScore;
-	}
-
-	/**
-	 * Saves the mission score.
-	 *
-	 * @param score
-	 */
-	public void saveMissionScore(double score) {
-
-		// Recalculate the new minimum score; minimum score ages in the timePulse method
-		double total = 0;
-		for (double s : missionScores) {
-			total += s;
-		}
-
-		// Simplify how minimum score is calculated. Use of trending scores
-		// seems to make it harder to get missions approved over time
-		minimumPassingScore = total / missionScores.size();
-
-		// Cap any very large score to protect the average
-		double desiredMax = MathUtils.between(minimumPassingScore * 1.5D, 0, MAX_MISSION_SCORE);
-		missionScores.add(Math.min(score, desiredMax));
-
-		if (missionScores.size() > 30)
-			missionScores.remove(0);
 	}
 
 	public double getOutsideTemperature() {
@@ -3620,6 +3540,14 @@ public class Settlement extends Unit implements Temporal,
 		return waterConsumptionRate;
 	}
 	
+	/**
+	 * Get the control for Missions of this Settlement.
+	 * @return
+	 */
+	public MissionControl getMissionControl() {
+		return missionControl;
+	}
+
 	/**
 	 * Reinitializes references after loading from a saved sim.
 	 */

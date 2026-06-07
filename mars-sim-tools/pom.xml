@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.mars-sim</groupId>
     <artifactId>mars-sim</artifactId>
-    <version>3.11.0</version>
+    <version>4.1</version>
   </parent>
   <artifactId>mars-sim-tools</artifactId>
   <dependencies>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>7.0.6</version>
+      <version>7.0.7</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.mustache.java</groupId>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>
-      <version>1.21.2</version>
+      <version>1.22.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

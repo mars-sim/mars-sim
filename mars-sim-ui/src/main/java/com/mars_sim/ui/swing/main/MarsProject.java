@@ -29,12 +29,12 @@ import com.mars_sim.core.SimulationBuilder;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.Scenario;
+import com.mars_sim.ui.swing.ContentManager;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.configeditor.SimulationConfigEditor;
 import com.mars_sim.ui.swing.desktop.MainWindow;
 import com.mars_sim.ui.swing.docking.DockingWindow;
-import com.mars_sim.ui.swing.sound.AudioPlayer;
 
 /**
 * MarsProject is the main class for starting mars-sim's UI mode. It creates both the
@@ -49,19 +49,16 @@ public class MarsProject {
 	private static final String NEW = "new";
 	private static final String DOCKINGUI = "dockingui";
 	private static final String CLEANUI = "cleanui";
-	private static final String SANDBOX = "sandbox";
 	private static final String SITE_EDITOR = "site";
 	private static final String LOAD_ARG = "load";
+	private static final String DEBUGUI = "debugui";
 	
 	/** true if displaying graphic user interface. */
 	private boolean useNew = false;
 	private boolean useCleanUI = false;
 	private boolean useSiteEditor;
-	private boolean isSandbox = false;
 	private boolean useDockingUI = false;
 	private boolean useAudio = true;
-
-	private Simulation sim;
 
 	private String simFile;
 
@@ -79,6 +76,7 @@ public class MarsProject {
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
+  Simulation sim;
 				
 		SimulationBuilder builder = new SimulationBuilder();
 		
@@ -123,29 +121,21 @@ public class MarsProject {
 			if (!useCleanUI || askScreenConfig()) {
 				config.parseFile();
 			}
-
-			// Set up the look and feel library to be used
-			StyleManager.setStyles(config.getPropSets());
 		
-			// Start audio if enabled
-			AudioPlayer audio = null;
-			if (useAudio) {
-				Properties props = config.getPropSet(UIConfig.AUDIO_PROPS);
-				audio = new AudioPlayer(props);
-			}
-			
 			// Build main window
+			ContentManager contentMgr = null;
 			splashWindow.setStatusMessage("Starting the Main Window...");
-			if (useDockingUI) {
-				DockingWindow.create(sim, config, audio);
+			if (config.useDockingUI() || useDockingUI) {
+				contentMgr = DockingWindow.create(sim, config, useAudio);
 			}
 			else {
-				new MainWindow(sim, config, audio);
+				contentMgr = new MainWindow(sim, config, useAudio);
 			}
 
 			// Switch from Splash to main window as one
 			SwingUtilities.invokeLater(splashWindow::remove);
 
+			var audio = contentMgr.getAudio();
 			if (audio != null) {
 				audio.playRandomTracks();
 			}
@@ -256,8 +246,8 @@ public class MarsProject {
 				.desc("Disable loading stored UI configurations").get());
 		options.addOption(Option.builder(DOCKINGUI)
 				.desc("Enable the docking UI").get());
-		options.addOption(Option.builder(SANDBOX)
-				.desc("Start in Sandbox Mode").get());
+		options.addOption(Option.builder(DEBUGUI)
+				.desc("Enable debug UI").get());
 		options.addOption(Option.builder(NEW)
 				.desc("Enable quick start").get());
 		options.addOption(Option.builder(SITE_EDITOR)
@@ -278,6 +268,7 @@ public class MarsProject {
 				usage("See available options below", options);
 			}
 			useNew = line.hasOption(NEW);
+			StyleManager.setDebug(line.hasOption(DEBUGUI));
 			useCleanUI = line.hasOption(CLEANUI);
 			useDockingUI = line.hasOption(DOCKINGUI);
 
@@ -289,7 +280,6 @@ public class MarsProject {
 			}
 			
 			useSiteEditor = line.hasOption(SITE_EDITOR);
-			isSandbox = line.hasOption(SANDBOX);
 		}
 		catch (ParseException e) {
 			usage("Problem with arguments: " + e.getMessage(), options);
@@ -339,11 +329,11 @@ public class MarsProject {
 	 */
 	private void usage(String message, Options options) {
         // New non-deprecated HelpFormatter (Commons CLI 1.10+)
-        final HelpFormatter fmt = HelpFormatter.builder().get();
+        final HelpFormatter fmt = HelpFormatter.builder().setShowSince(false).get();
         final String header = "\n" + message + "\n";
         final String footer = "";
         try {
-            fmt.printHelp("mars-sim-ui [options]", header, options, footer, true);
+            fmt.printHelp("mars-sim-ui", header, options, footer, true);
         } catch (IOException ioe) {
             // Fallback if printing help fails
             logger.severe(message);

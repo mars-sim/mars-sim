@@ -22,9 +22,9 @@ import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -143,18 +143,18 @@ class TabPanelSpecs extends EntityTabPanel<Vehicle>
 		grid2.addRow( "DT Efficiency", StyleManager.DECIMAL_PERC.format(100*vSpec.getDrivetrainEfficiency()));
 
 		grid2.addRow( "DT Fuel Energy", StyleManager.DECIMAL_KWH.format(vSpec.getDrivetrainFuelEnergy()));
-		grid2.addRow( "Base Range", StyleManager.DECIMAL_KM.format(v.getBaseRange()));
+		grid2.addRow( "Base Range", StyleManager.DECIMAL2_KM.format(v.getBaseRange()));
 
 		cumEnergyUsage = new JDoubleLabel(StyleManager.DECIMAL2_KWH);
 		grid2.addLabelledItem("Cum Energy Used", cumEnergyUsage, null);
 		
-		currentRange = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		currentRange = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		grid2.addLabelledItem("Current Range", currentRange, null);
 		
 		cumFuelUsage = new JDoubleLabel(StyleManager.DECIMAL_KG);
 		grid2.addLabelledItem("Cum Fuel Used", cumFuelUsage, null);
 
-		estimatedRange = new JDoubleLabel(StyleManager.DECIMAL_KM);
+		estimatedRange = new JDoubleLabel(StyleManager.DECIMAL2_KM);
 		grid2.addLabelledItem("Estimated Range", estimatedRange, null);
 
 		// Load the dynamic values

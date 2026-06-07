@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -48,11 +50,11 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.components.MarsTimeTableCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -196,14 +198,17 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		JPanel bedPanel = new JPanel(new BorderLayout(8, 1));
 		northPanel.add(bedPanel);
 	
-		// Prepare bed time ta
+		// Prepare sleep times JList
 		sleepTimes = new DefaultListModel<>();
 		var sleeps = new JList<>(sleepTimes);
-		sleeps.setToolTipText("The 3 best times to go to bed [msol (weight)]");
+		DefaultListCellRenderer renderer = (DefaultListCellRenderer) sleeps.getCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		sleeps.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+		sleeps.setToolTipText("The 3 best times to go to bed [At # msol (weight)]");
 
 		// Wrap with a panel to get border correct
 		var sleepsPanel = new JPanel(new BorderLayout());
-		sleepsPanel.setBorder(SwingHelper.createLabelBorder("Sleep times"));
+		sleepsPanel.setBorder(SwingHelper.createLabelBorder("Sleep Times"));
 		sleepsPanel.add(sleeps, BorderLayout.CENTER);
 		
 		// Prepare panel for bed time ta .
@@ -213,8 +218,12 @@ class TabPanelHealth extends EntityTabPanel<Person>
 
 		// Prepare panel for bed location
 		JPanel bedLocPanel = new JPanel(new BorderLayout(0, 0));
-		bedLocationLabel = new JLabel("Assigned : ", SwingConstants.CENTER);
-		bedLocPanel.add(bedLocationLabel);
+		JPanel bedAssignedPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		JLabel lodgingLabel = new JLabel("Lodging Assigned : ", SwingConstants.CENTER);
+		bedLocationLabel = new JLabel();
+		bedLocPanel.add(bedAssignedPanel);
+		bedAssignedPanel.add(lodgingLabel);
+		bedAssignedPanel.add(bedLocationLabel);
 		bedPanel.add(bedLocPanel, BorderLayout.NORTH);
 			
 		// Prepare middle panel
@@ -366,13 +375,13 @@ class TabPanelHealth extends EntityTabPanel<Person>
             }
         };
 	
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		DefaultTableCellRenderer renderer1 = new DefaultTableCellRenderer();
+		renderer1.setHorizontalAlignment(SwingConstants.CENTER);
 		TableColumnModel rModel = radiationTable.getColumnModel();
-		rModel.getColumn(0).setCellRenderer(renderer);
-		rModel.getColumn(1).setCellRenderer(renderer);
-		rModel.getColumn(2).setCellRenderer(renderer);
-		rModel.getColumn(3).setCellRenderer(renderer);
+		rModel.getColumn(0).setCellRenderer(renderer1);
+		rModel.getColumn(1).setCellRenderer(renderer1);
+		rModel.getColumn(2).setCellRenderer(renderer1);
+		rModel.getColumn(3).setCellRenderer(renderer1);
 
 		radiationTable.setPreferredScrollableViewportSize(new Dimension(225, 65));
 		rModel.getColumn(0).setPreferredWidth(35);
@@ -497,13 +506,13 @@ class TabPanelHealth extends EntityTabPanel<Person>
 	}
 
 	/**
-	 * Updates the sleep time.
-	 * @param  person Person being observed 
+	 * Updates the sleep times.
 	 * 
+	 * @param  person Person being observed 
 	 * @return Text representation of sleep time
 	 */
 	private void updateSleepTime(Person person) {	
-		// Checks the 3 best sleep time
+		// Checks the 3 best sleep times
 		sleepTimes.clear();
 
     	int [] bestSleepTime = person.getPreferredSleepHours();
@@ -513,10 +522,10 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		}
 		Arrays.sort(bestSleepTime);
 		
-		// Prepare sleep time TF
+		// Prepare sleep time TFA
 		for (int i=0; i<size; i++) {
 			int sleepTime = bestSleepTime[i];
-			String text = sleepTime + " msol (w:" + person.getSleepWeight(sleepTime) + ")";
+			String text = "\t" + "At " + sleepTime + " msol (weight:" + person.getSleepWeight(sleepTime) + ")";
 			sleepTimes.addElement(text);
 		}
 	}
@@ -561,7 +570,7 @@ class TabPanelHealth extends EntityTabPanel<Person>
 		if (allocatedBed != null) {
 			bedText = allocatedBed.getSpotDescription();
 		}
- 		bedLocationLabel.setText("Assigned : " + bedText);
+ 		bedLocationLabel.setText(bedText);
 		
 		// Update sleep time table model
 		sleepExerciseTableModel.update(circadianClock);

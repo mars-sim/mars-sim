@@ -19,7 +19,7 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.TemporalComponent;
 
 /**
- * This class renders a ContentPanel into an InternalWindow that can be displayed in a DesktopPane.
+ * This class renders a Content Window into an InternalWindow that can be displayed in a DesktopPane.
  */
 @SuppressWarnings("serial")
 public class ContentWindow extends JInternalFrame
@@ -30,13 +30,14 @@ public class ContentWindow extends JInternalFrame
     private ContentPanel content;
 
     /**
-     * Create an internal window to display the specified content panel inside a desktiop.
+     * Creates an internal window to display the specified content panel inside a desktop.
+     * 
      * @param desktop
      * @param content
      */
     public ContentWindow(MainDesktopPane desktop, ContentPanel content) {
 
-		// use JInternalFrame constructor
+		// Use JInternalFrame constructor
 		super(content.getTitle(), true, // resizable
 				true, // closable
 				false, // maximizable
@@ -59,7 +60,8 @@ public class ContentWindow extends JInternalFrame
     }
 
     /**
-     * Get the content panel being displayed in this window
+     * Gets the content panel being displayed in this window.
+     * 
      * @return
      */
     public ContentPanel getContent() {
@@ -68,8 +70,8 @@ public class ContentWindow extends JInternalFrame
 
 	/**
 	 * Updates window. 
-	 * Note: This is overridden by subclasses.
 	 * 
+	 * @Note: This is overridden by subclasses
 	 * @param pulse Clock step advancement
 	 */
     @Override
@@ -78,7 +80,7 @@ public class ContentWindow extends JInternalFrame
     }
 
     /**
-     * Destroy the assocaited content panel.
+     * Destroy the associated content panel.
      */
     public void destroy() {
         content.destroy();

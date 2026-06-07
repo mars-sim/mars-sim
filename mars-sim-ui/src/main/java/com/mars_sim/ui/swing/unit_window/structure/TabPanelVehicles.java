@@ -7,7 +7,7 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 
-import java.util.Collection;
+import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -16,12 +16,11 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.unit_window.UnitListPanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.model.BaseVehicleModel;
 
 /** 
  * The TabPanelVehicles is a tab panel for parked vehicles and vehicles on mission.
@@ -32,8 +31,8 @@ class TabPanelVehicles extends EntityTabPanel<Settlement>
 	
 	private static final String SUV_ICON ="vehicle";
 	
-	private UnitListPanel<Vehicle> parkedVehicles;
-	private UnitListPanel<Vehicle> missionVehicles;
+	private ParkedVehicleModel parkedVehicles;
+	private MissionVehicleModel missionVehicles;
 	
 	/**
 	 * Constructor.
@@ -57,29 +56,65 @@ class TabPanelVehicles extends EntityTabPanel<Settlement>
 		content.add(vehiclePanel);
 
 		// Parked Vehicles
-		parkedVehicles = new UnitListPanel<>(getContext()) {
-			@Override
-			protected Collection<Vehicle> getData() {
-				return settlement.getParkedGaragedVehicles();
-			}
-		};
-		parkedVehicles.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelVehicles.parked.vehicles")));
-		vehiclePanel.add(parkedVehicles);
+		var dim = new Dimension(-1, 100);
+		parkedVehicles = new ParkedVehicleModel(settlement);
+		parkedVehicles.update();
+		vehiclePanel.add(SwingHelper.createScrolledTable(parkedVehicles, getContext(),
+					Msg.getString("TabPanelVehicles.parked.vehicles"), dim));
 
 		// Mission vehicles
-		missionVehicles = new UnitListPanel<>(getContext()) {
-			@Override
-			protected Collection<Vehicle> getData() {
-				return settlement.getMissionVehicles();
-			}
-		};
-		missionVehicles.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelVehicles.mission.vehicles")));
-		vehiclePanel.add(missionVehicles);
+		missionVehicles = new MissionVehicleModel(settlement);
+		missionVehicles.update();
+		vehiclePanel.add(SwingHelper.createScrolledTable(missionVehicles, getContext(),
+			Msg.getString("TabPanelVehicles.mission.vehicles"), dim));
 	}
 
 	@Override
 	public void entityUpdate(EntityEvent event) {
 		parkedVehicles.update();
 		missionVehicles.update();
+	}
+
+	@Override
+	public void destroy() {
+		if (parkedVehicles != null) {
+			parkedVehicles.release();
+		}
+		if (missionVehicles != null) {
+			missionVehicles.release();
+		}
+		super.destroy();
+	}
+
+	/**
+	 * The MissionVehicleModel is a model for mission vehicles.
+	 */
+	private static class MissionVehicleModel extends BaseVehicleModel {
+		private Settlement settlement;
+
+		public MissionVehicleModel(Settlement settlement) {
+			super(NAME, MISSION);
+			this.settlement = settlement;
+		}
+
+		public void update() {
+			setEntities(settlement.getMissionVehicles());
+		}
+	}
+
+	/**
+	 * The ParkedVehicleModel is a model for parked vehicles.
+	 */
+	private static class ParkedVehicleModel extends BaseVehicleModel {
+		private Settlement settlement;
+		
+		public ParkedVehicleModel(Settlement settlement) {
+			super(NAME, TYPE);
+			this.settlement = settlement;
+		}
+
+		public void update() {
+			setEntities(settlement.getParkedGaragedVehicles());
+		}
 	}
 }

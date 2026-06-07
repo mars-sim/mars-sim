@@ -79,6 +79,7 @@ public class VehicleUnitWindow extends EntityContentPanel<Vehicle> {
 		addTabPanel(new TabPanelTow(vehicle, context));
 
 		applyProps(props);
+		activateListener();
 	}
 
 	/**

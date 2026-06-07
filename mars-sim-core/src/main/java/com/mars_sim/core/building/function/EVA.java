@@ -89,26 +89,6 @@ public class EVA extends Function {
 	public Airlock getAirlock() {
 		return airlock;
 	}
-
-	public int getNumAwaitingInnerDoor() {
-		return airlock.getNumAwaitingInnerDoor();
-	}
-	
-	public int getNumAwaitingOuterDoor() {
-		return airlock.getNumAwaitingOuterDoor();
-	}
-	
-	public int getNumEmptied() {
-		return airlockCapacity - getNumOccupiedActivitySpots();
-	}
-	
-	public int getNumInChamber() {
-		return getNumOccupiedActivitySpots();
-	}
-	
-	public String getOperatorName() {
-		return airlock.getOperatorName();
-	}
 	
 	/**
 	 * Time passing for the building.
@@ -131,8 +111,8 @@ public class EVA extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getCombinedPowerLoad() {
-		return 0.75;
+	public double getFullPowerLoad() {
+		return 1.25;
 	}
 
 	/**
@@ -141,8 +121,8 @@ public class EVA extends Function {
 	 * @return power (kW)
 	 */
 	@Override
-	public double getLowPowerRequired() {
-		return 0.075;
+	public double getLowPowerLoad() {
+		return 0.1 * getFullPowerLoad();
 	}
 
 	@Override

@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool;
 
+import java.util.List;
 import java.util.Properties;
 
 import com.mars_sim.core.Simulation;
@@ -15,6 +16,7 @@ import com.mars_sim.ui.swing.astroarts.OrbitViewer;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
 import com.mars_sim.ui.swing.tool.console.ConsolePanel;
 import com.mars_sim.ui.swing.tool.entitybrowser.EntityBrowser;
+import com.mars_sim.ui.swing.tool.eventviewer.EventViewer;
 import com.mars_sim.ui.swing.tool.guide.GuideWindow;
 import com.mars_sim.ui.swing.tool.metrics.MetricChartViewer;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
@@ -44,11 +46,12 @@ public class ToolRegistry {
     public record ToolInfo(String name, ToolCategory category, String title, String iconName) {}
 
     // List of all available tools
-    public static final ToolInfo[] TOOL_INFOS = {
+    public static final List<ToolInfo> TOOL_INFOS = List.of(
         new ToolInfo(NavigatorWindow.NAME, ToolCategory.GENERIC, NavigatorWindow.TITLE, NavigatorWindow.ICON),
         new ToolInfo(SettlementWindow.NAME, ToolCategory.GENERIC, SettlementWindow.TITLE, SettlementWindow.ICON),
         new ToolInfo(EntityBrowser.NAME, ToolCategory.GENERIC, EntityBrowser.TITLE, EntityBrowser.ICON),
         new ToolInfo(MonitorWindow.NAME, ToolCategory.GENERIC, MonitorWindow.TITLE, MonitorWindow.ICON),
+        new ToolInfo(EventViewer.NAME, ToolCategory.GENERIC, EventViewer.TITLE, EventViewer.ICON),
         new ToolInfo(CommanderWindow.NAME, ToolCategory.GENERIC, CommanderWindow.TITLE, CommanderWindow.ICON),
         new ToolInfo(OrbitViewer.NAME, ToolCategory.UTILITY, OrbitViewer.TITLE, OrbitViewer.ICON),
         new ToolInfo(TimeTool.NAME, ToolCategory.UTILITY, TimeTool.TITLE, TimeTool.ICON),
@@ -56,7 +59,7 @@ public class ToolRegistry {
         new ToolInfo(SearchWindow.NAME, ToolCategory.UTILITY, SearchWindow.TITLE, SearchWindow.ICON),
         new ToolInfo(ConsolePanel.NAME, ToolCategory.GENERIC, ConsolePanel.TITLE, ConsolePanel.ICON),
         new ToolInfo(MetricChartViewer.NAME, ToolCategory.GENERIC, MetricChartViewer.TITLE, MetricChartViewer.ICON)
-    };
+    );
 
     /**
      * Build a tool for the given tool name.
@@ -73,12 +76,13 @@ public class ToolRegistry {
 			case TimeTool.NAME -> new TimeTool(sim);
 			case GuideWindow.NAME -> new GuideWindow(sim.getConfig()); 
 			case SearchWindow.NAME -> new SearchWindow(context);
+            case EventViewer.NAME -> new EventViewer(context, toolProps);
 			case CommanderWindow.NAME -> new CommanderWindow(context);
             case MetricChartViewer.NAME -> new MetricChartViewer(sim.getMetricManager());
 			case SettlementWindow.NAME -> new SettlementWindow(context, toolProps);
             case NavigatorWindow.NAME -> new NavigatorWindow(context, toolProps);
             case MonitorWindow.NAME -> new MonitorWindow(context, toolProps);
-            case ConsolePanel.NAME -> new ConsolePanel(context, toolProps);
+            case ConsolePanel.NAME -> new ConsolePanel(context);
 			default -> null;
 		};
     }

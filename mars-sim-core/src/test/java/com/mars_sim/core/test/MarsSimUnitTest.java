@@ -1,5 +1,8 @@
 package com.mars_sim.core.test;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.junit.jupiter.api.BeforeEach;
 
 import com.mars_sim.core.MarsSimContext;
@@ -236,6 +239,14 @@ public abstract class MarsSimUnitTest {
 		getSim().getUnitManager().addUnit(settlement);
 
 		return settlement;
+	}
+
+	public static void loadSettlementAmounts(Settlement target, Map<Integer, Double> resourcesMap) {
+		for (Entry<Integer, Double> resource : resourcesMap.entrySet()) {
+			// Add extra to the stored to give a tolerance
+			double amount = resource.getValue().doubleValue() + 0.01D;
+			target.storeAmountResource(resource.getKey(), amount);
+		}
 	}
 
 	/**

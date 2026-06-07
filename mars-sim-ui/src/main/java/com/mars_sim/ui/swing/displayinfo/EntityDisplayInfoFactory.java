@@ -85,4 +85,25 @@ public final class EntityDisplayInfoFactory {
 			default -> null;
 		};
 	}
+
+	/**
+	 * This is a convience method to get a sounds for an Entity.
+	 * It is the equivalent of
+	 * <code>
+	 * var displayInfo = EntityDisplayInfoFactory.getDisplayInfo(entity);
+	 * if (displayInfo != null) {
+	 *    return displayInfo.getSound(entity);
+	 * }
+	 * return null;
+	 * </code>
+	 * @param entity Entity a soudns is needed for
+	 * @return Sounds name or null.
+	 */
+    public static String getSound(Entity entity) {
+		var displayInfo = getDisplayInfo(entity);
+		if (displayInfo != null) {
+			return displayInfo.getSound(entity);
+		}
+		return null;
+    }
 }

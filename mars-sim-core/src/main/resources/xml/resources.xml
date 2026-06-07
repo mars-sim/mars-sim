@@ -153,7 +153,7 @@
 
 <!-- food resources derived from crop produce -->
 	<resource name="Glucose" type="derived" phase="solid" edible="true">Glucose can be used for providing food for bio-organism
-		to work in bio-reactors to produce compounds.</resource>
+		to work in bio-reactors to produce compounds. Can be processed from Sugarcane or from a bio-reactor process.</resource>
 	<resource name="Cane fiber" type="derived" phase="solid" edible="true">Fiber processed from Sugarcane.</resource>
 	<resource name="Leaves" type="derived" phase="solid" edible="true">Edible leaves extracted during harvest. A filler fiber for meal</resource>
 	<resource name="Sesame milk" type="derived" phase="liquid" edible="true">Plant milk produced by soaking dry Soybean and sesame seeds and grinding them with water.</resource>
@@ -177,7 +177,6 @@
 	<resource name="Rice vinegar" type="derived" phase="liquid" edible="true">Rice vinegar is more popular in the cuisines of East and Southeast Asia. It is available in "white" (light yellow), red, and black varieties.</resource>
 	<resource name="Roasted peanut" type="derived" phase="solid" edible="true"></resource>
 	<resource name="Sugarcane juice" type="derived" phase="liquid" edible="true">Juice made from Sugarcane</resource>
-	<resource name="Sugar" type="derived" phase="solid" edible="true">Sugar processed from Sugarcane.</resource>
 	<resource name="Veggie patty" type="derived" phase="solid" edible="true">Made of textured vegetable protein (like soy), legumes (beans), tofu, nuts, mushrooms, or grains or seeds, like wheat and flax. </resource>
 	<resource name="Wheat noodle" type="derived" phase="solid" edible="true">Noodle made of Wheat Flour.</resource>
 	<resource name="Wheat flour" type="derived" phase="solid" edible="true">Flour made from wheat kernel.</resource>
@@ -219,16 +218,56 @@
 	<resource name="Lemon" type="crop" phase="solid" edible="true"></resource>
 	<resource name="Cinnamon" type="crop" phase="solid" edible="true"></resource>
 				
+<!-- Bio-organisms 
+
+    Nitrification itself is a two-step aerobic process, each step facilitated by a 
+    different type of bacteria. The oxidation of ammonia (NH3) to nitrite (NO2−) 
+    is most often facilitated by Nitrosomonas spp. ("nitroso" referring to the formation
+    of a nitroso functional group). Nitrite oxidation to nitrate (NO3−), though 
+    traditionally believed to be facilitated by Nitrobacter spp. (nitro referring 
+    the formation of a nitro functional group), is now known to be facilitated in 
+    the environment almost exclusively by Nitrospira spp.
+    
+    Reference : 
+    1. http://en.wiki2.org/wiki/Sewage_treatment
+	2. http://www.the-compost-gardener.com/nitrogen-fixing-bacteria.html
+-->
+	<resource name="Acetic acid bacteria" type="organism" phase="solid">This bacteria has the ability to oxidize
+		many types of sugars and alcohols to organic acids as end products during fermentation
+		process. Useful for making vinegar.</resource>
+	<resource name="Nitrospira SPP" type="organism" phase="solid">Used in the oxidation of nitrite to nitrate
+		(NO3−) in the nitrification of waste water.</resource>
+	<resource name="Nitrosomonas SPP" type="organism" phase="solid"> Used in the oxidation of ammonia (NH3)
+		to nitrite (NO2−) in the nitrification of waste water.</resource>
+	<resource name="Rhizobia" type="organism" phase="solid"> Seen as organic fertilizer, the nitrogen fixing
+		bacteria that colonize the roots of their preferred plant partner and take nitrogen
+		from the air and convert it into ammonia, a form of nitrogen that plants can use.
+		In return, legumes feed the bacteria a steady diet of plant sugars.
+	 </resource>
+	<resource name="Cyanobacteria" type="organism" phase="solid" edible="false">
+		Photoautotrophic Cyanobacteria are useful for an industrial scale, bio-based process. Strains are genetically modified to express 
+		the ethylene-forming enzyme (EFE) from Pseudomonas syringae.  This process enables the direct solar-driven conversion of CO2 
+		into ethylene, a volatile hydrocarbon used in the plastic industry, by directing cellular carbon flux toward the primary 
+		metabolite 2-oxoglutarate. </resource>
+	<resource name="Anaerobes" type="organism" phase="solid" edible="false">
+		Anaerobes are anaerobic bacteria that does glucose fermentations to produce acetate, C02 and H2 in a bio-based process.  </resource>
+	<resource name="Methanotrophs" type="organism" phase="solid" edible="false">
+		Methanotrophs (sometimes called methanophiles) are prokaryotes that metabolize methane as their source of carbon and chemical energy.</resource>
+	<resource name="Methanoarchaea" type="organism" phase="solid" edible="false">
+		Methanogenic archaea produces methane as a catabolic end product.</resource>
+					 				
 <!-- Food resources derived from Bio-organism -->
 	<resource name="Aspergillus mix" type="organism" phase="solid" edible="true">
 		A mix of the fungi Aspergillus oryzae and 
 		Aspergillus sojae. Used in the fermentation of miso, soy sauce, and sake.</resource>
 	<resource name="Rhizopus oligosporus" type="organism" phase="solid" edible="true">
-		This edible fungus is used to ferment 
-		tempeh. As the fungus grows, its mycelia grow throughout the edible medium, producing
+		This edible fungus is used to ferment tempeh. As the fungus grows, its mycelia grow throughout the edible medium, producing
 		an edible block.</resource>
 	<resource name="Yeast" type="organism" phase="solid" edible="true">
 		Yeasts are single-celled fungi. It is an essential Baking Ingredient for making bread.</resource>
+	<resource name="Chlorella" type="organism" phase="solid" edible="true">
+		Chorella is commonly processed into organic tablets as a convenient and portable supplement form. 
+		They are also useful for an industrial scale, bio-based process.</resource>
 	<resource name="Spirulina" type="organism" phase="solid" edible="true">
 		Spirulina is multi-cellular and filamentous cyano-bacteria commonly known as blue-green algae that 
 		grows both in fresh as well as salt water. Similar to plants it produces energy from sunlight 
@@ -864,34 +903,6 @@
 
 <!-- Drugs and Supplements -->
 	<resource name="Immune booster" type="medical" phase="solid" >A Drug.</resource>
-
-<!-- Bio-organisms 
-
-    Nitrification itself is a two-step aerobic process, each step facilitated by a 
-    different type of bacteria. The oxidation of ammonia (NH3) to nitrite (NO2−) 
-    is most often facilitated by Nitrosomonas spp. ("nitroso" referring to the formation
-    of a nitroso functional group). Nitrite oxidation to nitrate (NO3−), though 
-    traditionally believed to be facilitated by Nitrobacter spp. (nitro referring 
-    the formation of a nitro functional group), is now known to be facilitated in 
-    the environment almost exclusively by Nitrospira spp.
-    
-    Reference : 
-    1. http://en.wiki2.org/wiki/Sewage_treatment
-	2. http://www.the-compost-gardener.com/nitrogen-fixing-bacteria.html
--->
-	<resource name="Acetic acid bacteria" type="organism" phase="solid">This bacteria has the ability to oxidize
-		many types of sugars and alcohols to organic acids as end products during fermentation
-		process. Useful for making vinegar.</resource>
-	<resource name="Nitrospira SPP" type="organism" phase="solid">Used in the oxidation of nitrite to nitrate
-		(NO3−) in the nitrification of waste water.</resource>
-	<resource name="Nitrosomonas SPP" type="organism" phase="solid"> Used in the oxidation of ammonia (NH3)
-		to nitrite (NO2−) in the nitrification of waste water.</resource>
-	<resource name="Rhizobia" type="organism" phase="solid"> Seen as organic fertilizer, the nitrogen fixing
-		bacteria that colonize the roots of their preferred plant partner and take nitrogen
-		from the air and convert it into ammonia, a form of nitrogen that plants can use.
-		In return, legumes feed the bacteria a steady diet of plant sugars.
-	 </resource>
-	 
 
 
 <!-- Misc. -->

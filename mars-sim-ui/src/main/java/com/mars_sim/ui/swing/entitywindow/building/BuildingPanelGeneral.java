@@ -11,24 +11,25 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
 import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The BuildingPanelGeneral class is a building function panel showing
  * the general status of a settlement building.
  */
-@SuppressWarnings("serial")
 class BuildingPanelGeneral extends EntityTabPanel<Building> {
 		
 	/**
 	 * Constructor.
+	 * 
 	 * @param building the building
 	 * @param context the UI context
 	 */
@@ -41,7 +42,7 @@ class BuildingPanelGeneral extends EntityTabPanel<Building> {
 	}
 
 	/**
-	 * Build the UI elements
+	 * Builds the UI elements.
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
@@ -62,16 +63,16 @@ class BuildingPanelGeneral extends EntityTabPanel<Building> {
 		AttributePanel infoPanel = new AttributePanel();
 		topPanel.add(infoPanel, BorderLayout.SOUTH);
 
-		infoPanel.addRow(Msg.getString("building.type"), building.getBuildingType());
-		infoPanel.addRow(Msg.getString("building.category"), building.getCategory().getName());
-		infoPanel.addRow(Msg.getString("building.construction"), building.getConstruction().name());
-
+		infoPanel.addTextField(Msg.getString("building.type"), building.getBuildingType(), null);
+		infoPanel.addTextField(Msg.getString("building.category"), building.getCategory().getName(), null);
+		infoPanel.addTextField(Msg.getString("building.construction"), Conversion.capitalize(building.getConstruction().name()), null);
+		infoPanel.addTextField(Msg.getString("building.templateid"), building.getTemplateID(), null);
 		// Prepare dimension label
-		infoPanel.addRow(Msg.getString("entity.internalPosn"), building.getPosition().getShortFormat(), 
+		infoPanel.addTextField(Msg.getString("entity.internalPosn"), building.getPosition().getShortFormat(), 
 				"The center x and y coordinates of this building, according to the Settlement Map");
-		infoPanel.addRow(Msg.getString("entity.dimension"), building.getLength() + " m x " + building.getWidth() 
+		infoPanel.addTextField(Msg.getString("entity.dimension"), building.getLength() + " m x " + building.getWidth() 
 			+ " m x 2.5 m", "Length x Width x Height");
-		infoPanel.addRow("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
+		infoPanel.addTextField("Floor Area", StyleManager.DECIMAL_M2.format(building.getFloorArea()),
 				"The floor area in square meters");
 	}
 }

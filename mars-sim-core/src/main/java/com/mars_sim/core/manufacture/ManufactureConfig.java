@@ -44,6 +44,7 @@ public class ManufactureConfig {
 	private static final String EQUIPMENT = "equipment";
 	private static final String BIN = "bin";
 	private static final String VEHICLE = "vehicle";
+	private static final String ROBOT = "robot";
 	private static final String SALVAGE = "salvage";
 	private static final String ITEM_NAME = "item-name";
 	private static final String TYPE = "type";
@@ -187,6 +188,7 @@ public class ManufactureConfig {
 			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.EQUIPMENT, outputs.getChildren(EQUIPMENT)));
 			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.BIN, outputs.getChildren(BIN)));
 			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.VEHICLE, outputs.getChildren(VEHICLE)));
+			outputList.addAll(ConfigHelper.parseProcessItems(ItemType.ROBOT, outputs.getChildren(ROBOT)));
 
 			// Add process to newList.
 			ManufactureProcessInfo process = new ManufactureProcessInfo(name, description,

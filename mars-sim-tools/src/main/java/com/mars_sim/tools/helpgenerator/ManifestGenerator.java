@@ -24,11 +24,15 @@ public class ManifestGenerator extends TypeGenerator<ResupplyManifest> {
                 null);
     }
 
+    /**
+     * Find the known resupply manifests from the config.
+     */
     @Override
     protected List<ResupplyManifest> getEntities() {
-        return getConfig().getSettlementTemplateConfiguration().getSupplyManifests();
+        return getConfig().getSettlementTemplateConfiguration().getResupplyConfig().getAll();
 
     }
+
 	/**
 	 * Add properties for the initial suppliers for this Settlement
 	 * @param v Template being rendered.

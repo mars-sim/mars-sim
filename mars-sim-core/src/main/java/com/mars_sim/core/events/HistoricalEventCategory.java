@@ -7,12 +7,13 @@
 
 package com.mars_sim.core.events;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.tool.Msg;
 
-public enum HistoricalEventCategory {
-
-	MEDICAL, MALFUNCTION, MISSION,
-	TASK, TRANSPORT, HAZARD;
+public enum HistoricalEventCategory implements Named{
+	CONSTRUCTION, EXPLORATION, HAZARD,
+	MALFUNCTION, MEDICAL, MISSION,
+	ORGANIZATION, SCIENCE_STUDY, TRANSPORT;
 	
 	private String name;
 
@@ -24,6 +25,7 @@ public enum HistoricalEventCategory {
 	/** 
 	 * Gets the internationalized name for display in user interface.
 	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}

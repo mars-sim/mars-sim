@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.metrics.Metric;
@@ -34,6 +35,12 @@ public class MetricFrame extends JFrame {
         @Override
         public String getContext() {
             return "test";
+        }
+
+        @Override
+        public EntityIdentifier getEntityIdentifier() {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
         }
     }
 

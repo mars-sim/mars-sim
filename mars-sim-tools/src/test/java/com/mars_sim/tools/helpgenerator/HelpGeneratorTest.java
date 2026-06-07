@@ -49,7 +49,7 @@ class HelpGeneratorTest {
         var context = createGenerator();
 
         // Find a resupply manifest that has mixture of most things
-        var config = context.getConfig().getSettlementTemplateConfiguration().getSupplyManifests()
+        var config = context.getConfig().getSettlementTemplateConfiguration().getResupplyConfig().getAll()
                         .stream()
                         .filter(v -> v.getName().equals("Resupply for Phase 3"))
                         .findAny()

@@ -44,7 +44,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.tool.MoreMath;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.UIConfig;
 import com.mars_sim.ui.swing.UIContext;
@@ -118,8 +117,6 @@ public class SettlementMapPanel extends JPanel {
 
 	private Settlement settlement;
 
-	private PopUpUnitMenu menu;
-
 	private SettlementTransparentPanel settlementTransparentPanel;
 
 	private DayNightMapLayer dayNightMapLayer;
@@ -142,11 +139,7 @@ public class SettlementMapPanel extends JPanel {
 	/** Coalesces simulation-tick UI updates so we don't flood the EDT. */
 	private final AtomicBoolean uiUpdateScheduled = new AtomicBoolean(false);
 
-	// -------- Listener lifecycle management --------
-	private boolean listenersInstalled = false;
 	
-	
-
 	// -------- Shared cache hook for layers that rasterize scalable art --------
 	private final ScaledIconCache iconCache = new ScaledIconCache();
 	private UIContext context;
@@ -268,9 +261,7 @@ public class SettlementMapPanel extends JPanel {
 	/**
 	 * Installs mouse listeners once; safe to call multiple times.
 	 */
-	public void detectMouseMovement() {
-
-		if (listenersInstalled) return;
+	private void detectMouseMovement() {
 
 		var motionListener = new MouseMotionAdapter() {
 			@Override
@@ -346,15 +337,6 @@ public class SettlementMapPanel extends JPanel {
 
 		addMouseMotionListener(motionListener);
 		addMouseListener(mouseListener);
-
-		listenersInstalled = true;
-	}
-
-	@Override
-	public void addNotify() {
-		super.addNotify();
-		// Ensure listeners are attached if panel is re-added to a container
-		detectMouseMovement();
 	}
 
 	/**
@@ -390,7 +372,7 @@ public class SettlementMapPanel extends JPanel {
 	}
 
 	private void setPopUp(final MouseEvent evt, int x, int y, Unit unit) {
-		menu = new PopUpUnitMenu(unit, context);
+		var menu = new PopUpUnitMenu(unit, context);
 		menu.show(evt.getComponent(), x, y);
 	}
 
@@ -532,8 +514,8 @@ public class SettlementMapPanel extends JPanel {
 		double yDiff = yd / scale;
 
 		// Correct due to rotation of map.
-		double c = MoreMath.cos(rotation);
-		double s = MoreMath.sin(rotation);
+		double c = Math.cos(rotation);
+		double s = Math.sin(rotation);
 
 		double realXDiff = c * xDiff + s * yDiff;
 		double realYDiff = c * yDiff - s * xDiff;

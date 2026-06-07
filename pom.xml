@@ -8,20 +8,16 @@
 	<groupId>com.mars-sim</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.11.0</version>
+	<version>4.1</version>
 	<name>mars-sim</name>
 	<url>https://github.com/mars-sim/mars-sim</url>
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>		
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>		
 		<sonar.java.source>21</sonar.java.source>
-		
-		<!-- These 3 have an interdepency -->
-		<junit-jupiter.version>5.14.1</junit-jupiter.version>
-		<junit-launcher.version>1.14.1</junit-launcher.version>
-		
+
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		
@@ -29,11 +25,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
+		<junit.version>6.1.0</junit.version>
+
 		<lwjgl.version>3.3.6</lwjgl.version>
-		<slf4j.version>2.0.17</slf4j.version>
+		<slf4j.version>2.0.18</slf4j.version>
 
 		<commons-cli.version>1.11.0</commons-cli.version>
-		<commons-io.version>2.21.0</commons-io.version>
+		<commons-io.version>2.22.0</commons-io.version>
 		<commons-lang3.version>3.20.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 			
@@ -85,29 +83,37 @@
 			</modules>
 		</profile>
 	</profiles>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>${junit.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
 			<artifactId>junit-platform-launcher</artifactId>
-			<version>${junit-launcher.version}</version>
 			<scope>test</scope>
 		</dependency>		
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-			<version>${junit-jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>5.20.0</version>
+			<version>5.23.0</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>
@@ -131,13 +137,6 @@
 		</developer>
 		<developer>
 			<name>Barry Evans</name>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<name>muybien3433</name>
 			<roles>
 				<role>developer</role>
 			</roles>

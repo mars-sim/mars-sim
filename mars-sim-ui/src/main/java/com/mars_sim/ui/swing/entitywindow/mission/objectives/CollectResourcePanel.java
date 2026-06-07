@@ -10,9 +10,12 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
@@ -20,7 +23,8 @@ import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.mission.objectives.CollectResourceObjective;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * A panel for displaying collect resources objectives information.
@@ -50,7 +54,7 @@ public class CollectResourcePanel extends JPanel implements EntityListener {
 	  	attrs.addRow("Max. per site", StyleManager.DECIMAL_KG.format(objective.getSiteResourceGoal()));
 		add(attrs, BorderLayout.NORTH);
 
-		var horz = new JPanel(new GridLayout(1, 2));
+		var horz = new JPanel(new GridLayout(2, 1));
 		add(horz, BorderLayout.CENTER);
 
 		resourceModel = new DefaultListModel<>();
@@ -66,10 +70,13 @@ public class CollectResourcePanel extends JPanel implements EntityListener {
 	static Component createList(DefaultListModel<String> model, String title) {
 		var list = new JList<>(model); 
 		list.setLayoutOrientation(JList.VERTICAL);
+		DefaultListCellRenderer renderer = (DefaultListCellRenderer) list.getCellRenderer();
+		renderer.setHorizontalAlignment(SwingConstants.CENTER);
+		list.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		list.setVisibleRowCount(-1);
 
 
-		return StyleManager.createScrollBorder(title, list);
+		return SwingHelper.createScrollBorder(title, list, null);
 	}
 
 

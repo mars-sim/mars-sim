@@ -12,8 +12,8 @@ import java.awt.BorderLayout;
 import javax.swing.JComboBox;
 
 import com.mars_sim.core.interplanetary.transport.resupply.ResupplyManifest;
-import com.mars_sim.ui.swing.components.NamedListCellRenderer;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.utils.NamedListCellRenderer;
 import com.mars_sim.ui.swing.utils.wizard.WizardPane;
 import com.mars_sim.ui.swing.utils.wizard.WizardStep;
 
@@ -38,7 +38,7 @@ class ResupplyManifestStep extends WizardStep<TransportState> {
 
 		manifestCB = new JComboBox<>();
 		manifestCB.setRenderer(new NamedListCellRenderer());
-		parent.getContext().getSimulation().getConfig().getSettlementTemplateConfiguration().getSupplyManifests()
+		parent.getContext().getSimulation().getConfig().getSettlementTemplateConfiguration().getResupplyConfig().getAll()
 					.forEach(manifestCB::addItem);
 		manifestCB.addItemListener(e -> manifestSelection());
 

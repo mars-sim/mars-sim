@@ -191,9 +191,11 @@ class OGGSoundClip {
 					if (bitStream != null) {
 						bitStream.reset();
 					}
-				} catch (IOException e) {
-					logger.log(Level.SEVERE, "Trouble resetting the bit stream for the sound effect of " + name,
-							e);
+				} catch (Exception e) {
+					logger.log(Level.SEVERE, "Trouble setting up a bit stream to play the sound of " 
+							+ name, e);
+					
+					stop();
 				}
 
 				if (callback != null) {
@@ -416,6 +418,8 @@ class OGGSoundClip {
 					// throw new InternalException(e);
 					// Note: when loading from a saved sim, the following log statement appears excessively
 					logger.log(Level.SEVERE, "Exception in reading bitstream.", e);
+					
+					return;
 				}
 				
 				if (bytes == 0 && i < 2) {

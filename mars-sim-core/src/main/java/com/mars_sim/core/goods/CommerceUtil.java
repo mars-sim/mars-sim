@@ -18,8 +18,6 @@ import com.mars_sim.core.equipment.ContainerUtil;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.resource.AmountResource;
@@ -44,7 +42,6 @@ public final class CommerceUtil {
 	 */
 	private static final double SELL_CREDIT_LIMIT = 10_000_000D;
 
-	private static MissionManager missionManager;
 	private static UnitManager unitManager;
 			
 	/**
@@ -127,19 +124,14 @@ public final class CommerceUtil {
 	 * @return true if current trade mission between settlements.
 	 */
 	private static boolean hasCurrentCommerceMission(Settlement settlement1, Settlement settlement2) {
-
-		for(Mission mission : missionManager.getMissions()) {
-			if (mission instanceof CommerceMission tradeMission) {
-				Settlement startingSettlement = tradeMission.getStartingSettlement();
-				Settlement tradingSettlement = tradeMission.getTradingSettlement();
-				if ((startingSettlement.equals(settlement1) && tradingSettlement.equals(settlement2))
-					|| (startingSettlement.equals(settlement2) && tradingSettlement.equals(settlement1))) {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return (settlement1.getMissionControl().getActiveMissions().stream()
+			.filter(CommerceMission.class::isInstance)
+			.map(CommerceMission.class::cast)
+			.anyMatch(m -> m.getTradingSettlement().equals(settlement2))
+			|| settlement2.getMissionControl().getActiveMissions().stream()
+				.filter(CommerceMission.class::isInstance)
+				.map(CommerceMission.class::cast)
+				.anyMatch(m -> m.getTradingSettlement().equals(settlement1)));
 	}
 
 	/**
@@ -529,8 +521,7 @@ public final class CommerceUtil {
 		return buyLoad;
     }
 
-	public static void initializeInstances(MissionManager m, UnitManager u) {
-		missionManager = m;
+	public static void initializeInstances(UnitManager u) {
 		unitManager = u;
 	}
 }

@@ -22,7 +22,6 @@ class TransportState {
 	private MarsTime arrivalDate;
 
 	private int arrivingPopulation = 4;
-	private int arrivingRobots = 2;
 	private Settlement landingSettlement;
     private ResupplyManifest manifest;
 
@@ -59,10 +58,6 @@ class TransportState {
         this.arrivingPopulation = value;    
     }
 
-    public void setRobots(Integer value) {
-        this.arrivingRobots = value;
-    }
-
     public void setLandingSite(Coordinates coordinates) {
         this.landingSite = coordinates;
     }
@@ -89,10 +84,6 @@ class TransportState {
 
     public ResupplyManifest getManifest() {
         return manifest;
-    }
-
-    public int getArrivingRobots() {
-        return arrivingRobots;
     }
 
     public int getArrivingPopulation() {

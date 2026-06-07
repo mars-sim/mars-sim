@@ -27,9 +27,9 @@ import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -183,9 +183,9 @@ class BuildingPanelPowerGen extends EntityTabPanel<Building>
 		// Update power used if necessary.
 		double totalUsed = 0D;
 		if (powerModeCache == PowerMode.FULL_POWER) 
-			totalUsed = building.getFullPowerRequired();
+			totalUsed = building.getFullPowerLoad();
 		else if (powerModeCache == PowerMode.LOW_POWER) 
-			totalUsed = building.getLowPowerRequired();
+			totalUsed = building.getLowPowerLoad();
 		totalUsedLabel.setValue(totalUsed);
 
 		if (generator == null)

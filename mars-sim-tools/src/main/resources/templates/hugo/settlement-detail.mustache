@@ -10,7 +10,6 @@
 |Objective:|{{settlement.objective.getName}}|
 |Shift Pattern:|{{settlement.shiftDefinition.name}}|
 |Default People #:|{{settlement.defaultPopulation}}|
-|Default Robot #:|{{settlement.defaultNumOfRobots}}|
 |Sponsor:|[{{settlement.sponsor.name}}]({{authorityfolder}}{{#filename}}{{settlement.sponsor.name}}{{/filename}})|
 
 {{>settlement-supplies}}   
@@ -24,16 +23,6 @@
 |[{{buildingType}}]({{buildingfolder}}{{#filename}}{{buildingType}}{{/filename}})|{{delayInSols}}|
 {{/buildingPlans}}
 {{/buildingPlans.isEmpty}}
-
-{{^settlement.predefinedRobots.isEmpty}}
-## Robots
-
-| Name      | Type | Model |
-|--------:|:------|:-----|
-{{#settlement.predefinedRobots}}
-|{{name}}|{{type}}|{{model}}|
-{{/settlement.predefinedRobots}}
-{{/settlement.predefinedRobots.isEmpty}}
 
 {{^settlement.resupplyMissionTemplates.isEmpty}}
 ## Supply Missions

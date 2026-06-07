@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.robot;
 
-import com.mars_sim.core.resource.ResourceUtil;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.tool.Msg;
 
 public enum RobotType {
@@ -43,7 +43,7 @@ public enum RobotType {
 	 * @return
 	 */
 	public static int getResourceID(RobotType type) {
-		return type.ordinal() + ResourceUtil.FIRST_ROBOT_RESOURCE_ID;
+		return type.ordinal() + ResourceType.FIRST_ROBOT_RESOURCE_ID;
 	}
 	
 }

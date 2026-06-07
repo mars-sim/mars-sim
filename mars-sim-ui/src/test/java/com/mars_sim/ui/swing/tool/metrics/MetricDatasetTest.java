@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.Entity;
+import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.metrics.Metric;
@@ -57,6 +58,11 @@ class MetricDatasetTest {
         @Override
         public String getContext() {
             return "MockContext";
+        }
+
+        @Override
+        public EntityIdentifier getEntityIdentifier() {
+            throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
         }   
     }
 

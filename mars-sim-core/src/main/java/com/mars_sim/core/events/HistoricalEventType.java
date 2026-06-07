@@ -19,18 +19,17 @@ public enum HistoricalEventType {
 	MEDICAL_CURED				(HistoricalEventCategory.MEDICAL),
 	MEDICAL_STARTS				(HistoricalEventCategory.MEDICAL),
 	MEDICAL_DEGRADES			(HistoricalEventCategory.MEDICAL),
-	MEDICAL_RECOVERY			(HistoricalEventCategory.MEDICAL),
-	MEDICAL_TREATED				(HistoricalEventCategory.MEDICAL),
+	MEDICAL_START_RECOVERY		(HistoricalEventCategory.MEDICAL),
+	MEDICAL_START_TREATMENT		(HistoricalEventCategory.MEDICAL),
 	MEDICAL_DEATH				(HistoricalEventCategory.MEDICAL),
 	MEDICAL_POSTMORTEM_EXAM		(HistoricalEventCategory.MEDICAL),
 	MEDICAL_RESCUE				(HistoricalEventCategory.MEDICAL),
 	MEDICAL_RESUSCITATED		(HistoricalEventCategory.MEDICAL),
 
-	MISSION_START					(HistoricalEventCategory.MISSION),
-	MISSION_JOINING					(HistoricalEventCategory.MISSION),
+	MISSION_PHASE					(HistoricalEventCategory.MISSION),
 	MISSION_FINISH					(HistoricalEventCategory.MISSION),
 	MISSION_EMERGENCY_DESTINATION	(HistoricalEventCategory.MISSION),
-	MISSION_NOT_ENOUGH_RESOURCES		(HistoricalEventCategory.MISSION),
+	MISSION_NOT_ENOUGH_RESOURCES	(HistoricalEventCategory.MISSION),
 	MISSION_MEDICAL_EMERGENCY		(HistoricalEventCategory.MISSION),
 	MISSION_EMERGENCY_BEACON_ON		(HistoricalEventCategory.MISSION),
 	MISSION_EMERGENCY_BEACON_OFF	(HistoricalEventCategory.MISSION),
@@ -40,16 +39,24 @@ public enum HistoricalEventType {
 	MISSION_ONLY_ONE_MEMBER			(HistoricalEventCategory.MISSION),
 	MISSION_LEAD_NO_SHOW			(HistoricalEventCategory.MISSION),
 
-	TASK_START			(HistoricalEventCategory.TASK),
+	STUDY_START_PHASE				(HistoricalEventCategory.SCIENCE_STUDY),
+	STUDY_FINISH					(HistoricalEventCategory.SCIENCE_STUDY),
 
-	TRANSPORT_ITEM_CREATED		(HistoricalEventCategory.TRANSPORT),
 	TRANSPORT_ITEM_CANCELLED	(HistoricalEventCategory.TRANSPORT),
 	TRANSPORT_ITEM_LAUNCHED		(HistoricalEventCategory.TRANSPORT),
 	TRANSPORT_ITEM_ARRIVED		(HistoricalEventCategory.TRANSPORT),
-	TRANSPORT_ITEM_MODIFIED		(HistoricalEventCategory.TRANSPORT),
 
 	HAZARD_ACTS_OF_GOD			(HistoricalEventCategory.HAZARD), 
-	HAZARD_RADIATION_EXPOSURE	(HistoricalEventCategory.HAZARD);
+	HAZARD_RADIATION_EXPOSURE	(HistoricalEventCategory.HAZARD),
+	
+	BUILDING_CREATED			(HistoricalEventCategory.CONSTRUCTION),
+	CONSTRUCTION_STAGE_STARTED	(HistoricalEventCategory.CONSTRUCTION),
+
+	SITE_CLAIMED				(HistoricalEventCategory.EXPLORATION),
+	SITE_DISCOVERED				(HistoricalEventCategory.EXPLORATION),
+	
+	CHANGE_ROLE					(HistoricalEventCategory.ORGANIZATION),
+	CHANGE_JOB					(HistoricalEventCategory.ORGANIZATION);
 
 	private String name;
 	private HistoricalEventCategory category;

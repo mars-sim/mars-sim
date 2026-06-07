@@ -22,17 +22,18 @@ import javax.swing.JTabbedPane;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityResolver;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.ui.swing.ConfigurableWindow;
 import com.mars_sim.ui.swing.ContentPanel;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.MarsPanelBorder;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
 import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
+import com.mars_sim.ui.swing.utils.EntityLabel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * The EntityContentPanel is the base panel for displaying entities. It is a subclass of the generic ContentPanel.
@@ -43,8 +44,7 @@ import com.mars_sim.ui.swing.displayinfo.EntityDisplayInfoFactory;
 public class EntityContentPanel<T extends Entity> extends ContentPanel
     implements ConfigurableWindow, EntityListener {
 
-    static final String UNIT_TYPE = "unittype";
-	static final String UNIT_NAME = "unitname";
+    static final String ENTITY_ID = "entity";
 	private static final String SELECTED_TAB = "selected_tab";
 
     private static final int WIDTH = 550;
@@ -87,7 +87,12 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
         setMinimumSize(dim);
         setPreferredSize(dim);
 
-        // Some Entities are MonitorableEntities and can send events
+    }
+
+    /**
+     * Activate this content panel as an entity listener once initialization is complete.
+     */
+    protected void activateListener() {
         if (entity instanceof MonitorableEntity u) {
             u.addEntityListener(this);
         }
@@ -127,7 +132,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      */
     protected void setHeading(Entity parent, String categoryIcon, String categoryName, String categoryValue) {
         var infoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        infoPanel.setBorder(new MarsPanelBorder());
+        infoPanel.setBorder(SwingHelper.createEtchedBorder());
         add(infoPanel, BorderLayout.NORTH);
 
         // Left hand label is based on the type of the parent entity
@@ -154,7 +159,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
      */
     protected void applyProps(Properties props) {
         // Add the listener panel if the entity is MonitorableEntity
-        if (entity instanceof MonitorableEntity m) {
+        if (StyleManager.isDebug() && entity instanceof MonitorableEntity m) {
             addTabPanel(new ListenerTabPanel(m, context));
         }
         
@@ -189,8 +194,7 @@ public class EntityContentPanel<T extends Entity> extends ContentPanel
     @Override
 	public Properties getUIProps() {
 		Properties result = new Properties();
-		result.setProperty(UNIT_NAME, entity.getName());
-        result.setProperty(UNIT_TYPE, EntityDisplayInfoFactory.getDisplayInfo(entity).getEntityKey());
+		result.setProperty(ENTITY_ID, EntityResolver.toString(entity.getEntityIdentifier()));
         var selected = getSelected();
         if (selected != null) {
 		    result.setProperty(SELECTED_TAB, selected.getTabTitle());

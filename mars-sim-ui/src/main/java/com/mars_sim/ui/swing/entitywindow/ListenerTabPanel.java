@@ -7,6 +7,7 @@
 package com.mars_sim.ui.swing.entitywindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 
 /**
  * This tab panel displays the active listeners registered on a MonitorableEntity.
@@ -83,6 +84,7 @@ public class ListenerTabPanel extends EntityTabPanel<MonitorableEntity> {
 		// Configure scrollPane with horizontal scrollbar
 		var scrollPane = new JScrollPane(listenerList);
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setMaximumSize(new Dimension(200, 1024)); // Force a maximum size
 		content.add(scrollPane, BorderLayout.CENTER);
 		
 		// Initial population of the list

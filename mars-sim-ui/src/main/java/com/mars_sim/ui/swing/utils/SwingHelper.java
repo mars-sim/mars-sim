@@ -21,12 +21,18 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.UIContext;
+import com.mars_sim.ui.swing.components.ColumnSpecHelper;
+import com.mars_sim.ui.swing.components.EnhancedTableModel;
 
 import io.github.parubok.text.multiline.MultilineLabel;
 
@@ -36,7 +42,7 @@ import io.github.parubok.text.multiline.MultilineLabel;
  */
 public final class SwingHelper {
 
-	private static boolean USE_TEXTARAEA_FOR_TEXT_BLOCKS = false;
+	private static boolean textBlocksUseTextArea = false;
 
 	private SwingHelper() {
 	}
@@ -108,19 +114,6 @@ public final class SwingHelper {
 			//placeholder
 		}
 	}
-
-	
-    /**
-     * Creates a titled border that uses the sub title font.
-     * 
-     * @param title
-     * @return
-     */
-    public static Border createLabelBorder(String title) {
-        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
-                                                        TitledBorder.DEFAULT_POSITION,
-                                                        StyleManager.getSubTitleFont(), (Color)null);
-    }
 	
 	/*
 	 * Creates a text block.
@@ -130,7 +123,7 @@ public final class SwingHelper {
 	 * @return The Swing component
 	 */
 	public static JComponent createTextBlock(String title, String content) {
-		if (USE_TEXTARAEA_FOR_TEXT_BLOCKS) {
+		if (textBlocksUseTextArea) {
 			return createTextBlockArea(title, content);
 		}
 		return createTextBlockMulti(title, content);
@@ -174,8 +167,41 @@ public final class SwingHelper {
 		label.setMinimumSize(new Dimension(50,50));
 		return label;
 	}
+    /**
+     * Create a table to display the model in a scroll pane. The table is sortable and read only.
+	 * 
+	 * @param model The model to display in the table
+	 * @param content The UI context to use for launching entities; can be null
+	 * @param name The title for the border; can be null
+	 * @param dim Preferred size; can be null
+     */
+    public static JScrollPane createScrolledTable(EnhancedTableModel model, UIContext content,
+									String name, Dimension dim) {
+        // Create table
+        JTable table = new JTable(model);
+        table.setAutoCreateRowSorter(true);
+		table.setRowSelectionAllowed(true);
+		ColumnSpecHelper.applyRenderers(table, model);
 
-	
+		if ((model instanceof EntityModel) && content != null) {
+			EntityLauncher.attach(table, content);
+		}
+
+        var scrollPane = new JScrollPane(table);
+
+		if (dim != null) {
+			scrollPane.setPreferredSize(dim);
+			scrollPane.setMinimumSize(dim);
+		}
+
+		if (name != null) {
+			var border = createLabelBorder(name);
+			scrollPane.setBorder(border);
+		}
+		
+		return scrollPane;
+    }
+
     /**
      * Creates a scroll pane with border and title
      * 
@@ -192,4 +218,48 @@ public final class SwingHelper {
 		}
         return listScroller;
     }
+
+	/**
+	 * Creates a compound border with an etched border and an empty border.
+	 * @return The compound border
+	 */
+	public static Border createEtchedBorder() {
+		return BorderFactory.createCompoundBorder(new EtchedBorder(),
+					BorderFactory.createEmptyBorder(1, 1, 1, 1));
+	}
+
+    /**
+     * Creates a titled border that uses the sub title font.
+     * 
+     * @param title
+     * @return
+     */
+    public static Border createLabelBorder(String title) {
+        return BorderFactory.createTitledBorder(null, title, TitledBorder.DEFAULT_JUSTIFICATION,
+                                                        TitledBorder.DEFAULT_POSITION,
+                                                        StyleManager.getSubTitleFont(), (Color)null);
+    }
+
+	/**
+	 * Helper method to convert a Dimension to a string for display.
+	 * @param size Dimension to convert
+	 * @return String representation of the dimension
+	 */
+    public static String toString(Dimension minimumSize) {
+        return (int) minimumSize.getWidth() + "x" + (int) minimumSize.getHeight();
+    }
+
+	/**
+	 * Runs a task in the Event Dispatch Thread (EDT). If already on the EDT, it runs immediately; otherwise, it is scheduled to run on the EDT.
+	 * This is a helper method to ensure that UI updates are performed on the correct thread without blocking.
+	 * @param updateTask	The task to run on the EDT
+	 */
+	public static void runInEDT(Runnable updateTask) {
+		// Only defer to EDT if not already on it
+		if (SwingUtilities.isEventDispatchThread()) {
+			updateTask.run();
+		} else {
+			SwingUtilities.invokeLater(updateTask);
+		}
+	}
 }

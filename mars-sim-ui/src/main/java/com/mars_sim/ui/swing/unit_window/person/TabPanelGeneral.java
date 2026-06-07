@@ -17,17 +17,15 @@ import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.components.EntityLabel;
+import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.AttributePanel;
+import com.mars_sim.ui.swing.utils.EntityLabel;
 
 /**
  * The TabPanelGeneral is a tab panel for general information about a person.
  */
 @SuppressWarnings("serial")
 class TabPanelGeneral extends EntityTabPanel<Person> {
-	
-	private static final String TAB_BIRTH_DATE_AGE = "TabPanelGeneral.birthDateAndAge";
 			
 	/**
 	 * Constructor.
@@ -58,12 +56,10 @@ class TabPanelGeneral extends EntityTabPanel<Person> {
 		infoPanel.addTextField(Msg.getString("person.bloodType"), person.getBloodType(), null);
 				
 		// Prepare birthdate and age textfield
+		infoPanel.addTextField(Msg.getString("person.age"), Integer.toString(person.getAge()), null);
 		var birthDate = person.getBirthDate();
-		String birthTxt = Msg.getString(
-			TAB_BIRTH_DATE_AGE,
-			birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
-			Integer.toString(person.getAge())); //$NON-NLS-1$
-		infoPanel.addTextField(Msg.getString("person.birthDate"), birthTxt, null);
+		infoPanel.addTextField(Msg.getString("person.birthDate"),
+					birthDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)), null);
 		
 		// Prepare country of origin textfield
 		String country = person.getCountry();

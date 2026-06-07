@@ -22,7 +22,6 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -1051,14 +1050,13 @@ public class GoodsManager implements Serializable {
 	 * Reloads instances after loading from a saved sim.
 	 *
 	 * @param s  {@link SimulationConfg}
-	 * @param m  {@link MissionManager}
 	 * @param u  {@link UnitManager}
 	 * @param mm  {@link MarketManager}
 	 */
-	public static void initializeInstances(SimulationConfig sc, MissionManager m, UnitManager u, MarketManager mm) {
+	public static void initializeInstances(SimulationConfig sc, UnitManager u, MarketManager mm) {
 		unitManager = u;
-		Good.initializeInstances(sc, m, u);
-		CommerceUtil.initializeInstances(m, u);
+		Good.initializeInstances(sc, u);
+		CommerceUtil.initializeInstances(u);
 		marketManager = mm;
 		resLimits = sc.getSettlementConfiguration().getEssentialResources();
 	}

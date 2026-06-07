@@ -69,5 +69,7 @@ public class SettlementUnitWindow extends EntityContentPanel<Settlement> {
 		addTabPanel(new TabPanelWasteProcesses(settlement, context));
 
 		applyProps(props);
+		activateListener();
 	}
+
 }

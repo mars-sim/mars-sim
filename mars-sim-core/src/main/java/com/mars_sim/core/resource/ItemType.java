@@ -16,6 +16,7 @@ public enum ItemType {
 	BIN					("Bin"),
 	EQUIPMENT			("Equipment"),
 	PART				("Part"),
+	ROBOT				("Robot"),
 	VEHICLE				("Vehicle"),
 	;
 

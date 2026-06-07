@@ -34,4 +34,9 @@ public class MockEntity implements Entity {
     public String getContext() {
         return "MockContext";
     }   
+
+    @Override
+    public EntityIdentifier getEntityIdentifier() {
+        throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
+    }  
 }

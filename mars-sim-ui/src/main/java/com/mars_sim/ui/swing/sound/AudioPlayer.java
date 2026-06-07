@@ -189,7 +189,6 @@ public class AudioPlayer {
 				    String ext = filename.substring(filename.indexOf('.') + 1, filename.length());
 					
 					if (ext.equalsIgnoreCase(OGG)) {
-						logger.info(filename);
 						musicTracks.put(filename, r.getFile().getParent());
 					}
 				}

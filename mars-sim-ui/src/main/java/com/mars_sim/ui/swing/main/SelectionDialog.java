@@ -11,6 +11,8 @@ import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.event.ItemEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.Consumer;
@@ -29,9 +31,9 @@ import javax.swing.JTextArea;
 
 import com.mars_sim.core.configuration.UserConfigurable;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.StyleManager;
-import com.mars_sim.ui.swing.components.UserConfigurableListRenderer;
-import com.mars_sim.ui.swing.utils.SortedComboBoxModel;
+import com.mars_sim.ui.swing.components.SortedComboBoxModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.UserConfigurableListRenderer;
 
 /**
  * This is a modal dialog used to allow the user to complete a selection of a list of options.
@@ -66,7 +68,7 @@ class SelectionDialog extends JDialog {
     protected static<T extends UserConfigurable> JPanel createComboPane(String label, Collection<T> potentials,
                                                     Consumer<T> listener) {
         var contentPane = new JPanel();
-        contentPane.setBorder(StyleManager.createLabelBorder(label));
+        contentPane.setBorder(SwingHelper.createLabelBorder(label));
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
 
         var selectPanel = new JPanel();
@@ -130,6 +132,15 @@ class SelectionDialog extends JDialog {
  
         //Initialize values.
         pack();
+
+        // Closed via toolbar then cancel
+        addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent event) {
+				choiceMade(CANCEL);
+			}
+		});
+
     }
  
     private synchronized void choiceMade(int choice) {
