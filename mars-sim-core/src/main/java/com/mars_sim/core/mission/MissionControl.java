@@ -55,6 +55,7 @@ public class MissionControl implements ScheduledEventHandler {
 
 	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
     private List<Double> missionScores = new ArrayList<>();
+	private Set<Mission> allMissions = new HashSet<>();
 	private SolMetricDataLogger<String> historicalMissions;
 	private Settlement owner;
 	private int id = 1;
@@ -208,11 +209,9 @@ public class MissionControl implements ScheduledEventHandler {
 	/**
 	 * Adds a new mission as the ongoing list under control of this control.
 	 * @param mission The mission to be added to the ongoing list.
-	 * TODO the implementation will be changed in a later commit.
 	 */
 	public void addMission(Mission mission) {
-		var missionManager = Simulation.instance().getMissionManager();
-		missionManager.addOngoingMission(mission);
+		allMissions.add(mission);
 
 		if (listeners != null) {
 			synchronized (listeners) {
@@ -224,13 +223,9 @@ public class MissionControl implements ScheduledEventHandler {
 	/**
 	 * Removes a mission from the ongoing list under control of this control.
 	 * @param mission Mission to remove
-	 * TODO the implementation will be changed in a later commit.
 	 */
 	public void removeMission(Mission mission) {
-		var missionManager = Simulation.instance().getMissionManager();
-		missionManager.removeOngoingMission(mission);
-
-		if (listeners != null) {
+		if (allMissions.remove(mission) && listeners != null) {
 			synchronized (listeners) {
 				listeners.forEach(l -> l.entityRemoved(mission));
 			}
@@ -264,14 +259,10 @@ public class MissionControl implements ScheduledEventHandler {
 	
 	/**
 	 * Gets all the missions associated with this control.
-	 * TODO the implementation will be changed in a later commit.
 	 * @return set of missions associated with this control.
 	 */
 	public Set<Mission> getAllMissions() {
-		return Simulation.instance().getMissionManager().getMissions()
-				.stream()
-				.filter(m -> m.getAssociatedSettlement().equals(owner))
-				.collect(Collectors.toSet());
+		return allMissions;
 	}
 
 	/**
@@ -279,7 +270,7 @@ public class MissionControl implements ScheduledEventHandler {
 	 * @return set of active missions associated with this control.
 	 */
 	public Set<Mission> getActiveMissions() {
-		return getAllMissions().stream()
+		return allMissions.stream()
 				.filter(m -> !m.isDone())
 				.collect(Collectors.toSet());
 	}

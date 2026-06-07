@@ -119,8 +119,7 @@ class MissionControlTest extends MarsSimUnitTest{
         var mc2 = new MissionControl(s2);
 
         var m = new MockMission(s1);
-
-        s1.getMissionControl().addMission(m);
+        mc1.addMission(m);
 
         var active = mc1.getActiveMissions();
         assertEquals(1, active.size(), "There should be one active mission");
@@ -136,8 +135,7 @@ class MissionControlTest extends MarsSimUnitTest{
         var mc1 = new MissionControl(s1);
 
         var m = new MockMission(s1);
-
-        s1.getMissionControl().addMission(m);
+        mc1.addMission(m);
 
         var active = mc1.getActiveMissions();
         assertFalse(active.isEmpty(), "There should be one active mission");

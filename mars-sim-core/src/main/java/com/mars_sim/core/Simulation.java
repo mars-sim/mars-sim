@@ -63,10 +63,8 @@ import com.mars_sim.core.moon.LunarWorld;
 import com.mars_sim.core.moon.Moon;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.Mind;
 import com.mars_sim.core.person.ai.job.util.JobSpec;
 import com.mars_sim.core.person.ai.mission.AbstractMission;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.person.ai.social.Relation;
 import com.mars_sim.core.person.ai.task.util.MetaTaskUtil;
@@ -78,8 +76,8 @@ import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.science.ScientificStudyUtil;
 import com.mars_sim.core.structure.Airlock;
 import com.mars_sim.core.structure.ExplorationManager;
-import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.ClockPulse;
+import com.mars_sim.core.time.ClockPulseListener;
 import com.mars_sim.core.time.CompressedClockListener;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.SystemDateTime;
@@ -169,8 +167,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 	private MalfunctionFactory malfunctionFactory;
 	/** Manager for all units in simulation. */
 	private UnitManager unitManager;
-	/** Mission controller. */
-	private MissionManager missionManager;
 	/** Medical complaints. */
 	private MedicalManager medicalManager;
 	/** Master clock for the simulation. */
@@ -356,10 +352,8 @@ public class Simulation implements ClockPulseListener, Serializable {
         // Initialize RoleUtil
         RoleUtil.initialize();
      
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
-		
-		missionManager = new MissionManager();
-			
+		GoodsManager.initializeInstances(simulationConfig, unitManager, marketManager);
+					
 		medicalManager = new MedicalManager();
 		MedicalManager.initializeInstances(mc);
 
@@ -375,7 +369,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		ScientificStudyUtil.initializeInstances(unitManager);
 
 		Rover.initializeInstances(simulationConfig);
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+		Unit.initializeInstances(masterClock, unitManager, weather);
 		
 		LocalAreaUtil.initializeInstances(unitManager, masterClock);
 
@@ -436,8 +430,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		weather = new Weather(masterClock, orbitInfo);
 		// Create surface features
 		surfaceFeatures = new SurfaceFeatures(orbitInfo, weather);
-		// Initialize MissionManager instance
-		missionManager = new MissionManager();
 		// Initialize MedicalManager instance
 		medicalManager = new MedicalManager();
 		
@@ -471,7 +463,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Initialize Unit
 		Rover.initializeInstances(simulationConfig);
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+		Unit.initializeInstances(masterClock, unitManager, weather);
 	
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 										simulationConfig.getPersonConfig(), eventManager);
@@ -523,7 +515,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		Relation.initializeInstances(unitManager);
 				
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
+		GoodsManager.initializeInstances(simulationConfig, unitManager, marketManager);
 		
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -555,8 +547,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		masterClock = new MasterClock(simulationConfig, userTimeRatio);
 		// Initialize UnitManager instance
 		unitManager = new UnitManager();
-		// Initialize MissionManager instance
-		missionManager = new MissionManager();
 	}
 	
 	/**
@@ -592,7 +582,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		
 		// Re-initialize units prior to starting the unit manager
 		Rover.initializeInstances(simulationConfig);
-		Unit.initializeInstances(masterClock, unitManager, weather, missionManager);
+		Unit.initializeInstances(masterClock, unitManager, weather);
 
 		PhysicalCondition.initializeInstances(masterClock, medicalManager,
 								simulationConfig.getPersonConfig(), eventManager);
@@ -639,7 +629,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 	
 		Relation.initializeInstances(unitManager);
 				
-		GoodsManager.initializeInstances(simulationConfig, missionManager, unitManager, marketManager);
+		GoodsManager.initializeInstances(simulationConfig, unitManager, marketManager);
 				
 		//  Re-initialize the GameManager
 		GameManager.initializeInstances(unitManager);
@@ -751,7 +741,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 			orbitInfo = (OrbitInfo) ois.readObject();
 			weather = (Weather) ois.readObject();
 			surfaceFeatures = (SurfaceFeatures) ois.readObject();
-			missionManager = (MissionManager) ois.readObject();
 			medicalManager = (MedicalManager) ois.readObject();
 			scientificStudyManager = (ScientificStudyManager) ois.readObject();
 			eventManager = (HistoricalEventManager) ois.readObject();
@@ -1033,7 +1022,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 			oos.writeObject(orbitInfo);
 			oos.writeObject(weather);
 			oos.writeObject(surfaceFeatures);		
-			oos.writeObject(missionManager);
 			oos.writeObject(medicalManager);
 			oos.writeObject(scientificStudyManager);
 			oos.writeObject(eventManager);
@@ -1082,7 +1070,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 				orbitInfo,
 				weather,
 				surfaceFeatures,
-				missionManager,
 				medicalManager,
 				scientificStudyManager,
 				transportManager,
@@ -1266,15 +1253,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 	
 	public SurfaceFeatures getSurfaceFeatures() {
 		return surfaceFeatures;
-	}
-	
-	/**
-	 * Gets the mission manager.
-	 *
-	 * @return mission manager
-	 */
-	public MissionManager getMissionManager() {
-		return missionManager;
 	}
 
 	/**
@@ -1466,11 +1444,6 @@ public class Simulation implements ClockPulseListener, Serializable {
 		if (surfaceFeatures != null) {
 			surfaceFeatures.destroy();
 			surfaceFeatures = null;
-		}
-
-		if (missionManager != null) {
-			missionManager.destroy();
-			missionManager = null;
 		}
 
 		if (medicalManager != null) {
