@@ -2,7 +2,7 @@
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
         name="Alpha Base 1" shift-pattern="Long 3 Shift" 
         default-population="44" sponsor="RKA"
-        description="Large Base" objective="CROP_FARM">
+        description="Alpha Base 1" objective="CROP_FARM">
         
     <!-- zone 0 -->
         

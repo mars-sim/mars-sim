@@ -2,12 +2,12 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="300"
-   height="300"
+   width="300.20001"
+   height="100.20097"
    id="svg3421"
    version="1.1"
    inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
-   sodipodi:docname="brickcore3x3.svg"
+   sodipodi:docname="walkway.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -48,11 +48,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.5922857"
-     inkscape:cx="211.33142"
-     inkscape:cy="201.911"
+     inkscape:zoom="2.251832"
+     inkscape:cx="178.29927"
+     inkscape:cy="29.975593"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:snap-global="true"
      gridtolerance="10000"
@@ -66,8 +66,8 @@
      fit-margin-bottom="0"
      inkscape:window-width="1628"
      inkscape:window-height="1052"
-     inkscape:window-x="267"
-     inkscape:window-y="49"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:showpageshadow="2"
      inkscape:pagecheckerboard="0"
@@ -79,19 +79,19 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       originx="0.10048242"
-       originy="0.10048242"
+       originx="0.10048242px"
+       originy="0.10048242px"
        spacingy="1"
        spacingx="1"
        units="px" />
     <sodipodi:guide
        orientation="1,0"
-       position="150.10048,184.89951"
+       position="150.10048,-14.899518"
        id="guide4218"
        inkscape:locked="false" />
     <sodipodi:guide
        orientation="0,1"
-       position="55.100482,249.89951"
+       position="55.100482,50.100482"
        id="guide4220"
        inkscape:locked="false" />
   </sodipodi:namedview>
@@ -103,6 +103,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -110,65 +111,51 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="foundation"
-     transform="translate(0.10048242,-952.2617)">
+     transform="matrix(1.001339,0,0,1.001339,0.10061696,-953.53675)"
+     sodipodi:insensitive="true">
     <rect
-       y="952.43549"
-       x="0.073356576"
-       height="299.65231"
-       width="299.65234"
+       y="952.36194"
+       x="-0.00026865158"
+       height="99.665848"
+       width="299.39841"
        id="rect4734"
-       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.347678;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.200428;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       sodipodi:insensitive="true" />
   </g>
   <g
      inkscape:label="interior"
      inkscape:groupmode="layer"
      id="layer1"
      style="opacity:0.5"
-     transform="matrix(0.99950973,0,0,3.0025493,0.17397339,-2859.3401)"
-     sodipodi:insensitive="true">
+     transform="translate(0.10048242,-952.2617)">
     <rect
-       style="fill:#be921d;fill-opacity:1;stroke:#000000;stroke-width:0.200696;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#9b9261;fill-opacity:1;stroke:#000000;stroke-width:0.200696;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect4222"
        width="299.79932"
        height="99.799301"
-       x="-0.00013446642"
-       y="952.362" />
+       x="-0.00013446591"
+       y="952.36206" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="roof"
-     transform="matrix(1,0,0,3,0.10048242,-2856.7851)">
+     transform="translate(0,-952.36218)">
     <rect
-       y="952.26172"
-       x="-29.899517"
+       y="952.36218"
+       x="-30"
        height="100"
        width="30"
        id="rect4747"
-       style="opacity:1;fill:#be921d;fill-opacity:1;stroke:none"
+       style="opacity:1;fill:#917f54;fill-opacity:1;stroke:none"
        transform="scale(-1,1)"
-       sodipodi:insensitive="true"
        inkscape:label="left" />
     <use
        x="0"
        y="0"
        xlink:href="#rect4747"
        id="use1"
-       inkscape:label="top"
-       transform="matrix(10,0,0,0.1,0.90434647,857.03552)" />
-    <use
-       x="0"
-       y="0"
-       xlink:href="#rect4747"
-       id="use2"
-       inkscape:label="bottom"
-       transform="translate(270,-1.875e-5)" />
-    <use
-       x="0"
-       y="0"
-       xlink:href="#rect4747"
-       id="use3"
        inkscape:label="right"
-       transform="matrix(10,0,0,0.1,0.90434699,947.03553)" />
+       transform="translate(270)" />
   </g>
 </svg>

@@ -993,8 +993,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-1.25" yloc="0.0" />
-					<activity-spot xloc="1.25" yloc="0.0" />
+					<activity-spot xloc="-1.1" yloc="0.0" />
+					<activity-spot xloc="1.1" yloc="0.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="7000">
@@ -1046,8 +1046,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-1.25" yloc="0.0" />
-					<activity-spot xloc="1.25" yloc="0.0" />
+					<activity-spot xloc="-1.1" yloc="0.0" />
+					<activity-spot xloc="1.1" yloc="0.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="7000">
@@ -4015,21 +4015,20 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 
 	<!-- A hallway's length is variable and determined in templates or during construction. -->
 	<building type="Hallway" width="2.0" length="-1.0" north-south-alignment="length" base-level="0"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="18.0" base-mass="100"
+			wear-lifetime="3340000" maintenance-time="10" room-temperature="18.0" base-mass="100"
 			category="CONNECTION">
-		<description> The Hallway is a pressurized access tube connecting
-			two inhabitable buildings. It allows only one person to access it
-			at a time.
+		<description> The Hallway is a pressurized access tube connecting inhabitable buildings.
 		</description>
 		<base-power power-priority="2" base-full-power="0.1" base-low-power="0.01" />
 
 		<functions>
 			<connection />
-			<!-- For hallway and tunnel, the final capacity is initial capacity * floor area / 4 -->
-			<life-support capacity="2" />
+			<!-- The final capacity is initial capacity * floor area / 4 -->
+			<life-support capacity="1" />
 
 			<power-generation>
-				<power-source type="Solar Power Source" power="1.0" />
+				<!-- The final capacity is initial capacity * floor area / 6 -->
+				<power-source type="Solar Power Source" power="2.0" />
 			</power-generation>
 
 			<robotic-station capacity="1">
@@ -4039,31 +4038,30 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 						
 			<thermal-generation>
-				<!-- For hallway and Tunnel, the final capacity is initial capacity * 3 kW * floor area / 6 -->
+				<!-- The final capacity is initial capacity * 3 kW * floor area / 6 -->
 				<heat-source type="Solar Heating" capacity="3.0" />
 				<heat-source type="Electric Heating" capacity="3.0" />
 			</thermal-generation>
 		</functions>
 	</building>
 
-	<!-- A brickway's length is variable and determined in templates or during construction. -->
-	<building type="Brickway" width="6.0" length="-1.0" north-south-alignment="length" 
-			construction="CONCRETE" base-level="0"
-			wear-lifetime="3340000" maintenance-time="20" room-temperature="18.0" base-mass="100"
+
+	<!-- A Walkway's length is variable and determined in templates or during construction. -->
+	<building type="Walkway" width="3.0" length="-1.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="15" room-temperature="18.0" base-mass="150"
 			category="CONNECTION">
-		<description> The Brickway is a pressurized access tube connecting
-			two inhabitable buildings. It allows only one person to access it
-			at a time.
+		<description> The Walkway is a pressurized access tube connecting inhabitable buildings.
 		</description>
 		<base-power power-priority="2" base-full-power="0.1" base-low-power="0.01" />
 
 		<functions>
 			<connection />
-			<!-- For brickway, hallway and tunnel, the final capacity is initial capacity * floor area / 4 -->
+			<!-- The final capacity is initial capacity * floor area / 4 -->
 			<life-support capacity="2" />
 
 			<power-generation>
-				<power-source type="Solar Power Source" power="1.0" />
+				<!-- The final capacity is initial capacity * floor area / 6 -->
+				<power-source type="Solar Power Source" power="3.0" />
 			</power-generation>
 
 			<robotic-station capacity="1">
@@ -4073,7 +4071,41 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			</robotic-station>
 						
 			<thermal-generation>
-				<!-- For brickway, hallway and Tunnel, the final capacity is initial capacity * 3 kW * floor area / 6 -->
+				<!-- The final capacity is initial capacity * 3 kW * floor area / 6 -->
+				<heat-source type="Solar Heating" capacity="3.0" />
+				<heat-source type="Electric Heating" capacity="3.0" />
+			</thermal-generation>
+		</functions>
+	</building>
+	
+	<!-- A brickway's length is variable and determined in templates or during construction. -->
+	<building type="Brickway" width="6.0" length="-1.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="0"
+			wear-lifetime="3340000" maintenance-time="25" room-temperature="18.0" base-mass="100"
+			category="CONNECTION">
+		<description> The Brickway is a pressurized access tube connecting inhabitable buildings.
+		</description>
+		<base-power power-priority="2" base-full-power="0.1" base-low-power="0.01" />
+
+		<functions>
+			<connection />
+			<!-- The final capacity is initial capacity * floor area / 4 -->
+			<life-support capacity="3" />
+
+			<power-generation>
+				<!-- The final capacity is initial capacity * floor area / 6 -->
+				<power-source type="Solar Power Source" power="4.0" />
+			</power-generation>
+
+			<robotic-station capacity="2">
+				<activity>
+					<activity-spot xloc="0.0" yloc="1.0" />
+					<activity-spot xloc="0.0" yloc="-1.0" />
+				</activity>
+			</robotic-station>
+						
+			<thermal-generation>
+				<!-- The final capacity is initial capacity * 3 kW * floor area / 6 -->
 				<heat-source type="Solar Heating" capacity="3.0" />
 				<heat-source type="Electric Heating" capacity="3.0" />
 			</thermal-generation>
