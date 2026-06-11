@@ -120,11 +120,9 @@ public class Building extends FixedUnit implements Malfunctionable,
 	/** The power priority number for this building. */
 	private int powerPriority;
 	
-	/** Default : 22.5 deg celsius. */
-	private double presetTemperature = 0; //22.5D
+	private double presetTemperature = 0; 
 	private double width;
-	// Q: how to handle the indefinite length of hallway/tunnel ?
-	// "-1" if it doesn't exist.
+	// Regarding the length, how to best handle the variable length of brickway/walkly/hallway/tunnel 
 	private double length;
 	private double floorArea;
 	private double areaFactor;
@@ -133,7 +131,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	private double baseLowPowerLoad;
 	private double powerNeededForEVAHeater;
 	
-	/** Unique template id assigned for the settlement template of this building belong. */
+	/** Unique template id assigned for this building in settlement template xml. */
 	private String templateID;
 	/** Type of building. */
 	private String buildingType;
@@ -1421,7 +1419,7 @@ public class Building extends FixedUnit implements Malfunctionable,
 	}
 
 	/**
-	 * Gets the building's settlement template ID number.
+	 * Gets the building's template ID number.
 	 *
 	 * @return id.
 	 */

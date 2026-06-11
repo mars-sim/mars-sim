@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.mars_sim.core.map.location.BoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.tool.Msg;
 
 /**
@@ -68,6 +69,9 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 * @return id.
 	 */
 	public String getID() {
+		if (streetNum.isBlank()) {
+			streetNum = Integer.toString(SettlementTemplateConfig.getNextBuildingTypeID(buildingType));
+		}
 		return streetNum;
 	}
 

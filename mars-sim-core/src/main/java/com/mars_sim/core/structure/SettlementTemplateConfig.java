@@ -87,6 +87,8 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private final AuthorityFactory authorityConfig;
     private final SettlementConfig settlementConfig;
 
+    private static final Map<String, Integer> buildingTypeNumMap = new HashMap<>();
+    
     /**
      * Constructor.
      *
@@ -235,21 +237,33 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
     /**
      * Gets an available building type suffix ID for a new building.
-     *
+     * 
      * @param buildingType
-     * @return type ID (starting from 1, not zero)
+     * @return
      */
-    private int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeIDMap) {
+    public static int getNextBuildingTypeID(String buildingType) {
+    	// Note: check with BuildingManager's getUniqueName() and getUniqueNum() for comparison
+    	
         int last = 1;
-        if (buildingTypeIDMap.containsKey(buildingType)) {
-            last = buildingTypeIDMap.get(buildingType);
-            buildingTypeIDMap.put(buildingType, ++last);
+        if (buildingTypeNumMap.containsKey(buildingType)) {
+            last = buildingTypeNumMap.get(buildingType);
+            buildingTypeNumMap.put(buildingType, ++last);
         } else {
-            buildingTypeIDMap.put(buildingType, last);
+        	buildingTypeNumMap.put(buildingType, last);
         }
         return last;
     }
-
+    
+    /**
+     * Gets an available building type suffix ID for a new building.
+     *
+     * @param buildingType
+     * @param buildingTypeIDMap
+     * @return type ID (starting from 1, not zero)
+     */
+    private int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeIDMap) {
+    	return getNextBuildingTypeID(buildingType);
+    }
 
     /**
      * Parses the item XML.
@@ -296,7 +310,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
  
         List<BuildingTemplate> buildingTemplates = new ArrayList<>();
         Set<String> existingBuildingIDs = new HashSet<>();
-        Map<String, Integer> buildingTypeNumMap = new HashMap<>();
 
         // Process a list of buildings
         parseBuildingORConnectorList(templateElement, buildingTemplates,
@@ -393,6 +406,13 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         return settlementTemplate;
     }
 
+    /**
+     * Puts together a list of building templates.
+     * 
+     * @param buildingPackageNodes
+     * @param buildingTypeNumMap
+     * @param buildingTemplates
+     */
     private void parseBuildingPackages(List<Element> buildingPackageNodes, Map<String, Integer> buildingTypeNumMap, List<BuildingTemplate> buildingTemplates) {
         for (Element buildingPackageElement : buildingPackageNodes) {
            String packageName = buildingPackageElement.getAttributeValue(NAME);

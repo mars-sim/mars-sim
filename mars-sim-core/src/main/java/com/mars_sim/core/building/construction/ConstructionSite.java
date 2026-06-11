@@ -239,13 +239,15 @@ public class ConstructionSite extends FixedUnit {
         var settlement = getAssociatedSettlement();
 
         BuildingManager manager = settlement.getBuildingManager();
-        int id = manager.getNextTemplateID();
+
         String buildingType = currentStage.getInfo().getName();
         String uniqueName = manager.getUniqueName(buildingType);
         
         int zone = 0;
         var spec = getBuildingSpec(buildingType);
-
+        int id = manager.getNextTemplateID(buildingType);
+        
+        
         Building newBuilding = new Building(settlement, Integer.toString(id), zone, uniqueName,
         		new BoundedObject(position, width, length, facing), spec);
         
@@ -255,6 +257,7 @@ public class ConstructionSite extends FixedUnit {
         fireUnitUpdate(ConstructionSite.FINISH_CONSTRUCTION_BUILDING_EVENT, newBuilding);
 
         registerHistoricalEvent(HistoricalEventType.BUILDING_CREATED, uniqueName, null, newBuilding, null);
+        
         return newBuilding;
     }
 

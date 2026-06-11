@@ -90,6 +90,7 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -2016,8 +2017,11 @@ public class BuildingManager implements Serializable {
 	 *
 	 * @return template ID (starting from 0).
 	 */
-	public int getNextTemplateID() {
-		return buildings.size();
+	public int getNextTemplateID(String buildingType) {
+		
+		// Note: check  with getUniqueName() and getUniqueNum() methods below for comparison
+		
+		return SettlementTemplateConfig.getNextBuildingTypeID(buildingType);		
 	}
 
 	/**
@@ -2026,10 +2030,20 @@ public class BuildingManager implements Serializable {
 	 * @return a unique nick name
 	 */
 	public String getUniqueName(String buildingType) {
-		long id = buildings.stream().filter(b -> b.getBuildingType().equals(buildingType)).count() + 1;
-		return buildingType + " " + id;
+		return buildingType + " " + getUniqueNum(buildingType) ;
 	}
 
+	/**
+	 * Gets an unique number for a new building.
+	 *
+	 * @return a unique number
+	 */
+	public int getUniqueNum(String buildingType) {
+		long id = buildings.stream().filter(b -> b.getBuildingType().equals(buildingType)).count() + 1;
+		return (int)id;
+	}
+	
+	
 	/**
 	 * Gets total combined power loads from all computing nodes in a settlement.
 	 * 

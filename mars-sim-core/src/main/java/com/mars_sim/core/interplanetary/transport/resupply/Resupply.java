@@ -218,17 +218,18 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				// Correct length and width in building template.
 				// Replace width and length defaults to deal with variable width and length
 				// buildings.
-				BuildingSpec spec = buildingConfig.getBuildingSpec(btemplate.getBuildingType());
+				String buildingType = btemplate.getBuildingType();
+				BuildingSpec spec = buildingConfig.getBuildingSpec(buildingType);
 				BoundedObject correctedBounds = getCorrectedBounds(spec, btemplate.getBounds());
 
-				String buildingID = "" + buildingManager.getNextTemplateID();
+				String buildingID = Integer.toString(buildingManager.getNextTemplateID(buildingType));
 				
 				int zone = btemplate.getZone();
 				
-				String uniqueName = buildingManager.getUniqueName(btemplate.getBuildingType());
+				String uniqueName = buildingManager.getUniqueName(buildingType);
 
 				BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, zone,
-						btemplate.getBuildingType(), uniqueName, correctedBounds);
+						buildingType, uniqueName, correctedBounds);
 
 				checkTemplateAddBuilding(spec, correctedTemplate, buildingManager);
 			}
@@ -581,7 +582,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 				// If no buildings at settlement, position new building at (0, 0) with random
 				// facing.
 				// Note: check to make sure it does not overlap another building.
-				String buildingID = "" + buildingManager.getNextTemplateID();
+				
+				// Note: do not assign a numeric id since this method doesn't NOT finalize the construction of this building template.
+				// It would have incremented the counter incorrectly when this object is discarded.
+				String buildingID = "";
 				
 				int zone = 0;
 				
@@ -913,7 +917,10 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			BoundedObject position =  new BoundedObject(rectCenterX, rectCenterY, width, length, rectRotation);
 			if (buildingManager.isBuildingLocationOpen(position)) {
 				// Set the new building here.
-				String buildingID = "" + buildingManager.getNextTemplateID();
+				
+				// Note: do not assign a numeric id since this method doesn't NOT finalize the construction of this building template.
+				// It would have incremented the counter incorrectly when this object is discarded.
+				String buildingID = "";
 			
 				int zone = 0;
 				
@@ -1006,7 +1013,9 @@ public class Resupply extends Transportable implements SettlementSupplies {
 			double newLength = p1.distance(p2);
 			double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
 		
-			String buildingID = "" + buildingManager.getNextTemplateID();
+			// Note: do not assign a numeric id since this method doesn't NOT finalize the construction of this building template.
+			// It would have incremented the counter incorrectly when this object is discarded.
+			String buildingID = "";
 		
 			int zone = 0;
 			

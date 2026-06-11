@@ -72,7 +72,6 @@ public class ResupplyConfig {
 	            for (Element buildingElement : buildingNodes) {
 	                String buildingType = buildingElement.getAttributeValue(TYPE);
 					BoundedObject bounds = ConfigHelper.parseBoundedObject(buildingElement);
-	
 	                buildings.add(new BuildingTemplate("", zone, buildingType,
 	                        buildingType, bounds));	
 	            }
