@@ -87,7 +87,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private final AuthorityFactory authorityConfig;
     private final SettlementConfig settlementConfig;
 
-    private static final Map<String, Integer> buildingTypeNumMap = new HashMap<>();
+    private Map<String, Integer> buildingTypeNumMap = new HashMap<>();
     
     /**
      * Constructor.
@@ -241,7 +241,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
      * @param buildingType
      * @return
      */
-    public static int getNextBuildingTypeID(String buildingType) {
+    public int getNextBuildingTypeID(String buildingType) {
     	// Note: check with BuildingManager's getUniqueName() and getUniqueNum() for comparison
     	
         int last = 1;

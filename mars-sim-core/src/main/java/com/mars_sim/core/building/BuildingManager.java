@@ -2018,10 +2018,10 @@ public class BuildingManager implements Serializable {
 	 * @return template ID (starting from 0).
 	 */
 	public int getNextTemplateID(String buildingType) {
-		
+		return buildings.size();
 		// Note: check  with getUniqueName() and getUniqueNum() methods below for comparison
 		
-		return SettlementTemplateConfig.getNextBuildingTypeID(buildingType);		
+//		return SettlementTemplateConfig.getNextBuildingTypeID(buildingType);		
 	}
 
 	/**

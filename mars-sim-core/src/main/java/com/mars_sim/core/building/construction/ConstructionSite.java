@@ -245,8 +245,7 @@ public class ConstructionSite extends FixedUnit {
         
         int zone = 0;
         var spec = getBuildingSpec(buildingType);
-        int id = manager.getNextTemplateID(buildingType);
-        
+        int id = manager.getNextTemplateID(buildingType);      
         
         Building newBuilding = new Building(settlement, Integer.toString(id), zone, uniqueName,
         		new BoundedObject(position, width, length, facing), spec);
