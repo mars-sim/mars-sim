@@ -67,7 +67,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String PART_PACKAGE = "part-package";
     private static final String RESOURCE = "resource";
 
-
     private static final String SHIFT_PATTERN = "shift-pattern";
     private static final String MANIFEST_NAME = "manifest-name";
     private static final String SCHEDULE = "schedule";
@@ -86,9 +85,7 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private final ResupplyConfig resupplyConfig;
     private final AuthorityFactory authorityConfig;
     private final SettlementConfig settlementConfig;
-
-    private Map<String, Integer> buildingTypeNumMap = new HashMap<>();
-    
+   
     /**
      * Constructor.
      *
@@ -237,13 +234,12 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
     /**
      * Gets an available building type suffix ID for a new building.
-     * 
+     *
      * @param buildingType
-     * @return
+     * @param buildingTypeNumMap
+     * @return type ID (starting from 1, not zero)
      */
-    public int getNextBuildingTypeID(String buildingType) {
-    	// Note: check with BuildingManager's getUniqueName() and getUniqueNum() for comparison
-    	
+    private int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeNumMap) {
         int last = 1;
         if (buildingTypeNumMap.containsKey(buildingType)) {
             last = buildingTypeNumMap.get(buildingType);
@@ -252,17 +248,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         	buildingTypeNumMap.put(buildingType, last);
         }
         return last;
-    }
-    
-    /**
-     * Gets an available building type suffix ID for a new building.
-     *
-     * @param buildingType
-     * @param buildingTypeIDMap
-     * @return type ID (starting from 1, not zero)
-     */
-    private int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeIDMap) {
-    	return getNextBuildingTypeID(buildingType);
     }
 
     /**
@@ -306,11 +291,11 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         else {
             activitySchedule = settlementConfig.getActivityByPopulation(defaultPopulation);
         }
-
  
         List<BuildingTemplate> buildingTemplates = new ArrayList<>();
         Set<String> existingBuildingIDs = new HashSet<>();
-
+        Map<String, Integer> buildingTypeNumMap = new HashMap<>();
+        
         // Process a list of buildings
         parseBuildingORConnectorList(templateElement, buildingTemplates,
                 BUILDING,

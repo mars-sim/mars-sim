@@ -19,9 +19,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.config.BuildingConfig;
@@ -90,7 +90,6 @@ import com.mars_sim.core.resource.Part;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.SettlementTemplateConfig;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -2019,9 +2018,7 @@ public class BuildingManager implements Serializable {
 	 */
 	public int getNextTemplateID(String buildingType) {
 		return buildings.size();
-		// Note: check  with getUniqueName() and getUniqueNum() methods below for comparison
-		
-//		return SettlementTemplateConfig.getNextBuildingTypeID(buildingType);		
+		// Note: check  with getUniqueName() and getUniqueNum() methods below for comparison	
 	}
 
 	/**
