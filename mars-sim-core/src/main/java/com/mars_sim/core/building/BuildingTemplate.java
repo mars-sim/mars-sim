@@ -69,9 +69,6 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	 * @return id.
 	 */
 	public String getID() {
-//		if (streetNum.isBlank()) {
-//			streetNum = Integer.toString(SettlementTemplateConfig.getNextBuildingTypeID(buildingType));
-//		}
 		return streetNum;
 	}
 

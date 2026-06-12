@@ -39,15 +39,15 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
 
 	private static final float[] DASHES = {50.0f, 20.0f, 10.0f, 20.0f};
     
-	private static final String H = "H ";
-	private static final String T = "T ";
-	private static final String B = "B ";
-	private static final String B3 = "B3. ";
-	private static final String B9 = "B9. ";
-	private static final String W = "W ";
-	private static final String C1 = "C1. ";
-	private static final String C2 = "C2. ";
-	private static final String C3 = "C3. ";
+//	private static final String H = "H ";
+//	private static final String T = "T ";
+//	private static final String B = "B ";
+//	private static final String B3 = "B3. ";
+//	private static final String B9 = "B9. ";
+//	private static final String W = "W ";
+//	private static final String C1 = "C1. ";
+//	private static final String C2 = "C2. ";
+//	private static final String C3 = "C3. ";
 	
     // See https://docstore.mik.ua/orelly/java-ent/jfc/ch04_05.htm for instructions on BasicStroke
     private static final BasicStroke THIN_DASH = new BasicStroke(2.0f,
@@ -263,14 +263,14 @@ public abstract class AbstractMapLayer implements SettlementMapLayer {
             s--;
         }
 
-        String initial = words[0];
-        
+//        String initial = words[0];
+//        
         // Shrink the Hallway label further by removing the whitespace
-        if (initial.contains(H) || initial.contains(B) || initial.contains(B3) || initial.contains(B9) 
-        		|| initial.contains(W) || initial.contains(C1) || initial.contains(C2) || initial.contains(C3) 
-        		|| initial.contains(T)) {
-        	words[0] = words[0].replace(" ", "");
-        }
+//        if (initial.contains(H) || initial.contains(B) || initial.contains(B3) || initial.contains(B9) 
+//        		|| initial.contains(W) || initial.contains(C1) || initial.contains(C2) || initial.contains(C3) 
+//        		|| initial.contains(T)) {
+//        	words[0] = words[0].replace(" ", "");
+//        }
 
         if (s == 1) {
         	drawCenteredLabel(words[0], labelFont, position, frontColor, 0, viewpoint);
