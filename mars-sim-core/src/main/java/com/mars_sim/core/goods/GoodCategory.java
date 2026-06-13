@@ -6,9 +6,11 @@
  */
 package com.mars_sim.core.goods;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum GoodCategory {
+public enum GoodCategory implements Named {
 
 	AMOUNT_RESOURCE, ITEM_RESOURCE, EQUIPMENT, BIN,
 	CONTAINER, VEHICLE, ROBOT;
@@ -19,6 +21,7 @@ public enum GoodCategory {
         this.name = Msg.getStringOptional("GoodCategory", name());
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

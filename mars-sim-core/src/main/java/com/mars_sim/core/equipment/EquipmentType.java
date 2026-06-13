@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.equipment;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.tool.Msg;
 
@@ -13,7 +15,7 @@ import com.mars_sim.core.tool.Msg;
 /**
  * The EquipmentType enum class is used for distinguishing between various type of equipments
  */
-public enum EquipmentType {
+public enum EquipmentType implements Named {
 	
 	// non-container
 	EVA_SUIT, 
@@ -29,6 +31,7 @@ public enum EquipmentType {
 		this.name = Msg.getStringOptional("EquipmentType", name());
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

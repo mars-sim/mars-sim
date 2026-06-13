@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.ai.job.util;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum AssignmentType {
+public enum AssignmentType implements Named {
 
 	PENDING,APPROVED,NOT_APPROVED;
 
@@ -20,6 +22,7 @@ public enum AssignmentType {
         this.name = Msg.getStringOptional("AssignmentType", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

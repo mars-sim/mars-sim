@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.ai.training;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum TrainingType {
+public enum TrainingType implements Named {
 
 	BIOETHICAL, EXTREME_ENV_OPS, NASA_DESERT_RATS, SURVIVAL_TRAINING,
 	SCUBA_DIVING_MASTER, FLIGHT_SAFETY, SEARCH_AND_RESCUE, MOUNTAINEERING_MASTER,
@@ -48,6 +50,7 @@ public enum TrainingType {
         this.name = Msg.getStringOptional("TrainingType", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

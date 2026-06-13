@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.food;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum FoodType {
+public enum FoodType implements Named {
 
 	ANIMAL, CHEMICAL, CROP, DERIVED, INSECT,
 	OIL, ORGANISM, SOY_BASED, TISSUE;
@@ -20,6 +22,7 @@ public enum FoodType {
         this.name = Msg.getStringOptional("FoodType", name());
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}
