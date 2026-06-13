@@ -45,6 +45,10 @@ public interface ToolTipTableModel extends TableModel {
             rowIndex = sorter.convertRowIndexToModel(rowIndex);
         }
         ToolTipTableModel model = (ToolTipTableModel) source.getModel();
-        return model.getToolTipAt(rowIndex, tc.getModelIndex());
+        var text = model.getToolTipAt(rowIndex, tc.getModelIndex());
+        if (text == null) {
+            text = source.getToolTipText();
+        }
+        return text;
     }
 }

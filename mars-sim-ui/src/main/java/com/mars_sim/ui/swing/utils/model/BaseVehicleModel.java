@@ -62,4 +62,12 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
             default -> "";
         };
     }
+
+    @Override
+    protected String getEntityDescription(Vehicle entity, int valueIndex) {
+        if (valueIndex == MISSION_VAL && entity.getMission() != null) {
+            return "Phase: " +entity.getMission().getPhaseDescription();
+        }
+        return null;
+    }
 }

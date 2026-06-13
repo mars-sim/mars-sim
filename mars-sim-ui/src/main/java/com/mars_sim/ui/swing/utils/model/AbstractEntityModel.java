@@ -65,7 +65,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
      * @param newEntities New entities to display.
      * @return true if the entities were updated, false if the new entities are the same as the current entities.
      */
-    public boolean setEntities(Collection<T> newEntities) {
+    public boolean setEntities(Collection<? extends T> newEntities) {
         // Cannot use straight equals because parameter is not a list
         if (newEntities.size() != entities.size() || !entities.containsAll(newEntities)) {
             release();
@@ -149,8 +149,32 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
         return columns[modelIndex];
     }
 
+    /**
+     * A tooltip is needed for a specific cell in the model. The implementation resolves the relevant column spec and entity
+     * and delegates to getEntityDescription to get the tooltip text.
+     * @param rowIndex Row index of the cell.
+     * @param columnIndex Column index of the cell.
+     * @return Tooltip text for the cell, or null if no tooltip is provided.
+     */
     @Override
-    public String getToolTipAt(int row, int col) {
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+        var spec = getColumnSpec(columnIndex);
+        if (rowIndex < 0 || rowIndex >= entities.size()) {
+            return null;
+        }
+        var entity = entities.get(rowIndex);
+        return getEntityDescription(entity, spec.id());
+    }
+    
+    /**
+     * Get a cell description for the associated Entity. The description is a longer version of the value commonly used for tooltip.
+     * Column index maps to the associated ColumnSpec where the id is used to determine the value to return.
+     * Default implementatino return null, override to provide descriptions.
+     * @param entity Source of value.
+     * @param valueIndex Index of the value.
+     * @return String description
+     */
+    protected String getEntityDescription(T entity, int valueIndex) {
         return null;
     }
 

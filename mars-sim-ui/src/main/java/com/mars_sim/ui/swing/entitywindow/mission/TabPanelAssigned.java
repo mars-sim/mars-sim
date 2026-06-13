@@ -6,8 +6,6 @@
  */
 package com.mars_sim.ui.swing.entitywindow.mission;
 
-import java.util.Set;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.table.TableColumnModel;
@@ -16,27 +14,19 @@ import javax.swing.table.TableModel;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
-import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.unit.MobileUnit;
-import com.mars_sim.core.vehicle.Crewable;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
-import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityLabel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
-import com.mars_sim.ui.swing.utils.model.BaseWorkerModel;
 
 /**
  * Tab panel for assigned mission members and Vehicles.
@@ -163,76 +153,4 @@ class TabPanelAssigned extends EntityTableTabPanel<Mission>
 			}
 		}
     }
-    
-	/**
-	 * Table model for mission members.
-	 */
-	@SuppressWarnings("serial")
-	private static class MemberTableModel extends BaseWorkerModel {
-		private static final int BOARDED_VAL = 201;
-		private static final int AIRLOCK_VAL = 202;
-
-		protected static final EntityColumnSpec BOARDED = new EntityColumnSpec(new ColumnSpec(BOARDED_VAL, Msg.getString("MainDetailPanel.column.boarded"),
-                                                        Boolean.class), Set.of(MobileUnit.CONTAINER_EVENT));	
-		protected static final EntityColumnSpec AIRLOCK = new EntityColumnSpec(new ColumnSpec(AIRLOCK_VAL, Msg.getString("MainDetailPanel.column.airlock"),
-														Boolean.class), Set.of(EntityEventType.TASK_SUBTASK_EVENT, EntityEventType.STATUS_EVENT, EntityEventType.SPEED_EVENT, TaskManager.TASK_EVENT));											
-
-		
-		// Private members.
-		private Mission mission;
-		private Crewable v = null;
-		
-		/**
-		 * Constructor.
-		 */
-		private MemberTableModel(Mission mission) {
-			super(NAME, TASK, BOARDED, AIRLOCK);
-            this.mission = mission;
-			if ((mission instanceof VehicleMission vm)
-                    && (vm.getVehicle() instanceof Crewable c)) {
-				v = c;
-			}
-			updateOccupantList();
-		}
-
-
-		@Override
-		protected Object getEntityValue(Worker entity, int valueIndex) {
-			return switch(valueIndex) {
-				case BOARDED_VAL -> isBoarded(entity);
-				case AIRLOCK_VAL -> isInAirlock(entity);
-				default -> BaseWorkerModel.getWorkerValue(entity, valueIndex);
-			};
-		}
-		
-		/**
-		 * Has this member boarded the vehicle ?
-		 *
-		 * @param member Worker member.
-		 * @return Is the worker boarded ?
-		 */
-		private boolean isBoarded(Worker member) {
-			if (member instanceof Person p && v != null) {
-				return v.isCrewmember(p);
-			}
-			return false;
-		}
-		
-		/**
-		 * Is this member currently in vehicle's airlock ?
-		 *
-		 * @param member	 Worker member.
-		 * @return Is the worker in the airlock ?
-		 */
-		private boolean isInAirlock(Worker member) {
-			return (member instanceof Person p && v instanceof Rover r && r.isInAirlock(p));
-		}
-
-		/**
-		 * Updates the occupant list.
-		 */
-		void updateOccupantList() {
-			setEntities(mission.getMembers());
-		}
-	}
 }

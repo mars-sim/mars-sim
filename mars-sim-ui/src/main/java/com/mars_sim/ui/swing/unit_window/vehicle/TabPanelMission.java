@@ -7,57 +7,39 @@
 package com.mars_sim.ui.swing.unit_window.vehicle;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.util.Collection;
-import java.util.Collections;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.ai.mission.Mission;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.ui.swing.ImageLoader;
-import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
-import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
-import com.mars_sim.ui.swing.tool.monitor.PersonTableModel;
+import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
 import com.mars_sim.ui.swing.utils.EntityLabel;
-import com.mars_sim.ui.swing.utils.EntityListLauncher;
+import com.mars_sim.ui.swing.utils.model.BaseWorkerModel;
 
 /**
  * Tab panel displaying vehicle mission info.
  */
 @SuppressWarnings("serial")
-class TabPanelMission extends EntityTabPanel<Vehicle> 
+class TabPanelMission extends EntityTableTabPanel<Vehicle> 
 		implements EntityListener {
 
 	private static final String FLAG_MISSION ="mission";
 	
-	private DefaultListModel<Worker> memberListModel;
-	
-	private JButton monitorButton;
-
 	// Cache
 	private String phaseCache = null;
-	private Collection<Worker> memberCache;
 	private EntityLabel missionLabel;
 	private JLabel missionPhase;
+	private MembersModel model;
 
 	private Mission trackedMission;
 
@@ -73,17 +55,17 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 			Msg.getString("mission.singular"), //-NLS-1$
 			ImageLoader.getIconByName(FLAG_MISSION),
 			Msg.getString("mission.singular"), //-NLS-1$
-			context, vehicle
+			vehicle, context
 		);
+
+		setTableTitle(Msg.getString("mission.members"));
 	}
 
 	@Override
-	protected void buildUI(JPanel topContentPanel) {
-  		JList<Worker> memberList;
+	protected JPanel createInfoPanel() {
 
 		// Prepare mission top panel
 		var missionTopPanel = new AttributePanel();
-		topContentPanel.add(missionTopPanel, BorderLayout.NORTH);
 
 		// Prepare mission panel
 		missionLabel = new EntityLabel(getContext());
@@ -94,46 +76,18 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 		// Prepare mission bottom panel
 		JPanel missionBottomPanel = new JPanel(new BorderLayout(0, 0));
 		missionBottomPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		topContentPanel.add(missionBottomPanel, BorderLayout.CENTER);
-
-		// Prepare member label
-		JLabel memberLabel = new JLabel(Msg.getString("mission.members"), SwingConstants.CENTER); //-NLS-1$
-		StyleManager.applySubHeading(memberLabel);
-		missionBottomPanel.add(memberLabel, BorderLayout.NORTH);
-
-		// Prepare member list panel
-		JPanel memberListPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		missionBottomPanel.add(memberListPanel, BorderLayout.CENTER);
-
-		// Create scroll panel for member list.
-		JScrollPane memberScrollPanel = new JScrollPane();
-		memberScrollPanel.setPreferredSize(new Dimension(225, 100));
-		memberListPanel.add(memberScrollPanel);
-
-		// Create member list model
-		memberListModel = new DefaultListModel<>();
-
-		// Create member list
-		memberList = new JList<>(memberListModel);
-		memberList.addMouseListener(new EntityListLauncher(getContext()));
-		memberScrollPanel.setViewportView(memberList);
-
-		JPanel buttonPanel = new JPanel(new GridLayout(1, 1, 5, 5));
-		memberListPanel.add(buttonPanel);
-
-		// Create member monitor button
-		monitorButton = new JButton(ImageLoader.getIconByName(MonitorWindow.ICON)); //-NLS-1$
-		monitorButton.setMargin(new Insets(2, 2, 2, 2));
-		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //-NLS-1$
-		monitorButton.addActionListener(e -> {
-			Mission m = getEntity().getMission();
-			if (m != null) {
-				showModel(new PersonTableModel(m));
-			}
-		});
-		buttonPanel.add(monitorButton);
 
 		assignMission();
+		
+		return missionTopPanel;
+	}
+
+	protected TableModel createModel() {
+		model = new MembersModel();
+		if (trackedMission != null) {
+			model.update(trackedMission);
+		}
+		return model;
 	}
 
 	/**
@@ -157,20 +111,6 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 			phaseCache = newPhase;
 			missionPhase.setText(Conversion.trim(phaseCache, 24));
 		}
-
-		// Update member list
-		Collection<Worker> tempCollection = null;
-		if (mission != null) {
-		    tempCollection = mission.getMembers();
-		}
-		else {
-		    tempCollection = Collections.emptyList();
-		}
-		if (memberCache == null || !memberCache.equals(tempCollection)) {
-			memberCache = tempCollection;
-			memberListModel.clear();
-			memberCache.forEach(i ->  memberListModel.addElement(i));
-		}
 	}
 
 	/**
@@ -191,7 +131,6 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 		var mission = getEntity().getMission();
 
 		missionLabel.setEntity(mission);
-		monitorButton.setEnabled(mission != null);
 
 		// Swap over the Mission tracked
 		if (trackedMission != null) {
@@ -212,11 +151,22 @@ class TabPanelMission extends EntityTabPanel<Vehicle>
 	public void entityUpdate(EntityEvent event) {
 		switch(event.getType()) {
 			case Vehicle.MISSION_EVENT -> assignMission();
-			case Mission.PHASE_EVENT, Mission.ADD_MEMBER_EVENT,
-				Mission.REMOVE_MEMBER_EVENT -> updateMission();
+			case Mission.PHASE_EVENT -> updateMission();
+			case Mission.ADD_MEMBER_EVENT, Mission.REMOVE_MEMBER_EVENT -> model.update((Mission) event.getSource());
 			default -> {
 						// Do nothing as other event types are not tracked
 						}
+		}
+	}
+
+	private static class MembersModel extends BaseWorkerModel {
+		public MembersModel() {
+			super(NAME, TASK);
+
+		}
+
+		public void update(Mission mission) {
+			setEntities(mission.getMembers());
 		}
 	}
 }
