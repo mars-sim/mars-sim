@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
@@ -33,6 +34,7 @@ import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.goods.PartGood;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.health.Complaint;
@@ -125,6 +127,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private static final int FREQUENCY = 7;
 	private static final int SCORE_DEFAULT = 50;
 	private static final int MAX_DELAY = 100;
+
+	private static final MetricCategory MALFUNCTION_CAT = new MetricCategory("Malfunction", false);
+	private static final String OCCURRED_MEASURE = "Occurred";
+	private static final String FIXED_MEASURE = "Fixed";
 
 	private static boolean noFailures = false;
 	
@@ -477,6 +483,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 		malfunctions.add(malfunction);
 		
+		// Update metric
+		Simulation.instance().getMetricManager().addValue(entity.getAssociatedSettlement(),
+							MALFUNCTION_CAT, OCCURRED_MEASURE, 1);
+
 		numberMalfunctions++;
 
 		getUnit().fireUnitUpdate(MalfunctionManager.MALFUNCTION_EVENT, malfunction);
@@ -944,6 +954,8 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 			u.registerHistoricalEvent(HistoricalEventType.MALFUNCTION_FIXED, fixed.getName(), null, null, null);
 
+			Simulation.instance().getMetricManager().addValue(entity.getAssociatedSettlement(),
+							MALFUNCTION_CAT, FIXED_MEASURE, 1);
 			logger.log(entity, Level.INFO, 20_000L, "The malfunction '" + fixed.getName() + "' had been dealt with.");
 		}
 	}
