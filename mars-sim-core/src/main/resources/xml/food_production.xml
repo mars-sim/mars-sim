@@ -49,6 +49,7 @@
 				<alternative name="Leaves" amount="8.0" />
 				<alternative name="Swiss Chard" amount="3.0" />
 				<alternative name="Potato" amount="3.0" />
+				<alternative name="Spirulina" amount="3.0" />
 			</resource>
 		</inputs>
 
@@ -115,6 +116,7 @@
 			<resource name="Okara" amount="2.0" />
 			<resource name="Strawberry" amount="0.5">
 				<alternative name="Blueberry" amount="0.5" />
+				<alternative name="Spirulina" amount="0.5" />
 			</resource>
 			<resource name="honey" amount="0.5">
 				<alternative name="sugarcane juice" amount="0.5" />
@@ -223,7 +225,10 @@
 		<inputs>
 			<part name="blender" number="1" />
 			<resource name="sesame seed" amount="0.5" />
-			<resource name="soymilk" amount="4.5" />
+			<resource name="soymilk" amount="4.3" />
+			<resource name="soymilk" amount="0.2">
+				<alternative name="Spirulina" amount="0.2" />
+			</resource>
 		</inputs>
 		<outputs>
 			<part name="blender" number="1" />
@@ -902,7 +907,12 @@
 		<inputs>
 			<part name="autoclave" number="1" />
 			<part name="oven" number="1" />
-			<resource name="Quinoa" amount="1.75" />
+			<resource name="Quinoa" amount="1.25">
+				<alternative name="white rice" amount="1.25" />
+			</resource>
+			<resource name="Quinoa" amount="0.5" >
+				<alternative name="Spirulina" amount="0.5" />
+			</resource>
 			<resource name="Rhizopus oligosporus" amount="0.008" />
 			<resource name="water" amount="6.125" />
 			<resource name="rice vinegar" amount="0.236" />
@@ -1209,7 +1219,10 @@
 		crushing cranberries in a mill or by hand cranked machine. </description>
 		<inputs>
 			<part name="blender" number="1" />
-			<resource name="Cranberry" amount="2.0" />
+			<resource name="Cranberry" amount="1.8" />
+			<resource name="Cranberry" amount="0.2" >
+				<alternative name="spirulina" amount="0.2" />
+			</resource>
 			<resource name="water" amount="7.0" />
 			<resource name="glucose" amount="1" />
 		</inputs>
@@ -1228,7 +1241,10 @@
 		</description>
 		<inputs>
 			<part name="blender" number="1" />
-			<resource name="Cranberry" amount="2.0" />
+			<resource name="Cranberry" amount="1.8" />
+			<resource name="Cranberry" amount="0.2" >
+				<alternative name="spirulina" amount="0.2" />
+			</resource>
 			<resource name="water" amount="1.0" />
 			<resource name="glucose" amount=".5" />
 			<resource name="table salt" amount=".15" />

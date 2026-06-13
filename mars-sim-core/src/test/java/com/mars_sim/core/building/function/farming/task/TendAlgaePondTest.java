@@ -46,7 +46,7 @@ public class TendAlgaePondTest extends MarsSimUnitTest {
         var p = buildPerson("fisherman", s, JobType.ASTROBIOLOGIST, b, FunctionType.ALGAE_FARMING);
         var pond = b.getAlgae();
         var shortfall = (pond.getIdealAlgae() * 2) - pond.getCurrentAlgae();
-        pond.addAlgae(shortfall);
+        pond.multiplifyAlgae(shortfall);
 
         var task = new TendAlgaePond(p, pond, TendAlgaePond.HARVESTING);
         assertFalse(task.isDone(), "Harvesting task created");

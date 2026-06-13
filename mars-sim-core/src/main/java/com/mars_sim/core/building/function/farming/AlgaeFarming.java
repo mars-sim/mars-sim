@@ -43,8 +43,6 @@ public class AlgaeFarming extends Function {
 	/** The average CO2 needed [in kg]. */
 	private static double averageCarbonDioxideNeeded;
 	
-	public static final int PRODUCED_ALGAE_ID = 0;
-	
 	private static final int LIGHT_FACTOR = 0;
 	private static final int TEMPERATURE_FACTOR = 2;	
 	private static final int O2_FACTOR = 4;
@@ -204,6 +202,8 @@ public class AlgaeFarming extends Function {
 	private double lightingPower = 0;
 	/** The total amount of light received by this crop. */
 	private double effectivePAR;
+	/** The amount of algae harvested. */
+//	private double harvestedAlgaeMass;
 	
 	/** The cache values of the past environment factors influencing the crop */
 	private double[] environmentalFactor = new double[CO2_FACTOR + 1];
@@ -215,6 +215,9 @@ public class AlgaeFarming extends Function {
 	
 	/** The resource logs for growing algae in this facility [kg/sol]. */
 	private SolMetricDataLogger<Integer> resourceLog = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+
+	/** The resource logs for harvested algae in this facility [kg/sol]. */
+	private SolMetricDataLogger<Integer> harvestedLog = new SolMetricDataLogger<>(MAX_NUM_SOLS);
 	
 	/**
 	 * Constructor.
@@ -241,8 +244,15 @@ public class AlgaeFarming extends Function {
 		idealAlgae = maxAlgae * IDEAL_PERCENTAGE;
 	    
 		currentAlgae = RandomUtil.getRandomDouble(idealAlgae * 0.05, idealAlgae * 0.15);
+		
+		// Question: should the initial batch be added to resource log ?
+//		addResourceLog(currentAlgae, ResourceUtil.SPIRULINA_ID);
+		
 		// The amount of water in kg
 		waterMass = tankSize * currentAlgae / maxAlgae;
+		
+		// Question: should the initial pool water be added to resource log ?
+//		addResourceLog(waterMass, ResourceUtil.WATER_ID);
 		
 	    double initalFood = currentAlgae * NUTRIENT_RATIO;
 	    
@@ -250,6 +260,7 @@ public class AlgaeFarming extends Function {
     
 		// Give variation to the amount of food nutrient for algae at the start for each tank
 		initalFood = RandomUtil.getRandomDouble(initalFood * 0.95, initalFood * 1.05);
+		
 		currentFood = initalFood;
 	}
 
@@ -337,9 +348,9 @@ public class AlgaeFarming extends Function {
 	}
 	
 	/**
-	 * Records the average resource usage of a resource
+	 * Records the usage of a resource.
 	 *
-	 * @param amount    average consumption/production in kg/sol
+	 * @param amount of consumption/production in kg
 	 * @Note positive usage amount means consumption 
 	 * @Note negative usage amount means generation
 	 * @param id The resource id
@@ -347,6 +358,18 @@ public class AlgaeFarming extends Function {
 	private void addResourceLog(double amount, int id) {
 		resourceLog.increaseDataPoint(id, amount);
 	}
+	
+	/**
+	 * Records the harvested amount of a resource.
+	 *
+	 * @param amount harvested in kg
+	 * @Note positive usage amount means consumption 
+	 * @Note negative usage amount means generation
+	 * @param id The resource id
+	 */
+	private void addHarvestedLog(double amount, int id) {
+		harvestedLog.increaseDataPoint(id, amount);
+	}	
 	
 
 	/**
@@ -357,6 +380,25 @@ public class AlgaeFarming extends Function {
 	 */
 	public double computeDailyAverage(int id) {
 		return resourceLog.getDailyAverage(id);
+	}
+	
+	/**
+	 * Computes the cumulative total.
+	 * 
+	 * @param id The resource id
+	 * @return the double array
+	 */
+	public double[] getTotCumulativeDailyAverage(int id) {
+		return resourceLog.getTotCumulativeDailyAverage(id);
+	}
+	
+	/**
+	 * Gets the cumulative total amount of algae harvested.
+	 * 
+	 * @return
+	 */
+	public double getHarvestedAlgaeMass() {
+		return harvestedLog.getCumulativeTotal(ResourceUtil.SPIRULINA_ID);
 	}
 	
 	/**
@@ -631,21 +673,21 @@ public class AlgaeFarming extends Function {
 		   if (birthIterationCache > 1) {
 			   double newAlgae = birthIterationCache;
 			   birthIterationCache = birthIterationCache - newAlgae;
-			   addAlgae(newAlgae);
+			   multiplifyAlgae(newAlgae);
 		   }
 		}
 	}
 
 	/**
-	 * Adds new algae to the pond.
+	 * Multiplifies new algae to the pond.
 	 * 
 	 * @param newAlgae
 	 */
-	public void addAlgae(double newAlgae) {
+	public void multiplifyAlgae(double newAlgae) {
 		currentAlgae += newAlgae;
 		   
 		// Record the freshly produced spirulina
-		addResourceLog(newAlgae, PRODUCED_ALGAE_ID);
+		addResourceLog(newAlgae, ResourceUtil.SPIRULINA_ID);
 		
 		// Compute the amount of fresh water to be replenished at the inlet
 		double freshWater = newAlgae / ALGAE_TO_WATER_RATIO * RandomUtil.getRandomDouble(.9, 1.1);
@@ -927,9 +969,11 @@ public class AlgaeFarming extends Function {
 		
 		if (currentAlgae < harvestedWetBiomass)
 			return 0;
-			
+		
+		// Subtract the harvestedWetBiomass from the pond
 		currentAlgae = currentAlgae - harvestedWetBiomass;
-
+		addResourceLog(-harvestedWetBiomass, ResourceUtil.SPIRULINA_ID);
+		
 		// Assuming the dry mass is ~15% 
 		double spirulinaExtracted = harvestedWetBiomass 
 				* RandomUtil.getRandomDouble(.1, .2) * health;
@@ -948,20 +992,22 @@ public class AlgaeFarming extends Function {
 		double foodWaste = filteredMass * .05;
 		
 		currentAlgae += returnAlgae;
-
+		addResourceLog(returnAlgae, ResourceUtil.SPIRULINA_ID);
+		
+		// Store in the settlement
 		store(foodWaste, ResourceUtil.FOOD_WASTE_ID, "AlgaeFarming::foodWaste");
-		
+		// Store in the settlement		
 		storeGreyWater(greyWaterWaste, ResourceUtil.GREY_WATER_ID);
-		
+		// Store in the settlement
 		store(spirulinaExtracted, ResourceUtil.SPIRULINA_ID, "AlgaeFarming::harvestAlgae");
 		// Record the harvest amount
-		addResourceLog(spirulinaExtracted, ResourceUtil.SPIRULINA_ID);
-
+//		harvestedAlgaeMass += spirulinaExtracted;
+		addHarvestedLog(spirulinaExtracted, ResourceUtil.SPIRULINA_ID);
+		
 		logger.info(worker, 5000, "spirulinaExtracted: " 
 				+ Math.round(spirulinaExtracted * 100.0)/100.0 
 				+ " kg algae.");
-		
-		
+			
 		return spirulinaExtracted;
 	}
 

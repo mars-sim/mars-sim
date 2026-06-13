@@ -329,6 +329,12 @@
 				
 	</side-list>
 	<dessert-list>
+		<dish name="Spirulina Salad">
+			<ingredient name="Spirulina" proportion="0.4"/>
+			<ingredient name="Cranberry" proportion="0.15"/>
+			<ingredient name="Parsley" proportion="0.15"/>
+			<ingredient name="glucose" proportion="0.1"/>
+		</dish>
 		<dish name="Fruit Salad">
 			<ingredient name="Apple" proportion="0.3"/>
 			<ingredient name="Blueberry" proportion="0.3"/>
