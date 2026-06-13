@@ -359,7 +359,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
 
 			
-	      	if (RoleType.GUEST != person.getRole().getType()) {      
+	      	if (RoleType.GUEST != person.getRole().getType() && person.getShiftSlot() != null) {      
 	      		person.getShiftSlot().setOnCall(false);
 	      	}	
 
