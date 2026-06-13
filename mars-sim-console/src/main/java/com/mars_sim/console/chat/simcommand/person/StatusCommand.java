@@ -57,7 +57,7 @@ public class StatusCommand extends AbstractPersonCommand {
 		buffer.append(System.lineSeparator());
 		buffer.append("     Stress : ").append(condition.getStressLevel().getName());
 		buffer.append(System.lineSeparator());
-		buffer.append("    Fatigue : ").append(PhysicalConditionFormat.getFatigueStatus(condition, true));
+		buffer.append("    Fatigue : ").append(condition.getFatigueLevel().getName());
 		buffer.append(System.lineSeparator());
 		buffer.append("Performance : ").append(PhysicalConditionFormat.getPerformanceStatus(condition, true));
 		buffer.append(System.lineSeparator());

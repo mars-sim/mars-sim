@@ -21,13 +21,6 @@ public final class PhysicalConditionFormat {
     private static final String ENERGY_LEVEL_6 = Msg.getString("PersonTableModel.column.energy.level6");
     private static final String ENERGY_LEVEL_7 = Msg.getString("PersonTableModel.column.energy.level7");
 
-
-    private static final String FATIGUE_LEVEL_1 = Msg.getString("PersonTableModel.column.fatigue.level1");
-    private static final String FATIGUE_LEVEL_2 = Msg.getString("PersonTableModel.column.fatigue.level2");
-    private static final String FATIGUE_LEVEL_3 = Msg.getString("PersonTableModel.column.fatigue.level3");
-    private static final String FATIGUE_LEVEL_4 = Msg.getString("PersonTableModel.column.fatigue.level4");
-    private static final String FATIGUE_LEVEL_5 = Msg.getString("PersonTableModel.column.fatigue.level5");
-
     private static final String PERF_LEVEL_1 = Msg.getString("PersonTableModel.column.performance.level1");
     private static final String PERF_LEVEL_2 = Msg.getString("PersonTableModel.column.performance.level2");
     private static final String PERF_LEVEL_3 = Msg.getString("PersonTableModel.column.performance.level3");
@@ -65,31 +58,6 @@ public final class PhysicalConditionFormat {
     		status = PERF_LEVEL_5;
         if (showValue) {
            status += " (" + Math.round(value*10.0)/10.0 + " %)";
-        }
-    	return status;
-    }
-
-    /**
-     * Gives the status of a person's fatigue level.
-     *
-     * @param pc
-     * @return status
-     */
-    public static String getFatigueStatus(PhysicalCondition pc, boolean showValue) {
-        var value = pc.getFatigue();
-    	String status;
-    	if (value < 500)
-    		status = FATIGUE_LEVEL_1;
-    	else if (value < 800)
-    		status = FATIGUE_LEVEL_2;
-    	else if (value < 1200)
-    		status = FATIGUE_LEVEL_3;
-    	else if (value < 1600)
-    		status = FATIGUE_LEVEL_4;
-    	else
-    		status = FATIGUE_LEVEL_5;
-        if (showValue) {
-            status += " (" + Math.round(value*10.0)/10.0 + ")";
         }
     	return status;
     }

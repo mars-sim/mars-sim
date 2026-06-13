@@ -349,7 +349,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 
 			case FATIGUE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getFatigueStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getFatigueLevel().getName();
 				break;
 
 			case STRESS:

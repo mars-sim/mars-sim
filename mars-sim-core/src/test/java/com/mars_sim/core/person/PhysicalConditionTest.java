@@ -17,6 +17,28 @@ import com.mars_sim.core.test.MarsSimUnitTest;
 class PhysicalConditionTest extends MarsSimUnitTest{
 
     @Test
+    void testAttributesChangeOverTime() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Initial values
+        double initialStress = physicalCondition.getStress();
+        double initialThirst = physicalCondition.getThirst();
+        double initialFatigue = physicalCondition.getFatigue();
+        double initialHunger = physicalCondition.getHunger();
+
+        // Simulate time passing
+        physicalCondition.timePassing(createPulse(10), s);
+
+        // Check that the attributes have changed
+        assertFalse(initialStress < physicalCondition.getStress(), "Stress should decrease over time");
+        assertTrue(initialThirst < physicalCondition.getThirst(), "Thirst should increase over time");
+        assertTrue(initialFatigue < physicalCondition.getFatigue(), "Fatigue should increase over time");
+        assertTrue(initialHunger < physicalCondition.getHunger(), "Hunger should increase over time");
+    }
+
+    @Test
     void testStressLevelChangeFiresEvent() {
         Settlement s = buildSettlement("Test");
         Person person = buildPerson("Person", s);
@@ -90,7 +112,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         person.addEntityListener(listener);
 
         // Change the thirst level and check if the event is fired
-        physicalCondition.setThirst(ThirstLevel.ISOTONIC.getMaxValue() - 1);
+        physicalCondition.setThirst(10);
         physicalCondition.timePassing(createPulse(10), s);
         assertEquals(0, listener.getEventsReceived(), "No events fired");
 
@@ -110,7 +132,7 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         PhysicalCondition physicalCondition = person.getPhysicalCondition();
 
         // Change the thirst level to max and check for dehydrated
-        physicalCondition.setThirst(ThirstLevel.DESICCATED.getMaxValue() - 1);
+        physicalCondition.setThirst(ThirstLevel.BONE_DRY.getMaxValue() + 1);
         physicalCondition.timePassing(createPulse(10), s);
         assertTrue(physicalCondition.getProblems().isEmpty(), "No problems should be present");
 
@@ -128,13 +150,13 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         assertEquals(HealthProblemState.DEGRADING, dehydration.getState(), "Dehydration getting worse");
 
         // Start recovery by changing thirst level
-        physicalCondition.setThirst(ThirstLevel.WANT_A_SIP.getMaxValue() - 1);
+        physicalCondition.setThirst(ThirstLevel.ISOTONIC.getMaxValue() + 1);
         physicalCondition.timePassing(createPulse(10), s);
         assertEquals(1, problems.size(), "Still dehyrated but recovering");
         assertEquals(HealthProblemState.RECOVERING, dehydration.getState(), "Dehydration should be recovering");
 
         // Marked cured
-        physicalCondition.setThirst(ThirstLevel.ISOTONIC.getMaxValue() - 1);
+        physicalCondition.setThirst(10);
         physicalCondition.timePassing(createPulse(10), s);
         assertTrue(physicalCondition.getProblems().isEmpty(), "Problems should be cured after thirst decrease");
         assertEquals(HealthProblemState.CURED, dehydration.getState(), "Dehydration should be cured");
@@ -147,8 +169,8 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         var physicalCondition = person.getPhysicalCondition();
         
         // Change the thirst level to max and check for dehydrated
-        physicalCondition.setThirst(ThirstLevel.DESICCATED.getMaxValue() - 1);
-        physicalCondition.timePassing(createPulse(physicalCondition.getDessicatedWait()), s);
+        physicalCondition.setThirst(ThirstLevel.BONE_DRY.getMaxValue() + 1);
+        physicalCondition.timePassing(createPulse(physicalCondition.getDessicatedWait()+1), s);
 
         physicalCondition.setThirst(PhysicalCondition.MAX_THIRST);
         physicalCondition.timePassing(createPulse(physicalCondition.getDessicatedWait() * 2), s);
