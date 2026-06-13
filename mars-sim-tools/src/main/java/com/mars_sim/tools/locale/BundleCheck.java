@@ -26,6 +26,7 @@ import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.mars_sim.core.Named;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.function.FunctionType;
@@ -44,22 +45,29 @@ import com.mars_sim.core.food.FoodType;
 import com.mars_sim.core.goods.GoodCategory;
 import com.mars_sim.core.interplanetary.transport.TransitState;
 import com.mars_sim.core.location.LocationStateType;
+import com.mars_sim.core.person.FatigueLevel;
+import com.mars_sim.core.person.StressLevel;
+import com.mars_sim.core.person.ThirstLevel;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.PersonalityTraitType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.AssignmentType;
 import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.training.CertificationType;
 import com.mars_sim.core.person.ai.training.TrainingType;
+import com.mars_sim.core.person.health.BodyRegionType;
 import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
+import com.mars_sim.core.robot.BotMode;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.ObjectiveType;
+import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.vehicle.StatusType;
 import com.mars_sim.core.vehicle.VehicleType;
 
@@ -73,6 +81,216 @@ public class BundleCheck {
     private static final String SOURCE_ARG = "source";
 
     private static final String TARGET_ARG = "output";
+
+    record LangValue(String value, int paramCount) {}
+
+    private static Logger logger = Logger.getLogger(BundleCheck.class.getName());
+
+    private File outputFolder;
+
+    private BundleCheck(String outputDir) {
+        outputFolder = new File(outputDir);
+    
+        logger.info("Output folder: " + outputFolder.getAbsolutePath());
+        outputFolder.mkdirs();
+    }
+
+    /**
+     * Find any defined locale properties file in the source folder and compare to the base
+     * messages.properties file.
+     * @throws IOException
+     */
+    private void checkBundles(String sourceFolder) throws IOException {
+        var source = new File(sourceFolder);
+
+        // Load the base messages file
+        var baseMessages = loadMessages(new File(source, "messages.properties"));
+
+        // Define keys that are automatically handled by the system
+        try(var report = new PrintWriter(new FileOutputStream(new File(outputFolder, "report.txt")))) {
+            // Compare each found locale file
+            for(var f : FileUtils.listFiles(source, new String[]{"properties"}, false)) {
+                if (f.getName().startsWith("messages_")) {
+                    var name = f.getName().substring("messages_".length(), f.getName().length() - ".properties".length());
+                    if (!name.isEmpty()) {
+                        compareBundle(f, name, baseMessages, report);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Compare the enums used in the code to the keys in the locale bundle and report any missing keys.
+     * @param localeMessages the messages from the locale bundle
+     * @param output the output writer to write the report to
+     * @return the number of missing enum keys
+     */
+    private int compareEnums(Map<String, LangValue> localeMessages, PrintWriter output) {
+        output.println("# Enum keys (these will automatically default to internal enum value):");
+
+        int enumMissing = 0;
+
+        // These are all the enums that use a default name strategy
+        // This is all Enums that use the Msg.getStringOptional("EnumType", name()) strategy
+        // This could be done dynamically by finding all Enums that implement Named.
+        enumMissing += compareEnum(AssignmentType.class, localeMessages, output);
+        enumMissing += compareEnum(BodyRegionType.class, localeMessages, output);
+        enumMissing += compareEnum(BotMode.class, localeMessages, output);
+        enumMissing += compareEnum(BuildingCategory.class, localeMessages, output);
+        enumMissing += compareEnum(CertificationType.class, localeMessages, output);
+        enumMissing += compareEnum(ComplaintType.class, localeMessages, output);
+        enumMissing += compareEnum(ComputingLoadType.class, localeMessages, output);
+        enumMissing += compareEnum(DishCategory.class, localeMessages, output);
+        enumMissing += compareEnum(DustStormType.class, localeMessages, output);
+        enumMissing += compareEnum(EquipmentType.class, localeMessages, output);
+        enumMissing += compareEnum(FatigueLevel.class, localeMessages, output);
+        enumMissing += compareEnum(FavoriteType.class, localeMessages, output);
+        enumMissing += compareEnum(FoodType.class, localeMessages, output);
+        enumMissing += compareEnum(FunctionType.class, localeMessages, output);
+        enumMissing += compareEnum(GoodCategory.class, localeMessages, output);
+        enumMissing += compareEnum(HealthProblemState.class, localeMessages, output);
+        enumMissing += compareEnum(HealthRiskType.class, localeMessages, output);
+        enumMissing += compareEnum(HeatMode.class, localeMessages, output);
+        enumMissing += compareEnum(HistoricalEventCategory.class, localeMessages, output);
+        enumMissing += compareEnum(HistoricalEventType.class, localeMessages, output);
+        enumMissing += compareEnum(JobType.class, localeMessages, output);
+        enumMissing += compareEnum(LandmarkType.class, localeMessages, output);
+        enumMissing += compareEnum(LocationStateType.class, localeMessages, output);
+        enumMissing += compareEnum(MissionType.class, localeMessages, output);
+        enumMissing += compareEnum(NaturalAttributeType.class, localeMessages, output);
+        enumMissing += compareEnum(ObjectiveType.class, localeMessages, output);
+        enumMissing += compareEnum(OverrideType.class, localeMessages, output);
+        enumMissing += compareEnum(PersonalityTraitType.class, localeMessages, output);
+        enumMissing += compareEnum(PhaseType.class, localeMessages, output);
+        enumMissing += compareEnum(PlanType.class, localeMessages, output);
+        enumMissing += compareEnum(PowerMode.class, localeMessages, output);
+        enumMissing += compareEnum(RoleType.class, localeMessages, output);
+        enumMissing += compareEnum(ScienceType.class, localeMessages, output);
+        enumMissing += compareEnum(SkillType.class, localeMessages, output);
+        enumMissing += compareEnum(StatusType.class, localeMessages, output);
+        enumMissing += compareEnum(StressLevel.class, localeMessages, output);
+        enumMissing += compareEnum(StudyStatus.class, localeMessages, output);
+        enumMissing += compareEnum(SystemType.class, localeMessages, output);
+        enumMissing += compareEnum(TrainingType.class, localeMessages, output);
+        enumMissing += compareEnum(TransitState.class, localeMessages, output);
+        enumMissing += compareEnum(ThirstLevel.class, localeMessages, output);
+        enumMissing += compareEnum(UnitType.class, localeMessages, output);
+        enumMissing += compareEnum(VehicleType.class, localeMessages, output);
+
+        return enumMissing;
+    }
+
+    /**
+     * Compare the enum values of a given enum class to the keys in the locale bundle and report any missing keys.
+     * @param enumClass the enum class to compare
+     * @param localeMessages the messages from the locale bundle
+     * @param output the output writer to write the report to
+     * @return the number of missing enum keys
+     */
+    private int compareEnum(Class<? extends Enum<?>> enumClass, Map<String, LangValue> localeMessages, PrintWriter output) {
+        int enumMissing = 0;
+
+        // This follows the pattern used in Msg.getOptional where the key is the enum type in lower case followed by the enum value in lower cas
+        String mainKey = enumClass.getSimpleName().toLowerCase() + ".";
+        for(var v : enumClass.getEnumConstants()) {
+            String key = mainKey + v.name().toLowerCase();
+            if (localeMessages.containsKey(key)) {
+                output.println(key + "=" + localeMessages.get(key).value);    
+            }
+            else if (v instanceof Named n) {
+                // Supports localised name
+                output.println("#" + key + "=" + n.getName());
+                enumMissing++;
+            }
+            else {
+                // Ideally should not happen for these Enums
+                output.println("#" + key + "=" + v.name());
+                enumMissing++;
+            }
+        }
+        return enumMissing;
+    }
+    
+    /**
+     * 
+     * Compare a locale bundle to the base messages and generate a report file.
+     * @param f             the locale file
+     * @param name          the locale name
+     * @param report    the report writer
+     * @param baseMessages  the base messages map
+     * @throws IOException
+     */
+    private void compareBundle(File f, String name, Map<String, LangValue> baseMessages,
+                                PrintWriter report) throws IOException {
+        var localeMessage = loadMessages(f);
+        int differences = 0;
+        var outputFile = new File(outputFolder, "messages_" + name + ".properties");
+        logger.info("Locale " + name + "output file: " + outputFile.getAbsolutePath());
+
+        try(var output = new PrintWriter(new FileOutputStream(outputFile))) {
+
+            // Header in output files
+            output.println("# Proposed new properties file for locale " + name);
+
+            // Do enums first
+            var enumMissing = compareEnums(localeMessage, output);
+
+            // Report on the match with the base keys
+            Set<String> baseKeys = new TreeSet<>(baseMessages.keySet());
+            output.println();
+            output.println("# Base keys:");
+            for(var k : baseKeys) {
+                var baseValue = baseMessages.get(k);
+                if (localeMessage.containsKey(k)) {
+                    // Check parameter count
+                    var localeValue = localeMessage.get(k);
+                    if (baseValue.paramCount != localeValue.paramCount) {
+                        differences++;
+
+                        output.println("#" + k + "=" + localeMessage.get(k).value + " expected params " + baseValue.paramCount);
+                    }
+                    else {
+                        output.println(k + "=" + localeMessage.get(k).value);
+                    }
+                } else {
+                    differences++;
+                    output.println("#" + k + "=" + baseValue.value);
+                }
+            }
+
+            // Create a summary of the results
+            var summary = "Locale " + name + ":" + differences + " missing keys "
+                        + enumMissing + " missing enum keys.";
+            logger.info(summary);
+            report.println(summary);
+        }
+    }
+
+    /**
+     * Load messages from a properties file and count the number of parameters in each message.
+     * @param file  the properties file
+     * @return map of message keys to parameter count
+     * @throws IOException
+     */
+    private Map<String, LangValue> loadMessages(File file) throws IOException {
+        Map<String, LangValue> results = new HashMap<>();
+
+        try(var input = FileUtils.openInputStream(file)) {  
+            Properties rawMessages = new Properties();
+            rawMessages.load(input);
+        
+            // Tag messages that contain properties
+            rawMessages.forEach( (k,v)-> {
+                var key = (String) k;
+                var value = (String) v;
+                int count = StringUtils.countMatches(value, "{");
+                results.put(key, new LangValue(value, count));
+            });
+        }
+        
+        return results;
+    }
 
     public static void main(String[] args) throws IOException {
         var sourceFolder = "./mars-sim-core/src/main/resources/";
@@ -100,7 +318,7 @@ public class BundleCheck {
             String header = "\n" + e.getMessage() + "\n";
             try {
                 fmt.printHelp("bundleCheck [options]", header, options, null, true);
-            } catch (IOException ioe) {
+            } catch (IOException _) {
                 // Fallback if printing help fails
                 logger.severe("usage: bundleCheck [options]");
             }
@@ -109,190 +327,5 @@ public class BundleCheck {
 
         var checker = new BundleCheck(targetFolder);
         checker.checkBundles(sourceFolder);
-    }
-
-    private static Logger logger = Logger.getLogger(BundleCheck.class.getName());
-
-    private File outputFolder;
-
-    private BundleCheck(String outputDir) {
-        outputFolder = new File(outputDir);
-    
-        logger.info("Output folder: " + outputFolder.getAbsolutePath());
-        outputFolder.mkdirs();
-    }
-
-    /**
-     * Find any defined locale properties file in the source folder and compare to the base
-     * messages.properties file.
-     * @throws IOException
-     */
-    private void checkBundles(String sourceFolder) throws IOException {
-        var source = new File(sourceFolder);
-
-        // Load the base messages file
-        var baseMessages = loadMessages(new File(source, "messages.properties"));
-
-        // Define keys that are automatically handled by the system
-        Set<String> defaultEnumsKeys = loadDefaultEnumsKeys();
-
-        // Compare each found locale file
-        for(var f : FileUtils.listFiles(source, new String[]{"properties"}, false)) {
-            if (f.getName().startsWith("messages_")) {
-                var name = f.getName().substring("messages_".length(), f.getName().length() - ".properties".length());
-                if (!name.isEmpty()) {
-                    compareBundle(f, name, baseMessages, defaultEnumsKeys);
-                }
-            }
-        }
-        
-    }
-
-    /**
-     * Create an entry for every constant in the enum class using the format
-     * @param <T> the enum type
-     * @param results   the set to add the keys to
-     * @param enumClass the enum class to process
-     */
-    private <T extends Enum<T>>  void loadEnum(Set<String> results, Class<T> enumClass) {
-        String mainKey = enumClass.getSimpleName().toLowerCase() + ".";
-        for(var v : enumClass.getEnumConstants()) {
-            results.add(mainKey + v.name().toLowerCase());
-        }
-    }
-
-    /**
-     * Load all the enum keys that use the default naming strategy.
-     * The enums used here should match those in Msg.getStringOptional calls.
-     * @return set of enum keys
-     */
-    private Set<String> loadDefaultEnumsKeys() {
-        Set<String> results = new TreeSet<>();
-
-        // These are all the enums that use a default name strategy
-        loadEnum(results, FunctionType.class);
-        loadEnum(results, EquipmentType.class);
-        loadEnum(results, RoleType.class);
-        loadEnum(results, HeatMode.class);
-        loadEnum(results, LocationStateType.class);
-        loadEnum(results, HealthRiskType.class);
-        loadEnum(results, HistoricalEventCategory.class);
-        loadEnum(results, PersonalityTraitType.class);
-        loadEnum(results, PhaseType.class);
-        loadEnum(results, StudyStatus.class);
-        loadEnum(results, ComputingLoadType.class);
-        loadEnum(results, ObjectiveType.class);
-        loadEnum(results, VehicleType.class);
-        loadEnum(results, UnitType.class);
-        loadEnum(results, AssignmentType.class);
-        loadEnum(results, DustStormType.class);
-        loadEnum(results, FoodType.class);
-        loadEnum(results, ScienceType.class);
-        loadEnum(results, LandmarkType.class);
-        loadEnum(results, FavoriteType.class);
-        loadEnum(results, BuildingCategory.class);
-        loadEnum(results, GoodCategory.class);
-        loadEnum(results, TrainingType.class);
-        loadEnum(results, DishCategory.class);
-        loadEnum(results, StatusType.class);
-        loadEnum(results, NaturalAttributeType.class);
-        loadEnum(results, SkillType.class);
-        loadEnum(results, PlanType.class);
-        loadEnum(results, CertificationType.class);
-        loadEnum(results, SystemType.class);
-        loadEnum(results, HealthProblemState.class);
-        loadEnum(results, JobType.class);
-        loadEnum(results, ComplaintType.class);
-        loadEnum(results, PowerMode.class);
-        loadEnum(results, TransitState.class);
-        loadEnum(results, HistoricalEventType.class);
-
-        return results;
-    }
-
-    /**
-     * Compare a locale bundle to the base messages and generate a report file.
-     * @param f             the locale file
-     * @param name          the locale name
-     * @param baseMessages  the base messages map
-     * @param enumKeys      the set of enum keys that are automatically handled
-     * @throws IOException
-     */
-    private void compareBundle(File f, String name, Map<String,Integer> baseMessages,
-                Set<String> enumKeys) throws IOException {
-        var localeMessage = loadMessages(f);
-        int differences = 0;
-        int enumMissing = 0;
-
-        File outputFile = new File(outputFolder, "report_" + name + ".txt");
-        try(var out = new PrintWriter(new FileOutputStream(outputFile))) {
-            out.println("Report for locale " + name);
-
-            // Report on the enum keys
-            out.println();
-            out.println("Enum keys (these will automatically default to internal enum value):");
-            for(var k : enumKeys) {
-                if (!localeMessage.containsKey(k)) {
-                    out.println(k + " : MISSING");
-                    enumMissing++;
-                }
-            }
-
-            // Report on the match with the base keys
-            Set<String> baseKeys = new TreeSet<>(baseMessages.keySet());
-            out.println();
-            out.println("Base keys:");
-            for(var k : baseKeys) {
-                if (localeMessage.containsKey(k)) {
-                    // Check parameter count
-                    var localeCount = localeMessage.get(k);
-                    int baseCount = baseMessages.get(k).intValue();
-                    if (baseCount != localeCount.intValue()) {
-                        out.println(k + " : parameters base=" + baseCount + ", locale=" + localeCount);
-                        differences++;
-                    }
-                } else {
-                    out.println(k + " : MISSING");
-                    differences++;
-                }
-            }
-
-            // Find keys in the locale that are missing in the base but allow any enum keys
-            Set<String> extraKeys = new TreeSet<>(localeMessage.keySet());
-            extraKeys.removeAll(baseMessages.keySet());
-            extraKeys.removeAll(enumKeys);
-            out.println();
-            out.println("Redundant keys:");
-            for(var k : extraKeys) {
-                out.println(k);
-            }
-            logger.info("Report for locale " + name + ":" + differences + " differences "
-                        + enumMissing + " missing enum keys, "
-                        + extraKeys.size() + " redundant keys.");
-        }
-    }
-
-    /**
-     * Load messages from a properties file and count the number of parameters in each message.
-     * @param file  the properties file
-     * @return map of message keys to parameter count
-     * @throws IOException
-     */
-    private Map<String, Integer> loadMessages(File file) throws IOException {
-        Map<String, Integer> results = new HashMap<>();
-
-        try(var input = FileUtils.openInputStream(file)) {  
-            Properties rawMessages = new Properties();
-            rawMessages.load(input);
-        
-            // Tag messages that contain properties
-            rawMessages.forEach( (k,v)-> {
-                var key = (String) k;
-                int count = StringUtils.countMatches((String) v, "{");
-                results.put(key, count);
-            });
-        }
-        
-        return results;
     }
 }

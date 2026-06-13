@@ -7,9 +7,11 @@ natural attributes.
 
 package com.mars_sim.core.environment;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum DustStormType {
+public enum DustStormType implements Named {
 
 	// The demarcation between local and regional storms has been placed at a scale
 	// of 2000 km, or about 40 degrees of longitude (for the long axis of the storm),
@@ -30,6 +32,7 @@ public enum DustStormType {
         this.name = Msg.getStringOptional("DustStormType", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

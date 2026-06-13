@@ -68,7 +68,6 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 
 	private static final Map<String, Integer> EVENT_COLUMN_MAPPING;
 
-	private static final String DEHYDRATED = "Dehydrated";
 	private static final String STARVING = "Starving";
 	private static final String LIVE = "Show Alive";
 	private static final String DECEASED = "Show Deceased";
@@ -112,7 +111,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_ENDED_EVENT, TASK_DESC);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.MISSION_EVENT, MISSION_COL);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.ILLNESS_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.DEATH_EVENT, HEALTH);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.BURIAL_EVENT, HEALTH);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.REVIVED_EVENT, HEALTH);
@@ -343,22 +342,19 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 			case WATER: {
 				PhysicalCondition pc = person.getPhysicalCondition();
 				if (!pc.isDead()) {
-					if (pc.isDehydrated())
-						result = DEHYDRATED;
-					else
-						result = PhysicalConditionFormat.getThirstyStatus(pc, false);
+					result = pc.getThirstLevel().getName();
 				}
 			}
 			break;
 
 			case FATIGUE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getFatigueStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getFatigueLevel().getName();
 				break;
 
 			case STRESS:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getStressStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getStressLevel().getName();
 				break;
 
 			case PERFORMANCE:

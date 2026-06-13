@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.building.utility.power;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum PowerMode {
+public enum PowerMode implements Named {
 
 	FULL_POWER, LOW_POWER, NO_POWER;
 
@@ -21,6 +23,7 @@ public enum PowerMode {
 	}
 
 	/** gives back an internationalized {@link String} for display in user interface. */
+	@Override
 	public String getName() {
 		return this.name;
 	}

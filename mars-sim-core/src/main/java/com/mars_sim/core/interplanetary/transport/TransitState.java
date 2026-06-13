@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.interplanetary.transport;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum TransitState {
+public enum TransitState implements Named {
 
 	PLANNED, IN_TRANSIT, ARRIVED, CANCELED;
 
@@ -23,6 +25,7 @@ public enum TransitState {
 	/** 
 	 * Gets the internationalized name for display in user interface. 
 	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}

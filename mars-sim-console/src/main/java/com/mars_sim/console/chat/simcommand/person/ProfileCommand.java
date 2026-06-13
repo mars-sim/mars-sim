@@ -39,11 +39,11 @@ public class ProfileCommand extends AbstractPersonCommand {
 		response.appendBlankLine();
 		PhysicalCondition condition = person.getPhysicalCondition();
 		response.appendLabeledString("Hunger", PhysicalConditionFormat.getHungerStatus(condition, false));
-		response.appendLabeledString("Thirst", PhysicalConditionFormat.getThirstyStatus(condition, false));
-		response.appendLabeledString("Fatigue", PhysicalConditionFormat.getFatigueStatus(condition, false));
+		response.appendLabeledString("Thirst", condition.getThirstLevel().getName());
+		response.appendLabeledString("Fatigue", condition.getFatigueLevel().getName());
 		response.appendLabeledString("Performance",
 									PhysicalConditionFormat.getPerformanceStatus(condition, false));
-		response.appendLabeledString("Stress", PhysicalConditionFormat.getStressStatus(condition, false));
+		response.appendLabeledString("Stress", condition.getStressLevel().getName());
 		MBTIPersonality mbti = person.getMind().getMBTI();
 		response.appendLabeledString("Personality", mbti.getDescriptor() + " (" + mbti.getTypeString() + ')');
 

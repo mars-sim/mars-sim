@@ -9,7 +9,6 @@ package com.mars_sim.core;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import com.mars_sim.core.environment.Weather;
@@ -55,7 +54,7 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	private String notes = "";
 
 	/** Entity listeners. */
-	private transient Set<EntityListener> listeners;
+	private transient EntityListenerManager listeners;
 
 	protected static MasterClock masterClock;
 
@@ -247,14 +246,9 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 
 	/**
 	 * Checks if it has an entity listener.
-	 * 
-	 * @param listener
-	 * @return
 	 */
 	public synchronized boolean hasEntityListener(EntityListener listener) {
-		if (listeners == null)
-			return false;
-		return listeners.contains(listener);
+		return listeners.hasEntityListener(listener);
 	}
 
 	/**
@@ -267,11 +261,9 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 		if (newListener == null)
 			throw new IllegalArgumentException();
 		if (listeners == null)
-			listeners = new HashSet<>();
+			listeners = new EntityListenerManager();
 
-		synchronized(listeners) {	
-			listeners.add(newListener);
-		}
+		listeners.addEntityListener(newListener);
 	}
 
 	/**
@@ -280,14 +272,9 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 * @param oldListener the listener to remove.
 	 */
 	@Override
-	public final synchronized void removeEntityListener(EntityListener oldListener) {
-		if (oldListener == null)
-			throw new IllegalArgumentException();
-
+	public final void removeEntityListener(EntityListener oldListener) {
 		if (listeners != null) {
-			synchronized(listeners) {
-				listeners.remove(oldListener);
-			}
+			listeners.removeEntityListener(oldListener);
 		}
 	}
 
@@ -297,11 +284,11 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 * @return unmodifiable set of entity listeners.
 	 */
 	@Override
-	public final synchronized Set<EntityListener> getEntityListeners() {
+	public Set<EntityListener> getEntityListeners() {
 		if (listeners == null) {
 			return Collections.emptySet();
 		}
-		return Collections.unmodifiableSet(listeners);
+		return listeners.getEntityListeners();
 	}
 
 	
@@ -342,21 +329,11 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 * @param target     the event target object or null if none.
 	 */
 	public final void fireUnitUpdate(String updateType, Object target) {
-		if (listeners == null || listeners.isEmpty()) {
+		if (listeners == null) {
 			return;
 		}
 		final EntityEvent ue = new EntityEvent(this, updateType, target);
-		synchronized (listeners) {
-			for(EntityListener i : listeners) {
-				try {
-					// Stop listeners breaking the update thread
-					i.entityUpdate(ue);
-				}
-				catch(RuntimeException rte) {
-					logger.severe(this, "Problem executing listener " + i + " for event " + ue, rte);
-				}
-			}
-		}
+		listeners.fireEvent(ue);
 	}
 
 	/**

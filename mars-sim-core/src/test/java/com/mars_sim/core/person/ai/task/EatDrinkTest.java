@@ -15,10 +15,11 @@ import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ThirstLevel;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.resource.ResourceUtil;
 
-public class EatDrinkTest extends MarsSimUnitTest {
+class EatDrinkTest extends MarsSimUnitTest {
     
     private static final double INITIAL_RESOURCE = 100D;
 
@@ -28,7 +29,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testSettlementWater() {
+    void testSettlementWater() {
         var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
@@ -39,7 +40,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testBottleWater() {
+    void testBottleWater() {
         var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
@@ -54,7 +55,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testVehicleWater() {
+    void testVehicleWater() {
         var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
         var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
@@ -70,9 +71,12 @@ public class EatDrinkTest extends MarsSimUnitTest {
 
     private void testWater(Person p) {
         var pc = p.getPhysicalCondition();
-        pc.setThirst(PhysicalCondition.MAX_THIRST);
+        pc.setThirst(ThirstLevel.DRY.getMaxValue());
         var initialThirst = pc.getThirst();
         assertTrue(initialThirst > 0, "Person is thirty");
+
+        // Move advance to update thirst level and ensure that the person is thirsty
+        pc.timePassing(createPulse(10), p.getSettlement());
 
         var t = new EatDrink(p);
         assertFalse(t.isDone(), "EatDrink task not complete");
@@ -83,7 +87,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testSettlementFood() {
+    void testSettlementFood() {
         var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
@@ -92,7 +96,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testSettlementFoodWater() {
+    void testSettlementFoodWater() {
         var s = buildSettlement("mock");
         var d = buildDining(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, 0);
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
@@ -108,7 +112,7 @@ public class EatDrinkTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testVehicleFood() {
+    void testVehicleFood() {
         var s = buildSettlement("mock");
         var p = buildPerson("eater", s);
         var v = buildRover(s, "R1", LocalPosition.DEFAULT_POSITION, EXPLORER_ROVER);
