@@ -21,11 +21,6 @@ public final class PhysicalConditionFormat {
     private static final String ENERGY_LEVEL_6 = Msg.getString("PersonTableModel.column.energy.level6");
     private static final String ENERGY_LEVEL_7 = Msg.getString("PersonTableModel.column.energy.level7");
 
-    private static final String WATER_LEVEL_1 = Msg.getString("PersonTableModel.column.water.level1");
-    private static final String WATER_LEVEL_2 = Msg.getString("PersonTableModel.column.water.level2");
-    private static final String WATER_LEVEL_3 = Msg.getString("PersonTableModel.column.water.level3");
-    private static final String WATER_LEVEL_4 = Msg.getString("PersonTableModel.column.water.level4");
-    private static final String WATER_LEVEL_5 = Msg.getString("PersonTableModel.column.water.level5");
 
     private static final String FATIGUE_LEVEL_1 = Msg.getString("PersonTableModel.column.fatigue.level1");
     private static final String FATIGUE_LEVEL_2 = Msg.getString("PersonTableModel.column.fatigue.level2");
@@ -95,32 +90,6 @@ public final class PhysicalConditionFormat {
     		status = FATIGUE_LEVEL_5;
         if (showValue) {
             status += " (" + Math.round(value*10.0)/10.0 + ")";
-        }
-    	return status;
-    }
-
-    /**
-     * Gives the status of a person's water level.
-     *
-     * @param pc
-     * @return status
-     */
-    public static String getThirstyStatus(PhysicalCondition pc, boolean showValue) {
-        var thirst = pc.getThirst();
-    	String status;
-    	if (thirst < 150)
-    		status = WATER_LEVEL_1;
-    	else if (thirst < 500)
-    		status = WATER_LEVEL_2;
-    	else if (thirst < 1000)
-    		status = WATER_LEVEL_3;
-    	else if (thirst < 1600)
-    		// Note : Use getDehydrationStartTime()
-    		status = WATER_LEVEL_4;
-    	else
-    		status = WATER_LEVEL_5;
-        if (showValue) {
-            status += " (" + Math.round(thirst*10.0)/10.0 + ")";
         }
     	return status;
     }

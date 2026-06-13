@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.Building;
@@ -1228,7 +1227,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 					Person person = i2.next();
 					if (RandomUtil.lessThanRandPercent(probability)) {
 						person.getPhysicalCondition().addMedicalComplaint(complaint);
-						person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 					}
 				}
 			}

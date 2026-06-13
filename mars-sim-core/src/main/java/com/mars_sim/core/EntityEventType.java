@@ -37,7 +37,6 @@ public class EntityEventType {
 	public static final String PERFORMANCE_EVENT = "performance event";
 	
 	// Others
-	public static final String ILLNESS_EVENT = "illness event";
 	public static final String DEATH_EVENT = "death event";
 	public static final String BURIAL_EVENT = "burial event";
 	public static final String REVIVED_EVENT = "revived event";

@@ -8,7 +8,6 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -92,7 +91,7 @@ public class HealthProblem implements Serializable {
 		state = newState;
 
 		var c = getComplaint();
-		sufferer.fireUnitUpdate(EntityEventType.ILLNESS_EVENT, c);
+		sufferer.fireUnitUpdate(PhysicalCondition.ILLNESS_EVENT, c);
 		logger.fine(getSufferer(), "Problem " + c.getName() + " now " + newState);
 	}
 
@@ -118,6 +117,16 @@ public class HealthProblem implements Serializable {
 			return d;
 		else
 			return 100;
+	}
+
+	/**
+	 * Checks if this health problem is more serious than another based on Complaint severity.
+	 * 
+	 * @param other The other health problem to compare against.
+	 * @return true if this health problem is more serious than the other.
+	 */
+	public boolean isMoreSeriousThan(HealthProblem other) {
+		return getComplaint().getSeriousness() > other.getComplaint().getSeriousness();
 	}
 
 	/**

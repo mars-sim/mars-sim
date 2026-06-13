@@ -152,9 +152,7 @@ public class EatDrink extends Task {
 		}
 
 		boolean hungry = pc.isHungry();
-		boolean thirsty = pc.isThirsty();
-
-		/////////////////////////////////////////////////
+		boolean thirsty = pc.getThirstLevel().isThirsty();
 
 		if (person.isInSettlement()) {	
 			
@@ -816,8 +814,9 @@ public class EatDrink extends Task {
 			setDescription(DRINKING + " water");
 		}
 
-		if (pc.getThirst() < PhysicalCondition.THIRST_THRESHOLD / 6)
+		if (!pc.getThirstLevel().isThirsty()) {
 			endTask();
+		}
 	}
 	
 	/**

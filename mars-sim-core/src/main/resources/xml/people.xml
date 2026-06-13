@@ -174,7 +174,7 @@
 
 		<!-- Number of sols without water before dehydration kicks in -->
 		<!-- Default: 2.0 -->
-		<dehydration-start-time value="3.0" />
+		<dehydration-start-time value="1.0" />
 
 		<!-- Number of sols without food before starvation kicks in -->
 		<!-- Default: 7.0 -->

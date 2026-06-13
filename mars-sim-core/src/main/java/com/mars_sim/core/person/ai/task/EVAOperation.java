@@ -634,8 +634,8 @@ public abstract class EVAOperation extends Task {
 			return false;
 		}	
 		
-        return person.getPhysicalCondition().isDoubleHungry() && person.getPhysicalCondition().isDoubleThirsty()
-                && person.getPhysicalCondition().isSleepy() && person.getPhysicalCondition().isStressedOut();
+        return person.getPhysicalCondition().isDoubleHungry() && person.getPhysicalCondition().getThirstLevel().isDoubleThirsty()
+                && person.getPhysicalCondition().isSleepy() && person.getPhysicalCondition().getStressLevel().isStressedOut();
     }
 
 	/**
