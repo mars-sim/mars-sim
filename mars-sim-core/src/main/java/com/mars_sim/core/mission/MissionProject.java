@@ -18,6 +18,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityListenerManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.events.HistoricalEvent;
@@ -105,7 +106,7 @@ public abstract class MissionProject implements Mission {
     private Person leader;
 
 	/** Entity listeners. */
-	private transient Set<EntityListener> listeners = null;
+	private transient EntityListenerManager listeners;
     private MarsTime stepStarted;
 
     private Set<Worker> members = new UnitSet<>();
@@ -449,11 +450,9 @@ public abstract class MissionProject implements Mission {
     @Override
     public void addEntityListener(EntityListener newListener) {
 		if (listeners == null) {
-			listeners = new HashSet<>();
+			listeners = new EntityListenerManager();
 		}
-		synchronized (listeners) {
-			listeners.add(newListener);
-		}
+		listeners.addEntityListener(newListener);
     }
 
     /**
@@ -463,9 +462,7 @@ public abstract class MissionProject implements Mission {
     @Override
     public void removeEntityListener(EntityListener oldListener) {
 		if (listeners != null) {
-			synchronized (listeners) {
-				listeners.remove(oldListener);
-			}
+			listeners.removeEntityListener(oldListener);
 		}
     }
 
@@ -476,12 +473,10 @@ public abstract class MissionProject implements Mission {
 	 */
 	@Override
 	public Set<EntityListener> getEntityListeners() {
-		if (listeners == null || listeners.isEmpty()) {
+		if (listeners == null ) {
 			return Collections.emptySet();
 		}
-		synchronized (listeners) {
-			return Collections.unmodifiableSet(listeners);
-		}
+		return listeners.getEntityListeners();
 	}
 
 	/**
@@ -493,12 +488,7 @@ public abstract class MissionProject implements Mission {
     @Override
 	public void fireMissionUpdate(String eventType, Object target) {
 		if (listeners != null) {
-			synchronized (listeners) {
-				var event = new EntityEvent(this, eventType, target);
-				for (EntityListener l : listeners) {
-					l.entityUpdate(event);
-				}
-			}
+			listeners.fireEvent(new EntityEvent(this, eventType, target));
 		}
 	}
 
