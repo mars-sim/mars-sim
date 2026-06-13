@@ -63,11 +63,11 @@ class BuildingPanelGeneral extends EntityTabPanel<Building> {
 		AttributePanel infoPanel = new AttributePanel();
 		topPanel.add(infoPanel, BorderLayout.SOUTH);
 
+		infoPanel.addTextField(Msg.getString("entity.name"), building.getName(), null);
 		infoPanel.addTextField(Msg.getString("building.type"), building.getBuildingType(), null);
 		infoPanel.addTextField(Msg.getString("building.category"), building.getCategory().getName(), null);
 		infoPanel.addTextField(Msg.getString("building.construction"), Conversion.capitalize(building.getConstruction().name()), null);
 		infoPanel.addTextField(Msg.getString("building.templateid"), building.getTemplateID(), null);
-		infoPanel.addTextField(Msg.getString("building.name"), building.getName(), null);
 		// Prepare dimension label
 		infoPanel.addTextField(Msg.getString("entity.internalPosn"), building.getPosition().getShortFormat(), 
 				"The center x and y coordinates of this building, according to the Settlement Map");
