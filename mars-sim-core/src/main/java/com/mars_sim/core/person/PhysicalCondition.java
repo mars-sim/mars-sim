@@ -83,8 +83,6 @@ public class PhysicalCondition implements Serializable {
 	private static final int FATIGUE_THRESHOLD = 750;
 	/** The amount of fatigue threshold [millisols]. */
 	public static final int FATIGUE_MIN = 150;
-	/** The amount of stress threshold [millisols]. */
-	private static final int STRESS_THRESHOLD = 75;
 	/** Life support minimum value. */
 	private static final int MIN_VALUE = 0;
 	/** Life support maximum value. */
@@ -133,16 +131,12 @@ public class PhysicalCondition implements Serializable {
 
 	/** True if person is starving. */
 	private boolean isStarving;
-	/** True if person is stressed out. */
-	private boolean isStressedOut;
 	/** True if person is dehydrated. */
 	private boolean isDehydrated;
 	/** True if person is alive. */
 	private boolean alive;
 	/** True if person is radiation Poisoned. */
 	private boolean isRadiationPoisoned;
-	/** True if person is doing a task that's considered resting. */
-	private boolean restingTask;
 
 	private int endurance;
 	private int strength;
@@ -164,6 +158,7 @@ public class PhysicalCondition implements Serializable {
 	private double hunger;
 	/** Person's stress level (0.0 % - 100.0 %). */
 	private double stress;
+	private StressLevel stressLevel;
 	/** Performance factor 0.0 to 1.0. */
 	private double performance;
 	/** Person's energy level [in kJ] */
@@ -231,12 +226,8 @@ public class PhysicalCondition implements Serializable {
 	private HealthProblem mostSeriousProblem;
 
     public static final String STRESS_EVENT = "stress event";
-
     public static final String THIRST_EVENT = "thirst event";
-
     public static final String HUNGER_EVENT = "hunger event";
-
-    // For PhysicalCondition
     public static final String FATIGUE_EVENT = "fatigue event";
 
 	private static MasterClock master;
@@ -305,7 +296,6 @@ public class PhysicalCondition implements Serializable {
 		dehydrationStartTime = 1000D * RandomUtil.getGaussianPositive(dTime, bodyMassDeviation / 5);
 
 		isStarving = false;
-		isStressedOut = false;
 		isDehydrated = false;
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
@@ -328,6 +318,7 @@ public class PhysicalCondition implements Serializable {
 		thirst = RandomUtil.getRandomRegressionInteger(50);
 		fatigue = RandomUtil.getRandomRegressionInteger(50);
 		stress = RandomUtil.getRandomRegressionInteger(10);
+		stressLevel = StressLevel.fromValue(stress);
 		hunger = RandomUtil.getRandomRegressionInteger(50);
 		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (50 - hunger) * 100;
@@ -337,21 +328,6 @@ public class PhysicalCondition implements Serializable {
 				- (50 - thirst) * .002;
 	}
 
-	
-	/**
-	 * Initializes the health risk probability map.
-	 * 
-	 * @return
-	 */
-	public void initializeHealthRisks() {
-		
-		for (HealthRiskType type: HealthRiskType.values()) {
-			double probability = RandomUtil.getRandomDouble(5);
-			healthRisks.put(type, probability);
-		}
-	}
-	
-	
 	/**
 	 * Initialize values and instances at the beginning of sol 1
 	 * (Note : Must skip this when running maven test or else having exceptions)
@@ -363,8 +339,12 @@ public class PhysicalCondition implements Serializable {
 		updateAppetite();
 		// Derive personal max energy
 		updateMaxEnergy();
+
 		// Set up the initial values for health risks
-		initializeHealthRisks();
+		for (HealthRiskType type: HealthRiskType.values()) {
+			double probability = RandomUtil.getRandomDouble(5);
+			healthRisks.put(type, probability);
+		}
 	}
 
 	/**
@@ -432,15 +412,15 @@ public class PhysicalCondition implements Serializable {
 			
 			double time = pulse.getElapsed();
 			
+			// Check key attributes
+			checkStress();
+
 			// Check once a day only
 			if (pulse.isNewSol()) {	
-//				int solOfMonth = pulse.getMarsTime().getSolOfMonth();
-//				if (solOfMonth == 1 || solOfMonth == 8 || solOfMonth == 15 || solOfMonth == 22 || solOfMonth == 29) {
-					// Update the personal appetite
-					updateAppetite();
-					// Update personal max energy
-					updateMaxEnergy();
-//				}
+				// Update the personal appetite
+				updateAppetite();
+				// Update personal max energy
+				updateMaxEnergy();
 			}
 			
 			// Check once per msol (millisol integer)
@@ -448,23 +428,7 @@ public class PhysicalCondition implements Serializable {
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
 				// Check radiation 
-				radiation.timePassing(pulse);
-				
-//				// Get stress factor due to settlement overcrowding
-//				if (person.isInSettlement() && !person.isRestingTask()) {
-//					// Note: this stress factor is different from LifeSupport's timePassing's
-//					//       stress modifier for each particular building
-//					double stressFactor = person.getSettlement().getStressFactor(time);
-//					
-//					if (stressFactor > 0) {
-//						// Update stress
-//				        addStress(stressFactor);
-//					}
-//				}				
-				
-				if (stress < STRESS_THRESHOLD) {
-					isStressedOut = false;
-				}
+				radiation.timePassing(pulse);			
 				
 				int msol = pulse.getMarsTime().getMillisolInt();
 				if (msol % 7 == 0) {
@@ -473,8 +437,6 @@ public class PhysicalCondition implements Serializable {
 					checkStarvation(hunger);
 					// Update dehydration
 					checkDehydration(thirst);					
-					// Check if person is stressed out
-					checkStressOut();
 					
 					// Check if person is at very high fatigue may collapse.
 
@@ -485,24 +447,15 @@ public class PhysicalCondition implements Serializable {
 				}
 			}
 
-            double currentO2Consumption;
-			if (person.isRestingTask())
-				currentO2Consumption = personConfig.getLowO2ConsumptionRate();
-			else
-				currentO2Consumption = personConfig.getNominalO2ConsumptionRate();
-
+			boolean isResting = person.isRestingTask();
+            double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
+											: personConfig.getNominalO2ConsumptionRate();
 			// Check life support system
 			checkLifeSupport(time, currentO2Consumption, support);
 			// Update the existing health problems
-			checkHealth(pulse);
+			checkHealth(pulse, isResting);
 			
-			
-			double factor = 1;
-			
-			if (person.isRestingTask()) {
-				// Modify the time factor
-				factor = 2;
-			}
+			double factor = isResting ? 2 : 1;
 			
 			// Reduce stress
 			reduceStress(time / 10 * factor);
@@ -512,17 +465,15 @@ public class PhysicalCondition implements Serializable {
 			increaseFatigue(time * 1.1 / factor);
 			// Update hunger
 			increaseHunger(time * bodyMassDeviation * .75 / factor);
-			// Update the entropy in muscles
-//			muscularAtrophy(time / 4);	
 		}
 	}
 
 	 /**
 	  * Checks and updates existing health problems
-	  *
-	  * @param time
+	  * @param pulse
+	  * @param isResting 
 	  */
-	private void checkHealth(ClockPulse pulse) {
+	private void checkHealth(ClockPulse pulse, boolean isResting) {
 		boolean illnessEvent = false;
 
 		if (!problems.isEmpty()) {
@@ -593,7 +544,7 @@ public class PhysicalCondition implements Serializable {
 		}
 
 		// Generates any random illnesses.
-		if (!restingTask) {
+		if (!isResting) {
 			List<Complaint> randomAilments = checkForRandomAilments(pulse);
 			illnessEvent = !randomAilments.isEmpty();
 		}
@@ -948,7 +899,6 @@ public class PhysicalCondition implements Serializable {
 			ss = 0D;
 		
 		stress = ss;
-		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 	
 	/**
@@ -957,9 +907,7 @@ public class PhysicalCondition implements Serializable {
 	 * @param d
 	 */
 	public void addStress(double d) {
-		if (stress > 95) {
-			logger.warning(person, 30_000, "stress: " + Math.round(stress * 1000.0)/1000.0 + "  d: " + Math.round(d * 1000.0)/1000.0);
-		}
+
 		// Note: Some research findings indicate that individuals 
 		// with depression often exhibit lower pain tolerance.
 		double ss = stress + d / getPainToleranceFactor();
@@ -970,7 +918,6 @@ public class PhysicalCondition implements Serializable {
 			ss = 0;
 		
 		stress = ss;
-		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 
 	/**
@@ -988,47 +935,52 @@ public class PhysicalCondition implements Serializable {
 			ss = 0;
 		
 		stress = ss;
-		person.fireUnitUpdate(PhysicalCondition.STRESS_EVENT);
 	}
 	
 	/**
 	 * Gets the person's stress level.
-	 *
 	 * @return stress (0.0 to 100.0)
 	 */
 	public double getStress() {
 		return stress;
 	}
+
+	/**
+	 * Gets the current stress level.
+	 * @return current stress level
+	 */
+	public StressLevel getStressLevel() {
+		return stressLevel;
+	}
 	
 	/**
 	 * Checks if a person suffers from stress related health problem.
 	 */
-	private void checkStressOut() {
-		if (stress >= STRESS_THRESHOLD && !isStressedOut()) {
-			isStressedOut = true;
-		}
-		
-		if (isStressedOut()) {
+	private void checkStress() {
+		// Always check for panic attack
+		if (stress >= 100D) {
 			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
-	
-			if (panic == null || !problems.contains(panic)) {
-				if (stress >= 100.0) {
-					addMedicalComplaint(medicalManager.getPanicAttack());
-					person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
-				}
-				else if (stress >= STRESS_THRESHOLD) {
-					// Anything to do here ?
-				}
+			if (panic == null) {
+				addMedicalComplaint(medicalManager.getPanicAttack());
+				person.fireUnitUpdate(EntityEventType.ILLNESS_EVENT);
 			}
-			
-			else if (panic != null && stress < STRESS_THRESHOLD) {
-				
-				panic.setCured();
-				
-				isStressedOut = false;
+		}
 
-				logger.log(person, Level.INFO, 20_000, "No longer having panic attack (case 2).");
-			}
+		// Check change of stress level
+		var newStressLevel = StressLevel.fromValue(stress);
+		if (newStressLevel == stressLevel) {
+			return;
+		}
+
+		// Update the stress level as it's changed
+		stressLevel = newStressLevel;
+		person.fireUnitUpdate(STRESS_EVENT);
+		
+		// Check Panic Attack cured
+		HealthProblem activePanic = getProblemByType(ComplaintType.PANIC_ATTACK);	
+		if (activePanic != null && !stressLevel.isStressedOut()) {
+			activePanic.setCured();
+			logger.log(person, Level.INFO, 20_000, "No longer having panic attack (case 2).");
 		}
 	}
 	
@@ -1869,7 +1821,7 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	public boolean isStressedOut() {
-		return isStressedOut;
+		return stressLevel.isStressedOut();
 	}
 
 	public boolean isRadiationPoisoned() {
@@ -1939,7 +1891,7 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getPainToleranceFactor() {
+	private double getPainToleranceFactor() {
 		return (1 + musclePainTolerance/200);
 	}
 	
@@ -1948,17 +1900,8 @@ public class PhysicalCondition implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getPainSorenessFactor() {
+	private double getPainSorenessFactor() {
 		return (1 + muscleSoreness/200);
-	}
-	
-	/**
-	 * Gets the muscle health factor.
-	 * 
-	 * @return
-	 */
-	public double getMusleHealthFactor() {
-		return (1 + muscleHealth/200);
 	}
 	
 	/**
@@ -1998,15 +1941,6 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
-	 * Improves the muscle health.
-	 * 
-	 * @return
-	 */
-	public void improveMuscleHealth(double time) {
-		muscleHealth += .001 * time;
-	}
-	
-	/**
 	 * Checks if it passes the hunger x2 threshold
 	 *
 	 * @return
@@ -2015,7 +1949,6 @@ public class PhysicalCondition implements Serializable {
 		return hunger > HUNGER_THRESHOLD * 2 || kJoules < ENERGY_THRESHOLD * 2;
 	}
 	
-
 	/**
 	 * Checks if it passes the hunger threshold
 	 *
@@ -2050,17 +1983,6 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public boolean isSleepy() {
 		return fatigue > FATIGUE_THRESHOLD;
-	}
-
-	/**
-	 * Checks if it's above the stress threshold.
-	 *
-	 * @return
-	 */
-	public boolean isStressed() {
-		// Research findings indicate that individuals 
-		// with depression often exhibit lower pain tolerance
-		return stress > STRESS_THRESHOLD * getPainToleranceFactor();
 	}
 
 	public double getStrengthMod() {

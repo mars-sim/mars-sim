@@ -1,0 +1,80 @@
+package com.mars_sim.core.person;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+import com.mars_sim.core.TestEntityListener;
+import com.mars_sim.core.person.health.ComplaintType;
+import com.mars_sim.core.person.health.HealthProblemState;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.test.MarsSimUnitTest;
+
+class PhysicalConditionTest extends MarsSimUnitTest{
+
+    @Test
+    void testStressLevelChangeFiresEvent() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Add a listener to capture the event
+        TestEntityListener listener = new TestEntityListener(PhysicalCondition.STRESS_EVENT);
+        person.addEntityListener(listener);
+
+        // Change the stress level and check if the event is fired
+        physicalCondition.setStress(5);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertEquals(0, listener.getEventsReceived(), "No events fired");
+
+        var level = physicalCondition.getStressLevel();
+
+        // Change to a higher level
+        physicalCondition.setStress(80);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertEquals(1, listener.getEventsReceived(), "Stress level change should fire an event");
+        assertNotEquals(level, physicalCondition.getStressLevel(), "Stress level should have changed");
+    }
+
+    @Test
+    void testPanicAttack() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Change the stress level and check if the event is fired
+        physicalCondition.setStress(5);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertTrue(physicalCondition.getProblems().isEmpty(), "No problems should be present");
+
+        // Change to a higher level
+        physicalCondition.setStress(100);
+        physicalCondition.timePassing(createPulse(10), s);
+        var problems = physicalCondition.getProblems();
+        assertEquals(1, problems.size(), "Problems should be present after stress increase");
+
+        var panic = problems.get(0);
+        assertEquals(ComplaintType.PANIC_ATTACK, panic.getComplaint().getType(), "Panic attack should be present");
+        assertEquals(HealthProblemState.DEGRADING, panic.getState(), "Panic attack active");
+
+        // Stay paniced
+        physicalCondition.timePassing(createPulse(10), s);
+        problems = physicalCondition.getProblems();
+        assertEquals(1, problems.size(), "Problems stay same");
+        assertEquals(HealthProblemState.DEGRADING, panic.getState(), "Panic attack still be active");
+        assertTrue(problems.contains(panic), "Panic attack should still be present");
+
+        // Cure
+        physicalCondition.setStress(0);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertTrue(physicalCondition.getProblems().isEmpty(), "Problems should be cured after stress decrease");
+        assertEquals(HealthProblemState.CURED, panic.getState(), "Panic attack should be cured");
+        
+        var cured = physicalCondition.getHealthHistory();
+        assertFalse(cured.isEmpty(), "Cured history should not be empty");
+        assertEquals(ComplaintType.PANIC_ATTACK, cured.get(0).complaint().getType(), "Cured history should contain the panic attack");
+    }
+}

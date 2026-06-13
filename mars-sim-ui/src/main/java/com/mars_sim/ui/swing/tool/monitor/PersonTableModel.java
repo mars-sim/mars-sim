@@ -358,7 +358,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 
 			case STRESS:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getStressStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getStressLevel().getName();
 				break;
 
 			case PERFORMANCE:

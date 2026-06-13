@@ -33,12 +33,6 @@ public final class PhysicalConditionFormat {
     private static final String FATIGUE_LEVEL_4 = Msg.getString("PersonTableModel.column.fatigue.level4");
     private static final String FATIGUE_LEVEL_5 = Msg.getString("PersonTableModel.column.fatigue.level5");
 
-    private static final String STRESS_LEVEL_1 = Msg.getString("PersonTableModel.column.stress.level1");
-    private static final String STRESS_LEVEL_2 = Msg.getString("PersonTableModel.column.stress.level2");
-    private static final String STRESS_LEVEL_3 = Msg.getString("PersonTableModel.column.stress.level3");
-    private static final String STRESS_LEVEL_4 = Msg.getString("PersonTableModel.column.stress.level4");
-    private static final String STRESS_LEVEL_5 = Msg.getString("PersonTableModel.column.stress.level5");
-
     private static final String PERF_LEVEL_1 = Msg.getString("PersonTableModel.column.performance.level1");
     private static final String PERF_LEVEL_2 = Msg.getString("PersonTableModel.column.performance.level2");
     private static final String PERF_LEVEL_3 = Msg.getString("PersonTableModel.column.performance.level3");
@@ -76,31 +70,6 @@ public final class PhysicalConditionFormat {
     		status = PERF_LEVEL_5;
         if (showValue) {
            status += " (" + Math.round(value*10.0)/10.0 + " %)";
-        }
-    	return status;
-    }
-
-    /**
-     * Gives the status of a person's stress level.
-     *
-     * @param pc
-     * @return status
-     */
-    public static String getStressStatus(PhysicalCondition pc, boolean showValue) {
-        var value = pc.getStress();
-    	String status;
-    	if (value < 10)
-    		status = STRESS_LEVEL_1;
-    	else if (value < 40)
-    		status = STRESS_LEVEL_2;
-    	else if (value < 75)
-    		status = STRESS_LEVEL_3;
-    	else if (value < 95)
-    		status = STRESS_LEVEL_4;
-    	else
-    		status = STRESS_LEVEL_5;
-        if (showValue) {
-            status += " (" + Math.round(value*10.0)/10.0 + " %)";
         }
     	return status;
     }
