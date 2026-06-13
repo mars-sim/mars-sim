@@ -17,7 +17,7 @@ import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 
 /**
  * Table panel that shows collaborators for a scientific study. It shows the primary researcher and any collaborative researchers.
- * It listens for changes to the collaborators and updates the table as needed.WS
+ * It listens for changes to the collaborators and updates the table as needed.
  */
 class TabPanelCollaborators extends EntityTableTabPanel<ScientificStudy>
     implements EntityListener {

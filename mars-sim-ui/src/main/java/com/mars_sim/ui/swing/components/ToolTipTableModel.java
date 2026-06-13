@@ -35,17 +35,19 @@ public interface ToolTipTableModel extends TableModel {
      */
     public static String extractToolTip(MouseEvent e, JTable source) {
         var p = e.getPoint();
+        String text = null;
 		int rowIndex = source.rowAtPoint(p);
 		int colIndex = source.columnAtPoint(p);
-
-        // Use the column model to handle hidden columns
-        var tc = source.getColumnModel().getColumn(colIndex);
-        var sorter = source.getRowSorter();
-        if (sorter != null) {
-            rowIndex = sorter.convertRowIndexToModel(rowIndex);
+        if (rowIndex >= 0 && colIndex >= 0) {
+            // Use the column model to handle hidden columns
+            var tc = source.getColumnModel().getColumn(colIndex);
+            var sorter = source.getRowSorter();
+            if (sorter != null) {
+                rowIndex = sorter.convertRowIndexToModel(rowIndex);
+            }
+            ToolTipTableModel model = (ToolTipTableModel) source.getModel();
+            text = model.getToolTipAt(rowIndex, tc.getModelIndex());
         }
-        ToolTipTableModel model = (ToolTipTableModel) source.getModel();
-        var text = model.getToolTipAt(rowIndex, tc.getModelIndex());
         if (text == null) {
             text = source.getToolTipText();
         }

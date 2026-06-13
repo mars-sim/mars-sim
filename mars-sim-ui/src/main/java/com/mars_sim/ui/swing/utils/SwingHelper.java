@@ -191,7 +191,7 @@ public final class SwingHelper {
 			// Get header width first
 			TableCellRenderer headerRenderer = tableColumn.getHeaderRenderer();
 		    if (headerRenderer == null) {
-				// Should nevr happen
+				// Should never happen
 				headerRenderer = defaultRenderer;
 			}
 		    var header = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
