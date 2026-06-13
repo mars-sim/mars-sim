@@ -7,6 +7,8 @@
 package com.mars_sim.ui.swing.components;
 
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
@@ -60,6 +62,9 @@ public final class ColumnSpecHelper {
             case ColumnSpec.STYLE_DIGIT2 -> new NumberCellRenderer(2);
             case ColumnSpec.STYLE_DIGIT3 -> new NumberCellRenderer(3);
             case ColumnSpec.STYLE_PERCENTAGE -> new PercentageTableCellRenderer(false);
+            case ColumnSpec.STYLE_RIGHT -> { var t = new DefaultTableCellRenderer();
+                                             t.setHorizontalAlignment(SwingConstants.RIGHT);
+                                             yield t; }
             default -> null;
         };
 

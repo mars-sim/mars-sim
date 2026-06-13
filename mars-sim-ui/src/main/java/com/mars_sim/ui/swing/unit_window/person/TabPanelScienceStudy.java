@@ -9,8 +9,6 @@ package com.mars_sim.ui.swing.unit_window.person;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.util.Collections;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,33 +16,33 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.table.AbstractTableModel;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.science.ScienceType;
-import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
+import com.mars_sim.ui.swing.utils.AchievementTableModel;
 import com.mars_sim.ui.swing.utils.EntityLauncher;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.model.BaseScienceStudyModel;
 
 
 /**
  * A tab panel displaying a person's scientific studies and achievements.
  */
 @SuppressWarnings("serial")
-class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManagerListener {
+class TabPanelScienceStudy extends EntityTabPanel<Person>
+	implements EntityManagerListener, TemporalComponent {
 
 	private static final String SCIENCE_ICON = "science";
 	
@@ -80,7 +78,6 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 	@Override
 	protected void buildUI(JPanel content) {
     JTable studyTable;
-  		JTable achievementTable;
 		// Create the main panel.
 		JPanel mainPane = new JPanel(new GridLayout(2, 1, 0, 0));
 		content.add(mainPane);
@@ -126,21 +123,11 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		collabCompletedLabel = achievementLabelPane.addTextField(Msg.getString("scientificstudy.collaborator.plural"), //$NON-NLS-1$
 						"", null);
 
-		// Create the achievement scroll panel.
-		JScrollPane achievementScrollPane = new JScrollPane();
-		achievementScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		achievementPane.add(achievementScrollPane, BorderLayout.CENTER);
-
 		// Create the achievement table.
-		achievementTableModel = new AchievementTableModel(person);
-		achievementTable = new JTable(achievementTableModel);
-		achievementTable.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		achievementTable.setRowSelectionAllowed(true);
-		achievementTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
-		
-		achievementScrollPane.setViewportView(achievementTable);
-
-		achievementTable.setAutoCreateRowSorter(true);
+		achievementTableModel = new AchievementTableModel(s -> person.getResearchStudy().getScientificAchievement(s));
+		achievementTableModel.update();
+		var achievementTable = SwingHelper.createScrolledTable(achievementTableModel, getContext(), null, new Dimension(225, -1));
+		achievementPane.add(achievementTable, BorderLayout.CENTER);
 	}
 
 	/**
@@ -150,64 +137,80 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 	public void destroy() {
 		scienceManager.removeListener(this);
 		if (studyTableModel != null) {
-			studyTableModel.destroy();
+			studyTableModel.release();
 		}
 		super.destroy();
 	}
-
-	/**	
-	 * Possible update due to assigned study change. The StudyTableModel is updated,
-	 * and if it changed, the achievement table model and total achievement label are also updated.
-	 */
-	private void possibleAssignedStudyChange() {
-		// Update study table model.
-		if (studyTableModel.update()) {
-			// If study table changed, also update achievement table model.
-			achievementTableModel.update();
-
-
-			var person = getEntity();
-
-			// Update total achievement label.
-			String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getResearchStudy().getTotalScientificAchievement());
-			totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
-			primaryCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedPrimaryStudies(person)));
-			collabCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedCollaborativeStudies(person)));
-		}
-	}
-
 	
 	@Override
 	public void entityAdded(Entity newEntity) {
-		// New study so refresh study table
-		possibleAssignedStudyChange();
+		if (studyTableModel != null) {
+			studyTableModel.update();
+		}
 	}
 
 	@Override
 	public void entityRemoved(Entity removedEntity) {
-		// Study removed so refresh study table
-		possibleAssignedStudyChange();
+		if (studyTableModel != null) {
+			studyTableModel.update();
+		}
+	}
+
+	@Override
+	public void clockUpdate(ClockPulse pulse) {
+		// If study table changed, also update achievement table model.
+		achievementTableModel.update();
+
+		if (studyTableModel != null) {
+			studyTableModel.refresh();
+		}
+
+		var person = getEntity();
+
+		// Update total achievement label.
+		String totalAchievementString = StyleManager.DECIMAL_PLACES1.format(person.getResearchStudy().getTotalScientificAchievement());
+		totalAchievementLabel.setText(totalAchievementString); //$NON-NLS-1$
+		primaryCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedPrimaryStudies(person)));
+		collabCompletedLabel.setText(Integer.toString(scienceManager.getNumCompletedCollaborativeStudies(person)));
+	}
+
+	/**
+	 * Refreshes the UI components forces a reset of study table.
+	 */
+	@Override
+	public void refreshUI() {
+		if (studyTableModel != null) {
+			studyTableModel.update();
+		}
 	}
 
 	/**
 	 * Inner class for study table model.
 	 */
-	private static class StudyTableModel extends AbstractTableModel 
-		implements EntityModel, EntityListener {
+	private static class StudyTableModel extends BaseScienceStudyModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private static final int NAME_COL = 0;
-		private static final int ROLE_COL = 1;
-		private static final int PHASE_COL = 2;
-		private static final int RESEARCH_COL = 3;
-		private static final int PAPER_COL = 4;
+		private static final String COLLABORATOR = Msg.getString("scientificstudy.collaborator"); //$NON-NLS-1$
+		private static final String LEAD = Msg.getString("scientificstudy.lead"); //$NON-NLS-1$
+
+		private static final int ROLE_VAL = 10;
+		private static final int RESEARCH_VAL = 11;
+		private static final int PAPER_VAL = 12;
+
+		private static final EntityColumnSpec ROLE = new EntityColumnSpec(
+						new ColumnSpec(ROLE_VAL, Msg.getString("TabPanelScience.column.role"), String.class),
+						null);
+		private static final EntityColumnSpec RESEARCH = new EntityColumnSpec(
+						new ColumnSpec(RESEARCH_VAL, Msg.getString("TabPanelScience.column.researchTime"), Double.class),
+						null);
+		private static final EntityColumnSpec PAPER = new EntityColumnSpec(
+						new ColumnSpec(PAPER_VAL, Msg.getString("TabPanelScience.column.paperTime"), Double.class),
+						null);
 
 		// Data members.
 		private Person person;
-		private List<ScientificStudy> studies;
-
 		private ScientificStudyManager manager;
 
 		/**
@@ -216,261 +219,60 @@ class TabPanelScienceStudy extends EntityTabPanel<Person> implements EntityManag
 		 * @param person the person.
 		 */
 		private StudyTableModel(Person person, ScientificStudyManager manager)  {
-			super();
+			super(NAME, ROLE, PHASE, RESEARCH, PAPER);
 
 			this.person = person;
 			this.manager = manager;
-			this.studies = Collections.emptyList();
 
 			// Get all studies the person is or has been involved in.
-			setMonitoredStudies(manager.getAllStudies(person));
-		}
-
-		/**
-		 * Sets the list of monitored studies.
-		 * @param newStudies Studies to monitor
-		 */
-		private void setMonitoredStudies(List<ScientificStudy> newStudies) {
-			// Remove this as listener from old studies.
-			for (ScientificStudy study : this.studies) {
-				study.removeEntityListener(this);
-			}
-			
-			this.studies = newStudies;
-
-			// Add this as listener to new studies.
-			for (ScientificStudy study : this.studies) {
-				study.addEntityListener(this);
-			}
-		}	
-
-		private void destroy() {
-			// Remove this as listener from monitored studies.
-			for (ScientificStudy study : this.studies) {
-				study.removeEntityListener(this);
-			}
-		}
-
-		/**
-		 * Returns the number of columns in the model.
-		 * 
-		 * @return the number of columns in the model.
-		 */
-		public int getColumnCount() {
-			return PAPER_COL + 1;
+			setEntities(manager.getAllStudies(person));
 		}
 
 		@Override
-		public String getColumnName(int column) {
-			return switch (column) {
-				case NAME_COL -> Msg.getString("entity.name");
-				case ROLE_COL -> Msg.getString("TabPanelScience.column.role");
-				case PHASE_COL -> Msg.getString("scientificstudy.phase");
-				case RESEARCH_COL -> Msg.getString("TabPanelScience.column.researchTime");
-				case PAPER_COL -> Msg.getString("TabPanelScience.column.paperTime");
-				default -> null;
+		protected Object getEntityValue(com.mars_sim.core.science.ScientificStudy entity, int valueIndex) {
+			return switch (valueIndex) {
+				case ROLE_VAL -> {
+					if (person.equals(entity.getPrimaryResearcher())) {
+						yield LEAD;
+					} else if (entity.getCollaborativeResearchers().contains(person)) {
+						yield COLLABORATOR;
+					} else {
+						yield null;
+					}
+				}
+				case RESEARCH_VAL -> {
+					if (entity.getPrimaryResearcher().equals(person)) {
+						yield entity.getPrimaryResearchWorkTimeCompleted();
+					} else if (entity.getCollaborativeResearchers().contains(person)) {
+						yield entity.getCollaborativeResearchWorkTimeCompleted(person);
+					} else {
+						yield null;
+					}
+				}
+				case PAPER_VAL -> {
+					if (entity.getPrimaryResearcher().equals(person)) {
+						yield entity.getPrimaryPaperWorkTimeCompleted();
+					} else if (entity.getCollaborativeResearchers().contains(person)) {
+						yield entity.getCollaborativePaperWorkTimeCompleted(person);
+					} else {
+						yield null;
+					}
+				}
+				default -> super.getEntityValue(entity, valueIndex);
 			};
-		}
-
-		@Override
-		public Class<?> getColumnClass(int column) {
-			return switch (column) {
-				case NAME_COL -> String.class;
-				case ROLE_COL -> String.class;
-				case PHASE_COL -> String.class;
-				case RESEARCH_COL -> Double.class;
-				case PAPER_COL -> Double.class;
-				default -> null;
-			};
-		}
-
-		/**
-		 * Returns the number of rows in the model.
-		 * 
-		 * @return the number of rows in the model.
-		 */
-		public int getRowCount() {
-			return studies.size();
-		}
-
-		/**
-		 * Returns the value for the cell at columnIndex and rowIndex.
-		 * 
-		 * @param rowIndex    the row whose value is to be queried.
-		 * @param columnIndex the column whose value is to be queried.
-		 * @return the value Object at the specified cell.
-		 */
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			ScientificStudy study = getStudy(rowIndex);
-			if (study == null) {
-				return null;
-			}
-
-			Object result = null;
-			switch (columnIndex) {
-				case NAME_COL:
-					result = study.getName();
-					break;
-				case ROLE_COL:
-					if (person.equals(study.getPrimaryResearcher()))
-						result = Msg.getString("scientificstudy.lead");
-					else if (study.getCollaborativeResearchers().contains(person))
-						result = Msg.getString("scientificstudy.collaborator.singular"); //$NON-NLS-1$
-					break;
-				case PHASE_COL:
-					result = study.getPhase().getName();
-					break;
-				case RESEARCH_COL:
-					if (study.getPrimaryResearcher().equals(person))
-						result = study.getPrimaryResearchWorkTimeCompleted();
-					else if (study.getCollaborativeResearchers().contains(person))
-						result = study.getCollaborativeResearchWorkTimeCompleted(person);
-					break;
-				case PAPER_COL:
-					if (study.getPrimaryResearcher().equals(person))
-						result = study.getPrimaryPaperWorkTimeCompleted();
-					else if (study.getCollaborativeResearchers().contains(person))
-						result = study.getCollaborativePaperWorkTimeCompleted(person);
-					break;
-				default:
-			}
-			return result;
 		}
 
 		/**
 		 * Updates the table model.
 		 */
 		private boolean update() {
-			List<ScientificStudy> newStudies = manager.getAllStudies(person);
-			boolean hasChanged = !newStudies.equals(studies);
-			
-			if (hasChanged) {
-				setMonitoredStudies(newStudies);
-				fireTableDataChanged();
-			}
-			return hasChanged;
+			return setEntities(manager.getAllStudies(person));
 		}
 
-		/**
-		 * Gets the scientific study in the table at a given row index.
-		 * 
-		 * @param rowIndex the row index in the table.
-		 * @return scientific study or null if invalid index.
-		 */
-		private ScientificStudy getStudy(int rowIndex) {
-			ScientificStudy result = null;
-			if ((rowIndex >= 0) && (rowIndex < studies.size()))
-				result = studies.get(rowIndex);
-			return result;
-		}
-
-		@Override
-		public Entity getAssociatedEntity(int row) {
-			return getStudy(row);
-		}
-
-		/**
-		 * Monitored study has changed so fire a change for the corresponding row.
-		 */
-		@Override
-		public void entityUpdate(EntityEvent event) {
-			// A monitored study has changed so fire table data changed.
-			if (event.getSource() instanceof ScientificStudy ss) {
-				var idx = studies.indexOf(ss);
-				fireTableRowsUpdated(idx, idx);
+		private void refresh() {
+			if (getRowCount() > 0) {
+				fireTableRowsUpdated(0, getRowCount() - 1);
 			}
 		}
 	}
-
-	/**
-	 * Inner class for achievement table model.
-	 */
-	private static class AchievementTableModel extends AbstractTableModel {
-
-		/** default serial id. */
-		private static final long serialVersionUID = 1L;
-
-		// Data members.
-		private Person person;
-		private ScienceType[] sciences;
-
-		private AchievementTableModel(Person person) {
-			// Use AbstractTableModel constructor.
-			super();
-
-			this.person = person;
-			sciences = ScienceType.values();
-		}
-
-		/**
-		 * Returns the number of columns in the model.
-		 * 
-		 * @return the number of columns in the model.
-		 */
-		public int getColumnCount() {
-			return 2;
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			return switch (columnIndex) {
-				case 0 -> Msg.getString("scientificstudy.science");
-				case 1 -> Msg.getString("TabPanelScience.column.achievementCredit");
-				default -> null;
-			};
-		}
-
-		/**
-		 * Returns the most specific superclass for all the cell values in the column.
-		 * 
-		 * @param columnIndex the index of the column.
-		 * @return the common ancestor class of the object values in the model.
-		 */
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return switch (columnIndex) {
-				case 0 -> String.class;
-				case 1 -> Double.class;
-				default -> Object.class;
-			};
-		}
-
-		/**
-		 * Returns the number of rows in the model.
-		 * 
-		 * @return the number of rows in the model.
-		 */
-		public int getRowCount() {
-			return sciences.length;
-		}
-
-		/**
-		 * Returns the value for the cell at columnIndex and rowIndex.
-		 * 
-		 * @param rowIndex    the row whose value is to be queried.
-		 * @param columnIndex the column whose value is to be queried.
-		 * @return the value Object at the specified cell.
-		 */
-		@Override
-		public Object getValueAt(int rowIndex, int columnIndex) {
-			Object result = null;
-			if ((rowIndex >= 0) && (rowIndex < sciences.length)) {
-				ScienceType science = sciences[rowIndex];
-				if (columnIndex == 0)
-					result = science.getName();
-				else if (columnIndex == 1) {
-					result = person.getResearchStudy().getScientificAchievement(science);
-				}
-			}
-			return result;
-		}
-
-		/**
-		 * Updates the table model.
-		 */
-		private void update() {
-			fireTableDataChanged();
-		}
-	}
-
 }
