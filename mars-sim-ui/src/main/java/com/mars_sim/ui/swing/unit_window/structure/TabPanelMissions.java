@@ -13,7 +13,6 @@ import java.awt.FlowLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.OverrideType;
 import com.mars_sim.core.structure.Settlement;
@@ -121,8 +120,7 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 		unclaimPanel.addLabelledItem(STD_DEVIATION, unclaimedSDevLabel);
 		
 		// Create mission list panel.
-		var missionMgr = getContext().getSimulation().getMissionManager();
-		model = new ActiveMissionModel(missionMgr, getEntity());
+		model = new ActiveMissionModel(getEntity());
 		var missionListPanel = SwingHelper.createScrolledTable(model, getContext(), "Active Missions", new Dimension(300, 100));
 		content.add(missionListPanel, BorderLayout.CENTER);
 
@@ -211,16 +209,14 @@ class TabPanelMissions extends EntityTabPanel<Settlement> implements TemporalCom
 	 */
 	private static class ActiveMissionModel extends BaseMissionModel {
 		private Settlement settlement;
-		private MissionManager mMgr;
 
-		public ActiveMissionModel(MissionManager mMgr, Settlement settlement) {
+		public ActiveMissionModel(Settlement settlement) {
 			super(NAME, PHASE);
 			this.settlement = settlement;
-			this.mMgr = mMgr;
 		}
 
 		public void update() {
-			setEntities(mMgr.getMissionsForSettlement(settlement));
+			setEntities(settlement.getMissionControl().getActiveMissions());
 		}
 	}
 }

@@ -1,0 +1,330 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
+        name="Alpha Base 3" shift-pattern="Long 3 Shift" 
+        default-population="48" sponsor="MS"
+        description="Alpha Base 3" objective="CROP_FARM">
+        
+    <!-- row 0 -->               
+    <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
+        facing="180.0">
+        <connection-list>
+            <connection id="B2" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <building id="IG0" type="Inflatable Greenhouse" xloc="-12.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="B2" hatch-facing="west" />
+            <connection id="IG1" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="IG1" type="Inflatable Greenhouse" xloc="-21.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="IG0" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
+    <!-- row 1 -->  
+    <building id="LH1" type="Lander Hab" xloc="0.0" yloc="13.0"
+        facing="180.0">
+        <connection-list>
+            <connection id="B3" hatch-facing="east" />
+        </connection-list>
+    </building>
+    
+    <building id="AP0" type="Algae Pond" xloc="-12.0"
+        yloc="13.0" facing="270.0">
+        <connection-list>
+            <connection id="B3" hatch-facing="west" />
+        </connection-list>
+    </building>
+    
+    <!-- row 2 -->  
+    <building id="LH2" type="Lander Hab" xloc="0.0" yloc="26.0"
+        facing="180.0">
+        <connection-list>
+            <connection id="B4" hatch-facing="east"  />
+        </connection-list>
+    </building>
+
+    <building id="F0" type="Fish Farm" xloc="-12.0"
+        yloc="26.0" facing="270.0">
+        <connection-list>
+            <connection id="B4" hatch-facing="west" />
+        </connection-list>
+    </building>
+
+    <!-- row 3 -->
+    <building id="B1" type="Brickcore3x3" xloc="-6.0"
+        yloc="38" facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="east" />
+            <connection id="H5" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="RQ0" type="Residential Quarters" xloc="-12.5" 
+    	yloc="42.5" facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="RQ1" type="Residential Quarters" xloc="-21.5"
+        yloc="42.5" facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="south" />
+        </connection-list>
+    </building>
+       
+    <building id="IN" type="Infirmary" xloc="-30.5" yloc="42.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="south" />
+        </connection-list>
+    </building>  
+    
+    <building id="LOU" type="Lounge" xloc="-41.5" yloc="42.5"
+        facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="south" />
+        </connection-list>
+    </building>  
+    
+    <building id="H7" type="Hallway" length="57.0625" xloc="-36"
+        yloc="38" facing="270.0">
+        <connection-list>
+            <connection id="B1" hatch-facing="west" />
+            
+            <connection id="RQ0" hatch-facing="north" />
+            <connection id="RQ1" hatch-facing="north" />
+            <connection id="H9" hatch-facing="north" />
+            <connection id="H10" hatch-facing="north" />
+            <connection id="IN" hatch-facing="north" />
+            <connection id="LOU" hatch-facing="north" />
+            
+            <connection id="COM" hatch-facing="south" />       
+            <connection id="LAB" hatch-facing="south" />
+            <connection id="SF" hatch-facing="south" />
+            <connection id="WS" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+   <building id="LAB" type="Laboratory" xloc="-12.5"
+        yloc="33.5" facing="90.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="WS" type="Workshop" xloc="-21.5" 
+    	yloc="33.5" facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="COM" type="Command Center" xloc="-30.5" 
+    	yloc="33.5" facing="270.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+     <building id="SF" type="Server Farm" xloc="-41.5" yloc="33.5"
+        facing="0.0">
+        <connection-list>
+            <connection id="H7" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="H9" type="Hallway" length="7.0" xloc="-36.0"
+        yloc="42.5" facing="0.0">
+        <connection-list>
+            <connection id="LGH" hatch-facing="north"/>
+            <connection id="H7" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="LGH" type="Large Greenhouse" xloc="-36.0"
+        yloc="55.0" facing="0.0">
+        <connection-list>
+            <connection id="H9" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="H10" type="Hallway" length="6.5" xloc="-63.0"
+        yloc="42.25" facing="0.0">
+        <connection-list>
+            <connection id="G0" hatch-facing="north" />
+            <connection id="H7" hatch-facing="south" />
+        </connection-list>
+    </building>
+    
+    <building id="G0" type="Garage" xloc="-63.0" yloc="53.5"
+        facing="0.0">
+        <connection-list>
+            <connection id="H10" hatch-facing="south" />
+        </connection-list>
+    </building>
+
+    <building id="EVA0" type="EVA Airlock" xloc="-2.0" yloc="6.5" facing="0.0">
+        <connection-list>
+            <connection id="H1" hatch-facing="east" />
+        </connection-list>
+    </building>
+
+    <building id="EVA1" type="EVA Airlock" xloc="-2.0" yloc="19.5" facing="0.0">
+        <connection-list>
+            <connection id="H3" hatch-facing="east" />
+        </connection-list>
+    </building> 
+
+    <building id="EVA2" type="EVA Airlock" xloc="-2.0" yloc="32.5" facing="0.0">
+        <connection-list>
+            <connection id="H5" hatch-facing="east" />
+        </connection-list>
+    </building> 
+        
+    <building id="B2" type="Brickcore3x3" length="3.0" xloc="-6.0"
+        yloc="0.0" facing="270.0">
+        <connection-list>
+            <connection id="LH0" hatch-facing="west" />
+            <connection id="IG0" hatch-facing="east" />
+            <connection id="H1" hatch-facing="north" /> 
+            <connection id="T0" hatch-facing="south" />
+        </connection-list>
+    </building>
+
+	<building id="H1" type="Hallway" length="10.0" xloc="-6.0"
+        yloc="6.5" facing="0.0">
+        <connection-list>
+            <connection id="EVA0" hatch-facing="west" />
+            <connection id="B2" hatch-facing="south" />
+            <connection id="B3" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="B3" type="Brickcore3x3" length="3.0" xloc="-6.0"
+        yloc="13.0" facing="270.0">
+        <connection-list>
+            <connection id="LH1" hatch-facing="west"  />
+            <connection id="AP0" hatch-facing="east"  />
+            <connection id="H1" hatch-facing="south" />
+            <connection id="H3" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="H3" type="Hallway" length="10.0" xloc="-6.0"
+        yloc="19.5" facing="0.0">
+        <connection-list>
+            <connection id="EVA1" hatch-facing="west" />
+            <connection id="B3" hatch-facing="south" />
+            <connection id="B4" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="B4" type="Brickcore3x3" length="3.0" xloc="-6.0"
+        yloc="26.0" facing="270.0">
+        <connection-list>
+            <connection id="LH2" hatch-facing="west"  />
+            <connection id="F0" hatch-facing="east"  />
+            <connection id="H3" hatch-facing="south" />
+            <connection id="H5" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+    <building id="H5" type="Hallway" length="9.0" xloc="-6.0"
+        yloc="32.0" facing="0.0">
+        <connection-list>
+            <connection id="EVA2" hatch-facing="west" />
+            <connection id="B4" hatch-facing="south" />
+            <connection id="B1" hatch-facing="north" />
+        </connection-list>
+    </building>        
+    
+    <building id="T0" type="Tunnel" length="10" xloc="-6.0"
+        yloc="-6.5" facing="0.0">
+        <connection-list>
+            <connection id="AO1" hatch-facing="south" />
+            <connection id="B2" hatch-facing="north" />
+        </connection-list>
+    </building>
+    
+    <building id="AO1" type="Astronomy Observatory" xloc="-6.0"
+        yloc="-15.0" facing="0.0">
+        <connection-list>
+            <connection id="T0" hatch-facing="north" />
+        </connection-list>
+    </building>
+
+   
+ 
+	<!-- Building Packages -->
+    <building-package name="Storage Set 1"/>
+    <building-package name="Storage Set 2"/>
+   	<building-package name="ERV Set 1"/>
+   	<building-package name="ERV Set 2"/>
+   	<building-package name="ERV Set 3"/>   	  	
+   	<building-package name="Air Set 1 - 1x4"/>
+    <building-package name="Sabatier Set 1 - 1x4"/>
+	<building-package name="Syngas Set 1 - 1x1"/>
+	<building-package name="Solar Thermal Set 1 - 1x9"/>
+	<building-package name="Wind Set 1 - 1x3"/>
+	<building-package name="Kilo Set 1 - 1x2"/>
+	<building-package name="MD1 Set 1 - 1x2"/>
+	<building-package name="MD4 Set 1 - 1x2"/>
+  	<building-package name="Brine Water Well Set 1 - 1x3"/>	 	
+ 
+    <initial-supplies>
+ 
+    <vehicle type="Explorer Rover" number="2" />
+    <vehicle type="Long Range Explorer" number="1" />
+    <vehicle type="Transport Rover" number="2" />
+    <vehicle type="Cargo Rover" number="2" />
+    <vehicle type="Light Utility Vehicle" number="3" />
+    <vehicle type="Delivery Drone" number="2" />
+    <vehicle type="Cargo Drone" number="2" />
+    
+    <!-- Robots -->
+    <robot type="ChefBot-Standard" number="1"/>
+    <robot type="DeliveryBot-Standard" number="3"/>
+    <robot type="GardenBot-Advanced" number="4"/>
+    <robot type="MakerBot-Standard" number="2"/>
+    <robot type="MedicBot-Advanced" number="1"/>
+    <robot type="RepairBot-Standard" number="2"/>
+  
+    
+    <equipment type="EVA Suit" number="36" />
+
+    <!-- Containers-->
+	<equipment type="barrel" number="120" />
+	<equipment type="bag" number="120" />
+	<equipment type="gas canister" number="120" />		
+	<equipment type="large bag" number="120" />
+	<equipment type="specimen box" number="120" />
+    <equipment type="thermal bottle" number="48" />	
+ 	<equipment type="wheelbarrow" number="24" />
+
+	<!-- Life Support Resources -->
+	<resource type="food" amount="4320" />
+	<resource type="water" amount="7200" />
+	<resource type="oxygen" amount="5760" />
+
+    <part-package name="Standard Part Package 1" number="6" />
+ 
+    </initial-supplies>
+
+      
+    <resupply>
+       	<resupply-mission name="Bi-Monthly Delivery" manifest-name="Standard Resupply 1">
+            <schedule firstSol="1" eventTime="400" frequency="62" /> 
+        </resupply-mission>
+        <resupply-mission name="Scale up Delivery" manifest-name="Resupply for Phase 3">
+            <schedule firstSol="300" eventTime="400"/>
+        </resupply-mission> 
+    </resupply>     
+</template>

@@ -128,6 +128,10 @@ public class MissionPlanning implements Serializable {
 		return reviewPercentComplete;
 	}
 	
+    public void setScore(double d) {
+        score = d;
+    }
+
 	public double getScore() {
 		return score;
 	}

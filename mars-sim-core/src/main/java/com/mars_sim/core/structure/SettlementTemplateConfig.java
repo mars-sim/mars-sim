@@ -67,7 +67,6 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String PART_PACKAGE = "part-package";
     private static final String RESOURCE = "resource";
 
-
     private static final String SHIFT_PATTERN = "shift-pattern";
     private static final String MANIFEST_NAME = "manifest-name";
     private static final String SCHEDULE = "schedule";
@@ -81,12 +80,31 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
     private static final String BUILDING_TYPE = "building-type";
     private static final String DELAY_SOLS = "delay-sols";
 
+	private static final String HALLWAY = "Hallway";
+	private static final String H = "H";
+	private static final String TUNNEL = "Tunnel";
+	private static final String T = "T";
+	private static final String WALKWAY = "Walkway";
+	private static final String W = "W";
+	private static final String BRICKWAY = "Brickway";
+	private static final String B = "B";
+	private static final String BRICKCORE3 = "Brickcore3x3";
+	private static final String B3 = "B3.";
+	private static final String BRICKCORE9 = "Brickcore3x9";
+	private static final String B9 = "B9.";
+	private static final String CORE_A = "Core A";
+	private static final String C1 = "C1.";
+	private static final String CORE_B = "Core B";
+	private static final String C2 = "C2.";
+	private static final String CORE_C = "Core C";
+	private static final String C3 = "C3.";
+    
     private final PartPackageConfig partPackageConfig;
     private final BuildingPackageConfig buildingPackageConfig;
     private final ResupplyConfig resupplyConfig;
     private final AuthorityFactory authorityConfig;
     private final SettlementConfig settlementConfig;
-
+   
     /**
      * Constructor.
      *
@@ -182,9 +200,29 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
 
             int last = getNextBuildingTypeID(buildingType, buildingTypeNumMap);
 
-            // e.g. Lander Hab 1, Lander Hab 2
-            String uniqueName = buildingType + " " + last;
-
+            String uniqueName = null;
+            
+            if (buildingType.equals(HALLWAY))
+            	uniqueName = H + last;
+            else if (buildingType.equals(WALKWAY))
+            	uniqueName = W + last;
+            else if (buildingType.equals(BRICKWAY))
+           		uniqueName = B + last;
+    		else if (buildingType.equals(TUNNEL))
+    			uniqueName = T + last;
+    		else if (buildingType.equals(BRICKCORE3))
+            	uniqueName = B3 + last;
+            else if (buildingType.equals(BRICKCORE9))
+            	uniqueName = B9 + last;
+            else if (buildingType.equals(CORE_A))
+            	uniqueName = C1 + last;
+            else if (buildingType.equals(CORE_B))
+            	uniqueName = C2 + last;
+            else if (buildingType.equals(CORE_C))
+            	uniqueName = C3 + last;
+            else
+    			uniqueName = buildingType + " " + last;
+  
             BuildingTemplate buildingTemplate = new BuildingTemplate(id, zone,
                     buildingType, uniqueName, bounds);
 
@@ -237,19 +275,19 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
      * Gets an available building type suffix ID for a new building.
      *
      * @param buildingType
+     * @param buildingTypeNumMap
      * @return type ID (starting from 1, not zero)
      */
-    private int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeIDMap) {
+    private int getNextBuildingTypeID(String buildingType, Map<String, Integer> buildingTypeNumMap) {
         int last = 1;
-        if (buildingTypeIDMap.containsKey(buildingType)) {
-            last = buildingTypeIDMap.get(buildingType);
-            buildingTypeIDMap.put(buildingType, ++last);
+        if (buildingTypeNumMap.containsKey(buildingType)) {
+            last = buildingTypeNumMap.get(buildingType);
+            buildingTypeNumMap.put(buildingType, ++last);
         } else {
-            buildingTypeIDMap.put(buildingType, last);
+        	buildingTypeNumMap.put(buildingType, last);
         }
         return last;
     }
-
 
     /**
      * Parses the item XML.
@@ -292,12 +330,11 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         else {
             activitySchedule = settlementConfig.getActivityByPopulation(defaultPopulation);
         }
-
  
         List<BuildingTemplate> buildingTemplates = new ArrayList<>();
         Set<String> existingBuildingIDs = new HashSet<>();
         Map<String, Integer> buildingTypeNumMap = new HashMap<>();
-
+        
         // Process a list of buildings
         parseBuildingORConnectorList(templateElement, buildingTemplates,
                 BUILDING,
@@ -393,6 +430,13 @@ public class SettlementTemplateConfig extends UserConfigurableConfig<SettlementT
         return settlementTemplate;
     }
 
+    /**
+     * Puts together a list of building templates.
+     * 
+     * @param buildingPackageNodes
+     * @param buildingTypeNumMap
+     * @param buildingTemplates
+     */
     private void parseBuildingPackages(List<Element> buildingPackageNodes, Map<String, Integer> buildingTypeNumMap, List<BuildingTemplate> buildingTemplates) {
         for (Element buildingPackageElement : buildingPackageNodes) {
            String packageName = buildingPackageElement.getAttributeValue(NAME);

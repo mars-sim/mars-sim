@@ -6,39 +6,39 @@
     <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="180.0">
         <connection-list>
-            <connection id="C0" hatch-facing="east" />
+            <connection id="B0" hatch-facing="east" />
         </connection-list>
     </building>
 
-   <building id="C0" type="Corridor 3x9" xloc="-6.0" yloc="0.0"
+   <building id="B0" type="Brickcore3x9" xloc="-6.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="LH0" hatch-facing="west" />
             <connection id="EVA" hatch-facing="south" />
-            <connection id="C1" hatch-facing="north" />
+            <connection id="B1" hatch-facing="north" />
         </connection-list>
     </building>
     
     <building id="EVA" type="EVA Airlock" xloc="-6.0" yloc="-7.5"
         facing="270.0">
         <connection-list>
-            <connection id="C0" hatch-facing="north" />
+            <connection id="B0" hatch-facing="north" />
         </connection-list>
     </building>
 
-    <building id="C1" type="Corridor 3x3" xloc="-6.0" yloc="6.0"
+    <building id="B1" type="Brickcore3x3" xloc="-6.0" yloc="6.0"
         facing="0.0">
         <connection-list>
-            <connection id="C0" hatch-facing="south" />
-            <connection id="C2" hatch-facing="east" />
+            <connection id="B0" hatch-facing="south" />
+            <connection id="B2" hatch-facing="east" />
         </connection-list>
     </building>
     
-    <building id="C2" type="Corridor 3x9" xloc="-12.0" yloc="6.0"
+    <building id="B2" type="Brickcore3x9" xloc="-12.0" yloc="6.0"
         facing="90.0">
         <connection-list>
-            <connection id="C1" hatch-facing="west" />
-            <connection id="C3" hatch-facing="east" />
+            <connection id="B1" hatch-facing="west" />
+            <connection id="B3" hatch-facing="east" />
             <connection id="IG0" hatch-facing="south" />
         </connection-list>
     </building>
@@ -46,14 +46,14 @@
     <building id="IG0" type="Inflatable Greenhouse" xloc="-12.0" yloc="1.5"
         facing="270.0">
         <connection-list>
-            <connection id="C2" hatch-facing="north" />
+            <connection id="B2" hatch-facing="north" />
         </connection-list>
     </building>
 
-    <building id="C3" type="Corridor 3x9" xloc="-21.0" yloc="6.0"
+    <building id="B3" type="Brickcore3x9" xloc="-21.0" yloc="6.0"
         facing="90.0">
         <connection-list>
-            <connection id="C2" hatch-facing="west" />
+            <connection id="B2" hatch-facing="west" />
             <connection id="W0" hatch-facing="south" />
         </connection-list>
     </building>
@@ -61,7 +61,7 @@
     <building id="W0" type="Workshop" xloc="-21.0" yloc="1.0" 
     	facing="90.0">
         <connection-list>
-            <connection id="C3" hatch-facing="north" />
+            <connection id="B3" hatch-facing="north" />
         </connection-list>
     </building>
     

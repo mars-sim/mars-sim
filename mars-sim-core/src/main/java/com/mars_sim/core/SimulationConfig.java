@@ -553,6 +553,11 @@ public class SimulationConfig {
 		return settlementConfig;
 	}
 
+	/**
+	 * Gets the settlement template config.
+	 *
+	 * @return settlement template config
+	 */
 	public SettlementTemplateConfig getSettlementTemplateConfiguration() {
 		return settlementTemplateConfig;
 	}
@@ -602,7 +607,6 @@ public class SimulationConfig {
 		return scienceConfig;
 	}
 
-
 	/**
 	 * Gets the manager to the ReportingAuthority.
 	 * 
@@ -614,6 +618,9 @@ public class SimulationConfig {
 
 	/**
 	 * Finds the requested XML file in the bundled JAR and extracts to the xml sub-directory.
+	 * 
+	 * @param filename
+	 * @return
 	 */
 	public File getBundledXML(String filename) {
 		if (filename.indexOf('.') == -1) {

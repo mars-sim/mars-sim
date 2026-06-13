@@ -43,6 +43,7 @@ public class SettlementChat extends ConnectedUnitCommand {
 																	ManufactureCommand.MANUFACTURE,
 																	MealCommand.MEALS,
 																	MissionNowCommand.MISSION_NOW,
+																	MissionPlanCommand.MISSION_PLAN,
 																	MissionCreateCommand.MISSION,
 																	PeopleCommand.PEOPLE,
 																	LevelCommand.LEVEL,

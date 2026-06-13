@@ -14,9 +14,9 @@
 	<inceptionYear>2009</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>		
-		<sonar.java.source>21</sonar.java.source>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>		
+		<sonar.java.source>25</sonar.java.source>
 
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
@@ -35,7 +35,7 @@
 		<commons-lang3.version>3.20.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 			
-		<jacoco.version>0.8.14</jacoco.version>		
+		<jacoco.version>0.8.15</jacoco.version>		
 	</properties>
 	<profiles>
 		<profile>

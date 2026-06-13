@@ -17,6 +17,7 @@ import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.construction.ConstructionSite;
 import com.mars_sim.core.equipment.Equipment;
 import com.mars_sim.core.interplanetary.transport.Transportable;
+import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.robot.Robot;
@@ -40,6 +41,8 @@ import com.mars_sim.ui.swing.unit_window.vehicle.VehicleUnitWindow;
  * This factory classes creates EntityContentPanel instances for various Entity types.
  */
 public class EntityContentFactory {
+    private static final SimLogger logger = SimLogger.getLogger(EntityContentFactory.class.getName());
+
     private EntityContentFactory() {
         // Static factory class
     }
@@ -81,14 +84,13 @@ public class EntityContentFactory {
 	public static Entity getEntity(Simulation sim, Properties settings) {
 		String stringId = settings.getProperty(EntityContentPanel.ENTITY_ID);
 
-        EntityIdentifier identifier = EntityResolver.fromString(stringId);
-
         // Resolver may throw exceptino in failure
         try {
+            EntityIdentifier identifier = EntityResolver.fromString(stringId);
             return EntityResolver.resolve(sim, identifier);
         }
         catch (RuntimeException ex) {
-            // Unknown entity type
+            logger.warning("Failed to resolve entity from ui_settings with id: " + stringId + ", error: " + ex.getMessage());
             return null;
         }
 	}

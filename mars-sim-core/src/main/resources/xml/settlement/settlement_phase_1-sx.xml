@@ -6,11 +6,11 @@
     <building id="LH0" type="Lander Hab" xloc="0.0" yloc="0.0"
         facing="180.0">
         <connection-list>
-            <connection id="MCD0" hatch-facing="east" />
+            <connection id="B0" hatch-facing="east" />
         </connection-list>
     </building>
 
-   <building id="MCD0" type="Corridor 3x9" xloc="-6.0" yloc="0.0"
+   <building id="B0" type="Brickcore3x9" xloc="-6.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="LH0" hatch-facing="west" />
@@ -22,7 +22,7 @@
     <building id="EVA" type="EVA Airlock" xloc="-6.0" yloc="-7.5"
         facing="270.0">
         <connection-list>
-            <connection id="MCD0" hatch-facing="north" />
+            <connection id="B0" hatch-facing="north" />
         </connection-list>
     </building>
 
@@ -30,7 +30,7 @@
     <building id="IG0" type="Inflatable Greenhouse" xloc="-12.0" yloc="0.0"
         facing="270.0">
         <connection-list>
-            <connection id="MCD0" hatch-facing="west" />
+            <connection id="B0" hatch-facing="west" />
             <connection id="C0" hatch-facing="east" />
         </connection-list>
     </building>

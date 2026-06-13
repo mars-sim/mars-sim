@@ -152,7 +152,7 @@ public class EquipmentGood extends Good {
 		number += settlement.findNumEmptyContainersOfType(equipmentType, false);
 
 		// Get number of equipment out on mission vehicles.
-		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
 			if (mission instanceof VehicleMission vehicleMission) {
 				Vehicle vehicle = vehicleMission.getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement()))
@@ -360,7 +360,7 @@ public class EquipmentGood extends Good {
 
 		Collection<Container> equipmentList = settlement.findContainersOfType(equipmentType);
 
-		for (Mission mission : missionManager.getMissionsForSettlement(settlement)) {
+		for (Mission mission : settlement.getMissionControl().getActiveMissions()) {
 			if (mission instanceof VehicleMission vehicleMission) {
 				Vehicle vehicle = vehicleMission.getVehicle();
 				if ((vehicle != null) && (vehicle.getSettlement() == null)) {

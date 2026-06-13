@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -213,17 +212,18 @@ public class TravelToSettlement extends RoverMission {
 			double range) {
 		Map<Settlement, Double> result = new HashMap<>();
 
-		Iterator<Settlement> i = unitManager.getSettlements().iterator();
+		// Find potential destination settlements within range and not current travel destination.
+		for(var potentialDestination : unitManager.getSettlements()) {
+			if (potentialDestination.equals(startingSettlement)) {
+				continue;
+			}
+			double distance = startingSettlement.getCoordinates().getDistance(potentialDestination.getCoordinates());
+			if ((distance <= (range * RANGE_BUFFER))
+						&& !isCurrentTravelDestination(startingSettlement, potentialDestination)) {
 
-		while (i.hasNext()) {
-			Settlement settlement = i.next();
-			double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
-			boolean isTravelDestination = isCurrentTravelDestination(settlement);
-			if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER)) && !isTravelDestination) {
-
-				double desirability = getDestinationSettlementDesirability(member, startingSettlement, settlement);
+				double desirability = getDestinationSettlementDesirability(member, startingSettlement, potentialDestination);
 				if (desirability > 0D)
-					result.put(settlement, desirability);
+					result.put(potentialDestination, desirability);
 			}
 		}
 
@@ -234,25 +234,22 @@ public class TravelToSettlement extends RoverMission {
 	 * Checks if a settlement is the destination of a current travel to settlement
 	 * mission.
 	 * 
-	 * @param settlement the settlement.
+	 * @param startingSettlement the starting settlement.
+	 * @param endSettlement the destination settlement.
 	 * @return true if settlement is a travel destination.
 	 */
-	private static boolean isCurrentTravelDestination(Settlement settlement) {
+	private static boolean isCurrentTravelDestination(Settlement startingSettlement, Settlement endSettlement) {
 
-		boolean result = false;
-
-		Iterator<Mission> i = missionManager.getMissions().iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof TravelToSettlement ts) {
+		for(var m : startingSettlement.getMissionControl().getActiveMissions()) {
+			if (m instanceof TravelToSettlement ts) {
 				Settlement destination = ts.getDestinationSettlement();
-				if (settlement.equals(destination)) {
-					result = true;
+				if (endSettlement.equals(destination)) {
+					return true;
 				}
 			}
 		}
 
-		return result;
+		return false;
 	}
 
 	/**

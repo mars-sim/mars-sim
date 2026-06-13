@@ -25,7 +25,6 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.mission.steps.MissionCloseStep;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.AbstractMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionLog;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
@@ -119,20 +118,25 @@ public abstract class MissionProject implements Mission {
         this.maxMembers = maxMembers;
         this.minMembers = minMembers;
 
+        var names = leader.getAssociatedSettlement().getMissionControl().generateNames(type);
+        this.missionCallSign = names.callSign();
+        if (name == null) {
+            // Use default generated if no user name defined
+            name = names.name();
+        }
+        
         this.leader = leader;
         leader.setMission(this);
         this.log = new MissionLog();
         this.control = new MissionController(name);
 
-        // Needs reworking in the future
-        var solSortieString = Simulation.instance().getMissionManager().computeSolSortieString();
-        this.missionCallSign = AbstractMission.createDesignationString(type, solSortieString,
-									leader.getAssociatedSettlement(), 1);
+
     }
 
     @Override
     public EntityIdentifier getEntityIdentifier() {
-        return new EntityIdentifier("MISSION", getFullMissionDesignation());
+        return new EntityIdentifier("MISSION", getFullMissionDesignation(), 
+                Integer.toString(getAssociatedSettlement().getIdentifier()));
     }
     
     /**

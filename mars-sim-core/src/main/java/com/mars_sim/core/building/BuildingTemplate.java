@@ -49,7 +49,8 @@ public class BuildingTemplate implements Serializable, Comparable<BuildingTempla
 	}
 
 	/**
-	 * Do a deep copy of an existing template but with a different name.
+	 * Does a deep copy of an existing template but with a different name.
+	 * 
 	 * @param newName
 	 * @param source
 	 */

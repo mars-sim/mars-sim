@@ -56,7 +56,6 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.time.Temporal;
-import com.mars_sim.core.tool.Conversion;
 import com.mars_sim.core.tool.RandomUtil;
 
 
@@ -113,8 +112,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
-	/** Unique identifier  */
-	protected int identifier;
 	
 	/** Has the current phase ended? */
 	private boolean phaseEnded = false;
@@ -165,7 +162,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	// Static members
 	protected static UnitManager unitManager;
 	private static HistoricalEventManager eventManager;
-	protected static MissionManager missionManager;
 	protected static SurfaceFeatures surfaceFeatures;
 	protected static PersonConfig personConfig;
 	private static MasterClock clock;
@@ -178,16 +174,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	protected AbstractMission(MissionType missionType, Worker startingMember) {
 		// Initialize data members
-
-		var solSortieString = missionManager.computeSolSortieString();
-		this.identifier = missionManager.getIdentifier();
-		
-		this.name = missionType.getName() + " " + solSortieString;
 		this.missionType = missionType;
 		this.startingMember = startingMember;
 
-		this.designationString = createDesignationString(missionType, solSortieString,
-									startingMember.getAssociatedSettlement(), this.identifier);
+		var names = startingMember.getAssociatedSettlement().getMissionControl().generateNames(missionType);
+		this.name = names.name();
+		this.designationString = names.callSign();
 
 		missionStatus = new HashSet<>();
 		members = new UnitSet<>();
@@ -218,7 +210,8 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public EntityIdentifier getEntityIdentifier() {
-		return new EntityIdentifier("MISSION", designationString);
+		return new EntityIdentifier("MISSION", designationString,
+				Integer.toString(startingMember.getAssociatedSettlement().getIdentifier()));
 	}
 	
 	/**
@@ -771,7 +764,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		
 		StringBuilder status = new StringBuilder();
 		
-		if (listOfStatuses.isBlank() || listOfStatuses == null) {
+		if (listOfStatuses.isBlank()) {
 			status.append("Ended the ")
 			.append(getName())
 			.append(" without status flags.");
@@ -1298,7 +1291,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	protected void startReview() {
 		setPhase(REVIEWING, null);
 
-		var minScore = getAssociatedSettlement().getMinimumPassingScore();
+		var minScore = getAssociatedSettlement().getMissionControl().getMinimumPassingScore();
 		plan = new MissionPlanning(this, getMarsTime().getMissionSol(), minScore);
 	}
 	
@@ -1343,23 +1336,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
 	public String getFullMissionDesignation() {
 		return designationString;
-	}
-
-	/**
-	 * Creates the mission designation string for this mission.
-	 */
-	public static String createDesignationString(MissionType type, String solSortieString, Settlement owner,
-								int id) {
-		StringBuilder buffer = new StringBuilder();
-		buffer.append(Conversion.getOneLetterInitial(type.getName().replace("with", "").trim()))
-			  .append("-")
-			  .append(solSortieString)
-			  .append("-")
-			  .append(owner.getSettlementCode())
-			  .append('-')
-			  .append(id);
-		
-		return buffer.toString();
 	}
 
 	@Override
@@ -1430,7 +1406,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		if (obj == null) return false;
 		if (this.getClass() != obj.getClass()) return false;
 		AbstractMission m = (AbstractMission) obj;
-		return this.identifier == m.identifier;
+		return this.designationString.equals(m.designationString);
 	}
 
 	/**
@@ -1439,7 +1415,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		return (1 + identifier) % 64; 
+		return designationString.hashCode();
 	}
 
 	/**
@@ -1450,21 +1426,19 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param e {@link HistoricalEventManager}
 	 * @param u {@link UnitManager}
 	 * @param sf {@link SurfaceFeatures}
-	 * @param m {@link MissionManager}
 	 */
 	public static void initializeInstances(Simulation si, HistoricalEventManager e,
 			UnitManager u, SurfaceFeatures sf, 
-			MissionManager m, PersonConfig pc) {
+			PersonConfig pc) {
 		eventManager = e;
 		unitManager = u;
 		surfaceFeatures = sf;
-		missionManager = m;
 		personConfig = pc;
 
 		clock = si.getMasterClock();
 
 		MissionLog.initialise(clock);
-		MissionUtil.initializeInstances(u, m);
+		MissionUtil.initializeInstances(u);
 		AbstractMetaMission.initializeInstances(clock);
 	}
 }

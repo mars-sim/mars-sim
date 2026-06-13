@@ -20,7 +20,6 @@ import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.job.util.JobType;
-import com.mars_sim.core.person.ai.mission.MissionManager;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.role.RoleUtil;
 import com.mars_sim.core.robot.Robot;
@@ -87,7 +86,6 @@ public abstract class MetaTask {
 	
 	protected static SurfaceFeatures surfaceFeatures;
 	private static MasterClock masterClock;
-	protected static MissionManager missionManager;
 	/* Does this task primarily require physical effort ? */	
 	private boolean effortDriven = true;
 	
@@ -517,6 +515,5 @@ public abstract class MetaTask {
 	static void initialiseInstances(Simulation sim) {
 		masterClock = sim.getMasterClock();
 		surfaceFeatures = sim.getSurfaceFeatures();
-		missionManager = sim.getMissionManager();
 	}
 }

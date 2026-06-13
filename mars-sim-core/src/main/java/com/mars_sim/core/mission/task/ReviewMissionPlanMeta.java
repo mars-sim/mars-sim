@@ -1,0 +1,151 @@
+/*
+ * Mars Simulation Project
+ * ReviewMissionPlanMeta.java
+ * @date 2022-12-22
+ * @author Manny Kung
+ */
+package com.mars_sim.core.mission.task;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mars_sim.core.data.RatingScore;
+import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
+import com.mars_sim.core.person.ai.mission.Mission;
+import com.mars_sim.core.person.ai.mission.MissionPlanning;
+import com.mars_sim.core.person.ai.mission.PlanType;
+import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.MetaTask;
+import com.mars_sim.core.person.ai.task.util.SettlementMetaTask;
+import com.mars_sim.core.person.ai.task.util.SettlementTask;
+import com.mars_sim.core.person.ai.task.util.Task;
+import com.mars_sim.core.person.ai.task.util.TaskTrait;
+import com.mars_sim.core.structure.Settlement;
+import com.mars_sim.core.tool.Msg;
+
+/**
+ * The meta task for reviewing mission plans.
+ */
+public class ReviewMissionPlanMeta extends MetaTask implements SettlementMetaTask {
+	/**
+     * Represents a Job to review a specific mission plan
+     */
+    private static class ReviewMissionPlanJob extends SettlementTask {
+
+		private static final long serialVersionUID = 1L;
+
+        private MissionPlanning plan;
+
+        public ReviewMissionPlanJob(SettlementMetaTask owner, MissionPlanning plan, RatingScore score) {
+			super(owner, "Review Mission", plan.getMission(), score);
+            this.plan = plan;
+        }
+
+
+        @Override
+        public Task createTask(Person person) {
+            return new ReviewMissionPlan(person, plan);
+        }
+    }
+
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.reviewMissionPlan"); //$NON-NLS-1$
+        
+    private static final double BASE_SCORE = 200.0;  // Initial score
+	private static final double MAX_SCORE = 750.0; // Max score once max age is reached
+	private static final int MAX_AGE = 7;
+	private static final double SOL_DELAY_MODIFIER = ((MAX_SCORE - BASE_SCORE)/BASE_SCORE) / MAX_AGE;
+    
+    public ReviewMissionPlanMeta() {
+		super(NAME, WorkerType.PERSON, TaskScope.WORK_HOUR);
+		setTrait(TaskTrait.LEADERSHIP);
+		addAllLeadershipRoles();
+		setPreferredRole(RoleType.CREW_OPERATION_OFFICER);
+		addPreferredRole(RoleType.MISSION_SPECIALIST, 1.5D);
+		addPreferredRole(RoleType.CHIEF_OF_MISSION_PLANNING, 3);
+	}
+
+	/**
+     * Gets the score for a Settlement task for a person to review a mission.
+     * 
+	 * @param t Task being scored
+	 * @param p Person requesting work.
+	 * @return The factor to adjust task score; 0 means task is not applicable
+     */
+    @Override
+	public RatingScore assessPersonSuitability(SettlementTask t, Person p) {
+    	if (JobType.TOURIST == p.getMind().getJobType()) {
+            return RatingScore.ZERO_RATING;
+        }
+    	
+        RatingScore factor = RatingScore.ZERO_RATING;
+        if (p.isInSettlement() && p.getPhysicalCondition().isFitByLevel(1000, 70, 1000)) {
+			MissionPlanning mp = ((ReviewMissionPlanJob)t).plan;
+			Mission m = mp.getMission();			
+
+			// Is this Person allowed to review this Mission
+			if (!p.equals(m.getStartingPerson()) && mp.isReviewerValid(p)) {
+				factor = super.assessPersonSuitability(t, p);
+				if (factor.getScore() == 0D) {
+					return factor;
+				}
+
+				// This reviewer is valid
+				RoleType roleType = p.getRole().getType();  
+				double reviewer;
+				if (roleType.isCouncil()) {
+					reviewer = 4;
+				}
+				else {
+					reviewer = switch(roleType) {
+						case MISSION_SPECIALIST -> 1.5;
+						case CHIEF_OF_MISSION_PLANNING -> 3;
+						default -> 1;
+					};
+				}
+				factor.addModifier("reviewer", reviewer);
+			}
+		}
+		return factor;
+	}
+
+	/**
+	 * Scans the Settlement for any Mission that need reviewing.
+	 * 
+	 * @param settlement Settlement to scan.
+	 */
+	@Override
+	public List<SettlementTask> getSettlementTasks(Settlement settlement) {
+		List<SettlementTask> tasks = new ArrayList<>();
+	
+		var pendingMissions = settlement.getMissionControl().getActiveMissions().stream()
+							  .filter(m -> (m.getPlan() != null
+									  && m.getPlan().getStatus() == PlanType.PENDING))
+							  .toList();
+        for (Mission m : pendingMissions) {
+
+        	MissionPlanning mp = m.getPlan();
+    	
+			if ((mp.getStatus() == PlanType.PENDING) && (mp.getActiveReviewer() == null)) {
+				RatingScore score = new RatingScore(BASE_SCORE);               	
+
+				// Add adjustment based on how many sol the request has since been submitted
+				// if the job assignment submitted date is > 1 sol
+				int sol = getMarsTime().getMissionSol();
+				int solRequest = mp.getMissionSol();
+				int planAge = (sol - solRequest);
+
+				// If no one else is able to offer the review after x days, 
+				// do allow the review to go through even if the reviewer is not valid
+				planAge = Math.min(planAge, MAX_AGE); // Limit the age of a review
+				score.addModifier("review.age", 1 + (planAge * SOL_DELAY_MODIFIER));
+
+				tasks.add(new ReviewMissionPlanJob(this, mp, score));
+			}
+		}
+	
+        return tasks;
+    }
+}

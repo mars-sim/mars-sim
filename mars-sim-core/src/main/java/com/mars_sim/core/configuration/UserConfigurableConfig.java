@@ -160,6 +160,7 @@ public abstract class UserConfigurableConfig<T extends UserConfigurable> {
 	 * Loads a configuration from external or bundled XML.
 	 * 
 	 * @param name
+	 * @param predefined
 	 * @return
 	 */
 	protected void loadItem(String file, boolean predefined) {

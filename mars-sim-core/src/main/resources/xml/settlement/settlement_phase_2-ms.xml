@@ -10,7 +10,7 @@
         </connection-list>
     </building>
 
-   <building id="C00" type="Corridor 3x9" xloc="-6.0" yloc="0.0"
+   <building id="C00" type="Brickcore3x9" xloc="-6.0" yloc="0.0"
         facing="0.0">
         <connection-list>
             <connection id="LH0" hatch-facing="west" />
@@ -26,7 +26,7 @@
         </connection-list>
     </building>
 
-    <building id="C1" type="Corridor 3x3" xloc="-6.0" yloc="6.0"
+    <building id="C1" type="Brickcore3x3" xloc="-6.0" yloc="6.0"
         facing="0.0">
         <connection-list>
             <connection id="C00" hatch-facing="south" />
@@ -35,7 +35,7 @@
         </connection-list>
     </building>
     
-    <building id="C2" type="Corridor 3x9" xloc="-12.0" yloc="6.0"
+    <building id="C2" type="Brickcore3x9" xloc="-12.0" yloc="6.0"
         facing="90.0">
         <connection-list>
             <connection id="C1" hatch-facing="west" />
@@ -60,7 +60,7 @@
         </connection-list>
     </building>
 
-    <building id="C3" type="Corridor 3x9" xloc="-21.0" yloc="6.0"
+    <building id="C3" type="Brickcore3x9" xloc="-21.0" yloc="6.0"
         facing="90.0">
         <connection-list>
             <connection id="C2" hatch-facing="west" />
@@ -93,7 +93,7 @@
     </building>
 
 
-    <building id="C01" type="Corridor 3x9" xloc="-6.0" yloc="12.0"
+    <building id="C01" type="Brickcore3x9" xloc="-6.0" yloc="12.0"
         facing="0.0">
         <connection-list>
             <connection id="C1" hatch-facing="south" />

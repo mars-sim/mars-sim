@@ -18,20 +18,20 @@ import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.vehicle.VehicleType;
 
-public class TestGood {
+class TestGood {
 
     ItemResource hammer;
     
     public TestGood() {
 		super();
-	}
+	} 
 
 	@BeforeEach
-    protected void setUp() throws Exception {
+    void setUp() {
         SimulationConfig config = SimulationConfig.loadConfig();
   
         // Don't need a full GoodsManager initialisation
-        GoodsManager.initializeInstances(config, null, null, null);
+        GoodsManager.initializeInstances(config, null, null);
 	}
 
 	@Test
