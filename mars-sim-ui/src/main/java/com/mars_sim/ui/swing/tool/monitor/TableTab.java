@@ -7,7 +7,6 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -19,9 +18,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
@@ -31,6 +28,7 @@ import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.ColumnSpecHelper;
 import com.mars_sim.ui.swing.components.ToolTipTableModel;
 import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -98,36 +96,11 @@ public class TableTab extends MonitorTab {
 
 		setName(model.getName());
 		// Use column resizer
-		adjustColumnWidth(table);
+		SwingHelper.resizeTableColumns(table);
 	}
 
 	public JTable getTable() {
 		return table;
-	}
-
-	private static void adjustColumnWidth(JTable table) {
-		// Gets max width for cells in column as the preferred width
-		TableColumnModel columnModel = table.getColumnModel();
-		for (int col = 0; col < table.getColumnCount(); col++) {
-			TableColumn tableColumn = columnModel.getColumn(col);
-		    int preferredWidth = tableColumn.getMinWidth() + 15;
-		    TableCellRenderer rend = table.getTableHeader().getDefaultRenderer();
-			TableCellRenderer rendCol = tableColumn.getHeaderRenderer();
-		    if (rendCol == null) rendCol = rend;
-		    Component header = rendCol.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
-		    int headerWidth = header.getPreferredSize().width + 15;
-		    preferredWidth = Math.max(preferredWidth, headerWidth);
-
-			// Sample the first 20 rows
-			for (int row = 0; row < Math.min(20, table.getRowCount()); row++) {
-				TableCellRenderer tableCellRenderer = table.getCellRenderer(row, col);
-				Component c = table.prepareRenderer(tableCellRenderer, row, col);
-				int cellWidth = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
-				preferredWidth = Math.max(cellWidth, preferredWidth);
-			}
-
-			tableColumn.setPreferredWidth(preferredWidth);
-		}
 	}
 
 	/**
@@ -225,7 +198,7 @@ public class TableTab extends MonitorTab {
 		// Automatically adjust the width when a significant data change
 		if (!widthAdjusted) {
 			widthAdjusted = true;
-			adjustColumnWidth(table);
+			SwingHelper.resizeTableColumns(table);
 		}
 
 		return accepted;

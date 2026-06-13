@@ -41,6 +41,9 @@ public class VehicleMaintenance extends Function {
 
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(VehicleMaintenance.class.getName());
+
+	// Event type for when a vehicle is garaged in the building.
+	public static final String GARAGED = "garaged";
 	
 	private List<ParkedLocation<Rover>> roverLocations;
 	private List<ParkedLocation<LightUtilityVehicle>> luvLocations;
@@ -79,15 +82,6 @@ public class VehicleMaintenance extends Function {
 	}
 
 	/**
-	 * Gets the current number of rovers in the building.
-	 * 
-	 * @return number of rover
-	 */
-	public int getCurrentRoverNumber() {
-		return (int)roverLocations.stream().filter(p -> p.hasParkedVehicle()).count();
-	}
-
-	/**
 	 * How many available rover locations unoccupied does the garage have?
 	 * 
 	 * @param Available rover parking locations.
@@ -106,15 +100,6 @@ public class VehicleMaintenance extends Function {
 	}
 
 	/**
-	 * Gets the current number of utility vehicles in the building.
-	 * 
-	 * @return number of luvs
-	 */
-	public int getCurrentUtilityVehicleNumber() {
-		return (int)luvLocations.stream().filter(p -> p.hasParkedVehicle()).count();
-	}
-
-	/**
 	 * How many available luv locations unoccupied does the garage have?
 	 * 
 	 * @param Available luv parking locations.
@@ -130,15 +115,6 @@ public class VehicleMaintenance extends Function {
 	 */
 	public int getFlyerCapacity() {
 		return flyerLocations.size();
-	}
-
-	/**
-	 * Gets the current number of flyers in the building.
-	 * 
-	 * @return number of flyers
-	 */
-	public int getCurrentFlyerNumber() {
-		return (int)flyerLocations.stream().filter(p -> p.hasParkedVehicle()).count();
 	}
 
 	/**
@@ -161,6 +137,10 @@ public class VehicleMaintenance extends Function {
 	}
 
 	private <T extends Vehicle> boolean addVehicle(List<ParkedLocation<T>> locations, T newVehicle) {
+		if (newVehicle == null) {
+			throw new IllegalArgumentException("Vehicle cannot be null.");
+		}
+
 		if (getAssignedLocation(locations, newVehicle) != null) {
 			logger.log(newVehicle, Level.INFO, 1000,  "Already garaged in " + building + ".");
 			return false;
@@ -181,6 +161,8 @@ public class VehicleMaintenance extends Function {
 		
 		double newFacing = getBuilding().getFacing();
 		newVehicle.setParkedLocation(location.getPosition(), newFacing);
+
+		getBuilding().fireUnitUpdate(GARAGED);
 		return true;
 	}
 
@@ -221,6 +203,9 @@ public class VehicleMaintenance extends Function {
 	 * 
 	 */
 	private <T extends Vehicle> boolean removeVehicle(List<ParkedLocation<T>> locations, T oldVehicle, boolean transferCrew) {
+		if (oldVehicle == null) {
+			throw new IllegalArgumentException("Vehicle cannot be null.");
+		}
 
 		var found = getAssignedLocation(locations, oldVehicle);
 		if (found == null) {
@@ -233,7 +218,7 @@ public class VehicleMaintenance extends Function {
 		found.parkVehicle(null);
 		parkInVicinity(oldVehicle);
 
-		logger.fine(oldVehicle, "Removed from " + found.getName() + " in " + building.getName());
+		getBuilding().fireUnitUpdate(GARAGED);
 			
 		return true;
 	}

@@ -19,8 +19,7 @@ import javax.swing.table.TableModel;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.utils.EntityLauncher;
-import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.StatefulComponent;
 import com.mars_sim.ui.swing.utils.SwingHelper;
 
 /**
@@ -32,6 +31,7 @@ public abstract class EntityTableTabPanel<T extends Entity> extends EntityTabPan
 	
 	private String tableTitle;
 	private JTable table;
+	private StatefulComponent model;
 
 	/**
 	 * Constructor.
@@ -81,24 +81,20 @@ public abstract class EntityTableTabPanel<T extends Entity> extends EntityTabPan
 		
 		// Prepare table model.
 		var tableModel = createModel();
-		
-		// Prepare table.
-		table = new JTable(tableModel);
-		if (tableModel instanceof EntityModel) {
-			// Call up the window when clicking on a row on the table
-			EntityLauncher.attach(table, getContext());
+		if (tableModel instanceof StatefulComponent sc) {
+			model = sc;
 		}
 		
-		table.setRowSelectionAllowed(true);
+		// Prepare table.
+		table = SwingHelper.createEnhancedTable(tableModel, getContext());
+
+		// Potentially this could be dropped if EnhandedTableModel trigger autoColumn sizing
 		var tc = table.getColumnModel();
 		setColumnDetails(tc);
 		
 		// Resizable automatically when its Panel resizes
 		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		// Add sorting
-		table.setAutoCreateRowSorter(true);
 
 		scrollPane.setViewportView(table);
 	}
@@ -137,5 +133,17 @@ public abstract class EntityTableTabPanel<T extends Entity> extends EntityTabPan
 	 */
 	protected JPanel createInfoPanel() {
 		return null;
+	}
+
+	/**
+	 * If the associated model is a StatefulComponent then it will be released when the panel is destroyed.
+	 */
+	@Override
+	public void destroy() {
+		if (model != null) {
+			model.release();
+		}
+
+		super.destroy();
 	}
 }

@@ -7,11 +7,8 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
@@ -19,15 +16,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.air.AirComposition;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
@@ -41,12 +30,11 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
-import com.mars_sim.ui.swing.components.NumberCellRenderer;
 import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
-import com.mars_sim.ui.swing.utils.EntityLauncher;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.model.BaseBuildingModel;
 
 /**
  * This is a tab panel for displaying the composition of air of each inhabitable building in a settlement.
@@ -54,13 +42,11 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
 @SuppressWarnings("serial")
 class TabPanelAirComposition extends EntityTabPanel<Settlement> implements TemporalComponent {
 
-	private static final String BLDG = Msg.getString("building.singular"); //$NON-NLS-1$
-	private static final String TOTAL = Msg.getString("TabPanelAirComposition.column.total"); //$NON-NLS-1$
-	private static final String O2 = Msg.getString("TabPanelAirComposition.o2"); //$NON-NLS-1$
-	private static final String H2O = Msg.getString("TabPanelAirComposition.h2o"); //$NON-NLS-1$
-	private static final String N2 = Msg.getString("TabPanelAirComposition.n2"); //$NON-NLS-1$
-	private static final String CO2 = Msg.getString("TabPanelAirComposition.co2"); //$NON-NLS-1$
-	private static final String AR = Msg.getString("TabPanelAirComposition.ar"); //$NON-NLS-1$
+	private static final String O2_NAME = Msg.getString("TabPanelAirComposition.o2"); //$NON-NLS-1$
+	private static final String H2O_NAME = Msg.getString("TabPanelAirComposition.h2o"); //$NON-NLS-1$
+	private static final String N2_NAME = Msg.getString("TabPanelAirComposition.n2"); //$NON-NLS-1$
+	private static final String CO2_NAME = Msg.getString("TabPanelAirComposition.co2"); //$NON-NLS-1$
+	private static final String AR_NAME = Msg.getString("TabPanelAirComposition.ar"); //$NON-NLS-1$
 	
 	private static final String AIR_ICON = "air";
 	private static final DecimalFormat DECIMAL_ATM = new DecimalFormat("0.0 atm");
@@ -81,19 +67,14 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 	private JLabel indoorPressureLabel;
 	private JDoubleLabel averageTemperatureLabel;
 
-	private JTable table ;
+	private static final int SHOW_PERC = 1;
+	private static final int SHOW_KPA = 2;
+	private static final int SHOW_ATM = 3;
+	private static final int SHOW_MB = 4;
+	private static final int SHOW_PSI = 5;
+	private static final int SHOW_MASS = 6;
+	private int styleSelected = SHOW_PERC;
 
-	private JRadioButton percent_btn;
-	private JRadioButton mass_btn;
-	private JRadioButton kPa_btn;
-	private JRadioButton atm_btn;
-	private JRadioButton psi_btn;
-	private JRadioButton mb_btn;
-	
-	private JScrollPane scrollPane;
-	
-	private ButtonGroup bG;
-	
 	private AirTableModel airTableModel;
 
 	private BuildingManager manager;
@@ -141,99 +122,82 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 		gasPanel.setBorder(SwingHelper.createLabelBorder(Msg.getString("TabPanelAirComposition.label")));
 		topContentPanel.add(gasPanel); 
 		cO2Label = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.CO2_ID));
-		gasPanel.addLabelledItem(CO2, cO2Label, null);
+		gasPanel.addLabelledItem(CO2_NAME, cO2Label, null);
 		arLabel = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.ARGON_ID));
-		gasPanel.addLabelledItem(AR, arLabel, null);
+		gasPanel.addLabelledItem(AR_NAME, arLabel, null);
 		n2Label = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.NITROGEN_ID));
-		gasPanel.addLabelledItem(N2, n2Label, null);
+		gasPanel.addLabelledItem(N2_NAME, n2Label, null);
 		o2Label = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.OXYGEN_ID));
-		gasPanel.addLabelledItem(O2, o2Label, null);
+		gasPanel.addLabelledItem(O2_NAME, o2Label, null);
 		h2OLabel = new JDoubleLabel(StyleManager.DECIMAL2_PERC, getOverallComposition(ResourceUtil.WATER_ID));
-		gasPanel.addLabelledItem(H2O, h2OLabel, null);
+		gasPanel.addLabelledItem(H2O_NAME, h2OLabel, null);
 		gasPanel.addBlankField();
 
 		// Create override check box panel.
-		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		topContentPanel.add(radioPane, BorderLayout.SOUTH);
-		
-		percent_btn = createSelectorButton("percent");
-		mass_btn = createSelectorButton("mass");
-		kPa_btn = createSelectorButton("kPa");
-		atm_btn = createSelectorButton("atm");
-		psi_btn = createSelectorButton("psi");
-		mb_btn = createSelectorButton("mb");
-
-		JPanel pressure_p = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-		pressure_p.setBorder(SwingHelper.createLabelBorder("Pressure"));
-		pressure_p.add(kPa_btn);
-		pressure_p.add(atm_btn);
-		pressure_p.add(mb_btn);
-		pressure_p.add(psi_btn);
-		radioPane.add(pressure_p);
-		
-		JPanel mass_p = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-		mass_p.setBorder(SwingHelper.createLabelBorder("Mass "));
-		mass_p.add(mass_btn);
-		radioPane.add(mass_p);
-    
-		JPanel vol_p = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-		vol_p.setBorder(SwingHelper.createLabelBorder("Vol "));
-		vol_p.add(percent_btn);
-		radioPane.add(vol_p);
-
-	    percent_btn.setSelected(true);
-		
-	    bG = new ButtonGroup();
-	    bG.add(kPa_btn);
-	    bG.add(atm_btn);
-	    bG.add(mb_btn);
-	    bG.add(psi_btn);
-	    bG.add(mass_btn);
-	    bG.add(percent_btn);
+		topContentPanel.add(createSelectionPanel(), BorderLayout.SOUTH);
  
 		// Create scroll panel for the outer table panel.
-		scrollPane = new JScrollPane();
-		scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		content.add(scrollPane,BorderLayout.CENTER);
-
 		airTableModel = new AirTableModel(settlement);
-		table = new JTable(airTableModel);
-		EntityLauncher.attach(table, getContext());
-
-		table.setRowSelectionAllowed(true);
-		TableColumnModel tableColumnModel = table.getColumnModel();
-		tableColumnModel.getColumn(0).setPreferredWidth(100);
-		tableColumnModel.getColumn(1).setPreferredWidth(20);
-		tableColumnModel.getColumn(2).setPreferredWidth(20);
-		tableColumnModel.getColumn(3).setPreferredWidth(20);
-		tableColumnModel.getColumn(4).setPreferredWidth(20);
-		tableColumnModel.getColumn(5).setPreferredWidth(20);
-		tableColumnModel.getColumn(6).setPreferredWidth(20);
-
-		// Override default cell renderer for formatting double values.
-		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
-        
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		tableColumnModel.getColumn(0).setCellRenderer(renderer);
-		
-		table.setPreferredScrollableViewportSize(new Dimension(225, -1));
-		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
-		table.setAutoCreateRowSorter(true);
-
-		scrollPane.setViewportView(table);
+		var table = SwingHelper.createScrolledTable(airTableModel, getContext(), null, null);
+		content.add(table ,BorderLayout.CENTER);
 
 		//Force an update to load
 		clockUpdate(null);
 	}
 
-	private JRadioButton createSelectorButton(String selector) {
+	private JPanel createSelectionPanel() {
+		JPanel radioPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		var percentBtn = createSelectorButton("percent", SHOW_PERC);
+		var massBtn = createSelectorButton("mass", SHOW_MASS);
+		var kPaBtn = createSelectorButton("kPa", SHOW_KPA);
+		var atmBtn = createSelectorButton("atm", SHOW_ATM);
+		var psiBtn = createSelectorButton("psi", SHOW_PSI);
+		var mbBtn = createSelectorButton("mb", SHOW_MB);
+
+		JPanel pressurePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
+		pressurePanel.setBorder(SwingHelper.createLabelBorder("Pressure"));
+		pressurePanel.add(kPaBtn);
+		pressurePanel.add(atmBtn);
+		pressurePanel.add(mbBtn);
+		pressurePanel.add(psiBtn);
+		radioPane.add(pressurePanel);
+		
+		JPanel massPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
+		massPanel.setBorder(SwingHelper.createLabelBorder("Mass "));
+		massPanel.add(massBtn);
+		radioPane.add(massPanel);
+    
+		JPanel volPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 3));
+		volPanel.setBorder(SwingHelper.createLabelBorder("Vol "));
+		volPanel.add(percentBtn);
+		radioPane.add(volPanel);
+
+	    percentBtn.setSelected(true);
+		
+	    var bG = new ButtonGroup();
+	    bG.add(kPaBtn);
+	    bG.add(atmBtn);
+	    bG.add(mbBtn);
+	    bG.add(psiBtn);
+	    bG.add(massBtn);
+	    bG.add(percentBtn);
+
+		return radioPane;
+	}
+
+	private JRadioButton createSelectorButton(String selector, int value) {
 	    JRadioButton btn = new JRadioButton(Msg.getString("TabPanelAirComposition.checkbox." + selector)); //$NON-NLS-1$
 	    btn.setToolTipText(Msg.getString("TabPanelAirComposition.checkbox." + selector + ".tooltip")); //$NON-NLS-1$
-	    btn.addActionListener(e -> airTableModel.update());
+	    btn.addActionListener(e -> changeSelection(value));
 		return btn;
+	}
+
+	private void changeSelection(int newSelection) {
+		styleSelected = newSelection;
+		if (airTableModel != null) {
+			airTableModel.update();
+		}
 	}
 
 	private double getOverallComposition(int gasId) {
@@ -245,38 +209,6 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 			result += percent;
 		}
 		return (result/size);
-	}
-
-	private double getSubtotal(Building b) {
-		AirComposition air = b.getLifeSupport().getAir();
-		double v = air.getTotalPressure();
-
-		if (percent_btn.isSelected()) {
-			return 100D;
-		}
-		else if (kPa_btn.isSelected()) {
-			// convert to kPascal
-			return v * AirComposition.KPA_PER_ATM;
-		}
-		else if (atm_btn.isSelected()) {
-			// convert to atm
-			return v;
-		}
-		else if (mb_btn.isSelected()) {
-			// convert to millibar
-			return v * AirComposition.MB_PER_ATM;
-		}
-		else if (psi_btn.isSelected()) {
-			// convert to psi
-			return  v * AirComposition.PSI_PER_ATM;
-		}
-
-		else if (mass_btn.isSelected()) {
-			return air.getTotalMass();
-		}
-		else
-			return 0D;
-
 	}
 
 	@Override
@@ -302,23 +234,13 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 			averageTemperatureLabel.setValue(settlement.getTemperature());
 		
 			// Update indoor pressure (complex formatting based on button selection)
-			String indoorPressure = StyleManager.DECIMAL_KPA.format(settlement.getAirPressure());
-			
-			if (kPa_btn.isSelected()) {
-				// convert from atm to kPascal
-				indoorPressure = StyleManager.DECIMAL_KPA.format(settlement.getAirPressure());
-			}
-			else if (atm_btn.isSelected()) {
-				indoorPressure = DECIMAL_ATM.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM);
-			}
-			else if (mb_btn.isSelected()) {
-				// convert from atm to mb
-				indoorPressure = DECIMAL_MB.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.MB_PER_ATM);
-			}
-			else if (psi_btn.isSelected()) {
-				// convert from atm to kPascal
-				indoorPressure =  DECIMAL_PSI.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.PSI_PER_ATM);
-			}
+			String indoorPressure = switch (styleSelected) {
+				case SHOW_KPA -> StyleManager.DECIMAL_KPA.format(settlement.getAirPressure());
+				case SHOW_ATM -> DECIMAL_ATM.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM);
+				case SHOW_MB -> DECIMAL_MB.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.MB_PER_ATM);
+				case SHOW_PSI -> DECIMAL_PSI.format(settlement.getAirPressure()/AirComposition.KPA_PER_ATM * AirComposition.PSI_PER_ATM);
+				default -> StyleManager.DECIMAL2_PERC.format(100D);
+			};
 			
 			if (!indoorPressure.equals(indoorPressureCache)) {
 				indoorPressureCache = indoorPressure;
@@ -333,130 +255,76 @@ class TabPanelAirComposition extends EntityTabPanel<Settlement> implements Tempo
 	/**
 	 * Internal class used as model for the table.
 	 */
-	private class AirTableModel extends AbstractTableModel 
-				implements EntityModel {
+	private class AirTableModel extends BaseBuildingModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		private int size;
+		private static final int TOTAL_VAL = 101;
+		private static final int O2_VAL = 102;
+		private static final int H2O_VAL = 103;
+		private static final int N2_VAL = 104;
+		private static final int CO2_VAL = 105;	
+		private static final int AR_VAL = 106;
+
+		private static final EntityColumnSpec TOTAL = new EntityColumnSpec(new ColumnSpec(TOTAL_VAL, Msg.getString("TabPanelAirComposition.column.total"), Double.class), null);
+		private static final EntityColumnSpec O2 = new EntityColumnSpec(new ColumnSpec(O2_VAL, O2_NAME, Double.class), null);
+		private static final EntityColumnSpec H2O = new EntityColumnSpec(new ColumnSpec(H2O_VAL, H2O_NAME, Double.class), null);
+		private static final EntityColumnSpec N2 = new EntityColumnSpec(new ColumnSpec(N2_VAL, N2_NAME, Double.class), null);
+		private static final EntityColumnSpec CO2 = new EntityColumnSpec(new ColumnSpec(CO2_VAL, CO2_NAME, Double.class), null);	
+		private static final EntityColumnSpec AR = new EntityColumnSpec(new ColumnSpec(AR_VAL, AR_NAME, Double.class), null);	
 
 		private BuildingManager manager;
 
-		private List<Building> buildings = new ArrayList<>();
-
 		private AirTableModel(Settlement settlement) {
+			super(NAME, TOTAL, O2, H2O, N2, CO2, AR);
 			this.manager = settlement.getBuildingManager();
-			this.buildings = selectBuildingsWithLS();
-			this.size = buildings.size();
-		}
-
-		private List<Building> selectBuildingsWithLS() {
-			return manager.getBuildingsWithLifeSupport();
+			setEntities(manager.getBuildingsWithLifeSupport());
 		}
 
 		@Override
-		public int getRowCount() {
-			return size;
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 7;
-
-		}
-
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			if (columnIndex == 0) return String.class;
-			else return Double.class;
-
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			return switch(columnIndex) {
-				case 0 -> BLDG;
-				case 1 -> TOTAL;
-				case 2 -> O2;
-				case 3 -> H2O;
-				case 4 -> N2;
-				case 5 -> CO2;
-				case 6 -> AR;
-				default -> null;
+		protected Object getEntityValue(Building building, int valueIndex) {
+			return switch (valueIndex) {
+				case TOTAL_VAL -> getSubtotal(building);
+				case O2_VAL -> getGasValue(ResourceUtil.OXYGEN_ID, building);
+				case H2O_VAL -> getGasValue(ResourceUtil.WATER_ID, building);
+				case N2_VAL -> getGasValue(ResourceUtil.NITROGEN_ID, building);
+				case CO2_VAL -> getGasValue(ResourceUtil.CO2_ID, building);
+				case AR_VAL -> getGasValue(ResourceUtil.ARGON_ID, building);
+				default -> super.getEntityValue(building, valueIndex);
 			};
 		}
 
-		private int getGasId(int columnIndex) {
-		 	return switch (columnIndex) {
-				case 2 -> ResourceUtil.OXYGEN_ID;
-				case 3 -> ResourceUtil.WATER_ID;
-				case 4 -> ResourceUtil.NITROGEN_ID;
-				case 5 -> ResourceUtil.CO2_ID;
-				case 6 -> ResourceUtil.ARGON_ID;
-				default -> -1;
-				};
-		}
+		private double getSubtotal(Building b) {
+			AirComposition air = b.getLifeSupport().getAir();
+			double v = air.getTotalPressure();
 
-		@Override
-		public Object getValueAt(int row, int column) {
-
-			Building b = buildings.get(row);
-
-			// CO2, H2O, N2, O2, Others (Ar2, He, CH4...)
-			if (column == 0) {
-				return b.getName();
-			}
-			else if (column == 1) {
-				return getSubtotal(b);
-			}
-			else if (column > 1) {				
-				double amt = getGasValue(getGasId(column), b);
-				if (amt == 0)
-					return null;
-				else
-					return amt;
-			}
-			else  {
-				return null;
-			}
+			return switch (styleSelected) {
+				case SHOW_PERC -> 100D;
+				case SHOW_KPA -> v * AirComposition.KPA_PER_ATM;
+				case SHOW_ATM -> v;
+				case SHOW_MB -> v * AirComposition.MB_PER_ATM;	
+				case SHOW_PSI -> v * AirComposition.PSI_PER_ATM;
+				case SHOW_MASS -> air.getTotalMass();
+				default -> 0D;
+			};
 		}
 
 		private double getGasValue(int gasId, Building b) {
 			AirComposition.GasDetails gas = b.getLifeSupport().getAir().getGas(gasId);
-			if (percent_btn.isSelected())
-				return gas.getPercent();
-			else if (kPa_btn.isSelected())
-				return gas.getPartialPressure() * AirComposition.KPA_PER_ATM;
-			else if (atm_btn.isSelected())
-				return gas.getPartialPressure();
-			else if (mb_btn.isSelected())
-				return gas.getPartialPressure() * AirComposition.MB_PER_ATM;
-			else if (psi_btn.isSelected())
-				return gas.getPartialPressure() * AirComposition.PSI_PER_ATM;
-			//else if (temperature_btn.isSelected())
-			//	return air.getTemperature()[gas][id] - CompositionOfAir.C_TO_K;
-			//else if (moles_btn.isSelected())
-			//	return air.getNumMoles()[gas][id];
-			else if (mass_btn.isSelected())
-				return gas.getMass();
-			else
-				return 0;
+			return switch (styleSelected) {
+				case SHOW_PERC -> gas.getPercent();
+				case SHOW_KPA -> gas.getPartialPressure() * AirComposition.KPA_PER_ATM;
+				case SHOW_ATM -> gas.getPartialPressure();
+				case SHOW_MB -> gas.getPartialPressure() * AirComposition.MB_PER_ATM;
+				case SHOW_PSI -> gas.getPartialPressure() * AirComposition.PSI_PER_ATM;
+				case SHOW_MASS -> gas.getMass();
+				default -> 0D;
+			};
 		}
 
 		public void update() {
-			List<Building> newBuildings = selectBuildingsWithLS();
-			if (!buildings.equals(newBuildings)) {
-				buildings = newBuildings;
-				scrollPane.validate();
-			}
-
-			fireTableDataChanged();
-		}
-
-		@Override
-		public Entity getAssociatedEntity(int row) {
-			return buildings.get(row);
+			fireTableRowsUpdated(0, getRowCount() - 1);
 		}
 	}
 }

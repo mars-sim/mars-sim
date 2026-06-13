@@ -8,7 +8,7 @@
 package com.mars_sim.core.person.ai.task.util;
 
 import com.mars_sim.core.UnitIdentifer;
-import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.core.building.function.ActivitySpot.AllocatedSpot;
@@ -19,7 +19,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.unit.MobileUnit;
 
-public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, MobileUnit {
+public interface Worker extends UnitIdentifer, MonitorableEntity, EquipmentOwner, SkillOwner, MobileUnit {
 
 	/**
 	 * Returns a reference to the Worker natural attribute manager
@@ -62,20 +62,6 @@ public interface Worker extends UnitIdentifer, EquipmentOwner, SkillOwner, Mobil
 	 * @return the worker's associated settlement
 	 */
 	public Settlement getAssociatedSettlement();
-	
-	/**
-	 * Adds an entity listener.
-	 *
-	 * @param newListener the listener to add.
-	 */
-	public void addEntityListener(EntityListener newListener);
-
-	/**
-	 * Removes an entity listener.
-	 *
-	 * @param oldListener the listener to remove.
-	 */
-	public void removeEntityListener(EntityListener oldListener);
 
 	/**
 	 * What is the Mission this Worker is performing.

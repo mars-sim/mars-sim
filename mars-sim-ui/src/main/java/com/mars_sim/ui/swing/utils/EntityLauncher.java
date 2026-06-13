@@ -68,6 +68,9 @@ public class EntityLauncher extends MouseInputAdapter {
             JTable table = (JTable) e.getComponent();
             // Get the mouse-selected row
             int r = table.getSelectedRow();
+            if (r < 0) {
+                return;
+            }
             RowSorter<? extends TableModel> sorter = table.getRowSorter();
             if (sorter != null && r >= 0) {
                 r = sorter.convertRowIndexToModel(r);

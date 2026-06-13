@@ -9,7 +9,6 @@ package com.mars_sim.ui.swing.utils.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,18 +31,20 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * The subclass defines which columns are to be rendered.
  * The model automatically monitors the entities for changes and updates the table as needed.
  */
-abstract class AbstractEntityModel<T extends MonitorableEntity> extends AbstractTableModel
+public abstract class AbstractEntityModel<T extends MonitorableEntity> extends AbstractTableModel
     implements EnhancedTableModel, EntityListener, EntityModel, StatefulComponent {
 
     // Used to associate column index with column spec and event types to listen for
     public record EntityColumnSpec(ColumnSpec column, Set<String> eventTypes) {}
 
-    
-	private List<T> entities = Collections.emptyList();
+	private List<T> entities = new ArrayList<>();
     private ColumnSpec[] columns;
     private Map<String, List<Integer>> monitoredEvents = new HashMap<>();
 
-
+    /**
+     * Create a generic entity model with the specified columns.
+     * @param columns Columns to render
+     */
     protected AbstractEntityModel(EntityColumnSpec... columns) {
         // Create the event map by extracting the event types against the index of the EntityColumnSpec
         int idx = 0;
@@ -62,23 +63,52 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
      * Updates the entities to be shown.
      * The model will automatically monitor the new entities for changes and update the table as needed.
      * @param newEntities New entities to display.
+     * @return true if the entities were updated, false if the new entities are the same as the current entities.
      */
-    public void setEntities(Collection<T> newEntities) {
+    public boolean setEntities(Collection<? extends T> newEntities) {
         // Cannot use straight equals because parameter is not a list
         if (newEntities.size() != entities.size() || !entities.containsAll(newEntities)) {
+            release();
+            entities = new ArrayList<>(newEntities);
+            
+            // If there are no monitored events, then no need to register as listener
+            if (!monitoredEvents.isEmpty()) {
+                entities.forEach(e -> e.addEntityListener(this));
+            }
             // Update in swing thread as table has sorting
-            SwingHelper.runInEDT(() -> {
-                release();
-                entities = new ArrayList<>(newEntities);
+            SwingHelper.runInEDT(this::fireTableDataChanged);
+            return true;
+        }
 
-                // reload the whole table
-                fireTableDataChanged();
+        return false;
+    }
 
-                // If there are no monitored events, then no need to register as listener
-                if (!monitoredEvents.isEmpty()) {
-                    entities.forEach(e -> e.addEntityListener(this));
-                }
-            });
+    /**
+     * Add an entity to the model. This check the entity is not already present.
+     * @param entity Entity to add.
+     */
+    public void addEntity(T entity) {
+        if (!entities.contains(entity)) {
+            entities.add(entity);
+            int index = entities.size() - 1;
+            if (!monitoredEvents.isEmpty()) {
+                entity.addEntityListener(this);
+            }
+
+            SwingHelper.runInEDT(() -> fireTableRowsInserted(index, index));
+        }
+    }
+
+    /**
+     * Remove an entity from the model.
+     * @param entity Entity to remove.
+     */
+    public void removeEntity(T entity) {
+        int index = entities.indexOf(entity);
+        if (index >= 0) {
+            entities.remove(index);
+            entity.removeEntityListener(this);
+            SwingHelper.runInEDT(() -> fireTableRowsDeleted(index, index));
         }
     }
 
@@ -119,8 +149,32 @@ abstract class AbstractEntityModel<T extends MonitorableEntity> extends Abstract
         return columns[modelIndex];
     }
 
+    /**
+     * A tooltip is needed for a specific cell in the model. The implementation resolves the relevant column spec and entity
+     * and delegates to getEntityDescription to get the tooltip text.
+     * @param rowIndex Row index of the cell.
+     * @param columnIndex Column index of the cell.
+     * @return Tooltip text for the cell, or null if no tooltip is provided.
+     */
     @Override
-    public String getToolTipAt(int row, int col) {
+    public String getToolTipAt(int rowIndex, int columnIndex) {
+        var spec = getColumnSpec(columnIndex);
+        if (rowIndex < 0 || rowIndex >= entities.size()) {
+            return null;
+        }
+        var entity = entities.get(rowIndex);
+        return getEntityDescription(entity, spec.id());
+    }
+    
+    /**
+     * Get a cell description for the associated Entity. The description is a longer version of the value commonly used for tooltip.
+     * Column index maps to the associated ColumnSpec where the id is used to determine the value to return.
+     * Default implementatino return null, override to provide descriptions.
+     * @param entity Source of value.
+     * @param valueIndex Index of the value.
+     * @return String description
+     */
+    protected String getEntityDescription(T entity, int valueIndex) {
         return null;
     }
 

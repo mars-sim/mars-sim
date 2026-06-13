@@ -83,14 +83,6 @@ public class TabPanelBots extends EntityTableTabPanel<Vehicle>
 		return model;
 	}
 
-	@Override
-	public void destroy() {
-		if (model != null) {
-			model.release();
-		}
-		super.destroy();
-	}
-
 	private static class BotModel extends BaseRobotModel {
 		private final Crewable crewable;
 

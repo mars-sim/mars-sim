@@ -420,15 +420,6 @@ public class BuildingManager implements Serializable {
 	}
 
 	/**
-	 * Gets a list of settlement's buildings with thermal function.
-	 *
-	 * @return list of buildings
-	 */
-	public List<Building> getBuildingsWithThermal() {
-		return getBuildings(FunctionType.THERMAL_GENERATION);
-	}
-	
-	/**
 	 * Checks if the settlement contains a given building.
 	 *
 	 * @param building the building.
