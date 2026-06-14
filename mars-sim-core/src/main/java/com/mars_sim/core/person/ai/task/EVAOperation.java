@@ -26,7 +26,6 @@ import com.mars_sim.core.map.location.LocalBoundedObject;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact;
@@ -875,7 +874,7 @@ public abstract class EVAOperation extends Task {
 				
 		if (problem == null) {
 			p.registerHistoricalEvent(HistoricalEventType.MISSION_RESCUE_PERSON,
-										PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()),
+										p.getPhysicalCondition().getStatus(),
 										p.getTaskDescription(), p.getMission(), p.getCoordinates());
 
 		}

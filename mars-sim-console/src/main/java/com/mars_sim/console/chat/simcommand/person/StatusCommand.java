@@ -66,7 +66,7 @@ public class StatusCommand extends AbstractPersonCommand {
 	private static void outputAlive(StringBuilder buffer, Person person) {
 		buffer.append("Hi, my name is ");
 		buffer.append(person.getName());
-		buffer.append(" and my role is ");
+		buffer.append(" and my job is ");
 		String job = person.getMind().getJobType().getName();
 		buffer.append(job).append(".");
 		buffer.append(System.lineSeparator());

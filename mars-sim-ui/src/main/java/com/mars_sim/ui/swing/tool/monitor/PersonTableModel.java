@@ -20,7 +20,6 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
@@ -364,7 +363,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 				break;
 
 			case HEALTH: 
-				result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
+				result = person.getPhysicalCondition().getStatus();
 				break;
 
 			case LOCATION:

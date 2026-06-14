@@ -1588,6 +1588,16 @@ public class PhysicalCondition implements Serializable {
 	}
 
 	/**
+	 * Gets the health status of the person.
+	 */
+	public String getStatus() {
+		if (mostSeriousProblem != null) {
+			return (alive ? "Dead: " : "Sick: ") + mostSeriousProblem.printStatus();
+    	}
+		return "Well";	
+	}
+
+	/**
 	 * Checks if a person is super unfit.
 	 *
 	 * @return
