@@ -46,6 +46,7 @@ import com.mars_sim.core.goods.GoodCategory;
 import com.mars_sim.core.interplanetary.transport.TransitState;
 import com.mars_sim.core.location.LocationStateType;
 import com.mars_sim.core.person.FatigueLevel;
+import com.mars_sim.core.person.HungerLevel;
 import com.mars_sim.core.person.StressLevel;
 import com.mars_sim.core.person.ThirstLevel;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
@@ -154,6 +155,7 @@ public class BundleCheck {
         enumMissing += compareEnum(HeatMode.class, localeMessages, output);
         enumMissing += compareEnum(HistoricalEventCategory.class, localeMessages, output);
         enumMissing += compareEnum(HistoricalEventType.class, localeMessages, output);
+        enumMissing += compareEnum(HungerLevel.class, localeMessages, output);
         enumMissing += compareEnum(JobType.class, localeMessages, output);
         enumMissing += compareEnum(LandmarkType.class, localeMessages, output);
         enumMissing += compareEnum(LocationStateType.class, localeMessages, output);

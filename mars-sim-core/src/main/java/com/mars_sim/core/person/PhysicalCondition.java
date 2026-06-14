@@ -44,7 +44,6 @@ import com.mars_sim.core.person.health.CuredProblem;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.person.health.RadioProtectiveAgent;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
@@ -107,9 +106,6 @@ public class PhysicalCondition implements Serializable {
 	private static final double RANDOM_AILMENT_PROBABILITY_TIME = 100_000D;
 	/** The standard pre-breathing time in the EVA suit. */
 	private static final double STANDARD_PREBREATHING_TIME = 40;
-
-	public static final String STANDARD_QUOTE_0 = "Thousands have lived without love, not one without water. – W.H.Auden.";
-	public static final String STANDARD_QUOTE_1 = "Remember that no child should go empty stomach in the 21st century.";
 	
 	/** The default string for degree celsius */
 	public static final String DEGREE_CELSIUS = Msg.getString("temperature.sign.degreeCelsius");
@@ -124,9 +120,6 @@ public class PhysicalCondition implements Serializable {
 	private static double maxTemperature;
 	private static double foodConsumption;
 
-
-	/** True if person is starving. */
-	private boolean isStarving;
 	/** True if person is alive. */
 	private boolean alive;
 	/** True if person is radiation Poisoned. */
@@ -147,8 +140,7 @@ public class PhysicalCondition implements Serializable {
 	// Thirst attributes
 	private double thirst;
 	private ThirstLevel thirstLevel;
-	private int dessicatedStartTime = -1;
-	private int dessicatedMinMSols;
+	private int dehydrationTrigger;
 
 	/** Person's fatigue level from 0 to infinity. */
 	private double fatigue;
@@ -156,6 +148,7 @@ public class PhysicalCondition implements Serializable {
 
 	/** Person's hunger level [in millisols]. */
 	private double hunger;
+	private HungerLevel hungerLevel;
 
 	/** Person's stress level (0.0 % - 100.0 %). */
 	private double stress;
@@ -171,7 +164,7 @@ public class PhysicalCondition implements Serializable {
 	/** The time it takes to prebreathe the air mixture in the EVA suit. */
 	private double remainingPrebreathingTime = STANDARD_PREBREATHING_TIME + RandomUtil.getRandomInt(-5, 5);
 
-	private double starvationStartTime;
+	private double starvationTrigger;
 	
 	/** Person's max daily energy in kJ */
 	private double personalMaxEnergy = STANDARD_DAILY_ENERGY_INTAKE;
@@ -219,8 +212,6 @@ public class PhysicalCondition implements Serializable {
 	/** The NaturalAttributeManager instance. */
 	private transient NaturalAttributeManager naturalAttributeManager;
 
-	/** The HealthProblem instance. */
-	private HealthProblem starved;
 	/** Most mostSeriousProblem problem. */
 	private HealthProblem mostSeriousProblem;
 
@@ -291,12 +282,11 @@ public class PhysicalCondition implements Serializable {
 		waterConsumedPerServing = waterConsumedPerSol / 10; 
 
 		double sTime = personConfig.getStarvationStartTime();
-		starvationStartTime = 1000D * RandomUtil.getGaussianPositive(sTime, bodyMassDeviation / 5);
+		starvationTrigger = 1000D * RandomUtil.getGaussianPositive(sTime, bodyMassDeviation / 5);
 		
 		double dTime = personConfig.getDehydrationStartTime();
-		dessicatedMinMSols = (int)(1000D * RandomUtil.getGaussianPositive(dTime, bodyMassDeviation / 5));
+		dehydrationTrigger = (int)(1000D * RandomUtil.getGaussianPositive(dTime, bodyMassDeviation / 5));
 
-		isStarving = false;
 		// Initially set performance to 1.0 (=100%) to avoid issues at startup
 		performance = 1.0D;
 
@@ -322,6 +312,7 @@ public class PhysicalCondition implements Serializable {
 		stress = RandomUtil.getRandomRegressionInteger(10);
 		stressLevel = StressLevel.fromValue(stress);
 		hunger = RandomUtil.getRandomRegressionInteger(50);
+		hungerLevel = HungerLevel.fromValue(hunger);
 		// kJoules somewhat co-relates with hunger
 		kJoules = 10000 + (50 - hunger) * 100;
 		performance = 1.0D - (50 - fatigue) * .002 
@@ -419,8 +410,9 @@ public class PhysicalCondition implements Serializable {
 			// Check key attributes
 			double factor = isResting ? 2 : 1;
 			checkStress(time, factor);
-			checkThirst(time, factor, pulse.getMarsTime());
+			checkThirst(time, factor);
 			checkFatigue(time, factor);
+			checkHunger(time, factor);
 
 			// Check once a day only
 			if (pulse.isNewSol()) {	
@@ -439,9 +431,6 @@ public class PhysicalCondition implements Serializable {
 				
 				int msol = pulse.getMarsTime().getMillisolInt();
 				if (msol % 7 == 0) {
-
-					// Update starvation
-					checkStarvation(hunger);
 				
 					
 					// Check if person is at very high fatigue may collapse.
@@ -459,9 +448,6 @@ public class PhysicalCondition implements Serializable {
 			checkLifeSupport(time, currentO2Consumption, support);
 			// Update the existing health problems
 			checkHealth(pulse, isResting);
-
-			// Update hunger
-			increaseHunger(time * bodyMassDeviation * .75 / factor);
 		}
 	}
 
@@ -494,10 +480,7 @@ public class PhysicalCondition implements Serializable {
 					logger.log(person, Level.INFO, 20_000,
 							"Cured from " + type.getName() + ".");
 
-					if (type == ComplaintType.STARVATION)
-						isStarving = false;
-
-					else if (type == ComplaintType.RADIATION_SICKNESS)
+					if (type == ComplaintType.RADIATION_SICKNESS)
 						isRadiationPoisoned = false;
 				
 					// If nextPhase is not null, remove this problem so that it can
@@ -688,8 +671,6 @@ public class PhysicalCondition implements Serializable {
 		if (kJoules > personalMaxEnergy) {
 			kJoules = personalMaxEnergy;
 		}
-		
-		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 
 	/**
@@ -780,8 +761,8 @@ public class PhysicalCondition implements Serializable {
 	/**
 	 * How long it takes for a person to become dehydrated (in millisols).
 	 */
-	public double getDessicatedWait() {
-		return dessicatedMinMSols;
+	public double getDehydrationLevel() {
+		return dehydrationTrigger;
 	}
 
 	/**
@@ -830,7 +811,7 @@ public class PhysicalCondition implements Serializable {
 	}
 	
 	/**
-	 * Increases the hunger setting for this person.
+	 * Increases the thirst setting for this person.
 	 *
 	 * @param delta
 	 */
@@ -840,6 +821,54 @@ public class PhysicalCondition implements Serializable {
 			t = MAX_THIRST;
 		
 		thirst = t;
+	}
+	
+	/**
+	 * Checks if a person is dehydrated.
+	 * @param factor 
+	 * @param time 
+	 */
+	private void checkThirst(double time, double factor) {
+		// Update thirst
+		increaseThirst(time * bodyMassDeviation * .75 / factor);
+
+		// If the person's thirst at top level for a period then trigger dehydration
+		if (thirst > dehydrationTrigger) {
+			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
+			logger.info(person, "Dessicasted time has exp");
+		}
+
+		// IF thirst at critical, person is dead
+		if (thirst >= MAX_THIRST) {
+			var dehydrated = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
+			dehydrated.setState(HealthProblemState.DEAD);
+			recordDead(dehydrated, false, ThirstLevel.DEATH_QUOTE);
+			return;
+		}
+
+		// Check change of thirst level
+		var newThirstLevel = ThirstLevel.fromValue(thirst);
+		if (newThirstLevel == thirstLevel) {
+			return;
+		}
+
+		// Update the thirst level as it's changed
+		thirstLevel = newThirstLevel;
+		person.fireUnitUpdate(THIRST_EVENT);
+
+		var dehydrated = getProblemByType(ComplaintType.DEHYDRATION);
+
+		if (dehydrated != null) {
+			// Start recovery if thirst is below threshold
+			if (thirstLevel == ThirstLevel.ISOTONIC) {
+				dehydrated.setCured();
+				logger.info(person, "No longer dehydrated.");
+			}
+			else if (thirstLevel == ThirstLevel.WANT_A_SIP) {
+				dehydrated.startRecovery();
+				logger.info(person, "Recovering from dehydration.");
+			}
+		}
 	}
 
 	/**
@@ -855,7 +884,6 @@ public class PhysicalCondition implements Serializable {
 			h = -100;
 
 		hunger = h;
-		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 
 	/**
@@ -871,7 +899,6 @@ public class PhysicalCondition implements Serializable {
 			h = HUNGER_CEILING_UPON_EATING;
 		
 		hunger = h;
-		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -885,7 +912,6 @@ public class PhysicalCondition implements Serializable {
 			h = MAX_HUNGER;
 
 		hunger = h;
-		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -895,6 +921,69 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public double getHunger() {
 		return hunger;
+	}
+
+	/**
+	 * The current hunger level
+	 */
+	public HungerLevel getHungerLevel() {
+		return hungerLevel;
+	}
+
+	/**
+	 * The hunger level where starvation is triggered.
+	 */
+	public int getStarvationTrigger() {
+		return (int)starvationTrigger;
+	}
+
+	/**
+	 * Check for changes to hunger.
+	 * @param time
+	 * @param factor
+	 */
+	private void checkHunger(double time, double factor) {
+		// Update hunger
+		increaseHunger(time * bodyMassDeviation * .75 / factor);
+
+		
+		// If the person's hunger at top level for a period then trigger starvation
+		if (hunger > starvationTrigger) {
+			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
+			logger.info(person, "Starvation time has expired");
+		}
+
+		// IF hunger at critical, person is dead
+		if (hunger >= MAX_HUNGER) {
+			var starved = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
+			starved.setState(HealthProblemState.DEAD);
+			recordDead(starved, false, HungerLevel.DEATH_QUOTE);
+			return;
+		}
+
+		// Check change of hunger level
+		var newHungerLevel = HungerLevel.fromValue(hunger);
+		if (newHungerLevel == hungerLevel) {
+			return;
+		}
+
+		// Update the hunger level as it's changed
+		hungerLevel = newHungerLevel;
+		person.fireUnitUpdate(HUNGER_EVENT);
+
+		var starved = getProblemByType(ComplaintType.STARVATION);
+
+		if (starved != null) {
+			// Start recovery if hunger is below threshold
+			if (hungerLevel.isFull()) {
+				starved.setCured();
+				logger.info(person, "No longer starving.");
+			}
+			else if (hungerLevel.isAdequate()) {
+				starved.startRecovery();
+				logger.info(person, "Recovering from starvation.");
+			}
+		}
 	}
 
 	/**
@@ -978,7 +1067,7 @@ public class PhysicalCondition implements Serializable {
 		if (stress >= 100D) {
 			HealthProblem panic = getProblemByType(ComplaintType.PANIC_ATTACK);
 			if (panic == null) {
-				addMedicalComplaint(medicalManager.getPanicAttack());
+				addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.PANIC_ATTACK));
 			}
 		}
 
@@ -1003,117 +1092,6 @@ public class PhysicalCondition implements Serializable {
 		}
 	}
 	
-	/**
-	 * Checks if a person is starving or no longer starving.
-	 *
-	 * @param hunger
-	 */
-	private void checkStarvation(double hunger) {
-
-		starved = getProblemByType(ComplaintType.STARVATION);
-		
-		if (!isStarving && hunger > starvationStartTime) {
-
-			// if problems doesn't have starvation, execute the following
-			if (starved == null || !problems.contains(starved)) {
-				addMedicalComplaint(medicalManager.getStarvation());
-				isStarving = true;
-				logger.log(person, Level.INFO, 20_000, "Starting starving.");
-			}
-
-			// Note : how to tell a person to walk back to the settlement ?
-			// Note : should check if a person is on a critical mission,
-		}
-
-		else if (starved != null && isStarving) {
-
-			if (hunger < HUNGER_THRESHOLD || kJoules > ENERGY_THRESHOLD) {
-
-				starved.setCured();
-				// Set isStarving to false
-				isStarving = false;
-
-				logger.log(person, Level.INFO, 20_000, "No longer starving (case 2).");
-			}
-
-			// If this person's hunger has reached the buffer zone
-			else if (hunger < HUNGER_THRESHOLD * 2 || kJoules > ENERGY_THRESHOLD * 2) {
-
-				starved.startRecovery();
-				// Set to not starving
-				isStarving = false;
-
-				logger.log(person, Level.INFO, 20_000, "Recovering from hunger. "
-						 + "  Hunger: " + (int)hunger
-						 + ";  kJ: " + Math.round(kJoules*10.0)/10.0
-						 + ";  isStarving: " + isStarving
-						 + ";  Status: " + starved.getState());
-			}
-			
-			else if (hunger >= MAX_HUNGER) {
-				starved.setState(HealthProblemState.DEAD);
-				recordDead(starved, false, STANDARD_QUOTE_1);
-			}
-		}
-	}
-
-
-	/**
-	 * Checks if a person is dehydrated.
-	 * @param factor 
-	 * @param time 
-	 * @param marsTime Current time on mars.
-	 */
-	private void checkThirst(double time, double factor, MarsTime marsTime) {
-		// Update thirst
-		increaseThirst(time * bodyMassDeviation * .75 / factor);
-
-		// If the person's thirst at top level for a period then trigger dehydration
-		if (dessicatedStartTime > 0 && thirstLevel == ThirstLevel.DESICCATED
-					&& (marsTime.getTotalMillisols() - dessicatedStartTime) > dessicatedMinMSols) {
-			addMedicalComplaint(medicalManager.getDehydration());
-			logger.info(person, "Dessicasted time has exp");
-
-			dessicatedStartTime = -1;
-		}
-
-		// IF thirst at critical, person is dead
-		if (thirst >= MAX_THIRST) {
-			var dehydrated = addMedicalComplaint(medicalManager.getDehydration());
-			dehydrated.setState(HealthProblemState.DEAD);
-			recordDead(dehydrated, false, STANDARD_QUOTE_0);
-			return;
-		}
-
-		// Check change of thirst level
-		var newThirstLevel = ThirstLevel.fromValue(thirst);
-		if (newThirstLevel == thirstLevel) {
-			return;
-		}
-
-		// Update the thirst level as it's changed
-		thirstLevel = newThirstLevel;
-		person.fireUnitUpdate(THIRST_EVENT);
-
-		var dehydrated = getProblemByType(ComplaintType.DEHYDRATION);
-
-		if (dehydrated != null) {
-			// Start recovery if thirst is below threshold
-			if (thirstLevel == ThirstLevel.ISOTONIC) {
-				dehydrated.setCured();
-				logger.info(person, "No longer dehydrated.");
-			}
-			else if (thirstLevel == ThirstLevel.WANT_A_SIP) {
-				dehydrated.startRecovery();
-				logger.info(person, "Recovering from dehydration.");
-			}
-		}
-		else if (thirstLevel == ThirstLevel.DESICCATED) {
-			// Person at top level of thirst so record when it started
-			dessicatedStartTime = (int) marsTime.getTotalMillisols();
-		}
-	}
-
 	/**
 	 * Gets the health problem by a certain complaint type.
 	 *
@@ -1522,15 +1500,6 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public boolean isDead() {
 		return !alive;
-	}
-
-	/**
-	 * Checks if the person is starving.
-	 *
-	 * @return true if starving
-	 */
-	public boolean isStarving() {
-		return isStarving;
 	}
 
 	private void findMostSeriousProblem() {
@@ -2119,7 +2088,6 @@ public class PhysicalCondition implements Serializable {
 		person = null;
 		radiation = null;
 		circadian = null;
-		starved = null;
 		medicationList = null;
 	}
 

@@ -68,7 +68,6 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 
 	private static final Map<String, Integer> EVENT_COLUMN_MAPPING;
 
-	private static final String STARVING = "Starving";
 	private static final String LIVE = "Show Alive";
 	private static final String DECEASED = "Show Deceased";
 	
@@ -331,10 +330,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 			case ENERGY: {
 				PhysicalCondition pc = person.getPhysicalCondition();
 				if (!pc.isDead()) {
-					if (pc.isStarving())
-						result = STARVING;
-					else
-						result = PhysicalConditionFormat.getHungerStatus(pc, false);
+					result = pc.getHungerLevel().getName();
 				}
 			}
 			break;

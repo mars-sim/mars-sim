@@ -132,17 +132,14 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         PhysicalCondition physicalCondition = person.getPhysicalCondition();
 
         // Change the thirst level to max and check for dehydrated
-        physicalCondition.setThirst(ThirstLevel.BONE_DRY.getMaxValue() + 1);
+        var delimit = physicalCondition.getDehydrationLevel();
+        physicalCondition.setThirst(delimit-40);
         physicalCondition.timePassing(createPulse(10), s);
         assertTrue(physicalCondition.getProblems().isEmpty(), "No problems should be present");
 
-        // Check still no dehydration
-        var timelimit = physicalCondition.getDessicatedWait();
-        physicalCondition.timePassing(createPulse(timelimit/2), s);
-        assertTrue(physicalCondition.getProblems().isEmpty(), "No problems still not present");
-
         // Change time expired to trigger dehydration
-        physicalCondition.timePassing(createPulse(timelimit/1.5), s);
+        physicalCondition.setThirst(delimit+20);
+        physicalCondition.timePassing(createPulse(10), s);
         var problems = physicalCondition.getProblems();
         assertEquals(1, problems.size(), "Problems should be present after thirst increase");
         var dehydration = problems.get(0);
@@ -170,10 +167,10 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         
         // Change the thirst level to max and check for dehydrated
         physicalCondition.setThirst(ThirstLevel.BONE_DRY.getMaxValue() + 1);
-        physicalCondition.timePassing(createPulse(physicalCondition.getDessicatedWait()+1), s);
+        physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationLevel()+1), s);
 
         physicalCondition.setThirst(PhysicalCondition.MAX_THIRST);
-        physicalCondition.timePassing(createPulse(physicalCondition.getDessicatedWait() * 2), s);
+        physicalCondition.timePassing(createPulse(physicalCondition.getDehydrationLevel() * 2), s);
         assertTrue(physicalCondition.isDead(), "Person should be dead from dehydration");
         var death = physicalCondition.getDeathDetails();
         assertEquals(ComplaintType.DEHYDRATION, death.getIllness(), "Death should be from dehydration");
@@ -204,4 +201,82 @@ class PhysicalConditionTest extends MarsSimUnitTest{
         physicalCondition.timePassing(createPulse(10), s);
         assertNull(physicalCondition.getMostSerious(), "No most serious problem should be present");
     }
+
+    
+    @Test
+    void testHungerLevelChangeFiresEvent() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Add a listener to capture the event
+        TestEntityListener listener = new TestEntityListener(PhysicalCondition.HUNGER_EVENT);
+        person.addEntityListener(listener);
+
+        // Change the hunger level and check if the event is fired
+        physicalCondition.setHunger(10);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertEquals(0, listener.getEventsReceived(), "No events fired");
+
+        var level = physicalCondition.getHungerLevel();
+
+        // Change to a higher level
+        physicalCondition.setHunger(HungerLevel.RUMBLING.getMaxValue() + 1);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertEquals(1, listener.getEventsReceived(), "Hunger level change should fire an event");
+        assertNotEquals(level, physicalCondition.getHungerLevel(), "Hunger level should have changed");
+    }
+
+    
+    @Test
+    void testStarving() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Change the hunger level to max and check for starving
+        var delimit = physicalCondition.getStarvationTrigger();
+        physicalCondition.setHunger(delimit-40);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertTrue(physicalCondition.getProblems().isEmpty(), "No problems should be present");
+
+        // Change time expired to trigger starvation
+        physicalCondition.setHunger(delimit+20);
+        physicalCondition.timePassing(createPulse(10), s);
+        var problems = physicalCondition.getProblems();
+        assertEquals(1, problems.size(), "Problems should be present after hunger increase");
+        var starvation = problems.get(0);
+        assertEquals(ComplaintType.STARVATION, starvation.getType(), "Starvation should be present");
+        assertEquals(HealthProblemState.DEGRADING, starvation.getState(), "Starvation getting worse");
+
+        // Start recovery by changing hunger level
+        physicalCondition.setHunger(HungerLevel.COMFY.getMaxValue() - 1);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertEquals(1, problems.size(), "Still starving but recovering");
+        assertEquals(HealthProblemState.RECOVERING, starvation.getState(), "Starvation should be recovering");
+
+        // Marked cured
+        physicalCondition.setHunger(10);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertTrue(physicalCondition.getProblems().isEmpty(), "Problems should be cured after hunger decrease");
+        assertEquals(HealthProblemState.CURED, starvation.getState(), "Starvation should be cured");
+    }
+
+    @Test
+    void testDeathByStarvation() {
+        var s = buildSettlement("Test");
+        var person = buildPerson("Person", s);
+        var physicalCondition = person.getPhysicalCondition();
+        
+        // Change the hunger level to max and check for starving
+        physicalCondition.setHunger(HungerLevel.TOP_OFF.getMaxValue());
+        physicalCondition.timePassing(createPulse(10), s);
+
+        physicalCondition.setHunger(PhysicalCondition.MAX_HUNGER);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertTrue(physicalCondition.isDead(), "Person should be dead from starvation");
+        var death = physicalCondition.getDeathDetails();
+        assertEquals(ComplaintType.STARVATION, death.getIllness(), "Death should be from starvation");
+    }  
+
 }

@@ -21,6 +21,9 @@ public enum ThirstLevel implements Named, LevelBand {
     DRY(1000),
     BONE_DRY(1600),
     DESICCATED(Double.MAX_VALUE);
+    
+    // Final words for death by thirst
+    public static final String DEATH_QUOTE = "So thirsty";
 
     private double maxValue;
     private String name;

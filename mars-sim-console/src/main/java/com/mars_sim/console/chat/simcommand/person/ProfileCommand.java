@@ -38,7 +38,7 @@ public class ProfileCommand extends AbstractPersonCommand {
 
 		response.appendBlankLine();
 		PhysicalCondition condition = person.getPhysicalCondition();
-		response.appendLabeledString("Hunger", PhysicalConditionFormat.getHungerStatus(condition, false));
+		response.appendLabeledString("Hunger", condition.getHungerLevel().getName());
 		response.appendLabeledString("Thirst", condition.getThirstLevel().getName());
 		response.appendLabeledString("Fatigue", condition.getFatigueLevel().getName());
 		response.appendLabeledString("Performance",

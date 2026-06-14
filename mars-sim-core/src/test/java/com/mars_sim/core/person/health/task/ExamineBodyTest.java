@@ -13,15 +13,17 @@ import java.util.Set;
 import com.mars_sim.core.test.MarsSimUnitTest;
 import com.mars_sim.core.building.function.ActivitySpot;
 import com.mars_sim.core.building.function.FunctionType;
+import com.mars_sim.core.person.HungerLevel;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ThirstLevel;
 import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.ComplaintType;
 
-public class ExamineBodyTest extends MarsSimUnitTest {
+class ExamineBodyTest extends MarsSimUnitTest {
 
     @Test
-    public void testCreateSettlementTask() {
+    void testCreateSettlementTask() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         
@@ -34,7 +36,7 @@ public class ExamineBodyTest extends MarsSimUnitTest {
         
         // Laceration is self heal
         var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.DEHYDRATION);
-        patient.getPhysicalCondition().recordDead(hp, true, PhysicalCondition.STANDARD_QUOTE_0);
+        patient.getPhysicalCondition().recordDead(hp, true, ThirstLevel.DEATH_QUOTE);
         var death = patient.getPhysicalCondition().getDeathDetails();
 
         var doctor = buildPerson("Doctor", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
@@ -87,7 +89,7 @@ public class ExamineBodyTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testExamineBodyMetaTask() {
+    void testExamineBodyMetaTask() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var patient = buildPerson("Patient", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
@@ -100,7 +102,7 @@ public class ExamineBodyTest extends MarsSimUnitTest {
 
         // Make person dead
         var hp = SelfTreatHealthProblemTest.addComplaint(getContext(), patient, ComplaintType.STARVATION);
-        patient.getPhysicalCondition().recordDead(hp, true, PhysicalCondition.STANDARD_QUOTE_1);
+        patient.getPhysicalCondition().recordDead(hp, true, HungerLevel.DEATH_QUOTE);
 
         tasks = mt.getSettlementTasks(s);
         assertFalse(tasks.isEmpty(), "Bodies to examine found");

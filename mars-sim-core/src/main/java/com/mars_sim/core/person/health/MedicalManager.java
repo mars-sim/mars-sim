@@ -78,36 +78,6 @@ public class MedicalManager implements Serializable {
 		return medicalConfig.getTreatmentsByLevel(level);
 	}
 
-	/**
-	 * Returns the pre-defined Medical Complaint that signifies a panic attack
-	 * complaint.
-	 * 
-	 * @return Medical complaint for high stress.
-	 */
-	public Complaint getPanicAttack() {
-		return getComplaintByName(ComplaintType.PANIC_ATTACK);
-	}
-
-	/**
-	 * Returns the pre-defined Medical Complaint that signifies a dehydration
-	 * complaint.
-	 * 
-	 * @return Medical complaint for shortage of water.
-	 */
-	public Complaint getDehydration() {
-		return getComplaintByName(ComplaintType.DEHYDRATION);
-	}
-
-	/**
-	 * Returns the pre-defined Medical Complaint that signifies a starvation
-	 * complaint.
-	 * 
-	 * @return Medical complaint for shortage of food.
-	 */
-	public Complaint getStarvation() {
-		return getComplaintByName(ComplaintType.STARVATION);
-	}
-
 	public void addDeathRegistry(Settlement s, DeathInfo death) {
 		int id = s.getIdentifier();
 		awaitingPostmortemExam.get(id).remove(death);

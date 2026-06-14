@@ -49,7 +49,7 @@ public class StatusCommand extends AbstractPersonCommand {
 		PhysicalCondition condition = person.getPhysicalCondition();
 		buffer.append(System.lineSeparator());
 		buffer.append(System.lineSeparator());
-		buffer.append("     Hunger : ").append(PhysicalConditionFormat.getHungerStatus(condition, true)); 
+		buffer.append("     Hunger : ").append(condition.getHungerLevel().getName()); 
 		buffer.append(System.lineSeparator());
 		buffer.append("     Energy : ").append(Math.round(condition.getEnergy() *10.0)/10.0 + " kJ");
 		buffer.append(System.lineSeparator());
