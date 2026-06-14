@@ -161,14 +161,18 @@ public class AlgaeFarming extends Function {
 	// Note: 1000 L = 1 m^3; 10000 L = 10 m^3 or 10 CM
 	// Assuming 0.5 m deep with room utilization 40 %
 	// 6 m * 9 m * 40% * 0.5 m = 10.8 m^3
-	/** The size of tank [in liters]. **/
-	private double tankSize;
+	
+	// 86.4 m2 × 0.25 m = 21.6 m3
+	/** The size of tank [in liters] or max liter of water it can hold. **/
+	private double maxLiterWaterInTank; 
 	/** The area of tank [in m^2]. **/
 	private double tankArea;
 	/** The depth of tank [in m]. **/
 	private double tankDepth;
 	/** The amount of water [in m]. **/
-	private double waterMass;
+	private double currentWaterMass;
+	/** The current depth of water in the tanks [in m]. **/
+	private double currentWaterDepth;
 	
 	// By providing the ideal conditions (ph 10.5, temp 32 Cel, 70% light)  
 	// and a proper nutrient balance), Spirulina can multiply by 25% every day
@@ -237,9 +241,11 @@ public class AlgaeFarming extends Function {
 		
 		// Calculate the tank size in Liter 
 		// Note:  1000 L = 1 m^3; 10000 L = 10 m^3
-		tankSize = tankArea * tankDepth * 1000;
+		// 86.4 m2 × 0.25 m = 21.6 m3
+		
+		maxLiterWaterInTank = tankArea * tankDepth * 1000;
 		// Calculate max algae based on tank size
-		maxAlgae = tankSize * ALGAE_TO_WATER_RATIO;
+		maxAlgae = maxLiterWaterInTank * ALGAE_TO_WATER_RATIO;
 		
 		idealAlgae = maxAlgae * IDEAL_PERCENTAGE;
 	    
@@ -249,7 +255,9 @@ public class AlgaeFarming extends Function {
 //		addResourceLog(currentAlgae, ResourceUtil.SPIRULINA_ID);
 		
 		// The amount of water in kg
-		waterMass = tankSize * currentAlgae / maxAlgae;
+		currentWaterMass = maxLiterWaterInTank * currentAlgae / maxAlgae;
+		// Recompute the water depth
+		computeWaterDepth();
 		
 		// Question: should the initial pool water be added to resource log ?
 //		addResourceLog(waterMass, ResourceUtil.WATER_ID);
@@ -365,10 +373,9 @@ public class AlgaeFarming extends Function {
 	 * @param amount harvested in kg
 	 * @Note positive usage amount means consumption 
 	 * @Note negative usage amount means generation
-	 * @param id The resource id
 	 */
-	private void addHarvestedLog(double amount, int id) {
-		harvestedLog.increaseDataPoint(id, amount);
+	private void addHarvestedLog(double amount) {
+		harvestedLog.increaseDataPoint(ResourceUtil.SPIRULINA_ID, amount);
 	}	
 	
 
@@ -553,7 +560,7 @@ public class AlgaeFarming extends Function {
 	}
 
 	private double getGasThreshold() {
-		return (waterMass + currentAlgae + currentFood) / 100; 
+		return (currentWaterMass + currentAlgae + currentFood) / 100; 
 	}
 	
 	/**
@@ -562,7 +569,7 @@ public class AlgaeFarming extends Function {
 	 * @return
 	 */
 	public double getAlgaeWaterRatio() {
-		return currentAlgae/waterMass * 1000;
+		return currentAlgae/currentWaterMass * 1000;
 	}
 	
 	/**
@@ -583,15 +590,13 @@ public class AlgaeFarming extends Function {
 		currentFood = currentFood - nibbleAmount;	   
 		
 		// Future: treat this as a task for turning on and off inlet and outlet
-		double new2Old = currentAlgae/waterMass / ALGAE_TO_WATER_RATIO;
+		double new2Old = currentAlgae / currentWaterMass / ALGAE_TO_WATER_RATIO;
 		// Check if it's too concentrated (more than 1% of its target ratio) and need more fresh water
 		if (new2Old > 1.01) {
 			// Compute the amount of fresh water to be added at the inlet
 			double freshWater = new2Old * AVERAGE_FRESH_WATER * currentAlgae * timeFactor;
-			// Consume fresh water
-			retrieveWater(freshWater, ResourceUtil.WATER_ID);
-		    // Add fresh water to the existing tank water
-			waterMass += freshWater;
+
+			addWater(freshWater, new2Old);
 		}
 		
 		// Check if it's too diluted (less than 90% of its target ratio) and need to release water
@@ -601,16 +606,20 @@ public class AlgaeFarming extends Function {
 			// Produce grey water
 			storeGreyWater(greyWater, ResourceUtil.GREY_WATER_ID);
 		    // Retrieve grey water from the existing tank water
-			waterMass -= greyWater;
+			currentWaterMass -= greyWater;
+			// Recompute the water depth
+			computeWaterDepth();
 		}
 		
 		
 		// Estimate 0.01% water evaporated
-		double greyWater = waterMass * .0001 * timeFactor;
+		double greyWater = currentWaterMass * .0001 * timeFactor;
 		// Produce grey water
 		storeGreyWater(greyWater, ResourceUtil.GREY_WATER_ID);
 	    // Retrieve grey water from the existing tank water
-		waterMass -= greyWater;
+		currentWaterMass -= greyWater;
+		// Recompute the water depth
+		computeWaterDepth();
 		
 		// STEP 1 : COMPUTE THE EFFECTS OF THE SUNLIGHT AND ARTIFICIAL LIGHT
 		
@@ -667,36 +676,66 @@ public class AlgaeFarming extends Function {
 	private void birthSpirulina(double time) {
 
 		// Create new spirulina, using BIRTH_RATE
-		if (currentAlgae < maxAlgae * 1.25 && currentFood > 0) {
+		if (currentAlgae < maxAlgae * 1.1 && currentFood > 0) {
 			birthIterationCache += BIRTH_RATE * time * currentAlgae * health
-					   * (1 + .01 * RandomUtil.getRandomInt(-25, 25));
+					   * (1 + .25 * RandomUtil.getRandomInt(-2, 2));
 		   if (birthIterationCache > 1) {
 			   double newAlgae = birthIterationCache;
 			   birthIterationCache = birthIterationCache - newAlgae;
-			   multiplifyAlgae(newAlgae);
+			   multiplyAlgae(newAlgae);
 		   }
 		}
 	}
 
 	/**
-	 * Multiplifies new algae to the pond.
+	 * Adds new algae and water to the pond.
 	 * 
 	 * @param newAlgae
 	 */
-	public void multiplifyAlgae(double newAlgae) {
-		currentAlgae += newAlgae;
-		   
+	public void multiplyAlgae(double newAlgae) {
+		currentAlgae += newAlgae;	   
 		// Record the freshly produced spirulina
-		addResourceLog(newAlgae, ResourceUtil.SPIRULINA_ID);
-		
+		addResourceLog(newAlgae, ResourceUtil.SPIRULINA_ID);	
 		// Compute the amount of fresh water to be replenished at the inlet
 		double freshWater = newAlgae / ALGAE_TO_WATER_RATIO * RandomUtil.getRandomDouble(.9, 1.1);
-		// Consume fresh water
-		retrieveWater(freshWater, ResourceUtil.WATER_ID);
-		// Add fresh water to the existing tank water
-		waterMass += freshWater;
+	
+		addWater(freshWater, newAlgae);
 	}
 
+	/**
+	 * Adds water.
+	 * 
+	 * @param freshWater
+	 * @param newAlgae
+	 */
+	private void addWater(double freshWater, double newAlgae) {
+
+		double waterToAdd = 0;
+		
+		if (currentWaterMass + freshWater > maxLiterWaterInTank) {
+			waterToAdd = maxLiterWaterInTank - currentWaterMass - freshWater;
+		}
+		else {
+			waterToAdd = freshWater;
+		}
+		
+		if (waterToAdd > 0) {
+			// Consume fresh water
+			retrieveWater(waterToAdd, ResourceUtil.WATER_ID);
+			// Add fresh water to the existing tank water
+			currentWaterMass += waterToAdd;
+			// Recompute the water depth
+			computeWaterDepth();
+		}
+	}
+	
+	/**
+	 * Recompute the water depth.
+	 */
+	private void computeWaterDepth() {
+		currentWaterDepth = currentWaterMass / tankArea / 1000;
+	}
+	
 	/**
 	 * Resets things at the end of a sol.
 	 *
@@ -848,7 +887,7 @@ public class AlgaeFarming extends Function {
 	@Override
 	public double getFullPowerLoad() {
 		// Power (kW) required for normal operations.
-		return waterMass * POWER_PER_LITRE 
+		return currentWaterMass * POWER_PER_LITRE 
 				+ getCurrentAlgae() * POWER_PER_KG_ALGAE 
 				+ getFoodMass() * POWER_PER_KG_FOOD
 				+ getLightingPower();
@@ -884,13 +923,25 @@ public class AlgaeFarming extends Function {
 	public double getMaxAlgae() {
 		return maxAlgae;
 	}
+
+	public double getTankArea() {
+		return tankArea;
+	}
+	
+	public double getTankDepth() {
+		return tankDepth;
+	}
+	
+	public double getWaterDepth() {
+		return currentWaterDepth;
+	}
 	
 	public double getTankSize() {
-		return tankSize;
+		return maxLiterWaterInTank;
 	}
 	
 	public double getWaterMass() {
-		return waterMass;
+		return currentWaterMass;
 	}
 	
 	public double getFoodMass() {
@@ -961,7 +1012,12 @@ public class AlgaeFarming extends Function {
 				
 		// Harvesting a certain amount (~ 1 kg)
 		double harvestedWetBiomass = RandomUtil.getRandomDouble(.9, 1.1)
-				* EXPECTED_YIELD_RATE * waterMass * workTime / 1000;
+				* EXPECTED_YIELD_RATE * currentWaterMass * workTime / 1000;
+		
+		// Reduce the water mass
+		currentWaterMass -= harvestedWetBiomass;
+		// Recompute the water depth
+		computeWaterDepth();
 		
 		logger.info(worker, 5000, "harvestedWetBiomass: " 
 				+ Math.round(harvestedWetBiomass * 100.0)/100.0 
@@ -972,6 +1028,7 @@ public class AlgaeFarming extends Function {
 		
 		// Subtract the harvestedWetBiomass from the pond
 		currentAlgae = currentAlgae - harvestedWetBiomass;
+		
 		addResourceLog(-harvestedWetBiomass, ResourceUtil.SPIRULINA_ID);
 		
 		// Assuming the dry mass is ~15% 
@@ -992,17 +1049,20 @@ public class AlgaeFarming extends Function {
 		double foodWaste = filteredMass * .05;
 		
 		currentAlgae += returnAlgae;
+		
 		addResourceLog(returnAlgae, ResourceUtil.SPIRULINA_ID);
 		
 		// Store in the settlement
 		store(foodWaste, ResourceUtil.FOOD_WASTE_ID, "AlgaeFarming::foodWaste");
 		// Store in the settlement		
 		storeGreyWater(greyWaterWaste, ResourceUtil.GREY_WATER_ID);
+
+		
 		// Store in the settlement
 		store(spirulinaExtracted, ResourceUtil.SPIRULINA_ID, "AlgaeFarming::harvestAlgae");
 		// Record the harvest amount
 //		harvestedAlgaeMass += spirulinaExtracted;
-		addHarvestedLog(spirulinaExtracted, ResourceUtil.SPIRULINA_ID);
+		addHarvestedLog(spirulinaExtracted);
 		
 		logger.info(worker, 5000, "spirulinaExtracted: " 
 				+ Math.round(spirulinaExtracted * 100.0)/100.0 
@@ -1046,6 +1106,7 @@ public class AlgaeFarming extends Function {
 	@Override
 	public void destroy() {
 		resourceLog = null;
+		harvestedLog = null;
 		houseKeeping = null;
 		super.destroy();
 	}

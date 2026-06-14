@@ -1828,8 +1828,14 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 			Higher water levels in the tank can lead to difficulty in photosynthesis 
 			and algae development. Average water level should be kept 25 centimeter.  
 			
-			area in square meters (SM)
-			depth in meters (M)
+			Sanity Check : 
+			A pool with an area of 86.4 square meters and a water depth of 0.25 meters holds 21,600 liters of water. 
+			This is calculated by multiplying the surface area by the depth to find the volume in cubic meters, 
+			then converting to liters: 86.4 m2 × 0.25 m = 21.6 m3; 21.6 m3 × 1,000 = 21,600 liters
+			
+			Area in square meters (SM)
+			Depth in meters (M)
+			
 			-->
 			<algae-farming area="86.4" depth="0.25">
 				<activity>

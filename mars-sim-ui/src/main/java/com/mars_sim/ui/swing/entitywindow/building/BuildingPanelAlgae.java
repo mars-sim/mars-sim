@@ -53,7 +53,11 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	private JDoubleLabel foodDemandLabel;
 	
 	private JDoubleLabel waterMassLabel;
-	
+	private JDoubleLabel waterDepthLabel;
+	private JDoubleLabel maxWaterLiterLabel;
+	private JDoubleLabel maxTankAreaLabel;
+	private JDoubleLabel maxTankDepthLabel;
+		
 	private JLabel algaeWaterRatioLabel;
 	
 	private JDoubleLabel powerReqLabel;
@@ -98,7 +102,7 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(19);
+		AttributePanel labelPanel = new AttributePanel(23);
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.type"), 
@@ -129,9 +133,21 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 									algaeHarvestLabel,
 									Msg.getString("BuildingPanelAlgae.totalAlgaeHarvested.tooltip"));
 		
-		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_LITER, pond.getWaterMass());
+		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG, pond.getWaterMass());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterMass"), waterMassLabel);
 		
+		waterDepthLabel = new JDoubleLabel(StyleManager.DECIMAL_M, pond.getWaterDepth());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterDepth"), waterDepthLabel);
+		
+		maxWaterLiterLabel = new JDoubleLabel(StyleManager.DECIMAL_LITER, pond.getTankSize());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxWater"), maxWaterLiterLabel);
+		
+		maxTankAreaLabel = new JDoubleLabel(StyleManager.DECIMAL_M2, pond.getTankArea());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxTankArea"), maxTankAreaLabel);
+		
+		maxTankDepthLabel = new JDoubleLabel(StyleManager.DECIMAL_M, pond.getTankDepth());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxTankDepth"), maxTankDepthLabel);
+				
 		algaeWaterRatio = pond.getAlgaeWaterRatio();
 		algaeWaterRatioLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algaeWaterRatio"),
 			StyleManager.DECIMAL2_G_LITER.format(algaeWaterRatio)
@@ -186,6 +202,8 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	public void clockUpdate(ClockPulse pulse) {
 
 		waterMassLabel.setValue(pond.getWaterMass());
+		waterDepthLabel.setValue(pond.getWaterDepth());
+		
 		algaeMassLabel.setValue(pond.getCurrentAlgae());
 		idealAlgaeMassLabel.setValue(pond.getIdealAlgae());		
 		maxAlgaeMassLabel.setValue(pond.getMaxAlgae());
