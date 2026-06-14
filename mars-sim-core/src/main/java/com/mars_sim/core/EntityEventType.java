@@ -34,7 +34,6 @@ public class EntityEventType {
 	public static final String REMOVE_ASSOCIATED_BIN_EVENT = "remove associated bin";
 	
 	public static final String EMOTION_EVENT = "emotion event";
-	public static final String PERFORMANCE_EVENT = "performance event";
 	
 	// Others
 	public static final String DEATH_EVENT = "death event";

@@ -6,18 +6,11 @@
  */
 package com.mars_sim.core.person;
 
-import com.mars_sim.core.tool.Msg;
 
 /**
  * Helper class to create text representations of the PhysicalCondition instances.
  */
 public final class PhysicalConditionFormat {
-
-    private static final String PERF_LEVEL_1 = Msg.getString("PersonTableModel.column.performance.level1");
-    private static final String PERF_LEVEL_2 = Msg.getString("PersonTableModel.column.performance.level2");
-    private static final String PERF_LEVEL_3 = Msg.getString("PersonTableModel.column.performance.level3");
-    private static final String PERF_LEVEL_4 = Msg.getString("PersonTableModel.column.performance.level4");
-    private static final String PERF_LEVEL_5 = Msg.getString("PersonTableModel.column.performance.level5");
 
 	private static final String WELL = "Well";
 	private static final String DEAD_COLON = "Dead: ";
@@ -28,31 +21,6 @@ public final class PhysicalConditionFormat {
      */
     private PhysicalConditionFormat() {}
 
-    /**
-     * Gives the status of a person's hunger level.
-     * @param b 
-     *
-     * @param hunger
-     * @return status
-     */
-    public static String getPerformanceStatus(PhysicalCondition pc, boolean showValue) {
-        var value = pc.getPerformanceFactor();
-    	String status;
-    	if (value > .95)
-    		status = PERF_LEVEL_1;
-    	else if (value > .75)
-    		status = PERF_LEVEL_2;
-    	else if (value > .50)
-    		status = PERF_LEVEL_3;
-    	else if (value > .25)
-    		status = PERF_LEVEL_4;
-    	else
-    		status = PERF_LEVEL_5;
-        if (showValue) {
-           status += " (" + Math.round(value*10.0)/10.0 + " %)";
-        }
-    	return status;
-    }
 
     /**
 	 * Gets a string description of the most mostSeriousProblem health situation.

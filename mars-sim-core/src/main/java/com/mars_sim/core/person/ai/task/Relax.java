@@ -163,12 +163,7 @@ extends Task {
 	        // to increase pain tolerance
 	        pc.increasePainTolerance(time);
 	        
-	        pc.reduceStress(time/2);   
-	        
-	        if (perf < 1) {
-	        	perf *= (1 + fractionOfRest);
-	        	pc.setPerformanceFactor(perf);
-	        }
+	        pc.reduceStress(time/2);
 		}
 		
 		return remainingTime;

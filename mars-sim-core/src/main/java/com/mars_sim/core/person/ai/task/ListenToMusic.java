@@ -122,7 +122,6 @@ extends Task {
         setDescription(Msg.getString("Task.description.listenToMusic")); //$NON-NLS-1$
         
         PhysicalCondition pc = person.getPhysicalCondition();
-		double perf = pc.getPerformanceFactor();
         
 		double fractionOfRest = time * TIME_FACTOR;
 		
@@ -144,12 +143,7 @@ extends Task {
         pc.increasePainTolerance(time);
         
         pc.reduceStress(time/2); 
-  
-        if (perf < 1) {
-        	perf *= (1 + fractionOfRest);
-        	pc.setPerformanceFactor(perf);
-        }
-        
+
 		return remainingTime;
 	}
 

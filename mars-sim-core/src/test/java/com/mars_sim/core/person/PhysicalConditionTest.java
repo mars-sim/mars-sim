@@ -39,6 +39,75 @@ class PhysicalConditionTest extends MarsSimUnitTest{
     }
 
     @Test
+    void testPerformanceLevelChangeFiresEvent() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Add a listener to capture the event
+        TestEntityListener listener = new TestEntityListener(PhysicalCondition.PERFORMANCE_EVENT);
+        person.addEntityListener(listener);
+
+        // Change the performance level and check if the event is fired when same level
+        physicalCondition.timePassing(createPulse(10), s);
+        assertEquals(0, listener.getEventsReceived(), "No events fired");
+
+        var level = physicalCondition.getPerformanceLevel();
+
+        // Change to a higher level, cannot change p[erformance directly as derived]
+        physicalCondition.setThirst(100);
+        physicalCondition.setStress(200);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertEquals(1, listener.getEventsReceived(), "Performance level change should fire an event");
+        assertNotEquals(level, physicalCondition.getPerformanceLevel(), "Performance level should have changed");
+    }
+
+    @Test
+    void testPerformanceBasedOnPrimary() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Set stress to a high value and check performance
+        var originalPerformance = physicalCondition.getPerformanceFactor();
+        physicalCondition.setStress(76);
+        physicalCondition.setThirst(1000);
+        physicalCondition.setHunger(2000);
+        physicalCondition.setFatigue(1600);
+        physicalCondition.timePassing(createPulse(10), s);
+        var newPerformance = physicalCondition.getPerformanceFactor();
+        assertTrue(newPerformance < originalPerformance, "Performance should decrease with high stress");
+
+        // Set stress to a low value and check performance
+        physicalCondition.setStress(0);
+        physicalCondition.setThirst(0);
+        physicalCondition.setHunger(0);
+        physicalCondition.setFatigue(0);
+        physicalCondition.timePassing(createPulse(10), s);
+        assertTrue(physicalCondition.getPerformanceFactor() > newPerformance, "Performance should increase with low stress");
+    }
+
+    @Test
+    void testPerformanceBasedOnHealthProblem() {
+        Settlement s = buildSettlement("Test");
+        Person person = buildPerson("Person", s);
+        PhysicalCondition physicalCondition = person.getPhysicalCondition();
+
+        // Set stress to a high value and check performance
+        var originalPerformance = physicalCondition.getPerformanceFactor();
+
+        var c = getConfig().getMedicalConfiguration().getComplaintByName(ComplaintType.BROKEN_BONE);
+        var hp = physicalCondition.addMedicalComplaint(c);
+        physicalCondition.timePassing(createPulse(10), s);
+        var newPerformance = physicalCondition.getPerformanceFactor();
+        assertTrue(newPerformance < originalPerformance, "Performance should decrease with illness");
+
+        hp.setCured();
+        physicalCondition.timePassing(createPulse(10), s);
+        assertTrue(physicalCondition.getPerformanceFactor() > newPerformance, "Performance should increase with improved health");
+    }
+
+    @Test
     void testStressLevelChangeFiresEvent() {
         Settlement s = buildSettlement("Test");
         Person person = buildPerson("Person", s);

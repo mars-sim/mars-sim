@@ -8,10 +8,8 @@ package com.mars_sim.console.chat.simcommand.person;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
-import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.health.DeathInfo;
 import com.mars_sim.core.structure.Settlement;
 
@@ -20,9 +18,7 @@ import com.mars_sim.core.structure.Settlement;
  */
 public class StatusCommand extends AbstractPersonCommand {
 	public static final ChatCommand STATUS = new StatusCommand();
-	
-	static String vowels = "aeiou";
-	
+		
 	private StatusCommand() {
 		super("sts", "status", "Status report");
 	}
@@ -59,7 +55,7 @@ public class StatusCommand extends AbstractPersonCommand {
 		buffer.append(System.lineSeparator());
 		buffer.append("    Fatigue : ").append(condition.getFatigueLevel().getName());
 		buffer.append(System.lineSeparator());
-		buffer.append("Performance : ").append(PhysicalConditionFormat.getPerformanceStatus(condition, true));
+		buffer.append("Performance : ").append(condition.getPerformanceLevel().getName());
 		buffer.append(System.lineSeparator());
 		buffer.append("    Emotion : ").append(person.getMind().getEmotion().getDescription());
 		buffer.append(System.lineSeparator());
@@ -70,14 +66,8 @@ public class StatusCommand extends AbstractPersonCommand {
 	private static void outputAlive(StringBuilder buffer, Person person) {
 		buffer.append("Hi, my name is ");
 		buffer.append(person.getName());
-		buffer.append(" and I am ");
-		String job = person.getMind().getJobType().getName().toLowerCase();
-		if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) == -1) {	
-			buffer.append("a ");
-		}
-		else {
-			buffer.append("an ");
-		}
+		buffer.append(" and my role is ");
+		String job = person.getMind().getJobType().getName();
 		buffer.append(job).append(".");
 		buffer.append(System.lineSeparator());
 		
@@ -86,14 +76,8 @@ public class StatusCommand extends AbstractPersonCommand {
 			buffer.append("My home base is ");
 			buffer.append(person.getAssociatedSettlement().getName()).append(",");
 			buffer.append(System.lineSeparator());
-			buffer.append("where I am ");
-			String role = person.getRole().getType().getName().toLowerCase();
-			if (vowels.indexOf(Character.toLowerCase(role.charAt(0))) == -1) {	
-				buffer.append("a ");
-			}
-			else {
-				buffer.append("an ");
-			}
+			buffer.append("where my role is ");
+			String role = person.getRole().getType().getName();
 			buffer.append(role).append(".");
 		}
 		buffer.append(System.lineSeparator());		
@@ -107,51 +91,25 @@ public class StatusCommand extends AbstractPersonCommand {
 		buffer.append(person.getName());
 		buffer.append(" has passed away. ");
 		
-		String genderNoun0 = "He was ";	
-		String genderNoun1 = "His ";
-		String genderNoun2 = "He ";	
+		buffer.append("Their job was");
 		
-		GenderType gender = person.getGender();
-		if (gender == GenderType.FEMALE) {
-			genderNoun0 = "She was";
-			genderNoun1 = "Her ";
-			genderNoun2 = "She ";	
-		}
-		
-		buffer.append(genderNoun0);
-		
-		String job = person.getMind().getJobType().getName().toLowerCase();
-		if (vowels.indexOf(Character.toLowerCase(job.charAt(0))) != -1) {	
-			buffer.append(" a ");
-		}
-		else {
-			buffer.append(" an ");
-		}
+		String job = person.getMind().getJobType().getName();
 		buffer.append(job).append(".");
 		buffer.append(System.lineSeparator());
 		
 		Settlement home = person.getAssociatedSettlement();
 		if (home != null) {
-			buffer.append(genderNoun1);
-			buffer.append("home base was ");
+			buffer.append("Their home base was ");
 			buffer.append(person.getAssociatedSettlement().getName()).append(", ");
-			buffer.append("where ");
-			buffer.append(genderNoun0.toLowerCase());
-			String role = person.getRole().getType().getName().toLowerCase();
-			if (vowels.indexOf(Character.toLowerCase(role.charAt(0))) == -1) {	
-				buffer.append(" a ");
-			}
-			else {
-				buffer.append(" an ");
-			}
+			buffer.append("where their role was ");
+			String role = person.getRole().getType().getName();
 			buffer.append(role).append(". ");
 		}
 		buffer.append(System.lineSeparator());
 		
 		PhysicalCondition condition = person.getPhysicalCondition();
 		DeathInfo death = condition.getDeathDetails();
-		buffer.append(genderNoun2);
-		buffer.append(" died on ");
+		buffer.append("They died on ");
 		buffer.append(death.getTimeOfDeath());
 		buffer.append(" while ");
 		buffer.append(death.getTask() + ".");

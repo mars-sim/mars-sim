@@ -101,7 +101,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		EVENT_COLUMN_MAPPING.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
 		EVENT_COLUMN_MAPPING.put(PhysicalCondition.STRESS_EVENT, STRESS);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.EMOTION_EVENT, EMOTION);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.JOB_EVENT, JOB);
 		EVENT_COLUMN_MAPPING.put(Role.ROLE_EVENT, ROLE);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.SHIFT_EVENT, SHIFT);
@@ -355,7 +355,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 
 			case PERFORMANCE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getPerformanceStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getPerformanceLevel().getName();
 				break;
 
 			case EMOTION: 
