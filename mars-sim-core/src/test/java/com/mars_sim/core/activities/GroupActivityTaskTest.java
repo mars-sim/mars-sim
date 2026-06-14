@@ -19,12 +19,12 @@ import com.mars_sim.core.time.EventSchedule;
 import com.mars_sim.core.time.MarsTime;
 
 public class GroupActivityTaskTest extends MarsSimUnitTest {
-    public final static ExperienceImpact IMPACT = new ExperienceImpact(1D,
+    public static final ExperienceImpact IMPACT = new ExperienceImpact(1D,
                     NaturalAttributeType.CONVERSATION, false, 0D,
                     SkillType.MANAGEMENT);
 
     @Test
-    public void testPerformMappedPhase() {
+    void testPerformMappedPhase() {
         var s = buildSettlement("mock");
         var accom = buildAccommodation(s.getBuildingManager(), LocalPosition.DEFAULT_POSITION, BUILDING_LENGTH);
 
@@ -43,7 +43,6 @@ public class GroupActivityTaskTest extends MarsSimUnitTest {
 
         // Assign person to Task
         Person p = buildPerson("Worker", s);
-        p.getPhysicalCondition().setPerformanceFactor(1);
         p.setCurrentBuilding(accom); // Put person in correct buildign to avoid walking sub task
         p.getSkillManager().addNewSkill(testedSkill, 1);
 
@@ -81,8 +80,5 @@ public class GroupActivityTaskTest extends MarsSimUnitTest {
         returnedTime = task.performTask(offered); // Short of duration but will still complete
         assertTrue(task.isDone(), "Activity complete");
         assertEquals(offered, returnedTime, "Activity consumed no time");
-
-
-
     }
 }

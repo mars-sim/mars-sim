@@ -8,13 +8,14 @@
 
 package com.mars_sim.core.person.health;
 
-import com.mars_sim.core.tool.Conversion;
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
  * 	Medical Illnesses.
  */
-public enum ComplaintType {
+public enum ComplaintType implements Named {
 
 	APPENDICITIS,BROKEN_BONE,BURNS,COLD,
 
@@ -45,7 +46,8 @@ public enum ComplaintType {
         this.name = Msg.getStringOptional("ComplaintType", name());
 	}
 
+	@Override
 	public String getName() {
-		return Conversion.capitalize0(name.toLowerCase().replaceAll("_", " "));
+		return this.name;
 	}
 }

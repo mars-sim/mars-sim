@@ -7,12 +7,14 @@
 
 package com.mars_sim.core.location;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
  * The LocationStateType enum class keeps track of the location of a unit.
  */
-public enum LocationStateType {
+public enum LocationStateType implements Named {
 	 
 	// INSIDE_SETTLEMENT is for a vehicle may be in a garage inside a building
 	// WITHIN_SETTLEMENT_VICINITY can be used by a person or a vehicle
@@ -28,6 +30,7 @@ public enum LocationStateType {
         this.name = Msg.getStringOptional("LocationStateType", name());
 	}
 	
+	@Override
 	public final String getName() {
 		return this.name;
 	}

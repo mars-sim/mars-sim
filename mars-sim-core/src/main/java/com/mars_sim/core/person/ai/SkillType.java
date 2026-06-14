@@ -7,12 +7,14 @@
 
 package com.mars_sim.core.person.ai;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
  * The skill of a settler. A total of 22 types is available
  */
-public enum SkillType {
+public enum SkillType implements Named {
 
 	
 	// The following listing is organized in accordance with the subject matter affinity.
@@ -38,6 +40,7 @@ public enum SkillType {
 	/** 
 	 * Gives the internationalized name of this skill for display in user interface. 
 	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}

@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.structure;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum ObjectiveType {
+public enum ObjectiveType implements Named {
 
 	BUILDERS_HAVEN,CROP_FARM,MANUFACTURING_DEPOT,RESEARCH_CAMPUS,
 	TRANSPORTATION_HUB,TRADE_CENTER,TOURISM;
@@ -21,6 +23,7 @@ public enum ObjectiveType {
         this.name = Msg.getStringOptional("ObjectiveType", name());
 	}
 	
+	@Override
 	public final String getName() {
 		return this.name;
 	}

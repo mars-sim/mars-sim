@@ -20,7 +20,6 @@ import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
@@ -68,8 +67,6 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 
 	private static final Map<String, Integer> EVENT_COLUMN_MAPPING;
 
-	private static final String DEHYDRATED = "Dehydrated";
-	private static final String STARVING = "Starving";
 	private static final String LIVE = "Show Alive";
 	private static final String DECEASED = "Show Deceased";
 	
@@ -103,7 +100,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		EVENT_COLUMN_MAPPING.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
 		EVENT_COLUMN_MAPPING.put(PhysicalCondition.STRESS_EVENT, STRESS);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.EMOTION_EVENT, EMOTION);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.JOB_EVENT, JOB);
 		EVENT_COLUMN_MAPPING.put(Role.ROLE_EVENT, ROLE);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.SHIFT_EVENT, SHIFT);
@@ -112,7 +109,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_ENDED_EVENT, TASK_DESC);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.MISSION_EVENT, MISSION_COL);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.ILLNESS_EVENT, HEALTH);
+		EVENT_COLUMN_MAPPING.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.DEATH_EVENT, HEALTH);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.BURIAL_EVENT, HEALTH);
 		EVENT_COLUMN_MAPPING.put(EntityEventType.REVIVED_EVENT, HEALTH);
@@ -332,10 +329,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 			case ENERGY: {
 				PhysicalCondition pc = person.getPhysicalCondition();
 				if (!pc.isDead()) {
-					if (pc.isStarving())
-						result = STARVING;
-					else
-						result = PhysicalConditionFormat.getHungerStatus(pc, false);
+					result = pc.getHungerLevel().getName();
 				}
 			}
 			break;
@@ -343,27 +337,24 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 			case WATER: {
 				PhysicalCondition pc = person.getPhysicalCondition();
 				if (!pc.isDead()) {
-					if (pc.isDehydrated())
-						result = DEHYDRATED;
-					else
-						result = PhysicalConditionFormat.getThirstyStatus(pc, false);
+					result = pc.getThirstLevel().getName();
 				}
 			}
 			break;
 
 			case FATIGUE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getFatigueStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getFatigueLevel().getName();
 				break;
 
 			case STRESS:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getStressStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getStressLevel().getName();
 				break;
 
 			case PERFORMANCE:
 				if (!person.getPhysicalCondition().isDead())
-					result = PhysicalConditionFormat.getPerformanceStatus(person.getPhysicalCondition(), false);
+					result = person.getPhysicalCondition().getPerformanceLevel().getName();
 				break;
 
 			case EMOTION: 
@@ -372,7 +363,7 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 				break;
 
 			case HEALTH: 
-				result = PhysicalConditionFormat.getHealthSituation(person.getPhysicalCondition());
+				result = person.getPhysicalCondition().getStatus();
 				break;
 
 			case LOCATION:

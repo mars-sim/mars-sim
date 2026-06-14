@@ -608,7 +608,6 @@ public abstract class Task implements Serializable, Comparable<Task> {
 				// If task is effort-driven and person is incapacitated, end task.
 				if (effortDriven && (person.getPerformanceRating() == 0D)) {
 					// "Resurrect" him a little to give him a chance to make amend
-					person.getPhysicalCondition().setPerformanceFactor(.1);
 					endTask();
 				} else {
 					timeLeft = executeMappedPhase(timeLeft, time);

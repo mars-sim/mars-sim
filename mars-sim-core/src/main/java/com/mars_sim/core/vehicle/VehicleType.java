@@ -7,10 +7,12 @@
  */
 package com.mars_sim.core.vehicle;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.tool.Msg;
 
-public enum VehicleType {
+public enum VehicleType implements Named {
 		
 	LUV,DELIVERY_DRONE,CARGO_DRONE,PASSENGER_DRONE,EXPLORER_ROVER,TRANSPORT_ROVER,CARGO_ROVER;
 	
@@ -23,6 +25,7 @@ public enum VehicleType {
         this.name = Msg.getStringOptional("VehicleType", name());
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

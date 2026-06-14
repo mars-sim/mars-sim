@@ -13,7 +13,6 @@ import com.mars_sim.console.chat.simcommand.CommandHelper;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.MBTIPersonality;
 
 /** 
@@ -38,12 +37,11 @@ public class ProfileCommand extends AbstractPersonCommand {
 
 		response.appendBlankLine();
 		PhysicalCondition condition = person.getPhysicalCondition();
-		response.appendLabeledString("Hunger", PhysicalConditionFormat.getHungerStatus(condition, false));
-		response.appendLabeledString("Thirst", PhysicalConditionFormat.getThirstyStatus(condition, false));
-		response.appendLabeledString("Fatigue", PhysicalConditionFormat.getFatigueStatus(condition, false));
-		response.appendLabeledString("Performance",
-									PhysicalConditionFormat.getPerformanceStatus(condition, false));
-		response.appendLabeledString("Stress", PhysicalConditionFormat.getStressStatus(condition, false));
+		response.appendLabeledString("Hunger", condition.getHungerLevel().getName());
+		response.appendLabeledString("Thirst", condition.getThirstLevel().getName());
+		response.appendLabeledString("Fatigue", condition.getFatigueLevel().getName());
+		response.appendLabeledString("Performance", condition.getPerformanceLevel().getName());
+		response.appendLabeledString("Stress", condition.getStressLevel().getName());
 		MBTIPersonality mbti = person.getMind().getMBTI();
 		response.appendLabeledString("Personality", mbti.getDescriptor() + " (" + mbti.getTypeString() + ')');
 

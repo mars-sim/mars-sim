@@ -17,6 +17,7 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.GenderType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.MockSettlement;
@@ -48,6 +49,8 @@ public class MarsSimContextImpl implements MarsSimContext {
         // Create new simulation instance.
 	    simConfig = SimulationConfig.loadConfig();
 	    
+        PhysicalCondition.usePerfectHealth(); // Ensure perfect health for unit tests
+        
 	    sim = Simulation.instance();
 	    sim.testRun();
 
@@ -150,7 +153,7 @@ public class MarsSimContextImpl implements MarsSimContext {
     private ClockPulse createPulse(MarsTime marsTime, double elapsed, boolean newSol, boolean newHalfSol) {
         var master = sim.getMasterClock();
         master.setMarsTime(marsTime);
-        return new ClockPulse(pulseID++, elapsed, marsTime, master, newSol, newHalfSol, true, false);
+        return new ClockPulse(pulseID++, elapsed, marsTime, master, newSol, newHalfSol, (elapsed >= 1D), false);
     }
 
     @Override

@@ -16,15 +16,14 @@ import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.structure.Settlement;
 
-public class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
+class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
     @Test
-    public void testCreateTask() {
+    void testCreateTask() {
         Settlement s = buildSettlement("Research", true);
         var research = createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
         var assistant = buildPerson("Helper", s);
         assistant.setJob(JobType.ASTROBIOLOGIST, "Boss");
-        assistant.getPhysicalCondition().setPerformanceFactor(1);
         assistant.getSkillManager().addNewSkill(SkillType.ASTROBIOLOGY, 1); // Must have higher skill
 
         var t = AssistScientificStudyResearcher.createTask(assistant);
@@ -47,13 +46,12 @@ public class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testMetaTask() {
+    void testMetaTask() {
         Settlement s = buildSettlement("Research", true);
         createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
         var p = buildPerson("Helper", s);
         p.setJob(JobType.ASTROBIOLOGIST, "Boss");
-        p.getPhysicalCondition().setPerformanceFactor(1);
         p.getSkillManager().addNewSkill(SkillType.ASTROBIOLOGY, 1); // Must have higher skill
 
         var mt = new AssistScientificStudyResearcherMeta();
@@ -63,13 +61,12 @@ public class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testMetaTaskTooSkilled() {
+    void testMetaTaskTooSkilled() {
         Settlement s = buildSettlement("Research", true);
         createActiveResearch(s, ScienceType.ASTROBIOLOGY, JobType.ASTROBIOLOGIST);
 
         var p = buildPerson("Helper", s);
         p.setJob(JobType.ASTROBIOLOGIST, "Boss");
-        p.getPhysicalCondition().setPerformanceFactor(1);
         p.getSkillManager().addNewSkill(SkillType.ASTROBIOLOGY, 10); // Must have higher skill
 
         var mt = new AssistScientificStudyResearcherMeta();
@@ -83,7 +80,6 @@ public class AssistScientificStudyResearcherTest extends MarsSimUnitTest {
 
         var p = study.getPrimaryResearcher();
         p.getSkillManager().addNewSkill(science.getSkill(), 2); // Must have higher skill
-        p.getPhysicalCondition().setPerformanceFactor(1);
         var task  = PerformLaboratoryResearch.createTask(p);
         p.getMind().getTaskManager().replaceTask(task);
 

@@ -7,11 +7,13 @@
 
 package com.mars_sim.core.building.utility.heating;
 
+import com.mars_sim.core.Named;
+
 import java.util.List;
 
 import com.mars_sim.core.tool.Msg;
 
-public enum HeatMode {
+public enum HeatMode implements Named {
 
 	HEAT_OFF (0),				// If HEAT_OFF, no heat but allows electricity generation
 	ONE_EIGHTH_HEAT (12.5),
@@ -48,6 +50,7 @@ public enum HeatMode {
 	/** 
 	 * Returns an internationalized {@link String} for display in user interface. 
 	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}

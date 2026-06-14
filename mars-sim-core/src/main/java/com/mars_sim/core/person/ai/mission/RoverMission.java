@@ -29,7 +29,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.task.EVAOperation;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Relax;
@@ -354,8 +353,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		for (Person crewmember : rover.getCrew()) {
-            Worker w = (Worker)crewmember; 
-			if (!getMembers().contains(w)) {
+			if (!getMembers().contains(crewmember)) {
 				ejectedMembers.add(crewmember);
 			}
 		}
@@ -1197,7 +1195,10 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		BuildingManager.addPatientToMedicalBed(p, s);
 
 		// Register the historical event
-		registerHistoricalEvent(p, HistoricalEventType.MISSION_RESCUE_PERSON, PhysicalConditionFormat.getHealthSituation(p.getPhysicalCondition()));
+		var serious = p.getPhysicalCondition().getMostSerious();
+		registerHistoricalEvent(p, HistoricalEventType.MISSION_RESCUE_PERSON,
+					(serious != null ? serious.printStatus() : "Unknown")
+		);
 	}
 	
 	/**

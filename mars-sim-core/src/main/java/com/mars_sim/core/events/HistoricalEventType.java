@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.events;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum HistoricalEventType {
+public enum HistoricalEventType implements Named {
 
 	MALFUNCTION_PARTS_FAILURE	(HistoricalEventCategory.MALFUNCTION),
 	MALFUNCTION_HUMAN_FACTORS	(HistoricalEventCategory.MALFUNCTION),
@@ -71,6 +73,7 @@ public enum HistoricalEventType {
 	 * Language specific name for display in user interface.
 	 * @return
 	 */
+	@Override
 	public final String getName() {
 		return this.name;
 	}

@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.ai.mission;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum PlanType {
+public enum PlanType implements Named {
 
 	PREPARING,PENDING,APPROVED,NOT_APPROVED;
 
@@ -20,6 +22,7 @@ public enum PlanType {
         this.name = Msg.getStringOptional("PlanType", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

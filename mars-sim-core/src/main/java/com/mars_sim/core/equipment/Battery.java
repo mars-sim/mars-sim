@@ -66,16 +66,13 @@ public class Battery implements Serializable {
 	
     /** The standard voltage of a drone battery pack in volts. */
     public static final double DRONE_VOLTAGE = HIGHEST_MAX_VOLTAGE / 8;
-    
-    /** The maximum current that can be safely drawn from this battery pack in Ampere. */
-    // May add back: private static final double MAX_AMP_DRAW = 120
-  
+
 	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_CHARGING = 1;
 	/** The maximum continuous discharge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_DISCHARGING = 2;
 
-	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
+	public static final double HOURS_PER_MILLISOL = 0.0247 ;
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .1; // [in %]
 	 
@@ -88,6 +85,8 @@ public class Battery implements Serializable {
 	public static final double HEAT_TRANSFER_COEFF_COOLING = 12;
 	
 	public static final double SURFACE_AREA_HEAT_DISSIPATION = 20;
+
+	private static final String PERFORMANCE_EVENT = "battery performance";
 	
     // Data members
     /** Is the unit at low power mode ? */  
@@ -620,7 +619,7 @@ public class Battery implements Serializable {
     private void setPerformanceFactor(double newPerformance) {
         if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
             performance = newPerformance;
-			unit.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
+			unit.fireUnitUpdate(PERFORMANCE_EVENT);
         }
     }
 

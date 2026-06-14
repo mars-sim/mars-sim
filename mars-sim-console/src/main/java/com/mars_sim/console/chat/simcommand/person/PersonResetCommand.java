@@ -39,7 +39,6 @@ public class PersonResetCommand extends AbstractPersonCommand {
 			pc.setHunger(0D);
 			pc.setStress(0D);
 			pc.setThirst(0D);
-			pc.setPerformanceFactor(1D);
 		}
 		return true;
 	}

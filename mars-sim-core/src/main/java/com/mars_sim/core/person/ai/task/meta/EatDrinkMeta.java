@@ -16,6 +16,7 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.ResourceHolder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
+import com.mars_sim.core.person.ThirstLevel;
 import com.mars_sim.core.person.ai.fav.FavoriteType;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.util.FactoryMetaTask;
@@ -90,7 +91,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		double energy = pc.getEnergy();
 
 		boolean hungry = pc.isHungry();
-		boolean thirsty = pc.isThirsty();
+		boolean thirsty = pc.getThirstLevel().isThirsty();
 
 		double ghrelinS = person.getCircadianClock().getSurplusGhrelin();
 		double leptinS = person.getCircadianClock().getSurplusLeptin();
@@ -174,7 +175,7 @@ public class EatDrinkMeta extends FactoryMetaTask {
 		}
 
 		if (needWater) {
-			double thirstBase = .5 * (thirst - PhysicalCondition.THIRST_THRESHOLD);
+			double thirstBase = .5 * (thirst - ThirstLevel.ISOTONIC.getMaxValue());
 			if (thirstBase <= 0)
 				thirstBase = 0;
 

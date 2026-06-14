@@ -9,7 +9,6 @@ package com.mars_sim.core.robot;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
@@ -32,6 +31,8 @@ public class SystemCondition implements Serializable {
 	private static final double POWER_SAVE_CONSUMPTION = .1;
 
 	private static final double ENERGY_PER_MODULE = 15;
+
+    public static final String PERFORMANCE_EVENT = "system performance";
 	
     // Data members
 
@@ -84,7 +85,7 @@ public class SystemCondition implements Serializable {
 		
     	battery.timePassing(pulse);
     	
-		// Degrade performance;				
+		// Degrade performance		
     	double aveFatigue = robot.getMalfunctionManager().findAverageWorstFatigue();
 
 		setPerformanceFactor(performance - MathUtils.between(time * aveFatigue / 5000, 0, time / 500));	
@@ -192,7 +193,7 @@ public class SystemCondition implements Serializable {
     void setPerformanceFactor(double newPerformance) {
         if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
             performance = newPerformance;
-			robot.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
+			robot.fireUnitUpdate(PERFORMANCE_EVENT);
         }
     }
 

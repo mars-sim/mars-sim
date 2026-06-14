@@ -23,6 +23,7 @@ import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.core.vehicle.Crewable;
@@ -102,7 +103,7 @@ public class RobotTableModel extends EntityMonitorModel<Robot> {
 		eventColumnMapping.put(EntityEventType.COORDINATE_EVENT, LOCATION);
 		eventColumnMapping.put(EntityEventType.STATUS_EVENT, MODE);
 		eventColumnMapping.put(EntityEventType.BATTERY_EVENT, BATTERY);
-		eventColumnMapping.put(EntityEventType.PERFORMANCE_EVENT, PERFORMANCE);
+		eventColumnMapping.put(SystemCondition.PERFORMANCE_EVENT, PERFORMANCE);
 		eventColumnMapping.put(TaskManager.TASK_EVENT, TASK);
 		eventColumnMapping.put(EntityEventType.TASK_NAME_EVENT, TASK);
 		eventColumnMapping.put(EntityEventType.TASK_ENDED_EVENT, TASK);

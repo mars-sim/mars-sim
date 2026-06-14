@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.ai;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum PersonalityTraitType {
+public enum PersonalityTraitType implements Named {
 
 //          Openness - The willingness to make a shift of standards in new situations and appreciation for a variety of experience.
 // Conscientiousness - Planning ahead rather than being spontaneous.
@@ -33,6 +35,7 @@ public enum PersonalityTraitType {
 	 * 
 	 * @return {@link String}
 	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}

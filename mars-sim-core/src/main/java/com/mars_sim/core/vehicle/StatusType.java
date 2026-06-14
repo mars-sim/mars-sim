@@ -7,13 +7,15 @@
  */
 package com.mars_sim.core.vehicle;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
  * Vehicle status types. They can be either primary or secondary.
  * Primary status type are mutually exclusive on a Vehicle.
  */
-public enum StatusType {
+public enum StatusType implements Named {
 	
 	GARAGED 				(true),
 	HOVERING 				(true),
@@ -39,6 +41,7 @@ public enum StatusType {
 		this.primary = primary;
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

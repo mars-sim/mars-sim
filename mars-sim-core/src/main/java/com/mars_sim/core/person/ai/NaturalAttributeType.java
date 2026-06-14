@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.ai;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum NaturalAttributeType {
+public enum NaturalAttributeType implements Named {
 
 	ACADEMIC_APTITUDE, AGILITY, ARTISTRY, ATTRACTIVENESS,
 	COURAGE, CONVERSATION, CREATIVITY, DISCIPLINE,
@@ -29,6 +31,7 @@ public enum NaturalAttributeType {
 	 * 
 	 * @return {@link String}
 	 */
+	@Override
 	public String getName() {
 		return this.name;
 	}

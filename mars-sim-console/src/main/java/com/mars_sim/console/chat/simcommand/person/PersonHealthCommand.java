@@ -69,7 +69,7 @@ public class PersonHealthCommand extends AbstractPersonCommand {
 	        double perf = pc.getPerformanceFactor()*100D;
 	                
 			String h = !pc.isHungry() ? "(Not Hungry)" : "(Hungry)";
-			String t = !pc.isThirsty() ? "(Not Thirsty)" : "(Thirsty)";
+			String t = pc.getThirstLevel().isThirsty() ? "(Thirsty)" : "(Not Thirsty)";
 			
 			responseText.appendLabeledString(THIRST, String.format(CommandHelper.MILLISOL_FORMAT, pc.getThirst()) + " " + t);		
 			responseText.appendLabeledString(HUNGER, String.format(CommandHelper.MILLISOL_FORMAT, pc.getHunger()) + " " + h);

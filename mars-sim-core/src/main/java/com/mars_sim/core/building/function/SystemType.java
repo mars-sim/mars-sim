@@ -6,11 +6,13 @@
  */
 package com.mars_sim.core.building.function;
 
+import com.mars_sim.core.Named;
+
 import java.util.Set;
 
 import com.mars_sim.core.tool.Msg;
 
-public enum SystemType {
+public enum SystemType implements Named {
 
 	BUILDING, EVA_SUIT, ROBOT, ROVER, VEHICLE;
 	
@@ -31,6 +33,7 @@ public enum SystemType {
 		this.name = Msg.getStringOptional("SystemType", name());
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

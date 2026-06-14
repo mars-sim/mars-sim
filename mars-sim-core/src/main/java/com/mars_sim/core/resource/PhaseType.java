@@ -7,13 +7,15 @@
 
 package com.mars_sim.core.resource;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 
 /**
  * The phase type of an amount resource.
  */
-public enum PhaseType {
+public enum PhaseType implements Named {
 
 	GAS,LIQUID,SOLID;
 
@@ -30,6 +32,7 @@ public enum PhaseType {
 	 * Gets the internationalized name of the phase for display in user interface.
 	 * @return name
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
