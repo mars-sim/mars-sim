@@ -707,7 +707,7 @@ public class PhysicalCondition implements Serializable {
 		// affects performance. This is the performance baseline
 		double maxPerformance = problems.stream()
 			.filter(p -> p.getState() != HealthProblemState.CURED)
-			.mapToDouble(p -> p.getPerformanceFactor()).max().orElse(1D);
+			.mapToDouble(p -> p.getPerformanceFactor()).min().orElse(1D);
 		double tempPerformance = maxPerformance;
 
 		// High thirst reduces performance.
@@ -886,13 +886,14 @@ public class PhysicalCondition implements Serializable {
 		increaseThirst(time * bodyMassDeviation * .75 / factor);
 
 		// If the person's thirst at top level for a period then trigger dehydration
-		if (thirst > dehydrationTrigger) {
+		if (thirst > dehydrationTrigger && getProblemByType(ComplaintType.DEHYDRATION) == null) {
 			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
 			logger.info(person, "Dessicasted time has exp");
 		}
 
 		// IF thirst at critical, person is dead
 		if (thirst >= MAX_THIRST) {
+			// Add operation will return existing if one already exists
 			var dehydrated = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.DEHYDRATION));
 			dehydrated.setState(HealthProblemState.DEAD);
 			recordDead(dehydrated, false, ThirstLevel.DEATH_QUOTE);
@@ -1001,13 +1002,14 @@ public class PhysicalCondition implements Serializable {
 
 		
 		// If the person's hunger at top level for a period then trigger starvation
-		if (hunger > starvationTrigger) {
+		if (hunger > starvationTrigger && getProblemByType(ComplaintType.STARVATION) == null) {
 			addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
 			logger.info(person, "Starvation time has expired");
 		}
 
 		// IF hunger at critical, person is dead
 		if (hunger >= MAX_HUNGER) {
+			// AddMedicalComplaint will return existing if one already exists
 			var starved = addMedicalComplaint(medicalManager.getComplaintByName(ComplaintType.STARVATION));
 			starved.setState(HealthProblemState.DEAD);
 			recordDead(starved, false, HungerLevel.DEATH_QUOTE);
@@ -1592,7 +1594,7 @@ public class PhysicalCondition implements Serializable {
 	 */
 	public String getStatus() {
 		if (mostSeriousProblem != null) {
-			return (alive ? "Dead: " : "Sick: ") + mostSeriousProblem.printStatus();
+			return (alive ? "Sick: " : "Dead: ") + mostSeriousProblem.printStatus();
     	}
 		return "Well";	
 	}

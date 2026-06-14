@@ -195,7 +195,8 @@ public class BundleCheck {
     private int compareEnum(Class<? extends Enum<?>> enumClass, Map<String, LangValue> localeMessages, PrintWriter output) {
         int enumMissing = 0;
 
-        // This follows the pattern used in Msg.getOptional where the key is the enum type in lower case followed by the enum value in lower cas
+        // This follows the pattern used in Msg.getOptional where the key is the enum type name in lower case
+        // followed by the enum value in lower case
         String mainKey = enumClass.getSimpleName().toLowerCase() + ".";
         for(var v : enumClass.getEnumConstants()) {
             String key = mainKey + v.name().toLowerCase();
@@ -230,7 +231,7 @@ public class BundleCheck {
         var localeMessage = loadMessages(f);
         int differences = 0;
         var outputFile = new File(outputFolder, "messages_" + name + ".properties");
-        logger.info("Locale " + name + "output file: " + outputFile.getAbsolutePath());
+        logger.info("Locale " + name + " output file: " + outputFile.getAbsolutePath());
 
         try(var output = new PrintWriter(new FileOutputStream(outputFile))) {
 

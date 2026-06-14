@@ -248,7 +248,7 @@ public abstract class Unit implements MonitorableEntity, UnitIdentifer, Comparab
 	 * Checks if it has an entity listener.
 	 */
 	public synchronized boolean hasEntityListener(EntityListener listener) {
-		return listeners.hasEntityListener(listener);
+		return (listeners != null && listeners.hasEntityListener(listener));
 	}
 
 	/**
