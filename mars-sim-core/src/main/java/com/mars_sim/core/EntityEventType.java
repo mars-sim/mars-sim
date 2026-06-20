@@ -34,10 +34,8 @@ public class EntityEventType {
 	public static final String REMOVE_ASSOCIATED_BIN_EVENT = "remove associated bin";
 	
 	public static final String EMOTION_EVENT = "emotion event";
-	public static final String PERFORMANCE_EVENT = "performance event";
 	
 	// Others
-	public static final String ILLNESS_EVENT = "illness event";
 	public static final String DEATH_EVENT = "death event";
 	public static final String BURIAL_EVENT = "burial event";
 	public static final String REVIVED_EVENT = "revived event";
@@ -89,8 +87,6 @@ public class EntityEventType {
 	public static final String OPERATOR_EVENT = "vehicle operator";
 	public static final String EMERGENCY_BEACON_EVENT = "vehicle emergency beacon event";
 	public static final String RESERVED_EVENT = "vehicle reserved event";
-
-	public static final String BATTERY_EVENT = "battery event";
 
 	// For thermal/heating system
 	public static final String HEAT_MODE_EVENT = "heat mode";

@@ -7,9 +7,9 @@
 package com.mars_sim.ui.swing.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -17,35 +17,32 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.utility.power.PowerGeneration;
 import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.building.utility.power.PowerMode;
-import com.mars_sim.core.building.utility.power.PowerSource;
 import com.mars_sim.core.building.utility.power.PowerStorage;
 import com.mars_sim.core.building.utility.power.SolarPowerSource;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
-import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
 import com.mars_sim.ui.swing.utils.SwingHelper;
+import com.mars_sim.ui.swing.utils.model.BaseBuildingModel;
 
 
 /**
@@ -91,8 +88,6 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 
 	private BuildingManager manager;
 
-	private List<Building> buildings;
-
 	/**
 	 * Constructor.
 	 * 
@@ -117,8 +112,6 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 
 		powerGrid = settlement.getPowerGrid();
 		manager = settlement.getBuildingManager();
-		buildings = manager.getBuildingsF1NoF2F3(
-				FunctionType.POWER_GENERATION, FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
 
 		JPanel topContentPanel = new JPanel(new BorderLayout());
 
@@ -131,7 +124,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		// Prepare power used tf.
 		powerLoadCache = powerGrid.getPowerLoad();
 		// Prepare the power usage percent
-		percentPowerUsage = MathUtils.between(Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0, 0, 100);
+		percentPowerUsage = Math.clamp((powerLoadCache / powerGenCache) * 100D, 0, 100);
 		
 		percentPowerUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.powerUsage"),
 				StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
@@ -144,7 +137,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		// Prepare power stored tf.
 		energyStoredCache = powerGrid.getStoredEnergy();
 		// Prepare the energy usage percent
-		percentEnergyUsage = Math.round(energyStoredCache/energyCapacityCache * 100 * 10.0)/10.0;
+		percentEnergyUsage = (energyStoredCache/energyCapacityCache) * 100D;
 
 		percentEnergyUsageLabel = powerInfoPanel.addTextField(Msg.getString("TabPanelPowerGrid.energyUsage"),
 				StyleManager.DECIMAL1_PERC.format(percentEnergyUsage) + OPEN_PARA 
@@ -174,13 +167,13 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		ButtonGroup group0 = new ButtonGroup();
 
 		var r0 = new JRadioButton("Power Bldgs", true);
-		r0.setActionCommand(POWER);
+		r0.addActionListener(e -> setSelection(POWER));
 		var r1 = new JRadioButton("Bldgs w/ Gen");
-		r1.setActionCommand(BUILDINGS_WITH_GENERATION);
+		r1.addActionListener(e -> setSelection(BUILDINGS_WITH_GENERATION));
 		var r2 = new JRadioButton("Bldgs w/o Gen");
-		r2.setActionCommand(BUILDINGS_NO_GENERATION);
+		r2.addActionListener(e -> setSelection(BUILDINGS_NO_GENERATION));
 		var r3 = new JRadioButton("All");
-		r3.setActionCommand(ALL_BUILDINGS);
+		r3.addActionListener(e -> setSelection(ALL_BUILDINGS));
 
 		group0.add(r0);
 		group0.add(r1);
@@ -191,12 +184,6 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		buttonPanel.add(r1);
 		buttonPanel.add(r2);
 		buttonPanel.add(r3);
-
-		PolicyRadioActionListener actionListener = new PolicyRadioActionListener();
-		r0.addActionListener(actionListener);
-		r1.addActionListener(actionListener);
-		r2.addActionListener(actionListener);
-		r3.addActionListener(actionListener);
 		
 		return topContentPanel;
 	}
@@ -204,47 +191,31 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 	@Override
 	protected TableModel createModel() {
 		// Prepare power table model.
-		powerTableModel = new PowerTableModel(getEntity());
+		powerTableModel = new PowerTableModel();
+		setSelection(POWER);
 		return powerTableModel;
 	}
 
+	/**
+	 * Customise the power table's column details such as width and cell renderers.
+	 */
 	@Override
 	protected void setColumnDetails(TableColumnModel powerColumns) {
-
-		powerColumns.getColumn(0).setPreferredWidth(8);
-		powerColumns.getColumn(1).setPreferredWidth(20);
-		powerColumns.getColumn(2).setPreferredWidth(120);
-		powerColumns.getColumn(3).setPreferredWidth(35);
-		powerColumns.getColumn(4).setPreferredWidth(35);
-		powerColumns.getColumn(5).setPreferredWidth(35);
-		
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.LEFT);
-		powerColumns.getColumn(1).setCellRenderer(renderer);
-		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		powerColumns.getColumn(3).setCellRenderer(renderer);
-		powerColumns.getColumn(4).setCellRenderer(renderer);
-		powerColumns.getColumn(5).setCellRenderer(renderer);
+		powerColumns.getColumn(0).setPreferredWidth(20);
+		powerColumns.getColumn(0).setCellRenderer(new PowerModeCellRenderer());
 	}
 
-
-	class PolicyRadioActionListener implements ActionListener {
-		@Override
-	    public void actionPerformed(ActionEvent event) {
-
-			switch(event.getActionCommand()) {
-				case POWER -> buildings = manager.getBuildingsF1NoF2F3(FunctionType.POWER_GENERATION, 
-						FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
-				case BUILDINGS_WITH_GENERATION -> buildings = getBuildingsWithPowerGeneration();
-				case BUILDINGS_NO_GENERATION -> buildings = manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, 
-						FunctionType.THERMAL_GENERATION);
-				case ALL_BUILDINGS -> buildings = manager.getSortedBuildings();
-				default -> {
-					// Do nothing as not understood
-				}
-			}
-			powerTableModel.fireTableDataChanged();
-	    }
+	private void setSelection(String selected) {
+		List<Building> buildings = switch(selected) {
+			case POWER -> manager.getBuildingsF1NoF2F3(FunctionType.POWER_GENERATION, 
+					FunctionType.LIFE_SUPPORT, FunctionType.RESOURCE_PROCESSING);
+			case BUILDINGS_WITH_GENERATION -> getBuildingsWithPowerGeneration();
+			case BUILDINGS_NO_GENERATION -> manager.getBuildingsNoF1F2(FunctionType.POWER_GENERATION, 
+					FunctionType.THERMAL_GENERATION);
+			case ALL_BUILDINGS -> manager.getSortedBuildings();
+			default -> Collections.emptyList();
+		};
+		powerTableModel.setEntities(buildings);
 	}
 
 	/**
@@ -256,25 +227,17 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		return manager.getBuildings(FunctionType.POWER_GENERATION);
 	}
 
-	public double getAverageEfficiency() {
-		double eff = 0;
-		int i = 0;
-		for(Building building : getBuildingsWithPowerGeneration()) {
-			for(PowerSource powerSource : building.getPowerGeneration().getPowerSources()) {
-				if (powerSource instanceof SolarPowerSource solarPowerSource) {
-					i++;
-					eff += solarPowerSource.getElectricEfficiency();
-				}
-			}
-		}
-		// get the average eff
-		if (i > 0) {
-			eff = eff / i;
-		}
-		return eff;
+	private double getAverageEfficiency() {
+		return getBuildingsWithPowerGeneration().stream()
+				.flatMap(b -> b.getPowerGeneration().getPowerSources().stream())
+				.filter(SolarPowerSource.class::isInstance)
+				.mapToDouble(s -> ((SolarPowerSource)s).getElectricEfficiency())
+				.average().orElse(0);
 	}
 
-
+	/**
+	 * Values are always updated on the Clock pulse as there are so many small attributes.
+	 */
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 
@@ -287,7 +250,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 			powerGenCache = gen;
 			powerLoadCache = req;
 			
-			percentPowerUsage = MathUtils.between(Math.round(powerLoadCache / powerGenCache * 100 * 10.0)/10.0, 0, 100);
+			percentPowerUsage = Math.clamp(powerLoadCache / powerGenCache * 100, 0, 100);
 
 			String s = StyleManager.DECIMAL1_PERC.format(percentPowerUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KW.format(powerLoadCache) 
@@ -304,7 +267,7 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 		if (Math.abs(energyCapacityCache - cap) > .4 || Math.abs(energyStoredCache - store) > .4) {
 			energyCapacityCache = cap;
 			energyStoredCache = store;
-			percentEnergyUsage = Math.round(energyStoredCache / energyCapacityCache * 100 * 10.0)/10.0;
+			percentEnergyUsage = (energyStoredCache / energyCapacityCache) * 100D;
 					
 			String s = StyleManager.DECIMAL1_PERC.format(percentEnergyUsage) + OPEN_PARA 
 					+ StyleManager.DECIMAL_KWH.format(energyStoredCache) 
@@ -321,115 +284,119 @@ class TabPanelPowerGrid extends EntityTableTabPanel<Settlement> implements Tempo
 	}
 
 	/**
+	 * Custom cell renderer for displaying power mode icons in the power table.
+	 */
+	private static class PowerModeCellRenderer extends DefaultTableCellRenderer {
+		private static final Icon DOT_RED = ImageLoader.getIconByName("dot/red"); 
+		private static final Icon DOT_YELLOW = ImageLoader.getIconByName("dot/yellow"); 
+		private static final Icon DOT_GREEN = ImageLoader.getIconByName("dot/green"); 
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			// Use null as value of JLabel is blank
+			JLabel cell = (JLabel)super.getTableCellRendererComponent(table, null, isSelected, hasFocus, row,
+					column);
+			
+			PowerMode powerMode = (PowerMode)value;
+			if (powerMode == null) {
+				cell.setIcon(null);
+				return cell;
+			}
+			cell.setIcon(switch (powerMode) {
+				case PowerMode.FULL_POWER -> DOT_GREEN;
+				case PowerMode.LOW_POWER -> DOT_YELLOW;
+				case PowerMode.NO_POWER -> DOT_RED;
+				default -> null;
+			});
+
+			return cell;
+		}
+	}
+
+	/**
 	 * Internal class used as model for the power table.
 	 */
-	private class PowerTableModel extends AbstractTableModel
-				implements EntityModel  {
+	private class PowerTableModel extends BaseBuildingModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
+		private static final int STATUS_VAL = 101;
+		private static final int PRIORITY_VAL = 102;
+		private static final int GENERATED_VAL = 103;
+		private static final int USED_VAL = 104;
+		private static final int STORED_VAL = 105;
 
-		private Icon dotRed;
-		private Icon dotYellow;
-		private Icon dotGreen;
+		private static final EntityColumnSpec STATUS = new EntityColumnSpec(
+						new ColumnSpec(STATUS_VAL, Msg.getString("TabPanelPowerGrid.column.s"), PowerMode.class), null);
+		private static final EntityColumnSpec PRIORITY = new EntityColumnSpec(
+						new ColumnSpec(PRIORITY_VAL, Msg.getString("TabPanelPowerGrid.column.priority"), Integer.class), null);
+		private static final EntityColumnSpec GENERATED = new EntityColumnSpec(
+						new ColumnSpec(GENERATED_VAL, Msg.getString("TabPanelPowerGrid.column.generated"), Double.class), null);
+		private static final EntityColumnSpec USED = new EntityColumnSpec(
+						new ColumnSpec(USED_VAL, Msg.getString("TabPanelPowerGrid.column.used"), Double.class), null);
+		private static final EntityColumnSpec STORED = new EntityColumnSpec(
+						new ColumnSpec(STORED_VAL, Msg.getString("TabPanelPowerGrid.column.stored"), Double.class), null);
 
-		private PowerTableModel(Settlement settlement) {
-			dotRed = ImageLoader.getIconByName("dot/red"); 
-			dotYellow = ImageLoader.getIconByName("dot/yellow"); 
-			dotGreen = ImageLoader.getIconByName("dot/green"); 
-		}
-
-		public int getRowCount() {
-			return buildings.size();
-		}
-
-		public int getColumnCount() {
-			return 6;
-		}
-
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return switch (columnIndex) {
-				case 0 -> Icon.class;
-				case 1 -> Integer.class;
-				case 2 -> String.class;
-				case 3,4, 5 -> Double.class;
-				default -> null;
-			};
+		private PowerTableModel() {
+			super(STATUS, PRIORITY, NAME, GENERATED, USED, STORED);
 		}
 
 		@Override
-		public String getColumnName(int columnIndex) {
-			return switch (columnIndex) {
-				case 0 -> Msg.getString("TabPanelPowerGrid.column.s");
-				case 1 -> Msg.getString("TabPanelPowerGrid.column.priority");
-				case 2 -> Msg.getString("building.singular");
-				case 3 -> Msg.getString("TabPanelPowerGrid.column.generated");
-				case 4 -> Msg.getString("TabPanelPowerGrid.column.used");
-				case 5 -> Msg.getString("TabPanelPowerGrid.column.stored");
-				default -> null;
-			};
-		}
-
-		@Override
-		public Object getValueAt(int row, int column) {
-
-			Building building = buildings.get(row);
+		protected Object getEntityValue(Building building, int valueIndex) {
 			PowerMode powerMode = building.getPowerMode();
 
-			switch (column) {
-				case 0 -> {
-						return switch (powerMode) {
-							case PowerMode.FULL_POWER -> dotGreen;
-							case PowerMode.LOW_POWER -> dotYellow;
-							case PowerMode.NO_POWER -> dotRed;
-							default -> null;
-						};
-					}
-				case 1 -> { return buildings.get(row).getPowerPriority(); }
-				case 2 -> { return buildings.get(row).getName(); }
-				case 3 -> {
+			return switch (valueIndex) {
+				case STATUS_VAL -> powerMode;
+				case PRIORITY_VAL -> building.getPowerPriority();
+				case GENERATED_VAL -> {
 						double generated = 0D;
 						PowerGeneration pg = building.getFunction(FunctionType.POWER_GENERATION);
 						if (pg != null) {
 							try {
 								generated = pg.getGeneratedPower();
 							} catch (Exception e) {
+								// Should not happen
 							}
 						}
-						return Math.round(generated * 10.0) / 10.0;
-					}
-				case 4 -> {
+						yield generated;
+				}
+				case USED_VAL -> {
 						double used = 0D;
 						if (powerMode == PowerMode.FULL_POWER)
 							used = building.getFullPowerLoad();
 						else if (powerMode == PowerMode.LOW_POWER)
 							used = building.getLowPowerLoad();
-						return Math.round(used * 10.0) / 10.0;
-					}
-				case 5 -> {
+						yield used;
+				}
+				case STORED_VAL -> {
 						PowerStorage ps = building.getPowerStorage();
-						double stored = 0D;
 						if (ps != null) {
-							stored = ps.getBattery().getCurrentStoredEnergy();
-							return Math.round(stored * 10.0) / 10.0;
+							yield ps.getBattery().getCurrentStoredEnergy();
 						}
 					
-						return 0D;
-					}
+						yield 0D;
+				}
+				default -> super.getEntityValue(building, valueIndex);
+			};
+		}
+
+		/**
+		 * Tooltip for status column to show the power mode name.
+		 */
+		@Override
+		protected String getEntityDescription(Building building, int valueIndex) {
+			if (valueIndex == STATUS_VAL) {
+				return building.getPowerMode().getName();
 			}
-			return null;
+			
+			return super.getEntityDescription(building, valueIndex);
 		}
 
 		public void update() {
-			if (buildings.isEmpty())
+			if (getRowCount() == 0)
 				return;
-			fireTableRowsUpdated(0, buildings.size() - 1);
-		}
-
-		@Override
-		public Entity getAssociatedEntity(int row) {
-			return buildings.get(row);
+			fireTableRowsUpdated(0, getRowCount() - 1);
 		}
 	}
 }

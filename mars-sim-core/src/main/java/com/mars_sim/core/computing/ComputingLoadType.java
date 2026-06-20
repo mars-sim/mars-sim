@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.computing;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum ComputingLoadType {
+public enum ComputingLoadType implements Named {
 
 	LOW, MID, HIGH, HEAVY;
 	
@@ -20,6 +22,7 @@ public enum ComputingLoadType {
 		this.name = Msg.getStringOptional("ComputingLoadType", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

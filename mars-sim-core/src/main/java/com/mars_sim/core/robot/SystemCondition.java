@@ -4,16 +4,13 @@
  * @date 2025-09-24
  * @author Manny Kung
  */
-
 package com.mars_sim.core.robot;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.MathUtils;
 
 /**
  * This class represents the System Condition of a robot.
@@ -32,6 +29,8 @@ public class SystemCondition implements Serializable {
 	private static final double POWER_SAVE_CONSUMPTION = .1;
 
 	private static final double ENERGY_PER_MODULE = 15;
+
+    public static final String PERFORMANCE_EVENT = "robot performance";
 	
     // Data members
 
@@ -40,10 +39,10 @@ public class SystemCondition implements Serializable {
 
     /** The power consumed in the standby mode in kW. */
     private double standbyPower;
-    /** Robot's stress level (0.0 - 100.0). */
-    private double systemLoad;
     /** Performance factor. */
     private double performance;
+    private RobotPerfLevel performanceLevel;
+
 
 	/** The robot that owns this class. */ 
     private Robot robot;
@@ -60,12 +59,13 @@ public class SystemCondition implements Serializable {
         robot = newRobot;
 
         performance = 1.0;
+        performanceLevel = RobotPerfLevel.fromValue(performance);
         
         double energyStorageCapacity = spec.getMaxCapacity();
         
         int numModules = (int)(Math.ceil(energyStorageCapacity/ENERGY_PER_MODULE));
         
-        battery = new Battery(newRobot, numModules, ENERGY_PER_MODULE);
+        battery = new Battery(newRobot, 80, numModules, ENERGY_PER_MODULE);
        
         battery.initPower(spec.getLowPowerModePercent(), spec.getStandbyPowerConsumption());
     }
@@ -74,8 +74,6 @@ public class SystemCondition implements Serializable {
      * This method reflects a passing of time.
      * 
      * @param pulse amount of time in a clock pulse
-     * @param support life support system.
-     * @param config robot configuration.
      */
     public boolean timePassing(ClockPulse pulse) {
     	double time = pulse.getElapsed();
@@ -84,10 +82,14 @@ public class SystemCondition implements Serializable {
 		
     	battery.timePassing(pulse);
     	
-		// Degrade performance;				
+		// Degrade performance		
     	double aveFatigue = robot.getMalfunctionManager().findAverageWorstFatigue();
-
-		setPerformanceFactor(performance - MathUtils.between(time * aveFatigue / 5000, 0, time / 500));	
+		performance = performance - Math.clamp(time * aveFatigue / 5000, 0, time / 500);
+        var newLevel = RobotPerfLevel.fromValue(performance);
+        if (newLevel != getPerformanceLevel()) {
+        	robot.fireUnitUpdate(PERFORMANCE_EVENT);
+            performanceLevel = newLevel;
+        }
 		
     	if (!pulse.isNewHalfSol()) {
     		
@@ -185,15 +187,10 @@ public class SystemCondition implements Serializable {
     }
 
     /**
-     * Sets the performance factor.
-     * 
-     * @param newPerformance new performance (between 0 and 1).
+     * Gets the performance level.
      */
-    void setPerformanceFactor(double newPerformance) {
-        if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
-            performance = newPerformance;
-			robot.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
-        }
+    public RobotPerfLevel getPerformanceLevel() {
+        return performanceLevel;
     }
 
     /**
@@ -202,17 +199,7 @@ public class SystemCondition implements Serializable {
      * @param reduction
      */
     public void tuneUpPerformance(double points) {
-    	double newPerformance = MathUtils.between(performance + points / 50, performance, .99);
-    	setPerformanceFactor(newPerformance);
-    }
-    
-    /**
-     * Gets the robot system stress level.
-     * 
-     * @return stress (0.0 to 100.0)
-     */
-    public double getStress() {
-        return systemLoad;
+    	performance = Math.clamp(performance + points / 50, performance, 1D);
     }
 
     /** 

@@ -8,13 +8,29 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.health.task.SelfTreatHealthProblemTest;
 
-public class HealthProblemTest extends MarsSimUnitTest {
+class HealthProblemTest extends MarsSimUnitTest {
+
+    @Test
+    void testHealthProblemSerious() {
+        var s = buildSettlement("Hospital");
+        var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
+        var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);
+
+        var hp1 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.BROKEN_BONE);
+        var hp2 = SelfTreatHealthProblemTest.addComplaint(getContext(), p, ComplaintType.PANIC_ATTACK);
+
+        assertEquals(ComplaintType.BROKEN_BONE, hp1.getComplaint().getType());
+        assertEquals(ComplaintType.PANIC_ATTACK, hp2.getComplaint().getType());
+
+        assertEquals(true, hp1.isMoreSeriousThan(hp2), "Broken bone should be more serious than panic attack");
+        assertEquals(false, hp2.isMoreSeriousThan(hp1), "Panic attack should not be more serious than broken bone");
+    }
 
     /**
      * 
      */
     @Test
-    public void testCured() {
+    void testCured() {
         var s = buildSettlement("Hospital");
         var sb = SelfTreatHealthProblemTest.buildMediCare(getContext(), s);
         var p = buildPerson("Ill", s, JobType.DOCTOR, sb, FunctionType.MEDICAL_CARE);

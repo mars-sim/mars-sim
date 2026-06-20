@@ -11,6 +11,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.IOException;
@@ -27,12 +28,17 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.ColumnSpecHelper;
 import com.mars_sim.ui.swing.components.EnhancedTableModel;
+import com.mars_sim.ui.swing.components.ToolTipTableModel;
 
 import io.github.parubok.text.multiline.MultilineLabel;
 
@@ -167,6 +173,83 @@ public final class SwingHelper {
 		label.setMinimumSize(new Dimension(50,50));
 		return label;
 	}
+
+	/**
+	 * Resizes the columns of a table to fit the content.
+	 * It samples the first N rows to determine the appropriate width for each column, ensuring that both cell content and header are fully visible without excessive space.
+	 * @param table Table to resize
+	 */
+	public static void resizeTableColumns(JTable table) {
+		// Gets max width for cells in column as the preferred width
+		TableColumnModel columnModel = table.getColumnModel();
+		TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
+
+		for (int col = 0; col < columnModel.getColumnCount(); col++) {
+			TableColumn tableColumn = columnModel.getColumn(col);
+		    int preferredWidth = tableColumn.getMinWidth() + 15;
+
+			// Get header width first
+			TableCellRenderer headerRenderer = tableColumn.getHeaderRenderer();
+		    if (headerRenderer == null) {
+				// Should never happen
+				headerRenderer = defaultRenderer;
+			}
+		    var header = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, col);
+		    preferredWidth = Math.max(preferredWidth, header.getPreferredSize().width + 15);
+
+			// Sample the first N rows
+			for (int row = 0; row < Math.min(5, table.getRowCount()); row++) {
+				TableCellRenderer tableCellRenderer = table.getCellRenderer(row, col);
+				var c = table.prepareRenderer(tableCellRenderer, row, col);
+				int cellWidth = c.getPreferredSize().width + table.getIntercellSpacing().width + 15;
+				preferredWidth = Math.max(cellWidth, preferredWidth);
+			}
+
+			tableColumn.setPreferredWidth(preferredWidth);
+		}
+	}	
+
+	/**
+	 * Create a table to display the model. This method will attach various supported accelerators according to the model type:
+	 * - If the model is a ToolTipTableModel, the table will show tooltips for values.
+	 * - If the model is an EnhancedTableModel, the table will apply custom renderers.
+	 * - If the model is an EntityModel, the table will attach an entity launcher.
+	 * @param model Model to display in the table
+	 * @param content The UI context to use for launching entities; can be null
+	 * @return JTable displaying the model with appropriate features based on the model type
+	 */
+	public static JTable createEnhancedTable(TableModel model, UIContext content) {
+		JTable table = null;
+		if (model instanceof ToolTipTableModel) {
+			// Create a table that can show tooltips
+			table = new JTable(model) {
+				@Override
+				public String getToolTipText(MouseEvent e) {
+					return ToolTipTableModel.extractToolTip(e, this);
+				}
+			};
+		} else {
+			// Create a regular table
+			table = new JTable(model);
+		}
+		table.setAutoCreateRowSorter(true);
+
+		// If this is an EnhancedTableModel, apply the renderers
+		if ((model instanceof EnhancedTableModel etm)) {
+			ColumnSpecHelper.applyRenderers(table, etm);
+		}
+
+		// If this is an EntityModel, attach the launcher
+		if ((model instanceof EntityModel) && content != null) {
+			EntityLauncher.attach(table, content);
+		}
+
+		// Auto resize as well
+		resizeTableColumns(table);
+
+		return table;
+	}
+
     /**
      * Create a table to display the model in a scroll pane. The table is sortable and read only.
 	 * 
@@ -178,15 +261,7 @@ public final class SwingHelper {
     public static JScrollPane createScrolledTable(EnhancedTableModel model, UIContext content,
 									String name, Dimension dim) {
         // Create table
-        JTable table = new JTable(model);
-        table.setAutoCreateRowSorter(true);
-		table.setRowSelectionAllowed(true);
-		ColumnSpecHelper.applyRenderers(table, model);
-
-		if ((model instanceof EntityModel) && content != null) {
-			EntityLauncher.attach(table, content);
-		}
-
+        JTable table = createEnhancedTable(model, content);
         var scrollPane = new JScrollPane(table);
 
 		if (dim != null) {

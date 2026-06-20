@@ -9,7 +9,7 @@ package com.mars_sim.core;
 
 import com.mars_sim.core.tool.Msg;
 
-public enum UnitType {
+public enum UnitType implements Named {
 
 	OUTER_SPACE,MARS,MOON,SETTLEMENT,PERSON,
 	VEHICLE,CONTAINER,EVA_SUIT,ROBOT,
@@ -22,6 +22,7 @@ public enum UnitType {
         this.name = Msg.getStringOptional("UnitType", name());
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

@@ -31,7 +31,6 @@ import com.mars_sim.ui.swing.entitywindow.EntityTabPanel;
  * The BuildingPanelAlgae class is a building function panel for
  * the algae pond building.
  */
-@SuppressWarnings("serial")
 class BuildingPanelAlgae extends EntityTabPanel<Building> 
 	implements TemporalComponent {
 
@@ -46,6 +45,7 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	private JDoubleLabel algaeMassLabel;
 	private JDoubleLabel idealAlgaeMassLabel;
 	private JDoubleLabel maxAlgaeMassLabel;
+	private JDoubleLabel cumuTotalAlgaeProducedLabel;
 	private JDoubleLabel algaeHarvestLabel;
 	private JDoubleLabel algaeProducedLabel;
 	
@@ -53,7 +53,11 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	private JDoubleLabel foodDemandLabel;
 	
 	private JDoubleLabel waterMassLabel;
-	
+	private JDoubleLabel waterDepthLabel;
+	private JDoubleLabel maxWaterLiterLabel;
+	private JDoubleLabel maxTankAreaLabel;
+	private JDoubleLabel maxTankDepthLabel;
+		
 	private JLabel algaeWaterRatioLabel;
 	
 	private JDoubleLabel powerReqLabel;
@@ -70,6 +74,8 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	private Coordinates location;
 
 	private SurfaceFeatures surfaceFeatures;
+	
+	private static final int SPIRULINA_ID = ResourceUtil.SPIRULINA_ID;
 	
 	/**
 	 * Constructor.
@@ -96,35 +102,52 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	 */
 	@Override
 	protected void buildUI(JPanel center) {
-		AttributePanel labelPanel = new AttributePanel(18);
+		AttributePanel labelPanel = new AttributePanel(23);
 		center.add(labelPanel, BorderLayout.NORTH);
 
 		labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algae.type"), 
 				"Spirulina", null);
 		
 		algaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, pond.getCurrentAlgae());
-		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algaeMass"), algaeMassLabel);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.currentAlgaeMass"), algaeMassLabel);
 				
 		idealAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, pond.getIdealAlgae());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.idealAlgaeMass"), idealAlgaeMassLabel);
 		
 		maxAlgaeMassLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, pond.getMaxAlgae());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxAlgaeMass"), maxAlgaeMassLabel);
+			
+		double[] amountInPond = pond.getTotCumulativeDailyAverage(SPIRULINA_ID);
+		
+		cumuTotalAlgaeProducedLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, amountInPond[0]);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.cumTotalAlgae"), cumuTotalAlgaeProducedLabel);
+		
+		algaeProducedLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, amountInPond[1]);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algaeDailyProduced"), algaeProducedLabel,
+									Msg.getString("BuildingPanelAlgae.algaeDailyProduced.tooltip"));
 
-		var algaeProducedCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
-		algaeProducedLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, algaeProducedCache);
-		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algae.produced"), algaeProducedLabel,
-									Msg.getString("BuildingPanelAlgae.algae.produced.tooltip"));
+		double harvestedAlgaeMass = pond.getHarvestedAlgaeMass();
 		
-		var algaeHarvestCache = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
-		algaeHarvestLabel = new JDoubleLabel(StyleManager.DECIMAL1_KG_SOL, algaeHarvestCache);
-		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.algae.harvested"),
+		algaeHarvestLabel = new JDoubleLabel(StyleManager.DECIMAL2_KG, harvestedAlgaeMass);
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.totalAlgaeHarvested"),
 									algaeHarvestLabel,
-									Msg.getString("BuildingPanelAlgae.algae.harvested.tooltip"));
+									Msg.getString("BuildingPanelAlgae.totalAlgaeHarvested.tooltip"));
 		
-		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_LITER, pond.getWaterMass());
+		waterMassLabel = new JDoubleLabel(StyleManager.DECIMAL_KG, pond.getWaterMass());
 		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterMass"), waterMassLabel);
 		
+		waterDepthLabel = new JDoubleLabel(StyleManager.DECIMAL_M, pond.getWaterDepth());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.waterDepth"), waterDepthLabel);
+		
+		maxWaterLiterLabel = new JDoubleLabel(StyleManager.DECIMAL_LITER, pond.getTankSize());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxWater"), maxWaterLiterLabel);
+		
+		maxTankAreaLabel = new JDoubleLabel(StyleManager.DECIMAL_M2, pond.getTankArea());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxTankArea"), maxTankAreaLabel);
+		
+		maxTankDepthLabel = new JDoubleLabel(StyleManager.DECIMAL_M, pond.getTankDepth());
+		labelPanel.addLabelledItem(Msg.getString("BuildingPanelAlgae.maxTankDepth"), maxTankDepthLabel);
+				
 		algaeWaterRatio = pond.getAlgaeWaterRatio();
 		algaeWaterRatioLabel = labelPanel.addTextField(Msg.getString("BuildingPanelAlgae.algaeWaterRatio"),
 			StyleManager.DECIMAL2_G_LITER.format(algaeWaterRatio)
@@ -179,16 +202,22 @@ class BuildingPanelAlgae extends EntityTabPanel<Building>
 	public void clockUpdate(ClockPulse pulse) {
 
 		waterMassLabel.setValue(pond.getWaterMass());
+		waterDepthLabel.setValue(pond.getWaterDepth());
+		
 		algaeMassLabel.setValue(pond.getCurrentAlgae());
 		idealAlgaeMassLabel.setValue(pond.getIdealAlgae());		
 		maxAlgaeMassLabel.setValue(pond.getMaxAlgae());
 
-		double newAlgaeHarvested = pond.computeDailyAverage(ResourceUtil.SPIRULINA_ID);
-		algaeHarvestLabel.setValue(newAlgaeHarvested);	
+		double[] amountInPond = pond.getTotCumulativeDailyAverage(SPIRULINA_ID);
 		
-		double newAlgaeProduced = pond.computeDailyAverage(AlgaeFarming.PRODUCED_ALGAE_ID);
-		algaeProducedLabel.setValue(newAlgaeProduced);
+		cumuTotalAlgaeProducedLabel.setValue(amountInPond[0]);
 		
+		algaeProducedLabel.setValue(amountInPond[1]);
+		
+		double harvestedAlgaeMass = pond.getHarvestedAlgaeMass();
+		
+		algaeHarvestLabel.setValue(harvestedAlgaeMass);	
+
 		double newAlgaeWaterRatio = pond.getAlgaeWaterRatio();
 		if (DoubleMath.fuzzyEquals(algaeWaterRatio, newAlgaeWaterRatio, 0.1)) {
 			algaeWaterRatio = newAlgaeWaterRatio;

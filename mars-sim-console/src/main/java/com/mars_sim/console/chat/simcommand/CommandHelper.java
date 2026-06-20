@@ -80,7 +80,7 @@ public class CommandHelper {
 	public static final String KM_FORMAT = "%.2f km";
 	public static final String KW_FORMAT = "%,.2f kW";
 	public static final String KWH_FORMAT = "%.2f kWh";
-	public static final String PERC_FORMAT = "%d%%";
+	public static final String PERC_FORMAT = "%.0f%%";
 	public static final String PERC1_FORMAT = "%.1f%%";
 	public static final String MILLISOL_FORMAT = "%.1f millisol";
 	public static final String KMPH_FORMAT = "%.2f km/h";
@@ -90,7 +90,7 @@ public class CommandHelper {
 	public static final String KPA_FORMAT = "%.2f kPa";
 	public static final String CELSIUS_FORMAT = "%.2f C\u00B0";
 
-	// Use by teh getYesNoInput method to return values for yes, no and cancel
+	// Used by the getYesNoInput method to return values for yes, no and cancel
     public static final int CANCEL = 0;
     public static final int YES = 1;
     public static final int NO = 2;
@@ -339,7 +339,7 @@ public class CommandHelper {
 			PlanType st = mp.getStatus();
 			planMsg.append(st.getName());
 			planMsg.append(' ');
-			planMsg.append(String.format(PERC_FORMAT, mp.getPercentComplete()));
+			planMsg.append(String.format(PERC_FORMAT, (double)mp.getPercentComplete()));
 
 			var activeReview = mp.getActiveReviewer();
 			if (activeReview != null) {

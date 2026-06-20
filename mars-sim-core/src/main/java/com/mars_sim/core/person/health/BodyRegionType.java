@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.health;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum BodyRegionType {
+public enum BodyRegionType implements Named {
 
 	BFO,OCULAR,SKIN;
 
@@ -20,6 +22,7 @@ public enum BodyRegionType {
 		this.name = Msg.getStringOptional("bodyregiontype", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

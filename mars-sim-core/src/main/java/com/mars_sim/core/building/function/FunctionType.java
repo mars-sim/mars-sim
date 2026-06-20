@@ -6,11 +6,13 @@
  */
 package com.mars_sim.core.building.function;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.tool.Msg;
 
-public enum FunctionType {
+public enum FunctionType implements Named {
 
     ADMINISTRATION              (BuildingCategory.COMMAND), 
 	ALGAE_FARMING				(BuildingCategory.FARMING), 
@@ -59,6 +61,7 @@ public enum FunctionType {
 		this.category = category;
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

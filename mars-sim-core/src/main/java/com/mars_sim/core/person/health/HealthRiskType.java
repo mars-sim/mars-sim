@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.health;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum HealthRiskType {
+public enum HealthRiskType implements Named {
 
 	CATARACTS, BRAIN_STEM_CELLS_DAMAGE,CANCERS,CENTRAL_NERVOUS_SYSTEM_EFFECTS,
 	NEUROVESTIBULAR,INFERTILITY,MUSCULAR_ATROPHY,BONE_LOSS,
@@ -22,6 +24,7 @@ public enum HealthRiskType {
         this.name = Msg.getStringOptional("HealthRiskType", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

@@ -44,15 +44,7 @@ import com.mars_sim.core.tool.RandomUtil;
 	 public static final double RATIO_OXIDIZER_METHANE = 1;
 	 /** The ratio of the amount of oxidizer to methanol fuel. */
 	 public static final double RATIO_OXIDIZER_METHANOL = 1.5;
-	 
-	 // Water Ratio is 2 for direct methanol fuel cell (DMFC). 
-	 // Water Ratio varies for indirect methanol fuel cell (DMFC). say 1.125;
-	 /** The ratio of water produced for every methanol consumed. */
-//	 private static final double RATIO_WATER_METHANOL = 2; 
 
-	 /** The ratio of water produced for every methane consumed. */
-//	 private static final double RATIO_WATER_METHANE = 2.25;
-	 
 	 /** The factor for estimating the adjusted fuel economy [km/kg]. */
 	 public static final double FUEL_ECONOMY_FACTOR = .85;
 	 /** The factor for estimating the adjusted fuel consumption [Wh/km]. */
@@ -116,7 +108,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		 int numModule = vehicle.getVehicleSpec().getBatteryModule();
 		 double energyPerModule = vehicle.getVehicleSpec().getEnergyPerModule();
 		 
-		 battery = new Battery(vehicle, numModule, energyPerModule);
+		 battery = new Battery(vehicle, 40,numModule, energyPerModule);
 		 fuelTypeID = vehicle.getFuelTypeID();
 	 }
  
@@ -163,7 +155,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		 }
 		 
 		 // distance in km
-		 double distanceTravelled = distToCover; //vKPH * hrsTime;
+		 double distanceTravelled = distToCover; 
 		 // Gets the current mass of the vehicle with payload
 		 double mass = vehicle.getMass(); // [in kg]
 		 // weight is mg
@@ -190,13 +182,13 @@ import com.mars_sim.core.tool.RandomUtil;
 		 double aveForce = 0;
 		  
 		 double powerThrustDrone = 0;
-		 //  g/m3 -> kg /m3;  14.76 g/m3 / 1000 -> kg /m3; 
+		 //  g/m3 -> kg /m3;  14.76 g/m3 / 1000 -> kg /m3
 		 double airDensity = sim.getWeather().getAirDensity(vehicle.getCoordinates()) / 1000;
 			
 		 if (VehicleType.isRover(vehicle.getVehicleType())) {
 			 // Calculates forces and power
 			 
-			 double drive[] = propulsion.driveOnGround(weight, vMS, averageSpeed, fGravity, airDensity);
+			 double []drive = propulsion.driveOnGround(weight, vMS, averageSpeed, fGravity, airDensity);
 			 
 //			 double forceConstantSpeed = drive[0];
 			 powerConstantSpeed = drive[1];
@@ -255,7 +247,6 @@ import com.mars_sim.core.tool.RandomUtil;
 			 double multiplier = 1.0 + (int)(angle / Math.PI / 16.0); 
 
 			 double height = 0;
-			 // if (angle == 0)
 			 String caseText = "Case A: Tilt forward at same height - ";
 			 if (angle > 0) {
 				 // Case C: tilt forward ascent
@@ -429,18 +420,6 @@ import com.mars_sim.core.tool.RandomUtil;
 				 
 				 // Calculate energy that can be delivered by battery 
 				 double energySuppliedByBattery = battery.consumeEnergy(energyByBattery / 1000, hrsTime) * 1000;
-		 
-//				 // Test to see how much can be drawn from the battery
-//				 if (VehicleType.isDrone(vehicle.getVehicleType())) {
-//					 // For drone, prioritize to use up fuel as power source first
-//					 // Get energy from the battery [in Wh]			  
-//					 energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;
-//				 }
-//				 else {
-//					 // For ground vehicles
-//					 // Get energy from the battery [in Wh]
-//					 energySuppliedByBattery = battery.requestEnergy(energyByBattery / 1000, hrsTime) * 1000;
-//				 }
 				 
 				 double batteryEnergyDeficit = energyByBattery - energySuppliedByBattery;
 				 
@@ -531,7 +510,7 @@ import com.mars_sim.core.tool.RandomUtil;
 
 			 // Derive the instantaneous fuel economy [km/kg]
 			 // [km/kg] = [km] / [Wh] *  [Wh/kg]
-			 //  energyByFuel = fuelNeeded * vehicle.getFuelConv();
+			 //  energyByFuel = fuelNeeded * vehicle.getFuelConv()
 			 // getFuelConv() is [Wh/kg]
 			 iFE = distanceTravelled / (energyByFuel * vehicle.getFuelConv() + energyByBattery / 1000);	        
 			 // Set the instantaneous fuel economy [km/kg]
@@ -556,9 +535,6 @@ import com.mars_sim.core.tool.RandomUtil;
 		 // Update new vehicle speed
 		 vehicle.setSpeed(vKPH);
 		 // overallEnergyUsed [in Wh], not in kWh
-		 // Calculate the average road load power in kW = Wh / s * 3.6
-//		 double averageRoadLoadPower = overallEnergyUsed / secs * 3.6;
-//		 double averageRoadLoadPower = accelMotor * mass * vMS / 1000;
 	 
 		 if (vKPH > 1 && avePower > 0) {
 			 // update average road load speed in kph
@@ -609,9 +585,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		 double regenDecel = aveForce / mass;
 		 double oldAccel = vehicle.getAccel();
 		 double newAccel = oldAccel + regenDecel;
-//		 if (newAccel < 0)
-//		 // Avoid a -ve newAccel
-//		 newAccel = 0;
+
 		 // Set new vehicle acceleration
 		 vehicle.setAccel(newAccel);
 	 
@@ -649,11 +623,7 @@ import com.mars_sim.core.tool.RandomUtil;
 		 double newAvePower = avePower + brakingPower;
 		// -ve = -ve + +ve
 		 double newForce = aveForce + oppositeForce;
-
-		 // Recompute the new distance it could travel
-//		 double distanceTravelled = vKPH * hrsTime;
-		 // Record this regen energy [Wh] as cache
-//		 regenEnergyBuffer = energyforCharging;	 
+		  
 		 logger.log(vehicle, Level.INFO, 10_000,  
 				 "Scenario 0: regen mode - "
 				 + "oldAccel: " + DECIMAL3_M_S2.format(oldAccel) + TWO_WHITESPACES

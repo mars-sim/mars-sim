@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityListenerManager;
 import com.mars_sim.core.MonitorableEntity;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
@@ -119,7 +120,7 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	/** A map of invited researchers.  */
 	private Map<Integer, Boolean> invitedResearchers;
 	/** A set of listeners for this scientific study. */
-	private transient Set<EntityListener> listeners;
+	private transient EntityListenerManager listeners;
 	/** Major topics covered by this research. */
 	private List<String> topics;
 
@@ -182,7 +183,6 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		primaryStats = new CollaboratorStats(science);
 		proposalWorkTime = 0D;
 		peerReviewStartTime = null;
-		listeners = new HashSet<>();
 		topics = new ArrayList<>();
 
 		// Register the initial phase
@@ -975,10 +975,13 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	 * @param newListener the listener to add.
 	 */
 	@Override
-	public synchronized void addEntityListener(EntityListener newListener) {
+	public void addEntityListener(EntityListener newListener) {
+		if (newListener == null)
+			throw new IllegalArgumentException();
 		if (listeners == null)
-			listeners = new HashSet<>();
-		listeners.add(newListener);
+			listeners = new EntityListenerManager();
+
+		listeners.addEntityListener(newListener);
 	}
 
 	/**
@@ -987,9 +990,9 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	 * @param oldListener the listener to remove.
 	 */
 	@Override
-	public synchronized void removeEntityListener(EntityListener oldListener) {
+	public void removeEntityListener(EntityListener oldListener) {
 		if (listeners != null)
-			listeners.remove(oldListener);
+			listeners.removeEntityListener(oldListener);
 	}
 
 	/**
@@ -998,11 +1001,11 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	 * @return unmodifiable set of entity listeners.
 	 */
 	@Override
-	public synchronized Set<EntityListener> getEntityListeners() {
-		if (listeners == null || listeners.isEmpty()) {
+	public Set<EntityListener> getEntityListeners() {
+		if (listeners == null) {
 			return Collections.emptySet();
 		}
-		return Collections.unmodifiableSet(listeners);
+		return listeners.getEntityListeners();
 	}
 
 	/**
@@ -1021,13 +1024,11 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 	 * @param researcher   the researcher related to the event or null if none.
 	 */
 	private void fireScientificStudyUpdate(String updateType, Person researcher) {
-		if (listeners != null) {
-			synchronized (listeners) {
-				for (EntityListener listener : listeners) {
-					listener.entityUpdate(new EntityEvent(this, updateType, researcher));
-				}
-			}
+		if (listeners == null) {
+			return;
 		}
+		final EntityEvent studyEvent = new EntityEvent(this, updateType, researcher);
+		listeners.fireEvent(studyEvent);
 	}
 	
 	@Override
@@ -1077,9 +1078,6 @@ public class ScientificStudy implements MonitorableEntity, Temporal, Comparable<
 		invitedResearchers.clear();
 		invitedResearchers = null;
 		peerReviewStartTime = null;
-		if (listeners != null) {
-			listeners.clear();
-		}
 		listeners = null;
 	}
 

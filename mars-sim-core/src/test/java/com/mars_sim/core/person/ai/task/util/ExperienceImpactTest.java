@@ -19,10 +19,10 @@ import com.mars_sim.core.person.ai.task.util.ExperienceImpact.PhysicalEffort;
 import com.mars_sim.core.person.ai.task.util.ExperienceImpact.SkillWeight;
 import com.mars_sim.core.structure.Settlement;
 
-public class ExperienceImpactTest extends MarsSimUnitTest {
+class ExperienceImpactTest extends MarsSimUnitTest {
 
     @Test
-    public void testApplyBasicSkill() {
+    void testApplyBasicSkill() {
         Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
 
@@ -69,7 +69,7 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testApplySingleSkill() {
+    void testApplySingleSkill() {
         Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
 
@@ -110,7 +110,7 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testApplyUnbalancedSkill() {
+    void testApplyUnbalancedSkill() {
         Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
 
@@ -149,10 +149,9 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testEffectiveSkill() {
+    void testEffectiveSkill() {
         Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
-        p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
         // Get skills and push them up yo at leace level 1
         var sm = p.getSkillManager();
@@ -181,10 +180,9 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testPersonNoEffort() {
+    void testPersonNoEffort() {
         Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
-        p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
         var origFatigue = p.getPhysicalCondition().getFatigue();
 
@@ -199,10 +197,9 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
     
     @Test
-    public void testPersonLowEffort() {
+    void testPersonLowEffort() {
         Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
-        p.getPhysicalCondition().setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
         var origEnergy = p.getPhysicalCondition().getEnergy();
 
@@ -217,17 +214,15 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testPersonHighEffort() {
+    void testPersonHighEffort() {
         Settlement s = buildSettlement("mock");
         Person p = buildPerson("Worker #1", s);
         var cond = p.getPhysicalCondition();
-        cond.setPerformanceFactor(1D);  // Ensure Person does not disrupt skill
 
         var origEnergy = cond.getEnergy();
         var origSoreness = cond.getMuscleSoreness();
         var origHealth = cond.getMuscleHealth();
 
-//        System.out.println("origSoreness: " + origSoreness);
         // No effort impact
         ExperienceImpact noEffort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                                           PhysicalEffort.HIGH, 0);
@@ -235,7 +230,6 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
 
         noEffort.apply(p, 10, 1, 1);
 
-//        System.out.println("new Soreness: " + cond.getMuscleSoreness());
         
         assertLessThan("Energy reduced", origEnergy, cond.getEnergy());
         assertGreaterThan("Muscle soreness inceased", origSoreness, cond.getMuscleSoreness());
@@ -243,7 +237,7 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testConstructors() {
+    void testConstructors() {
         ExperienceImpact effort = new ExperienceImpact(0, NaturalAttributeType.EXPERIENCE_APTITUDE,
                 true, 0);
         assertEquals(PhysicalEffort.LOW, effort.getEffortRequired(), "Low effort experience");
@@ -254,7 +248,7 @@ public class ExperienceImpactTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testEffort() {
+    void testEffort() {
         assertEffort(PhysicalEffort.HIGH, PhysicalEffort.LOW);
         assertEffort(PhysicalEffort.HIGH, PhysicalEffort.NONE);
         assertEffort(PhysicalEffort.LOW, PhysicalEffort.NONE);

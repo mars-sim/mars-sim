@@ -762,11 +762,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		// Reset declaredDead
 		declaredDead = false;
 		
-		condition.recalculatePerformance();
 		// Set description
 		setDescription("Recovering");
-		// Set performance to 0% awaiting recovering
-		condition.setPerformanceFactor(0);
 		// Set fatigue to 3000 to rest		
 		condition.setFatigue(3000);
 	}

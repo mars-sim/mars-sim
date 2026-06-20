@@ -10,12 +10,7 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.building.function.FunctionType;
@@ -27,8 +22,9 @@ import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
+import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.entitywindow.EntityTableTabPanel;
-import com.mars_sim.ui.swing.utils.EntityModel;
+import com.mars_sim.ui.swing.utils.model.BaseBuildingModel;
 
 /**
  * This is a tab panel for settlement's computing capability.
@@ -119,31 +115,6 @@ class TabPanelComputing extends EntityTableTabPanel<Settlement>
 		return tableModel;
 	}
 
-	/**
-	 * Sets column widths and renderers.
-	 */
-	@Override
-	protected void setColumnDetails(TableColumnModel columns) {
-		columns.getColumn(0).setPreferredWidth(90);
-		columns.getColumn(1).setPreferredWidth(24);
-		columns.getColumn(2).setPreferredWidth(24);
-		columns.getColumn(3).setPreferredWidth(33);
-		columns.getColumn(4).setPreferredWidth(30);
-		columns.getColumn(5).setPreferredWidth(65);
-		columns.getColumn(6).setPreferredWidth(33);
-		
-		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		renderer.setHorizontalAlignment(SwingConstants.RIGHT);
-		columns.getColumn(1).setCellRenderer(renderer);
-		columns.getColumn(2).setCellRenderer(renderer);
-		columns.getColumn(3).setCellRenderer(renderer);
-		columns.getColumn(5).setCellRenderer(renderer);
-		columns.getColumn(6).setCellRenderer(renderer);
-		renderer.setHorizontalAlignment(SwingConstants.CENTER);
-		columns.getColumn(4).setCellRenderer(renderer);
-	}
-
-
 	@Override
 	public void clockUpdate(ClockPulse pulse) {
 		// Total Power Demand
@@ -182,79 +153,51 @@ class TabPanelComputing extends EntityTableTabPanel<Settlement>
 	/**
 	 * Internal class used as model for the table.
 	 */
-	private static class TableModel extends AbstractTableModel
-		implements EntityModel {
+	private static class TableModel extends BaseBuildingModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
+		private static final int KWE_VAL = 101;
+		private static final int KWT_VAL = 102;
+		private static final int COOLING_VAL = 103;
+		private static final int UTILIZATION_VAL = 104;
+		private static final int CUS_VAL = 105;
+		private static final int ENTROPY_VAL = 106;
+
+		private static final EntityColumnSpec KWE = new EntityColumnSpec(new ColumnSpec(KWE_VAL, "kWe", Double.class), null);
+		private static final EntityColumnSpec KWT = new EntityColumnSpec(new ColumnSpec(KWT_VAL, "kWt", Double.class), null);
+		private static final EntityColumnSpec COOLING = new EntityColumnSpec(new ColumnSpec(COOLING_VAL, "Cooling", Double.class), null);
+		private static final EntityColumnSpec UTILIZATION = new EntityColumnSpec(new ColumnSpec(UTILIZATION_VAL, "% Util", Double.class), null);
+		private static final EntityColumnSpec CUS = new EntityColumnSpec(new ColumnSpec(CUS_VAL, "CUs", String.class, ColumnSpec.STYLE_RIGHT), null);
+		private static final EntityColumnSpec ENTROPY = new EntityColumnSpec(new ColumnSpec(ENTROPY_VAL, "Entropy", Double.class), null);
 
 		private List<Building> buildings;
 
 		private TableModel(Settlement settlement) {
+			super(NAME, KWE, KWT, COOLING, UTILIZATION, CUS, ENTROPY);
 			buildings = settlement.getBuildingManager().getBuildings(FunctionType.COMPUTATION);
+			setEntities(buildings);
 		}
 
 		@Override
-		public int getRowCount() {
-			return buildings.size();
-		}
-
-		@Override
-		public int getColumnCount() {
-			return 7;
-		}
-		
-		@Override
-		public Class<?> getColumnClass(int columnIndex) {
-			return switch (columnIndex) {
-				case 0 -> String.class;
-				case 1, 2, 3, 4, 6 -> Double.class;
-				case 5 -> String.class;
-				default -> Object.class;
-			};
-		}
-
-		@Override
-		public String getColumnName(int columnIndex) {
-			return switch (columnIndex) {
-				case 0 -> Msg.getString("building.singular");
-				case 1 -> "kWe";
-				case 2 -> "kWt";
-				case 3 -> "Cooling";
-				case 4 -> "% Util";
-				case 5 -> "CUs";
-				case 6 -> "Entropy";
-				default -> null;
-			};
-		}
-
-		@Override
-		public Object getValueAt(int row, int column) {
-
-			var b = buildings.get(row);
-			return switch (column) {
-				case 0 -> b.getName();
-				case 1 -> Math.round(b.getComputation().getFullPowerLoad() * 10.0)/10.0;
-				case 2 -> Math.round(b.getComputation().getInstantHeatGenerated() * 10.0)/10.0;
-				case 3 -> Math.round(b.getComputation().getInstantCoolingLoad() * 10.0)/10.0;
-				case 4 -> Math.round(b.getComputation().getUsagePercent() * 10.0)/10.0;
-				case 5 -> {
-					double peak = Math.round(b.getComputation().getPeakCU() * 100.0)/100.0;
-					double computingUnit = Math.round(b.getComputation().getCurrentCU() * 100.0)/100.0;
+		protected Object getEntityValue(Building b, int valueIndex) {
+			return switch (valueIndex) {
+				case KWE_VAL -> Math.round(b.getComputation().getFullPowerLoad() * 10.0) / 10.0;
+				case KWT_VAL -> Math.round(b.getComputation().getInstantHeatGenerated() * 10.0) / 10.0;
+				case COOLING_VAL -> Math.round(b.getComputation().getInstantCoolingLoad() * 10.0) / 10.0;
+				case UTILIZATION_VAL -> Math.round(b.getComputation().getUsagePercent() * 10.0) / 10.0;
+				case CUS_VAL -> {
+					double peak = Math.round(b.getComputation().getPeakCU() * 100.0) / 100.0;
+					double computingUnit = Math.round(b.getComputation().getCurrentCU() * 100.0) / 100.0;
 					yield computingUnit + SLASH + peak;
 				}
-				case 6 -> Math.round(b.getComputation().getEntropy( )* 1_000.0)/1_000.0;
-				default -> null;
+				case ENTROPY_VAL -> Math.round(b.getComputation().getEntropy() * 1_000.0) / 1_000.0;
+				default -> super.getEntityValue(b, valueIndex);
 			};
 		}
 
 		public void update() {
 			fireTableDataChanged();
-		}
-
-		@Override
-		public Entity getAssociatedEntity(int row) {
-			return buildings.get(row);
 		}
 	}
 }

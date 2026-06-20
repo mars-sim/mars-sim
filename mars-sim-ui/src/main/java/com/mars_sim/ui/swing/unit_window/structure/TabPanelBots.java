@@ -87,14 +87,6 @@ class TabPanelBots extends EntityTableTabPanel<Settlement> implements TemporalCo
 		return model;
 	}
 
-	@Override
-	public void destroy() {
-		if (model != null) {
-			model.release();
-		}
-		super.destroy();
-	}
-
 	private static class BotModel extends BaseRobotModel {
 		private final Settlement home;
 

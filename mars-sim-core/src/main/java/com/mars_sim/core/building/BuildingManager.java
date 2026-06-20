@@ -19,9 +19,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.LocalAreaUtil;
 import com.mars_sim.core.SimulationConfig;
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.building.config.BuildingConfig;
@@ -419,15 +419,6 @@ public class BuildingManager implements Serializable {
 				).toList();
 	}
 
-	/**
-	 * Gets a list of settlement's buildings with thermal function.
-	 *
-	 * @return list of buildings
-	 */
-	public List<Building> getBuildingsWithThermal() {
-		return getBuildings(FunctionType.THERMAL_GENERATION);
-	}
-	
 	/**
 	 * Checks if the settlement contains a given building.
 	 *
@@ -2016,8 +2007,9 @@ public class BuildingManager implements Serializable {
 	 *
 	 * @return template ID (starting from 0).
 	 */
-	public int getNextTemplateID() {
+	public int getNextTemplateID(String buildingType) {
 		return buildings.size();
+		// Note: check  with getUniqueName() and getUniqueNum() methods below for comparison	
 	}
 
 	/**
@@ -2026,10 +2018,20 @@ public class BuildingManager implements Serializable {
 	 * @return a unique nick name
 	 */
 	public String getUniqueName(String buildingType) {
-		long id = buildings.stream().filter(b -> b.getBuildingType().equals(buildingType)).count() + 1;
-		return buildingType + " " + id;
+		return buildingType + " " + getUniqueNum(buildingType) ;
 	}
 
+	/**
+	 * Gets an unique number for a new building.
+	 *
+	 * @return a unique number
+	 */
+	public int getUniqueNum(String buildingType) {
+		long id = buildings.stream().filter(b -> b.getBuildingType().equals(buildingType)).count() + 1;
+		return (int)id;
+	}
+	
+	
 	/**
 	 * Gets total combined power loads from all computing nodes in a settlement.
 	 * 

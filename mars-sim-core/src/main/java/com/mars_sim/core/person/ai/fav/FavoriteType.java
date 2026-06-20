@@ -7,9 +7,11 @@
 
 package com.mars_sim.core.person.ai.fav;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
-public enum FavoriteType {
+public enum FavoriteType implements Named {
 
 	ASTRONOMY,COOKING,FIELD_WORK,GAMING,LAB_EXPERIMENTATION,
 	OPERATION,RESEARCH,SPORT,TENDING_FARM,TINKERING;
@@ -34,6 +36,7 @@ public enum FavoriteType {
         this.name = Msg.getStringOptional("FavoriteType", name());
 	}
 
+	@Override
 	public final String getName() {
 		return this.name;
 	}

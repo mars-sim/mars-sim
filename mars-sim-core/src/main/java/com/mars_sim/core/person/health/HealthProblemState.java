@@ -6,12 +6,14 @@
  */
 package com.mars_sim.core.person.health;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
  * Represents the state of a HealthProblem.
  */
-public enum HealthProblemState {
+public enum HealthProblemState implements Named {
 	DEGRADING, BEING_TREATED, RECOVERING, CURED, DEAD;
 
     private String name;
@@ -20,6 +22,7 @@ public enum HealthProblemState {
         this.name = Msg.getStringOptional("HealthProblemState", name());
     }
 
+    @Override
     public String getName() {
         return name;
     }

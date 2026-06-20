@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -26,6 +25,7 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.EntityListener;
+import com.mars_sim.core.EntityListenerManager;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
@@ -157,7 +157,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	
 	// transient members
 	/** Entity listeners. */
-	private transient Set<EntityListener> listeners;
+	private transient EntityListenerManager listeners;
 
 	// Static members
 	protected static UnitManager unitManager;
@@ -222,12 +222,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
 	public final void addEntityListener(EntityListener newListener) {
 		if (listeners == null) {
-			// Use a concurrent set as there is a rare potential for a listener to unregsiter itself when events are fired
-			listeners = new CopyOnWriteArraySet<>();
+			listeners = new EntityListenerManager();
 		}
-		synchronized (listeners) {
-			listeners.add(newListener);
-		}
+		listeners.addEntityListener(newListener);
 	}
 
 	/**
@@ -238,9 +235,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
 	public final void removeEntityListener(EntityListener oldListener) {
 		if (listeners != null) {
-			synchronized (listeners) {
-				listeners.remove(oldListener);
-			}
+			listeners.removeEntityListener(oldListener);
 		}
 	}
 
@@ -251,12 +246,10 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 */
 	@Override
 	public final Set<EntityListener> getEntityListeners() {
-		if (listeners == null || listeners.isEmpty()) {
+		if (listeners == null) {
 			return Collections.emptySet();
 		}
-		synchronized (listeners) {
-			return Collections.unmodifiableSet(listeners);
-		}
+		return listeners.getEntityListeners();
 	}
 
 	/**
@@ -277,12 +270,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	@Override
 	public void fireMissionUpdate(String eventType, Object target) {
 		if (listeners != null) {
-			synchronized (listeners) {
-				var event = new EntityEvent(this, eventType, target);
-				for (EntityListener l : listeners) {
-					l.entityUpdate(event);
-				}
-			}
+			listeners.fireEvent(new EntityEvent(this, eventType, target));
 		}
 	}
 
@@ -359,7 +347,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 			person.getTaskManager().recordActivity(getName(), "Leave Mission", "", this);
 
 			
-	      	if (RoleType.GUEST != person.getRole().getType()) {      
+	      	if (RoleType.GUEST != person.getRole().getType() && person.getShiftSlot() != null) {      
 	      		person.getShiftSlot().setOnCall(false);
 	      	}	
 

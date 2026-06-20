@@ -135,7 +135,7 @@ public class PrescribeMedication extends Task {
         PhysicalCondition condition = patient.getPhysicalCondition();
         RadiationExposure exposure = condition.getRadiationExposure();
         return (!condition.isDead()
-            && ((condition.isStressedOut() && !condition.hasMedication(AnxietyMedication.NAME))
+            && ((condition.getStressLevel().isStressedOut() && !condition.hasMedication(AnxietyMedication.NAME))
                 || (exposure.isSick() && !condition.hasMedication(RadioProtectiveAgent.NAME))));
     }
 
@@ -182,7 +182,7 @@ public class PrescribeMedication extends Task {
                 if (condition.isRadiationPoisoned()) {
                 	medication = new RadioProtectiveAgent(patient);                    
                 }
-                else if (condition.isStressedOut()) {
+                else if (condition.getStressLevel().isStressedOut()) {
                 	medication = new AnxietyMedication(patient); 
                 }
 

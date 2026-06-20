@@ -6,12 +6,14 @@
  */
 package com.mars_sim.core.environment;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
  * Type of landmarks
  */
-public enum LandmarkType {
+public enum LandmarkType implements Named {
 
     AO, CM, CH, AA, FO, LF, ME, MO, PL, TH, VA;
 
@@ -25,6 +27,7 @@ public enum LandmarkType {
      * Get the human readable name
      * @return
      */
+    @Override
     public String getName() {
         return name;
     }

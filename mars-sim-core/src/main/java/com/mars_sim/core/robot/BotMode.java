@@ -7,12 +7,14 @@
  */
 package com.mars_sim.core.robot;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
  * Robot status mode. They can be either primary or secondary.
  */
-public enum BotMode {
+public enum BotMode implements Named {
 	
 	CHARGING 				(false),
 	MAINTENANCE 			(false),
@@ -31,6 +33,7 @@ public enum BotMode {
 		this.primary = primary;
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}

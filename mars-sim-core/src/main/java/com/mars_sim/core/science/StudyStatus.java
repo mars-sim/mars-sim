@@ -6,12 +6,14 @@
  */
  package com.mars_sim.core.science;
 
+import com.mars_sim.core.Named;
+
 import com.mars_sim.core.tool.Msg;
 
 /**
   * Represents the different states of a Scientific Study
   */
-public enum StudyStatus {
+public enum StudyStatus implements Named {
     PROPOSAL_PHASE, INVITATION_PHASE,
     RESEARCH_PHASE, PAPER_PHASE,
     PEER_REVIEW_PHASE, CANCELLED,
@@ -28,6 +30,7 @@ public enum StudyStatus {
      * Get localised label
      * @return
      */
+    @Override
     public String getName() {
         return name;
     }

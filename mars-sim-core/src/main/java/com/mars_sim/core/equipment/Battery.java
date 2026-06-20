@@ -10,15 +10,11 @@ package com.mars_sim.core.equipment;
 import java.io.Serializable;
 
 import com.mars_sim.core.Unit;
-import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.building.Building;
 import com.mars_sim.core.logging.SimLogger;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.tool.MathUtils;
 import com.mars_sim.core.tool.RandomUtil;
-import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * This class represents the modeling of an electrical battery.
@@ -31,6 +27,8 @@ public class Battery implements Serializable {
     /** Default logger. */
 	private static final SimLogger logger = SimLogger.getLogger(Battery.class.getName());
 	
+	public static final String BATTERY_EVENT = "battery event";
+
 	/** 
 	 * The number of cells per module of the battery. 
 	 * Note: 3.6 V * 104 = 374.4 V 
@@ -66,16 +64,13 @@ public class Battery implements Serializable {
 	
     /** The standard voltage of a drone battery pack in volts. */
     public static final double DRONE_VOLTAGE = HIGHEST_MAX_VOLTAGE / 8;
-    
-    /** The maximum current that can be safely drawn from this battery pack in Ampere. */
-    // May add back: private static final double MAX_AMP_DRAW = 120
-  
+
 	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_CHARGING = 1;
 	/** The maximum continuous discharge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_DISCHARGING = 2;
 
-	public static final double HOURS_PER_MILLISOL = 0.0247 ; //MarsTime.SECONDS_IN_MILLISOL / 3600D;
+	public static final double HOURS_PER_MILLISOL = 0.0247 ;
 	/** The percent of health improvement after reconditioning. */
 	public static final double PERCENT_BATTERY_RECONDITIONING = .1; // [in %]
 	 
@@ -96,18 +91,11 @@ public class Battery implements Serializable {
     private boolean isCharging;
 	/** True if the battery reconditioning is prohibited. */
 	private boolean locked;
-    /** Is the unit operational ? */
-    private boolean operable;
-    
-    /** The number of battery module. */
-    public int numModules;
 	
 	private int cableSizeFactor;
 	
 	/** The number of times the battery has been discharged/depleted. */
 	private double cyclesDepleted;
-    /** The maximum energy capacity of a standard battery module in kWh. */
-    public double energyPerModule;
     /** The standby power consumption in kW. */
     private double standbyPower;
     /** unit's stress level (0.0 - 100.0). */
@@ -125,7 +113,7 @@ public class Battery implements Serializable {
 	/** The energy storage capacity [in kWh, not Wh]. */
 	private double energyStorageCapacity;
 	/** The maximum nameplate kWh of this battery. */	
-	public double maxCapNameplate;
+	private double maxCapNameplate;
 	/** 
 	 * The capacity rating [in ampere-hour or Ah] of the battery in terms of its 
 	 * charging/discharging ability at a particular C-rating. 
@@ -142,12 +130,6 @@ public class Battery implements Serializable {
 	 */
 	private double ampHourStored;
 	
-	/** 
-	 * The full capacity [in ampere-hour or Ah] of this battery in terms of its charging/discharging ability at 
-	 * a particular C-rating.
-	 */
-	private double ampHourFullCapacity;
-
 	/**  
 	 * The total internal resistance of the battery.
 	 * rTotal = rCell * # of cells * # of modules
@@ -166,61 +148,50 @@ public class Battery implements Serializable {
 	 * series resistance of the battery.
 	 */
 	private double terminalVoltage; 
-	/** The lifecycle of energy charging and discharging. For lifecycle analysis. */
-	public double cumulativeChargeDischarge;
 	/** The degradation rate of the battery in % per 1000 milisols. May be reduced via research. */
-	public double percentBatteryDegrade = .05;
+	private double percentBatteryDegrade = .05;
 	/** The health of the battery. */
 	private double health = 1D; 
 	
 	private double internalTemperature = INITIAL_TEMPERATURE;
 			
 	private Unit unit;
+
+	private BatteryStatus status;
 	
     /**
      * Constructor.
      * 
      * @param unit The unit requiring a battery.
-	 * @param numModule
-	 * @param energyPerModule
+	 * @param cableSizeFactor The cable size factor for the unit.
+	 * @param numModule NUmber of modules in the battery pack.
+	 * @param energyPerModule The energy capacity of each module in kWh.
 	 */
-    public Battery(Unit unit, int numModules, double energyPerModule) {
+    public Battery(Unit unit, int cableSizeFactor, int numModules, double energyPerModule) {
     	this.unit = unit;
-    	
-    	if (unit instanceof Building) {
-        	cableSizeFactor = 20; 
-    	}
-    	else if (unit instanceof Robot) {
-        	cableSizeFactor = 80; 
-    	}
-    	else if (unit instanceof Vehicle) {
-        	cableSizeFactor = 40; 
-    	}
+		this.cableSizeFactor = cableSizeFactor;
     	
         performance = 1.0D;
-        operable = true;
         
         lowPowerPercent = 5;
         standbyPower = 0.01;
         
-        this.numModules = numModules;
         // numModules * 0.583 mΩ * 96 = numModules * 55.968 mΩ
 		rTotal = R_CELL * numModules * CELLS_IN_SERIES_PER_MODULE;
 		cellVoltage = NOMINAL_CELL_VOLTAGE;
 		
 		// For now, energyPerModule is 15 kWh
-        this.energyPerModule = energyPerModule; 
         energyStorageCapacity = energyPerModule * numModules;
         maxCapNameplate = energyStorageCapacity;
         
 		// At the start of sim, set to a random value
         kWhStored = energyStorageCapacity * (.5 + RandomUtil.getRandomDouble(.5));	
- 
-		updateFullAmpHourCapacity();
 		
         updateLowPowerMode();
         
     	updateTerminalVoltage();
+
+		status = BatteryStatus.fromValue(getBatteryPercent());
     }
     
     /**
@@ -246,17 +217,13 @@ public class Battery implements Serializable {
 			return 0D;
 		
 		double storedkWh = getkWhStored();
-		
-//		double maxCap = getEnergyStorageCapacity();
-		
+				
 		if (storedkWh <= 0)
 			return 0D;
 
 		double vTerminal = getTerminalVoltage();
 		// Assume the internal resistance of the battery is constant
 		double rInt = getTotalResistance();
-		// Assume max stateOfCharge is 1
-//		double stateOfCharge = storedkWh / maxCap;
 
 		// The output voltage
 		// e.g. nominal voltage of Tesla Model 3 is 350 V
@@ -341,14 +308,10 @@ public class Battery implements Serializable {
      * This method reflects a passing of time.
      * 
      * @param pulse amount of time in a clock pulse
-     * @param support life support system.
-     * @param config robot configuration.
      */
-    public boolean timePassing(ClockPulse pulse) {
+    public void timePassing(ClockPulse pulse) {
     	double time = pulse.getElapsed();
-    	if (time == 0.0)
-    		return false;
-		
+
     	if (pulse.isNewSol()) {
 	        reconditionBattery();
     	}
@@ -373,7 +336,12 @@ public class Battery implements Serializable {
     		internalTemperature = INITIAL_TEMPERATURE;
     	}
     	
-        return operable;
+        // Last notify
+		var newStatus = BatteryStatus.fromValue(getBatteryPercent());
+		if (newStatus != status) {
+			status = newStatus;
+			unit.fireUnitUpdate(BATTERY_EVENT);
+		}
     }
 
     /**
@@ -420,26 +388,6 @@ public class Battery implements Serializable {
     }
     
     /**
-     * Updates the full Amp Hour capacity [in Ah].
-     * NOTE: DO NOT DELTE. RETAIN THIS METHOD FOR FUTURE USE.
-     */
-    private void updateFullAmpHourCapacity() {
-    	ampHourFullCapacity = 1000 * energyStorageCapacity / HIGHEST_MAX_VOLTAGE; 
-    }
-    
-    /**
-     * Gets the maximum power [in kW] available when discharging or drawing power.
-     * 
-     * @param time in hours
-     * @return
-     */
-    private double getMaxPowerDraw(double time) {
-    	// Note: Need to find the physical formula for max power draw
-    	return ampHourStored * HIGHEST_MAX_VOLTAGE / time / 1000;
-    }
-
-    
-    /**
      * Consumes energy from the battery. This will discharge the battery.
      * 
      * @param consumekWh amount of energy to consume [in kWh]
@@ -464,15 +412,11 @@ public class Battery implements Serializable {
     	
 	    cyclesDepleted += available / 3 / energyStorageCapacity;
 
-    	unit.fireUnitUpdate(EntityEventType.BATTERY_EVENT);
-
     	updateTerminalVoltage();
     	
         updateLowPowerMode();
             
         updateAmpHourStored();
-        
-    	cumulativeChargeDischarge += consumekWh;
     	
     	if (kWhStored / maxCapNameplate < .02) {
     	    // Unlock the flag for reconditioning
@@ -516,9 +460,7 @@ public class Battery implements Serializable {
      */
     public double getMaxPowerCharging() {
     	// Note: Need to find the physical formula for max power charge
-    	double power = MAX_C_RATING_CHARGING * ampHourStored * HIGHEST_MAX_VOLTAGE / 1000;
-    	// May add back for debugging: logger.info("getMaxPowerCharging: " + Math.round(power * 10.0)/10.0 + "  ampHourStored: " + Math.round(ampHourStored* 10.0)/10.0)
-    	return power;
+    	return MAX_C_RATING_CHARGING * ampHourStored * HIGHEST_MAX_VOLTAGE / 1000;
     }
     
     /**
@@ -544,12 +486,8 @@ public class Battery implements Serializable {
         updateAmpHourStored();
 
         updateLowPowerMode();
-        
-		unit.fireUnitUpdate(EntityEventType.BATTERY_EVENT);
     	
 		updateTerminalVoltage();
-		
-		cumulativeChargeDischarge += kWhPumpedIn;
 		
     	return kWhAccepted;
     }
@@ -613,18 +551,6 @@ public class Battery implements Serializable {
     }
 
     /**
-     * Sets the battery performance factor.
-     * 
-     * @param newPerformance new performance (between 0 and 1).
-     */
-    private void setPerformanceFactor(double newPerformance) {
-        if (newPerformance <= 1.0 && newPerformance >= 0.0 && performance != newPerformance) {
-            performance = newPerformance;
-			unit.fireUnitUpdate(EntityEventType.PERFORMANCE_EVENT);
-        }
-    }
-
-    /**
      * Gets the unit system stress level.
      * 
      * @return stress (0.0 to 100.0)
@@ -649,6 +575,13 @@ public class Battery implements Serializable {
     public double getBatteryPercent() {
     	return kWhStored / energyStorageCapacity * 100;
     }
+
+	/**
+	 * The status of the battery.
+	 */
+	public BatteryStatus getBatteryStatus() {
+		return status;
+	}
 
     /**
      * Gets the internal temperature.
@@ -838,5 +771,4 @@ public class Battery implements Serializable {
     public void destroy() {
         unit = null;
     }
-
 }

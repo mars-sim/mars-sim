@@ -37,16 +37,24 @@ public class BuildingMapLayer extends AbstractMapLayer {
 
 	private static final String HATCH = "hatch";
 	
-	private static final String HALLWAY = "Hallway";
-	private static final String H = "H";
-	private static final String TUNNEL = "Tunnel";
-	private static final String T = "T";
-	private static final String BRICKWAY = "Brickway";
-	private static final String B = "B";
-	private static final String BRICKCORE3 = "Brickcore3x3";
-	private static final String B3 = "B3";
-	private static final String BRICKCORE9 = "Brickcore3x9";
-	private static final String B9 = "B9";
+//	private static final String HALLWAY = "Hallway";
+//	private static final String H = "H";
+//	private static final String TUNNEL = "Tunnel";
+//	private static final String T = "T";
+//	private static final String WALKWAY = "Walkway";
+//	private static final String W = "W";
+//	private static final String BRICKWAY = "Brickway";
+//	private static final String B = "B";
+//	private static final String BRICKCORE3 = "Brickcore3x3";
+//	private static final String B3 = "B3.";
+//	private static final String BRICKCORE9 = "Brickcore3x9";
+//	private static final String B9 = "B9.";
+//	private static final String CORE_A = "Core A";
+//	private static final String C1 = "C1.";
+//	private static final String CORE_B = "Core B";
+//	private static final String C2 = "C2.";
+//	private static final String CORE_C = "Core C";
+//	private static final String C3 = "C3.";
 	
     // Static members
     private static final Font SPOT_FONT = new Font(Font.SERIF, Font.ITALIC, 3); 
@@ -152,8 +160,7 @@ public class BuildingMapLayer extends AbstractMapLayer {
         }
 
         if (showLabel) {
-            String[] words = building.getName().replace(HALLWAY, H).replace(TUNNEL, T)
-            		.replace(BRICKWAY, B).replace(BRICKCORE3, B3).replace(BRICKCORE9, B9).split(" ");
+            String[] words = building.getName().split(" ");
     
             ColorChoice frontColor = BUILDING_COLORS.getOrDefault(building.getCategory(), BUILDING_COLOR);
 

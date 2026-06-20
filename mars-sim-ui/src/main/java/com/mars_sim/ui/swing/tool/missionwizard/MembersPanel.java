@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PhysicalConditionFormat;
 import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.tool.Msg;
@@ -125,7 +124,7 @@ class MembersPanel extends WizardItemStep<MissionDataBean, Person>
 					else yield null;
 				}
 				case 4 -> item.getPerformanceRating() * 100D;
-				case 5 -> PhysicalConditionFormat.getHealthSituation(item.getPhysicalCondition());
+				case 5 -> item.getPhysicalCondition().getStatus();
 				default -> null;
 			}; 
 		}

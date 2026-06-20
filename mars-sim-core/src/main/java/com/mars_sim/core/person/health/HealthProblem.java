@@ -8,7 +8,6 @@ package com.mars_sim.core.person.health;
 
 import java.io.Serializable;
 
-import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.events.HistoricalEventManager;
 import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
@@ -16,7 +15,6 @@ import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.time.MarsTime;
-import com.mars_sim.core.tool.Conversion;
 
 /**
  * This class represents a Health problem being suffered by a Person. The class
@@ -92,7 +90,7 @@ public class HealthProblem implements Serializable {
 		state = newState;
 
 		var c = getComplaint();
-		sufferer.fireUnitUpdate(EntityEventType.ILLNESS_EVENT, c);
+		sufferer.fireUnitUpdate(PhysicalCondition.ILLNESS_EVENT, c);
 		logger.fine(getSufferer(), "Problem " + c.getName() + " now " + newState);
 	}
 
@@ -118,6 +116,16 @@ public class HealthProblem implements Serializable {
 			return d;
 		else
 			return 100;
+	}
+
+	/**
+	 * Checks if this health problem is more serious than another based on Complaint severity.
+	 * 
+	 * @param other The other health problem to compare against.
+	 * @return true if this health problem is more serious than the other.
+	 */
+	public boolean isMoreSeriousThan(HealthProblem other) {
+		return getComplaint().getSeriousness() > other.getComplaint().getSeriousness();
 	}
 
 	/**
@@ -352,16 +360,7 @@ public class HealthProblem implements Serializable {
 	 * @return
 	 */
 	public String printStatus() {
-		return Conversion.capitalize0(getComplaint().getName()) + ". " + getState().getName();
-	}
-	
-	/**
-	 * Prints the dead status.
-	 * 
-	 * @return
-	 */
-	public String printDeadStatus() {
-		return Conversion.capitalize0(getComplaint().getName());
+		return getComplaint().getName() + ". " + getState().getName();
 	}
 	
 	/**
