@@ -13,6 +13,7 @@ import com.mars_sim.core.equipment.Battery;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.SystemCondition;
 import com.mars_sim.core.tool.Msg;
+import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 
 /**
@@ -52,7 +53,7 @@ public abstract class BaseRobotModel extends AbstractEntityModel<Robot> {
 	protected static final EntityColumnSpec PERFORMANCE = new EntityColumnSpec(new ColumnSpec(PERFORMANCE_VAL, Msg.getString("robot.performance"),
                                                         String.class), Set.of(SystemCondition.PERFORMANCE_EVENT));
 
-    /**)
+    /**
      * Create a generic robot model with the specified columns.
      * @param columns Columns to show.
      */
@@ -78,6 +79,18 @@ public abstract class BaseRobotModel extends AbstractEntityModel<Robot> {
             case BATT_TEMPERATURE_VAL -> entity.getSystemCondition().getBattery().getInternalTemperature();
             case PERFORMANCE_VAL -> entity.getSystemCondition().getPerformanceLevel().getName();
             default -> BaseWorkerModel.getWorkerValue(entity, valueIndex);
+        };
+    }
+
+    /**
+     * Show raw value for level band columns.
+     */
+    @Override
+    protected String getEntityDescription(Robot entity, int colValue) {
+        return switch (colValue) {
+            case BATTERY_VAL -> StyleManager.DECIMAL1_PERC.format(entity.getSystemCondition().getBattery().getBatteryPercent());
+            case PERFORMANCE_VAL -> StyleManager.DECIMAL1_PERC.format(entity.getSystemCondition().getPerformanceFactor() * 100D);
+            default -> null;
         };
     }
 }

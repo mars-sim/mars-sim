@@ -10,6 +10,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
+import com.mars_sim.core.EntityEvent;
+import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.utils.model.BaseRobotModel;
@@ -75,5 +78,31 @@ public class RobotTableModel extends BaseRobotModel implements MonitorModel {
     @Override
     public int getSettlementColumn() {
         return 1;
+    }
+
+    /**
+     * Handle entity updates for a Settlelment.
+     * This is used to update the model when a settlement is added or removed from the filter.
+     * If Event source is not a Settlement, then the event is passed to the super class for handling.
+     * @param event The entity event.
+     */
+    @Override
+    public void entityUpdate(EntityEvent event) {
+        if ((event.getSource() instanceof Settlement settlement)
+            && (settlements.contains(settlement))
+            && (event.getTarget() instanceof Robot r))
+        {
+            // Change to a Robot in a Settlement
+            var eventType = event.getType();
+            if (EntityEventType.INVENTORY_STORING_UNIT_EVENT.equals(eventType)) {
+                addEntity(r);
+            }
+            else if (EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT.equals(eventType)) {
+                removeEntity(r);
+            }
+        }
+        else {
+            super.entityUpdate(event);
+        }
     }
 }

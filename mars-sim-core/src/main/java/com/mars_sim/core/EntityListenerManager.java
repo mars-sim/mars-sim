@@ -109,7 +109,7 @@ public class EntityListenerManager {
 
         // Update metrics
         // Uncomment only when needed as this is an expensive operation
-        updateMetrics(newEvent, listeners.size());
+        //updateMetrics(newEvent, listeners.size());
     }
 
     /**
