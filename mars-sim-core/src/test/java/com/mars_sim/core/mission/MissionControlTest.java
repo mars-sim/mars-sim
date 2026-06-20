@@ -76,10 +76,10 @@ class MissionControlTest extends MarsSimUnitTest{
 
         // Check the scoring has changed
         var history = missionControl.getHistoricalMissions();
-        var numApproved = history.get(1).get(PlanType.APPROVED.name()).doubleValue();
+        var numApproved = history.get(1).get(PlanType.APPROVED.getName()).doubleValue();
         assertEquals(1D, numApproved, "Historical score should match final score");
 
-        assertNull(history.get(1).get(PlanType.NOT_APPROVED.name()), "There should be no rejected missions");
+        assertNull(history.get(1).get(PlanType.NOT_APPROVED.getName()), "There should be no rejected missions");
     }
 
    @Test
@@ -103,10 +103,10 @@ class MissionControlTest extends MarsSimUnitTest{
 
         // Check the scoring has changed
         var history = missionControl.getHistoricalMissions();
-        var numNotApproved = history.get(1).get(PlanType.NOT_APPROVED.name()).doubleValue();
+        var numNotApproved = history.get(1).get(PlanType.NOT_APPROVED.getName()).doubleValue();
         assertEquals(1D, numNotApproved, "Historical score should match final score");
 
-        assertNull(history.get(1).get(PlanType.APPROVED.name()), "There should be no approved missions");
+        assertNull(history.get(1).get(PlanType.APPROVED.getName()), "There should be no approved missions");
     }
 
     
