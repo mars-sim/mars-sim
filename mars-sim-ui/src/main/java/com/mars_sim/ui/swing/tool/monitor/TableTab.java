@@ -180,14 +180,14 @@ public class TableTab extends MonitorTab {
 		if (settlementColumnId > 0) {
 			boolean showSettlement = (currentSelection.size() > 1);
 			if (showSettlement && (savedSettlementColumn != null)) {
-				// SHow Settlement but it is hidden
+				// Show Settlement but it is hidden
 				var tc = table.getColumnModel();
 				tc.addColumn(savedSettlementColumn);
 				tc.moveColumn(tc.getColumnCount()-1, settlementColumnId);
 				savedSettlementColumn = null;
 			}
 			else if (!showSettlement && (savedSettlementColumn == null)) {
-				// No need for Settlement and is no display
+				// No need for Settlement and it is displayed
 				var tc = table.getColumnModel();
 				savedSettlementColumn = tc.getColumn(settlementColumnId);
 				tc.removeColumn(savedSettlementColumn);
@@ -196,7 +196,7 @@ public class TableTab extends MonitorTab {
 		var accepted = getModel().setSettlementFilter(currentSelection);
 
 		// Automatically adjust the width when a significant data change
-		if (!widthAdjusted) {
+		if (!widthAdjusted && getModel().getRowCount() > 0) {
 			widthAdjusted = true;
 			SwingHelper.resizeTableColumns(table);
 		}
