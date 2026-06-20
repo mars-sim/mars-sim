@@ -16,20 +16,15 @@ import java.util.Set;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.Unit;
-import com.mars_sim.core.UnitType;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.role.Role;
 import com.mars_sim.core.person.ai.shift.ShiftSlot;
 import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
-import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.core.vehicle.Crewable;
 import com.mars_sim.ui.swing.components.ColumnSpec;
 import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
 
@@ -115,24 +110,10 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 		EVENT_COLUMN_MAPPING.put(EntityEventType.REVIVED_EVENT, HEALTH);
 	}
 
-	/** 
-	 * Inner enum with valid source types. 
-	 */
-	private enum ValidSourceType {
-		ALL_PEOPLE, VEHICLE_CREW, SETTLEMENT_ALL_ASSOCIATED_PEOPLE, MISSION_PEOPLE;
-	}
-
-	private ValidSourceType sourceType;
-
 	private boolean isLiveCB = true;
 	private boolean isDeceasedCB = false;
 	
-	private transient Crewable vehicle;
-	private Mission mission;
-
-	private transient EntityListener crewListener;
 	private transient EntityListener settlementListener;
-	private transient EntityListener missionListener;
 
 	/**
 	 * Constructs a PersonTableModel that displays residents are all associated
@@ -142,68 +123,9 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	public PersonTableModel()  {
 		super (Msg.getString("PersonTableModel.nameAllCitizens"),
 				"PersonTableModel.countingCitizens", COLUMNS);
-		setupCache();
+		setCachedColumns(FATIGUE, PERFORMANCE);
 		
 		setSettlementColumn(SETTLEMENT);
-
-		sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
-	}
-	
-	/**
-	 * Constructs a PersonTableModel object that displays all people from the
-	 * specified vehicle.
-	 *
-	 * @param vehicle Monitored vehicle Person objects.
-	 */
-	public PersonTableModel(Crewable vehicle) {
-		
-		super(Msg.getString("PersonTableModel.nameVehicle", //-NLS-1$
-				((Unit)vehicle).getName()), 
-				"PersonTableModel.countingPeople", //-NLS-1$
-				COLUMNS);
-
-		setupCache();
-
-		sourceType = ValidSourceType.VEHICLE_CREW;
-		this.vehicle = vehicle;
-				
-		resetItems(vehicle.getCrew());
-		
-		crewListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
-										EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-		((Unit) vehicle).addEntityListener(crewListener);
-	}
-
-	/**
-	 * Constructs a PersonTableModel object that displays all Person from the
-	 * specified mission.
-	 *
-	 * @param mission Monitored mission Person objects.
-	 */
-	public PersonTableModel(Mission mission)  {
-		super(Msg.getString("PersonTableModel.nameMission", //-NLS-1$
-				mission.getName()), "PersonTableModel.countingMissionMembers", //-NLS-1$
-				COLUMNS);
-		
-		setupCache();
-
-		sourceType = ValidSourceType.MISSION_PEOPLE;
-		this.mission = mission;
-		Collection<Person> missionPeople = new ArrayList<>();
-		for(Worker member : mission.getMembers()) {
-			if (member.getUnitType() == UnitType.PERSON) {
-				missionPeople.add((Person) member);
-			}
-		}
-		
-		resetItems(missionPeople);
-		
-		missionListener = new LocalMissionListener();
-		mission.addEntityListener(missionListener);
-	}
-
-	private void setupCache() {
-		setCachedColumns(FATIGUE, PERFORMANCE);
 	}
 
 	@Override
@@ -214,27 +136,13 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 			settlementListener = null;
 		}
 		
-		Collection<Person> entities = null;
-		
-		if (sourceType == ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE) {
-
-			entities = filter.stream()
+		Collection<Person> entities = filter.stream()
 							.map(Settlement::getAllAssociatedPeople)
 							.flatMap(Collection::stream)
 							.filter(this::isPersonDisplayable)
 							.toList();
-			settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
+		settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
 									EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-		}
-		else {
-			entities = filter.stream()
-							.map(Settlement::getIndoorPeople)
-							.flatMap(Collection::stream)
-							.filter(this::isPersonDisplayable)
-							.toList();
-			settlementListener = new PersonChangeListener(EntityEventType.INVENTORY_STORING_UNIT_EVENT,
-											EntityEventType.INVENTORY_RETRIEVING_UNIT_EVENT);
-		}
 		
 		resetItems(entities);
 
@@ -457,47 +365,8 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	public void destroy() {
 		super.destroy();
 
-		 switch (sourceType) {
-			case ValidSourceType.VEHICLE_CREW -> {
-					((Unit) vehicle).removeEntityListener(crewListener);
-					crewListener = null;
-					vehicle = null;
-				}
-			case ValidSourceType.MISSION_PEOPLE -> {
-					mission.removeEntityListener(missionListener);
-					missionListener = null;
-					mission = null;
-				}
-			default -> {
-					getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
-					settlementListener = null;
-				}
-		}
-	}
-
-	/**
-	 * MissionListener inner class.
-	 */
-	private class LocalMissionListener implements EntityListener {
-		/**
-		 * Catches mission update event.
-		 *
-		 * @param event the entity event.
-		 */
-		@Override
-		public void entityUpdate(EntityEvent event) {
-			Object target = event.getTarget();
-			if (target instanceof Person p) {
-				String eventType = event.getType();
-
-				if (eventType.equals(Mission.ADD_MEMBER_EVENT)) {
-					addItem(p);
-				}
-				else if (eventType.equals(Mission.REMOVE_MEMBER_EVENT)) {
-					removeItem(p);
-				}
-			}
-		}
+		getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
+		settlementListener = null;
 	}
 
 	/**

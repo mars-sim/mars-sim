@@ -38,6 +38,7 @@ import com.mars_sim.core.building.utility.power.PowerMode;
 import com.mars_sim.core.computing.ComputingLoadType;
 import com.mars_sim.core.environment.DustStormType;
 import com.mars_sim.core.environment.LandmarkType;
+import com.mars_sim.core.equipment.BatteryStatus;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.events.HistoricalEventCategory;
 import com.mars_sim.core.events.HistoricalEventType;
@@ -66,6 +67,7 @@ import com.mars_sim.core.person.health.ComplaintType;
 import com.mars_sim.core.person.health.HealthProblemState;
 import com.mars_sim.core.person.health.HealthRiskType;
 import com.mars_sim.core.robot.BotMode;
+import com.mars_sim.core.robot.RobotPerfLevel;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.StudyStatus;
 import com.mars_sim.core.structure.ObjectiveType;
@@ -137,6 +139,7 @@ public class BundleCheck {
         // This is all Enums that use the Msg.getStringOptional("EnumType", name()) strategy
         // This could be done dynamically by finding all Enums that implement Named.
         enumMissing += compareEnum(AssignmentType.class, localeMessages, output);
+        enumMissing += compareEnum(BatteryStatus.class, localeMessages, output);
         enumMissing += compareEnum(BodyRegionType.class, localeMessages, output);
         enumMissing += compareEnum(BotMode.class, localeMessages, output);
         enumMissing += compareEnum(BuildingCategory.class, localeMessages, output);
@@ -169,6 +172,7 @@ public class BundleCheck {
         enumMissing += compareEnum(PhaseType.class, localeMessages, output);
         enumMissing += compareEnum(PlanType.class, localeMessages, output);
         enumMissing += compareEnum(PowerMode.class, localeMessages, output);
+        enumMissing += compareEnum(RobotPerfLevel.class, localeMessages, output);
         enumMissing += compareEnum(RoleType.class, localeMessages, output);
         enumMissing += compareEnum(ScienceType.class, localeMessages, output);
         enumMissing += compareEnum(SkillType.class, localeMessages, output);

@@ -7,9 +7,9 @@
 package com.mars_sim.core;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import com.mars_sim.core.logging.SimLogger;
@@ -40,7 +40,7 @@ public class EntityListenerManager {
         }
     }
 
-    private static Map<String, EventMetric> metrics = new HashMap<>();
+    private static Map<String, EventMetric> metrics = new TreeMap<>();
     private static long lastFlushTime = System.currentTimeMillis();
     private static final long FLUSH_INTERVAL_MS = 60000; // Flush metrics every 60 seconds
 
@@ -109,7 +109,7 @@ public class EntityListenerManager {
 
         // Update metrics
         // Uncomment only when needed as this is an expensive operation
-        //updateMetrics(newEvent, listeners.size());
+        updateMetrics(newEvent, listeners.size());
     }
 
     /**

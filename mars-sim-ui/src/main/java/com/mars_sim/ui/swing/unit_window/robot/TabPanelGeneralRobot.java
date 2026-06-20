@@ -10,13 +10,12 @@ import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
-import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.ImageLoader;
 import com.mars_sim.ui.swing.StyleManager;
+import com.mars_sim.ui.swing.TemporalComponent;
 import com.mars_sim.ui.swing.UIContext;
 import com.mars_sim.ui.swing.components.AttributePanel;
 import com.mars_sim.ui.swing.components.JDoubleLabel;
@@ -27,7 +26,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * This tab shows the general details of the Robot type.
  */
 @SuppressWarnings("serial")
-class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListener{
+class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements TemporalComponent {
 
 	private JDoubleLabel statePercent;
 	private JDoubleLabel cap;
@@ -106,25 +105,22 @@ class TabPanelGeneralRobot extends EntityTabPanel<Robot> implements EntityListen
 	}
 
 	/**
-	 * Track changes to the battery or system condition.
+	 * Battery is updated every frame
 	 */
 	@Override
-	public void entityUpdate(EntityEvent event) {
-	
-		if (EntityEventType.BATTERY_EVENT.equals(event.getType())) {
-			var battery = getEntity().getSystemCondition().getBattery();
+	public void clockUpdate(ClockPulse pulse) {
+		var battery = getEntity().getSystemCondition().getBattery();
 
-			statePercent.setValue(battery.getBatteryPercent());
-			cap.setValue(battery.getEnergyStorageCapacity());
-			maxCapNameplate.setValue(battery.getMaxCapNameplate());
-			kWhStored.setValue(battery.getkWhStored());
-			ampHours.setValue(battery.getAmpHourStored());
-			
-			tVolt.setValue(battery.getTerminalVoltage());
-			health.setValue(battery.getHealth() * 100);
-			degradPercent.setValue(battery.getPercentDegrade());
-			maxCRating.setValue(battery.getMaxCRating());
-			cycles.setValue(battery.getNumCycles());
-		}
+		statePercent.setValue(battery.getBatteryPercent());
+		cap.setValue(battery.getEnergyStorageCapacity());
+		maxCapNameplate.setValue(battery.getMaxCapNameplate());
+		kWhStored.setValue(battery.getkWhStored());
+		ampHours.setValue(battery.getAmpHourStored());
+		
+		tVolt.setValue(battery.getTerminalVoltage());
+		health.setValue(battery.getHealth() * 100);
+		degradPercent.setValue(battery.getPercentDegrade());
+		maxCRating.setValue(battery.getMaxCRating());
+		cycles.setValue(battery.getNumCycles());
 	}
 }
