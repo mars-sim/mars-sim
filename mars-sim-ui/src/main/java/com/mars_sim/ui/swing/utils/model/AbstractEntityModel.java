@@ -113,11 +113,33 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     }
 
     /**
-     * Unregister the listening for EntityEvents of the managed Entities.
+     * When releasing the model, the entity listeners are removed.
      */
     @Override
     public void release() {
-       entities.forEach(e -> e.removeEntityListener(this));
+       setMonitorEntities(false);
+    }
+
+    /**
+     * This is a temp. method until MonitorModel implements StatefulComponent.
+     */
+    @Deprecated(forRemoval = true)
+    public void destroy() {
+        // This will be called directly once StatefulCompoment is implemented.
+        release();
+    }
+
+    /**
+     * Control whether the listeners are enabled or disabled.
+     * @param activate Activate the listeners if true, disable if false.
+     */
+    public void setMonitorEntities(boolean activate) {
+        if (activate) {
+            entities.forEach(e -> e.addEntityListener(this));
+        }
+        else {
+            entities.forEach(e -> e.removeEntityListener(this));
+        }
     }
 
     @Override

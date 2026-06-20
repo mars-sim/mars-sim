@@ -88,8 +88,6 @@ public class EntityEventType {
 	public static final String EMERGENCY_BEACON_EVENT = "vehicle emergency beacon event";
 	public static final String RESERVED_EVENT = "vehicle reserved event";
 
-	public static final String BATTERY_EVENT = "battery event";
-
 	// For thermal/heating system
 	public static final String HEAT_MODE_EVENT = "heat mode";
 	
