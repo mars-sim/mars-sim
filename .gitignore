@@ -2,10 +2,11 @@
 **/target/
 .classpath
 .project
-**/.settings/**
+.settings/
 .idea
 .prefs
 /mars-sim.iml
 .vscode
 .DS_Store
 lib/
+**/*.db
