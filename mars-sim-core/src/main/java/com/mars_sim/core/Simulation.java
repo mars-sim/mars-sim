@@ -58,6 +58,7 @@ import com.mars_sim.core.logging.SimuLoggingFormatter;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.metrics.MetricManager;
+import com.mars_sim.core.metrics.database.DatabaseMetricManager;
 import com.mars_sim.core.metrics.memory.MemoryMetricManager;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.moon.LunarColonyManager;
@@ -409,7 +410,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Common handler for full planet events
 		scheduledEvents = new ScheduledEventManager(masterClock);
-		metricManager = new MemoryMetricManager();
+		metricManager = new DatabaseMetricManager(SimulationRuntime.getDataDir() + "/metrics/");
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();

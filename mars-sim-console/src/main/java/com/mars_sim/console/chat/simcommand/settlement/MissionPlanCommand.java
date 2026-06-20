@@ -7,12 +7,12 @@
 
 package com.mars_sim.console.chat.simcommand.settlement;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.mars_sim.console.chat.ChatCommand;
 import com.mars_sim.console.chat.Conversation;
 import com.mars_sim.console.chat.simcommand.StructuredResponse;
-import com.mars_sim.core.person.ai.mission.PlanType;
 import com.mars_sim.core.structure.Settlement;
 
 /**
@@ -43,7 +43,7 @@ public class MissionPlanCommand extends AbstractSettlementCommand {
 		context.println(prompt2);
 		int newObj = context.getIntInput("Select an option ");
 		int max = 0;
-		boolean totals = false;
+		Map<String, Double> totals = null;
 		int today = context.getSim().getMasterClock().getMarsTime().getMissionSol();
 
 		switch (newObj) {
@@ -60,28 +60,28 @@ public class MissionPlanCommand extends AbstractSettlementCommand {
 			break;
 		
 		case 4:			
-			totals = true;
+			totals = new HashMap<>();
 			max = 3;
 			break;
 			
 		case 5:
 			max = 7;
-			totals = true;
+			totals = new HashMap<>();
 			break;
 			
 		case 6:
 			max = 14;
-			totals = true;
+			totals = new HashMap<>();
 			break;
 			
 		case 7:
 			max = 28;
-			totals = true;
+			totals = new HashMap<>();
 			break;
 			
 		case 8:
 			max = today;
-			totals = true;
+			totals = new HashMap<>();
 			break;
 			
 		default:
@@ -91,43 +91,35 @@ public class MissionPlanCommand extends AbstractSettlementCommand {
 
 		StructuredResponse response = new StructuredResponse();
 
-		response.appendHeading("On Sol " + today + ", the " + (totals ? "combined " : "")
-								+ "data for the last " + max + " sols shows");
+		response.appendHeading("On Sol " + today + ", the data for the last N sols");
 
 		Map<Integer, Map<String, Double>> plannings = settlement.getMissionControl().getHistoricalMissions();
 
-		int totalApproved = 0;
-		int totalNotApproved = 0;
 		int firstSol = today;
 		int lastSol = Math.max(0, today - max); // Don't go negative
 		for (int i = firstSol; i > lastSol; i--) {
-			Map<String, Double> plans = plannings.get(i);
-			if (plans != null) {
-				int approved = (int) plans.getOrDefault(PlanType.APPROVED.name(), 0D).doubleValue();
-				int notApproved = (int) plans.getOrDefault(PlanType.NOT_APPROVED.name(), 0D).doubleValue();
-	
-				if (totals) {
-					totalApproved += approved;
-					totalNotApproved += notApproved;
-				}
-				else {
-					response.appendText("Stats for sol " + i);
-					response.appendLabelledDigit("# of plans approved", approved);
-					response.appendLabelledDigit("# of plans not approved", notApproved);
+			response.appendText("Stats for sol " + i);
+
+			var sol = plannings.get(i);
+			outputStats(response, sol);
+
+			if (totals != null) {
+				for(var p : sol.entrySet()) {
+					totals.merge(p.getKey(), p.getValue(), Double::sum);
 				}
 			}
-			else {
-	        	context.println("No plans reviewed.");
-	        	return false;
-	        }
 		}
 		
-		if (totals) {
-			response.appendLabelledDigit("# of plans approved", totalApproved);
-			response.appendLabelledDigit("# of plans not approved", totalNotApproved);
+		if (totals != null) {
+			response.appendText("Stats for total:");
+			outputStats(response, totals);
 		}
 		
 		context.println(response.getOutput());
 		return true;
+	}
+
+	private static void outputStats(StructuredResponse response, Map<String, Double> stats) {
+		stats.entrySet().forEach(p -> response.appendLabelledDigit(p.getKey(), p.getValue().intValue()));
 	}
 }

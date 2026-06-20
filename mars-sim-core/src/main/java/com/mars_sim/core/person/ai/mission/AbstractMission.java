@@ -748,7 +748,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 		
 		setPhase(finalPhase, listOfStatuses);
 		log.setDone();
-		done = true; 
+		done = true;
+
+		getAssociatedSettlement().getMissionControl().finishMission(!aborted);
 		
 		StringBuilder status = new StringBuilder();
 		

@@ -65,6 +65,10 @@ public abstract class MissionProject implements Mission {
                 log.addEntry("Completed");
                 status.add(ACCOMPLISHED);
             }
+
+            // Update stats
+            fireMissionUpdate(Mission.END_MISSION_EVENT, this);
+            getAssociatedSettlement().getMissionControl().finishMission(successful);
             clearDown();
         }
 

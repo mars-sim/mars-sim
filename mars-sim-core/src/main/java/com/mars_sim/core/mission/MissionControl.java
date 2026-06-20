@@ -17,9 +17,10 @@ import java.util.stream.Collectors;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingLog;
-import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.events.ScheduledEventHandler;
 import com.mars_sim.core.logging.SimLogger;
+import com.mars_sim.core.metrics.MetricCategory;
+import com.mars_sim.core.metrics.MetricGroup;
 import com.mars_sim.core.mission.util.MissionRating;
 import com.mars_sim.core.parameter.ParameterManager;
 import com.mars_sim.core.person.Person;
@@ -57,17 +58,16 @@ public class MissionControl implements ScheduledEventHandler {
 	private double minimumPassingScore = INITIAL_MISSION_PASSING_SCORE;
     private List<Double> missionScores = new ArrayList<>();
 	private Set<Mission> allMissions = new CopyOnWriteArraySet<>();
-	private SolMetricDataLogger<String> historicalMissions;
 	private Settlement owner;
 	private int id = 1;
 	
 	private transient Set<EntityManagerListener> listeners;
+	private static final MetricCategory MISSION_CAT = new MetricCategory("Missions");
+	private MetricGroup metrics = new MetricGroup(MISSION_CAT);
 
     public MissionControl(Settlement settlement) {
 		this.owner = settlement;
         missionScores.add(minimumPassingScore);
-
-		historicalMissions = new SolMetricDataLogger<>(10);
 
         // Get time of next sol and schedule refresh; compensates for time zone
         MarsTime startOfNextSol = Simulation.instance().getMasterClock().getMarsTime();
@@ -177,7 +177,7 @@ public class MissionControl implements ScheduledEventHandler {
         double score = mp.getScore();
 		double minScore = mp.getPassingScore();   // Passing score is set when the review is started
 		PlanType state = (score > minScore ? PlanType.APPROVED : PlanType.NOT_APPROVED);
-		historicalMissions.increaseDataPoint(state.name(), 1D);
+		metrics.recordValue(state.getName(), 1D, owner);
 
 		// Updates the mission plan status
 		mp.setStatus(state);
@@ -203,7 +203,7 @@ public class MissionControl implements ScheduledEventHandler {
 	 * @return
 	 */
 	public Map<Integer, Map<String, Double>> getHistoricalMissions() {
-		return historicalMissions.getHistory();
+		return metrics.getSolBreakdown();
 	}
 
 	
@@ -213,6 +213,7 @@ public class MissionControl implements ScheduledEventHandler {
 	 */
 	public void addMission(Mission mission) {
 		allMissions.add(mission);
+		metrics.recordValue("Started", 1D, owner);
 
 		if (listeners != null) {
 			synchronized (listeners) {
@@ -366,5 +367,13 @@ public class MissionControl implements ScheduledEventHandler {
 		score.addModifier("settlement.ratio", settlementRatio);
 
 		return new MissionRating(metaMission, score);
+	}
+
+	/**
+	 * A mission has been finished and the control needs to be notified so it can update the statistics.
+	 * @param successful true if the mission was successful, false otherwise
+	 */
+	public void finishMission(boolean successful) {
+		metrics.recordValue(successful ? "Successful" : "Aborted", 1D, owner);
 	}
 }
