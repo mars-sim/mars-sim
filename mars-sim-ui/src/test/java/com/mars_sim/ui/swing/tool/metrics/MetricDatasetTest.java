@@ -19,35 +19,18 @@ import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.metrics.Metric;
 import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.metrics.MetricManager;
+import com.mars_sim.core.metrics.memory.MemoryMetricManager;
 import com.mars_sim.core.time.MarsTime;
 
 /**
  * Unit tests for the MetricDataset class.
  */
 class MetricDatasetTest {
-    private static class MockEntity implements Entity {
+    private static class LocalMockEntity implements Entity {
         private final String id;
-        
-        public MockEntity(String id) {
+
+        private LocalMockEntity(String id) {
             this.id = id;
-        }
-        
-        @Override
-        public String toString() {
-            return "MockEntity{" + "id='" + id + '\'' + '}';
-        }
-        
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) return true;
-            if (obj == null || getClass() != obj.getClass()) return false;
-            MockEntity that = (MockEntity) obj;
-            return id.equals(that.id);
-        }
-        
-        @Override
-        public int hashCode() {
-            return id.hashCode();
         }
 
         @Override
@@ -62,8 +45,8 @@ class MetricDatasetTest {
 
         @Override
         public EntityIdentifier getEntityIdentifier() {
-            throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
-        }   
+            return new EntityIdentifier("MockEntity", id);
+        }
     }
 
     private static final int BASE1 = 10;
@@ -87,11 +70,11 @@ class MetricDatasetTest {
         var sim = Simulation.instance();
         sim.testRun();
         var clock = sim.getMasterClock();
-        manager = new MetricManager();
+        manager = new MemoryMetricManager();
         
         // Create test entities
-        testEntity1 = new MockEntity("E1");
-        testEntity2 = new MockEntity("E2");
+        testEntity1 = new LocalMockEntity("E1");
+        testEntity2 = new LocalMockEntity("E2");
         
         // Get metrics without adding data points (to avoid simulation dependency)
         metric1 = manager.getMetric(testEntity1, CATEGORY, "M1");

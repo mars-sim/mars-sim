@@ -37,6 +37,6 @@ public class MockEntity implements Entity {
 
     @Override
     public EntityIdentifier getEntityIdentifier() {
-        throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
+        return new EntityIdentifier("MockEntity", id);
     }  
 }

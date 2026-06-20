@@ -18,10 +18,10 @@ import com.mars_sim.core.Named;
  */
 public class MetricCategory implements Comparable<MetricCategory>, Named, Serializable {
     private String name;
-    private boolean replaceExist;
+    private boolean absoluteData;
 
     /**
-     * Creates a MetricCategory with the given name. The replaceExist flag is set to false, i.e. duplicate
+     * Creates a MetricCategory with the given name. The absoluteData flag is set to false, i.e. duplicate
      * data points are summed.
      * @param name Name of category
      */
@@ -30,13 +30,13 @@ public class MetricCategory implements Comparable<MetricCategory>, Named, Serial
     }  
 
     /**
-     * Creates a MetricCategory with the given name and replaceExist flag.
+     * Creates a MetricCategory with the given name and absoluteData flag.
      * @param name Name of category
-     * @param replaceExist If true, existing DataPoints in a Metric using this Category are replaced
+     * @param absoluteData If true, data points are absolute values
      */
-    public MetricCategory(String name, boolean replaceExist) {
+    public MetricCategory(String name, boolean absoluteData) {
         this.name = name;
-        this.replaceExist = replaceExist;
+        this.absoluteData = absoluteData;
     }
 
 
@@ -46,10 +46,12 @@ public class MetricCategory implements Comparable<MetricCategory>, Named, Serial
     }
 
     /**
-     * Indicates whether existing DataPoints in a Metric using this Category are replaced.
+     * Are the data points captured as absolute values. 
+     * If absolute; then when a new data point is added to a metric with an existing DataPoint at the same timestamp, the data point is replaced with the new value.
+     * If not absolute; then when a new data point is added to a metric with an existing DataPoint at the same timestamp, the new data point is summed with the existing data point.
      */
-    public boolean replaceExist() {
-        return replaceExist;
+    public boolean isAbsolute() {
+        return absoluteData;
     }
 
     /**

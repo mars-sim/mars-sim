@@ -4,12 +4,14 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.metrics.Metric;
 import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.metrics.MetricManager;
+import com.mars_sim.core.metrics.database.DatabaseMetricManager;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.time.MasterClock;
 
@@ -19,30 +21,6 @@ public class MetricFrame extends JFrame {
     private static final MetricCategory FULL_CAT = new MetricCategory("Full");
     private static final MetricCategory HALF_CAT = new MetricCategory("Half");
     private static final MetricCategory DYN_CAT = new MetricCategory("Dynamic");
-
-    private static class TestEntity implements Entity {
-        private String name;
-
-        public TestEntity(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String getContext() {
-            return "test";
-        }
-
-        @Override
-        public EntityIdentifier getEntityIdentifier() {
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'getEntityIdentifier'");
-        }
-    }
 
     private Simulation sim;
     private MetricChartViewer viewer;
@@ -56,7 +34,7 @@ public class MetricFrame extends JFrame {
         sim = Simulation.instance();
         sim.testRun();
 
-        metricManager = new MetricManager();
+        metricManager = new DatabaseMetricManager("./framedb");
             
         // Create and add the chart viewer
         viewer = new MetricChartViewer(metricManager);
@@ -67,11 +45,17 @@ public class MetricFrame extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    private MetricManager loadTestData(MasterClock clock) {
-        System.out.println("Loading test data into MetricManager");
+    private Entity createEntity(String name) {
+        var auth = sim.getConfig().getReportingAuthorityFactory().getItem("NASA");
+        Settlement settlement = Settlement.createNewSettlement(name, "Phase 0-AE", auth, Coordinates.getRandomLocation(), 0);
+		sim.getUnitManager().addUnit(settlement);
 
-        var rover1 = new TestEntity("Rover 1");
-        var rover2 = new TestEntity("Rover 2");
+        return settlement;
+    }
+
+    private MetricManager loadTestData(MasterClock clock) {
+        var rover1 = createEntity("Static 1");
+        var rover2 = createEntity("Static 2");
 
 
         for(int step = 1; step <= INITIAL_POINTS; step++) {
@@ -114,7 +98,7 @@ public class MetricFrame extends JFrame {
                     count++;
                     if (count % 2 == 1) {
                         if (d1 == null) {
-                            var rover3 = new TestEntity("Rover 3");
+                            var rover3 = createEntity("Dynamic 3");
                             d1 = metricManager.getMetric(rover3, DYN_CAT, "Metric");
                         }
                         advanceTime(sim.getMasterClock(), 500D);
@@ -143,7 +127,7 @@ public class MetricFrame extends JFrame {
     /**
      * Main method for testing the component.
      */
-    public static void main(String[] args) {
+    public static void main() {
         var tester = new MetricFrame();
 
         tester.setLocationRelativeTo(null); // Center on screen

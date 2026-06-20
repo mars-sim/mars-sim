@@ -7,46 +7,22 @@
 package com.mars_sim.core.metrics;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.Simulation;
-import com.mars_sim.core.metrics.memory.MemoryMetric;
 import com.mars_sim.core.time.MarsTime;
 
 /**
  * Central manager for all metrics in the system. Provides methods to store,
  * retrieve, and manage metrics data organized by entity, category, and measure.
  */
-public class MetricManager implements Serializable {
+public abstract class MetricManager implements Serializable {
     private static final long serialVersionUID = 1L;
-    
-    private Map<MetricKey, Metric> metrics;
+
     private transient Set<MetricManagerListener> listeners = null;
-    
-    /**
-     * Creates a new MetricManager.
-     */
-    public MetricManager() {
-        this.metrics = new HashMap<>();
-    }
-    
-    /**
-     * Reinitializes the MetricManager after deserialization.
-     */
-    public void reinit() {
-        //There is a problem with dserializing the HashMap.The saved hashcode for the the same key
-        // is different after deserialization, so we need to rebuild the map.
-        var newMetrics = new HashMap<MetricKey, Metric>(); 
-        for (var entry : metrics.entrySet()) {
-            newMetrics.put(entry.getKey(), entry.getValue());
-        }
-        this.metrics = newMetrics;
-    }
 
     /**
      * Returns all categories used. Can be filtered by entity.
@@ -54,14 +30,7 @@ public class MetricManager implements Serializable {
      * @param asset The entity to filter by, or null for all entities
      * @return List of categories choosen
      */
-    public List<MetricCategory> getCategories(Entity asset) {
-        return metrics.keySet().stream()
-                .filter(key -> (asset == null) || key.asset().equals(asset))
-                .map(MetricKey::category)
-                .distinct()
-                .sorted()
-                .toList();
-    }
+    public abstract List<MetricCategory> getCategories(Entity asset);
     
     /**
      * Returns all entities using a specific category.
@@ -69,14 +38,24 @@ public class MetricManager implements Serializable {
      * @param tempCat The category to get entities for
      * @return List of entities that use the specified category
      */
-    public List<Entity> getEntities(MetricCategory tempCat) {
-        return metrics.keySet().stream()
-                .filter(key -> (tempCat == null) || key.category().equals(tempCat))
-                .map(MetricKey::asset)
-                .distinct()
-                .toList();
-    }
+    public abstract List<Entity> getEntities(MetricCategory tempCat);
+        
+    /**
+     * Gets all measures for a specific entity and category.
+     * 
+     * @param asset The entity
+     * @param tempCat The category
+     * @return List of measure names for the specified entity and category
+     */
+    public abstract List<String> getMeasures(Entity asset, MetricCategory tempCat);
+
     
+    /**
+     * Get all known metrics in the system.
+     * @return Keys of the metrics.
+     */
+    public abstract Set<MetricKey> getMetrics();
+
     /**
      * Gets a metric for the specified entity, category, and measure.
      * If the metric doesn't exist, a new one is created.
@@ -88,18 +67,23 @@ public class MetricManager implements Serializable {
      */
     public Metric getMetric(Entity asset, MetricCategory tempCat, String measure) {
         MetricKey key = new MetricKey(asset, tempCat, measure);
-        var m = metrics.get(key);
-        if (m == null) {
-            m = createMetric(key);
-            metrics.put(key, m);
+        return getMetric(key);
+    }
 
-            if (listeners != null) {
-                for (var listener : listeners) {
-                    listener.newMetric(m);
-                }
+    /**
+     * Gets a metric for the specified key.
+     * If the metric doesn't exist, a new one is created.
+     * @param key The metric key
+     * @return  The metric for the specified key
+     */
+    public abstract Metric getMetric(MetricKey key);
+
+    protected void notifyListeners(Metric metric) {
+        if (listeners != null) {
+            for (var listener : listeners) {
+                listener.newMetric(metric);
             }
         }
-        return m;
     }
     
     /**
@@ -122,17 +106,6 @@ public class MetricManager implements Serializable {
             listeners.remove(listener);
         }
     }
-
-    /**
-     * Creates a new Metric instance based on the provided key.
-     * Currently, all metrics are in-memory, but this could be extended to support other types
-     * @param key
-     * @return
-     */
-    private Metric createMetric(MetricKey key) {
-        // For now, all metrics are in-memory. This could be extended to support other types.
-        return new MemoryMetric(key);
-    }
     
     /**
      * Adds a value to a metric. If the metric doesn't exist, it will be created.
@@ -148,25 +121,6 @@ public class MetricManager implements Serializable {
     }
     
     /**
-     * Gets all measures for a specific entity and category.
-     * 
-     * @param asset The entity
-     * @param tempCat The category
-     * @return List of measure names for the specified entity and category
-     */
-    public List<String> getMeasures(Entity asset, MetricCategory tempCat) {
-        return metrics.keySet().stream()
-                .filter(key -> key.asset().equals(asset) && key.category().equals(tempCat))
-                .map(MetricKey::measure)
-                .toList();
-    }
-    
-    @Override
-    public String toString() {
-        return String.format("MetricManager{metrics=%d}", metrics.size());
-    }
-
-    /**
      * What is the Mars time now?
      * @return
      */
@@ -174,4 +128,9 @@ public class MetricManager implements Serializable {
         // Needs solving
         return Simulation.instance().getMasterClock().getMarsTime();
     }
+
+    /**
+     * Reinitializes the metric manager, clearing all existing metrics and resetting internal state.
+     */
+    public abstract void reinit();
 }

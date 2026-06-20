@@ -3,7 +3,7 @@ package com.mars_sim.core.metrics;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.MockEntity;
+import com.mars_sim.core.metrics.database.DatabaseMetricManager;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,43 +21,42 @@ class MetricManagerTest extends MarsSimUnitTest {
     private static final MetricCategory PRES_CAT = new MetricCategory("Pressure");
 
     private MetricManager manager;
-    private Entity entity1;
-    private Entity entity2;
+
     private String measure1;
     private String measure2;
     
     @BeforeEach
     void setUp() {
-        manager = new MetricManager();
         
-        entity1 = new MockEntity("E1");
-        entity2 = new MockEntity("E2");
+        // Create an in memory DatabaseMetricManager for testing
+        manager = new DatabaseMetricManager(null);
         
         measure1 = "Average";
         measure2 = "Maximum";
     }
-    
+
+
     @Test
     @DisplayName("Constructor should create empty MetricManager")
     void testConstructor() {
-        // Given
-        MetricManager newManager = new MetricManager();
         
         // Then
-        assertNotNull(newManager);
-        assertTrue(newManager.getCategories(null).isEmpty());
-        assertTrue(newManager.getEntities(null).isEmpty());
+        assertNotNull(manager);
+        assertTrue(manager.getMetrics().isEmpty());
+        assertTrue(manager.getEntities(null).isEmpty());
+        assertTrue(manager.getCategories(null).isEmpty());
     }
     
     @Test
     @DisplayName("getMetric should create new metric when it doesn't exist")
     void testGetMetricCreatesNew() {
-        // When
-        Metric metric = manager.getMetric(entity1, TEMP_CAT, measure1);
+        
+        var s = buildSettlement("Test");
+        Metric metric = manager.getMetric(s, TEMP_CAT, measure1);
         
         // Then
         assertNotNull(metric);
-        assertEquals(entity1, metric.getKey().asset());
+        assertEquals(s, metric.getKey().asset());
         assertEquals(TEMP_CAT, metric.getKey().category());
         assertEquals(measure1, metric.getKey().measure());
     }
@@ -66,20 +65,24 @@ class MetricManagerTest extends MarsSimUnitTest {
     @DisplayName("getMetric should return existing metric when it exists")
     void testGetMetricReturnsExisting() {
         // Given
-        Metric metric1 = manager.getMetric(entity1, TEMP_CAT, measure1);
+        var s = buildSettlement("Test");
+        Metric metric1 = manager.getMetric(s, TEMP_CAT, measure1);
         
         // When
-        Metric metric2 = manager.getMetric(entity1, TEMP_CAT, measure1);
+        Metric metric2 = manager.getMetric(s, TEMP_CAT, measure1);
         
         // Then
-        assertSame(metric1, metric2);
+        assertEquals(metric1, metric2);
     }
     
     @Test
     @DisplayName("getCategories should return empty list for entity with no metrics")
     void testGetCategoriesEmptyForNewEntity() {
+        // Given
+        var s = buildSettlement("Test");
+        
         // When
-        var categories = manager.getCategories(entity1);
+        var categories = manager.getCategories(s);
         
         // Then
         assertTrue(categories.isEmpty());
@@ -89,12 +92,14 @@ class MetricManagerTest extends MarsSimUnitTest {
     @DisplayName("getCategories should return categories for entity")
     void testGetCategoriesForEntity() {
         // Given
-        manager.getMetric(entity1, TEMP_CAT, measure1);
-        manager.getMetric(entity1, PRES_CAT, measure1);
-        manager.getMetric(entity2, TEMP_CAT, measure1); // Different entity
+        var s = buildSettlement("Test");
+        manager.getMetric(s, TEMP_CAT, measure1);
+        manager.getMetric(s, PRES_CAT, measure1);
+        var s2 = buildSettlement("Test2");
+        manager.getMetric(s2, TEMP_CAT, measure1); // Different entity
         
         // When
-        var categories = manager.getCategories(entity1);
+        var categories = manager.getCategories(s);
         
         // Then
         assertEquals(2, categories.size());
@@ -120,14 +125,15 @@ class MetricManagerTest extends MarsSimUnitTest {
         TestListener listener = new TestListener();
 
         manager.addListener(listener);
-        var added = manager.getMetric(entity1, TEMP_CAT, measure1);
+        var s = buildSettlement("Test");
+        var added = manager.getMetric(s, TEMP_CAT, measure1);
 
         assertEquals(added, listener.notifiedMetric);
 
         // Reset
         listener.notifiedMetric = null;
         manager.removeListener(listener);
-        manager.getMetric(entity1, TEMP_CAT, measure2);
+        manager.getMetric(s, TEMP_CAT, measure2);
         assertNull(listener.notifiedMetric);
     }
 
@@ -145,26 +151,31 @@ class MetricManagerTest extends MarsSimUnitTest {
     @DisplayName("getEntities should return entities for category")
     void testGetEntitiesForCategory() {
         // Given
-        manager.getMetric(entity1, TEMP_CAT, measure1);
-        manager.getMetric(entity1, TEMP_CAT, measure2); // Same entity, different measure
-        manager.getMetric(entity2, TEMP_CAT, measure1);
-        manager.getMetric(entity1, PRES_CAT, measure1); // Different category
+        var s = buildSettlement("Test");
+        var s2 = buildSettlement("Test2");
+        manager.getMetric(s, TEMP_CAT, measure1);
+        manager.getMetric(s, TEMP_CAT, measure2); // Same entity, different measure
+        manager.getMetric(s2, TEMP_CAT, measure1);
+        manager.getMetric(s, PRES_CAT, measure1); // Different category
         
         // When
         List<Entity> entities = manager.getEntities(TEMP_CAT);
         
         // Then
         assertEquals(2, entities.size());
-        assertTrue(entities.contains(entity1));
-        assertTrue(entities.contains(entity2));
+        assertTrue(entities.contains(s));
+        assertTrue(entities.contains(s2));
     }
     
     @Test
     @DisplayName("getMeasures should return empty list for entity/category with no metrics")
     void testGetMeasuresEmpty() {
-        // When
-        List<String> measures = manager.getMeasures(entity1, TEMP_CAT);
+        // Given
+        var s = buildSettlement("Test");
         
+        // When
+        List<String> measures = manager.getMeasures(s, TEMP_CAT);
+
         // Then
         assertTrue(measures.isEmpty());
     }
@@ -173,25 +184,32 @@ class MetricManagerTest extends MarsSimUnitTest {
     @DisplayName("getMeasures should return measures for entity and category")
     void testGetMeasuresForEntityAndCategory() {
         // Given
-        manager.getMetric(entity1, TEMP_CAT, measure1);
-        manager.getMetric(entity1, TEMP_CAT, measure2);
-        manager.getMetric(entity1, PRES_CAT, measure1); // Different category
-        manager.getMetric(entity2, TEMP_CAT, measure1); // Different entity
+        var s = buildSettlement("Test");
+        var s2 = buildSettlement("Test2");
+        manager.getMetric(s, TEMP_CAT, measure1);
+        manager.getMetric(s, TEMP_CAT, measure2);
+        manager.getMetric(s, PRES_CAT, measure1); // Different category
+        manager.getMetric(s2, TEMP_CAT, measure1); // Different entity
         
         // When
-        List<String> measures = manager.getMeasures(entity1, TEMP_CAT);
+        List<String> measures = manager.getMeasures(s, TEMP_CAT);
         
         // Then
         assertEquals(2, measures.size());
         assertTrue(measures.contains(measure1));
         assertTrue(measures.contains(measure2));
+
+        assertEquals(2, manager.getCategories(null).size());
+        assertEquals(2, manager.getEntities(null).size());
+
     }
     
     @Test
     @DisplayName("addValue should add to metric")
     void testAddValue() {
-        manager.addValue(entity1, TEMP_CAT, measure1, 42.0);
-        Metric metric = manager.getMetric(entity1, TEMP_CAT, measure1);
+        var s = buildSettlement("Test");
+        manager.addValue(s, TEMP_CAT, measure1, 42.0);
+        Metric metric = manager.getMetric(s, TEMP_CAT, measure1);
         var totalCalculator = new Total();
         metric.apply(totalCalculator);
         assertEquals(42.0, totalCalculator.getSum(), 0.001);
@@ -206,8 +224,8 @@ class MetricManagerTest extends MarsSimUnitTest {
         
         // When
         manager.addListener(listener1);
-        
-        var createdMetric = manager.getMetric(entity1, TEMP_CAT, measure1);
+        var s = buildSettlement("Test");
+        var createdMetric = manager.getMetric(s, TEMP_CAT, measure1);
         
         // Then
         assertEquals(createdMetric, listener1.notifiedMetric);
@@ -217,7 +235,7 @@ class MetricManagerTest extends MarsSimUnitTest {
         
         // Remove one listener and create another metric
         manager.removeListener(listener1);
-        manager.getMetric(entity1, PRES_CAT, measure1);
+        manager.getMetric(s, PRES_CAT, measure1);
         
         // Then
         assertNull(listener1.notifiedMetric); // Should not be notified after removal
@@ -227,22 +245,24 @@ class MetricManagerTest extends MarsSimUnitTest {
     @DisplayName("Multiple operations should work together correctly")
     void testIntegrationScenario() {
         // Given - Create several metrics
-        manager.getMetric(entity1, TEMP_CAT, "Max");
-        manager.getMetric(entity1, TEMP_CAT, "Average");
-        manager.getMetric(entity1, PRES_CAT, "Average");
-        manager.getMetric(entity2, TEMP_CAT, "Average");
+        var s = buildSettlement("Test");
+        var s2 = buildSettlement("Test2");
+        manager.getMetric(s, TEMP_CAT, "Max");
+        manager.getMetric(s, TEMP_CAT, "Average");
+        manager.getMetric(s, PRES_CAT, "Average");
+        manager.getMetric(s2, TEMP_CAT, "Average");
         
-        var entity1Categories = manager.getCategories(entity1);
-        assertEquals(2, entity1Categories.size());
-        assertTrue(entity1Categories.contains(TEMP_CAT));
-        assertTrue(entity1Categories.contains(PRES_CAT));
+        var sCategories = manager.getCategories(s);
+        assertEquals(2, sCategories.size());
+        assertTrue(sCategories.contains(TEMP_CAT));
+        assertTrue(sCategories.contains(PRES_CAT));
         
         var tempEntities = manager.getEntities(TEMP_CAT);
         assertEquals(2, tempEntities.size());
-        assertTrue(tempEntities.contains(entity1));
-        assertTrue(tempEntities.contains(entity2));
+        assertTrue(tempEntities.contains(s));
+        assertTrue(tempEntities.contains(s2));
         
-        var tempMeasures = manager.getMeasures(entity1, TEMP_CAT);
+        var tempMeasures = manager.getMeasures(s, TEMP_CAT);
         assertEquals(2, tempMeasures.size());
         assertTrue(tempMeasures.contains("Average"));
         assertTrue(tempMeasures.contains("Max"));

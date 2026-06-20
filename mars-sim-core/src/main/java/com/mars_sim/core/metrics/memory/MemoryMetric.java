@@ -64,7 +64,7 @@ public class MemoryMetric extends Metric {
             if (dataPoint.getWhen().equals(lastPoint.getWhen())) {
                 // Last and new data point have same time so combine
                 DataPoint replacement;
-                if (getKey().category().replaceExist()) {
+                if (getKey().category().isAbsolute()) {
                     // Replace last value
                     replacement = dataPoint;
                 }

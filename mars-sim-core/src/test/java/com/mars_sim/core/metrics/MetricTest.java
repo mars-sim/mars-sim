@@ -103,7 +103,7 @@ class MetricTest extends MarsSimUnitTest{
     @DisplayName("recordValue should aggregate last data point")
     void testAggregateDataPoint() {
         
-        assertFalse(metricKey.category().replaceExist(), 
+        assertFalse(metricKey.category().isAbsolute(), 
             "MetricCategory should be set to aggregate existing data points by default");
 
         Metric newMetric = createMetric(metricKey);
