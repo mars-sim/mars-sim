@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.test.MarsSimUnitTest;
+import com.mars_sim.core.LifeSupportInterface;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -35,7 +36,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         var p = buildPerson("eater", s, JobType.ENGINEER, d, FunctionType.DINING);
         s.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
 
-        testWater(p);
+        testWater(p, s);
         assertTrue(s.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
     }
 
@@ -50,7 +51,7 @@ class EatDrinkTest extends MarsSimUnitTest {
         b.storeAmountResource(ResourceUtil.WATER_ID, INITIAL_RESOURCE);
         p.assignThermalBottle();
 
-        testWater(p);
+        testWater(p, s);
         assertTrue(b.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
     }
 
@@ -64,19 +65,19 @@ class EatDrinkTest extends MarsSimUnitTest {
         p.transfer(v);
         assertTrue(p.isInVehicle(), "In vehicle");
 
-        testWater(p);
+        testWater(p, v);
         assertTrue(v.getSpecificAmountResourceStored(ResourceUtil.WATER_ID) < INITIAL_RESOURCE, "Water consumed");
 
     }
 
-    private void testWater(Person p) {
+    private void testWater(Person p, LifeSupportInterface support) {
         var pc = p.getPhysicalCondition();
         pc.setThirst(ThirstLevel.DRY.getMaxValue());
         var initialThirst = pc.getThirst();
         assertTrue(initialThirst > 0, "Person is thirty");
 
         // Move advance to update thirst level and ensure that the person is thirsty
-        pc.timePassing(createPulse(10), p.getSettlement());
+        pc.timePassing(createPulse(10), support);
 
         var t = new EatDrink(p);
         assertFalse(t.isDone(), "EatDrink task not complete");

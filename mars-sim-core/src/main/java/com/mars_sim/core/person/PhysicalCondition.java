@@ -417,26 +417,24 @@ public class PhysicalCondition implements Serializable {
 		if (alive) {
 			
 			double time = pulse.getElapsed();
-						
-			boolean isResting = person.isRestingTask();
-
-			// Check key attributes
-			double factor = isResting ? 2 : 1;
-			checkStress(time, factor);
-			checkThirst(time, factor);
-			checkFatigue(time, factor);
-			checkHunger(time, factor);
-
-			// Check once a day only
-			if (pulse.isNewSol()) {	
-				// Update the personal appetite
-				updateAppetite();
-				// Update personal max energy
-				updateMaxEnergy();
-			}
 			
-			// Check once per msol (millisol integer)
 			if (pulse.isNewIntMillisol()) {
+				boolean isResting = person.isRestingTask();
+
+				// Check key attributes
+				double factor = isResting ? 2 : 1;
+				checkStress(time, factor);
+				checkThirst(time, factor);
+				checkFatigue(time, factor);
+				checkHunger(time, factor);
+				
+				double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
+												: personConfig.getNominalO2ConsumptionRate();
+				// Check life support system
+				checkLifeSupport(time, currentO2Consumption, support);
+				// Update the existing health problems
+				checkHealth(pulse, isResting);
+
 				// Calculate performance and most mostSeriousProblem illness.
 				recalculatePerformance();
 
@@ -454,13 +452,14 @@ public class PhysicalCondition implements Serializable {
 					}
 				}
 			}
-
-            double currentO2Consumption = isResting ? personConfig.getLowO2ConsumptionRate()
-											: personConfig.getNominalO2ConsumptionRate();
-			// Check life support system
-			checkLifeSupport(time, currentO2Consumption, support);
-			// Update the existing health problems
-			checkHealth(pulse, isResting);
+			
+			// Check once a day only
+			if (pulse.isNewSol()) {	
+				// Update the personal appetite
+				updateAppetite();
+				// Update personal max energy
+				updateMaxEnergy();
+			}
 		}
 	}
 
@@ -548,17 +547,12 @@ public class PhysicalCondition implements Serializable {
 	 */
 	private void checkLifeSupport(double time, double currentO2Consumption, LifeSupportInterface support) {
 		if (time > 0) {
-			try {
-				if (lackOxygen(support, currentO2Consumption * (time / 1000D)))
-					logger.severe(person, 60_000, "Reported lack of oxygen.");
-				if (badAirPressure(support, minAirPressure))
-					logger.severe(person, 60_000, "Reported non-optimal air pressure.");
-				if (badTemperature(support, minTemperature, maxTemperature))
-					logger.severe(person, 60_000, "Reported non-optimal temperature.");
-
-			} catch (Exception e) {
-				logger.severe(person, 60_000, "Reported anomaly in the life support system: ", e);
-			}
+			if (lackOxygen(support, currentO2Consumption * (time / 1000D)))
+				logger.severe(person, 60_000, "Reported lack of oxygen.");
+			if (checkResourceConsumption(support.getAirPressure(), minAirPressure, MIN_VALUE, ComplaintType.DECOMPRESSION))
+				logger.severe(person, 60_000, "Reported non-optimal air pressure.");
+			if (badTemperature(support, minTemperature, maxTemperature))
+				logger.severe(person, 60_000, "Reported non-optimal temperature.");
 		}
 	}
 
@@ -625,8 +619,6 @@ public class PhysicalCondition implements Serializable {
 			kJoules -= xdelta * .65;	
 		} else
 			kJoules -= xdelta * .7;
-
-		person.fireUnitUpdate(PhysicalCondition.HUNGER_EVENT);
 	}
 	
 	/**
@@ -1439,17 +1431,6 @@ public class PhysicalCondition implements Serializable {
 			addMedicalComplaint(medicalManager.getComplaintByName(complaint));
 		}
 		return newProblem;
-	}
-
-	/**
-	 * Person requires minimum air pressure.
-	 *
-	 * @param support  Life support system providing air pressure.
-	 * @param pressure minimum air pressure person requires (in Pa)
-	 * @return new problem added.
-	 */
-	private boolean badAirPressure(LifeSupportInterface support, double pressure) {
-		return checkResourceConsumption(support.getAirPressure(), pressure, MIN_VALUE, ComplaintType.DECOMPRESSION);
 	}
 
 	/**
