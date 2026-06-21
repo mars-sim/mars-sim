@@ -6,6 +6,8 @@
  */
 package com.mars_sim.core.metrics;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,5 +56,16 @@ public class MetricGroup implements Serializable {
             }
         }
         return solBreakdown;
+    }
+
+    /**
+     * Custom deserialization logic to reinitialize the transient metrics map after deserialization.
+     * @param ois
+     * @throws ClassNotFoundException
+     * @throws IOException
+     */
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        ois.defaultReadObject();
+        this.metrics = new HashMap<>();
     }
 }

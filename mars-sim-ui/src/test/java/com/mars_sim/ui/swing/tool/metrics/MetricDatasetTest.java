@@ -70,7 +70,7 @@ class MetricDatasetTest {
         var sim = Simulation.instance();
         sim.testRun();
         var clock = sim.getMasterClock();
-        manager = new MemoryMetricManager();
+        manager = new MemoryMetricManager(2);
         
         // Create test entities
         testEntity1 = new LocalMockEntity("E1");

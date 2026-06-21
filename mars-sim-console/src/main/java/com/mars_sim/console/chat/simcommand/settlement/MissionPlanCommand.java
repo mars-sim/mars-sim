@@ -98,15 +98,18 @@ public class MissionPlanCommand extends AbstractSettlementCommand {
 		int firstSol = today;
 		int lastSol = Math.max(0, today - max); // Don't go negative
 		for (int i = firstSol; i > lastSol; i--) {
-			response.appendText("Stats for sol " + i);
-
 			var sol = plannings.get(i);
-			outputStats(response, sol);
-
-			if (totals != null) {
-				for(var p : sol.entrySet()) {
-					totals.merge(p.getKey(), p.getValue(), Double::sum);
+			if (sol != null) {
+				response.appendText("Stats for sol " + i);
+				outputStats(response, sol);
+				if (totals != null) {
+					for(var p : sol.entrySet()) {
+						totals.merge(p.getKey(), p.getValue(), Double::sum);
+					}
 				}
+			}
+			else {
+				response.appendText("No data for sol " + i);
 			}
 		}
 		

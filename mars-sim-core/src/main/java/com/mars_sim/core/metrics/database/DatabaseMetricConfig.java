@@ -6,7 +6,7 @@
  */
 package com.mars_sim.core.metrics.database;
 
-import java.util.UUID;
+import java.io.File;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -62,7 +62,7 @@ public class DatabaseMetricConfig {
         // DB_CLOSE_DELAY=-1 keeps the named in-memory database alive until close() is called.
         DriverManagerDataSource ds = new DriverManagerDataSource(
             "jdbc:h2:" +
-            (path != null ? path + "/marssim-metrics" : "mem:marssim") + ";DB_CLOSE_DELAY=-1");
+            (path != null ? path + File.separator + "marssim-metrics" : "mem:marssim"));
         this.jdbcTemplate = new JdbcTemplate(ds);
         initializeSchema();
     }

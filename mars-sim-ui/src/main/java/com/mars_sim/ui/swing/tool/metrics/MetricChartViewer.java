@@ -66,7 +66,7 @@ public class MetricChartViewer extends ContentPanel
      * @param metricManager The MetricManager to use for populating dropdowns and retrieving metrics
      */
     public MetricChartViewer(MetricManager metricManager) {
-        super(NAME, "Metric Chart Viewer", Placement.CENTER);
+        super(NAME, TITLE, Placement.CENTER);
 
         this.metricManager = metricManager;
 
@@ -108,7 +108,7 @@ public class MetricChartViewer extends ContentPanel
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(SwingHelper.createLabelBorder("Chart Controls"));
         
-        JPanel keyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel keyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 2));
 
         // Add labels and dropdowns
         keyPanel.add(new JLabel("Entity:"));
@@ -126,7 +126,7 @@ public class MetricChartViewer extends ContentPanel
         keyPanel.add(measureComboBox);
         panel.add(keyPanel);
          
-        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 2));
 
         newButton = new JButton("New Chart");
         newButton.addActionListener(e -> addNewChart());
@@ -292,11 +292,9 @@ public class MetricChartViewer extends ContentPanel
         var measure = (String) measureComboBox.getSelectedItem();
         
         if (entityObj != null && category != null && !SELECT_PROMPT.equals(measure)) {
-            
-            Entity entity = (Entity) entityObj;
-            
+                        
             // Find selected Metrix
-            return metricManager.getMetric(entity, category, measure);
+            return metricManager.getMetric(entityObj, category, measure);
         }
         return null;
     }
