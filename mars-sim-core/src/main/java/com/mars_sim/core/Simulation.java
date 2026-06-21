@@ -58,6 +58,7 @@ import com.mars_sim.core.logging.SimuLoggingFormatter;
 import com.mars_sim.core.malfunction.MalfunctionFactory;
 import com.mars_sim.core.malfunction.MalfunctionManager;
 import com.mars_sim.core.metrics.MetricManager;
+import com.mars_sim.core.metrics.database.DatabaseMetricManager;
 import com.mars_sim.core.metrics.memory.MemoryMetricManager;
 import com.mars_sim.core.mission.MissionStep;
 import com.mars_sim.core.moon.LunarColonyManager;
@@ -270,7 +271,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Create marsClock instance
 		masterClock = new MasterClock(simulationConfig, 256);
 		scheduledEvents = new ScheduledEventManager(masterClock);
-		metricManager = new MemoryMetricManager();
+		metricManager = new MemoryMetricManager(2);
 
 		// Create lunar world instance
 		lunarWorld = new LunarWorld(); 
@@ -300,7 +301,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 		// Create marsClock instance
 		masterClock = new MasterClock(simulationConfig, 256);
 		scheduledEvents = new ScheduledEventManager(masterClock);
-		metricManager = new MemoryMetricManager();
+		metricManager = new MemoryMetricManager(2);
 
 		// Set instances for logging
 		SimuLoggingFormatter.initializeInstances(masterClock);
@@ -409,7 +410,8 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Common handler for full planet events
 		scheduledEvents = new ScheduledEventManager(masterClock);
-		metricManager = new MemoryMetricManager();
+		//metricManager = new DatabaseMetricManager(SimulationRuntime.getDataDir() + File.separator +"metrics");
+		metricManager = new MemoryMetricManager(10);
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();
@@ -1392,6 +1394,11 @@ public class Simulation implements ClockPulseListener, Serializable {
 			if (pulse.isNewSol()) {
 				// Compute reliability daily for each part
 				malfunctionFactory.computePartReliability(pulse.getMarsTime().getMissionSol());
+
+				// Flush any old metrics
+				if (metricManager instanceof MemoryMetricManager mm) {
+					mm.newSol(pulse.getMarsTime());
+				}
 			}
 
 			// Update scheduled events

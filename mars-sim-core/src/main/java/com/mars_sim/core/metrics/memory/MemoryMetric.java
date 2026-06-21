@@ -109,4 +109,27 @@ public class MemoryMetric extends Metric {
         }
         return null;
     }
+
+    /**
+     * Remove all sol data that is earlier that the specified sol.
+     * @param earliestSol Earliest sol to he held.
+     */
+    void removeOldSols(int earliestSol) {
+        // Avoid scanning the metric if going to alter
+        for(int s = firstSol; s < earliestSol; s++) {
+            var removed = solSeries.remove(s);
+            size -= (removed != null) ? removed.size() : 0;
+        }
+        // Recalculate firstSol and lastSol
+        firstSol = Integer.MAX_VALUE;
+        lastSol = Integer.MIN_VALUE;
+        for(int s : solSeries.keySet()) {
+            if (s < firstSol) {
+                firstSol = s;
+            }
+            if (s > lastSol) {
+                lastSol = s;
+            }
+        }
+    }
 }

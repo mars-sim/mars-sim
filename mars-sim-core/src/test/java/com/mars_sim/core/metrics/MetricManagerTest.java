@@ -3,7 +3,6 @@ package com.mars_sim.core.metrics;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.metrics.database.DatabaseMetricManager;
 import com.mars_sim.core.test.MarsSimUnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +14,9 @@ import java.util.List;
 /**
  * Unit tests for the MetricManager class.
  */
-@DisplayName("MetricManager Tests")
-class MetricManagerTest extends MarsSimUnitTest {
-    private static final MetricCategory TEMP_CAT = new MetricCategory("Temperature");
-    private static final MetricCategory PRES_CAT = new MetricCategory("Pressure");
+public abstract class MetricManagerTest extends MarsSimUnitTest {
+    protected static final MetricCategory TEMP_CAT = new MetricCategory("Temperature");
+    protected static final MetricCategory PRES_CAT = new MetricCategory("Pressure");
 
     private MetricManager manager;
 
@@ -29,12 +27,17 @@ class MetricManagerTest extends MarsSimUnitTest {
     void setUp() {
         
         // Create an in memory DatabaseMetricManager for testing
-        manager = new DatabaseMetricManager(null);
+        manager = createMetricManager();
         
         measure1 = "Average";
         measure2 = "Maximum";
     }
 
+    protected abstract MetricManager createMetricManager();
+
+    protected MetricManager getManager() {
+        return manager;
+    }
 
     @Test
     @DisplayName("Constructor should create empty MetricManager")
