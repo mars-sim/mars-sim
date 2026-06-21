@@ -669,7 +669,7 @@ public class AlgaeFarming extends Function {
 	}
 	
 	/**
-	 * Births spirulina.
+	 * Births spirulina.I
 	 * 
 	 * @param time
 	 */
@@ -999,76 +999,68 @@ public class AlgaeFarming extends Function {
 	 */
 	public double harvestAlgae(Worker worker, double workTime) {
 		if (getSurplusRatio() < 0.5) {
-			return 0;
+			return 0.0;
 		}
 
 		// With adequate amount of sunshine, it takes a minimum of 10 to 15 days time 
 		// for the spirulina to develop.
 		// https://krishijagran.com/agripedia/all-about-organic-spirulina-cultivation-basic-requirements-water-quality-nutrient-requirements-economics-much-more/
 		
-		addCumulativeWorkTime(workTime);
-		
 		// Should define the algae liquid flow rate, not currentAlgae
 				
-		// Harvesting a certain amount (~ 1 kg)
+		// Harvesting a certain amount
 		double harvestedWetBiomass = RandomUtil.getRandomDouble(.9, 1.1)
 				* EXPECTED_YIELD_RATE * currentWaterMass * workTime / 1000;
+
+		// Assuming the dry mass is ~15% 
+		double algaePortion = harvestedWetBiomass 
+						* RandomUtil.getRandomDouble(.1, .2) * health;
 		
-		// Reduce the water mass
-		currentWaterMass -= harvestedWetBiomass;
-		// Recompute the water depth
-		computeWaterDepth();
+		double diff = currentAlgae - algaePortion;
 		
-		logger.info(worker, 5000, "harvestedWetBiomass: " 
-				+ Math.round(harvestedWetBiomass * 100.0)/100.0 
-				+ " kg algae. Pond stock: " +  Math.round(currentAlgae * 100.0)/100.0);
-		
-		if (currentAlgae < harvestedWetBiomass)
-			return 0;
+		if (diff <= 0)
+			return 0.0;	
 		
 		// Subtract the harvestedWetBiomass from the pond
-		currentAlgae = currentAlgae - harvestedWetBiomass;
+		currentAlgae = diff;
 		
-		addResourceLog(-harvestedWetBiomass, ResourceUtil.SPIRULINA_ID);
+		logger.info(worker, 5000, "algaePortion: " 
+				+ Math.round(algaePortion * 100.0)/100.0 
+				+ " kg algae. Pond stock: " +  Math.round(currentAlgae * 100.0)/100.0);
 		
-		// Assuming the dry mass is ~15% 
-		double spirulinaExtracted = harvestedWetBiomass 
-				* RandomUtil.getRandomDouble(.1, .2) * health;
+		addResourceLog(-algaePortion, ResourceUtil.SPIRULINA_ID);
+		
+		// Record the harvest amount
+		addHarvestedLog(algaePortion);
 		
 		// Future: specify harvesting equipment and sieving parameter
 		
 		// See https://grow-organic-spirulina.com/blog/the-complete-guide-to-harvesting-spirulina/
 		// regarding the use of harvesting mesh to filter spirulina
+	
+		double waterPortion = harvestedWetBiomass - algaePortion;
 		
-		double filteredMass = harvestedWetBiomass - spirulinaExtracted;
+		double foodWaste = waterPortion * .2;
 		
-		double returnAlgae = filteredMass * .8;
+		double greyWaterWaste = waterPortion * .8;
+				
+		// Reduce the water mass
+		currentWaterMass -= waterPortion;
 		
-		double greyWaterWaste = filteredMass * .15;
-		
-		double foodWaste = filteredMass * .05;
-		
-		currentAlgae += returnAlgae;
-		
-		addResourceLog(returnAlgae, ResourceUtil.SPIRULINA_ID);
+		// Recompute the water depth
+		computeWaterDepth();
 		
 		// Store in the settlement
 		store(foodWaste, ResourceUtil.FOOD_WASTE_ID, "AlgaeFarming::foodWaste");
+		
 		// Store in the settlement		
 		storeGreyWater(greyWaterWaste, ResourceUtil.GREY_WATER_ID);
 
 		
-		// Store in the settlement
-		store(spirulinaExtracted, ResourceUtil.SPIRULINA_ID, "AlgaeFarming::harvestAlgae");
-		// Record the harvest amount
-//		harvestedAlgaeMass += spirulinaExtracted;
-		addHarvestedLog(spirulinaExtracted);
+		addCumulativeWorkTime(workTime);
+
 		
-		logger.info(worker, 5000, "spirulinaExtracted: " 
-				+ Math.round(spirulinaExtracted * 100.0)/100.0 
-				+ " kg algae.");
-			
-		return spirulinaExtracted;
+		return algaePortion;
 	}
 
 
