@@ -1030,6 +1030,9 @@ public class AlgaeFarming extends Function {
 		
 		addResourceLog(-algaePortion, ResourceUtil.SPIRULINA_ID);
 		
+		// Store in the settlement
+		store(algaePortion, ResourceUtil.SPIRULINA_ID, "AlgaeFarming::algaePortion");
+		
 		// Record the harvest amount
 		addHarvestedLog(algaePortion);
 		
