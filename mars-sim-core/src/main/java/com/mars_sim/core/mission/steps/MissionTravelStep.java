@@ -47,7 +47,7 @@ public class MissionTravelStep extends MissionStep {
     @Override
     protected boolean execute(Worker worker) {
 
-        Vehicle vehicle = ((VehicleMission) getMission()).getVehicle();
+        Vehicle vehicle = getVehicle();
         Coordinates current = vehicle.getCoordinates();
         Coordinates target =  destination.getLocation();
 
@@ -76,7 +76,7 @@ public class MissionTravelStep extends MissionStep {
 		// Choose a driver
         boolean workedOn = false;
         var driver = vehicle.getOperator();
-        if (isOperatable(vehicle) && ((driver == null) || driver.equals(worker))) {
+        if (isOperable(vehicle) && ((driver == null) || driver.equals(worker))) {
             Task operateVehicleTask = createOperateVehicleTask(vehicle, worker);
             workedOn = assignTask(worker, operateVehicleTask);
         }
@@ -84,11 +84,13 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Feel thsi should be in the Vehicle class
+     * Is the vehicle operable ? 
+     * 
+     * @apiNote May move this method to Vehicle class
      * @param vehicle
      * @return
      */
-    private boolean isOperatable(Vehicle vehicle) {
+    private boolean isOperable(Vehicle vehicle) {
         return !vehicle.isBeaconOn() && !vehicle.isBeingTowed();
     }
 
@@ -111,7 +113,7 @@ public class MissionTravelStep extends MissionStep {
     }
 
     /**
-     * Creates the most appropriate Task to operate the vehicle.
+     * Creates the most appropriate task to operate the vehicle.
      * 
      * @param vehicle
      * @param worker

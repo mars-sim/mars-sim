@@ -32,6 +32,8 @@ public class MissionLoadVehicleStep extends MissionStep {
     private LoadingController loadingPlan;
 
     /**
+     * Constructor.
+     * 
      * @param parent Parent mission
      */
     public MissionLoadVehicleStep(MissionVehicleProject parent) {
@@ -39,7 +41,7 @@ public class MissionLoadVehicleStep extends MissionStep {
     }
 
     /**
-     * Step just become active so mark Vehicle for loading.
+     * Starts a step and makes it active. Marks the vehicle for loading.
      */
     @Override
     protected void start() {
@@ -115,6 +117,6 @@ public class MissionLoadVehicleStep extends MissionStep {
 
     @Override
 	public String toString() {
-		return "Mission " + getMission().getName() + " load  vehicle";
+		return "Mission " + getMission().getName() + " load vehicle";
 	}
 }

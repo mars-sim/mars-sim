@@ -42,7 +42,7 @@ import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
 /**
- * Is a Mission astraction that allows a Mission tobe defiend in terms of a number of MissionSteps.
+ * Is a Mission abstraction that allows a Mission to be defined in terms of a number of MissionSteps.
  */
 public abstract class MissionProject implements Mission {
 
@@ -89,28 +89,30 @@ public abstract class MissionProject implements Mission {
 
     // Mission score for Worker
     private static record Candidate(Worker worker, double score) {}
-
+	/** Default logger. */
     private static final SimLogger logger = SimLogger.getLogger(MissionProject.class.getName());
 
+    // Minimum settlement population after a mission
+    public static final int MIN_POP = 2;
+   
 	public static final MissionStatus NOT_ENOUGH_MEMBERS = new MissionStatus("Mission.status.noMembers");
     public static final MissionStatus LOW_SETTLEMENT_POPULATION = new MissionStatus("Mission.status.lowPopulation");
     private static final MissionStatus ACCOMPLISHED = new MissionStatus("Mission.status.accomplished");
 
-    // Minimum settlement population after a mission
-    public static final int MIN_POP = 2;
-
-
-    private Project control;
-    private String missionCallSign;
-    private MissionLog log;
-    private MissionType type;
+	/** Entity listeners. */
+	private transient EntityListenerManager listeners;
+	
     private int priority;
     private int minMembers;
     private int maxMembers;
-    private Person leader;
+    
+    private String missionCallSign;
+    
+    private MissionType type;
 
-	/** Entity listeners. */
-	private transient EntityListenerManager listeners;
+    private Project control;
+    private MissionLog log;
+    private Person leader;
     private MarsTime stepStarted;
 
     private Set<Worker> members = new UnitSet<>();
@@ -134,8 +136,6 @@ public abstract class MissionProject implements Mission {
         leader.setMission(this);
         this.log = new MissionLog();
         this.control = new MissionController(name);
-
-
     }
 
     @Override
@@ -161,7 +161,7 @@ public abstract class MissionProject implements Mission {
 
 
     /**
-     * Complete the current step immediately
+     * Aborts the current phase/step.
      */
     @Override
     public void abortPhase() {
@@ -189,7 +189,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * The owning settlement is the settlement of the leader.
+     * Gets the owning settlement of the leader.
+     * 
      * @return Default based on leader
      */
     @Override
@@ -200,11 +201,6 @@ public abstract class MissionProject implements Mission {
     @Override
     public String getFullMissionDesignation() {
         return missionCallSign;
-    }
-
-    @Override
-    public MissionLog getLog() {
-        return log;
     }
 
     protected void addStatus(MissionStatus s) {
@@ -237,7 +233,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Define the step of this Mission. This will trigger finding suitable people.
+     * Defines the step of this Mission. This will trigger finding suitable people.
+     * 
      * @param plan
      */
     protected void setSteps(List<MissionStep> plan) {
@@ -254,14 +251,15 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Callback method to be notified when a stepis completed
+     * Callbacks method to be notified when a step is completed.
+     * 
      * @param ms The Mission step just completed
      */
     protected void stepCompleted(MissionStep ms) {
         // Do nothing
     }
 
-    	/**
+    /**
 	 * Registers this historical mission event about a member.
 	 * 
 	 * @param affected the entity affected by the event
@@ -296,7 +294,7 @@ public abstract class MissionProject implements Mission {
 	}
 
     /** 
-     * Find new members based on the skils needed for the Mission steps.
+     * Finds new members based on the skills needed for the Mission steps.
      */
     private void findMembers() {
     	// Get all people qualified for the mission.
@@ -383,7 +381,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * All the workers that are active in the Mission. Doe snot include thos that have left.
+     * Gets all workers that are active in the Mission. Does not include those that have left.
+     * 
      * @return Workers active
      */
     @Override
@@ -392,7 +391,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Get a list of everyone thta has signed up to the Mission
+     * Gets a list of everyone who has signed up to the Mission.
+     * 
      * @return Everyone originally signed up
      */
     @Override
@@ -401,7 +401,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Who is leading the Mission
+     * Who is leading the Mission ?
+     * 
      * @return Leading person
      */
     @Override
@@ -419,7 +420,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Notification that a step has been started so update the Mission log
+     * Notifies that a step has been started so update the Mission log.
+     * 
      * @param activeStep Step started
      */
     protected void stepStarted(ProjectStep activeStep) {
@@ -427,7 +429,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Get the resources needed to complete the mission
+     * Gets the resources needed to complete the mission.
+     * 
      * @return
      */
     public SuppliesManifest getResources(boolean includeOptionals) {
@@ -448,7 +451,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Add an entity listener to the Mission
+     * Adds an entity listener to the Mission.
+     * 
      * @param newListener Listener
      */
     @Override
@@ -460,7 +464,8 @@ public abstract class MissionProject implements Mission {
     }
 
     /**
-     * Remove a previously registered entity listener
+     * Removes a previously registered entity listener.
+     * 
      * @param oldListener Listener to remove
      */
     @Override
@@ -497,15 +502,34 @@ public abstract class MissionProject implements Mission {
 	}
 
     /**
-     * Add an entry to the mission log
+     * Adds an entry to the mission log.
+     * 
      * @param string
      */
     public void addMissionLog(String string) {
         log.addEntry(string);
     }
 
+	/**
+	 * Adds an entry to the mission log.
+	 * 
+	 * @param entry
+	 * @param enterBy the name of the person who logs this
+	 */
+	public void addMissionLog(String entry, String enterBy) {
+		log.addEntry(entry, enterBy);
+	}    
+    
+	/**
+	 * Gets the mission log.
+	 */
+	@Override
+	public MissionLog getLog() {
+		return log;
+	}
+
     /**
-     * Clear down the mission as it has completed. This should be overriden by subclasses/
+     * Clears down the mission as it has completed. This should be overridden by subclasses.
      */
     protected void clearDown() {
         // Force release of any remaining members

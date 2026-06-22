@@ -517,7 +517,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Adds a mission log.
+	 * Adds an entry to the mission log.
 	 * 
 	 * @param entry
 	 */
@@ -526,7 +526,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Adds a mission log.
+	 * Adds an entry to the mission log.
 	 * 
 	 * @param entry
 	 * @param enterBy the name of the person who logs this

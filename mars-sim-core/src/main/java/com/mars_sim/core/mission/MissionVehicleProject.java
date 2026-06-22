@@ -228,7 +228,7 @@ public class MissionVehicleProject extends MissionProject
 
 
     /**
-     * Extracst the Navpoints and calculates the proposed. This will extract the NavPoints for the Route.
+     * Extracts the Navpoints and calculates the proposed. This will extract the NavPoints for the Route.
      * 
      * It will also select a Vehicle based on the steps.
      * @param plan Steps for the mission

@@ -149,7 +149,8 @@ public class Project implements Serializable {
     }
 
     /**
-     * Remove a registered step. Can not be a step already executed
+     * Removes a registered step. Can not be a step already executed.
+     * 
      * @param oldStep
      * @return Returns false is the step has already been executed
      */
@@ -166,7 +167,8 @@ public class Project implements Serializable {
     }
 
     /**
-     * What is active currently
+     * What is the active step currently ?
+     * 
      * @return
      */
     public ProjectStep getStep() {
@@ -174,15 +176,17 @@ public class Project implements Serializable {
     }
 
     /**
-     * Is the project finished; either completed ot aborted
-     * @return Finsihed
+     * Is the project finished; either completed or aborted ?
+     * 
+     * @return Finished
      */
     public boolean isFinished() {
         return (isDone || isAborted);
     }
 
     /**
-     * Get the remaining steps of the project
+     * Gets the remaining steps of the project.
+     * 
      * @return
      */
     public List<ProjectStep> getRemainingSteps() {
@@ -191,7 +195,8 @@ public class Project implements Serializable {
     }
 
     /**
-     * A step has completed
+     * A step has completed.
+     * 
      * @param completedStep
      */
     void completeStep(ProjectStep completedStep) {
@@ -204,7 +209,7 @@ public class Project implements Serializable {
     }
 
     /**
-     * Abort the current step. Mark it as complete and advance
+     * Aborts the current step. Marks it as complete and advance.
      */
     public void abortStep() {
        currentStep.complete(); 

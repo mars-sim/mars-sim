@@ -25,8 +25,8 @@ public class MissionCloseStep extends MissionStep {
     }
 
     /**
-     * Execute the close down that involves experiecne update and leaving the Mission.
-     * LEader closes the Mission down.
+     * Executes the close down that involves experience update and leaving the Mission.
+     * Leader closes the Mission down.
      */
     @Override
     protected boolean execute(Worker worker) {

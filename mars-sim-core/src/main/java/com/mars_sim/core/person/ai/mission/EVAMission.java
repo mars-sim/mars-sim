@@ -431,7 +431,8 @@ abstract class EVAMission extends RoverMission {
 	}
 
 	/**
-	 * Estimate the time needed at an EVA site.
+	 * Estimates the time needed at an EVA site.
+	 * 
 	 * @param buffer Add a buffer allowance
 	 * @return Estimated time per EVA site
 	 */

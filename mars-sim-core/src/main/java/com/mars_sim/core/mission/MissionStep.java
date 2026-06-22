@@ -48,6 +48,7 @@ public abstract class MissionStep extends ProjectStep {
 
     /**
      * How on has the current step been running?
+     * 
      * @return mSol
      */
     protected int getStepDuration() {
@@ -55,7 +56,8 @@ public abstract class MissionStep extends ProjectStep {
     }
 
     /**
-     * Get the leader for this Mission
+     * Gets the leader for this Mission.
+     * 
      * @return
      */
     protected Person getLeader() {
@@ -63,19 +65,22 @@ public abstract class MissionStep extends ProjectStep {
 	}
 
     /**
-     * Calculate what resources are needed for this step.
+     * Calculates what resources are needed for this step.
+     * 
      * Method should be empty
      * The return value may change once the step is active.
+     * 
      * @param includeOptionals
      * @param resources
      */
     protected void getRequiredResources(SuppliesManifest resources, boolean includeOptionals) {}
 
     /**
-     * Calculate and add life support resources to the manifest for the crew
+     * Calculates and add life support resources to the manifest for the crew.
+     * 
      * @param crew Number of crew members
      * @param durationMSol Duration to cover for supplies
-     * @param ideal Calculate the ideal amount which will be more thn the minimum
+     * @param ideal Calculate the ideal amount which will be more than the minimum
      * @param manifest Place to hold the order
      */
     protected void addLifeSupportResource(int crew, double durationMSol, boolean ideal, SuppliesManifest manifest) {

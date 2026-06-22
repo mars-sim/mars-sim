@@ -45,6 +45,8 @@ public class MissionBoardVehicleStep extends MissionStep {
     private boolean notifiedMembers = false;
 
     /**
+     * Constructor.
+     * 
      * @param parent Parent mission
      */
     public MissionBoardVehicleStep(MissionVehicleProject parent) {
@@ -149,7 +151,8 @@ public class MissionBoardVehicleStep extends MissionStep {
     }
 
 	/**
-     * Call all members to board; alarms the members
+     * Calls all members to board; alarms the members.
+     * 
 	 * @param m Mission in control
 	 * @param caller Calling members to board
 	 * @param v Vehicle to board
@@ -174,7 +177,8 @@ public class MissionBoardVehicleStep extends MissionStep {
     }
 
     /**
-     * Is everyone on  board the vehicle ?
+     * Is everyone on board the vehicle ?
+     * 
 	 * @param m Controlling mission
      * @param vehicle Vehicle being checked
      * @return
