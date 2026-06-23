@@ -132,13 +132,13 @@ public class SimulationRuntime {
 	/**
 	 * Initialises the runtime logging. This is a facade onto the java logging classes.
 	 */
-    public static void initialseLogging() {
+    public static void initialiseLogging() {
 
         try (var conf = SimulationRuntime.class.getResourceAsStream(LOGGING_PROPERTIES)) {
             LogManager.getLogManager().readConfiguration(conf);
         } catch (IOException e) {
             // Problem with the logging.properties file
-        	logger.log(Level.SEVERE, "Unable to initialize logging.properties ", e);
+        	logger.log(Level.SEVERE, "Unable to initialize logging.properties: ", e);
         }
     }
 

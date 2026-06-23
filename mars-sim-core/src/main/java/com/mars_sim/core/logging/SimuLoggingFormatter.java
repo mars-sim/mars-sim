@@ -29,6 +29,7 @@ public class SimuLoggingFormatter extends Formatter {
 	private static final String LOGSIM = "simlogger";
 	private static final String LINEFEED = System.getProperty("line.separator");
 	private static final String O_PAREN = " (";
+	private static final String SPACE_O_PAREN = "(";
 	private static final String C_PAREN = ") ";
 	private static final String BRAC_X1 = "[x1] ";
 	private static final String C_BRAC = "] ";
@@ -52,31 +53,37 @@ public class SimuLoggingFormatter extends Formatter {
      * Obtains a formatted string of a time record.
      */
 	public String format(LogRecord record) {
-    	
+
 		String msg = formatMessage(record);
 
+		if (msg.trim().endsWith("log") || msg.trim().endsWith("baseLog"))
+			return null;
+		
 		// Build the message output using a fixed format
 	    StringBuffer sb = new StringBuffer();
 	    if (masterClock != null) {
-			if (timeStampType == 0) {
-				sb.append(getLocalTime());
-			}
-			else if (timeStampType == 1) {
-				sb.append(masterClock.getEarthTime().format(DATE_TIME_FORMATTER));
-			}
-			else if (timeStampType == 2  && isMarsClockValid()) {
-				String marsTime = getMarsTimestamp();
-				sb.append(marsTime);
+//			if (timeStampType == 0) {
+//				sb.append(getLocalTime());
+//			}
+//			 if (timeStampType == 1) {
+//				sb.append(masterClock.getEarthTime().format(DATE_TIME_FORMATTER));
+//			}
+			if (timeStampType == 2  && isMarsClockValid()) {
+				sb.append(getMarsTimestamp());
+				// Get the level name and add it to the buffer
+				sb.append(SPACE_O_PAREN);
+				sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
+				sb.append(C_PAREN);
 			}
 	    }
 		else {
-			sb.append(getLocalTime());
+//			sb.append(getLocalTime());
+			// Get the level name and add it to the buffer
+			sb.append(O_PAREN);
+			sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
+			sb.append(C_PAREN);
 		}
 
-		// Get the level name and add it to the buffer
-		sb.append(O_PAREN);
-		sb.append(Conversion.capitalize(record.getLevel().getName().toLowerCase()));
-		sb.append(C_PAREN);
 		
 		// If not using LogConsolidated class to generate the log statement
 		// do the following to extract the source class name

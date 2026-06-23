@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import com.mars_sim.core.MarsSimContext;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.BuildingCategory;
 import com.mars_sim.core.building.BuildingManager;
@@ -56,6 +57,8 @@ public abstract class MarsSimUnitTest {
 
     @BeforeEach
     public void init() {
+    	SimulationRuntime.enableFileLogging(null);
+    	
         // Initialize the MarsSimContextImpl for each test
         context = new MarsSimContextImpl();
     }

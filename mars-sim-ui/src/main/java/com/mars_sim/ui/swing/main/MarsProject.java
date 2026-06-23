@@ -76,7 +76,7 @@ public class MarsProject {
 	 * @param args
 	 */
 	public void parseArgs(String[] args) {
-  Simulation sim;
+		Simulation sim;
 				
 		SimulationBuilder builder = new SimulationBuilder();
 		
@@ -366,7 +366,7 @@ public class MarsProject {
 	 */
 	public static void main(String[] args) {
 
-		SimulationRuntime.initialseLogging();
+		SimulationRuntime.initialiseLogging();
 		
 		// Sets text antialiasing
 		System.setProperty("swing.aatext", "true");

@@ -183,7 +183,7 @@ public class SimulationBuilder {
 	 * @param line
 	 */
 	public void parseCommandLine(CommandLine line) {	
-		// Config arg MUST be first follwoed by the logging arg
+		// Config arg MUST be first followed by the logging arg
 		if (line.hasOption(CONFIG_ARG)) {
 			SimulationRuntime.setDataDir(line.getOptionValue(CONFIG_ARG));
 		}

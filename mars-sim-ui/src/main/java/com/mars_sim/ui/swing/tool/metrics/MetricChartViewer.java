@@ -39,6 +39,7 @@ import com.mars_sim.ui.swing.utils.SwingHelper;
  * A Swing component that displays multiple JFreeChart line charts in a tabbed pane.
  * Users can add and remove chart tabs using dropdown controls for Entity, Category, and Measure.
  */
+@SuppressWarnings("serial")
 public class MetricChartViewer extends ContentPanel
         implements MetricManagerListener {
     

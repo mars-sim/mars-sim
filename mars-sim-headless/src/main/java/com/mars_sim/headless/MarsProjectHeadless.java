@@ -233,7 +233,7 @@ public class MarsProjectHeadless {
      */
     public static void main(String[] args) {
 
-        SimulationRuntime.initialseLogging();
+        SimulationRuntime.initialiseLogging();
 
         // starting the simulation
         new MarsProjectHeadless(args);

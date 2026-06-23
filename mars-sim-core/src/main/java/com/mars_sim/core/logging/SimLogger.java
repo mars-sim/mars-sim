@@ -67,7 +67,6 @@ public class SimLogger {
 		SimLogger result = null;
 		synchronized (loggers) {
 			result = loggers.computeIfAbsent(name, k -> new SimLogger(name));
-
 		}
 		return result;
 	}
@@ -119,7 +118,8 @@ public class SimLogger {
 	 */
 	private void baseLog(Entity actor, Level level, long timeBetweenLogs, String message,
 			Throwable t) {
-		if (!rootLogger.isLoggable(level)) {
+			
+		if (message == null || message.isBlank() || message.isEmpty() || !rootLogger.isLoggable(level)) {
 			return;
 		}
 
