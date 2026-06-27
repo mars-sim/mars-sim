@@ -18,7 +18,10 @@ import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
 import com.mars_sim.core.person.ai.task.EatDrink;
 import com.mars_sim.core.person.ai.task.Sleep;
 import com.mars_sim.core.person.ai.task.Walk;
+import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
+import com.mars_sim.core.vehicle.Rover;
+import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * The PersonTaskManager class keeps track of a person's current task and can randomly
@@ -210,6 +213,71 @@ public class PersonTaskManager extends TaskManager {
 	}
 	
 	
+	/**
+	 * Directly assign a Task to a person if they have any issues in starting a new task.
+	 *
+	 * @param newTask   the new task to be assigned
+	 * @param allowSameTask is it allowed to execute the same task as previous
+	 * @return true if task can be performed.
+	 */
+	@Override
+	public boolean directlyAssignTask(Task newTask, boolean allowSameTask) {
+		// If task is physical effort driven and person too ill, do not assign task.
+		Task currentTask = getTask();
+
+		String newTaskName = newTask.getName();
+		
+		if (currentTask != null && !currentTask.isDone()) {
+
+			String currentTaskName = currentTask.getName();
+			if (!allowSameTask && currentTaskName.equals(newTaskName)){
+	      		logger.info(person, 20_000, "Already '" + currentTaskName 
+	      				+ "' as of this moment.");
+				// If the person has been doing this task, 
+				// then there is no need of adding it.
+				return false;
+			}
+
+			if (currentTaskName.equals(Sleep.NAME)) {
+	      		logger.info(person, 20_000, "Currently asleep. Not available to be assigned with other tasks.");
+				// If the person is asleep, 
+				// do not assign this task.
+	      		
+	      		// Note: what if it's an emergency that one must wake up and respond ?
+				return false;
+			}
+
+			Vehicle v = person.getVehicle();
+			if (v != null && v instanceof Rover r && r.isInAirlock(person)) {	
+	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
+		
+	      		// Note: need to wait until the person has exited the vehicular airlock
+				return false;
+			}
+			Settlement settlement = person.getSettlement();
+			if (settlement != null && settlement.isInAirlock(person)) {	
+	      		logger.info(person, 20_000, "Currently inside a vehicular airlock. Not available to be assigned with other tasks.");
+		
+	      		// Note: need to wait until the person has exited the vehicular airlock
+				return false;
+			}
+		}
+		
+		if (!newTaskName.equals(Sleep.NAME) && person.isSuperUnfit()) {
+			logger.warning(person, 20_000, "Super unfit to be assigned with '" + newTask + ".");
+			return false;
+		}
+		
+		// If Task is easy or person is fit enough, then assign the task.
+		if ((!newTask.isEffortDriven() || person.getPerformanceRating() > 0D)
+				 && checkReplaceTask(newTask, allowSameTask)) {
+			return true;
+		}
+
+		logger.info(person, 20_000, "Unable to assign with '" + newTaskName + "'.");		
+		return false;
+	}
+
 	/**
 	 * Sets the list of mission ratings and the selected mission rating.
 	 * 

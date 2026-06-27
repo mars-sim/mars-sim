@@ -31,6 +31,7 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.job.util.JobUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.role.RoleUtil;
+import com.mars_sim.core.tool.RandomUtil;
 
 /**
  * The ChainOfCommand class creates and assigns a person a role type based on
@@ -435,6 +436,37 @@ public class ChainOfCommand implements Serializable {
 		return settlement.getAllAssociatedPeople().stream()
 				.filter(p -> p.getRole().getType() == role)
 				.toList();
+	}
+
+	/**
+	 * Returns the maximum number of members allowed in a mission based on the current population of the settlement.
+	 */
+	public int getMaxMissionMembers() {
+		int pop = settlement.getNumCitizens();
+		int max;
+		if (pop < 4)
+			max = 1;
+		else if (pop < 7)
+			max = 2;
+		else if (pop < 10)
+			max = 3;
+		else if (pop < 14)
+			max = 4;
+		else if (pop < 18)
+			max = 5;
+		else if (pop < 23)
+			max = 6;
+		else if (pop < 29)
+			max = 7;
+		else
+			max = 8;
+
+		// 50% tendency to have 1 less person
+		int rand = RandomUtil.getRandomInt(1);
+		if ((rand == 1) && (max >= 5)) {
+			max--;
+		}
+		return max;
 	}
 
 	/**

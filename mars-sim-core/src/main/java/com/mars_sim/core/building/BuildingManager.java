@@ -1088,8 +1088,7 @@ public class BuildingManager implements Serializable {
 		if (walkingTask != null) {
 			
 	        // Walk back home
-			TaskManager.assignTask((Person)worker, walkingTask);
-			
+			worker.getTaskManager().directlyAssignTask(walkingTask, false);			
 			return true;
 		}
 		else {
