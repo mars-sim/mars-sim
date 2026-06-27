@@ -52,8 +52,6 @@ public abstract class Airlock implements Serializable {
 	/** default logger. */
 	private static SimLogger logger = SimLogger.getLogger(Airlock.class.getName());
 
-	/** The maximum number of reservations that can be made for an airlock. */
-	public static final int MAX_RESERVED = 4;
 	/** The effective reservation period [in millisols]. */
 	public static final int RESERVATION_PERIOD = 40;
 	
@@ -118,6 +116,8 @@ public abstract class Airlock implements Serializable {
 	/** True if outer door is locked. */
 	private boolean outerDoorLocked;
 
+	/** The maximum number of reservations that can be made for an airlock. */
+	public int maxReserved;
 	/** Number of people who can use the airlock at once. */
 	private int capacity;
 	/** Number of times no eva suit is found available. */
@@ -154,8 +154,10 @@ public abstract class Airlock implements Serializable {
 		// Initialize data members
 		if (capacity < 1)
 			throw new IllegalArgumentException("capacity less than one.");
-		else
+		else {
 			this.capacity = capacity;
+			this.maxReserved = capacity;
+		}
 
 		airlockState = AirlockState.PRESSURIZED;
 		innerDoorLocked = false;
@@ -283,7 +285,7 @@ public abstract class Airlock implements Serializable {
 	 * @return
 	 */
 	public boolean isReservationFull() {
-		if (reservationMap.size() >= MAX_RESERVED) {
+		if (reservationMap.size() >= maxReserved) {
 			return true;
 		}
 		return false;

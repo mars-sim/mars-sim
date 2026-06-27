@@ -488,10 +488,9 @@ public class Walk extends Task {
 			boolean isEgressMode = airlockMode == AirlockMode.EGRESS;
 			boolean notInUse = airlockMode == AirlockMode.NOT_IN_USE;
 
-			if (!chamberFull
-				&& (notInUse
-					|| (ingress && isIngressMode)
-					|| (!ingress && isEgressMode))) {
+			if (notInUse
+					|| (ingress && isIngressMode && !chamberFull)
+					|| (!ingress && isEgressMode && !chamberFull)) {
 						return true;
 			}
 		}

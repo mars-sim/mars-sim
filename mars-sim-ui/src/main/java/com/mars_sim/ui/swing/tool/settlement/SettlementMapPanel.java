@@ -718,10 +718,10 @@ public class SettlementMapPanel extends JPanel {
 			hX = oL / 2D;
 		}
 		// Loading Dock Garage
-		if (facing == 180) {
+		if (facing == 180 || facing == -180) {
 			hX = oW / 2D;
 			hY = oL / 2D;
-		} else if (facing == 270) {
+		} else if (facing == 270 || facing == -90) {
 			hY = oW / 2D;
 			hX = oL / 2D;
 		}
@@ -773,10 +773,10 @@ public class SettlementMapPanel extends JPanel {
 			hX = oL / 2D;
 		}
 		// Loading Dock Garage
-		if (facing == 180) {
+		if (facing == 180 || facing == -180) {
 			hX = oW / 2D;
 			hY = oL / 2D;
-		} else if (facing == 270) {
+		} else if (facing == 270 || facing == -90) {
 			hY = oW / 2D;
 			hX = oL / 2D;
 		}

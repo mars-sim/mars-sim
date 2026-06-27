@@ -54,6 +54,7 @@ public class Rover extends GroundVehicle implements Crewable,
 	// default logger.
 	private static final SimLogger logger = SimLogger.getLogger(Rover.class.getName());
 
+	private static final int NUM_OCCUPANTS = 2;
 	/** The fuel range modifier. */
 	private static final double FUEL_RANGE_FACTOR = 0.95;
 	/** The reference small amount of resource. */
@@ -185,7 +186,7 @@ public class Rover extends GroundVehicle implements Crewable,
 		}
 
 		// Create the rover's airlock.
-		airlock = new VehicleAirlock(this, 2, spec.getAirlockLoc(), spec.getAirlockInteriorLoc(),
+		airlock = new VehicleAirlock(this, NUM_OCCUPANTS, spec.getAirlockLoc(), spec.getAirlockInteriorLoc(),
 										 spec.getAirlockExteriorLoc());
 	}
 

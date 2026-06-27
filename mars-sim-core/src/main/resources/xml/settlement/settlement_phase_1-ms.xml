@@ -14,26 +14,32 @@
         facing="0.0">
         <connection-list>
             <connection id="LH0" hatch-facing="west" />
-            <connection id="EVA" hatch-facing="south" />
+            <connection id="EVA1" hatch-facing="south" />
             <connection id="B1" hatch-facing="north" />
         </connection-list>
     </building>
-    
-    <building id="EVA" type="EVA Airlock" xloc="-6.0" yloc="-7.5"
-        facing="270.0">
+
+    <building id="EVA1" type="Suit Port" xloc="-6.0" yloc="-6.0" facing="180.0">
         <connection-list>
             <connection id="B0" hatch-facing="north" />
         </connection-list>
     </building>
-
+    
     <building id="B1" type="Brickcore3x3" xloc="-6.0" yloc="6.0"
         facing="0.0">
         <connection-list>
             <connection id="B0" hatch-facing="south" />
             <connection id="B2" hatch-facing="east" />
+            <connection id="EVA2" hatch-facing="west" />
         </connection-list>
     </building>
     
+    <building id="EVA2" type="Suit Port" xloc="-3.0" yloc="6.0" facing="-90.0">
+        <connection-list>
+            <connection id="B1" hatch-facing="east" />
+        </connection-list>
+    </building>
+        
     <building id="B2" type="Brickcore3x9" xloc="-12.0" yloc="6.0"
         facing="90.0">
         <connection-list>
@@ -54,10 +60,17 @@
         facing="90.0">
         <connection-list>
             <connection id="B2" hatch-facing="west" />
+            <connection id="EVA3" hatch-facing="east" />
             <connection id="W0" hatch-facing="south" />
         </connection-list>
     </building>
     
+    <building id="EVA3" type="Suit Port" xloc="-27.0" yloc="6.0" facing="90.0">
+        <connection-list>
+            <connection id="B3" hatch-facing="west" />
+        </connection-list>
+    </building>
+        
     <building id="W0" type="Workshop" xloc="-21.0" yloc="1.0" 
     	facing="90.0">
         <connection-list>

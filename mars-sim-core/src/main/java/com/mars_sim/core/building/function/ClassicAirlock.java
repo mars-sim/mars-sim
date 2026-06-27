@@ -37,9 +37,6 @@ public class ClassicAirlock extends Airlock {
 
     private static SimLogger logger = SimLogger.getLogger(ClassicAirlock.class.getName());
 
-	/** The maximum number of space in the chamber. */
-	public static final int MAX_SLOTS = 4;
-	
 	/** Pressurize/depressurize time (millisols). */
 	public static final double CYCLE_TIME = 10D; 
 	/** Assume an uniform height of 2 meters in all airlocks. */
@@ -50,8 +47,12 @@ public class ClassicAirlock extends Airlock {
 	private static final double AIRLOCK_VOLUME_IN_LITER = AIRLOCK_VOLUME_IN_CM * 1000D; // 12 m^3
 
     // Data members.
+	
 	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;
+	/** The capacity of this airlock (the max number of occupants or the number of chambers). */
+	private int slots;
+	
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
 	private double remainingCycleTime;
 	
@@ -94,22 +95,40 @@ public class ClassicAirlock extends Airlock {
         this.building = building;
 		this.eva = eva;
 
- 
+		slots = capacity;
 		activated = false;
 		remainingCycleTime = CYCLE_TIME;
 
-        // Determine airlock inner/interior door position.
-        airlockInteriorPos = interiorPos.toPosition(building);
-        // For Zone 0
-        outsideInteriorDoorMap = buildDoorMap(interiorPos, building, -0.3, -0.55, 0.4);
-        // For Zone 1
-        insideInteriorDoorMap = buildDoorMap(interiorPos, building, 1.7, 2.3, 0.4);
-        // Determine airlock outer/exterior door position.
-        airlockExteriorPos = exteriorPos.toPosition(building);
-        // For Zone 3
-        insideExteriorDoorMap = buildDoorMap(exteriorPos, building, -0.5, -1.0, 0.4);
-        // For Zone 4
-        outsideExteriorDoorMap = buildDoorMap(exteriorPos, building, 0.5, 1.0, 0.4);
+		if (slots == 4) {
+			// In case of EVA Airlock,
+	        // Determine airlock inner/interior door position.
+	        airlockInteriorPos = interiorPos.toPosition(building);
+	        // For Zone 0
+	        outsideInteriorDoorMap = buildDoorEastWestMap(interiorPos, building, -0.33, -0.66, 0.4);
+	        // For Zone 1
+	        insideInteriorDoorMap = buildDoorEastWestMap(interiorPos, building, 0.33, 0.66, 0.4);
+	        // Determine airlock outer/exterior door position.
+	        airlockExteriorPos = exteriorPos.toPosition(building);
+	        // For Zone 3
+	        insideExteriorDoorMap = buildDoorEastWestMap(exteriorPos, building, -0.33, -0.66, 0.4);
+	        // For Zone 4
+	        outsideExteriorDoorMap = buildDoorEastWestMap(exteriorPos, building, 0.33, 0.66, 0.4);
+		}
+		else {
+			// In case of Suit Port,
+	        // Determine airlock inner/interior door position.
+	        airlockInteriorPos = interiorPos.toPosition(building);
+	        // For Zone 0
+	        outsideInteriorDoorMap = buildDoorNorthSouthMap(interiorPos, building, 0.25, -0.25);
+	        // For Zone 1
+	        insideInteriorDoorMap = buildDoorNorthSouthMap(interiorPos, building, 0.25, 0.25);
+	        // Determine airlock outer/exterior door position.
+	        airlockExteriorPos = exteriorPos.toPosition(building);
+	        // For Zone 3
+	        insideExteriorDoorMap = buildDoorNorthSouthMap(exteriorPos, building, 0.25, -0.25);
+	        // For Zone 4
+	        outsideExteriorDoorMap = buildDoorNorthSouthMap(exteriorPos, building, 0.25, 0.25);
+		}
     }
 
     /**
@@ -117,23 +136,48 @@ public class ClassicAirlock extends Airlock {
      * 
      * @param center 	The x value of the pos of the interior or exterior door
      * @param building 	The building hosting the door
-     * @param x1 		The first x pos
-     * @param x2 		The second x pos
-     * @param y 		The +y and -y pos
+     * @param x1 		The first delta x pos
+     * @param x2 		The second delta x pos
+     * @param y 		The delta +y and -delta y pos
      * @return
      */
-    private static Map<LocalPosition, Integer> buildDoorMap(RelativePosition center, Building building,
+    private static Map<LocalPosition, Integer> buildDoorEastWestMap(RelativePosition center, Building building,
 			double x1, double x2, double y) {
         Map<LocalPosition, Integer> result = new HashMap<>();
-
+        // In Future, treat them as activity spots instead
+        // Fill in integer -1 to denote that the spot is empty
+        
         result.put(center.move(x1, y).toPosition(building), -1);
 		result.put(center.move(x1, -y).toPosition(building), -1);
+		
         result.put(center.move(x2, y).toPosition(building), -1);
         result.put(center.move(x2, -y).toPosition(building), -1);
 
         return result;
 	}
 
+    /**
+     * Builds a map for the door positions. Creates four positioned around the center offset by the x and y values.
+     * 
+     * @param center 	The x value of the pos of the interior or exterior door
+     * @param building 	The building hosting the door
+     * @param x 		The delta x pos
+     * @param y 		The delta y pos
+     * @return
+     */
+    private static Map<LocalPosition, Integer> buildDoorNorthSouthMap(RelativePosition center, Building building,
+			double x, double y) {
+        Map<LocalPosition, Integer> result = new HashMap<>();
+        // In Future, treat them as activity spots instead
+        // Fill in integer -1 to denote that the spot is empty
+        
+        result.put(center.move(x, y).toPosition(building), -1);
+        result.put(center.move(-x, y).toPosition(building), -1);
+        
+        return result;
+	}
+
+    
 
 	@Override
     protected boolean egress(Person person) {
@@ -634,7 +678,7 @@ public class ClassicAirlock extends Airlock {
 	 */
 	@Override
 	public boolean areAll4ChambersFull() {
-		return getNumInChamber() >= MAX_SLOTS;
+		return getNumInChamber() >= slots;
 	}
 
 	/**
@@ -745,9 +789,9 @@ public class ClassicAirlock extends Airlock {
 			return true;
 		}
 		else {
-			// MAX_SLOTS - 1 because it needs to have one vacant spot
+			// The size must be less than (slots - 1) because it needs to have one vacant spot
 			// for the flow of traffic
-			if (set.size() < MAX_SLOTS - 1) {
+			if (set.size() < slots - 1) {
 				set.add(id);
 				return true;
 			}

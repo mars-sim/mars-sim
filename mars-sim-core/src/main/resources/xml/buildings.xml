@@ -565,25 +565,74 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Lander Hab-->
 
+	<building type="Suit Port" width="2.0" length="3.0" north-south-alignment="length" base-level="0"
+			wear-lifetime="3340000" maintenance-time="50" room-temperature="20" base-mass="250"
+			category="EVA">
+		<description> The SuitPort is a one-person EVA airlock for donning or doffing a EVA suit for EVA operation.</description>
+		<base-power power-priority="6" base-full-power="1.0" base-low-power="0.2" />
+		<functions>
+			<!-- This building has an airlock and changing room for EVA operations. -->
+			<!--          capacity : the number of people who can use the airlock at once. -->
+			<!--        	  xloc : the relative X location inside the airlock. West is +ve. -->
+			<!--       		  yloc : the relative Y location inside the airlock. North is +ve. -->
+			<!--   center-position : the center position of the airlock. -->
+			<!-- interior-position : the inner or inteior door position of the airlock. -->
+			<!-- exterior-position : the outer or exterior door position of the airlock. -->
+			<EVA capacity="2">
+				<center-position xloc="0.0" yloc="0.0"/>
+				<interior-position xloc="0.0" yloc="-1.0"/>
+				<exterior-position xloc="0.0" yloc="1.5"/>
+				<activity>
+					<!-- activity-spot : location of a chamber in xloc and yloc. -->		
+					<activity-spot xloc="-0.5" yloc="0.0" />
+					<activity-spot xloc="0.25" yloc="-0.25" />
+				</activity>
+			</EVA>
+
+			<life-support capacity="2" />
+
+			<power-generation>
+				<power-source type="Solar Power Source" power="0.5" />
+			</power-generation>
+
+			<power-storage capacity="5" discharge-rate="1.25"/>
+
+			<robotic-station capacity="1">
+				<activity>
+					<activity-spot xloc="0.25" yloc="0.75" />
+				</activity>
+			</robotic-station>
+			
+			<thermal-generation>
+				<heat-source type="Solar Heating" capacity="0.5" />
+				<heat-source type="Electric Heating" capacity="5.0" />
+				<heat-source type="Fuel Heating" toggle="true"
+					fuel-type="methane"	capacity="5.0"/>
+			</thermal-generation>
+
+		</functions>
+	</building>
+<!-- end of Suit Port -->
 
 	<building type="EVA Airlock" width="6.0" length="4.0" north-south-alignment="length" base-level="0"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="20" base-mass="1500"
 			category="EVA">
-		<description> The EVA Airlock is a node to be attached to building for giving direct access
-		in performing EVA operations.</description>
-		<base-power power-priority="6" base-full-power="1.0" base-low-power="0.1" />
+		<description> The EVA Airlock is a node allowing access to EVA surface operations.</description>
+		<base-power power-priority="6" base-full-power="2.0" base-low-power="0.4" />
 		<functions>
 			<!-- This building has an airlock and changing room for EVA operations. -->
 			<!--          capacity : the number of people who can use the airlock at once. -->
-			<!--        xloc, yloc : the relative X/Y location inside the airlock. -->
+			<!--        	  xloc : the relative X location inside the airlock. West is +ve. -->
+			<!--       		  yloc : the relative Y location inside the airlock. North is +ve. -->
 			<!--   center-position : the center position of the airlock. -->
 			<!-- interior-position : the inner or inteior door position of the airlock. -->
 			<!-- exterior-position : the outer or exterior door position of the airlock. -->
 			<EVA capacity="4">
 				<center-position xloc="0.0" yloc="0.0"/>
-				<interior-position xloc="-2.25" yloc="0.0"/>
+				<interior-position xloc="-2.5" yloc="0.0"/>
 				<exterior-position xloc="3.0" yloc="0.0"/>
 				<activity>
+					<!-- activity-spot : location of a chamber in xloc and yloc. -->		
 					<activity-spot xloc="1.0" yloc="1.25" />
 					<activity-spot xloc="1.0" yloc="-1.25" />
 					<activity-spot xloc="-1.0" yloc="1.25" />
@@ -591,7 +640,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 				</activity>
 			</EVA>
 
-			<life-support capacity="8" />
+			<life-support capacity="4" />
 
 			<power-generation>
 				<power-source type="Solar Power Source" power="3.0" />

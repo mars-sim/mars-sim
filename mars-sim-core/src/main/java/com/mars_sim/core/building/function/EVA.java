@@ -91,6 +91,15 @@ public class EVA extends Function {
 	}
 	
 	/**
+	 * Gets the capacity.
+	 * 
+	 * @return
+	 */
+	public int getCapacity() {
+		return airlockCapacity;
+	}
+	
+	/**
 	 * Time passing for the building.
 	 * 
 	 * @param pulse the amount of clock pulse passing (in millisols)

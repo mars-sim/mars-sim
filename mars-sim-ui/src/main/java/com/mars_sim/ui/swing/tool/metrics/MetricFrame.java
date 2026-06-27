@@ -76,9 +76,9 @@ public class MetricFrame extends JFrame {
         return metricManager;
     }
 
-    private static void advanceTime(MasterClock clock, double seconds) {
+    private static void advanceTime(MasterClock clock, double ms) {
         var now = clock.getMarsTime();
-        now = now.addTime(seconds);
+        now = now.addTime(ms);
         clock.setMarsTime(now);
     }
 
@@ -115,7 +115,7 @@ public class MetricFrame extends JFrame {
     }
 
     private void startUpdates() {
-        // Add more sample data as needed, load after vieer is created
+        // Add more sample data as needed, load after viewer is created
         // to check events
         loadTestData(sim.getMasterClock());
 

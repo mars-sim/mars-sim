@@ -1,6 +1,6 @@
 <?xml version = "1.0" encoding = "UTF-8" standalone = "yes" ?>
 <template xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settlement.xsd"
-        name="Phase 0-MS" default-population="1" description="Phase 0 base for Mars Society"
+        name="Phase 0-MS" default-population="2" description="Phase 0 base for Mars Society"
 		 sponsor="MS">
 
     <!-- Lander habitat building is the main habitation in the Mars Direct
@@ -17,15 +17,15 @@
         </connection-list>
     </building>
 
-    <!-- EVA Airlock is attached to the lander hab -->
-    <building id="1" type="EVA Airlock" xloc="7.5" yloc="0.0" facing="0.0">
+    <!-- Suit Port is attached to the lander hab -->
+    <building id="1" type="Suit Port" xloc="6.0" yloc="0.0" facing="-90.0">
         <connection-list>
-            <connection id="0" xloc="-3.0" yloc="0.0" />
+            <connection id="0" hatch-facing="east"  />
         </connection-list>
     </building>
 
     <!-- Hallway connecting lander hab and inflatable greenhouse. -->
-    <!-- Note: Aa hallway has fixed width but variable length. Therefore,
+    <!-- Note: A hallway has fixed width but variable length. Therefore,
         the length argument must be provided below. -->
     <building id="2" type="Hallway" length="3.0" xloc="-6.0" yloc="0.0" facing="270.0">
         <connection-list>

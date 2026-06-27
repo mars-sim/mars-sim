@@ -1495,9 +1495,7 @@ public class Settlement extends Unit implements Temporal,
 		Airlock result = null;
 		
 		double leastDistance = Double.MAX_VALUE;
-		double leastPeople = 4;
-		double leastInnerDoor = 4;
-		double leastOuterDoor = 4;
+
 		Map<Airlock, Integer> airlockMap = new HashMap<>();
 		
 		Set<Building> airlocks = buildingManager.getAirlocks();
@@ -1507,7 +1505,11 @@ public class Settlement extends Unit implements Temporal,
 
         for (Building nextBuilding : airlocks) {
             Airlock airlock = nextBuilding.getEVA().getAirlock();
-
+            int capacity = airlock.getCapacity();
+    		int leastPeople = capacity;
+    		int leastInnerDoor = capacity;
+    		int leastOuterDoor = capacity;	
+            
             boolean chamberFull = airlock.isFull();
             boolean reservationFull = airlock.isReservationFull();
             

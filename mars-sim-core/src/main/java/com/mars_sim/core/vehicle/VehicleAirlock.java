@@ -41,12 +41,12 @@ extends Airlock {
 
 	/** Pressurize/depressurize time (millisols). */
 	public static final double CYCLE_TIME = 2D; 
-	/** The maximum number of space in the chamber. */
-	public static final int MAX_SLOTS = 2;
 	
 	// Data members.
 	/** True if airlock is activated (may elect an operator or may change the airlock state). */
 	private boolean activated;
+	/** The capacity of this airlock (the max number of occupants). */
+	private int slots;
 	/** Amount of remaining time for the airlock cycle. (in millisols) */
 	private double remainingCycleTime;
 	
@@ -85,7 +85,10 @@ extends Airlock {
 			this.vehicle = vehicle;
 		}
 
+		slots = capacity;
+		
 		activated = false;
+		
 		remainingCycleTime = CYCLE_TIME;
 		
 		// Determine airlock interior position.
@@ -318,7 +321,7 @@ extends Airlock {
 	 */
 	@Override
 	public boolean areAll4ChambersFull() {
-		return getInsideChamberNum() >= MAX_SLOTS;
+		return getInsideChamberNum() >= slots;
 	}
 
 	/**
@@ -592,9 +595,9 @@ extends Airlock {
 			return true;
 		}
 		else {
-			// MAX_SLOTS - 1 because it needs to have one vacant spot
+			// The size must be less than (slots - 1) because it needs to have one vacant spot
 			// for the flow of traffic
-			if (set.size() < MAX_SLOTS - 1) {
+			if (set.size() < slots - 1) {
 				set.add(id);
 				return true;
 			}
