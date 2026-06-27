@@ -14,9 +14,9 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 
-public class CookMealMetaTest extends MarsSimUnitTest {
+class CookMealMetaTest extends MarsSimUnitTest {
     @Test
-    public void testMealTime() {
+    void testMealTime() {
         var s = buildSettlement("mock");
      
         buildKitchen(s.getBuildingManager());
@@ -41,7 +41,7 @@ public class CookMealMetaTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testMultiKitchen() {
+    void testMultiKitchen() {
         var s = buildSettlement("mock");
      
         var b1 = buildKitchen(s.getBuildingManager());
@@ -61,7 +61,7 @@ public class CookMealMetaTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testCooks() {
+    void testCooks() {
         var s = buildSettlement("mock");
      
         var b = buildKitchen(s.getBuildingManager());
@@ -82,11 +82,7 @@ public class CookMealMetaTest extends MarsSimUnitTest {
         p1.getTaskManager().replaceTask(new CookMeal(p1, k));
         results = mt.getSettlementTasks(s);
         task = results.get(0);
-        
-        String taskName = p1.getTaskManager().getTaskDescription(false);
-        System.out.println(p1 + " " + taskName);
-        int numCooks = k.getNumCooks();
-        System.out.println(p1 + " at " + p1.getBuildingLocation() + " (numCooks: " + numCooks + ")");
+
         assertEquals(k.getCookCapacity() - 1, task.getDemand(), "Meal task demand after 1 chef");
 
         var p2 = buildPerson("Chef", s, JobType.CHEF, b, FunctionType.COOKING);

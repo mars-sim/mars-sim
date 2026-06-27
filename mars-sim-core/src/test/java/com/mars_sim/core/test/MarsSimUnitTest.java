@@ -57,6 +57,7 @@ public abstract class MarsSimUnitTest {
 
     @BeforeEach
     public void init() {
+		SimulationRuntime.initialiseLogging();
     	SimulationRuntime.enableFileLogging(null);
     	
         // Initialize the MarsSimContextImpl for each test

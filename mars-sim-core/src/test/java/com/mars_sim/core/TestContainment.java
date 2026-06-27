@@ -182,7 +182,7 @@ class TestContainment extends MarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	@Test
-	public void testPersonInGarage() {
+	void testPersonInGarage() {
 		var person = buildPerson("Worker One", settlement);
 
 		assertInsideSettlement("Initial person", person, settlement);
@@ -196,7 +196,7 @@ class TestContainment extends MarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	@Test
-	public void testVehicleInGarage() {
+	void testVehicleInGarage() {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1), EXPLORER_ROVER);
         
 		// Since garage has been built at constructor, once the vehicle is built, 
@@ -216,7 +216,7 @@ class TestContainment extends MarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	@Test
-	public void testVehicleNearSettlement() {
+	void testVehicleNearSettlement() {
 		Vehicle vehicle = buildRover(settlement, "Near Rover", new LocalPosition(1,1), EXPLORER_ROVER);
 		
 		// Vehicle leaves garage
@@ -227,9 +227,7 @@ class TestContainment extends MarsSimUnitTest {
 		// Since garage has been built at constructor, once the vehicle is built, 
 		// it goes into a garage automatically 
 		
-		boolean isInGarage = vehicle.isInGarage();
-		System.out.println("In testVehicleNearSettlement(), isInGarage: " + isInGarage);
-		
+		boolean isInGarage = vehicle.isInGarage();		
 		assertVehicleGaraged("Vehicle in garage", vehicle, settlement);
 		
 		LocationStateType state = LocationStateType.SETTLEMENT_VICINITY;
@@ -243,7 +241,7 @@ class TestContainment extends MarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	@Test
-	public void testVehicleOnSurface() {
+	void testVehicleOnSurface() {
 		Vehicle vehicle = buildRover(settlement, "Garage Rover", new LocalPosition(1,1), EXPLORER_ROVER);
 
 		assertTrue(vehicle.transfer(getSurface()),
@@ -256,7 +254,7 @@ class TestContainment extends MarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	@Test
-	public void testBagOnSurface() {
+	void testBagOnSurface() {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
@@ -274,7 +272,7 @@ class TestContainment extends MarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	@Test
-	public void testBagOnVehicle() {
+	void testBagOnVehicle() {
 
 		Equipment bag = EquipmentFactory.createEquipment(EquipmentType.BAG, settlement);
 		
@@ -301,7 +299,7 @@ class TestContainment extends MarsSimUnitTest {
 	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
 	 */
 	@Test
-	public void testPersonOnVehicle() {
+	void testPersonOnVehicle() {
 
 		Person person = buildPerson("Test Person", settlement);
 		
@@ -342,33 +340,4 @@ class TestContainment extends MarsSimUnitTest {
 		
 		assertInsideSettlement("After return", person, settlement);
 	}
-
-	
-	/*
-	 * Test method for 'com.mars_sim.simulation.person.ai.task.LoadVehicle.isFullyLoaded()'
-	 */
-//	public void testEVAOnPerson() {
-//		Person person = new Person("Worker Two", settlement);
-//		person.initialize(); // TODO This is bad. Why do we have to call a 2nd method after the constructor ???
-//        unitManager.addUnit(person);
-//
-//        person.transfer(settlement,  surface);
-//
-//		EVASuit suit = new EVASuit("EVA Suit", settlement);
-//		unitManager.addUnit(suit);
-//		assertTrue("transfer suit to Person", suit.transfer(settlement, person));
-//
-//		assertEquals("Location state type", LocationStateType.ON_PERSON_OR_ROBOT, suit.getLocationStateType());
-//		assertNull("Settlement", suit.getSettlement());
-//		
-//		assertFalse("InSettlement", suit.isInSettlement());
-//		assertFalse("IsInside", suit.isInside());
-//		assertFalse("IsOutside", suit.isOutside());
-//
-//		assertFalse("isInVehicle", suit.isInVehicle());
-//		assertNull("Vehicle", suit.getVehicle());
-//		
-//		assertEquals("Container", person, suit.getContainerUnit());
-//		assertEquals("Top container", person, suit.getTopContainerUnit());
-//	}
 }
