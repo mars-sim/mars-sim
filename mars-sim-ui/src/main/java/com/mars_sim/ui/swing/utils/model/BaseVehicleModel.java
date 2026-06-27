@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.utils.model;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -80,14 +81,14 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
     protected static final EntityColumnSpec FUEL = new EntityColumnSpec(new ColumnSpec(FUEL_VAL, "Fuel %", Double.class, ColumnSpec.STYLE_INTEGER), null);
     
     private Map<Vehicle, VehicleMission> vehicleToMission = new HashMap<>();
-    private Set<Integer> resources = Collections.emptySet();
+    private List<Integer> resources = Collections.emptyList();
 
     /**
      * Create a generic vehicle model with the specified columns.
-     * @param resources Set of resource IDs to create columns for.
+     * @param resources List of resource IDs to create columns for.
      * @param columns Columns to show.
      */
-    protected BaseVehicleModel(Set<Integer> resources,EntityColumnSpec... columns) {
+    protected BaseVehicleModel(List<Integer> resources,EntityColumnSpec... columns) {
         super(ResourceColumnHelper.getColumns(resources, columns));
         this.resources = resources;
     }
@@ -118,13 +119,12 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
             }
         }
 
-        // Always disabke if Mission is done
+        // Always disable if Mission is done
         super.enableListener(entity, activate);
     }
 
     /**
-     * 
-     * Also if the Vehicle ;s Mission changes it triggers adding/removing listener on the Mission
+     * Also if the Vehicle's Mission changes it triggers adding/removing listener on the Mission
      */
     @Override
     public void entityUpdate(EntityEvent event) {
@@ -132,7 +132,7 @@ public abstract class BaseVehicleModel extends AbstractEntityModel<Vehicle> {
         if (event.getSource() instanceof VehicleMission vm) {
             if (FORWARED_EVENTS.contains(event.getType())) {
                 // Make the model refresh vehicle distances
-                event = new EntityEvent(vm.getVehicle(), VehicleMission.DISTANCE_EVENT, event.getTarget());
+                event = new EntityEvent(vm.getVehicle(), event.getType(), event.getTarget());
             }
             else {
                 // Do not pass other Vehicle event to model

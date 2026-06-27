@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.utils.model;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
@@ -37,7 +38,7 @@ public class ResourceColumnHelper {
      * @param columns Array of named columns.
      * @return Array of EntityColumnSpec including both existing and resource columns.  
      */
-    static EntityColumnSpec[] getColumns(Set<Integer> resources, EntityColumnSpec[] columns) {
+    static EntityColumnSpec[] getColumns(List<Integer> resources, EntityColumnSpec[] columns) {
         EntityColumnSpec[] resourceColumns = new EntityColumnSpec[resources.size() + columns.length];
     
         // Named columns first
@@ -60,7 +61,7 @@ public class ResourceColumnHelper {
      * @param resources The set of monitored resource IDs.
      * @return A new event referencing the resource column, or null if the resource is not monitored.
      */
-    static EntityEvent convertResourceToEvent(EntityEvent event, Set<Integer> resources) {
+    static EntityEvent convertResourceToEvent(EntityEvent event, List<Integer> resources) {
         // Resource change
         var target = event.getTarget();
         int resourceID = switch (target) {

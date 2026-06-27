@@ -113,7 +113,6 @@ public abstract class BaseMissionModel extends AbstractEntityModel<Mission> {
      */
     @Override
     public void entityUpdate(EntityEvent event) {
-        super.entityUpdate(event);
         if (event.getSource() instanceof Vehicle v) {
             if (event.getType().equals(EntityEventType.COORDINATE_EVENT)) {
                 // Vehicle distance changed, update the associated mission

@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.tool.monitor;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.resource.ResourceUtil;
@@ -22,7 +23,7 @@ public class SettlementTableModel extends BaseSettlementModel implements Monitor
 	
 	private static final String SETTLEMENTS = Msg.getString("settlement.plural");
 	
-	private static final Set<Integer> RESOURCES = Set.of(
+	private static final List<Integer> RESOURCES = List.of(
 							ResourceUtil.HYDROGEN_ID,ResourceUtil.METHANE_ID,
 							ResourceUtil.METHANOL_ID, ResourceUtil.WATER_ID);
 

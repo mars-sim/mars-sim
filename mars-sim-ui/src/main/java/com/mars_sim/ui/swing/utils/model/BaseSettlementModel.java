@@ -6,6 +6,7 @@
  */
 package com.mars_sim.ui.swing.utils.model;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
@@ -48,13 +49,14 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
                                 Set.of(PowerGrid.STORED_ENERGY_EVENT));
 
     // Resource columns
-    private Set<Integer> resources;
+    private List<Integer> resources;
 
     /**
      * Create a generic building model with the specified columns.
+     * @param resources The list of monitored resource IDs.
      * @param columns Columns to show.
      */
-    protected BaseSettlementModel(Set<Integer> resources, EntityColumnSpec... columns) {
+    protected BaseSettlementModel(List<Integer> resources, EntityColumnSpec... columns) {
         super(ResourceColumnHelper.getColumns(resources, columns));
 
         this.resources = resources;

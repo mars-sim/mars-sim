@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.resource.ResourceUtil;
@@ -26,7 +27,7 @@ public class VehicleTableModel extends BaseVehicleModel implements MonitorModel 
 	private static final String VEHICLES = Msg.getString("vehicle.plural");
 
 	// Displayed resources
-	private static final Set<Integer> RESOURCES = Set.of(ResourceUtil.METHANE_ID, ResourceUtil.METHANOL_ID, ResourceUtil.OXYGEN_ID,
+	private static final List<Integer> RESOURCES = List.of(ResourceUtil.METHANE_ID, ResourceUtil.METHANOL_ID, ResourceUtil.OXYGEN_ID,
 													ResourceUtil.WATER_ID, ResourceUtil.FOOD_ID);
 	
 	public VehicleTableModel() {
