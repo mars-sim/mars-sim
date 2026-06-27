@@ -76,7 +76,7 @@ public abstract class BaseBuildingModel extends AbstractEntityModel<Building> {
 			case PWR_REQ_VAL -> entity.getFullPowerLoad();
 			case PWR_GEN_VAL -> entity.getGeneratedPower();
             case TEMP_VAL -> entity.getCurrentTemperature();
-            default -> "";
+            default -> null;
         };
     }
 }

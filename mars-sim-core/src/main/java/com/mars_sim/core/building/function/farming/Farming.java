@@ -66,9 +66,7 @@ public class Farming extends Function {
 	private static final double MIN  = .00001D;
 	
 	private static final String CROPS = "crops";
-	
-//	Not in use currently but may use in future : private static final String POWER_GROWING_CROP = "power-growing-crop";
-	
+		
 	private static final String POWER_SUSTAINING_CROP = "power-sustaining-crop";
 	private static final String GROWING_AREA = "growing-area";
 
@@ -854,13 +852,20 @@ public class Farming extends Function {
 				}
 			}
 
-			int size = cropList.size();
-			numCrops2Plant = defaultCropNum - size;
-			
-			// Remove finished crops
+			// Remove completed crops and fire events
 			cropList.removeAll(toRemove);
+			toRemove.forEach(crop -> building.fireUnitUpdate(CROP_EVENT, crop));
+
+			numCrops2Plant = defaultCropNum - cropList.size();
 		}
 		return valid;
+	}
+
+	/**
+	 * What is the maximumcrops supported.
+	 */
+	public int getMaxCrops() {
+		return defaultCropNum;
 	}
 
 	/**
