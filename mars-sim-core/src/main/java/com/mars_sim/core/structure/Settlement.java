@@ -41,7 +41,6 @@ import com.mars_sim.core.building.utility.heating.ThermalSystem;
 import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.data.History;
 import com.mars_sim.core.data.Range;
-import com.mars_sim.core.data.SolMetricDataLogger;
 import com.mars_sim.core.data.UnitSet;
 import com.mars_sim.core.environment.DustStorm;
 import com.mars_sim.core.environment.SurfaceFeatures;
@@ -68,6 +67,8 @@ import com.mars_sim.core.manufacture.ManufacturingManager;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.map.location.SurfacePOI;
+import com.mars_sim.core.metrics.MetricCategory;
+import com.mars_sim.core.metrics.MetricGroup;
 import com.mars_sim.core.mineral.RandomMineralFactory;
 import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.parameter.ParameterManager;
@@ -89,6 +90,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.process.CompletedProcess;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
@@ -306,12 +308,13 @@ public class Settlement extends Unit implements Temporal,
 	/** The settlement objective type instance. */
 	private ObjectiveType objectiveType = ObjectiveType.BUILDERS_HAVEN;
 
-	/** The settlement's water consumption in kitchen when preparing/cleaning meal and dessert. */
-	private SolMetricDataLogger<WaterUseType> waterConsumption = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-	/** The settlement's daily output (resources produced). */
-	private SolMetricDataLogger<Integer> dailyResourceOutput = new SolMetricDataLogger<>(MAX_NUM_SOLS);
-	/** The settlement's daily labor hours output. */
-	private SolMetricDataLogger<Integer> dailyLaborTime = new SolMetricDataLogger<>(MAX_NUM_SOLS);
+	/**
+	 * Metrics for the settlement.
+	 */
+	private static final MetricCategory WATER_CATEGORY = new MetricCategory("Water Usage");
+	private MetricGroup waterConsumption = new MetricGroup(WATER_CATEGORY);
+	private static final MetricCategory PRODUCED_CATEGORY = new MetricCategory("Resource Produced");
+	private MetricGroup dailyResourceOutput = new MetricGroup(PRODUCED_CATEGORY);
 	
 	/** The settlement's achievement in scientific fields. */
 	private EnumMap<ScienceType, Double> scientificAchievement;
@@ -326,9 +329,6 @@ public class Settlement extends Unit implements Temporal,
 	private Map<Integer, Double> resourcesCollected = new HashMap<>();
 	/** The settlement's resource statistics. */
 	private Map<Integer, Map<Integer, Map<Integer, Double>>> resourceStat = new HashMap<>();
-	
-	/** The last 20 mission scores */
-	private List<Double> missionScores;
 
 	/** The set of available pressurized/pressurizing airlocks. */
 	private Set<Building> pressurizedAirlocks = new UnitSet<>();
@@ -2847,11 +2847,9 @@ public class Settlement extends Unit implements Temporal,
 	 * @param amount the amount or quantity produced
 	 * @param millisols the labor time
 	 */
-	public void addOutput(Integer resource, double amount, double millisols) {
-
-		// Record the amount of resource produced
-		dailyResourceOutput.increaseDataPoint(resource, amount);
-		dailyLaborTime.increaseDataPoint(resource, millisols);
+	public void addOutput(int resource, double amount, double millisols) {
+		// This is not optimal and needs a better way to record Measures as not only String
+		dailyResourceOutput.recordValue(ResourceType.getName(resource), amount, this);
 	}
 
 	/**
@@ -2861,18 +2859,17 @@ public class Settlement extends Unit implements Temporal,
 	 * @param amount
 	 */
 	public void addWaterConsumption(WaterUseType type, double amount) {
-		waterConsumption.increaseDataPoint(type, amount);
+		waterConsumption.recordValue(type.getName(), amount, this);
 	}
 
 	/**
 	 * Gets the daily average water usage of the last x sols Not: most weight on
 	 * yesterday's usage. Least weight on usage from x sols ago.
 	 *
-	 * @param type
-	 * @return
+	 * @return Map keys on water usage
 	 */
-	public double getDailyWaterUsage(WaterUseType type) {
-		return waterConsumption.getDailyAverage(type);
+	public Map<String, Double> getDailyWaterUsage() {
+		return waterConsumption.getAveragePerSol();
 	}
 
 	/**

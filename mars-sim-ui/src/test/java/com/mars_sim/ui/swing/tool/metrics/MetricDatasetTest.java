@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.tool.metrics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityIdentifier;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.metrics.Metric;
 import com.mars_sim.core.metrics.MetricCategory;
 import com.mars_sim.core.metrics.MetricManager;
@@ -64,9 +66,14 @@ class MetricDatasetTest {
     private MarsTime startTime;
     private MetricManager manager;
 
+    @BeforeAll
+    static void ghlobalSetup() {
+        SimulationRuntime.initialiseLogging();
+        SimulationConfig.loadConfig();
+    }
+
     @BeforeEach
     void setup() {
-        SimulationConfig.loadConfig();
         var sim = Simulation.instance();
         sim.testRun();
         var clock = sim.getMasterClock();

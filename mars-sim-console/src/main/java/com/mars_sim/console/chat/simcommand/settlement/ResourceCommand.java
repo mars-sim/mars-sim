@@ -24,7 +24,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.resourceprocess.ResourceProcess;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.structure.WaterUseType;
 
 public class ResourceCommand extends AbstractSettlementCommand {
 	private static final String PROJECTED_DAILY_CONSUMED = "Projected daily consumed";
@@ -176,26 +175,16 @@ public class ResourceCommand extends AbstractSettlementCommand {
 		response.appendTableRow("People", Math.round(consumption * 100.0) / 100.0);
 		net = net + consumption;
 
-		// Add water usage from making meal and dessert
-		double cooking = settlement.getDailyWaterUsage(WaterUseType.PREP_MEAL)
-					+ settlement.getDailyWaterUsage(WaterUseType.PREP_DESSERT);
-		response.appendTableRow("Cooking", Math.round(cooking * 100.0) / 100.0);
-		net = net + cooking;
-
-		// Prints living usage
-		List<Building> quarters = settlement.getBuildingManager()
-				.getBuildings(FunctionType.LIVING_ACCOMMODATION);
-		double livingUsage = quarters.stream()
-					.mapToDouble(b -> b.getLivingAccommodation().getDailyAverageWaterUsage())
-					.sum();		
-		response.appendTableRow("Accommodation", Math.round(livingUsage * 100.0) / 100.0);
-		net = net + livingUsage;
-
-		// Prints cleaning usage
-		double cleaning = settlement.getDailyWaterUsage(WaterUseType.CLEAN_MEAL)
-					+ settlement.getDailyWaterUsage(WaterUseType.CLEAN_DESSERT);
-		response.appendTableRow("Cleaning", Math.round(cleaning * 100.0) / 100.0);
-		net = net + cleaning;
+		// Get water usage.
+		var waterUsage = settlement.getDailyWaterUsage();
+		for(var entry: waterUsage.entrySet()) {
+			String type = entry.getKey();
+			double amount = entry.getValue();
+			if (amount > 0) {
+				response.appendTableRow(type, Math.round(amount * 100.0) / 100.0);
+				net = net + amount;
+			}
+		}
 
 		// Prints output from resource processing
 		double output = 0;

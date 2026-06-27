@@ -10,6 +10,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -28,6 +30,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import com.mars_sim.core.Entity;
 import com.mars_sim.core.metrics.Metric;
 import com.mars_sim.core.metrics.MetricCategory;
+import com.mars_sim.core.metrics.MetricKey;
 import com.mars_sim.core.metrics.MetricManager;
 import com.mars_sim.core.metrics.MetricManagerListener;
 import com.mars_sim.core.time.ClockPulse;
@@ -49,17 +52,20 @@ public class MetricChartViewer extends ContentPanel
     public static final String ICON = "metrics";
 
     private static final String SELECT_PROMPT = "-- Select --";
+    private static final String ALL_MEASURES = "ALL";  // Token value for all measures
     
     private transient MetricManager metricManager;
     private JTabbedPane tabbedPane;
     private JComboBox<Entity> entityComboBox;
     private JComboBox<MetricCategory> categoryComboBox;
     private JComboBox<String> measureComboBox;
-    private JButton newButton;
+    private JButton showMetric;
     private JButton removeButton;
     private JButton addButton;
     private JCheckBox cummulative;
     private JCheckBox shapes;
+    private JButton showCategory;
+    private Map<MetricKey, MetricDataset> categoryToDataset = new HashMap<>();
         
     /**
      * Creates a new MetricChartViewer component with the specified MetricManager.
@@ -94,7 +100,8 @@ public class MetricChartViewer extends ContentPanel
         add(tabbedPane, BorderLayout.CENTER);
                         
         // Initially disable buttons
-        newButton.setEnabled(false);
+        showMetric.setEnabled(false);
+        showCategory.setEnabled(false);
         updateButtonState();
 
         // Set preferred size
@@ -129,10 +136,12 @@ public class MetricChartViewer extends ContentPanel
          
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 2));
 
-        newButton = new JButton("New Chart");
-        newButton.addActionListener(e -> addNewChart());
+        showMetric = new JButton("Show Metric");
+        showMetric.addActionListener(e -> showMetricNewChart());
+        showCategory = new JButton("Show Category");
+        showCategory.addActionListener(e -> showCategoryNewChart());
         addButton = new JButton("Add To Chart");
-        addButton.addActionListener(e -> addToChart());
+        addButton.addActionListener(e -> addMeasureToChart());
         removeButton = new JButton("Remove Chart");
         removeButton.addActionListener(e -> removeSelectedChart());
 
@@ -161,8 +170,9 @@ public class MetricChartViewer extends ContentPanel
         });
 
         // Add buttons
-        controlPanel.add(newButton);
+        controlPanel.add(showMetric);
         controlPanel.add(addButton);
+        controlPanel.add(showCategory);
         controlPanel.add(removeButton);
         controlPanel.add(cummulative);
         controlPanel.add(shapes);
@@ -187,6 +197,7 @@ public class MetricChartViewer extends ContentPanel
     private void populateMeasureComboBox() {
         measureComboBox.removeAllItems();
 
+        boolean enableNewChartButtons = false;
         if (entityComboBox.getSelectedIndex() > 0 && categoryComboBox.getSelectedIndex() > 0) {
             var measures = metricManager.getMeasures(
                                 (Entity) entityComboBox.getSelectedItem(),
@@ -196,11 +207,11 @@ public class MetricChartViewer extends ContentPanel
                 measureComboBox.addItem(m);
             }
             measureComboBox.setSelectedIndex(0);
-            newButton.setEnabled(true);
+            enableNewChartButtons = true;
         }
-        else {
-            newButton.setEnabled(false);
-        }
+
+        showCategory.setEnabled(enableNewChartButtons);
+        showMetric.setEnabled(enableNewChartButtons);
     }
     
     private void categorySelected() {
@@ -299,11 +310,11 @@ public class MetricChartViewer extends ContentPanel
         }
         return null;
     }
-        
+
     /**
      * Adds the selected metric to the currently selected chart tab.
      */
-    private void addToChart() {
+    private void addMeasureToChart() {
         int selectedIndex = tabbedPane.getSelectedIndex();
         var data = getSelectedMetric();
         if (data != null && (selectedIndex >= 0)) {
@@ -321,49 +332,93 @@ public class MetricChartViewer extends ContentPanel
     }
 
     /**
-     * Adds a new chart tab based on the current dropdown selections.
+     * Show a new chart for the selected Metric
      */
-    private void addNewChart() {
-
+    private void showMetricNewChart() {
         var data = getSelectedMetric();
         if (data != null) {
             // Create the chart
             var dataset = new MetricDataset();
             dataset.setCumulative(cummulative.isSelected());
-            if (!dataset.addMetric(data)) {
-                // Metric already present, do not add duplicate chart
-                return;
-            }
+            dataset.addMetric(data);
 
-            JFreeChart chart = createMetricChart(dataset);
-            
-            // Create chart panel
-            ChartPanel chartPanel = new ChartPanel(chart);
-            chartPanel.setPreferredSize(new Dimension(600, 400));
-            chartPanel.setMouseWheelEnabled(true);
-            
-            // Add to tabbed pane
-            tabbedPane.addTab(dataset.getTitle(), chartPanel);
-            
-            // Select the new tab
-            tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
-            
-            // Update button states
-            updateButtonState();
-            
+            buildNewChart(dataset);
+           
             // Reset selections to encourage creating different charts
             measureComboBox.setSelectedIndex(0); // Reset to "-- Select --"
         }
     }
+        
+    /**
+     * Show a new chart for the selected Category
+     */
+    private void showCategoryNewChart() {
+        var entityObj = (Entity)entityComboBox.getSelectedItem();
+        var category = (MetricCategory) categoryComboBox.getSelectedItem();
+        
+        // Make the category is selected and there are measures
+        if (entityObj == null || category == null || measureComboBox.getModel().getSize() == 0) {
+            return;
+        }
+
+        // Create the dataset
+        var dataset = new MetricDataset();
+        dataset.setCumulative(cummulative.isSelected());
+
+        // add all known measures
+        for(var m : metricManager.getMeasures(entityObj, category)) {
+            // Find selected Metrix
+            var metric = metricManager.getMetric(entityObj, category, m);
+            dataset.addMetric(metric);
+        }
+
+        buildNewChart(dataset);
+
+        // Add to map so new Measure are auto added
+        categoryToDataset.put(new MetricKey(entityObj, category, ALL_MEASURES), dataset);
+    }
     
+    private void buildNewChart(MetricDataset dataset) {
+        JFreeChart chart = createMetricChart(dataset);
+        
+        // Create chart panel
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(new Dimension(600, 400));
+        chartPanel.setMouseWheelEnabled(true);
+        
+        // Add to tabbed pane
+        tabbedPane.addTab(dataset.getTitle(), chartPanel);
+        
+        // Select the new tab
+        tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
+        
+        // Update button states
+        updateButtonState();     
+    }
+
     /**
      * Removes the currently selected chart tab.
      */
     private void removeSelectedChart() {
         int selectedIndex = tabbedPane.getSelectedIndex();
         if (selectedIndex >= 0) {
+            var selection = tabbedPane.getTabComponentAt(selectedIndex);
             tabbedPane.removeTabAt(selectedIndex);
             updateButtonState();
+
+            // Remove from categoryToDataset map if it was a category chart
+            ChartPanel chartPanel = (ChartPanel) selection;
+            JFreeChart chart = chartPanel.getChart();
+            XYPlot plot = chart.getXYPlot();
+            var dataset = (MetricDataset) plot.getDataset();
+
+            // Check if the dataset is in the map and remove it
+            for(var entry : categoryToDataset.entrySet()) {
+                if (entry.getValue() == dataset) {
+                    categoryToDataset.remove(entry.getKey());
+                    break;
+                }
+            }
         }
     }
     
@@ -417,9 +472,20 @@ public class MetricChartViewer extends ContentPanel
         dataset.refresh();
 	}
 
+    /**
+     * New metric added so update the dropdowns to include it.
+     * Also check if the new Metric belongs to an existing Chart
+     */
     @Override
     public void newMetric(Metric m) {
         populateCategoryComboBox();
         populateEntityComboBox();
+
+        // Check if the new metric belongs to an existing chart for the same category
+        var pseudoKey = new MetricKey(m.getKey().asset(), m.getKey().category(), ALL_MEASURES);
+        var dataset = categoryToDataset.get(pseudoKey);
+        if (dataset != null) {
+            dataset.addMetric(m);
+        }
     }
 }

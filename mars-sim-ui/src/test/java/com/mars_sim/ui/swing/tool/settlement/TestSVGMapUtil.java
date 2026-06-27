@@ -7,10 +7,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.batik.gvt.GraphicsNode;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.building.construction.ConstructionConfig;
 import com.mars_sim.core.building.construction.ConstructionStageInfo;
 import com.mars_sim.core.resource.Part;
@@ -23,11 +24,12 @@ import com.mars_sim.ui.swing.tool.svg.SVGMapUtil;
  */
 class TestSVGMapUtil {
 
-    private SimulationConfig config;
+    private static SimulationConfig config;
 
-    @BeforeEach
-    void setUp() {
-    	config = SimulationConfig.loadConfig();
+    @BeforeAll
+    static void setup() {
+        SimulationRuntime.initialiseLogging();
+        config = SimulationConfig.loadConfig();
     }
 
     /**

@@ -14,7 +14,7 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.time.MarsTime;
 
-public class CropTest extends MarsSimUnitTest{
+class CropTest extends MarsSimUnitTest {
     
 	public Building buildGreenhouse(BuildingManager buildingManager) {
 		return buildFunction(buildingManager, "Large Greenhouse", BuildingCategory.FARMING,
@@ -22,17 +22,17 @@ public class CropTest extends MarsSimUnitTest{
 	}
 
     @Test
-    public void testGrowingWhiteMustard() {
+    void testGrowingWhiteMustard() {
         testCropGrowth("White Mustard");  // Select a crop with a short growing cycle
     }
 
     @Test
-    public void testGrowingSpringOnion() {
+    void testGrowingSpringOnion() {
         testCropGrowth("Spring Onion");  // Select a crop with a short growing cycle
     }
     
     @Test
-    public void testGrowingGreenBellPepper() {
+    void testGrowingGreenBellPepper() {
         testCropGrowth("Green Bell Pepper");  // Select a crop with a short growing cycle
     }
 
@@ -94,7 +94,6 @@ public class CropTest extends MarsSimUnitTest{
         
         double cropCache = crop.getCropCache();
         
-        // assertTrue((harvested.value()/harvested.max()) > 0.5D, cropName + " crop harvested over 10%");
         assertEquals(cropCache + s.getSpecificAmountResourceStored(spec.getCropID()), harvested.value(), 0.01, cropName + " stored");
    
         return crop;

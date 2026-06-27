@@ -109,49 +109,30 @@ class MicroInventoryTest {
 		int resource = ResourceUtil.CO2_ID;
 		inv.setSpecificCapacity(resource, CAPACITY_AMOUNT);
 		
-		double excess = inv.storeAmountResource(resource, CAPACITY_AMOUNT);
-		System.out.println("excess: " + excess);
+		inv.storeAmountResource(resource, CAPACITY_AMOUNT);
 		
 		double shortfall = inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2);
-		System.out.println("shortfall: " + shortfall);
-		
 		assertEquals(0D, shortfall, "Shortfall on 1st retrieve");
 		
 		double stored = inv.getSpecificAmountResourceStored(resource);
-		System.out.println("stored: " + stored);
 		
 		assertEquals(CAPACITY_AMOUNT/2, stored, "Stored on 1st retrieve");
 		assertEquals(CAPACITY_AMOUNT/2, inv.getRemainingSpecificCapacity(resource), "Remaining after 1st retrieve");
 		
-		double mass = inv.getStoredMass();
-		System.out.println("mass: " + mass);
-		
+		double mass = inv.getStoredMass();		
 		assertEquals(CAPACITY_AMOUNT/2, mass, "Total mass after 1st retrieve");
 
-		shortfall = inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2);
-		System.out.println("shortfall: " + shortfall);
-		
+		shortfall = inv.retrieveAmountResource(resource, CAPACITY_AMOUNT/2);		
 		assertEquals(0D, shortfall, "Shortfall on 2nd retrieve");
 		
-		stored = inv.getSpecificAmountResourceStored(resource);
-		System.out.println("stored: " + stored);
-		
+		stored = inv.getSpecificAmountResourceStored(resource);		
 		assertEquals(0D, stored, "Stored on 2nd retrieve");
 		
-		double cap = inv.getRemainingSpecificCapacity(resource);
-		System.out.println("cap: " + cap);
-		
+		double cap = inv.getRemainingSpecificCapacity(resource);		
 		assertEquals(CAPACITY_AMOUNT, cap, "Remaining after 2nd retrieve");
-		
-		double totalSpecificStored = inv.getTotalSpecificAmountResourceStored();
-		System.out.println("totalSpecificStored: " + totalSpecificStored);
-		
-		double totalStockStored = inv.getTotalStockAmountResourceStored();
-		System.out.println("totalStockStored: " + totalStockStored);
 		
 		inv.printStoredMass();
 		mass = inv.getStoredMass();
-		System.out.println("mass: " + mass);
 		
 		assertEquals(0D, mass, "Total mass after 2nd retrieve");
 

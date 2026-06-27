@@ -38,12 +38,15 @@ public enum RobotType {
 
 	/**
 	 * Convert an robot type to the associated resourceID.
-	 * Note : Needs revisiting. Equipment should be referenced by the RobotType enum.
-	 * 
-	 * @return
 	 */
 	public static int getResourceID(RobotType type) {
 		return type.ordinal() + ResourceType.FIRST_ROBOT_RESOURCE_ID;
 	}
-	
+
+	/**
+	 * Obtains the enum type of the robot with its type id.
+	 */
+	public static RobotType convertID2Type(int resourceId) {
+		return RobotType.values()[resourceId - ResourceType.FIRST_ROBOT_RESOURCE_ID];
+	}	
 }

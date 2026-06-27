@@ -16,9 +16,11 @@ import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 import com.mars_sim.core.configuration.ScenarioConfig;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.RobotType;
@@ -29,6 +31,11 @@ class HelpGeneratorTest {
 	
     private SimulationConfig simconfig;
     
+    @BeforeAll
+    static void setup() {
+        SimulationRuntime.initialiseLogging();
+    }
+
     private HelpContext createGenerator() {
         simconfig = SimulationConfig.loadConfig();
 

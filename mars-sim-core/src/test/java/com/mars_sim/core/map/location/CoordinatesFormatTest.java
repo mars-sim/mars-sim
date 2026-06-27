@@ -119,7 +119,6 @@ class CoordinatesFormatTest {
         // Do North & West
         for(var v : values) {
             var s = CoordinatesFormat.DIGIT_FORMAT.format(v[0]);
-            System.out.println("Parsing: " + s);
             var c = CoordinatesFormat.DIGIT_FORMAT.parse(s).doubleValue();
             assertEquals(c, v[0], 0.001);
 

@@ -410,8 +410,7 @@ public class Simulation implements ClockPulseListener, Serializable {
 
 		// Common handler for full planet events
 		scheduledEvents = new ScheduledEventManager(masterClock);
-		//metricManager = new DatabaseMetricManager(SimulationRuntime.getDataDir() + File.separator +"metrics");
-		metricManager = new MemoryMetricManager(10);
+		metricManager = new MemoryMetricManager(20);
 
 		// Initialize serializable objects
 		malfunctionFactory = new MalfunctionFactory();

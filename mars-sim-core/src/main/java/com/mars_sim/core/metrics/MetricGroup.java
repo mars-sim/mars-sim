@@ -59,6 +59,20 @@ public class MetricGroup implements Serializable {
     }
 
     /**
+     * Get the average value per sol for each Measure. This uses the Average calculator to get the average for each sol.
+     * @return Map keys on measure name
+     */
+    public Map<String, Double> getAveragePerSol() {
+        Map<String, Double> averagePerSol = new HashMap<>();
+        for(Metric metric : metrics.values()) {
+            var results = metric.applyBySol(0, sol -> new Total());
+            double totalAverage = results.values().stream().mapToDouble(Total::getSum).average().orElse(0.0);
+            averagePerSol.put(metric.getKey().measure(), totalAverage);
+        }
+        return averagePerSol;
+    }
+    
+    /**
      * Custom deserialization logic to reinitialize the transient metrics map after deserialization.
      * @param ois
      * @throws ClassNotFoundException

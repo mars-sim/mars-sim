@@ -9,12 +9,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.mars_sim.core.SimulationConfig;
+import com.mars_sim.core.SimulationRuntime;
 
 class HelpLibraryTest {
-
+    @BeforeAll
+    static void setup() {
+        SimulationRuntime.initialiseLogging();
+    }
+    
     @Test
     void testCreateLibrary() throws IOException {
 		// Load config files
