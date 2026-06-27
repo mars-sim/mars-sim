@@ -7,14 +7,12 @@
 package com.mars_sim.core.mission;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
-import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.data.RatingLog;
 import com.mars_sim.core.events.ScheduledEventHandler;
@@ -61,8 +59,12 @@ public class MissionControl implements ScheduledEventHandler {
 	private Settlement owner;
 	private int id = 1;
 	
-	private transient Set<EntityManagerListener> listeners;
 	private static final MetricCategory MISSION_CAT = new MetricCategory("Missions");
+
+	// Event types when missions are added or removed from the control
+	public static final String MISSION_ADD = "mission add";
+	public static final String MISSION_REMOVED = "mission removed";
+
 	private MetricGroup metrics = new MetricGroup(MISSION_CAT);
 
     public MissionControl(Settlement settlement) {
@@ -215,11 +217,7 @@ public class MissionControl implements ScheduledEventHandler {
 		allMissions.add(mission);
 		metrics.recordValue("Started", 1D, owner);
 
-		if (listeners != null) {
-			synchronized (listeners) {
-				listeners.forEach(l -> l.entityAdded(mission));
-			}
-		}
+		owner.fireUnitUpdate(MISSION_ADD, mission);
 	}
 
 	/**
@@ -227,38 +225,11 @@ public class MissionControl implements ScheduledEventHandler {
 	 * @param mission Mission to remove
 	 */
 	public void removeMission(Mission mission) {
-		if (allMissions.remove(mission) && listeners != null) {
-			synchronized (listeners) {
-				listeners.forEach(l -> l.entityRemoved(mission));
-			}
+		if (allMissions.remove(mission)) {
+			owner.fireUnitUpdate(MISSION_REMOVED, mission);
 		}
 	}
 
-	/**
-	 * Add a listener for changes to missions controlled by this settlement.
-	 * @param listener the listener to register.
-	 */
-	public void addListener(EntityManagerListener listener) {
-		if (listeners == null) {
-			listeners = new HashSet<>();
-		}
-		synchronized (listeners) {
-			listeners.add(listener);
-		}
-	}
-
-	/**
-	 * Remove a previously registered mission change listener.
-	 * @param listener listener to remove.
-	 */
-	public void removeListener(EntityManagerListener listener) {
-		if (listeners != null) {
-			synchronized (listeners) {
-				listeners.remove(listener);
-			}
-		}
-	}
-	
 	/**
 	 * Gets all the missions associated with this control.
 	 * @return set of missions associated with this control.

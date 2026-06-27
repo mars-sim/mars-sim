@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,7 +46,9 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
      * Create a generic entity model with the specified columns.
      * @param columns Columns to render
      */
-    protected AbstractEntityModel(EntityColumnSpec... columns) {
+    protected AbstractEntityModel(EntityColumnSpec[] columns) {
+        Set<Integer> valIds = new HashSet<>();
+
         // Create the event map by extracting the event types against the index of the EntityColumnSpec
         int idx = 0;
         for (EntityColumnSpec ecs : columns) {
@@ -55,7 +58,15 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
                 }
             }
             idx++;
+            
+            valIds.add(ecs.column().id());
         }
+
+        // Check all columns have unique Ids
+        if (valIds.size() != columns.length) {
+            throw new IllegalArgumentException("Column Ids must be unique");
+        }
+
         this.columns = Arrays.stream(columns).map(EntityColumnSpec::column).toArray(ColumnSpec[]::new);
     }
 
@@ -73,7 +84,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
             
             // If there are no monitored events, then no need to register as listener
             if (!monitoredEvents.isEmpty()) {
-                entities.forEach(e -> e.addEntityListener(this));
+                entities.forEach(e -> enableListener(e, true));
             }
             // Update in swing thread as table has sorting
             SwingHelper.runInEDT(this::fireTableDataChanged);
@@ -92,7 +103,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
             entities.add(entity);
             int index = entities.size() - 1;
             if (!monitoredEvents.isEmpty()) {
-                entity.addEntityListener(this);
+                enableListener(entity, true);
             }
 
             SwingHelper.runInEDT(() -> fireTableRowsInserted(index, index));
@@ -107,38 +118,41 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
         int index = entities.indexOf(entity);
         if (index >= 0) {
             entities.remove(index);
-            entity.removeEntityListener(this);
+            enableListener(entity, false);
             SwingHelper.runInEDT(() -> fireTableRowsDeleted(index, index));
         }
     }
 
     /**
-     * When releasing the model, the entity listeners are removed.
+     * When releasing the model, the listeners for each entity are deactivated via #enableListeners(false).
+     * Subclasses may override to release any additional resources listerners but should call super.release() to ensure the entity listeners are removed.
      */
     @Override
     public void release() {
-       setMonitorEntities(false);
+       enableListeners(false);
     }
 
     /**
-     * This is a temp. method until MonitorModel implements StatefulComponent.
-     */
-    @Deprecated(forRemoval = true)
-    public void destroy() {
-        // This will be called directly once StatefulCompoment is implemented.
-        release();
-    }
-
-    /**
-     * Control whether the listeners are enabled or disabled.
+     * Enable or disable the entity listeners for the model.
+     * The default just handles the entities in the model, but subclasses may have additional entities to monitor.
      * @param activate Activate the listeners if true, disable if false.
      */
-    public void setMonitorEntities(boolean activate) {
+    public void enableListeners(boolean activate) {
+        entities.forEach(e -> enableListener(e, activate));
+    }
+
+    /**
+     * Enable the listeners required for the entity. The default implementation adds a EntityListener to the entity.
+     * Subclasses may override to add additional listeners.
+     * @param entity Source of events
+     * @param activate Activiate listeners
+     */
+    protected void enableListener(T entity, boolean activate) {
         if (activate) {
-            entities.forEach(e -> e.addEntityListener(this));
+            entity.addEntityListener(this);
         }
         else {
-            entities.forEach(e -> e.removeEntityListener(this));
+            entity.removeEntityListener(this);
         }
     }
 

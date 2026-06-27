@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.ui.swing.components.EnhancedTableModel;
+import com.mars_sim.ui.swing.utils.StatefulComponent;
 
 /**
  * This defines a table model for use in the Monitor tool.
@@ -17,7 +18,7 @@ import com.mars_sim.ui.swing.components.EnhancedTableModel;
  * Simulation. This interface defines simple extra method that provide a richer
  * interface for the Monitor window to be based upon.
  */
-interface MonitorModel extends EnhancedTableModel {
+interface MonitorModel extends EnhancedTableModel, StatefulComponent {
 
 	/**
 	 * Gets the name of this model. The name will be a description helping
@@ -31,7 +32,9 @@ interface MonitorModel extends EnhancedTableModel {
 	/**
 	 * Gets the model count string.
 	 */
-	public String getCountString();
+	public default String getCountString() {
+		return null;
+	}
 
 	/**
 	 * Sets the Settlement as a filter.
@@ -42,11 +45,11 @@ interface MonitorModel extends EnhancedTableModel {
 	public boolean setSettlementFilter(Set<Settlement> selectedSettlement);
 
 	/**
-	 * Sets whether the changes to the Entities should be monitor for change.
+	 * Sets whether to listen to changes on teh rows.
 	 * 
 	 * @param activate 
 	 */
-    public void setMonitorEntities(boolean activate);
+    public void enableListeners(boolean activate);
 
 	/**
 	 * Gets the index of the Settlement column if defined. This is a special column that can be visible/hidden according
@@ -55,9 +58,4 @@ interface MonitorModel extends EnhancedTableModel {
 	 * @return
 	 */
 	public int getSettlementColumn();
-    
-	/**
-	 * Prepares the model for deletion.
-	 */
-	public void destroy();
 }

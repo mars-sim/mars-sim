@@ -24,6 +24,8 @@ public class BaseScienceStudyModel extends AbstractEntityModel<ScientificStudy> 
     private static final int SCIENCE_VAL = 2;
     private static final int LEVEL_VAL = 3;
     private static final int LEAD_VAL = 4;
+    private static final int SETTLEMENT_VAL = 5;
+    private static final int COMPLETED_VAL = 6;
     
     // Basic fixed properties of a ScientificStudy
     public static final EntityColumnSpec NAME = new EntityColumnSpec(
@@ -34,11 +36,16 @@ public class BaseScienceStudyModel extends AbstractEntityModel<ScientificStudy> 
                     new ColumnSpec(LEVEL_VAL, Msg.getString("scientificstudy.level"), String.class), null);
     public static final EntityColumnSpec LEAD = new EntityColumnSpec(
                     new ColumnSpec(LEAD_VAL, Msg.getString("scientificstudy.lead"), String.class), null);
+    public static final EntityColumnSpec SETTLEMENT = new EntityColumnSpec(
+                    new ColumnSpec(SETTLEMENT_VAL, Msg.getString("settlement.singular"), String.class), null);
 
     // Phase property that changes via events
     public static final EntityColumnSpec PHASE = new EntityColumnSpec(
                     new ColumnSpec(PHASE_VAL, Msg.getString("scientificstudy.phase"), String.class),
                     Set.of(ScientificStudy.PHASE_CHANGE_EVENT));
+    public static final EntityColumnSpec COMPLETED = new EntityColumnSpec(
+                    new ColumnSpec(COMPLETED_VAL, Msg.getString("scientificstudy.completed"), Double.class, ColumnSpec.STYLE_PERCENTAGE),
+                    Set.of(ScientificStudy.PHASE_CHANGE_EVENT));    
 
     /**
      * Create a generic ScientificStudy model with the specified columns.
@@ -63,6 +70,8 @@ public class BaseScienceStudyModel extends AbstractEntityModel<ScientificStudy> 
             case SCIENCE_VAL -> entity.getScience().getName();
             case LEVEL_VAL -> Integer.toString(entity.getDifficultyLevel());
             case LEAD_VAL -> (entity.getPrimaryResearcher() != null) ? entity.getPrimaryResearcher().getName() : "";
+            case SETTLEMENT_VAL -> entity.getPrimarySettlement().getName();
+            case COMPLETED_VAL -> entity.getPhaseProgress() * 100D;
             default -> "";
         };
     }

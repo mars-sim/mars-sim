@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import com.mars_sim.core.SimulationConfig;
 import com.mars_sim.core.EntityEvent;
-import com.mars_sim.core.EntityEventType;
+import com.mars_sim.core.Named;
 import com.mars_sim.core.building.Building;
 import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.building.function.farming.Crop;
@@ -22,34 +22,37 @@ import com.mars_sim.core.building.function.farming.Farming;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
+import com.mars_sim.ui.swing.utils.model.BaseBuildingModel;
 
 /**
  * The CropTableModel keeps track of the quantity of the growing crops in each greenhouse by categories.
  */
 @SuppressWarnings("serial")
-class CropTableModel extends EntityMonitorModel<Building> {
+class CropTableModel extends BaseBuildingModel implements MonitorModel {
 
 	// Column indexes
-	private static final int GREENHOUSE_NAME = 0;
-	private static final int SETTLEMENT_NAME = 1;
-	private static final int INITIAL_COLS = 2;
-	private static final int FIRST_CROP_CAT = INITIAL_COLS + 1;
+
+	private static final int CROP_COUNT_VAL = 200;
+	private static final int FIRST_CROP_CAT = 1000;
 	
+	// Pseudo event to trigger refresh of CROP_VAL column
+	private static final String CROP_COUNT_EVENT= "crop count";
+
 	/** Names of Columns. */
-	private static ColumnSpec[] columns;
+	private static EntityColumnSpec[] columns;
 	private static List<CropCategory> cropCats;
 
-	private static ColumnSpec[] getColumns(CropConfig config) {
+	private static EntityColumnSpec[] getColumns(CropConfig config) {
 		if (columns == null) {
 			cropCats = config.getCropCategories();
-			columns = new ColumnSpec[FIRST_CROP_CAT + cropCats.size()];
-			columns[GREENHOUSE_NAME] = new ColumnSpec("Greenhouse", String.class);
-			columns[SETTLEMENT_NAME] = new ColumnSpec("Settlement", String.class);
-			columns[INITIAL_COLS] = new ColumnSpec("# Crops", Integer.class);
+			columns = new EntityColumnSpec[3 + cropCats.size()];
+			columns[0] = NAME;
+			columns[1] = SETTLEMENT;
+			columns[2] = new EntityColumnSpec(new ColumnSpec(CROP_COUNT_VAL, Msg.getString("crop.plural"), String.class), Set.of(CROP_COUNT_EVENT));
 
-			int idx = FIRST_CROP_CAT;
+			int idx = 0;
 			for (CropCategory cat : cropCats) {
-				columns[idx] = new ColumnSpec(cat.getName(), Integer.class);
+				columns[3 + idx] = new EntityColumnSpec(new ColumnSpec(FIRST_CROP_CAT + idx, cat.getName(), Integer.class), Set.of(cat.getName()));
 				idx++;
 			}
 		}
@@ -57,37 +60,32 @@ class CropTableModel extends EntityMonitorModel<Building> {
 	}
 
 	public CropTableModel(SimulationConfig config) {
-		super (Msg.getString("CropTableModel.tabName"), //$NON-NLS-1$
-				"CropTableModel.countingCrops", getColumns(config.getCropConfiguration()));
+		super (getColumns(config.getCropConfiguration()));
+	}
 
-		// Cache all crop categories
-		setCachedColumns(INITIAL_COLS, FIRST_CROP_CAT + cropCats.size());
-		setSettlementColumn(SETTLEMENT_NAME);
+	@Override
+	public String getName() {
+		return Msg.getString("crop.plural");
+	}
+
+	@Override
+	public int getSettlementColumn() {
+		return 1;
 	}
 
 	/**
 	 * Filter the Greenhouses according to a Settlement
 	 */
 	@Override
-	protected boolean applySettlementFilter(Set<Settlement> filter) {
+	public boolean setSettlementFilter(Set<Settlement> filter) {
 		
 		Set<Building> buildings = filter.stream()
 				.flatMap(s -> s.getBuildingManager().getBuildingSet(FunctionType.FARMING).stream())
 				.collect(Collectors.toSet());
 
-		resetItems(buildings);
+		setEntities(buildings);
 
 		return true;
-	}
-
-	/**
-	 * Gives the position number for a particular crop group.
-	 *
-	 * @param cropCat Crop category to search
-	 * @return a position number
-	 */
-	private int getCategoryNum(CropCategory cat) {
-		return cropCats.indexOf(cat);
 	}
 
 	/**
@@ -95,7 +93,7 @@ class CropTableModel extends EntityMonitorModel<Building> {
 	 *
 	 * @param return a number
 	 */
-	private Object getValueAtCropCat(Building greenhouse, int cropColumn) {
+	private long getValueAtCropCat(Building greenhouse, int cropColumn) {
 		CropCategory cropCat = cropCats.get(cropColumn - FIRST_CROP_CAT);
 
 		return(int) greenhouse.getFarming().getCrops()
@@ -104,45 +102,44 @@ class CropTableModel extends EntityMonitorModel<Building> {
 				.count();
 	}
 
+	@Override
+	protected String getEntityDescription(Building entity, int cropColumn) {
+		if (cropColumn >= FIRST_CROP_CAT) {
+			CropCategory cropCat = cropCats.get(cropColumn - FIRST_CROP_CAT);
+			
+			var crops = entity.getFarming().getCrops().stream()
+					.filter(c -> c.getCropSpec().getCropCategory().equals(cropCat))
+					.map(Named::getName)
+					.collect(Collectors.groupingBy(c -> c, Collectors.counting()));
+			if (crops.isEmpty()) {
+				return null;
+			}
+
+			return crops.entrySet().stream()
+					.map(e -> e.getKey() + " (" + e.getValue() + ")")
+					.collect(Collectors.joining("<br/>", "<html>", "</html>"));
+		}
+
+		return super.getEntityDescription(entity, cropColumn);
+	}
+
 	/**
 	 * Return the value of a Cell.
 	 *
 	 * @param rowIndex    Row index of the cell.
-	 * @param columnIndex Column index of the cell.
+	 * @param columnVal Column value index of the cell.
 	 */
 	@Override
-	public Object getItemValue(Building greenhouse, int columnIndex) {
-		Object result = null;
+	protected Object getEntityValue(Building greenhouse, int columnVal) {
 
-		switch (columnIndex) {
-			case GREENHOUSE_NAME: 
-				result = greenhouse.getName();
-				break;
-			case SETTLEMENT_NAME: 
-				result = greenhouse.getSettlement().getName();
-				break;
-			case INITIAL_COLS: 
-				result = getTotalNumOfAllCrops(greenhouse);
-				break;
-			default: 
-				result = getValueAtCropCat(greenhouse, columnIndex);
-				break;
+		if (columnVal >= FIRST_CROP_CAT) {
+			return getValueAtCropCat(greenhouse, columnVal);
 		}
 
-		return result;
-	}
-
-
-	/**
-	 * Gets the total numbers of all crops in a greenhouse building
-	 *
-	 * @param b Building
-	 * @return total num of crops
-	 */
-	private int getTotalNumOfAllCrops(Building b) {
-		if (!b.getFarming().getCrops().isEmpty())
-			return b.getFarming().getCrops().size();
-		return 0;
+		return switch (columnVal) {
+			case CROP_COUNT_VAL -> greenhouse.getFarming().getCrops().size() + "/" + greenhouse.getFarming().getMaxCrops();
+			default -> super.getEntityValue(greenhouse, columnVal);
+		};
 	}
 
 	/**
@@ -153,23 +150,19 @@ class CropTableModel extends EntityMonitorModel<Building> {
 	@Override
 	public void entityUpdate(EntityEvent event) {
 		if (event.getTarget() instanceof Crop crop) {
-			Building building = (Building) event.getSource();
 			String eventType = event.getType();
-			Object target = event.getTarget();
 	
-			int columnNum = -1;
-			if (EntityEventType.ADD_BUILDING_EVENT.equals(eventType)) {
-				if (target instanceof Farming)
-					columnNum = GREENHOUSE_NAME; // = 1
-			}
-	
-			else if (Farming.CROP_EVENT.equals(eventType)) {
+			if (Farming.CROP_EVENT.equals(eventType)) {
 				CropCategory cat = crop.getCropSpec().getCropCategory();
-				columnNum = getCategoryNum(cat);
-			}
-			if (columnNum > -1) {
-				entityValueUpdated(building, columnNum, columnNum);
+
+				// Make a Psuedo event
+				event = new EntityEvent(event.getSource(), cat.getName(), event.getTarget());
+
+				// Force an event to update total
+				super.entityUpdate(new EntityEvent(event.getSource(), CROP_COUNT_EVENT, null));
 			}
 		}
+
+		super.entityUpdate(event);
 	}
 }

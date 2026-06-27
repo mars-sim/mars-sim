@@ -11,6 +11,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -161,7 +162,7 @@ public class MonitorWindow extends ContentPanel
 		setMinimumSize(new Dimension(640, 256));
 		
 		// Lastly activate the default tab
-		currentSelection = settlementSelector.getSelectedSettlements();
+		currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
 		selectNewTab(getSelectedTab());
 
 		// List for changes in the settlement selection
@@ -189,7 +190,7 @@ public class MonitorWindow extends ContentPanel
 
 		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, true, SCIENCE_ICON));
 
-		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, "mission"));
+		newTabs.add(new TableTab(this, new MissionTableModel(), true, true, "mission"));
 		newTabs.add(new TableTab(this, new VehicleTableModel(), true, true, VEHICLE_ICON));
 
 		for (MonitorTab m : newTabs) {
@@ -252,32 +253,10 @@ public class MonitorWindow extends ContentPanel
 	}
 
 	/**
-	 * This method adds the specified Unit table as a new tab in the Monitor. The
-	 * model is displayed as a table by default. The name of the tab is that of the
-	 * Model.
-	 *
-	 * @param model The new model to display.
-	 */
-	public void displayModel(EntityMonitorModel<?> model) {
-		int index = getModelIndex(model);
-		if (index != -1)
-			tabsSection.setSelectedIndex(index);
-		else {
-			try {
-				var newTab = new TableTab(this, model, false, true,"usertab");
-				addTab(newTab);
-				tabsSection.setSelectedComponent(newTab);
-			} catch (Exception e) {
-				logger.severe(model + " cannot be added.");
-			}
-		}
-	}
-
-	/**
 	 * Reacts to a change in the settlement selection. 
 	 */
 	private void changeSelection() {
-		currentSelection = settlementSelector.getSelectedSettlements();
+		currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
 		updateTab();
 	}
 
@@ -288,21 +267,6 @@ public class MonitorWindow extends ContentPanel
 	 */
 	private void setSettlementBox(boolean isOpaque) {
 		settlementSelector.setVisible(!isOpaque);
-	}
-
-	/**
-	 * Gets the index of the monitor tab with the model.
-	 *
-	 * @param model the model to check for.
-	 * @return tab index or -1 if none.
-	 */
-	private int getModelIndex(EntityMonitorModel<?> model) {
-		for (Component c: tabsSection.getComponents()) {
-			if ((c instanceof MonitorTab tab) && model.equals(tab.getModel())) {
-				return tabsSection.indexOfComponent(c);
-			}
-		}
-		return -1;
 	}
 
 	/**
@@ -370,11 +334,7 @@ public class MonitorWindow extends ContentPanel
 	private void selectNewTab(MonitorTab selectedTab) {
 		
 		MonitorModel tabTableModel = selectedTab.getModel();
-
-		String title = tabTableModel.getName();
-		
-		super.setTitle(TITLE + " - " + title);
-		
+				
 		boolean enableRemove = !selectedTab.isMandatory();
 		boolean enableDetails = selectedTab.isEntityDriven();
 		boolean enableFilter = selectedTab.isFilterable();
@@ -396,14 +356,14 @@ public class MonitorWindow extends ContentPanel
 			// If a different tab then activate listeners
 			activiateListeners = !(activeTab.equals(selectedTab));
 			if (activiateListeners) {
-				previousModel.setMonitorEntities(false);
+				previousModel.enableListeners(false);
 			}
 
 			// Stop listening for table size changes
 			previousModel.removeTableModelListener(this);
 		}
 		if (activiateListeners) {
-			tabTableModel.setMonitorEntities(true);
+			tabTableModel.enableListeners(true);
 		}
 
 		// Listener for row changes
@@ -411,7 +371,7 @@ public class MonitorWindow extends ContentPanel
 		activeTab = selectedTab;
 
 		// Update the row count label with new numbers
-		rowCount.setText(selectedTab.getCountString());
+		updateRowCount(selectedTab);
 		
 		// Set the opaqueness of the settlement box
 		setSettlementBox(!enableSettlement);
@@ -424,12 +384,21 @@ public class MonitorWindow extends ContentPanel
 		buttonProps.setEnabled(!enableRemove);
 	}
 
+	private void updateRowCount(MonitorTab selectedTab) {
+		var countString = selectedTab.getCountString();
+		if (countString == null) {	
+			countString = String.format("%d rows", selectedTab.getModel().getRowCount());
+		}
+		
+		rowCount.setText(countString);
+	}
+
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		if ((e.getType() == TableModelEvent.INSERT) || (e.getType() == TableModelEvent.DELETE)) {
 			// Redisplay row count
 			MonitorTab selectedTab = getSelectedTab();
-			rowCount.setText(selectedTab.getCountString());
+			updateRowCount(selectedTab);
 		}
 	}
 
@@ -527,7 +496,7 @@ public class MonitorWindow extends ContentPanel
 		// Remove listeners for the active tab; should already be present but just in case
 		MonitorModel activeModel = (activeTab != null) ? activeTab.getModel() : null;
 		if (activeModel != null) {
-			activeModel.setMonitorEntities(false);
+			activeModel.enableListeners(false);
 		}
 			
 		super.destroy();
