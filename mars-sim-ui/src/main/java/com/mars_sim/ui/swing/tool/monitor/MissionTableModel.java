@@ -10,11 +10,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Simulation;
+import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.person.ai.mission.ConstructionMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionPlanning;
@@ -32,8 +31,7 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * within the Monitor Window for all settlements.
  */
 @SuppressWarnings("serial")
-class MissionTableModel extends EntityMonitorModel<Mission>
-		implements EntityManagerListener {
+class MissionTableModel extends EntityMonitorModel<Mission> {
 
 	// Column indexes
 	private static final int DATE_FILED = 0;
@@ -101,34 +99,9 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 		resetItems(missions);
 
 		// Change listeners to match the new filter
-		getSelectedSettlements().forEach(s -> s.getMissionControl().removeListener(this));
-		filter.forEach(s -> s.getMissionControl().addListener(this));
+		getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
+		filter.forEach(s -> s.addEntityListener(this));
 		return true;
-	}
-
-	/**
-	 * New mission has been added to the Mission Manager
-	 *
-	 * @param mission the new mission.
-	 */
-	@Override
-	public void entityAdded(Entity mission) {
-		var s = ((Mission) mission).getAssociatedSettlement();
-
-		// Should never fail but good to check
-		if (getSelectedSettlements().contains(s)) {
-			addItem((Mission) mission);
-		}
-	}
-
-	/**
-	 * Removes an old mission.
-	 *
-	 * @param mission the old mission.
-	 */
-	@Override
-	public void entityRemoved(Entity mission){
-		removeItem((Mission) mission);
 	}
 
 	/**
@@ -164,6 +137,19 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 			}
 			else if (eventType.equals(Mission.PHASE_EVENT)) {
 				entityValueUpdated(mission, DATE_FILED, DATE_COMPLETED);
+			}
+		}
+		else if (event.getSource() instanceof Settlement s) {
+			if (event.getType().equals(MissionControl.MISSION_ADD)) {
+				var m = (Mission) event.getTarget();
+
+				// Should never fail but good to check
+				if (getSelectedSettlements().contains(m.getAssociatedSettlement())) {
+					addItem(m);
+				}
+			}
+			else if (event.getType().equals(MissionControl.MISSION_REMOVED)) {
+				removeItem((Mission) event.getTarget());
 			}
 		}
 	}
@@ -287,7 +273,7 @@ class MissionTableModel extends EntityMonitorModel<Mission>
 	 */
 	@Override
 	public void destroy() {
-		getSelectedSettlements().forEach(s -> s.getMissionControl().removeListener(this));
+		getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
 		super.destroy();
 	}
 }

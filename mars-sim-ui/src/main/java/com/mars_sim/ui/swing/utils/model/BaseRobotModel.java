@@ -48,7 +48,7 @@ public abstract class BaseRobotModel extends AbstractEntityModel<Robot> {
                                                         String.class), Set.of(EntityEventType.DEATH_EVENT));
     protected static final EntityColumnSpec BATTERY = new EntityColumnSpec(new ColumnSpec(BATTERY_VAL, Msg.getString("battery.singular"),
                                                         String.class), Set.of(Battery.BATTERY_EVENT));
-    protected static final EntityColumnSpec BATTERY_TEMPERATURE = new EntityColumnSpec(new ColumnSpec(BATT_TEMPERATURE_VAL, Msg.getString("battery.temperature"),
+    protected static final EntityColumnSpec BATTERY_TEMPERATURE = new EntityColumnSpec(new ColumnSpec(BATT_TEMPERATURE_VAL, Msg.getString("temperature.shortlabel"),
                                                         Double.class, ColumnSpec.STYLE_DIGIT1), Set.of(Battery.BATTERY_EVENT));
 	protected static final EntityColumnSpec PERFORMANCE = new EntityColumnSpec(new ColumnSpec(PERFORMANCE_VAL, Msg.getString("robot.performance"),
                                                         String.class), Set.of(SystemCondition.PERFORMANCE_EVENT));

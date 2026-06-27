@@ -45,7 +45,7 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
      * Create a generic entity model with the specified columns.
      * @param columns Columns to render
      */
-    protected AbstractEntityModel(EntityColumnSpec... columns) {
+    protected AbstractEntityModel(EntityColumnSpec[] columns) {
         // Create the event map by extracting the event types against the index of the EntityColumnSpec
         int idx = 0;
         for (EntityColumnSpec ecs : columns) {

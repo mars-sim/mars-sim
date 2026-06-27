@@ -16,6 +16,7 @@ import com.mars_sim.core.UnitManager;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.map.location.SurfacePOI;
+import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.VehicleMission;
 import com.mars_sim.core.structure.Settlement;
@@ -99,7 +100,7 @@ public class MissionMapLayer extends RoutePathLayer
         // Remove Entity manager listeners
         if (unitMgr != null) {
             unitMgr.removeEntityManagerListener(UnitType.SETTLEMENT, this);
-            unitMgr.getSettlements().forEach(s -> s.getMissionControl().removeListener(this));
+            unitMgr.getSettlements().forEach(s -> s.removeEntityListener(this));
         }
     }
 
@@ -112,6 +113,14 @@ public class MissionMapLayer extends RoutePathLayer
         if (event.getSource() instanceof Mission m && m.isDone()) {
             removeMission(m);
         }
+        else if (event.getSource() instanceof Settlement s) {
+            if (event.getType().equals(MissionControl.MISSION_ADD)) {
+                addMission((Mission) event.getTarget());
+            }
+            else if (event.getType().equals(MissionControl.MISSION_REMOVED)) {
+                removeMission((Mission) event.getTarget());
+            }
+        }
     }
 
     /**
@@ -120,28 +129,23 @@ public class MissionMapLayer extends RoutePathLayer
      */
     @Override
     public void entityAdded(Entity newEntity) {
-        if (newEntity instanceof Mission m) {
-            addMission(m);
-        }
-        else if (newEntity instanceof Settlement s) {
+        if (newEntity instanceof Settlement s) {
             addSettlement(s);
         }
     }
 
     /**
-     * Entity has been removed from the parent manager. If it's a mission, remove it from the display.
+     * Entity has been removed from the parent manager.
      * @param event Entity removed.
      */
     @Override
     public void entityRemoved(Entity event) {
-        if (event instanceof Mission m) {
-            removeMission(m);
-        }
+        // Nothing to do
     }
 
     private void addSettlement(Settlement settlement) {
         // Listen for new missions in each settlement
-        settlement.getMissionControl().addListener(this);
+        settlement.addEntityListener(this);
 
         // Add existing missions
         settlement.getMissionControl().getActiveMissions().forEach(this::addMission);

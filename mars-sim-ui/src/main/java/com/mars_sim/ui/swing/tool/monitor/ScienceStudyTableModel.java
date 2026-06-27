@@ -7,47 +7,29 @@
 package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import com.mars_sim.core.Entity;
-import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.ScientificStudyManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.components.ColumnSpec;
+import com.mars_sim.ui.swing.utils.model.BaseScienceStudyModel;
 
 /**
  * Table model for Scientific Studies.
  */
-public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
-       implements EntityManagerListener {
+public class ScienceStudyTableModel extends BaseScienceStudyModel
+       implements EntityManagerListener, MonitorModel {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
+    private static final String STUDIES = Msg.getString("scientificstudy.plural");
 
-    private static final int NAME = 0;
-	private static final int SETTLEMENT = NAME + 1;
-    private static final int SCIENCE = SETTLEMENT + 1;
-    private static final int LEVEL = SCIENCE + 1;
-    private static final int PHASE = LEVEL + 1;
-    private static final int COMPLETED = PHASE + 1;
-
-
-    private static final ColumnSpec[] COLUMNS;
-    static {
-        COLUMNS = new ColumnSpec[COMPLETED + 1];
-
-        COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
-        COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
-        COLUMNS[PHASE] = new ColumnSpec(Msg.getString("scientificstudy.phase"), String.class);
-        COLUMNS[SCIENCE] = new ColumnSpec(Msg.getString("scientificstudy.science"), String.class);
-        COLUMNS[LEVEL] = new ColumnSpec(Msg.getString("scientificstudy.level"), Integer.class);
-        COLUMNS[COMPLETED] = new ColumnSpec(Msg.getString("scientificstudy.completed"), Double.class, ColumnSpec.STYLE_PERCENTAGE);
-    }
-
+    private Set<Settlement> settlements = Collections.emptySet();
     private ScientificStudyManager mgr;
 
     /**
@@ -56,67 +38,33 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
      * @param mgr the Scientific Study Manager
      */
     public ScienceStudyTableModel(ScientificStudyManager mgr) {
-		super(Msg.getString("scientificstudy.plural"),
-				COLUMNS);	
-		this.mgr = mgr;
-
-		setSettlementColumn(SETTLEMENT);
+        super(NAME, SETTLEMENT, PHASE, SCIENCE, LEVEL, COMPLETED);
+        this.mgr = mgr;
         mgr.addListener(this);
     }
 
     /**
-     * Update the time dependent values.
+     * Set the settlement filter for the model. This will select the Scientific Studies associated with the selected settlements.
+     * @param selectedSettlement Selected settlements to filter by.
+     * @return true if the filter was applied, false otherwise.
      */
     @Override
-    public void entityUpdate(EntityEvent event) {
-        if (event.getSource() instanceof ScientificStudy ss) {
-            entityValueUpdated(ss, PHASE, COMPLETED);
-        }
-    }
-
-    /**
-     * Load the Scientific Studies for the selected settlements.
-     */
-    @Override
-    protected boolean applySettlementFilter(Set<Settlement> selectedSettlement) {
+    public boolean setSettlementFilter(Set<Settlement> selectedSettlement) {
         List<ScientificStudy> studies = new ArrayList<>();
         for (Settlement settlement : selectedSettlement) {
             studies.addAll(mgr.getAllStudies(settlement));
         }
 
-		resetItems(studies);
-
+		setEntities(studies);
+        settlements = selectedSettlement;
 		return true;
-    }
-
-    /**
-     * Get the value for the given column.
-     */
-    @Override
-    protected Object getItemValue(ScientificStudy entity, int column) {
-        switch (column) {
-            case NAME:
-                return entity.getName();
-            case SETTLEMENT:
-                return entity.getPrimarySettlement().getName();
-            case PHASE:
-                return entity.getPhase().getName();
-            case SCIENCE:
-                return entity.getScience().getName();
-            case LEVEL:
-                return entity.getDifficultyLevel();
-            case COMPLETED:
-                return entity.getPhaseProgress() * 100D;
-            default:
-                return null;
-        }
     }
 
     @Override
     public void entityAdded(Entity newEntity) {
         if (newEntity instanceof ScientificStudy ss
-                && getSelectedSettlements().contains(ss.getPrimarySettlement())) {
-            addItem(ss);
+                && settlements.contains(ss.getPrimarySettlement())) {
+            addEntity(ss);
         } 
     }
 
@@ -124,16 +72,29 @@ public class ScienceStudyTableModel extends EntityMonitorModel<ScientificStudy>
     public void entityRemoved(Entity removedEntity) {
         if (removedEntity instanceof ScientificStudy ss) {
             // The Study may not be visible but remove it just in case
-            removeItem(ss);
+            removeEntity(ss);
         }
     }
 
     /**
-     * Remove listener on Scientific Study Manager when destroying the model.
+     * Remove listener on Scientific Study Manager when releasing the model.
      */
     @Override
-    public void destroy() {
+    public void release() {
         mgr.removeListener(this);
-        super.destroy();
+        super.release();
+    }
+
+    @Override
+    public String getName() {
+        return STUDIES;
+    }
+
+    /**
+     * Settlement column is the second column in the model.
+     */
+    @Override
+    public int getSettlementColumn() {
+        return 1;
     }
 }

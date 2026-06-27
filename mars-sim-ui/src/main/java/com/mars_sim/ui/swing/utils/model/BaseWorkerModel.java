@@ -8,6 +8,7 @@ package com.mars_sim.ui.swing.utils.model;
 
 import java.util.Set;
 
+import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.Msg;
@@ -23,6 +24,7 @@ public abstract class BaseWorkerModel extends AbstractEntityModel<Worker> {
     private static final int NAME_VAL = 0;
     private static final int TASK_VAL = 1;
     private static final int SETTLEMENT_VAL = 2;
+    private static final int MISSION_VAL = 3;
 
     // Show the Worker name, passive and unchanging
     protected static final EntityColumnSpec NAME = new EntityColumnSpec(new ColumnSpec(NAME_VAL, Msg.getString("entity.name"),
@@ -33,7 +35,11 @@ public abstract class BaseWorkerModel extends AbstractEntityModel<Worker> {
 
     // Show the Worker's settlement, paassive and unchanging
     protected static final EntityColumnSpec SETTLEMENT = new EntityColumnSpec(new ColumnSpec(SETTLEMENT_VAL, Msg.getString("settlement.singular"),
-                                                    String.class), null);   
+                                                    String.class), null);
+    // Show the Worker's mission, reacts to events
+    protected static final EntityColumnSpec MISSION = new EntityColumnSpec(new ColumnSpec(MISSION_VAL, Msg.getString("mission.singular"),
+                                                    String.class), Set.of(EntityEventType.MISSION_EVENT));
+
     /**
      * Create a generic worker model with the specified columns.
      * @param columns Columns to show.
@@ -67,6 +73,7 @@ public abstract class BaseWorkerModel extends AbstractEntityModel<Worker> {
             case NAME_VAL-> entity.getName();
             case TASK_VAL -> entity.getTaskManager().getTaskName();
             case SETTLEMENT_VAL -> entity.getAssociatedSettlement().getName();
+            case MISSION_VAL -> entity.getMission() != null ? entity.getMission().getName() : null;
             default -> null;
         };
     }

@@ -9,12 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import com.mars_sim.core.Entity;
-import com.mars_sim.core.EntityManagerListener;
+import com.mars_sim.core.TestEntityListener;
 import com.mars_sim.core.building.construction.MockMission;
 import com.mars_sim.core.equipment.EquipmentFactory;
 import com.mars_sim.core.equipment.EquipmentType;
@@ -151,44 +149,29 @@ class MissionControlTest extends MarsSimUnitTest{
         var missionControl = new MissionControl(settlement);
         var mission = new MockMission(settlement);
 
-        var addedCount = new int[1];
-        var removedCount = new int[1];
-        var addedEntity = new AtomicReference<Entity>();
-        var removedEntity = new AtomicReference<Entity>();
+        TestEntityListener listener = new TestEntityListener(MissionControl.MISSION_ADD, MissionControl.MISSION_REMOVED);
 
-        EntityManagerListener listener = new EntityManagerListener() {
-            @Override
-            public void entityAdded(Entity newEntity) {
-                addedCount[0]++;
-                addedEntity.set(newEntity);
-            }
-
-            @Override
-            public void entityRemoved(Entity removedEntityParam) {
-                removedCount[0]++;
-                removedEntity.set(removedEntityParam);
-            }
-        };
-
-        missionControl.addListener(listener);
+        settlement.addEntityListener(listener);
 
         missionControl.addMission(mission);
 
-        assertEquals(1, addedCount[0], "Exactly one mission added event should be fired");
-        assertSame(mission, addedEntity.get(), "Added event should contain the added mission");
+        assertEquals(1, listener.getEventsReceived(), "Exactly one mission added event should be fired");
+        assertSame(mission, listener.getLastTarget(), "Added event should contain the added mission");
+        assertEquals(MissionControl.MISSION_ADD, listener.getLastType(), "Added event should be of type MISSION_ADD");
 
         missionControl.removeMission(mission);
-        assertEquals(1, removedCount[0], "Exactly one mission removed event should be fired");
-        assertSame(mission, removedEntity.get(), "Removed event should contain the removed mission");
+        assertEquals(2, listener.getEventsReceived(), "Exactly one mission removed event should be fired");
+        assertSame(mission, listener.getLastTarget(), "Removed event should contain the removed mission");
+        assertEquals(MissionControl.MISSION_REMOVED, listener.getLastType(), "Removed event should be of type MISSION_REMOVED");
 
-        missionControl.removeListener(listener);
+        settlement.removeEntityListener(listener);
 
         var mission1 = new MockMission(settlement);
         missionControl.addMission(mission1);
-        assertEquals(1, addedCount[0], "No additional mission added event should be fired after listener is removed");
+        assertEquals(2, listener.getEventsReceived(), "No additional mission added event should be fired after listener is removed");
 
         missionControl.removeMission(mission1);
-        assertEquals(1, removedCount[0], "No additional mission removed event should be fired after listener is removed");
+        assertEquals(2, listener.getEventsReceived(), "No additional mission removed event should be fired after listener is removed");
     }
 
     @Test

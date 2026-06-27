@@ -15,15 +15,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.CollectionUtils;
-import com.mars_sim.core.Entity;
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.EntityListener;
-import com.mars_sim.core.EntityManagerListener;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.malfunction.MalfunctionManager;
+import com.mars_sim.core.mission.MissionControl;
 import com.mars_sim.core.person.ai.mission.AbstractVehicleMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.NavPoint;
@@ -405,7 +404,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 	}
 
 
-	private class LocalMissionManagerListener implements EntityManagerListener {
+	private class LocalMissionManagerListener implements EntityListener {
 
 		private Set<VehicleMission> monitoredMissions = Collections.emptySet();
 		private Set<Settlement> monitoredSettlements = Collections.emptySet();
@@ -418,7 +417,7 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		public void setSettlements(Set<Settlement> settlementFilter) {
 			// Unregister from old missions
 			monitoredMissions.forEach(vm -> vm.removeEntityListener(missionListener));
-			monitoredSettlements.forEach(s -> s.getMissionControl().removeListener(this));
+			monitoredSettlements.forEach(s -> s.removeEntityListener(this));
 
 			if (settlementFilter != null) {
 				// If new set of Settlements is provided then register to be notifed of new Missions
@@ -426,10 +425,12 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 				monitoredMissions = new HashSet<>();
 				monitoredSettlements = new HashSet<>(settlementFilter);
 				for(var s : monitoredSettlements) {
-					s.getMissionControl().addListener(this);
+					s.addEntityListener(this);
 					s.getMissionControl().getAllMissions().stream()
 							.filter(m -> !m.isDone())
-							.forEach(this::entityAdded);
+							.filter(VehicleMission.class::isInstance)
+							.map(VehicleMission.class::cast)
+							.forEach(this::addMission);
 				}
 			}
 		}
@@ -437,26 +438,11 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 		/**
 		 * Adds a new mission.
 		 * 
-		 * @param mission the new mission.
+		 * @param vm the new mission.
 		 */
-		@Override
-		public void entityAdded(Entity mission) {
-			if (mission instanceof VehicleMission vm) {
-				vm.addEntityListener(missionListener);
-				monitoredMissions.add(vm);
-			}
-		}
-
-		/**
-		 * Removes an old mission.
-		 * 
-		 * @param mission the old mission.
-		 */
-		@Override
-		public void entityRemoved(Entity mission){
-			Mission m = (Mission) mission;
-			m.removeEntityListener(missionListener);
-			monitoredMissions.remove(mission);
+		private void addMission(VehicleMission vm) {
+			vm.addEntityListener(missionListener);
+			monitoredMissions.add(vm);
 		}
 
 		/**
@@ -466,6 +452,20 @@ public class VehicleTableModel extends EntityMonitorModel<Vehicle> {
 			setSettlementFilter(null);
 			monitoredMissions = null;
 			missionListener = null;
+		}
+
+		@Override
+		public void entityUpdate(EntityEvent event) {
+			if (event.getSource() instanceof Settlement
+			   && event.getTarget() instanceof VehicleMission vm) {
+				if (event.getType().equals(MissionControl.MISSION_ADD)) {
+					addMission(vm);
+				}
+				else if (event.getType().equals(MissionControl.MISSION_REMOVED)) {
+					vm.removeEntityListener(missionListener);
+					monitoredMissions.remove(vm);
+				}
+			}
 		}
 	}
 

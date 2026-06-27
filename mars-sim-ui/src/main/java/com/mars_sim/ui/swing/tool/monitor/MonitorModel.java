@@ -31,7 +31,9 @@ interface MonitorModel extends EnhancedTableModel {
 	/**
 	 * Gets the model count string.
 	 */
-	public String getCountString();
+	public default String getCountString() {
+		return null;
+	}
 
 	/**
 	 * Sets the Settlement as a filter.

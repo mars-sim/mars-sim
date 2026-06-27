@@ -11,6 +11,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -161,7 +163,7 @@ public class MonitorWindow extends ContentPanel
 		setMinimumSize(new Dimension(640, 256));
 		
 		// Lastly activate the default tab
-		currentSelection = settlementSelector.getSelectedSettlements();
+		currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
 		selectNewTab(getSelectedTab());
 
 		// List for changes in the settlement selection
@@ -277,7 +279,7 @@ public class MonitorWindow extends ContentPanel
 	 * Reacts to a change in the settlement selection. 
 	 */
 	private void changeSelection() {
-		currentSelection = settlementSelector.getSelectedSettlements();
+		currentSelection = new HashSet<>(settlementSelector.getSelectedSettlements());
 		updateTab();
 	}
 
@@ -411,7 +413,7 @@ public class MonitorWindow extends ContentPanel
 		activeTab = selectedTab;
 
 		// Update the row count label with new numbers
-		rowCount.setText(selectedTab.getCountString());
+		updateRowCount(selectedTab);
 		
 		// Set the opaqueness of the settlement box
 		setSettlementBox(!enableSettlement);
@@ -424,12 +426,21 @@ public class MonitorWindow extends ContentPanel
 		buttonProps.setEnabled(!enableRemove);
 	}
 
+	private void updateRowCount(MonitorTab selectedTab) {
+		var countString = selectedTab.getCountString();
+		if (countString == null) {	
+			countString = String.format("%d rows", selectedTab.getModel().getRowCount());
+		}
+		
+		rowCount.setText(countString);
+	}
+
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		if ((e.getType() == TableModelEvent.INSERT) || (e.getType() == TableModelEvent.DELETE)) {
 			// Redisplay row count
 			MonitorTab selectedTab = getSelectedTab();
-			rowCount.setText(selectedTab.getCountString());
+			updateRowCount(selectedTab);
 		}
 	}
 

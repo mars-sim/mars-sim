@@ -8,25 +8,16 @@ package com.mars_sim.ui.swing.tool.monitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
-import com.mars_sim.core.EntityListener;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.PhysicalCondition;
-import com.mars_sim.core.person.ai.role.Role;
-import com.mars_sim.core.person.ai.shift.ShiftSlot;
-import com.mars_sim.core.person.ai.shift.ShiftSlot.WorkStatus;
-import com.mars_sim.core.person.ai.task.util.Task;
-import com.mars_sim.core.person.ai.task.util.TaskManager;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
-import com.mars_sim.ui.swing.components.ColumnSpec;
-import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
+import com.mars_sim.ui.swing.utils.model.BasePersonModel;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults the
@@ -34,86 +25,16 @@ import com.mars_sim.ui.swing.utils.RatingScoreRenderer;
  * into Columns.
  */
 @SuppressWarnings("serial")
-public class PersonTableModel extends EntityMonitorModel<Person>
-		implements FilteredTableModel {
+public class PersonTableModel extends BasePersonModel
+		implements FilteredTableModel, MonitorModel {
 
-	// Column indexes
-	private static final int NAME = 0;
-	private static final int SETTLEMENT = NAME+1;
-	private static final int TASK_DESC = SETTLEMENT+1;
-	private static final int MISSION_COL = TASK_DESC+1;
-	private static final int JOB = MISSION_COL+1;
-	private static final int ROLE = JOB+1;
-	private static final int SHIFT = ROLE+1;
-	private static final int LOCATION = SHIFT+1;
-	private static final int LOCALE = LOCATION+1;
-	private static final int HEALTH = LOCALE+1;
-	private static final int FATIGUE = HEALTH+1;
-	private static final int ENERGY = FATIGUE+1;
-	private static final int WATER = ENERGY+1;
-	private static final int STRESS = WATER+1;
-	private static final int PERFORMANCE = STRESS+1;
-	private static final int EMOTION = PERFORMANCE+1;
-
-	/** The number of Columns. */
-	private static final int COLUMNCOUNT = EMOTION+1;
-	/** Names of Columns. */
-	private static final ColumnSpec[] COLUMNS;
-
-	private static final Map<String, Integer> EVENT_COLUMN_MAPPING;
-
+	private static final String PEOPLE = Msg.getString("person.plural");
 	private static final String LIVE = "Show Alive";
 	private static final String DECEASED = "Show Deceased";
 	
-	/**
-	 * The static initializer creates the name & type arrays.
-	 */
-	static {
-		COLUMNS = new ColumnSpec[COLUMNCOUNT];
-		COLUMNS[NAME] = new ColumnSpec(Msg.getString("entity.name"), String.class);
-		COLUMNS[SETTLEMENT] = new ColumnSpec(Msg.getString("settlement.singular"), String.class);
-		COLUMNS[HEALTH] = new ColumnSpec(Msg.getString("person.health"), String.class);
-		COLUMNS[ENERGY] = new ColumnSpec(Msg.getString("person.energy"), String.class);
-		COLUMNS[WATER] = new ColumnSpec(Msg.getString("person.water"), String.class);
-		COLUMNS[FATIGUE] = new ColumnSpec(Msg.getString("person.fatigue"), String.class);
-		COLUMNS[STRESS] = new ColumnSpec(Msg.getString("person.stress"), String.class);
-		COLUMNS[PERFORMANCE] = new ColumnSpec(Msg.getString("person.performance"), String.class);
-		COLUMNS[EMOTION] = new ColumnSpec(Msg.getString("person.emotion"), String.class);
-		COLUMNS[LOCATION] = new ColumnSpec(Msg.getString("PersonTableModel.column.location"), String.class);
-		COLUMNS[LOCALE] = new ColumnSpec(Msg.getString("PersonTableModel.column.locale"), String.class);
-		COLUMNS[ROLE] = new ColumnSpec(Msg.getString("person.role"), String.class);
-		COLUMNS[JOB] = new ColumnSpec(Msg.getString("person.job"), String.class);
-		COLUMNS[SHIFT] = new ColumnSpec(Msg.getString("person.shift"), String.class);
-		COLUMNS[MISSION_COL] = new ColumnSpec(Msg.getString("mission.singular"), String.class);
-		COLUMNS[TASK_DESC] = new ColumnSpec(Msg.getString("task.singular"), String.class);
-
-		EVENT_COLUMN_MAPPING = new HashMap<>();
-		EVENT_COLUMN_MAPPING.put(EntityEventType.NAME_EVENT, NAME);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.COORDINATE_EVENT, LOCATION);
-		EVENT_COLUMN_MAPPING.put(PhysicalCondition.HUNGER_EVENT, ENERGY);
-		EVENT_COLUMN_MAPPING.put(PhysicalCondition.THIRST_EVENT, ENERGY);
-		EVENT_COLUMN_MAPPING.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
-		EVENT_COLUMN_MAPPING.put(PhysicalCondition.STRESS_EVENT, STRESS);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.EMOTION_EVENT, EMOTION);
-		EVENT_COLUMN_MAPPING.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.JOB_EVENT, JOB);
-		EVENT_COLUMN_MAPPING.put(Role.ROLE_EVENT, ROLE);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.SHIFT_EVENT, SHIFT);
-		EVENT_COLUMN_MAPPING.put(TaskManager.TASK_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_NAME_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_DESCRIPTION_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.TASK_ENDED_EVENT, TASK_DESC);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.MISSION_EVENT, MISSION_COL);
-		EVENT_COLUMN_MAPPING.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.DEATH_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.BURIAL_EVENT, HEALTH);
-		EVENT_COLUMN_MAPPING.put(EntityEventType.REVIVED_EVENT, HEALTH);
-	}
-
 	private boolean isLiveCB = true;
 	private boolean isDeceasedCB = false;
-	
-	private transient EntityListener settlementListener;
+	private Set<Settlement> settlements = new HashSet<>();
 
 	/**
 	 * Constructs a PersonTableModel that displays residents are all associated
@@ -121,35 +42,51 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	 *
 	 */
 	public PersonTableModel()  {
-		super (Msg.getString("PersonTableModel.nameAllCitizens"),
-				"PersonTableModel.countingCitizens", COLUMNS);
-		setCachedColumns(FATIGUE, PERFORMANCE);
-		
-		setSettlementColumn(SETTLEMENT);
+		super (NAME, TASK, SETTLEMENT, MISSION, HEALTH, ENERGY, WATER, FATIGUE, STRESS,
+				PERFORMANCE, EMOTION, LOCATION, LOCALE, ROLE, JOB, SHIFT);
 	}
 
 	@Override
-	protected boolean applySettlementFilter(Set<Settlement> filter) {	
+	public String getName() {
+		return PEOPLE;
+	}
 
-		if (settlementListener != null) {
-			getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
-			settlementListener = null;
-		}
-		
-		Collection<Person> entities = filter.stream()
-							.map(Settlement::getAllAssociatedPeople)
-							.flatMap(Collection::stream)
-							.filter(this::isPersonDisplayable)
-							.toList();
-		settlementListener = new PersonChangeListener(EntityEventType.ADD_ASSOCIATED_PERSON_EVENT,
-									EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT);
-		
-		resetItems(entities);
+	@Override
+	public int getSettlementColumn() {
+		return 2;
+	}
+
+	/**
+	 * Sets the settlement filter for the model. This will select the Persons associated with the selected settlements.
+	 * @param filter New settlements
+	 * @return
+	 */
+	@Override
+	public boolean setSettlementFilter(Set<Settlement> filter) {	
+
+		settlements.forEach(s -> s.removeEntityListener(this));
+
+		settlements = filter;
+
+		reapplyFilter();
 
 		// Listen to the settlements for new People
-		filter.forEach(s -> s.addEntityListener(settlementListener));
+		settlements.forEach(s -> s.addEntityListener(this));
 
 		return true;
+	}
+
+	/**
+	 * Find the relevant Person by apply filters.
+	 */
+	private void reapplyFilter() {
+		Collection<Person> entities = settlements.stream()
+					.map(Settlement::getAllAssociatedPeople)
+					.flatMap(Collection::stream)
+					.filter(this::isPersonDisplayable)
+					.toList();
+		
+		setEntities(entities);
 	}
 
 	/**
@@ -200,161 +137,26 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	}
 
 	/**
-	 * Returns the value of a Cell.
-	 *
-	 * @param rowIndex    Row index of the cell.
-	 * @param columnIndex Column index of the cell.
-	 */
-	@Override
-	protected Object getItemValue(Person person, int columnIndex) {
-		Object result = null;
-
-		switch (columnIndex) {
-
-			case TASK_DESC: {
-				// If the Person is dead, there is no Task Manager
-				Task task = person.getMind().getTaskManager().getTask();
-				result = ((task != null) ? task.getDescription() : "");
-			}
-			break;
-
-			case MISSION_COL: {
-				var m = person.getMind().getMission();
-				if (m != null) {
-					result = m.getFullMissionDesignation();
-				}
-			}
-			break;
-
-			case NAME:
-				result = person.getName();
-			break;
-
-			case SETTLEMENT:
-				result = person.getAssociatedSettlement().getName();
-			break;
-
-			case ENERGY: {
-				PhysicalCondition pc = person.getPhysicalCondition();
-				if (!pc.isDead()) {
-					result = pc.getHungerLevel().getName();
-				}
-			}
-			break;
-
-			case WATER: {
-				PhysicalCondition pc = person.getPhysicalCondition();
-				if (!pc.isDead()) {
-					result = pc.getThirstLevel().getName();
-				}
-			}
-			break;
-
-			case FATIGUE:
-				if (!person.getPhysicalCondition().isDead())
-					result = person.getPhysicalCondition().getFatigueLevel().getName();
-				break;
-
-			case STRESS:
-				if (!person.getPhysicalCondition().isDead())
-					result = person.getPhysicalCondition().getStressLevel().getName();
-				break;
-
-			case PERFORMANCE:
-				if (!person.getPhysicalCondition().isDead())
-					result = person.getPhysicalCondition().getPerformanceLevel().getName();
-				break;
-
-			case EMOTION: 
-				if (!person.getPhysicalCondition().isDead())
-					result = person.getMind().getEmotion().getDescription();
-				break;
-
-			case HEALTH: 
-				result = person.getPhysicalCondition().getStatus();
-				break;
-
-			case LOCATION:
-				result = person.getLocationTag().getImmediateLocation();
-				break;
-
-			case LOCALE:
-				result = person.getLocationTag().getLocale();
-				break;
-				
-			case ROLE:
-				if (!person.getPhysicalCondition().isDead()) {
-					Role role = person.getRole();
-					if (role != null) {
-						result = role.getType().getName();
-					}
-				}
-				break;
-
-			case JOB:
-				// If person is dead, get job from death info.
-				if (person.getPhysicalCondition().isDead())
-					result = person.getPhysicalCondition().getDeathDetails().getJob().getName();
-				else if (person.getMind().getJobType() != null)
-					result = person.getMind().getJobType().getName();
-				break;
-
-			case SHIFT:
-				// If person is dead, disable it.
-				if (!person.getPhysicalCondition().isDead()) {
-					ShiftSlot shift = person.getShiftSlot();		
-					if (shift.getStatus() == WorkStatus.ON_CALL) {
-						result = WorkStatus.ON_CALL.getName();
-					}
-					else {
-						result = shift.getStatusDescription();
-					}
-				}
-				break;
-			
-			default:
-				throw new IllegalArgumentException("Unknown column " + columnIndex);
-		}
-		return result;
-	}
-	
-	/**
-     * Returns the score breakdown if TASK_DESC column is selected.
-     * 
-     * @param rowIndex Row index of cell
-     * @param columnIndex Column index of cell
-     * @return Return null by default
-     */
-    @Override
-    public String getToolTipAt(int rowIndex, int columnIndex) {
-		String result = null;
-		if (columnIndex == TASK_DESC) {
-			Person p = getItem(rowIndex);
-			if (p != null) {
-				// If the Person is dead, there is no Task Manager
-				var score = p.getMind().getTaskManager().getScore();
-				result = (score != null ? "<html>" + RatingScoreRenderer.getHTMLFragment(score) + "</html>"
-								: null);
-			}
-		}
-        return result;
-    }
-
-	
-	/**
-	 * Catches unit update event.
+	 * Catches changes to the Settlement
 	 *
 	 * @param event the unit event.
 	 */
-	@Override
+	@Override		
 	public void entityUpdate(EntityEvent event) {
-		String eventType = event.getType();
-
-		Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-
-		if (column != null && column > -1) {
-			Person unit = (Person) event.getSource();
-			entityValueUpdated(unit, column, column);
+		if (event.getSource() instanceof Settlement s) {
+			// Catch all Settlement events that add/remove associated people.
+			if (event.getTarget() instanceof Person p) {
+				String eventType = event.getType();
+				if (EntityEventType.ADD_ASSOCIATED_PERSON_EVENT.equals(eventType)) {
+					addEntity(p);
+				}
+				else if (EntityEventType.REMOVE_ASSOCIATED_PERSON_EVENT.equals(eventType)) {
+					removeEntity(p);
+				}
+			}
+		}
+		else {
+			super.entityUpdate(event);
 		}
 	}
 
@@ -362,41 +164,8 @@ public class PersonTableModel extends EntityMonitorModel<Person>
 	 * Prepares the model for deletion.
 	 */
 	@Override
-	public void destroy() {
-		super.destroy();
-
-		getSelectedSettlements().forEach(s -> s.removeEntityListener(settlementListener));
-		settlementListener = null;
-	}
-
-	/**
-	 * EntityListener inner class for watching Person move in/out of a Unit.
-	 */
-	private class PersonChangeListener implements EntityListener {
-
-		private String addEvent;
-		private String removeEvent;
-
-		public PersonChangeListener(String addEvent, String removeEvent) {
-			this.addEvent = addEvent;
-			this.removeEvent = removeEvent;
-		}
-
-		/**
-		 * Catches unit update event.
-		 *
-		 * @param event the unit event.
-		 */
-		public void entityUpdate(EntityEvent event) {
-			if (event.getTarget() instanceof Person p) {
-				String eventType = event.getType();
-				if (addEvent.equals(eventType)) {
-					addItem(p);
-				}
-				else if (removeEvent.equals(eventType)) {
-					removeItem(p);
-				}
-			}
-		}
+	public void release() {
+		settlements.forEach(s -> s.removeEntityListener(this));
+		super.release();
 	}
 }

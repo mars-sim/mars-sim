@@ -36,11 +36,6 @@ public class RobotTableModel extends BaseRobotModel implements MonitorModel {
         return ROBOTS;
     }
 
-    @Override
-    public String getCountString() {
-        return ROBOTS + " (" + getRowCount() + ")";
-    }
-
     /**
      * Set the settlement filter for the model. This will select the Robots associated with the selected settlements.
      * @param selectedSettlement Selected settlements to filter by.
@@ -59,20 +54,6 @@ public class RobotTableModel extends BaseRobotModel implements MonitorModel {
 
         settlements.forEach(s -> s.addEntityListener(this));
         return true;
-    }
-
-    /**
-     * Control whether the listeners are enabled or disabled.
-     * @param activate Activate the listeners if true, disable if false.
-     */
-    @Override
-    public void setMonitorEntities(boolean activate) {
-        if (activate) {
-            settlements.forEach(s -> s.addEntityListener(this));
-        } else {
-            settlements.forEach(s -> s.removeEntityListener(this));
-        }
-        super.setMonitorEntities(activate);
     }
 
     @Override
