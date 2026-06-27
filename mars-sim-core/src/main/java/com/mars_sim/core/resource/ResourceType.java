@@ -6,6 +6,11 @@
  */
 package com.mars_sim.core.resource;
 
+import com.mars_sim.core.equipment.BinType;
+import com.mars_sim.core.equipment.EquipmentType;
+import com.mars_sim.core.robot.RobotType;
+import com.mars_sim.core.vehicle.VehicleType;
+
 /**
  * This class provides the logic to infer the type of resource based on the resource ID.
  * It also defines the ranges of resource IDs for each type of resource.
@@ -45,5 +50,23 @@ public class ResourceType {
         return resourceID >> TYPE_BIT;
     }
 
-
+    /**
+     * Gets the name of the resource based on the resource ID.
+     * This is an uber coordinator method that will call the appropriate method to get the name of the resource based on its type.
+     * 
+     * @param resourceID the resource ID
+     * @return the name of the resource
+     */
+    public static String getName(int resourceID) {
+        int type = getType(resourceID);
+        return switch (type) {
+            case AMOUNT_RESOURCE -> ResourceUtil.findAmountResourceName(resourceID);
+            case ITEM_RESOURCE -> ItemResourceUtil.findItemResourceName(resourceID);
+            case VEHICLE_RESOURCE -> VehicleType.convertID2Type(resourceID).getName();
+            case EQUIPMENT_RESOURCE -> EquipmentType.convertID2Type(resourceID).getName();
+            case ROBOT_RESOURCE -> RobotType.convertID2Type(resourceID).getName();
+            case BIN_RESOURCE -> BinType.convertID2Type(resourceID).getName();
+            default -> "Resource:" + resourceID;
+        };
+    }
 }

@@ -15,11 +15,11 @@ import com.mars_sim.core.process.ProcessItem;
 import com.mars_sim.core.resource.ItemType;
 import com.mars_sim.core.structure.Settlement;
 
-public class WorkshopProcessTest extends MarsSimUnitTest {
+class WorkshopProcessTest extends MarsSimUnitTest {
     private static final String FURNACE_PROCESS = "Cast aluminum ingot";
 
     @Test
-    public void testManuProcessFailed() {
+    void testManuProcessFailed() {
         ManufactureProcessInfo processInfo = getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
                             .filter(p -> p.getName().equals(FURNACE_PROCESS))
                             .findAny().get();
@@ -46,11 +46,11 @@ public class WorkshopProcessTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testManuProcess() {
+    void testManuProcess() {
         ManufactureProcessInfo processInfo = getConfig().getManufactureConfiguration().getManufactureProcessList().stream()
                             .filter(p -> p.getName().equals(FURNACE_PROCESS))
                             .findAny().get();
-        assertTrue(processInfo.getProcessTimeRequired() > 0, "Process has prcoess time");
+        assertTrue(processInfo.getProcessTimeRequired() > 0, "Process has process time");
         
         var s = buildSettlement("Test", true);
         var b = ManufacturingManagerTest.buildWorkshop(getContext(), s.getBuildingManager());
@@ -78,7 +78,7 @@ public class WorkshopProcessTest extends MarsSimUnitTest {
     }
 
     @Test
-    public void testSalvProcess() {
+    void testSalvProcess() {
         SalvageProcessInfo processInfo = getConfig().getManufactureConfiguration().getSalvageInfoList().stream()
                             .filter(p -> p.getName().equals(SalvageProcessInfo.NAME_PREFIX + "gas canister"))
                             .findAny().get();

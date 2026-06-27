@@ -90,6 +90,7 @@ import com.mars_sim.core.person.ai.task.util.SettlementTaskManager;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.person.health.RadiationExposure;
 import com.mars_sim.core.process.CompletedProcess;
+import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.science.ScienceType;
@@ -2845,7 +2846,8 @@ public class Settlement extends Unit implements Temporal,
 	 * @param millisols the labor time
 	 */
 	public void addOutput(int resource, double amount, double millisols) {
-		dailyResourceOutput.recordValue(ResourceUtil.findAmountResourceName(resource), amount, this);
+		// This is not optimal and needs a better way to record Measures as not only String
+		dailyResourceOutput.recordValue(ResourceType.getName(resource), amount, this);
 	}
 
 	/**
