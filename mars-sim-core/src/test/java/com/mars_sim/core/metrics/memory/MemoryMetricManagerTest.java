@@ -47,4 +47,31 @@ class MemoryMetricManagerTest extends MetricManagerTest {
         assertEquals(MAX_SOL, m.getSize(), "Metric size after removing old sols");
         
     }
+
+    @Test
+    @DisplayName("newSol should remove datapoints from metrics")
+    void testRemoveDataPoints() {
+        var manager = new MemoryMetricManager(100); // Must be large sols
+
+        var maxPoints = 3;
+        manager.setMaxPoints(maxPoints);
+        assertEquals(maxPoints, manager.getMaxPoints(), "Max points should be set correctly");
+
+        var s = buildSettlement("Test");
+        var m = manager.getMetric(new MetricKey(s, TEMP_CAT, "Average"));
+
+        // Add data points for sols 0 to MAX_SOL+1
+        var clock = getSim().getMasterClock();
+        var marsTime = clock.getMarsTime();
+        for (int sol = 0; sol <= maxPoints; sol++) {
+            m.recordValue(1D);
+
+            marsTime = marsTime.addTime(1000D);
+            clock.setMarsTime(marsTime);
+        }
+        assertEquals(maxPoints + 1, m.getSize(), "Metric size before newSol");
+    
+        manager.newSol(marsTime);
+        assertEquals(maxPoints, m.getSize(), "Metric size after newSol");
+    }   
 }

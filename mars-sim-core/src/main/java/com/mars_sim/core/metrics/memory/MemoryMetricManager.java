@@ -29,10 +29,12 @@ public class MemoryMetricManager extends MetricManager {
 
     // 1 double & 1 memory reference at 8 bytes each plus 1 reference in Metric
     private static final int MEMORY_PER_DATA = 24;
+    private static final int MAX_MEMORY_PERC = 2; // 2% of max memory
 
     private Map<MetricKey, MemoryMetric> metrics;
-    private int maxSol = 1;
-    private int totalDataPoints = 0;
+    private int maxSol = 1; // Maximum number of sols to retain in memory for each metric
+    private int maxPoints;
+    private int earliestSol = 1; // The earliest sol that is currently being tracked
 
     /**
      * Creates a new MemoryMetricManager with the specified maximum number of sols to retain.
@@ -40,8 +42,27 @@ public class MemoryMetricManager extends MetricManager {
      */
     public MemoryMetricManager(int maxSol) {
         super();
-        metrics = new HashMap<>();
+        this.metrics = new HashMap<>();
         this.maxSol = maxSol;
+        var maxMem = (Runtime.getRuntime().maxMemory() * MAX_MEMORY_PERC) / 100.0;
+        this.maxPoints = (int) (maxMem / MEMORY_PER_DATA);
+
+        logger.info("MemoryMetricManager initialized with maxSol: " + maxSol + ", maxPoints: " + maxPoints);
+    }
+
+    /**
+     * Ovveride the default maxPoints to a new value.
+     * @param maxPoints The new maximum number of data points to retain in memory.
+     */
+    void setMaxPoints(int maxPoints) {
+        this.maxPoints = maxPoints;
+    }
+
+    /**
+     * Get the maximum number of data points to retain in memory.
+     */
+    public int getMaxPoints() {
+        return maxPoints;
     }
 
     /**
@@ -63,16 +84,33 @@ public class MemoryMetricManager extends MetricManager {
      * @param time Current mars time.
      */
     public void newSol(MarsTime time) {
-        var earliestSol = time.getMissionSol() - maxSol + 1;
-        if (earliestSol>= 1) {
+        int newDataPointCount = metrics.values().stream().mapToInt(Metric::getSize).sum();
+
+        // Check if the total sols has past the limit
+        var newEarliest = time.getMissionSol() - maxSol + 1;
+        if (newEarliest <= earliestSol) {
+            // No sol limit so check memory usage and remove old sols if necessary
+            if (newDataPointCount > maxPoints) {
+                logger.info("Memory usage exceeded limit. Current data points: " + newDataPointCount + ", max allowed: " + maxPoints);
+                newEarliest = earliestSol + 1; // Remove the new earliest one sol forward
+            }
+        }
+        else {
+            logger.info("Sol limit exceeded. Earliest allowed sol: " + newEarliest + ", max sols: " + maxSol);
+        }
+
+        // Remove old sols from all metrics if the earliest sol is greater than or equal to 1
+        if (newEarliest > earliestSol) {
+            earliestSol = newEarliest;
+
             metrics.values().forEach(mm -> mm.removeOldSols(earliestSol));
+
+            // Update the total data points after removing old sols
+            newDataPointCount = metrics.values().stream().mapToInt(Metric::getSize).sum();
         }  
         
-        int newDataPointCount = metrics.values().stream().mapToInt(Metric::getSize).sum();
-        logger.info("Total data points in memory: " + newDataPointCount + ", previous: " + totalDataPoints
-                + " (estimated memory usage: " + (newDataPointCount * MEMORY_PER_DATA)/1024D + " KB)");  
-    
-        totalDataPoints = newDataPointCount;
+        logger.info("Total data points: " + newDataPointCount + ", max: " + maxPoints
+                + ", earliest sol held: " + earliestSol);
     }
 
     @Override
