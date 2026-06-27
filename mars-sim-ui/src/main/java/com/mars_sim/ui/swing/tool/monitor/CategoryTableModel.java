@@ -41,7 +41,8 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 	 * 
 	 * @param activate 
 	 */
-    public void setMonitorEntities(boolean activate) {
+	@Override
+    public void enableListeners(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
 				getSelectedSettlements().forEach(s ->s.addEntityListener(this));
@@ -57,9 +58,9 @@ abstract class CategoryTableModel<T> extends CachingTableModel<CategoryKey<T>>
 	 * Prepares the model for deletion.
 	 */
 	@Override
-	public void destroy() {
+	public void release() {
 		getSelectedSettlements().forEach(s ->s.removeEntityListener(this));
-		super.destroy();
+		super.release();
 	}
 
 	/**

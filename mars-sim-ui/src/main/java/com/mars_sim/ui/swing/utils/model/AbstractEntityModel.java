@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +47,8 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
      * @param columns Columns to render
      */
     protected AbstractEntityModel(EntityColumnSpec[] columns) {
+        Set<Integer> valIds = new HashSet<>();
+
         // Create the event map by extracting the event types against the index of the EntityColumnSpec
         int idx = 0;
         for (EntityColumnSpec ecs : columns) {
@@ -55,7 +58,15 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
                 }
             }
             idx++;
+            
+            valIds.add(ecs.column().id());
         }
+
+        // Check all columns have unique Ids
+        if (valIds.size() != columns.length) {
+            throw new IllegalArgumentException("Column Ids must be unique");
+        }
+
         this.columns = Arrays.stream(columns).map(EntityColumnSpec::column).toArray(ColumnSpec[]::new);
     }
 
@@ -119,25 +130,6 @@ public abstract class AbstractEntityModel<T extends MonitorableEntity> extends A
     @Override
     public void release() {
        enableListeners(false);
-    }
-
-    /**
-     * This is a temp. method until MonitorModel implements StatefulComponent.
-     */
-    @Deprecated(forRemoval = true)
-    public void destroy() {
-        // This will be called directly once StatefulCompoment is implemented.
-        release();
-    }
-
-    /**
-     * Control whether the listeners are enabled or disabled.
-     * TODO This is a temp. method until MonitorModel is reworked
-     * @param activate Activate the listeners if true, disable if false.
-     */
-    @Deprecated(forRemoval = true)
-    public void setMonitorEntities(boolean activate) {
-        enableListeners(activate);
     }
 
     /**

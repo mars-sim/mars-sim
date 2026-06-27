@@ -110,7 +110,7 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * @param activate 
 	 */
 	@Override
-    public void setMonitorEntities(boolean activate) {
+    public void enableListeners(boolean activate) {
 		if (activate != monitorSettlement) {
 			if (activate) {
 				getSelectedSettlements().forEach(s -> s.addEntityListener(this));
@@ -126,11 +126,11 @@ public class BacklogTableModel extends AbstractMonitorModel
 	 * Prepares the model for deletion.
 	 */
 	@Override
-	public void destroy() {
+	public void release() {
 		// Remove as listener for all settlements.
 		getSelectedSettlements().forEach(s -> s.removeEntityListener(this));
 
-		super.destroy();
+		super.release();
 	}
 
 	/**

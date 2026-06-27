@@ -52,7 +52,7 @@ public abstract class MonitorTab extends JPanel {
 	 */
 	public void removeTab() {
 		if (ownModel) {
-			model.destroy();
+			model.release();
 		}
 		model = null;
 	}

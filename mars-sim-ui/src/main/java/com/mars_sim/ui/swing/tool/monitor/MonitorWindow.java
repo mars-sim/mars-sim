@@ -253,28 +253,6 @@ public class MonitorWindow extends ContentPanel
 	}
 
 	/**
-	 * This method adds the specified Unit table as a new tab in the Monitor. The
-	 * model is displayed as a table by default. The name of the tab is that of the
-	 * Model.
-	 *
-	 * @param model The new model to display.
-	 */
-	public void displayModel(EntityMonitorModel<?> model) {
-		int index = getModelIndex(model);
-		if (index != -1)
-			tabsSection.setSelectedIndex(index);
-		else {
-			try {
-				var newTab = new TableTab(this, model, false, true,"usertab");
-				addTab(newTab);
-				tabsSection.setSelectedComponent(newTab);
-			} catch (Exception e) {
-				logger.severe(model + " cannot be added.");
-			}
-		}
-	}
-
-	/**
 	 * Reacts to a change in the settlement selection. 
 	 */
 	private void changeSelection() {
@@ -289,21 +267,6 @@ public class MonitorWindow extends ContentPanel
 	 */
 	private void setSettlementBox(boolean isOpaque) {
 		settlementSelector.setVisible(!isOpaque);
-	}
-
-	/**
-	 * Gets the index of the monitor tab with the model.
-	 *
-	 * @param model the model to check for.
-	 * @return tab index or -1 if none.
-	 */
-	private int getModelIndex(EntityMonitorModel<?> model) {
-		for (Component c: tabsSection.getComponents()) {
-			if ((c instanceof MonitorTab tab) && model.equals(tab.getModel())) {
-				return tabsSection.indexOfComponent(c);
-			}
-		}
-		return -1;
 	}
 
 	/**
@@ -393,14 +356,14 @@ public class MonitorWindow extends ContentPanel
 			// If a different tab then activate listeners
 			activiateListeners = !(activeTab.equals(selectedTab));
 			if (activiateListeners) {
-				previousModel.setMonitorEntities(false);
+				previousModel.enableListeners(false);
 			}
 
 			// Stop listening for table size changes
 			previousModel.removeTableModelListener(this);
 		}
 		if (activiateListeners) {
-			tabTableModel.setMonitorEntities(true);
+			tabTableModel.enableListeners(true);
 		}
 
 		// Listener for row changes
@@ -533,7 +496,7 @@ public class MonitorWindow extends ContentPanel
 		// Remove listeners for the active tab; should already be present but just in case
 		MonitorModel activeModel = (activeTab != null) ? activeTab.getModel() : null;
 		if (activeModel != null) {
-			activeModel.setMonitorEntities(false);
+			activeModel.enableListeners(false);
 		}
 			
 		super.destroy();

@@ -187,7 +187,7 @@ public abstract class AbstractMonitorModel extends AbstractTableModel
      * Tidies up any listeners or external dependencies.
      */
     @Override
-	public void destroy() {
+	public void release() {
         // Nothing to do for this base class
     }
 }

@@ -22,8 +22,6 @@ import com.mars_sim.core.Entity;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.StyleManager;
 import com.mars_sim.ui.swing.UIContext;
-import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
-import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 
 /**
  * This is a typesafe Panel to be used for Entity Content Panel. 
@@ -101,16 +99,6 @@ public abstract class EntityTabPanel<T extends Entity>  {
     protected T getEntity() {
         return entity;
     }
-
-    /**
-	 * Displays a new Unit model in the monitor window.
-	 *
-	 * @param model the new model to display
-	 */
-	protected void showModel(EntityMonitorModel<?> model) {
-		var cw = context.openToolWindow(MonitorWindow.NAME);
-		((MonitorWindow)cw).displayModel(model);
-	}
 
 	/**
 	 * Are all the UI element in place ?

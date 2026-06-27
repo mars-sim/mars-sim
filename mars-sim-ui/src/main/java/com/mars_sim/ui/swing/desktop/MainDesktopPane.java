@@ -49,7 +49,6 @@ import com.mars_sim.ui.swing.entitywindow.EntityContentPanel;
 import com.mars_sim.ui.swing.sound.AudioPlayer;
 import com.mars_sim.ui.swing.tool.ToolRegistry;
 import com.mars_sim.ui.swing.tool.commander.CommanderWindow;
-import com.mars_sim.ui.swing.tool.monitor.EntityMonitorModel;
 import com.mars_sim.ui.swing.tool.monitor.MonitorWindow;
 import com.mars_sim.ui.swing.tool.time.TimeTool;
 import com.mars_sim.ui.swing.utils.SwingHelper;
@@ -270,16 +269,6 @@ public class MainDesktopPane extends JDesktopPane
 		return w;
 	}
 
-	/**
-	 * Displays a new Unit model in the monitor window.
-	 *
-	 * @param model the new model to display
-	 */
-	public void addModel(EntityMonitorModel<?> model) {
-		var cw = openToolWindow(MonitorWindow.NAME);
-		((MonitorWindow)cw).displayModel(model);
-	}
-	
 	/**
 	 * Opens a tool window if necessary.
 	 *
