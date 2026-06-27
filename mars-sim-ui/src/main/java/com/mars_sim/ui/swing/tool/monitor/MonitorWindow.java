@@ -11,7 +11,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -191,7 +190,7 @@ public class MonitorWindow extends ContentPanel
 
 		newTabs.add(new TableTab(this, new ScienceStudyTableModel(context.getSimulation().getScientificStudyManager()), true, true, SCIENCE_ICON));
 
-		newTabs.add(new TableTab(this, new MissionTableModel(context.getSimulation()), true, true, "mission"));
+		newTabs.add(new TableTab(this, new MissionTableModel(), true, true, "mission"));
 		newTabs.add(new TableTab(this, new VehicleTableModel(), true, true, VEHICLE_ICON));
 
 		for (MonitorTab m : newTabs) {
@@ -372,11 +371,7 @@ public class MonitorWindow extends ContentPanel
 	private void selectNewTab(MonitorTab selectedTab) {
 		
 		MonitorModel tabTableModel = selectedTab.getModel();
-
-		String title = tabTableModel.getName();
-		
-		super.setTitle(TITLE + " - " + title);
-		
+				
 		boolean enableRemove = !selectedTab.isMandatory();
 		boolean enableDetails = selectedTab.isEntityDriven();
 		boolean enableFilter = selectedTab.isFilterable();

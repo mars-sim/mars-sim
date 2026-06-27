@@ -12,8 +12,6 @@ import com.mars_sim.core.EntityEvent;
 import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.building.utility.power.PowerGrid;
 import com.mars_sim.core.mission.MissionControl;
-import com.mars_sim.core.resource.AmountResource;
-import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
 import com.mars_sim.ui.swing.components.ColumnSpec;
@@ -25,7 +23,6 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  */
 public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement> {
 
-    private static final String RES_PREFIX = "res:";
     private static final int NAME_VAL = 0;
 	private static final int POP_VAL = 1;
 	private static final int PARKED_VAL = 2;
@@ -51,42 +48,16 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
                                 Set.of(PowerGrid.STORED_ENERGY_EVENT));
 
     // Resource columns
-    private static final int RESOURCE_VAL = 1000;
     private Set<Integer> resources;
-
 
     /**
      * Create a generic building model with the specified columns.
      * @param columns Columns to show.
      */
     protected BaseSettlementModel(Set<Integer> resources, EntityColumnSpec... columns) {
-        super(getColumns(resources, columns));
+        super(ResourceColumnHelper.getColumns(resources, columns));
 
         this.resources = resources;
-    }
-
-    /**
-     * Create an array of EntityColumnSpec for the specified resources and columns.
-     * Note this could be resued elsewhere.
-     * @param resources Set of resource IDs to create columns for.
-     * @param columns Array of named columns.
-     * @return Array of EntityColumnSpec including both existing and resource columns.  
-     */
-    private static EntityColumnSpec[] getColumns(Set<Integer> resources, EntityColumnSpec[] columns) {
-        EntityColumnSpec[] resourceColumns = new EntityColumnSpec[resources.size() + columns.length];
-
-        // Named columns first
-        System.arraycopy(columns, 0, resourceColumns, 0, columns.length);
-
-        // Then add the resource columns
-        int idx = columns.length;
-        for(var resourceID : resources) {
-            var name =ResourceUtil.findAmountResourceName(resourceID);
-            var resColumn = new EntityColumnSpec(new ColumnSpec(RESOURCE_VAL + resourceID, name, Double.class, ColumnSpec.STYLE_INTEGER),
-                                Set.of(RES_PREFIX + resourceID));
-            resourceColumns[idx++] = resColumn;
-        }
-        return resourceColumns;
     }
 
     /**
@@ -97,21 +68,11 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
     @Override
     public void entityUpdate(EntityEvent event) {
         if (event.getType().equals(EntityEventType.INVENTORY_RESOURCE_EVENT)) {
-            // Resource change
-            var target = event.getTarget();
-            int resourceID = switch (target) {
-              case AmountResource ar -> ar.getID();
-              case Integer i -> i;
-              default -> -1;
-            };
-
-            // Is the resource a monitored one
-            var pesuoEventType = (resources.contains(resourceID)) ? RES_PREFIX + resourceID : null;
-            if (pesuoEventType == null) {
+            event = ResourceColumnHelper.convertResourceToEvent(event, resources);
+            if (event == null) {
                 // Not a monitored resource
                 return;
             }
-            event = new EntityEvent(event.getSource(), pesuoEventType, event.getTarget());
         }        
 
         super.entityUpdate(event);
@@ -134,7 +95,8 @@ public abstract class BaseSettlementModel extends AbstractEntityModel<Settlement
             case POWER_GEN_VAL -> entity.getPowerGrid().getGeneratedPower();
             case POWER_LOAD_VAL -> entity.getPowerGrid().getPowerLoad();
             case ENERGY_STORED_VAL -> entity.getPowerGrid().displayStoredEnergy();
-            default -> (valueIndex >= RESOURCE_VAL) ? entity.getSpecificAmountResourceStored(valueIndex - RESOURCE_VAL) : null;
+            default -> (valueIndex >= ResourceColumnHelper.RESOURCE_VAL) ?
+                        entity.getSpecificAmountResourceStored(valueIndex - ResourceColumnHelper.RESOURCE_VAL) : null;
         };
     }
 }
