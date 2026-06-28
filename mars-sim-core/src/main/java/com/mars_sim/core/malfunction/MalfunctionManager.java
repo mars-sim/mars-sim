@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import com.mars_sim.core.EntityEventType;
+
 import com.mars_sim.core.Simulation;
 import com.mars_sim.core.Unit;
 import com.mars_sim.core.UnitType;
@@ -80,8 +80,6 @@ import com.mars_sim.core.tool.RandomUtil;
  */
 public class MalfunctionManager implements Serializable, Temporal {
 
-	private static final String PERC_CHANGE = "%.3f %% --> %.3f %%";
-
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
@@ -90,6 +88,10 @@ public class MalfunctionManager implements Serializable, Temporal {
 
 	/** For a typical building, the number of inspection expected throughout its lifetime. */
 	private static final int INSPECTION_FREQUENCY = 75;
+
+	private static final int FREQUENCY = 7;
+	private static final int SCORE_DEFAULT = 50;
+	private static final int MAX_DELAY = 100;
 	
 	/** Initial estimate for malfunctions per orbit for an entity. */
 	private static final double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 5;
@@ -119,17 +121,18 @@ public class MalfunctionManager implements Serializable, Temporal {
 	/** Factor for chance of accident due to wear condition. */
 	private static final double WEAR_ACCIDENT_FACTOR = 1D;
 
+	private static final String PERC_CHANGE = "%.3f %% --> %.3f %%";
+
 	private static final String OXYGEN = "Oxygen";
 	private static final String PROBABLE_CAUSE = ". Probable Cause: ";
 	private static final String CAUSED_BY = " Caused by '";
 
-	private static final int FREQUENCY = 7;
-	private static final int SCORE_DEFAULT = 50;
-	private static final int MAX_DELAY = 100;
-
-	private static final MetricCategory MALFUNCTION_CAT = new MetricCategory("Malfunction", false);
 	private static final String OCCURRED_MEASURE = "Occurred";
 	private static final String FIXED_MEASURE = "Fixed";
+
+    public static final String MALFUNCTION_EVENT = "malfunction";
+
+	private static final MetricCategory MALFUNCTION_CAT = new MetricCategory("Malfunction", false);
 
 	private static boolean noFailures = false;
 	
@@ -184,9 +187,6 @@ public class MalfunctionManager implements Serializable, Temporal {
 	private Map<MaintenanceScope, Integer> partsNeededForMaintenance;
 	/** The map of collections of scopes. */
 	private Map<Collection<String>, List<MaintenanceScope>> scopeCollection = new HashMap<>();
-
-    // For MalfunctionManager
-    public static final String MALFUNCTION_EVENT = "malfunction";
 	
 	private static MasterClock masterClock;
 	private static MedicalManager medic;

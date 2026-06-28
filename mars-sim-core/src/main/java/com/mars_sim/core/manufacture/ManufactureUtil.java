@@ -213,6 +213,8 @@ public final class ManufactureUtil {
 				if (isOutput)
 					result *= VEHICLE_VALUE;
 			} break;
+		default:
+			break;
 		}
 
 		return result;

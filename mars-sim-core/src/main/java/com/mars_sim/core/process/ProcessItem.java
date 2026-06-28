@@ -137,6 +137,8 @@ public class ProcessItem implements Serializable {
 					outputId = VehicleType.getVehicleID(v.getVehicleType());
 				}
 			} break;
+		default:
+			break;
 		}
 
 		// Record goods benefit

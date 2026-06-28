@@ -1,5 +1,5 @@
 # Introduction
-*The Mars Simulation Project* is a Java-based Open Source project that simulates mission operations and activities of initial settlers on Mars with a higher fidelity of modelling and simulation details than most classic simulation games.
+*The Mars Simulation Project* is a Java-based Open Source project that simulates mission operations and activities of initial settlers on Mars with a higher fidelity of modeling and simulation details than most classic simulation games.
 
 ## Significant Changes
 

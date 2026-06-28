@@ -32,13 +32,12 @@
 - [Creating the Future](#creating-the-future)
 - [Conclusion](#conclusion)
 - [Development](#development)
+   - [Outreach](#outreach)
    - [Discussions](#discussions)
    - [Issues and Tickets](#issues-and-tickets)
    - [Contribution](#contribution)
    - [Website](#website)
    - [Wiki](#wiki)
-   - [Outreach](#outreach)
-   - [Official Codebase](#official-codebase)
    - [Download](#download)
    - [License](#license)
 
@@ -306,10 +305,10 @@ in creating a new branch of human society on another planetary surface.
 
 # Development
 
-Currently, mars-sim supports Java 21. It also uses Apache Maven as the build platform.
+Currently, mars-sim requires Java 25. It also uses Apache Maven as the build platform.
 
-* Requires only JRE 21 for running mars-sim
-* Requires only JDK 21 (or OpenJDK 21) for compiling binary
+* Requires only JRE 25 for running mars-sim
+* Requires only JDK 25 (or OpenJDK 25) for compiling binary
 
 ## Outreach
 Feel free to use our [Facebook community](https://www.facebook.com/groups/125541663548/)
@@ -329,7 +328,7 @@ Help us by filling in the info below when submitting an issue :
 
 **Affected Area**
  - What area(s) are we dealing with ? [e.g. Construction, Mission, Resupply,
- Settlement Map, Mini-map, Saving/Loading Sim, System Exceptions in Command
+ Settlement Map, Mars Navigator, Saving/Loading Sim, System Exceptions in Command
  Prompt/Terminal, etc..]
 
 **Expected behaviors**
@@ -351,8 +350,8 @@ e.g. Include the followings :
 
 **Specifications (please complete)**
  - OS version : [e.g. Windows 11, macOS 26.1, Ubuntu 25.10]
- - Java version : [e.g. Oracle JDK 21, Azul Zulu 21, Amazon Corretto 21, BellSoft Liberica JDK]
- - Major version and build : [e.g. post 3.10.0]
+ - Java version : [e.g. Oracle JDK 25, Azul Zulu 25, Amazon Corretto 25, BellSoft Liberica JDK 25]
+ - Major version and build : [e.g. post 4.1.0]
 
 **Additional context**
  - Add any other context about the problem here. By providing more info above when filing it, 
@@ -383,3 +382,5 @@ Find the past and recent [releases](https://github.com/mars-sim/mars-sim/release
 
 ## License
 This project is licensed under the terms of the GPL v3.0 license.
+
+

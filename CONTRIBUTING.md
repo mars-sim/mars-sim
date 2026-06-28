@@ -1,6 +1,6 @@
 # Mars Simulation Project
 
-Copyright &copy; 2025 Scott Davis  
+Copyright &copy; 2026 Scott Davis  
 Project: https://marssim.space/
 GitHub: https://github.com/mars-sim/mars-sim  
 
