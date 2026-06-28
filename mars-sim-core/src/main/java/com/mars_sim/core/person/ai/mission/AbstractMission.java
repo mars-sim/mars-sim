@@ -600,7 +600,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 		}
 
 		else if (REVIEWING.equals(getPhase())) {
-			requestReviewPhase(member);
+			requestReviewPhase();
 		}
 	}
 
@@ -866,7 +866,7 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
 	 * @param minMembers Minimum number of members required
 	 */
-	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
+	protected boolean recruitMembersForMission(Person startingMember, boolean sameSettlement, int minMembers) {
 
 		// Get all people qualified for the mission.
 		Collection<Person> possibles;
@@ -1019,11 +1019,9 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Requests review for the mission.
-	 *
-	 * @param member the mission lead.
+	 * Requests review for the mission
 	 */
-	private void requestReviewPhase(Worker member) {
+	private void requestReviewPhase() {
 		if (plan == null) {
 			throw new IllegalStateException("No Mission plan");
 		}

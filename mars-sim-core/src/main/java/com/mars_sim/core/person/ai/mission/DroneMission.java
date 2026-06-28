@@ -363,7 +363,7 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 
 	@Override
-	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement, int minMembers) {
+	protected boolean recruitMembersForMission(Person startingMember, boolean sameSettlement, int minMembers) {
 		// Get a delivery bot qualified for the mission.
 		Iterator<Robot> r = getStartingSettlement().getAllAssociatedRobots().iterator();
 		while (r.hasNext()) {

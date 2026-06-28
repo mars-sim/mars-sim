@@ -15,7 +15,6 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -67,18 +66,8 @@ public class AbstractMetaMission implements MetaMission {
 	}
 
 	@Override
-	public Mission constructInstance(Robot robot) {
-		throw new UnsupportedOperationException("Mission Meta "+ name + " does not support mission for Robots.");
-	}
-
-	@Override
 	public RatingScore getProbability(Person person) {
 		return RatingScore.ZERO_RATING;
-	}
-
-	@Override
-	public double getProbability(Robot robot) {
-		return 0;
 	}
 
 	/**

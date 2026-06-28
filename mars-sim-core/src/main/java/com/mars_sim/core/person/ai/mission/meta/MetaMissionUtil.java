@@ -9,6 +9,8 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.person.ai.mission.MissionType;
+
 /**
  * A utility mission for getting the list of meta missions.
  */
@@ -54,6 +56,21 @@ public class MetaMissionUtil {
 		metaMissions = newMissions;
 	}
 
+	/**
+	 * Gets a meta mission by its type.
+	 * 
+	 * @param type the type of the meta mission.
+	 * @return the meta mission with the specified type, or null if not found.
+	 */
+	public static MetaMission getMetaMission(MissionType type) {
+		for (MetaMission meta : getMetaMissions()) {
+			if (meta.getType() == type) {
+				return meta;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Gets a list of all meta missions.
 	 * 

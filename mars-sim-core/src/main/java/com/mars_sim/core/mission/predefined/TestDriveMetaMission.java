@@ -12,7 +12,6 @@ import com.mars_sim.core.person.ai.SkillType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.meta.MetaMission;
-import com.mars_sim.core.robot.Robot;
 
 /**
  * Skeleton implementation of the Meta Mission for a test drive
@@ -40,20 +39,7 @@ public class TestDriveMetaMission implements MetaMission {
     }
 
     @Override
-    public Mission constructInstance(Robot robot) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'constructInstance'");
-    }
-
-    @Override
     public RatingScore getProbability(Person person) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getProbability'");
-    }
-
-    @Override
-    public double getProbability(Robot robot) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getProbability'");
-    }    
+    } 
 }

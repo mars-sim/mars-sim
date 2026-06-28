@@ -1476,12 +1476,12 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 * @param startingMember
 	 * @return
 	 */
-	protected boolean recruitMembersForMission(Worker startingMember, int minMembers) {
+	protected boolean recruitMembersForMission(Person startingMember, int minMembers) {
 		return recruitMembersForMission(startingMember, true, minMembers);
 	}
 
 	@Override
-	protected boolean recruitMembersForMission(Worker startingMember, boolean sameSettlement,
+	protected boolean recruitMembersForMission(Person startingMember, boolean sameSettlement,
 										int minMembers) {
 		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
 

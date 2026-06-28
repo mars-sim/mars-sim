@@ -66,7 +66,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Delivery(Worker startingMember, boolean needsReview) {
+	public Delivery(Person startingMember, boolean needsReview) {
 		// Use DroneMission constructor.
 		super(MissionType.DELIVERY, startingMember, null);
 

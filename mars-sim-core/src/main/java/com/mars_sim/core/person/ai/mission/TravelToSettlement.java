@@ -62,7 +62,7 @@ public class TravelToSettlement extends RoverMission {
 	 * 
 	 * @param startingMember the mission member starting the mission.
 	 */
-	public TravelToSettlement(Worker startingMember, boolean needsReview) {
+	public TravelToSettlement(Person startingMember, boolean needsReview) {
 		// Use RoverMission constructor
 		super(MissionType.TRAVEL_TO_SETTLEMENT, startingMember, null);
 

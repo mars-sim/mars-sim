@@ -10,7 +10,6 @@ import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.robot.Robot;
 
 /**
  * Interface for a meta mission, responsible for determining mission probability
@@ -49,8 +48,6 @@ public interface MetaMission {
 	 */
 	public Mission constructInstance(Person person, boolean needsReview);
 
-	public Mission constructInstance(Robot robot);
-
 	/**
 	 * Gets the weighted probability value that the person might perform this
 	 * mission. A probability weight of zero means that the mission has no chance of
@@ -60,6 +57,4 @@ public interface MetaMission {
 	 * @return Rating of this mission starting
 	 */
 	public RatingScore getProbability(Person person);
-
-	public double getProbability(Robot robot);
 }

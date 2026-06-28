@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.AbstractMission;
+import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.tool.RandomUtil;
@@ -28,23 +28,29 @@ import com.mars_sim.core.tool.RandomUtil;
 public class MissionRecruitment {
 
 	// Plain POJO to help score potential mission members
-	private record MemberScore(Worker candidate, double leaderLike, double qualification) {
-		public double score() {
-			return (leaderLike + qualification) / 2D;
-		}
-	}
+	private record MemberScore(Worker candidate, double score) {}
 
-    private AbstractMission mission;
-    private Worker startingMember;
+    private Mission mission;
+    private Person startingMember;
+	private int maxMembers;
 
-    public MissionRecruitment(AbstractMission target, Worker startingMember) {
+    public MissionRecruitment(Mission target, Person startingMember) {
         this.mission = target;
         this.startingMember = startingMember;
+		this.maxMembers = target.getMissionCapacity();
     }
+
+	/**
+	 * Define the maximum members to recruit. By default it takes the fixed Maximum capactiy from the MetaMission.
+	 * @param maxMembers New overide number fo rmaximum members.
+	 */
+	public void setMaxmMembers(int maxMembers) {
+		this.maxMembers = maxMembers;
+	}	
 
     /**
      * Attempts to recruit members for the mission from a collection of possible candidates.
-     * @param minMembers Minimum number of members required for the mission.
+     * @param minMembers Minimum number to recruit from these potentials.
      * @param possibles Possible candidates for recruitment.
      * @return Successful recruitment?
      */
@@ -52,66 +58,50 @@ public class MissionRecruitment {
 
 		List<MemberScore> qualifiedPeople = new ArrayList<>();
 		for (var w : possibles) {
-			if (isCapableOfMission(w)) {
+			if (!w.equals(startingMember) && isCapableOfMission(w)) {
 				// Determine the person's mission qualification.
 				double qualification = mission.getMissionQualification(w) * 100D;
 
-				// Determine how much the recruiter likes the person.
 				double likability = 50D;
-				if (startingMember instanceof Person sm && w instanceof Person p) {
-					likability = RelationshipUtil.getOpinionOfPerson(sm, p);
-				}
+				double groupLikability = 50D;
+				if (w instanceof Person p) {
+					// Determine how much the recruiter likes the person.
+					likability = RelationshipUtil.getOpinionOfPerson(startingMember, p);
 
-				// Check if person is the best recruit.
-				qualifiedPeople.add(new MemberScore(w, likability, qualification));
+					// Get the recruitee's average opinion of all the current mission members.
+					List<Person> people = mission.getMembers().stream()
+							.filter(Person.class::isInstance)
+							.map(Person.class::cast)
+							.toList();
+					groupLikability = RelationshipUtil.getAverageOpinionOfPeople(p, people);
+            	}
+
+				double recruitmentChance = (qualification + likability + groupLikability) / 3D;
+				if (recruitmentChance > 0D) {
+					// Check if person is the best recruit.
+					qualifiedPeople.add(new MemberScore(w, recruitmentChance));
+				}
 			}
 		}
 
-		int max = startingMember.getAssociatedSettlement().getChainOfCommand().getMaxMissionMembers();
+		int actualMax = startingMember.getAssociatedSettlement().getChainOfCommand().getMaxMissionMembers();
 		
 		// Max can not bigger than mission capacity
-		max = Math.min(max, mission.getMissionCapacity());
+		actualMax = Math.min(actualMax, maxMembers);
 
 		// Recruit the most qualified and most liked people first.
 		qualifiedPeople.sort(Comparator.comparing(MemberScore::score, Comparator.reverseOrder()));
-		while (!qualifiedPeople.isEmpty() && (mission.getMembers().size() < max)) {
+		while (!qualifiedPeople.isEmpty() && (mission.getMembers().size() < actualMax)) {
 			// Try to recruit best person available to the mission.
 			MemberScore next = qualifiedPeople.remove(0);
-			recruitWorker(next);
+			if (RandomUtil.lessThanRandPercent(next.score)) {
+				next.candidate.setMission(mission);
+			}
 		}
 		
 		return (mission.getMembers().size() >= minMembers);
     }
 
-    
-	/**
-	 * Attempts to recruit a new person into the mission.
-	 *
-	 * @param selected the Worker being recruited.
-	 */
-	private void recruitWorker(MemberScore selected) {
-		if (isCapableOfMission(selected.candidate)) {
-            double groupLikability = 50D;
-
-            // For a person check the relationships with the fellow members
-            if (selected.candidate instanceof Person re) {
-                // Get the recruitee's average opinion of all the current mission members.
-                List<Person> people = mission.getMembers().stream()
-                        .filter(Person.class::isInstance)
-                        .map(Person.class::cast)
-                        .toList();
-                groupLikability = RelationshipUtil.getAverageOpinionOfPeople(re, people);
-            }
-
-			double recruitmentChance = (selected.qualification + selected.leaderLike + groupLikability) / 3D;
-            recruitmentChance = Math.clamp(recruitmentChance, 0D, 100D);
-			if (RandomUtil.lessThanRandPercent(recruitmentChance)) {
-				selected.candidate.setMission(mission);
-				// NOTE: do not set his shift to ON_CALL until after the mission plan has been approved
-			}
-		}
-	}
-    
 	/**
 	 * Checks to see if a member is capable of joining a mission.
 	 *

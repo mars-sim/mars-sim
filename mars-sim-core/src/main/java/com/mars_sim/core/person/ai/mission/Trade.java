@@ -81,7 +81,7 @@ public class Trade extends RoverMission implements CommerceMission {
 	 *
 	 * @param startingMember the mission member starting the settlement.
 	 */
-	public Trade(Worker startingMember, boolean needsReview) {
+	public Trade(Person startingMember, boolean needsReview) {
 		// Use RoverMission constructor.
 		super(MissionType.TRADE, startingMember, null);
 
