@@ -25,7 +25,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		
-		<junit.version>6.1.0</junit.version>
+		<junit.version>6.1.1</junit.version>
 
 		<lwjgl.version>3.3.6</lwjgl.version>
 		<slf4j.version>2.0.18</slf4j.version>
