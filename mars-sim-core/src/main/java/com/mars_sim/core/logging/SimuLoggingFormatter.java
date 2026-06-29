@@ -55,9 +55,29 @@ public class SimuLoggingFormatter extends Formatter {
 	public String format(LogRecord record) {
 
 		String msg = formatMessage(record);
+		
+		String target0 = "SimLogger log";
+		
+		int length = target0.length();
+		// Find first occurrence
+		int index = msg.indexOf(target0);
 
-		if (msg.trim().endsWith("log") || msg.trim().endsWith("baseLog"))
-			return null;
+		if (index != -1) {
+		    // Keep everything after the substring
+		    msg = msg.substring(index + length);
+		}
+		else {
+			target0 = "SimLogger baseLog";
+			
+			length = target0.length();
+			// Find first occurrence
+			index = msg.indexOf(target0);
+	
+			if (index != -1) {
+			    // Keep everything after the substring
+			    msg = msg.substring(index + length);
+			}
+		}
 		
 		// Build the message output using a fixed format
 	    StringBuffer sb = new StringBuffer();
@@ -168,7 +188,7 @@ public class SimuLoggingFormatter extends Formatter {
 		// Gets the local time
 		String dt = LocalDateTime.now().toString();
 		// Show only one decimal place in seconds
-		return dt.substring(0, dt.lastIndexOf(".")+2);
+		return dt.substring(0, dt.lastIndexOf(".") + 2);
     }
     
     /**

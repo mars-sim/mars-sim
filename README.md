@@ -73,14 +73,15 @@ they live, dream, explore, and settle down on Mars.
 ## Mars Direct Mission Plan 
 
 mars-sim loosely follows the *Mars Direct Mission Plan* (by Robert Zubrin) and has 8 basic
-settlement templates to choose from. The first template is a *Mars Direct Plan (MDP) Phase 1* base
-with 4 settlers. The next template is a *MDP Phase 2* base with 8 settlers. Then a *MDP Phase 3* base
-has 12 settlers. An *Alpha Base* has 36 settlers. A *Hub Base* has 56 settlers. A *Sector Base* has
-136 settlers. Besides, players may build a *Trading Outpost* or a *Mining Depot* 
+settlement templates to choose from. The first template is a *Mars Direct Plan (MDP) Phase 0* base
+with 0 to 4 settlers and a *Mars Direct Plan (MDP) Phase 1* base with up to 6 settlers. 
+A *MDP Phase 2* base can have 8 settlers. A *MDP Phase 3* base has up to 16 settlers. 
+An *Alpha Base* has up to 48 settlers. A *Hub Base* has 56 settlers. A *Sector Base* can have
+as many as 240 settlers. Besides, players may build a *Trading Outpost* or a *Mining Depot* 
 near sites with high mineral concentrations. 
 
-Each sponsoring agency or country of origin has unique templates that house various types of buildings. 
-Altogether, there is a total of 37 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
+Each sponsoring agency or country of origin has unique templates that utiliize various types of buildings. 
+Altogether, there is a total of 42 unique [settlement templates](https://github.com/mars-sim/mars-sim/wiki/Settlement-Templates) 
 to choose from.
 
 ## Settlement Development
@@ -351,7 +352,7 @@ e.g. Include the followings :
 **Specifications (please complete)**
  - OS version : [e.g. Windows 11, macOS 26.1, Ubuntu 25.10]
  - Java version : [e.g. Oracle JDK 25, Azul Zulu 25, Amazon Corretto 25, BellSoft Liberica JDK 25]
- - Major version and build : [e.g. post 4.1.0]
+ - Major version and build : [e.g. post-4.0]
 
 **Additional context**
  - Add any other context about the problem here. By providing more info above when filing it, 
