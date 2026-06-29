@@ -141,7 +141,7 @@ public final class SVGMapUtil {
 
 
     /**
-     * Gets a SVG node for a person.
+     * Gets a SVG node for a unit.
      * 
      * @param type the unit's type.
      * @return SVG node or null if none found.
@@ -209,6 +209,7 @@ public final class SVGMapUtil {
 
     /**
      * Creates a JPanel containing the vehicle SVG graphic.
+     * 
      * @param vehicleType the vehicle type.
      * @param w Panel width
      * @param h Panel height
@@ -218,8 +219,10 @@ public final class SVGMapUtil {
 		GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicleType);
         return createSVGPanel(svg, w, h);
     }
+    
     /**
      * Creates a JPanel containing the building SVG graphic.
+     * 
      * @param buildingType the building type.
      * @param w Panel width
      * @param h Panel height
@@ -231,8 +234,9 @@ public final class SVGMapUtil {
     }
     
     /**
-     * Creaate a JPanel containing the SVG graphic node. The image to rotate to match the orientation
+     * Creates a JPanel containing the SVG graphic node. The image to rotate to match the orientation
      * of the panel.
+     * 
      * @param svg Image to render
      * @param w Width of panel
      * @param h Height of panel

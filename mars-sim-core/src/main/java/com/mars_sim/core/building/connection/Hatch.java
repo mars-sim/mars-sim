@@ -18,14 +18,16 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 	private static final long serialVersionUID = 1L;
 	
 	// Static members.
-	public static final double LENGTH = .6D;
-	public static final double WIDTH = 2.76D;
+	public static final double LENGTH = .4D;
+	public static final double WIDTH = 2.5D;
 
 	// Data members
+	private boolean isBrick = false;
+	private double facing;
+
 	private Building building;
 	private BuildingConnector connector;
 	private LocalPosition pos;
-	private double facing;
 
 	/**
 	 * Constructor.
@@ -42,6 +44,24 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 		this.facing = facing;
 	}
 
+	/**
+	 * Is this a brick construction ?
+	 * 
+	 * @return
+	 */
+	public boolean isBrick() {
+		return isBrick;
+	}
+	
+	/**
+	 * Sets brick value.
+	 * 
+	 * @param value
+	 */
+	public void setBrick(boolean value) {
+		isBrick = value;
+	}
+	
 	/**
 	 * Gets the building the hatch is connected to.
 	 * 
@@ -85,13 +105,9 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 
 		boolean result = false;
 
-		if (other instanceof Hatch) {
-			Hatch otherHatch = (Hatch) other;
-
-			if (pos.equals(otherHatch.getPosition())
-					&& (facing == otherHatch.getFacing())) {
-				result = true;
-			}
+		if (other instanceof Hatch otherHatch && pos.equals(otherHatch.getPosition())
+			&& (facing == otherHatch.getFacing())) {
+			result = true;
 		}
 
 		return result;
@@ -108,7 +124,7 @@ public class Hatch implements LocalBoundedObject, InsidePathLocation {
 	}
 	
 	/**
-	 * Prepare object for garbage collection.
+	 * Prepares object for garbage collection.
 	 */
 	public void destroy() {
 		building = null;

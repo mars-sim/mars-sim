@@ -22,6 +22,8 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
     // Data members
+	private boolean isBrick = false;
+	
     private Building building1;
     private Building building2;
     private Hatch hatch1;
@@ -51,9 +53,16 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
         }
         this.building1 = building1;
         hatch1 = new Hatch(building1, this, building1HatchPosition, building1HatchFacing);
+        
+		if (building1.getBuildingType().toLowerCase().contains("brick"))
+			hatch1.setBrick(true);
+        
         this.building2 = building2;
         hatch2 = new Hatch(building2, this, building2HatchPosition, building2HatchFacing);
 
+		if (building2.getBuildingType().toLowerCase().contains("brick"))
+			hatch2.setBrick(true);
+        
         // Finally calculate the local position
         if (isSplitConnection()) {
         	pos = building1HatchPosition.getMidPosition(building2HatchPosition);

@@ -1042,8 +1042,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-1.1" yloc="0.0" />
-					<activity-spot xloc="1.1" yloc="0.0" />
+					<activity-spot xloc="-0.5" yloc="0.0" />
+					<activity-spot xloc="0.5" yloc="0.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="7000">
@@ -1095,8 +1095,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 			<robotic-station capacity="2">
 				<activity>
-					<activity-spot xloc="-1.1" yloc="0.0" />
-					<activity-spot xloc="1.1" yloc="0.0" />
+					<activity-spot xloc="-0.5" yloc="0.0" />
+					<activity-spot xloc="0.5" yloc="0.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="7000">
@@ -1132,7 +1132,6 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 					<activity-spot xloc=".75" yloc="-1.35" />
 					<activity-spot xloc=".75" yloc="-0.35" />
 					<activity-spot xloc="-.75" yloc="0.35" />
-
 				</activity>
 			</life-support>
 			
@@ -1144,7 +1143,7 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	
 			<robotic-station capacity="1">
 				<activity>
-					<activity-spot xloc="-.75" yloc="1.35" />
+					<activity-spot xloc="0.0" yloc="0.0" />
 				</activity>
 			</robotic-station>
 			<storage stock-capacity="2000">
