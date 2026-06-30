@@ -1404,9 +1404,11 @@ public class Building extends FixedUnit implements Malfunctionable,
 	
 	/**
 	 * Gets the wall thickness based on the constructionType type.
+	 * Note: is it in meter ?
 	 */
 	private double getWallThickness() {
 		return switch(constructionType) {
+			case CONCRETE 			-> 0.001;
 			case PRE_FABRICATED 	-> 0.000_025_4;
 			case INFLATABLE 		-> 0.000_005_8;
 			case SEMI_ENGINEERED 	-> 0.000_010_0;

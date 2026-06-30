@@ -191,6 +191,7 @@ public class MeteoriteImpactProperty implements Serializable {
 		double penetrationThicknessOnAL = 1.09 * Math.pow(massPerMeteorite * impVel, 1 / 3D);
 
 		// a. the wall penetration thickness on average
+		//    Q: is it in meters ?
 		wallPenetrationThickness = .8 * wallPenetrationThickness + .2 * 1.5 * penetrationThicknessOnAL;
 		
 		// FUTURE: does it account for all angles of penetration on average ?

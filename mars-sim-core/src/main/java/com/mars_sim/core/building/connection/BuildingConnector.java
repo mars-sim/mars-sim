@@ -9,6 +9,7 @@ package com.mars_sim.core.building.connection;
 import java.io.Serializable;
 
 import com.mars_sim.core.building.Building;
+import com.mars_sim.core.building.ConstructionType;
 import com.mars_sim.core.map.location.LocalPosition;
 
 /**
@@ -54,13 +55,13 @@ public class BuildingConnector implements Serializable, InsidePathLocation {
         this.building1 = building1;
         hatch1 = new Hatch(building1, this, building1HatchPosition, building1HatchFacing);
         
-		if (building1.getBuildingType().toLowerCase().contains("brick"))
+		if (ConstructionType.CONCRETE == building1.getConstruction())
 			hatch1.setBrick(true);
         
         this.building2 = building2;
         hatch2 = new Hatch(building2, this, building2HatchPosition, building2HatchFacing);
 
-		if (building2.getBuildingType().toLowerCase().contains("brick"))
+		if (ConstructionType.CONCRETE == building2.getConstruction())
 			hatch2.setBrick(true);
         
         // Finally calculate the local position

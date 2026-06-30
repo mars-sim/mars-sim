@@ -4619,7 +4619,8 @@ http://www.uss-hornet.org/groups/pdf/SEMB_MarsHabitat.pdf
 	</building>
 <!-- end of Mining Lab -->
 
-	<building type="Manufacturing Shed" width="5.0" length="5.0" north-south-alignment="length" base-level="-1"
+	<building type="Manufacturing Shed" width="5.0" length="5.0" north-south-alignment="length" 
+			construction="CONCRETE" base-level="-1"
 			wear-lifetime="3340000" maintenance-time="200" room-temperature="22.5" base-mass="2500">
 		<description> The Manufacturing Shed is a small brick manufacturing
 			building for forming, cutting, coating and glazing bricks for construction projects.
