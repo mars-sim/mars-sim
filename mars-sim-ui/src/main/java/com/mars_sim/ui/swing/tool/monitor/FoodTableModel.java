@@ -11,7 +11,6 @@ import com.mars_sim.core.EntityEventType;
 import com.mars_sim.core.food.Food;
 import com.mars_sim.core.food.FoodUtil;
 import com.mars_sim.core.goods.Good;
-import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.tool.Msg;
@@ -21,9 +20,8 @@ import com.mars_sim.ui.swing.components.ColumnSpec;
  * This class model how food data is organized and displayed
  * within the Monitor Window for a settlement.
  */
+@SuppressWarnings("serial")
 class FoodTableModel extends CategoryTableModel<Food> {
-
-	private static final long serialVersionUID = 1L;
 
 	/** Names of Columns. */
 	private static final ColumnSpec[] COLUMNS;
@@ -81,10 +79,11 @@ class FoodTableModel extends CategoryTableModel<Food> {
 	 */
 	@Override
 	public void entityUpdate(EntityEvent event) {
-		if (event.getTarget() instanceof Food f
+		if (event.getTarget() instanceof Good g
 				&& event.getSource() instanceof Settlement s) {
 			
 			String eventType = event.getType();
+			Food f = FoodUtil.convertGoodToFood(g);
 			CategoryKey<Food> key = new CategoryKey<>(s, f);
 		
 			if (EntityEventType.DEMAND_EVENT.equals(eventType)) {
@@ -125,7 +124,7 @@ class FoodTableModel extends CategoryTableModel<Food> {
 			case LOCAL_DEMAND_COL:
 				return selectedSettlement.getGoodsManager().getDemandScoreWithID(selectedFood.getID());
 			case MARKET_DEMAND_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(convertFoodToGood(selectedFood)).getDemand();
+				return selectedSettlement.getGoodsManager().getMarketData(FoodUtil.convertFoodToGood(selectedFood)).getDemand();
 			case SUPPLY_COL:
 				return selectedSettlement.getGoodsManager().getSupplyScore(selectedFood.getID());
 			case MASS_COL:
@@ -133,9 +132,9 @@ class FoodTableModel extends CategoryTableModel<Food> {
 			case LOCAL_VP_COL:
 				return selectedSettlement.getGoodsManager().getGoodValuePoint(selectedFood.getID()); 
 			case MARKET_VP_COL:
-				return selectedSettlement.getGoodsManager().getMarketData(convertFoodToGood(selectedFood)).getGoodValue();
+				return selectedSettlement.getGoodsManager().getMarketData(FoodUtil.convertFoodToGood(selectedFood)).getGoodValue();
 			case COST_COL:
-				return convertFoodToGood(selectedFood).getCostOutput();
+				return FoodUtil.convertFoodToGood(selectedFood).getCostOutput();
 			case PRICE_COL:
 				return selectedSettlement.getGoodsManager().getPricePerItem(selectedFood.getID()); 
 			default:
@@ -143,16 +142,6 @@ class FoodTableModel extends CategoryTableModel<Food> {
 		}
 	}
 
-	/**
-	 * Converts food object to good object.
-	 * 
-	 * @param food
-	 * @return
-	 */
-	private static Good convertFoodToGood(Food food) {
-		return GoodsUtil.getGood(food.getID());
-	}
-	
 	/**
 	 * Gets the total mass of a food resource.
 	 *

@@ -9,6 +9,9 @@ package com.mars_sim.core.food;
 
 import java.io.Serializable;
 
+import com.mars_sim.core.goods.Good;
+import com.mars_sim.core.goods.GoodsUtil;
+
 /**
  * A meta class describing an economic food in the simulation.
  */
@@ -27,7 +30,7 @@ implements Serializable, Comparable<Food> {
 	 * Constructor with object.
 	 * 
 	 * @param name the name of the food.
-	 * @param id The resoruce id of the assoicated AmountResource
+	 * @param id The resource id of the associated AmountResource
 	 * @param foodType the food's category.
 	 */
 	Food(String name, int id, FoodType foodType) {
@@ -75,6 +78,8 @@ implements Serializable, Comparable<Food> {
 	public int getID() {
 		return id;
 	}
+	
+
 	
 	/**
 	 * Checks if an object is equal to this object.

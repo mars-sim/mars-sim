@@ -8,7 +8,9 @@ package com.mars_sim.core.food;
 
 import java.util.List;
 
+import com.mars_sim.core.goods.Good;
 import com.mars_sim.core.goods.GoodType;
+import com.mars_sim.core.goods.GoodsUtil;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 
@@ -40,6 +42,28 @@ public class FoodUtil {
 		return foodList;
 	}
 
+	/**
+	 * Converts food object to good object.
+	 * 
+	 * @param food
+	 * @return
+	 */
+	public static Good convertFoodToGood(Food food) {
+		return GoodsUtil.getGood(food.getID());
+	}
+	
+	/**
+	 * Converts good object to food object.
+	 * 
+	 * @param food
+	 * @return
+	 */
+	public static Food convertGoodToFood(Good good) {
+		return getFoodList().stream()
+			    .filter(f -> f.getID() == good.getID())
+			    .findFirst().orElse(null);
+	}
+	
 
 	/**
 	 * Creates the food instance from the amount resource.
