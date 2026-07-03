@@ -253,6 +253,18 @@ public abstract class CachingTableModel<T> extends AbstractMonitorModel {
     }
 
     /**
+     * Updates a column value that have been changed. 
+     * This will recalculate any cached columns if needed
+     * and always fire a model change event asynchronously.
+     * 
+     * @param entity
+     * @param col
+     */
+	protected void entityValueUpdated(T entity, int col) {
+		 entityValueUpdated(entity, col, col);
+	}
+	
+    /**
      * Updates a range of column values that have been changed. 
      * This will recalculate any cached columns if needed
      * and always fire a model change event asynchronously.

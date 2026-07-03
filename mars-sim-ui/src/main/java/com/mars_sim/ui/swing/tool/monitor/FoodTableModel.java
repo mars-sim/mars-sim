@@ -1,7 +1,7 @@
 /*
  * Mars Simulation Project
  * FoodTableModel.java
- * @date 2025-07-24
+ * @date 2026-07-03
  * @author Manny Kung
  */
 package com.mars_sim.ui.swing.tool.monitor;
@@ -42,7 +42,9 @@ class FoodTableModel extends CategoryTableModel<Food> {
 	static final int COST_COL = MARKET_VP_COL+1;
 	static final int PRICE_COL = COST_COL+1;
 	
-	protected static final int NUM_DATA_COL = PRICE_COL - LOCAL_DEMAND_COL + 1;
+	private static final int COLUMNCOUNT = PRICE_COL + 1;
+	
+	protected static final int NUM_DATA_COL = COLUMNCOUNT - LOCAL_DEMAND_COL;
 	
 	static {
 		COLUMNS = new ColumnSpec[NUM_INITIAL_COLUMNS + NUM_DATA_COL];
@@ -68,7 +70,7 @@ class FoodTableModel extends CategoryTableModel<Food> {
 		super(Msg.getString("FoodInventoryTableModel.tabName"), "FoodInventoryTabModel.foodCounting",
 					COLUMNS, FoodUtil.getFoodList());
 		
-		setCachedColumns(LOCAL_DEMAND_COL, PRICE_COL);
+		setCachedColumns(NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 		setSettlementColumn(SETTLEMENT_COL);
 	}
 
@@ -81,11 +83,28 @@ class FoodTableModel extends CategoryTableModel<Food> {
 	public void entityUpdate(EntityEvent event) {
 		if (event.getTarget() instanceof Food f
 				&& event.getSource() instanceof Settlement s) {
+			
 			String eventType = event.getType();
-			if (EntityEventType.FOOD_EVENT.equals(eventType)) {
-				CategoryKey<Food> row = new CategoryKey<>(s, f);
-				// Update the whole row
-				entityValueUpdated(row, LOCAL_DEMAND_COL, PRICE_COL);
+			CategoryKey<Food> key = new CategoryKey<>(s, f);
+		
+			if (EntityEventType.DEMAND_EVENT.equals(eventType)) {
+				entityValueUpdated(key, LOCAL_DEMAND_COL); 
+			} else if (EntityEventType.MARKET_VALUE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MARKET_DEMAND_COL);
+			} else if (EntityEventType.SUPPLY_EVENT.equals(eventType)) {
+				entityValueUpdated(key, SUPPLY_COL);
+			} else if (EntityEventType.MASS_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MASS_COL);
+			} else if (EntityEventType.VALUE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, LOCAL_VP_COL);
+			} else if (EntityEventType.MARKET_VALUE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, MARKET_VP_COL);
+			} else if (EntityEventType.COST_EVENT.equals(eventType)) {
+				entityValueUpdated(key, COST_COL);
+			} else if (EntityEventType.PRICE_EVENT.equals(eventType)) {
+				entityValueUpdated(key, PRICE_COL);
+			} else {
+				entityValueUpdated(key, NUM_INITIAL_COLUMNS, COLUMNCOUNT-1);
 			}
 		}
 	}
