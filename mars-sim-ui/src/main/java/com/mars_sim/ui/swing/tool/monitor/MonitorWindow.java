@@ -98,6 +98,7 @@ public class MonitorWindow extends ContentPanel
 	private MonitorTab activeTab;
 
 	private UIContext context;
+	private boolean listenersActive = false;  // Must be false until window fully constructed
 
 	private SettlementsSelector settlementSelector;
 
@@ -167,6 +168,10 @@ public class MonitorWindow extends ContentPanel
 
 		// List for changes in the settlement selection
 		settlementSelector.setSelectionListener("selectionChanged", e -> changeSelection());
+
+		// Now that the window is fully constructed, activate the listeners
+		getSelectedTab().getModel().enableListeners(true);
+		listenersActive = true;
 	}
 
 	/**
@@ -363,7 +368,7 @@ public class MonitorWindow extends ContentPanel
 			previousModel.removeTableModelListener(this);
 		}
 		if (activiateListeners) {
-			tabTableModel.enableListeners(true);
+			tabTableModel.enableListeners(listenersActive);
 		}
 
 		// Listener for row changes
