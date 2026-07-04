@@ -59,8 +59,11 @@ public class ChargeMeta extends FactoryMetaTask {
         	
         	double batteryLevel = sc.getBattery().getBatteryPercent();
         	
-        	if (batteryLevel >= LEVEL_UPPER_LIMIT) {
+        	if (batteryLevel >= LEVEL_UPPER_LIMIT * .95) {
         		return 0;
+        	}
+        	else if (batteryLevel < sc.getBattery().getLowPowerPercent() / 2) {
+        		result += (LEVEL_UPPER_LIMIT - batteryLevel) * CHANCE_0 * 4;
         	}
         	// Checks if the battery is low
         	else if (sc.isLowPower()) {

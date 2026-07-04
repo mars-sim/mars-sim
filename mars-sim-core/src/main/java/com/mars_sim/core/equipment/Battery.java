@@ -65,7 +65,14 @@ public class Battery implements Serializable {
     /** The standard voltage of a drone battery pack in volts. */
     public static final double DRONE_VOLTAGE = HIGHEST_MAX_VOLTAGE / 8;
 
-	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. */
+	/** The maximum continuous charge rate (within the safety limit) that this battery can handle. 
+	 * 
+	 * C-Rate = Charge Current (A) / Battery Capacity (Ah)
+	 * 
+	 * It's in the unit of [1 / hour]
+	 * 
+	 * e.g. 1C: full capacity in 1 hour; 2C: full capacity in 30 mins; 0.5C: full capacity in 2 hours
+	 */
 	private static final int MAX_C_RATING_CHARGING = 1;
 	/** The maximum continuous discharge rate (within the safety limit) that this battery can handle. */
 	private static final int MAX_C_RATING_DISCHARGING = 2;
@@ -173,7 +180,7 @@ public class Battery implements Serializable {
     	
         performance = 1.0D;
         
-        lowPowerPercent = 5;
+        lowPowerPercent = 10;
         standbyPower = 0.01;
         
         // numModules * 0.583 mΩ * 96 = numModules * 55.968 mΩ
@@ -224,7 +231,7 @@ public class Battery implements Serializable {
 		double vTerminal = getTerminalVoltage();
 		// Assume the internal resistance of the battery is constant
 		double rInt = getTotalResistance();
-
+		 
 		// The output voltage
 		// e.g. nominal voltage of Tesla Model 3 is 350 V
 		// At 100% SoC, it's ~ 403 V
@@ -281,9 +288,7 @@ public class Battery implements Serializable {
 		// That same 100Ah battery being discharged at a C-rate of 1C will provide 100Amps 
 		// for one hours, and if discharged at 0.5C rate it provide 50Amps for 2 hours.
 		
-		double cRatingDischarge = getMaxCRating();
-		
-		double nowAmpHr = ampHrRating * cRatingDischarge;
+		double nowAmpHr = ampHrRating * MAX_C_RATING_DISCHARGING;
 		
 		double possiblekWh = nowAmpHr / 1000D * vOut;
 
@@ -313,26 +318,27 @@ public class Battery implements Serializable {
     	double time = pulse.getElapsed();
 
     	if (pulse.isNewSol()) {
-	        reconditionBattery();
+    		if (RandomUtil.getRandomInt(3) == 1) 
+    			reconditionBattery();
     	}
+    	
     	else if (pulse.isNewHalfSol()) {
-	        locked = false;
-	    	diagnoseBattery();
+    		if (RandomUtil.getRandomInt(3) == 1) {
+		        locked = false;
+		    	diagnoseBattery();
+    		}
 		}
 
     	internalTemperature -= time;
     	
-    	if (internalTemperature > UPPER_LIMIT_TEMPERATURE) {
-			internalTemperature = UPPER_LIMIT_TEMPERATURE;
-		}
-    	
-		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE && kWhStored > 0) {
-			double deltaTemperature = applyForcedAirCooling(time 
-    				* MathUtils.between(internalTemperature, INITIAL_TEMPERATURE, UPPER_LIMIT_TEMPERATURE) / UPPER_LIMIT_TEMPERATURE);
+		if (internalTemperature > 0.5 * UPPER_LIMIT_TEMPERATURE && kWhStored > 0.1) {
+			double tempRatio = MathUtils.between(internalTemperature, INITIAL_TEMPERATURE, UPPER_LIMIT_TEMPERATURE) / UPPER_LIMIT_TEMPERATURE;
+			double timeFactor = time * tempRatio;
+			double deltaTemperature = applyForcedAirCooling(timeFactor);
 			internalTemperature -= deltaTemperature;
     	}
-    	
-    	else if (internalTemperature < INITIAL_TEMPERATURE) {
+    	 	
+    	if (internalTemperature < INITIAL_TEMPERATURE) {
     		internalTemperature = INITIAL_TEMPERATURE;
     	}
     	
@@ -342,25 +348,15 @@ public class Battery implements Serializable {
 			status = newStatus;
 			unit.fireUnitUpdate(BATTERY_EVENT);
 		}
+			
+        updateLowPowerMode();
     }
 
-    /**
-     * Computes the rise of temperature due to current.
-     * 
-     * @param amp
-     * @return
-     */
-    private double computeDeltaTemperature(double amp) {
-    	double heatInternal = amp * amp * rTotal + amp * 0.0001;
-    	return heatInternal / HEAT_TRANSFER_COEFF_HEATING / SURFACE_AREA_HEAT_DISSIPATION;
-    	// May add back for debugging: logger.severe("heatInternal=" + heatInternal + "  deltaT=" + deltaT); return deltaT
-    }
-    
     /**
      * Turns on active cooling.
      * 
      * @param timeFactor
-     * @return
+     * @return temperature change
      */
     private double applyForcedAirCooling(double timeFactor) {
     	double amp = timeFactor * 5;
@@ -378,6 +374,20 @@ public class Battery implements Serializable {
     	}
  
     	return deltaTemperature;
+    }
+    
+    /**
+     * Computes the rise of temperature due to current.
+     * 
+     * @param amp
+     * @return change of temperature
+     */
+    private double computeDeltaTemperature(double amp) {
+    	// Q = I^2 * R + I * constant
+    	double heatInternal = amp * amp * rTotal + amp * 0.0001;
+    	// T = Q / 6 / 20;
+    	return heatInternal / HEAT_TRANSFER_COEFF_HEATING / SURFACE_AREA_HEAT_DISSIPATION;
+    	// May add back for debugging: logger.severe("heatInternal=" + heatInternal + "  deltaT=" + deltaT); return deltaT
     }
     
     /**
@@ -403,7 +413,9 @@ public class Battery implements Serializable {
 		
     	kWhStored -= available;
     	
-    	internalTemperature += computeDeltaTemperature(1000 * available / HIGHEST_MAX_VOLTAGE / time / MarsTime.HOURS_PER_MILLISOL);
+    	double amp = 1000 * available / HIGHEST_MAX_VOLTAGE / time / MarsTime.HOURS_PER_MILLISOL;
+    	
+    	internalTemperature += computeDeltaTemperature(amp);
     	  	
     	if ((previouskWhStored - kWhStored) / previouskWhStored > .2) {
     	    // If drawing too much energy at a time, it hurts the battery and degrade health
@@ -413,9 +425,7 @@ public class Battery implements Serializable {
 	    cyclesDepleted += available / 3 / energyStorageCapacity;
 
     	updateTerminalVoltage();
-    	
-        updateLowPowerMode();
-            
+    	       
         updateAmpHourStored();
     	
     	if (kWhStored / maxCapNameplate < .02) {
@@ -460,7 +470,7 @@ public class Battery implements Serializable {
      */
     public double getMaxPowerCharging() {
     	// Note: Need to find the physical formula for max power charge
-    	return MAX_C_RATING_CHARGING * ampHourStored * HIGHEST_MAX_VOLTAGE / 1000;
+    	return MAX_C_RATING_CHARGING * energyStorageCapacity;
     }
     
     /**
@@ -481,12 +491,16 @@ public class Battery implements Serializable {
 		
     	kWhStored += kWhAccepted;
 
-    	internalTemperature += computeDeltaTemperature(1000 * kWhAccepted / HIGHEST_MAX_VOLTAGE / hours);
+    	double amp = 1000 * kWhAccepted / HIGHEST_MAX_VOLTAGE / hours;
     	
+    	internalTemperature += computeDeltaTemperature(amp);
+    	
+    	if (internalTemperature > UPPER_LIMIT_TEMPERATURE) {
+			internalTemperature = UPPER_LIMIT_TEMPERATURE;
+		}
+		
         updateAmpHourStored();
-
-        updateLowPowerMode();
-    	
+ 	
 		updateTerminalVoltage();
 		
     	return kWhAccepted;
@@ -603,7 +617,7 @@ public class Battery implements Serializable {
     }
 
 	public double getMaxCRating() {
-		return MAX_C_RATING_DISCHARGING;
+		return MAX_C_RATING_CHARGING;
 	}
 
     private void updateLowPowerMode() {

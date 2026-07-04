@@ -420,17 +420,13 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		
 		// If robot is dead, then skip
-		if (condition != null) {
-			if (condition.timePassing(pulse)) {
-				// Mental changes with time passing.
-				if (botMind != null) {
-					botMind.timePassing(pulse);
-					
-					// Note: Call activeTimePassing only when in use
-					if (primaryMode == BotMode.NOMINAL) {
-						malfunctionManager.activeTimePassing(pulse);
-					}	
-				}
+		if (condition != null && condition.timePassing(pulse)) {
+			// Mental changes with time passing.
+			if (botMind != null && botMind.timePassing(pulse)) {		
+				// Note: Call activeTimePassing only when in use
+				if (primaryMode == BotMode.NOMINAL) {
+					malfunctionManager.activeTimePassing(pulse);
+				}	
 			}
 		}
 

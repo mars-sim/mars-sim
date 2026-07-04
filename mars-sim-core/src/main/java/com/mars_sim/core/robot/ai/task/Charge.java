@@ -137,7 +137,7 @@ public class Charge extends Task {
 	 */
 	private double chargingPhase(double time) {
 		
-		if (isDone() || getTimeLeft() <= 0) {
+		if (isDone()) {
 			
 			endCharging();
 			
@@ -298,7 +298,7 @@ public class Charge extends Task {
 	}
 	
 	/**
-	 * If worker is a Robot then send them to report to duty
+	 * Clears this task and send robot back to duty.
 	 */
 	@Override
 	protected void clearDown() {

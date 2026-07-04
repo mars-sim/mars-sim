@@ -91,6 +91,7 @@ public class SystemCondition implements Serializable {
             performanceLevel = newLevel;
         }
 		
+        // Avoid running this at half sol to relieve thread work load
     	if (!pulse.isNewHalfSol()) {
     		
     		int msol = pulse.getMarsTime().getMillisolInt();
