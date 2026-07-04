@@ -60,36 +60,6 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	}
 
 	/**
-	 * Gets a drone that is ready for use.
-	 *
-	 * @param settlement         the settlement to check.
-	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
-	 * @return vehicle or null if none available.
-	 * @throws Exception if error finding vehicles.
-	 */
-	public static Drone getDroneWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
-		Drone bestDrone = null;
-		double bestRange = 0D;
-
-		for (Drone drone : settlement.getParkedGaragedDrones()) {
-			boolean usable = !drone.isReservedForMission();
-            usable = usable && (allowMaintReserved || !drone.isReserved());
-			usable = usable && drone.isVehicleReady();
-			usable = usable && (drone.isEmpty());
-
-			if (usable) {
-				double range = drone.getRange();
-				if ((bestDrone == null) || (bestRange > range)) {
-					bestDrone = drone;
-					bestRange = range;
-				}
-			}
-		}
-
-		return bestDrone;
-	}
-
-	/**
 	 * Gets a new instance of an OperateVehicle task for the mission member.
 	 *
 	 * @param member the mission member operating the vehicle.

@@ -17,14 +17,12 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Delivery;
-import com.mars_sim.core.person.ai.mission.DroneMission;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.Drone;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
@@ -49,7 +47,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 
 	DeliveryMeta() {
 		// Everyone can start Delivery ??
-		super(MissionType.DELIVERY, 2,3, LEADER_JOBS, WORKER_JOBS);
+		super(MissionType.DELIVERY, 3, LEADER_JOBS, WORKER_JOBS);
 
 		setPreferredRobots(Set.of(RobotType.DELIVERYBOT));
 		setPreferredVehicle(Set.of(VehicleType.DELIVERY_DRONE));
@@ -76,8 +74,8 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Check if mission is possible for person based on their circumstance.
 		Settlement settlement = person.getAssociatedSettlement();
 
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
-    		return missionProbability;
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
+    		return RatingScore.ZERO_RATING;
     	}
 		
 		RoleType roleType = person.getRole().getType();
@@ -119,7 +117,7 @@ public class DeliveryMeta extends AbstractMetaMission {
 		// Future: all drones offer the same range (unless it can be retrofitted/customized
 
 		// Check for the best delivery settlement within range.
-		Drone drone = DroneMission.getDroneWithGreatestRange(settlement, false);
+		var drone = selectVehicle(settlement);
 		if (drone == null) {
 			return RatingScore.ZERO_RATING;
 		}

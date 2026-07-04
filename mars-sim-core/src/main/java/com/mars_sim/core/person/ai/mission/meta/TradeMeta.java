@@ -17,12 +17,10 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.Trade;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.vehicle.Rover;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
 import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
@@ -41,7 +39,7 @@ public class TradeMeta extends AbstractMetaMission {
 	public static final int MAX_MEMBERS = 3;
 
 	TradeMeta() {
-		super(MissionType.TRADE, 2, MAX_MEMBERS, LEADER_JOBS, WORKER_JOBS);
+		super(MissionType.TRADE, MAX_MEMBERS, LEADER_JOBS, WORKER_JOBS);
 
 		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER));
 	}
@@ -63,14 +61,12 @@ public class TradeMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-
-		Settlement settlement = person.getAssociatedSettlement();
-		
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
-    		return missionProbability;
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
+    		return RatingScore.ZERO_RATING;
     	}
-		
+
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
+		Settlement settlement = person.getAssociatedSettlement();
 		// Check if person is in a settlement.
 		if (settlement != null) {
 	
@@ -108,7 +104,7 @@ public class TradeMeta extends AbstractMetaMission {
 	private RatingScore getSettlementProbability(Settlement settlement) {
 		
 		// Check for the best trade settlement within range.			
-		Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
+		var rover = selectVehicle(settlement);
 		if (rover == null) {
 			return RatingScore.ZERO_RATING;
 		}

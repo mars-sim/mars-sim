@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import com.mars_sim.core.environment.MineralSite;
@@ -223,7 +222,7 @@ public class Mining extends EVAMission
 				result = false;
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error in getting parts.");
+			logger.severe("Error in getting parts.", e);
 		}
 
 		return result;
@@ -461,7 +460,7 @@ public class Mining extends EVAMission
 				}
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error determining best mining site.");
+			logger.severe("Error determining best mining site.", e);
 		}
 
 		return result;
@@ -500,7 +499,7 @@ public class Mining extends EVAMission
 				}
 			}
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "Error determining best mining site.");
+			logger.severe("Error determining best mining site.", e);
 		}
 
 		return total;

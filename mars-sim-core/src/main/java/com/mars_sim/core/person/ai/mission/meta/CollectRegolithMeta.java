@@ -35,7 +35,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	public static final int MIN_STARTING_SOL = 4;
 
 	CollectRegolithMeta() {
-		super(MissionType.COLLECT_REGOLITH, 2, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
+		super(MissionType.COLLECT_REGOLITH, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 	}
 
 	@Override
@@ -46,11 +46,11 @@ public class CollectRegolithMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
     		return RatingScore.ZERO_RATING;
     	}
-    	
+		
+    	RatingScore missionProbability = RatingScore.ZERO_RATING;
 		if (person.isInSettlement()) {
 
 			Settlement settlement = person.getSettlement();

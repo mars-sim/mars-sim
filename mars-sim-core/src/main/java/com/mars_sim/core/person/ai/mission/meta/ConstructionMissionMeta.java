@@ -34,7 +34,8 @@ public class ConstructionMissionMeta extends AbstractMetaMission {
 	private static final int QUEUE_BASE = 50;
 		
     ConstructionMissionMeta() {
-    	super(MissionType.CONSTRUCTION, 3, 10, LEADER_JOBS, WORKER_JOBS);
+    	super(MissionType.CONSTRUCTION, 10, LEADER_JOBS, WORKER_JOBS);
+		setMinimumMembers(3);
     }
     
     @Override

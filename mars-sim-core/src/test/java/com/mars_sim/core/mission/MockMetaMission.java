@@ -11,7 +11,8 @@ import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
 class MockMetaMission extends AbstractMetaMission {
 
     MockMetaMission(int minMembers, int maxMembers, Set<JobType> leaderJobs, Set<JobType> workerJobs) {
-        super(MissionType.TRADE, minMembers, maxMembers, leaderJobs, workerJobs);
+        super(MissionType.TRADE, maxMembers, leaderJobs, workerJobs);
+        setMinimumMembers(minMembers);
     }
 
     @Override

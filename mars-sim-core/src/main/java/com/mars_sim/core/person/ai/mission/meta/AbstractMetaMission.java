@@ -22,7 +22,6 @@ import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
-import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.VehicleType;
@@ -57,13 +56,21 @@ public abstract class AbstractMetaMission implements MetaMission {
 	 * @param type 
 	 * @param preferredLeaderJob Jobs that a leader should have; null means no preference
 	 */
-	protected AbstractMetaMission(MissionType type, int minimum,int capacity, Set<JobType> preferredLeaderJob, Set<JobType> preferredWorkerJob) {
+	protected AbstractMetaMission(MissionType type, int capacity, Set<JobType> preferredLeaderJob, Set<JobType> preferredWorkerJob) {
 		super();
 		this.type = type;
 		this.preferredLeaderJob = preferredLeaderJob;
 		this.preferredWorkerJob = preferredWorkerJob;
 		this.name = type.getName();
 		this.capacity = capacity;
+		this.minimum = 2;
+	}
+
+	/**
+	 * Override the default minimum members for this mission. Default is 2.
+	 * @param minimum New limit.
+	 */
+	protected void setMinimumMembers(int minimum) {
 		this.minimum = minimum;
 	}
 
@@ -239,12 +246,12 @@ public abstract class AbstractMetaMission implements MetaMission {
 	}
 
 	/**
-	 * Gets the current time on Mars.
-	 * 
-	 * @return
+	 * Is the time suitable for this mission. This may check the Mission sol in the clock or the time of day.
+	 * @param minimumSol Minimum sol for the mission to be suitable.
+	 * @return true if suitable; false otherwise.
 	 */
-	protected MarsTime getMarsTime() {
-		return masterClock.getMarsTime();
+	protected boolean isTimeSuitable(int minimumSol) {
+		return masterClock.getMarsTime().getMissionSol() >= minimumSol;
 	}
 	
     public static void initializeInstances(MasterClock mc) {

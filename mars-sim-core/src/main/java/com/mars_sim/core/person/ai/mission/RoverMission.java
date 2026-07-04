@@ -80,7 +80,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	private static final String VEHICLE_NOT_AT_SETTLEMENT = STATUS_VEHICLE_NOT_AT_SETTLEMENT.getName();
 	
 	// Static members
-	public static final int MIN_STAYING_MEMBERS = 1;
 	public static final int MIN_GOING_MEMBERS = 2;
 	/* How long do Worker have to complete departure */
 	private static final int DEPARTURE_DURATION = 250;
@@ -126,36 +125,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 	 */
 	public final Rover getRover() {
 		return (Rover) getVehicle();
-	}
-
-	/**
-	 * Gets the available vehicle at the settlement with the greatest range.
-	 *
-	 * @param settlement         the settlement to check.
-	 * @param allowMaintReserved allow vehicles that are reserved for maintenance.
-	 * @return vehicle or null if none available.
-	 * @throws Exception if error finding vehicles.
-	 */
-	public static Rover getVehicleWithGreatestRange(Settlement settlement, boolean allowMaintReserved) {
-		Rover result = null;
-
-		for (Vehicle vehicle : settlement.getAllAssociatedVehicles()) {
-			boolean usable = !vehicle.isReservedForMission();
-            usable = usable && (allowMaintReserved || !vehicle.isReserved());
-			usable = usable && vehicle.isVehicleReady();
-			usable = usable && (vehicle.isEmpty());
-
-			if (usable && (vehicle instanceof Rover rover)) {
-				if (result == null)
-					// so far, this is the first vehicle being picked
-					result = rover;
-				else if (vehicle.getEstimatedRange() > result.getEstimatedRange())
-					// This vehicle has a better range than the previously selected vehicle
-					result = rover;
-			}
-		}
-
-		return result;
 	}
 
 	/**
@@ -1215,7 +1184,7 @@ public abstract class RoverMission extends AbstractVehicleMission {
 				}
 			}
 			
-			Vehicle v = (Vehicle)getRover();
+			Vehicle v = getRover();
 			
 			if (!v.haveStatusType(StatusType.OUT_OF_FUEL)
 					&& !v.haveStatusType(StatusType.OUT_OF_BATTERY_POWER)) {

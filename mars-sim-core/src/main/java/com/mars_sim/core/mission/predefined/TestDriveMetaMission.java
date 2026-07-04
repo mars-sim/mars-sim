@@ -21,7 +21,7 @@ import com.mars_sim.core.vehicle.VehicleType;
 public class TestDriveMetaMission extends AbstractMetaMission {
 
     public TestDriveMetaMission() {
-        super(MissionType.TEST_DRIVE, 2, 2, Set.of(JobType.PILOT), Set.of(JobType.TECHNICIAN));
+        super(MissionType.TEST_DRIVE, 2, Set.of(JobType.PILOT), Set.of(JobType.TECHNICIAN));
 
         setPreferredVehicle(VehicleType.ROVER_TYPES);
     }

@@ -34,7 +34,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	public static final int MIN_STARTING_SOL = 3;
 	
 	CollectIceMeta() {
-		super(MissionType.COLLECT_ICE, 2, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
+		super(MissionType.COLLECT_ICE, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class CollectIceMeta extends AbstractMetaMission {
 	public RatingScore getProbability(Person person) {
 
 		RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
     		return RatingScore.ZERO_RATING;
     	}
     	

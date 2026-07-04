@@ -310,7 +310,8 @@ public class Person extends AbstractMobileUnit implements Worker, Temporal, Unit
 		jobHistory = new AssignmentHistory();
 		// Create the role
 		role = new Role(this);
-
+		// Construct the ResearchStudy instance
+		research = new ResearchStudy();
 		// Create the mission experiences map
 		missionExperiences = new EnumMap<>(MissionType.class);
 	}

@@ -6,9 +6,6 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
-import java.util.Comparator;
-import java.util.Set;
-
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.mission.Mission;

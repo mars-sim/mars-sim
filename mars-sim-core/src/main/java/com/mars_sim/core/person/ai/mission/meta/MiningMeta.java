@@ -18,7 +18,6 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mining;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -41,7 +40,7 @@ public class MiningMeta extends AbstractMetaMission {
 	private static final double FACTOR = 5.0;
 	
     MiningMeta() {
-    	super(MissionType.MINING, 2,6, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
+    	super(MissionType.MINING, 6, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 
 		setPreferredVehicle(Set.of(VehicleType.CARGO_ROVER, VehicleType.EXPLORER_ROVER));
     }
@@ -62,11 +61,12 @@ public class MiningMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-        RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
     		return RatingScore.ZERO_RATING;
     	}
     	
+		RatingScore missionProbability = RatingScore.ZERO_RATING;
+
         if (person.isInSettlement()) {
 
         	Settlement settlement = person.getSettlement();
@@ -112,7 +112,7 @@ public class MiningMeta extends AbstractMetaMission {
 				missionProbability = new RatingScore(1D);
 	
 				// Get available rover.
-				Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
+				var rover = (Rover)selectVehicle(settlement);
 
 				if (rover != null) {
 					// Find best mining site.

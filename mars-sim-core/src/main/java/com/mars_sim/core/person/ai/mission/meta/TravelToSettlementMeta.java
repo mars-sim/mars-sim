@@ -18,7 +18,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.mission.TravelToSettlement;
 import com.mars_sim.core.person.ai.task.util.MetaTask;
 import com.mars_sim.core.person.ai.task.util.Worker;
@@ -37,7 +36,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     private static final Set<JobType> LEADER_JOBS = Set.of(JobType.PILOT, JobType.POLITICIAN, JobType.REPORTER);
 
 	public TravelToSettlementMeta() {
-    	super(MissionType.TRAVEL_TO_SETTLEMENT, 2,8, LEADER_JOBS, WORKER_JOBS);
+    	super(MissionType.TRAVEL_TO_SETTLEMENT, 8, LEADER_JOBS, WORKER_JOBS);
 
         setPreferredVehicle(Set.of(VehicleType.TRANSPORT_ROVER, VehicleType.EXPLORER_ROVER));
     }
@@ -58,11 +57,11 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
     @Override
     public RatingScore getProbability(Person person) {
 
-        RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < EARLIEST_SOL_TRAVEL) {
+    	if (!isTimeSuitable(EARLIEST_SOL_TRAVEL)) {
     		return RatingScore.ZERO_RATING;
     	}
     	
+        RatingScore missionProbability = RatingScore.ZERO_RATING;
         if (person.isInSettlement()) {
             // Check if mission is possible for person based on their
             // circumstance.
@@ -94,7 +93,7 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         
         // Check if there are any desirable settlements within range.
         double topSettlementDesirability = 0D;
-        Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, false);
+        var vehicle = selectVehicle(settlement);
         if (vehicle == null) {
             return RatingScore.ZERO_RATING;
         }

@@ -31,7 +31,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
     private static final Set<JobType> WORKER_JOBS = Collections.emptySet();
 
     RescueSalvageVehicleMeta() {
-    	super(MissionType.RESCUE_SALVAGE_VEHICLE, 2, 2, LEADER_JOBS, WORKER_JOBS);
+    	super(MissionType.RESCUE_SALVAGE_VEHICLE, 2, LEADER_JOBS, WORKER_JOBS);
     }
   
     @Override
@@ -51,7 +51,7 @@ public class RescueSalvageVehicleMeta extends AbstractMetaMission {
             Vehicle vehicleTarget = null;
 
             // Check if there are any beacon vehicles within range that need help.
-            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+            var vehicle = selectVehicle(settlement);
             if (vehicle != null) {
                 vehicleTarget = RescueSalvageVehicle.findBeaconVehicle(settlement,
                         vehicle.getEstimatedRange());

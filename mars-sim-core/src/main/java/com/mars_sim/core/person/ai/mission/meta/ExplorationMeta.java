@@ -18,7 +18,6 @@ import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Exploration;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.vehicle.Rover;
@@ -42,7 +41,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 	private static final double VALUE = 20D;
 
 	ExplorationMeta() {
-		super(MissionType.EXPLORATION, 2, 4,
+		super(MissionType.EXPLORATION, 4,
 					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST),
 					PREFERRED_WORKER_JOBS);
 		
@@ -66,11 +65,10 @@ public class ExplorationMeta extends AbstractMetaMission {
 	@Override
 	public RatingScore getProbability(Person person) {
 
-		RatingScore missionProbability = RatingScore.ZERO_RATING;
-    	if (getMarsTime().getMissionSol() < MIN_STARTING_SOL) {
+    	if (!isTimeSuitable(MIN_STARTING_SOL)) {
     		return RatingScore.ZERO_RATING;
     	}
-    	
+    	RatingScore missionProbability = RatingScore.ZERO_RATING;
 		Settlement settlement = person.getAssociatedSettlement();
 
         RoleType roleType = person.getRole().getType();
@@ -93,8 +91,7 @@ public class ExplorationMeta extends AbstractMetaMission {
 			}
 
 			// Get available rover.
-			Rover rover = RoverMission.getVehicleWithGreatestRange(settlement, false);
-			
+			var rover = (Rover)selectVehicle(settlement);
 			if (rover == null) {
 				return RatingScore.ZERO_RATING;
 			}
