@@ -6,7 +6,6 @@ import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
-import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
 
 class MockMetaMission extends AbstractMetaMission {
 

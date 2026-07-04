@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.mission.meta.MetaMission;
 import com.mars_sim.core.person.ai.social.RelationshipUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.robot.Robot;

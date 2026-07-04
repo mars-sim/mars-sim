@@ -4,7 +4,7 @@
  * @date 2021-09-28
  * @author Barry Evans
  */
-package com.mars_sim.core.person.ai.mission.meta;
+package com.mars_sim.core.mission;
 
 import java.util.Collection;
 import java.util.Collections;

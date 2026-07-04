@@ -13,6 +13,7 @@ import com.mars_sim.core.building.BuildingManager;
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.equipment.EquipmentType;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.CollectRegolith;
@@ -49,7 +50,7 @@ public class CollectRegolithMeta extends AbstractMetaMission {
     	if (!isTimeSuitable(MIN_STARTING_SOL)) {
     		return RatingScore.ZERO_RATING;
     	}
-		
+
     	RatingScore missionProbability = RatingScore.ZERO_RATING;
 		if (person.isInSettlement()) {
 

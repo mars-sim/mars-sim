@@ -4,7 +4,7 @@
  * @version 3.2.0 2021-06-20
  * @author Scott Davis
  */
-package com.mars_sim.core.person.ai.mission.meta;
+package com.mars_sim.core.mission;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.person.Person;

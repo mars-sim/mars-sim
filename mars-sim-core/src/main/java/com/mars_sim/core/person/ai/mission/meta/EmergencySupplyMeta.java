@@ -8,6 +8,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 
 import java.util.Set;
 
+import com.mars_sim.core.mission.AbstractMetaMission;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.MissionType;
 
