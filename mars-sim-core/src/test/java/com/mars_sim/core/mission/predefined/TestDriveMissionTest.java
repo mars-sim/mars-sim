@@ -21,6 +21,8 @@ import com.mars_sim.core.map.location.LocalPosition;
 import com.mars_sim.core.mission.MissionProject;
 import com.mars_sim.core.mission.MissionVehicleProject;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -28,19 +30,18 @@ import com.mars_sim.core.time.ClockPulse;
 import com.mars_sim.core.vehicle.Vehicle;
 import com.mars_sim.core.vehicle.task.LoadingController;
 
-public class TestDriveMissionTest extends MarsSimUnitTest {
-    /**
-     *
-     */
+class TestDriveMissionTest extends MarsSimUnitTest {
+
     private static final String MISSION_NAME = "test-mission";
 
     @Test
-    public void testCreation() {
-        Settlement home = buildSettlement("mock");
+    void testCreation() {
+        Settlement home = buildSettlement("mock", true, 5);
         buildGarage(home.getBuildingManager(), new LocalPosition(0,0), BUILDING_LENGTH);
         buildRover(home, "Rover 1", null, EXPLORER_ROVER);
         Person leader = buildPerson("Leader", home);
-        for(int i = 0; i < 1 + MissionProject.MIN_POP; i++) {
+        var meta = MetaMissionUtil.getMetaMission(MissionType.TEST_DRIVE);
+        for(int i = 0; i < 1 + meta.getMinimumMembers(); i++) {
             buildPerson("Support" + i, home);
         }
         MissionVehicleProject mp = new TestDriveMission(MISSION_NAME, leader);
@@ -57,7 +58,7 @@ public class TestDriveMissionTest extends MarsSimUnitTest {
 
         // Check Members
         Collection<Worker> members = mp.getMembers();
-        assertEquals(2, members.size(), "Mission members");
+        assertEquals(meta.getMinimumMembers(), members.size(), "Mission members");
         assertTrue(members.contains(leader), "Member " + leader.getName());
 
         // Run to the loading stage

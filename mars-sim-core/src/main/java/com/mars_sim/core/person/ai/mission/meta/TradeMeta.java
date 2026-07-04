@@ -28,12 +28,16 @@ import com.mars_sim.core.vehicle.Rover;
  */
 public class TradeMeta extends AbstractMetaMission {
 	
+	private static final Set<JobType> LEADER_JOBS = Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER);
+	private static final Set<JobType> WORKER_JOBS = Set.of(JobType.PILOT);
+
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 4;
 
+	public static final int MAX_MEMBERS = 3;
+
 	TradeMeta() {
-		super(MissionType.TRADE, 
-				Set.of(JobType.POLITICIAN, JobType.TRADER, JobType.REPORTER));
+		super(MissionType.TRADE, 2, MAX_MEMBERS, LEADER_JOBS, WORKER_JOBS);
 	}
 
 	@Override

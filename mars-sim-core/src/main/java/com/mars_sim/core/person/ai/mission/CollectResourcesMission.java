@@ -57,8 +57,6 @@ public abstract class CollectResourcesMission extends EVAMission
 	private static final int MAX_NUM_SECONDARY_SITES = 5;
 	/** Minimum number of people to do mission. */
 	private static final int MIN_PEOPLE = 2;
-	/** Upper limit of mission to avoid airlock congestion */
-	private static final int MAX_PEOPLE = 6;
 
 	// Data members
 	/** The type of resource to collect. */
@@ -96,11 +94,6 @@ public abstract class CollectResourcesMission extends EVAMission
 		// Problem starting mission
 		if (isDone()) {
 			return;
-		}
-		
-		// Too many members creates a congestion at the airlock during EVA
-		if (getMissionCapacity() > MAX_PEOPLE) {
-			setMissionCapacity(MAX_PEOPLE);
 		}
 		
 		Settlement s = startingPerson.getSettlement();

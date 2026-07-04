@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Collections;
 import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
@@ -15,6 +16,9 @@ import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
+import com.mars_sim.core.person.ai.task.util.Worker;
+import com.mars_sim.core.robot.Robot;
+import com.mars_sim.core.robot.RobotType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.MarsTime;
 import com.mars_sim.core.time.MasterClock;
@@ -35,7 +39,11 @@ public class AbstractMetaMission implements MetaMission {
 
 	private String name;
 	private MissionType type;
-	private Set<JobType> preferredLeaderJob = null;
+	private int minimum;
+	private int capacity;
+	private Set<JobType> preferredLeaderJob;
+	private Set<JobType> preferredWorkerJob;
+	private Set<RobotType> preferredRobots = Collections.emptySet();  // Optional so empty by default
 	
 	/**
 	 * Creates a new Mission meta instance.
@@ -43,11 +51,18 @@ public class AbstractMetaMission implements MetaMission {
 	 * @param type 
 	 * @param preferredLeaderJob Jobs that a leader should have; null means no preference
 	 */
-	protected AbstractMetaMission(MissionType type, Set<JobType> preferredLeaderJob) {
+	protected AbstractMetaMission(MissionType type, int minimum,int capacity, Set<JobType> preferredLeaderJob, Set<JobType> preferredWorkerJob) {
 		super();
 		this.type = type;
 		this.preferredLeaderJob = preferredLeaderJob;
+		this.preferredWorkerJob = preferredWorkerJob;
 		this.name = type.getName();
+		this.capacity = capacity;
+		this.minimum = minimum;
+	}
+
+	protected void setPreferredRobots(Set<RobotType> preferredRobots) {
+		this.preferredRobots = preferredRobots;
 	}
 
 	@Override
@@ -58,6 +73,27 @@ public class AbstractMetaMission implements MetaMission {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	protected Set<JobType> getPreferredLeaderJob() {
+		return preferredLeaderJob;
+	}
+
+	protected Set<JobType> getPreferredWorkerJobs() {
+		return preferredWorkerJob;
+	}
+	
+	/** 
+	 * Gets the default capacity for a mission of this type.
+	 */
+	@Override
+	public int getDefaultCapacity() {
+		return capacity;
+	}
+
+	@Override
+	public int getMinimumMembers() {
+		return minimum;
 	}
 
 	@Override
@@ -102,7 +138,7 @@ public class AbstractMetaMission implements MetaMission {
 		// If the person has a job and it is a preferred job
 		// OR there are no preferred Jobs then give it a boost
 		if ((jt != null) &&
-				((preferredLeaderJob == null) || preferredLeaderJob.contains(jt))) {
+				(preferredLeaderJob.isEmpty() || preferredLeaderJob.contains(jt))) {
 			result *= 1.25;
 		}
 		else
@@ -111,8 +147,40 @@ public class AbstractMetaMission implements MetaMission {
 		return result;
 	}
 
-	protected Set<JobType> getPreferredLeaderJob() {
-		return preferredLeaderJob;
+	/**
+	 * Gets the mission qualification value for the member. Member is qualified in
+	 * joining the mission if the value is larger than 0. The larger the
+	 * qualification value, the more likely the member will be picked for the
+	 * mission.
+	 *
+	 * @param member the member to check.
+	 * @return mission qualification value.
+	 */
+	@Override
+	public double getWorkerSuitability(Worker member) {
+
+		double result;
+
+		if (member instanceof Person person) {
+			result = Math.max(5,  person.getMissionExperience(type));
+
+			// Get base result for job modifier.
+			JobType job = person.getMind().getJobType();
+			double jobModifier = 2D;
+			if (preferredWorkerJob.isEmpty() || preferredWorkerJob.contains(job)) {
+				jobModifier = 3D;
+			}
+
+			result = result * jobModifier;
+		}
+		else {
+			Robot robot = (Robot) member;
+
+			// Get base result for job modifier.
+			result = (preferredRobots.contains(robot.getRobotType())) ? 30.0 : 0;
+		}
+
+		return result;
 	}
 
 	/**

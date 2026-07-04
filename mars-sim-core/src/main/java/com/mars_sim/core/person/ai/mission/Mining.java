@@ -26,7 +26,6 @@ import com.mars_sim.core.mission.objectives.MiningObjective.MineralStats;
 import com.mars_sim.core.mission.task.CollectMinedMinerals;
 import com.mars_sim.core.mission.task.MineSite;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ItemResourceUtil;
 import com.mars_sim.core.resource.ResourceUtil;
@@ -48,7 +47,6 @@ import com.mars_sim.core.vehicle.comparators.CargoRangeComparator;
 public class Mining extends EVAMission
 	implements SiteMission {
 
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -588,11 +586,6 @@ public class Mining extends EVAMission
 		}
 
 		return null;
-	}
-
-	@Override
-	protected Set<JobType> getPreferredPersonJobs() {
-		return PREFERRED_JOBS;
 	}
 
 	@Override

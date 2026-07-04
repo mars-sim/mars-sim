@@ -28,13 +28,16 @@ import com.mars_sim.core.vehicle.Rover;
  */
 public class MiningMeta extends AbstractMetaMission {
 	
+	private static final Set<JobType> PREFERRED_LEADER_JOBS = Set.of(JobType.AREOLOGIST, JobType.ENGINEER);
+	private static final Set<JobType> PREFERRED_WORKER_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.PILOT);
+
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 4;
 	/** The multiplier factor. */
 	private static final double FACTOR = 5.0;
 	
     MiningMeta() {
-    	super(MissionType.MINING, Set.of(JobType.AREOLOGIST, JobType.ENGINEER));
+    	super(MissionType.MINING, 2,6, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
     }
 
     @Override

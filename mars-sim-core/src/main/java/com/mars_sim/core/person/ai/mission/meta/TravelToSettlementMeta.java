@@ -6,12 +6,17 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.mars_sim.core.data.RatingScore;
 import com.mars_sim.core.goods.GoodsManager.CommerceType;
 import com.mars_sim.core.person.Person;
+import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.Mission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RoverMission;
@@ -27,10 +32,11 @@ import com.mars_sim.core.vehicle.Vehicle;
 public class TravelToSettlementMeta extends AbstractMetaMission {
     
     private static final int EARLIEST_SOL_TRAVEL = 28;
+    private static final Set<JobType> WORKER_JOBS = Collections.emptySet();
+    private static final Set<JobType> LEADER_JOBS = Set.of(JobType.PILOT, JobType.POLITICIAN, JobType.REPORTER);
 
 	public TravelToSettlementMeta() {
-		// Anyone can start ??
-    	super(MissionType.TRAVEL_TO_SETTLEMENT, null);
+    	super(MissionType.TRAVEL_TO_SETTLEMENT, 2,8, LEADER_JOBS, WORKER_JOBS);
     }
     
     @Override
@@ -112,4 +118,21 @@ public class TravelToSettlementMeta extends AbstractMetaMission {
         return missionProbability;
     }
 
+    @Override
+	public double getWorkerSuitability(Worker member) {
+		double result = super.getWorkerSuitability(member);
+
+		if (member instanceof Person person) {
+			// If person has the "Driver" job, add 1 to their qualification.
+			if (person.getMind().getJobType() == JobType.PILOT) {
+				result += 1D;
+			}
+
+			if (person.getMind().getJobType() == JobType.POLITICIAN) {
+				result += 10D;
+			}
+        }
+
+		return result;
+	}
 }

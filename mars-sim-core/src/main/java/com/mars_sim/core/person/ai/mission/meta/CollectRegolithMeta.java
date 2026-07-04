@@ -6,6 +6,7 @@
  */
 package com.mars_sim.core.person.ai.mission.meta;
 
+import java.util.Collections;
 import java.util.Set;
 
 import com.mars_sim.core.building.BuildingManager;
@@ -25,13 +26,16 @@ import com.mars_sim.core.structure.Settlement;
  */
 public class CollectRegolithMeta extends AbstractMetaMission {
 
+	private static final Set<JobType> PREFERRED_LEADER_JOBS = Set.of(JobType.ARCHITECT, JobType.CHEMIST);
+	private static final Set<JobType> PREFERRED_WORKER_JOBS = Collections.emptySet();
+
 	private static final int VALUE = 500;
 
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 4;
 
 	CollectRegolithMeta() {
-		super(MissionType.COLLECT_REGOLITH, Set.of(JobType.ARCHITECT, JobType.CHEMIST));
+		super(MissionType.COLLECT_REGOLITH, 2, 4, PREFERRED_LEADER_JOBS, PREFERRED_WORKER_JOBS);
 	}
 
 	@Override

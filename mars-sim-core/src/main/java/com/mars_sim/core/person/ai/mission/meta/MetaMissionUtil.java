@@ -9,6 +9,7 @@ package com.mars_sim.core.person.ai.mission.meta;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mars_sim.core.mission.predefined.TestDriveMetaMission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 
 /**
@@ -51,7 +52,8 @@ public class MetaMissionUtil {
 		newMissions.add(new MiningMeta());
 		newMissions.add(new RescueSalvageVehicleMeta());
 		newMissions.add(new TradeMeta());
-		newMissions.add(new TravelToSettlementMeta());		
+		newMissions.add(new TravelToSettlementMeta());
+		newMissions.add(new TestDriveMetaMission());	
 
 		metaMissions = newMissions;
 	}

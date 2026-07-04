@@ -34,18 +34,17 @@ import com.mars_sim.core.events.HistoricalEventType;
 import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.map.location.Coordinates;
 import com.mars_sim.core.mission.MissionObjective;
-import com.mars_sim.core.mission.MissionRecruitment;
+import com.mars_sim.core.mission.MissionBuilder;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.PersonConfig;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.mission.meta.AbstractMetaMission;
+import com.mars_sim.core.person.ai.mission.meta.MetaMissionUtil;
 import com.mars_sim.core.person.ai.role.RoleType;
 import com.mars_sim.core.person.ai.task.util.Task;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.project.Stage;
 import com.mars_sim.core.robot.Robot;
-import com.mars_sim.core.robot.ai.job.RobotJob;
 import com.mars_sim.core.structure.ObjectiveType;
 import com.mars_sim.core.structure.Settlement;
 import com.mars_sim.core.time.ClockPulse;
@@ -82,8 +81,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 	private static final String INTERNAL_PROBLEM = "Mission.status.internalProblem";
 	
 	// Data members
-	/** The number of people that can be in the mission. */
-	private int missionCapacity;
 	/** The mission priority (between 1 and 5, with 1 the lowest, 5 the highest) */
 	private int priority = 2;
 	
@@ -159,7 +156,6 @@ public abstract class AbstractMission implements Mission, Temporal {
 		members = new UnitSet<>();
 		done = false;
 		phaseDescription = "";
-		missionCapacity = MAX_CAP;
 		
 		signUp = new UnitSet<>();
 		
@@ -605,23 +601,12 @@ public abstract class AbstractMission implements Mission, Temporal {
 	}
 
 	/**
-	 * Gets the mission capacity for participating people.
-	 *
-	 * @return mission capacity
-	 */
-	@Override
-	public final int getMissionCapacity() {
-		return missionCapacity;
-	}
-
-	/**
 	 * Sets the mission capacity to a given value.
 	 *
 	 * @param newCapacity the new mission capacity
 	 */
 	protected final void setMissionCapacity(int newCapacity) {
-		missionCapacity = newCapacity;
-		fireMissionUpdate(CAPACITY_EVENT, newCapacity);
+		// Fix later
 	}
 
 	/** 
@@ -863,85 +848,34 @@ public abstract class AbstractMission implements Mission, Temporal {
 	 * Recruits new members into the mission.
 	 *
 	 * @param startingMember the mission member starting the mission.
-	 * @param sameSettlement do members have to be at the same Settlement as the starting Member
 	 * @param minMembers Minimum number of members required
 	 */
-	protected boolean recruitMembersForMission(Person startingMember, boolean sameSettlement, int minMembers) {
+	protected boolean recruitMembersForMission(Person startingMember, int minMembers) {
 
 		// Get all people qualified for the mission.
-		Collection<Person> possibles;
-		if (sameSettlement) {
-			possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
-		}
-		else {
-			possibles = unitManager.getPeople();
-		}
+		Collection<Person> possibles = startingMember.getAssociatedSettlement().getAllAssociatedPeople();
 
-		var recruiter = new MissionRecruitment(this, startingMember);
-		if (!recruiter.recruitMembers(minMembers, possibles)) {
+		var meta = MetaMissionUtil.getMetaMission(getMissionType());
+		var recruiter = new MissionBuilder(meta, startingMember);
+		var team = recruiter.recruitMembers(possibles);
+		if ((team.size() + 1) < minMembers) {
 			endMission(NOT_ENOUGH_MEMBERS);
 			return false;
 		}
+		team.forEach(w -> w.setMission(this));
 		return true;
-
-	}
-
-	/**
-	 * Gets the mission qualification value for the member. Member is qualified in
-	 * joining the mission if the value is larger than 0. The larger the
-	 * qualification value, the more likely the member will be picked for the
-	 * mission.
-	 *
-	 * @param member the member to check.
-	 * @return mission qualification value.
-	 */
-	@Override
-	public double getMissionQualification(Worker member) {
-
-		double result = 0D;
-
-		if (member instanceof Person person) {
-			result = Math.max(5,  person.getMissionExperience(missionType));
-
-			// Get base result for job modifier.
-			Set<JobType> prefered = getPreferredPersonJobs();
-			JobType job = person.getMind().getJobType();
-			double jobModifier;
-			if ((prefered != null) && prefered.contains(job)) {
-				jobModifier = 1D;
-			}
-			else {
-				jobModifier = 0.5D;
-			}
-
-			result = result + 2 * result * jobModifier;
-		}
-		else {
-			Robot robot = (Robot) member;
-
-			// Get base result for job modifier.
-			RobotJob job = robot.getBotMind().getRobotJob();
-			if (job != null) {
-				result = job.getJoinMissionProbabilityModifier(this.getClass());
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the preferred Job types.
-	 * 
-	 * @return
-	 */
-	protected Set<JobType> getPreferredPersonJobs() {
-		return Collections.emptySet();
 	}
 
 	@Override
 	public Set<ObjectiveType> getObjectiveSatisified() {
 		return Collections.emptySet();
 	}
+
+	protected int getMissionCapacity() {
+		var meta = MetaMissionUtil.getMetaMission(getMissionType());
+		return meta.getDefaultCapacity();
+	}
+
 	/**
 	 * Checks if the current phase has ended or not.
 	 *

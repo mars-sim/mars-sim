@@ -361,21 +361,4 @@ public abstract class DroneMission extends AbstractVehicleMission {
 	protected boolean isInAGarage() {
 		return getVehicle().isInGarage();
 	}
-
-	@Override
-	protected boolean recruitMembersForMission(Person startingMember, boolean sameSettlement, int minMembers) {
-		// Get a delivery bot qualified for the mission.
-		Iterator<Robot> r = getStartingSettlement().getAllAssociatedRobots().iterator();
-		while (r.hasNext()) {
-			Robot robot = r.next();
-			if (robot.getRobotType() == RobotType.DELIVERYBOT) {
-				addMember(robot);
-				break;
-			}
-		}
-
-		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
-
-		return true;
-	}
 }

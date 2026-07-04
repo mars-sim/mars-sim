@@ -29,7 +29,7 @@ public class TestDriveMission extends MissionVehicleProject{
     public static final double TRAVEL_DIST = 50D;
 
     public TestDriveMission(String name, Person leader) {
-        super(name, MissionType.TRAVEL_TO_SETTLEMENT, 10, 2, leader);
+        super(name, MissionType.TEST_DRIVE, 10, leader);
         
         if (!isDone()) {
             Settlement base = leader.getAssociatedSettlement();

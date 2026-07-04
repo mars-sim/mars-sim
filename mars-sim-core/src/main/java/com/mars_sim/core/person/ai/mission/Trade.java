@@ -64,8 +64,6 @@ public class Trade extends RoverMission implements CommerceMission {
 	// Static members
 	public static final double MAX_STARTING_PROBABILITY = 100D;
 
-	public static final int MAX_MEMBERS = 2;
-
 	private static final Set<ObjectiveType> OBJECTIVES = Set.of(ObjectiveType.TRADE_CENTER);
 
 	private TradeObjective objective;
@@ -91,11 +89,6 @@ public class Trade extends RoverMission implements CommerceMission {
 		}
 
 		Settlement s = startingMember.getSettlement();
-		// Set the mission capacity.
-		if (getMissionCapacity() > MAX_MEMBERS) {
-			setMissionCapacity(MAX_MEMBERS);
-		}
-
 		outbound = true;
 
 		// Get trading settlement
@@ -111,7 +104,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		addObjective(objective);
 
 		// Recruit additional members to mission.
-		if (!isDone() && !recruitMembersForMission(startingMember, MAX_MEMBERS)) {
+		if (!isDone() && !recruitMembersForMission(startingMember, getMissionCapacity())) {
 			return;
 		}
 
@@ -136,12 +129,7 @@ public class Trade extends RoverMission implements CommerceMission {
 		super(MissionType.TRADE, members.get(0), rover);
 
 		outbound = true;
-
-		// Sets the mission capacity.
-		if (getMissionCapacity() > MAX_MEMBERS) {
-			setMissionCapacity(MAX_MEMBERS);
-		}
-
+		
 		// Set mission destination.
 		addNavpoint(tradingSettlement);
 

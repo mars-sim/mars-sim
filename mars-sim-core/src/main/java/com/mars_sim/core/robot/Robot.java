@@ -177,6 +177,16 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		// Construct the RoboticAttributeManager instance.
 		attributes = new NaturalAttributeManager(spec.getAttributeMap());
+
+		// Construct the BotMind instance.
+		botMind = new BotMind(this);
+
+		// Add scope to malfunction manager.
+		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+		// Add system type to malfunction manager scope
+		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
+		// Initialize the scope map.
+		malfunctionManager.initScopes();
 	}
 
 	/**
@@ -190,22 +200,12 @@ public class Robot extends AbstractMobileUnit implements Salvagable, Temporal, M
 
 		// Put robot in proper building.
 		BuildingManager.addRobotToRandomBuilding(this, s);
-
-		// Add scope to malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
-		// Add system type to malfunction manager scope
-		malfunctionManager.addScopeString(SystemType.ROBOT.getName());
-		// Initialize the scope map.
-		malfunctionManager.initScopes();
 		
 		// Add TYPE to the part scope
 		SimulationConfig.instance().getPartConfiguration().addScopes(TYPE);
 
 		// Set up the time stamp for the robot
 		createBirthDate();
-
-		// Construct the BotMind instance.
-		botMind = new BotMind(this);
 
 		// Set inventory total mass capacity based on the robot's strength.
 		int strength = attributes.getAttribute(NaturalAttributeType.STRENGTH);

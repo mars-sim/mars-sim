@@ -96,7 +96,7 @@ public class Delivery extends DroneMission implements CommerceMission {
 			addObjective(objective);
 			
 			// Recruit additional members to mission.
-			recruitMembersForMission(startingMember, true, 2);
+			recruitMembersForMission(startingMember, 2);
 
 			if (!isDone()) {
 				// Set initial phase

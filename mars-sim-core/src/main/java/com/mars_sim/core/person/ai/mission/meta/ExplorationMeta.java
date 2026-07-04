@@ -28,15 +28,19 @@ import com.mars_sim.core.vehicle.Rover;
 public class ExplorationMeta extends AbstractMetaMission {
 
 	private static final int MAX = 50;
-	
+
+	private static final Set<JobType> PREFERRED_WORKER_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.ASTROBIOLOGIST, 
+			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);	
+
 	/** Starting sol for this mission to commence. */
 	public static final int MIN_STARTING_SOL = 2;
 
 	private static final double VALUE = 20D;
 
 	ExplorationMeta() {
-		super(MissionType.EXPLORATION, 
-					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST));
+		super(MissionType.EXPLORATION, 2, 4,
+					Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.METEOROLOGIST),
+					PREFERRED_WORKER_JOBS);
 	}
 
 	@Override
@@ -57,10 +61,8 @@ public class ExplorationMeta extends AbstractMetaMission {
         RoleType roleType = person.getRole().getType();
 
 		if (roleType.isCouncil()
-//				|| RoleType.CHIEF_OF_SCIENCE == roleType
 				|| RoleType.CHIEF_OF_MISSION_PLANNING == roleType
 				|| RoleType.CHIEF_OF_SUPPLY_RESOURCE == roleType
-//	 			|| RoleType.SCIENCE_SPECIALIST == roleType
 	 			|| RoleType.MISSION_SPECIALIST == roleType
 				|| RoleType.RESOURCE_SPECIALIST == roleType
 				) {

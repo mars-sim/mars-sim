@@ -16,6 +16,7 @@ import com.mars_sim.core.person.ai.mission.FieldStudyMission;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.RoverMission;
 import com.mars_sim.core.person.ai.role.RoleType;
+import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.science.ScienceType;
 import com.mars_sim.core.science.ScientificStudy;
 import com.mars_sim.core.science.StudyStatus;
@@ -28,8 +29,9 @@ public class FieldStudyMeta extends AbstractMetaMission {
 							RoleType.CHIEF_OF_LOGISTIC_OPERATION, RoleType.LOGISTIC_SPECIALIST,
 							RoleType.CHIEF_OF_SCIENCE, RoleType.SCIENCE_SPECIALIST,
 							RoleType.CHIEF_OF_SUPPLY_RESOURCE, RoleType.RESOURCE_SPECIALIST,
-							RoleType.CHIEF_OF_MISSION_PLANNING, RoleType.MISSION_SPECIALIST, 
-							RoleType.COMMANDER, RoleType.SUB_COMMANDER);
+							RoleType.CHIEF_OF_MISSION_PLANNING, RoleType.MISSION_SPECIALIST);
+	private static final Set<JobType> PREFERRED_WORKER_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER,
+							JobType.ASTROBIOLOGIST, JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
 	private static final String PRI_STUDY_BASE = "study.primary";
 	private static final String COL_STUDY_BASE = "study.collaborative";
@@ -40,8 +42,15 @@ public class FieldStudyMeta extends AbstractMetaMission {
 
 	public FieldStudyMeta(MissionType type, Set<JobType> preferredLeaderJob,
 			ScienceType scienceType) {
-		super(type, preferredLeaderJob);
+		super(type, 2, 3, preferredLeaderJob, PREFERRED_WORKER_JOBS);
 		this.scienceType = scienceType;
+	}
+
+	/**
+	 * Get the science type for this field study meta mission.
+	 */
+	ScienceType getScienceType() {
+		return scienceType;
 	}
 
 	@Override
@@ -154,5 +163,19 @@ public class FieldStudyMeta extends AbstractMetaMission {
 		}
 		
 	    return missionProbability;
+	}
+
+	
+	@Override
+	public double getWorkerSuitability(Worker member) {
+		double result = super.getWorkerSuitability(member);
+
+		if ((result > 0D) && (member instanceof Person person)) {
+			// Add modifier based on their knowledhe of the specific science
+			var knowledge = person.getResearchStudy().getScientificAchievement(scienceType);
+			result *= 1 + (knowledge/100.0);
+		}
+
+		return result;
 	}
 }

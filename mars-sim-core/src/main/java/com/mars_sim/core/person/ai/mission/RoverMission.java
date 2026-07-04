@@ -1281,29 +1281,6 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		return result;
 	}
 
-	/**
-	 * Checks to see if at least one inhabitant a settlement is remaining there.
-	 *
-	 * @param settlement the settlement to check.
-	 * @param member     the mission member checking
-	 * @return true if at least one person left at settlement.
-	 */
-	protected static boolean atLeastOnePersonRemainingAtSettlement(Settlement settlement, Worker member) {
-		boolean result = false;
-
-		if (settlement != null) {
-			Iterator<Person> i = settlement.getIndoorPeople().iterator();
-			while (i.hasNext()) {
-				Person inhabitant = i.next();
-				if ((inhabitant != member) && !inhabitant.getMind().hasActiveMission()) {
-					result = true;
-				}
-			}
-		}
-
-		return result;
-	}
-
 
 	/**
 	 * Gets the optional containers for a Rover mission. Add a spare EVASuit
@@ -1467,49 +1444,5 @@ public abstract class RoverMission extends AbstractVehicleMission {
 		}
 		
 		return timeLimit;
-	}
-
-	/**
-	 * Finds members for a mission, for RoverMissions all members must be at the same
-	 * settlement.
-	 * 
-	 * @param startingMember
-	 * @return
-	 */
-	protected boolean recruitMembersForMission(Person startingMember, int minMembers) {
-		return recruitMembersForMission(startingMember, true, minMembers);
-	}
-
-	@Override
-	protected boolean recruitMembersForMission(Person startingMember, boolean sameSettlement,
-										int minMembers) {
-		super.recruitMembersForMission(startingMember, sameSettlement, minMembers);
-
-		// Make sure there is at least one person left at the starting
-		// settlement.
-		if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingMember)) {
-			// Remove last person added to the mission.
-			Person lastPerson = null;
-			for (Iterator<Worker> i = getMembers().iterator(); i.hasNext();) {      
-				Worker member = i.next();
-				if (member instanceof Person p) {
-					lastPerson = p;
-					// Use Iterator's remove() method
-					i.remove();
-					// Adjust the work shift
-					removeMember(member);
-				}
-			 }
-			
-			 if (lastPerson != null) {
-				lastPerson.getMind().setMission(null);
-				if (getMembers().size() < minMembers) {
-					endMission(NOT_ENOUGH_MEMBERS);
-					return false;
-				} 
-			}
-		}
-
-		return true;
 	}
 }

@@ -21,7 +21,6 @@ import com.mars_sim.core.mission.objectives.ExplorationObjective;
 import com.mars_sim.core.mission.task.ExploreSite;
 import com.mars_sim.core.person.Person;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.structure.ExplorationManager;
 import com.mars_sim.core.structure.ObjectiveType;
@@ -38,9 +37,6 @@ import com.mars_sim.core.vehicle.comparators.LabRangeComparator;
  */
 public class Exploration extends EVAMission
 	implements SiteMission {
-
-	private static final Set<JobType> PREFERRED_JOBS = Set.of(JobType.AREOLOGIST, JobType.ASTRONOMER, JobType.ASTROBIOLOGIST, 
-			JobType.BOTANIST, JobType.CHEMIST, JobType.METEOROLOGIST, JobType.PILOT);
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -474,11 +470,6 @@ public class Exploration extends EVAMission
 	 */
 	public double getCurrentSiteTime() {
 		return currentSiteTime;
-	}
-	
-	@Override
-	protected Set<JobType> getPreferredPersonJobs() {
-		return PREFERRED_JOBS;
 	}
 
 	@Override

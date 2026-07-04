@@ -103,17 +103,6 @@ public interface Mission extends MonitorableEntity {
 	 */
 	Set<ObjectiveType> getObjectiveSatisified();
 
-    /**
-	 * Gets the mission qualification value for the member. Member is qualified in
-	 * joining the mission if the value is larger than 0. The larger the
-	 * qualification value, the more likely the member will be picked for the
-	 * mission.
-	 *
-	 * @param member the member to check
-	 * @return mission qualification value
-	 */
-	double getMissionQualification(Worker member);
-
 	/**
 	 * Gets the stage of the Mission.
 	 * 
@@ -144,13 +133,6 @@ public interface Mission extends MonitorableEntity {
      * Mission priority
      */
     int getPriority();
-
-	/**
-	 * Gets the mission capacity for participating people.
-	 *
-	 * @return mission capacity
-	 */
-	int getMissionCapacity();
 
 	/**
 	 * Adds a member.

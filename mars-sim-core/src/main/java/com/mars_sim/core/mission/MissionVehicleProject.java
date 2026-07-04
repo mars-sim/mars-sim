@@ -44,8 +44,8 @@ public class MissionVehicleProject extends MissionProject
     private List<NavPoint> route;
     private double distanceCompleted = 0;
 
-    public MissionVehicleProject(String name, MissionType type, int priority, int maxMembers, Person leader) {
-        super(name, type, priority, 2, maxMembers, leader);
+    public MissionVehicleProject(String name, MissionType type, int priority, Person leader) {
+        super(name, type, priority, leader);
     }
 
     /**

@@ -18,7 +18,6 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.malfunction.Malfunction;
 import com.mars_sim.core.mission.objectives.RescueVehicleObjective;
 import com.mars_sim.core.person.Person;
-import com.mars_sim.core.person.ai.job.util.JobType;
 import com.mars_sim.core.person.ai.task.util.Worker;
 import com.mars_sim.core.resource.ResourceType;
 import com.mars_sim.core.structure.Settlement;
@@ -418,23 +417,6 @@ public class RescueSalvageVehicle extends RoverMission {
 			}
 		}
 
-		return result;
-	}
-
-	/**
-	 * Gets the mission qualification score.
-	 * 
-	 * @param member
-	 * @return the score
-	 */
-	@Override
-	public double getMissionQualification(Worker member) {
-		double result = super.getMissionQualification(member);
-
-		if (member instanceof Person person && person.getMind().getJobType() == JobType.PILOT) {
-			result += 1D;
-		}
-		
 		return result;
 	}
 }

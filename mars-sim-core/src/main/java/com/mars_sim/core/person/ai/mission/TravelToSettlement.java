@@ -7,7 +7,6 @@
 
 package com.mars_sim.core.person.ai.mission;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -328,43 +327,6 @@ public class TravelToSettlement extends RoverMission {
 		// Return the sum of the factors with modifiers.
 		return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER)
 				+ (crowdingFactor * CROWDING_MODIFIER) + (scienceAchievementFactor * SCIENCE_MODIFIER);
-	}
-
-	@Override
-	public double getMissionQualification(Worker member) {
-		double result = super.getMissionQualification(member);
-
-		if (member instanceof Person person) {
-			// Add modifier for average relationship with inhabitants of
-			// destination settlement.
-			if (destinationSettlement != null) {
-				Collection<Person> destinationInhabitants = destinationSettlement.getAllAssociatedPeople();
-				double destinationSocialModifier = (RelationshipUtil.getAverageOpinionOfPeople(person,
-						destinationInhabitants) - 50D) / 50D;
-				result += destinationSocialModifier;
-			}
-
-			// Subtract modifier for average relationship with non-mission
-			// inhabitants of starting settlement.
-			if (getStartingSettlement() != null) {
-				Collection<Person> startingInhabitants = new ArrayList<>(getStartingSettlement().getAllAssociatedPeople());
-				startingInhabitants.removeAll(getMembers());
-				double startingSocialModifier = (RelationshipUtil.getAverageOpinionOfPeople(person,
-						startingInhabitants) - 50D) / 50D;
-				result -= startingSocialModifier;
-			}
-
-			// If person has the "Driver" job, add 1 to their qualification.
-			if (person.getMind().getJobType() == JobType.PILOT) {
-				result += 1D;
-			}
-
-			if (person.getMind().getJobType() == JobType.POLITICIAN) {
-				result += 10D;
-			}
-        }
-
-		return result;
 	}
 
 	/**

@@ -10,7 +10,6 @@ import com.mars_sim.core.building.function.FunctionType;
 import com.mars_sim.core.person.ai.NaturalAttributeManager;
 import com.mars_sim.core.person.ai.NaturalAttributeType;
 import com.mars_sim.core.person.ai.SkillType;
-import com.mars_sim.core.person.ai.mission.Delivery;
 import com.mars_sim.core.robot.Robot;
 import com.mars_sim.core.structure.Settlement;
 
@@ -24,9 +23,7 @@ public class Deliverybot extends RobotJob {
 	 */
 	public Deliverybot() {
 		// Use Job constructor.
-		super();
-		
-        jobMissionStarts.add(Delivery.class);
+		super();		
 	}
 
 	/**
@@ -37,7 +34,7 @@ public class Deliverybot extends RobotJob {
 	@Override
 	public double getCapability(Robot robot) {
 
-		double result = 0D;
+		double result;
 
 		int tradingSkill = robot.getSkillManager().getSkillLevel(SkillType.TRADING);
 		result = tradingSkill;

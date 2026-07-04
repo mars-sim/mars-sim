@@ -20,6 +20,7 @@ import com.mars_sim.core.logging.SimLogger;
 import com.mars_sim.core.person.PhysicalCondition;
 import com.mars_sim.core.person.ai.mission.MissionType;
 import com.mars_sim.core.person.ai.mission.Trade;
+import com.mars_sim.core.person.ai.mission.meta.TradeMeta;
 import com.mars_sim.core.resource.AmountResource;
 import com.mars_sim.core.resource.ResourceUtil;
 import com.mars_sim.core.structure.Settlement;
@@ -439,19 +440,19 @@ public final class CommerceUtil {
 
 			double lifeSupportMargin = Vehicle.getLifeSupportRangeErrorMargin();
 			// Get oxygen amount.
-			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
+			double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * tripTimeSols * TradeMeta.MAX_MEMBERS
 					* lifeSupportMargin;
 			Good oxygenGood = GoodsUtil.getGood(ResourceUtil.OXYGEN_ID);
 			neededResources.put(oxygenGood, (int) oxygenAmount);
 
 			// Get water amount.
-			double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
+			double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * TradeMeta.MAX_MEMBERS
 					* lifeSupportMargin;
 			Good waterGood = GoodsUtil.getGood(ResourceUtil.WATER_ID);
 			neededResources.put(waterGood, (int) waterAmount);
 
 			// Get food amount.
-			double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS
+			double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * TradeMeta.MAX_MEMBERS
 					* lifeSupportMargin;
 			Good foodGood = GoodsUtil.getGood(ResourceUtil.FOOD_ID);
 			neededResources.put(foodGood, (int) foodAmount);

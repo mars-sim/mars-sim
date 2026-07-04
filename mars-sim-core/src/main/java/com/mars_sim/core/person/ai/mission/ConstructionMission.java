@@ -62,8 +62,6 @@ public class ConstructionMission extends AbstractMission {
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 2;
 	
-	private static final int MAX_PEOPLE = 10;
-	
 	private static final int CONSTRUCT_PERCENT_PROBABILITY = 50;
 	
 	/** Time (millisols) required to prepare construction site for stage. */
@@ -86,11 +84,8 @@ public class ConstructionMission extends AbstractMission {
 			return;
 		}
 
-		// Sets the mission capacity.
-		setMissionCapacity(MAX_PEOPLE);
-
 		// Recruit additional members to mission.
-		if (!recruitMembersForMission(startingMember, true, MIN_PEOPLE)) {
+		if (!recruitMembersForMission(startingMember, MIN_PEOPLE)) {
 			return;
 		}
 
@@ -140,8 +135,6 @@ public class ConstructionMission extends AbstractMission {
 
 		// Add mission members.
 		addMembers(members, false);
-		
-		setMissionCapacity(MAX_PEOPLE);
 
 		// site already selected
 		logger.info(settlement, "Case 2. new construction stageInfo could not be determined.");
