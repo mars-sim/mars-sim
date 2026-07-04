@@ -219,8 +219,11 @@ public class ReviewMissionPlan extends Task {
 		int relation = assessLeader(leader, reviewerSettlement);
 
 		// 3. Mission Qualification Score
+		double qual = 1D;
 		var meta = MetaMissionUtil.getMetaMission(m.getMissionType());
-		double qual = meta.getWorkerSuitability(person) * 0.4D;
+		if (meta != null) {
+			qual = meta.getWorkerSuitability(person) * 0.4D;
+		}
 		
 		// 4. Settlement objective score, is the Mission type
 		// is preferred for the Objective

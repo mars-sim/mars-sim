@@ -43,7 +43,7 @@ public interface MetaMission {
 	double getLeaderSuitability(Person person);
 
 	/**
-	 * Guage the suitability of this worker joining a mission of this type.
+	 * Gauges the suitability of this worker joining a mission of this type.
 	 * @param w Worker
 	 * @return Score of qualification. zero means not suitable at all.
 	 */

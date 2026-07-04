@@ -86,7 +86,7 @@ public class TradeCommand extends AbstractSettlementCommand {
 	private void outputDeals(Conversation context, Settlement settlement, StructuredResponse response) {
 
 		// Find some example vehicles
-		var deliveryMeta = MetaMissionUtil.getMetaMission(null);
+		var deliveryMeta = MetaMissionUtil.getMetaMission(MissionType.DELIVERY);
 		var drone = deliveryMeta.selectVehicle(settlement);
 		if (drone != null) {
 			response.appendLabeledString("Drone Range", String.format(CommandHelper.KM_FORMAT,

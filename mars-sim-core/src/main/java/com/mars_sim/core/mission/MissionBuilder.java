@@ -21,7 +21,7 @@ import com.mars_sim.core.vehicle.Vehicle;
 
 /**
  * This class is responsible for building a mission.
- * There is a step to select a suitaable vehicle.
+ * There is a step to select a suitable vehicle.
  * It provides a step for recruiting members for a mission.
  * It evaluates potential candidates based on their:
  * - qualifications
@@ -94,7 +94,7 @@ public class MissionBuilder {
     }
 
 	/**
-	 * Rate all the possibles and removes any noit suitable. The remaining are ordered according to decreasing suitability.
+	 * Rate all the possibles and removes any not suitable. The remaining are ordered according to decreasing suitability.
 	 * @param possibles Potential candidates for recruitment.
 	 * @return Ordered list of suitable candidates with their scores.
 	 */
